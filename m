@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 609106126A5
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 02:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C39E26126AA
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 02:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbiJ3ATC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 20:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        id S229936AbiJ3ATJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 20:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiJ3ASq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 20:18:46 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F7724BE7
-        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:45 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id h18so4719956ilq.9
-        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:45 -0700 (PDT)
+        with ESMTP id S229877AbiJ3ASt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 20:18:49 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA704363F
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:47 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id p184so7364110iof.11
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=R88kCoeCwDv+6qx8H8D1eKrnunl5yRlCsLCL15HFklE=;
-        b=F1+aFWl9mh16nV+3OhidAUkfR8KopPxpN92zsTwEGVEphUWqJtVtDlSMjRjOpGxUmG
-         XMy8lwKkGE6/E+YVPj3ZDdAfaUwmGqDWbgmu/4YtRWvg37LLXBK7uXdbioJX7PNlwt1k
-         3uLIEXp2cgBNoVpCWmmqSmmsfrhloczhjmsqFt7MbVy9W1zYyjYi/wvQDRiwJshL9Q4o
-         JFcVsjhnAfuTeixlcaASHodHRvZbmLzbK31vH1B2qqe08f2z5w7JKSCZ/NGx1/O4hUop
-         /TKpWLB+1Dg1hY1a4ZR/Nxdq3ZUsolUL9IxMovRHXE+P4b2Db0kaPXFNOcw7gv6qo0h0
-         gPqQ==
+        bh=Lk3pnPj9yt9t91KAvzsXB5y55ZuWPJLZLwDcUNTFozw=;
+        b=dfJAjEjOKaMWvJQAhG9FkquaM+/gFfJ8lFxaU5DP/wGG8THdDVUZDLBDCpHS0/eOuP
+         nvmVVwABhf9vIWdiiF0tM8KcJQUlTV/np8Yn1lT2CICzOCfvowO4xkBBIWmqdJ+lSd3m
+         6/ruvJahVNZvwp0FfHUtHHjRCjPu2IluiebekKaSy+WNUbZ9xhoMGxMEzci6gI6b7BHE
+         Ldbmrkk1kVuWQEkv91HsMChlRqfIDUyChimWcWrZK2nsWsXdstWxoVofxc0CNhmBpyTv
+         oAuPi0jUUeAezOsSLtp84umLwHx3EgcuZ0cSjpB8SFy7SlWBzJUBvNvOSPsvWsKva5ZF
+         1RjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=R88kCoeCwDv+6qx8H8D1eKrnunl5yRlCsLCL15HFklE=;
-        b=s3smrmxoSHYk7bGkqDPI1VTvPMDcFjPDvhWPEQ2skKm1bR4t5HnnS7RAXdnnYY6dX2
-         oZrjUS4muzjCqHSIvi/JmmKcdaBJcB+93MxMp21YYfhTswDxwROPh1jluGnE2DvCPFG3
-         j9FDUaSqtS9DGOsKthdKDtf8w8l1iEqWbQVcTEDKMV/rUDFu+ApMDqRFg4pRPnrg/OSv
-         Bh5R/7zqb3FpQU4Sbo5u/Bg9QQhPy3BTWNWBR02au7EeRcA68Nfj+n/M4aBgSs30fIQL
-         4GsTXSYnf/fJTXQlmd7hK1QTReJK1y8fX2e3vQ3wjQzBiTK+bjN3Iow5C0qyS6jM8PX9
-         LD7Q==
-X-Gm-Message-State: ACrzQf2czB/ymdkE1d6QHcz1NfVlpy9rVxbKaH4+JpZscqL+7Nl+dqnU
-        ZsijEYiIyhMVbGCI8npHWUvKDg==
-X-Google-Smtp-Source: AMsMyM5Eufyl9Abspn/K5iqnZ9+ZEgPo1s95Ze8BT24YGErCd18WlOw/mlZwABCMJ7cu+3WyezWs7Q==
-X-Received: by 2002:a92:502:0:b0:2fc:5e54:b4a6 with SMTP id q2-20020a920502000000b002fc5e54b4a6mr2946656ile.41.1667089124808;
-        Sat, 29 Oct 2022 17:18:44 -0700 (PDT)
+        bh=Lk3pnPj9yt9t91KAvzsXB5y55ZuWPJLZLwDcUNTFozw=;
+        b=p4xnFnuw73pVgNvVCtSnCLOZsepvYf+yQHUC99ZxNcFk6etPdi2AHPF4iIJbyeqhwK
+         JHa+t9LnAq5s6ZWD6ESiSt7d8Fh113bGkkezHpZ27TfRx0eVp0qySsKbfb3OKn0fqyfW
+         yCWn19nR/Xuhv9r6YmErJDZFo86VjJUmp/osYQ+uNBiOnDmvEs2PUoVYGBKGn6KRT3RL
+         H/4cY34h/XyIoHM86lT8bCa3gKfvvWmlEoT0zmDjLZ7Yd6cLW6zwshLnAJfTLFCpldaK
+         Axcu+bOX6azWPwpYzagncOmbjawhiLCb6aCQA+z7OGCh/98InPfGGILO/VPMzUUSBvto
+         9X+A==
+X-Gm-Message-State: ACrzQf2thGK8GacoOI6jKXSTKsF477ha7R/qC2gExv5TJ3vrNs3pwhwt
+        K37oltYxSmqQdHaHEz011RlUdg==
+X-Google-Smtp-Source: AMsMyM6pKOO2LZSwxRvFzTKWQrnSxFDtSsPBbehdKiBWkltRcPp+9U74Dd0nN4/o4TSBeXNyTF3rBQ==
+X-Received: by 2002:a05:6638:2605:b0:363:a059:36bd with SMTP id m5-20020a056638260500b00363a05936bdmr3535592jat.267.1667089126738;
+        Sat, 29 Oct 2022 17:18:46 -0700 (PDT)
 Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id co20-20020a0566383e1400b00375126ae55fsm1087519jab.58.2022.10.29.17.18.43
+        by smtp.gmail.com with ESMTPSA id co20-20020a0566383e1400b00375126ae55fsm1087519jab.58.2022.10.29.17.18.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 17:18:44 -0700 (PDT)
+        Sat, 29 Oct 2022 17:18:46 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/9] net: ipa: use a bitmap for defined endpoints
-Date:   Sat, 29 Oct 2022 19:18:24 -0500
-Message-Id: <20221030001828.754010-6-elder@linaro.org>
+Subject: [PATCH net-next 6/9] net: ipa: use a bitmap for available endpoints
+Date:   Sat, 29 Oct 2022 19:18:25 -0500
+Message-Id: <20221030001828.754010-7-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221030001828.754010-1-elder@linaro.org>
 References: <20221030001828.754010-1-elder@linaro.org>
@@ -75,182 +75,191 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPA v5.0 supports more than 32 endpoints, so we will be unable to
-represent endpoints defined in the configuration data with a 32-bit
-value.  To prepare for that, convert the field in the IPA structure
-representing defined endpoints to be a Linux bitmap.
-
-Convert loops based on that field into for_each_set_bit() calls over
-the new bitmap.  Note that the loop in ipa_endpoint_config() still
-assumes there are 32 or fewer endpoints (when comparing against the
-available endpoint bit mask); that assumption goes away in the next
-patch.
+Similar to the previous patch, replace the 32-bit unsigned used to
+track endpoints supported by hardware with a Linux bitmap, to allow
+an arbitrary number of endpoints to be represented.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa.h          |  6 ++---
- drivers/net/ipa/ipa_endpoint.c | 49 +++++++++++++++-------------------
- 2 files changed, 24 insertions(+), 31 deletions(-)
+ drivers/net/ipa/ipa.h           |  8 +++---
+ drivers/net/ipa/ipa_endpoint.c  | 44 +++++++++++++++++++++++----------
+ drivers/net/ipa/ipa_interrupt.c |  8 +++---
+ 3 files changed, 41 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index a44595575d066..261c7263f9e31 100644
+index 261c7263f9e31..c603575e2a58b 100644
 --- a/drivers/net/ipa/ipa.h
 +++ b/drivers/net/ipa/ipa.h
-@@ -62,7 +62,7 @@ struct ipa_interrupt;
+@@ -61,9 +61,10 @@ struct ipa_interrupt;
+  * @zero_addr:		DMA address of preallocated zero-filled memory
   * @zero_virt:		Virtual address of preallocated zero-filled memory
   * @zero_size:		Size (bytes) of preallocated zero-filled memory
-  * @endpoint_count:	Number of endpoints represented by bit masks below
-- * @defined:		Bit mask indicating endpoints defined in config data
-+ * @defined:		Bitmap of endpoints defined in config data
-  * @available:		Bit mask indicating endpoints hardware supports
+- * @endpoint_count:	Number of endpoints represented by bit masks below
++ * @endpoint_count:	Number of defined bits in most bitmaps below
++ * @available_count:	Number of defined bits in the available bitmap
+  * @defined:		Bitmap of endpoints defined in config data
+- * @available:		Bit mask indicating endpoints hardware supports
++ * @available:		Bitmap of endpoints supported by hardware
   * @filter_map:		Bit mask indicating endpoints that support filtering
   * @set_up:		Bit mask indicating endpoints set up
-@@ -117,9 +117,9 @@ struct ipa {
- 	void *zero_virt;
- 	size_t zero_size;
+  * @enabled:		Bit mask indicating endpoints enabled
+@@ -119,8 +120,9 @@ struct ipa {
  
--	/* Bit masks indicating endpoint state */
-+	/* Bitmaps indicating endpoint state */
+ 	/* Bitmaps indicating endpoint state */
  	u32 endpoint_count;
--	u32 defined;			/* Defined in configuration data */
-+	unsigned long *defined;		/* Defined in configuration data */
- 	u32 available;			/* Supported by hardware */
++	u32 available_count;
+ 	unsigned long *defined;		/* Defined in configuration data */
+-	u32 available;			/* Supported by hardware */
++	unsigned long *available;	/* Supported by hardware */
  	u32 filter_map;
  	u32 set_up;
+ 	u32 enabled;
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 32559ed498c19..56908ee097cf6 100644
+index 56908ee097cf6..8d4cb2c30ec90 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -459,8 +459,8 @@ void ipa_endpoint_modem_pause_all(struct ipa *ipa, bool enable)
- /* Reset all modem endpoints to use the default exception endpoint */
- int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
+@@ -351,19 +351,17 @@ ipa_endpoint_program_delay(struct ipa_endpoint *endpoint, bool enable)
+ static bool ipa_endpoint_aggr_active(struct ipa_endpoint *endpoint)
  {
--	u32 defined = ipa->defined;
- 	struct gsi_trans *trans;
-+	u32 endpoint_id;
- 	u32 count;
- 
- 	/* We need one command per modem TX endpoint, plus the commands
-@@ -474,14 +474,11 @@ int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
- 		return -EBUSY;
- 	}
- 
--	while (defined) {
--		u32 endpoint_id = __ffs(defined);
-+	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count) {
- 		struct ipa_endpoint *endpoint;
- 		const struct ipa_reg *reg;
- 		u32 offset;
- 
--		defined ^= BIT(endpoint_id);
--
- 		/* We only reset modem TX endpoints */
- 		endpoint = &ipa->endpoint[endpoint_id];
- 		if (!(endpoint->ee_id == GSI_EE_MODEM && endpoint->toward_ipa))
-@@ -1823,16 +1820,11 @@ static void ipa_endpoint_teardown_one(struct ipa_endpoint *endpoint)
- 
- void ipa_endpoint_setup(struct ipa *ipa)
- {
--	u32 defined = ipa->defined;
-+	u32 endpoint_id;
- 
- 	ipa->set_up = 0;
--	while (defined) {
--		u32 endpoint_id = __ffs(defined);
--
--		defined ^= BIT(endpoint_id);
--
-+	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count)
- 		ipa_endpoint_setup_one(&ipa->endpoint[endpoint_id]);
--	}
- }
- 
- void ipa_endpoint_teardown(struct ipa *ipa)
-@@ -1853,10 +1845,10 @@ int ipa_endpoint_config(struct ipa *ipa)
- {
- 	struct device *dev = &ipa->pdev->dev;
+ 	u32 endpoint_id = endpoint->endpoint_id;
+-	u32 mask = BIT(endpoint_id % 32);
+ 	struct ipa *ipa = endpoint->ipa;
+ 	u32 unit = endpoint_id / 32;
  	const struct ipa_reg *reg;
-+	u32 endpoint_id;
- 	u32 tx_count;
- 	u32 rx_count;
- 	u32 rx_base;
--	u32 defined;
- 	u32 limit;
  	u32 val;
  
-@@ -1896,13 +1888,9 @@ int ipa_endpoint_config(struct ipa *ipa)
+-	/* This works until we actually have more than 32 endpoints */
+-	WARN_ON(!(mask & ipa->available));
++	WARN_ON(!test_bit(endpoint_id, ipa->available));
+ 
+ 	reg = ipa_reg(ipa, STATE_AGGR_ACTIVE);
+ 	val = ioread32(ipa->reg_virt + ipa_reg_n_offset(reg, unit));
+ 
+-	return !!(val & mask);
++	return !!(val & BIT(endpoint_id % 32));
+ }
+ 
+ static void ipa_endpoint_force_close(struct ipa_endpoint *endpoint)
+@@ -374,8 +372,7 @@ static void ipa_endpoint_force_close(struct ipa_endpoint *endpoint)
+ 	u32 unit = endpoint_id / 32;
+ 	const struct ipa_reg *reg;
+ 
+-	/* This works until we actually have more than 32 endpoints */
+-	WARN_ON(!(mask & ipa->available));
++	WARN_ON(!test_bit(endpoint_id, ipa->available));
+ 
+ 	reg = ipa_reg(ipa, AGGR_FORCE_CLOSE);
+ 	iowrite32(mask, ipa->reg_virt + ipa_reg_n_offset(reg, unit));
+@@ -1863,7 +1860,13 @@ int ipa_endpoint_config(struct ipa *ipa)
+ 	 * assume the configuration is valid.
+ 	 */
+ 	if (ipa->version < IPA_VERSION_3_5) {
+-		ipa->available = ~0;
++		ipa->available = bitmap_zalloc(IPA_ENDPOINT_MAX, GFP_KERNEL);
++		if (!ipa->available)
++			return -ENOMEM;
++		ipa->available_count = IPA_ENDPOINT_MAX;
++
++		bitmap_set(ipa->available, 0, IPA_ENDPOINT_MAX);
++
+ 		return 0;
+ 	}
+ 
+@@ -1885,8 +1888,15 @@ int ipa_endpoint_config(struct ipa *ipa)
+ 		return -EINVAL;
+ 	}
+ 
++	/* Allocate and initialize the available endpoint bitmap */
++	ipa->available = bitmap_zalloc(limit, GFP_KERNEL);
++	if (!ipa->available)
++		return -ENOMEM;
++	ipa->available_count = limit;
++
  	/* Mark all supported RX and TX endpoints as available */
- 	ipa->available = GENMASK(limit - 1, rx_base) | GENMASK(tx_count - 1, 0);
+-	ipa->available = GENMASK(limit - 1, rx_base) | GENMASK(tx_count - 1, 0);
++	bitmap_set(ipa->available, 0, tx_count);
++	bitmap_set(ipa->available, rx_base, rx_count);
  
--	defined = ipa->defined;
--	while (defined) {
--		u32 endpoint_id = __ffs(defined);
-+	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count) {
+ 	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count) {
  		struct ipa_endpoint *endpoint;
- 
--		defined ^= BIT(endpoint_id);
--
+@@ -1894,13 +1904,13 @@ int ipa_endpoint_config(struct ipa *ipa)
  		if (endpoint_id >= limit) {
  			dev_err(dev, "invalid endpoint id, %u > %u\n",
  				endpoint_id, limit - 1);
-@@ -1954,27 +1942,26 @@ static void ipa_endpoint_init_one(struct ipa *ipa, enum ipa_endpoint_name name,
- 	endpoint->toward_ipa = data->toward_ipa;
- 	endpoint->config = data->endpoint.config;
+-			return -EINVAL;
++			goto err_free_bitmap;
+ 		}
  
--	ipa->defined |= BIT(endpoint->endpoint_id);
-+	__set_bit(endpoint->endpoint_id, ipa->defined);
- }
+-		if (!(BIT(endpoint_id) & ipa->available)) {
++		if (!test_bit(endpoint_id, ipa->available)) {
+ 			dev_err(dev, "unavailable endpoint id %u\n",
+ 				endpoint_id);
+-			return -EINVAL;
++			goto err_free_bitmap;
+ 		}
  
- static void ipa_endpoint_exit_one(struct ipa_endpoint *endpoint)
- {
--	endpoint->ipa->defined &= ~BIT(endpoint->endpoint_id);
-+	__clear_bit(endpoint->endpoint_id, endpoint->ipa->defined);
+ 		/* Make sure it's pointing in the right direction */
+@@ -1913,15 +1923,23 @@ int ipa_endpoint_config(struct ipa *ipa)
+ 		}
  
- 	memset(endpoint, 0, sizeof(*endpoint));
- }
+ 		dev_err(dev, "endpoint id %u wrong direction\n", endpoint_id);
+-		return -EINVAL;
++		goto err_free_bitmap;
+ 	}
  
- void ipa_endpoint_exit(struct ipa *ipa)
- {
--	u32 defined = ipa->defined;
--
--	while (defined) {
--		u32 endpoint_id = __fls(defined);
--
--		defined ^= BIT(endpoint_id);
-+	u32 endpoint_id;
- 
-+	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count)
- 		ipa_endpoint_exit_one(&ipa->endpoint[endpoint_id]);
--	}
+ 	return 0;
 +
-+	bitmap_free(ipa->defined);
-+	ipa->defined = NULL;
++err_free_bitmap:
++	bitmap_free(ipa->available);
++	ipa->available = NULL;
 +
- 	memset(ipa->name_map, 0, sizeof(ipa->name_map));
- 	memset(ipa->channel_map, 0, sizeof(ipa->channel_map));
++	return -EINVAL;
  }
-@@ -1983,6 +1970,7 @@ void ipa_endpoint_exit(struct ipa *ipa)
- u32 ipa_endpoint_init(struct ipa *ipa, u32 count,
- 		      const struct ipa_gsi_endpoint_data *data)
+ 
+ void ipa_endpoint_deconfig(struct ipa *ipa)
  {
-+	struct device *dev = &ipa->pdev->dev;
- 	enum ipa_endpoint_name name;
- 	u32 filter_map;
+-	ipa->available = 0;	/* Nothing more to do */
++	ipa->available_count = 0;
++	bitmap_free(ipa->available);
++	ipa->available = NULL;
+ }
  
-@@ -1993,7 +1981,12 @@ u32 ipa_endpoint_init(struct ipa *ipa, u32 count,
- 	if (!ipa->endpoint_count)
- 		return 0;	/* Error */
+ static void ipa_endpoint_init_one(struct ipa *ipa, enum ipa_endpoint_name name,
+diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
+index a62bc667bda0e..a49f66efacb87 100644
+--- a/drivers/net/ipa/ipa_interrupt.c
++++ b/drivers/net/ipa/ipa_interrupt.c
+@@ -132,14 +132,13 @@ static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
+ 					  u32 endpoint_id, bool enable)
+ {
+ 	struct ipa *ipa = interrupt->ipa;
+-	u32 mask = BIT(endpoint_id % 32);
+ 	u32 unit = endpoint_id / 32;
+ 	const struct ipa_reg *reg;
+ 	u32 offset;
++	u32 mask;
+ 	u32 val;
  
--	ipa->defined = 0;
-+	/* Set up the defined endpoint bitmap */
-+	ipa->defined = bitmap_zalloc(ipa->endpoint_count, GFP_KERNEL);
-+	if (!ipa->defined) {
-+		dev_err(dev, "unable to allocate defined endpoint bitmap\n");
-+		return 0;
-+	}
+-	/* This works until we actually have more than 32 endpoints */
+-	WARN_ON(!(mask & ipa->available));
++	WARN_ON(!test_bit(endpoint_id, ipa->available));
  
- 	filter_map = 0;
- 	for (name = 0; name < count; name++, data++) {
+ 	/* IPA version 3.0 does not support TX_SUSPEND interrupt control */
+ 	if (ipa->version == IPA_VERSION_3_0)
+@@ -148,10 +147,13 @@ static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
+ 	reg = ipa_reg(ipa, IRQ_SUSPEND_EN);
+ 	offset = ipa_reg_n_offset(reg, unit);
+ 	val = ioread32(ipa->reg_virt + offset);
++
++	mask = BIT(endpoint_id);
+ 	if (enable)
+ 		val |= mask;
+ 	else
+ 		val &= ~mask;
++
+ 	iowrite32(val, ipa->reg_virt + offset);
+ }
+ 
 -- 
 2.34.1
 
