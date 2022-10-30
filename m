@@ -2,145 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C3B7612A16
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 11:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12599612A54
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 12:24:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229866AbiJ3K31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 06:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
+        id S229973AbiJ3LY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 07:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiJ3K30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 06:29:26 -0400
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329CC330;
-        Sun, 30 Oct 2022 03:29:25 -0700 (PDT)
-Received: by mail-ua1-x932.google.com with SMTP id x20so3914381ual.6;
-        Sun, 30 Oct 2022 03:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=siZbDKvkv6GDmhZBqxezDI7PD/3HH95diPO+ZsUwpjo=;
-        b=WNLIgtt5mOTUiknqiJdlxmjsudTixQ6DAzH8tAAbRCcCuFlbkjimnTdUFsMvjISvYP
-         Ar1+bG2UrAuFR3UCINZEhh6oD//Kn6kM4gJk46wfmVb41rPf6oxcBv3wEJ7bnGte32uQ
-         1bdLhC024i/xgeByNLSr03LUw5zpNWN6hVZpSN4OKvEawTg50ft3NEKV4LhWb797cwJI
-         6wJpJCGudYU/gCXs/RVsC3T/VgoPGMcINSriDGTDq1V8IAxfGkZ0XAaMCBzW41FxDe0h
-         N2NENsMt4jpRnzELU1q2a7qNrc3RzPopZMXaa9JXRnmjOhwcqrmO7QKep9WkNNeTxOiK
-         v9oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=siZbDKvkv6GDmhZBqxezDI7PD/3HH95diPO+ZsUwpjo=;
-        b=E4GSIvIEUMFEk1hxRyzPqLLMyzj1KRpWsFnCoIhxGgDZ7PS5KQa7MDqK8/9f+YG5xF
-         gYR5hs7Yfx8Kvg6oA5lypLot8Lhzty+ild/V5UDoQPADSn5zgY8uSyrZF/L6st7pdV1o
-         4lU178Fxtn0iKHQ9o1GkaVy5yKXIBaOY5gAIzHLCMuY/r7jR7sUXQO/SrY88OBlMZhJf
-         K9NtykBa4I1WJGrT8eNAj2mRSah3E//BTFvGVhsTGiXsTJQsyAHlBFkCZjguB3nXed0w
-         0RnvbfbtJ8Xb0cabjtIiTQUfgKYVdPsRHdmXTAx3Zp/oyUwd0kgA/niTnC17l+a/WjlU
-         1DAA==
-X-Gm-Message-State: ACrzQf0SlaTFouo0ZwFw7FGnU69WHoR0UObvZgjC/vXmIvrA+ocCA0QB
-        oHfFMxluKngNzBKALmcm1H9VbR5ctsO3g2uucF8=
-X-Google-Smtp-Source: AMsMyM5hylRd0xhmbLwKG1AYBixMFt8oW4I0vGo0LFbDby5FFzTk5F1XFtHbFqXgZ3dyrFcNuwRCFB1egWwf5aCXeEc=
-X-Received: by 2002:ab0:76d1:0:b0:407:702d:7b67 with SMTP id
- w17-20020ab076d1000000b00407702d7b67mr2757436uaq.6.1667125764100; Sun, 30 Oct
- 2022 03:29:24 -0700 (PDT)
+        with ESMTP id S229651AbiJ3LY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 07:24:28 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B4425F8;
+        Sun, 30 Oct 2022 04:24:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667129067; x=1698665067;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZDwLt1JxlL7tE7yCgnQ84ANfngwDWA+sGuiJcNf49J0=;
+  b=lUk1AHe9WMsxT65x5eXVpo1NZoxdyZpdjUAqQNUFA3Em1rnMwuFN5xNc
+   4OJ4cdq0caUc2nwXwcwglvje51JrIuNb+gUMkOeGPWweId0w/j9oLLEHP
+   Vpwh4u6zAahDtVaOVzXabD2fhCzASdieUjvQAMhvSe289YuJ8ykF0NTDI
+   c+vtjMFz4nJej7i9/ZyQ5v4HNK59J1dSfOEzBkueeI5IgbuRkCcimCm5d
+   o7FTKFZcbqPaLSU/iHf+avpSMXS9nVTzjCuLVo5bneLxkIaFS18DElJdM
+   mbxel3TpZyGTc5woXE6KIj1UhX3I4woaZ8CkJrffdMxaadiLCYf8bhL6h
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10515"; a="335391561"
+X-IronPort-AV: E=Sophos;i="5.95,225,1661842800"; 
+   d="scan'208";a="335391561"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2022 04:24:27 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10515"; a="758550970"
+X-IronPort-AV: E=Sophos;i="5.95,225,1661842800"; 
+   d="scan'208";a="758550970"
+Received: from naamamex-mobl.ger.corp.intel.com (HELO [10.214.234.205]) ([10.214.234.205])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2022 04:24:24 -0700
+Message-ID: <fe7ce0bb-35b6-e16f-d86c-766a040b76df@linux.intel.com>
+Date:   Sun, 30 Oct 2022 13:24:14 +0200
 MIME-Version: 1.0
-References: <20221029214058.25159-1-tegongkang@gmail.com> <80f39eff-d175-785c-c10f-a31a046ec132@molgen.mpg.de>
-In-Reply-To: <80f39eff-d175-785c-c10f-a31a046ec132@molgen.mpg.de>
-From:   Kang Minchul <tegongkang@gmail.com>
-Date:   Sun, 30 Oct 2022 19:29:13 +0900
-Message-ID: <CA+uqrQDukt7u8Nvbn7RK5K+Lw8PoxO769Nf9CF9UbvM2WshXTw@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Use kzalloc instead of kmalloc/memset
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Fix TX dispatch condition
+Content-Language: en-US
+To:     Akihiko Odaki <akihiko.odaki@daynix.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Yan Vugenfirer <yan@daynix.com>,
+        intel-wired-lan@lists.osuosl.org, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20221013050044.11862-1-akihiko.odaki@daynix.com>
+From:   "naamax.meir" <naamax.meir@linux.intel.com>
+In-Reply-To: <20221013050044.11862-1-akihiko.odaki@daynix.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 29.10.22 um 23:40 schrieb Kang Minchul:
-> > This commit replace kmalloc + memset to kzalloc
->
-> replace*s*
->
-> (Though starting with =E2=80=9CThis commit =E2=80=A6=E2=80=9D is redundan=
-t.
->
-> > for better code readability and simplicity.
-> >
-> > Following messages are related cocci warnings.
->
-> Maybe: This addresse the cocci warning below.
->
-> > WARNING: kzalloc should be used for d, instead of kmalloc/memset
-> >
-> > Signed-off-by: Kang Minchul <tegongkang@gmail.com>
-> > ---
-> > V1 -> V2: Change subject prefix
-> >
-> >   net/bluetooth/hci_conn.c | 6 ++----
-> >   1 file changed, 2 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-> > index 7a59c4487050..287d313aa312 100644
-> > --- a/net/bluetooth/hci_conn.c
-> > +++ b/net/bluetooth/hci_conn.c
-> > @@ -824,11 +824,10 @@ static int hci_le_terminate_big(struct hci_dev *h=
-dev, u8 big, u8 bis)
-> >
-> >       bt_dev_dbg(hdev, "big 0x%2.2x bis 0x%2.2x", big, bis);
-> >
-> > -     d =3D kmalloc(sizeof(*d), GFP_KERNEL);
-> > +     d =3D kzalloc(sizeof(*d), GFP_KERNEL);
-> >       if (!d)
-> >               return -ENOMEM;
-> >
-> > -     memset(d, 0, sizeof(*d));
-> >       d->big =3D big;
-> >       d->bis =3D bis;
-> >
-> > @@ -861,11 +860,10 @@ static int hci_le_big_terminate(struct hci_dev *h=
-dev, u8 big, u16 sync_handle)
-> >
-> >       bt_dev_dbg(hdev, "big 0x%2.2x sync_handle 0x%4.4x", big, sync_han=
-dle);
-> >
-> > -     d =3D kmalloc(sizeof(*d), GFP_KERNEL);
-> > +     d =3D kzalloc(sizeof(*d), GFP_KERNEL);
-> >       if (!d)
-> >               return -ENOMEM;
-> >
-> > -     memset(d, 0, sizeof(*d));
-> >       d->big =3D big;
-> >       d->sync_handle =3D sync_handle;
->
-> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
->
->
-> Kind regards,
->
-> Paul
-
-Thank you so much for your feedback!
-Should I amend the previous commit message and resend PATCH v3?
-
-regards,
-
-Kang Minchul
+On 10/13/2022 08:00, Akihiko Odaki wrote:
+> e1000_xmit_frame is expected to stop the queue and dispatch frames to
+> hardware if there is not sufficient space for the next frame in the
+> buffer, but sometimes it failed to do so because the estimated maxmium
+> size of frame was wrong. As the consequence, the later invocation of
+> e1000_xmit_frame failed with NETDEV_TX_BUSY, and the frame in the buffer
+> remained forever, resulting in a watchdog failure.
+> 
+> This change fixes the estimated size by making it match with the
+> condition for NETDEV_TX_BUSY. Apparently, the old estimation failed to
+> account for the following lines which determines the space requirement
+> for not causing NETDEV_TX_BUSY:
+>> 	/* reserve a descriptor for the offload context */
+>> 	if ((mss) || (skb->ip_summed == CHECKSUM_PARTIAL))
+>> 		count++;
+>> 	count++;
+>>
+>> 	count += DIV_ROUND_UP(len, adapter->tx_fifo_limit);
+> 
+> This issue was found with http-stress02 test included in Linux Test
+> Project 20220930.
+> 
+> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+> ---
+>   drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
