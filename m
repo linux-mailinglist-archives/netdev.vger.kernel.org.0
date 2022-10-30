@@ -2,89 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F79B612CF9
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 22:22:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78CB4612D07
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 22:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbiJ3VWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 17:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
+        id S229824AbiJ3VcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 17:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiJ3VWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 17:22:53 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65C1A181
-        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 14:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xWlWitXqrchjPrfUBYTswcryjzyQkx/XvuMFbUgFbj8=; b=ptdun4eU69Og+tAJbRIidtBVlK
-        rMNo/bnvy0FP+M2YCgUNV1JcfD2kZKiRSDQsmUHJe+qHVl6KpnQOjOfA+mA/nbYt+JeLiZjPn7UXj
-        fGH7VbTmWk1BbOSNuhlCOU6Imt3px/U1x1esFiLzjlB1LiUqtPTdlndLkdONH3B3hmmU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1opFlB-000yeQ-M9; Sun, 30 Oct 2022 22:22:25 +0100
-Date:   Sun, 30 Oct 2022 22:22:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Michael Walle <michael@walle.cc>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>
-Subject: Re: [RFC PATCH net-next 0/3] Autoload DSA tagging driver when
- dynamically changing protocol
-Message-ID: <Y17rEVzO2w1RslrV@lunn.ch>
-References: <20221027210830.3577793-1-vladimir.oltean@nxp.com>
- <2bad372ce42a06254c7767fd658d2a66@walle.cc>
- <20221028092840.bprd37sn6nxwvzww@skbuf>
+        with ESMTP id S229893AbiJ3Vb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 17:31:59 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8BBB1DE;
+        Sun, 30 Oct 2022 14:31:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667165518; x=1698701518;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yF+CHeWI4UiDbUU7IwMxj8YjpjdcFZ5iBSnZRE+nm6s=;
+  b=CWel5ZVUj7ZgFJtNu+6hGkzS+vLl6iPeeQiUaFT59M3C5DS+9nuRBsL4
+   m2HJUMcQo2cFwn8hjEWLTzGbOrqLgq7YQ+ahU79MdeUCIOUYjPkmCeeh2
+   YfeNpgWaj9y8T9QLZ9fJAve5U7E3kCdLC9j5pE0QC43Q+0sVNeujNFZOn
+   Tzl+FEnCr41p3ySL912gz8lr6HTsrulYds/1COsPUM9cGgUFSbgAAC948
+   e3CUZLTVnFdM8j3IpEAzjtfTHG+NcmVBdRu+TOf7F80Wax6YkchriAb1D
+   0PWKUzD62Lui5iN1Mtc5cGhNbdMFxK5bE2wkfRWbl3MTZ92iLlEyHOBN1
+   A==;
+X-IronPort-AV: E=Sophos;i="5.95,226,1661842800"; 
+   d="scan'208";a="186969027"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Oct 2022 14:31:57 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Sun, 30 Oct 2022 14:31:57 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Sun, 30 Oct 2022 14:31:55 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
+Date:   Sun, 30 Oct 2022 22:36:33 +0100
+Message-ID: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221028092840.bprd37sn6nxwvzww@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 28, 2022 at 09:28:41AM +0000, Vladimir Oltean wrote:
-> On Fri, Oct 28, 2022 at 11:17:40AM +0200, Michael Walle wrote:
-> > >   alias:          dsa_tag-ocelot-8021q
-> > >   alias:          dsa_tag-20
-> > 
-> > I know that name clashes are not to be expected because one is a numerical id
-> > and the other is a string, but it might still make sense to have a different
-> > prefix so the user of modinfo can figure that out more easily.
-> > 
-> > Presuming that backwards compatibility is not an issue, maybe:
-> > dsa_tag-ocelot-8021q
-> > dsa_tag-id-20
-> 
-> Hm, it probably isn't an issue, but I'd like to hear from
-> Andrew/Florian/Vivien as well?
+There were multiple problems in different parts of the driver when
+the MTU was changed.
+The first problem was that the HW was missing to configure the correct
+value, it was missing ETH_HLEN and ETH_FCS_LEN. The second problem was
+when vlan filtering was enabled/disabled, the MRU was not adjusted
+corretly. While the last issue was that the FDMA was calculated wrongly
+the correct maximum MTU.
 
-I don't see it being a big issue either way. This is not ABI, as
-Vladimir points out. These module strings are also somewhat black
-magic:
+v1->v2:
+- when calculating max frame possible to receive add also the vlan tags
+  length
 
-pci:v00001269d000000BBsv*sd*bc*sc*i*
-usb:v17E9p*d*dc*dsc*dp*icFFisc00ip00in*
-virtio:d00000005v*
-pcmcia:m*c*f02fn*pfn*pa*pb*pc*pd*
-acpi*:TPF0001:*
+Horatiu Vultur (3):
+  net: lan966x: Fix the MTU calculation
+  net: lan966x: Adjust maximum frame size when vlan is enabled/disabled
+  net: lan966x: Fix FDMA when MTU is changed
 
-I don't think they are meant to be human readable.
+ .../net/ethernet/microchip/lan966x/lan966x_fdma.c |  8 ++++++--
+ .../net/ethernet/microchip/lan966x/lan966x_main.c |  4 ++--
+ .../net/ethernet/microchip/lan966x/lan966x_main.h |  2 ++
+ .../net/ethernet/microchip/lan966x/lan966x_regs.h | 15 +++++++++++++++
+ .../net/ethernet/microchip/lan966x/lan966x_vlan.c |  6 ++++++
+ 5 files changed, 31 insertions(+), 4 deletions(-)
 
-I do however wounder if they should be dsa_tag:ocelot-8021q,
-dsa_tag:20 ?
+-- 
+2.38.0
 
-	   Andrew
