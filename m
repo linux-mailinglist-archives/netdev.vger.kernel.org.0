@@ -2,173 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C262D612965
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 10:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF9861296F
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 10:29:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiJ3JZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 05:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
+        id S229916AbiJ3J3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 05:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiJ3JZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 05:25:15 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2070.outbound.protection.outlook.com [40.107.95.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62EE32C0
-        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 02:25:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RsbvQhyZJIkqQbFo3V85Dd79cme3tDK7UvB+xOsPb4VHfB0uW9lPzakgK5lv1z4kG/rXVDcB8nDJ/PvCMTzeAXeT7/Pi5a1bJ+QcrRPvqvX+lGj6qj6NXEo4fOO45RduEtW1ajymPaU+4DIVg0e/LNXQ8O9ZFJw1mfBczen5t8Po04CWc4u8AVAAb7MJ0SBvkalJ2fK13OrW6QR62gyitjHeBF6oOcEkT8qYvnTxR+VFKZbzmKLhF9TsuZ8CmHujA1kcmpD9tDO4tIJSIjy0fK4mnxF4fBG8kspa4rx5PEf6hiwMaKwkxqwgyz2t5FQ6rp0nETkm8bqUXj1Zy3FqhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YLLxvZksRetjwjdMPvziNPMzngEJk9Xp2s7sxduq0Wg=;
- b=GspWMtH3puCttkRG1dIUD3D9N3hIb7PA0QrcmSzGtxDOEecknV5KXw9v/lya8LTwoPZ7QHj6aCPf/k6g4fq0J5cSj3QVs9B6kiNnIBIS7hDpfkOUwgo4080ZtktX1kS2jGXoLALpTUaGPXXTQP2Efe8EBAwlV0hL8pX80qxhokNaRG97f3dBagFzuTJFRCmFz90qaAQJBf87s8gxWZ6+3VA3JAfCLv0pCjixbgnzIw1JcManQZYNZ32LtF0NhQN31gDktxDyosrhD3g13P2Mmwg6aKKZSCMMF+sHhkU7iACxKSZSSxhWzfE63jzcavvc0ZWLjEgmp6dabiSCi4obPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YLLxvZksRetjwjdMPvziNPMzngEJk9Xp2s7sxduq0Wg=;
- b=uM/4E7fPp7cGxVPjrF+c55MHzEZxvbJPzPj/RfPYuGNuBbeW6M46S9VcOiN6jFZMwUt+xF110oa8BV7q33LroJolBPQWMTOzcfmFTkmy5xWOEWK6KcoGdzN0F4WoY8jWvZJPVxhVwEWHkUYXVOR+4u9mzaGpHVy11J3Gb8hts2bhrz+4jPPv+l8wzr/79F/0GutibbVbegCBC+HdHW9FfnIBtBA271cMskXbTPqHCuSAHDGb8lsyWYK0wHxB+VsVNUZRZMh59giddqevC/ukYJiEjyxozUIgdxkiCelDfi9fX6gZMVDkToAVbdfPFVR+Ec5F16hLYkB4OW3mjscHJA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by MN2PR12MB4176.namprd12.prod.outlook.com (2603:10b6:208:1d5::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.18; Sun, 30 Oct
- 2022 09:25:08 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::3409:6c36:1a7f:846e]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::3409:6c36:1a7f:846e%4]) with mapi id 15.20.5769.019; Sun, 30 Oct 2022
- 09:25:08 +0000
-Date:   Sun, 30 Oct 2022 11:25:01 +0200
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "jiri@nvidia.com" <jiri@nvidia.com>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "ivecera@redhat.com" <ivecera@redhat.com>,
-        "roopa@nvidia.com" <roopa@nvidia.com>,
-        "razor@blackwall.org" <razor@blackwall.org>,
-        "netdev@kapio-technology.com" <netdev@kapio-technology.com>,
-        "mlxsw@nvidia.com" <mlxsw@nvidia.com>
-Subject: Re: [RFC PATCH net-next 03/16] bridge: switchdev: Let device drivers
- determine FDB offload indication
-Message-ID: <Y15C7Uq0OoMTTv1G@shredder>
-References: <20221025100024.1287157-1-idosch@nvidia.com>
- <20221025100024.1287157-4-idosch@nvidia.com>
- <20221027231039.2rqn7yeomk5nsx76@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221027231039.2rqn7yeomk5nsx76@skbuf>
-X-ClientProxiedBy: AM6P194CA0011.EURP194.PROD.OUTLOOK.COM
- (2603:10a6:209:90::24) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S229862AbiJ3J25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 05:28:57 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0472C06;
+        Sun, 30 Oct 2022 02:28:55 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id 13so22761064ejn.3;
+        Sun, 30 Oct 2022 02:28:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=hDKGMCpj76LglQyCjAd4gwCw0ksLmiMkut2VbUcz/SY=;
+        b=o7mfKfrPxwVahtVT9rvYK46TIQu4TAFiTdOv7Z9Ainvp2RaJH/oYOtW0YU/9pbRmOd
+         nATPAoPQTzFkRzb/1jLje1nUhMwZODX9GZ7ZIqCynUtaqfwtdRjU7vUQrRu/iKKwVUrR
+         4DV2ToGCakaGDvsX4Chz9cD5eLWhUnsP5/i3P0xWV2V4BABrNW+PnwKXNvaNRrkXysYi
+         LK0kSOcMgRfiYHICJNXrF+X/o8jw4Dfg6IzHcu63JSnNhgKf37MeLhR43L8OsWGlqJpg
+         jDCmhdmROseeCsK/gA1TkCxyge2yo9DdN5zNxplmLcSS9a+mm+8xo+F/uB5zi+wJ0MKh
+         sBVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hDKGMCpj76LglQyCjAd4gwCw0ksLmiMkut2VbUcz/SY=;
+        b=rmYXhI4YfTyY7VShY2HdvFK//K2FUQDimJQl8WF+tk0JydlVOtpMVfyqeiuHuawD/O
+         2LupmDh6ZHRpqrtgglDwznHJPkFK6H7OhiPqtQbebuqsestr8XDhV/QKSPzx2ZB6SwZ4
+         NeMKFA4t09jHPQ5BbJ8JKCEg9FqcslL2FVW7CBN41Wtc4xfDN9mdxbrlXBOX4OjLVqmy
+         Y76F5Nm2TSFVvK78oMzhjhRqci3e0lgzMm0yK2bMoljBzJNkhnFMDXxiuImiZv3FsbQH
+         SWvuvcuQztym07BPWNKOdHY1ZnOgtKHp53tnUc1n4dPoxAlelJyBdMhrboNqasD8HJLJ
+         J4Qw==
+X-Gm-Message-State: ACrzQf2IsQUsBBIfSX/qjoILkqoSR6D0SmUAtm9MfoZ2DM5oi5vWGiiM
+        3mSgy9O5dmAyMUUiQ19tLQq8XHz7DmAF6nfGaPhykPJSurxwZg==
+X-Google-Smtp-Source: AMsMyM6ju7m2x+MPHl6QDls0jqNOzAEPHFBvoOaZwEyOcBz7f6HDN+HZRE0549bK5t7dq5OiJjUC1NuvTjzRCJ1RexQ=
+X-Received: by 2002:a17:907:2c75:b0:78d:c201:e9aa with SMTP id
+ ib21-20020a1709072c7500b0078dc201e9aamr7470691ejc.235.1667122134192; Sun, 30
+ Oct 2022 02:28:54 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|MN2PR12MB4176:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9a3402cc-f96a-4452-21f3-08daba58a2ff
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5sTLpEvLNG2txNN0+I5wqYR/ztiEeVljumrxDG0/+ow+Lq9CTOYgdBL1GF4zNlIA3LKW52sYLid/yvLRdKxjuALcGkA8c4w8p+OQ8LdzkuM7DEuE4dhd1DyJC0R70+Z7vrBlyd++oPQtf1dCSh6vL1+nVDxg1oRSIpUsbU+wLXQwC+g3efz6v0vfHo9WHF3IieiiJV1h2PCJboUqaHnqdTGnmwYVDMzAhhhJOXzarHXL+N8qCCm/6wQQPQA9j+p8hmkq+Tp8b2d3pvWbeTQJBvmGcdAhMRSGYAoy6Bp71+ZifoozOd1rK/LAzuvdOajt9zPattP0SyvymH7XLAG7NbmjUUzbeIG2nYhaGkOB+ZKox+UoHAcmJkmHPzndAgYcYrH0OyTEnpDZDM60RS5w/mD2XBxYSUz9VLW8Z7ars/+VDyc0ptr8OKpSHPiuMEdsm1ROKq9bET85UNYFOlRruSPCy6oOEuoU6ghQQupohKrdZUyzR+iUV3PCCdgSuhVjqYBPHsVNHeYwGRZOVUAFXfC4dRbI91KOYve8nD36YDdG7PR79U5m/IjJsxUvtvczu+Msc52a3dTrOI92fpHmLEO0Egk8Quw7qVc3HM2/SZcdBezrl6XWov/7gMHHRf7Bd0yuZVL3iry+oLeyBiJiBjyYASLcuX5NtJR33ZpFB+/9Ag4Nh5SJ/6xfYUvYHKEyKtq9ip5qyER4u2MtZmwPtQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(136003)(346002)(376002)(366004)(39860400002)(396003)(451199015)(6512007)(2906002)(83380400001)(26005)(5660300002)(186003)(9686003)(7416002)(8936002)(33716001)(86362001)(38100700002)(6666004)(107886003)(478600001)(316002)(6486002)(54906003)(6916009)(6506007)(8676002)(4326008)(66946007)(66476007)(66556008)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7XzGhJgR8oSAVQS1aitG1x1UyjnUBf8F5qKuAjqpVjl6jPVJ3iPJZlkCdhGS?=
- =?us-ascii?Q?43Ipb82/xOWEEJ6q2wOmHpCHMvi2D7gqlTipVA7dikV0iOP6DiEKeHtrVW4f?=
- =?us-ascii?Q?+GIHBKWPDG0tvUjvCtVKFYnL20DAM3bc9pIceU/YFwtpOUrOOavMZAKsFCab?=
- =?us-ascii?Q?zCCE+xOHpLTZpAaWuZnBHA9n1LyHhQzTtrks5SFIYICviBX6doTLhlL7oOUj?=
- =?us-ascii?Q?RPLiuNVwnROyfLBYGnnlFTcUvN5FD533sfHLwkYvnJezi+bW83SJC+d27I+V?=
- =?us-ascii?Q?YwlKT/JYWzqaNRC+TwNKLUU2/KnxC9SWmlmQ19RBSil6wjU3bYmBOKtba1AA?=
- =?us-ascii?Q?H3Ei4uXpmDeg30q/ErsrPS5nTt2fBOKnfVu1wyWmBDyKFskw0WSpragySBu9?=
- =?us-ascii?Q?nMwIRtni7SIU6dgojVzfh371RVPUaYZFP/ln1h0d0CBDrpl/xQmHW4rfi+Ys?=
- =?us-ascii?Q?ksKJ+QiwEaJPnKk/0jkz6ehys1lvawGb+xF+LbdwHlE3nRVI5u5fXOrxraRj?=
- =?us-ascii?Q?m05xdol+JnZcIjlXu3PjewG5GHrN0hV7bnN9JIZekokekFW65bqxzISFBczh?=
- =?us-ascii?Q?gZWJ65Loz6y4yl9n6M/rPmWs0WkrGJpaUPlj0lJlXz3ZgJB800mJUbYvf6pP?=
- =?us-ascii?Q?uMvZBRKfGEZcQ22CtXBXm2kLYVRc+yKa6bh2yyi6YJ8Cp3c+eh+g8gE1IQuk?=
- =?us-ascii?Q?S3TjM24EF/CEs4sPmBlc3Zchr8h/OfX3UmzlN5E8l13xZrKwDeAKIUQoUxax?=
- =?us-ascii?Q?6876Dqkc6wUSdXJBPVDZIqp68n/had10rjns0neT9hNNCRFbyrWpQqre7Am6?=
- =?us-ascii?Q?EqZN1KnDfjTLwXXRfxZNvDHmWbcZbDxVmJajSVRluzN700ec+ZSnOqQ8KJ6h?=
- =?us-ascii?Q?oAF/7u8LTx4Yz1lC88QrdoXYnP7L8h46SJGj/RQwAxYcde4Ndk3LtticrfHY?=
- =?us-ascii?Q?kx+/KhMNZaZ2fc7XZYpN0Y0fkbu2sHN/rANS8JXyKY/mlGXi4vyxrIZz9chp?=
- =?us-ascii?Q?n/hBqXeO5JDfP8RtPKoAv/2u7nU46s5MpWQgwPIuFfyK4lXUeMRCBxvHClX8?=
- =?us-ascii?Q?BqHBtS3uASWJMJH2T/ysT0pzUSiydP6C0wT/8TvWy96xiO0E+1bL13sHSvPB?=
- =?us-ascii?Q?s+3iKfgFEBtbZy1Ku3QAHk6LY1saeDd32SwZQ6J1wLpxZILHcFoLEUy24Onc?=
- =?us-ascii?Q?yzcwKqvtkyQR2y1cZNcr33u2VXSXOWykbtT86gRmBTFZ+bUnzSrmWWfSZSSq?=
- =?us-ascii?Q?T7dIMfeTZmMs49kej1mY2cI6x3/0Qvc6EjEgg3Q9zcURUOaqTuDDfzSitI03?=
- =?us-ascii?Q?ed1PVqKesBir70MdBYnW0KshWP4V2jiTh+9reZPSwi+SfoHuH23AKkSO80ou?=
- =?us-ascii?Q?yj/cQL/E6GZlRQDDVrrT1E2a5hUqkX4w9MbhgEsCSV3palzaruv9Bq3ztWgy?=
- =?us-ascii?Q?F7+DjtnDnS/0zEAOXp7ZV2X2z0LGz+XPOGM88tp9dOIz3yyWA9hDDqAoYEvj?=
- =?us-ascii?Q?kh9jRdEvhUNfJkKGVDFOIiiIczxq/i4kbNh3zYZPomsk4s6M+bFCPJ9R1RmA?=
- =?us-ascii?Q?bUs8U0mKXI8O7RAisvCbi8XA23z6KF+LNQJiuxrb?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a3402cc-f96a-4452-21f3-08daba58a2ff
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2022 09:25:08.2103
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7MdVMgQ5YNZdnn3FeUKc5yhYT71BzTbZVSJxZ6lYHLMTQy5E701TBYmQXKmmF5/F/jyZQKXBEWREsKnZ0UI7rQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4176
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   Wei Chen <harperchen1110@gmail.com>
+Date:   Sun, 30 Oct 2022 17:28:18 +0800
+Message-ID: <CAO4mrfdifWvUdi7s30yHsbZkavjLuKF_=snSXUo_DtPX9ONjKQ@mail.gmail.com>
+Subject: BUG: unable to handle kernel paging request in tcp_retransmit_timer
+To:     Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 27, 2022 at 11:10:41PM +0000, Vladimir Oltean wrote:
-> On Tue, Oct 25, 2022 at 01:00:11PM +0300, Ido Schimmel wrote:
-> > Currently, FDB entries that are notified to the bridge via
-> > 'SWITCHDEV_FDB_ADD_TO_BRIDGE' are always marked as offloaded. With MAB
-> > enabled, this will no longer be universally true. Device drivers will
-> > report locked FDB entries to the bridge to let it know that the
-> > corresponding hosts required authorization, but it does not mean that
-> > these entries are necessarily programmed in the underlying hardware.
-> > 
-> > Solve this by determining the offload indication based of the
-> > 'offloaded' bit in the FDB notification.
-> > 
-> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> > ---
-> > 
-> > Notes:
-> >     Needs auditing to see which device drivers are not setting this bit.
-> > 
-> >  net/bridge/br.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/net/bridge/br.c b/net/bridge/br.c
-> > index 96e91d69a9a8..145999b8c355 100644
-> > --- a/net/bridge/br.c
-> > +++ b/net/bridge/br.c
-> > @@ -172,7 +172,7 @@ static int br_switchdev_event(struct notifier_block *unused,
-> >  			break;
-> >  		}
-> >  		br_fdb_offloaded_set(br, p, fdb_info->addr,
-> > -				     fdb_info->vid, true);
-> > +				     fdb_info->vid, fdb_info->offloaded);
-> 
-> ofdpa_port_fdb_learn_work() doesn't set info->offloaded on
-> SWITCHDEV_FDB_ADD_TO_BRIDGE, the rest do.
+Dear Linux Developer,
 
-Double-checked and this is the only one missing. Will send a patch.
-Thanks
+Recently when using our tool to fuzz kernel, the following crash was triggered:
 
-> 
-> >  		break;
-> >  	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
-> >  		fdb_info = ptr;
-> > -- 
-> > 2.37.3
-> >
+HEAD commit: 64570fbc14f8 Linux 5.15-rc5
+git tree: upstream
+compiler: gcc 8.0.1
+console output:
+https://drive.google.com/file/d/1wVTAdDoOo8KqTaGm1v8SaKuv1V8Pt9qs/view?usp=share_link
+kernel config: https://drive.google.com/file/d/1uDOeEYgJDcLiSOrx9W8v2bqZ6uOA_55t/view?usp=share_link
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: Wei Chen <harperchen1110@gmail.com>
+
+BUG: unable to handle page fault for address: ffffe8ff3fa5f268
+#PF: supervisor write access in kernel mode
+#PF: error_code(0x0002) - not-present page
+PGD 983f067 P4D 983f067 PUD afce067 PMD 4e244067 PTE 0
+Oops: 0002 [#1] PREEMPT SMP
+CPU: 0 PID: 6544 Comm: syz-fuzzer Not tainted 5.15.0-rc5 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
+RIP: 0010:tcp_retransmit_timer+0x4c5/0x1540
+Code: 31 e7 ff ff e9 65 fd ff ff e8 b7 75 3c fd 48 c7 c7 26 1c ee 85
+e8 8b fa bc 00 48 8b 43 30 bf 1f 00 00 00 48 8b 80 58 02 00 00 <65> 48
+ff 80 40 01 00 00 44 0f b6 73 12 48 8b 43 30 44 89 f6 48 89
+RSP: 0000:ffffc90000807cc0 EFLAGS: 00010202
+RAX: 0000607ec1e5f128 RBX: ffff8880156c0000 RCX: ffff888011480000
+RDX: 0000000000000000 RSI: 0000000000000101 RDI: 000000000000001f
+RBP: ffff8880156c0120 R08: ffffffff8400fda9 R09: 0000000000000000
+R10: 0000000000000005 R11: 0000000080000001 R12: 0000000080000001
+R13: ffff88810cd1b280 R14: ffff888029b5f400 R15: ffff8880156c0278
+FS:  000000c000030c90(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffe8ff3fa5f268 CR3: 0000000015c0b000 CR4: 00000000003506f0
+Call Trace:
+ tcp_write_timer_handler+0x132/0x420
+ tcp_write_timer+0x179/0x230
+ call_timer_fn+0xe8/0x510
+ run_timer_softirq+0x423/0xa40
+ __do_softirq+0xe2/0x56b
+ irq_exit_rcu+0xb6/0xf0
+ sysvec_apic_timer_interrupt+0x52/0xc0
+ asm_sysvec_apic_timer_interrupt+0x12/0x20
+RIP: 0033:0x415543
+Code: 48 8b 1d a0 e8 76 01 84 03 48 8b 14 d3 48 85 d2 74 1d 48 89 c3
+48 c1 e8 0d 48 25 ff 1f 00 00 48 8b 8c c2 00 00 20 00 48 89 d8 <e9> 6c
+fe ff ff 31 c9 e9 65 fe ff ff cc cc cc cc cc cc cc cc cc cc
+RSP: 002b:000000c00003de70 EFLAGS: 00000202
+RAX: 000000c004cc8600 RBX: 000000c004cc8600 RCX: 00007f27b2e23400
+RDX: 00007f27b2e3b000 RSI: 0000000000000001 RDI: 00000000000dcf40
+RBP: 000000c00003de98 R08: 00007f27b303afff R09: 000000c004beb6c0
+R10: 000000c000021e98 R11: 0000000000000008 R12: 000000c004cc8600
+R13: 000000c000001200 R14: 0000000000c4de75 R15: 0000000000000000
+Modules linked in:
+CR2: ffffe8ff3fa5f268
+---[ end trace 8795388675688c1b ]---
+RIP: 0010:tcp_retransmit_timer+0x4c5/0x1540
+Code: 31 e7 ff ff e9 65 fd ff ff e8 b7 75 3c fd 48 c7 c7 26 1c ee 85
+e8 8b fa bc 00 48 8b 43 30 bf 1f 00 00 00 48 8b 80 58 02 00 00 <65> 48
+ff 80 40 01 00 00 44 0f b6 73 12 48 8b 43 30 44 89 f6 48 89
+RSP: 0000:ffffc90000807cc0 EFLAGS: 00010202
+RAX: 0000607ec1e5f128 RBX: ffff8880156c0000 RCX: ffff888011480000
+RDX: 0000000000000000 RSI: 0000000000000101 RDI: 000000000000001f
+RBP: ffff8880156c0120 R08: ffffffff8400fda9 R09: 0000000000000000
+R10: 0000000000000005 R11: 0000000080000001 R12: 0000000080000001
+R13: ffff88810cd1b280 R14: ffff888029b5f400 R15: ffff8880156c0278
+FS:  000000c000030c90(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffe8ff3fa5f268 CR3: 0000000015c0b000 CR4: 00000000003506f0
+----------------
+Code disassembly (best guess), 4 bytes skipped:
+   0: e9 65 fd ff ff        jmpq   0xfffffd6a
+   5: e8 b7 75 3c fd        callq  0xfd3c75c1
+   a: 48 c7 c7 26 1c ee 85 mov    $0xffffffff85ee1c26,%rdi
+  11: e8 8b fa bc 00        callq  0xbcfaa1
+  16: 48 8b 43 30          mov    0x30(%rbx),%rax
+  1a: bf 1f 00 00 00        mov    $0x1f,%edi
+  1f: 48 8b 80 58 02 00 00 mov    0x258(%rax),%rax
+* 26: 65 48 ff 80 40 01 00 incq   %gs:0x140(%rax) <-- trapping instruction
+  2d: 00
+  2e: 44 0f b6 73 12        movzbl 0x12(%rbx),%r14d
+  33: 48 8b 43 30          mov    0x30(%rbx),%rax
+  37: 44 89 f6              mov    %r14d,%esi
+  3a: 48                    rex.W
+  3b: 89                    .byte 0x89
+
+Best,
+Wei
