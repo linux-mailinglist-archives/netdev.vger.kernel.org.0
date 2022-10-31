@@ -2,103 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B661C6130D9
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 08:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A1261310A
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 08:08:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbiJaHBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 03:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        id S229692AbiJaHI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 03:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiJaHA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 03:00:58 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7183F9590;
-        Mon, 31 Oct 2022 00:00:57 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N13rW5pnszJnNL;
-        Mon, 31 Oct 2022 14:58:03 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 31 Oct
- 2022 15:00:54 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>
-CC:     <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
-        <jolsa@kernel.org>, <lmb@cloudflare.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH bpf-next] bpf: fix memory leak in grow_stack_state()
-Date:   Mon, 31 Oct 2022 15:08:12 +0800
-Message-ID: <20221031070812.339883-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229528AbiJaHIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 03:08:25 -0400
+Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA562C2
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 00:08:21 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1667200096to91h720
+Received: from localhost.localdomain ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 31 Oct 2022 15:08:08 +0800 (CST)
+X-QQ-SSF: 01400000000000M0L000000A0000000
+X-QQ-FEAT: TVZM0Uoyj00f4gbKLUdN1yUj1JR3QDeMKnvTSwRm1qd4TAI8hIi/SV784PEiN
+        Q3XyB4Hck1lgFtQEahcgEKxwrRW5+jPRnWOintem2KEfC9AvWKLhC/iHq3oeD6uAkT9/y2o
+        Ai77e3e2unVKDyDaPQztTg48NGzrCCrcCgbRN9Y/aTCnhp4kWC5SPKELnULziXJDeYzQcmK
+        aqLEORPOlJn+9swBkSM7XEvO8FIcji7VWE7hPv9LcvFXmrOJvGROJ6yDSe7heIpvdEgwes4
+        XSwgw+qfZbNsHkAGLbUqvn+NdTXniB1XHB8HxE8dbrMIOv1DXfsHQHdLxOLaFSkw5MVL5j6
+        25BiuvI0dEopqrKiy95bIZ3vpsI6NTJFVNdG41W4C1QLVoUgiuStVaLnDF+czuSdyONm5I1
+        WBF4lo2BZEE=
+X-QQ-GoodBg: 2
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Cc:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [PATCH net-next 0/3] net: WangXun txgbe/ngbe ethernet driver
+Date:   Mon, 31 Oct 2022 15:07:54 +0800
+Message-Id: <20221031070757.982-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The realloc_array() fails, but the previous memory is not released.
-However, state->stack and state->refs are set to NULL. This will
-cause memory leakage.
+This patch series adds support for WangXun NICS, to initialize
+interface from software to firmware.
 
-The memory leak information is as follows:
-unreferenced object 0xffff888019801800 (size 256):
-  comm "bpf_repo", pid 6490, jiffies 4294959200 (age 17.170s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000b211474b>] __kmalloc_node_track_caller+0x45/0xc0
-    [<0000000086712a0b>] krealloc+0x83/0xd0
-    [<00000000139aab02>] realloc_array+0x82/0xe2
-    [<00000000b1ca41d1>] grow_stack_state+0xfb/0x186
-    [<00000000cd6f36d2>] check_mem_access.cold+0x141/0x1341
-    [<0000000081780455>] do_check_common+0x5358/0xb350
-    [<0000000015f6b091>] bpf_check.cold+0xc3/0x29d
-    [<000000002973c690>] bpf_prog_load+0x13db/0x2240
-    [<00000000028d1644>] __sys_bpf+0x1605/0x4ce0
-    [<00000000053f29bd>] __x64_sys_bpf+0x75/0xb0
-    [<0000000056fedaf5>] do_syscall_64+0x35/0x80
-    [<000000002bd58261>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Jiawen Wu (2):
+  net: libwx: Implement interaction with firmware
+  net: txgbe: Add operations to interact with firmware
 
-Fixes: c69431aab67a ("bpf: verifier: Improve function state reallocation")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- kernel/bpf/verifier.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Mengyuan Lou (1):
+  net: ngbe: Initialize sw info and register netdev
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 7f0a9f6cb889..c0b0cc2891e3 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1027,12 +1027,16 @@ static void *copy_array(void *dst, const void *src, size_t n, size_t size, gfp_t
-  */
- static void *realloc_array(void *arr, size_t old_n, size_t new_n, size_t size)
- {
-+	void *old_arr = arr;
-+
- 	if (!new_n || old_n == new_n)
- 		goto out;
- 
- 	arr = krealloc_array(arr, new_n, size, GFP_KERNEL);
--	if (!arr)
-+	if (!arr) {
-+		kfree(old_arr);
- 		return NULL;
-+	}
- 
- 	if (new_n > old_n)
- 		memset(arr + old_n * size, 0, (new_n - old_n) * size);
+ drivers/net/ethernet/wangxun/Kconfig          |   1 +
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 463 ++++++++++++++++++
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |  10 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  | 115 +++++
+ drivers/net/ethernet/wangxun/ngbe/Makefile    |   2 +-
+ drivers/net/ethernet/wangxun/ngbe/ngbe.h      |  55 +++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   |  87 ++++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h   |  12 +
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 368 ++++++++++++++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  99 +++-
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |   1 +
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c | 219 ++++++++-
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |   2 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  85 +++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  14 +
+ 15 files changed, 1522 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
+
 -- 
-2.17.1
+2.38.1
 
