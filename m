@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A96A614164
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 00:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B646141EB
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 00:41:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiJaXKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 19:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35838 "EHLO
+        id S229528AbiJaXlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 19:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiJaXKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 19:10:17 -0400
+        with ESMTP id S229480AbiJaXlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 19:41:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F91515806;
-        Mon, 31 Oct 2022 16:10:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C032115706;
+        Mon, 31 Oct 2022 16:41:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3621614E5;
-        Mon, 31 Oct 2022 23:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 23108C433D7;
-        Mon, 31 Oct 2022 23:10:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ECB9614EB;
+        Mon, 31 Oct 2022 23:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5521CC433C1;
+        Mon, 31 Oct 2022 23:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667257816;
-        bh=ZMIoRfYnbzb46WivSxsiGy2a3pilLAniv/pIUSFDcbU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qwBWUMLd/Pamb+UDwLlYZDcbcfob3QjcZpmhcZJCcCTwg3iTUHp5SW2NPtWg9Hc1l
-         f9hT2I5dhOxaes94JSJuwBt0zq9PAN6d6fTUSwg5fRIXp7mnLxqiP70qRhebY0UZY8
-         gAWKsssZo3BRm52XNaMx7LJ/vi91xx1dJK5sy9kEtYloCQNKaMECBzyJw1CzxHMewc
-         A5XjTBU+dh3dhGmBhJYfkjIjsZFXmTsWDuFwxcCeOKRN90AtowYX4DR0WODSvLis7h
-         U6psO4+4ZJLpqAUEj/QAmDlpLqN/WowpgNVHs7Rf5Egq6RTHHZHO9ujs46+2v4MajG
-         QqLsS7ssOluCg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 05D84E5629A;
-        Mon, 31 Oct 2022 23:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1667259668;
+        bh=fF5fmsmBw8x107hSFOrswTvOSdyCrOqAoWXWsPQMdPo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ilSMv0IFr0PfMeN4M5vMhFx1hzhAMS3cxTL1vZoDWg8eQbrE9xuy8gP4BSPcTuRTi
+         TXv91lug6CSBp5uSBzXv2rsBZHmsLAZMIDjA/pu5AWgC5MJnuZYwCiS7ndZo6y62h6
+         +nKOHmk8UJtjCpoBB9xKfZ+gTknkSo3i7y0gCR0eU+2AeNNeRWCAO1yyp8CDRLuDHb
+         U2PJJojYml1Ti6ncDjR5qKrZ5rniRJoRL3LAftkF3kXT/Sr0wnl2dcgNeC6G44Bf+b
+         yPftc/WrzItESqfyoprFZcvFxRy1mteAMeEh6gLD9/2SqMur9Yy79QXIP5qMVNKH/L
+         M3dWyG3wMGiYQ==
+Date:   Mon, 31 Oct 2022 16:41:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <Bryan.Whitehead@microchip.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next V4] net: lan743x: Add support to SGMII register
+ dump for PCI11010/PCI11414 chips
+Message-ID: <20221031164107.1a2e8090@kernel.org>
+In-Reply-To: <20221031065336.GB8441@raju-project-pc>
+References: <20221018061425.3400-1-Raju.Lakkaraju@microchip.com>
+        <20221019164344.52cf16dd@kernel.org>
+        <20221031065336.GB8441@raju-project-pc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] Bluetooth: Use kzalloc instead of kmalloc/memset
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <166725781601.15466.8966753850530203194.git-patchwork-notify@kernel.org>
-Date:   Mon, 31 Oct 2022 23:10:16 +0000
-References: <20221030181722.34788-1-tegongkang@gmail.com>
-In-Reply-To: <20221030181722.34788-1-tegongkang@gmail.com>
-To:     Kang Minchul <tegongkang@gmail.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,28 +57,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
-
-On Mon, 31 Oct 2022 03:17:22 +0900 you wrote:
-> Replace kmalloc+memset by kzalloc
-> for better readability and simplicity.
+On Mon, 31 Oct 2022 12:23:36 +0530 Raju Lakkaraju wrote:
+> > You can then read the values in a loop. And inside that loop you can
+> > handle errors (perhaps avoiding the need for lan743x_sgmii_dump_read()
+> > which seems rather unnecessary as lan743x_sgmii_read() already prints
+> > errors).
+> > 
+> > FWIW I like Andrew's suggestion from v3 to use version as a bitfield, too.  
 > 
-> This addresses the cocci warning below:
-> 
-> WARNING: kzalloc should be used for d, instead of kmalloc/memset
-> 
-> [...]
+> I will implement Andrew's suggestion in my next regdump function patch.
+> Is it OK ?
 
-Here is the summary with links:
-  - [v3] Bluetooth: Use kzalloc instead of kmalloc/memset
-    https://git.kernel.org/bluetooth/bluetooth-next/c/214c507d87cc
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+SG, thanks!
