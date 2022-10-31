@@ -2,166 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9705C613FCD
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 22:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FEF0613FC6
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 22:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbiJaVRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 17:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        id S230291AbiJaVRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 17:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiJaVR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 17:17:27 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9211403A
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 14:17:21 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id k4so5549994qkj.8
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 14:17:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=yradgPL/ByAxbPQMnqez5yUnx3OZ/BJsgva6K9y/eZM=;
-        b=qgif2OgWz/eegfbs3K9teAoZh8jyjoJgum9u1n7rSqK1A/SZWlCq2SEVv2ED3LnwKD
-         P39+E2pLSN5/AFm4O8mToJDTR6nb1GfyhQybHBiC1q4F02sqs/1wRZZMvIbH+04aDBbA
-         VPcIKwCcwTFg1Tg4FxiykphTlZKNlnNbm9ax7Ow5tCZeEBa1efnWREsKSUmXs+ffS1yG
-         YPW/t0FuBTdDdH5LfbQ3mfP2XhDGfiIuWZRrkakMJeGBpPitZe0tR8oXOi4t3vtZErjc
-         WpPAhYt5MZQrKvcyE+dFdG+ZZp0M2n+HaIrAzyzjbuiPqf6vBtkor9vmkHmEvR8o7+ge
-         eV8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yradgPL/ByAxbPQMnqez5yUnx3OZ/BJsgva6K9y/eZM=;
-        b=NyHFkwcDqVa8TKKe9Id1pLHqAb+dWQX1gtMjBoweH3q3ee+cjHeSfeh3by7FGkCE5W
-         kHGM6+qrNSY8gf7EjR4zHWSqjTnM9hL1yJ7ZBUlj1zrXhG2CKttyBXUEMqvsSmq0AI0T
-         yfcYRuItMlk5C2SZC6IO/jk2uJL2/zPr9D0W5s+52bnsntbWisWaUly57ZfKyCDdLtiJ
-         lYE9JLpZrPfm1O1MVlCe16eKI1p2JZqy63mocOosTqlJSuWFMXobxIfcNnG80zae8KGh
-         6JWEEaueHxg2dDsTH3KPrsCVSwoZFdY6n++JfgpQg5nT6KII36mVR5qbXw3mPxge1BvN
-         fEXA==
-X-Gm-Message-State: ACrzQf3ia40bglQ9yIi9DAFTI/ilm9cv0yf8pDvddAQ4wbmpGHDRa9OM
-        1HSvNSb9GcRHNpTx2n9TWYMoxo39CPE=
-X-Google-Smtp-Source: AMsMyM5+Tlu0EdkNFoB7Jg+5EBP0Nz2hXGBKNI4gjqSgt56AZlAJ3LnMng4J3T6T7z/mnBRFgo7aAA==
-X-Received: by 2002:a37:6347:0:b0:6f8:e1c1:97c0 with SMTP id x68-20020a376347000000b006f8e1c197c0mr10863190qkb.308.1667251040374;
-        Mon, 31 Oct 2022 14:17:20 -0700 (PDT)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id g4-20020ac81244000000b0039cb9b6c390sm4151844qtj.79.2022.10.31.14.17.19
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Oct 2022 14:17:19 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-36ad4cf9132so119862257b3.6
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 14:17:19 -0700 (PDT)
-X-Received: by 2002:a81:f04:0:b0:36a:d4bf:c187 with SMTP id
- 4-20020a810f04000000b0036ad4bfc187mr14426623ywp.208.1667251039196; Mon, 31
- Oct 2022 14:17:19 -0700 (PDT)
+        with ESMTP id S230262AbiJaVRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 17:17:15 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4098E13CD4;
+        Mon, 31 Oct 2022 14:17:14 -0700 (PDT)
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 29VL74A2020997;
+        Mon, 31 Oct 2022 21:17:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=xEQOZoeQz+d79gocLoLfDMdECpn1lTupjLfLjzlXF4A=;
+ b=KBWk26G3AiJJRu3ZtwxD3fLBUOogsRhKmez992ZXJgN7G1TRxU/axB2kO4405OUi1CQc
+ ixB4ohXyYS6+VMANFgOSH6mSpy5sqUxUmVlOU65s39rTkfOxAc/axWiJYepHTxu9oX4P
+ 69mL23AnJ2Za47Nzw9sj3FrdITWH+MjGwEPC2FAaUMIlWBz9yRoXkV/BT/UXwHixpB+3
+ SAf48od7hWCxbY/GfNy8Y+MtdLj4AZZcXMg0m2zP0mmDTr69X6XAkp88alf8l8FzQ2MA
+ MzmrddmAb4kCuzSH/cL1ekcWsRTx+Gz0F/XfE10Gl1taT7KNdc0fIMfgZY1bhEx20bme xg== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3kjj148tst-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Oct 2022 21:17:00 +0000
+Received: from pps.filterd (NALASPPMTA01.qualcomm.com [127.0.0.1])
+        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 29VLGxkk000771;
+        Mon, 31 Oct 2022 21:16:59 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 3khdpm6d0n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Oct 2022 21:16:59 +0000
+Received: from NALASPPMTA01.qualcomm.com (NALASPPMTA01.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 29VLGxO3000760;
+        Mon, 31 Oct 2022 21:16:59 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 29VLGx1U000759
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Oct 2022 21:16:59 +0000
+Received: from [10.110.19.51] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 31 Oct
+ 2022 14:16:58 -0700
+Message-ID: <55c4d139-0f22-e7ba-398a-e3e0d8919220@quicinc.com>
+Date:   Mon, 31 Oct 2022 14:16:57 -0700
 MIME-Version: 1.0
-References: <559cea869928e169240d74c386735f3f95beca32.1666858629.git.jbenc@redhat.com>
- <20221029104131.07fbc6cf@blondie> <CA+FuTSdkOMBahoeLsXV8wnGdqNtmUHHDu-9xn9JX6zY3M4VmVw@mail.gmail.com>
- <20221031175206.50a54083@griffin>
-In-Reply-To: <20221031175206.50a54083@griffin>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 31 Oct 2022 17:16:42 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSebSMp76U83RpGZVxf=p_Zb9FNH2kScB521x1Z+1zEu9g@mail.gmail.com>
-Message-ID: <CA+FuTSebSMp76U83RpGZVxf=p_Zb9FNH2kScB521x1Z+1zEu9g@mail.gmail.com>
-Subject: Re: [PATCH net] net: gso: fix panic on frag_list with mixed head
- alloc types
-To:     Jiri Benc <jbenc@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Tomas Hruby <tomas@tigera.io>,
-        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        alexanderduyck@meta.com, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] ath11k (gcc13): synchronize
+ ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
+Content-Language: en-US
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, <kvalo@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Martin Liska <mliska@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <ath11k@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <20221031114341.10377-1-jirislaby@kernel.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <20221031114341.10377-1-jirislaby@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: D3seMyoJ8ZICL02O27qI9D3IV_24DjZK
+X-Proofpoint-GUID: D3seMyoJ8ZICL02O27qI9D3IV_24DjZK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-31_21,2022-10-31_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 suspectscore=0
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 adultscore=0 mlxscore=0
+ bulkscore=0 mlxlogscore=939 impostorscore=0 malwarescore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2210310131
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 12:53 PM Jiri Benc <jbenc@redhat.com> wrote:
->
-> On Sat, 29 Oct 2022 10:10:03 -0400, Willem de Bruijn wrote:
-> > If a device has different allocation strategies depending on packet
-> > size, and GRO coalesces those using a list, then indeed this does not
-> > have to hold. GRO requires the same packet size and thus allocation
-> > strategy to coalesce -- except for the last segment.
->
-> That's exactly what I saw: the last segment was different.
->
-> However, I don't see anything in the GRO code that enforces that. It
-> appears that currently, it just usually happens that way. When there's
-> a burst of packets for the given flow on the wire, only the last
-> segment is small (and thus malloced) and there's no immediate packet
-> following for the same flow. What would happen if (for whatever reason)
-> there was such packet following?
+On 10/31/2022 4:43 AM, Jiri Slaby (SUSE) wrote:
+> ath11k_mac_he_gi_to_nl80211_he_gi() generates a valid warning with gcc-13:
+>    drivers/net/wireless/ath/ath11k/mac.c:321:20: error: conflicting types for 'ath11k_mac_he_gi_to_nl80211_he_gi' due to enum/integer mismatch; have 'enum nl80211_he_gi(u8)'
+>    drivers/net/wireless/ath/ath11k/mac.h:166:5: note: previous declaration of 'ath11k_mac_he_gi_to_nl80211_he_gi' with type 'u32(u8)'
+> 
+> I.e. the type of the return value ath11k_mac_he_gi_to_nl80211_he_gi() in
+> the declaration is u32, while the definition spells enum nl80211_he_gi.
+> Synchronize them to the latter.
+> 
+> Cc: Martin Liska <mliska@suse.cz>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: ath11k@lists.infradead.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-This is enforced. In tcp_gro_receive:
+Suggest the subject should be
+wifi: ath11k: synchronize ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
 
-        /* If skb is a GRO packet, make sure its gso_size matches
-prior packet mss.
-         * If it is a single frame, do not aggregate it if its length
-         * is bigger than our mss.
-         */
-        if (unlikely(skb_is_gso(skb)))
-                flush |= (mss != skb_shinfo(skb)->gso_size);
-        else
-                flush |= (len - 1) >= mss;
+The reference to gcc in the description should be sufficient.
 
-        [..]
+Kalle can update this when he merges
 
-        /* Force a flush if last segment is smaller than mss. */
-        if (unlikely(skb_is_gso(skb)))
-                flush = len != NAPI_GRO_CB(skb)->count *
-skb_shinfo(skb)->gso_size;
-        else
-                flush = len < mss;
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
 
-That branch and the comment is very new, introduced with GRO support
-for HW-GRO packets. But the else clauses are not new.
+> ---
+>   drivers/net/wireless/ath/ath11k/mac.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
+> index 2a0d3afb0c99..0231783ad754 100644
+> --- a/drivers/net/wireless/ath/ath11k/mac.h
+> +++ b/drivers/net/wireless/ath/ath11k/mac.h
+> @@ -163,7 +163,7 @@ void ath11k_mac_drain_tx(struct ath11k *ar);
+>   void ath11k_mac_peer_cleanup_all(struct ath11k *ar);
+>   int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx);
+>   u8 ath11k_mac_bw_to_mac80211_bw(u8 bw);
+> -u32 ath11k_mac_he_gi_to_nl80211_he_gi(u8 sgi);
+> +enum nl80211_he_gi ath11k_mac_he_gi_to_nl80211_he_gi(u8 sgi);
+>   enum nl80211_he_ru_alloc ath11k_mac_phy_he_ru_to_nl80211_he_ru_alloc(u16 ru_phy);
+>   enum nl80211_he_ru_alloc ath11k_mac_he_ru_tones_to_nl80211_he_ru_alloc(u16 ru_tones);
+>   enum ath11k_supported_bw ath11k_mac_mac80211_bw_to_ath11k_bw(enum rate_info_bw bw);
 
->
-> > I don't see any allocation in vmxnet3 that uses a head frag, though.
-> > There is a small packet path (rxDataRingUsed), but both small and
-> > large allocate using a kmalloc-backed skb->data as far as I can tell.
->
-> I believe the logic is that for rxDataRingUsed,
-> netdev_alloc_skb_ip_align is called to alloc skb to copy data into,
-> passing to it the actual packet length. If it's small enough,
-> __netdev_alloc_skb will kmalloc the data. However, for !rxDataRingUsed,
-> the skb for dma buffer is allocated with a larger length and
-> __netdev_alloc_skb will use page_frag_alloc.
-
-That explains perfectly.
-
-> I admit I've not spend that much time understanding the logic in the
-> driver. I was satisfied when the perceived logic matched what I saw in
-> the kernel memory dump. I may have easily missed something, such as
-> Jakub's point that it's not actually the driver deciding on the
-> allocation strategy but rather __netdev_alloc_skb on its own. But the
-> outcome still seems to be that small packets are kmalloced, while
-> larger packets are page backed. Am I wrong?
->
-> > In any case, iterating over all frags is more robust. This is an edge
-> > case, fine to incur the cost there.
->
-> Thanks! We might get a minor speedup if we check only the last segment;
-> but first, I'd like to be proven wrong about GRO not enforcing this.
-> Plus, I wonder whether the speedup would be measurable if we have to
-> iterate through the list to find the last segment anyway.
->
-> Unless there are objections or clarifications (and unless I'm wrong
-> above), I'll send a v2 with the commit message corrected and with the
-> same code.
-
-Sounds good to me, thanks.
-
->
-> Thanks to all!
->
->  Jiri
->
