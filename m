@@ -2,135 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBDD6139AB
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:06:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7C86139DA
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:17:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbiJaPG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
+        id S230056AbiJaPRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiJaPGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:06:55 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBB21116C
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:06:53 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29VEj8IO001306
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:06:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=vhqIuqfE+8s8WXlqmcDSkSmeg9DtPFOfETTTdvO+Tgk=;
- b=CRJlb6DKo40NmfAzTHgRK+GEGMTlbFHV+W3eEecUdKb5hS37Rh9cv7T0wVg8WgM1NsK/
- a9MIN1wC88LTpGahoHM4i33vXkyJ0cgQXgLsPc21gC4LHjHgGTgUl/vpa0VCxYskTu43
- l2ZL5bBZH0gLxUzyfaBr5jPCkZMYCniG4QX5Y8pgL6px0cFxtsx3uVr8hfYN3DJ0bCuK
- F4NldUik4SQQtAtaaPCoVehOkqt0aa8wQ12zsiaoBPk90VKBmyqxm5Md+3Y5g/BePLuL
- 2mF1F1xqjg88BXvGq6oFa/MQeWDkm4Q+rEHV1xRJuV/lksnovqdFizO4L496W2cwquZ2 iQ== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kjgd70sqr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:06:52 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29VF5gf4006760
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:06:51 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma02wdc.us.ibm.com with ESMTP id 3kgut9x8aj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:06:51 +0000
-Received: from smtpav02.dal12v.mail.ibm.com ([9.208.128.128])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29VF6mxF19792454
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 31 Oct 2022 15:06:49 GMT
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ED4E65805A;
-        Mon, 31 Oct 2022 15:06:46 +0000 (GMT)
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3C95158065;
-        Mon, 31 Oct 2022 15:06:46 +0000 (GMT)
-Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.160.167.41])
-        by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
-        Mon, 31 Oct 2022 15:06:46 +0000 (GMT)
-From:   Nick Child <nnac123@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     haren@linux.ibm.com, ricklind@linux.ibm.com, danymadden@us.ibm.com,
-        tlfalcon@linux.ibm.com, Nick Child <nnac123@linux.ibm.com>
-Subject: [PATCH net] ibmvnic: Free rwi on reset success
-Date:   Mon, 31 Oct 2022 10:06:42 -0500
-Message-Id: <20221031150642.13356-1-nnac123@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: rWGqVlOzMhCnjI3CXUrLcFvIeA7dnwGc
-X-Proofpoint-ORIG-GUID: rWGqVlOzMhCnjI3CXUrLcFvIeA7dnwGc
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S231261AbiJaPRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:17:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE9911456
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:17:49 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1opWXY-00078z-KN; Mon, 31 Oct 2022 16:17:28 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:3c2a:13d:f861:4564])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D6B1010F39A;
+        Mon, 31 Oct 2022 15:17:24 +0000 (UTC)
+Date:   Mon, 31 Oct 2022 16:17:19 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: RE: [PATCH v3 6/6] can: rcar_canfd: Add has_gerfl_eef to struct
+ rcar_canfd_hw_info
+Message-ID: <20221031151719.6p3jyou4rxoblz3q@pengutronix.de>
+References: <20221027082158.95895-1-biju.das.jz@bp.renesas.com>
+ <20221027082158.95895-7-biju.das.jz@bp.renesas.com>
+ <CAMuHMdXayck0o9=Oc2+X7pDSx=Y+SHHdi3QtmYz+U-rumpc92Q@mail.gmail.com>
+ <20221028102458.6qcuojc5xk46jbuo@pengutronix.de>
+ <OS0PR01MB5922A029B93F82F47AE1DD7C86329@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB5922BBCF1BDFD3176C5DAAF386379@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-31_17,2022-10-31_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
- malwarescore=0 priorityscore=1501 spamscore=0 impostorscore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2210310094
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="i5zf2r45iochguhu"
+Content-Disposition: inline
+In-Reply-To: <OS0PR01MB5922BBCF1BDFD3176C5DAAF386379@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Free the rwi structure in the event that the last rwi in the list
-processed successfully. The logic in commit 4f408e1fa6e1 ("ibmvnic:
-retry reset if there are no other resets") introduces an issue that
-results in a 32 byte memory leak whenever the last rwi in the list
-gets processed.
 
-Fixes: 4f408e1fa6e1 ("ibmvnic: retry reset if there are no other resets")
-Signed-off-by: Nick Child <nnac123@linux.ibm.com>
----
+--i5zf2r45iochguhu
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Links to related discussions:
- - Same patch sent to net-next:
-    https://lore.kernel.org/netdev/20221018130606.46c4ed3d@kernel.org/
- - Updated ibmvnic maintainers:
-    https://lore.kernel.org/netdev/20221028203509.4070154-1-ricklind@us.ibm.com/
+On 31.10.2022 14:57:43, Biju Das wrote:
+[...]
 
- drivers/net/ethernet/ibm/ibmvnic.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+> > > This way we'll avoid a merge conflict.
+>=20
+> Is it OK, if I send all other patches ie, patch#1 to patch#5 in [1] and l=
+ater
+> once net/main merged to net-next/main, will send patch#6?
+>=20
+> Please let me know.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 65dbfbec487a..9282381a438f 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3007,19 +3007,19 @@ static void __ibmvnic_reset(struct work_struct *work)
- 		rwi = get_next_rwi(adapter);
- 
- 		/*
--		 * If there is another reset queued, free the previous rwi
--		 * and process the new reset even if previous reset failed
--		 * (the previous reset could have failed because of a fail
--		 * over for instance, so process the fail over).
--		 *
- 		 * If there are no resets queued and the previous reset failed,
- 		 * the adapter would be in an undefined state. So retry the
- 		 * previous reset as a hard reset.
-+		 *
-+		 * Else, free the previous rwi and, if there is another reset
-+		 * queued, process the new reset even if previous reset failed
-+		 * (the previous reset could have failed because of a fail
-+		 * over for instance, so process the fail over).
- 		 */
--		if (rwi)
--			kfree(tmprwi);
--		else if (rc)
-+		if (!rwi && rc)
- 			rwi = tmprwi;
-+		else
-+			kfree(tmprwi);
- 
- 		if (rwi && (rwi->reset_reason == VNIC_RESET_FAILOVER ||
- 			    rwi->reset_reason == VNIC_RESET_MOBILITY || rc))
--- 
-2.31.1
+I picked patches 1...5 for can-next/main.
 
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--i5zf2r45iochguhu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNf5vwACgkQrX5LkNig
+010NgAf+PVoRDYEoikD26GnGOeEZn240nW7P24ols+p3jfOaqpb4AlFAPafKRHho
+ZzKWxR9paqtd+YKONsh5bhgI12d005S2vFs0Rq6I/TyxivBUG5VDPwC1Wm/WMg0N
+kkLwV+ac3CsW/rf8fpaAy4vg7fS9Kz0oAXkaOr5iiihW0iEF4W9KxmwoQZUfU5S0
+446aMy4EGg5OtQ9S2IzZP3gQ138NivbIYBK4UoCKhHDT6NSzlH3oNNzNWln3862H
+oHh0fNqO1PW2Ismwy3LyONlQnH/xVARY392uvD2rPtEOhtuD0ecVjguFajJXK59K
+snjKBap38hsh4ofDHfN0dZlScLvKDg==
+=EXJg
+-----END PGP SIGNATURE-----
+
+--i5zf2r45iochguhu--
