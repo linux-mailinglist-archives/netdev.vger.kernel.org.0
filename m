@@ -2,117 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB02613BC4
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 17:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196B4613BBC
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 17:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbiJaQxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 12:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
+        id S231696AbiJaQwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 12:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231902AbiJaQxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 12:53:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77062A46D
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 09:52:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667235136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PvS4jZUIuDA5HwDTER4Hkyb6olzQD3iHpphKUESWfcg=;
-        b=asHNUaSS5vu4YlqHVh8IbqiBqtNJXIC5KamhpXfSRHcfipV03u25bytvxxFnN4P69pyyPy
-        xtW2eaU0yKxAeKkmiEAYOjsXscyj3IkRYL0loZjMRvw1Y2MlIgZ1MyxiAaTk79FIvgLFa8
-        mAGxCU9m5OJmYrpoXX7ODQsSWxuJtpQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-225-ehYD_4jJNpCY2FvEZ7oeRw-1; Mon, 31 Oct 2022 12:52:10 -0400
-X-MC-Unique: ehYD_4jJNpCY2FvEZ7oeRw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229947AbiJaQwQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 12:52:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB3BA46D;
+        Mon, 31 Oct 2022 09:52:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4465A3802B89;
-        Mon, 31 Oct 2022 16:52:10 +0000 (UTC)
-Received: from griffin (ovpn-208-21.brq.redhat.com [10.40.208.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 69CC0C2C8C8;
-        Mon, 31 Oct 2022 16:52:08 +0000 (UTC)
-Date:   Mon, 31 Oct 2022 17:52:06 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Tomas Hruby <tomas@tigera.io>,
-        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        alexanderduyck@meta.com, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net] net: gso: fix panic on frag_list with mixed head
- alloc types
-Message-ID: <20221031175206.50a54083@griffin>
-In-Reply-To: <CA+FuTSdkOMBahoeLsXV8wnGdqNtmUHHDu-9xn9JX6zY3M4VmVw@mail.gmail.com>
-References: <559cea869928e169240d74c386735f3f95beca32.1666858629.git.jbenc@redhat.com>
-        <20221029104131.07fbc6cf@blondie>
-        <CA+FuTSdkOMBahoeLsXV8wnGdqNtmUHHDu-9xn9JX6zY3M4VmVw@mail.gmail.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id C5AA0CE1787;
+        Mon, 31 Oct 2022 16:52:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD29FC433C1;
+        Mon, 31 Oct 2022 16:52:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1667235132;
+        bh=4LBbaOp5pkVKnJvh0thaErh2rpcgi2vvQSPR6sAuTmM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VH5KIN5cCvqym505CXMlogO9wxchEgnm9y4Z9IFmYdeQA5qPnO2DvjlEQObz0Vnoe
+         WUABDQI32Rne0BsEdU81IWOcA2AZq9DbN6nODuiAaUBCcO22qqWG44YNjiHYdx/RLN
+         KDL9nQN9v70o/8xO+8uM0r+/rY9jT1YovgvJ7dyo=
+Date:   Mon, 31 Oct 2022 17:53:08 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     drake@draketalley.com
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] staging: qlge: add comment explaining memory barrier
+Message-ID: <Y1/9dMavegJ+bQza@kroah.com>
+References: <20221031142516.266704-1-drake@draketalley.com>
+ <20221031142516.266704-4-drake@draketalley.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221031142516.266704-4-drake@draketalley.com>
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 Oct 2022 10:10:03 -0400, Willem de Bruijn wrote:
-> If a device has different allocation strategies depending on packet
-> size, and GRO coalesces those using a list, then indeed this does not
-> have to hold. GRO requires the same packet size and thus allocation
-> strategy to coalesce -- except for the last segment.
+On Mon, Oct 31, 2022 at 10:25:16AM -0400, drake@draketalley.com wrote:
+> From: Drake Talley <drake@draketalley.com>
+> 
+> codestyle change that fixes the following report from checkpatch:
+> 
+> > WARNING: memory barrier without comment
+> > #2101: FILE: drivers/staging/qlge/qlge_main.c:2101:
+> 
+> The added comment identifies the next item from the circular
+> buffer (rx_ring->curr_entry) and its handling/unmapping as the two
+> operations that must not be reordered.  Based on the kernel
+> documentation for memory barriers in circular buffers
+> (https://www.kernel.org/doc/Documentation/circular-buffers.txt) and
+> the presence of atomic operations in the current context I'm assuming
+> this usage of the memory barrier is akin to what is explained in the
+> linked doc.
+> 
+> There are a couple of other uncommented usages of memory barriers in
+> the current file.  If this comment is adequate I can add similar
+> comments to the others.
+> 
+> Signed-off-by: Drake Talley <drake@draketalley.com>
+> ---
+>  drivers/staging/qlge/qlge_main.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index c8403dbb5bad..f70390bce6d8 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -2098,6 +2098,12 @@ static int qlge_clean_outbound_rx_ring(struct rx_ring *rx_ring)
+>  			     rx_ring->cq_id, prod, rx_ring->cnsmr_idx);
+>  
+>  		net_rsp = (struct qlge_ob_mac_iocb_rsp *)rx_ring->curr_entry;
+> +		/*
+> +		 * Ensure that the next item from the ring buffer is loaded
+> +		 * before being processed.
+> +		 * Adding rmb() prevents the compiler from reordering the read
+> +		 * and subsequent handling of the outbound completion pointer.
+> +		 */
 
-That's exactly what I saw: the last segment was different.
+Which "next item"?
 
-However, I don't see anything in the GRO code that enforces that. It
-appears that currently, it just usually happens that way. When there's
-a burst of packets for the given flow on the wire, only the last
-segment is small (and thus malloced) and there's no immediate packet
-following for the same flow. What would happen if (for whatever reason)
-there was such packet following?
+>  		rmb();
 
-> I don't see any allocation in vmxnet3 that uses a head frag, though.
-> There is a small packet path (rxDataRingUsed), but both small and
-> large allocate using a kmalloc-backed skb->data as far as I can tell.
+>  		switch (net_rsp->opcode) {
 
-I believe the logic is that for rxDataRingUsed,
-netdev_alloc_skb_ip_align is called to alloc skb to copy data into,
-passing to it the actual packet length. If it's small enough,
-__netdev_alloc_skb will kmalloc the data. However, for !rxDataRingUsed,
-the skb for dma buffer is allocated with a larger length and
-__netdev_alloc_skb will use page_frag_alloc.
+So the opcode read is what you want to prevent from reordering?  Where
+is the other users of this that could have changed it?
 
-I admit I've not spend that much time understanding the logic in the
-driver. I was satisfied when the perceived logic matched what I saw in
-the kernel memory dump. I may have easily missed something, such as
-Jakub's point that it's not actually the driver deciding on the
-allocation strategy but rather __netdev_alloc_skb on its own. But the
-outcome still seems to be that small packets are kmalloced, while
-larger packets are page backed. Am I wrong?
+Changes like this are hard to determine if your comments are correct.
+We know what a rmb() does, the question that needs to be answered here
+is _why_ it is used here.  So try to step back and see if it really is
+needed at all.
 
-> In any case, iterating over all frags is more robust. This is an edge
-> case, fine to incur the cost there.
+If it is needed, why?  And go from there on how to document this
+properly.
 
-Thanks! We might get a minor speedup if we check only the last segment;
-but first, I'd like to be proven wrong about GRO not enforcing this.
-Plus, I wonder whether the speedup would be measurable if we have to
-iterate through the list to find the last segment anyway.
+thanks,
 
-Unless there are objections or clarifications (and unless I'm wrong
-above), I'll send a v2 with the commit message corrected and with the
-same code.
-
-Thanks to all!
-
- Jiri
-
+greg k-h
