@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D69161364E
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 13:27:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A820613668
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 13:33:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231328AbiJaM1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 08:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
+        id S229556AbiJaMdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 08:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiJaM1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 08:27:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1151FCE5;
-        Mon, 31 Oct 2022 05:27:06 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N1C7q1jhwzHvRP;
-        Mon, 31 Oct 2022 20:26:47 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 31 Oct 2022 20:27:04 +0800
-Subject: Re: [ovs-dev] [PATCH net] openvswitch: add missing resv_start_op
- initialization for dp_vport_genl_family
-To:     Ilya Maximets <i.maximets@ovn.org>, <pshelar@ovn.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <dev@openvswitch.org>
-CC:     <linux-kernel@vger.kernel.org>
-References: <20221031081210.2852708-1-william.xuanziyang@huawei.com>
- <7f118c0f-c79a-7f26-aefc-afae00483233@ovn.org>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <9b86ae1c-4700-f41f-29ab-4372ec9e7b22@huawei.com>
-Date:   Mon, 31 Oct 2022 20:27:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S230456AbiJaMdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 08:33:02 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95E6C233;
+        Mon, 31 Oct 2022 05:33:01 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.95,227,1661785200"; 
+   d="scan'208";a="138519632"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 31 Oct 2022 21:33:01 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E99E840071EA;
+        Mon, 31 Oct 2022 21:33:00 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v7 0/3] net: ethernet: renesas: Add support for "Ethernet Switch"
+Date:   Mon, 31 Oct 2022 21:32:39 +0900
+Message-Id: <20221031123242.2528208-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <7f118c0f-c79a-7f26-aefc-afae00483233@ovn.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 10/31/22 09:12, Ziyang Xuan via dev wrote:
->> I got a warning using the latest mainline codes to start vms as following:
->>
->> ===================================================
->> WARNING: CPU: 1 PID: 1 at net/netlink/genetlink.c:383 genl_register_family+0x6c/0x76c
->> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.1.0-rc2-00886-g882ad2a2a8ff #43
->> ...
->> Call trace:
->>  genl_register_family+0x6c/0x76c
->>  dp_init+0xa8/0x124
->>  do_one_initcall+0x84/0x450
->>
->> It is because that commit 9c5d03d36251 ("genetlink: start to validate
->> reserved header bytes") has missed the resv_start_op initialization
->> for dp_vport_genl_family, and commit ce48ebdd5651 ("genetlink: limit
->> the use of validation workarounds to old ops") add checking warning.
->>
->> Add resv_start_op initialization for dp_vport_genl_family to fix it.
->>
->> Fixes: 9c5d03d36251 ("genetlink: start to validate reserved header bytes")
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->> ---
-> 
-> Hi, Ziyang Xuan.  Thanks for the patch!
-> 
-> But it looks like Jakub already fixed that issue a couple of days ago:
->   https://git.kernel.org/netdev/net/c/e4ba4554209f
-> 
+This patch series is based on next-20221027.
 
-That's fine. Ignore this.
+Add initial support for Renesas "Ethernet Switch" device of R-Car S4-8.
+The hardware has features about forwarding for an ethernet switch
+device. But, for now, it acts as ethernet controllers so that any
+forwarding offload features are not supported. So, any switchdev
+header files and DSA framework are not used.
 
-Thank you.
+Notes that this driver requires some special settings on marvell10g,
+Especially host mactype and host speed. And, I need further investigation
+to modify the marvell10g driver for upstream. But, the special settings
+are applied, this rswitch driver can work correcfly without any changes
+of this rswitch driver. So, I believe the rswitch driver can go for
+upstream.
 
-> Best regards, Ilya Maximets.
-> 
-> .
-> 
+Changes from v6:
+https://lore.kernel.org/all/20221028065458.2417293-1-yoshihiro.shimoda.uh@renesas.com/
+ - Add Reviewed-by tag in the patch [1/3].
+ - Fix ordering of initialization because NFS root can start mounting
+   the filesystem before register_netdev() even returns
+
+Changes from v5:
+https://lore.kernel.org/all/20221027134034.2343230-1-yoshihiro.shimoda.uh@renesas.com/
+ - Add maxItems for the ethernet-port/port/reg property.
+
+Changes from v4:
+https://lore.kernel.org/all/20221019083518.933070-1-yoshihiro.shimoda.uh@renesas.com/
+ - Rebased on next-20221027.
+ - Drop some unneeded properties on the dt-bindings doc.
+ - Change the subject and commit descriptions on the patch [2/3].
+ - Use phylink instead of phylib.
+ - Modify struct rswitch_*_desc to remove similar functions ([gs]et_dptr).
+
+Yoshihiro Shimoda (3):
+  dt-bindings: net: renesas: Document Renesas Ethernet Switch
+  net: ethernet: renesas: Add support for "Ethernet Switch"
+  net: ethernet: renesas: rswitch: Add R-Car Gen4 gPTP support
+
+ .../net/renesas,r8a779f0-ether-switch.yaml    |  262 +++
+ drivers/net/ethernet/renesas/Kconfig          |   11 +
+ drivers/net/ethernet/renesas/Makefile         |    4 +
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.c  |  181 ++
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.h  |   72 +
+ drivers/net/ethernet/renesas/rswitch.c        | 1841 +++++++++++++++++
+ drivers/net/ethernet/renesas/rswitch.h        |  973 +++++++++
+ 7 files changed, 3344 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/renesas,r8a779f0-ether-switch.yaml
+ create mode 100644 drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+ create mode 100644 drivers/net/ethernet/renesas/rcar_gen4_ptp.h
+ create mode 100644 drivers/net/ethernet/renesas/rswitch.c
+ create mode 100644 drivers/net/ethernet/renesas/rswitch.h
+
+-- 
+2.25.1
+
