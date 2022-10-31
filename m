@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6A506134C4
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 12:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 356A66134C7
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 12:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiJaLor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 07:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        id S230466AbiJaLos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 07:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230519AbiJaLoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 07:44:18 -0400
+        with ESMTP id S231137AbiJaLof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 07:44:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EA0E0ED;
-        Mon, 31 Oct 2022 04:44:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEB6F02C;
+        Mon, 31 Oct 2022 04:44:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F4A1B815F0;
-        Mon, 31 Oct 2022 11:44:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87A4FC433C1;
-        Mon, 31 Oct 2022 11:44:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03E6CB815F0;
+        Mon, 31 Oct 2022 11:44:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7877CC433D6;
+        Mon, 31 Oct 2022 11:44:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667216653;
-        bh=EMzbD4B5bfnKfJkZGRgtgkLVwrwh+JQ4S/pXYPWRlME=;
+        s=k20201202; t=1667216668;
+        bh=nToB1GC3IZYvNqBjpUGx00XoAWJDS1KYM7LwXh0TTXQ=;
         h=From:To:Cc:Subject:Date:From;
-        b=kspjBtIZxgn6e+oCSNlrBpC6ANeXeD52Ho7ocYN0+kV6fQxetHIuKQc/M1v/0cTpy
-         3f1MLE6hPHBhaedF0Pu90juiH6CMDTykij3hgMO3uO8pJTyTgy6PsbrsrPguHD5GJM
-         RTWB8CWzYAeHJIr1KqyhVLczfKMIpch0ppFnjKSidpISMPKXYzL102sWdS4vscn1aZ
-         dDWBmp0PlDZNAXZFwitGGAcktWiELRkp+rrY/MoAjUPYTjqBO1VnZ8Izeqx1ulYBF8
-         kXwvw5npEUPA5Et3AJyj0Xeubtw4gN9l/hrGnNm3s8NNlQkZBI/nIFcKxT/HOKFaEv
-         qMihU4G5jfBig==
+        b=XHOKN6EiXg24tI+YL5fNUQoIwWC8ToQ9v5XYBhYzBFQ5dXVhDq7TedJ+jpHoKInF1
+         hu+XjGGHhJqDa7DBprj1D+AkyhtMrccFKhSLEQdt9WHlOb5NlNvYD+bJzuIGFeJmDC
+         TBiuEha58nxC2+9v3RmYIlzY84i7N1IHV0XVw/NvUTS3+9pDpTFtDmoKokY5bDBGIi
+         ANsVKljgQMZPEniEIw+BzBkMhWbUb824VrBHjga5LWskEW22rK+TZaZ++cCDkTfyPg
+         wxGMYx2Dld/7znmv+uTqrbYdIsIGQvjmzyMSvVwPeRjEER0GFJ1eBb9Du7blIB5PhG
+         fEChIgrGSLo0Q==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     j.vosburgh@gmail.com
+To:     Jason@zx2c4.com
 Cc:     linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
         Martin Liska <mliska@suse.cz>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH] bonding (gcc13): synchronize bond_{a,t}lb_xmit() types
-Date:   Mon, 31 Oct 2022 12:44:09 +0100
-Message-Id: <20221031114409.10417-1-jirislaby@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org
+Subject: [PATCH] wireguard (gcc13): cast enum limits members to int in prints
+Date:   Mon, 31 Oct 2022 12:44:24 +0100
+Message-Id: <20221031114424.10438-1-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -57,46 +56,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both bond_alb_xmit() and bond_tlb_xmit() produce a valid warning with
-gcc-13:
-  drivers/net/bonding/bond_alb.c:1409:13: error: conflicting types for 'bond_tlb_xmit' due to enum/integer mismatch; have 'netdev_tx_t(struct sk_buff *, struct net_device *)' ...
-  include/net/bond_alb.h:160:5: note: previous declaration of 'bond_tlb_xmit' with type 'int(struct sk_buff *, struct net_device *)'
+Since gcc13, each member of an enum has the same type as the enum [1]. And
+that is inherited from its members. Provided "REKEY_AFTER_MESSAGES = 1ULL
+<< 60", the named type is unsigned long.
 
-  drivers/net/bonding/bond_alb.c:1523:13: error: conflicting types for 'bond_alb_xmit' due to enum/integer mismatch; have 'netdev_tx_t(struct sk_buff *, struct net_device *)' ...
-  include/net/bond_alb.h:159:5: note: previous declaration of 'bond_alb_xmit' with type 'int(struct sk_buff *, struct net_device *)'
+This generates warnings with gcc-13:
+  error: format '%d' expects argument of type 'int', but argument 6 has type 'long unsigned int'
 
-I.e. the return type of the declaration is int, while the definitions
-spell netdev_tx_t. Synchronize both of them to the latter.
+Cast the enum members to int when printing them.
+
+Alternatively, we can cast it to ulong (to silence gcc < 12) and use %lu.
+Alternatively, we can move REKEY_AFTER_MESSAGES away from the enum.
+
+[1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36113
 
 Cc: Martin Liska <mliska@suse.cz>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
+Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: wireguard@lists.zx2c4.com
 Cc: netdev@vger.kernel.org
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- include/net/bond_alb.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireguard/timers.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index 191c36afa1f4..9dc082b2d543 100644
---- a/include/net/bond_alb.h
-+++ b/include/net/bond_alb.h
-@@ -156,8 +156,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
- void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
- void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char link);
- void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave);
--int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
--int bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
-+netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
-+netdev_tx_t bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
- struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 				      struct sk_buff *skb);
- struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+diff --git a/drivers/net/wireguard/timers.c b/drivers/net/wireguard/timers.c
+index b5706b6718b1..51081ba93609 100644
+--- a/drivers/net/wireguard/timers.c
++++ b/drivers/net/wireguard/timers.c
+@@ -46,7 +46,7 @@ static void wg_expired_retransmit_handshake(struct timer_list *timer)
+ 	if (peer->timer_handshake_attempts > MAX_TIMER_HANDSHAKES) {
+ 		pr_debug("%s: Handshake for peer %llu (%pISpfsc) did not complete after %d attempts, giving up\n",
+ 			 peer->device->dev->name, peer->internal_id,
+-			 &peer->endpoint.addr, MAX_TIMER_HANDSHAKES + 2);
++			 &peer->endpoint.addr, (int)MAX_TIMER_HANDSHAKES + 2);
+ 
+ 		del_timer(&peer->timer_send_keepalive);
+ 		/* We drop all packets without a keypair and don't try again,
+@@ -64,7 +64,7 @@ static void wg_expired_retransmit_handshake(struct timer_list *timer)
+ 		++peer->timer_handshake_attempts;
+ 		pr_debug("%s: Handshake for peer %llu (%pISpfsc) did not complete after %d seconds, retrying (try %d)\n",
+ 			 peer->device->dev->name, peer->internal_id,
+-			 &peer->endpoint.addr, REKEY_TIMEOUT,
++			 &peer->endpoint.addr, (int)REKEY_TIMEOUT,
+ 			 peer->timer_handshake_attempts + 1);
+ 
+ 		/* We clear the endpoint address src address, in case this is
+@@ -94,7 +94,8 @@ static void wg_expired_new_handshake(struct timer_list *timer)
+ 
+ 	pr_debug("%s: Retrying handshake with peer %llu (%pISpfsc) because we stopped hearing back after %d seconds\n",
+ 		 peer->device->dev->name, peer->internal_id,
+-		 &peer->endpoint.addr, KEEPALIVE_TIMEOUT + REKEY_TIMEOUT);
++		 &peer->endpoint.addr,
++		 (int)(KEEPALIVE_TIMEOUT + REKEY_TIMEOUT));
+ 	/* We clear the endpoint address src address, in case this is the cause
+ 	 * of trouble.
+ 	 */
+@@ -126,7 +127,7 @@ static void wg_queued_expired_zero_key_material(struct work_struct *work)
+ 
+ 	pr_debug("%s: Zeroing out all keys for peer %llu (%pISpfsc), since we haven't received a new one in %d seconds\n",
+ 		 peer->device->dev->name, peer->internal_id,
+-		 &peer->endpoint.addr, REJECT_AFTER_TIME * 3);
++		 &peer->endpoint.addr, (int)REJECT_AFTER_TIME * 3);
+ 	wg_noise_handshake_clear(&peer->handshake);
+ 	wg_noise_keypairs_clear(&peer->keypairs);
+ 	wg_peer_put(peer);
 -- 
 2.38.1
 
