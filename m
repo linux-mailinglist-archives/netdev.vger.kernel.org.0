@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E62D2613A83
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 266FF613A86
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:44:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232065AbiJaPok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
+        id S232002AbiJaPom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbiJaPoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:44:17 -0400
+        with ESMTP id S231975AbiJaPoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:44:20 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0543B10FED
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:44:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B529F11A21
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:44:17 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1opWxS-0002sn-Ad
-        for netdev@vger.kernel.org; Mon, 31 Oct 2022 16:44:14 +0100
+        id 1opWxT-0002uq-PW
+        for netdev@vger.kernel.org; Mon, 31 Oct 2022 16:44:15 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4C12110F46E
+        by bjornoya.blackshift.org (Postfix) with SMTP id D2F8910F482
         for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:44:11 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 657AF10F413;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 76FD910F415;
         Mon, 31 Oct 2022 15:44:08 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 6d20ab08;
-        Mon, 31 Oct 2022 15:44:07 +0000 (UTC)
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 24c7f2e8;
+        Mon, 31 Oct 2022 15:44:08 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Lukas Magel <lukas.magel@posteo.net>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 06/14] can: peak_usb: export PCAN user device ID as sysfs device attribute
-Date:   Mon, 31 Oct 2022 16:43:58 +0100
-Message-Id: <20221031154406.259857-7-mkl@pengutronix.de>
+Subject: [PATCH net-next 07/14] can: peak_usb: align user device id format in log with sysfs attribute
+Date:   Mon, 31 Oct 2022 16:43:59 +0100
+Message-Id: <20221031154406.259857-8-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221031154406.259857-1-mkl@pengutronix.de>
 References: <20221031154406.259857-1-mkl@pengutronix.de>
@@ -61,100 +60,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lukas Magel <lukas.magel@posteo.net>
 
-This patch exports the user device ID as a sysfs attribute. This allows
-users to easily read the ID and to write udev rules that can match against
-the ID.
+Previously, the user device id was printed to the kernel log in decimal
+upon connecting a new PEAK device. This behavior is inconsistent with
+the hexadecimal format of the user device id sysfs attribute. This patch
+updates the log message to output the id in hexadecimal.
 
-Signed-off-by: Stephane Grosjean <s.grosjean@peak-system.com>
 Signed-off-by: Lukas Magel <lukas.magel@posteo.net>
-Link: https://lore.kernel.org/all/20221030105939.87658-7-lukas.magel@posteo.net
+Link: https://lore.kernel.org/all/20221030105939.87658-8-lukas.magel@posteo.net
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- .../ABI/testing/sysfs-class-net-peak_usb      | 15 ++++++++++
- drivers/net/can/usb/peak_usb/pcan_usb_core.c  | 30 +++++++++++++++++--
- 2 files changed, 42 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-net-peak_usb
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net-peak_usb b/Documentation/ABI/testing/sysfs-class-net-peak_usb
-new file mode 100644
-index 000000000000..f7f23f9bdfde
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-class-net-peak_usb
-@@ -0,0 +1,15 @@
-+
-+What:		/sys/class/net/<iface>/peak_usb/user_devid
-+Date:		October 2022
-+KernelVersion:	6.1
-+Contact:	Stephane Grosjean <s.grosjean@peak-system.com>
-+Description:
-+		PEAK PCAN-USB devices support a user-configurable device
-+		identifier. This attribute provides read-only access to the
-+		currently configured value of the device identifier. Depending
-+		on the device type, the identifier has a length of 8 or 32 bit.
-+		The value read from this attribute is always an 8 digit 32 bit
-+		hexadecimal value in big endian format. If the device only
-+		supports an 8 bit identifier, the upper 24 bit of the value are
-+		set to zero.
-+
 diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index d8af448058fa..e558746a0252 100644
+index e558746a0252..731bd6553cfc 100644
 --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
 +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -8,13 +8,15 @@
-  *
-  * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
-  */
-+#include <linux/device.h>
-+#include <linux/ethtool.h>
- #include <linux/init.h>
--#include <linux/signal.h>
--#include <linux/slab.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
-+#include <linux/signal.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
- #include <linux/usb.h>
--#include <linux/ethtool.h>
+@@ -1028,8 +1028,8 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
+ 	/* get device number early */
+ 	dev->adapter->dev_get_user_devid(dev, &dev->user_devid);
  
- #include <linux/can.h>
- #include <linux/can/dev.h>
-@@ -53,6 +55,25 @@ static const struct usb_device_id peak_usb_table[] = {
+-	netdev_info(netdev, "attached to %s channel %u (device %u)\n",
+-			peak_usb_adapter->name, ctrl_idx, dev->user_devid);
++	netdev_info(netdev, "attached to %s channel %u (device %08Xh)\n",
++		    peak_usb_adapter->name, ctrl_idx, dev->user_devid);
  
- MODULE_DEVICE_TABLE(usb, peak_usb_table);
+ 	return 0;
  
-+static ssize_t user_devid_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct net_device *netdev = to_net_dev(dev);
-+	struct peak_usb_device *peak_dev = netdev_priv(netdev);
-+
-+	return sysfs_emit(buf, "%08X\n", peak_dev->user_devid);
-+}
-+static DEVICE_ATTR_RO(user_devid);
-+
-+static const struct attribute *peak_usb_sysfs_attrs[] = {
-+	&dev_attr_user_devid.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group peak_usb_sysfs_group = {
-+	.name	= "peak_usb",
-+	.attrs	= (struct attribute **)peak_usb_sysfs_attrs,
-+};
-+
- /*
-  * dump memory
-  */
-@@ -961,6 +982,9 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
- 	/* add ethtool support */
- 	netdev->ethtool_ops = peak_usb_adapter->ethtool_ops;
- 
-+	/* register peak_usb sysfs files */
-+	netdev->sysfs_groups[0] = &peak_usb_sysfs_group;
-+
- 	init_usb_anchor(&dev->rx_submitted);
- 
- 	init_usb_anchor(&dev->tx_submitted);
 -- 
 2.35.1
 
