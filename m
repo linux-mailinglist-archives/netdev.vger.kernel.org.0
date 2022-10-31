@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C259F613ADA
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:56:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB344613AE0
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:57:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232127AbiJaP44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
+        id S232097AbiJaP5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiJaP4o (ORCPT
+        with ESMTP id S229923AbiJaP4o (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:56:44 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548F11263E;
-        Mon, 31 Oct 2022 08:56:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E691C12753;
+        Mon, 31 Oct 2022 08:56:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667231799; x=1698767799;
+  t=1667231801; x=1698767801;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=V1Nkq9hQXjYYrRgRp+2yBjTalxnHs9n2ROBv+BkWg38=;
-  b=FmDS4aeWapeQhEdxkWZzlbJd/c2YMfArI0usqb7c3KT9Pi2ijwEd6RJ/
-   Rhm4RpjfcgWw7CeTHM/ScXTUEkhSaN/0zcs0LIGK4OYuY06c736n8P8tN
-   zSeC99x1UGNhdFy44+ETLEvLuYfMqRNylPUr8qv1vvrhFfzXQfuCkUjRz
-   YeRvTTz8bE3Q3gPpreWEmyhzjCUTIvIC7RUFXmE6AHqeEI3nFm1RzaF7o
-   NKynEj6d3iFShek/UzZyTH7Pdg+Yu4V+Rjt5Zc+o8ATVyx+yIo9/nsd29
-   GXrbrXA70C8VaLvFHY88lv/ZvsdAa5ZzmtR/x4IDd73As2IqvP+WZUare
-   Q==;
+  bh=NZVj8CsVcZYf/Kxg8SpnWLE0+k4rDuZWfdOpNBE1/p0=;
+  b=hOS+Jaz+n1Wvl6++iYs65KsYeMLw5cbW9Pj09umGCFB4CQjyLIYrOOa2
+   iUfWaIpTFbyWq/McdwpXgDevE1G5S1TXcw2D827xn4sPBF0iZoPag4luA
+   uWzeGuZNnwrA9XlxHmCOevQwLjr26bYBT5LznSCQyuRL/sJSIgP0j7Lva
+   tPir4MXJKxJMeozQ9rc9zSLfczT+ODb4hIoLRoQHRL1wbJZtnDzZ20R0t
+   06+JUmCzkLYvnG7tRjr4OfXCjM1CfgCbe4ySTK3psV7L0Ykz5EztyXTgk
+   n8xYIGSnVLT0rbm1Q0pMH0ivFdoaOoSho8N4SMtJNIiDYLF3VhWWoyFo+
+   g==;
 X-IronPort-AV: E=Sophos;i="5.95,228,1661842800"; 
-   d="scan'208";a="187081594"
+   d="scan'208";a="187081597"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Oct 2022 08:56:38 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Oct 2022 08:56:39 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 31 Oct 2022 08:56:21 -0700
+ 15.1.2507.12; Mon, 31 Oct 2022 08:56:24 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 31 Oct 2022 08:56:17 -0700
+ 15.1.2507.12 via Frontend Transport; Mon, 31 Oct 2022 08:56:21 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -55,9 +55,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         "Daniel Machon" <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v3 2/5] net: microchip: sparx5: Adding more tc flower keys for the IS2 VCAP
-Date:   Mon, 31 Oct 2022 16:56:04 +0100
-Message-ID: <20221031155607.3615381-3-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v3 3/5] net: microchip: sparx5: Match keys in configured port keysets
+Date:   Mon, 31 Oct 2022 16:56:05 +0100
+Message-ID: <20221031155607.3615381-4-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221031155607.3615381-1-steen.hegelund@microchip.com>
 References: <20221031155607.3615381-1-steen.hegelund@microchip.com>
@@ -74,557 +74,458 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds the following TC flower filter keys to Sparx5 for IS2:
+This tries to match the keys in a rule with the keysets supported by the
+VCAP instance, and generate a list of keysets.
 
-- ipv4_addr (sip and dip)
-- ipv6_addr (sip and dip)
-- control (IPv4 fragments)
-- portnum (tcp and udp port numbers)
-- basic (L3 and L4 protocol)
-- vlan (outer vlan tag info)
-- tcp (tcp flags)
-- ip (tos field)
+This list is then validated against the list of keysets that is currently
+selected for the lookups (per port) in the VCAP configuration.
 
-as well as an 128 bit keyfield interface on the VCAP API to set the IPv6
-addresses.
-
-IS2 supports the classified VLAN information which amounts to the outer
-VLAN info in case of multiple tags.
-
-Here are some examples of the tc flower filter operations that are now
-supported for the IS2 VCAP:
-
-- IPv4 Addresses
-    tc filter add dev eth12 ingress chain 8000000 prio 12 handle 12 \
-        protocol ip flower skip_sw dst_ip 1.0.1.1 src_ip 2.0.2.2    \
-        action trap
-
-- IPv6 Addresses
-    tc filter add dev eth12 ingress chain 8000000 prio 13 handle 13 \
-        protocol ipv6 flower skip_sw dst_ip 1::1:1 src_ip 2::2:2    \
-        action trap
-
-- IPv4 fragments
-    tc filter add dev eth12 ingress chain 8000000 prio 14 handle 14 \
-        protocol ip flower skip_sw dst_ip 3.0.3.3 src_ip 2.0.2.2    \
-        ip_flags frag/nofirstfrag action trap
-
-- TCP and UDP portnumbers
-    tc filter add dev eth12 ingress chain 8000000 prio 21 handle 21 \
-        protocol ip flower skip_sw dst_ip 8.8.8.8 src_ip 2.0.2.2    \
-        ip_proto tcp dst_port 100 src_port 12000 action trap
-    tc filter add dev eth12 ingress chain 8000000 prio 23 handle 23 \
-        protocol ipv6 flower skip_sw dst_ip 5::5:5 src_ip 2::2:2    \
-        ip_proto tcp dst_port 300 src_port 13000 action trap
-
-- Layer 3 and Layer 4 protocol info
-    tc filter add dev eth12 ingress chain 8000000 prio 28 handle 28 \
-        protocol ipv4 flower skip_sw dst_ip 9.0.9.9 src_ip 2.0.2.2  \
-        ip_proto icmp action trap
-
-- VLAN tag info (outer tag)
-    tc filter add dev eth12 ingress chain 8000000 prio 29 handle 29 \
-        protocol 802.1q flower skip_sw vlan_id 600 vlan_prio 6      \
-        vlan_ethtype ipv4 action trap
-    tc filter add dev eth12 ingress chain 8000000 prio 31 handle 31 \
-        protocol 802.1q flower skip_sw vlan_id 600 vlan_prio 5      \
-        vlan_ethtype ipv6 action trap
-
-- TCP flags
-    tc filter add dev eth12 ingress chain 8000000 prio 15 handle 15 \
-        protocol ip flower skip_sw dst_ip 4.0.4.4 src_ip 2.0.2.2    \
-        ip_proto tcp tcp_flags 0x2a/0x3f action trap
-
-- IP info (IPv4 TOS field)
-    tc filter add dev eth12 ingress chain 8000000 prio 16 handle 16 \
-        protocol ip flower skip_sw ip_tos 0x35 dst_ip 5.0.5.5       \
-        src_ip 2.0.2.2 action trap
-
-Notes:
-- The "protocol all" selection is not supported yet.
-
-- The MAC address rule now needs to use non-ip and non "protocol all". Here
-  is an example:
-
-   tc filter add dev eth12 ingress chain 8000000 prio 10 handle 10 \
-         protocol 0xbeef flower skip_sw \
-         dst_mac 0a:0b:0c:0d:0e:0f \
-         src_mac 2:0:0:0:0:1 \
-         action trap
-
-- The VLAN rules use classified VLAN information, and to get the
-  classification information into the frame metadata, the ingress port need
-  to be added to a bridge with the VID and vlan filtering enabled, like
-  this (using VID 600 and four ports eth12, eth13, eth14 and eth15):
-
-    ip link add name br5 type bridge
-    ip link set dev br5 up
-    ip link set eth12 master br5
-    ip link set eth13 master br5
-    ip link set eth14 master br5
-    ip link set eth15 master br5
-    sysctl -w net.ipv6.conf.eth12.disable_ipv6=1
-    sysctl -w net.ipv6.conf.eth13.disable_ipv6=1
-    sysctl -w net.ipv6.conf.eth14.disable_ipv6=1
-    sysctl -w net.ipv6.conf.eth15.disable_ipv6=1
-    sysctl -w net.ipv6.conf.br5.disable_ipv6=1
-    ip link set dev br5 type bridge vlan_filtering 1
-    bridge vlan add dev eth12 vid 600
-    bridge vlan add dev eth13 vid 600
-    bridge vlan add dev eth14 vid 600
-    bridge vlan add dev eth15 vid 600
-    bridge vlan add dev br5 vid 600 self
+The Sparx5 IS2 only has one actionset, so there is no actionset matching
+performed for now.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Tested-by: Casper Andersson <casper.casan@gmail.com>
 ---
- .../microchip/sparx5/sparx5_tc_flower.c       | 384 +++++++++++++++++-
- .../net/ethernet/microchip/vcap/vcap_api.c    |  11 +
- .../ethernet/microchip/vcap/vcap_api_client.h |   2 +
- 3 files changed, 396 insertions(+), 1 deletion(-)
+ .../microchip/sparx5/sparx5_tc_flower.c       |  26 ++--
+ .../microchip/sparx5/sparx5_vcap_impl.c       | 147 +++++++++++++++++-
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 137 ++++++++++++++--
+ .../ethernet/microchip/vcap/vcap_api_client.h |  11 ++
+ 4 files changed, 298 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index 626558a5c850..13bc6bff4c1e 100644
+index 13bc6bff4c1e..9b90e7d5517b 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -16,9 +16,32 @@ struct sparx5_tc_flower_parse_usage {
- 	struct flow_cls_offload *fco;
- 	struct flow_rule *frule;
- 	struct vcap_rule *vrule;
-+	u16 l3_proto;
-+	u8 l4_proto;
- 	unsigned int used_keys;
- };
+@@ -443,11 +443,13 @@ static int (*sparx5_tc_flower_usage_handlers[])(struct sparx5_tc_flower_parse_us
  
-+/* These protocols have dedicated keysets in IS2 and a TC dissector
-+ * ETH_P_ARP does not have a TC dissector
-+ */
-+static u16 sparx5_tc_known_etypes[] = {
-+	ETH_P_ALL,
-+	ETH_P_IP,
-+	ETH_P_IPV6,
-+};
-+
-+static bool sparx5_tc_is_known_etype(u16 etype)
-+{
-+	int idx;
-+
-+	/* For now this only knows about IS2 traffic classification */
-+	for (idx = 0; idx < ARRAY_SIZE(sparx5_tc_known_etypes); ++idx)
-+		if (sparx5_tc_known_etypes[idx] == etype)
-+			return true;
-+
-+	return false;
-+}
-+
- static int sparx5_tc_flower_handler_ethaddr_usage(struct sparx5_tc_flower_parse_usage *st)
+ static int sparx5_tc_use_dissectors(struct flow_cls_offload *fco,
+ 				    struct vcap_admin *admin,
+-				    struct vcap_rule *vrule)
++				    struct vcap_rule *vrule,
++				    u16 *l3_proto)
  {
- 	enum vcap_key_field smac_key = VCAP_KF_L2_SMAC;
-@@ -54,9 +77,368 @@ static int sparx5_tc_flower_handler_ethaddr_usage(struct sparx5_tc_flower_parse_
+ 	struct sparx5_tc_flower_parse_usage state = {
+ 		.fco = fco,
+ 		.vrule = vrule,
++		.l3_proto = ETH_P_ALL,
+ 	};
+ 	int idx, err = 0;
+ 
+@@ -461,6 +463,15 @@ static int sparx5_tc_use_dissectors(struct flow_cls_offload *fco,
+ 		if (err)
+ 			return err;
+ 	}
++
++	if (state.frule->match.dissector->used_keys ^ state.used_keys) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Unsupported match item");
++		return -ENOENT;
++	}
++
++	if (l3_proto)
++		*l3_proto = state.l3_proto;
  	return err;
  }
  
-+static int
-+sparx5_tc_flower_handler_ipv4_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	int err = 0;
-+
-+	if (st->l3_proto == ETH_P_IP) {
-+		struct flow_match_ipv4_addrs mt;
-+
-+		flow_rule_match_ipv4_addrs(st->frule, &mt);
-+		if (mt.mask->src) {
-+			err = vcap_rule_add_key_u32(st->vrule,
-+						    VCAP_KF_L3_IP4_SIP,
-+						    be32_to_cpu(mt.key->src),
-+						    be32_to_cpu(mt.mask->src));
-+			if (err)
-+				goto out;
-+		}
-+		if (mt.mask->dst) {
-+			err = vcap_rule_add_key_u32(st->vrule,
-+						    VCAP_KF_L3_IP4_DIP,
-+						    be32_to_cpu(mt.key->dst),
-+						    be32_to_cpu(mt.mask->dst));
-+			if (err)
-+				goto out;
-+		}
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS);
-+
-+	return err;
-+
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "ipv4_addr parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_ipv6_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	int err = 0;
-+
-+	if (st->l3_proto == ETH_P_IPV6) {
-+		struct flow_match_ipv6_addrs mt;
-+		struct vcap_u128_key sip;
-+		struct vcap_u128_key dip;
-+
-+		flow_rule_match_ipv6_addrs(st->frule, &mt);
-+		/* Check if address masks are non-zero */
-+		if (!ipv6_addr_any(&mt.mask->src)) {
-+			vcap_netbytes_copy(sip.value, mt.key->src.s6_addr, 16);
-+			vcap_netbytes_copy(sip.mask, mt.mask->src.s6_addr, 16);
-+			err = vcap_rule_add_key_u128(st->vrule,
-+						     VCAP_KF_L3_IP6_SIP, &sip);
-+			if (err)
-+				goto out;
-+		}
-+		if (!ipv6_addr_any(&mt.mask->dst)) {
-+			vcap_netbytes_copy(dip.value, mt.key->dst.s6_addr, 16);
-+			vcap_netbytes_copy(dip.mask, mt.mask->dst.s6_addr, 16);
-+			err = vcap_rule_add_key_u128(st->vrule,
-+						     VCAP_KF_L3_IP6_DIP, &dip);
-+			if (err)
-+				goto out;
-+		}
-+	}
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS);
-+	return err;
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "ipv6_addr parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_control_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	struct flow_match_control mt;
-+	u32 value, mask;
-+	int err = 0;
-+
-+	flow_rule_match_control(st->frule, &mt);
-+
-+	if (mt.mask->flags) {
-+		if (mt.mask->flags & FLOW_DIS_FIRST_FRAG) {
-+			if (mt.key->flags & FLOW_DIS_FIRST_FRAG) {
-+				value = 1; /* initial fragment */
-+				mask = 0x3;
-+			} else {
-+				if (mt.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-+					value = 3; /* follow up fragment */
-+					mask = 0x3;
-+				} else {
-+					value = 0; /* no fragment */
-+					mask = 0x3;
-+				}
-+			}
-+		} else {
-+			if (mt.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-+				value = 3; /* follow up fragment */
-+				mask = 0x3;
-+			} else {
-+				value = 0; /* no fragment */
-+				mask = 0x3;
-+			}
-+		}
-+
-+		err = vcap_rule_add_key_u32(st->vrule,
-+					    VCAP_KF_L3_FRAGMENT_TYPE,
-+					    value, mask);
-+		if (err)
-+			goto out;
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_CONTROL);
-+
-+	return err;
-+
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "ip_frag parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_portnum_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	struct flow_match_ports mt;
-+	u16 value, mask;
-+	int err = 0;
-+
-+	flow_rule_match_ports(st->frule, &mt);
-+
-+	if (mt.mask->src) {
-+		value = be16_to_cpu(mt.key->src);
-+		mask = be16_to_cpu(mt.mask->src);
-+		err = vcap_rule_add_key_u32(st->vrule, VCAP_KF_L4_SPORT, value,
-+					    mask);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (mt.mask->dst) {
-+		value = be16_to_cpu(mt.key->dst);
-+		mask = be16_to_cpu(mt.mask->dst);
-+		err = vcap_rule_add_key_u32(st->vrule, VCAP_KF_L4_DPORT, value,
-+					    mask);
-+		if (err)
-+			goto out;
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_PORTS);
-+
-+	return err;
-+
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "port parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_basic_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	struct flow_match_basic mt;
-+	int err = 0;
-+
-+	flow_rule_match_basic(st->frule, &mt);
-+
-+	if (mt.mask->n_proto) {
-+		st->l3_proto = be16_to_cpu(mt.key->n_proto);
-+		if (!sparx5_tc_is_known_etype(st->l3_proto)) {
-+			err = vcap_rule_add_key_u32(st->vrule, VCAP_KF_ETYPE,
-+						    st->l3_proto, ~0);
-+			if (err)
-+				goto out;
-+		} else if (st->l3_proto == ETH_P_IP) {
-+			err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_IP4_IS,
-+						    VCAP_BIT_1);
-+			if (err)
-+				goto out;
-+		} else if (st->l3_proto == ETH_P_IPV6) {
-+			err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_IP4_IS,
-+						    VCAP_BIT_0);
-+			if (err)
-+				goto out;
-+		}
-+	}
-+
-+	if (mt.mask->ip_proto) {
-+		st->l4_proto = mt.key->ip_proto;
-+		if (st->l4_proto == IPPROTO_TCP) {
-+			err = vcap_rule_add_key_bit(st->vrule,
-+						    VCAP_KF_TCP_IS,
-+						    VCAP_BIT_1);
-+			if (err)
-+				goto out;
-+		} else if (st->l4_proto == IPPROTO_UDP) {
-+			err = vcap_rule_add_key_bit(st->vrule,
-+						    VCAP_KF_TCP_IS,
-+						    VCAP_BIT_0);
-+			if (err)
-+				goto out;
-+		} else {
-+			err = vcap_rule_add_key_u32(st->vrule,
-+						    VCAP_KF_L3_IP_PROTO,
-+						    st->l4_proto, ~0);
-+			if (err)
-+				goto out;
-+		}
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_BASIC);
-+
-+	return err;
-+
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "ip_proto parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_vlan_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	enum vcap_key_field vid_key = VCAP_KF_8021Q_VID_CLS;
-+	enum vcap_key_field pcp_key = VCAP_KF_8021Q_PCP_CLS;
-+	struct flow_match_vlan mt;
-+	int err;
-+
-+	flow_rule_match_vlan(st->frule, &mt);
-+
-+	if (mt.mask->vlan_id) {
-+		err = vcap_rule_add_key_u32(st->vrule, vid_key,
-+					    mt.key->vlan_id,
-+					    mt.mask->vlan_id);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (mt.mask->vlan_priority) {
-+		err = vcap_rule_add_key_u32(st->vrule, pcp_key,
-+					    mt.key->vlan_priority,
-+					    mt.mask->vlan_priority);
-+		if (err)
-+			goto out;
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_VLAN);
-+
-+	return err;
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "vlan parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_tcp_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	struct flow_match_tcp mt;
-+	u16 tcp_flags_mask;
-+	u16 tcp_flags_key;
-+	enum vcap_bit val;
-+	int err = 0;
-+
-+	flow_rule_match_tcp(st->frule, &mt);
-+	tcp_flags_key = be16_to_cpu(mt.key->flags);
-+	tcp_flags_mask = be16_to_cpu(mt.mask->flags);
-+
-+	if (tcp_flags_mask & TCPHDR_FIN) {
-+		val = VCAP_BIT_0;
-+		if (tcp_flags_key & TCPHDR_FIN)
-+			val = VCAP_BIT_1;
-+		err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_L4_FIN, val);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (tcp_flags_mask & TCPHDR_SYN) {
-+		val = VCAP_BIT_0;
-+		if (tcp_flags_key & TCPHDR_SYN)
-+			val = VCAP_BIT_1;
-+		err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_L4_SYN, val);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (tcp_flags_mask & TCPHDR_RST) {
-+		val = VCAP_BIT_0;
-+		if (tcp_flags_key & TCPHDR_RST)
-+			val = VCAP_BIT_1;
-+		err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_L4_RST, val);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (tcp_flags_mask & TCPHDR_PSH) {
-+		val = VCAP_BIT_0;
-+		if (tcp_flags_key & TCPHDR_PSH)
-+			val = VCAP_BIT_1;
-+		err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_L4_PSH, val);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (tcp_flags_mask & TCPHDR_ACK) {
-+		val = VCAP_BIT_0;
-+		if (tcp_flags_key & TCPHDR_ACK)
-+			val = VCAP_BIT_1;
-+		err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_L4_ACK, val);
-+		if (err)
-+			goto out;
-+	}
-+
-+	if (tcp_flags_mask & TCPHDR_URG) {
-+		val = VCAP_BIT_0;
-+		if (tcp_flags_key & TCPHDR_URG)
-+			val = VCAP_BIT_1;
-+		err = vcap_rule_add_key_bit(st->vrule, VCAP_KF_L4_URG, val);
-+		if (err)
-+			goto out;
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_TCP);
-+
-+	return err;
-+
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "tcp_flags parse error");
-+	return err;
-+}
-+
-+static int
-+sparx5_tc_flower_handler_ip_usage(struct sparx5_tc_flower_parse_usage *st)
-+{
-+	struct flow_match_ip mt;
-+	int err = 0;
-+
-+	flow_rule_match_ip(st->frule, &mt);
-+
-+	if (mt.mask->tos) {
-+		err = vcap_rule_add_key_u32(st->vrule, VCAP_KF_L3_TOS,
-+					    mt.key->tos,
-+					    mt.mask->tos);
-+		if (err)
-+			goto out;
-+	}
-+
-+	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_IP);
-+
-+	return err;
-+
-+out:
-+	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "ip_tos parse error");
-+	return err;
-+}
-+
- static int (*sparx5_tc_flower_usage_handlers[])(struct sparx5_tc_flower_parse_usage *st) = {
--	/* More dissector handlers will be added here later */
- 	[FLOW_DISSECTOR_KEY_ETH_ADDRS] = sparx5_tc_flower_handler_ethaddr_usage,
-+	[FLOW_DISSECTOR_KEY_IPV4_ADDRS] = sparx5_tc_flower_handler_ipv4_usage,
-+	[FLOW_DISSECTOR_KEY_IPV6_ADDRS] = sparx5_tc_flower_handler_ipv6_usage,
-+	[FLOW_DISSECTOR_KEY_CONTROL] = sparx5_tc_flower_handler_control_usage,
-+	[FLOW_DISSECTOR_KEY_PORTS] = sparx5_tc_flower_handler_portnum_usage,
-+	[FLOW_DISSECTOR_KEY_BASIC] = sparx5_tc_flower_handler_basic_usage,
-+	[FLOW_DISSECTOR_KEY_VLAN] = sparx5_tc_flower_handler_vlan_usage,
-+	[FLOW_DISSECTOR_KEY_TCP] = sparx5_tc_flower_handler_tcp_usage,
-+	[FLOW_DISSECTOR_KEY_IP] = sparx5_tc_flower_handler_ip_usage,
- };
+@@ -473,6 +484,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 	struct vcap_control *vctrl;
+ 	struct flow_rule *frule;
+ 	struct vcap_rule *vrule;
++	u16 l3_proto;
+ 	int err, idx;
  
- static int sparx5_tc_use_dissectors(struct flow_cls_offload *fco,
+ 	frule = flow_cls_offload_flow_rule(fco);
+@@ -491,7 +503,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 		return PTR_ERR(vrule);
+ 
+ 	vrule->cookie = fco->cookie;
+-	sparx5_tc_use_dissectors(fco, admin, vrule);
++	sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
+ 	flow_action_for_each(idx, act, &frule->action) {
+ 		switch (act->id) {
+ 		case FLOW_ACTION_TRAP:
+@@ -528,14 +540,8 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 			goto out;
+ 		}
+ 	}
+-	/* For now the keyset is hardcoded */
+-	err = vcap_set_rule_set_keyset(vrule, VCAP_KFS_MAC_ETYPE);
+-	if (err) {
+-		NL_SET_ERR_MSG_MOD(fco->common.extack,
+-				   "No matching port keyset for filter protocol and keys");
+-		goto out;
+-	}
+-	err = vcap_val_rule(vrule, ETH_P_ALL);
++	/* provide the l3 protocol to guide the keyset selection */
++	err = vcap_val_rule(vrule, l3_proto);
+ 	if (err) {
+ 		vcap_set_tc_exterr(fco, vrule);
+ 		goto out;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+index e4428d55af2b..642c27299e22 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+@@ -160,7 +160,7 @@ static const char *sparx5_vcap_keyset_name(struct net_device *ndev,
+ {
+ 	struct sparx5_port *port = netdev_priv(ndev);
+ 
+-	return port->sparx5->vcap_ctrl->stats->keyfield_set_names[keyset];
++	return vcap_keyset_name(port->sparx5->vcap_ctrl, keyset);
+ }
+ 
+ /* Check if this is the first lookup of IS2 */
+@@ -204,6 +204,127 @@ static void sparx5_vcap_add_wide_port_mask(struct vcap_rule *rule,
+ 	vcap_rule_add_key_u72(rule, VCAP_KF_IF_IGR_PORT_MASK, &port_mask);
+ }
+ 
++/* Convert chain id to vcap lookup id */
++static int sparx5_vcap_cid_to_lookup(int cid)
++{
++	int lookup = 0;
++
++	/* For now only handle IS2 */
++	if (cid >= SPARX5_VCAP_CID_IS2_L1 && cid < SPARX5_VCAP_CID_IS2_L2)
++		lookup = 1;
++	else if (cid >= SPARX5_VCAP_CID_IS2_L2 && cid < SPARX5_VCAP_CID_IS2_L3)
++		lookup = 2;
++	else if (cid >= SPARX5_VCAP_CID_IS2_L3 && cid < SPARX5_VCAP_CID_IS2_MAX)
++		lookup = 3;
++
++	return lookup;
++}
++
++/* Return the list of keysets for the vcap port configuration */
++static int sparx5_vcap_is2_get_port_keysets(struct net_device *ndev,
++					    int lookup,
++					    struct vcap_keyset_list *keysetlist,
++					    u16 l3_proto)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5 *sparx5 = port->sparx5;
++	int portno = port->portno;
++	u32 value;
++
++	/* Check if the port keyset selection is enabled */
++	value = spx5_rd(sparx5, ANA_ACL_VCAP_S2_KEY_SEL(portno, lookup));
++	if (!ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA_GET(value))
++		return -ENOENT;
++
++	/* Collect all keysets for the port in a list */
++	if (l3_proto == ETH_P_ALL || l3_proto == ETH_P_ARP) {
++		switch (ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL_GET(value)) {
++		case VCAP_IS2_PS_ARP_MAC_ETYPE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
++			break;
++		case VCAP_IS2_PS_ARP_ARP:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_ARP);
++			break;
++		}
++	}
++
++	if (l3_proto == ETH_P_ALL || l3_proto == ETH_P_IP) {
++		switch (ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL_GET(value)) {
++		case VCAP_IS2_PS_IPV4_UC_MAC_ETYPE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
++			break;
++		case VCAP_IS2_PS_IPV4_UC_IP4_TCP_UDP_OTHER:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_TCP_UDP);
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_OTHER);
++			break;
++		case VCAP_IS2_PS_IPV4_UC_IP_7TUPLE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP_7TUPLE);
++			break;
++		}
++
++		switch (ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL_GET(value)) {
++		case VCAP_IS2_PS_IPV4_MC_MAC_ETYPE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
++			break;
++		case VCAP_IS2_PS_IPV4_MC_IP4_TCP_UDP_OTHER:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_TCP_UDP);
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_OTHER);
++			break;
++		case VCAP_IS2_PS_IPV4_MC_IP_7TUPLE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP_7TUPLE);
++			break;
++		}
++	}
++
++	if (l3_proto == ETH_P_ALL || l3_proto == ETH_P_IPV6) {
++		switch (ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL_GET(value)) {
++		case VCAP_IS2_PS_IPV6_UC_MAC_ETYPE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
++			break;
++		case VCAP_IS2_PS_IPV6_UC_IP_7TUPLE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP_7TUPLE);
++			break;
++		case VCAP_IS2_PS_IPV6_UC_IP6_STD:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP6_STD);
++			break;
++		case VCAP_IS2_PS_IPV6_UC_IP4_TCP_UDP_OTHER:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_TCP_UDP);
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_OTHER);
++			break;
++		}
++
++		switch (ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL_GET(value)) {
++		case VCAP_IS2_PS_IPV6_MC_MAC_ETYPE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
++			break;
++		case VCAP_IS2_PS_IPV6_MC_IP_7TUPLE:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP_7TUPLE);
++			break;
++		case VCAP_IS2_PS_IPV6_MC_IP6_STD:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP6_STD);
++			break;
++		case VCAP_IS2_PS_IPV6_MC_IP4_TCP_UDP_OTHER:
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_TCP_UDP);
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_IP4_OTHER);
++			break;
++		case VCAP_IS2_PS_IPV6_MC_IP6_VID:
++			/* Not used */
++			break;
++		}
++	}
++
++	if (l3_proto != ETH_P_ARP && l3_proto != ETH_P_IP &&
++	    l3_proto != ETH_P_IPV6) {
++		switch (ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL_GET(value)) {
++		case VCAP_IS2_PS_NONETH_MAC_ETYPE:
++			/* IS2 non-classified frames generate MAC_ETYPE */
++			vcap_keyset_list_add(keysetlist, VCAP_KFS_MAC_ETYPE);
++			break;
++		}
++	}
++	return 0;
++}
++
+ /* API callback used for validating a field keyset (check the port keysets) */
+ static enum vcap_keyfield_set
+ sparx5_vcap_validate_keyset(struct net_device *ndev,
+@@ -212,10 +333,30 @@ sparx5_vcap_validate_keyset(struct net_device *ndev,
+ 			    struct vcap_keyset_list *kslist,
+ 			    u16 l3_proto)
+ {
++	struct vcap_keyset_list keysetlist = {};
++	enum vcap_keyfield_set keysets[10] = {};
++	int idx, jdx, lookup;
++
+ 	if (!kslist || kslist->cnt == 0)
+ 		return VCAP_KFS_NO_VALUE;
+-	/* for now just return whatever the API suggests */
+-	return kslist->keysets[0];
++
++	/* Get a list of currently configured keysets in the lookups */
++	lookup = sparx5_vcap_cid_to_lookup(rule->vcap_chain_id);
++	keysetlist.max = ARRAY_SIZE(keysets);
++	keysetlist.keysets = keysets;
++	sparx5_vcap_is2_get_port_keysets(ndev, lookup, &keysetlist, l3_proto);
++
++	/* Check if there is a match and return the match */
++	for (idx = 0; idx < kslist->cnt; ++idx)
++		for (jdx = 0; jdx < keysetlist.cnt; ++jdx)
++			if (kslist->keysets[idx] == keysets[jdx])
++				return kslist->keysets[idx];
++
++	pr_err("%s:%d: %s not supported in port key selection\n",
++	       __func__, __LINE__,
++	       sparx5_vcap_keyset_name(ndev, kslist->keysets[0]));
++
++	return -ENOENT;
+ }
+ 
+ /* API callback used for adding default fields to a rule */
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index d255bc7deae7..ace2582d8552 100644
+index ace2582d8552..9e67ea814768 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -1073,6 +1073,17 @@ int vcap_rule_add_key_u72(struct vcap_rule *rule, enum vcap_key_field key,
+@@ -704,15 +704,115 @@ static int vcap_add_type_keyfield(struct vcap_rule *rule)
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(vcap_rule_add_key_u72);
  
-+/* Add a 128 bit key with value and mask to the rule */
-+int vcap_rule_add_key_u128(struct vcap_rule *rule, enum vcap_key_field key,
-+			   struct vcap_u128_key *fieldval)
++/* Add a keyset to a keyset list */
++bool vcap_keyset_list_add(struct vcap_keyset_list *keysetlist,
++			  enum vcap_keyfield_set keyset)
 +{
-+	struct vcap_client_keyfield_data data;
++	int idx;
 +
-+	memcpy(&data.u128, fieldval, sizeof(data.u128));
-+	return vcap_rule_add_key(rule, key, VCAP_FIELD_U128, &data);
++	if (keysetlist->cnt < keysetlist->max) {
++		/* Avoid duplicates */
++		for (idx = 0; idx < keysetlist->cnt; ++idx)
++			if (keysetlist->keysets[idx] == keyset)
++				return keysetlist->cnt < keysetlist->max;
++		keysetlist->keysets[keysetlist->cnt++] = keyset;
++	}
++	return keysetlist->cnt < keysetlist->max;
 +}
-+EXPORT_SYMBOL_GPL(vcap_rule_add_key_u128);
++EXPORT_SYMBOL_GPL(vcap_keyset_list_add);
 +
- static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
- 					      struct vcap_client_actionfield *field,
- 					      struct vcap_client_actionfield_data *data)
++/* map keyset id to a string with the keyset name */
++const char *vcap_keyset_name(struct vcap_control *vctrl,
++			     enum vcap_keyfield_set keyset)
++{
++	return vctrl->stats->keyfield_set_names[keyset];
++}
++EXPORT_SYMBOL_GPL(vcap_keyset_name);
++
++/* map key field id to a string with the key name */
++const char *vcap_keyfield_name(struct vcap_control *vctrl,
++			       enum vcap_key_field key)
++{
++	return vctrl->stats->keyfield_names[key];
++}
++EXPORT_SYMBOL_GPL(vcap_keyfield_name);
++
++/* Return the keyfield that matches a key in a keyset */
++static const struct vcap_field *
++vcap_find_keyset_keyfield(struct vcap_control *vctrl,
++			  enum vcap_type vtype,
++			  enum vcap_keyfield_set keyset,
++			  enum vcap_key_field key)
++{
++	const struct vcap_field *fields;
++	int idx, count;
++
++	fields = vcap_keyfields(vctrl, vtype, keyset);
++	if (!fields)
++		return NULL;
++
++	/* Iterate the keyfields of the keyset */
++	count = vcap_keyfield_count(vctrl, vtype, keyset);
++	for (idx = 0; idx < count; ++idx) {
++		if (fields[idx].width == 0)
++			continue;
++
++		if (key == idx)
++			return &fields[idx];
++	}
++
++	return NULL;
++}
++
++/* Match a list of keys against the keysets available in a vcap type */
++static bool vcap_rule_find_keysets(struct vcap_rule_internal *ri,
++				   struct vcap_keyset_list *matches)
++{
++	const struct vcap_client_keyfield *ckf;
++	int keyset, found, keycount, map_size;
++	const struct vcap_field **map;
++	enum vcap_type vtype;
++
++	vtype = ri->admin->vtype;
++	map = ri->vctrl->vcaps[vtype].keyfield_set_map;
++	map_size = ri->vctrl->vcaps[vtype].keyfield_set_size;
++
++	/* Get a count of the keyfields we want to match */
++	keycount = 0;
++	list_for_each_entry(ckf, &ri->data.keyfields, ctrl.list)
++		++keycount;
++
++	matches->cnt = 0;
++	/* Iterate the keysets of the VCAP */
++	for (keyset = 0; keyset < map_size; ++keyset) {
++		if (!map[keyset])
++			continue;
++
++		/* Iterate the keys in the rule */
++		found = 0;
++		list_for_each_entry(ckf, &ri->data.keyfields, ctrl.list)
++			if (vcap_find_keyset_keyfield(ri->vctrl, vtype,
++						      keyset, ckf->ctrl.key))
++				++found;
++
++		/* Save the keyset if all keyfields were found */
++		if (found == keycount)
++			if (!vcap_keyset_list_add(matches, keyset))
++				/* bail out when the quota is filled */
++				break;
++	}
++
++	return matches->cnt > 0;
++}
++
+ /* Validate a rule with respect to available port keys */
+ int vcap_val_rule(struct vcap_rule *rule, u16 l3_proto)
+ {
+ 	struct vcap_rule_internal *ri = to_intrule(rule);
++	struct vcap_keyset_list matches = {};
+ 	enum vcap_keyfield_set keysets[10];
+-	struct vcap_keyset_list kslist;
+ 	int ret;
+ 
+-	/* This validation will be much expanded later */
+ 	ret = vcap_api_check(ri->vctrl);
+ 	if (ret)
+ 		return ret;
+@@ -724,24 +824,41 @@ int vcap_val_rule(struct vcap_rule *rule, u16 l3_proto)
+ 		ri->data.exterr = VCAP_ERR_NO_NETDEV;
+ 		return -EINVAL;
+ 	}
++
++	matches.keysets = keysets;
++	matches.max = ARRAY_SIZE(keysets);
+ 	if (ri->data.keyset == VCAP_KFS_NO_VALUE) {
+-		ri->data.exterr = VCAP_ERR_NO_KEYSET_MATCH;
+-		return -EINVAL;
++		/* Iterate over rule keyfields and select keysets that fits */
++		if (!vcap_rule_find_keysets(ri, &matches)) {
++			ri->data.exterr = VCAP_ERR_NO_KEYSET_MATCH;
++			return -EINVAL;
++		}
++	} else {
++		/* prepare for keyset validation */
++		keysets[0] = ri->data.keyset;
++		matches.cnt = 1;
+ 	}
+-	/* prepare for keyset validation */
+-	keysets[0] = ri->data.keyset;
+-	kslist.keysets = keysets;
+-	kslist.cnt = 1;
++
+ 	/* Pick a keyset that is supported in the port lookups */
+-	ret = ri->vctrl->ops->validate_keyset(ri->ndev, ri->admin, rule, &kslist,
+-					      l3_proto);
++	ret = ri->vctrl->ops->validate_keyset(ri->ndev, ri->admin, rule,
++					      &matches, l3_proto);
+ 	if (ret < 0) {
+ 		pr_err("%s:%d: keyset validation failed: %d\n",
+ 		       __func__, __LINE__, ret);
+ 		ri->data.exterr = VCAP_ERR_NO_PORT_KEYSET_MATCH;
+ 		return ret;
+ 	}
++	/* use the keyset that is supported in the port lookups */
++	ret = vcap_set_rule_set_keyset(rule, ret);
++	if (ret < 0) {
++		pr_err("%s:%d: keyset was not updated: %d\n",
++		       __func__, __LINE__, ret);
++		return ret;
++	}
+ 	if (ri->data.actionset == VCAP_AFS_NO_VALUE) {
++		/* Later also actionsets will be matched against actions in
++		 * the rule, and the type will be set accordingly
++		 */
+ 		ri->data.exterr = VCAP_ERR_NO_ACTIONSET_MATCH;
+ 		return -EINVAL;
+ 	}
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-index 5df6808679ff..577395402a9a 100644
+index 577395402a9a..959e125baa3f 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-@@ -176,6 +176,8 @@ int vcap_rule_add_key_u48(struct vcap_rule *rule, enum vcap_key_field key,
- 			  struct vcap_u48_key *fieldval);
- int vcap_rule_add_key_u72(struct vcap_rule *rule, enum vcap_key_field key,
- 			  struct vcap_u72_key *fieldval);
-+int vcap_rule_add_key_u128(struct vcap_rule *rule, enum vcap_key_field key,
-+			   struct vcap_u128_key *fieldval);
- int vcap_rule_add_action_bit(struct vcap_rule *rule,
- 			     enum vcap_action_field action, enum vcap_bit val);
- int vcap_rule_add_action_u32(struct vcap_rule *rule,
+@@ -201,4 +201,15 @@ void vcap_set_tc_exterr(struct flow_cls_offload *fco, struct vcap_rule *vrule);
+ /* Cleanup a VCAP instance */
+ int vcap_del_rules(struct vcap_control *vctrl, struct vcap_admin *admin);
+ 
++/* Add a keyset to a keyset list */
++bool vcap_keyset_list_add(struct vcap_keyset_list *keysetlist,
++			  enum vcap_keyfield_set keyset);
++
++/* map keyset id to a string with the keyset name */
++const char *vcap_keyset_name(struct vcap_control *vctrl,
++			     enum vcap_keyfield_set keyset);
++/* map key field id to a string with the key name */
++const char *vcap_keyfield_name(struct vcap_control *vctrl,
++			       enum vcap_key_field key);
++
+ #endif /* __VCAP_API_CLIENT__ */
 -- 
 2.38.1
 
