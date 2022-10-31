@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32470613910
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 15:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D56FF61390B
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 15:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiJaOfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 10:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
+        id S231638AbiJaOd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 10:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231646AbiJaOfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 10:35:14 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D8E133;
-        Mon, 31 Oct 2022 07:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667226913; x=1698762913;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1/9s7CWhJVq2t2k0cmR+pgj89lz/7OULjiOZcjFEIbk=;
-  b=XMKHl6NqDaJQNOLiDh8pFWhTyNyg025orljAuwadMmosYbKJW9nQVBM3
-   86WGP7b/B0fpit+M7VcYDvgMCbYE7/plWymIhR6ZTGJswErAxNvp12nle
-   hKWueEq3Bn8ddo9b6A15e1Kf8WTeN6EoCfBsXjk+bihslZGz+vmaTJ65f
-   e+ElwKFG5Czvs5AmoYFMwOCfa+3abDtcnTaoyvmnTnUp0G6gxQp+NzNyU
-   LKlCvem2FUDO3N2yiman2+xiHX/+wCAfUDp004530/hgQ6Zu7M3mlsTJC
-   o4eINXpeoaXGdzO95R9t0zTnpVyqIruEkRkoRg8WBv/xLfZjhxcRA/vfK
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10517"; a="309997625"
-X-IronPort-AV: E=Sophos;i="5.95,228,1661842800"; 
-   d="scan'208";a="309997625"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2022 07:31:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10517"; a="664796605"
-X-IronPort-AV: E=Sophos;i="5.95,228,1661842800"; 
-   d="scan'208";a="664796605"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 31 Oct 2022 07:30:59 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 29VEUwgI001967;
-        Mon, 31 Oct 2022 14:30:58 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>, brouer@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [RFC bpf-next 5/5] selftests/bpf: Test rx_timestamp metadata in xskxceiver
-Date:   Mon, 31 Oct 2022 15:29:07 +0100
-Message-Id: <20221031142907.164469-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221031142032.164247-1-alexandr.lobakin@intel.com>
-References: <20221027200019.4106375-1-sdf@google.com> <20221027200019.4106375-6-sdf@google.com> <31f3aa18-d368-9738-8bb5-857cd5f2c5bf@linux.dev> <1885bc0c-1929-53ba-b6f8-ace2393a14df@redhat.com> <CAKH8qBt3hNUO0H_C7wYiwBEObGEFPXJCCLfkA=GuGC1CSpn55A@mail.gmail.com> <20221031142032.164247-1-alexandr.lobakin@intel.com>
+        with ESMTP id S231666AbiJaOdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 10:33:35 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F95C2DD6;
+        Mon, 31 Oct 2022 07:33:23 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.95,228,1661785200"; 
+   d="scan'208";a="138526507"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 31 Oct 2022 23:33:23 +0900
+Received: from localhost.localdomain (unknown [10.226.92.171])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 3B32840065D4;
+        Mon, 31 Oct 2022 23:33:18 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        gregkh@linuxfoundation.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Pavel Machek <pavel@denx.de>, Sasha Levin <sashal@kernel.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <chris.paterson2@renesas.com>,
+        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
+Subject: [PATCH] can: rcar_canfd: rcar_canfd_handle_global_receive(): fix IRQ storm on global FIFO receive
+Date:   Mon, 31 Oct 2022 14:33:17 +0000
+Message-Id: <20221031143317.938785-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Mon, 31 Oct 2022 15:20:32 +0100
+commit 702de2c21eed04c67cefaaedc248ef16e5f6b293 upstream.
 
-> From: Stanislav Fomichev <sdf@google.com>
-> Date: Fri, 28 Oct 2022 11:46:14 -0700
-> 
-> > On Fri, Oct 28, 2022 at 3:37 AM Jesper Dangaard Brouer
-> > <jbrouer@redhat.com> wrote:
+We are seeing an IRQ storm on the global receive IRQ line under heavy
+CAN bus load conditions with both CAN channels enabled.
 
-[...]
+Conditions:
 
-> > I don't think __xdp_build_skb_from_frame is automagically solved by
-> > either proposal?
-> 
-> It's solved in my approach[0], so that __xdp_build_skb_from_frame()
+The global receive IRQ line is shared between can0 and can1, either of
+the channels can trigger interrupt while the other channel's IRQ line
+is disabled (RFIE).
 
-Yeah sure forget to paste the link, why doncha?
+When global a receive IRQ interrupt occurs, we mask the interrupt in
+the IRQ handler. Clearing and unmasking of the interrupt is happening
+in rx_poll(). There is a race condition where rx_poll() unmasks the
+interrupt, but the next IRQ handler does not mask the IRQ due to
+NAPIF_STATE_MISSED flag (e.g.: can0 RX FIFO interrupt is disabled and
+can1 is triggering RX interrupt, the delay in rx_poll() processing
+results in setting NAPIF_STATE_MISSED flag) leading to an IRQ storm.
 
-[0] https://github.com/alobakin/linux/commit/a43a9d6895fa11f182becf3a7c202eeceb45a16a
+This patch fixes the issue by checking IRQ active and enabled before
+handling the IRQ on a particular channel.
 
-> are automatically get skb fields populated with the metadata if
-> available. But I always use a fixed generic structure, which can't
-> compete with your series in terms of flexibility (but solves stuff
-> like inter-vendor redirects and so on).
+Fixes: dd3bd23eb438 ("can: rcar_canfd: Add Renesas R-Car CAN FD driver")
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/all/20221025155657.1426948-2-biju.das.jz@bp.renesas.com
+Cc: stable@vger.kernel.org#5.15.y
+[mkl: adjust commit message]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+[biju: removed gpriv from RCANFD_RFCC_RFIE macro]
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+Resending to 5.15 with confilcts[1] fixed
+[1] https://lore.kernel.org/stable/1667194204110137@kroah.com/T/#u
+---
+ drivers/net/can/rcar/rcar_canfd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-[...]
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 2f44c567ebd7..9991bb475ae1 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1106,11 +1106,13 @@ static void rcar_canfd_handle_global_receive(struct rcar_canfd_global *gpriv, u3
+ {
+ 	struct rcar_canfd_channel *priv = gpriv->ch[ch];
+ 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
+-	u32 sts;
++	u32 sts, cc;
+ 
+ 	/* Handle Rx interrupts */
+ 	sts = rcar_canfd_read(priv->base, RCANFD_RFSTS(ridx));
+-	if (likely(sts & RCANFD_RFSTS_RFIF)) {
++	cc = rcar_canfd_read(priv->base, RCANFD_RFCC(ridx));
++	if (likely(sts & RCANFD_RFSTS_RFIF &&
++		   cc & RCANFD_RFCC_RFIE)) {
+ 		if (napi_schedule_prep(&priv->napi)) {
+ 			/* Disable Rx FIFO interrupts */
+ 			rcar_canfd_clear_bit(priv->base,
+-- 
+2.25.1
 
-> Thanks,
-> Olek
-
-Thanks,
-Olek
