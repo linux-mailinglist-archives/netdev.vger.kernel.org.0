@@ -2,85 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CFCE613A73
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B53C613AB5
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:51:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231901AbiJaPoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
+        id S231685AbiJaPvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232034AbiJaPoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:44:10 -0400
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD8C11A2B;
-        Mon, 31 Oct 2022 08:44:09 -0700 (PDT)
-Received: by mail-ot1-f50.google.com with SMTP id cy15-20020a056830698f00b0065c530585afso6973985otb.2;
-        Mon, 31 Oct 2022 08:44:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ifwpmU7A0PMQ06MNBDvyGSIa8Sixxnkraic/SyG2pxo=;
-        b=xWeqNRs+xYaVY6pJ0/6AED+LI0KlGpT8/Xej8vjW1SbOIFob2Q0qJ+a5dioCyt/Yxt
-         gm0dOWhC8OMIlV2sYNDHIuT0xA8W1pL8spyDAuILElCVkPviCwMvr9QycUzy1WM+v//6
-         nPr1kpc4E7wQejg4hElLXbSKYwji1hjkzJkjDmu1neZIMZLjgng+Gs2jiBFN3zY0MiHJ
-         Dl8kYNZyajMlkeiZ5gfO7yxF2RmEB/Mk4YHvNV70COLtCVPAdP/+kONOkCmCJ2Hu3iiC
-         hC591Fp1e+2Lks/oP9/IP29GsLLtlCdAdsKF/yyB6GGw0Ae4b0Rrv/IJVrn6pzBauKmZ
-         fqvg==
-X-Gm-Message-State: ACrzQf0ZS/65EJSTloq4f3J+kB2WM2YBySsA6UVVeQmsv1AjIGxmEWgL
-        1DxsVIRyrTbczj2N8aTkXQ==
-X-Google-Smtp-Source: AMsMyM4dyhQJfUihmItaQeAe7EzaxUEKtl/G0crodesYYunz1GQ0UewMwDpLQSlnR0+F3iiPt9nM5A==
-X-Received: by 2002:a9d:7384:0:b0:66c:42ae:a3da with SMTP id j4-20020a9d7384000000b0066c42aea3damr5180443otk.220.1667231048700;
-        Mon, 31 Oct 2022 08:44:08 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v13-20020a056870708d00b0013c955f64dbsm3147424oae.41.2022.10.31.08.44.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 08:44:08 -0700 (PDT)
-Received: (nullmailer pid 2922103 invoked by uid 1000);
-        Mon, 31 Oct 2022 15:44:09 -0000
-Date:   Mon, 31 Oct 2022 10:44:09 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?iso-8859-1?Q?n=E7_=DCNAL?= <arinc.unal@arinc9.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S231241AbiJaPvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:51:54 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414A211C01;
+        Mon, 31 Oct 2022 08:51:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667231513; x=1698767513;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=/e/xVUZOgx6ZC1PZjHKMVt7ZDLH/w5AwFjP1sMSN8Qw=;
+  b=pPU/7QJ6EUkuF8jzSAMjhbNKW+LCpgQhSgZ4L09xXh1718KAEZsaym+Z
+   WPcvLGOTKI/mQWA9jYn/v9DfzwdRIXtDodj67U+MGD59UnRLxS8d6Npqy
+   cKq9057cn02XqRMv4pAiQav+U+EwIS05aKEaDM5G7fKKd9WnsKmGxGxOe
+   Xxok1CHHiUafx8qsH7ofb8ugI9quP8LELnOPA13E+cvO2clXM4IXFo9Hw
+   LDscqApgyU5av4MwhvBiXX/bZPPb4HAvW9d+Vw/jGEe6qmEYvFxtnWfjE
+   nDooa6SXNgPCSUNPyYSxhjY5/2aFB4mltIIrXDTBHB3O53ur2u8+RYjYb
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.95,228,1661842800"; 
+   d="scan'208";a="197767741"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Oct 2022 08:51:52 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 31 Oct 2022 08:51:51 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 31 Oct 2022 08:51:48 -0700
+Message-ID: <1625e326b6b8fc030425c61c29d31262366edf7a.camel@microchip.com>
+Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
+ flower keys for the IS2 VCAP
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Casper Andersson <casper.casan@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH v1 net-next 3/7] dt-bindings: net: dsa: qca8k: utilize
- shared dsa.yaml
-Message-ID: <20221031154409.GA2861119-robh@kernel.org>
-References: <20221025050355.3979380-1-colin.foster@in-advantage.com>
- <20221025050355.3979380-4-colin.foster@in-advantage.com>
- <20221025050355.3979380-1-colin.foster@in-advantage.com>
- <20221025050355.3979380-4-colin.foster@in-advantage.com>
- <20221025212114.GA3322299-robh@kernel.org>
- <20221025212114.GA3322299-robh@kernel.org>
- <20221027012553.zb3zjwmw3x6kw566@skbuf>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        "Wan Jiabing" <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Date:   Mon, 31 Oct 2022 16:51:47 +0100
+In-Reply-To: <20221031145209.hqebvyfqdsrzhiuh@wse-c0155>
+References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
+         <20221028144540.3344995-3-steen.hegelund@microchip.com>
+         <20221031103747.uk76tudphqdo6uto@wse-c0155>
+         <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
+         <20221031145209.hqebvyfqdsrzhiuh@wse-c0155>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221027012553.zb3zjwmw3x6kw566@skbuf>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,73 +78,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 27, 2022 at 04:25:53AM +0300, Vladimir Oltean wrote:
-> Hi Rob,
-> 
-> On Tue, Oct 25, 2022 at 04:21:14PM -0500, Rob Herring wrote:
-> > On Mon, Oct 24, 2022 at 10:03:51PM -0700, Colin Foster wrote:
-> > > The dsa.yaml binding contains duplicated bindings for address and size
-> > > cells, as well as the reference to dsa-port.yaml. Instead of duplicating
-> > > this information, remove the reference to dsa-port.yaml and include the
-> > > full reference to dsa.yaml.
-> > 
-> > I don't think this works without further restructuring. Essentially, 
-> > 'unevaluatedProperties' on works on a single level. So every level has 
-> > to define all properties at that level either directly in 
-> > properties/patternProperties or within a $ref.
-> > 
-> > See how graph.yaml is structured and referenced for an example how this 
-> > has to work.
-> > 
-> > > @@ -104,8 +98,6 @@ patternProperties:
-> > >                SGMII on the QCA8337, it is advised to set this unless a communication
-> > >                issue is observed.
-> > >  
-> > > -        unevaluatedProperties: false
-> > > -
-> > 
-> > Dropping this means any undefined properties in port nodes won't be an 
-> > error. Once I fix all the issues related to these missing, there will be 
-> > a meta-schema checking for this (this could be one I fixed already).
-> 
-> I may be misreading, but here, "unevaluatedProperties: false" from dsa.yaml
-> (under patternProperties: "^(ethernet-)?port@[0-9]+$":) is on the same
-> level as the "unevaluatedProperties: false" that Colin is deleting.
-> 
-> In fact, I believe that it is precisely due to the "unevaluatedProperties: false"
-> from dsa.yaml that this is causing a failure now:
-> 
-> net/dsa/qca8k.example.dtb: switch@10: ports:port@6: Unevaluated properties are not allowed ('qca,sgmii-rxclk-falling-edge' was unexpected)
-> 
-> Could you please explain why is the 'qca,sgmii-rxclk-falling-edge'
-> property not evaluated from the perspective of dsa.yaml in the example?
-> It's a head scratcher to me.
+Hi Casper,
 
-A schema with unevaluatedProperties can "see" into a $ref, but the 
-ref'ed schema having unevaluatedProperties can't see back to the 
-referring schema for properties defined there.
+On Mon, 2022-10-31 at 15:52 +0100, Casper Andersson wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e content is safe
+>=20
+> Hi Steen,
+>=20
+> On 2022-10-31 13:14, Steen Hegelund wrote:
+> > Hi Casper,
+> >=20
+> > First of all thanks for the testing effort (as usual).=C2=A0 This is mo=
+st welcome.
+> >=20
+> > On Mon, 2022-10-31 at 11:44 +0100, Casper Andersson wrote:
+> > > EXTERNAL EMAIL: Do not click links or open attachments unless you kno=
+w the content is safe
+> > >=20
+> > > Hi Steen,
+> > >=20
+> > > On 2022-10-28 16:45, Steen Hegelund wrote:
+> > > > - IPv4 Addresses
+> > > > =C2=A0=C2=A0=C2=A0 tc filter add dev eth12 ingress chain 8000000 pr=
+io 12 handle 12 \
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 protocol ip flower skip_=
+sw dst_ip 1.0.1.1 src_ip 2.0.2.2=C2=A0=C2=A0=C2=A0 \
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action trap
+> > >=20
+> > > I'm not able to get this working on PCB135. I tested the VLAN tags an=
+d
+> > > did not work either (did not test the rest). The example from the
+> > > previous patch series doesn't work either after applying this series.
+> >=20
+> >=20
+> > Yes I did not really explain this part (and I will update the series wi=
+th an explanation).
+> >=20
+> > 1) The rule example in the previous series will no longer work as expec=
+ted as the changes to the
+> > port keyset configuration now requires a non-ip frame to generate the M=
+AC_ETYPE keyset.
+> >=20
+> > So to test the MAC_ETYPE case your rule must be non-ip and not use "pro=
+tocol all" which is not
+> > supported yet.
+> >=20
+> > Here is an example using the "protocol 0xbeef":
+> >=20
+> > tc qdisc add dev eth3 clsact
+> > tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 protocol 0xbeef flower skip_=
+sw \
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dst_mac 0a:0b:0c:0d:0e:0f \
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 src_mac 2:0:0:0:0:1 \
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action trap
+> >=20
+> > And send a frame like this (using EasyFrame):
+> >=20
+> > ef tx eth_fiber1 rep 10 eth dmac 0a:0b:0c:0d:0e:0f smac 2::1 et 0xbeef =
+data repeat 50 0x61
+>=20
+> Thanks, this works. I saw now that you even mentioned that "protocol
+> all" doesn't work at the very end of this commit message.
+>=20
+> > I am not sure what went wrong when you tested the ipv4 rule, but if I c=
+reate the rule that you
+> > quoted above the rule is activated when I send frames like this:
+> >=20
+> > ef tx eth_fiber1 rep 10 eth dmac 0a:0b:0c:0d:0e:0f smac 2::2 ipv4 dip 1=
+.0.1.1 sip 2.0.2.2=C2=A0 data
+> > repeat 50 0x61
+>=20
+> Looks like adding the "data" at the end of it makes a difference when
+> creating the packets. Without it the ip.proto field becomes 17 (UDP).
+> With "data" it becomes 0 (IPv6 Hop-by-Hop Option). Ef will defaults to
+> 17 if no data is specified, otherwise it ends up 0. And the reason
+> UDP doesn't get trapped I assume is because this rule falls under the
+> IPV4_OTHER keyset (as opposed to IPV4_TCP_UDP).
 
-So if a schema is referenced by other schemas which can define their own 
-additional properties, that schema cannot have 'unevaluatedProperties: 
-false'. If both schemas have 'unevaluatedProperties: false', then it's 
-just redundant. We may end up doing that just because it's not obvious 
-when we have both or not, and no unevaluatedProperties/ 
-additionalProperties at all is a bigger issue. I'm working on a 
-meta-schema to check this.
+Yes the EasyFrame tool just uses defaults if you do not specify any data fo=
+r the frame, so I usually
+try to remember to do that to tweak the test a bit.
 
+>=20
+> Doing just this was enough:
+> ef tx eth0 rep 10 eth dmac 0a:0b:0c:0d:0e:0f smac 2::2 ipv4 dip 1.0.1.1 s=
+ip 2.0.2.2 data
+>=20
+> This also solved it for VLANs. I have successfully tested ipv4, ipv6,
+> protocol info (ICMP), and vlan tag info from the examples you provided.
+>=20
+> Tested on Microchip PCB135 switch.
+>=20
+> Tested-by: Casper Andersson <casper.casan@gmail.com>
+>=20
+> BR,
+> Casper
+>=20
+> >=20
+> > Note that the smac is changed to avoid hitting the first rule.
+> >=20
+> > 2) As for the VLAN based rules, the VLAN information used by IS2 is the=
+ classified VID and PCP,
+> > so
+> > you need to create a bridge and add the VID to the bridge and the ports=
+ to see this in action.
+> >=20
+> > IS0 uses the VLAN tags in the frames directly: this is one of the diffe=
+rences between IS0 and
+> > IS2.
+> >=20
+> > This is how I set up a bridge on my PCB134 when I do the testing:
+> >=20
+> > ip link add name br5 type bridge
+> > ip link set dev br5 up
+> > ip link set eth12 master br5
+> > ip link set eth13 master br5
+> > ip link set eth14 master br5
+> > ip link set eth15 master br5
+> > sysctl -w net.ipv6.conf.eth12.disable_ipv6=3D1
+> > sysctl -w net.ipv6.conf.eth13.disable_ipv6=3D1
+> > sysctl -w net.ipv6.conf.eth14.disable_ipv6=3D1
+> > sysctl -w net.ipv6.conf.eth15.disable_ipv6=3D1
+> > sysctl -w net.ipv6.conf.br5.disable_ipv6=3D1
+> > ip link set dev br5 type bridge vlan_filtering 1
+> > bridge vlan add dev eth12 vid 600
+> > bridge vlan add dev eth13 vid 600
+> > bridge vlan add dev eth14 vid 600
+> > bridge vlan add dev eth15 vid 600
+> > bridge vlan add dev br5 vid 600 self
+> >=20
+> > This should now allow you to use the classified VLAN information in IS2=
+ on these four ports.
+> >=20
+> > >=20
+> > > This example was provided in your last patch series and worked earlie=
+r.
+> > >=20
+> > > My setup is PC-eth0 -> PCB135-eth3 and I use the following EasyFrames
+> > > command to send packets:
+> > >=20
+> > > ef tx eth0 rep 50 eth smac 02:00:00:00:00:01 dmac 0a:0b:0c:0d:0e:0f
+> > >=20
+> > > IPv4:
+> > > tc qdisc add dev eth3 clsact
+> > > tc filter add dev eth3 ingress chain 8000000 prio 12 handle 12 \
+> > > =C2=A0=C2=A0=C2=A0 protocol ip flower skip_sw dst_ip 1.0.1.1 src_ip 2=
+.0.2.2=C2=A0=C2=A0=C2=A0 \
+> > > =C2=A0=C2=A0=C2=A0 action trap
+> > >=20
+> > > ef tx eth0 rep 50 eth smac 02:00:00:00:00:01 dmac 0a:0b:0c:0d:0e:0f i=
+pv4 dip 1.0.1.1 sip
+> > > 2.0.2.2
+> > >=20
+> > > Same setup as above and I can't get this to work either.
+> >=20
+> > Maybe you are hitting the first rule here, so changing the smac to avoi=
+d that, should help.
+> >=20
+> > >=20
+> > > I'm using tcpdump to watch the interface to see if the packets are be=
+ing
+> > > trapped or not. Changing the packets' dmac to broadcast lets me see t=
+he
+> > > packets so I don't have any issue with the setup.
+> > >=20
+> > > BR,
+> > > Casper
+> > >=20
+> >=20
+> > Best Regards
+> > Steen
+>=20
+> BR,
+> Casper
 
-> May it have something to do with the fact that Colin's addition:
-> 
-> $ref: "dsa.yaml#"
-> 
-> is not expressed as:
-> 
-> allOf:
->   - $ref: "dsa.yaml#"
-> 
-> ?
+Thanks again for the testing.  I will send an updated series with a bit mor=
+e explanation in the
+commit header.
 
-No. Either way behaves the same. We generally only use 'allOf' when 
-there might be more than 1 entry. That is mostly just at the top-level.
-
-Rob
+BR
+Steen
