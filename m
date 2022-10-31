@@ -2,307 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73774613A2F
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:36:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6080C613A31
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231897AbiJaPgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
+        id S231888AbiJaPgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbiJaPg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:36:28 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF86F657C
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:36:18 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id hh9so7601557qtb.13
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=71XeshtDDB2q+WreOMtT2TndRh+ZKPVNR9z46Ogh+gs=;
-        b=mVM39L0UNiUtX01ET4+DdLTSiMdEPyDeNr9U3XNs96NV8cZeEH6FKUvUOO4QKaJIQb
-         w4YnSRrWpi74NCpIZ0tUm77t5X2e9aJjgdUpGxvUXP9RTA7BhZpMnJOE8lf++88ilaBA
-         AzQOCpgwOKVNDJkaULWgu8WPCC9ZgERLl2dg/tQhG4QWApSXlKQ65SrIdthmv2dvWbIv
-         WZMm9lAQE+6VU3yoYjyWRgId6LcvzMpO7T+UEo5ijUihWsg7g7qpDfQ7zT+gRrqZ3X8q
-         LB9syjeNcu4UA0IMEiYAReHuwU8XvX3ErfL65zZ+T75WhJBWSogXWF7HIhfsB7cJOUj6
-         avIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=71XeshtDDB2q+WreOMtT2TndRh+ZKPVNR9z46Ogh+gs=;
-        b=I57+JqGarJB/76rTqfa7hnlTCsR3xl0w/DZP7sPrVu0G0wRyGBgcrgJinj+wcR52RD
-         0LIimWMppA1RZOIfW6z3sJPdrOyWBt8Uc2FPuvFhnElNGeWdNtul/3QURn/ItVDsKiYW
-         NSWNxuCbVrf+G/izmnJWN3/RY5GiZPGFGuZ4wiEgeEDHQzZpwR2v8UJO2po5UAQq9BBT
-         QHf2JRyE7PtP+lHN+t2LcrtgxsLeIKiHIVdtV3GnZnKbdeP3ZUjCEkHWXAIHKVh7fMbw
-         DvWgJPsJ4gkbwOX15Vp7XGDirz9GDBmEmGlqB0IL2GVFcHVE+IH5KhNN7M0TNTyLZNcz
-         g1rA==
-X-Gm-Message-State: ACrzQf0z6lllbvOf3s17ms0uFnNg7pbsC6IXLI+ireDTEI+FbllKyIgg
-        P6bzWcjstZhk1rBZzzKbhZWMouIvhh+9WA==
-X-Google-Smtp-Source: AMsMyM7nE3Zxe9BcJgb7ws2V/TEojX1V8HYy3KBBYsF8nGt0f5BHV/l62jA1r3X/AUa+DLSqbjdyhA==
-X-Received: by 2002:ac8:7d55:0:b0:39b:ef52:a79e with SMTP id h21-20020ac87d55000000b0039bef52a79emr11113503qtb.658.1667230577602;
-        Mon, 31 Oct 2022 08:36:17 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bi29-20020a05620a319d00b006f956766f76sm4957924qkb.1.2022.10.31.08.36.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 08:36:17 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
-        ovs-dev@openvswitch.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S231882AbiJaPgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:36:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E8B11A02;
+        Mon, 31 Oct 2022 08:36:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 651A0612DA;
+        Mon, 31 Oct 2022 15:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88A10C43140;
+        Mon, 31 Oct 2022 15:36:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667230582;
+        bh=hQTeoRIMnGPp9UdgDT08Aavn4R9xt6+Q4i1tH0XNAtE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XTouMncDtMEck6F3hpEnv5HTI5FxTrknmp7Hw+WJKidcVfbyNHJdYHjmRRLvQ1NMi
+         79k6ew61nkE5JUU/R+H8Y4UkCM20ONTgi5IvomLie4xhwbM01zKP+BP1cqNj41B9je
+         sLE2SObyNqVO4v93GRBtNDBDS1YoRyjPj1/UmGcrG3SCxctMAeXaLiGn9k43iyOphl
+         OD9LKi73/RdJWgcEKIBGJaisJJ7orl49E0Azz9nIM82iK8Ztons+syGXtHWUhfTqMH
+         gFNoIxoQRefbmGC7wkvpFacJV+m4GepDRdg8aa0Qzqxqd72bVQhwRsLd5G8iJPOxg2
+         vLf/O4qQ+5HyQ==
+Date:   Mon, 31 Oct 2022 15:36:14 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        =?iso-8859-1?Q?n=E7_=DCNAL?= <arinc.unal@arinc9.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Aaron Conole <aconole@redhat.com>
-Subject: [PATCHv3 net-next 4/4] net: sched: add helper support in act_ct
-Date:   Mon, 31 Oct 2022 11:36:10 -0400
-Message-Id: <4ce649629cc4c5bebe49fdd48a3cf5497a4489fa.1667230381.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1667230381.git.lucien.xin@gmail.com>
-References: <cover.1667230381.git.lucien.xin@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v1 net-next 1/7] dt-bindings: mfd: ocelot: remove
+ spi-max-frequency from required properties
+Message-ID: <Y1/rbgXwUZZXY3JK@google.com>
+References: <20221025050355.3979380-1-colin.foster@in-advantage.com>
+ <20221025050355.3979380-2-colin.foster@in-advantage.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221025050355.3979380-2-colin.foster@in-advantage.com>
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add helper support in act_ct for OVS actions=ct(alg=xxx)
-offloading, which is corresponding to Commit cae3a2627520 ("openvswitch:
-Allow attaching helpers to ct action") in OVS kernel part.
+On Mon, 24 Oct 2022, Colin Foster wrote:
 
-The difference is when adding TC actions family and proto cannot be got
-from the filter/match, other than helper name in tb[TCA_CT_HELPER_NAME],
-we also need to send the family in tb[TCA_CT_HELPER_FAMILY] and the
-proto in tb[TCA_CT_HELPER_PROTO] to kernel.
+> The property spi-max-frequency was initially documented as a required
+> property. It is not actually required, and will break bindings validation
+> if other control mediums (e.g. PCIe) are used.
+> 
+> Remove this property from the required arguments.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml | 1 -
+>  1 file changed, 1 deletion(-)
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/net/tc_act/tc_ct.h        |  1 +
- include/uapi/linux/tc_act/tc_ct.h |  3 ++
- net/sched/act_ct.c                | 83 +++++++++++++++++++++++++++++--
- 3 files changed, 82 insertions(+), 5 deletions(-)
+Applied, thanks.
 
-diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
-index 8250d6f0a462..b24ea2d9400b 100644
---- a/include/net/tc_act/tc_ct.h
-+++ b/include/net/tc_act/tc_ct.h
-@@ -10,6 +10,7 @@
- #include <net/netfilter/nf_conntrack_labels.h>
- 
- struct tcf_ct_params {
-+	struct nf_conntrack_helper *helper;
- 	struct nf_conn *tmpl;
- 	u16 zone;
- 
-diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
-index 5fb1d7ac1027..6c5200f0ed38 100644
---- a/include/uapi/linux/tc_act/tc_ct.h
-+++ b/include/uapi/linux/tc_act/tc_ct.h
-@@ -22,6 +22,9 @@ enum {
- 	TCA_CT_NAT_PORT_MIN,	/* be16 */
- 	TCA_CT_NAT_PORT_MAX,	/* be16 */
- 	TCA_CT_PAD,
-+	TCA_CT_HELPER_NAME,	/* string */
-+	TCA_CT_HELPER_FAMILY,	/* u8 */
-+	TCA_CT_HELPER_PROTO,	/* u8 */
- 	__TCA_CT_MAX
- };
- 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 193a460a9d7f..85f4dc5650da 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -33,6 +33,7 @@
- #include <net/netfilter/nf_conntrack_acct.h>
- #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
- #include <net/netfilter/nf_conntrack_act_ct.h>
-+#include <net/netfilter/nf_conntrack_seqadj.h>
- #include <uapi/linux/netfilter/nf_nat.h>
- 
- static struct workqueue_struct *act_ct_wq;
-@@ -655,7 +656,7 @@ struct tc_ct_action_net {
- 
- /* Determine whether skb->_nfct is equal to the result of conntrack lookup. */
- static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
--				   u16 zone_id, bool force)
-+				   struct tcf_ct_params *p, bool force)
- {
- 	enum ip_conntrack_info ctinfo;
- 	struct nf_conn *ct;
-@@ -665,8 +666,15 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
- 		return false;
- 	if (!net_eq(net, read_pnet(&ct->ct_net)))
- 		goto drop_ct;
--	if (nf_ct_zone(ct)->id != zone_id)
-+	if (nf_ct_zone(ct)->id != p->zone)
- 		goto drop_ct;
-+	if (p->helper) {
-+		struct nf_conn_help *help;
-+
-+		help = nf_ct_ext_find(ct, NF_CT_EXT_HELPER);
-+		if (help && rcu_access_pointer(help->helper) != p->helper)
-+			goto drop_ct;
-+	}
- 
- 	/* Force conntrack entry direction. */
- 	if (force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
-@@ -832,6 +840,13 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 
- static void tcf_ct_params_free(struct tcf_ct_params *params)
- {
-+	if (params->helper) {
-+#if IS_ENABLED(CONFIG_NF_NAT)
-+		if (params->ct_action & TCA_CT_ACT_NAT)
-+			nf_nat_helper_put(params->helper);
-+#endif
-+		nf_conntrack_helper_put(params->helper);
-+	}
- 	if (params->ct_ft)
- 		tcf_ct_flow_table_put(params->ct_ft);
- 	if (params->tmpl)
-@@ -1033,6 +1048,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	struct nf_hook_state state;
- 	int nh_ofs, err, retval;
- 	struct tcf_ct_params *p;
-+	bool add_helper = false;
- 	bool skip_add = false;
- 	bool defrag = false;
- 	struct nf_conn *ct;
-@@ -1086,7 +1102,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	 * actually run the packet through conntrack twice unless it's for a
- 	 * different zone.
- 	 */
--	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
-+	cached = tcf_ct_skb_nfct_cached(net, skb, p, force);
- 	if (!cached) {
- 		if (tcf_ct_flow_table_lookup(p, skb, family)) {
- 			skip_add = true;
-@@ -1119,6 +1135,22 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	if (err != NF_ACCEPT)
- 		goto drop;
- 
-+	if (!nf_ct_is_confirmed(ct) && commit && p->helper && !nfct_help(ct)) {
-+		err = __nf_ct_try_assign_helper(ct, p->tmpl, GFP_ATOMIC);
-+		if (err)
-+			goto drop;
-+		add_helper = true;
-+		if (p->ct_action & TCA_CT_ACT_NAT && !nfct_seqadj(ct)) {
-+			if (!nfct_seqadj_ext_add(ct))
-+				goto drop;
-+		}
-+	}
-+
-+	if (nf_ct_is_confirmed(ct) ? ((!cached && !skip_add) || add_helper) : commit) {
-+		if (nf_ct_helper(skb, family) != NF_ACCEPT)
-+			goto drop;
-+	}
-+
- 	if (commit) {
- 		tcf_ct_act_set_mark(ct, p->mark, p->mark_mask);
- 		tcf_ct_act_set_labels(ct, p->labels, p->labels_mask);
-@@ -1167,6 +1199,9 @@ static const struct nla_policy ct_policy[TCA_CT_MAX + 1] = {
- 	[TCA_CT_NAT_IPV6_MAX] = NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
- 	[TCA_CT_NAT_PORT_MIN] = { .type = NLA_U16 },
- 	[TCA_CT_NAT_PORT_MAX] = { .type = NLA_U16 },
-+	[TCA_CT_HELPER_NAME] = { .type = NLA_STRING, .len = NF_CT_HELPER_NAME_LEN },
-+	[TCA_CT_HELPER_FAMILY] = { .type = NLA_U8 },
-+	[TCA_CT_HELPER_PROTO] = { .type = NLA_U8 },
- };
- 
- static int tcf_ct_fill_params_nat(struct tcf_ct_params *p,
-@@ -1256,8 +1291,9 @@ static int tcf_ct_fill_params(struct net *net,
- {
- 	struct tc_ct_action_net *tn = net_generic(net, act_ct_ops.net_id);
- 	struct nf_conntrack_zone zone;
-+	int err, family, proto, len;
- 	struct nf_conn *tmpl;
--	int err;
-+	char *name;
- 
- 	p->zone = NF_CT_DEFAULT_ZONE_ID;
- 
-@@ -1318,10 +1354,31 @@ static int tcf_ct_fill_params(struct net *net,
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to allocate conntrack template");
- 		return -ENOMEM;
- 	}
--	__set_bit(IPS_CONFIRMED_BIT, &tmpl->status);
- 	p->tmpl = tmpl;
-+	if (tb[TCA_CT_HELPER_NAME]) {
-+		name = nla_data(tb[TCA_CT_HELPER_NAME]);
-+		len = nla_len(tb[TCA_CT_HELPER_NAME]);
-+		if (len > 16 || name[len - 1] != '\0') {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to parse helper name.");
-+			err = -EINVAL;
-+			goto err;
-+		}
-+		family = tb[TCA_CT_HELPER_FAMILY] ? nla_get_u8(tb[TCA_CT_HELPER_FAMILY]) : AF_INET;
-+		proto = tb[TCA_CT_HELPER_PROTO] ? nla_get_u8(tb[TCA_CT_HELPER_PROTO]) : IPPROTO_TCP;
-+		err = nf_ct_add_helper(tmpl, name, family, proto,
-+				       p->ct_action & TCA_CT_ACT_NAT, &p->helper);
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to add helper");
-+			goto err;
-+		}
-+	}
- 
-+	__set_bit(IPS_CONFIRMED_BIT, &tmpl->status);
- 	return 0;
-+err:
-+	nf_ct_put(p->tmpl);
-+	p->tmpl = NULL;
-+	return err;
- }
- 
- static int tcf_ct_init(struct net *net, struct nlattr *nla,
-@@ -1490,6 +1547,19 @@ static int tcf_ct_dump_nat(struct sk_buff *skb, struct tcf_ct_params *p)
- 	return 0;
- }
- 
-+static int tcf_ct_dump_helper(struct sk_buff *skb, struct nf_conntrack_helper *helper)
-+{
-+	if (!helper)
-+		return 0;
-+
-+	if (nla_put_string(skb, TCA_CT_HELPER_NAME, helper->name) ||
-+	    nla_put_u8(skb, TCA_CT_HELPER_FAMILY, helper->tuple.src.l3num) ||
-+	    nla_put_u8(skb, TCA_CT_HELPER_PROTO, helper->tuple.dst.protonum))
-+		return -1;
-+
-+	return 0;
-+}
-+
- static inline int tcf_ct_dump(struct sk_buff *skb, struct tc_action *a,
- 			      int bind, int ref)
- {
-@@ -1542,6 +1612,9 @@ static inline int tcf_ct_dump(struct sk_buff *skb, struct tc_action *a,
- 	if (tcf_ct_dump_nat(skb, p))
- 		goto nla_put_failure;
- 
-+	if (tcf_ct_dump_helper(skb, p->helper))
-+		goto nla_put_failure;
-+
- skip_dump:
- 	if (nla_put(skb, TCA_CT_PARMS, sizeof(opt), &opt))
- 		goto nla_put_failure;
 -- 
-2.31.1
-
+Lee Jones [李琼斯]
