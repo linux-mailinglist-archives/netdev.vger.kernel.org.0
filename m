@@ -2,125 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E72D961406D
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 23:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE6E614068
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 23:08:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiJaWIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 18:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
+        id S229823AbiJaWIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 18:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiJaWIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 18:08:34 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E80A117C
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:08:31 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id sc25so32800616ejc.12
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:08:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=AUFZ27KO58pY4DGyCP23/k/Mkp601j4ArNtp1x4g8JM=;
-        b=TcWK6Y98534y0LVy30JAamoKv4jpN6P0MFCKq1nfrYvQcURKtvef5NxVpPEPQm5irY
-         I3I7UGnwa5YPUawzeicEnDYu9xJS298kKpGFgCtffRSTe3bDSvCRqGjFZA8gOvP15Lpu
-         ZpiCq3iSXwRsmt0HIaC5LhUy7CHIXXHEj57yc=
+        with ESMTP id S229487AbiJaWIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 18:08:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B76D140F3
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:07:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667254040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+iZ0pV3SBOzW1z26S60SpkgdQOzJ1jKWT7LgrMsWLSw=;
+        b=YHRVBpUAM41TLYu3MbFEVWy9kK+MreJ8KJlMhAX1fvVlKKj2ZfgezIarcpANgnvPK4yfBQ
+        jz1S3qaI3t5hrveg6Am+RlZdhnWNGOll/MefFvAy/lRf1e5efse/mPn+az9t+0cRGvd6sC
+        qcjYM2uESWpvio045y7fJ7nme6EYQCQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-220-Le-LAP07Pu-upKdOjTsA8w-1; Mon, 31 Oct 2022 18:07:18 -0400
+X-MC-Unique: Le-LAP07Pu-upKdOjTsA8w-1
+Received: by mail-ed1-f69.google.com with SMTP id w4-20020a05640234c400b004631f8923baso3655606edc.5
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:07:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AUFZ27KO58pY4DGyCP23/k/Mkp601j4ArNtp1x4g8JM=;
-        b=wqovkFHJyp0hkBfaRq95KbqdIjROTrce8/1Sn3NNki34wZDupofYGQsXnfiSRzI/6z
-         lnvhOEzhjuqCbForDUe9cHy85vjKh1Eakxf0ZK9Mbsq5wGmUenvpKQw2OR3Hg4+/coLt
-         7uEKae55dG2/aodq0K5+QxCAbMDnGSvi6nY6vYDqoqTqGhldC+uqZMKvHUxKCsbelF96
-         XMVAHrRsC5iztnpHBcHzN3eM7rRVjJX2Z/oQq0TVcD912O2bqvGdi5Gd4DAgI/3VKsh3
-         F9qTtANRYec8ZgLOujbjUhr/esVvJIzMEtlXq7ihIAC7bvoetbeFMtReFeyPs+y+GaKs
-         PQNg==
-X-Gm-Message-State: ACrzQf2ZVVTdIOl0S8m/X5K+nwY5W+Po8j1ohaicw5ThrmaCFWB6TdiP
-        7XGsKSNe5Hgk7BzNRIUsliTgqg==
-X-Google-Smtp-Source: AMsMyM7PuvWTMk5C3OXlIc4FX6Dj85mzgawZwH0QaGYEwimBDSI82JQK2C8gQt52ZAS6b3HQRhTdlA==
-X-Received: by 2002:a17:906:9c83:b0:779:c14c:55e4 with SMTP id fj3-20020a1709069c8300b00779c14c55e4mr14970590ejc.619.1667254109667;
-        Mon, 31 Oct 2022 15:08:29 -0700 (PDT)
-Received: from cloudflare.com (79.191.56.44.ipv4.supernova.orange.pl. [79.191.56.44])
-        by smtp.gmail.com with ESMTPSA id ud24-20020a170907c61800b0077f324979absm3445992ejc.67.2022.10.31.15.08.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 15:08:29 -0700 (PDT)
-References: <20221018020258.197333-1-xiyou.wangcong@gmail.com>
- <Y07sxzoS/s6ZBhEx@google.com> <87eduxfiik.fsf@cloudflare.com>
- <Y1wqe2ybxxCtIhvL@pop-os.localdomain>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Cong Wang <cong.wang@bytedance.com>, sdf@google.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [Patch bpf] sock_map: convert cancel_work_sync() to cancel_work()
-Date:   Mon, 31 Oct 2022 23:03:09 +0100
-In-reply-to: <Y1wqe2ybxxCtIhvL@pop-os.localdomain>
-Message-ID: <87bkprprxf.fsf@cloudflare.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+iZ0pV3SBOzW1z26S60SpkgdQOzJ1jKWT7LgrMsWLSw=;
+        b=xayCq59aTCDhis4xFpIV4fEM1Q7TqdCySpWXkQjQL4khW3oHvm0Qya+DtPd9EGrjko
+         ifByMbDMc8L9e9cyUv0kjDuvjP2rFb4MkfTtd4RtIzaUareq9+mZKNLc78JuAOYedTii
+         5skLSCp/OOm6eSFv6Wp3IM62/zCSGlhVxxT3tqX7zsk9NGtcrUUzHUYQLhq3S746Dl6U
+         HC+LQjjflirr8I2UoG0VbFYqxV5JnoggwuK2xtTe3hY42V7FqV6hoVqIo7BJ01HMA1yg
+         l5C2Izqifs9DbRJjLZc2cKx4Y3oRidUXqYwjNd1zQTArEbXw+o7YY1YSLewJh6Uky8rV
+         JekQ==
+X-Gm-Message-State: ACrzQf3FGpxFq1884g24ZGLXb4/2zHFNFQf8RL09hk84aMeQjbETStSX
+        QrBHTv6blio8sEL0u+0go4JFQsSzQk86gcMKgOoCAF24GxxmOl3UZyOfABiEzvBRGSuOn2suWkM
+        Z1VpexZ3KfiWd3z5N9Fs7pIIN4WqaR3KB
+X-Received: by 2002:a17:906:a246:b0:78d:ee08:1867 with SMTP id bi6-20020a170906a24600b0078dee081867mr15055ejb.123.1667254037495;
+        Mon, 31 Oct 2022 15:07:17 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7808CBkgMpm2IjH8zlljCUguJuPX1x0B9oPTLTfUq3CiS9A72iS2SRvn8xSQPXLui8a1FHlXuRoePvlJ0JBYM=
+X-Received: by 2002:a17:906:a246:b0:78d:ee08:1867 with SMTP id
+ bi6-20020a170906a24600b0078dee081867mr15052ejb.123.1667254037330; Mon, 31 Oct
+ 2022 15:07:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+References: <20221026093502.602734-1-miquel.raynal@bootlin.com> <CAK-6q+jXPyruvdtS3jgzkuH=f599EiPk7vWTWLhREFCMj5ayNg@mail.gmail.com>
+In-Reply-To: <CAK-6q+jXPyruvdtS3jgzkuH=f599EiPk7vWTWLhREFCMj5ayNg@mail.gmail.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 31 Oct 2022 18:07:05 -0400
+Message-ID: <CAK-6q+iRAjEPLQqH-_YSxNnobd7o=NLaF-4XB+zvNTXpWgpb8A@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 0/3] IEEE 802.15.4: Add coordinator interfaces
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 28, 2022 at 12:16 PM -07, Cong Wang wrote:
-> On Mon, Oct 24, 2022 at 03:33:13PM +0200, Jakub Sitnicki wrote:
->> On Tue, Oct 18, 2022 at 11:13 AM -07, sdf@google.com wrote:
->> > On 10/17, Cong Wang wrote:
->> >> From: Cong Wang <cong.wang@bytedance.com>
->> >
->> >> Technically we don't need lock the sock in the psock work, but we
->> >> need to prevent this work running in parallel with sock_map_close().
->> >
->> >> With this, we no longer need to wait for the psock->work synchronously,
->> >> because when we reach here, either this work is still pending, or
->> >> blocking on the lock_sock(), or it is completed. We only need to cancel
->> >> the first case asynchronously, and we need to bail out the second case
->> >> quickly by checking SK_PSOCK_TX_ENABLED bit.
->> >
->> >> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
->> >> Reported-by: Stanislav Fomichev <sdf@google.com>
->> >> Cc: John Fastabend <john.fastabend@gmail.com>
->> >> Cc: Jakub Sitnicki <jakub@cloudflare.com>
->> >> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
->> >
->> > This seems to remove the splat for me:
->> >
->> > Tested-by: Stanislav Fomichev <sdf@google.com>
->> >
->> > The patch looks good, but I'll leave the review to Jakub/John.
->> 
->> I can't poke any holes in it either.
->> 
->> However, it is harder for me to follow than the initial idea [1].
->> So I'm wondering if there was anything wrong with it?
+Hi,
+
+On Sun, Oct 30, 2022 at 10:20 PM Alexander Aring <aahringo@redhat.com> wrote:
 >
-> It caused a warning in sk_stream_kill_queues() when I actually tested
-> it (after posting).
-
-We must have seen the same warnings. They seemed unrelated so I went
-digging. We have a fix for these [1]. They were present since 5.18-rc1.
-
->> This seems like a step back when comes to simplifying locking in
->> sk_psock_backlog() that was done in 799aa7f98d53.
+> Hi,
 >
-> Kinda, but it is still true that this sock lock is not for sk_socket
-> (merely for closing this race condition).
+> On Wed, Oct 26, 2022 at 5:35 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > Hello,
+> > These three patches allow the creation of coordinator interfaces, which
+> > were already defined without being usable. The idea behind is to use
+> > them advertizing PANs through the beaconing feature.
+> >
+>
+> I still don't know how exactly those "leaves" and "non-leaves" are
+> acting here regarding the coordinator interfaces. If this is just a
+> bit here to set in the interface I am fine with it. But yea,
+> "relaying" feature is a project on its own, as we said previously.
+>
+> Another mail I was asking myself what a node interface is then,
+> currently it is a mesh interface with none of those 802.15.4 PAN
+> management functionality? Or can it act also as a "leave"
+> coordinator... I am not sure about that.
+>
+> However I think we can think about something scheduled later as we can
+> still decide later if we really want that "node" can do that.
+> Regarding to 6LoWPAN I think the current type what "node" interface is
+> as a just a node in a mesh is required, it might depends on if you
+> want routing on IP or "relaying" on MAC (mesh-over vs mesh-under), but
 
-I really think the initial idea [2] is much nicer. I can turn it into a
-patch, if you are short on time.
+*route-over
 
-With [1] and [2] applied, the dead lock and memory accounting warnings
-are gone, when running `test_sockmap`.
+> I never saw mesh-under in 6LoWPAN.
+>
 
-Thanks,
-Jakub
+we will see how that works, because you can actually run a 6lowpan
+interface on the new coordinator type.
 
-[1] https://lore.kernel.org/netdev/1667000674-13237-1-git-send-email-wangyufen@huawei.com/
-[2] https://lore.kernel.org/netdev/Y0xJUc%2FLRu8K%2FAf8@pop-os.localdomain/
+- Alex
+
