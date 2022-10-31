@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A899B613A2D
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73774613A2F
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:36:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbiJaPgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
+        id S231897AbiJaPgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbiJaPgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:36:18 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698A1B4BE
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:36:17 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id j6so8530536qvn.12
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:36:17 -0700 (PDT)
+        with ESMTP id S231878AbiJaPg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:36:28 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF86F657C
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:36:18 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id hh9so7601557qtb.13
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:36:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vYCp3d34DHyk/MSd0SLsGCr9Tzl/7iMlVaqVp/bW8fs=;
-        b=jVN+OaM4vCeKBeIE+jTJkff/beDf3rRBVqm/lr2ZJnKEO3Wb2DwvizKuYJvmAiIxJE
-         gB+izr4hY/C3k5XFlOXLp+Vxva79L7QApHlgiTmpjHOaWQMCyDzA2GWJUb1j+ZGUAZII
-         PGUaJCzngkXY2YQ/gln/GrTYGdoFvLHRB/HdGdEeRvtyVgOUn5nZD+1iQceImgG3Aa18
-         S/CpqtW4BE+zF0TwgYeWUmGrde0xADedJTnnlWjxMfBHiUrDMj8VY4Z2l+j7L4G/ubmm
-         /m/ShQajDlqhW79PrZHQ0snUk5ZcdumXiB9MHHg4ZMTAobE+c7NyTmlTqsPbsp83WqDs
-         pbaQ==
+        bh=71XeshtDDB2q+WreOMtT2TndRh+ZKPVNR9z46Ogh+gs=;
+        b=mVM39L0UNiUtX01ET4+DdLTSiMdEPyDeNr9U3XNs96NV8cZeEH6FKUvUOO4QKaJIQb
+         w4YnSRrWpi74NCpIZ0tUm77t5X2e9aJjgdUpGxvUXP9RTA7BhZpMnJOE8lf++88ilaBA
+         AzQOCpgwOKVNDJkaULWgu8WPCC9ZgERLl2dg/tQhG4QWApSXlKQ65SrIdthmv2dvWbIv
+         WZMm9lAQE+6VU3yoYjyWRgId6LcvzMpO7T+UEo5ijUihWsg7g7qpDfQ7zT+gRrqZ3X8q
+         LB9syjeNcu4UA0IMEiYAReHuwU8XvX3ErfL65zZ+T75WhJBWSogXWF7HIhfsB7cJOUj6
+         avIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vYCp3d34DHyk/MSd0SLsGCr9Tzl/7iMlVaqVp/bW8fs=;
-        b=rRtC+YoNQ6h0S+9lRnIe7c2zdYAoZcdCRCv/yb1u0Pf0o0tx4w9+SQIrpDJirJik0J
-         X6QYSZ2PaEhSgGxGl+/em/8CajlmOwLrq8az0x6zAKOa+Sdj2kofZcy1+P5svFDTu/og
-         cUzjdzf6ZdWufFAzFiU5TG1vnvNgMQxCbEdj/jdC2bVezNTqlzEcfhhgqBd7U5HCq5I/
-         ih1GCZ4mdTJ9q/CBfZQ3xm9JnW+pg090lmuEF1cYVo4gSLHYNd67Uv/Y8SiCv0K++cBj
-         9TmsbKC36dbrisdyzJF9c06+07NPC39GAoNWpHZpNeE1tlVcfvl60h+nDTnZLkkjOUKc
-         HLrA==
-X-Gm-Message-State: ACrzQf1KZZgsDN0Zy6kmRHjH/2ywFwAZx98UVIqBcsiuRok17Ed/mbHD
-        s8cowkMeC5r9+ztwlExfdwQf0nSzkLAK+A==
-X-Google-Smtp-Source: AMsMyM6itiE9a3UYw7yX/ddMo+vEGJl1jACgX97xg3KvTCwM59tARGD9/AnJ2mlnvqdt6V5fC3Bblw==
-X-Received: by 2002:a05:6214:f2e:b0:4bb:ee2f:43b2 with SMTP id iw14-20020a0562140f2e00b004bbee2f43b2mr5519771qvb.105.1667230576279;
-        Mon, 31 Oct 2022 08:36:16 -0700 (PDT)
+        bh=71XeshtDDB2q+WreOMtT2TndRh+ZKPVNR9z46Ogh+gs=;
+        b=I57+JqGarJB/76rTqfa7hnlTCsR3xl0w/DZP7sPrVu0G0wRyGBgcrgJinj+wcR52RD
+         0LIimWMppA1RZOIfW6z3sJPdrOyWBt8Uc2FPuvFhnElNGeWdNtul/3QURn/ItVDsKiYW
+         NSWNxuCbVrf+G/izmnJWN3/RY5GiZPGFGuZ4wiEgeEDHQzZpwR2v8UJO2po5UAQq9BBT
+         QHf2JRyE7PtP+lHN+t2LcrtgxsLeIKiHIVdtV3GnZnKbdeP3ZUjCEkHWXAIHKVh7fMbw
+         DvWgJPsJ4gkbwOX15Vp7XGDirz9GDBmEmGlqB0IL2GVFcHVE+IH5KhNN7M0TNTyLZNcz
+         g1rA==
+X-Gm-Message-State: ACrzQf0z6lllbvOf3s17ms0uFnNg7pbsC6IXLI+ireDTEI+FbllKyIgg
+        P6bzWcjstZhk1rBZzzKbhZWMouIvhh+9WA==
+X-Google-Smtp-Source: AMsMyM7nE3Zxe9BcJgb7ws2V/TEojX1V8HYy3KBBYsF8nGt0f5BHV/l62jA1r3X/AUa+DLSqbjdyhA==
+X-Received: by 2002:ac8:7d55:0:b0:39b:ef52:a79e with SMTP id h21-20020ac87d55000000b0039bef52a79emr11113503qtb.658.1667230577602;
+        Mon, 31 Oct 2022 08:36:17 -0700 (PDT)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bi29-20020a05620a319d00b006f956766f76sm4957924qkb.1.2022.10.31.08.36.15
+        by smtp.gmail.com with ESMTPSA id bi29-20020a05620a319d00b006f956766f76sm4957924qkb.1.2022.10.31.08.36.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 08:36:15 -0700 (PDT)
+        Mon, 31 Oct 2022 08:36:17 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
         ovs-dev@openvswitch.org
@@ -67,9 +67,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Ilya Maximets <i.maximets@ovn.org>,
         Eelco Chaudron <echaudro@redhat.com>,
         Aaron Conole <aconole@redhat.com>
-Subject: [PATCHv3 net-next 3/4] net: sched: call tcf_ct_params_free to free params in tcf_ct_init
-Date:   Mon, 31 Oct 2022 11:36:09 -0400
-Message-Id: <342ecff78212f474db95e45987e6b5c053f83e07.1667230381.git.lucien.xin@gmail.com>
+Subject: [PATCHv3 net-next 4/4] net: sched: add helper support in act_ct
+Date:   Mon, 31 Oct 2022 11:36:10 -0400
+Message-Id: <4ce649629cc4c5bebe49fdd48a3cf5497a4489fa.1667230381.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1667230381.git.lucien.xin@gmail.com>
 References: <cover.1667230381.git.lucien.xin@gmail.com>
@@ -85,102 +85,224 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to make the err path simple by calling tcf_ct_params_free(),
-so that it won't cause problems when more members are added into param and
-need freeing on the err path.
+This patch is to add helper support in act_ct for OVS actions=ct(alg=xxx)
+offloading, which is corresponding to Commit cae3a2627520 ("openvswitch:
+Allow attaching helpers to ct action") in OVS kernel part.
+
+The difference is when adding TC actions family and proto cannot be got
+from the filter/match, other than helper name in tb[TCA_CT_HELPER_NAME],
+we also need to send the family in tb[TCA_CT_HELPER_FAMILY] and the
+proto in tb[TCA_CT_HELPER_PROTO] to kernel.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sched/act_ct.c | 35 ++++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 17 deletions(-)
+ include/net/tc_act/tc_ct.h        |  1 +
+ include/uapi/linux/tc_act/tc_ct.h |  3 ++
+ net/sched/act_ct.c                | 83 +++++++++++++++++++++++++++++--
+ 3 files changed, 82 insertions(+), 5 deletions(-)
 
+diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+index 8250d6f0a462..b24ea2d9400b 100644
+--- a/include/net/tc_act/tc_ct.h
++++ b/include/net/tc_act/tc_ct.h
+@@ -10,6 +10,7 @@
+ #include <net/netfilter/nf_conntrack_labels.h>
+ 
+ struct tcf_ct_params {
++	struct nf_conntrack_helper *helper;
+ 	struct nf_conn *tmpl;
+ 	u16 zone;
+ 
+diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
+index 5fb1d7ac1027..6c5200f0ed38 100644
+--- a/include/uapi/linux/tc_act/tc_ct.h
++++ b/include/uapi/linux/tc_act/tc_ct.h
+@@ -22,6 +22,9 @@ enum {
+ 	TCA_CT_NAT_PORT_MIN,	/* be16 */
+ 	TCA_CT_NAT_PORT_MAX,	/* be16 */
+ 	TCA_CT_PAD,
++	TCA_CT_HELPER_NAME,	/* string */
++	TCA_CT_HELPER_FAMILY,	/* u8 */
++	TCA_CT_HELPER_PROTO,	/* u8 */
+ 	__TCA_CT_MAX
+ };
+ 
 diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index b38d91d6b249..193a460a9d7f 100644
+index 193a460a9d7f..85f4dc5650da 100644
 --- a/net/sched/act_ct.c
 +++ b/net/sched/act_ct.c
-@@ -345,11 +345,9 @@ static void tcf_ct_flow_table_cleanup_work(struct work_struct *work)
- 	module_put(THIS_MODULE);
- }
+@@ -33,6 +33,7 @@
+ #include <net/netfilter/nf_conntrack_acct.h>
+ #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+ #include <net/netfilter/nf_conntrack_act_ct.h>
++#include <net/netfilter/nf_conntrack_seqadj.h>
+ #include <uapi/linux/netfilter/nf_nat.h>
  
--static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
-+static void tcf_ct_flow_table_put(struct tcf_ct_flow_table *ct_ft)
+ static struct workqueue_struct *act_ct_wq;
+@@ -655,7 +656,7 @@ struct tc_ct_action_net {
+ 
+ /* Determine whether skb->_nfct is equal to the result of conntrack lookup. */
+ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+-				   u16 zone_id, bool force)
++				   struct tcf_ct_params *p, bool force)
  {
--	struct tcf_ct_flow_table *ct_ft = params->ct_ft;
--
--	if (refcount_dec_and_test(&params->ct_ft->ref)) {
-+	if (refcount_dec_and_test(&ct_ft->ref)) {
- 		rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
- 		INIT_RCU_WORK(&ct_ft->rwork, tcf_ct_flow_table_cleanup_work);
- 		queue_rcu_work(act_ct_wq, &ct_ft->rwork);
-@@ -832,18 +830,23 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 	return err;
- }
- 
--static void tcf_ct_params_free(struct rcu_head *head)
-+static void tcf_ct_params_free(struct tcf_ct_params *params)
- {
--	struct tcf_ct_params *params = container_of(head,
--						    struct tcf_ct_params, rcu);
--
--	tcf_ct_flow_table_put(params);
--
-+	if (params->ct_ft)
-+		tcf_ct_flow_table_put(params->ct_ft);
- 	if (params->tmpl)
- 		nf_ct_put(params->tmpl);
- 	kfree(params);
- }
- 
-+static void tcf_ct_params_free_rcu(struct rcu_head *head)
-+{
-+	struct tcf_ct_params *params;
+ 	enum ip_conntrack_info ctinfo;
+ 	struct nf_conn *ct;
+@@ -665,8 +666,15 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+ 		return false;
+ 	if (!net_eq(net, read_pnet(&ct->ct_net)))
+ 		goto drop_ct;
+-	if (nf_ct_zone(ct)->id != zone_id)
++	if (nf_ct_zone(ct)->id != p->zone)
+ 		goto drop_ct;
++	if (p->helper) {
++		struct nf_conn_help *help;
 +
-+	params = container_of(head, struct tcf_ct_params, rcu);
-+	tcf_ct_params_free(params);
++		help = nf_ct_ext_find(ct, NF_CT_EXT_HELPER);
++		if (help && rcu_access_pointer(help->helper) != p->helper)
++			goto drop_ct;
++	}
+ 
+ 	/* Force conntrack entry direction. */
+ 	if (force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
+@@ -832,6 +840,13 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 
+ static void tcf_ct_params_free(struct tcf_ct_params *params)
+ {
++	if (params->helper) {
++#if IS_ENABLED(CONFIG_NF_NAT)
++		if (params->ct_action & TCA_CT_ACT_NAT)
++			nf_nat_helper_put(params->helper);
++#endif
++		nf_conntrack_helper_put(params->helper);
++	}
+ 	if (params->ct_ft)
+ 		tcf_ct_flow_table_put(params->ct_ft);
+ 	if (params->tmpl)
+@@ -1033,6 +1048,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	struct nf_hook_state state;
+ 	int nh_ofs, err, retval;
+ 	struct tcf_ct_params *p;
++	bool add_helper = false;
+ 	bool skip_add = false;
+ 	bool defrag = false;
+ 	struct nf_conn *ct;
+@@ -1086,7 +1102,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	 * actually run the packet through conntrack twice unless it's for a
+ 	 * different zone.
+ 	 */
+-	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
++	cached = tcf_ct_skb_nfct_cached(net, skb, p, force);
+ 	if (!cached) {
+ 		if (tcf_ct_flow_table_lookup(p, skb, family)) {
+ 			skip_add = true;
+@@ -1119,6 +1135,22 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	if (err != NF_ACCEPT)
+ 		goto drop;
+ 
++	if (!nf_ct_is_confirmed(ct) && commit && p->helper && !nfct_help(ct)) {
++		err = __nf_ct_try_assign_helper(ct, p->tmpl, GFP_ATOMIC);
++		if (err)
++			goto drop;
++		add_helper = true;
++		if (p->ct_action & TCA_CT_ACT_NAT && !nfct_seqadj(ct)) {
++			if (!nfct_seqadj_ext_add(ct))
++				goto drop;
++		}
++	}
++
++	if (nf_ct_is_confirmed(ct) ? ((!cached && !skip_add) || add_helper) : commit) {
++		if (nf_ct_helper(skb, family) != NF_ACCEPT)
++			goto drop;
++	}
++
+ 	if (commit) {
+ 		tcf_ct_act_set_mark(ct, p->mark, p->mark_mask);
+ 		tcf_ct_act_set_labels(ct, p->labels, p->labels_mask);
+@@ -1167,6 +1199,9 @@ static const struct nla_policy ct_policy[TCA_CT_MAX + 1] = {
+ 	[TCA_CT_NAT_IPV6_MAX] = NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
+ 	[TCA_CT_NAT_PORT_MIN] = { .type = NLA_U16 },
+ 	[TCA_CT_NAT_PORT_MAX] = { .type = NLA_U16 },
++	[TCA_CT_HELPER_NAME] = { .type = NLA_STRING, .len = NF_CT_HELPER_NAME_LEN },
++	[TCA_CT_HELPER_FAMILY] = { .type = NLA_U8 },
++	[TCA_CT_HELPER_PROTO] = { .type = NLA_U8 },
+ };
+ 
+ static int tcf_ct_fill_params_nat(struct tcf_ct_params *p,
+@@ -1256,8 +1291,9 @@ static int tcf_ct_fill_params(struct net *net,
+ {
+ 	struct tc_ct_action_net *tn = net_generic(net, act_ct_ops.net_id);
+ 	struct nf_conntrack_zone zone;
++	int err, family, proto, len;
+ 	struct nf_conn *tmpl;
+-	int err;
++	char *name;
+ 
+ 	p->zone = NF_CT_DEFAULT_ZONE_ID;
+ 
+@@ -1318,10 +1354,31 @@ static int tcf_ct_fill_params(struct net *net,
+ 		NL_SET_ERR_MSG_MOD(extack, "Failed to allocate conntrack template");
+ 		return -ENOMEM;
+ 	}
+-	__set_bit(IPS_CONFIRMED_BIT, &tmpl->status);
+ 	p->tmpl = tmpl;
++	if (tb[TCA_CT_HELPER_NAME]) {
++		name = nla_data(tb[TCA_CT_HELPER_NAME]);
++		len = nla_len(tb[TCA_CT_HELPER_NAME]);
++		if (len > 16 || name[len - 1] != '\0') {
++			NL_SET_ERR_MSG_MOD(extack, "Failed to parse helper name.");
++			err = -EINVAL;
++			goto err;
++		}
++		family = tb[TCA_CT_HELPER_FAMILY] ? nla_get_u8(tb[TCA_CT_HELPER_FAMILY]) : AF_INET;
++		proto = tb[TCA_CT_HELPER_PROTO] ? nla_get_u8(tb[TCA_CT_HELPER_PROTO]) : IPPROTO_TCP;
++		err = nf_ct_add_helper(tmpl, name, family, proto,
++				       p->ct_action & TCA_CT_ACT_NAT, &p->helper);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(extack, "Failed to add helper");
++			goto err;
++		}
++	}
+ 
++	__set_bit(IPS_CONFIRMED_BIT, &tmpl->status);
+ 	return 0;
++err:
++	nf_ct_put(p->tmpl);
++	p->tmpl = NULL;
++	return err;
+ }
+ 
+ static int tcf_ct_init(struct net *net, struct nlattr *nla,
+@@ -1490,6 +1547,19 @@ static int tcf_ct_dump_nat(struct sk_buff *skb, struct tcf_ct_params *p)
+ 	return 0;
+ }
+ 
++static int tcf_ct_dump_helper(struct sk_buff *skb, struct nf_conntrack_helper *helper)
++{
++	if (!helper)
++		return 0;
++
++	if (nla_put_string(skb, TCA_CT_HELPER_NAME, helper->name) ||
++	    nla_put_u8(skb, TCA_CT_HELPER_FAMILY, helper->tuple.src.l3num) ||
++	    nla_put_u8(skb, TCA_CT_HELPER_PROTO, helper->tuple.dst.protonum))
++		return -1;
++
++	return 0;
 +}
 +
- #if IS_ENABLED(CONFIG_NF_NAT)
- /* Modelled after nf_nat_ipv[46]_fn().
-  * range is only used for new, uninitialized NAT state.
-@@ -1390,7 +1393,7 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
+ static inline int tcf_ct_dump(struct sk_buff *skb, struct tc_action *a,
+ 			      int bind, int ref)
+ {
+@@ -1542,6 +1612,9 @@ static inline int tcf_ct_dump(struct sk_buff *skb, struct tc_action *a,
+ 	if (tcf_ct_dump_nat(skb, p))
+ 		goto nla_put_failure;
  
- 	err = tcf_ct_flow_table_get(net, params);
- 	if (err)
--		goto cleanup_params;
-+		goto cleanup;
- 
- 	spin_lock_bh(&c->tcf_lock);
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-@@ -1401,17 +1404,15 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
- 	if (params)
--		call_rcu(&params->rcu, tcf_ct_params_free);
-+		call_rcu(&params->rcu, tcf_ct_params_free_rcu);
- 
- 	return res;
- 
--cleanup_params:
--	if (params->tmpl)
--		nf_ct_put(params->tmpl);
- cleanup:
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
--	kfree(params);
-+	if (params)
-+		tcf_ct_params_free(params);
- 	tcf_idr_release(*a, bind);
- 	return err;
- }
-@@ -1423,7 +1424,7 @@ static void tcf_ct_cleanup(struct tc_action *a)
- 
- 	params = rcu_dereference_protected(c->params, 1);
- 	if (params)
--		call_rcu(&params->rcu, tcf_ct_params_free);
-+		call_rcu(&params->rcu, tcf_ct_params_free_rcu);
- }
- 
- static int tcf_ct_dump_key_val(struct sk_buff *skb,
++	if (tcf_ct_dump_helper(skb, p->helper))
++		goto nla_put_failure;
++
+ skip_dump:
+ 	if (nla_put(skb, TCA_CT_PARMS, sizeof(opt), &opt))
+ 		goto nla_put_failure;
 -- 
 2.31.1
 
