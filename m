@@ -2,159 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F8756139FB
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C96A66139FD
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbiJaP0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 11:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54792 "EHLO
+        id S231827AbiJaP1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiJaP0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:26:17 -0400
-Received: from rs07.intra2net.com (rs07.intra2net.com [85.214.138.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7851180C
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:26:15 -0700 (PDT)
-Received: from mail.m.i2n (unknown [172.17.128.1])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by rs07.intra2net.com (Postfix) with ESMTPS id D107115000BC;
-        Mon, 31 Oct 2022 16:26:13 +0100 (CET)
-Received: from localhost (mail.m.i2n [127.0.0.1])
-        by localhost (Postfix) with ESMTP id AFC8B5F9;
-        Mon, 31 Oct 2022 16:26:13 +0100 (CET)
-X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.64.216,VDF=8.19.27.38)
-X-Spam-Status: 
-Received: from localhost (storm.m.i2n [172.16.1.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.m.i2n (Postfix) with ESMTPS id 58F735D4;
-        Mon, 31 Oct 2022 16:26:12 +0100 (CET)
-Date:   Mon, 31 Oct 2022 16:26:12 +0100
-From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Antony Antony <antony.antony@secunet.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Leon Romanovsky <leon@kernel.org>, Roth Mark <rothm@mail.com>,
-        Zhihao Chen <chenzhihao@meizu.com>,
-        Tobias Brunner <tobias@strongswan.org>, netdev@vger.kernel.org
-Subject: [PATCH] xfrm: Fix oops in __xfrm_state_delete()
-Message-ID: <20221031152612.o3h44x3whath4iyp@intra2net.com>
+        with ESMTP id S231305AbiJaP1M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:27:12 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECEA263B
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 08:27:11 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-116-ZgOqlFTPPOq0OlbjIZXOPQ-1; Mon, 31 Oct 2022 15:27:09 +0000
+X-MC-Unique: ZgOqlFTPPOq0OlbjIZXOPQ-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 31 Oct
+ 2022 15:27:07 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.042; Mon, 31 Oct 2022 15:27:07 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Horatiu Vultur' <horatiu.vultur@microchip.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
+Thread-Topic: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
+Thread-Index: AQHY7Kcu7Ao/FHDvc0OFOxRqKUrPo64oT9IwgABKM4CAAAFVEA==
+Date:   Mon, 31 Oct 2022 15:27:07 +0000
+Message-ID: <219ebe83a5ad4467937545ee5a0e77e4@AcuMS.aculab.com>
+References: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
+ <b75a7136030846f587e555763ef2750e@AcuMS.aculab.com>
+ <20221031150133.2be5xr7cmuhr4gng@soft-dev3-1>
+In-Reply-To: <20221031150133.2be5xr7cmuhr4gng@soft-dev3-1>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel 5.14 added a new "byseq" index to speed
-up xfrm_state lookups by sequence number in commit
-fe9f1d8779cb ("xfrm: add state hashtable keyed by seq")
+RnJvbTogJ0hvcmF0aXUgVnVsdHVyJw0KPiBTZW50OiAzMSBPY3RvYmVyIDIwMjIgMTU6MDINCj4g
+DQo+IFRoZSAxMC8zMS8yMDIyIDEwOjQzLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4NCj4gPiBG
+cm9tOiBIb3JhdGl1IFZ1bHR1cg0KPiA+ID4gU2VudDogMzAgT2N0b2JlciAyMDIyIDIxOjM3DQo+
+IA0KPiBIaSBEYXZpZCwNCj4gDQo+ID4gPg0KPiA+ID4gVGhlcmUgd2VyZSBtdWx0aXBsZSBwcm9i
+bGVtcyBpbiBkaWZmZXJlbnQgcGFydHMgb2YgdGhlIGRyaXZlciB3aGVuDQo+ID4gPiB0aGUgTVRV
+IHdhcyBjaGFuZ2VkLg0KPiA+ID4gVGhlIGZpcnN0IHByb2JsZW0gd2FzIHRoYXQgdGhlIEhXIHdh
+cyBtaXNzaW5nIHRvIGNvbmZpZ3VyZSB0aGUgY29ycmVjdA0KPiA+ID4gdmFsdWUsIGl0IHdhcyBt
+aXNzaW5nIEVUSF9ITEVOIGFuZCBFVEhfRkNTX0xFTi4gVGhlIHNlY29uZCBwcm9ibGVtIHdhcw0K
+PiA+ID4gd2hlbiB2bGFuIGZpbHRlcmluZyB3YXMgZW5hYmxlZC9kaXNhYmxlZCwgdGhlIE1SVSB3
+YXMgbm90IGFkanVzdGVkDQo+ID4gPiBjb3JyZXRseS4gV2hpbGUgdGhlIGxhc3QgaXNzdWUgd2Fz
+IHRoYXQgdGhlIEZETUEgd2FzIGNhbGN1bGF0ZWQgd3JvbmdseQ0KPiA+ID4gdGhlIGNvcnJlY3Qg
+bWF4aW11bSBNVFUuDQo+ID4NCj4gPiBJSVJDIGFsbCB0aGVzZSBsZW5ndGhzIGFyZSAxNTE0LCAx
+NTE4IGFuZCBtYXliZSAxNTIyPw0KPiANCj4gQW5kIGFsc28gMTUyNiwgaWYgdGhlIGZyYW1lIGhh
+cyAyIHZsYW4gdGFncy4NCj4gDQo+ID4gSG93IGxvbmcgYXJlIHRoZSBhY3R1YWwgcmVjZWl2ZSBi
+dWZmZXJzPw0KPiA+IEknZCBndWVzcyB0aGV5IGhhdmUgdG8gYmUgcm91bmRlZCB1cCB0byBhIHdo
+b2xlIG51bWJlciBvZiBjYWNoZSBsaW5lcw0KPiA+IChlc3BlY2lhbGx5IG9uIG5vbi1jb2hlcmVu
+dCBzeXN0ZW1zKSBzbyBhcmUgcHJvYmFibHkgMTUzNiBieXRlcy4NCj4gDQo+IFRoZSByZWNlaXZl
+IGJ1ZmZlcnMgY2FuIGJlIGRpZmZlcmVudCBzaXplcywgaXQgY2FuIGJlIHVwIHRvIDY1ay4NCj4g
+VGhleSBhcmUgY3VycmVudGx5IGFsbGlnbiB0byBwYWdlIHNpemUuDQoNCklzIHRoYXQgbmVjZXNz
+YXJ5Pw0KSSBkb24ndCBrbm93IHdoZXJlIHRoZSBidWZmZXJzIGFyZSBhbGxvY2F0ZWQsIGJ1dCBl
+dmVuIDRrIHNlZW1zDQphIGJpdCBwcm9mbGlnYXRlIGZvciBub3JtYWwgZXRoZXJuZXQgbXR1Lg0K
+SWYgdGhlIHBhZ2Ugc2l6ZSBpZiBsYXJnZXIgaXQgaXMgZXZlbiBzaWxsaWVyLg0KDQpJZiB0aGUg
+YnVmZmVyIGlzIGVtYmVkZGVkIGluIGFuIHNrYiB5b3UgcmVhbGx5IHdhbnQgdGhlIHNrYg0KdG8g
+YmUgdW5kZXIgNGsgKEkgZG9uJ3QgdGhpbmsgYSAxNTAwIGJ5dGUgbXR1IGNhbiBmaXQgaW4gMmsp
+Lg0KDQpCdXQgeW91IG1pZ2h0IGFzIHdlbGwgdGVsbCB0aGUgaGFyZHdhcmUgdGhlIGFjdHVhbCBi
+dWZmZXIgbGVuZ3RoDQoocmVtZW1iZXIgdG8gYWxsb3cgZm9yIHRoZSBjcmMgYW5kIGFueSBhbGln
+bm1lbnQgaGVhZGVyKS4NCg0KPiA+DQo+ID4gSWYgZHJpdmVyIGRvZXMgc3VwcG9ydCA4aysganVt
+Ym8gZnJhbWVzIGp1c3Qgc2V0IHRoZSBoYXJkd2FyZQ0KPiA+IGZyYW1lIGxlbmd0aCB0byBtYXRj
+aCB0aGUgcmVjZWl2ZSBidWZmZXIgc2l6ZS4NCj4gDQo+IEluIHRoYXQgY2FzZSBJIHNob3VsZCBh
+bHdheXMgYWxsb2NhdGUgbWF4aW11bSBmcmFtZSBzaXplKDY1aykgZm9yIGFsbA0KPiByZWdhcmRs
+ZXNzIG9mIHRoZSBNVFU/DQoNClRoYXQgd291bGQgYmUgdmVyeSB3YXN0ZWZ1bC4gSSdkIHNldCB0
+aGUgYnVmZmVyIGxhcmdlIGVub3VnaCBmb3INCnRoZSBtdHUgYnV0IGxldCB0aGUgaGFyZHdhcmUg
+ZmlsbCB0aGUgZW50aXJlIGJ1ZmZlci4NCg0KQWxsb2NhdGluZyA2NGsgYnVmZmVycyBmb3IgYmln
+IGp1bWJvIGZyYW1lcyBkb2Vzbid0IHNlZW0gcmlnaHQuDQpJZiB0aGUgbXR1IGlzIDY0ayB0aGVu
+IGttYWxsb2MoKSB3aWxsIGFsbG9jYXRlIDEyOGsuDQpUaGlzIGlzIGdvaW5nIHRvIGNhdXNlICdv
+ZGRpdGllcycgd2l0aCBzbWFsbCBwYWNrZXRzIHdoZXJlDQp0aGUgJ3RydWVfc2l6ZScgaXMgbWFz
+c2l2ZWx5IG1vcmUgdGhhbiB0aGUgZGF0YSBzaXplLg0KDQpJc24ndCB0aGVyZSBhIHNjaGVtZSB3
+aGVyZSB5b3UgY2FuIGNyZWF0ZSBhbiBza2IgZnJvbSBhIHBhZ2UNCmxpc3QgdGhhdCBjb250YWlu
+cyBmcmFnbWVudHMgb2YgdGhlIGV0aGVybmV0IGZyYW1lPw0KSW4gd2hpY2ggY2FzZSBJJ2QgaGF2
+ZSB0aG91Z2h0IHlvdSdkIHdhbnQgdG8gZmlsbCB0aGUgcmluZw0Kd2l0aCBwYWdlIHNpemUgYnVm
+ZmVycyBhbmQgdGhlbiBoYW5kbGUgdGhlIGhhcmR3YXJlIHdyaXRpbmcNCmEgbG9uZyBmcmFtZSB0
+byBtdWx0aXBsZSBidWZmZXJzL2Rlc2NyaXB0b3JzLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJl
+ZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXlu
+ZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-While the patch was thorough, the function pfkey_send_new_mapping()
-in net/af_key.c also modifies x->km.seq and never added
-the current xfrm_state to the "byseq" index.
-
-This leads to the following kernel Ooops:
-    BUG: kernel NULL pointer dereference, address: 0000000000000000
-    ..
-    RIP: 0010:__xfrm_state_delete+0xc9/0x1c0
-    ..
-    Call Trace:
-    <TASK>
-    xfrm_state_delete+0x1e/0x40
-    xfrm_del_sa+0xb0/0x110 [xfrm_user]
-    xfrm_user_rcv_msg+0x12d/0x270 [xfrm_user]
-    ? remove_entity_load_avg+0x8a/0xa0
-    ? copy_to_user_state_extra+0x580/0x580 [xfrm_user]
-    netlink_rcv_skb+0x51/0x100
-    xfrm_netlink_rcv+0x30/0x50 [xfrm_user]
-    netlink_unicast+0x1a6/0x270
-    netlink_sendmsg+0x22a/0x480
-    __sys_sendto+0x1a6/0x1c0
-    ? __audit_syscall_entry+0xd8/0x130
-    ? __audit_syscall_exit+0x249/0x2b0
-    __x64_sys_sendto+0x23/0x30
-    do_syscall_64+0x3a/0x90
-    entry_SYSCALL_64_after_hwframe+0x61/0xcb
-
-Exact location of the crash in __xfrm_state_delete():
-    if (x->km.seq)
-        hlist_del_rcu(&x->byseq);
-
-The hlist_node "byseq" was never populated.
-
-The bug only triggers if a new NAT traversal mapping (changed IP or port)
-is detected in esp_input_done2() / esp6_input_done2(), which in turn
-indirectly calls pfkey_send_new_mapping() *if* the kernel is compiled
-with CONFIG_NET_KEY and "af_key" is active or loaded.
-
-The PF_KEYv2 message SADB_X_NAT_T_NEW_MAPPING is not part of RFC 2367.
-Various implementations have been examined how they handle
-the "sadb_msg_seq" header field:
-
-- racoon (Android): does not process SADB_X_NAT_T_NEW_MAPPING
-- strongswan: does not care about sadb_msg_seq
-- openswan: does not care about sadb_msg_seq
-
-Since there is no standard how PF_KEYv2 sadb_msg_seq should be populated
-for SADB_X_NAT_T_NEW_MAPPING and it's not used in popular
-implementations and is actually the sequence number of the
-PF_KEYv2 message itself, we can fix the root cause of the oops
-and not modify "x->km.seq" in pfkey_send_new_mapping().
-
-The update of "km.seq" looks like a copy'n'paste error
-from pfkey_send_acquire(). SADB_ACQUIRE must indeed assign a unique km.seq
-number according to RFC 2367. It has been verified that code paths
-involving pfkey_send_acquire() don't cause the same Oops.
-
-PF_KEYv2 SADB_X_NAT_T_NEW_MAPPING support was originally added here:
-    https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
-
-    commit cbc3488685b20e7b2a98ad387a1a816aada569d8
-    Author:     Derek Atkins <derek@ihtfp.com>
-    AuthorDate: Wed Apr 2 13:21:02 2003 -0800
-
-        [IPSEC]: Implement UDP Encapsulation framework.
-
-        In particular, implement ESPinUDP encapsulation for IPsec
-        Nat Traversal.
-
-A note on triggering the bug: I was not able to trigger it using VMs.
-There is one VPN using a high latency link on our production VPN server
-that triggered it like once a day though.
-
-Link: https://github.com/strongswan/strongswan/issues/992
-Link: https://lore.kernel.org/netdev/00959f33ee52c4b3b0084d42c430418e502db554.1652340703.git.antony.antony@secunet.com/T/
-Link: https://lore.kernel.org/netdev/20221027142455.3975224-1-chenzhihao@meizu.com/T/
-
-Fixes: fe9f1d8779cb ("xfrm: add state hashtable keyed by seq")
-Reported-by: Roth Mark <rothm@mail.com>
-Reported-by: Zhihao Chen <chenzhihao@meizu.com>
-Tested-by: Roth Mark <rothm@mail.com>
-Signed-off-by: Thomas Jarosch <thomas.jarosch@intra2net.com>
----
- net/key/af_key.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index c85df5b958d2..65a9ede62d65 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -3382,7 +3382,7 @@ static int pfkey_send_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr,
- 	hdr->sadb_msg_len = size / sizeof(uint64_t);
- 	hdr->sadb_msg_errno = 0;
- 	hdr->sadb_msg_reserved = 0;
--	hdr->sadb_msg_seq = x->km.seq = get_acqseq();
-+	hdr->sadb_msg_seq = get_acqseq();
- 	hdr->sadb_msg_pid = 0;
- 
- 	/* SA */
--- 
-2.37.3
