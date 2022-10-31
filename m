@@ -2,73 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F05861349D
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 12:39:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7516134BF
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 12:44:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbiJaLjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 07:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
+        id S230488AbiJaLoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 07:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiJaLjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 07:39:18 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C3BDFD4;
-        Mon, 31 Oct 2022 04:39:17 -0700 (PDT)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id A8326FF803;
-        Mon, 31 Oct 2022 11:39:09 +0000 (UTC)
-Message-ID: <7f118c0f-c79a-7f26-aefc-afae00483233@ovn.org>
-Date:   Mon, 31 Oct 2022 12:39:08 +0100
+        with ESMTP id S230491AbiJaLny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 07:43:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D961EE0F1;
+        Mon, 31 Oct 2022 04:43:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9251DB815DB;
+        Mon, 31 Oct 2022 11:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DD8C433C1;
+        Mon, 31 Oct 2022 11:43:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667216625;
+        bh=7CgMWQKsHtTPXkZqm7iC2oNhmPIigVqj/vJZBx2o4xg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TapGG1cj/MNNBx3Qa2teCF20AMx1UBkTPTwClP7Q/KpQFgnt4NM+sbJ3FL2VaGB26
+         t5nMsH/23wFoUzUAFu92sc83IHmkcmwrHEq1wpAzudldQD6tL+A+gYWAoQHRRAEAuu
+         4MGxdDKnRp1SkCh9bflpkd2ix0K5qWVr/04Aj1nsoxWGdfRErg1QeDfxYlXnE4IC6l
+         WhR+n7CahsIZARz57uccJaeGqN6Y7c6vEq+2A204LUFS5MAzK2O7avnVbTtnos8Onk
+         9w61rP4t6wavtcmvmPIPfU0r957YQ0QPMeXyRbNFE7v9GUZ0ZaXwGBqFcJyxDFj3rp
+         iSo1C0Tof/1jg==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     kvalo@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Martin Liska <mliska@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] ath11k (gcc13): synchronize ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
+Date:   Mon, 31 Oct 2022 12:43:41 +0100
+Message-Id: <20221031114341.10377-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Cc:     linux-kernel@vger.kernel.org, i.maximets@ovn.org
-Subject: Re: [ovs-dev] [PATCH net] openvswitch: add missing resv_start_op
- initialization for dp_vport_genl_family
-Content-Language: en-US
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>, pshelar@ovn.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, dev@openvswitch.org
-References: <20221031081210.2852708-1-william.xuanziyang@huawei.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-In-Reply-To: <20221031081210.2852708-1-william.xuanziyang@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/22 09:12, Ziyang Xuan via dev wrote:
-> I got a warning using the latest mainline codes to start vms as following:
-> 
-> ===================================================
-> WARNING: CPU: 1 PID: 1 at net/netlink/genetlink.c:383 genl_register_family+0x6c/0x76c
-> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.1.0-rc2-00886-g882ad2a2a8ff #43
-> ...
-> Call trace:
->  genl_register_family+0x6c/0x76c
->  dp_init+0xa8/0x124
->  do_one_initcall+0x84/0x450
-> 
-> It is because that commit 9c5d03d36251 ("genetlink: start to validate
-> reserved header bytes") has missed the resv_start_op initialization
-> for dp_vport_genl_family, and commit ce48ebdd5651 ("genetlink: limit
-> the use of validation workarounds to old ops") add checking warning.
-> 
-> Add resv_start_op initialization for dp_vport_genl_family to fix it.
-> 
-> Fixes: 9c5d03d36251 ("genetlink: start to validate reserved header bytes")
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
+ath11k_mac_he_gi_to_nl80211_he_gi() generates a valid warning with gcc-13:
+  drivers/net/wireless/ath/ath11k/mac.c:321:20: error: conflicting types for 'ath11k_mac_he_gi_to_nl80211_he_gi' due to enum/integer mismatch; have 'enum nl80211_he_gi(u8)'
+  drivers/net/wireless/ath/ath11k/mac.h:166:5: note: previous declaration of 'ath11k_mac_he_gi_to_nl80211_he_gi' with type 'u32(u8)'
 
-Hi, Ziyang Xuan.  Thanks for the patch!
+I.e. the type of the return value ath11k_mac_he_gi_to_nl80211_he_gi() in
+the declaration is u32, while the definition spells enum nl80211_he_gi.
+Synchronize them to the latter.
 
-But it looks like Jakub already fixed that issue a couple of days ago:
-  https://git.kernel.org/netdev/net/c/e4ba4554209f
+Cc: Martin Liska <mliska@suse.cz>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: ath11k@lists.infradead.org
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/net/wireless/ath/ath11k/mac.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards, Ilya Maximets.
+diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
+index 2a0d3afb0c99..0231783ad754 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.h
++++ b/drivers/net/wireless/ath/ath11k/mac.h
+@@ -163,7 +163,7 @@ void ath11k_mac_drain_tx(struct ath11k *ar);
+ void ath11k_mac_peer_cleanup_all(struct ath11k *ar);
+ int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx);
+ u8 ath11k_mac_bw_to_mac80211_bw(u8 bw);
+-u32 ath11k_mac_he_gi_to_nl80211_he_gi(u8 sgi);
++enum nl80211_he_gi ath11k_mac_he_gi_to_nl80211_he_gi(u8 sgi);
+ enum nl80211_he_ru_alloc ath11k_mac_phy_he_ru_to_nl80211_he_ru_alloc(u16 ru_phy);
+ enum nl80211_he_ru_alloc ath11k_mac_he_ru_tones_to_nl80211_he_ru_alloc(u16 ru_tones);
+ enum ath11k_supported_bw ath11k_mac_mac80211_bw_to_ath11k_bw(enum rate_info_bw bw);
+-- 
+2.38.1
+
