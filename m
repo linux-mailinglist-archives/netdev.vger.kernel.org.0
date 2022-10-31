@@ -2,171 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1ECB6134CC
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 12:45:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC05B6134EB
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 12:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiJaLp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 07:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
+        id S231140AbiJaLub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 07:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbiJaLpJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 07:45:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B65CF02D;
-        Mon, 31 Oct 2022 04:45:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB05EB815DB;
-        Mon, 31 Oct 2022 11:45:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27B98C433C1;
-        Mon, 31 Oct 2022 11:44:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667216700;
-        bh=adfQlcnVctTBnUDpH4VOx1zBf1snHtulVQoBO8D5+xc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=E8mdJOctRTx3d5d28JYRXP0Q56DDiwOmrgi06SHu2QHYho5Wf1Ba2oF0nADEsQbHO
-         9fFDDECbr3cusRdv/2yroG4W2Z0R8A9yS/5XoxWJSEgL3Hrjo5Rg/rP20ouW3a0hcz
-         UPk6myKUQUZzMdz++6Q9sScw1xQ+9y1rN9oqcuwOlFOhpvEs5Ds88wligNm7Mbin9f
-         p7IcO42Y3BwrbPd2nq+4vr7EyOVAgR5CjqqwPHjRY6EJ7wUHFDS1Ma75SuJaF2ldBd
-         91dHSnflIrItYRrTXwiDvNidTdlMuHZ66FCwr5EQJcxF/eF5M96MU+TFQ7plFQVN3f
-         iuCUpuhLJpNww==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     jesse.brandeburg@intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Martin Liska <mliska@suse.cz>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH] i40e (gcc13): synchronize allocate/free functions return type & values
-Date:   Mon, 31 Oct 2022 12:44:56 +0100
-Message-Id: <20221031114456.10482-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S231137AbiJaLu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 07:50:29 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E32EEE01;
+        Mon, 31 Oct 2022 04:50:26 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.95,227,1661785200"; 
+   d="scan'208";a="138516686"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 31 Oct 2022 20:50:25 +0900
+Received: from localhost.localdomain (unknown [10.226.92.171])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 5406C42B0AA9;
+        Mon, 31 Oct 2022 20:50:21 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        gregkh@linuxfoundation.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Pavel Machek <pavel@denx.de>, Sasha Levin <sashal@kernel.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <chris.paterson2@renesas.com>,
+        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
+Subject: [PATCH] can: rcar_canfd: rcar_canfd_handle_global_receive(): fix IRQ storm on global FIFO receive
+Date:   Mon, 31 Oct 2022 11:50:18 +0000
+Message-Id: <20221031115018.707442-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-i40e allocate/free functions generate a valid warning with gcc-13:
-  drivers/net/ethernet/intel/i40e/i40e_main.c:129:5: error: conflicting types for 'i40e_allocate_dma_mem_d' due to enum/integer mismatch; have 'int(struct i40e_hw *, struct i40e_dma_mem *, u64,  u32)' {aka 'int(struct i40e_hw *, struct i40e_dma_mem *, long long unsigned int,  unsigned int)'} [-Werror=enum-int-mismatch]
-  drivers/net/ethernet/intel/i40e/i40e_osdep.h:40:25: note: previous declaration of 'i40e_allocate_dma_mem_d' with type 'i40e_status(struct i40e_hw *, struct i40e_dma_mem *, u64,  u32)' {aka 'enum i40e_status_code(struct i40e_hw *, struct i40e_dma_mem *, long long unsigned int,  unsigned int)'}
-...
+commit 702de2c21eed04c67cefaaedc248ef16e5f6b293 upstream.
 
-I.e. the type of their return value in the definition is int, while the
-declaration spell enum i40e_status. Synchronize the definitions to the
-latter.
+We are seeing an IRQ storm on the global receive IRQ line under heavy
+CAN bus load conditions with both CAN channels enabled.
 
-And make sure proper values are returned. I.e. I40E_SUCCESS and not 0,
-I40E_ERR_NO_MEMORY and not -ENOMEM.
+Conditions:
 
-Cc: Martin Liska <mliska@suse.cz>
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: intel-wired-lan@lists.osuosl.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+The global receive IRQ line is shared between can0 and can1, either of
+the channels can trigger interrupt while the other channel's IRQ line
+is disabled (RFIE).
+
+When global a receive IRQ interrupt occurs, we mask the interrupt in
+the IRQ handler. Clearing and unmasking of the interrupt is happening
+in rx_poll(). There is a race condition where rx_poll() unmasks the
+interrupt, but the next IRQ handler does not mask the IRQ due to
+NAPIF_STATE_MISSED flag (e.g.: can0 RX FIFO interrupt is disabled and
+can1 is triggering RX interrupt, the delay in rx_poll() processing
+results in setting NAPIF_STATE_MISSED flag) leading to an IRQ storm.
+
+This patch fixes the issue by checking IRQ active and enabled before
+handling the IRQ on a particular channel.
+
+Fixes: dd3bd23eb438 ("can: rcar_canfd: Add Renesas R-Car CAN FD driver")
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/all/20221025155657.1426948-2-biju.das.jz@bp.renesas.com
+Cc: stable@vger.kernel.org # 4.19.y
+[mkl: adjust commit message]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+[biju: removed gpriv from RCANFD_RFCC_RFIE macro]
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 25 +++++++++++----------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+Resending to 4.19 with confilcts[1] fixed
+[1] https://lore.kernel.org/stable/16671942077080@kroah.com/T/#u
+---
+ drivers/net/can/rcar/rcar_canfd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 1a1fab94205d..92fd4db7195f 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -126,8 +126,9 @@ static void netdev_hw_addr_refcnt(struct i40e_mac_filter *f,
-  * @size: size of memory requested
-  * @alignment: what to align the allocation to
-  **/
--int i40e_allocate_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem,
--			    u64 size, u32 alignment)
-+i40e_status i40e_allocate_dma_mem_d(struct i40e_hw *hw,
-+				    struct i40e_dma_mem *mem, u64 size,
-+				    u32 alignment)
- {
- 	struct i40e_pf *pf = (struct i40e_pf *)hw->back;
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index a1634834b640..cb1388267fe0 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1079,7 +1079,7 @@ static irqreturn_t rcar_canfd_global_interrupt(int irq, void *dev_id)
+ 	struct rcar_canfd_global *gpriv = dev_id;
+ 	struct net_device *ndev;
+ 	struct rcar_canfd_channel *priv;
+-	u32 sts, gerfl;
++	u32 sts, cc, gerfl;
+ 	u32 ch, ridx;
  
-@@ -135,9 +136,9 @@ int i40e_allocate_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem,
- 	mem->va = dma_alloc_coherent(&pf->pdev->dev, mem->size, &mem->pa,
- 				     GFP_KERNEL);
- 	if (!mem->va)
--		return -ENOMEM;
-+		return I40E_ERR_NO_MEMORY;
+ 	/* Global error interrupts still indicate a condition specific
+@@ -1097,7 +1097,9 @@ static irqreturn_t rcar_canfd_global_interrupt(int irq, void *dev_id)
  
--	return 0;
-+	return I40E_SUCCESS;
- }
- 
- /**
-@@ -145,7 +146,7 @@ int i40e_allocate_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem,
-  * @hw:   pointer to the HW structure
-  * @mem:  ptr to mem struct to free
-  **/
--int i40e_free_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem)
-+i40e_status i40e_free_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem)
- {
- 	struct i40e_pf *pf = (struct i40e_pf *)hw->back;
- 
-@@ -154,7 +155,7 @@ int i40e_free_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem)
- 	mem->pa = 0;
- 	mem->size = 0;
- 
--	return 0;
-+	return I40E_SUCCESS;
- }
- 
- /**
-@@ -163,16 +164,16 @@ int i40e_free_dma_mem_d(struct i40e_hw *hw, struct i40e_dma_mem *mem)
-  * @mem:  ptr to mem struct to fill out
-  * @size: size of memory requested
-  **/
--int i40e_allocate_virt_mem_d(struct i40e_hw *hw, struct i40e_virt_mem *mem,
--			     u32 size)
-+i40e_status i40e_allocate_virt_mem_d(struct i40e_hw *hw,
-+				     struct i40e_virt_mem *mem, u32 size)
- {
- 	mem->size = size;
- 	mem->va = kzalloc(size, GFP_KERNEL);
- 
- 	if (!mem->va)
--		return -ENOMEM;
-+		return I40E_ERR_NO_MEMORY;
- 
--	return 0;
-+	return I40E_SUCCESS;
- }
- 
- /**
-@@ -180,14 +181,14 @@ int i40e_allocate_virt_mem_d(struct i40e_hw *hw, struct i40e_virt_mem *mem,
-  * @hw:   pointer to the HW structure
-  * @mem:  ptr to mem struct to free
-  **/
--int i40e_free_virt_mem_d(struct i40e_hw *hw, struct i40e_virt_mem *mem)
-+i40e_status i40e_free_virt_mem_d(struct i40e_hw *hw, struct i40e_virt_mem *mem)
- {
- 	/* it's ok to kfree a NULL pointer */
- 	kfree(mem->va);
- 	mem->va = NULL;
- 	mem->size = 0;
- 
--	return 0;
-+	return I40E_SUCCESS;
- }
- 
- /**
+ 		/* Handle Rx interrupts */
+ 		sts = rcar_canfd_read(priv->base, RCANFD_RFSTS(ridx));
+-		if (likely(sts & RCANFD_RFSTS_RFIF)) {
++		cc = rcar_canfd_read(priv->base, RCANFD_RFCC(ridx));
++		if (likely(sts & RCANFD_RFSTS_RFIF &&
++			   cc & RCANFD_RFCC_RFIE)) {
+ 			if (napi_schedule_prep(&priv->napi)) {
+ 				/* Disable Rx FIFO interrupts */
+ 				rcar_canfd_clear_bit(priv->base,
 -- 
-2.38.1
+2.25.1
 
