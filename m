@@ -2,129 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E44A16133DC
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 11:44:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DEE613387
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 11:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbiJaKoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 06:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S229781AbiJaKY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 06:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiJaKoO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 06:44:14 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D6AD98;
-        Mon, 31 Oct 2022 03:44:13 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id k8so15386331wrh.1;
-        Mon, 31 Oct 2022 03:44:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=mLyuDMVnPMQLxfqSCOA6WKTcHcZPNlbCeVpGI+Kz9Mc=;
-        b=bbpjQCMNu35fkuIAQRiS6l6lItaINBwkOH6pRZO/wK8bLbu+dwSy6VF6GCeWHX9hg6
-         SwInEK3dqS2xCRBmIngFPtYXUjHEgEKYCp9TdOuNqINjDLwoYT1PWeDABJuChodF3IHp
-         1NH3eF043snO92fCIe/xfrlP2QjrnXfE6ADMzLisTR8a2zs873kkjx65WpDL7ZSJegsf
-         avtTuBdElqIdxouCje9IphNPjX+3ApEvyd8chxTyN4nQfLOKwaDL4UgMF+eqCPgdA7nQ
-         QA2stDqxwk4LbU+wE0VVX3z/3Jk6G8q7TUk9vburWit49AhpyPRUkE9jyfdyyav/YzhD
-         WbyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mLyuDMVnPMQLxfqSCOA6WKTcHcZPNlbCeVpGI+Kz9Mc=;
-        b=JeywMZ1cxCrOk9kbrhlhzwyVCVv3xI3i1Chh+DwF/Lsa+blw80Zq8XHWViSyHtG31j
-         uTxTR1OY4KMa6xwGYZUY3m3wCFTxnNwkUULFJ+gRfjDuD9eO7AUWr1btVP0LhBDrrF6M
-         IuOD/IlWi7AtliA8Hibci3kOFxJWJNW4JvZyK5qEY/nl/Tbg77np7QurXWcdRcyvp6m4
-         ChWyyKZB1vEpoV0bj18LxucT/atmGVJ4Yp/LT07gIsvAXNSrY9avahT1Eyyu322DAUJR
-         FYEF3CvfWv63jNFc2X7Ud6MCqdJVoj768L1jP6C3WoI5qMWyiRlxvk4E6anjfm+4s5F+
-         UaRA==
-X-Gm-Message-State: ACrzQf2slWdAcjeoJH4PRx3XLcOyk+dxjq8PY1T/guKBRe0JU0GR/NM0
-        dNiPDo2QOCed02KGVB5p3mw=
-X-Google-Smtp-Source: AMsMyM7sUhBnxGkKp87JpgaUAB7A5KgNn6cV9iGP87kknDHIDNZR8BSCqTdUcwDe6QWh8NjwqCz8oA==
-X-Received: by 2002:a05:6000:887:b0:21e:24a0:f302 with SMTP id ca7-20020a056000088700b0021e24a0f302mr7315795wrb.466.1667213051475;
-        Mon, 31 Oct 2022 03:44:11 -0700 (PDT)
-Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id q8-20020a05600c46c800b003b4868eb71bsm6447707wmo.25.2022.10.31.03.44.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 03:44:10 -0700 (PDT)
-Date:   Mon, 31 Oct 2022 11:44:09 +0100
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
- flower keys for the IS2 VCAP
-Message-ID: <20221031103747.uk76tudphqdo6uto@wse-c0155>
-Organization: Westermo Network Technologies AB
-References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
- <20221028144540.3344995-3-steen.hegelund@microchip.com>
+        with ESMTP id S230233AbiJaKYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 06:24:54 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13898DF2E
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 03:24:49 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N18Mm1x64zJnPw;
+        Mon, 31 Oct 2022 18:21:56 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 31 Oct 2022 18:24:47 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <alobakin@pm.me>
+Subject: [PATCH net] net: Fix memory leaks in napi_get_frags_check()
+Date:   Mon, 31 Oct 2022 18:45:23 +0800
+Message-ID: <1667213123-18922-1-git-send-email-wangyufen@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221028144540.3344995-3-steen.hegelund@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steen,
+kmemleak reports this issue:
 
-On 2022-10-28 16:45, Steen Hegelund wrote:
-> - IPv4 Addresses
->     tc filter add dev eth12 ingress chain 8000000 prio 12 handle 12 \
->         protocol ip flower skip_sw dst_ip 1.0.1.1 src_ip 2.0.2.2    \
->         action trap
+unreferenced object 0xffff88819b8c97c0 (size 232):
+  comm "ip", pid 2915, jiffies 4295153830 (age 408.877s)
+  hex dump (first 32 bytes):
+    00 80 8c 9b 81 88 ff ff e0 24 f7 12 81 88 ff ff  .........$......
+    00 40 05 c0 81 88 ff ff 00 00 00 00 00 00 00 00  .@..............
+  backtrace:
+    [<0000000009fc179a>] napi_skb_cache_get+0xd4/0x150
+    [<00000000b4383b46>] __napi_build_skb+0x15/0x50
+    [<000000004902d9a0>] __napi_alloc_skb+0x26e/0x540
+    [<00000000f9542b96>] napi_get_frags+0x59/0x140
+    [<0000000002214936>] napi_get_frags_check+0x23/0xa0
+    [<00000000c9a8df5a>] netif_napi_add_weight+0x443/0x910
+    [<000000008f3a2156>] gro_cells_init+0x13f/0x230
+    [<000000006f5f87fd>] vxlan_init+0x125/0x210 [vxlan]
+    [<00000000f9d7479b>] register_netdevice+0x271/0xeb0
+    [<000000003eb98c8e>] __vxlan_dev_create+0x2f2/0x780 [vxlan]
+    [<00000000c5cdebe0>] vxlan_newlink+0xa0/0xf0 [vxlan]
+    [<000000004a0b0607>] __rtnl_newlink+0xcae/0x1490
+    [<0000000037188a06>] rtnl_newlink+0x5f/0x90
+    [<00000000b2d4e2b2>] rtnetlink_rcv_msg+0x31a/0x980
+    [<00000000613a7411>] netlink_rcv_skb+0x120/0x380
+    [<00000000836c6e0e>] netlink_unicast+0x439/0x660
 
-I'm not able to get this working on PCB135. I tested the VLAN tags and
-did not work either (did not test the rest). The example from the
-previous patch series doesn't work either after applying this series.
+The root case here is: 
+  napi_get_frags_check()
+    napi_get_frags()
+      napi_alloc_skb()
+       __alloc_skb()  <-- with flag SKB_ALLOC_NAPI
+        napi_skb_cache_get()
+    ...
+    napi_free_frags()
+      kfree_skb()
+        __kfree_skb()
 
-tc qdisc add dev eth3 clsact
-tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \
-	protocol all flower skip_sw \
-	dst_mac 0a:0b:0c:0d:0e:0f \
-	src_mac 2:0:0:0:0:1 \
-	action trap
+In function napi_get_frags(), the skb is alloced by napi_skb_cache_get().
+So, the skb should use __kfree_skb_defer (which called
+napi_skb_cache_put()) to free.
+To fix, add the function napi_free_frags_defer() to use __kfree_skb_defer
+to free skb.
 
-This example was provided in your last patch series and worked earlier.
+Fixes: cfb8ec659521 ("skbuff: allow to use NAPI cache from __napi_alloc_skb()")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+---
+ include/linux/netdevice.h | 8 ++++++++
+ net/core/skbuff.c         | 3 ++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-My setup is PC-eth0 -> PCB135-eth3 and I use the following EasyFrames
-command to send packets:
-
-ef tx eth0 rep 50 eth smac 02:00:00:00:00:01 dmac 0a:0b:0c:0d:0e:0f
-
-IPv4:
-tc qdisc add dev eth3 clsact
-tc filter add dev eth3 ingress chain 8000000 prio 12 handle 12 \
-    protocol ip flower skip_sw dst_ip 1.0.1.1 src_ip 2.0.2.2    \
-    action trap
-
-ef tx eth0 rep 50 eth smac 02:00:00:00:00:01 dmac 0a:0b:0c:0d:0e:0f ipv4 dip 1.0.1.1 sip 2.0.2.2
-
-Same setup as above and I can't get this to work either.
-
-I'm using tcpdump to watch the interface to see if the packets are being
-trapped or not. Changing the packets' dmac to broadcast lets me see the
-packets so I don't have any issue with the setup.
-
-BR,
-Casper
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index eddf8ee..0811663 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3833,6 +3833,14 @@ static inline void napi_free_frags(struct napi_struct *napi)
+ 	napi->skb = NULL;
+ }
+ 
++static inline void napi_free_frags_defer(struct napi_struct *napi)
++{
++	if (!skb_unref(napi->skb))
++		return;
++	__kfree_skb_defer(napi->skb);
++	napi->skb = NULL;
++}
++
+ bool netdev_is_rx_handler_busy(struct net_device *dev);
+ int netdev_rx_handler_register(struct net_device *dev,
+ 			       rx_handler_func_t *rx_handler,
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index d1a3fa6..1db3634 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -214,7 +214,7 @@ void napi_get_frags_check(struct napi_struct *napi)
+ 	local_bh_disable();
+ 	skb = napi_get_frags(napi);
+ 	WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
+-	napi_free_frags(napi);
++	napi_free_frags_defer(napi);
+ 	local_bh_enable();
+ }
+ 
+@@ -1073,6 +1073,7 @@ void __kfree_skb_defer(struct sk_buff *skb)
+ 	skb_release_all(skb);
+ 	napi_skb_cache_put(skb);
+ }
++EXPORT_SYMBOL(__kfree_skb_defer);
+ 
+ void napi_skb_free_stolen_head(struct sk_buff *skb)
+ {
+-- 
+1.8.3.1
 
