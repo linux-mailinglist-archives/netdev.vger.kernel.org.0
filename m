@@ -2,87 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6728D612F53
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 04:34:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A926C612FA6
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 06:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbiJaDeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 23:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36108 "EHLO
+        id S229696AbiJaFS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 01:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiJaDeQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 23:34:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9E89596;
-        Sun, 30 Oct 2022 20:34:12 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N0zCW5BjvzmVYJ;
-        Mon, 31 Oct 2022 11:29:11 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 31 Oct 2022 11:34:11 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 31 Oct 2022 11:34:10 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mailhol.vincent@wanadoo.fr>,
-        <chenzhongjin@huawei.com>
-Subject: [PATCH] can: canxl: Fix unremoved canxl_packet in can_exit()
-Date:   Mon, 31 Oct 2022 11:30:53 +0800
-Message-ID: <20221031033053.37849-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229476AbiJaFS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 01:18:26 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290B66564
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 22:18:25 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id i3-20020a5d8403000000b006c9271c3465so6350538ion.4
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 22:18:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pqHgzxDahGo8WLLuBYy59P40M4NmqDz0QC8mWC+Acpo=;
+        b=rTkipdx/2Lhp9Mdj0Nw+17rOJowUzQ35kPV+knUNb0uvK402mGbOJ3vCUwn4CgKHXY
+         lAo9/HzhFvCAqKoVEi1/oX01SnLyFbokij1spDVplT6rEeyJYW7+tjO06XmJ77dsyHsY
+         sEOugqgHKQ05pBDZDEq2qhSXmBlC9Uc37s2aV1TltRlC9kIa/qPcm2xc8ucILPohM/Bc
+         WeJ/a93SckzjFg2xPBnuR1JywrnyiN8gcZwu7ErXiUbeTmThyJKuy2fbcrEtrUaZNw70
+         HauEbOu/xD7wKf9bMKTkNaxxp6CKHrf2kFCq5XjcsP2jGDVW6HbqTk148Cypy29W/Mdh
+         E5Dg==
+X-Gm-Message-State: ACrzQf3svvHJREP/mSS6xAZD7N9NNUBRF5KOOMCRJOFCtsGpjnq6aP5C
+        hkM/dDbQUAp+SREtk3iUm/5GrP4qhWYHu/hhcbviw5Fi8TqQ
+X-Google-Smtp-Source: AMsMyM5Z+FcFSBgakH6YLy5XAtjRF33Ed5FIP7Y7cGMGJkLgInKlZZou46sPbAtjT/FJ3HaHpKsanl3V/5hWpmqfJlnSgrtqio13
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6602:154f:b0:6bc:f701:cb37 with SMTP id
+ h15-20020a056602154f00b006bcf701cb37mr6189453iow.136.1667193504510; Sun, 30
+ Oct 2022 22:18:24 -0700 (PDT)
+Date:   Sun, 30 Oct 2022 22:18:24 -0700
+In-Reply-To: <20221030153622.22720-1-yin31149@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009bbc8205ec4dbc91@google.com>
+Subject: Re: [syzbot] memory leak in regulatory_hint_core
+From:   syzbot <syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com>
+To:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
+        jhs@mojatatu.com, jiri@resnulli.us, johannes@sipsolutions.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com, yin31149@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In can_init(), dev_add_pack(&canxl_packet) is added but not removed in
-can_exit(). It break the packet handler list and can make kernel panic
-when can_init() for the second time.
+Hello,
 
-> modprobe can && rmmod can
-> rmmod xxx && modprobe can
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-BUG: unable to handle page fault for address: fffffbfff807d7f4
-RIP: 0010:dev_add_pack+0x133/0x1f0
-Call Trace:
- <TASK>
- can_init+0xaa/0x1000 [can]
- do_one_initcall+0xd3/0x4e0
- ...
+Reported-and-tested-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
 
-Fixes: fb08cba12b52 ("can: canxl: update CAN infrastructure for CAN XL frames")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
- net/can/af_can.c | 1 +
- 1 file changed, 1 insertion(+)
+Tested on:
 
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 9503ab10f9b8..5e9e3e1e9825 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -902,6 +902,7 @@ static __init int can_init(void)
- static __exit void can_exit(void)
- {
- 	/* protocol unregister */
-+	dev_remove_pack(&canxl_packet);
- 	dev_remove_pack(&canfd_packet);
- 	dev_remove_pack(&can_packet);
- 	sock_unregister(PF_CAN);
--- 
-2.17.1
+commit:         aae703b0 Merge tag 'for-6.1-rc1-tag' of git://git.kern..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=131ffba1880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d2f454d7d3b63980
+dashboard link: https://syzkaller.appspot.com/bug?extid=232ebdbd36706c965ebf
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=17589461880000
 
+Note: testing is done by a robot and is best-effort only.
