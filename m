@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA90613C65
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 18:44:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F894613C78
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 18:50:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiJaRoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 13:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
+        id S231149AbiJaRui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 13:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiJaRoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 13:44:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6292DFBA
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 10:43:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667238198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TT/XZ110meTYi+f9IfgbgFM1xC6lYWbDZ996IdwywWk=;
-        b=C/+79c8pEzQLV1T8pmYatOd9cIBZ3o7NEhaOUgqLw+iH3vHfP0S58av3neW8igWlr970yg
-        hzf/eGLEeZi9PMSatK4rTpobcxaZ1gR8DZcgfVNKWYkRQJawnrWS6a0O6Mv+EvPZX9l9G3
-        lQVTc74yTvJ7UXRi/3VBocXAo7UCW6o=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-528-XzOTIpKfNVOu5iYuOPpuAQ-1; Mon, 31 Oct 2022 13:43:17 -0400
-X-MC-Unique: XzOTIpKfNVOu5iYuOPpuAQ-1
-Received: by mail-qt1-f197.google.com with SMTP id fp9-20020a05622a508900b003a503ff1d4cso6713661qtb.22
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 10:43:16 -0700 (PDT)
+        with ESMTP id S229695AbiJaRuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 13:50:37 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EC762D0;
+        Mon, 31 Oct 2022 10:50:34 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id r187so13521218oia.8;
+        Mon, 31 Oct 2022 10:50:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TT/XZ110meTYi+f9IfgbgFM1xC6lYWbDZ996IdwywWk=;
-        b=Pt7+JbOJemZXi1FXb/GfaGT81JOkLm64og0qMIcoAkhshz/c+2W0SN2F9mT4euIxyt
-         LwcZDJ+BETFHF74LVa56oO+4AahPKlNp1bwNoWjGUoicrYa2nCkHD5ASpN3/kXrpwY9a
-         2hRjoGCyHAGAC7W7MEq8kW+DiHsyUGEMSY9u/zjXiVSVR18kZfzb8jq9Yl2UAsM3TVad
-         kkfz8VlwJWfODR3Na8A2b2iLlDW3Rd0tNEFvhftI8Dc5333vpKCpBY+m1XWb89notTBp
-         qFXvyST3qo5UJ9e/DW0dY/xDGVSnI+PTFsFcTCZUvON7HMom4Ewset/F+z5U595pJ135
-         1ufA==
-X-Gm-Message-State: ACrzQf0q/4m5cR1GgqHgEfyOisooKPf5zFH9bTS1WFYUO4VLRteUm2Ng
-        zRbAlXuC7unN4LKLrbIMOFJnnPrIW3NakP9EDMLjOoaULuJc9vnYjrgv24rDtMG3Ph3qfz4x5e4
-        Y/CI8Xc5vC+x6Rotw
-X-Received: by 2002:a0c:b447:0:b0:4b3:cf2b:92f6 with SMTP id e7-20020a0cb447000000b004b3cf2b92f6mr12161133qvf.79.1667238196581;
-        Mon, 31 Oct 2022 10:43:16 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7r9JXLFSSQQJfoCHGJZWN9b3C52xw/1yyMCcmRyIlqMqg/xqvsbP21xUv/j18LHvhiSb+VPA==
-X-Received: by 2002:a0c:b447:0:b0:4b3:cf2b:92f6 with SMTP id e7-20020a0cb447000000b004b3cf2b92f6mr12161108qvf.79.1667238196362;
-        Mon, 31 Oct 2022 10:43:16 -0700 (PDT)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id m15-20020a05620a24cf00b006ef0350db8asm5108920qkn.128.2022.10.31.10.43.14
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=O/OrJUaYHRoEPjInfDVcIfVomfgyPlGqEkIKHsEo9lU=;
+        b=Sws3S79oK2W9WoRcOxfaCrGsPty2JHx5XcO65A+e0fWM2FKfMaHcjfJ/Qp58SqjD/9
+         7ODZHr+lJ/mVHO+5toB87jlYwT+l+w4e55owQK6TZL9q/WtEjdZjdopNs2sNX5SdnqV1
+         tRMaJ0htltJ4KLd797qW5X1Pjym8F6RALR/yYQMEO23S4zmC/KzegNBGNOzM8SMkIbEH
+         WM7ywfEu6Am7DeOy6U9CnM0QK6BwVLUnNRPAIAO8IL+fZe34bnXF6cn1CyJwqLp68qW+
+         jEqSF6O4r9zaN9sKdWELQ/RpffuHJWzv7Hb+YXnv1Sk0dr7Pd/WMKII18cQLIICdXFSp
+         pumQ==
+X-Gm-Message-State: ACrzQf0MHyvzyg66zjG2XxYzuPd72pSUpuqk//B3cMTu0ALra2t0K5wW
+        UOjPfsgOzPYxf2BR+FKHnA==
+X-Google-Smtp-Source: AMsMyM4T6altTaqeOLsV6UcilL4G7P8IlDieSR1hoSqarcTXk4QF07+B3xUWgV1CPbP1TirWAooEhQ==
+X-Received: by 2002:a05:6808:14c1:b0:354:d3bf:67b with SMTP id f1-20020a05680814c100b00354d3bf067bmr16249885oiw.160.1667238633807;
+        Mon, 31 Oct 2022 10:50:33 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bk32-20020a0568081a2000b003595494e293sm2532518oib.32.2022.10.31.10.50.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 10:43:16 -0700 (PDT)
-Date:   Mon, 31 Oct 2022 18:43:11 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        Mon, 31 Oct 2022 10:50:33 -0700 (PDT)
+Received: (nullmailer pid 3060092 invoked by uid 1000);
+        Mon, 31 Oct 2022 17:50:34 -0000
+Date:   Mon, 31 Oct 2022 12:50:34 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCHv7 net-next 0/4] rtnetlink: Honour NLM_F_ECHO flag in
- rtnl_{new, del}link
-Message-ID: <20221031174311.GD13089@pc-4.home>
-References: <20221028084224.3509611-1-liuhangbin@gmail.com>
+        Marcin Wojtas <mw@semihalf.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Michael Walle <michael@walle.cc>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH 1/5] dt-bindings: vendor-prefixes: Add ONIE
+Message-ID: <166723863431.3060035.12852650709794600644.robh@kernel.org>
+References: <20221028092337.822840-1-miquel.raynal@bootlin.com>
+ <20221028092337.822840-2-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20221028084224.3509611-1-liuhangbin@gmail.com>
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221028092337.822840-2-miquel.raynal@bootlin.com>
+X-Spam-Status: No, score=0.3 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLACK autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 28, 2022 at 04:42:20AM -0400, Hangbin Liu wrote:
-> Netlink messages are used for communicating between user and kernel space.
-> When user space configures the kernel with netlink messages, it can set the
-> NLM_F_ECHO flag to request the kernel to send the applied configuration back
-> to the caller. This allows user space to retrieve configuration information
-> that are filled by the kernel (either because these parameters can only be
-> set by the kernel or because user space let the kernel choose a default
-> value).
+
+On Fri, 28 Oct 2022 11:23:33 +0200, Miquel Raynal wrote:
+> As described on their website (see link below),
 > 
-> The kernel has support this feature in some places like RTM_{NEW, DEL}ADDR,
-> RTM_{NEW, DEL}ROUTE. This patch set handles NLM_F_ECHO flag and send link
-> info back after rtnl_{new, del}link.
+>    "The Open Network Install Environment (ONIE) is an open source
+>     initiative that defines an open “install environment” for modern
+>     networking hardware."
+> 
+> It is not a proper corporation per-se but rather more a group which
+> tries to spread the use of open source standards in the networking
+> hardware world.
+> 
+> Link: https://opencomputeproject.github.io/onie/
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+> 
+> Please note ONIE is not a "company" but rather more an open source
+> group. I don't know if there will be other uses of this prefix but I
+> figured out it would be best to describe it to avoid warnings, but I'm
+> open to other solutions otherwise.
+> 
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Reviewed-by: Guillaume Nault <gnault@redhat.com>
-
-Thanks Hangbin!
-
+Acked-by: Rob Herring <robh@kernel.org>
