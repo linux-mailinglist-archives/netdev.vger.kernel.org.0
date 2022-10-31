@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8616D6133D3
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 11:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF166133D9
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 11:44:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiJaKkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 06:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
+        id S229742AbiJaKn7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 31 Oct 2022 06:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbiJaKko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 06:40:44 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333AED105
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 03:40:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667212843; x=1698748843;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=fjKIgiLi/amStiDKjCW0IRTllCh6c+oJYuQyTButUm8=;
-  b=uIi6ZfWOABycysAb38debH8wH3zPpcRiwqxyvbGUgtaNhhoa7euzChW4
-   p+xztup3RfVAsQD9dWuTMQg4uV7BjUFKHxJpj8p0g6ydpApPzR7twFR4c
-   Nj4EAfzV6NvmAAxdo6vpVWSEtJ2aSul9f18bkOFFSrJX29d03CjJRyviR
-   kwr2jfg9begsS2l4ckxQcjHpDfFbaqO0DraB8LMIUhEx7yNpPZDbPR1g1
-   v3NBwKdjMMlGYAOTWUHklLZzBsPdVaIBpmvilGUjsEzS+sLlZ6Y5gqaXo
-   VeJE1x2Wu9fESa33HrheechtpkpWT5fZ4rG91/Tgdi1QjJXnDzsxW9knq
-   A==;
-X-IronPort-AV: E=Sophos;i="5.95,227,1661842800"; 
-   d="scan'208";a="187032338"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Oct 2022 03:40:43 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 31 Oct 2022 03:40:43 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 31 Oct 2022 03:40:42 -0700
-Message-ID: <b6a2a8c9331d12dc6f7148be210acfea17f16479.camel@microchip.com>
-Subject: Re: [PATCH net-next v5 2/6] net: dcb: add new apptrust attribute
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Daniel Machon <daniel.machon@microchip.com>,
-        <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>
-Date:   Mon, 31 Oct 2022 11:40:42 +0100
-In-Reply-To: <20221028131403.1055694-3-daniel.machon@microchip.com>
-References: <20221028131403.1055694-1-daniel.machon@microchip.com>
-         <20221028131403.1055694-3-daniel.machon@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.4 
+        with ESMTP id S230024AbiJaKn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 06:43:56 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413EAD85
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 03:43:54 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-6-rBZvUtp9O5ulsghvKmsCxA-1; Mon, 31 Oct 2022 10:43:50 +0000
+X-MC-Unique: rBZvUtp9O5ulsghvKmsCxA-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 31 Oct
+ 2022 10:43:47 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.042; Mon, 31 Oct 2022 10:43:47 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Horatiu Vultur' <horatiu.vultur@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
+Thread-Topic: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
+Thread-Index: AQHY7Kcu7Ao/FHDvc0OFOxRqKUrPo64oT9Iw
+Date:   Mon, 31 Oct 2022 10:43:47 +0000
+Message-ID: <b75a7136030846f587e555763ef2750e@AcuMS.aculab.com>
+References: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgRGFuaWVsLAoKT24gRnJpLCAyMDIyLTEwLTI4IGF0IDE1OjEzICswMjAwLCBEYW5pZWwgTWFj
-aG9uIHdyb3RlOgo+IEFkZCBuZXcgYXBwdHJ1c3QgZXh0ZW5zaW9uIGF0dHJpYnV0ZXMgdG8gdGhl
-IDgwMjFRYXogQVBQIG1hbmFnZWQgb2JqZWN0Lgo+IAo+IFR3byBuZXcgYXR0cmlidXRlcywgRENC
-X0FUVFJfRENCX0FQUF9UUlVTVF9UQUJMRSBhbmQKPiBEQ0JfQVRUUl9EQ0JfQVBQX1RSVVNULCBo
-YXMgYmVlbiBhZGRlZC4gVHJ1c3RlZCBzZWxlY3RvcnMgYXJlIHBhc3NlZCBpbgo+IHRoZSBuZXN0
-ZWQgYXR0cmlidXRlIERDQl9BVFRSX0RDQl9BUFBfVFJVU1QsIGluIG9yZGVyIG9mIHByZWNlZGVu
-Y2UuCj4gCj4gVGhlIG5ldyBhdHRyaWJ1dGVzIGFyZSBtZWFudCB0byBhbGxvdyBkcml2ZXJzLCB3
-aG9zZSBodyBzdXBwb3J0cyB0aGUKPiBub3Rpb24gb2YgdHJ1c3QsIHRvIGJlIGFibGUgdG8gc2V0
-IHdoZXRoZXIgYSBwYXJ0aWN1bGFyIGFwcCBzZWxlY3RvciBpcwo+IHRydXN0ZWQgLSBhbmQgaW4g
-d2hpY2ggb3JkZXIuCj4gCj4gU2lnbmVkLW9mZi1ieTogRGFuaWVsIE1hY2hvbiA8ZGFuaWVsLm1h
-Y2hvbkBtaWNyb2NoaXAuY29tPgo+IC0tLQoKLi4uc25pcC4uLgoKPiBAIC0xMTg1LDYgKzExODYs
-MjkgQEAgc3RhdGljIGludCBkY2JubF9pZWVlX2ZpbGwoc3RydWN0IHNrX2J1ZmYgKnNrYiwgc3Ry
-dWN0IG5ldF9kZXZpY2UgKm5ldGRldikKPiDCoMKgwqDCoMKgwqDCoMKgc3Bpbl91bmxvY2tfYmgo
-JmRjYl9sb2NrKTsKPiDCoMKgwqDCoMKgwqDCoMKgbmxhX25lc3RfZW5kKHNrYiwgYXBwKTsKPiDC
-oAo+ICvCoMKgwqDCoMKgwqDCoGlmIChvcHMtPmRjYm5sX2dldGFwcHRydXN0KSB7Cj4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHU4IHNlbGVjdG9yc1tJRUVFXzgwMjFRQVpfQVBQX1NF
-TF9NQVggKyAxXSA9IHswfTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50IG5z
-ZWxlY3RvcnMsIGk7Cj4gKwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBhcHB0cnVz
-dCA9IG5sYV9uZXN0X3N0YXJ0KHNrYiwgRENCX0FUVFJfRENCX0FQUF9UUlVTVF9UQUJMRSk7Cj4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGlmICghYXBwKQoKYXBwdHJ1c3Q/Cgo+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIC1FTVNH
-U0laRTsKPiArCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGVyciA9IG9wcy0+ZGNi
-bmxfZ2V0YXBwdHJ1c3QobmV0ZGV2LCBzZWxlY3RvcnMsICZuc2VsZWN0b3JzKTsKPiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKCFlcnIpIHsKPiArwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGZvciAoaSA9IDA7IGkgPCBuc2VsZWN0b3JzOyBp
-KyspIHsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqBlcnIgPSBubGFfcHV0X3U4KHNrYiwgRENCX0FUVFJfRENCX0FQUF9UUlVT
-VCwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzZWxlY3RvcnNbaV0p
-Owo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoGlmIChlcnIpIHsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgbmxhX25lc3RfY2Fu
-Y2VsKHNrYiwgYXBwdHJ1c3QpOwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gZXJyOwo+
-ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoH0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oH0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfQo+ICsKPiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgbmxhX25lc3RfZW5kKHNrYiwgYXBwdHJ1c3QpOwo+ICvCoMKgwqDC
-oMKgwqDCoH0KPiArCj4gCgouLi5zbmlwLi4uCgo+IMKgZXJyOgo+IMKgwqDCoMKgwqDCoMKgwqBl
-cnIgPSBubGFfcHV0X3U4KHNrYiwgRENCX0FUVFJfSUVFRSwgZXJyKTsKPiDCoMKgwqDCoMKgwqDC
-oMKgZGNibmxfaWVlZV9ub3RpZnkobmV0ZGV2LCBSVE1fU0VURENCLCBEQ0JfQ01EX0lFRUVfU0VU
-LCBzZXEsIDApOwoKQlIKU3RlZW4K
+From: Horatiu Vultur
+> Sent: 30 October 2022 21:37
+> 
+> There were multiple problems in different parts of the driver when
+> the MTU was changed.
+> The first problem was that the HW was missing to configure the correct
+> value, it was missing ETH_HLEN and ETH_FCS_LEN. The second problem was
+> when vlan filtering was enabled/disabled, the MRU was not adjusted
+> corretly. While the last issue was that the FDMA was calculated wrongly
+> the correct maximum MTU.
+
+IIRC all these lengths are 1514, 1518 and maybe 1522?
+How long are the actual receive buffers?
+I'd guess they have to be rounded up to a whole number of cache lines
+(especially on non-coherent systems) so are probably 1536 bytes.
+
+If driver does support 8k+ jumbo frames just set the hardware
+frame length to match the receive buffer size.
+
+There is no real need to exactly police the receive MTU.
+There are definitely situations where the transmit MTU has
+to be limited (eg to avoid ptmu blackholes) but where some
+systems still send 'full sized' packets.
+
+There is also the possibility of receiving PPPoE encapsulated
+full sized ethernet packets.
+I can remember how big that header is - something like 8 bytes.
+There is no real reason to discard them if they'd fit in the buffer.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
