@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC88A61335A
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 11:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3021661335C
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 11:12:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbiJaKMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 06:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        id S230455AbiJaKMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 06:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiJaKLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 06:11:47 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2045.outbound.protection.outlook.com [40.107.104.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E335EDF9A;
-        Mon, 31 Oct 2022 03:11:39 -0700 (PDT)
+        with ESMTP id S230349AbiJaKLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 06:11:55 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2072.outbound.protection.outlook.com [40.107.104.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B95DFB8;
+        Mon, 31 Oct 2022 03:11:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bz7Lq7txrg5/83/qHs3Nsh2dVJGb2GI2lS2krtZHKWPrEI2RPWVAxAOYbkjjqYj4IjaQOuCtbkGybzuPBapGB8xqwvVRFScnXmrHJA6KMNNkB8pVDgZ518gPh1mstDYzZcdxbJx2Ogw0kP37Pudl1sqG9PaTw+x5iqLq/mGyGYc6WosYXcK2bmhOsGpaJB8BP4QNS72T95dOR2qb459wML1Dbl2dWze6cmZmMHDaVz1uFE8KHEUkANSaE/idIsf9aHuf4aqCWId6g14oi2mG1MgFYKV9N9rV0mPEZOqpO6Ff6qtXHSlRukLFAuAtSBuf46G8lCFCnfY0S1v2aCOJhg==
+ b=GNbit3hs/eE7oaxktX+kdWRPRVpABCR1Gf25oG0G7Fm2tbr+z/JV+Vmep24gkPWL/oC5KRCvDrOQkFk5vWfR38OGzG9UvYK12Gs2q7OJpFOgPR9SgYQGV7vvzXLv1CAJ/LbYEm2skVj5ab0gVcdOoa+Kq1g8NzL920N8IXu0BBwo3V9+B2Q2an4ajyk8QwQOmvhvHjicfr/IkutA0mSBKHFMQfL+BrKRfzCIjCxt9PkRCocq3ZwEYnddQAN8s8QIn/tHK+UKbdUSugM0JdgnHuk5R6pMAGR1428hQ8NkSqS2Y3RgDvQ/hkv9KIQIXU91kag661L+Zfw6YnMncxcZoQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5YrepXqukp2z8UFC9LnQrHM7bZLD01uO3QasyQDVHME=;
- b=Z1AoU1hCXXXIT+88JBzrWGN4KrP7EH15DC+g+4F9Lsj3osiND1JWyi5R+1jYQF/gLbW4HJHNMpNC1G7c39crymTS2D2Lmv5Jxsx2aKy5/1sVPqnWgh/VNsfkmqaj972ZjWw8D2BPguiRZhchncNhKByn7aRg9+eWMPILR5iX0u79GvlR1upp1Vo2+gnb4Pvn2U9RoBsH8dOtwRkYeMqByJGyzLBj3a3BEdDs5yMPpS4lmLDM1kS3KmXoW1yAnwapgBYNLz1bVyWa1Gzh4KRt2EM8+jUgw5ne2wTxg6F5e8Z2nDZRDK8GUfLTgU/sLjj2ztrMs2Sp6Wu48gIhKZUooQ==
+ bh=aMtB4KtZB4Fsq/+xbQpsPfW0AA+ilMnSEmgLWMsfEmo=;
+ b=Co/MY9hn7syP4y0FG/Iy/SjOyl8pSbtHYAyCXuoGOGNDOxCpJADe8Hp/H6Lsh4Zf30FgPm2ouxeu+wBpyA3ywYQZZXfjDgJfqoWUylINkCMwSw1xi3j+p7HlHW1XiZH17Jkh7iQW8zCJafJrSq3tMT+VMr3fgyFKr5+5Sv1ZfuTmub+jeh3Swm49QQK9pbZk2NkolFNbu8s+XQkR6rC0XgPqffO949jpVVhrzGsZzbJS6UTW0XQqV0EgZTIgpfKwT4bWvTAtrjZ7tGNDZc4C7szB4f7fDWs823TYdW0pXjYMYjZm/mTHpwlf0hXRH1kRV/SO7WPQR1tHQNz5MBXUEQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
  dkim=pass header.d=suse.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5YrepXqukp2z8UFC9LnQrHM7bZLD01uO3QasyQDVHME=;
- b=IP0gVQwvVnVnvJN53wBbkx1OaolcSlW/WVWxLmd0TgNKmhG+a8kwfZFkjTbt7/XSkuzEVsA4i/tsmbFYA6lGmFLSa+fRosR9017sU/WvjyBTKwVMFLi2NU3mVtU2KvYT4PoLOI5WcwOS4xK2BQwvNI+dEV3TPq0fv9v4t7jRSdB6XI2qSQL+RPnlyQzRVhKMkWmIQjpBtG6fkCBJOJC3B2EdAaxuxuMSX0Z3+XxNQKcg8SgNxoztnlufWydCuhkrFpWZhGfI8wWf1s13VhXSj8zyTvtWc+WYhKO/yVCBkz7SzZr/SWziCyK2N68kP1sE9XNAPbgTesljCKcUlG1wsA==
+ bh=aMtB4KtZB4Fsq/+xbQpsPfW0AA+ilMnSEmgLWMsfEmo=;
+ b=ayUa16REoqAc7K9QHzOAP6W9/oFAz8SkKbpuLC6qgrG4sg9sbr0hyjv2n/naWA5rdDG8SAMJwM1Xr8A0m2xPQpS6wRXa/KMRbpQnxu7AYGztN2kq3sNgbsCWZLHTWymIPl2NEfmsfSiIYQS795Fo1cxQR27d9XmzWKtdgKPIgsJ5i+hxgeD6EcN8YWOPOlAPoPC4o+tdHFKj9AvA1SI4WQ6ablVZNL7GH+U7XDwQZS9emQL1Vmpa5ghR6Q/jFYROfEfnIYI1DDUrIZ8YzPFMZp0J7+/wvvj08N8iT/wP/AkTXTJvOfk1aWBtMt1mJieFLd798UGA5jmB28cD0Pfz9g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=suse.com;
 Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com (2603:10a6:803:4::13)
  by VE1PR04MB7261.eurprd04.prod.outlook.com (2603:10a6:800:1a3::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Mon, 31 Oct
- 2022 10:11:38 +0000
+ 2022 10:11:48 +0000
 Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com
  ([fe80::41c4:5b70:6fec:a963]) by VI1PR0402MB3439.eurprd04.prod.outlook.com
  ([fe80::41c4:5b70:6fec:a963%7]) with mapi id 15.20.5746.028; Mon, 31 Oct 2022
- 10:11:38 +0000
+ 10:11:48 +0000
 From:   Chester Lin <clin@suse.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -50,66 +50,67 @@ Cc:     Chester Lin <clin@suse.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Jan Petrous <jan.petrous@nxp.com>,
+        Ondrej Spacek <ondrej.spacek@nxp.com>,
         =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
         Matthias Brugger <mbrugger@suse.com>
-Subject: [PATCH 3/5] net: stmmac: Add CSR clock 500Mhz/800Mhz support
-Date:   Mon, 31 Oct 2022 18:10:50 +0800
-Message-Id: <20221031101052.14956-4-clin@suse.com>
+Subject: [PATCH 4/5] net: stmmac: Add AXI4 ACE control support
+Date:   Mon, 31 Oct 2022 18:10:51 +0800
+Message-Id: <20221031101052.14956-5-clin@suse.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221031101052.14956-1-clin@suse.com>
 References: <20221031101052.14956-1-clin@suse.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: TYAPR01CA0205.jpnprd01.prod.outlook.com
- (2603:1096:404:29::25) To VI1PR0402MB3439.eurprd04.prod.outlook.com
+X-ClientProxiedBy: TYAPR01CA0204.jpnprd01.prod.outlook.com
+ (2603:1096:404:29::24) To VI1PR0402MB3439.eurprd04.prod.outlook.com
  (2603:10a6:803:4::13)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3439:EE_|VE1PR04MB7261:EE_
-X-MS-Office365-Filtering-Correlation-Id: 931a5415-bd00-4a43-e811-08dabb284c66
+X-MS-Office365-Filtering-Correlation-Id: 7de1a7a1-48e4-46a0-2ffb-08dabb285228
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JsKlPQ+7NgaZHfo+WcS2Hfc7GFEi75LJOIwfj89Ku3451ph0Ti9vJnwqCI0eEpbfF7uhOeZ4Y8Tk/cvX3Rvgq9KdxmZqgvCP6Y3OUUrhujgIc3XmwFRCwaWOLkO1mXVCfFrZYcS8OQYoBcoS77/4c6yFbTRjU8Unox3K45HeYyVmGaQfvJ4LJj92Y+PhBhqQrrXv3dAIPxpieZI18dWXMSoBCIfEUUXVh5LZkm7zmibzZwXLBEGTRyMcqXihs7GRCYBJQ1ZwmxY2SYkHu/KhXeMl74BDAhuHqQeqX1Eouk51fervNajicxgx0bsqJ4M2unrzUldbbm8MPPahYM9go66z5ATQBwUMEw3h2NFvJd3/wkwbUuns55Ulpe43+5EM8jq1Lj/ANFCv76hPzXhoqkDhisUGF8SAZRxOqzLqODYQ04dMDwzvlQeQMqZNaV/E5ImbljzjZMGU3fEv0jYBLd89rQHuplJmIpjpknCh9UE397fGA9GP13T1KcPl6m+7y4+OL4MrNObEwNUjsOFPZPCfhHZlpGiYYz2FAKQKZcggfq2MDyv9DjsL+1A93wAWTny9VhJScTvVFZko5r6n63DD2/W/9QSiLZyxtyAHmSK8QEN/hzDv4pdG8sgVips+Q6YazlBgrxWoQ68X2ttdeeGKExGwMib5EzcrkELoHBG1Phm8GB9UrgUsd0RyEi1tTsHizWImVMgFbBRZ9AC6Ng==
+X-Microsoft-Antispam-Message-Info: zCxcI4+xZ4rL6KyFsgRWh0ZekHkLaYBYv26VCB0cyOXQiTZdDelBCCWHJ2bl0D10V4EYk+BYmH10FVCLTrhe+9RdZ0BUByx38IfITKSAAJXL2jYGmXv7yIRbJOUaffeuGT43Nx44G483WFU3r1wMvug6OzhZQajjH9YFxhUZuFoSXbEF4uPUPjo6JY//tUax9rbf4Ei0OkOqY1wyokGGgTd2WTiug48QaMaWdL4+GaM55C/GwBjde0KgB86L57lUiTIbdXGmAmqUAmnAzOcdLZdPXaEPQlIaBKFA+0K+YXhmsc0Evnj7gnIKgrk3Cmi9ofp5OH8Svs5fjYOKphygBjy5XZsslevYqi5XzMN2XP/5V2S66IsmMGXy+hXDTDAUiL2qb3i2SpI4dlsyW2aDW+WhMW6rkJxllFZgAWYflrYVZE4I+ehJtZY5zlzEc8ssNL+JJdJWSGOMK1NMHYp56dVorGpZ6Ee4bUoiQl6+1PBrG3tMtN+osihhDcnnpHynFwQbdr935JDUk2nK/3pXHX8yWs3SAwXzoR/KSg5kodQecw9ALco0kVCPQyoCTU0upNmdlq45t2k782zExgIuWTfUDpzSnEbqMcaKiwqJeswhbeTKWXqzCfUYIhbhx/BFss+CeFfaBMEV/juVIxSZtxjgVIxAO3Xib+hACjKHtPHDzDPsouRUw4s4xSkXwGFRPyRBxbDrQqw2mKAUFheiAA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(39850400004)(376002)(366004)(346002)(451199015)(6486002)(107886003)(478600001)(110136005)(54906003)(316002)(6666004)(86362001)(8676002)(6506007)(4326008)(66476007)(66946007)(66556008)(2906002)(26005)(38100700002)(41300700001)(6512007)(2616005)(186003)(1076003)(83380400001)(8936002)(36756003)(7416002)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SxAQujihSr3y4d0bRb4dpAzpxXkHywLWzEoSu+UVtDV388Xr7fp+Yycw7Nhg?=
- =?us-ascii?Q?SlVBW/z3e8HGF6N0ca7GxzQyflloUJigSB3q7EjariWS/743/oPdVxYO1GKa?=
- =?us-ascii?Q?50D19chyFIQEnfBs3WzUVX6avHB9WfTeTVC48AZCzL0o7CZFQOrtfgb8Jg5k?=
- =?us-ascii?Q?VdBIixk81KSrhNq3IH69adogphlwMczeBpyEMyNd5D6qC2zgWBlNYTmIaXW1?=
- =?us-ascii?Q?MXMnj5zY+dvSbGmLmAUtL2S12jZIctmLvnBUjxLYvfeNbGPVl3bUjP2t3Nh9?=
- =?us-ascii?Q?3AFPL+yWNjwCdP0Wgr3lLJMxfRf+JeD8FI98/Ikk0lmySweoETDswVsQBLxo?=
- =?us-ascii?Q?JqrI2SLP9VPv7SFP6jOZVECxNn5dJxJjYiadVJm9KNlqFukGMEVtlOKA5yoz?=
- =?us-ascii?Q?mePQpup7HFcqWC8eYUI2v0JRwQhj5QpDuepOSBtp5ZRM/xpCLDF8Ztb7ky3f?=
- =?us-ascii?Q?59QZdbSVs75bkvAW8KWeJPmpTPbsdWlPIm+/iSXoFytnzSEDXQKlPk5I65aV?=
- =?us-ascii?Q?HjpzSRBGvmkxrQl/FoX+A1EJQjRGjjwvpXZwDgF7mGwAksigTlXAgw23qx+q?=
- =?us-ascii?Q?00jKQWTlLX3i6XOi73rorXZ5KVbp0ulOZwt7dux1TsgNsJVPd9V+w/PpVy+Y?=
- =?us-ascii?Q?Wkp47AWf+lrpLMayLm8fQFbm7tJY0wceRgbRvKpY8zJ1dijkSpakQ3qnd+I4?=
- =?us-ascii?Q?p36jKg1i8qXCFW5xIA2MEVUvmqE/1f/z66YmKpzmYGQpjp1C5GSx31DJGuX2?=
- =?us-ascii?Q?FNnwrVyfwIfdG2LlDsOEOxS/ynLfTSwuUr9jO8aV/cEuZmCvU4cBU1WKw5lc?=
- =?us-ascii?Q?Qi0iPlrNrbRiT1jnHCJtcOslrJoTlStfjPke9HKj77eSqpHBT4fU8GiYDthN?=
- =?us-ascii?Q?xRVsRebBWVypn3BkYPUlm7HokkfhL7QXLVU9Twx2/jnvjI2w/rSgw1XaWKDH?=
- =?us-ascii?Q?Zpwa69I9SPUlUn9n/pIoYuPZ1vAt3xGoK3j/NretALAqF3Bwu529TA8PHfDK?=
- =?us-ascii?Q?lAGE96Bs1TmmdPWU6qc8jlEP+QUlCsOA9dVe1tbG133tm2hEvIdjOUDpog0K?=
- =?us-ascii?Q?r+Ohyvxcm3i7HG1UF5sWy4svx7Bi1jG2t6Buks1Epw0O1oyVnrNE5WYOpt4D?=
- =?us-ascii?Q?CzuLLFr9K1v6UW5OUGbs3UlJ8IL2N+4DC3BzxpOGRS4xn1SrkxOn3lx7IcWK?=
- =?us-ascii?Q?rXzztq5aXIDzx70V9koZp9t+fKKlpchDuxU3zesTGKVRWM8Y9QyWxHjSY6+K?=
- =?us-ascii?Q?LpnQPInxZoYVAKcwGiLJBSnHM/E3jgThGpt/MjdTjTtHX7Jq9MDRFErb9wIv?=
- =?us-ascii?Q?ElswsMZPn58nSt1Jt8Z7PMeAM/7NebWWFbuO7MRtWh2y/AOzKVwd3px0eRzs?=
- =?us-ascii?Q?xDc8XoR3iIbFOdBTZNZUAN6+Ol7I1/pKTebbYirXnMJXd0Fkwd6EB4gMN08b?=
- =?us-ascii?Q?efWdvTINm75dgZKBZGP5XyDnpt5u07DgwxSmZEhctI7ydv1CJgxkkKg+sM/Z?=
- =?us-ascii?Q?10CGVSlGi/kpW5r9FItK9o1nJQWTri9aZm+ugNixLbC8UXmGKF++H87TJPWC?=
- =?us-ascii?Q?zRgVCoy0tkG+V1bmvQI=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QBei5nV3/AmNokC9CM325LlTcLVCseXblMyZg0thdGGFtsZyDg7j5CtqHCGu?=
+ =?us-ascii?Q?guL5pO5nYxKHwqtbeQdl3VUgLG1QEiWAdERiO74RcZGTZ7C0NNFjq5FxFYbV?=
+ =?us-ascii?Q?ymZWKvm4rYAdv2oUhq6gSoot8eeDDhLQ8FQXUkdE5cchWZ5WYN5C9dDJw76l?=
+ =?us-ascii?Q?r4kYR2bkewKUGLeMpGuDydB7H3khlacRUAOstkgpNDT2ssEeBJ8bJjW+558b?=
+ =?us-ascii?Q?peceVZBKLsmbvh7OobgbinsdzyieRmGtktCOrYGw9AJs2X7WIAbq41lJt2jU?=
+ =?us-ascii?Q?NpiPpmAkHdqkjqmSW6fcOjy6FargBKa2JbqwjUYV9mRwKamoJs5YTNmZBdgX?=
+ =?us-ascii?Q?KcEqmq6QCXfcoV3Rv7cOolZCcKg2LtaNgEJ0PnXLi8og0heTeqRODvyWr2Rx?=
+ =?us-ascii?Q?wnYxxXbBasRxofuO66+YnXKv24qrN7bpHCA8TvUbWz0BD2n2DkrmhVsvE04a?=
+ =?us-ascii?Q?4VkBtTDYSsOr1Awz1v40i32hZfS/YbshrF1wstiBlXeuXSBup5zCIFGEtL63?=
+ =?us-ascii?Q?hiKQyhotZ3Aqit8cKCAFn83As0TffECbORfQuiIlfOZWAxy4gPBOANeXXkkk?=
+ =?us-ascii?Q?LP9kNOWxwCyFYNHVT4G3FYqNj+xCnF2fEWCAJ+zbxt0Cyy0hE5aJQKJa6FtN?=
+ =?us-ascii?Q?BCpq8Py6xfJ74QPxFRkrjTEKZszqLPDusocaDHlRnIC2TNlySHOD2c2z1XNf?=
+ =?us-ascii?Q?S7tledYkJU4JWXvHYw3qtF/WmiliLeci3NCVxag7bZrZKZJ/TMOEvsapanyn?=
+ =?us-ascii?Q?XuSTuXmBWd2IOJsm3+Q2tjyrgLU2nmIMoIKsd/dLioxMHINDSGeC7jD+7Dwl?=
+ =?us-ascii?Q?ZXKu7oB480RbrD1Vd3ERWfSACHgu/NIiWj01WwOPYrez4My+oQnqkHILmX5I?=
+ =?us-ascii?Q?nvg+QfFpWxuEL8AbyChnQP+BiTWCrIGm/0FNiJDlAz0FLGVphSkufcGdEO1y?=
+ =?us-ascii?Q?m/NO5q5NxuD7VlH+lABEd26dqrvPGx6LaaxtkTysUNsz4gE4p12FTCPxXiEq?=
+ =?us-ascii?Q?ahkoq41tSRqi2jeyLhQ5ojfFySzRrxseYT+gZi6ULQ/C7OFQqJGu3+K2cs6+?=
+ =?us-ascii?Q?NUaPUBaVsPN5PPMU2Cguw3V5m6pXvbQ1ayUaLzmEu2Hncz4qWkG1Lz3jVmHN?=
+ =?us-ascii?Q?+4mbNqYvDZm2WFhrCGI+bkaJW/tfxnOtXK5vkJ6ddbGIDt5ZYzbJabOvlJsZ?=
+ =?us-ascii?Q?rW7lzuStpmZp2z1z1fWnE2SjIuFHiNWBZqIQvet77kgY7bCSl0salLUAwWP7?=
+ =?us-ascii?Q?4eXiDJz2B0bb2sHO3ppP1d/WebonbclLEd3CgXOAQfciGSN5V2qnOkI3oTvq?=
+ =?us-ascii?Q?4vFOl+Bn1DRFu8ninpgukD6D2tWpc45wXbrgRJmAvh/4LGGjAMGH649XXaol?=
+ =?us-ascii?Q?vWtHxGve7TZ2SNLSBgtqzMXp0bif6MZDVrT2OdlsDU+HJh3xeJYI7JY2rFZT?=
+ =?us-ascii?Q?LXcP0V8XMW5uZpyLp1wuMQE5+E6r/F6fgZ5CO2Y/LxgjkFuhyD8QFdwd+xZo?=
+ =?us-ascii?Q?kSPb3scWYam3BW/jnHrdw+tZJpwYJa7kziyPNJRwq/qCvIpzPGSmjI8bv+j3?=
+ =?us-ascii?Q?2GdXVmRysRprCboRu+o=3D?=
 X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 931a5415-bd00-4a43-e811-08dabb284c66
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7de1a7a1-48e4-46a0-2ffb-08dabb285228
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3439.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2022 10:11:38.2182
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2022 10:11:48.0766
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +5CDPJHQyexQOBKv57FhsTQgkAFkKGEXWnLPX4cKl2xZkisuEIZcSLcTz+36Knhl
+X-MS-Exchange-CrossTenant-UserPrincipalName: PcqKnGrzMk0XUbPlwh918LDkJu8gq2B3v17lxbt4zi/3ej1gL0BzL3gqe3LVCr5g
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7261
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,58 +122,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add additional 500Mhz/800Mhz CSR clock ranges since NXP S32CC DWMAC can
-support higher frequencies.
+Add AXI4 cache coherency control in dwmac4 DMA core.
 
-Signed-off-by: Jan Petrous <jan.petrous@nxp.com>
+Signed-off-by: Ondrej Spacek <ondrej.spacek@nxp.com>
 Signed-off-by: Chester Lin <clin@suse.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h      | 2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
- include/linux/stmmac.h                            | 2 ++
- 3 files changed, 8 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 10 ++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  4 +++-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h        |  5 +++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  3 +++
+ include/linux/stmmac.h                            |  7 +++++++
+ 5 files changed, 28 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6b5d96bced47..5b7e8cc70439 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -222,6 +222,8 @@ struct stmmac_safety_stats {
- #define CSR_F_150M	150000000
- #define CSR_F_250M	250000000
- #define CSR_F_300M	300000000
-+#define CSR_F_500M	500000000
-+#define CSR_F_800M	800000000
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+index d99fa028c646..4e6e2952abfd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+@@ -517,6 +517,15 @@ static int dwmac4_enable_tbs(void __iomem *ioaddr, bool en, u32 chan)
+ 	return 0;
+ }
  
- #define	MAC_CSR_H_FRQ_MASK	0x20
++static void dwmac4_axi4_cc(void __iomem *ioaddr,
++			   struct stmmac_axi4_ace_ctrl *acecfg)
++{
++	/* Configure AXI4 cache coherency for Tx/Rx DMA channels */
++	writel(acecfg->tx_ar_reg, ioaddr + DMA_AXI4_TX_AR_ACE_CONTROL);
++	writel(acecfg->rx_aw_reg, ioaddr + DMA_AXI4_RX_AW_ACE_CONTROL);
++	writel(acecfg->txrx_awar_reg, ioaddr + DMA_AXI4_TXRX_AWAR_ACE_CONTROL);
++}
++
+ const struct stmmac_dma_ops dwmac4_dma_ops = {
+ 	.reset = dwmac4_dma_reset,
+ 	.init = dwmac4_dma_init,
+@@ -574,4 +583,5 @@ const struct stmmac_dma_ops dwmac410_dma_ops = {
+ 	.set_bfsize = dwmac4_set_bfsize,
+ 	.enable_sph = dwmac4_enable_sph,
+ 	.enable_tbs = dwmac4_enable_tbs,
++	.axi4_cc = dwmac4_axi4_cc,
+ };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+index 9321879b599c..7f491f2651b2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+@@ -21,7 +21,9 @@
+ #define DMA_DEBUG_STATUS_0		0x0000100c
+ #define DMA_DEBUG_STATUS_1		0x00001010
+ #define DMA_DEBUG_STATUS_2		0x00001014
+-#define DMA_AXI_BUS_MODE		0x00001028
++#define DMA_AXI4_TX_AR_ACE_CONTROL	0x00001020
++#define DMA_AXI4_RX_AW_ACE_CONTROL	0x00001024
++#define DMA_AXI4_TXRX_AWAR_ACE_CONTROL	0x00001028
+ #define DMA_TBS_CTRL			0x00001050
  
+ /* DMA Bus Mode bitmap */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index 592b4067f9b8..bffe2ec36bb3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -212,6 +212,9 @@ struct stmmac_dma_ops {
+ 	void (*set_bfsize)(void __iomem *ioaddr, int bfsize, u32 chan);
+ 	void (*enable_sph)(void __iomem *ioaddr, bool en, u32 chan);
+ 	int (*enable_tbs)(void __iomem *ioaddr, bool en, u32 chan);
++	/* Configure AXI4 cache coherency for Tx and Rx DMA channels */
++	void (*axi4_cc)(void __iomem *ioaddr,
++			struct stmmac_axi4_ace_ctrl *acecfg);
+ };
+ 
+ #define stmmac_reset(__priv, __args...) \
+@@ -272,6 +275,8 @@ struct stmmac_dma_ops {
+ 	stmmac_do_void_callback(__priv, dma, enable_sph, __args)
+ #define stmmac_enable_tbs(__priv, __args...) \
+ 	stmmac_do_callback(__priv, dma, enable_tbs, __args)
++#define stmmac_axi4_cc(__priv, __args...) \
++	stmmac_do_void_callback(__priv, dma, axi4_cc, __args)
+ 
+ struct mac_device_info;
+ struct net_device;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8273e6a175c8..68ac3680c04e 100644
+index 68ac3680c04e..1325d5425daf 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -323,6 +323,10 @@ static void stmmac_clk_csr_set(struct stmmac_priv *priv)
- 			priv->clk_csr = STMMAC_CSR_150_250M;
- 		else if ((clk_rate >= CSR_F_250M) && (clk_rate <= CSR_F_300M))
- 			priv->clk_csr = STMMAC_CSR_250_300M;
-+		else if ((clk_rate >= CSR_F_300M) && (clk_rate < CSR_F_500M))
-+			priv->clk_csr = STMMAC_CSR_300_500M;
-+		else if ((clk_rate >= CSR_F_500M) && (clk_rate < CSR_F_800M))
-+			priv->clk_csr = STMMAC_CSR_500_800M;
- 	}
+@@ -2917,6 +2917,9 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
+ 	if (priv->plat->axi)
+ 		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
  
- 	if (priv->plat->has_sun8i) {
++	if (priv->plat->axi4_ace_ctrl)
++		stmmac_axi4_cc(priv, priv->ioaddr, priv->plat->axi4_ace_ctrl);
++
+ 	/* DMA CSR Channel configuration */
+ 	for (chan = 0; chan < dma_csr_ch; chan++) {
+ 		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
 diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index fb2e88614f5d..307980c808f7 100644
+index 307980c808f7..23e740c6c7b8 100644
 --- a/include/linux/stmmac.h
 +++ b/include/linux/stmmac.h
-@@ -34,6 +34,8 @@
- #define	STMMAC_CSR_35_60M	0x3	/* MDC = clk_scr_i/26 */
- #define	STMMAC_CSR_150_250M	0x4	/* MDC = clk_scr_i/102 */
- #define	STMMAC_CSR_250_300M	0x5	/* MDC = clk_scr_i/122 */
-+#define	STMMAC_CSR_300_500M	0x6	/* MDC = clk_scr_i/204 */
-+#define	STMMAC_CSR_500_800M	0x7	/* MDC = clk_scr_i/324 */
+@@ -115,6 +115,12 @@ struct stmmac_axi {
+ 	bool axi_rb;
+ };
  
- /* MTL algorithms identifiers */
- #define MTL_TX_ALGORITHM_WRR	0x0
++struct stmmac_axi4_ace_ctrl {
++	u32 tx_ar_reg;
++	u32 rx_aw_reg;
++	u32 txrx_awar_reg;
++};
++
+ #define EST_GCL		1024
+ struct stmmac_est {
+ 	struct mutex lock;
+@@ -248,6 +254,7 @@ struct plat_stmmacenet_data {
+ 	struct reset_control *stmmac_rst;
+ 	struct reset_control *stmmac_ahb_rst;
+ 	struct stmmac_axi *axi;
++	struct stmmac_axi4_ace_ctrl *axi4_ace_ctrl;
+ 	int has_gmac4;
+ 	bool has_sun8i;
+ 	bool tso_en;
 -- 
 2.37.3
 
