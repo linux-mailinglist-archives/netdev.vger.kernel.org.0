@@ -2,230 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCAF3614030
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 22:54:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E72D961406D
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 23:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbiJaVyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 17:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
+        id S229959AbiJaWIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 18:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbiJaVxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 17:53:53 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDA8140C9;
-        Mon, 31 Oct 2022 14:53:52 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id b2so32827950eja.6;
-        Mon, 31 Oct 2022 14:53:52 -0700 (PDT)
+        with ESMTP id S229967AbiJaWIe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 18:08:34 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E80A117C
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:08:31 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id sc25so32800616ejc.12
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 15:08:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=zdYNF6EUojfs0G57LtoPct7Uq38+dK+sU9/t/CK1zr8=;
-        b=dd3qB6WAJlYsE9wP/tCQU7sxRC0VEJ+ENYOIJBZ9x1nxKLDOs+gxPbNJ3JcbqZzMUj
-         Eu1uqtwJ71JjtASe52CsARhT8J0G08u+lioi2hLW9JmLWGw7JZxUbj2v2+Vz9/oF0wFY
-         BP3gIMhTMlj0zsGsTlDK22Jh0xeEOsszTlclrU6JrJG+M60xmKqiZkTw5H+cWGFgzWdz
-         VTU7V95R2LMK5ShBWu+/7YNP227U1iesGBdzg4lvecjema4ij3HNVmUmi+Tb0MEQ4MF3
-         zP27dLqDAqqgQG2un5DQlD8wGVvNKYf2wbcrl1/h1YbAV9NYmUUgOdu0OusLw1QvagHc
-         J6jA==
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=AUFZ27KO58pY4DGyCP23/k/Mkp601j4ArNtp1x4g8JM=;
+        b=TcWK6Y98534y0LVy30JAamoKv4jpN6P0MFCKq1nfrYvQcURKtvef5NxVpPEPQm5irY
+         I3I7UGnwa5YPUawzeicEnDYu9xJS298kKpGFgCtffRSTe3bDSvCRqGjFZA8gOvP15Lpu
+         ZpiCq3iSXwRsmt0HIaC5LhUy7CHIXXHEj57yc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zdYNF6EUojfs0G57LtoPct7Uq38+dK+sU9/t/CK1zr8=;
-        b=W9igpE1lZPqc9Cqj+F+Vr6yEzOq5uQqCXfcCcwPIFcqpTNs7PRVrfyc2eI9IVKGLnd
-         yOrAsMVpw7lm31ykd7JGnVDvKlNdbk7TEknB2Nbv5mQndAvV1S+hUrXm+RD35eRhhS0s
-         KxeMhqTMAKbViB58Elg4N899wxsReagvrxKVBM7ny/W6msAwqbWfKGYQjhXftLt+4h3C
-         Rs2TbRipSzNznAZamMISVWah83Tx2rQmyRjQ8IQKhRCJqNh/zwpI9vtD0oC1xdcebhzK
-         sZ/2ZuI/89JSnx+HI6lPU9+dm9XQ3SOAhbwc1GufRnzxaZJdTaeOLUq2JXQ5xqiv5+x/
-         iskg==
-X-Gm-Message-State: ACrzQf1ACYWENtRAD+WVCs3WiK4uTiwbdw+iJ/LIDPL1aIyg/nNHCAd0
-        BzXrfsekjZNXijLy37M9E/o=
-X-Google-Smtp-Source: AMsMyM6pc1rzE48OuKtJA/UAndbhX4M038/lkAK/YL+GR70D+HcyrJb+6UgD49Sp1aS0c3T2KUkr9g==
-X-Received: by 2002:a17:907:6d94:b0:7ad:95fd:d1e4 with SMTP id sb20-20020a1709076d9400b007ad95fdd1e4mr15608353ejc.233.1667253230605;
-        Mon, 31 Oct 2022 14:53:50 -0700 (PDT)
-Received: from krava ([83.240.62.146])
-        by smtp.gmail.com with ESMTPSA id l1-20020a1709067d4100b00782e3cf7277sm3416697ejp.120.2022.10.31.14.53.49
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AUFZ27KO58pY4DGyCP23/k/Mkp601j4ArNtp1x4g8JM=;
+        b=wqovkFHJyp0hkBfaRq95KbqdIjROTrce8/1Sn3NNki34wZDupofYGQsXnfiSRzI/6z
+         lnvhOEzhjuqCbForDUe9cHy85vjKh1Eakxf0ZK9Mbsq5wGmUenvpKQw2OR3Hg4+/coLt
+         7uEKae55dG2/aodq0K5+QxCAbMDnGSvi6nY6vYDqoqTqGhldC+uqZMKvHUxKCsbelF96
+         XMVAHrRsC5iztnpHBcHzN3eM7rRVjJX2Z/oQq0TVcD912O2bqvGdi5Gd4DAgI/3VKsh3
+         F9qTtANRYec8ZgLOujbjUhr/esVvJIzMEtlXq7ihIAC7bvoetbeFMtReFeyPs+y+GaKs
+         PQNg==
+X-Gm-Message-State: ACrzQf2ZVVTdIOl0S8m/X5K+nwY5W+Po8j1ohaicw5ThrmaCFWB6TdiP
+        7XGsKSNe5Hgk7BzNRIUsliTgqg==
+X-Google-Smtp-Source: AMsMyM7PuvWTMk5C3OXlIc4FX6Dj85mzgawZwH0QaGYEwimBDSI82JQK2C8gQt52ZAS6b3HQRhTdlA==
+X-Received: by 2002:a17:906:9c83:b0:779:c14c:55e4 with SMTP id fj3-20020a1709069c8300b00779c14c55e4mr14970590ejc.619.1667254109667;
+        Mon, 31 Oct 2022 15:08:29 -0700 (PDT)
+Received: from cloudflare.com (79.191.56.44.ipv4.supernova.orange.pl. [79.191.56.44])
+        by smtp.gmail.com with ESMTPSA id ud24-20020a170907c61800b0077f324979absm3445992ejc.67.2022.10.31.15.08.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 14:53:49 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Mon, 31 Oct 2022 22:53:47 +0100
-To:     Peter Zijlstra <peterz@infradead.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        David Laight <David.Laight@aculab.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        bpf@vger.kernel.org
-Subject: Re: Linux 6.1-rc3 build fail in include/linux/bpf.h
-Message-ID: <Y2BD6xZ108lv3j7J@krava>
-References: <439d8dc735bb4858875377df67f1b29a@AcuMS.aculab.com>
- <Y1+8zIdf8mgQXwHg@krava>
- <Y1/oBlK0yFk5c/Im@hirez.programming.kicks-ass.net>
+        Mon, 31 Oct 2022 15:08:29 -0700 (PDT)
+References: <20221018020258.197333-1-xiyou.wangcong@gmail.com>
+ <Y07sxzoS/s6ZBhEx@google.com> <87eduxfiik.fsf@cloudflare.com>
+ <Y1wqe2ybxxCtIhvL@pop-os.localdomain>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Cong Wang <cong.wang@bytedance.com>, sdf@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [Patch bpf] sock_map: convert cancel_work_sync() to cancel_work()
+Date:   Mon, 31 Oct 2022 23:03:09 +0100
+In-reply-to: <Y1wqe2ybxxCtIhvL@pop-os.localdomain>
+Message-ID: <87bkprprxf.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y1/oBlK0yFk5c/Im@hirez.programming.kicks-ass.net>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 04:21:42PM +0100, Peter Zijlstra wrote:
-> On Mon, Oct 31, 2022 at 01:17:16PM +0100, Jiri Olsa wrote:
-> > On Mon, Oct 31, 2022 at 11:14:31AM +0000, David Laight wrote:
-> > > The 6.1-rc3 sources fail to build because bpf.h unconditionally
-> > > #define BPF_DISPATCHER_ATTRIBUTES __attribute__((patchable_function_entry(5)))
-> > > for X86_64 builds.
-> > > 
-> > > I'm pretty sure that should depend on some other options
-> > > since the compiler isn't required to support it.
-> > > (The gcc 7.5.0 on my Ubunti 18.04 system certainly doesn't)
-> > > 
-> > > The only other reference to that attribute is in the definition
-> > > of 'notrace' in compiler.h.
-> > 
-> > I guess we need to make some __has_attribute check and make all that conditional
-> > 
-> > cc-ing Peter
-> 
-> Does something crazy like the below work? It compiles but is otherwise
-> totally untested.
+On Fri, Oct 28, 2022 at 12:16 PM -07, Cong Wang wrote:
+> On Mon, Oct 24, 2022 at 03:33:13PM +0200, Jakub Sitnicki wrote:
+>> On Tue, Oct 18, 2022 at 11:13 AM -07, sdf@google.com wrote:
+>> > On 10/17, Cong Wang wrote:
+>> >> From: Cong Wang <cong.wang@bytedance.com>
+>> >
+>> >> Technically we don't need lock the sock in the psock work, but we
+>> >> need to prevent this work running in parallel with sock_map_close().
+>> >
+>> >> With this, we no longer need to wait for the psock->work synchronously,
+>> >> because when we reach here, either this work is still pending, or
+>> >> blocking on the lock_sock(), or it is completed. We only need to cancel
+>> >> the first case asynchronously, and we need to bail out the second case
+>> >> quickly by checking SK_PSOCK_TX_ENABLED bit.
+>> >
+>> >> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+>> >> Reported-by: Stanislav Fomichev <sdf@google.com>
+>> >> Cc: John Fastabend <john.fastabend@gmail.com>
+>> >> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+>> >> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+>> >
+>> > This seems to remove the splat for me:
+>> >
+>> > Tested-by: Stanislav Fomichev <sdf@google.com>
+>> >
+>> > The patch looks good, but I'll leave the review to Jakub/John.
+>> 
+>> I can't poke any holes in it either.
+>> 
+>> However, it is harder for me to follow than the initial idea [1].
+>> So I'm wondering if there was anything wrong with it?
+>
+> It caused a warning in sk_stream_kill_queues() when I actually tested
+> it (after posting).
 
-looks good
+We must have seen the same warnings. They seemed unrelated so I went
+digging. We have a fix for these [1]. They were present since 5.18-rc1.
 
-it has now the ftrace nop and the jump to the dispatcher image
-or the bpf_dispatcher_nop_func.. great :)
+>> This seems like a step back when comes to simplifying locking in
+>> sk_psock_backlog() that was done in 799aa7f98d53.
+>
+> Kinda, but it is still true that this sock lock is not for sk_socket
+> (merely for closing this race condition).
 
-	bpf_dispatcher_xdp_func:
+I really think the initial idea [2] is much nicer. I can turn it into a
+patch, if you are short on time.
 
-	ffffffff81cc87b0 <load1+0xcc87b0>:
-	ffffffff81cc87b0:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
-	ffffffff81cc87b5:       e9 a6 fe 65 ff          jmp    0xffffffff81328660
+With [1] and [2] applied, the dead lock and memory accounting warnings
+are gone, when running `test_sockmap`.
 
-tests work for me..  Toke, Björn, could you please check?
+Thanks,
+Jakub
 
-thanks,
-jirka
-
-
-> 
-> ---
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 9e7d46d16032..7d7a00306d19 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -953,6 +953,10 @@ struct bpf_dispatcher {
->  	void *rw_image;
->  	u32 image_off;
->  	struct bpf_ksym ksym;
-> +#ifdef CONFIG_HAVE_STATIC_CALL
-> +	struct static_call_key *sc_key;
-> +	void *sc_tramp;
-> +#endif
->  };
->  
->  static __always_inline __nocfi unsigned int bpf_dispatcher_nop_func(
-> @@ -970,6 +974,20 @@ struct bpf_trampoline *bpf_trampoline_get(u64 key,
->  					  struct bpf_attach_target_info *tgt_info);
->  void bpf_trampoline_put(struct bpf_trampoline *tr);
->  int arch_prepare_bpf_dispatcher(void *image, void *buf, s64 *funcs, int num_funcs);
-> +
-> +
-> +#ifdef CONFIG_HAVE_STATIC_CALL
-> +#define BPF_DISPATCH_CALL(name)	static_call(bpf_dispatcher_##name##_call)(ctx, insnsi, bpf_func)
-> +
-> +#define __BPF_DISPATCHER_SC_INIT(_name)				\
-> +	.sc_key = &STATIC_CALL_KEY(_name),			\
-> +	.sc_tramp = STATIC_CALL_TRAMP_ADDR(_name),
-> +
-> +#else
-> +#define BPF_DISPATCH_CALL(name)	bpf_func(ctx, insnsi)
-> +#define __BPF_DISPATCHER_SC_INIT(name)
-> +#endif
-> +
->  #define BPF_DISPATCHER_INIT(_name) {				\
->  	.mutex = __MUTEX_INITIALIZER(_name.mutex),		\
->  	.func = &_name##_func,					\
-> @@ -981,32 +999,29 @@ int arch_prepare_bpf_dispatcher(void *image, void *buf, s64 *funcs, int num_func
->  		.name  = #_name,				\
->  		.lnode = LIST_HEAD_INIT(_name.ksym.lnode),	\
->  	},							\
-> +	__BPF_DISPATCHER_SC_INIT(_name##_call)			\
->  }
->  
-> -#ifdef CONFIG_X86_64
-> -#define BPF_DISPATCHER_ATTRIBUTES __attribute__((patchable_function_entry(5)))
-> -#else
-> -#define BPF_DISPATCHER_ATTRIBUTES
-> -#endif
-> -
->  #define DEFINE_BPF_DISPATCHER(name)					\
-> -	notrace BPF_DISPATCHER_ATTRIBUTES				\
-> +	DEFINE_STATIC_CALL(bpf_dispatcher_##name##_call, bpf_dispatcher_nop_func); \
->  	noinline __nocfi unsigned int bpf_dispatcher_##name##_func(	\
->  		const void *ctx,					\
->  		const struct bpf_insn *insnsi,				\
->  		bpf_func_t bpf_func)					\
->  	{								\
-> -		return bpf_func(ctx, insnsi);				\
-> +		return BPF_DISPATCH_CALL(name);				\
->  	}								\
->  	EXPORT_SYMBOL(bpf_dispatcher_##name##_func);			\
->  	struct bpf_dispatcher bpf_dispatcher_##name =			\
->  		BPF_DISPATCHER_INIT(bpf_dispatcher_##name);
-> +
->  #define DECLARE_BPF_DISPATCHER(name)					\
->  	unsigned int bpf_dispatcher_##name##_func(			\
->  		const void *ctx,					\
->  		const struct bpf_insn *insnsi,				\
->  		bpf_func_t bpf_func);					\
->  	extern struct bpf_dispatcher bpf_dispatcher_##name;
-> +
->  #define BPF_DISPATCHER_FUNC(name) bpf_dispatcher_##name##_func
->  #define BPF_DISPATCHER_PTR(name) (&bpf_dispatcher_##name)
->  void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
-> diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
-> index fa64b80b8bca..1ca8bd6da6bb 100644
-> --- a/kernel/bpf/dispatcher.c
-> +++ b/kernel/bpf/dispatcher.c
-> @@ -4,6 +4,7 @@
->  #include <linux/hash.h>
->  #include <linux/bpf.h>
->  #include <linux/filter.h>
-> +#include <linux/static_call.h>
->  
->  /* The BPF dispatcher is a multiway branch code generator. The
->   * dispatcher is a mechanism to avoid the performance penalty of an
-> @@ -106,7 +107,6 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
->  {
->  	void *old, *new, *tmp;
->  	u32 noff;
-> -	int err;
->  
->  	if (!prev_num_progs) {
->  		old = NULL;
-> @@ -128,11 +128,10 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
->  			return;
->  	}
->  
-> -	err = bpf_arch_text_poke(d->func, BPF_MOD_JUMP, old, new);
-> -	if (err || !new)
-> -		return;
-> +	__static_call_update(d->sc_key, d->sc_tramp, new ?: &bpf_dispatcher_nop_func);
->  
-> -	d->image_off = noff;
-> +	if (new)
-> +		d->image_off = noff;
->  }
->  
->  void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
+[1] https://lore.kernel.org/netdev/1667000674-13237-1-git-send-email-wangyufen@huawei.com/
+[2] https://lore.kernel.org/netdev/Y0xJUc%2FLRu8K%2FAf8@pop-os.localdomain/
