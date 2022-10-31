@@ -2,106 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19645613311
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 10:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C712C613326
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 10:58:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbiJaJwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 05:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55112 "EHLO
+        id S229982AbiJaJ6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 05:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiJaJwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 05:52:16 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F587D2C2;
-        Mon, 31 Oct 2022 02:52:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1667209912;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=1q9fEUOKuWy2MmpzvJRJt2YAOqO+9Lu7ei8YZTtRDnw=;
-    b=OKf136eLS80IjVjyiiVmEC2iCWzIYr8JCbN97wCerT39e6vXtlnwqkgTBUQ1C7f6g6
-    CnqcLJumhQWlXgo3g1UqtluwG797VBqdHcY5Zz56hPQtyiQvuCBgZU/0jcfxAkLn1r3b
-    udMh+XiEBJ+kheYR/NUBUnTqetnBvG9nNy9P9gV2MqzC7uEcWfNXotqdlNMHVb1owGG3
-    Q6XkPf5vau90VF+kIF/oF833mcRsIusEfaJbDmfhy4EJd4hEu2NCNU6QRVs6k2M1nbGZ
-    cNjS3vWhkAWaZ2PVQ+VUnGj3QB/mZwhNjFWyGyqQCVDJgoOJ35iQv2UCVA+IS4KoErVX
-    ykTw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytISr6hZqJAw=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfd:d104::923]
-    by smtp.strato.de (RZmta 48.2.1 AUTH)
-    with ESMTPSA id Dde783y9V9pqDjr
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 31 Oct 2022 10:51:52 +0100 (CET)
-Message-ID: <ef85bc4b-fbd0-f21c-1fe6-345659934bd9@hartkopp.net>
-Date:   Mon, 31 Oct 2022 10:51:26 +0100
+        with ESMTP id S229785AbiJaJ6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 05:58:37 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6427662;
+        Mon, 31 Oct 2022 02:58:36 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N17l83dwDzVjKs;
+        Mon, 31 Oct 2022 17:53:40 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 31 Oct 2022 17:58:35 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 31 Oct 2022 17:58:34 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <keescook@chromium.org>,
+        <gustavoars@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <acme@kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH] uapi: Add missing linux/stddef.h header file to in.h
+Date:   Mon, 31 Oct 2022 17:55:17 +0800
+Message-ID: <20221031095517.100297-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH] can: canxl: Fix unremoved canxl_packet in can_exit()
-To:     Chen Zhongjin <chenzhongjin@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     mkl@pengutronix.de, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mailhol.vincent@wanadoo.fr
-References: <20221031033053.37849-1-chenzhongjin@huawei.com>
-Content-Language: en-US
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20221031033053.37849-1-chenzhongjin@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+commit 5854a09b4957 ("net/ipv4: Use __DECLARE_FLEX_ARRAY() helper") does not
+include "linux/stddef.h" header file, and tools headers update linux/in.h copy,
+BPF prog fails to be compiled:
 
+    CLNG-BPF [test_maps] bpf_flow.bpf.o
+    CLNG-BPF [test_maps] cgroup_skb_sk_lookup_kern.bpf.o
+  In file included from progs/cgroup_skb_sk_lookup_kern.c:9:
+  /root/linux/tools/include/uapi/linux/in.h:199:3: error: type name requires a specifier or qualifier
+                  __DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
+                  ^
+  /root/linux/tools/include/uapi/linux/in.h:199:32: error: type specifier missing, defaults to 'int' [-Werror,-Wimplicit-int]
+                  __DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
+                                               ^
+  2 errors generated.
 
-On 31.10.22 04:30, Chen Zhongjin wrote:
-> In can_init(), dev_add_pack(&canxl_packet) is added but not removed in
-> can_exit(). It break the packet handler list and can make kernel panic
-> when can_init() for the second time.
-> 
->> modprobe can && rmmod can
->> rmmod xxx && modprobe can
-> 
-> BUG: unable to handle page fault for address: fffffbfff807d7f4
-> RIP: 0010:dev_add_pack+0x133/0x1f0
-> Call Trace:
->   <TASK>
->   can_init+0xaa/0x1000 [can]
->   do_one_initcall+0xd3/0x4e0
->   ...
-> 
-> Fixes: fb08cba12b52 ("can: canxl: update CAN infrastructure for CAN XL frames")
-> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+To maintain consistency, add missing header file to kernel.
+Fixes: 5854a09b4957 ("net/ipv4: Use __DECLARE_FLEX_ARRAY() helper")
 
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+---
+ include/uapi/linux/in.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks for the finding!
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index f243ce665f74..79015665daf1 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -22,6 +22,7 @@
+ #include <linux/types.h>
+ #include <linux/libc-compat.h>
+ #include <linux/socket.h>
++#include <linux/stddef.h>
+ 
+ #if __UAPI_DEF_IN_IPPROTO
+ /* Standard well-defined IP protocols.  */
+-- 
+2.30.GIT
 
-Best regards,
-Oliver
-
-> ---
->   net/can/af_can.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/can/af_can.c b/net/can/af_can.c
-> index 9503ab10f9b8..5e9e3e1e9825 100644
-> --- a/net/can/af_can.c
-> +++ b/net/can/af_can.c
-> @@ -902,6 +902,7 @@ static __init int can_init(void)
->   static __exit void can_exit(void)
->   {
->   	/* protocol unregister */
-> +	dev_remove_pack(&canxl_packet);
->   	dev_remove_pack(&canfd_packet);
->   	dev_remove_pack(&can_packet);
->   	sock_unregister(PF_CAN);
