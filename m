@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97CBA613221
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 10:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 302DE61322E
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 10:04:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbiJaJCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 05:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
+        id S230096AbiJaJE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 05:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiJaJCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 05:02:35 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87BE865F7;
-        Mon, 31 Oct 2022 02:02:33 -0700 (PDT)
+        with ESMTP id S229505AbiJaJE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 05:04:27 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0CF620C;
+        Mon, 31 Oct 2022 02:04:26 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.95,227,1661785200"; 
-   d="scan'208";a="138499766"
+   d="scan'208";a="140981913"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 31 Oct 2022 18:02:32 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 31 Oct 2022 18:04:26 +0900
 Received: from localhost.localdomain (unknown [10.226.92.171])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 5D22F41D280A;
-        Mon, 31 Oct 2022 18:02:28 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 4AEE841D2F64;
+        Mon, 31 Oct 2022 18:04:22 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Wolfgang Grandegger <wg@grandegger.com>,
         gregkh@linuxfoundation.org, Marc Kleine-Budde <mkl@pengutronix.de>
@@ -30,11 +30,10 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Chris Paterson <chris.paterson2@renesas.com>,
-        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org,
-        #@vger.kernel.org, 4.9.x@vger.kernel.org
+        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
 Subject: [PATCH] can: rcar_canfd: rcar_canfd_handle_global_receive(): fix IRQ storm on global FIFO receive
-Date:   Mon, 31 Oct 2022 09:02:25 +0000
-Message-Id: <20221031090225.589321-1-biju.das.jz@bp.renesas.com>
+Date:   Mon, 31 Oct 2022 09:04:20 +0000
+Message-Id: <20221031090420.589386-1-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,7 +71,7 @@ Fixes: dd3bd23eb438 ("can: rcar_canfd: Add Renesas R-Car CAN FD driver")
 Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 Link: https://lore.kernel.org/all/20221025155657.1426948-2-biju.das.jz@bp.renesas.com
-Cc: stable@vger.kernel.org
+Cc: stable@vger.kernel.org # 4.9.x
 [mkl: adjust commit message]
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 [biju: removed gpriv from RCANFD_RFCC_RFIE macro]
