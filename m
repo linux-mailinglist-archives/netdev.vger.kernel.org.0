@@ -2,121 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2179613971
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 15:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0E26139A8
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 16:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiJaO4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 10:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
+        id S231418AbiJaPFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 11:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbiJaO4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 10:56:53 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26321FD2C;
-        Mon, 31 Oct 2022 07:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667228213; x=1698764213;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=akuWszKcD7jklk4/ecGEIMo5t5JvMQAtz9KBLL67I1w=;
-  b=pU+SbL4M91eVoXp5ENeqY9fVBEezTl2cNQO+7bnsyqTgQ3uikOgjEHO3
-   qCJKhVCaMeyCYHYXHQ4idMTYz5jhqnpUjbrxvqvYlgFQTRAd896k6cuUE
-   OzeMdBiQMvnHh0oEIVa900lOkbbWII3LQe3NezcCm0DtYC9xoVNfKXSLR
-   e+NrVbziMcp/vu1N/Vo9R1JvybLsJCNBCBJi1y1tDW/CXGpBALMs6/LkC
-   /PL7FDXy61XI6L7w0Ynq9uYayjTJQZxqHazuSQNfr5HzdV1PS0X2HE/L4
-   rCrU1hy941S1xEzbLg386IubStPLJCdDLWTRlrLOoYoYtV1lE2IfE4aFh
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,228,1661842800"; 
-   d="scan'208";a="186992218"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Oct 2022 07:56:52 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 31 Oct 2022 07:56:51 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Mon, 31 Oct 2022 07:56:50 -0700
-Date:   Mon, 31 Oct 2022 16:01:33 +0100
-From:   'Horatiu Vultur' <horatiu.vultur@microchip.com>
-To:     David Laight <David.Laight@aculab.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
-Message-ID: <20221031150133.2be5xr7cmuhr4gng@soft-dev3-1>
-References: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
- <b75a7136030846f587e555763ef2750e@AcuMS.aculab.com>
+        with ESMTP id S230056AbiJaPFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 11:05:08 -0400
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8CAD1117F;
+        Mon, 31 Oct 2022 08:05:07 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 3FACE21BA0;
+        Mon, 31 Oct 2022 17:05:07 +0200 (EET)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 20DCC21B9F;
+        Mon, 31 Oct 2022 17:05:06 +0200 (EET)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id E692D3C0437;
+        Mon, 31 Oct 2022 17:05:03 +0200 (EET)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 29VF52rh159370;
+        Mon, 31 Oct 2022 17:05:03 +0200
+Date:   Mon, 31 Oct 2022 17:05:02 +0200 (EET)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+cc:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH net,v2 0/2] fix WARNING when removing file in ipvs
+In-Reply-To: <20221031120705.230059-1-shaozhengchao@huawei.com>
+Message-ID: <9dfd739c-f7b-e758-9b46-f79ba9cec82@ssi.bg>
+References: <20221031120705.230059-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <b75a7136030846f587e555763ef2750e@AcuMS.aculab.com>
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 10/31/2022 10:43, David Laight wrote:
+
+	Hello,
+
+On Mon, 31 Oct 2022, Zhengchao Shao wrote:
+
+> When using strace for fault injection, some warnings are trigged when
+> files are removed. This is because the file fails to be created during
+> the initialization, but the initialization continues normally. Therefore,
+> a WARNING is reported when the file is removed during the exit.
 > 
-> From: Horatiu Vultur
-> > Sent: 30 October 2022 21:37
+> ---
+> v2: add macro isolation
+> ---
+> Zhengchao Shao (2):
+>   ipvs: fix WARNING in __ip_vs_cleanup_batch()
+>   ipvs: fix WARNING in ip_vs_app_net_cleanup()
 
-Hi David,
+	Both patches in v2 look good to me, thanks!
 
-> >
-> > There were multiple problems in different parts of the driver when
-> > the MTU was changed.
-> > The first problem was that the HW was missing to configure the correct
-> > value, it was missing ETH_HLEN and ETH_FCS_LEN. The second problem was
-> > when vlan filtering was enabled/disabled, the MRU was not adjusted
-> > corretly. While the last issue was that the FDMA was calculated wrongly
-> > the correct maximum MTU.
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
+>  net/netfilter/ipvs/ip_vs_app.c  | 10 ++++++++--
+>  net/netfilter/ipvs/ip_vs_conn.c | 26 +++++++++++++++++++++-----
+>  2 files changed, 29 insertions(+), 7 deletions(-)
 > 
-> IIRC all these lengths are 1514, 1518 and maybe 1522?
+> -- 
+> 2.17.1
 
-And also 1526, if the frame has 2 vlan tags.
+Regards
 
-> How long are the actual receive buffers?
-> I'd guess they have to be rounded up to a whole number of cache lines
-> (especially on non-coherent systems) so are probably 1536 bytes.
+--
+Julian Anastasov <ja@ssi.bg>
 
-The receive buffers can be different sizes, it can be up to 65k.
-They are currently allign to page size.
-
-> 
-> If driver does support 8k+ jumbo frames just set the hardware
-> frame length to match the receive buffer size.
-
-In that case I should always allocate maximum frame size(65k) for all
-regardless of the MTU?
-
-> 
-> There is no real need to exactly police the receive MTU.
-> There are definitely situations where the transmit MTU has
-> to be limited (eg to avoid ptmu blackholes) but where some
-> systems still send 'full sized' packets.
-> 
-> There is also the possibility of receiving PPPoE encapsulated
-> full sized ethernet packets.
-> I can remember how big that header is - something like 8 bytes.
-> There is no real reason to discard them if they'd fit in the buffer.
-> 
->         David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
-
--- 
-/Horatiu
