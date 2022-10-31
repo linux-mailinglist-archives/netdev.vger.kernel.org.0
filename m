@@ -2,49 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83B646141EB
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 00:41:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04BF16141F0
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 00:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229528AbiJaXlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 19:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
+        id S229691AbiJaXrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 19:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiJaXlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 19:41:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C032115706;
-        Mon, 31 Oct 2022 16:41:09 -0700 (PDT)
+        with ESMTP id S229739AbiJaXrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 19:47:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B48D1580D
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 16:47:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ECB9614EB;
-        Mon, 31 Oct 2022 23:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5521CC433C1;
-        Mon, 31 Oct 2022 23:41:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32C8AB81AEE
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 23:47:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94EEC433D6;
+        Mon, 31 Oct 2022 23:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667259668;
-        bh=fF5fmsmBw8x107hSFOrswTvOSdyCrOqAoWXWsPQMdPo=;
+        s=k20201202; t=1667260066;
+        bh=qnDt9U2L7puTMDfhxdpVU/1hPBJH7OaofOu3M2B5r1c=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ilSMv0IFr0PfMeN4M5vMhFx1hzhAMS3cxTL1vZoDWg8eQbrE9xuy8gP4BSPcTuRTi
-         TXv91lug6CSBp5uSBzXv2rsBZHmsLAZMIDjA/pu5AWgC5MJnuZYwCiS7ndZo6y62h6
-         +nKOHmk8UJtjCpoBB9xKfZ+gTknkSo3i7y0gCR0eU+2AeNNeRWCAO1yyp8CDRLuDHb
-         U2PJJojYml1Ti6ncDjR5qKrZ5rniRJoRL3LAftkF3kXT/Sr0wnl2dcgNeC6G44Bf+b
-         yPftc/WrzItESqfyoprFZcvFxRy1mteAMeEh6gLD9/2SqMur9Yy79QXIP5qMVNKH/L
-         M3dWyG3wMGiYQ==
-Date:   Mon, 31 Oct 2022 16:41:07 -0700
+        b=dH91RAuwMxU88lyzPd5znNLLoIuufWmfhrf9gSPT2vJmtiO7lLW0Vr/IC7nKN94cN
+         xGAEs4KXEM50Xj4IIfc48OxJvP1O0GUwGJpb8ud9wZXXUNBqq4yizvisMHj8nXUe1T
+         nBZzYGd4E0mB4dAJlTNFC3ctVhocW4JTetWfi/OUoq85gU6bDhsoGH2z0HnPOS6P5c
+         rwmVfeUGeL9dI7nwmtmooZbNlEP+wx3KppQXY1F7PT9IdxyE9lDVbSbiRHdwJ1bTtA
+         CO4I7Nm5gLQyFRWYoNtmxiaauME4jt5aYh/T0XFNfNT32x8TQ7SZhRj49XhO4Foe4y
+         pOXXSzEuy/V4Q==
+Date:   Mon, 31 Oct 2022 16:47:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <Bryan.Whitehead@microchip.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next V4] net: lan743x: Add support to SGMII register
- dump for PCI11010/PCI11414 chips
-Message-ID: <20221031164107.1a2e8090@kernel.org>
-In-Reply-To: <20221031065336.GB8441@raju-project-pc>
-References: <20221018061425.3400-1-Raju.Lakkaraju@microchip.com>
-        <20221019164344.52cf16dd@kernel.org>
-        <20221031065336.GB8441@raju-project-pc>
+To:     Shai Malin <smalin@nvidia.com>
+Cc:     Aurelien Aptel <aaptel@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "sagi@grimberg.me" <sagi@grimberg.me>, "hch@lst.de" <hch@lst.de>,
+        "kbusch@kernel.org" <kbusch@kernel.org>,
+        "axboe@fb.com" <axboe@fb.com>,
+        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+        Or Gerlitz <ogerlitz@nvidia.com>,
+        Yoray Zack <yorayz@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        "aurelien.aptel@gmail.com" <aurelien.aptel@gmail.com>,
+        "malin1024@gmail.com" <malin1024@gmail.com>
+Subject: Re: [PATCH v7 01/23] net: Introduce direct data placement tcp
+ offload
+Message-ID: <20221031164744.43f8e83f@kernel.org>
+In-Reply-To: <DM6PR12MB356475DB9921B7E8D7802C14BC379@DM6PR12MB3564.namprd12.prod.outlook.com>
+References: <20221025135958.6242-1-aaptel@nvidia.com>
+        <20221025135958.6242-2-aaptel@nvidia.com>
+        <20221025153925.64b5b040@kernel.org>
+        <DM6PR12MB3564FB23C582CEF338D11435BC309@DM6PR12MB3564.namprd12.prod.outlook.com>
+        <20221026092449.5f839b36@kernel.org>
+        <DM6PR12MB356448156B75DD719E24E41DBC329@DM6PR12MB3564.namprd12.prod.outlook.com>
+        <20221028084001.447a7c05@kernel.org>
+        <DM6PR12MB356475DB9921B7E8D7802C14BC379@DM6PR12MB3564.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,15 +76,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 Oct 2022 12:23:36 +0530 Raju Lakkaraju wrote:
-> > You can then read the values in a loop. And inside that loop you can
-> > handle errors (perhaps avoiding the need for lan743x_sgmii_dump_read()
-> > which seems rather unnecessary as lan743x_sgmii_read() already prints
-> > errors).
-> > 
-> > FWIW I like Andrew's suggestion from v3 to use version as a bitfield, too.  
+On Mon, 31 Oct 2022 18:13:19 +0000 Shai Malin wrote:
+> > Then there are stats.  
 > 
-> I will implement Andrew's suggestion in my next regdump function patch.
-> Is it OK ?
+> In the patch "net/mlx5e: NVMEoTCP, statistics" we introduced 
+> rx_nvmeotcp_* stats.
+> We believe it should be collected by the device driver and not 
+> by the ULP layer.
 
-SG, thanks!
+I'm not sure I agree, but that's not the key point.
+The key point is that we want the stats to come via a protocol specific
+interface, and not have to be fished out of the ethtool -S goop. You
+can still collect them in the driver, if we have any ULP-level stats at
+any point we can add them to the same interface.
