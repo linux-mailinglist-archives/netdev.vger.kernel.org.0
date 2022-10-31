@@ -2,54 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6076137FC
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 14:27:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52CF1613813
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 14:31:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231139AbiJaN1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 09:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
+        id S230440AbiJaNbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 09:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230505AbiJaN1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 09:27:25 -0400
+        with ESMTP id S229785AbiJaNbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 09:31:11 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9884A10073;
-        Mon, 31 Oct 2022 06:27:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC289A186
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 06:31:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=X9mXfQU2azroHjW2fTPBBkJLznInfmUPZPQXER+vmpQ=; b=gmeka71Q7kSt2ZGYKoTPo7Nnrr
-        cJwdn8qVOkG7+mLn+qf3KQmFuec/MvR2q9J711pCgxpnZzVFFryxTqNwef48sHo5mKEaWYSZF8Cgf
-        m4o9xNpp0tpiRCPBPR3trUz4mi+uQfplAo+lWwoMwsu8QOJuuCDjZkRiZdpH9h3QNrpU=;
+        bh=6kRXwyfTcpt7W7LCYCHGBdc8yOudRqFyzurNf5ZoOjY=; b=j7OYmYB21A7LdGy7KcZqe50GGK
+        p3ZVZCRldgYFfjrbcy/tdnUTRH2Kn5rIQOfqFL1mF+f1FYYarzdjWHCDEMplpA8CgVXxpgklzyu2L
+        NGAJImaz5PxstSLLZ6zXro7bLw5K+YkSP1No34pf/cCujiT+WWs3wrf2ALv8jj7stsic=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1opUov-0011OF-Nu; Mon, 31 Oct 2022 14:27:17 +0100
-Date:   Mon, 31 Oct 2022 14:27:17 +0100
+        id 1opUsQ-0011Qj-O4; Mon, 31 Oct 2022 14:30:54 +0100
+Date:   Mon, 31 Oct 2022 14:30:54 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chester Lin <clin@suse.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jan Petrous <jan.petrous@nxp.com>,
-        Ondrej Spacek <ondrej.spacek@nxp.com>,
-        Ghennadi Procopciuc <Ghennadi.Procopciuc@nxp.com>,
-        Andra-Teodora Ilie <andra.ilie@nxp.com>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Matthias Brugger <mbrugger@suse.com>
-Subject: Re: [PATCH 5/5] net: stmmac: Add NXP S32 SoC family support
-Message-ID: <Y1/NNbZiVvM9+mrm@lunn.ch>
-References: <20221031101052.14956-1-clin@suse.com>
- <20221031101052.14956-6-clin@suse.com>
+To:     Gaosheng Cui <cuigaosheng1@huawei.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        afleming@freescale.com, buytenh@wantstofly.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2] net: mdio: fix undefined behavior in bit shift for
+ __mdiobus_register
+Message-ID: <Y1/ODk5btv1EPTEg@lunn.ch>
+References: <20221031132645.168421-1-cuigaosheng1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221031101052.14956-6-clin@suse.com>
+In-Reply-To: <20221031132645.168421-1-cuigaosheng1@huawei.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -59,69 +49,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +	/* set interface mode */
-> +	if (gmac->ctrl_sts) {
-> +		switch (gmac->intf_mode) {
-> +		default:
-> +			dev_info(&pdev->dev, "unsupported mode %u, set the default phy mode.\n",
-> +				 gmac->intf_mode);
+On Mon, Oct 31, 2022 at 09:26:45PM +0800, Gaosheng Cui wrote:
+> Shifting signed 32-bit value by 31 bits is undefined, so changing
+> significant bit to unsigned. The UBSAN warning calltrace like below:
+> 
+> UBSAN: shift-out-of-bounds in drivers/net/phy/mdio_bus.c:586:27
+> left shift of 1 by 31 places cannot be represented in type 'int'
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x7d/0xa5
+>  dump_stack+0x15/0x1b
+>  ubsan_epilogue+0xe/0x4e
+>  __ubsan_handle_shift_out_of_bounds+0x1e7/0x20c
+>  __mdiobus_register+0x49d/0x4e0
+>  fixed_mdio_bus_init+0xd8/0x12d
+>  do_one_initcall+0x76/0x430
+>  kernel_init_freeable+0x3b3/0x422
+>  kernel_init+0x24/0x1e0
+>  ret_from_fork+0x1f/0x30
+>  </TASK>
+> 
+> Fixes: 4fd5f812c23c ("phylib: allow incremental scanning of an mii bus")
+> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
 
-If it is an unsupported mode use dev_err() and return -EINVAL;
-
-> +			fallthrough;
-> +		case PHY_INTERFACE_MODE_SGMII:
-> +			dev_info(&pdev->dev, "phy mode set to SGMII\n");
-
-dev_dbg()
-
-Please don't spam the lock with useless information.
-
-> +			intf_sel = PHY_INTF_SEL_SGMII;
-> +			break;
-> +		case PHY_INTERFACE_MODE_RGMII:
-> +		case PHY_INTERFACE_MODE_RGMII_ID:
-> +		case PHY_INTERFACE_MODE_RGMII_TXID:
-> +		case PHY_INTERFACE_MODE_RGMII_RXID:
-> +			dev_info(&pdev->dev, "phy mode set to RGMII\n");
-
-dev_dbg()
-
-> +			intf_sel = PHY_INTF_SEL_RGMII;
-> +			break;
-> +		case PHY_INTERFACE_MODE_RMII:
-> +			dev_info(&pdev->dev, "phy mode set to RMII\n");
-
-dev_dbg()
-
-> +			intf_sel = PHY_INTF_SEL_RMII;
-> +			break;
-> +		case PHY_INTERFACE_MODE_MII:
-> +			dev_info(&pdev->dev, "phy mode set to MII\n");
-
-dev_dbg()
-
-> +			intf_sel = PHY_INTF_SEL_MII;
-> +			break;
-> +		}
-> +
-> +		writel(intf_sel, gmac->ctrl_sts);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int s32cc_config_cache_coherency(struct platform_device *pdev,
-> +					struct plat_stmmacenet_data *plat_dat)
-> +{
-> +	plat_dat->axi4_ace_ctrl =
-> +		devm_kzalloc(&pdev->dev,
-> +			     sizeof(struct stmmac_axi4_ace_ctrl),
-> +			     GFP_KERNEL);
-> +
-> +	if (!plat_dat->axi4_ace_ctrl) {
-> +		dev_info(&pdev->dev, "Fail to allocate axi4_ace_ctrl\n");
-
-dev_err(). But devm_kzalloc() failing will produce log messages, so
-you probably don't need this.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
     Andrew
