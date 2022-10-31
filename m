@@ -2,145 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D9A613932
-	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 15:44:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E5561395C
+	for <lists+netdev@lfdr.de>; Mon, 31 Oct 2022 15:52:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbiJaOoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 10:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        id S231597AbiJaOwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 10:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiJaOoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 10:44:06 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2052.outbound.protection.outlook.com [40.107.92.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8594CCE10
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 07:44:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dhl/dMRnyDrqFZyGNdxgUwiNNgzbeS76t3QF1h5v9EoHoysOkNt7R2Qyu8UU32iY4FU5uOW8tUZV8Qu1ZWME54qZ5cRfzkUrbCW/jsItgFsASVhmP1/xBhMeUZmEzMNzLQ9Der/dM5Px2GDEv5WWJaIFtyLK9JqUAXrKiAsuICwjModREzrobev257IDx7gWvrkVqQMFZaLXkPOHjf0oTGJPzmSMugG7dQzLSrn5XlvnSB0IIZqiy2su6NV27a3Xk1khN8XkNpHdLowuTcV6EWf5Q0GCxOmGu1u5OktdNxP9zoS7Ta1SM+lO2KPEj5x1GxAd6NeAnBdnj9Z3534i+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dkQatsE1ytNRBoxF3qJXgMBtKMQgZX4TomXa1frVOlg=;
- b=YJJ3uNBq45FQjrduKQouokKpL6TtcD8HqWPjN4YYHz/pD4CSUsZwZEJ115xw7LVcN6Yks0qvWLRZYBR2aGeMIq7o537N0sLA2Lkbrsj2wWOkp7ENd48zj+tMQUog1VPDDjrLSdOzJDq8GyW2edsIPXE7yRqEBm4RzPZEzxTycRWyHoMD9goiKqyrwwKLuZMlTsAmBkqExhZb6iTc8iOpXLhk1jClIBJz+XNoOyOkD/mDQytGjZpjQrZL0oucyGaxuXV9patrQrwIOoAP0C24nC9H3xJskTjgYUQkRAoC7OSJ7qN+T9xkm8U4Y6BFXrEWC24jf1uiAh9YfxYWSTxthw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dkQatsE1ytNRBoxF3qJXgMBtKMQgZX4TomXa1frVOlg=;
- b=LYHWC4EtiPnASf5DgjbNDZ0Y7wMSj/Wf66z+zCWKUAQYtl/NCtJDVTKzF0tF6U3t2HZKB+LnPLwtYZZ1X7zCLE6ZfL3iXoVwtYnFvflYFd3f0yuRkcLpd9uDPW+6mNikoGH21mAkuhg0o3EJAkigw0eNGtk1fNESbzjY18SHjFquc3qJo4mSX/k6L2iwOdOEmdtilYwjkn3+f0Ly9xk+HYZlDgsOzbb38q+XTjv7MX+g6EU1NJPY4ob45AKRFxZfLYctsvYnJh6kc5gnb1tmmgo+q8NBnHQBa8PB+/hxdP1FJyBDT5sXJ+pB8xd0NVx0PF7+8YJU30/DAlZQQB5L1A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by PH7PR12MB5596.namprd12.prod.outlook.com (2603:10b6:510:136::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.19; Mon, 31 Oct
- 2022 14:44:03 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::3409:6c36:1a7f:846e]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::3409:6c36:1a7f:846e%4]) with mapi id 15.20.5769.019; Mon, 31 Oct 2022
- 14:44:03 +0000
-Date:   Mon, 31 Oct 2022 16:43:56 +0200
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, jiri@nvidia.com, petrm@nvidia.com,
-        ivecera@redhat.com, roopa@nvidia.com, razor@blackwall.org,
-        vladimir.oltean@nxp.com, mlxsw@nvidia.com
-Subject: Re: [RFC PATCH net-next 01/16] bridge: Add MAC Authentication Bypass
- (MAB) support
-Message-ID: <Y1/fLCe3xApcBXCE@shredder>
-References: <20221025100024.1287157-1-idosch@nvidia.com>
- <20221025100024.1287157-2-idosch@nvidia.com>
- <0b1655f30a383f9b12c0d0c9c11efa56@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0b1655f30a383f9b12c0d0c9c11efa56@kapio-technology.com>
-X-ClientProxiedBy: FR3P281CA0119.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a3::19) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S230309AbiJaOwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 10:52:14 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1468EF031;
+        Mon, 31 Oct 2022 07:52:13 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id j16so19585642lfe.12;
+        Mon, 31 Oct 2022 07:52:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:organization:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oH27PpRVly2aDi6mWVUu1iZzX7AjDHjdV/xRXWcUScI=;
+        b=ctvo4DKxAbXV/KTNGn+iwVP+OC0g4v2kHAQyQf93uGuk5RRgMb1wgxPZ5odJoysMhF
+         NOD4IDKBiCfTiLFfLorjSvWP50R0jO4x+Hwn4vdcQYKJO5SkjFX1jiXhs7rBTwOeC+Y+
+         SQDhxOJb+8nBC5DuBtF6XndlfSc5wTd6pAOO8sfOjqxhMTluI8XgGzu5N+niu0ZyfCXl
+         ruWYZKPN8paZEMHNQXgs7FXnfPoWzqqn8FUc+djdDuYSc6jqoxwbfiTwYopWS5Mcmk2+
+         gwozRyY5oWg54BVGqujPnKa501XVqmCpqqBgD/32E90hP/Bj7gUiBTK4tNA+L5ooevpR
+         Kxng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:organization:message-id:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=oH27PpRVly2aDi6mWVUu1iZzX7AjDHjdV/xRXWcUScI=;
+        b=KAHgXG3MmAB6uXCYxGDqaqLNRle2nEMu7eRns0ivM8W82YOlvORIXhtedxgubnykKI
+         +poPxryrt5bfAZ2yCj6xCrnx9GbHbck6aO2ulw7hbmFyrHyx3f7CZeb5aUSVU61JhOhd
+         EAOdUXvBEYE2e/Cjgzwn8KmdpYXm4QsfY+WPnVUPVrSVVOZEF4ClUr/oHOhbDnuhZbD2
+         gWQQA7g+qnUZ2zdzXQJGWMAcTwlMAFtSTXAed4hqBE+B6Aw9lfLzn1gd6IT4aEW8oc8P
+         5aSOIBEI1yts2M8b3UdoRKMTxpMh7yyP0Iz8KEf51QlowJsjKdbHDn3RwmS3DYiq6HZK
+         0A4g==
+X-Gm-Message-State: ACrzQf0ckXOmNXrVCtHBW4kUME8cs/8yNzZgkeVH2mEwMZUp55rQ84bs
+        r4rQCyYUuzqGsXlnJINMRi8=
+X-Google-Smtp-Source: AMsMyM4OUE1cZ1JU4u1gLmDhijrjBmQr0FfYuzZGFn+2eRqx/R05QoLoU9cTiWA7pOZ0bGyZTq3i6w==
+X-Received: by 2002:ac2:5dd5:0:b0:4a2:2960:a855 with SMTP id x21-20020ac25dd5000000b004a22960a855mr5796412lfq.399.1667227931190;
+        Mon, 31 Oct 2022 07:52:11 -0700 (PDT)
+Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id 7-20020ac25f07000000b0048ad4c718f3sm1318126lfq.30.2022.10.31.07.52.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Oct 2022 07:52:10 -0700 (PDT)
+Date:   Mon, 31 Oct 2022 15:52:09 +0100
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
+ flower keys for the IS2 VCAP
+Message-ID: <20221031145209.hqebvyfqdsrzhiuh@wse-c0155>
+Organization: Westermo Network Technologies AB
+References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
+ <20221028144540.3344995-3-steen.hegelund@microchip.com>
+ <20221031103747.uk76tudphqdo6uto@wse-c0155>
+ <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH7PR12MB5596:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2b8d4646-5e5a-41e8-8fac-08dabb4e5adc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hlOaAAgOUPQYEZoGpLmojMhZPj0wQfIpvx5HsDVOz7TaVrN4T3DUQ9/Wule4y5Ef76HPVjrQc+1liS3BHDSwoCFiP/7wX57stHlgPXQrIzZb3tugDtH6Aryqc6QQiHshFyQZBaWYGzGYalf61hv2fnY7P2mloIziiDpSjXSY+bJBzLxwFW/0K5RcCVe5ep6SXYrRkXJgTZ8agJ5m/9VyruHJwqAALHRTCjXYSR77L5ymZ8I3eLdkTJtP1UtCqw4G1L1pKTez+IhFsOf4wecpbnVT6OktUIv00+kOtJYxHHHiKeie9o9kn9s9EV4ZpRaEvWyMhIpnTkzgXS2CUlcitG0Su6GD8lgs+Fi+ArWjVbKctXLSFaJJYuNl0JGZKt5v3VkdfwKvOWM46iE4UKdGe4yFTim9EYAqQfXvb42v8P+b7sOnOxmrJNtKdTY2c3juJU/GH5clER7BYaxRIPsSECJcZzdEk05zMoOlTAJbJW4OqE1JVAFAepVgEq5u0CjRsUgYkRBK7IfC2bwXZxgfRsepjjSG9Sqo2ro10Yg1GQZ3ZTnuAyYmlTWKPWEO6wtV2XD5vv0Gnziw8d21r6L2qumQi8/uI8geHZliu1rs+XMa+QnyUpyM54xAY8LFdd/OZ40Upw7/x2xHG1YHGduSx1CcTL1MUfBhwnpUKo2lUh0d0LhQbHgEf/HZ5t/jxZRgb/M67b2pNWlBw4oaubVxUw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(396003)(39860400002)(366004)(346002)(136003)(376002)(451199015)(26005)(9686003)(6512007)(53546011)(6666004)(107886003)(6506007)(83380400001)(478600001)(186003)(2906002)(4001150100001)(33716001)(316002)(6486002)(7416002)(8936002)(66476007)(66556008)(66946007)(8676002)(5660300002)(4326008)(41300700001)(6916009)(86362001)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hgdqItPO5XxGo66/GkMG7TZxC4pVHrmQyS0PZT7ZC0xydVISow7Hj2iFGmt5?=
- =?us-ascii?Q?wP9i/mzrRjKsQNquB/UnwVMJHaeZt79/BJVKtWvsLispR5NhRx0DaogV7mfD?=
- =?us-ascii?Q?o30BwyNJytaZ5yUUAFkicqIR1PHmOtEJ2CvcdslX83A4rpZ5oaD452oiuTfW?=
- =?us-ascii?Q?rkQi7vckoR3fOq0D9NRV5df6f2bAznlMuPTKfTaBmdrwfQU6DQdIJM3d8peO?=
- =?us-ascii?Q?DdYSo3De/Dnm/9xrpK9oIIefQWXLBvFivPpYxqrSyZJ7HksgBalZCF68Y9Vk?=
- =?us-ascii?Q?TjhztN3sxrte/BnORRaMplEa0OHaJnWKUEooc+MCHU41kFKwzxmB3mnPuxcq?=
- =?us-ascii?Q?G0WEhULTfo9K3+UuFBneAWHWArrkvY+xoYcU1Jy3zwllGbuwRQNjo8Yj0p79?=
- =?us-ascii?Q?8+LXWbBRbRHrx5AwUO9IGBRdH2pEiDtkjUPAHNvi5/KqqlBgKTcQjG9Fr0/n?=
- =?us-ascii?Q?vCX5FkdbOC3Kd9Ak5bbM7bKc8tIsxERVKp1SSnrP/xD9F9dqR4a4R0L19w9G?=
- =?us-ascii?Q?I3nkAYmRyVPlg52ffkSKUswfbNkdnGQ5vXqlhNXKHyZoQCb76WDw/IRh5SO2?=
- =?us-ascii?Q?8Iq+yNz12meDUvZNC9GBfIbMkIyoh1uHdS+ZjiSbHhSFx+ytkJWC5OKKpKYz?=
- =?us-ascii?Q?CWpEPfHmVA2ow/3H9VrxBEoaATu2U75AExpcKOaPkaZ0oA/xhYWflCbfr14h?=
- =?us-ascii?Q?f7yNw0qlGFYz7OAnRofT5x+JjWQ9WAVLTbvoFA3z52qGAUA+O6U8fJprEn4i?=
- =?us-ascii?Q?qJJWiXNe58QY4nkHA2TRtnukpFfxg2uk3psADWppyWrTQW3ABUMgH4EZwKkR?=
- =?us-ascii?Q?gF26fdH4QPsxchAvyOBmbc2iTwNLkOwE+2wmp31IIAnHj4GXp+fMQxeINP/Z?=
- =?us-ascii?Q?T9npoCT8DGDFgmO/7vzx+o7WQo7/+7H67drmYYgk6O6vy5EdmC+q+2Omfgj9?=
- =?us-ascii?Q?mB+K6WCNGXZ2yEQG10E3DwNE/VJUCVLHo1t8s2D05TtDrbc2lds8+xKzWkoX?=
- =?us-ascii?Q?nu47rPcc31lyEvJ5LTEKmApbsZhgy9FgCL8cT3zxO1xd4X4JOdy02e54axKX?=
- =?us-ascii?Q?K4+uWFdUFdaAgIvM0DtbNFbPINHrpVTG3zas2/5T+6xtgXuwci8I9wSnLHsz?=
- =?us-ascii?Q?wWADNi2mP6LcBT4ZY91YeoPBD5jcpTuj/vaMsgMWRlzFfVMCs/0IB55bDT9c?=
- =?us-ascii?Q?5y4N1hYnroCofsCWY7l0BJeeHW29pM7hEAO4IIFHVbHHA+2GjPeM6ZiNP1IU?=
- =?us-ascii?Q?et9DM1QrXD+sT5dqCCtJI+yS9jvuTJNVlICqGImTkLXRZKgevQVFLwWWb/z6?=
- =?us-ascii?Q?Qi57D2u4nxzk7qy6dfGY9vhsRkF9mxQMWkiyLcEq/EwbqNUBtj/RShXLeX0L?=
- =?us-ascii?Q?rf2v0CIJY/crJfSJb5B+XSY7AYEU3gwtK3z7F3cWmia/XNRrc93AP7FHOYOy?=
- =?us-ascii?Q?k8ZoV2VO67DGglRGycOZzi63x254CFMNnzNxOvzn3641k5ob8dfM7fQMN6Qn?=
- =?us-ascii?Q?+1ZSaQSRc6hfE5CoZSsn7rfFqimC3veKrzipPAOyDsCjBTl3Wwq4YADxWA7L?=
- =?us-ascii?Q?JwDVTdHHA9Gwvxn5uAe3d9bechBbApaFIFFsNmVH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b8d4646-5e5a-41e8-8fac-08dabb4e5adc
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2022 14:44:03.3999
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tAi513ekNibceE74WGP9ylmR0M8vypir/82sNndBJF2Ng4p5UvV3bBc662MTq2fjXvU0f0H+czGOLsjWbecYxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5596
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 30, 2022 at 11:09:31PM +0100, netdev@kapio-technology.com wrote:
-> On 2022-10-25 12:00, Ido Schimmel wrote:
-> > @@ -943,6 +946,14 @@ static int br_setport(struct net_bridge_port *p,
-> > struct nlattr *tb[],
-> >  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS,
-> > BR_NEIGH_SUPPRESS);
-> >  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
-> >  	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
-> > +	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
-> > +
-> > +	if ((p->flags & BR_PORT_MAB) &&
-> > +	    (!(p->flags & BR_PORT_LOCKED) || !(p->flags & BR_LEARNING))) {
-> > +		NL_SET_ERR_MSG(extack, "MAB can only be enabled on a locked port
-> > with learning enabled");
+Hi Steen,
+
+On 2022-10-31 13:14, Steen Hegelund wrote:
+> Hi Casper,
 > 
-> It's a bit odd to get this message when turning off learning on a port with
-> MAB on, e.g....
+> First of all thanks for the testing effort (as usual).  This is most welcome.
 > 
-> # bridge link set dev a2 learning off
-> Error: MAB can only be enabled on a locked port with learning enabled.
+> On Mon, 2022-10-31 at 11:44 +0100, Casper Andersson wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > Hi Steen,
+> > 
+> > On 2022-10-28 16:45, Steen Hegelund wrote:
+> > > - IPv4 Addresses
+> > >     tc filter add dev eth12 ingress chain 8000000 prio 12 handle 12 \
+> > >         protocol ip flower skip_sw dst_ip 1.0.1.1 src_ip 2.0.2.2    \
+> > >         action trap
+> > 
+> > I'm not able to get this working on PCB135. I tested the VLAN tags and
+> > did not work either (did not test the rest). The example from the
+> > previous patch series doesn't work either after applying this series.
+> 
+> 
+> Yes I did not really explain this part (and I will update the series with an explanation).
+> 
+> 1) The rule example in the previous series will no longer work as expected as the changes to the
+> port keyset configuration now requires a non-ip frame to generate the MAC_ETYPE keyset.
+> 
+> So to test the MAC_ETYPE case your rule must be non-ip and not use "protocol all" which is not
+> supported yet.  
+> 
+> Here is an example using the "protocol 0xbeef":
+> 
+> tc qdisc add dev eth3 clsact
+> tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \
+>         protocol 0xbeef flower skip_sw \
+>         dst_mac 0a:0b:0c:0d:0e:0f \
+>         src_mac 2:0:0:0:0:1 \
+>         action trap
+> 
+> And send a frame like this (using EasyFrame):
+> 
+> ef tx eth_fiber1 rep 10 eth dmac 0a:0b:0c:0d:0e:0f smac 2::1 et 0xbeef data repeat 50 0x61
 
-It's better if you suggest something else. How about:
+Thanks, this works. I saw now that you even mentioned that "protocol
+all" doesn't work at the very end of this commit message.
 
-"Bridge port must be locked and have learning enabled when MAB is enabled"
+> I am not sure what went wrong when you tested the ipv4 rule, but if I create the rule that you
+> quoted above the rule is activated when I send frames like this:
+> 
+> ef tx eth_fiber1 rep 10 eth dmac 0a:0b:0c:0d:0e:0f smac 2::2 ipv4 dip 1.0.1.1 sip 2.0.2.2  data
+> repeat 50 0x61 
 
-?
+Looks like adding the "data" at the end of it makes a difference when
+creating the packets. Without it the ip.proto field becomes 17 (UDP).
+With "data" it becomes 0 (IPv6 Hop-by-Hop Option). Ef will defaults to
+17 if no data is specified, otherwise it ends up 0. And the reason
+UDP doesn't get trapped I assume is because this rule falls under the
+IPV4_OTHER keyset (as opposed to IPV4_TCP_UDP).
+
+Doing just this was enough:
+ef tx eth0 rep 10 eth dmac 0a:0b:0c:0d:0e:0f smac 2::2 ipv4 dip 1.0.1.1 sip 2.0.2.2 data
+
+This also solved it for VLANs. I have successfully tested ipv4, ipv6,
+protocol info (ICMP), and vlan tag info from the examples you provided.
+
+Tested on Microchip PCB135 switch.
+
+Tested-by: Casper Andersson <casper.casan@gmail.com>
+
+BR,
+Casper
+
+> 
+> Note that the smac is changed to avoid hitting the first rule.
+> 
+> 2) As for the VLAN based rules, the VLAN information used by IS2 is the classified VID and PCP, so
+> you need to create a bridge and add the VID to the bridge and the ports to see this in action.
+> 
+> IS0 uses the VLAN tags in the frames directly: this is one of the differences between IS0 and IS2.
+> 
+> This is how I set up a bridge on my PCB134 when I do the testing:
+> 
+> ip link add name br5 type bridge
+> ip link set dev br5 up
+> ip link set eth12 master br5
+> ip link set eth13 master br5
+> ip link set eth14 master br5
+> ip link set eth15 master br5
+> sysctl -w net.ipv6.conf.eth12.disable_ipv6=1
+> sysctl -w net.ipv6.conf.eth13.disable_ipv6=1
+> sysctl -w net.ipv6.conf.eth14.disable_ipv6=1
+> sysctl -w net.ipv6.conf.eth15.disable_ipv6=1
+> sysctl -w net.ipv6.conf.br5.disable_ipv6=1
+> ip link set dev br5 type bridge vlan_filtering 1
+> bridge vlan add dev eth12 vid 600
+> bridge vlan add dev eth13 vid 600
+> bridge vlan add dev eth14 vid 600
+> bridge vlan add dev eth15 vid 600
+> bridge vlan add dev br5 vid 600 self
+> 
+> This should now allow you to use the classified VLAN information in IS2 on these four ports.
+> 
+> > 
+> > This example was provided in your last patch series and worked earlier.
+> > 
+> > My setup is PC-eth0 -> PCB135-eth3 and I use the following EasyFrames
+> > command to send packets:
+> > 
+> > ef tx eth0 rep 50 eth smac 02:00:00:00:00:01 dmac 0a:0b:0c:0d:0e:0f
+> > 
+> > IPv4:
+> > tc qdisc add dev eth3 clsact
+> > tc filter add dev eth3 ingress chain 8000000 prio 12 handle 12 \
+> >     protocol ip flower skip_sw dst_ip 1.0.1.1 src_ip 2.0.2.2    \
+> >     action trap
+> > 
+> > ef tx eth0 rep 50 eth smac 02:00:00:00:00:01 dmac 0a:0b:0c:0d:0e:0f ipv4 dip 1.0.1.1 sip 2.0.2.2
+> > 
+> > Same setup as above and I can't get this to work either.
+> 
+> Maybe you are hitting the first rule here, so changing the smac to avoid that, should help.
+> 
+> > 
+> > I'm using tcpdump to watch the interface to see if the packets are being
+> > trapped or not. Changing the packets' dmac to broadcast lets me see the
+> > packets so I don't have any issue with the setup.
+> > 
+> > BR,
+> > Casper
+> > 
+> 
+> Best Regards
+> Steen
+
+BR,
+Casper
