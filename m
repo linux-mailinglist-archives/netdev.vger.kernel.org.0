@@ -2,89 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 002046142FF
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 03:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F4A614319
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 03:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiKAB76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 21:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S229588AbiKACRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 22:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiKAB75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 21:59:57 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF9F10FED
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 18:59:56 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id p184so11256771iof.11
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 18:59:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=tz2IvL4GW+A3brfA0AhzvjM7rEyd8FHY7/DmEU+TeH0=;
-        b=T7WFWydh0LD3vChB+GqXb24P/X7ei44KzKvR+TqHO0dBFvi1ARAMzt/YdIkeyK5D0B
-         6SpyKlYkdBkTL+ptY4jMEbHc8Z2nBKaFn2Kkny8zJ6VG3WVZeE8EIkTGPP+Y+/dAJiN9
-         B5d9kgTK45V9q7DumxvznM0dMrK9k7b/YNdzR0kCpNl1NcSA1uIJ2PFskkhzdfcriAC7
-         cTysy9ebws1XNyQluguVdoeKSDhL+Ll6HPXVJa0d0kIgMVNSGdioRezPNB+Dgzpez9DP
-         1cgJIpCoSa9DrLsvVlRsKc96vLaNdva8AHLt2u18+xRBNSH38thtssS/YYKp98VGAdm9
-         IdBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tz2IvL4GW+A3brfA0AhzvjM7rEyd8FHY7/DmEU+TeH0=;
-        b=hQyJJVzi+9rgcVsQxVhBBs0NMCktpSkD8ofcJes80mWC+6sOMqaN+pcEQAkgbJsM6D
-         Ir4zJHJDCDvITdv/WgYJmcPrWeWvT3oJZnfPpDo/eTzavgCB1S/rdcodA07KeWFbGbMV
-         CBG1C+GcovU47Nhpl17OBMoD7jqdxfftP35FyGoCBugOQZItCWa0v4tjPOJ+6a3KX559
-         k0OASEDzlzspNGKoqFZiLxysfuAyUXTyRXQNaHPGUEYnto8OQ8dImRBqGo6R19MFSiFx
-         zso05M7QF5VTOv/SGe8dQZHFhpabW5OWZtuI5KbnHE+K5sKE6JtjV5mZ/3m0MzWdGLK+
-         pgpg==
-X-Gm-Message-State: ACrzQf3+f+EEabtQ/bSeQDcswQZtkkkdPEs6iTeG31YX6GsgXzS5Xc81
-        T/aSeqvlJkqyXp2s0fB7ybwFpxIGeZzYiQHU4B+lDg==
-X-Google-Smtp-Source: AMsMyM50fMCh4OLS6CKka+IBqOHJTMPLVNjRYGU0Vk4PSoQ7dXSO1vU905rE0hcc/k1KpEbbppvxgUw01IoBR3QG3LY=
-X-Received: by 2002:a02:ad18:0:b0:372:e2a5:3a54 with SMTP id
- s24-20020a02ad18000000b00372e2a53a54mr40880jan.106.1667267995551; Mon, 31 Oct
- 2022 18:59:55 -0700 (PDT)
+        with ESMTP id S229452AbiKACRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 22:17:40 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastusazon11021018.outbound.protection.outlook.com [52.101.52.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E190C1209B;
+        Mon, 31 Oct 2022 19:17:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k8/EAjsJLVkBURCkWzaKpp5FaUhFWGJ/DQO9PNheC2x40awebjuFKA1WY+Z9jm535AFsIBIzmUKrTDyJkIjAQ/WADLWHOW9bDABtvyC+XWQHYm7Z87fU0fW64CLjBKO7Pr32Z6Ra2BFmyBHEHyfSytDaOPvdBqJFCiqBHUkcpCECKdJTAC9psf8h+e1HvpHYnJ6mjLsRmko+mFQk73Ve2ZulL5DNOlWOEk+tB2BHLgSv+qE/TfBqU3ligUY2zatAX4rwopsNMqP33QqKFlSlZgZAvRKuCBb70mqW8yGeAaKNknUdjx05VZSQ8s7CGWV2LhbHmFtYJ2WuJSoXxoNkdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SKyFbDD0hV2RFntCcK5g0EJ24zZuBp24CNZLOKULoPA=;
+ b=kZwu13688rUQcceQF+bjjHzt0pT7K+sZfex+aAS7HJiuJx5VXK3IB987imw5/4K1GyF7cxyNmBRmB+ouAMNtPoa1cWpVEJvUhQb3ZfJaEq2kEAFJD9HCTVK08KPcEjd0VrZDML/hibtb2B4bh0GK72rqHFD2P09SCg0wmIe1qmoTusRk5pg+0/aBQGrgxqg2xJoJ6It5tkk/4LS82b0YbRINC/kOpttFSM1tIg3doouiGiV+hnrXlF8JCvOxqB/9RzEEGs8frYXhavdybCjMoFQSMyWCLxvoJjVhXzOSvhTWCW/IasNKb22aV6+nxbpQ6xNG/md3DxF5keBZ1QsIsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SKyFbDD0hV2RFntCcK5g0EJ24zZuBp24CNZLOKULoPA=;
+ b=W69zSxd+lHNAqadNQK55YgYKXmTHYRLk9kPrCJe+uL5vlkCYZRVnHI5yzks8bGVWpGlPtPOYZmNo/4pI3hTw/KWtZTJJm/6KRUBKvZ7v+7TofBXnRCl8y6q/2uWiOi9CHRZOBQXX+R2XUoXacYkTU6w3dBgIbauMw2jXfN2wg3s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from BL0PR2101MB1092.namprd21.prod.outlook.com
+ (2603:10b6:207:30::23) by PH7PR21MB3140.namprd21.prod.outlook.com
+ (2603:10b6:510:1d4::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.1; Tue, 1 Nov
+ 2022 02:17:36 +0000
+Received: from BL0PR2101MB1092.namprd21.prod.outlook.com
+ ([fe80::a746:e3bf:9f88:152f]) by BL0PR2101MB1092.namprd21.prod.outlook.com
+ ([fe80::a746:e3bf:9f88:152f%7]) with mapi id 15.20.5813.001; Tue, 1 Nov 2022
+ 02:17:35 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     sgarzare@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, arseny.krasnov@kaspersky.com,
+        netdev@vger.kernel.org
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, stephen@networkplumber.org,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        Dexuan Cui <decui@microsoft.com>
+Subject: [PATCH v2 0/2] vsock: remove an unused variable and fix infinite sleep
+Date:   Mon, 31 Oct 2022 19:17:04 -0700
+Message-Id: <20221101021706.26152-1-decui@microsoft.com>
+X-Mailer: git-send-email 2.17.1
+Reply-To: decui@microsoft.com
+Content-Type: text/plain
+X-ClientProxiedBy: MW3PR06CA0022.namprd06.prod.outlook.com
+ (2603:10b6:303:2a::27) To BL0PR2101MB1092.namprd21.prod.outlook.com
+ (2603:10b6:207:30::23)
 MIME-Version: 1.0
-References: <20221027200019.4106375-1-sdf@google.com> <635bfc1a7c351_256e2082f@john.notmuch>
- <20221028110457.0ba53d8b@kernel.org> <CAKH8qBshi5dkhqySXA-Rg66sfX0-eTtVYz1ymHfBxSE=Mt2duA@mail.gmail.com>
- <635c62c12652d_b1ba208d0@john.notmuch> <20221028181431.05173968@kernel.org>
- <5aeda7f6bb26b20cb74ef21ae9c28ac91d57fae6.camel@siemens.com>
- <875yg057x1.fsf@toke.dk> <CAKH8qBvQbgE=oSZoH4xiLJmqMSXApH-ufd-qEKGKD8=POfhrWQ@mail.gmail.com>
- <77b115a0-bbba-48eb-89bd-3078b5fb7eeb@linux.dev>
-In-Reply-To: <77b115a0-bbba-48eb-89bd-3078b5fb7eeb@linux.dev>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 31 Oct 2022 18:59:44 -0700
-Message-ID: <CAKH8qBsGB1G60cu91Au816gsB2zF8T0P-yDwxbTEOxX0TN3WgA@mail.gmail.com>
-Subject: Re: [xdp-hints] Re: [RFC bpf-next 0/5] xdp: hints via kfuncs
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "alexandr.lobakin@intel.com" <alexandr.lobakin@intel.com>,
-        "anatoly.burakov@intel.com" <anatoly.burakov@intel.com>,
-        "song@kernel.org" <song@kernel.org>,
-        "Deric, Nemanja" <nemanja.deric@siemens.com>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "Kiszka, Jan" <jan.kiszka@siemens.com>,
-        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
-        "willemb@google.com" <willemb@google.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>, "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "mtahhan@redhat.com" <mtahhan@redhat.com>,
-        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "haoluo@google.com" <haoluo@google.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL0PR2101MB1092:EE_|PH7PR21MB3140:EE_
+X-MS-Office365-Filtering-Correlation-Id: e7412859-85b3-462a-c617-08dabbaf3d42
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lP7yqv0Y4oJl5WaMU1Jb4Kj6BaUk9vZe+HytuUeJOEdNrJLXXT3nQy5k1FoEdLeB9SIQ5WV35fIrr3AN8zP4ZWAZC2kenrU4Qu6/EQpMwR8tOPy69vPkpjR4oHN2qyRSOvUjaI6wfwt+oTOsWzr1jzEhAty7UX4WEu9QwCxizNEAtNFi6kC0GheTRhP/SCCGhUHG3UvFfBtoP2q558NOhalw1nEnqmpQMKlgawIt7D/cEIp90w1xrApGQlNl7UhZcZuY8tiahmXXwQtnln6b5pCFKDsQMM9ZtbtKvrNUr1zKoy7YNiTSRFaCf/yUkNJqyq9hYgcvp7UJ6jDC8pAopDpzZnvixXl9AroaGP+AtzR7YfXVVa3JB8v9N3tJODMXp9oUpovcpXStjD/O9QbmWCL4JAy4SELSs8/zaC3fJeDUyByNXgjqAYYw8UGNQaT948QFQpanRa+ww24bRvZ+6lxTIm9GLiiuaRHvmB9LxJ3q5o0Xm3cZHzsj9ZF31aPPX4mz1fW6TvfDMH/7WLs27c2KyaSQ4mNeHF8qwbwS4FlhaMf6ptE3nt4wr69AyedFVqPfLKnIABSJ0SFMeDS06jMs/rZNZJOK4vNvRE/+vMlkdz/VvHhXv8icm0LZoPuVQ3YNuF6gp8PkSj1mQQkRWQAZv2PNjmzaxYeY1CIRLXJwlQs/O2mDX4RWWlIxqIEdD4In6aY/RLe0WMHyaWRJgzWGNheRlABXYbc+XFbUzN4JQq2+fCyjOK7U1QHScHKq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB1092.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(366004)(376002)(346002)(136003)(451199015)(10290500003)(316002)(52116002)(6506007)(107886003)(6512007)(6666004)(2616005)(478600001)(6486002)(41300700001)(8936002)(8676002)(36756003)(4326008)(66556008)(66476007)(3450700001)(5660300002)(7416002)(38100700002)(4744005)(82960400001)(86362001)(82950400001)(2906002)(83380400001)(1076003)(66946007)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ouve6Jt41HuR7jJaZJ8VYHc+ymXhlSRSuEvhqP8ciMtyGtG3NzGrM1xSYjWg?=
+ =?us-ascii?Q?h8ODXIkdiYCGuLFRxUqMEKRFZWjghRGOwZT4Ywx1Q82dddTUjKxNEjwR58Eq?=
+ =?us-ascii?Q?aiVOLme15uLFE3sj227GFKwompkoZcGMoOBupIJBdMy14dqD85ES7dn3dvgs?=
+ =?us-ascii?Q?s9YTDSoR8TT3fZIpB69PB0UmS9AE0KjNZWbBaIgPqLhEK5y5+1Y8I3piH6GG?=
+ =?us-ascii?Q?d86E6pedOctANct1FrgyIE5NiRR7nfNTY2yUMzJrNBvSYnSzxHmjiqRfG/LW?=
+ =?us-ascii?Q?gOIXQl0LX3AtG6X3rvE3e32jg38QN7WL3XbWib+ybp318yBXWctbU4Kp0rwU?=
+ =?us-ascii?Q?o7JZp/cOibHYinGtR7pZnkhYEovEX4ogUc/fvSFyEkL2zQgOwj3RDq9TrxEX?=
+ =?us-ascii?Q?VfIGZZbPCkIncPPmkATTPwuSkJYsOo2F2fpGa7HtWrTLGDbF/M/R56BuJpJb?=
+ =?us-ascii?Q?XhzpnSA1gekxTK0P3YH+9GX56o5i0L35W91xw1b+ldQzzzuX4gsUnNqi1wnW?=
+ =?us-ascii?Q?X9+uzowZJ6EzYFLZAnIvvD2eZHndhLzkii6F/gkm0bFo2dm00XcQYVXtKavl?=
+ =?us-ascii?Q?nGExpDPHuIEKDRdi3HDpIkX8fMj6YutO/5TcJu9qD+aj2HmK0Ns8yqtwJETC?=
+ =?us-ascii?Q?/ucrlfmE9M6CGi+mrgKp00dgJEfdzlXh4C0JNp51wr1c9BpqcHiwZ3r3Q29z?=
+ =?us-ascii?Q?KvJRh9Bc/JOD/5rlb4e+W+mXYKaJRqi8teks7a2s2uOwGJ4ThcLUNiPpu2L5?=
+ =?us-ascii?Q?NTAlHj6WF+YHCm4RqKsGIL5X0SqBPTjeU0r3H4ouqDddGDUFZFDbSSsFwJmg?=
+ =?us-ascii?Q?VXWbmQZNRumudq/GGhtekZTVWF8zYW2f56MQu/5lGOZEXovwk6JpHChIWTyt?=
+ =?us-ascii?Q?jkU+V1lC3mHsBy0dBhp+6X9f/OEFb/5FIT72yhR94xdZy1vZJHRsk/7OJ3LD?=
+ =?us-ascii?Q?eJ3ng5RhU32CYF3/kjSvF6zh+0Y14G0+8SWdV0dizRhvowZT8ZD/ZQYRWcZm?=
+ =?us-ascii?Q?trKPpaWjdiH1pncgHkSlPnelkRtGSSZn6i6GpTYtHKamSXB2ICC4FFWHS93y?=
+ =?us-ascii?Q?dC7GOtAtDD7lD7nMeC70dc9dj3Bu/pMWoJq5s8kYHFfk5Rq+LZpG70gidZ6U?=
+ =?us-ascii?Q?R90TUA/l4+aL+thH0C8VnWbdbnfqM1T0kUN8vCH43k5jH4cyy40eZ8c0D45q?=
+ =?us-ascii?Q?71rHou9W/aIIczZGeQFlPW2uzb0OY6y0rGf/TZLNfRgrZBjx0vM/vSET+5PS?=
+ =?us-ascii?Q?bLkHZe13vpERZBMj1pbzw+idZv1uZVA/AHUZnwkTeZTETCkkw0YBZC2XJ5KM?=
+ =?us-ascii?Q?RapMmZ7k95735Nwfu+sJqCMWFyfAdaDYM05f2jcxTiOsS7M7A8y9gwX7HVgO?=
+ =?us-ascii?Q?0PenJoH4u/Z8Y1JY7vfckJNBc4qChy+AdtBQ2/209TF7Z6iKXUvp/83FQlJ4?=
+ =?us-ascii?Q?8KoQo+V9gFx7g6u/DDbSA6Ax+Q36WTU1RJmzmGPScUN6qjz7v8l3u0ebRS1s?=
+ =?us-ascii?Q?1QcgHFcRAAiKBseWy4EgVns90Z/iBfMsMNyVMIDRR8Cssa95PUksZ8rGuig3?=
+ =?us-ascii?Q?yNNACKdeZnDX7Ehkxsf8q0uItwGSGTy/rx5IycJsZr7nKkXcMaPHAO2ntl+P?=
+ =?us-ascii?Q?StxyYUo1i66xn+P3vc3JLL54gNAK74RwHnjLC5UIRKZJ?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7412859-85b3-462a-c617-08dabbaf3d42
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB1092.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2022 02:17:35.4066
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Is7fY6t84cyF4FjB8ctBTnRLybeYPdIiTkcXLa/ycbcghMkeHjVZPxRvOCX5XbAtpZvQ367Hss4P0rGJ/3ytuw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3140
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,69 +118,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 3:57 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 10/31/22 10:00 AM, Stanislav Fomichev wrote:
-> >> 2. AF_XDP programs won't be able to access the metadata without using a
-> >> custom XDP program that calls the kfuncs and puts the data into the
-> >> metadata area. We could solve this with some code in libxdp, though; if
-> >> this code can be made generic enough (so it just dumps the available
-> >> metadata functions from the running kernel at load time), it may be
-> >> possible to make it generic enough that it will be forward-compatible
-> >> with new versions of the kernel that add new fields, which should
-> >> alleviate Florian's concern about keeping things in sync.
-> >
-> > Good point. I had to convert to a custom program to use the kfuncs :-(
-> > But your suggestion sounds good; maybe libxdp can accept some extra
-> > info about at which offset the user would like to place the metadata
-> > and the library can generate the required bytecode?
-> >
-> >> 3. It will make it harder to consume the metadata when building SKBs. I
-> >> think the CPUMAP and veth use cases are also quite important, and that
-> >> we want metadata to be available for building SKBs in this path. Maybe
-> >> this can be resolved by having a convenient kfunc for this that can be
-> >> used for programs doing such redirects. E.g., you could just call
-> >> xdp_copy_metadata_for_skb() before doing the bpf_redirect, and that
-> >> would recursively expand into all the kfunc calls needed to extract the
-> >> metadata supported by the SKB path?
-> >
-> > So this xdp_copy_metadata_for_skb will create a metadata layout that
->
-> Can the xdp_copy_metadata_for_skb be written as a bpf prog itself?
-> Not sure where is the best point to specify this prog though.  Somehow during
-> bpf_xdp_redirect_map?
-> or this prog belongs to the target cpumap and the xdp prog redirecting to this
-> cpumap has to write the meta layout in a way that the cpumap is expecting?
+Patch 1 removes the unused 'wait' variable.
+Patch 2 fixes an infinite sleep issue reported by a hv_sock user.
 
-We're probably interested in triggering it from the places where xdp
-frames can eventually be converted into skbs?
-So for plain 'return XDP_PASS' and things like bpf_redirect/etc? (IOW,
-anything that's not XDP_DROP / AF_XDP redirect).
-We can probably make it magically work, and can generate
-kernel-digestible metadata whenever data == data_meta, but the
-question - should we?
-(need to make sure we won't regress any existing cases that are not
-relying on the metadata)
+Made v2 to address Stefano's comments.
+Please see each patch's header for changes in v2.
 
+Dexuan Cui (2):
+  vsock: remove the unused 'wait' in vsock_connectible_recvmsg()
+  vsock: fix possible infinite sleep in vsock_connectible_wait_data()
 
+ net/vmw_vsock/af_vsock.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
+-- 
+2.25.1
 
-
-
-> > the kernel will be able to understand when converting back to skb?
-> > IIUC, the xdp program will look something like the following:
-> >
-> > if (xdp packet is to be consumed by af_xdp) {
-> >    // do a bunch of bpf_xdp_metadata_<metadata> calls and assemble your
-> > own metadata layout
-> >    return bpf_redirect_map(xsk, ...);
-> > } else {
-> >    // if the packet is to be consumed by the kernel
-> >    xdp_copy_metadata_for_skb(ctx);
-> >    return bpf_redirect(...);
-> > }
-> >
-> > Sounds like a great suggestion! xdp_copy_metadata_for_skb can maybe
-> > put some magic number in the first byte(s) of the metadata so the
-> > kernel can check whether xdp_copy_metadata_for_skb has been called
-> > previously (or maybe xdp_frame can carry this extra signal, idk).
