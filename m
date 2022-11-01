@@ -2,125 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBEDB614E86
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 16:42:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A59614E98
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 16:49:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231371AbiKAPm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 11:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
+        id S229593AbiKAPta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 11:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231330AbiKAPmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 11:42:54 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5961A22D
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 08:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rJQhR5L4U+fNykBEC3w37wasXjF1knve+lJjIPSMeJA=; b=RUwjt6KCun5bSl1KupnPB+Hw55
-        8Cs9Uz1h9UcVaOnCQweLzPSGLmZo182u3gtjj8F2mp9xWRoJEBab7GXLNz+HOYKaVPx/HiYVYFL4P
-        Pz7sKaJ3X1skjbMuuVV1UlUUPno1Jfz1N+HCPnvxjyauo1Z9kAKsSNBaR9hLLazxOEv+rTJZi4d+6
-        53FV5NzNb0exUQ0C2xvvOd0UtmamXIf609SbugdamMtsnhuELey0jZhbkzuA4GIKp/dk1FwRn0s01
-        6iJglvsWADH1uEkhw5+nuCHJm+srGXUo+TH7mBhW/YbA1uhD44kghg198wS0RF0kaieaJLaLA7FbM
-        ltlTOoBQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35070)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1optPd-0004EJ-Lm; Tue, 01 Nov 2022 15:42:49 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1optPa-0006Yj-Tr; Tue, 01 Nov 2022 15:42:46 +0000
-Date:   Tue, 1 Nov 2022 15:42:46 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229496AbiKAPt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 11:49:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFAF13E9B;
+        Tue,  1 Nov 2022 08:49:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19FFB61585;
+        Tue,  1 Nov 2022 15:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5398C433C1;
+        Tue,  1 Nov 2022 15:49:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667317767;
+        bh=DfUrWwktIzT3nEPqxzqndsQ774MPvZ61GZ6Ia/dmz0g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mTqr5cpjVIBbghNfV8kxdo+cAH20M1mnx1D3hRpQjc2dUKNVjyJh2x5gLuoU6srzA
+         6TkehApgi8hjBByjFZvXpRAYnV/37M6wWJQaZbbMLaXMhbJWGasY35VYr0NhyGcK2O
+         gGS8665B9MnIx9y5Z/j+qHHgjyGcmYB+twbQ7hvwyl01a7oVfAJlnYVhNyc9Znr89y
+         deGrbWCtmxW1dtQzkBhJxuQzUDf6UUWFG7oCEjUmBEqHWNoeCRD41nFRh+/fAett3l
+         LnQNSC6qNkdzlJ7DrAFWsIJehCiuxifnV4/eBrsvlQVTW7Nr8tL7Fg5ekGfwXqos/r
+         +PtsRTaXpOG5g==
+Date:   Tue, 1 Nov 2022 08:49:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     Casper Andersson <casper.casan@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 4/4] net: dsa: remove phylink_validate() method
-Message-ID: <Y2E+dvH+zk1/QPpB@shell.armlinux.org.uk>
-References: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
- <20221101114806.1186516-5-vladimir.oltean@nxp.com>
- <Y2EKnLt2SyhjvcNI@shell.armlinux.org.uk>
- <20221101124035.tqlmxvyrqpaqn63h@skbuf>
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        "Wan Jiabing" <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
+ flower keys for the IS2 VCAP
+Message-ID: <20221101084925.7d8b7641@kernel.org>
+In-Reply-To: <741b628857168a6844b6c2e0482beb7df9b56520.camel@microchip.com>
+References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
+        <20221028144540.3344995-3-steen.hegelund@microchip.com>
+        <20221031103747.uk76tudphqdo6uto@wse-c0155>
+        <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
+        <20221031184128.1143d51e@kernel.org>
+        <741b628857168a6844b6c2e0482beb7df9b56520.camel@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221101124035.tqlmxvyrqpaqn63h@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 01, 2022 at 12:40:36PM +0000, Vladimir Oltean wrote:
-> On Tue, Nov 01, 2022 at 12:01:32PM +0000, Russell King (Oracle) wrote:
-> > On Tue, Nov 01, 2022 at 01:48:06PM +0200, Vladimir Oltean wrote:
-> > > Not all DSA drivers provide config->mac_capabilities, for example
-> > > mv88e6060, lan9303 and vsc73xx don't. However, there have been users of
-> > > those drivers on recent kernels and no one reported that they fail to
-> > > establish a link, so I'm guessing that they work (somehow). But I must
-> > > admit I don't understand why phylink_generic_validate() works when
-> > > mac_capabilities=0. Anyway, these drivers did not provide a
-> > > phylink_validate() method before and do not provide one now, so nothing
-> > > changes for them.
-> > 
-> > There is a specific exception:
-> > 
-> > When config->mac_capabilities is zero, and there is no phylink_validate()
-> > function, dsa_port_phylink_validate() becomes a no-op, and the no-op
-> > case basically means "everything is allowed", which is how things worked
-> > before the generic validation was added, as you will see from commit
-> > 5938bce4b6e2 ("net: dsa: support use of phylink_generic_validate()").
-> > 
-> > Changing this as you propose below will likely break these drivers.
-> > 
-> > A safer change would be to elimate ds->ops->phylink_validate, leaving
-> > the call to phylink_generic_validate() conditional on mac_capabilities
-> > having been filled in - which will save breaking these older drivers.
+On Tue, 1 Nov 2022 08:31:16 +0100 Steen Hegelund wrote:
+> > Previous series in this context means previous revision or something
+> > that was already merged?  
 > 
-> Yes, this is correct, thanks; our emails crossed.
+> Casper refers to this series (the first of the VCAP related series) that was merged on Oct 24th:
 > 
-> Between keeping a no-op phylink_validate() for these drivers and filling
-> in mac_capabilities for them, to remove this extra code path in DSA,
-> what would be preferred?
+> https://lore.kernel.org/all/20221020130904.1215072-1-steen.hegelund@microchip.com/
 
-My stance has always been - if we don't know the answer to a question
-that affects a code path in a way we want to, we can't modify that code
-path. That said:
+Alright, looks like this is only in net-next so no risk of breaking
+existing users.
+ 
+That said you should reject filters you can't support with an extack
+message set. Also see below.
 
-> The 3 drivers I mentioned could all get a blanket MAC_10 | MAC_100 |
-> MAC1000FD | MAC_ASYM_PAUSE | MAC_SYM_PAUSE to keep advertising what they
-> did, even if this may or may not be 100% correct (lan9303 and mv88e6060
-> are not gigabit, and I don't know if they do flow control properly), but
-> these issues are not new.
+> > > tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \  
+> > 
+> > How are you using chains?  
+> 
+> The chain ids are referring to the VCAP instances and their lookups.  There are some more details
+> about this in the series I referred to above.
+> 
+> The short version is that this allows you to select where in the frame processing flow your rule
+> will be inserted (using ingress or egress and the chain id).
+> 
+> > I thought you need to offload FLOW_ACTION_GOTO to get to a chain,
+> > and I get no hits on this driver.  
+> 
+> I have not yet added the goto action, but one use of that is to chain a filter from one VCAP
+> instance/lookup to another.
+> 
+> The goto action will be added in a soon-to-come series.  I just wanted to avoid a series getting too
+> large, but on the other hand each of them should provide functionality that you can use in practice.
 
-Would almost be no different from what we do today. The exception would
-be the lack of 1000HD, which I think should be included even though it
-isn't common - because currently it will be included.
-
-I also think that if we're going down this route and putting code to set
-those capabilities in the DSA drivers, they need to be accompanied with
-a comment stating that they are a guess and may not be correct.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+The behavior of the offload must be the same as the SW implementation.
+It sounds like in your case it very much isn't, as adding rules to 
+a magic chain in SW, without the goto will result in the rules being
+unused.
