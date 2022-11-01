@@ -2,66 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9CF614C7A
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 15:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B416614C84
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 15:24:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiKAOVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 10:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        id S229973AbiKAOYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 10:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229766AbiKAOVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 10:21:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D7F1B78A
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 07:20:49 -0700 (PDT)
+        with ESMTP id S229756AbiKAOYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 10:24:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B8E2DC7
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 07:23:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667312449;
+        s=mimecast20190719; t=1667312612;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=af8a5692vQNnHtfl4OiAhO0hfTr2zQ516tgQOTBk6F8=;
-        b=Hf3zQUy9KvEkGozb6F54bjfdRCT7zvnU5DeauBLg0eLPwb4BENyODYdkEUds9gi3BSOy0s
-        V/jGZmsdlxUY3+hqQ7QKtQ4JAbnMbp0LcF1Zj8sL8jSK000f16KamxB46uncvOt9w4aVWB
-        3zMYIp10qvEPkuCoG2CJT5oVgZLBIgA=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=sqDa+kN8lmTDBcXC/JgXxNqx9tt0i1T0RdgjKzwWXWI=;
+        b=g4OiiySDWOo0hakuSTTbYbmh2LhwxW/ERvTyTL3lpEpvz992mYvaX7SMPHWUXXzlhBSpSj
+        qMEKCdlmATGSnNXxZm/ybc9aHcHrcIjBD51ddBH6gJ7i2UqXaGqwruyp0WTsAvr1NaBESM
+        ePP1MDyhUo+J48AmxCtIMqvZtorx4Do=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-609-aGhysppNP0iXrvm-sdKAZQ-1; Tue, 01 Nov 2022 10:20:48 -0400
-X-MC-Unique: aGhysppNP0iXrvm-sdKAZQ-1
-Received: by mail-ej1-f72.google.com with SMTP id he6-20020a1709073d8600b0078e20190301so8062989ejc.22
-        for <netdev@vger.kernel.org>; Tue, 01 Nov 2022 07:20:47 -0700 (PDT)
+ us-mta-116-zbhD9CgeNSaaBodrXy6-sw-1; Tue, 01 Nov 2022 10:23:31 -0400
+X-MC-Unique: zbhD9CgeNSaaBodrXy6-sw-1
+Received: by mail-ed1-f71.google.com with SMTP id t4-20020a056402524400b004620845ba7bso9934015edd.4
+        for <netdev@vger.kernel.org>; Tue, 01 Nov 2022 07:23:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=af8a5692vQNnHtfl4OiAhO0hfTr2zQ516tgQOTBk6F8=;
-        b=HJVAEflZgGttvaIhy3+5DWlHAVwPPPh7Ymle9yIQcKckkHOo1NH34j3zwEnNTT1e5l
-         hiRNTLt/rYUsmqDokJP+p9B2wsLC4JQQGh8wXrWXMEU+oBzN+u8IHOxtd9VUt6TK78SX
-         C1acGmSPsowmdiBbsanyFthFpgTJISzjIwF52emNIMMYihLTb/fliBPz1tVgFDHIyO79
-         Gdh4PCUtC/UepZK0W2Hg68FwGsI2hlLJrRvl2vdYmMybRf/GpWAONN4AG75IipNX0joY
-         ie16ZNa1HrLYB3dfKHayajAzTquBwiF7iu+KiFTBJXSPNF7OHMnf4mitDrZNKo7rEQZV
-         EQFA==
-X-Gm-Message-State: ACrzQf1AzIAa+rkzkpH0Jx5WhdsXwT5ceAapqQhNyRRKanBK5TvcFXy5
-        blc09OAyWFHUxtCwBZN/QyC+n3j6GYKRvyaf+DV5oDWyTzTyzqwdyq5D2YSL9Fj4eqj5e4+GaCh
-        FnOmyUXJFAgoLS1el
-X-Received: by 2002:a17:907:1dec:b0:7aa:6262:f23f with SMTP id og44-20020a1709071dec00b007aa6262f23fmr18937200ejc.38.1667312446478;
-        Tue, 01 Nov 2022 07:20:46 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6aDckAMRxEEVFgZBwDFvL3lMW4RACwP6nIccNT4NUAIDnjh9X31yp2rCqvrTBmz+z7LIZn4Q==
-X-Received: by 2002:a17:907:1dec:b0:7aa:6262:f23f with SMTP id og44-20020a1709071dec00b007aa6262f23fmr18937142ejc.38.1667312446014;
-        Tue, 01 Nov 2022 07:20:46 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id v14-20020a1709063bce00b0072af4af2f46sm4226672ejf.74.2022.11.01.07.20.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Nov 2022 07:20:45 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 21A2E723719; Tue,  1 Nov 2022 15:20:45 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sqDa+kN8lmTDBcXC/JgXxNqx9tt0i1T0RdgjKzwWXWI=;
+        b=O7qN6F2Bt3fC3aZedl5Cg2D+vC7XvfsyyzLEfIlG3y4V9W6rxVrlFB8agrF9a30zRt
+         rCV+T7Z7DXwiBCcEQkNzTmKspJKLFZWH5xbo75HDnMgEFcuvCBOS7/Ck2X29vXAzSZwT
+         3GD3SW/fM4F1d/4xSDCh6eXREwYaPV9QHjsXtzqEmwzLcV+XbwmTkcfAJyLxT6TbWf4g
+         thpRg0Ny6YNOYhMIm6CU6i3mvM/wF+ECvz//cymWUqbeVhuRJ3dqgJJGVr17PuI0ibnQ
+         J3Dj6YlRwSKIaeaAQCDEe+YXcgReXD1OpalQ2Swn9scdDFaoXnLeVDdSTN0rS18c1McC
+         cTmA==
+X-Gm-Message-State: ACrzQf2fmbfv7wHJJ81sTWwKMTMMlcWpLOnWNZnY5I/g1T1ZzpZKjGxE
+        CcGkCWeEAdmTpTuFGhIQAfWU3ziyJTDfnB7vPymQ1jGBidhlmmt9ZqCwcsB7Nw/rFvJpi+sGpmm
+        SL8sYx12jWEAc/qb3
+X-Received: by 2002:a05:6402:26cc:b0:462:2426:4953 with SMTP id x12-20020a05640226cc00b0046224264953mr19593323edd.13.1667312610510;
+        Tue, 01 Nov 2022 07:23:30 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7EAtyXXEISCk5BIVxhvsExoR2XlOV+BKRQiRc3NgS2/IvtHQzYy6t/vNeNApzYS3rTkdcizg==
+X-Received: by 2002:a05:6402:26cc:b0:462:2426:4953 with SMTP id x12-20020a05640226cc00b0046224264953mr19593307edd.13.1667312610241;
+        Tue, 01 Nov 2022 07:23:30 -0700 (PDT)
+Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id i2-20020aa7c9c2000000b00458947539desm4549046edt.78.2022.11.01.07.23.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Nov 2022 07:23:29 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <fb888d27-825c-37c9-128c-b67843777e32@redhat.com>
+Date:   Tue, 1 Nov 2022 15:23:26 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     brouer@redhat.com,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
         "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
         "alexandr.lobakin@intel.com" <alexandr.lobakin@intel.com>,
@@ -72,8 +75,8 @@ Cc:     "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
         "Kiszka, Jan" <jan.kiszka@siemens.com>,
         "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
         "willemb@google.com" <willemb@google.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>, "yhs@fb.com" <yhs@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>, "yhs@fb.com" <yhs@fb.com>,
+        "martin.lau@linux.dev" <martin.lau@linux.dev>,
         "kpsingh@kernel.org" <kpsingh@kernel.org>,
         "daniel@iogearbox.net" <daniel@iogearbox.net>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
@@ -83,172 +86,171 @@ Cc:     "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
         "jolsa@kernel.org" <jolsa@kernel.org>,
         "haoluo@google.com" <haoluo@google.com>
 Subject: Re: [xdp-hints] Re: [RFC bpf-next 0/5] xdp: hints via kfuncs
-In-Reply-To: <3caaaf96-58cf-9bf5-dcfe-2f6522f4da02@gmail.com>
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>, Yonghong Song <yhs@meta.com>
 References: <20221027200019.4106375-1-sdf@google.com>
- <635bfc1a7c351_256e2082f@john.notmuch>
- <20221028110457.0ba53d8b@kernel.org>
+ <635bfc1a7c351_256e2082f@john.notmuch> <20221028110457.0ba53d8b@kernel.org>
  <CAKH8qBshi5dkhqySXA-Rg66sfX0-eTtVYz1ymHfBxSE=Mt2duA@mail.gmail.com>
- <635c62c12652d_b1ba208d0@john.notmuch>
- <20221028181431.05173968@kernel.org>
+ <635c62c12652d_b1ba208d0@john.notmuch> <20221028181431.05173968@kernel.org>
  <5aeda7f6bb26b20cb74ef21ae9c28ac91d57fae6.camel@siemens.com>
- <875yg057x1.fsf@toke.dk>
- <CAKH8qBvQbgE=oSZoH4xiLJmqMSXApH-ufd-qEKGKD8=POfhrWQ@mail.gmail.com>
- <77b115a0-bbba-48eb-89bd-3078b5fb7eeb@linux.dev>
- <CAKH8qBsGB1G60cu91Au816gsB2zF8T0P-yDwxbTEOxX0TN3WgA@mail.gmail.com>
- <87wn8e4z14.fsf@toke.dk> <3caaaf96-58cf-9bf5-dcfe-2f6522f4da02@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 01 Nov 2022 15:20:45 +0100
-Message-ID: <87tu3i4uyq.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+ <875yg057x1.fsf@toke.dk> <663fb4f4-04b7-5c1f-899c-bdac3010f073@meta.com>
+ <CAKH8qBt=As5ON+CbH304tRanudvTF27bzeSnjH2GQR2TVx+mXw@mail.gmail.com>
+ <8892271c-fd8d-e8f3-5de9-b94e5f1ce5fe@meta.com>
+ <CAKH8qBvVQnYXL4H1TmGJiOhVS2jeoEcapzp3UtjaGpz0jsJY-w@mail.gmail.com>
+In-Reply-To: <CAKH8qBvVQnYXL4H1TmGJiOhVS2jeoEcapzp3UtjaGpz0jsJY-w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
 
-> On 11/1/22 6:52 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Stanislav Fomichev <sdf@google.com> writes:
->>=20
->>> On Mon, Oct 31, 2022 at 3:57 PM Martin KaFai Lau <martin.lau@linux.dev>=
- wrote:
+
+On 31/10/2022 23.55, Stanislav Fomichev wrote:
+> On Mon, Oct 31, 2022 at 3:38 PM Yonghong Song<yhs@meta.com>  wrote:
+>>
+>> On 10/31/22 3:09 PM, Stanislav Fomichev wrote:
+>>> On Mon, Oct 31, 2022 at 12:36 PM Yonghong Song<yhs@meta.com>  wrote:
 >>>>
->>>> On 10/31/22 10:00 AM, Stanislav Fomichev wrote:
->>>>>> 2. AF_XDP programs won't be able to access the metadata without usin=
-g a
->>>>>> custom XDP program that calls the kfuncs and puts the data into the
->>>>>> metadata area. We could solve this with some code in libxdp, though;=
- if
->>>>>> this code can be made generic enough (so it just dumps the available
->>>>>> metadata functions from the running kernel at load time), it may be
->>>>>> possible to make it generic enough that it will be forward-compatible
->>>>>> with new versions of the kernel that add new fields, which should
->>>>>> alleviate Florian's concern about keeping things in sync.
+>>>> On 10/31/22 8:28 AM, Toke Høiland-Jørgensen wrote:
+>>>>> "Bezdeka, Florian"<florian.bezdeka@siemens.com>  writes:
+>>>>>>
+>>>>>> On Fri, 2022-10-28 at 18:14 -0700, Jakub Kicinski wrote:
+>>>>>>> On Fri, 28 Oct 2022 16:16:17 -0700 John Fastabend wrote:
+[...]
+>>>>>> All parts of my application (BPF program included) should not be
+>>>>>> optimized/adjusted for all the different HW variants out there.
+>>>>> Yes, absolutely agreed. Abstracting away those kinds of hardware
+>>>>> differences is the whole*point*  of having an OS/driver model. I.e.,
+>>>>> it's what the kernel is there for! If people want to bypass that and get
+>>>>> direct access to the hardware, they can already do that by using DPDK.
 >>>>>
->>>>> Good point. I had to convert to a custom program to use the kfuncs :-(
->>>>> But your suggestion sounds good; maybe libxdp can accept some extra
->>>>> info about at which offset the user would like to place the metadata
->>>>> and the library can generate the required bytecode?
+>>>>> So in other words, 100% agreed that we should not expect the BPF
+>>>>> developers to deal with hardware details as would be required with a
+>>>>> kptr-based interface.
 >>>>>
->>>>>> 3. It will make it harder to consume the metadata when building SKBs=
-. I
->>>>>> think the CPUMAP and veth use cases are also quite important, and th=
-at
->>>>>> we want metadata to be available for building SKBs in this path. May=
-be
->>>>>> this can be resolved by having a convenient kfunc for this that can =
-be
->>>>>> used for programs doing such redirects. E.g., you could just call
->>>>>> xdp_copy_metadata_for_skb() before doing the bpf_redirect, and that
->>>>>> would recursively expand into all the kfunc calls needed to extract =
-the
->>>>>> metadata supported by the SKB path?
->>>>>
->>>>> So this xdp_copy_metadata_for_skb will create a metadata layout that
+>>>>> As for the kfunc-based interface, I think it shows some promise.
+>>>>> Exposing a list of function names to retrieve individual metadata items
+>>>>> instead of a struct layout is sorta comparable in terms of developer UI
+>>>>> accessibility etc (IMO).
+>>>> >>>> Looks like there are quite some use cases for hw_timestamp.
+>>>> Do you think we could add it to the uapi like struct xdp_md?
 >>>>
->>>> Can the xdp_copy_metadata_for_skb be written as a bpf prog itself?
->>>> Not sure where is the best point to specify this prog though.  Somehow=
- during
->>>> bpf_xdp_redirect_map?
->>>> or this prog belongs to the target cpumap and the xdp prog redirecting=
- to this
->>>> cpumap has to write the meta layout in a way that the cpumap is expect=
-ing?
->>>
->>> We're probably interested in triggering it from the places where xdp
->>> frames can eventually be converted into skbs?
->>> So for plain 'return XDP_PASS' and things like bpf_redirect/etc? (IOW,
->>> anything that's not XDP_DROP / AF_XDP redirect).
->>> We can probably make it magically work, and can generate
->>> kernel-digestible metadata whenever data =3D=3D data_meta, but the
->>> question - should we?
->>> (need to make sure we won't regress any existing cases that are not
->>> relying on the metadata)
->>=20
->> So I was thinking about whether we could have the kernel do this
->> automatically, and concluded that this was probably not feasible in
->> general, which is why I suggested the explicit helper. My reasoning was
->> as follows:
->>=20
->> For straight XDP_PASS in the driver we don't actually need to do
->> anything today, as the driver itself will build the SKB and read any
->> metadata it needs from the HW descriptor[0].
->
-> The program can pop encap headers, mpls tags, ... and thus affect the
-> metadata in the descriptor (besides the timestamp).
+>>>> The following is the current xdp_md:
+>>>> struct xdp_md {
+>>>>            __u32 data;
+>>>>            __u32 data_end;
+>>>>            __u32 data_meta;
+>>>>            /* Below access go through struct xdp_rxq_info */
+>>>>            __u32 ingress_ifindex; /* rxq->dev->ifindex */
+>>>>            __u32 rx_queue_index;  /* rxq->queue_index  */
+>>>>
+>>>>            __u32 egress_ifindex;  /* txq->dev->ifindex */
+>>>> };
+>>>>
+>>>> We could add  __u64 hw_timestamp to the xdp_md so user
+>>>> can just do xdp_md->hw_timestamp to get the value.
+>>>> xdp_md->hw_timestamp == 0 means hw_timestamp is not
+>>>> available.
+>>>>
+>>>> Inside the kernel, the ctx rewriter can generate code
+>>>> to call driver specific function to retrieve the data.
+>>> If the driver generates the code to retrieve the data, how's that
+>>> different from the kfunc approach?
+>>> The only difference I see is that it would be a more strong UAPI than
+>>> the kfuncs?
+>> Right. it is a strong uapi.
+>>
+>>>> The kfunc approach can be used to*less*  common use cases?
+>>> What's the advantage of having two approaches when one can cover
+>>> common and uncommon cases?
+>>
+>> Beyond hw_timestamp, do we have any other fields ready to support?
+>>
+>> If it ends up with lots of fields to be accessed by the bpf program,
+>> and bpf program actually intends to access these fields,
+>> using a strong uapi might be a good thing as it can make code
+>> much streamlined.
+> > There are a bunch. Alexander's series has a good list:
+> 
+> https://github.com/alobakin/linux/commit/31bfe8035c995fdf4f1e378b3429d24b96846cc8
+> 
 
-Hmm, right, good point. How does XDP_PASS deal with that today, though?
+Below are the fields I've identified, which are close to what Alexander 
+also found.
 
-I guess this is an argument for making the "read HW metadata into SKB
-format" thing be a kfunc/helper rather than a flag to bpf_redirect(),
-then. Because then we can allow the XDP program to override/modify the
-metadata afterwards, either by defining it as:
+  struct xdp_hints_common {
+	union {
+		__wsum		csum;
+		struct {
+			__u16	csum_start;
+			__u16	csum_offset;
+		};
+	};
+	u16 rx_queue;
+	u16 vlan_tci;
+	u32 rx_hash32;
+	u32 xdp_hints_flags;
+	u64 btf_full_id; /* BTF object + type ID */
+  } __attribute__((aligned(4))) __attribute__((packed));
 
-int xdp_copy_metadata_for_skb(struct xdp_md *ctx, struct xdp_skb_meta *over=
-ride, int flags)
+Some of the fields are encoded via flags:
 
-where the XDP program can fill in 'override' with new data that takes
-precedence over the stuff from the HW (like a modified checksum or
-offset or something).
+  enum xdp_hints_flags {
+	HINT_FLAG_CSUM_TYPE_BIT0  = BIT(0),
+	HINT_FLAG_CSUM_TYPE_BIT1  = BIT(1),
+	HINT_FLAG_CSUM_TYPE_MASK  = 0x3,
 
-Or we can just have xdp_copy_metadata_for_skb() into the regular XDP
-metadata area, and let the XDP program modify it afterwards. I feel like
-the override argument would be easier to use, though.
+	HINT_FLAG_CSUM_LEVEL_BIT0 = BIT(2),
+	HINT_FLAG_CSUM_LEVEL_BIT1 = BIT(3),
+	HINT_FLAG_CSUM_LEVEL_MASK = 0xC,
+	HINT_FLAG_CSUM_LEVEL_SHIFT = 2,
 
-Also, having it be completely opaque *where* the metadata is stored when
-using xdp_copy_metadata_for_skb() lets us be more flexible about it.
-E.g., the helper could write the timestamp directly into
-skb_shared_info, instead of stuffing it into the metadata area where it
-then has to be copied out later.
+	HINT_FLAG_RX_HASH_TYPE_BIT0 = BIT(4),
+	HINT_FLAG_RX_HASH_TYPE_BIT1 = BIT(5),
+	HINT_FLAG_RX_HASH_TYPE_MASK = 0x30,
+	HINT_FLAG_RX_HASH_TYPE_SHIFT = 0x4,
 
->> This leaves packets that are redirected (either to a veth or a cpumap so
->> we build SKBs from them later); here the problem is that we buffer the
->> packets (for performance reasons) so that the redirect doesn't actually
->> happen until after the driver exits the NAPI loop. At which point we
->> don't have access to the HW descriptors anymore, so we can't actually
->> read the metadata.
->>=20
->> This means that if we want to execute the metadata gathering
->> automatically, we'd have to do it in xdp_do_redirect(). Which means that
->> we'll have to figure out, at that point, whether the XDP frame is likely
->> to be converted to an SKB. This will add at least one branch (and
->> probably more) that will be in-path for every redirected frame.
->
-> or forwarded to a tun device as an xdp frame and wanting to pass
-> metadata into a VM which may construct an skb in the guest. This case is
-> arguably aligned with the redirect from vendor1 to vendor2.
->
-> This thread (and others) seem to be focused on the Rx path, but the Tx
-> path is equally important with similar needs.
+	HINT_FLAG_RX_QUEUE = BIT(7),
 
-You're right, of course. Thinking a bit out loud here, but I actually
-think the kfunc approach makes the TX side easier:
+	HINT_FLAG_VLAN_PRESENT            = BIT(8),
+	HINT_FLAG_VLAN_PROTO_ETH_P_8021Q  = BIT(9),
+	HINT_FLAG_VLAN_PROTO_ETH_P_8021AD = BIT(10),
+	/* Flags from BIT(16) can be used by drivers */
+  };
 
-We already have to ability to execute a second "TX" XDP program inside
-the devmaps. At which point that program is also tied to a particular
-interface. So we could duplicate the RX-side kfunc trick, and expose a
-set of *writer* kfuncs for metadata. So that an XDP program in the
-devmap can simply do:
+> We can definitely call some of them more "common" than the others, but
+> not sure how strong of a definition that would be.
 
-if (bpf_xdp_metadata_tx_timestamp_supported())
-  bpf_xdp_metadata_tx_timestamp(ctx, tsval);
+The important fields that would be worth considering as UAPI candidates
+are: (1) RX-hash, (2) Hash-type and (3) RX-checksum.
+With these three we can avoid calling the flow-dissector and GRO frame
+aggregations works. (This currently hurts xdp_frame to SKB performance a
+lot in practice).
 
-and those two kfuncs will be unrolled by the TX-side driver as well to
-store them wherever they need to go to reach the wire.
+*BUT* in it's current form above (incl. Alexanders approach/patch) it
+would be a mistake to UAPI standardize the "(2) Hash-type" in this
+simplified "reduced" form (which is what the SKB "needs").
 
-The one complication here being, of course, that by the time the devmap
-XDP program is executed, the driver hasn't seen the frame at all, yet,
-so it doesn't have anywhere to store that data. We'd need to reuse the
-frame metadata area for this (with some flag indicating that it's
-valid), or we'd need a new area the driver could use as scratch space
-specific to the xdp_frame (like the skb->cb field, I suppose).
+There is a huge untapped potential in the Hash-type.  Thanks to
+Microsoft almost all NIC hardware provided a Hash-type that gives us the
+L3-protocol (IPv4 or IPv6) and the L4-protocol (UDP or TCP and sometimes
+SCTP), plus info if extention-headers are provided. (Digging in
+datasheets, we can often also get the header-size).
 
--Toke
+Think about how many cycles XDP BPF-prog can save parsing protocol
+headers.  I'm also hoping we can leveregate this to allow SKBs created
+from an xdp_frame to have skb->transport_header and skb->network_header
+pre-populated (and skip some of these netstack layers).
+
+--Jesper
+
+p.s. in my patchset, I exposed the "raw" Hash-type bits from the 
+descriptor in hope this would evolve.
 
