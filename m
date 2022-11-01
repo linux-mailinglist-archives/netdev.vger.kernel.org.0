@@ -2,151 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B331B614282
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 02:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6EF614299
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 02:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiKABBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 21:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
+        id S229692AbiKABF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 21:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiKABBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 21:01:54 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671751570A;
-        Mon, 31 Oct 2022 18:01:52 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N1Wth6JBdzHvSj;
-        Tue,  1 Nov 2022 09:01:32 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 1 Nov 2022 09:01:50 +0800
-Message-ID: <86f9a599-2bcf-d811-8190-35e004f9dcc6@huawei.com>
-Date:   Tue, 1 Nov 2022 09:01:49 +0800
+        with ESMTP id S229480AbiKABF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 21:05:56 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6599911140
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 18:05:55 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id d59-20020a17090a6f4100b00213202d77e1so17480718pjk.2
+        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 18:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6G3WUF5IEDft9VKMxJYOx6kiMzh/TnFxGEk2w9L8d0k=;
+        b=ex1rcU/zOz56l7JLggQZyASS16wTvd9cY1fdEsgsAmoR3W3dZiEObjhc5OsIw1GwuH
+         rXgGnvHD9U2+7i/qHGvo+6yRcJtMcIVIbPiPpGr1x2Nt6DCujV+9P4LgsOOSQwQOWnE6
+         lR5U58Hlw55PeuEpKNZBTgQfoEo6IvLkvcGnw/QKBGQJs4SOql/pEPNLcNv3GhLFe3rk
+         nk13owa7ssF9upD98aSH1GxyZzgKDWu1O4RV9pTG3zMLcVOXzDw49jisDNutpAr7EmEb
+         q8eYahodHspCalExLKaMTcNhLpFP81rJ29xUqwspqxBZOrnaqg96xNDA2NJcHFx90Lwg
+         gxHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6G3WUF5IEDft9VKMxJYOx6kiMzh/TnFxGEk2w9L8d0k=;
+        b=AnszYW2xosClWwr3rRNCHCDuGs8u3Y7CVpSy1n7lvxcnM/gvLchUw62ggWlkuN4wKI
+         61wQYbHsOpvPaUNzxxsfB7zSm+yQsZSgmXoTuaKntz3rBTxS8/e+U8BIbF+gt0J+BHmn
+         fETwbzAAJfE8a2wZz3Xi0vMLtCjZ5Z934xNiDE6jZ2sXKoyJoQqXUX+CKrWAeU34Hb53
+         oipOVPdbXmoNewRgmAEppkIBuY8CFfb2e7bBANTOZNT24sXwN/FJCTXvRdbeMAuOi8be
+         uPJfDaHc1NWiuQ9A3umFikaCfa3WfKjFCQeItMXG0ASZAo2UxJvz8o08OJYxETaRYzy8
+         4PXA==
+X-Gm-Message-State: ACrzQf33djzwLCtYTp+LcN1wlYExwMjpasvCC8HJ2ZKmoQa5PcrNq8Pp
+        eG50TR47Bg1BrrNdtAq+JiMpI6qI4E8hVIQj
+X-Google-Smtp-Source: AMsMyM4wfm9Q3U5qBgYp6Pg5JyGvGsmgZ9+V6dQn3UGPD6y1aSbiuCgoTW+VRtwXfeedzEJ/5zO5DQ==
+X-Received: by 2002:a17:902:f78c:b0:185:3d6a:7576 with SMTP id q12-20020a170902f78c00b001853d6a7576mr16860809pln.86.1667264754910;
+        Mon, 31 Oct 2022 18:05:54 -0700 (PDT)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id p4-20020a622904000000b0056da2ad6503sm1501175pfp.39.2022.10.31.18.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Oct 2022 18:05:54 -0700 (PDT)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
+        radhey.shyam.pandey@xilinx.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, andy.chiu@sifive.com,
+        greentime.hu@sifive.com
+Subject: [PATCH v2 net-next 3/3] dt-bindings: describe the support of "clock-frequency" in mdio
+Date:   Tue,  1 Nov 2022 09:05:48 +0800
+Message-Id: <20221101010548.900471-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH net v2] bpf, sockmap: fix the sk->sk_forward_alloc warning
- of sk_stream_kill_queues()
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <john.fastabend@gmail.com>
-References: <1667000674-13237-1-git-send-email-wangyufen@huawei.com>
- <87fsf3q36k.fsf@cloudflare.com> <877d0fpqt4.fsf@cloudflare.com>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <877d0fpqt4.fsf@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+mdio bus frequency can be configured at boottime by a property in DT
+now, so add a description to it.
 
-在 2022/11/1 6:26, Jakub Sitnicki 写道:
-> On Mon, Oct 31, 2022 at 06:56 PM +01, Jakub Sitnicki wrote:
->> On Sat, Oct 29, 2022 at 07:44 AM +08, Wang Yufen wrote:
->>> When running `test_sockmap` selftests, got the following warning:
->>>
->>> WARNING: CPU: 2 PID: 197 at net/core/stream.c:205 sk_stream_kill_queues+0xd3/0xf0
->>> Call Trace:
->>>    <TASK>
->>>    inet_csk_destroy_sock+0x55/0x110
->>>    tcp_rcv_state_process+0xd28/0x1380
->>>    ? tcp_v4_do_rcv+0x77/0x2c0
->>>    tcp_v4_do_rcv+0x77/0x2c0
->>>    __release_sock+0x106/0x130
->>>    __tcp_close+0x1a7/0x4e0
->>>    tcp_close+0x20/0x70
->>>    inet_release+0x3c/0x80
->>>    __sock_release+0x3a/0xb0
->>>    sock_close+0x14/0x20
->>>    __fput+0xa3/0x260
->>>    task_work_run+0x59/0xb0
->>>    exit_to_user_mode_prepare+0x1b3/0x1c0
->>>    syscall_exit_to_user_mode+0x19/0x50
->>>    do_syscall_64+0x48/0x90
->>>    entry_SYSCALL_64_after_hwframe+0x44/0xae
->>>
->>> The root case is: In commit 84472b436e76 ("bpf, sockmap: Fix more
->>> uncharged while msg has more_data") , I used msg->sg.size replace
->>> tosend rudely, which break the
->>>     if (msg->apply_bytes && msg->apply_bytes < send)
->>> scene.
+Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+---
+ Documentation/devicetree/bindings/net/xilinx_axienet.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Sorry, I made a mistake here:  send --> tosend
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+index 1aa4c6006cd0..80e505a2fda1 100644
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+@@ -68,6 +68,8 @@ Optional properties:
+  - mdio		: Child node for MDIO bus. Must be defined if PHY access is
+ 		  required through the core's MDIO interface (i.e. always,
+ 		  unless the PHY is accessed through a different bus).
++		  Non-standard MDIO bus frequency is supported via
++		  "clock-frequency", see mdio.yaml.
+ 
+  - pcs-handle: 	  Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
+ 		  modes, where "pcs-handle" should be used to point
+-- 
+2.36.0
 
-alse will change in v3
-
->>>
->>> Fixes: 84472b436e76 ("bpf, sockmap: Fix more uncharged while msg has more_data")
->>> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
->>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->>> Acked-by: John Fastabend <john.fastabend@gmail.com>
->>> ---
->>> v1 -> v2: typo fixup
->>>   net/ipv4/tcp_bpf.c | 8 +++++---
->>>   1 file changed, 5 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
->>> index a1626af..774d481 100644
->>> --- a/net/ipv4/tcp_bpf.c
->>> +++ b/net/ipv4/tcp_bpf.c
->>> @@ -278,7 +278,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
->>>   {
->>>   	bool cork = false, enospc = sk_msg_full(msg);
->>>   	struct sock *sk_redir;
->>> -	u32 tosend, delta = 0;
->>> +	u32 tosend, orgsize, sent, delta = 0;
->>>   	u32 eval = __SK_NONE;
->>>   	int ret;
->>>   
->>> @@ -333,10 +333,12 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
->>>   			cork = true;
->>>   			psock->cork = NULL;
->>>   		}
->>> -		sk_msg_return(sk, msg, msg->sg.size);
->>> +		sk_msg_return(sk, msg, tosend);
->>>   		release_sock(sk);
->>>   
->>> +		orgsize = msg->sg.size;
->>>   		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
->>> +		sent = orgsize - msg->sg.size;
->> If I'm reading the code right, it's the same as:
->>
->>                  sent = tosend - msg->sg.size;
->>
->> If so, no need for orgsize.
-> Sorry, that doesn't make any sense. I misread the code.
->
-> The fix is correct.
->
-> If I can have a small ask to rename `orgsize` to something more common.
->
-> We have `orig_size` or `origsize` in use today, but no `orgsize`:
-ok, I will change in v3, thanks.
->
-> $ git grep -c '\<orig_size\>' -- net
-> net/core/sysctl_net_core.c:3
-> net/psample/psample.c:1
-> net/tls/tls_device.c:5
-> net/tls/tls_sw.c:7
-> $ git grep -c '\<origsize\>' -- net
-> net/bridge/netfilter/ebtables.c:5
-> net/ipv4/netfilter/arp_tables.c:10
-> net/ipv4/netfilter/ip_tables.c:10
-> net/ipv6/netfilter/ip6_tables.c:10
->
-> It reads a bit better, IMHO.
->
-> Thanks for fixing it so quickly.
->
-> Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
