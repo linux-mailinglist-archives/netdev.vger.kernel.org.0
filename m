@@ -2,110 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35CFF614473
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 07:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6073614475
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 07:04:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiKAGCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 02:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S229642AbiKAGER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 02:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiKAGCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 02:02:33 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B88F6E50;
-        Mon, 31 Oct 2022 23:02:30 -0700 (PDT)
-Received: from loongson.cn (unknown [10.20.42.77])
-        by gateway (Coremail) with SMTP id _____8Dx_7dztmBjt7oDAA--.11588S3;
-        Tue, 01 Nov 2022 14:02:27 +0800 (CST)
-Received: from loongson-PC.loongson.cn (unknown [10.20.42.77])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8Cxb+JqtmBjCVwJAA--.28915S2;
-        Tue, 01 Nov 2022 14:02:26 +0800 (CST)
-From:   Liu Peibao <liupeibao@loongson.cn>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229452AbiKAGEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 02:04:15 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AFC13F1C;
+        Mon, 31 Oct 2022 23:04:13 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667282651;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=icAV7Lk2okoEvGxaz81uFN6IaGUFlk9fMa1YNalfuA0=;
+        b=FKd9fy6jBZC1tKJgeDgCGU96ZNwD0C2DlV7uTgoCxo//KWAIJ0dMkjHzjylkfVDlVrZsRh
+        YfDWTQQBrcj3a6IeUaPf49PSMesesxigiVI5tNrdZR/X0hCWPcfl60gOT3dTT0SlFJNk6e
+        V2nadmSekOYqGZMQEYDt9JyfXd9XkmI=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     kuba@kernel.org
+Cc:     Cai Huoqing <cai.huoqing@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Cc:     chenhuacai@loongson.cn, lvjianmin@loongson.cn,
-        zhuyinbo@loongson.cn, liupeibao@loongson.cn,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] stmmac: dwmac-loongson: fix invalid mdio_node
-Date:   Tue,  1 Nov 2022 14:02:18 +0800
-Message-Id: <20221101060218.16453-1-liupeibao@loongson.cn>
-X-Mailer: git-send-email 2.20.1
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        SeongJae Park <sj@kernel.org>,
+        Peter Chen <peter.chen@kernel.org>,
+        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 1/2] net: hinic: Convert the cmd code from decimal to hex to be more readable
+Date:   Tue,  1 Nov 2022 14:03:38 +0800
+Message-Id: <20221101060358.7837-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf8Cxb+JqtmBjCVwJAA--.28915S2
-X-CM-SenderInfo: xolx1vpled0qxorr0wxvrqhubq/1tbiAQARCmNfuuMNGgADsr
-X-Coremail-Antispam: 1Uk129KBjvJXoW7tF45JFyxKry3tr15GFW3Jrb_yoW8Ww4Upw
-        4fCa4akr9IgrW7Ca1DXr4DXFy5u3yUt39rGr4Iya9a9a9YyrWjqry2gFWUAF1xArZ5C3W2
-        vr109w1UGF1DAwUanT9S1TB71UUUUjDqnTZGkaVYY2UrUUUUj1kv1TuYvTs0mT0YCTnIWj
-        qI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUIcSsGvfJTRUUU
-        bS8YFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s
-        1l1IIY67AEw4v_JrI_Jryl8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
-        wVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwA2z4
-        x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1l
-        n4kS14v26r126r1DM2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12xvs2x26I8E6x
-        ACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r126r1DMcIj6I8E
-        87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxV
-        Aaw2AFwI0_JF0_Jw1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l4IxY
-        O2xFxVAFwI0_JF0_Jw1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGV
-        WUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_
-        JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rV
-        WUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4U
-        YxBIdaVFxhVjvjDU0xZFpf9x07jeq2NUUUUU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,UPPERCASE_50_75 autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In current code "plat->mdio_node" is always NULL, the mdio
-support is lost as there is no "mdio_bus_data". The original
-driver could work as the "mdio" variable is never set to
-false, which is described in commit <b0e03950dd71> ("stmmac:
-dwmac-loongson: fix uninitialized variable ......"). And
-after this commit merged, the "mdio" variable is always
-false, causing the mdio supoort logic lost.
+The print cmd code is in hex, so using hex cmd code intead of
+decimal is easy to check the value with print info.
 
-Fixes: 30bba69d7db4 ("stmmac: pci: Add dwmac support for Loongson")
-Signed-off-by: Liu Peibao <liupeibao@loongson.cn>
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+v1->v2:
+	1.Add net-next prefix.
+	The comments link: https://lore.kernel.org/lkml/20221027110241.0340abdf@kernel.org/
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-index 017dbbda0c1c..79fa7870563b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-@@ -51,7 +51,6 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
- 	struct stmmac_resources res;
- 	struct device_node *np;
- 	int ret, i, phy_mode;
--	bool mdio = false;
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.h  | 108 +++++++++---------
+ 1 file changed, 52 insertions(+), 56 deletions(-)
+
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+index d2d89b0a5ef0..abffd967a791 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+@@ -46,104 +46,100 @@ enum hinic_port_cmd {
+ 	HINIC_PORT_CMD_VF_REGISTER = 0x0,
+ 	HINIC_PORT_CMD_VF_UNREGISTER = 0x1,
  
- 	np = dev_of_node(&pdev->dev);
+-	HINIC_PORT_CMD_CHANGE_MTU       = 2,
++	HINIC_PORT_CMD_CHANGE_MTU = 0x2,
  
-@@ -69,12 +68,10 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
- 	if (!plat)
- 		return -ENOMEM;
+-	HINIC_PORT_CMD_ADD_VLAN         = 3,
+-	HINIC_PORT_CMD_DEL_VLAN         = 4,
++	HINIC_PORT_CMD_ADD_VLAN = 0x3,
++	HINIC_PORT_CMD_DEL_VLAN = 0x4,
  
-+	plat->mdio_node = of_get_child_by_name(np, "mdio");
- 	if (plat->mdio_node) {
--		dev_err(&pdev->dev, "Found MDIO subnode\n");
--		mdio = true;
--	}
-+		dev_info(&pdev->dev, "Found MDIO subnode\n");
+-	HINIC_PORT_CMD_SET_PFC		= 5,
++	HINIC_PORT_CMD_SET_PFC = 0x5,
  
--	if (mdio) {
- 		plat->mdio_bus_data = devm_kzalloc(&pdev->dev,
- 						   sizeof(*plat->mdio_bus_data),
- 						   GFP_KERNEL);
+-	HINIC_PORT_CMD_SET_MAC          = 9,
+-	HINIC_PORT_CMD_GET_MAC          = 10,
+-	HINIC_PORT_CMD_DEL_MAC          = 11,
++	HINIC_PORT_CMD_SET_MAC = 0x9,
++	HINIC_PORT_CMD_GET_MAC = 0xA,
++	HINIC_PORT_CMD_DEL_MAC = 0xB,
+ 
+-	HINIC_PORT_CMD_SET_RX_MODE      = 12,
++	HINIC_PORT_CMD_SET_RX_MODE = 0xC,
+ 
+-	HINIC_PORT_CMD_GET_PAUSE_INFO	= 20,
+-	HINIC_PORT_CMD_SET_PAUSE_INFO	= 21,
++	HINIC_PORT_CMD_GET_PAUSE_INFO = 0x14,
++	HINIC_PORT_CMD_SET_PAUSE_INFO = 0x15,
+ 
+-	HINIC_PORT_CMD_GET_LINK_STATE   = 24,
++	HINIC_PORT_CMD_GET_LINK_STATE = 0x18,
+ 
+-	HINIC_PORT_CMD_SET_LRO		= 25,
++	HINIC_PORT_CMD_SET_LRO = 0x19,
+ 
+-	HINIC_PORT_CMD_SET_RX_CSUM	= 26,
++	HINIC_PORT_CMD_SET_RX_CSUM = 0x1A,
+ 
+-	HINIC_PORT_CMD_SET_RX_VLAN_OFFLOAD = 27,
++	HINIC_PORT_CMD_SET_RX_VLAN_OFFLOAD = 0x1B,
+ 
+-	HINIC_PORT_CMD_GET_PORT_STATISTICS = 28,
++	HINIC_PORT_CMD_GET_PORT_STATISTICS = 0x1C,
+ 
+-	HINIC_PORT_CMD_CLEAR_PORT_STATISTICS = 29,
++	HINIC_PORT_CMD_CLEAR_PORT_STATISTICS = 0x1D,
+ 
+-	HINIC_PORT_CMD_GET_VPORT_STAT	= 30,
++	HINIC_PORT_CMD_GET_VPORT_STAT = 0x1E,
+ 
+-	HINIC_PORT_CMD_CLEAN_VPORT_STAT	= 31,
++	HINIC_PORT_CMD_CLEAN_VPORT_STAT	= 0x1F,
+ 
+-	HINIC_PORT_CMD_GET_RSS_TEMPLATE_INDIR_TBL = 37,
++	HINIC_PORT_CMD_GET_RSS_TEMPLATE_INDIR_TBL = 0x25,
+ 
+-	HINIC_PORT_CMD_SET_PORT_STATE   = 41,
++	HINIC_PORT_CMD_SET_PORT_STATE = 0x29,
+ 
+-	HINIC_PORT_CMD_SET_RSS_TEMPLATE_TBL = 43,
++	HINIC_PORT_CMD_SET_RSS_TEMPLATE_TBL = 0x2B,
++	HINIC_PORT_CMD_GET_RSS_TEMPLATE_TBL = 0x2C,
+ 
+-	HINIC_PORT_CMD_GET_RSS_TEMPLATE_TBL = 44,
++	HINIC_PORT_CMD_SET_RSS_HASH_ENGINE = 0x2D,
++	HINIC_PORT_CMD_GET_RSS_HASH_ENGINE = 0x2E,
+ 
+-	HINIC_PORT_CMD_SET_RSS_HASH_ENGINE = 45,
++	HINIC_PORT_CMD_GET_RSS_CTX_TBL = 0x2F,
++	HINIC_PORT_CMD_SET_RSS_CTX_TBL = 0x30,
+ 
+-	HINIC_PORT_CMD_GET_RSS_HASH_ENGINE = 46,
++	HINIC_PORT_CMD_RSS_TEMP_MGR	= 0x31,
+ 
+-	HINIC_PORT_CMD_GET_RSS_CTX_TBL  = 47,
++	HINIC_PORT_CMD_RD_LINE_TBL = 0x39,
+ 
+-	HINIC_PORT_CMD_SET_RSS_CTX_TBL  = 48,
++	HINIC_PORT_CMD_RSS_CFG = 0x42,
+ 
+-	HINIC_PORT_CMD_RSS_TEMP_MGR	= 49,
++	HINIC_PORT_CMD_FWCTXT_INIT = 0x45,
+ 
+-	HINIC_PORT_CMD_RD_LINE_TBL	= 57,
++	HINIC_PORT_CMD_GET_LOOPBACK_MODE = 0x48,
++	HINIC_PORT_CMD_SET_LOOPBACK_MODE = 0x49,
+ 
+-	HINIC_PORT_CMD_RSS_CFG		= 66,
++	HINIC_PORT_CMD_ENABLE_SPOOFCHK = 0x4E,
+ 
+-	HINIC_PORT_CMD_FWCTXT_INIT      = 69,
++	HINIC_PORT_CMD_GET_MGMT_VERSION = 0x58,
+ 
+-	HINIC_PORT_CMD_GET_LOOPBACK_MODE = 72,
+-	HINIC_PORT_CMD_SET_LOOPBACK_MODE,
++	HINIC_PORT_CMD_SET_FUNC_STATE = 0x5D,
+ 
+-	HINIC_PORT_CMD_ENABLE_SPOOFCHK = 78,
++	HINIC_PORT_CMD_GET_GLOBAL_QPN = 0x66,
+ 
+-	HINIC_PORT_CMD_GET_MGMT_VERSION = 88,
++	HINIC_PORT_CMD_SET_VF_RATE = 0x69,
+ 
+-	HINIC_PORT_CMD_SET_FUNC_STATE   = 93,
++	HINIC_PORT_CMD_SET_VF_VLAN = 0x6A,
++	HINIC_PORT_CMD_CLR_VF_VLAN = 0x6B,
+ 
+-	HINIC_PORT_CMD_GET_GLOBAL_QPN   = 102,
++	HINIC_PORT_CMD_SET_TSO = 0x70,
+ 
+-	HINIC_PORT_CMD_SET_VF_RATE = 105,
++	HINIC_PORT_CMD_UPDATE_FW = 0x72,
+ 
+-	HINIC_PORT_CMD_SET_VF_VLAN	= 106,
++	HINIC_PORT_CMD_SET_RQ_IQ_MAP = 0x73,
+ 
+-	HINIC_PORT_CMD_CLR_VF_VLAN,
++	HINIC_PORT_CMD_LINK_STATUS_REPORT = 0xA0,
+ 
+-	HINIC_PORT_CMD_SET_TSO          = 112,
++	HINIC_PORT_CMD_UPDATE_MAC = 0xA4,
+ 
+-	HINIC_PORT_CMD_UPDATE_FW	= 114,
++	HINIC_PORT_CMD_GET_CAP = 0xAA,
+ 
+-	HINIC_PORT_CMD_SET_RQ_IQ_MAP	= 115,
++	HINIC_PORT_CMD_GET_LINK_MODE = 0xD9,
+ 
+-	HINIC_PORT_CMD_LINK_STATUS_REPORT = 160,
++	HINIC_PORT_CMD_SET_SPEED = 0xDA,
+ 
+-	HINIC_PORT_CMD_UPDATE_MAC = 164,
++	HINIC_PORT_CMD_SET_AUTONEG = 0xDB,
+ 
+-	HINIC_PORT_CMD_GET_CAP          = 170,
++	HINIC_PORT_CMD_GET_STD_SFP_INFO = 0xF0,
+ 
+-	HINIC_PORT_CMD_GET_LINK_MODE	= 217,
++	HINIC_PORT_CMD_SET_LRO_TIMER = 0xF4,
+ 
+-	HINIC_PORT_CMD_SET_SPEED	= 218,
++	HINIC_PORT_CMD_SET_VF_MAX_MIN_RATE = 0xF9,
+ 
+-	HINIC_PORT_CMD_SET_AUTONEG	= 219,
+-
+-	HINIC_PORT_CMD_GET_STD_SFP_INFO = 240,
+-
+-	HINIC_PORT_CMD_SET_LRO_TIMER	= 244,
+-
+-	HINIC_PORT_CMD_SET_VF_MAX_MIN_RATE = 249,
+-
+-	HINIC_PORT_CMD_GET_SFP_ABS	= 251,
++	HINIC_PORT_CMD_GET_SFP_ABS = 0xFB,
+ };
+ 
+ /* cmd of mgmt CPU message for HILINK module */
 -- 
-2.20.1
+2.25.1
 
