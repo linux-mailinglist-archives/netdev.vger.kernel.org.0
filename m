@@ -2,128 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 255C1614AD4
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 13:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F5C614AD5
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 13:37:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbiKAMhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 08:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51618 "EHLO
+        id S230255AbiKAMhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 08:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiKAMhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 08:37:08 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8EC17E18;
-        Tue,  1 Nov 2022 05:37:06 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d24so13434872pls.4;
-        Tue, 01 Nov 2022 05:37:06 -0700 (PDT)
+        with ESMTP id S230235AbiKAMhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 08:37:23 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E356618E2C
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 05:37:21 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-36cbcda2157so134558817b3.11
+        for <netdev@vger.kernel.org>; Tue, 01 Nov 2022 05:37:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8UQRCroGbZvbN/wuUnBp7fR9SFQ4noJrL6f95B344r4=;
-        b=iUPjFvfRCMd9oZmwbhRbchTuwGz+6E4LppQmC0lCfLz0W+6p0HAQftLD46X+yagFjO
-         xDWodmuRkU5H8sJPGVgw1lrPEmv2s9wvaBGVPgz3B3UWOg0G2s3VF5XDg0GyORvsOwWw
-         PGMbX2GmfW77RO48f6hD9EelrjAejhtiSahHqZpJ8Lvm7mHsSh+GPUP2ODbryRJWcjmy
-         NjI9mgiaT4s+oEQeuurZYZakyCuOGbBa37TyY6MWdfOLdVMXWQfVVPtwpTYZFzTxxQ/k
-         SBZfj8ZaNFF+96QaY/fO1g6P/o6W7jouyb9ec4IZe12MrXbavJWSrMCv4hDBK+/adjW+
-         sEJg==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=F/FPQon1lKuEcgIBUSF5KOqSskD51ob9OwnxpY6zbaI=;
+        b=GmC558rWwtuEoqdu6si69MXirnb5j/9l6OJbBCYVASq9xGha/MF1VIPYTQd0v/cZjv
+         nnc1LRPeBzgrtHp9p2KJQ0KCCHcHYFQJCcsdayIwk8hqVNAz5nzwk/Wg6enHceI0k6LY
+         fri3xdkjDUoTu5bn/vDkCeHi5+1vrhwFSA8tO5uROcOaUHNQNe4yE7W1ovoSjObpgi0E
+         bc21VqU0OOe3lQudIFpjliwfA+ahW7UEVs1euUab/Fh85HFIeR4E/0GFvxyUOMefCaW8
+         YTwr1/FSkIstd/6qtUmbYwLEJg9Dha+xh8u8hUHjrQvQo2AzFrsblg6x30TZPE20XhAD
+         HT7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8UQRCroGbZvbN/wuUnBp7fR9SFQ4noJrL6f95B344r4=;
-        b=owu5oQLWlYyxnaGH0oVCkC6kR/MDY1mXY0XHR5HmZT3S4b6v2Ykr3CVLtugtpI01fM
-         tbdUQ8i67+pFGvL2glIlUCkwkWAsEXj9+Fk37pcA61Ckt63bzVg6MrjyiP66hPFdc1/o
-         WrR0YQXlM3BjRQYyK3dvRI5hIoycjpEIu/06Dmrek4Po1qDMreeNiutxQ3ssgLrpU36/
-         0YKGZDhWga5qJOEPtWUmcdETS9cP7lfE5fTXJbXlZ3NP9ZbfSDABAzF60gmjfZ0JPOjP
-         7FtC6NM57o0Wa32JEgqc677ahFuhSJO6CVuhhMJUbmE7nRMK/aWOn6Yf2Mm2G7WuTGhc
-         yOyA==
-X-Gm-Message-State: ACrzQf3wQorivk8Xm4mGgo1Y3SzvdMeu3NoVYDwU8IKMQxPwE+/Jdo3I
-        UTqM2d42Faa9TWIQCgmnptcDMwe89nMPhg==
-X-Google-Smtp-Source: AMsMyM70cze/4h3TWE9CjuViil/KQGdba4o1DJXGYi+5hz++/FOHtA5sn+T4Brv7I4+qd79x+Ii8wg==
-X-Received: by 2002:a17:90a:d586:b0:213:de8f:4d6 with SMTP id v6-20020a17090ad58600b00213de8f04d6mr11447129pju.31.1667306225915;
-        Tue, 01 Nov 2022 05:37:05 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-74.three.co.id. [180.214.232.74])
-        by smtp.gmail.com with ESMTPSA id x9-20020a628609000000b00563ce1905f4sm6451631pfd.5.2022.11.01.05.37.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Nov 2022 05:37:05 -0700 (PDT)
-Message-ID: <83d70f8f-419c-2eb9-5130-782750772868@gmail.com>
-Date:   Tue, 1 Nov 2022 19:36:20 +0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F/FPQon1lKuEcgIBUSF5KOqSskD51ob9OwnxpY6zbaI=;
+        b=KqR3OB/D8BVekqGBX2VO6AzjOD1MrUDL5I0Z8DQR3EtSchLsFUdYPzZeAn2sKPMTE/
+         dWCwvoRxwW9hM/CEybxTqpnFIDTI+LKFq9vYWyD939o0exGeNUQaIgBPWN9s5Rekv6q/
+         18vap0id14clLDkyDqU0KwEIwh7yrq5YP5FK3wL4iZ+srenCmfIA87Hlf6YUXz8MefeC
+         l57SvRCR0+GG2+A52D3dJMkRPFFZlma1+fPvkq0hUx54AuDfaATKBnrcGbZfhwK7Bbt+
+         ITKmMygq0EOhEzHaVVV6309w25trcOH4nKKpZFROwmJY11XLIHjsoziwXhP9Fba1o2Gb
+         CeWQ==
+X-Gm-Message-State: ACrzQf2SLk7sy60d3J6TRtMI/avL0yFs13KLcxWP8Vl2wmE4hKnSooJ/
+        bb1hzkx5q25/IldWytKlDJn0ib8tgilEQYhey9UNUw==
+X-Google-Smtp-Source: AMsMyM7ul/e0fRGFfXIk2+oY/aAzl97477v2/nTAApjXIMy02cZaFiF4tXcmE/kvnb9/YqLacoEH02rlpeeqg7cS4WQ=
+X-Received: by 2002:a81:5a86:0:b0:36f:cece:6efd with SMTP id
+ o128-20020a815a86000000b0036fcece6efdmr17186330ywb.489.1667306240709; Tue, 01
+ Nov 2022 05:37:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH] can: rcar_canfd: rcar_canfd_handle_global_receive(): fix
- IRQ storm on global FIFO receive
-Content-Language: en-US
-To:     Biju Das <biju.das.jz@bp.renesas.com>, Pavel Machek <pavel@denx.de>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <20221031143317.938785-1-biju.das.jz@bp.renesas.com>
- <20221101074351.GA8310@amd>
- <OS0PR01MB59222BA2B1CAA6CDA9B4137486369@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <OS0PR01MB59222BA2B1CAA6CDA9B4137486369@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20221101121552.21890-1-chenzhongjin@huawei.com>
+In-Reply-To: <20221101121552.21890-1-chenzhongjin@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 1 Nov 2022 05:37:09 -0700
+Message-ID: <CANn89iLU4_YpS9abdsyckJ4ZWu+jtvHH=fHnxLe0ByPJ7gh8ng@mail.gmail.com>
+Subject: Re: [PATCH net] net, neigh: Fix null-ptr-deref in neigh_table_clear()
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dsahern@kernel.org, daniel@iogearbox.net, yangyingliang@huawei.com,
+        stephen@networkplumber.org, wangyuweihx@gmail.com,
+        alexander.mikhalitsyn@virtuozzo.com, den@openvz.org,
+        xu.xin16@zte.com.cn
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/22 14:59, Biju Das wrote:
->> I got 7 or so copies of this, with slightly different Cc: lines.
-> 
-> I followed option 1 mentioned in [1]
-> > [1] https://www.kernel.org/doc/html/v5.10/process/stable-kernel-rules.html
-> 
-> 
->>
->> AFAICT this is supposed to be stable kernel submission. In such case,
->> I'd expect [PATCH 4.14, 4.19, 5.10] in the subject line, and original
->> sign-off block from the mainline patch.
-> 
-> OK. Maybe [1] needs updating.
+On Tue, Nov 1, 2022 at 5:19 AM Chen Zhongjin <chenzhongjin@huawei.com> wrote:
+>
+> When IPv6 module gets initialized but hits an error in the middle,
+> kenel panic with:
+>
+> KASAN: null-ptr-deref in range [0x0000000000000598-0x000000000000059f]
+> CPU: 1 PID: 361 Comm: insmod
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+> RIP: 0010:__neigh_ifdown.isra.0+0x24b/0x370
+> RSP: 0018:ffff888012677908 EFLAGS: 00000202
+> ...
+> Call Trace:
+>  <TASK>
+>  neigh_table_clear+0x94/0x2d0
+>  ndisc_cleanup+0x27/0x40 [ipv6]
+>  inet6_init+0x21c/0x2cb [ipv6]
+>  do_one_initcall+0xd3/0x4d0
+>  do_init_module+0x1ae/0x670
+> ...
+> Kernel panic - not syncing: Fatal exception
+>
+> When ipv6 initialization fails, it will try to cleanup and calls:
+>
+> neigh_table_clear()
+>   neigh_ifdown(tbl, NULL)
+>     pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev == NULL))
+>     # dev_net(NULL) triggers null-ptr-deref.
+>
+> Fix it by passing NULL to pneigh_queue_purge() in neigh_ifdown() if dev
+> is NULL, to make kernel not panic immediately.
+>
+> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+> ---
 
-The documentation says (in this case the third option applies):
+SGTM, thanks !
 
-> Send the patch, after verifying that it follows the above rules, to> stable@vger.kernel.org. You must note the upstream commit ID in the
-> changelog of your submission, as well as the kernel version you wish
-> it to be applied to.
-
-It doesn't specify how to mark desired target branch, unfortunately.
-
-> 
->>
->> OTOH if it has Fixes tag (and it does) or Cc: stable (it has both),
->> normally there's no need to do separate submission to stable, as Greg
->> handles these automatically?
-> 
-> I got merge conflict mails for 4.9, 4.14, 4.19, 5.4, 5.10 and 5.15 stable.
-> I thought, I need to fix the conflicts and resend. Am I missing anything?? Please let me know.
-> 
-
-The upstream commit didn't apply cleanly to *all* stable branches due
-to conflicts, right?
-
-Thanks.
-
--- 
-An old man doll... just what I always wanted! - Clara
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
