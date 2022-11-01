@@ -2,178 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 216D3614550
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 08:57:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28DF2614544
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 08:54:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiKAH5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 03:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        id S229649AbiKAHy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 03:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiKAH5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 03:57:18 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE3018362;
-        Tue,  1 Nov 2022 00:57:16 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id kt23so35082371ejc.7;
-        Tue, 01 Nov 2022 00:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=S7YqvcW7uJgnvwYFXgxeJbVFHcM8MqyxOmFtKk4o1e8=;
-        b=Axuh0GyB1m/5zx5ujC1ZRQ4nA4yP8lbxoJxh2ikRk1bImT3tAn0Nfc1R+2N0W4CwDI
-         0ga1iUmOM+E/a6Z6sIIvR/usEy/w2grMFecHrNCgbAySFhBCTt2o4WKwVWJvvQoa5y+A
-         /TLMYlvP0zcb5CtfVLCqlfrafVi/eXzekKxl9RCiQ6fSJ8234zLHsMA+A1JskX5PNeID
-         kGqE+xU/9xhSNBVOtIX0olQpAcgipeFLWSoq3EC5UZ40SiiveQsuDCls2BedKmaWu/A8
-         69NauQoJTskQwEuik/8OYa4xodSCjjE+bR6WWEk+NamTPh6YvxKoaIibUnkuZQu0AoXO
-         Bm+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S7YqvcW7uJgnvwYFXgxeJbVFHcM8MqyxOmFtKk4o1e8=;
-        b=LzM/7eruQH9D0t68AHv0C538pBOVL/wrKpfxSU8V8IXCtmwksTUcmhJMT1+Ks0qNHn
-         oc+Lup9D3/VTz4POn0Nc8FIKLPud1aXTlDPWijTFBfqprzfoTFJ1alV1/eN/6ZrQu+4C
-         lwrMHQYZkjRimptVbpsRyAfM9/gU0f5nQR+NGkq9f3RUmFjqb9vrmYn7iHkhAysmCsGH
-         /DCD5EpPVdhONNeDqj8syX1lpJJE4uFgM9qRh98V4bsATiqxLS1rArkbUy19TlqyK1B0
-         v1j6FZTFfS+jljjQMQiwx44ry+Y8lTljdnAT020v/BrG1zNzXs6KMMTkM0fjWuST8LMn
-         fi9g==
-X-Gm-Message-State: ACrzQf0rxRylmN1UUCaGB0q0leZGovvvlxCDFJoAbeyBUIgaqHQpF5Hu
-        rxrNm1YZStE7OBQYUeGCfQo=
-X-Google-Smtp-Source: AMsMyM4pjDNo0Kww61Ai4NrW4m8vcLBMwRCzHrkO1tvnytVeLlvNSWmy7Va37978oGE/Vpqawvpvhw==
-X-Received: by 2002:a17:907:80a:b0:783:2585:5d73 with SMTP id wv10-20020a170907080a00b0078325855d73mr16851516ejb.642.1667289434901;
-        Tue, 01 Nov 2022 00:57:14 -0700 (PDT)
-Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
-        by smtp.gmail.com with ESMTPSA id d25-20020aa7c1d9000000b00456c6b4b777sm4124898edp.69.2022.11.01.00.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Nov 2022 00:57:14 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Tue, 1 Nov 2022 08:57:11 +0100
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, x86@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev
-Subject: Re: [PATCH bpf] bpf: Mark bpf_arch_init_dispatcher_early() as
- __init_or_module
-Message-ID: <Y2DRVwI4bNUppmXJ@krava>
-References: <20221031173819.2344270-1-nathan@kernel.org>
+        with ESMTP id S229452AbiKAHy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 03:54:26 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDB92BC1;
+        Tue,  1 Nov 2022 00:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667289265; x=1698825265;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tLO+v2AzJKaQNkzAWghgg1NvzuHZPK/g4CtPHCzvZpo=;
+  b=Ndz88Li8/2gDxhD6tPoTDLa9rbBXXyoP1vmmbAcLsrp1OYzYAai6NCmx
+   I1qy+QFcZnDah5auNT6GlMFHxiyhVXTMedUkI+BZcXOFt+jxB51wUqVIL
+   YASfVuGPPmZro+has7KsAkh1elOHC0Pte2anMYiCd2DdoUFZjAOfKN64g
+   uLavSORJk9OjcW8tBHH0tfU02Qpt6Jx2QVbIM1OOxgeUfHQQt21R+OJlo
+   xHKql8+EzEbdLaOQUFxrMZdNBjDJSInWxLdBw9x5HhaOhW2/1F7Ac3vbu
+   ZJRcpuPC2wkztaMaWDp33Df2OgL3xffMBcxO4Bq3LQEekt2bTL+l3Uv7q
+   g==;
+X-IronPort-AV: E=Sophos;i="5.95,230,1661842800"; 
+   d="scan'208";a="184784313"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 00:54:24 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 1 Nov 2022 00:54:24 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Tue, 1 Nov 2022 00:54:23 -0700
+Date:   Tue, 1 Nov 2022 08:59:06 +0100
+From:   'Horatiu Vultur' <horatiu.vultur@microchip.com>
+To:     David Laight <David.Laight@aculab.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
+Message-ID: <20221101075906.ets6zsti3c54idae@soft-dev3-1>
+References: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
+ <b75a7136030846f587e555763ef2750e@AcuMS.aculab.com>
+ <20221031150133.2be5xr7cmuhr4gng@soft-dev3-1>
+ <219ebe83a5ad4467937545ee5a0e77e4@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20221031173819.2344270-1-nathan@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <219ebe83a5ad4467937545ee5a0e77e4@AcuMS.aculab.com>
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 10:38:19AM -0700, Nathan Chancellor wrote:
-> After commit dbe69b299884 ("bpf: Fix dispatcher patchable function entry
-> to 5 bytes nop"), building kernel/bpf/dispatcher.c in certain
-> configurations with LLVM's integrated assembler results in a known
-> recordmcount bug:
+The 10/31/2022 15:27, David Laight wrote:
 > 
->   Cannot find symbol for section 4: .init.text.
->   kernel/bpf/dispatcher.o: failed
+> From: 'Horatiu Vultur'
+> > Sent: 31 October 2022 15:02
+> >
+> > The 10/31/2022 10:43, David Laight wrote:
+> > >
+> > > From: Horatiu Vultur
+> > > > Sent: 30 October 2022 21:37
+> >
+> > Hi David,
+> >
+> > > >
+> > > > There were multiple problems in different parts of the driver when
+> > > > the MTU was changed.
+> > > > The first problem was that the HW was missing to configure the correct
+> > > > value, it was missing ETH_HLEN and ETH_FCS_LEN. The second problem was
+> > > > when vlan filtering was enabled/disabled, the MRU was not adjusted
+> > > > corretly. While the last issue was that the FDMA was calculated wrongly
+> > > > the correct maximum MTU.
+> > >
+> > > IIRC all these lengths are 1514, 1518 and maybe 1522?
+> >
+> > And also 1526, if the frame has 2 vlan tags.
+> >
+> > > How long are the actual receive buffers?
+> > > I'd guess they have to be rounded up to a whole number of cache lines
+> > > (especially on non-coherent systems) so are probably 1536 bytes.
+> >
+> > The receive buffers can be different sizes, it can be up to 65k.
+> > They are currently allign to page size.
 > 
-> This occurs when there are only weak symbols in a particular section in
-> the translation unit; in this case, bpf_arch_init_dispatcher_early() is
-> marked '__weak __init' and it is the only symbol in the .init.text
-> section. recordmcount expects there to be a symbol for a particular
-> section but LLVM's integrated assembler (and GNU as after 2.37) do not
-> generated section symbols. This has been worked around in the kernel
-> before in commit 55d5b7dd6451 ("initramfs: fix clang build failure")
-> and commit 6e7b64b9dd6d ("elfcore: fix building with clang").
-> 
-> Fixing recordmcount has been brought up before but there is no clear
-> solution that does not break ftrace outright.
-> 
-> Unfortunately, working around this issue by removing the '__init' from
-> bpf_arch_init_dispatcher_early() is not an option, as the x86 version of
-> bpf_arch_init_dispatcher_early() calls text_poke_early(), which is
-> marked '__init_or_module', meaning that when CONFIG_MODULES is disabled,
-> bpf_arch_init_dispatcher_early() has to be marked '__init' as well to
-> avoid a section mismatch warning from modpost.
-> 
-> However, bpf_arch_init_dispatcher_early() can be marked
-> '__init_or_module' as well, which would resolve the recordmcount warning
-> for configurations that support modules (i.e., the vast majority of
-> them) while not introducing any new warnings for all configurations. Do
-> so to clear up the build failure for CONFIG_MODULES=y configurations.
-> 
-> Link: https://github.com/ClangBuiltLinux/linux/issues/981
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> Is that necessary?
 
-LGTM but the whole thing might be actually going away:
-  https://lore.kernel.org/bpf/Y2BD6xZ108lv3j7J@krava/T/#u
+HW requires to have the start of frame alligned to 128 bytes.
 
-because it won't compile on gcc 7
+> I don't know where the buffers are allocated, but even 4k seems
+> a bit profligate for normal ethernet mtu.
+> If the page size if larger it is even sillier.
 
-jirka
+For lan966x the pages are allocated here [1]
 
-> ---
->  arch/x86/net/bpf_jit_comp.c | 2 +-
->  include/linux/bpf.h         | 2 +-
->  kernel/bpf/dispatcher.c     | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index 00127abd89ee..4145939bbb6a 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -389,7 +389,7 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
->  	return ret;
->  }
->  
-> -int __init bpf_arch_init_dispatcher_early(void *ip)
-> +int __init_or_module bpf_arch_init_dispatcher_early(void *ip)
->  {
->  	const u8 *nop_insn = x86_nops[5];
->  
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 0566705c1d4e..4aa7bde406f5 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -971,7 +971,7 @@ struct bpf_trampoline *bpf_trampoline_get(u64 key,
->  					  struct bpf_attach_target_info *tgt_info);
->  void bpf_trampoline_put(struct bpf_trampoline *tr);
->  int arch_prepare_bpf_dispatcher(void *image, void *buf, s64 *funcs, int num_funcs);
-> -int __init bpf_arch_init_dispatcher_early(void *ip);
-> +int __init_or_module bpf_arch_init_dispatcher_early(void *ip);
->  
->  #define BPF_DISPATCHER_INIT(_name) {				\
->  	.mutex = __MUTEX_INITIALIZER(_name.mutex),		\
-> diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
-> index 04f0a045dcaa..e14a68e9a74f 100644
-> --- a/kernel/bpf/dispatcher.c
-> +++ b/kernel/bpf/dispatcher.c
-> @@ -91,7 +91,7 @@ int __weak arch_prepare_bpf_dispatcher(void *image, void *buf, s64 *funcs, int n
->  	return -ENOTSUPP;
->  }
->  
-> -int __weak __init bpf_arch_init_dispatcher_early(void *ip)
-> +int __weak __init_or_module bpf_arch_init_dispatcher_early(void *ip)
->  {
->  	return -ENOTSUPP;
->  }
+> If the buffer is embedded in an skb you really want the skb
+> to be under 4k (I don't think a 1500 byte mtu can fit in 2k).
 > 
-> base-commit: 8bdc2acd420c6f3dd1f1c78750ec989f02a1e2b9
-> -- 
-> 2.38.1
+> But you might as well tell the hardware the actual buffer length
+> (remember to allow for the crc and any alignment header).
+
+I am already doing that here [2]
+And I need to do it for each frame it can received.
+
 > 
+> > >
+> > > If driver does support 8k+ jumbo frames just set the hardware
+> > > frame length to match the receive buffer size.
+> >
+> > In that case I should always allocate maximum frame size(65k) for all
+> > regardless of the MTU?
+> 
+> That would be very wasteful.
+
+Yes, I agree.
+
+> I'd set the buffer large enough for the mtu but let the hardware fill
+> the entire buffer.
+
+I am not 100% sure I follow it. Can you expend on this a little bit?
+
+> 
+> Allocating 64k buffers for big jumbo frames doesn't seem right.
+> If the mtu is 64k then kmalloc() will allocate 128k.
+> This is going to cause 'oddities' with small packets where
+> the 'true_size' is massively more than the data size.
+> 
+> Isn't there a scheme where you can create an skb from a page
+> list that contains fragments of the ethernet frame?
+
+Can I use '__skb_fill_page_desc'?
+
+> In which case I'd have thought you'd want to fill the ring
+> with page size buffers and then handle the hardware writing
+> a long frame to multiple buffers/descriptors.
+
+It might be a good idea. I need to look in more details about this.
+Because it would change a little bit the logic on how the frames are
+received and see how this will impact for frames under a page.
+Also I was thinking next to use page_pool API, for which I send a patch
+[3] but is deffered by this patch series.
+But all these possible changes will need to go through net-next.
+
+> 
+>         David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+
+[1] https://elixir.bootlin.com/linux/v6.1-rc3/source/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c#L17
+[2] https://elixir.bootlin.com/linux/v6.1-rc3/source/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c#L70
+[3] https://lore.kernel.org/bpf/20221019135008.3281743-6-horatiu.vultur@microchip.com/
+
+-- 
+/Horatiu
