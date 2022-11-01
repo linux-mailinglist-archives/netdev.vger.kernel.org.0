@@ -2,299 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 879156155DF
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 00:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4EC61561D
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 00:29:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbiKAXIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 19:08:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        id S229601AbiKAX3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 19:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiKAXGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 19:06:41 -0400
-Received: from tarta.nabijaczleweli.xyz (unknown [139.28.40.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6675E20BD8;
-        Tue,  1 Nov 2022 16:05:56 -0700 (PDT)
-Received: from tarta.nabijaczleweli.xyz (unknown [192.168.1.250])
-        by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id 8F0025282;
-        Wed,  2 Nov 2022 00:05:55 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nabijaczleweli.xyz;
-        s=202205; t=1667343955;
-        bh=rw3lhRXMa/Ho52bgtMfPJ8t0Tc28iEsnbyGMRu0CPRY=;
-        h=Date:From:Cc:Subject:References:In-Reply-To:From;
-        b=TdFzXwTzQpYqv6vHwSyvuPwqNeeBukttQEQCsTB+5IadCoOnkIlGepS0baOBPSVIM
-         HJKckRzD1YVk5emJH4lWcknZlVLrepoIfloLtsRFXyplODDOS3lpib6crU8k1Ol0MX
-         JaoZiFGaH6b9wE8LMb8U66cyzV8As+bD1pAmetdXsDmvOBWxeVllAYKwPzAst0yVtA
-         TQHeTaoJW3tdeCoP/GvZICXJ7v5zxfiqPnYglHGfqRMoL7p4yqtzAVKZj4dAnRpF2p
-         qrcSSrwHJdLrYbeGLm077/8NHaDBDknlSjINk0DKBByxNRYFbGJIRyJXk9ENXUeQyX
-         /Jfmzsc5NepJX0nhzmE/0uuFYhIBcaFwZ1cUDbdgdQdkrWZTH1xsUbA767FC7/hQGg
-         n24nDgodDd9jfNXrOsFA0aKn31J4j7kwQnkf19lagjSqf9NIhwwhaBqQ6h4IuKeI+c
-         nN0udfZD400yybauHP86ro7Ky9peb3B5Fsy7lqY6bNaegBBHJIE0THO90aC9L6uN5K
-         LWDIpEo+oKc+kaZVwV1iieOji33Wce9DG5xUeaeAGceJFtlEWbNRVh1jHuM6lwWoaA
-         IsNrOH+TfcYxh2+KWRlH1Nk3miOOnMLDdPO//Q8eQmwlKdljnCnT/67XSpEOPlw8Sn
-         zSFob41a31IF+6+LkLs2bnfQ=
-Date:   Wed, 2 Nov 2022 00:05:54 +0100
-From:   Ahelenia =?utf-8?Q?Ziemia=C5=84ska?= 
-        <nabijaczleweli@nabijaczleweli.xyz>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
+        with ESMTP id S230393AbiKAX3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 19:29:19 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DEE13E28
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 16:29:17 -0700 (PDT)
+Message-ID: <7083e3fc-a3dd-4b3a-22bf-b68d22494898@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667345355;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mb/o0PiA1fLd4uqmdehdW1D610vyXdE086dVqH2CGPY=;
+        b=gG8Uq9Rsn6rK1svQ7RCb3/jDrxFtIce4zx9b+XhKF7vYDwE/wtF+tHWpREK7xU7uzEy3DX
+        lVeBvuFBiPSKM/Ze1gaKA/lFmDaIveiMZCfUm1VBdBH0t8Pciqx0lAXKAXehKG8e08ljw6
+        36e82/97NmjWpQJM9kSc1nwWNTNrd6E=
+Date:   Tue, 1 Nov 2022 16:29:07 -0700
+MIME-Version: 1.0
+Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
+Content-Language: en-US
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Huang Pei <huangpei@loongson.cn>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH v2 12/15] drivers: net: slip: remove SLIP_MAGIC
-Message-ID: <091907215b5f648e4e01f32e8902c1260101c1ba.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
-References: <cover.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7jljyqo7aionvge4"
-Content-Disposition: inline
-In-Reply-To: <cover.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
-User-Agent: NeoMutt/20220429
-X-Spam-Status: No, score=2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        MISSING_HEADERS,PDS_OTHER_BAD_TLD,PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>
+References: <20221029001249.86337-1-kuniyu@amazon.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221029001249.86337-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/28/22 5:12 PM, Kuniyuki Iwashima wrote:
+> Hi,
+> 
+> I want to discuss bhash2 and WARN_ON() being fired every day this month
+> on my syzkaller instance without repro.
+> 
+>    WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
+>    ...
+>    inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
+>    inet_listen (net/ipv4/af_inet.c:228)
+>    __sys_listen (net/socket.c:1810)
+>    __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
+>    do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+>    entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+> 
+> For the very first implementation of bhash2, there was a similar report
+> hitting the same WARN_ON().  The fix was to update the bhash2 bucket when
+> the kernel changes sk->sk_rcv_saddr from INADDR_ANY.  Then, syzbot has a
+> repro, so we can indeed confirm that it no longer triggers the warning on
+> the latest kernel.
+> 
+>    https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+> 
+> However, Mat reported at that time that there were at least two variants,
+> the latter being the same as mine.
+> 
+>    https://lore.kernel.org/netdev/4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com/
+>    https://lore.kernel.org/netdev/23d8e9f4-016-7de1-9737-12c3146872ca@linux.intel.com/
+> 
+> This week I started looking into this issue and finally figured out
+> why we could not catch all cases with a single repro.
+> 
+> Please see the source addresses of s2/s3 below after connect() fails.
+> The s2 case is another variant of the first syzbot report, which has
+> been already _fixed_.  And the s3 case is a repro for the issue that
+> Mat and I saw.
+> 
+>    # sysctl -w net.ipv4.tcp_syn_retries=1
+>    net.ipv4.tcp_syn_retries = 1
+>    # python3
+>    >>> from socket import *
+>    >>>
+>    >>> s1 = socket()
+>    >>> s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+>    >>> s1.bind(('0.0.0.0', 10000))
+>    >>> s1.connect(('127.0.0.1', 10000))
+>    >>>
+>    >>> s2 = socket()
+>    >>> s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+>    >>> s2.bind(('0.0.0.0', 10000))
+>    >>> s2
+>    <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
+>    >>>
+>    >>> s2.connect(('127.0.0.1', 10000))
+>    Traceback (most recent call last):
+>      File "<stdin>", line 1, in <module>
+>    OSError: [Errno 99] Cannot assign requested address
+>    >>>
+>    >>> s2
+>    <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 10000)>
+>                                                                                                     ^^^ ???
+>    >>> s3 = socket()
+>    >>> s3.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+>    >>> s3.bind(('0.0.0.0', 10000))
+>    >>> s3
+>    <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
+>    >>>
+>    >>> s3.connect(('0.0.0.1', 1))
+>    Traceback (most recent call last):
+>      File "<stdin>", line 1, in <module>
+>    TimeoutError: [Errno 110] Connection timed out
+>    >>>
+>    >>> s3
+>    <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
+> 
+> We can fire the WARN_ON() by s3.listen().
+> 
+>    >>> s3.listen()
+>    [ 1096.845905] ------------[ cut here ]------------
+>    [ 1096.846290] WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
+> 
+> In the s3 case, connect() resets sk->sk_rcv_saddr to INADDR_ANY without
+> updating the bhash2 bucket; OTOH sk has the correct non-NULL bhash bucket.
+> So, when we call listen() for s3, inet_csk_get_port() does not call
+> inet_bind_hash() and the WARN_ON() for bhash2 fires.
+> 
+>    if (!inet_csk(sk)->icsk_bind_hash)
+>    	inet_bind_hash(sk, tb, tb2, port);
+>    WARN_ON(inet_csk(sk)->icsk_bind_hash != tb);
+>    WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
+> 
+> Here I think the s2 case also _should_ trigger WARN_ON().  The issue
+> seems to be fixed, but it's just because we forgot to _fix_ the source
+> address in error paths after inet6?_hash_connect() in tcp_v[46]_connect().
+> (Of course, DCCP as well).
+> 
+> In the s3 case, connect() falls into a different path.  We reach the
+> sock_error label in __inet_stream_connect() and call sk_prot->disconnect(),
+> which resets sk->sk_rcv_saddr.
+> 
+> Then, there could be two subsequent issues.
+> 
+>    * listen() leaks a newly allocated bhash2 bucket
+> 
+>    * In inet_put_port(), inet_bhashfn_portaddr() computes a wrong hash for
+>      inet_csk(sk)->icsk_bind2_hash, resulting in list corruption.
+> 
+> We can fix these easily but it still leaves inconsistent sockets in bhash2,
+> so we need to fix the root cause.
+> 
+> As a side note, this issue only happens when we bind() only port before
+> connect().  If we do not bind() port, tcp_set_state(sk, TCP_CLOSE) calls
+> inet_put_port() and unhashes the sk from bhash2.
+> 
+> 
+> At first, I applied the patch below so that both sk2 and sk3 trigger
+> WARN_ON().  Then, I tried two approaches:
+> 
+>    * Fix up the bhash2 entry when calling sk_rcv_saddr
+> 
+>    * Change the bhash2 entry only when connect() succeeds
+> 
+> The former does not work when we run out of memory.  When we change saddr
+> from INADDR_ANY, inet_bhash2_update_saddr() could free (INADDR_ANY, port)
+> bhash2 bucket.  Then, we possibly could not allocate it again when
+> restoring saddr in the failure path.
+> 
+> The latter does not work when a sk is in non-blocking mode.  In this case,
+> a user might not call the second connect() to fix up the bhash2 bucket.
+> 
+>    >>> s4 = socket()
+>    >>> s4.bind(('0.0.0.0', 10000))
+>    >>> s4.setblocking(False)
+>    >>> s4
+>    <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
+> 
+>    >>> s4.connect(('0.0.0.1', 1))
+>    Traceback (most recent call last):
+>      File "<stdin>", line 1, in <module>
+>    BlockingIOError: [Errno 115] Operation now in progress
+>    >>> s4
+>    <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('10.0.2.15', 10000)>
+> 
+> Also, the former approach does not work for the non-blocking case.  Let's
+> say the second connect() fails.  What if we fail to allocate an INADDR_ANY
+> bhash2 bucket?  We have to change saddr to INADDR_ANY but cannot.... but
+> the connect() actually failed....??
+> 
+>    >>> s4.connect(('0.0.0.1', 1))
+>    Traceback (most recent call last):
+>      File "<stdin>", line 1, in <module>
+>    ConnectionRefusedError: [Errno 111] Connection refused
+>    >>> s4
+>    <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
+> 
+> 
+> Now, I'm thinking bhash2 bucket needs a refcnt not to be freed while
+> refcnt is greater than 1.  And we need to change the conflict logic
+> so that the kernel ignores empty bhash2 bucket.  Such changes could
+> be big for the net tree, but the next LTS will likely be v6.1 which
+> has bhash2.
+> 
+> What do you think is the best way to fix the issue?
 
---7jljyqo7aionvge4
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for the repro script and the detailed analysis on the issue.  iiuc, this 
+is limited to the sk that was bind() to ADDR_ANY:port-1234 (or 
+!SOCK_BINDADDR_LOCK).  Does it make sense to avoid adding the sk with 
+ADDR_ANY:port-1234 to bhash2 at all?  From inet_use_bhash2_on_bind(), it does 
+not seem ADDR_ANY will use bhash2.  or I have missed some cases?
 
-According to Greg, in the context of magic numbers as defined in
-magic-number.rst, "the tty layer should not need this and I'll gladly
-take patches".
-
-We have largely moved away from this approach, and we have better
-debugging instrumentation nowadays: kill it.
-
-Additionally, all SLIP_MAGIC checks just early-exit instead of noting
-the bug, so they're detrimental, if anything.
-
-Link: https://lore.kernel.org/linux-doc/YyMlovoskUcHLEb7@kroah.com/
-Reviewed-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Ahelenia Ziemia=C5=84ska <nabijaczleweli@nabijaczleweli.xyz>
----
- Documentation/process/magic-number.rst                |  1 -
- .../translations/it_IT/process/magic-number.rst       |  1 -
- .../translations/zh_CN/process/magic-number.rst       |  1 -
- .../translations/zh_TW/process/magic-number.rst       |  1 -
- drivers/net/slip/slip.c                               | 11 +++++------
- drivers/net/slip/slip.h                               |  4 ----
- 6 files changed, 5 insertions(+), 14 deletions(-)
-
-diff --git a/Documentation/process/magic-number.rst b/Documentation/process=
-/magic-number.rst
-index 3b3e607e1cbc..e59c707ec785 100644
---- a/Documentation/process/magic-number.rst
-+++ b/Documentation/process/magic-number.rst
-@@ -69,6 +69,5 @@ Changelog::
- Magic Name            Number           Structure                File
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
- FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
-linux/fs.h``
--SLIP_MAGIC            0x5302           slip                     ``drivers/=
-net/slip.h``
- CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
-scsi/ncr53c8xx.c``
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-diff --git a/Documentation/translations/it_IT/process/magic-number.rst b/Do=
-cumentation/translations/it_IT/process/magic-number.rst
-index e8c659b6a743..37a539867b6f 100644
---- a/Documentation/translations/it_IT/process/magic-number.rst
-+++ b/Documentation/translations/it_IT/process/magic-number.rst
-@@ -75,6 +75,5 @@ Registro dei cambiamenti::
- Nome magico           Numero           Struttura                File
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
- FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
-linux/fs.h``
--SLIP_MAGIC            0x5302           slip                     ``drivers/=
-net/slip.h``
- CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
-scsi/ncr53c8xx.c``
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-diff --git a/Documentation/translations/zh_CN/process/magic-number.rst b/Do=
-cumentation/translations/zh_CN/process/magic-number.rst
-index 2105af32187c..8a3a3e872c52 100644
---- a/Documentation/translations/zh_CN/process/magic-number.rst
-+++ b/Documentation/translations/zh_CN/process/magic-number.rst
-@@ -58,6 +58,5 @@ Linux =E9=AD=94=E6=9C=AF=E6=95=B0
- =E9=AD=94=E6=9C=AF=E6=95=B0=E5=90=8D              =E6=95=B0=E5=AD=97      =
-       =E7=BB=93=E6=9E=84                     =E6=96=87=E4=BB=B6
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
- FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
-linux/fs.h``
--SLIP_MAGIC            0x5302           slip                     ``drivers/=
-net/slip.h``
- CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
-scsi/ncr53c8xx.c``
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-diff --git a/Documentation/translations/zh_TW/process/magic-number.rst b/Do=
-cumentation/translations/zh_TW/process/magic-number.rst
-index 793a0ae9fb7c..7ace7834f7f9 100644
---- a/Documentation/translations/zh_TW/process/magic-number.rst
-+++ b/Documentation/translations/zh_TW/process/magic-number.rst
-@@ -61,6 +61,5 @@ Linux =E9=AD=94=E8=A1=93=E6=95=B8
- =E9=AD=94=E8=A1=93=E6=95=B8=E5=90=8D              =E6=95=B8=E5=AD=97      =
-       =E7=B5=90=E6=A7=8B                     =E6=96=87=E4=BB=B6
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
- FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
-linux/fs.h``
--SLIP_MAGIC            0x5302           slip                     ``drivers/=
-net/slip.h``
- CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
-scsi/ncr53c8xx.c``
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 6865d32270e5..95f5c79772e7 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -426,7 +426,7 @@ static void slip_transmit(struct work_struct *work)
-=20
- 	spin_lock_bh(&sl->lock);
- 	/* First make sure we're connected. */
--	if (!sl->tty || sl->magic !=3D SLIP_MAGIC || !netif_running(sl->dev)) {
-+	if (!sl->tty || !netif_running(sl->dev)) {
- 		spin_unlock_bh(&sl->lock);
- 		return;
- 	}
-@@ -690,7 +690,7 @@ static void slip_receive_buf(struct tty_struct *tty, co=
-nst unsigned char *cp,
- {
- 	struct slip *sl =3D tty->disc_data;
-=20
--	if (!sl || sl->magic !=3D SLIP_MAGIC || !netif_running(sl->dev))
-+	if (!sl || !netif_running(sl->dev))
- 		return;
-=20
- 	/* Read the characters out of the buffer */
-@@ -761,7 +761,6 @@ static struct slip *sl_alloc(void)
- 	sl =3D netdev_priv(dev);
-=20
- 	/* Initialize channel control data */
--	sl->magic       =3D SLIP_MAGIC;
- 	sl->dev	      	=3D dev;
- 	spin_lock_init(&sl->lock);
- 	INIT_WORK(&sl->tx_work, slip_transmit);
-@@ -809,7 +808,7 @@ static int slip_open(struct tty_struct *tty)
-=20
- 	err =3D -EEXIST;
- 	/* First make sure we're not already connected. */
--	if (sl && sl->magic =3D=3D SLIP_MAGIC)
-+	if (sl)
- 		goto err_exit;
-=20
- 	/* OK.  Find a free SLIP channel to use. */
-@@ -886,7 +885,7 @@ static void slip_close(struct tty_struct *tty)
- 	struct slip *sl =3D tty->disc_data;
-=20
- 	/* First make sure we're connected. */
--	if (!sl || sl->magic !=3D SLIP_MAGIC || sl->tty !=3D tty)
-+	if (!sl || sl->tty !=3D tty)
- 		return;
-=20
- 	spin_lock_bh(&sl->lock);
-@@ -1080,7 +1079,7 @@ static int slip_ioctl(struct tty_struct *tty, unsigne=
-d int cmd,
- 	int __user *p =3D (int __user *)arg;
-=20
- 	/* First make sure we're connected. */
--	if (!sl || sl->magic !=3D SLIP_MAGIC)
-+	if (!sl)
- 		return -EINVAL;
-=20
- 	switch (cmd) {
-diff --git a/drivers/net/slip/slip.h b/drivers/net/slip/slip.h
-index 3d7f88b330c1..d7dbedd27669 100644
---- a/drivers/net/slip/slip.h
-+++ b/drivers/net/slip/slip.h
-@@ -50,8 +50,6 @@
-=20
-=20
- struct slip {
--  int			magic;
--
-   /* Various fields. */
-   struct tty_struct	*tty;		/* ptr to TTY structure		*/
-   struct net_device	*dev;		/* easy for intr handling	*/
-@@ -100,6 +98,4 @@ struct slip {
- #endif
- };
-=20
--#define SLIP_MAGIC 0x5302
--
- #endif	/* _LINUX_SLIP.H */
---=20
-2.30.2
-
---7jljyqo7aionvge4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmNhplIACgkQvP0LAY0m
-WPGyrRAAoHizvV5tKKgojJuUkIwAPYTLrYZ6/9SmNDpIBi0+LQDLjMmieWckQUnT
-wddYPgvFGTFChs0NGcJOkM2ZD9oLB9M+yl08mbSAoPe82hLSONFn+yqwakFKx/UE
-ebtnQ/clo4f8fm/J+JccJ3Q2ERUohTjzBfWNfzNDoowAuC8p6ZMY7lz5GcEUrcHf
-pKT7BVn3cGUq/plx/6udosO0NTctJqyYs79hZ4spDlNAJbJ057xv29gPdrr0Clzz
-fUXqGQo3amFdZ+2JKpiq4+4SEtPVdTBkbHd2eL/r5T56SPZ6riBo6Nu4GvJt/82D
-Op4GzgYQy67d/6FxVZERyJT5Of39AkJGJbNodBHm+BSLiYQt5DiHC+XcvRXBtyQW
-brHnjifkP6494StqryYAzH0KMUOsrjipTof9O+MBaPcLvP4eWJn597G39ZBrgoCV
-GuukNvupNshB/GT+d+GL7hDCKUsaN90eN50rLFPEbjYwb12WVGbKUP7pLQnbPL+H
-h2c9TBofwR59jj/NpHjo/YpCiZVL0OTaHgjXmsO6+xr9RbPWLtrlpLlXyo9KjRBP
-BzmJKteCg0+B9xrJCGI2UbXpcr1ZJY/WhJxWglGON8ysNmfn1M9CcVEhFAEOfDGE
-BPB/RlGwNdB/F69C195r89ZoaXhXXe1uHixdRXz5bcOmz5k6v8w=
-=93An
------END PGP SIGNATURE-----
-
---7jljyqo7aionvge4--
