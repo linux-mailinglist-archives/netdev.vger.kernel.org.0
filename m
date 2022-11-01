@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0079C615278
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 20:40:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DFF4615279
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 20:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiKATk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 15:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        id S229766AbiKATk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 15:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiKATkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 15:40:13 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2079.outbound.protection.outlook.com [40.107.237.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238EF1DF31
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 12:40:11 -0700 (PDT)
+        with ESMTP id S229885AbiKATkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 15:40:24 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2072.outbound.protection.outlook.com [40.107.237.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423C21DF34
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 12:40:17 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dUA5t0KGKjHgZZ1JdB5M5gYpavuXOgXeecuf12H7J7MzXTs6YArFJOhpDzr+NOMw/l7jy896TgOQhTny6IQwh69fiNyO7vuHVNPLwpLzhFU+NlI8oR85nfiCaXlAy9G//4u96rVn3EcZBtwN/CKfxqWzB05xpXSIH5vbXFSAI2yCK+SpLSmn8otOOpS+61RihtDse8Mv84j+r0L3Tk1Tet976do3mWSsg7tavHPhtZZIUDmlyZ0sIMUmAAXOTBYX7gjN/2g0Mova+LDVuWgvR0yEY4lbKUCydGiokVxFAYfTgNWnBz6Ic64tv8vvBeAD+tPGDhA13IJQCZaRrxz6zg==
+ b=CeEH/nYwkH+sr1v3nT0KcE9HG7+/eq4O9x9jvqrjE/geNdVSWgISnzlacw2X7k0DrKsUhqex9z8D0jh6D23/gYBKkf9ub12NRx68M1gaj5hCxJaQjWaroPux0jxFrx9AUy6y44hYmWa32PXlP0Cn6CFjBGbmsYew8JqpqpuAe2VGUMMwFjA5KD65Uvq9wwW9rqt7NwMIwuiY5ygikG6lVtrNPeLNEQpra+6yqktLrTG5mp7Ts4PruQa5sxL/GVpNRZBTu1jzPNlP37+5qr5U7EE4ScuEt5Bm3caMaihNhSNmUOJWdlj+AIT3xOaOHgkWbgMx8mOdOhpsocG/6jIbFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pGaSEr/7L9lUkxs6XrzZHrET+uK5S6+SyeFDK4Y6VpI=;
- b=PXGBophJRpvXauCDCxuQbvevrkc4CnLhqJhbPZdxRZCXrCThKKXW3p4eVV9/T2e3I1Pjl1FxSfkI6SR5DcJeOAIBHrDEdHBa9kcqJA4MDueGO7W0N2+2jrN6LHCqjnDFCFTtMKrd3rdbJPqgwI+Gbm0nxsDxfHW1Rk3FsV+hDsb252L+VEUI8fD0T8EQ4M2TaU59I3aNfZQrlrxYTBb0r/xzyXmuYsjOFURf+WkyvO4ClZrixnYlv7001/C6OG3c+5RIhM2MyjnP5dHcHq92LEgXNeeIdR9ajYbivAE3lwBmnKmAMHmP4k3A3yAzHrOO6JcpvK9focpgPMjm3rT3lQ==
+ bh=kGqCg6WWbuXmq2LtfCZfZ4D7a1wD9O9NjM1Bb8VepDg=;
+ b=WlU6gOmPOhfqS0UBC6XqKQZPUaBlZh06s/Jnx/Cx6Kz+dyzUH6Y0b+9l1zBnrJ19f4fF/lef2eKGKfLBjj4oD+E8yAE7NhX5VeKoQmVSsLClKm7nltNWZjtHO6DSEM6We8wJCCguMJDkRNqk0tKK9tQRTezTtgxfGHTdqN7v1Rb/Ji09xlj9SOESPVKvgX+EogNvtNkT7clCYj1CxFWsH0rYNbolouNc7OaP1HMSGvITGNhNnKPjaXoIoJjV9ZS1lUy8uIt2zDScMqXkoGWdAUghz0SIgQ6tUvDP0V/FWNLT+sKdDsqC/8KG8RhWpJ0bvS5GqzyyhuU3iZKhv5QOjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pGaSEr/7L9lUkxs6XrzZHrET+uK5S6+SyeFDK4Y6VpI=;
- b=QA4l5ngZ1N/Vjlnfx9b3VSH4Eu2fTbKJcN88/nqv3upLQw/T/B4myuFT/X/o2CcsX49sBBMEHQhO9udSQlPN81vy03W2yqxI0ZBlHe5G7Fm1tXGo0jzgoFYiCInid9bpbf+UUnIEX9WB/KP6JgtfWV7MEK+9GMIfOgNydebZpP/WrPcur73QUE3bOz7z7K3m47EoK9bUp2NBgSopP7Sc5sXpBvMwZDVf8YGbf+D9YHPauM5SRjvII4eI0RWflWtgteRDdOZXeP5/K/iZXX6GLxmXDDJ2dq6UsISccP2brzfyAaiwnIRx8DNHqK4s74H+3KXCUVFfLM2hqu5uXFSduw==
+ bh=kGqCg6WWbuXmq2LtfCZfZ4D7a1wD9O9NjM1Bb8VepDg=;
+ b=ge7TlqsgZuG3UJpH8JZsU94q6W4vThRjS1A2bIJDnlNpWeiGpMdFFUzMtA4slzDabhhr5JNSpC+Lf75DaoY47DwBSYo844hWfdcgfF/nvr/yYJO373+qOjYlwWRpo1+bqknIIvAADGSZFPp2O5R1JAH3h9YB3u6gVrwJxcDDj7uQjnPC47+fH+cqaiB5ei9I4oQS89bWKetyFN5omTnLHSMT14P6wXoQggMDiquKRp+Spda8jdAJyg41SX7SQDqFomT6/taJFsv0J2wMdvVtZfxga9gA3zrax9mcor8z8CjAmRb61YH3m0TMMoXbooYkJjr5C8X90FlfaoqP2HAkmg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by LV2PR12MB5944.namprd12.prod.outlook.com (2603:10b6:408:14f::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Tue, 1 Nov
- 2022 19:40:09 +0000
+ 2022 19:40:15 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::3409:6c36:1a7f:846e]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::3409:6c36:1a7f:846e%4]) with mapi id 15.20.5769.019; Tue, 1 Nov 2022
- 19:40:08 +0000
+ 19:40:15 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, roopa@nvidia.com, razor@blackwall.org,
         netdev@kapio-technology.com, vladimir.oltean@nxp.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/2] bridge: Add MAC Authentication Bypass (MAB) support
-Date:   Tue,  1 Nov 2022 21:39:21 +0200
-Message-Id: <20221101193922.2125323-2-idosch@nvidia.com>
+Subject: [PATCH net-next 2/2] selftests: forwarding: Add MAC Authentication Bypass (MAB) test cases
+Date:   Tue,  1 Nov 2022 21:39:22 +0200
+Message-Id: <20221101193922.2125323-3-idosch@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221101193922.2125323-1-idosch@nvidia.com>
 References: <20221101193922.2125323-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR07CA0190.eurprd07.prod.outlook.com
- (2603:10a6:802:3f::14) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1P195CA0049.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:802:5a::38) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|LV2PR12MB5944:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8508b7af-02c0-4dc4-8f12-08dabc40e256
+X-MS-Office365-Filtering-Correlation-Id: fd648773-52f2-47dc-7f15-08dabc40e609
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T2SJb9O9JM9XIiv3amo+H1kalHzNh2rO7I1Xn2Kpe6J7eqm4/Yie7e2C1KlGuaDtIF1JC66yzx3Ddi5Ryn7rJthRXpf48iPphk0pZfi5rk5L6vluSg+JYl+GeVXXYw8AyBH943xJnOq49VIDkBkeRhozdd6SR+4CkNcthhlLOReo4vrHlJPMx/Cw/L0dyx+C4NsGyr6iSqYI4GsFUcGn+WjlR/j1CIaVNd6ipQRpJGvBT9cdHJ9aG6okVYT7hqHwPF3u8RpRzV/dsb+ZwV18AzrOiKOcQ/L4osnapyW7An7C8lGEce4/IuOWYfuv2YB/I3xisIvhGWGNtlcjhBFdslvV9UfRrNKew12lvzQkcfiW6UwmFddL96Amz/n4f+jPdJTwyZDSRrWhugZqN6eAa9fWx0AhBxNMj47/FjplxNrxmnBPEpwf4XItSoVAMketr54YkccqKgGFtIS+UDNtRZ3l5FynVMoqa3lsb/Am9Lx1USN71HUcFzGP6p9esVejP3b0ppDNbSnFju22Ow4hWn3/rH2G113cGuC+K8Ja61M+cW3AaXKzCIbW8/7dcxSv1AO17PxdYAkCmBbcTGJydE4QBrO9SSP4iL8FbIqT/kUNTw+WtCmIERJdzhsw+3sww3pKG2aBzjsQKORlZueVjIhkVQgHonvPEEUbpOHsDFC8ReVOT6iLwSfXupYywZcp7k5x8wZSTa1PxPKftN3b4Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(376002)(366004)(346002)(39860400002)(451199015)(478600001)(6666004)(107886003)(6512007)(316002)(26005)(6486002)(38100700002)(6506007)(2616005)(66574015)(186003)(1076003)(36756003)(83380400001)(86362001)(2906002)(66476007)(4326008)(66556008)(66946007)(8676002)(41300700001)(30864003)(5660300002)(8936002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ef0M2b2IhUqNaxDbSiJGhHBlwjulUPzECFAUk03uEGWoGgKeIRW2UHzKty1jC8v5TCsKYuUZ/b8IIv1fIhs2RE94onsb4IBYIH4l1aD9ILirVs/f7Zwm5D/XRdCoesFjOjGeR52QUPUnuz35nyuyHwCsHQP1nOGW/noqDWFFUMoXxx6E6/2pZS5dUlMPGMsiwTURT8YGMMkEQNG6BoHyv/Ndx6CpndHSp2U0ycCnQDxtumdty0hyuzpdMVaJKXthr/wiTAriqH/6f1jLtILZAJzoLh2nhwKHxKiR6DxsDUXnqj3VC9OAmFn6CVYJu9oZJekDGNQ6HTMeV17UVr3t3KW2Y/peudWl7+a9e0tVi0EBEWKHBtqs5rrw2hBOdzoh9ddcOUmfBDZWw3huYHlyKDsMDK7Tjwmy/NDDmjeglVLvrHUDVXsIc20zzvp7wDCX4bQkZMlWM4M4EiUi/7LYUzh6M31n5JxDJa+U1NNdlSD3O32CsZx3o2UQZKdt+ODG+94uDr8Ag4K3vYfUBgI/Iq1YEQizKhKljuc1OCu/GOJN3aIkSL6w+VlBYc031Th9jBZaP8a8KJ2tJogSdYaGWE31Bjeg2cIOnwEIY+xFB+/SsgfhYsM9DvdW4zZfKKK5VKCBEBCe/A+oQ2iiYvYxxU1Em1FoSK3lZl0e5aslXKgjAPF/GXyXblASvQmLJw1tR+73OropF0MO2GH+4bDT8g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(376002)(366004)(346002)(39860400002)(451199015)(478600001)(6666004)(107886003)(6512007)(316002)(26005)(6486002)(38100700002)(6506007)(2616005)(186003)(1076003)(36756003)(83380400001)(86362001)(2906002)(66476007)(4326008)(66556008)(66946007)(8676002)(41300700001)(5660300002)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MaDkFjq56C2E2YvYGUpKGfbfSFBRmhV4PuSJqupmuuP+/RYNI0PeJa4fKMKC?=
- =?us-ascii?Q?uaITD2SibabKQqy6scDoHGjwJC6fWi5e7M/110dCX6TeEK1hlF/js2KklnHF?=
- =?us-ascii?Q?bMYEglo/4mSdHMHpjv7I9UWMGCHlYoNe/Z5O94l9MuQZopGt8ex7aW0w/PaK?=
- =?us-ascii?Q?rPULMB7mm5ARLDRKjncW1DByUO3jg2WFY7qkk1WjKvmEX/BzLi02P2xJQwk9?=
- =?us-ascii?Q?DaU+tvUzBbeUZjOTccihSx5g4xuXq5Px/4HnjNjirXNpyJVFRrwiODJzvda+?=
- =?us-ascii?Q?f/Lrzn08aiXZFV0GOBVW7DZPNHvnbqR1K/3x04S8Jy48r+OAFo8qVKKhxThP?=
- =?us-ascii?Q?mXaXeZnAB4/nTQ3FmKm4YTQi5j7aK/XjJnSDkyHhC4RGV/XHFipuTExZE3/o?=
- =?us-ascii?Q?Dvjq/NiRESTDjPwcedynm50MMrmAzrGElkcrY74UeadEMFyaFHqgnxmGp51n?=
- =?us-ascii?Q?jiibTikbOmS1q0+jv0bLrfAjoFAcsn+D9XhXFjr6Y1GEMYmD42ApHBFlsn9z?=
- =?us-ascii?Q?rCs+fXWUzLUTm1BFyersX60y0TQ0PexDkrlB/ePGc/tYiz8wK7D073z6snti?=
- =?us-ascii?Q?AcSDCW+CCs5M68XbQ2J9vFXa2mHOB2AZIGSMlMxqeElFzPuuuSogOalTsso0?=
- =?us-ascii?Q?NJjW3OsTw+Lj2YJzXA46PruNA1F1JnZ1HahHHrNen3dAH/OD3SpLu0602LF0?=
- =?us-ascii?Q?Di+TYsxH6/V0MBxqj3bItlvdZLhvLBBaLS1E1nYU6Qzc65uU7wzXupEDxY3y?=
- =?us-ascii?Q?P+i7FYxUalauuzgWT7IXY37UUl2bh9sTuCQVCUscnvLN1qyqwti6ZtCIA1vP?=
- =?us-ascii?Q?5BR7yJMWCCJGelH/nj3q8m22bEJnVkqmhF4Bz0utrv2d2XV9Vo4yj/rVzMDj?=
- =?us-ascii?Q?+bqUzU3Ft9mGaIGmafmh6aRbSZyJpVIj5FW3GuQM4g2srnKRXBZ4fU6J3C8L?=
- =?us-ascii?Q?QYHb7MyuHumREibNFi1CNnTycvDVOlgNe0bma7jRj2Bksq4UC5DPRj7dwWBb?=
- =?us-ascii?Q?fwSR8K3nTykOVjuv/puokv4BX8n3vsmMR/ip6QamZH8yDTrUyRZwT59s5Z5I?=
- =?us-ascii?Q?+kl+erFq7Wi1nnEoo85uoWmgiine+DTZwt0jBxqhBiUBvBUSJNR2XL71+V30?=
- =?us-ascii?Q?xRfpn0Yq0AAgxwRGEitq3qC+bsF7mHvua0f8+QDhMK0Dtb7KVvQir+3d4agc?=
- =?us-ascii?Q?NavB0d6YdAgoXokBrF3mfviN2xYGtwrid8VmiiZ7W9t+9nSD2HZxdvyXj2HK?=
- =?us-ascii?Q?n+o1kx0uyxv09C9ab4ifvpQxN+HivRXYdvRtvA72vgijX/SWWBovbRR9zy5r?=
- =?us-ascii?Q?kkxEyfexbBQDeKpL0osQK71IjlWge+X4cRccFVxlHvJd6/CQUKXgI13vfQb1?=
- =?us-ascii?Q?i9m9hL/JfgBPkXpZG/CBoq1OZ5U+kiMFLCts9soQEzpCdingNm5UoZTqQjJV?=
- =?us-ascii?Q?zPDZIiJGXYMAi2plDncg2Lq/ViZSF/rmPJHXcVivLEbdhedsHb30jsQQZiH6?=
- =?us-ascii?Q?4U64+UbQUHBcOi89AFM12+alfP+I97PZdzT/IjFZeIhH1b/k7SSunu3sPcDE?=
- =?us-ascii?Q?IAgLLdEi2qWOCgEm8ob9TIfRiOVHKLt06wdv1/vh?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?15CNnwrkbQ/kWHCCJW8KVegapkvQwC6Lk+j7pyKIepD9o0cCqLMIrinTEVft?=
+ =?us-ascii?Q?nbwyTYbVRTCzvxuYb/uigH8am0p6nH5jS+vcCibGLij3evs0McPuzoyF3LC9?=
+ =?us-ascii?Q?NLOX0cmQOk0zu+Xve2C3pGonwobrKt0bvKAk/pN7InzmnNtN/Ps7LKer5khY?=
+ =?us-ascii?Q?rRsZ8TgRI+96LSURd+yWqtjbsU/ELS5GRnJ+PsB+w+9QplvACAMAx2KLTt66?=
+ =?us-ascii?Q?G8ARm7jK54cFsouvDYYIT0sw+pQ4HCsv7m08xJouEYh4yDakIwe+AqM49Rnr?=
+ =?us-ascii?Q?EprxPxIApcdHplCMgVtFGjLut+QEUBVtXs3kcTmX8OKl8Wvrrf8h/wcmN6zu?=
+ =?us-ascii?Q?FTrwDtifhJi+nK9APa7L69LxrxrviV5StfYJc0H6g7zHFGVMS20xSJcbx+VX?=
+ =?us-ascii?Q?yTsgIhJgHmdppp1AkD0wLM/BR4GLPC07yVN3R087vP4c/3ItUrCWdJj02TJ4?=
+ =?us-ascii?Q?X5Jxiw241HsjGRUpSrSNoQkGVEakbFNnrRYWKAGh9DPDkH2E/HTk+jTau0g2?=
+ =?us-ascii?Q?NdmJIi0RlC/rwrN0jNwK/h9M9pJKN7GFVx9pq7aqSZ/TTegEgb+QAdIstcoc?=
+ =?us-ascii?Q?hik0BmqugjpRGePAka454USKK+lkMg99TfISLaCpcqXhYWVeKSrvGyYgxKh3?=
+ =?us-ascii?Q?skYSCHUdWSgPvhU0H1xjk1e5hLKM+gB3ocie52ohL9xjL4LhLTyfKO/HnFls?=
+ =?us-ascii?Q?eBtHfQTr+iu9AojiRJSLGtiXzTBb+o375AcJUX39KihKAGUNqtoW5nYn+zES?=
+ =?us-ascii?Q?sdQsyBN8nHYqLaznPCRwyTs489F/zogUMDXaJe6nZrHHd2F4pY5d2G+TjuhC?=
+ =?us-ascii?Q?yMQueIQpmpLCiurE4ABTAlaUpRL9azpk9+JLZe/JR54KumpNmSTonERxOFdO?=
+ =?us-ascii?Q?aU1y6xje1qWrdoO03x3D1EoQJYgki1+Xs/R2DvfAAVze4fNXMZROJIeNZ6D+?=
+ =?us-ascii?Q?K7wARWt/1pNikZJ19nN0z1+x2nraUNm94Ty5pk20RWFmCCt2h2qmnE7mbVNL?=
+ =?us-ascii?Q?Op6ErjvG3oMrLtTIIPFteFF8GnpT3qHgZIrL4aKQpf9CaWr1PgElvDdWko4W?=
+ =?us-ascii?Q?J5kDq6o8ckbEwS3G07CUhOa5PnucjPi7uBDvEk6XMptkVTpdQb4jzTuYDpu9?=
+ =?us-ascii?Q?VbRTpXyw8wQxHTcg0RHxQy0FgGhvzf0jrZ0HcXfvppFWtXc9vUpk9IV8ZfI4?=
+ =?us-ascii?Q?kQhceSaJPBzFupyiaN8VrnVyt3+8JdKPRRLCTVGMLguWY5twS6y9K/Z9+hMn?=
+ =?us-ascii?Q?lyoTzySh3THqCWUaCzJgzU+TCoVxFqCTtGl8DpdLS4qsjyDQSrvhYvrN217W?=
+ =?us-ascii?Q?qEUaDws0IlQhHgBCbP2LtWEftEVq7PdixQdRpqFn/E5L1OEWn0uuLn7FhBYS?=
+ =?us-ascii?Q?T1LwkLvLihs2aY+Sk4RDvUiSEEebPj6a39HmNk3hryT8gdmNR0HhXl7/Na8q?=
+ =?us-ascii?Q?6F+PvET2cPPPyIQJsO9+AAhtXD6Igtln9o4BlU5wZvl3KImUTDt82x6OPuur?=
+ =?us-ascii?Q?O4kU6hmj0ByjdJbL0hX4L4eTpPEQ7HsB06xVYRKcGkJXg58bNLcFgwuBkWfo?=
+ =?us-ascii?Q?SwnwYkhCJxXexOXNG7h7bZNUzCYfdDH9F79XjQEt?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8508b7af-02c0-4dc4-8f12-08dabc40e256
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd648773-52f2-47dc-7f15-08dabc40e609
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2022 19:40:08.8687
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2022 19:40:15.2000
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P4MGXmzuxdzH5M66y25JLr7vnrAiCSdTfGnEI8Mn/K8I7IQ6sWuF3kwROo10XFFe6eNYX/QTdAdI1SR56/GF8w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: OwmO1Y9S+9fWOACVcpY83wm/U2EenOCrloxsHrfy9kbKUnlj4rD0RxSXd1um9ueWDXZnXw4B9zNrjvE+vo4vIg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5944
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -117,63 +117,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Hans J. Schultz" <netdev@kapio-technology.com>
 
-Hosts that support 802.1X authentication are able to authenticate
-themselves by exchanging EAPOL frames with an authenticator (Ethernet
-bridge, in this case) and an authentication server. Access to the
-network is only granted by the authenticator to successfully
-authenticated hosts.
+Add four test cases to verify MAB functionality:
 
-The above is implemented in the bridge using the "locked" bridge port
-option. When enabled, link-local frames (e.g., EAPOL) can be locally
-received by the bridge, but all other frames are dropped unless the host
-is authenticated. That is, unless the user space control plane installed
-an FDB entry according to which the source address of the frame is
-located behind the locked ingress port. The entry can be dynamic, in
-which case learning needs to be enabled so that the entry will be
-refreshed by incoming traffic.
+* Verify that a locked FDB entry can be generated by the bridge,
+  preventing a host from communicating via the bridge. Test that user
+  space can clear the "locked" flag by replacing the entry, thereby
+  authenticating the host and allowing it to communicate via the bridge.
 
-There are deployments in which not all the devices connected to the
-authenticator (the bridge) support 802.1X. Such devices can include
-printers and cameras. One option to support such deployments is to
-unlock the bridge ports connecting these devices, but a slightly more
-secure option is to use MAB. When MAB is enabled, the MAC address of the
-connected device is used as the user name and password for the
-authentication.
+* Test that an entry cannot roam to a locked port, but that it can roam
+  to an unlocked port.
 
-For MAB to work, the user space control plane needs to be notified about
-MAC addresses that are trying to gain access so that they will be
-compared against an allow list. This can be implemented via the regular
-learning process with the sole difference that learned FDB entries are
-installed with a new "locked" flag indicating that the entry cannot be
-used to authenticate the device. The flag cannot be set by user space,
-but user space can clear the flag by replacing the entry, thereby
-authenticating the device.
+* Test that MAB can only be enabled on a port that is both locked and
+  has learning enabled.
 
-Locked FDB entries implement the following semantics with regards to
-roaming, aging and forwarding:
-
-1. Roaming: Locked FDB entries can roam to unlocked (authorized) ports,
-   in which case the "locked" flag is cleared. FDB entries cannot roam
-   to locked ports regardless of MAB being enabled or not. Therefore,
-   locked FDB entries are only created if an FDB entry with the given {MAC,
-   VID} does not already exist. This behavior prevents unauthenticated
-   devices from disrupting traffic destined to already authenticated
-   devices.
-
-2. Aging: Locked FDB entries age and refresh by incoming traffic like
-   regular entries.
-
-3. Forwarding: Locked FDB entries forward traffic like regular entries.
-   If user space detects an unauthorized MAC behind a locked port and
-   wishes to prevent traffic with this MAC DA from reaching the host, it
-   can do so using tc or a different mechanism.
-
-Enable the above behavior using a new bridge port option called "mab".
-It can only be enabled on a bridge port that is both locked and has
-learning enabled. Locked FDB entries are flushed from the port once MAB
-is disabled. A new option is added because there are pure 802.1X
-deployments that are not interested in notifications about locked FDB
-entries.
+* Test that locked FDB entries are flushed from a port when MAB is
+  disabled.
 
 Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
@@ -181,276 +139,211 @@ Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 
 Notes:
     v1:
-    * Extend commit message.
-    * Adjust extack message.
-    * Flush locked FDB entries when MAB is disabled.
-    * Refresh locked FDB entries.
-    * Add comments in br_handle_frame_finish().
+    * Adjust commit message.
+    * Add FDB flushing test case.
     
     Changes made by me:
     * Reword commit message.
-    * Reword comment regarding 'NTF_EXT_LOCKED'.
-    * Use extack in br_fdb_add().
-    * Forbid MAB when learning is disabled.
+    * Remove blackhole tests as they are not relevant for this series.
+    * Add configuration test case.
+    * Add a few additional test cases.
 
- include/linux/if_bridge.h      |  1 +
- include/uapi/linux/if_link.h   |  1 +
- include/uapi/linux/neighbour.h |  8 +++++++-
- net/bridge/br_fdb.c            | 24 ++++++++++++++++++++++++
- net/bridge/br_input.c          | 21 +++++++++++++++++++--
- net/bridge/br_netlink.c        | 21 ++++++++++++++++++++-
- net/bridge/br_private.h        |  3 ++-
- net/core/rtnetlink.c           |  5 +++++
- 8 files changed, 79 insertions(+), 5 deletions(-)
+ .../net/forwarding/bridge_locked_port.sh      | 155 +++++++++++++++++-
+ tools/testing/selftests/net/forwarding/lib.sh |   8 +
+ 2 files changed, 162 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index d62ef428e3aa..1668ac4d7adc 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -59,6 +59,7 @@ struct br_ip_list {
- #define BR_MRP_LOST_IN_CONT	BIT(19)
- #define BR_TX_FWD_OFFLOAD	BIT(20)
- #define BR_PORT_LOCKED		BIT(21)
-+#define BR_PORT_MAB		BIT(22)
+diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+index 5b02b6b60ce7..dc92d32464f6 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+@@ -1,7 +1,16 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
  
- #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
- 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 5e7a1041df3a..d92b3f79eba3 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -561,6 +561,7 @@ enum {
- 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
- 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
- 	IFLA_BRPORT_LOCKED,
-+	IFLA_BRPORT_MAB,
- 	__IFLA_BRPORT_MAX
- };
- #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
-diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-index a998bf761635..5e67a7eaf4a7 100644
---- a/include/uapi/linux/neighbour.h
-+++ b/include/uapi/linux/neighbour.h
-@@ -52,7 +52,8 @@ enum {
- #define NTF_STICKY	(1 << 6)
- #define NTF_ROUTER	(1 << 7)
- /* Extended flags under NDA_FLAGS_EXT: */
--#define NTF_EXT_MANAGED	(1 << 0)
-+#define NTF_EXT_MANAGED		(1 << 0)
-+#define NTF_EXT_LOCKED		(1 << 1)
- 
- /*
-  *	Neighbor Cache Entry States.
-@@ -86,6 +87,11 @@ enum {
-  * NTF_EXT_MANAGED flagged neigbor entries are managed by the kernel on behalf
-  * of a user space control plane, and automatically refreshed so that (if
-  * possible) they remain in NUD_REACHABLE state.
-+ *
-+ * NTF_EXT_LOCKED flagged bridge FDB entries are entries generated by the
-+ * bridge in response to a host trying to communicate via a locked bridge port
-+ * with MAB enabled. Their purpose is to notify user space that a host requires
-+ * authentication.
-  */
- 
- struct nda_cacheinfo {
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index e7f4fccb6adb..3b83af4458b8 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
- 	struct nda_cacheinfo ci;
- 	struct nlmsghdr *nlh;
- 	struct ndmsg *ndm;
-+	u32 ext_flags = 0;
- 
- 	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
- 	if (nlh == NULL)
-@@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
- 		ndm->ndm_flags |= NTF_EXT_LEARNED;
- 	if (test_bit(BR_FDB_STICKY, &fdb->flags))
- 		ndm->ndm_flags |= NTF_STICKY;
-+	if (test_bit(BR_FDB_LOCKED, &fdb->flags))
-+		ext_flags |= NTF_EXT_LOCKED;
- 
- 	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
- 		goto nla_put_failure;
- 	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
- 		goto nla_put_failure;
-+	if (nla_put_u32(skb, NDA_FLAGS_EXT, ext_flags))
-+		goto nla_put_failure;
+-ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
++ALL_TESTS="
++	locked_port_ipv4
++	locked_port_ipv6
++	locked_port_vlan
++	locked_port_mab
++	locked_port_mab_roam
++	locked_port_mab_config
++	locked_port_mab_flush
++"
 +
- 	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
- 	ci.ndm_confirmed = 0;
- 	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
-@@ -171,6 +177,7 @@ static inline size_t fdb_nlmsg_size(void)
- 	return NLMSG_ALIGN(sizeof(struct ndmsg))
- 		+ nla_total_size(ETH_ALEN) /* NDA_LLADDR */
- 		+ nla_total_size(sizeof(u32)) /* NDA_MASTER */
-+		+ nla_total_size(sizeof(u32)) /* NDA_FLAGS_EXT */
- 		+ nla_total_size(sizeof(u16)) /* NDA_VLAN */
- 		+ nla_total_size(sizeof(struct nda_cacheinfo))
- 		+ nla_total_size(0) /* NDA_FDB_EXT_ATTRS */
-@@ -879,6 +886,11 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
- 						      &fdb->flags)))
- 					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
- 						  &fdb->flags);
-+				/* Clear locked flag when roaming to an
-+				 * unlocked port.
-+				 */
-+				if (unlikely(test_bit(BR_FDB_LOCKED, &fdb->flags)))
-+					clear_bit(BR_FDB_LOCKED, &fdb->flags);
- 			}
+ NUM_NETIFS=4
+ CHECK_TC="no"
+ source lib.sh
+@@ -166,6 +175,150 @@ locked_port_ipv6()
+ 	log_test "Locked port ipv6"
+ }
  
- 			if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, &flags)))
-@@ -1082,6 +1094,9 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- 		modified = true;
- 	}
- 
-+	if (test_and_clear_bit(BR_FDB_LOCKED, &fdb->flags))
-+		modified = true;
++locked_port_mab()
++{
++	RET=0
++	check_port_mab_support || return 0
 +
- 	if (fdb_handle_notify(fdb, notify))
- 		modified = true;
- 
-@@ -1150,6 +1165,7 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 	struct net_bridge_port *p = NULL;
- 	struct net_bridge_vlan *v;
- 	struct net_bridge *br = NULL;
-+	u32 ext_flags = 0;
- 	int err = 0;
- 
- 	trace_br_fdb_add(ndm, dev, addr, vid, nlh_flags);
-@@ -1178,6 +1194,14 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 		vg = nbp_vlan_group(p);
- 	}
- 
-+	if (tb[NDA_FLAGS_EXT])
-+		ext_flags = nla_get_u32(tb[NDA_FLAGS_EXT]);
++	ping_do $h1 192.0.2.2
++	check_err $? "Ping did not work before locking port"
 +
-+	if (ext_flags & NTF_EXT_LOCKED) {
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot add FDB entry with \"locked\" flag set");
-+		return -EINVAL;
-+	}
++	bridge link set dev $swp1 learning on locked on
 +
- 	if (tb[NDA_FDB_EXT_ATTRS]) {
- 		attr = tb[NDA_FDB_EXT_ATTRS];
- 		err = nla_parse_nested(nfea_tb, NFEA_MAX, attr,
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 68b3e850bcb9..d04d2205ad4e 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -109,9 +109,26 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 		struct net_bridge_fdb_entry *fdb_src =
- 			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
- 
--		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
--		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-+		if (!fdb_src) {
-+			/* FDB miss. Create locked FDB entry if MAB is enabled
-+			 * and drop the packet.
-+			 */
-+			if (p->flags & BR_PORT_MAB)
-+				br_fdb_update(br, p, eth_hdr(skb)->h_source,
-+					      vid, BIT(BR_FDB_LOCKED));
- 			goto drop;
-+		} else if (READ_ONCE(fdb_src->dst) != p ||
-+			   test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
-+			/* FDB mismatch. Drop the packet without roaming. */
-+			goto drop;
-+		} else if test_bit(BR_FDB_LOCKED, &fdb_src->flags) {
-+			/* FDB match, but entry is locked. Refresh it and drop
-+			 * the packet.
-+			 */
-+			br_fdb_update(br, p, eth_hdr(skb)->h_source, vid,
-+				      BIT(BR_FDB_LOCKED));
-+			goto drop;
-+		}
- 	}
- 
- 	nbp_switchdev_frame_mark(p, skb);
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 5aeb3646e74c..722fcfb857fc 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -188,6 +188,7 @@ static inline size_t br_port_info_size(void)
- 		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
- 		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
- 		+ nla_total_size(1)	/* IFLA_BRPORT_LOCKED */
-+		+ nla_total_size(1)	/* IFLA_BRPORT_MAB */
- 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_ROOT_ID */
- 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_BRIDGE_ID */
- 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
-@@ -274,7 +275,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
- 	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
- 		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
- 	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)) ||
--	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)))
-+	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)) ||
-+	    nla_put_u8(skb, IFLA_BRPORT_MAB, !!(p->flags & BR_PORT_MAB)))
- 		return -EMSGSIZE;
- 
- 	timerval = br_timer_value(&p->message_age_timer);
-@@ -876,6 +878,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
- 	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
- 	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
- 	[IFLA_BRPORT_LOCKED] = { .type = NLA_U8 },
-+	[IFLA_BRPORT_MAB] = { .type = NLA_U8 },
- 	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
- 	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
- };
-@@ -943,6 +946,22 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
- 	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
- 	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
- 	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
++	ping_do $h1 192.0.2.2
++	check_fail $? "Ping worked on a locked port without an FDB entry"
 +
-+	if ((p->flags & BR_PORT_MAB) &&
-+	    (!(p->flags & BR_PORT_LOCKED) || !(p->flags & BR_LEARNING))) {
-+		NL_SET_ERR_MSG(extack, "Bridge port must be locked and have learning enabled when MAB is enabled");
-+		p->flags = old_flags;
-+		return -EINVAL;
-+	} else if (!(p->flags & BR_PORT_MAB) && (old_flags & BR_PORT_MAB)) {
-+		struct net_bridge_fdb_flush_desc desc = {
-+			.flags = BIT(BR_FDB_LOCKED),
-+			.flags_mask = BIT(BR_FDB_LOCKED),
-+			.port_ifindex = p->dev->ifindex,
-+		};
++	bridge fdb get `mac_get $h1` br br0 vlan 1 &> /dev/null
++	check_fail $? "FDB entry created before enabling MAB"
 +
-+		br_fdb_flush(p->br, &desc);
-+	}
- 
- 	changed_mask = old_flags ^ p->flags;
- 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 06e5f6faa431..4ce8b8e5ae0b 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -251,7 +251,8 @@ enum {
- 	BR_FDB_ADDED_BY_EXT_LEARN,
- 	BR_FDB_OFFLOADED,
- 	BR_FDB_NOTIFY,
--	BR_FDB_NOTIFY_INACTIVE
-+	BR_FDB_NOTIFY_INACTIVE,
-+	BR_FDB_LOCKED,
- };
- 
- struct net_bridge_fdb_key {
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index d2f27548fc0b..b64fffeb3844 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -4051,6 +4051,11 @@ int ndo_dflt_fdb_add(struct ndmsg *ndm,
- 		return err;
- 	}
- 
-+	if (tb[NDA_FLAGS_EXT]) {
-+		netdev_info(dev, "invalid flags given to default FDB implementation\n");
-+		return err;
-+	}
++	bridge link set dev $swp1 learning on locked on mab on
 +
- 	if (vid) {
- 		netdev_info(dev, "vlans aren't supported yet for dev_uc|mc_add()\n");
- 		return err;
++	ping_do $h1 192.0.2.2
++	check_fail $? "Ping worked on MAB enabled port without an FDB entry"
++
++	bridge fdb get `mac_get $h1` br br0 vlan 1 | grep "dev $swp1" | grep -q "locked"
++	check_err $? "Locked FDB entry not created"
++
++	bridge fdb replace `mac_get $h1` dev $swp1 master static
++
++	ping_do $h1 192.0.2.2
++	check_err $? "Ping did not work after replacing FDB entry"
++
++	bridge fdb get `mac_get $h1` br br0 vlan 1 | grep "dev $swp1" | grep -q "locked"
++	check_fail $? "FDB entry marked as locked after replacement"
++
++	bridge fdb del `mac_get $h1` dev $swp1 master
++	bridge link set dev $swp1 learning off locked off mab off
++
++	log_test "Locked port MAB"
++}
++
++# Check that entries cannot roam to a locked port, but that entries can roam
++# to an unlocked port.
++locked_port_mab_roam()
++{
++	local mac=a0:b0:c0:c0:b0:a0
++
++	RET=0
++	check_port_mab_support || return 0
++
++	bridge link set dev $swp1 learning on locked on mab on
++
++	$MZ $h1 -q -c 5 -d 100msec -t udp -a $mac -b rand
++	bridge fdb get $mac br br0 vlan 1 | grep "dev $swp1" | grep -q "locked"
++	check_err $? "No locked entry on first injection"
++
++	$MZ $h2 -q -c 5 -d 100msec -t udp -a $mac -b rand
++	bridge fdb get $mac br br0 vlan 1 | grep -q "dev $swp2"
++	check_err $? "Entry did not roam to an unlocked port"
++
++	bridge fdb get $mac br br0 vlan 1 | grep -q "locked"
++	check_fail $? "Entry roamed with locked flag on"
++
++	$MZ $h1 -q -c 5 -d 100msec -t udp -a $mac -b rand
++	bridge fdb get $mac br br0 vlan 1 | grep -q "dev $swp1"
++	check_fail $? "Entry roamed back to locked port"
++
++	bridge fdb del $mac vlan 1 dev $swp2 master
++	bridge link set dev $swp1 learning off locked off mab off
++
++	log_test "Locked port MAB roam"
++}
++
++# Check that MAB can only be enabled on a port that is both locked and has
++# learning enabled.
++locked_port_mab_config()
++{
++	RET=0
++	check_port_mab_support || return 0
++
++	bridge link set dev $swp1 learning on locked off mab on &> /dev/null
++	check_fail $? "MAB enabled while port is unlocked"
++
++	bridge link set dev $swp1 learning off locked on mab on &> /dev/null
++	check_fail $? "MAB enabled while port has learning disabled"
++
++	bridge link set dev $swp1 learning on locked on mab on
++	check_err $? "Failed to enable MAB when port is locked and has learning enabled"
++
++	bridge link set dev $swp1 learning off locked off mab off
++
++	log_test "Locked port MAB configuration"
++}
++
++# Check that locked FDB entries are flushed from a port when MAB is disabled.
++locked_port_mab_flush()
++{
++	local locked_mac1=00:01:02:03:04:05
++	local unlocked_mac1=00:01:02:03:04:06
++	local locked_mac2=00:01:02:03:04:07
++	local unlocked_mac2=00:01:02:03:04:08
++
++	RET=0
++	check_port_mab_support || return 0
++
++	bridge link set dev $swp1 learning on locked on mab on
++	bridge link set dev $swp2 learning on locked on mab on
++
++	# Create regular and locked FDB entries on each port.
++	bridge fdb add $unlocked_mac1 dev $swp1 vlan 1 master static
++	bridge fdb add $unlocked_mac2 dev $swp2 vlan 1 master static
++
++	$MZ $h1 -q -c 5 -d 100msec -t udp -a $locked_mac1 -b rand
++	bridge fdb get $locked_mac1 br br0 vlan 1 | grep "dev $swp1" | \
++		grep -q "locked"
++	check_err $? "Failed to create locked FDB entry on first port"
++
++	$MZ $h2 -q -c 5 -d 100msec -t udp -a $locked_mac2 -b rand
++	bridge fdb get $locked_mac2 br br0 vlan 1 | grep "dev $swp2" | \
++		grep -q "locked"
++	check_err $? "Failed to create locked FDB entry on second port"
++
++	# Disable MAB on the first port and check that only the first locked
++	# FDB entry was flushed.
++	bridge link set dev $swp1 mab off
++
++	bridge fdb get $unlocked_mac1 br br0 vlan 1 &> /dev/null
++	check_err $? "Regular FDB entry on first port was flushed after disabling MAB"
++
++	bridge fdb get $unlocked_mac2 br br0 vlan 1 &> /dev/null
++	check_err $? "Regular FDB entry on second port was flushed after disabling MAB"
++
++	bridge fdb get $locked_mac1 br br0 vlan 1 &> /dev/null
++	check_fail $? "Locked FDB entry on first port was not flushed after disabling MAB"
++
++	bridge fdb get $locked_mac2 br br0 vlan 1 &> /dev/null
++	check_err $? "Locked FDB entry on second port was flushed after disabling MAB"
++
++	bridge fdb del $unlocked_mac2 dev $swp2 vlan 1 master static
++	bridge fdb del $unlocked_mac1 dev $swp1 vlan 1 master static
++
++	bridge link set dev $swp2 learning on locked off mab off
++	bridge link set dev $swp1 learning off locked off mab off
++
++	log_test "Locked port MAB FDB flush"
++}
++
+ trap cleanup EXIT
+ 
+ setup_prepare
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 3ffb9d6c0950..1c4f866de7d7 100755
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -137,6 +137,14 @@ check_locked_port_support()
+ 	fi
+ }
+ 
++check_port_mab_support()
++{
++	if ! bridge -d link show | grep -q "mab"; then
++		echo "SKIP: iproute2 too old; MacAuth feature not supported."
++		return $ksft_skip
++	fi
++}
++
+ if [[ "$(id -u)" -ne 0 ]]; then
+ 	echo "SKIP: need root privileges"
+ 	exit $ksft_skip
 -- 
 2.37.3
 
