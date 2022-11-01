@@ -2,137 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0CDA615123
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 18:54:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CEF061512D
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 19:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231256AbiKARyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 13:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
+        id S230031AbiKASAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 14:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbiKARyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 13:54:33 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94E11D0D3;
-        Tue,  1 Nov 2022 10:54:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=Rb+GxuYYkyrIKK+IY8jZcZsGk5i+4PamZxFzJOuIpvM=; b=bqYtpmjKYGACgO8BFCDLwL3w9m
-        yymr5KNFNii98N1Ca1Ulj/o23ZKmBL/lyFA3js4wFZCma3VjxYDQrgCBoy5J48kxtXZ/wkT8THrys
-        mjlSjLXQeFgMYnPDVYKeolIET4Y9nd/xN80QNqQQtVoLtLc7XtpmKCJLajiXUDzsve0PEii2i0yw8
-        UmuiegLQ0PeBfB+uUNG5+aPTDh0x9GIQJWDhRmYkg/1VsON6/QrxLCOVJ1ChssuWxt3axhRvdrOky
-        R6uRWZdM9LPWdD811IbBTk5PKzWInAr9mnHKovnnQmZGJvFIZ5VtIoKyV+lCOIHX5jrO/t/yUsDee
-        lHnu4P7Q==;
-Received: from c-67-160-137-253.hsd1.or.comcast.net ([67.160.137.253] helo=[10.0.0.152])
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1opvSn-006NYc-My; Tue, 01 Nov 2022 17:54:13 +0000
-Message-ID: <1041acdb-2978-7413-5567-ae9c14471605@infradead.org>
-Date:   Tue, 1 Nov 2022 10:54:11 -0700
+        with ESMTP id S229819AbiKASAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 14:00:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F093211C11
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 11:00:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EEC5B81EAA
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 18:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 146F9C433C1;
+        Tue,  1 Nov 2022 18:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667325617;
+        bh=hi3/rG+adxc22Q2ztzXfKvgRaAuSxlW59U3KnMS9jaU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cQnk+GAXXjE7SlxsMuKGfofyRmepjiTYnayvgHLRBwx+XIk3l9Ea8QDEHohW32Moo
+         sKBPiOIbY6SBc/9QOLroUl06eDmPyB1TFzeMQprvIPbVboZi4304v1UFujhfNLBAn3
+         eFK6EHSzo6dKK8SwqdVqLeGGCpHKWPveC+Cv7scpT4Q8jL6asbpMt4Lvca6nPM6ghL
+         xJGGuQVpMGufpymLL9AFNbnLQE9AlAE3XpKCTTUQ0iif/CeJ+QD8dEzSItU6WUz5ej
+         Cuo5c29PT+YIBZNz+WxtzvscN9XOyWfAbs4JjBnmPdSX0RpbdCDxlWr4fVFOJIpVmV
+         EtQbsB4VgJgDA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA4C3E270D3;
+        Tue,  1 Nov 2022 18:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH] ath11k (gcc13): synchronize
- ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        linux-kernel@vger.kernel.org, Martin Liska <mliska@suse.cz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-References: <20221031114341.10377-1-jirislaby@kernel.org>
- <55c4d139-0f22-e7ba-398a-e3e0d8919220@quicinc.com>
- <833c7f2f-c140-5a0b-1efc-b858348206ec@kernel.org> <87bkprgj0b.fsf@kernel.org>
- <503a3b36-2256-a9ce-cffe-5c0ed51f6f62@infradead.org>
- <87tu3ifv8z.fsf@kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <87tu3ifv8z.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH ethtool] add 10baseT1L mode to link mode tables
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166732561694.22124.17178596277168323304.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Nov 2022 18:00:16 +0000
+References: <20221024152855.D0D6E604C3@lion.mk-sys.cz>
+In-Reply-To: <20221024152855.D0D6E604C3@lion.mk-sys.cz>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, xose.vazquez@gmail.com,
+        alexandru.tachici@analog.com
+X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi--
+Hello:
 
-On 11/1/22 10:19, Kalle Valo wrote:
-> Randy Dunlap <rdunlap@infradead.org> writes:
+This patch was applied to ethtool/ethtool.git (master)
+by Michal Kubecek <mkubecek@suse.cz>:
+
+On Mon, 24 Oct 2022 17:28:55 +0200 (CEST) you wrote:
+> Add recently added 10baseT1L/Full link mode to man page and ioctl and
+> fallback code paths.
 > 
->> On 11/1/22 01:45, Kalle Valo wrote:
->>> Jiri Slaby <jirislaby@kernel.org> writes:
->>>
->>>> On 31. 10. 22, 22:16, Jeff Johnson wrote:
->>>>
->>>>> On 10/31/2022 4:43 AM, Jiri Slaby (SUSE) wrote:
->>
->>>>> Suggest the subject should be
->>>>> wifi: ath11k: synchronize ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
->>>>
->>>> FWIW I copied from:
->>>> $ git log --format=%s  drivers/net/wireless/ath/ath11k/mac.h
->>>> ath11k: Handle keepalive during WoWLAN suspend and resume
->>>> ath11k: reduce the wait time of 11d scan and hw scan while add interface
->>>> ath11k: Add basic WoW functionalities
->>>> ath11k: add support for hardware rfkill for QCA6390
->>>> ath11k: report tx bitrate for iw wlan station dump
->>>> ath11k: add 11d scan offload support
->>>> ath11k: fix read fail for htt_stats and htt_peer_stats for single pdev
->>>> ath11k: add support for BSS color change
->>>> ath11k: add support for 80P80 and 160 MHz bandwidth
->>>> ath11k: Add support for STA to handle beacon miss
->>>> ath11k: add support to configure spatial reuse parameter set
->>>> ath11k: remove "ath11k_mac_get_ar_vdev_stop_status" references
->>>> ath11k: Perform per-msdu rx processing
->>>> ath11k: fix incorrect peer stats counters update
->>>> ath11k: Move mac80211 hw allocation before wmi_init command
->>>> ath11k: fix missed bw conversion in tx completion
->>>> ath11k: driver for Qualcomm IEEE 802.11ax devices
->>>
->>> Yeah, using "wifi:" is a new prefix we started using with wireless
->>> patches this year.
->>>
->>
->> It would be nice if that was documented somewhere...
-> 
-> It is mentioned on our wiki but I doubt anyone reads it :)
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> ---
+>  ethtool.8.in       | 1 +
+>  ethtool.c          | 3 +++
+>  netlink/settings.c | 1 +
+>  3 files changed, 5 insertions(+)
 
-I think that you are correct. ;)
+Here is the summary with links:
+  - [ethtool] add 10baseT1L mode to link mode tables
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=1b7d16496cc8
 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#subject
-> 
-> Do let me know if there are other places which should have this info.
-
-Ideally it would be in the subsystem's profile document as described in the
-MAINTAINERS file:
-
-	P: Subsystem Profile document for more details submitting
-	   patches to the given subsystem. This is either an in-tree file,
-	   or a URI. See Documentation/maintainer/maintainer-entry-profile.rst
-	   for details.
-
-although that seems to be overkill IMHO just to add a prefix: setting.
-
-You could just clone some other maintainer's Profile document and then modify it
-to anything that you would like to have in it as far as Maintaining and patching
-are concerned.
-
-> I did assume it will take at least a year or two before people get used
-> to the new prefix, but my patchwork script has a check for this and it's
-> trivial to fix the subject before I commit the patch. So hopefully the
-> switch goes smoothly.
-
-OK.
-
-Thanks.
-
+You are awesome, thank you!
 -- 
-~Randy
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
