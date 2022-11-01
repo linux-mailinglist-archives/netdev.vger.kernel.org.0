@@ -2,208 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 177D56144E2
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 08:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51EC86144F7
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 08:22:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiKAHIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 03:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
+        id S229549AbiKAHWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 03:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiKAHIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 03:08:20 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8121181D
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 00:08:18 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N1h1p6GWbz15MD6;
-        Tue,  1 Nov 2022 15:08:14 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 1 Nov 2022 15:08:16 +0800
-Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Kuniyuki Iwashima <kuni1840@gmail.com>, <netdev@vger.kernel.org>
-References: <20221029001249.86337-1-kuniyu@amazon.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <4bd122d2-d606-b71e-dbe7-63fa293f0a73@huawei.com>
-Date:   Tue, 1 Nov 2022 15:08:15 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S229457AbiKAHWt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 03:22:49 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C5B14029;
+        Tue,  1 Nov 2022 00:22:47 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R671e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VTebUcP_1667287362;
+Received: from 30.221.145.108(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VTebUcP_1667287362)
+          by smtp.aliyun-inc.com;
+          Tue, 01 Nov 2022 15:22:44 +0800
+Message-ID: <1615836b-3087-2467-262e-f402ec521716@linux.alibaba.com>
+Date:   Tue, 1 Nov 2022 15:22:41 +0800
 MIME-Version: 1.0
-In-Reply-To: <20221029001249.86337-1-kuniyu@amazon.com>
-Content-Type: multipart/mixed;
-        boundary="------------1D573F848E0B75F2BB2E5409"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH net-next v4 00/10] optimize the parallelism of SMC-R
+ connections
 Content-Language: en-US
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Jan Karcher <jaka@linux.ibm.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1666529042-40828-1-git-send-email-alibuda@linux.alibaba.com>
+ <95feb2a1-d17a-6233-d3d0-eaebf26d2284@linux.ibm.com>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <95feb2a1-d17a-6233-d3d0-eaebf26d2284@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---------------1D573F848E0B75F2BB2E5409
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 7bit
 
-Hello Kuniyuki Iwashima,
+Hi Jan,
 
-> Hi,
-> 
-> I want to discuss bhash2 and WARN_ON() being fired every day this month
-> on my syzkaller instance without repro.
-> 
->   WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
->   ...
->   inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
->   inet_listen (net/ipv4/af_inet.c:228)
->   __sys_listen (net/socket.c:1810)
->   __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
->   do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
->   entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> 
-> For the very first implementation of bhash2, there was a similar report
-> hitting the same WARN_ON().  The fix was to update the bhash2 bucket when
-> the kernel changes sk->sk_rcv_saddr from INADDR_ANY.  Then, syzbot has a
-> repro, so we can indeed confirm that it no longer triggers the warning on
-> the latest kernel.
-> 
->   https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
-> 
-> However, Mat reported at that time that there were at least two variants,
-> the latter being the same as mine.
-> 
->   https://lore.kernel.org/netdev/4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com/
->   https://lore.kernel.org/netdev/23d8e9f4-016-7de1-9737-12c3146872ca@linux.intel.com/
-> 
-> This week I started looking into this issue and finally figured out
-> why we could not catch all cases with a single repro.
-> 
+Our team conducted some code reviews over this, but unfortunately no obvious problems were found. Hence
+we are waiting for Tony Lu's virtual SMC-D device to test, which is expected to come in this week.  Before that,
+I wonder if your tests are running separately on separate PATCH? If so, I would like to please you to test
+the first PATCH and the second PATCH together. I doubt that the problem repaired by the second PATCH
+is the cause of this issues.
 
-Provide another C repro for analysis. See the attachment.
+Best Wishes.
+D. Wythe
 
-> 
-> Now, I'm thinking bhash2 bucket needs a refcnt not to be freed while
-> refcnt is greater than 1.  And we need to change the conflict logic
-> so that the kernel ignores empty bhash2 bucket.  Such changes could
-> be big for the net tree, but the next LTS will likely be v6.1 which
-> has bhash2.
-> 
-> What do you think is the best way to fix the issue?
-> 
-> Thank you.
-> 
-> 
-> ---8<---
-> diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> index 713b7b8dad7e..40640c26680e 100644
-> --- a/net/dccp/ipv4.c
-> +++ b/net/dccp/ipv4.c
-> @@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
->  	 * This unhashes the socket and releases the local port, if necessary.
->  	 */
->  	dccp_set_state(sk, DCCP_CLOSED);
-> +	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> +		inet_reset_saddr(sk);
->  	ip_rt_put(rt);
->  	sk->sk_route_caps = 0;
->  	inet->inet_dport = 0;
-> diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> index e57b43006074..626166cb6d7e 100644
-> --- a/net/dccp/ipv6.c
-> +++ b/net/dccp/ipv6.c
-> @@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
->  
->  late_failure:
->  	dccp_set_state(sk, DCCP_CLOSED);
-> +	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> +		inet_reset_saddr(sk);
->  	__sk_dst_reset(sk);
->  failure:
->  	inet->inet_dport = 0;
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 7a250ef9d1b7..834245da1e95 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
->  	 * if necessary.
->  	 */
->  	tcp_set_state(sk, TCP_CLOSE);
-> +	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> +		inet_reset_saddr(sk);
->  	ip_rt_put(rt);
->  	sk->sk_route_caps = 0;
->  	inet->inet_dport = 0;
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 2a3f9296df1e..81b396e5cf79 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
->  
->  late_failure:
->  	tcp_set_state(sk, TCP_CLOSE);
-> +	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> +		inet_reset_saddr(sk);
->  failure:
->  	inet->inet_dport = 0;
->  	sk->sk_route_caps = 0;
-> ---8<---
-> .
-> 
 
---------------1D573F848E0B75F2BB2E5409
-Content-Type: text/plain; charset="UTF-8"; name="warning_on_for_bhash2.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="warning_on_for_bhash2.c"
-
-#define _GNU_SOURCE 
-
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-uint64_t r[1] = {0xffffffffffffffff};
-
-int main(void)
-{
-		syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-	syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
-	syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-				intptr_t res = 0;
-	res = syscall(__NR_socket, 0xaul, 1ul, 0);
-	if (res != -1)
-		r[0] = res;
-*(uint16_t*)0x20000000 = 0xa;
-*(uint16_t*)0x20000002 = htobe16(0x4e22);
-*(uint32_t*)0x20000004 = htobe32(0);
-memset((void*)0x20000008, 0, 16);
-*(uint32_t*)0x20000018 = 0;
-	syscall(__NR_bind, r[0], 0x20000000ul, 0x1cul);
-*(uint16_t*)0x200000c0 = 0xa;
-*(uint16_t*)0x200000c2 = htobe16(0x4e24);
-*(uint32_t*)0x200000c4 = htobe32(0x285);
-memset((void*)0x200000c8, 0, 16);
-*(uint32_t*)0x200000d8 = 3;
-	syscall(__NR_connect, r[0], 0x200000c0ul, 0x1cul);
-	syscall(__NR_listen, r[0], 0);
-	return 0;
-}
---------------1D573F848E0B75F2BB2E5409--
+On 10/24/22 9:11 PM, Jan Karcher wrote:
+> Hi D. Wythe,
+> 
+> I re-run the tests with your fix.
+> SMC-R works fine now. For SMC-D we still have the following problem. It is kind of the same as i reported in v2 but even weirder:
+> 
+> smc stats:
+> 
+> t8345011
+> SMC-D Connections Summary
+>    Total connections handled          2465
+> SMC-R Connections Summary
+>    Total connections handled           232
+> 
+> t8345010
+> SMC-D Connections Summary
+>    Total connections handled          2290
+> SMC-R Connections Summary
+>    Total connections handled           231
+> 
+> 
+> smc linkgroups:
+> 
+> t8345011
+> [root@t8345011 ~]# smcr linkgroup
+> LG-ID    LG-Role  LG-Type  VLAN  #Conns  PNET-ID
+> 00000400 SERV     SYM         0       0  NET25
+> [root@t8345011 ~]# smcd linkgroup
+> LG-ID    VLAN  #Conns  PNET-ID
+> 00000300    0      16  NET25
+> 
+> t8345010
+> [root@t8345010 tela-kernel]# smcr linkgroup
+> LG-ID    LG-Role  LG-Type  VLAN  #Conns  PNET-ID
+> 00000400 CLNT     SYM         0       0  NET25
+> [root@t8345010 tela-kernel]# smcd linkgroup
+> LG-ID    VLAN  #Conns  PNET-ID
+> 00000300    0       1  NET25
+> 
+> 
+> smcss:
+> 
+> t8345011
+> [root@t8345011 ~]# smcss
+> State          UID   Inode   Local Address           Peer Address     Intf Mode
+> 
+> t8345010
+> [root@t8345010 tela-kernel]# smcss
+> State          UID   Inode   Local Address           Peer Address     Intf Mode
+> 
+> 
+> lsmod:
+> 
+> t8345011
+> [root@t8345011 ~]# lsmod | grep smc
+> smc                   225280  18 ism,smc_diag
+> t8345010
+> [root@t8345010 tela-kernel]# lsmod | grep smc
+> smc                   225280  3 ism,smc_diag
+> 
+> Also smc_dbg and netstat do not show any more information on this problem. We only see in the dmesg that the code seems to build up SMC-R linkgroups even tho we are running the SMC-D tests.
+> NOTE: we disabled the syncookies for the tests.
+> 
+> dmesg:
+> 
+> t8345011
+> smc-tests: test_smcapp_torture_test started
+> kernel: TCP: request_sock_TCP: Possible SYN flooding on port 22465. Dropping request.  Check SNMP counters.
+> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000401, peerid 00000401, ibdev mlx5_0, ibport 1
+> kernel: smc: SMC-R lg 00000400 net 1 state changed: SINGLE, pnetid NET25
+> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000402, peerid 00000402, ibdev mlx5_1, ibport 1
+> kernel: smc: SMC-R lg 00000400 net 1 state changed: SYMMETRIC, pnetid NET25
+> 
+> t8345010
+> smc-tests: test_smcapp_torture_test started
+> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000401, peerid 00000401, ibdev mlx5_0, ibport 1
+> kernel: smc: SMC-R lg 00000400 net 1 state changed: SINGLE, pnetid NET25
+> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000402, peerid 00000402, ibdev mlx5_1, ibport 1
+> kernel: smc: SMC-R lg 00000400 net 1 state changed: SYMMETRIC, pnetid NET25
+> 
+> If this output does not help and if you want us to look deeper into it feel free to let us know and we can debug further.
+> 
+> On 23/10/2022 14:43, D.Wythe wrote:
+>> From: "D.Wythe" <alibuda@linux.alibaba.com>
+>>
+>> This patch set attempts to optimize the parallelism of SMC-R connections,
+>> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+>> occur after thoses optimization.
+>>
+>> According to Off-CPU graph, SMC worker's off-CPU as that:
+>>
+>> smc_close_passive_work                  (1.09%)
+>>          smcr_buf_unuse                  (1.08%)
+>>                  smc_llc_flow_initiate   (1.02%)
+>>
+>> smc_listen_work                         (48.17%)
+>>          __mutex_lock.isra.11            (47.96%)
+>>
+>>
+>> An ideal SMC-R connection process should only block on the IO events
+>> of the network, but it's quite clear that the SMC-R connection now is
+>> queued on the lock most of the time.
+>>
+>> The goal of this patchset is to achieve our ideal situation where
+>> network IO events are blocked for the majority of the connection lifetime.
+>>
+>> There are three big locks here:
+>>
+>> 1. smc_client_lgr_pending & smc_server_lgr_pending
+>>
+>> 2. llc_conf_mutex
+>>
+>> 3. rmbs_lock & sndbufs_lock
+>>
+>> And an implementation issue:
+>>
+>> 1. confirm/delete rkey msg can't be sent concurrently while
+>> protocol allows indeed.
+>>
+>> Unfortunately,The above problems together affect the parallelism of
+>> SMC-R connection. If any of them are not solved. our goal cannot
+>> be achieved.
+>>
+>> After this patch set, we can get a quite ideal off-CPU graph as
+>> following:
+>>
+>> smc_close_passive_work                                  (41.58%)
+>>          smcr_buf_unuse                                  (41.57%)
+>>                  smc_llc_do_delete_rkey                  (41.57%)
+>>
+>> smc_listen_work                                         (39.10%)
+>>          smc_clc_wait_msg                                (13.18%)
+>>                  tcp_recvmsg_locked                      (13.18)
+>>          smc_listen_find_device                          (25.87%)
+>>                  smcr_lgr_reg_rmbs                       (25.87%)
+>>                          smc_llc_do_confirm_rkey         (25.87%)
+>>
+>> We can see that most of the waiting times are waiting for network IO
+>> events. This also has a certain performance improvement on our
+>> short-lived conenction wrk/nginx benchmark test:
+>>
+>> +--------------+------+------+-------+--------+------+--------+
+>> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
+>> +--------------+------+------+-------+--------+------+--------+
+>> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
+>> +--------------+------+------+-------+--------+------+--------+
+>> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
+>> +--------------+------+------+-------+--------+------+--------+
+>> |TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
+>> +--------------+------+------+-------+--------+------+--------+
+>>
+>> The reason why the benefit is not obvious after the number of connections
+>> has increased dues to workqueue. If we try to change workqueue to UNBOUND,
+>> we can obtain at least 4-5 times performance improvement, reach up to half
+>> of TCP. However, this is not an elegant solution, the optimization of it
+>> will be much more complicated. But in any case, we will submit relevant
+>> optimization patches as soon as possible.
+>>
+>> Please note that the premise here is that the lock related problem
+>> must be solved first, otherwise, no matter how we optimize the workqueue,
+>> there won't be much improvement.
+>>
+>> Because there are a lot of related changes to the code, if you have
+>> any questions or suggestions, please let me know.
+>>
+>> Thanks
+>> D. Wythe
+>>
+>> v1 -> v2:
+>>
+>> 1. Fix panic in SMC-D scenario
+>> 2. Fix lnkc related hashfn calculation exception, caused by operator
+>> priority
+>> 3. Only wake up one connection if the lnk is not active
+>> 4. Delete obsolete unlock logic in smc_listen_work()
+>> 5. PATCH format, do Reverse Christmas tree
+>> 6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx
+>> 7. PATCH format, add correct fix tag for the patches for fixes.
+>> 8. PATCH format, fix some spelling error
+>> 9. PATCH format, rename slow to do_slow
+>>
+>> v2 -> v3:
+>>
+>> 1. add SMC-D support, remove the concept of link cluster since SMC-D has
+>> no link at all. Replace it by lgr decision maker, who provides suggestions
+>> to SMC-D and SMC-R on whether to create new link group.
+>>
+>> 2. Fix the corruption problem described by PATCH 'fix application
+>> data exception' on SMC-D.
+>>
+>> v3 -> v4:
+>>
+>> 1. Fix panic caused by uninitialization map.
+>>
+>> D. Wythe (10):
+>>    net/smc: remove locks smc_client_lgr_pending and
+>>      smc_server_lgr_pending
+>>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
+>>    net/smc: allow confirm/delete rkey response deliver multiplex
+>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+>>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+>>    net/smc: use read semaphores to reduce unnecessary blocking in
+>>      smc_buf_create() & smcr_buf_unuse()
+>>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+>>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+>>    net/smc: Fix potential panic dues to unprotected
+>>      smc_llc_srv_add_link()
+>>    net/smc: fix application data exception
+>>
+>>   net/smc/af_smc.c   |  70 ++++----
+>>   net/smc/smc_core.c | 478 +++++++++++++++++++++++++++++++++++++++++++++++------
+>>   net/smc/smc_core.h |  36 +++-
+>>   net/smc/smc_llc.c  | 277 ++++++++++++++++++++++---------
+>>   net/smc/smc_llc.h  |   6 +
+>>   net/smc/smc_wr.c   |  10 --
+>>   net/smc/smc_wr.h   |  10 ++
+>>   7 files changed, 712 insertions(+), 175 deletions(-)
+>>
