@@ -2,107 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A5B6147D2
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 11:41:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A4D6147E0
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 11:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiKAKlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 06:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
+        id S229711AbiKAKql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 06:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiKAKlL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 06:41:11 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9733618360;
-        Tue,  1 Nov 2022 03:41:07 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id l16-20020a05600c4f1000b003c6c0d2a445so9626623wmq.4;
-        Tue, 01 Nov 2022 03:41:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7Pe2nrgeiyZg8ID37Ige8MwH9qNBIQiYrCcbJSksgFI=;
-        b=Y6YrCkEQsgOc7ZDWGKxi3Wkox/e6LYXmnJtkUXGypr79o8IHyXPlONne0anADVbPeG
-         5oEMkznQDrPVzR0DQXvWvH54Ov554LfRfqdOELVQhEE0+kxcjulVOxcu7NhkrrdjVWk6
-         9LFUZcqxmHZ7Wc7xLHk/3NsiRnCPu5SPE6XNA1/34y9ChsR5cYfDJPtivp1aWpOr48JW
-         qRWfCox9pAodZfOtbvu0douBihtk1+a0W0oUZ7XF5YJSCJb2kcHY56wUmcAlPwQdxPZD
-         nMjXz8I+DhibL1w+xIb05y8Zz8mvPiJcdLM+trx9f7LkEcuhMoSG6GQZGkQLeT+JO9zE
-         3AWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7Pe2nrgeiyZg8ID37Ige8MwH9qNBIQiYrCcbJSksgFI=;
-        b=JFRrebWwsRvMcUVWMNMGLwtMnD4ygJNejgwRRETzOI1amxWXGju8sw3X0MNixNw4ME
-         EYLjSxOfKWjF+t6qdf8nlbCrV4HRQPw5Ch2cdzY/7zhrDmSpp2xiZvd7J+PlV76ZLoGg
-         kX8QKYRugdLw9aMElGDsAfxlrNpfFMM8df242RZQqQiJyfmc8ncCCYjZ6TUhyNeoSYEK
-         9zTwNiINaAm2nTvIaJpX/Zj33Vn9d/g7Cn6FxifTYsD1Ovnx/veQaskbuxj4wkOuhZpl
-         4q7YvjgDdvS+YHXZ51ALrwON3GB0pEvR03CcjK0C+dcqstG8UsST5MZFFC5MeJH6v2IX
-         GPTQ==
-X-Gm-Message-State: ACrzQf2M9Rc9dg40KF9MN0LS3WDCSai4GSe2Sdc9BKHMNvXtghyuD/Ul
-        /DZnkqepHO8n/Bnnz7o8xTg=
-X-Google-Smtp-Source: AMsMyM7IAKYIwvuvbcyWM+yWofRtGf6bwmSRDO1+LzjepNvIn0/kw2Cu6ZZW2RuMAvkqzd3YvnAc6w==
-X-Received: by 2002:a05:600c:1c98:b0:3cf:77cc:5f65 with SMTP id k24-20020a05600c1c9800b003cf77cc5f65mr72335wms.25.1667299266115;
-        Tue, 01 Nov 2022 03:41:06 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id o23-20020a05600c511700b003cf54b77bfesm10436628wms.28.2022.11.01.03.41.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Nov 2022 03:41:05 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229452AbiKAKqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 06:46:39 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DC1193C7;
+        Tue,  1 Nov 2022 03:46:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667299599; x=1698835599;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=uituX6EfEuLj0s1j7ECFATXPhjO7z9j9nwhPYjeinlY=;
+  b=czdMxmH9sVFQG2XnQE1F2wdaRawkPy56yUOkWj4VIBDw/AOtnm5Uy3Yu
+   QXaH2l/HVNrGGzTrIVB7PG3HALHQsyYlgp7AdVwkHimWRoR/OLm65WoAM
+   cKpro8FCEzF2VbF5er0bE6R0cVWhyhnoN8zh7eGvBEwIXU5TNEJgYo0Ho
+   K+e4QM4kKRhM9cPl1URLZxCCeBbyeMyFLZjg6U+fRpoRlJDhJXyCmqwuQ
+   mrPGJ+e9+0x+Xj+/ez/YAcWrsxLFPm860RPZHVQCfxfSUnClr+VkwULgB
+   ofsuryZ7LxdKbknTTWJJQK05N+ArDrdouNCfxwEsZoJJ7CoMh1PW4S4ac
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10517"; a="310816950"
+X-IronPort-AV: E=Sophos;i="5.95,230,1661842800"; 
+   d="scan'208";a="310816950"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 03:46:38 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10517"; a="739288553"
+X-IronPort-AV: E=Sophos;i="5.95,230,1661842800"; 
+   d="scan'208";a="739288553"
+Received: from rsimofi-mobl.ger.corp.intel.com (HELO localhost) ([10.252.30.2])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 03:46:35 -0700
+From:   Jani Nikula <jani.nikula@intel.com>
+To:     Cai Huoqing <cai.huoqing@linux.dev>, kuba@kernel.org
+Cc:     Cai Huoqing <cai.huoqing@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rds: remove redundant variable total_payload_len
-Date:   Tue,  1 Nov 2022 10:41:04 +0000
-Message-Id: <20221101104104.29878-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        Paolo Abeni <pabeni@redhat.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        SeongJae Park <sj@kernel.org>,
+        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/2] net: hinic: Add control command support
+ for VF PMD driver in DPDK
+In-Reply-To: <20221101060358.7837-2-cai.huoqing@linux.dev>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20221101060358.7837-1-cai.huoqing@linux.dev>
+ <20221101060358.7837-2-cai.huoqing@linux.dev>
+Date:   Tue, 01 Nov 2022 12:46:32 +0200
+Message-ID: <87iljz7y0n.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable total_payload_len is being used to accumulate payload lengths
-however it is never read or used afterwards. It is redundant and can
-be removed.
+On Tue, 01 Nov 2022, Cai Huoqing <cai.huoqing@linux.dev> wrote:
+> HINIC has a mailbox for PF-VF communication and the VF driver
+> could send port control command to PF driver via mailbox.
+>
+> The control command only can be set to register in PF,
+> so add support in PF driver for VF PMD driver control
+> command when VF PMD driver work with linux PF driver.
+>
+> Then there is no need to add handlers to nic_vf_cmd_msg_handler[],
+> because the host driver just forwards it to the firmware.
+> Actually the firmware works on a coprocessor MGMT_CPU(inside the NIC)
+> which will recv and deal with these commands.
+>
+> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- net/rds/send.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Out of curiosity, what exactly compelled you to Cc me on this particular
+patch? I mean there aren't a whole lot of places in the kernel that
+would be more off-topic for me. :)
 
-diff --git a/net/rds/send.c b/net/rds/send.c
-index 0c5504068e3c..5e57a1581dc6 100644
---- a/net/rds/send.c
-+++ b/net/rds/send.c
-@@ -1114,7 +1114,7 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
- 	struct rds_conn_path *cpath;
- 	struct in6_addr daddr;
- 	__u32 scope_id = 0;
--	size_t total_payload_len = payload_len, rdma_payload_len = 0;
-+	size_t rdma_payload_len = 0;
- 	bool zcopy = ((msg->msg_flags & MSG_ZEROCOPY) &&
- 		      sock_flag(rds_rs_to_sk(rs), SOCK_ZEROCOPY));
- 	int num_sgs = DIV_ROUND_UP(payload_len, PAGE_SIZE);
-@@ -1243,7 +1243,6 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
- 	if (ret)
- 		goto out;
- 
--	total_payload_len += rdma_payload_len;
- 	if (max_t(size_t, payload_len, rdma_payload_len) > RDS_MAX_MSG_SIZE) {
- 		ret = -EMSGSIZE;
- 		goto out;
+BR,
+Jani.
+
+
 -- 
-2.37.3
-
+Jani Nikula, Intel Open Source Graphics Center
