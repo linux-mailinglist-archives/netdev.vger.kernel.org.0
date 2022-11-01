@@ -2,83 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F4E6142CD
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 02:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 514166142E2
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 02:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbiKABld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 21:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
+        id S229925AbiKABt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 21:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKABlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 21:41:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4582910050;
-        Mon, 31 Oct 2022 18:41:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D49B2614E1;
-        Tue,  1 Nov 2022 01:41:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CCAC433D6;
-        Tue,  1 Nov 2022 01:41:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667266890;
-        bh=XJvNcCvYTd4PK+vO4pqCyIW2MQydHQ5BXboQR88RVrI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ng5IKB72OvrAGnyyDLPsp+VJEDvkimJgEQ5XQs9rLxfH/2OVyZdacii0xI0OlpoGw
-         ROslgGRfdYZZOh9H6G/swxBr9nFGNVSxJyGWLEO4Hz6KVFI9SOnoOTW91fo1091TnF
-         mCKNYHVe9nCllh7xOnQfYedyII7LWbrx07rSr27Yz8qTSiqL/H/6hbV58ZR6jnpyXo
-         Wu+q6tcCHdEcaJ1R9KZLJc545bPCwNlVDBmUAHmZZKVO4hpIy3SoXPS1xhzpwqgfYw
-         kJSPv5NsIga5PV6bxwB2qp7BXnnoiWtu3tuviHu322iBWxuiM0b/MqSo7nteLJJ221
-         fWaP/FKhuezTg==
-Date:   Mon, 31 Oct 2022 18:41:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     Casper Andersson <casper.casan@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229912AbiKABtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 21:49:25 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2968217073;
+        Mon, 31 Oct 2022 18:49:24 -0700 (PDT)
+Date:   Tue, 1 Nov 2022 09:49:17 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667267362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fRVVxpWdboI3BCK5/upfkjgcKdbyv36akL/n18YwLFA=;
+        b=TSIHK7qeBypUjvQibb1WLgZ9Yk4uCfZYIxuKDvJOiK+9htliugor0n81pzJMEjZtZPhMvf
+        u1/nTa3ohrfBL4L+IiyQ6eRxV10P2QxJrYM+XvLlmRi+A2164NOGAbCfP60xwtyTM31lpS
+        /zCDU/EXOHUXccFEm9EN1NgnPt1GxtI=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        "Wan Jiabing" <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
- flower keys for the IS2 VCAP
-Message-ID: <20221031184128.1143d51e@kernel.org>
-In-Reply-To: <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
-References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
-        <20221028144540.3344995-3-steen.hegelund@microchip.com>
-        <20221031103747.uk76tudphqdo6uto@wse-c0155>
-        <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Bin Chen <bin.chen@corigine.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Peter Chen <peter.chen@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: hinic: Add control command support for VF PMD
+ driver in DPDK
+Message-ID: <20221101014917.GA6739@chq-T47>
+References: <20221026125922.34080-1-cai.huoqing@linux.dev>
+ <20221026125922.34080-2-cai.huoqing@linux.dev>
+ <20221027110312.7391f69f@kernel.org>
+ <20221028045655.GB3164@chq-T47>
+ <20221028085651.78408e2c@kernel.org>
+ <20221029075335.GA9148@chq-T47>
+ <20221031165255.6a754aad@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221031165255.6a754aad@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 Oct 2022 13:14:33 +0100 Steen Hegelund wrote:
-> > I'm not able to get this working on PCB135. I tested the VLAN tags and
-> > did not work either (did not test the rest). The example from the
-> > previous patch series doesn't work either after applying this series.  
+On 31 10月 22 16:52:55, Jakub Kicinski wrote:
+> On Sat, 29 Oct 2022 15:53:35 +0800 Cai Huoqing wrote:
+> > On 28 10月 22 08:56:51, Jakub Kicinski wrote:
+> > > > if the cmd is not added to 'nic_cmd_support_vf',
+> > > > the PF will return false, and the error messsage "PF Receive VFx
+> > > > unsupported cmd x" in the function 'hinic_mbox_check_cmd_valid',
+> > > > then, the configuration will not be set to hardware.  
+> > > 
+> > > You're describing the behavior before the patch?
+> > > 
+> > > After the patch the command is ignored silently, like I said, right?
+> > > Because there is no handler added to nic_vf_cmd_msg_handler[].
+> > > Why is that okay? Or is there handler somewhere else?  
+> > 
+> > No need to add handlers to nic_vf_cmd_msg_handler[].
+> > It will run the path,
+> > if (i == ARRAY_SIZE(nic_vf_cmd_msg_handler))
+> > 	err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_L2NIC,
+> > 				cmd, buf_in, in_size, buf_out,
+> > 				out_size, HINIC_MGMT_MSG_SYNC);
+> 
+> Meaning it just forwards it to the firmware?
+Yes, host driver just forwards it to the firmware.
+Actually the firmware works on a coprocessor MGMT_CPU(inside the NIC)
+which will recv and deal with these commands.
 
-Previous series in this context means previous revision or something
-that was already merged?
-
-> tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \
-
-How are you using chains?
-
-I thought you need to offload FLOW_ACTION_GOTO to get to a chain,
-and I get no hits on this driver.
+Thanks,
+Cai
+> 
+> > right? or if not please show the related code.
+> 
+> I don't know, I don't know this random driver. I'm just asking you
+> questions because as the author of the patch _you_ are supposed to know.
