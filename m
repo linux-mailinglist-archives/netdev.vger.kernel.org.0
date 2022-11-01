@@ -2,145 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 293DA614EBA
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 17:00:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54349614ED3
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 17:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbiKAQAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 12:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        id S230252AbiKAQHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 12:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbiKAQAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 12:00:14 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1DF13E9A;
-        Tue,  1 Nov 2022 09:00:12 -0700 (PDT)
+        with ESMTP id S230344AbiKAQH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 12:07:28 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEF91A06E;
+        Tue,  1 Nov 2022 09:07:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667318412; x=1698854412;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rFi+QccnOwdpqMzOzh+5VH7hp3B+12AeLQr8Z5QZS88=;
-  b=MdrO1XOtuOz7YNmjPZYTI5f+z3sggO4bBW6XAT6Ss58Va4CRcxbDmceb
-   Q9n8aQJv9XAKgxBYYO7Sbh/s7e0nXjN9a3rZJOepmoSnFeXn41DaptfLP
-   HsHm2klrKJIlE08QL9zpCVgWJFt5B4j8k7wFpPmNYm2H/RtgrJ6UAeoWg
-   QNV3ZffTcaRemzFWFmCJ8nTR/+DsdX6wPijRMtWO681frK/UM7kXn+Wu9
-   ZXg2DzEtMy5kMUyfJY0qf5VOE1ysxNTkxsIgX6ZntngkLcgDzEu4M4h6/
-   zvz+GuoNE3K9XbNlQSTg5DsM8LlyiKC+mbNlBPpq2ppmt/5moJy2Hy50i
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667318848; x=1698854848;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=EQcFxapb17YQhzuTIeBrPhOZsWVpDavoU3S/ubxgLvQ=;
+  b=D7DCDr83R83dT6Et8bIO5mERsHP0XxZSHFkR3/rX2TVMzgfuLKB5T65u
+   xj0rk58xW2zRPoGxCvMYdxPXE+ev7AQd8RemKxO9rVlzdujhkZ57QciVu
+   K8W7peuNYpigu5Ac9SNwWSMkGrWI3QfJKNZsUVhJEXpnNSj9WqTx509oG
+   C1jhq0qLFpWWE96NO+iDlH5/UEpKttnH8mYU7LwzUQKJ2B6gWGJJMf0SE
+   lUmxqQ8Rwug1cSbYN71nGdF5Bq/qBBI+dVthKDRPZOJgEndmSty/U8SJb
+   72fR3l/wV1/781hB9Qb3D3OqgM9m+7EmnEOQsk1z6OcMthoBnNv59iW7F
    Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="395483721"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="184854886"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 09:00:11 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 1 Nov 2022 09:00:09 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 1 Nov 2022 09:00:09 -0700
-Date:   Tue, 1 Nov 2022 17:04:52 +0100
-From:   'Horatiu Vultur' <horatiu.vultur@microchip.com>
-To:     David Laight <David.Laight@aculab.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net v2 0/3] net: lan966x: Fixes for when MTU is changed
-Message-ID: <20221101160452.mhk6ze7hzjaz4hzo@soft-dev3-1>
-References: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
- <b75a7136030846f587e555763ef2750e@AcuMS.aculab.com>
- <20221031150133.2be5xr7cmuhr4gng@soft-dev3-1>
- <219ebe83a5ad4467937545ee5a0e77e4@AcuMS.aculab.com>
- <20221101075906.ets6zsti3c54idae@soft-dev3-1>
- <de73370512334c76b1500e12cfd33005@AcuMS.aculab.com>
+   d="scan'208";a="395483721"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 09:06:48 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="697449213"
+X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
+   d="scan'208";a="697449213"
+Received: from rsimofi-mobl.ger.corp.intel.com (HELO localhost) ([10.252.30.2])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 09:06:45 -0700
+From:   Jani Nikula <jani.nikula@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        SeongJae Park <sj@kernel.org>,
+        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/2] net: hinic: Add control command support
+ for VF PMD driver in DPDK
+In-Reply-To: <20221101083744.7b0e9e5a@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20221101060358.7837-1-cai.huoqing@linux.dev>
+ <20221101060358.7837-2-cai.huoqing@linux.dev> <87iljz7y0n.fsf@intel.com>
+ <20221101121734.GA6389@chq-T47> <87a65a97fw.fsf@intel.com>
+ <20221101083744.7b0e9e5a@kernel.org>
+Date:   Tue, 01 Nov 2022 18:06:42 +0200
+Message-ID: <871qqm8xrh.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <de73370512334c76b1500e12cfd33005@AcuMS.aculab.com>
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/01/2022 09:03, David Laight wrote:
-> > HW requires to have the start of frame alligned to 128 bytes.
-> 
-> Not a real problem.
-> Even dma_alloc_coherent() guarantees alignment.
-> 
-> I'm not 100% sure of all the options of the Linux stack.
-> But for ~1500 byte mtu I'd have thought that receiving
-> directly into an skb would be best (1 page allocated for an skb).
-> For large mtu (and hardware receive coalescing) receiving
-> into pages is probably better - but not high order allocations.
+On Tue, 01 Nov 2022, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 01 Nov 2022 14:37:39 +0200 Jani Nikula wrote:
+>> On Tue, 01 Nov 2022, Cai Huoqing <cai.huoqing@linux.dev> wrote:
+>> > On 01 11=E6=9C=88 22 12:46:32, Jani Nikula wrote:=20=20
+>> >> Out of curiosity, what exactly compelled you to Cc me on this particu=
+lar
+>> >> patch? I mean there aren't a whole lot of places in the kernel that
+>> >> would be more off-topic for me. :)=20=20
+>> > run ./scripts/get_maintainer.pl this patch in net-next
+>> > then get your email
+>> > Jani Nikula <jani.nikula@intel.com> (commit_signer:1/8=3D12%)
+>> > Maybe you have some commits in net subsystem ?=20=20
+>>=20
+>> A grand total of 3 commits in drivers/net/wireless/ath/ two years ago,
+>> adding 3 const keywords, nowhere near of what you're changing.
+>>=20
+>> get_maintainer.pl is utterly broken to suggest I should be Cc'd.
+>
+> Apparently is because you acked commit 8581fd402a0c ("treewide: Add
+> missing includes masked by cgroup -> bpf dependency").
+> This random driver is obviously was not the part you were acking but
+> heuristics :/
 
-But am I not doing this already? I allocate the page here [1] and then create
-the skb here[2].
+*rolls eyes* :D
 
-> 
-> ...
-> > > If the buffer is embedded in an skb you really want the skb
-> > > to be under 4k (I don't think a 1500 byte mtu can fit in 2k).
-> > >
-> > > But you might as well tell the hardware the actual buffer length
-> > > (remember to allow for the crc and any alignment header).
-> >
-> > I am already doing that here [2]
-> > And I need to do it for each frame it can received.
-> 
-> That is the length of the buffer.
-> Not the maximum frame length - which seems to be elsewhere.
-> I suspect that having the maximum frame length less than the
-> buffer size stops the driver having to handle long frames
-> that span multiple buffers.
-> (and very long frames that are longer than all the buffers!)
-> 
-> ...
-> > > I'd set the buffer large enough for the mtu but let the hardware fill
-> > > the entire buffer.
-> >
-> > I am not 100% sure I follow it. Can you expend on this a little bit?
-> 
-> At the moment I think the receive buffer descriptors have a length
-> of 4k. But you are setting another 'maximum frame length' register
-> to (eg) 1518 so that the hardware rejects long frames.
 
-That is correct.
+>
+> Cai Huoqing FWIW we recommend adding --git-min-percent 25 when running
+> get_maintainers, otherwise there's all sorts of noise that gets in.
 
-> But you can set the 'maximum frame length' register to (just under)
-> 4k so that longer frames are received ok but without the driver
-> having to worry about frames spanning multiple buffer fragments.
-
-But this will not just put more load on CPU? In the way that I accept
-long frames but then they will be discard by the CPU.
-And I can do this in HW, because I know what is the maximum frame length
-accepted on that interface.
-
-> 
-> The network stack might choose to discard frames with an overlong mtu.
-> But that can be done after all the headers have been removed.
-> 
-> ...
-> > But all these possible changes will need to go through net-next.
-> 
-> Indeed.
-> 
->         David
-
-[1] https://elixir.bootlin.com/linux/v6.1-rc3/source/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c#L17
-[2] https://elixir.bootlin.com/linux/v6.1-rc3/source/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c#L417
-
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-
--- 
-/Horatiu
+--=20
+Jani Nikula, Intel Open Source Graphics Center
