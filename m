@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EE96155C0
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 00:05:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1545B6155DC
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 00:08:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbiKAXF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 19:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
+        id S231370AbiKAXH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 19:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbiKAXFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 19:05:25 -0400
+        with ESMTP id S231484AbiKAXGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 19:06:16 -0400
 Received: from tarta.nabijaczleweli.xyz (unknown [139.28.40.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48C6B2035C;
-        Tue,  1 Nov 2022 16:05:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 079A12098A;
+        Tue,  1 Nov 2022 16:05:51 -0700 (PDT)
 Received: from tarta.nabijaczleweli.xyz (unknown [192.168.1.250])
-        by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id 886E04EDA;
-        Wed,  2 Nov 2022 00:05:09 +0100 (CET)
+        by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id 356824E34;
+        Wed,  2 Nov 2022 00:05:51 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nabijaczleweli.xyz;
-        s=202205; t=1667343909;
-        bh=1C2PA3CPeOAdYlYDjeuzEbLN4NuRAcpssYiDt09L1oo=;
+        s=202205; t=1667343951;
+        bh=DTGJTbh0Y3OZJ4sMCmhd7AQI6rV6WGDqYy9+7OtkP0g=;
         h=Date:From:Cc:Subject:References:In-Reply-To:From;
-        b=ik/mbhUbQpJG7TCVAGlObFN62AVvNN2lkaAWCb2/g7csdiNi85awwxYFqEmw+JME8
-         11rqLMfv9CiZ8W4xHSqPPaH2KsFpH46nrV9s0lTIXZbJ6Q8eEjfrJVw/jzNBjvMfnx
-         5xHlEFx/tg6V0haiTl2HiG2gPHbAD2vnFYiyVSpGYzB2iWzAaelhDRACWGNayU1qzq
-         Px9N9SoZKKmgoE0n1I7ySClfoQvxU/K8NbbJCkqIZUhU+ZV+JNWtw5XJ/FppyS68eg
-         e5Otg7sfOw0RVGpVnZ01KAadIW2S/OnBSpO3RvslyzMYe/MQi6mh4obQQxAHcOOzKs
-         Xl9B8B5p+VrYI7JdDZtJPtbgZfgnD7kNjsBWmmwTTeGNmXD166Bhmz92GLeJ3WQvKt
-         UYssTFHFnROrwwqEqGTEQAouTP7TYNjhXHW7wARCd8r18abDA63TeroPY1K4e/JiNO
-         pKDcnJ8A+aDx4YXlRy160HKC8iqOhn8VfXeOvi9yxtYdo2GXcTrh2txrMamMRbEc6b
-         gDSyG/pVO+C0vZnSF25Z1Nq6Es9UTm+WlcCE8/9Jg/WprCmk5DEC+MZQeP29GtMeAP
-         fNUfWOksyCgqU9QGpjuYukr3ZBIB1zdPezdRP0X+8a3UAVo7hJ/LxUKA/6OfkbORko
-         T7I8wKdO5MFx+DV91Qb/uUWo=
-Date:   Wed, 2 Nov 2022 00:05:08 +0100
+        b=jRaknn+SVS7PT5GviE9Sxf2OAtvKhNWKfthc8UvaNxbB/SWX54frattUzN3lvGPAw
+         c8XZJjH165y6r7hcYSAvh2tSkEIeEbMeiRgJXxyS0kkHliwNxvexRKW8JUPDRx8BKq
+         JtGxag4wGnoKneMN+jQ0gl7A6o8t9kFks7vLTaPvAL5WrULIf6aKCI+PND2q0NHnT4
+         3uvcAd1xHm68J7j0m2a0tkvwh/WfjMWAbTClhppRpK6Nipw3uHuT0KHtposJXKR8+w
+         iAaCIE5u0pZO2dwtpEag/Jy5fbEegDuWozvZMIM4byIOwq/E/PTKB0ABWB8sHMtI21
+         jtQGh9QyAGtnU65X77KX+xqk8/FSnM6ljxOmOgV3G1ERkhMefA1BkXUbD+nPpbVt2a
+         vWzJUzd1AZ8MffL7KtCQP3VqRvkHsDw2cnEQ0Fu2PiiU8Y9OES+WHvwHp6I4GcpAaK
+         uENUpqg/7agizU8LSK9DgLulwzWvPd/a4D/HQ/+5BqBclpWb1iRhiG+Y9BnqcrewrZ
+         y8vp+Zyre1ob7cBipUh05Iz8fh7keNXvTMiEi/3yCwplnUuLU93irXdJwtJ4aGs7HN
+         vPCSnVE9/BP+gr7EZJB8m/SRL1r1Qa2MBTfsqVlXxQ3v0jz0xH5W/umhycNLNO20xb
+         mydErc6Nm7kfRBFK4ExBbDnE=
+Date:   Wed, 2 Nov 2022 00:05:50 +0100
 From:   Ahelenia =?utf-8?Q?Ziemia=C5=84ska?= 
         <nabijaczleweli@nabijaczleweli.xyz>
 Cc:     Jonathan Corbet <corbet@lwn.net>,
@@ -40,22 +40,27 @@ Cc:     Jonathan Corbet <corbet@lwn.net>,
         Alex Shi <alexs@kernel.org>,
         Yanteng Si <siyanteng@loongson.cn>,
         Hu Haowen <src.res@email.cn>,
-        Jean-Paul Roubelat <jpr@f6fbb.org>,
+        Thomas Sailer <t.sailer@alumni.ethz.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc-tw-discuss@lists.sourceforge.net,
         linux-hams@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 02/15] hamradio: yam: remove YAM_MAGIC
-Message-ID: <a6f2e6b429170d9fdbbed6d3cea77ec60804f2d8.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
+Subject: [PATCH v2 11/15] hdlcdrv: remove HDLCDRV_MAGIC
+Message-ID: <ca973973144224fca9116649345f3f6d91445ce6.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
 References: <cover.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kiiph3skcyfwyofc"
+        protocol="application/pgp-signature"; boundary="bd5stcneyxpl7kt2"
 Content-Disposition: inline
 In-Reply-To: <cover.1667330271.git.nabijaczleweli@nabijaczleweli.xyz>
 User-Agent: NeoMutt/20220429
@@ -72,182 +77,286 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---kiiph3skcyfwyofc
+--bd5stcneyxpl7kt2
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-This is checked inconsistently, only in contexts following directly from
-the module init, and returns an error to userspace/ignores the condition
-entirely, rather than yielding remotely-useful diagnostics.
+We have largely moved away from this approach, and we have better
+debugging instrumentation nowadays: kill it.
 
-This is cruft, and we have better debugging tooling nowadays: kill it.
+Additionally, ~half HDLCDRV_MAGIC checks just early-exit instead of
+noting the bug, so they're detrimental, if anything.
 
 Link: https://lore.kernel.org/linux-doc/YyMlovoskUcHLEb7@kroah.com/
 Signed-off-by: Ahelenia Ziemia=C5=84ska <nabijaczleweli@nabijaczleweli.xyz>
 ---
- Documentation/process/magic-number.rst                    | 1 -
- Documentation/translations/it_IT/process/magic-number.rst | 1 -
- Documentation/translations/zh_CN/process/magic-number.rst | 1 -
- Documentation/translations/zh_TW/process/magic-number.rst | 1 -
- drivers/net/hamradio/yam.c                                | 8 +-------
- 5 files changed, 1 insertion(+), 11 deletions(-)
+ Documentation/process/magic-number.rst                   | 1 -
+ .../translations/it_IT/process/magic-number.rst          | 1 -
+ .../translations/zh_CN/process/magic-number.rst          | 1 -
+ .../translations/zh_TW/process/magic-number.rst          | 1 -
+ drivers/net/hamradio/baycom_par.c                        | 1 -
+ drivers/net/hamradio/baycom_ser_fdx.c                    | 3 +--
+ drivers/net/hamradio/baycom_ser_hdx.c                    | 3 +--
+ drivers/net/hamradio/hdlcdrv.c                           | 9 +++------
+ include/linux/hdlcdrv.h                                  | 2 --
+ 9 files changed, 5 insertions(+), 17 deletions(-)
 
 diff --git a/Documentation/process/magic-number.rst b/Documentation/process=
 /magic-number.rst
-index 87353e0207c1..a4414b7e15aa 100644
+index c1c68c713cbc..3b3e607e1cbc 100644
 --- a/Documentation/process/magic-number.rst
 +++ b/Documentation/process/magic-number.rst
-@@ -76,7 +76,6 @@ MGSLPC_MAGIC          0x5402           mgslpc_info       =
-       ``drivers/char/p
- HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
+@@ -70,6 +70,5 @@ Magic Name            Number           Structure         =
+       File
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+ FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
+linux/fs.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/=
+net/slip.h``
+-HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
 linux/hdlcdrv.h``
- KV_MAGIC              0x5f4b565f       kernel_vars_s            ``arch/mip=
-s/include/asm/sn/klkernvars.h``
- CODA_MAGIC            0xC0DAC0DA       coda_file_info           ``fs/coda/=
-coda_fs_i.h``
--YAM_MAGIC             0xF10A7654       yam_port                 ``drivers/=
-net/hamradio/yam.c``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
- QUEUE_MAGIC_FREE      0xf7e1c9a3       queue_entry              ``drivers/=
-scsi/arm/queue.c``
- QUEUE_MAGIC_USED      0xf7e1cc33       queue_entry              ``drivers/=
-scsi/arm/queue.c``
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
 diff --git a/Documentation/translations/it_IT/process/magic-number.rst b/Do=
 cumentation/translations/it_IT/process/magic-number.rst
-index a96712bd8a68..f51c5ef9d93f 100644
+index 5b609ca78a14..e8c659b6a743 100644
 --- a/Documentation/translations/it_IT/process/magic-number.rst
 +++ b/Documentation/translations/it_IT/process/magic-number.rst
-@@ -82,7 +82,6 @@ MGSLPC_MAGIC          0x5402           mgslpc_info       =
-       ``drivers/char/p
- HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
+@@ -76,6 +76,5 @@ Nome magico           Numero           Struttura         =
+       File
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+ FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
+linux/fs.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/=
+net/slip.h``
+-HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
 linux/hdlcdrv.h``
- KV_MAGIC              0x5f4b565f       kernel_vars_s            ``arch/mip=
-s/include/asm/sn/klkernvars.h``
- CODA_MAGIC            0xC0DAC0DA       coda_file_info           ``fs/coda/=
-coda_fs_i.h``
--YAM_MAGIC             0xF10A7654       yam_port                 ``drivers/=
-net/hamradio/yam.c``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
- QUEUE_MAGIC_FREE      0xf7e1c9a3       queue_entry              ``drivers/=
-scsi/arm/queue.c``
- QUEUE_MAGIC_USED      0xf7e1cc33       queue_entry              ``drivers/=
-scsi/arm/queue.c``
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
 diff --git a/Documentation/translations/zh_CN/process/magic-number.rst b/Do=
 cumentation/translations/zh_CN/process/magic-number.rst
-index 44f3a29fce57..3b53bd67e41b 100644
+index ab4d4e32b61f..2105af32187c 100644
 --- a/Documentation/translations/zh_CN/process/magic-number.rst
 +++ b/Documentation/translations/zh_CN/process/magic-number.rst
-@@ -65,7 +65,6 @@ MGSLPC_MAGIC          0x5402           mgslpc_info       =
-       ``drivers/char/p
- HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
+@@ -59,6 +59,5 @@ Linux =E9=AD=94=E6=9C=AF=E6=95=B0
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+ FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
+linux/fs.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/=
+net/slip.h``
+-HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
 linux/hdlcdrv.h``
- KV_MAGIC              0x5f4b565f       kernel_vars_s            ``arch/mip=
-s/include/asm/sn/klkernvars.h``
- CODA_MAGIC            0xC0DAC0DA       coda_file_info           ``fs/coda/=
-coda_fs_i.h``
--YAM_MAGIC             0xF10A7654       yam_port                 ``drivers/=
-net/hamradio/yam.c``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
- QUEUE_MAGIC_FREE      0xf7e1c9a3       queue_entry              ``drivers/=
-scsi/arm/queue.c``
- QUEUE_MAGIC_USED      0xf7e1cc33       queue_entry              ``drivers/=
-scsi/arm/queue.c``
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
 diff --git a/Documentation/translations/zh_TW/process/magic-number.rst b/Do=
 cumentation/translations/zh_TW/process/magic-number.rst
-index 0fde3183e82a..7d176a87ec3c 100644
+index a6131d978189..793a0ae9fb7c 100644
 --- a/Documentation/translations/zh_TW/process/magic-number.rst
 +++ b/Documentation/translations/zh_TW/process/magic-number.rst
-@@ -68,7 +68,6 @@ MGSLPC_MAGIC          0x5402           mgslpc_info       =
-       ``drivers/char/p
- HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
+@@ -62,6 +62,5 @@ Linux =E9=AD=94=E8=A1=93=E6=95=B8
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+ FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
+linux/fs.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/=
+net/slip.h``
+-HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
 linux/hdlcdrv.h``
- KV_MAGIC              0x5f4b565f       kernel_vars_s            ``arch/mip=
-s/include/asm/sn/klkernvars.h``
- CODA_MAGIC            0xC0DAC0DA       coda_file_info           ``fs/coda/=
-coda_fs_i.h``
--YAM_MAGIC             0xF10A7654       yam_port                 ``drivers/=
-net/hamradio/yam.c``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
- QUEUE_MAGIC_FREE      0xf7e1c9a3       queue_entry              ``drivers/=
-scsi/arm/queue.c``
- QUEUE_MAGIC_USED      0xf7e1cc33       queue_entry              ``drivers/=
-scsi/arm/queue.c``
-diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
-index 2ed2f836f09a..0f43411a6ca5 100644
---- a/drivers/net/hamradio/yam.c
-+++ b/drivers/net/hamradio/yam.c
-@@ -73,7 +73,6 @@ static const char yam_drvinfo[] __initconst =3D KERN_INFO=
- \
- #define YAM_1200	2
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+diff --git a/drivers/net/hamradio/baycom_par.c b/drivers/net/hamradio/bayco=
+m_par.c
+index fd7da5bb1fa5..e1cf3ed42df6 100644
+--- a/drivers/net/hamradio/baycom_par.c
++++ b/drivers/net/hamradio/baycom_par.c
+@@ -418,7 +418,6 @@ static int baycom_ioctl(struct net_device *dev, void __=
+user *data,
+ 		return -EINVAL;
 =20
- #define NR_PORTS	4
--#define YAM_MAGIC	0xF10A7654
+ 	bc =3D netdev_priv(dev);
+-	BUG_ON(bc->hdrv.magic !=3D HDLCDRV_MAGIC);
 =20
- /* Transmitter states */
+ 	if (cmd !=3D SIOCDEVPRIVATE)
+ 		return -ENOIOCTLCMD;
+diff --git a/drivers/net/hamradio/baycom_ser_fdx.c b/drivers/net/hamradio/b=
+aycom_ser_fdx.c
+index 646f605e358f..65113cb6de8d 100644
+--- a/drivers/net/hamradio/baycom_ser_fdx.c
++++ b/drivers/net/hamradio/baycom_ser_fdx.c
+@@ -252,7 +252,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_i=
+d)
+ 	unsigned char iir, msr;
+ 	unsigned int txcount =3D 0;
 =20
-@@ -94,7 +93,6 @@ static const char yam_drvinfo[] __initconst =3D KERN_INFO=
- \
- #define DEFAULT_PERS	64			/* 0->255 */
+-	if (!bc || bc->hdrv.magic !=3D HDLCDRV_MAGIC)
++	if (!bc)
+ 		return IRQ_NONE;
+ 	/* fast way out for shared irq */
+ 	if ((iir =3D inb(IIR(dev->base_addr))) & 1) =09
+@@ -507,7 +507,6 @@ static int baycom_ioctl(struct net_device *dev, void __=
+user *data,
+ 		return -EINVAL;
 =20
- struct yam_port {
--	int magic;
- 	int bitrate;
- 	int baudrate;
- 	int iobase;
-@@ -604,7 +602,7 @@ static void yam_arbitrate(struct net_device *dev)
- {
- 	struct yam_port *yp =3D netdev_priv(dev);
+ 	bc =3D netdev_priv(dev);
+-	BUG_ON(bc->hdrv.magic !=3D HDLCDRV_MAGIC);
 =20
--	if (yp->magic !=3D YAM_MAGIC || yp->tx_state !=3D TX_OFF ||
-+	if (yp->tx_state !=3D TX_OFF ||
- 	    skb_queue_empty(&yp->send_queue))
+ 	if (cmd !=3D SIOCDEVPRIVATE)
+ 		return -ENOIOCTLCMD;
+diff --git a/drivers/net/hamradio/baycom_ser_hdx.c b/drivers/net/hamradio/b=
+aycom_ser_hdx.c
+index 5d1ab4840753..df33e5cdb5c2 100644
+--- a/drivers/net/hamradio/baycom_ser_hdx.c
++++ b/drivers/net/hamradio/baycom_ser_hdx.c
+@@ -365,7 +365,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_i=
+d)
+ 	struct baycom_state *bc =3D netdev_priv(dev);
+ 	unsigned char iir;
+=20
+-	if (!dev || !bc || bc->hdrv.magic !=3D HDLCDRV_MAGIC)
++	if (!dev || !bc)
+ 		return IRQ_NONE;
+ 	/* fast way out */
+ 	if ((iir =3D inb(IIR(dev->base_addr))) & 1)
+@@ -561,7 +561,6 @@ static int baycom_ioctl(struct net_device *dev, void __=
+user *data,
+ 		return -EINVAL;
+=20
+ 	bc =3D netdev_priv(dev);
+-	BUG_ON(bc->hdrv.magic !=3D HDLCDRV_MAGIC);
+=20
+ 	if (cmd !=3D SIOCDEVPRIVATE)
+ 		return -ENOIOCTLCMD;
+diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
+index 2263029d1a20..60abd6008cc7 100644
+--- a/drivers/net/hamradio/hdlcdrv.c
++++ b/drivers/net/hamradio/hdlcdrv.c
+@@ -158,7 +158,7 @@ void hdlcdrv_receiver(struct net_device *dev, struct hd=
+lcdrv_state *s)
+ 	int i;
+ 	unsigned int mask1, mask2, mask3, mask4, mask5, mask6, word;
+ =09
+-	if (!s || s->magic !=3D HDLCDRV_MAGIC)=20
++	if (!s)
  		return;
- 	/* tx_state is TX_OFF and there is data to send */
-@@ -930,9 +928,6 @@ static int yam_siocdevprivate(struct net_device *dev, s=
-truct ifreq *ifr, void __
- 	if (copy_from_user(&ioctl_cmd, data, sizeof(int)))
- 		return -EFAULT;
+ 	if (test_and_set_bit(0, &s->hdlcrx.in_hdlc_rx))
+ 		return;
+@@ -257,7 +257,7 @@ void hdlcdrv_transmitter(struct net_device *dev, struct=
+ hdlcdrv_state *s)
+ 	struct sk_buff *skb;
+ 	int pkt_len;
 =20
--	if (yp->magic !=3D YAM_MAGIC)
--		return -EINVAL;
--
- 	if (!capable(CAP_NET_ADMIN))
- 		return -EPERM;
+-	if (!s || s->magic !=3D HDLCDRV_MAGIC)=20
++	if (!s)
+ 		return;
+ 	if (test_and_set_bit(0, &s->hdlctx.in_hdlc_tx))
+ 		return;
+@@ -364,7 +364,7 @@ static void start_tx(struct net_device *dev, struct hdl=
+cdrv_state *s)
 =20
-@@ -1079,7 +1074,6 @@ static void yam_setup(struct net_device *dev)
+ void hdlcdrv_arbitrate(struct net_device *dev, struct hdlcdrv_state *s)
  {
- 	struct yam_port *yp =3D netdev_priv(dev);
+-	if (!s || s->magic !=3D HDLCDRV_MAGIC || s->hdlctx.ptt || !s->skb)=20
++	if (!s || s->hdlctx.ptt || !s->skb)
+ 		return;
+ 	if (s->ch_params.fulldup) {
+ 		start_tx(dev, s);
+@@ -701,7 +701,6 @@ struct net_device *hdlcdrv_register(const struct hdlcdr=
+v_ops *ops,
+ 	 * initialize part of the hdlcdrv_state struct
+ 	 */
+ 	s =3D netdev_priv(dev);
+-	s->magic =3D HDLCDRV_MAGIC;
+ 	s->ops =3D ops;
+ 	dev->base_addr =3D baseaddr;
+ 	dev->irq =3D irq;
+@@ -723,8 +722,6 @@ void hdlcdrv_unregister(struct net_device *dev)
+ {
+ 	struct hdlcdrv_state *s =3D netdev_priv(dev);
 =20
--	yp->magic =3D YAM_MAGIC;
- 	yp->bitrate =3D DEFAULT_BITRATE;
- 	yp->baudrate =3D DEFAULT_BITRATE * 2;
- 	yp->iobase =3D 0;
+-	BUG_ON(s->magic !=3D HDLCDRV_MAGIC);
+-
+ 	if (s->opened && s->ops->close)
+ 		s->ops->close(dev);
+ 	unregister_netdev(dev);
+diff --git a/include/linux/hdlcdrv.h b/include/linux/hdlcdrv.h
+index 5d70c3f98f5b..809ad0f5c99c 100644
+--- a/include/linux/hdlcdrv.h
++++ b/include/linux/hdlcdrv.h
+@@ -13,7 +13,6 @@
+ #include <linux/spinlock.h>
+ #include <uapi/linux/hdlcdrv.h>
+=20
+-#define HDLCDRV_MAGIC      0x5ac6e778
+ #define HDLCDRV_HDLCBUFFER  32 /* should be a power of 2 for speed reasons=
+ */
+ #define HDLCDRV_BITBUFFER  256 /* should be a power of 2 for speed reasons=
+ */
+ #undef HDLCDRV_LOOPBACK  /* define for HDLC debugging purposes */
+@@ -84,7 +83,6 @@ struct hdlcdrv_ops {
+ };
+=20
+ struct hdlcdrv_state {
+-	int magic;
+ 	int opened;
+=20
+ 	const struct hdlcdrv_ops *ops;
 --=20
 2.30.2
 
---kiiph3skcyfwyofc
+--bd5stcneyxpl7kt2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmNhpiQACgkQvP0LAY0m
-WPGePg/8ChqU4VIF4t7om1gGzOmY1DhHtjq03TjoeS7pGOSlqw+/zTUint2pghOn
-RlhQf7uB6pDmVsXw4exdV/thcyvQNQzy0KkOitsyK/nd41E9nQfiDjwGjTAyq+dv
-KktpJSkHyngTFv9EARP7QTq2yNeDvQhJWw7QhX00B+11+n22CMO7WL1Wf69xaPmL
-VB2StU2TXAKmhS6AqCzE7F+E4ooMuP+KXuh3oyZdn3DS+gSGvgdJGwwhUM1bW4F6
-NA0TltCtt6aEFXssio3SuVm95wk/bMlJzqe4w2zAl+kcrFKUQFFSJIA7bZu+2LcP
-ygzzSnPUAObgte/vS5P03oORE1JyFXnxl+YiGvmJrUcW7Bokn+YvvwzB8LfSRkhm
-0lplEd1ctLw0US8m9jH5dIWATKd6Cr2xwnp1Q5PNXDu9gDW89w1Tyg4mo+GbQJNY
-+vHh7n/lcbBwFM6dc1zUDu/EDDFLuIFbFDNW3Q9xV/Mxiq47QVGsx79b8DnKmpCe
-fgH0G+jkg2zqAey7lw5au0myEBa24Afjy2dqRZFUc464d/S5sDf/XtuutAC8Pz0I
-X1XpYLGPmGOp4LDGFp+893YVMpie8c1IkxiucZdd0uN0E2b+8oDHQsL7a9O0e7/H
-eIfNcmKP22Bqdm17dL/60MMzpnUSfhqUUowAW9Esq0KwjHPFsAQ=
-=/Hwl
+iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmNhpk0ACgkQvP0LAY0m
+WPHaVw/+Jpqv2S/Gm1y9XYwoQNE9fnQpwuNa1/LMgRlP+ZAWi4qh+hH1E6iWu3WS
+5mEeqdhQ6jAn5cHaqjQ72SW4EG7KEFq2lYednVSxBv1BtrOGKUFv0sK8Nti7yyey
+CokCSvr/D6a65c9CdAQT6QBjKPOzhhr0sVjZAqmgPr86c+RVWC/e+VKFIEbQQZNZ
+OEzDBvyHqllnlSUhf8DzMZ/yTJTkbiJ215Ez0zrZRQNo25R3iund4+j75bQUzqWY
+fvIrCh7Qhfni9oLKuCoBs7kiJkXIwME3Jt4z/jcdctxbG+W/dwiV3CE3d9udEp62
+MRsLeprLC63betf14NhXUQrzQFexAMAz/bKIA/GwzrsjE/qHCKzjUeuvEw2BK8gL
+tIlE5TyotK1NKp1MbiSIEfKCGJOqnoSZxkiJr5gD3QGx/18Jb/of2HIW104Of8ZS
+dGaSIycFKeRUA6G6H4tTEQ5qJU9VrD4G+ukl9aUFsdkNaswbE9u4TTpDxhRSmTpm
+BHJ4OIAgDxTSIN81kHh7hcZOX/aJhnpDsfA91pYa4K6JgSXvSIJdS7PSqebvL+IU
+QwllDIFlM9t4GApUS7YdIKDulWtBz3AAtsJ/lab83r7n27+QgUTZGsIo8eZPJtIu
+hCGjAEVO4ELO2xJmJrfXpHMxCTLZJmehmM3wO/3u3P1qW9+omxA=
+=VAnv
 -----END PGP SIGNATURE-----
 
---kiiph3skcyfwyofc--
+--bd5stcneyxpl7kt2--
