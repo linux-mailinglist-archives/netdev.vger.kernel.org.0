@@ -2,87 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C95614814
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 12:00:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A375614817
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 12:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbiKALAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 07:00:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
+        id S230038AbiKALA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 07:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiKALAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 07:00:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF7E178BC;
-        Tue,  1 Nov 2022 03:59:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A48B4B81B0F;
-        Tue,  1 Nov 2022 10:59:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B9B7C433D6;
-        Tue,  1 Nov 2022 10:59:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667300397;
-        bh=dKEuaYyyAw0/iFBymiu6NLIfDXb4VFkaxpP0t9sFQn0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=YDcgPJMnCwXLtF5ZBJ3e1vZ/8v2eo7+N0HdsMyBc+vncFG3OJjUegJDLOw5agKDC6
-         1PbS+8y7XUGCrZq2OEylHUwrkPxiot5IQSbbHxOLN5A5yiNy5AP6A3Ybhe/rzB9nSe
-         mVHPDaYWrZbdn/zEpk4w9fay9MbCjrhimbME64d3n/T0DpvUScGkjbGICgaKX7YInb
-         aCsGQ0Be3hl5+REJpUwAN90sH8PM1aaxhQLnJ39aTMMCQLY0VdQfxv/oQX+WzdYdmF
-         cL5T8VBwE7XNQ4mfexmuTJMuPORfqpwTjLu5dvUKISvMFgBp5BRNB+Tb5kd9ZgE005
-         9lv1AEyuofzAA==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230037AbiKALAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 07:00:23 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4BE18E01;
+        Tue,  1 Nov 2022 04:00:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VThdbr7_1667300417;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VThdbr7_1667300417)
+          by smtp.aliyun-inc.com;
+          Tue, 01 Nov 2022 19:00:19 +0800
+Date:   Tue, 1 Nov 2022 19:00:14 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, kgraul@linux.ibm.com, wenjia@linux.ibm.com,
+        jaka@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, guvenc@linux.ibm.com
+Subject: Re: [PATCH] net/smc: Fix possible leaked pernet namespace in
+ smc_init()
+Message-ID: <Y2D8PvHrKtpjTdJ1@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20221101093722.127223-1-chenzhongjin@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [next] wifi: atmel: Fix atmel_private_handler array size
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221018023732.never.700-kees@kernel.org>
-References: <20221018023732.never.700-kees@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Simon Kelley <simon@thekelleys.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166730039237.21401.8200103649620545525.kvalo@kernel.org>
-Date:   Tue,  1 Nov 2022 10:59:54 +0000 (UTC)
-X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221101093722.127223-1-chenzhongjin@huawei.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> wrote:
-
-> Fix the atmel_private_handler to correctly sized (1 element) again. (I
-> should have checked the data segment for differences.) This had no
-> behavioral impact (no private callbacks), but it made a very large
-> zero-filled array.
+On Tue, Nov 01, 2022 at 05:37:22PM +0800, Chen Zhongjin wrote:
+> In smc_init(), register_pernet_subsys(&smc_net_stat_ops) is called
+> without any error handling.
+> If it fails, registering of &smc_net_ops won't be reverted.
+> And if smc_nl_init() fails, &smc_net_stat_ops itself won't be reverted.
 > 
-> Cc: Simon Kelley <simon@thekelleys.org.uk>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Fixes: 8af9d4068e86 ("wifi: atmel: Avoid clashing function prototypes")
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> This leaves wild ops in subsystem linkedlist and when another module
+> tries to call register_pernet_operations() it triggers page fault:
+> 
+> BUG: unable to handle page fault for address: fffffbfff81b964c
+> RIP: 0010:register_pernet_operations+0x1b9/0x5f0
+> Call Trace:
+>   <TASK>
+>   register_pernet_subsys+0x29/0x40
+>   ebtables_init+0x58/0x1000 [ebtables]
+>   ...
+> 
+> Fixes: 194730a9beb5 ("net/smc: Make SMC statistics network namespace aware")
+> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 
-Patch applied to wireless-next.git, thanks.
+This patch looks good to me. 
 
-8b860466b137 wifi: atmel: Fix atmel_private_handler array size
+The subject of this patch should be in net, the prefix tag is missed.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221018023732.never.700-kees@kernel.org/
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+> ---
+>  net/smc/af_smc.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index 3ccbf3c201cd..e12d4fa5aece 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -3380,14 +3380,14 @@ static int __init smc_init(void)
+>  
+>  	rc = register_pernet_subsys(&smc_net_stat_ops);
+>  	if (rc)
+> -		return rc;
+> +		goto out_pernet_subsys;
+>  
+>  	smc_ism_init();
+>  	smc_clc_init();
+>  
+>  	rc = smc_nl_init();
+>  	if (rc)
+> -		goto out_pernet_subsys;
+> +		goto out_pernet_subsys_stat;
+>  
+>  	rc = smc_pnet_init();
+>  	if (rc)
+> @@ -3480,6 +3480,8 @@ static int __init smc_init(void)
+>  	smc_pnet_exit();
+>  out_nl:
+>  	smc_nl_exit();
+> +out_pernet_subsys_stat:
+> +	unregister_pernet_subsys(&smc_net_stat_ops);
+>  out_pernet_subsys:
+>  	unregister_pernet_subsys(&smc_net_ops);
+>  
+> -- 
+> 2.17.1
