@@ -2,167 +2,340 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6C5615424
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 22:21:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2FE2615454
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 22:35:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230310AbiKAVVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 17:21:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
+        id S230432AbiKAVfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 17:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiKAVV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 17:21:29 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCA71EEDC;
-        Tue,  1 Nov 2022 14:19:18 -0700 (PDT)
-Message-ID: <ca6e4ce1-abf6-6142-3463-4410181ed0ab@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1667337456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bi/oB/qmacK/RH/CAd+QG/wEP2oGK2k8fvNgbwrWZys=;
-        b=D3M7dUaGs2WbmaCIGS72lKDr0N3fGeYnI9EN5f4raXNPMVE59479rZvo7g8a/rxAQmMDQr
-        Ju0Nf1JIo1uXekI/Ieo7uzG+WtolcOOYCFDzBaGnfJ++KX0ZLPkV1bOwnbMHDq9YsfhS9w
-        q6BUfDVqxCNNELAEvefWbuoTpaXHcKY=
-Date:   Tue, 1 Nov 2022 14:17:16 -0700
+        with ESMTP id S230402AbiKAVfj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 17:35:39 -0400
+X-Greylist: delayed 363 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Nov 2022 14:35:35 PDT
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0DA1E3F9;
+        Tue,  1 Nov 2022 14:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1667338168;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=LwgcuQpDVphRmoE8aGvGLTtr8UFcb+TsyQ/w+VFhDEg=;
+    b=nSNfcLMBfXB0v8fsjV6/7DunKlywdM2aoe46ExMjbVTik1c22GbFPdGaSOtSOmgB2c
+    z4Tb5PwILC61GsPxDk3EfJHul/TBZ/gSCW85ywuSiyrqWKyKJ28rsBalmayNLDUch9+Q
+    tl58WmA5jLXzkR6Psb8s7UxyXP8YJCE2FPee7JcO94HTHlC4hjhmgX1d4gPvmsCNI5Sr
+    Ab/kBRAvbZLyTNRdvJrdXEnWOfJWScjpDme6rdHV33+zp2+Pkkfr+cVI6YhIw2MsiDH4
+    0yajOEBDJiPBvYXcgCUea3O1JEVmYTBccYqp0BTjhun13z9RwpSwcncyC/fv10cPaiq2
+    Rjow==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS/xvEBL7X5sbo3UIh9JiLceSWNadhq4/jU"
+X-RZG-CLASS-ID: mo00
+Received: from silver.lan
+    by smtp.strato.de (RZmta 48.2.1 AUTH)
+    with ESMTPSA id Dde783yA1LTSHQr
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 1 Nov 2022 22:29:28 +0100 (CET)
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wei Chen <harperchen1110@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH] can: isotp: fix tx state handling for echo tx processing
+Date:   Tue,  1 Nov 2022 22:29:02 +0100
+Message-Id: <20221101212902.10702-1-socketcan@hartkopp.net>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Subject: Re: [xdp-hints] Re: [RFC bpf-next 0/5] xdp: hints via kfuncs
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "alexandr.lobakin@intel.com" <alexandr.lobakin@intel.com>,
-        "anatoly.burakov@intel.com" <anatoly.burakov@intel.com>,
-        "song@kernel.org" <song@kernel.org>,
-        "Deric, Nemanja" <nemanja.deric@siemens.com>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "Kiszka, Jan" <jan.kiszka@siemens.com>,
-        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
-        "willemb@google.com" <willemb@google.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>, "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "mtahhan@redhat.com" <mtahhan@redhat.com>,
-        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "haoluo@google.com" <haoluo@google.com>,
-        Yonghong Song <yhs@meta.com>
-References: <20221027200019.4106375-1-sdf@google.com>
- <635bfc1a7c351_256e2082f@john.notmuch> <20221028110457.0ba53d8b@kernel.org>
- <CAKH8qBshi5dkhqySXA-Rg66sfX0-eTtVYz1ymHfBxSE=Mt2duA@mail.gmail.com>
- <635c62c12652d_b1ba208d0@john.notmuch> <20221028181431.05173968@kernel.org>
- <5aeda7f6bb26b20cb74ef21ae9c28ac91d57fae6.camel@siemens.com>
- <875yg057x1.fsf@toke.dk> <663fb4f4-04b7-5c1f-899c-bdac3010f073@meta.com>
- <CAKH8qBt=As5ON+CbH304tRanudvTF27bzeSnjH2GQR2TVx+mXw@mail.gmail.com>
- <752afbbb-1a14-3dad-53d0-35bb32632c91@linux.dev>
- <CAKH8qBsH_bxvH3M8RmSAfgWkuwsgMApU0qpF4H_vJfqN+gdx3A@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <CAKH8qBsH_bxvH3M8RmSAfgWkuwsgMApU0qpF4H_vJfqN+gdx3A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/22 1:12 PM, Stanislav Fomichev wrote:
->>>>> As for the kfunc-based interface, I think it shows some promise.
->>>>> Exposing a list of function names to retrieve individual metadata items
->>>>> instead of a struct layout is sorta comparable in terms of developer UI
->>>>> accessibility etc (IMO).
->>>>
->>>> Looks like there are quite some use cases for hw_timestamp.
->>>> Do you think we could add it to the uapi like struct xdp_md?
->>>>
->>>> The following is the current xdp_md:
->>>> struct xdp_md {
->>>>            __u32 data;
->>>>            __u32 data_end;
->>>>            __u32 data_meta;
->>>>            /* Below access go through struct xdp_rxq_info */
->>>>            __u32 ingress_ifindex; /* rxq->dev->ifindex */
->>>>            __u32 rx_queue_index;  /* rxq->queue_index  */
->>>>
->>>>            __u32 egress_ifindex;  /* txq->dev->ifindex */
->>>> };
->>>>
->>>> We could add  __u64 hw_timestamp to the xdp_md so user
->>>> can just do xdp_md->hw_timestamp to get the value.
->>>> xdp_md->hw_timestamp == 0 means hw_timestamp is not
->>>> available.
->>>>
->>>> Inside the kernel, the ctx rewriter can generate code
->>>> to call driver specific function to retrieve the data.
->>>
->>> If the driver generates the code to retrieve the data, how's that
->>> different from the kfunc approach?
->>> The only difference I see is that it would be a more strong UAPI than
->>> the kfuncs?
->>
->> Another thing may be worth considering, some hints for some HW/driver may be
->> harder (or may not worth) to unroll/inline.  For example, I see driver is doing
->> spin_lock_bh while getting the hwtstamp.  For this case, keep calling a kfunc
->> and avoid the unroll/inline may be the right thing to do.
-> 
-> Yeah, I'm trying to look at the drivers right now and doing
-> spinlocks/seqlocks might complicate the story...
-> But it seems like in the worst case, the unrolled bytecode can always
-> resort to calling a kernel function?
+In commit 4b7fe92c0690 ("can: isotp: add local echo tx processing for
+consecutive frames") the data flow for consecutive frames (CF) has been
+reworked to improve the reliability of long data transfers.
 
-unroll the common cases and call kernel function for everything else? that 
-should be doable.  The bpf prog calling it as kfunc will have more flexibility 
-like this here.
+This rework did not touch the transmission and the tx state changes of
+single frame (SF) transfers which likely led to the WARN in the
+isotp_tx_timer_handler() catching a wrong tx state. This patch makes use
+of the improved frame processing for SF frames and sets the ISOTP_SENDING
+state in isotp_sendmsg() within the cmpxchg() condition handling.
 
-> (we might need to have some scratch area to preserve r1-r5 and we
-> can't touch r6-r9 because we are not in a real call, but seems doable;
-> I'll try to illustrate with a bunch of examples)
-> 
-> 
->>>> The kfunc approach can be used to *less* common use cases?
->>>
->>> What's the advantage of having two approaches when one can cover
->>> common and uncommon cases?
->>>
->>>>> There are three main drawbacks, AFAICT:
->>>>>
->>>>> 1. It requires driver developers to write and maintain the code that
->>>>> generates the unrolled BPF bytecode to access the metadata fields, which
->>>>> is a non-trivial amount of complexity. Maybe this can be abstracted away
->>>>> with some internal helpers though (like, e.g., a
->>>>> bpf_xdp_metadata_copy_u64(dst, src, offset) helper which would spit out
->>>>> the required JMP/MOV/LDX instructions?
->>>>>
->>>>> 2. AF_XDP programs won't be able to access the metadata without using a
->>>>> custom XDP program that calls the kfuncs and puts the data into the
->>>>> metadata area. We could solve this with some code in libxdp, though; if
->>>>> this code can be made generic enough (so it just dumps the available
->>>>> metadata functions from the running kernel at load time), it may be
->>>>> possible to make it generic enough that it will be forward-compatible
->>>>> with new versions of the kernel that add new fields, which should
->>>>> alleviate Florian's concern about keeping things in sync.
->>>>>
->>>>> 3. It will make it harder to consume the metadata when building SKBs. I
->>>>> think the CPUMAP and veth use cases are also quite important, and that
->>>>> we want metadata to be available for building SKBs in this path. Maybe
->>>>> this can be resolved by having a convenient kfunc for this that can be
->>>>> used for programs doing such redirects. E.g., you could just call
->>>>> xdp_copy_metadata_for_skb() before doing the bpf_redirect, and that
->>>>> would recursively expand into all the kfunc calls needed to extract the
->>>>> metadata supported by the SKB path?
->>>>>
->>>>> -Toke
->>>>>
->>
+A review of the state machine and the timer handling additionally revealed
+a missing echo timeout handling in the case of the burst mode in
+isotp_rcv_echo() and removes a potential timer configuration uncertainty
+in isotp_rcv_fc() when the receiver requests consecutive frames.
+
+Fixes: 4b7fe92c0690 ("can: isotp: add local echo tx processing for consecutive frames")
+Link: https://lore.kernel.org/linux-can/CAO4mrfe3dG7cMP1V5FLUkw7s+50c9vichigUMQwsxX4M=45QEw@mail.gmail.com/T/#u
+Reported-by: Wei Chen <harperchen1110@gmail.com>
+Cc: stable@vger.kernel.org # v6.0
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ net/can/isotp.c | 69 ++++++++++++++++++++++++++-----------------------
+ 1 file changed, 37 insertions(+), 32 deletions(-)
+
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index a9d1357f8489..08fd4d5013a4 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -109,10 +109,13 @@ MODULE_ALIAS("can-proto-6");
+ /* Flow Status given in FC frame */
+ #define ISOTP_FC_CTS 0		/* clear to send */
+ #define ISOTP_FC_WT 1		/* wait */
+ #define ISOTP_FC_OVFLW 2	/* overflow */
+ 
++#define ISOTP_FC_TIMEOUT 1	/* 1 sec */
++#define ISOTP_ECHO_TIMEOUT 2	/* 2 secs */
++
+ enum {
+ 	ISOTP_IDLE = 0,
+ 	ISOTP_WAIT_FIRST_FC,
+ 	ISOTP_WAIT_FC,
+ 	ISOTP_WAIT_DATA,
+@@ -256,11 +259,12 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
+ 
+ 	/* reset last CF frame rx timestamp for rx stmin enforcement */
+ 	so->lastrxcf_tstamp = ktime_set(0, 0);
+ 
+ 	/* start rx timeout watchdog */
+-	hrtimer_start(&so->rxtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
++	hrtimer_start(&so->rxtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
++		      HRTIMER_MODE_REL_SOFT);
+ 	return 0;
+ }
+ 
+ static void isotp_rcv_skb(struct sk_buff *skb, struct sock *sk)
+ {
+@@ -342,10 +346,12 @@ static int check_pad(struct isotp_sock *so, struct canfd_frame *cf,
+ 				return 1;
+ 	}
+ 	return 0;
+ }
+ 
++static void isotp_send_cframe(struct isotp_sock *so);
++
+ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ {
+ 	struct sock *sk = &so->sk;
+ 
+ 	if (so->tx.state != ISOTP_WAIT_FC &&
+@@ -396,18 +402,19 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ 
+ 	switch (cf->data[ae] & 0x0F) {
+ 	case ISOTP_FC_CTS:
+ 		so->tx.bs = 0;
+ 		so->tx.state = ISOTP_SENDING;
+-		/* start cyclic timer for sending CF frame */
+-		hrtimer_start(&so->txtimer, so->tx_gap,
++		/* send CF frame and enable echo timeout handling */
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
++		isotp_send_cframe(so);
+ 		break;
+ 
+ 	case ISOTP_FC_WT:
+ 		/* start timer to wait for next FC frame */
+-		hrtimer_start(&so->txtimer, ktime_set(1, 0),
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		break;
+ 
+ 	case ISOTP_FC_OVFLW:
+ 		/* overflow on receiver side - report 'message too long' */
+@@ -598,11 +605,11 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+ 	}
+ 
+ 	/* perform blocksize handling, if enabled */
+ 	if (!so->rxfc.bs || ++so->rx.bs < so->rxfc.bs) {
+ 		/* start rx timeout watchdog */
+-		hrtimer_start(&so->rxtimer, ktime_set(1, 0),
++		hrtimer_start(&so->rxtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		return 0;
+ 	}
+ 
+ 	/* no creation of flow control frames */
+@@ -827,11 +834,11 @@ static void isotp_rcv_echo(struct sk_buff *skb, void *data)
+ {
+ 	struct sock *sk = (struct sock *)data;
+ 	struct isotp_sock *so = isotp_sk(sk);
+ 	struct canfd_frame *cf = (struct canfd_frame *)skb->data;
+ 
+-	/* only handle my own local echo skb's */
++	/* only handle my own local echo CF/SF skb's (no FF!) */
+ 	if (skb->sk != sk || so->cfecho != *(u32 *)cf->data)
+ 		return;
+ 
+ 	/* cancel local echo timeout */
+ 	hrtimer_cancel(&so->txtimer);
+@@ -847,17 +854,20 @@ static void isotp_rcv_echo(struct sk_buff *skb, void *data)
+ 	}
+ 
+ 	if (so->txfc.bs && so->tx.bs >= so->txfc.bs) {
+ 		/* stop and wait for FC with timeout */
+ 		so->tx.state = ISOTP_WAIT_FC;
+-		hrtimer_start(&so->txtimer, ktime_set(1, 0),
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		return;
+ 	}
+ 
+ 	/* no gap between data frames needed => use burst mode */
+ 	if (!so->tx_gap) {
++		/* enable echo timeout handling */
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
++			      HRTIMER_MODE_REL_SOFT);
+ 		isotp_send_cframe(so);
+ 		return;
+ 	}
+ 
+ 	/* start timer to send next consecutive frame with correct delay */
+@@ -877,11 +887,11 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+ 		/* cfecho should be consumed by isotp_rcv_echo() here */
+ 		if (!so->cfecho) {
+ 			/* start timeout for unlikely lost echo skb */
+ 			hrtimer_set_expires(&so->txtimer,
+ 					    ktime_add(ktime_get(),
+-						      ktime_set(2, 0)));
++						      ktime_set(ISOTP_ECHO_TIMEOUT, 0)));
+ 			restart = HRTIMER_RESTART;
+ 
+ 			/* push out the next consecutive frame */
+ 			isotp_send_cframe(so);
+ 			break;
+@@ -905,10 +915,11 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+ 		so->tx.state = ISOTP_IDLE;
+ 		wake_up_interruptible(&so->wait);
+ 		break;
+ 
+ 	default:
++		pr_notice_once("can-isotp: tx timer state %X\n", so->tx.state);
+ 		WARN_ON_ONCE(1);
+ 	}
+ 
+ 	return restart;
+ }
+@@ -921,11 +932,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	struct sk_buff *skb;
+ 	struct net_device *dev;
+ 	struct canfd_frame *cf;
+ 	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
+ 	int wait_tx_done = (so->opt.flags & CAN_ISOTP_WAIT_TX_DONE) ? 1 : 0;
+-	s64 hrtimer_sec = 0;
++	s64 hrtimer_sec = ISOTP_ECHO_TIMEOUT;
+ 	int off;
+ 	int err;
+ 
+ 	if (!so->bound)
+ 		return -EADDRNOTAVAIL;
+@@ -940,10 +951,12 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 
+ 		/* wait for complete transmission of current pdu */
+ 		err = wait_event_interruptible(so->wait, so->tx.state == ISOTP_IDLE);
+ 		if (err)
+ 			goto err_out;
++
++		so->tx.state = ISOTP_SENDING;
+ 	}
+ 
+ 	if (!size || size > MAX_MSG_LENGTH) {
+ 		err = -EINVAL;
+ 		goto err_out_drop;
+@@ -984,10 +997,14 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	so->tx.idx = 0;
+ 
+ 	cf = (struct canfd_frame *)skb->data;
+ 	skb_put_zero(skb, so->ll.mtu);
+ 
++	/* cfecho should have been zero'ed by init / former isotp_rcv_echo() */
++	if (so->cfecho)
++		pr_notice_once("can-isotp: uninit cfecho %08X\n", so->cfecho);
++
+ 	/* check for single frame transmission depending on TX_DL */
+ 	if (size <= so->tx.ll_dl - SF_PCI_SZ4 - ae - off) {
+ 		/* The message size generally fits into a SingleFrame - good.
+ 		 *
+ 		 * SF_DL ESC offset optimization:
+@@ -1009,15 +1026,12 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 		if (off)
+ 			cf->data[SF_PCI_SZ4 + ae] = size;
+ 		else
+ 			cf->data[ae] |= size;
+ 
+-		so->tx.state = ISOTP_IDLE;
+-		wake_up_interruptible(&so->wait);
+-
+-		/* don't enable wait queue for a single frame transmission */
+-		wait_tx_done = 0;
++		/* set CF echo tag for isotp_rcv_echo() (SF-mode) */
++		so->cfecho = *(u32 *)cf->data;
+ 	} else {
+ 		/* send first frame */
+ 
+ 		isotp_create_fframe(cf, so, ae);
+ 
+@@ -1029,35 +1043,27 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 				so->tx_gap = ktime_set(0, so->frame_txtime);
+ 
+ 			/* disable wait for FCs due to activated block size */
+ 			so->txfc.bs = 0;
+ 
+-			/* cfecho should have been zero'ed by init */
+-			if (so->cfecho)
+-				pr_notice_once("can-isotp: no fc cfecho %08X\n",
+-					       so->cfecho);
+-
+-			/* set consecutive frame echo tag */
++			/* set CF echo tag for isotp_rcv_echo() (CF-mode) */
+ 			so->cfecho = *(u32 *)cf->data;
+-
+-			/* switch directly to ISOTP_SENDING state */
+-			so->tx.state = ISOTP_SENDING;
+-
+-			/* start timeout for unlikely lost echo skb */
+-			hrtimer_sec = 2;
+ 		} else {
+ 			/* standard flow control check */
+ 			so->tx.state = ISOTP_WAIT_FIRST_FC;
+ 
+ 			/* start timeout for FC */
+-			hrtimer_sec = 1;
+-		}
++			hrtimer_sec = ISOTP_FC_TIMEOUT;
+ 
+-		hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
+-			      HRTIMER_MODE_REL_SOFT);
++			/* no CF echo tag for isotp_rcv_echo() (FF-mode) */
++			so->cfecho = 0;
++		}
+ 	}
+ 
++	hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
++		      HRTIMER_MODE_REL_SOFT);
++
+ 	/* send the first or only CAN frame */
+ 	cf->flags = so->ll.tx_flags;
+ 
+ 	skb->dev = dev;
+ 	skb->sk = sk;
+@@ -1066,12 +1072,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	if (err) {
+ 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
+ 			       __func__, ERR_PTR(err));
+ 
+ 		/* no transmission -> no timeout monitoring */
+-		if (hrtimer_sec)
+-			hrtimer_cancel(&so->txtimer);
++		hrtimer_cancel(&so->txtimer);
+ 
+ 		/* reset consecutive frame echo tag */
+ 		so->cfecho = 0;
+ 
+ 		goto err_out_drop;
+-- 
+2.30.2
 
