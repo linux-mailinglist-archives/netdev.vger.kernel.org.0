@@ -2,52 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACACA61439C
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 04:20:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B0366143A4
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 04:27:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiKADUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Oct 2022 23:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
+        id S229696AbiKAD1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Oct 2022 23:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiKADUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 23:20:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC44DF25;
-        Mon, 31 Oct 2022 20:20:19 -0700 (PDT)
+        with ESMTP id S229565AbiKAD1R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Oct 2022 23:27:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D3ADBC;
+        Mon, 31 Oct 2022 20:27:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0BEEB81B8F;
-        Tue,  1 Nov 2022 03:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9AD78C43470;
-        Tue,  1 Nov 2022 03:20:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4610461492;
+        Tue,  1 Nov 2022 03:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6460DC433C1;
+        Tue,  1 Nov 2022 03:27:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667272816;
-        bh=ZaCqXWdLyCYwzwFf3qFKT1X3USe85hzoy5zcqMZXZFs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=I4yAXvrEuNf/aqDu1lCNNExAtYnmr8Hqkalw6OKehW7uYDTI94mLzyFGflMiwnTtr
-         K3IT78kxXYYyuosH5CEJvwzjG9fXkwiaUTBgbNLZY2SmU46cdhkF+v1LSy22UGkOpX
-         rWBGae/OCP+Cn6DEDbJYWXDWGVWShgFklmQvivkc8A2rvz+ufDBugOZB63IMpduAF7
-         twUQPVyJNb2gKyelfkhgjt+yO9W7SUgu2hx5eMf0kySb9q6FNYs64sHfltBABaMQh4
-         94l6uT3kHZ7Fwr07hFcg7CcfpBwDdziGtYpomSFZd8/D8PDHPAgRSEdJwIQahXqSEu
-         +/fS+LSG7Nd2w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8031DC41621;
-        Tue,  1 Nov 2022 03:20:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1667273235;
+        bh=L1IBfjfOFq+K/Esb8RP5PXa3qyj94RhKpco9HpxQFME=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=quk4O123zcz3700lWnblwDjK1+wgfK1BaKs8DKQ3jkhpFqIDRmaWNwvy4BO56YC4K
+         dLrSowxkX+Q96zXZ0jjRUYw+a9XbcJJQth2AvcJlrXgR2PscHADPPtnO6F9pQenmej
+         0AHIdPHyamPfmoiVTUr/az8EmWY83wsfg/MZv6uLRe/2mH5l/U5hyhyF1fea39D7wP
+         NEBy2Dntzrd04orSA5sYNq7BqMGcB5COmRPMAdo2hzF7j50TOM6lKtJ97M4BbWHfC8
+         u9SWOhKIX3JOPl49L0yNuNHi0qrAysxFBhFZ8AUkx+0a/YlfaaYisQpO8bYKqZznlk
+         Rln8bEm40sfBg==
+Date:   Mon, 31 Oct 2022 20:27:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH net-next 0/14] pull-request: can-next 2022-10-31
+Message-ID: <20221031202714.1eada551@kernel.org>
+In-Reply-To: <20221031154406.259857-1-mkl@pengutronix.de>
+References: <20221031154406.259857-1-mkl@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: systemport: Add support for RDMA overflow
- statistic counter
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166727281652.6120.10846675304729657013.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Nov 2022 03:20:16 +0000
-References: <20221028222141.3208429-1-f.fainelli@gmail.com>
-In-Reply-To: <20221028222141.3208429-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,28 +53,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 31 Oct 2022 16:43:52 +0100 Marc Kleine-Budde wrote:
+> The first 7 patches are by Stephane Grosjean and Lukas Magel and
+> target the peak_usb driver. Support for flashing a user defined device
+> ID via the ethtool flash interface is added. A read only sysfs
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+nit: ethtool eeprom set != ethtool flash
 
-On Fri, 28 Oct 2022 15:21:40 -0700 you wrote:
-> RDMA overflows can happen if the Ethernet controller does not have
-> enough bandwidth allocated at the memory controller level, report RDMA
-> overflows and deal with saturation, similar to the RBUF overflow
-> counter.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> [...]
+> attribute for that value is added to distinguish between devices via
+> udev.
 
-Here is the summary with links:
-  - [net-next,v2] net: systemport: Add support for RDMA overflow statistic counter
-    https://git.kernel.org/netdev/net-next/c/b98deb2f9803
+So the user can write an arbitrary u32 value into flash which then
+persistently pops up in sysfs across reboots (as a custom attribute
+called "user_devid")?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I don't know.. the whole thing strikes me as odd. Greg do you have any
+feelings about such.. solutions?
 
-
+patches 5 and 6 here:
+https://lore.kernel.org/all/20221031154406.259857-1-mkl@pengutronix.de/
