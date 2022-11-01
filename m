@@ -2,170 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC436146FB
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 10:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD47614786
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 11:12:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230142AbiKAJlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 05:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
+        id S230052AbiKAKMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 06:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiKAJkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 05:40:18 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD3419285;
-        Tue,  1 Nov 2022 02:40:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667295600; x=1698831600;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wc4p60hzilLsjiyS5YcrB0DkuhstRRprkPQbrsrNDTc=;
-  b=myCKtGQcLYh9oxHHld+uEKF1AMPsefG3jA8btNsTWvjPy8hoptkEQBj8
-   KNLAXwpbkWIkjWJXrAd+s6gdfyb2ZpVMk6vwMEl1sJ3yh+4pdqCYIowKy
-   GxBpik49mNHbjk4dyob9YMO5QVbh9/ajSta9DKNuFZuEmqu+diNvqcXb6
-   JQuUriJksslMcEHZVA7zBQSK9HRz8+F9XXXuwKbDbfMNz5pnz3zav0PfP
-   EPoleOUPOKkxmRUnFrB80CtPCUzzubZs/WYlIfr8BoV1zzo8RRp/H2zSV
-   eO4a2C0Tv5sfhzzZm7AN092nDYmWaBBnaxvloDJjxn5HEGX3klzL5pJDx
-   g==;
-X-IronPort-AV: E=Sophos;i="5.95,230,1661842800"; 
-   d="scan'208";a="187176723"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 02:39:59 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 1 Nov 2022 02:39:55 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 1 Nov 2022 02:39:52 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
-        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <joe@perches.com>, <linux@armlinux.org.uk>,
-        <horatiu.vultur@microchip.com>, <Julia.Lawall@inria.fr>,
-        <vladimir.oltean@nxp.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next v6 6/6] net: microchip: sparx5: add support for offloading default prio
-Date:   Tue, 1 Nov 2022 10:48:34 +0100
-Message-ID: <20221101094834.2726202-7-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221101094834.2726202-1-daniel.machon@microchip.com>
-References: <20221101094834.2726202-1-daniel.machon@microchip.com>
+        with ESMTP id S229795AbiKAKMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 06:12:51 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5D111C3D
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 03:12:49 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 17052412D9
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 10:12:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1667297565;
+        bh=J8vfky3Qylps8OMqQ8ZcbmW3mdMqJcDpCzHtW3LZzvE=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=IgFI1v8ImA376c8bTxfuSdq3Upepl31hzIA8wM8SoJvgSexZ/ogFyeCf0vyv3USr9
+         x01sglRSy1n1DQl85TyvhwXFokbb4H2B8TG1qvLIBSWgI4vjnfIb3h4XMmxMyR3Pb2
+         Wewbv1DCqmkrB29NyaVsdqoABdCPh3IQauRXQBkWicwCXZ9hp/CkdZWHLHb5yWLfb0
+         58icBu9JPal7ZS6XrlFChwNPopG502azmecgL+R5wwPhkolaPlpkm13fhW2lXk+YdK
+         gyFi0IruWSHT+aazSyFULFpwKFBrQx40NSRXo3Gpc+4wpXdyNkzfyYe4J7To/cSfwI
+         rLnn7XMLscvUQ==
+Received: by mail-ej1-f71.google.com with SMTP id hd11-20020a170907968b00b0078df60485fdso7594492ejc.17
+        for <netdev@vger.kernel.org>; Tue, 01 Nov 2022 03:12:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=J8vfky3Qylps8OMqQ8ZcbmW3mdMqJcDpCzHtW3LZzvE=;
+        b=qY+XqGQJWwncIKAH8MvNjPkHf743k/4ceOeRgP3AoOjLAEpD9HlL+M5ahichUt25S5
+         CwmlE2+u1wFiGueoHM2+GWOhRApCIjl6tu02peIDbxoW8IeeSHz7qheiIk5lk3Ytt0pU
+         ZOuDmqhmY9Jdkb6sfnya0PI+SVN4PmMnDq6Djw/rcprgQTTRDf6uQLyF6mzfZDemPq2M
+         WRTEAWnZ+iR6YPsKHQFjCR2715k925h/H43N6w2u9lbJrWzEMZFFjG/E7N8cU+LT1oJO
+         Z4CapQCT5CI2H4X5iBO6v45+ZNOgtgZdto6EysuewFtoHynXxpBmZekzLSE3N3LFTH7X
+         Uk0Q==
+X-Gm-Message-State: ACrzQf1K9KR/4hfo5ZU2YQU529o1L0CaRgEuXUYUbLV73ipKJMD5UQRe
+        Wzj+VM082D7YJ3s6Wmu6dL1cyctDDk67dzK8hABTJmFpvtel1luRVAlUpLv7rNtuuyol6ZwsSAe
+        2kBYI2TPNop86pjy7ZhB6b/pVbSGYt7PTSw==
+X-Received: by 2002:a05:6402:378c:b0:458:8053:6c5f with SMTP id et12-20020a056402378c00b0045880536c5fmr17944187edb.9.1667297564836;
+        Tue, 01 Nov 2022 03:12:44 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM61hBCJiuAe9A47gdjr3llGRA1PTkGUr600Ik1086+XAAfHQfTTYvUrg788CJPFNtuRvTDFOw==
+X-Received: by 2002:a05:6402:378c:b0:458:8053:6c5f with SMTP id et12-20020a056402378c00b0045880536c5fmr17944161edb.9.1667297564530;
+        Tue, 01 Nov 2022 03:12:44 -0700 (PDT)
+Received: from vermin.localdomain ([213.29.99.90])
+        by smtp.gmail.com with ESMTPSA id vq7-20020a170907a4c700b007ad96726c42sm4035464ejc.91.2022.11.01.03.12.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Nov 2022 03:12:43 -0700 (PDT)
+Received: by vermin.localdomain (Postfix, from userid 1000)
+        id 1B5081C9B08; Tue,  1 Nov 2022 03:12:43 -0700 (PDT)
+Received: from vermin (localhost [127.0.0.1])
+        by vermin.localdomain (Postfix) with ESMTP id 1938C1C9B05;
+        Tue,  1 Nov 2022 11:12:43 +0100 (CET)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>, Liang Li <liali@redhat.com>
+Subject: Re: [PATCH net] bonding: fix ICMPv6 header handling when receiving IPv6 messages
+In-reply-to: <20221101091356.531160-1-liuhangbin@gmail.com>
+References: <20221101091356.531160-1-liuhangbin@gmail.com>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Tue, 01 Nov 2022 17:13:56 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.7+dev; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <72466.1667297563.1@vermin>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 01 Nov 2022 11:12:43 +0100
+Message-ID: <72467.1667297563@vermin>
 X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for offloading default prio {ETHERTYPE, 0, prio}.
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+>Some drivers, like bnx2x, will call ipv6_gro_receive() and set skb
+>IPv6 transport header before bond_handle_frame(). But some other drivers,
+>like be2net, will not call ipv6_gro_receive() and skb transport header
+>is not set properly. Thus we can't use icmp6_hdr(skb) to get the icmp6
+>header directly when dealing with IPv6 messages.
+
+	I don't understand this explanation, as ipv6_gro_receive() isn't
+called directly by the device drivers, but from within the GRO
+processing, e.g., by dev_gro_receive().
+
+	Could you explain how the call paths actually differ?  =
+
+
+	-J
+
+>Fix this by checking the skb length manually and getting icmp6 header bas=
+ed
+>on the IPv6 header offset.
+>
+>Reported-by: Liang Li <liali@redhat.com>
+>Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
+>Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>---
+> drivers/net/bonding/bond_main.c | 15 +++++++++++++--
+> 1 file changed, 13 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index e84c49bf4d0c..08b5f512f5fb 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -3231,12 +3231,23 @@ static int bond_na_rcv(const struct sk_buff *skb,=
+ struct bonding *bond,
+> 		       struct slave *slave)
+> {
+> 	struct slave *curr_active_slave, *curr_arp_slave;
+>-	struct icmp6hdr *hdr =3D icmp6_hdr(skb);
+>+	const struct icmp6hdr *icmp6_hdr;
+> 	struct in6_addr *saddr, *daddr;
+>+	const struct ipv6hdr *hdr;
+>+	u16 pkt_len;
+>+
+>+	/* Check if the length is enough manually as we can't use pskb_may_pull=
+ */
+>+	hdr =3D ipv6_hdr(skb);
+>+	pkt_len =3D ntohs(hdr->payload_len);
+>+	if (hdr->nexthdr !=3D NEXTHDR_ICMP || pkt_len < sizeof(*icmp6_hdr) ||
+>+	    skb_headlen(skb) < sizeof(*hdr) + pkt_len)
+>+		goto out;
+>+
+>+	icmp6_hdr =3D (const struct icmp6hdr *)(skb->data + sizeof(*hdr));
+> =
+
+> 	if (skb->pkt_type =3D=3D PACKET_OTHERHOST ||
+> 	    skb->pkt_type =3D=3D PACKET_LOOPBACK ||
+>-	    hdr->icmp6_type !=3D NDISC_NEIGHBOUR_ADVERTISEMENT)
+>+	    icmp6_hdr->icmp6_type !=3D NDISC_NEIGHBOUR_ADVERTISEMENT)
+> 		goto out;
+> =
+
+> 	saddr =3D &ipv6_hdr(skb)->saddr;
+>-- =
+
+>2.38.1
+>
+
 ---
- .../ethernet/microchip/sparx5/sparx5_dcb.c    | 12 ++++++++++
- .../ethernet/microchip/sparx5/sparx5_port.c   | 23 +++++++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_port.h   |  5 ++++
- 3 files changed, 40 insertions(+)
-
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-index be1dc78fc7ba..8108f3767767 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-@@ -49,6 +49,13 @@ static int sparx5_dcb_app_validate(struct net_device *dev,
- 	int err = 0;
- 
- 	switch (app->selector) {
-+	/* Default priority checks */
-+	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
-+		if (app->protocol != 0)
-+			err = -EINVAL;
-+		else if (app->priority >= SPX5_PRIOS)
-+			err = -ERANGE;
-+		break;
- 	/* Dscp checks */
- 	case IEEE_8021QAZ_APP_SEL_DSCP:
- 		if (app->protocol >= SPARX5_PORT_QOS_DSCP_COUNT)
-@@ -137,6 +144,11 @@ static int sparx5_dcb_app_update(struct net_device *dev)
- 	dscp_map = &qos.dscp.map;
- 	pcp_map = &qos.pcp.map;
- 
-+	/* Get default prio. */
-+	qos.default_prio = dcb_ieee_getapp_default_prio_mask(dev);
-+	if (qos.default_prio)
-+		qos.default_prio = fls(qos.default_prio) - 1;
-+
- 	/* Get dscp ingress mapping */
- 	for (i = 0; i < ARRAY_SIZE(dscp_map->map); i++) {
- 		app_itr.selector = IEEE_8021QAZ_APP_SEL_DSCP;
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-index 23ef93919753..107b9cd931c0 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-@@ -1151,6 +1151,7 @@ int sparx5_port_qos_set(struct sparx5_port *port,
- {
- 	sparx5_port_qos_dscp_set(port, &qos->dscp);
- 	sparx5_port_qos_pcp_set(port, &qos->pcp);
-+	sparx5_port_qos_default_set(port, qos);
- 
- 	return 0;
- }
-@@ -1220,3 +1221,25 @@ int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
- 
- 	return 0;
- }
-+
-+int sparx5_port_qos_default_set(const struct sparx5_port *port,
-+				const struct sparx5_port_qos *qos)
-+{
-+	struct sparx5 *sparx5 = port->sparx5;
-+
-+	/* Set default prio and dp level */
-+	spx5_rmw(ANA_CL_QOS_CFG_DEFAULT_QOS_VAL_SET(qos->default_prio) |
-+		 ANA_CL_QOS_CFG_DEFAULT_DP_VAL_SET(0),
-+		 ANA_CL_QOS_CFG_DEFAULT_QOS_VAL |
-+		 ANA_CL_QOS_CFG_DEFAULT_DP_VAL,
-+		 sparx5, ANA_CL_QOS_CFG(port->portno));
-+
-+	/* Set default pcp and dei for untagged frames */
-+	spx5_rmw(ANA_CL_VLAN_CTRL_PORT_PCP_SET(0) |
-+		 ANA_CL_VLAN_CTRL_PORT_DEI_SET(0),
-+		 ANA_CL_VLAN_CTRL_PORT_PCP |
-+		 ANA_CL_VLAN_CTRL_PORT_DEI,
-+		 sparx5, ANA_CL_VLAN_CTRL(port->portno));
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-index 6141c0278e87..fbafe22e25cc 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-@@ -119,6 +119,7 @@ struct sparx5_port_qos_dscp {
- struct sparx5_port_qos {
- 	struct sparx5_port_qos_pcp pcp;
- 	struct sparx5_port_qos_dscp dscp;
-+	u8 default_prio;
- };
- 
- int sparx5_port_qos_set(struct sparx5_port *port, struct sparx5_port_qos *qos);
-@@ -128,4 +129,8 @@ int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
- 
- int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
- 			     struct sparx5_port_qos_dscp *qos);
-+
-+int sparx5_port_qos_default_set(const struct sparx5_port *port,
-+				const struct sparx5_port_qos *qos);
-+
- #endif	/* __SPARX5_PORT_H__ */
--- 
-2.34.1
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
