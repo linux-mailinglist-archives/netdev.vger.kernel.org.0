@@ -2,179 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD31C614AE7
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 13:40:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E70614AED
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 13:40:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiKAMkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 08:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        id S230470AbiKAMkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 08:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbiKAMk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 08:40:27 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140134.outbound.protection.outlook.com [40.107.14.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5631A067;
-        Tue,  1 Nov 2022 05:40:26 -0700 (PDT)
+        with ESMTP id S230451AbiKAMkk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 08:40:40 -0400
+Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2078.outbound.protection.outlook.com [40.107.247.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3859A1A3A2
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 05:40:39 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VBh144NRtIbm5v+YyIdZiS+VyjRQCJW3RS3A6WkC69sUDOeP/pjK+oyLAyNW7qCsxJ6eu/sFr3PpH+tiKvuKt0T/96z2eoWTEhgurqwL2y+1K6xjnjqClQFIt+luNzBXtGMS/wbkjEgOlPruzxbSJurOpwsBojRADQo7s0D5fq7hpO4FR28GtUBS06lcsyUFwFdYw62ER6jDzXaXryLvO6MC5UC6SIf+C0B79S4kFz8jweJUcg/xZ6Xu5N7Eq5jrDjVO4a7MyXTzf7dNJ86L4EIVXsxGPVW3gbCaYedGTmTkU7ZpYtEBgrWgY1UcbFq/eiYX3LVjddI1KAj4cQdsfg==
+ b=V6b4cATwxWIyWy3XXmTC9v7YAk8JevnvOo5wzsgnc44WSndOauwKgIM2rK5DMRpiiqaeoZ4jv3GNQQsKNewv6RNjWXM/eew1K6GDShu0blst+DuTBgQN7uZoIlB+LGy/szceSurA8RfbAkq9ekeAJlXyz+UjN715ddEBnvJrnT8osXuxMjgCpv0jZCjlgsFHBxaU39BWNiOP3a/smpAGKeuSv7P8KKQ5rNuD19lP50d35pMATFXZLuLXOWH6GxyF3REztnRgnaFEBNOuQnd/qZ+L1RfoHzWPFpZIl4dVU/lv4jemqoLWsJq+vtqS3gfIO7JBSulMXSAT9RVUh6douA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IhpyxyUemrXZ17XenIOFm3sEUYmlgE9HLITjl01Uyhw=;
- b=l1hz5LJGzACacb/mH5yBMyOoszNmyINu+VEeypp8BfwjuFMCPls+JfSiV7Rq64Fbc9gu7VJ+methf/k7YTjcwBXMeZns1OcbMK0G4spU3f3SxiWlRQL0640MILMZE4eI7IhfTTcWDd6E8tARx2Pbx72t3ckgJyqYr2aP8Is85dYi2Rr3f7v7UsA90dVMeaQAGfsywEY1IwHga3N/C+uHGqFZmFAojtRNqpyvNveWbAEEV/N3+75+0a04zyP220Dol2mSh5KSZJu81fmAhrFvF8cx0ivC6OQZo9y4Hfjt8uIQgZC5nhUhrUpyea8kI/Vrc1w82UO/mNyAGM/DEJolvw==
+ bh=Ogy+DLXLYa/fP0cBtkCxVzae5PL4RdMDKC4AYAJmpjA=;
+ b=a2nuAfuqTGYv+Cbi9FKI/rKRsaQF0Ml6xzjS/lHo8GRSV47G6Fk6Nr4Cg9wsM+5KfNuJXtPApMwLwQwOqjypMmrVeA3L36NLv/ugdd4JRaCDpHc3w7zFZMvPIpYQLOWe1DvoifUp+jO6zh6KanodHyMoYOdSqoiWfqJtue0y5P0EC2/5ozEyIWHTsKHRDhxpEzul51tiRxPkI8EqLSn2AYDN+ot71u68BFPS4nSyBQd7Br6/TS4kRktAIns3pBZqT718p0QkyS596Z4d+4q30mKOVJMzk27KoUdThKIgAdVfG/FPn2AzCjMjJP4+R5w8jv1yDQWl0u9r06QHptzxaA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
- header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IhpyxyUemrXZ17XenIOFm3sEUYmlgE9HLITjl01Uyhw=;
- b=HBjxLzK99O6sQGU56u7fvQ4GkamflGVXkFV0fskIik5U5GNmfaprdy+1kUmSXLjpIAySCq33T5iIjqNzWPslcrAbeVuoEsADp7E79s96c5VFWEsac+1WSdHWy5L3fPjZfwpFrT8bhdH1FJYGWkYIFH1Ghx9beL9odvbq6j5rNCSGMgj0muXB0gSqfjDxDNksWVWa+jVOg7FOIoB4fvjZbyS/Dih9HCOnjRMLdPNaIi7RhhIWgh6GWJVAuKCQuMUOhRjl13oMFBiucKoJvW1tm/+J1BeucmwNHCZZF7zRgOXzBJfAIP4dnY/dM5Dmuq20hGnuUjHznL8aHa88xX3tiw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=virtuozzo.com;
-Received: from PAXPR08MB6956.eurprd08.prod.outlook.com (2603:10a6:102:1db::9)
- by DB9PR08MB9659.eurprd08.prod.outlook.com (2603:10a6:10:45e::22) with
+ bh=Ogy+DLXLYa/fP0cBtkCxVzae5PL4RdMDKC4AYAJmpjA=;
+ b=racUYGRcqZ2iaASmmaOXhp2eL079d2lcM3RibTBdesslGTVIcWWNgM0fHOsxLJL+2meGB0A319oFWMg5+U7z+skocjiGmA+cP6kXdQDohNqEz1FG55Or26NxaT+KvmgK+o+RytYCmpArKCis410pnfCnnZwD6TsomW6BwkBkRbM=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS1PR04MB9480.eurprd04.prod.outlook.com (2603:10a6:20b:4d6::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Tue, 1 Nov
- 2022 12:40:24 +0000
-Received: from PAXPR08MB6956.eurprd08.prod.outlook.com
- ([fe80::e2ae:48d9:fe01:40e7]) by PAXPR08MB6956.eurprd08.prod.outlook.com
- ([fe80::e2ae:48d9:fe01:40e7%4]) with mapi id 15.20.5769.021; Tue, 1 Nov 2022
- 12:40:24 +0000
-Message-ID: <56da57f3-446c-fe63-b625-931fd9f0cbd5@virtuozzo.com>
-Date:   Tue, 1 Nov 2022 13:40:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH net] net, neigh: Fix null-ptr-deref in neigh_table_clear()
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.14; Tue, 1 Nov
+ 2022 12:40:36 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::df5b:6133:6d4c:a336]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::df5b:6133:6d4c:a336%7]) with mapi id 15.20.5769.018; Tue, 1 Nov 2022
+ 12:40:36 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 4/4] net: dsa: remove phylink_validate() method
+Thread-Topic: [PATCH net-next 4/4] net: dsa: remove phylink_validate() method
+Thread-Index: AQHY7efc5i1n/1Oz0kGxX/wEp9VJma4p940AgAAK6YA=
+Date:   Tue, 1 Nov 2022 12:40:36 +0000
+Message-ID: <20221101124035.tqlmxvyrqpaqn63h@skbuf>
+References: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
+ <20221101114806.1186516-5-vladimir.oltean@nxp.com>
+ <Y2EKnLt2SyhjvcNI@shell.armlinux.org.uk>
+In-Reply-To: <Y2EKnLt2SyhjvcNI@shell.armlinux.org.uk>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Chen Zhongjin <chenzhongjin@huawei.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, daniel@iogearbox.net,
-        yangyingliang@huawei.com, stephen@networkplumber.org,
-        wangyuweihx@gmail.com, alexander.mikhalitsyn@virtuozzo.com,
-        xu.xin16@zte.com.cn
-References: <20221101121552.21890-1-chenzhongjin@huawei.com>
-From:   "Denis V. Lunev" <den@virtuozzo.com>
-In-Reply-To: <20221101121552.21890-1-chenzhongjin@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: VI1PR09CA0065.eurprd09.prod.outlook.com
- (2603:10a6:802:28::33) To PAXPR08MB6956.eurprd08.prod.outlook.com
- (2603:10a6:102:1db::9)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AS1PR04MB9480:EE_
+x-ms-office365-filtering-correlation-id: 8143a7fa-9218-4be4-ed74-08dabc064695
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lnlZM2zF48FROG6o0tETnZ7Vf9XToVy2p+/usN8/KZXX1dqNOna9+3umfPtGUKJI2rZXrZI0vqulLGq3LGIFBTglTDcpZGrlwqrXn30J9chb9pnXZY24DpIHB153AfDgoVdm1KJjYehzSuMvFBXg3OcClvWdIkjX4wo/8f5uhYiLNSWiABKKw2Q1hzj+TdYXVhZH2irJEymxUt0eQhLEshGU56fAgVNXgZ4ctq16ak0Xfdo2KCL9UFbjNOx6XLGvJUm76JfhcP/2cB5idds+2Srbw2npZFHxO5ORSnEi0HuY3sX85Xr+A712nlvjibSweTkGibhRjn0ElcqpOgPOR+LJqSB7wElDbAo42WH1oGCOfVNuAbyTDydtf6KDw4gwyStd3NXvAMhFgGAQRUvGqLfclsnG3hQWNhkRaJdAMaAf+7Gx0mUpveZ0Z49E1IYVpYN4O/rUlral8WlEl1wmrl/27ZPaLoZJoS6lXc1cGwNLn49Hm2OmCfZ0Ucb11pV9MdQ+V2dSNmrKVp4BwiXShl2s08FQEWDAkw2ygPN+faEfsoySVpjcP0O1LC0DYi/NYRbAbiGhwt0ogwOrxN7JHdlBYyxXZXQlSA97yqtfqwJ067Djzk1wvvYsEQQ2gKzLSXVJ+hhjW7JiYCZpPXLdTrpfwg2/68+CnEUYLquR/9vgz3xliMXvQ/qddNkXY/Sbq9SVmvom41Rb+lPpECwCh+F/nLC8qytfelBsSu9jCXrkEQXLZreBrfndr0HKDT+/yWnsmnqLxcJ/S3gtLbXB0A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(346002)(376002)(396003)(366004)(39860400002)(136003)(451199015)(44832011)(1076003)(6486002)(186003)(7416002)(71200400001)(478600001)(38070700005)(316002)(64756008)(6916009)(54906003)(83380400001)(66476007)(66946007)(8676002)(8936002)(4326008)(6512007)(122000001)(66446008)(6506007)(91956017)(2906002)(33716001)(26005)(66556008)(86362001)(5660300002)(9686003)(76116006)(38100700002)(41300700001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?xwRj3kw4jnm7Yknr83jx6puq+U1GjVEXRobuTNWX8/hrKpHGhYO+PLRW/Zmi?=
+ =?us-ascii?Q?Nyt5QOVZ7vGVdaoQpOl3dvUrSlC2Fh4cGEsWQeG0KmNuLR5R809f8xpSjm5s?=
+ =?us-ascii?Q?QwKir6mmLZwikVS4UlbHBF2kE+f8L8u+whRFgng4LHc5t5GXZMSSdtu42VRT?=
+ =?us-ascii?Q?1aMnISRqxDyIJCAY5b6OCy6f/2ijFiZRPDyE1B17tOrsaBl5+V5GylXzLCfT?=
+ =?us-ascii?Q?7MLf0PiOQj9MLCJtwePFrzJp1i6fs+qyoj0aznvOgUTDNOs4V3+1TyxNT2OV?=
+ =?us-ascii?Q?IJaVUXaeEQHEuQX0oX3gz/xC/eb5Jugip/kVP96ZUzq065VOE7PYYRYYcVCi?=
+ =?us-ascii?Q?JynBDg1AIoqaAua6KPmF2nIIxxhi+YI+2PjB9ADTGjfcIm4ucFM+muv/hfV6?=
+ =?us-ascii?Q?MBiLr/GRnpUIrDja76IGDkXxu1R07uFtVF2yiL4qRkaheWeaI5J6Q+hyFmj1?=
+ =?us-ascii?Q?nUem92wzFcuWOmiS8tAmJxuKpzLDg+45Kg68gVLP6T7ryT52QDMCMUPlx1WI?=
+ =?us-ascii?Q?Xdq45I4I7ihtFDrey4pFgJ7/5sZBVeGh0zoSzak9BfZ5T2/lYWgUbO7dYcra?=
+ =?us-ascii?Q?y6UPF45g5GIBvzh6zkIwxnslM/qOuD80cmXfNsVBPbY3ByY4rVTIUvyBpKRZ?=
+ =?us-ascii?Q?4tvaqjUmHpQaG+EANSYyjV04TykL4jIg7uNILt1JayGRyRIKaszndTplzFfA?=
+ =?us-ascii?Q?foktyPzBBktha3Vxxl5y8VLqPp+rcoqCQannVaZbrq7ZZc4idxvSeNXs1gx5?=
+ =?us-ascii?Q?aLpgLwUfK+zsRgxI+pIbQMQqoNz9fmlGUPVdhF1R6yaBDNSE11eK+Pz2mxOG?=
+ =?us-ascii?Q?NfW2ZfzIp+nLb0aSB5mhgigUDR8iXlQDtKZw1JTvpovf1xFHwyffSgik/xEB?=
+ =?us-ascii?Q?eSaB+fDKtUqn1PGR1JmZZ9S4/o6Xhn3uGhHdWgKcJO70WbeSpd5T+8uOt4Fs?=
+ =?us-ascii?Q?0TFRvu/u5p/BFWitL+yReZfVdoqG64RogcfzTTfKpjTRIrjgA/r+VNpy/05E?=
+ =?us-ascii?Q?dkWFKt0wfEVZLQ1K/PZZfE3Fk2rfVwNYI0anXnh75tEXxelObC0SjwamPnx7?=
+ =?us-ascii?Q?Na4hxPZ79lj7YZ9cKrIK2u7hV6E1BkK6t96tkWdTbyr8oKJfGqZm0i6iJ0tL?=
+ =?us-ascii?Q?T5iTOBaFKrDXy2zwwHdii4nb6tSC39+vZkoI8wEb906hYYSCAV6EvcsC95dL?=
+ =?us-ascii?Q?psFEHTdTE8WmIRYsti/eIajlS5ALsxu6G8WB6vvyYhR7cdyqMWrNI+G4F/w9?=
+ =?us-ascii?Q?13Qvfg4pqzqAc9cD72ZDvvUD5O093zIu5euqU3sbAWR4CsRKlfHeTnfxZzXE?=
+ =?us-ascii?Q?bGxhtBePSjrHaJzBMrxSirYA577YCMrCGVX7hNwYAbbsCT6py+Ggs/r3r2OP?=
+ =?us-ascii?Q?xZlQwDgR3SSNVXENNbfZEMH//ACONm354s9a7mR+8hwlZZb/1cOo794GZPtG?=
+ =?us-ascii?Q?yjaoXPV0cFwVXJ+ThoNZoR/prrKXUh2lHallRhN4pl0JUAYxM6BnUIQQx3Kv?=
+ =?us-ascii?Q?LakZbMlz/Y6/H5pIJ1pxMG3mW7lS8kYPFa9zJN5Rg4TrVmMCiEZuDoC6EXa5?=
+ =?us-ascii?Q?isnRw8bokozd6JX4eFakHrzP0vLci08ENb6O9ls9CpUZQNrR6it91uXh+4hP?=
+ =?us-ascii?Q?cw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <21ED1B8A662ABC4C85004F2C011F0BA3@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR08MB6956:EE_|DB9PR08MB9659:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9c175629-71a7-4f17-f3e8-08dabc063f26
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VFggomur8Trv7SuJ+h4sH6VDJOjC2bv5AP4loAZc/A+bbZ2WNL158fjy3jTgrVUuKjJayrjZ+rf77x3F3vAwPNLL5JMcG1xEXzjd7o3p4wvzbtL4UYTofhg2msZfXJPQsDpSX8osF40lcICHVS5OzprJ4JFZmmmaeVf8hvopdfHFFLzAU2UNwipGqAbRFTA7cDWgM7XX0XtJFAGDVFs3RkyLxI5kM7eEyhwVi+whJujqZZ4BhUhS0Z2OoMtiNrBoIursuhJ9jkoQyNW4BHhYH0xghQOBAy6oKCegQmZAMavfa42xkuIjjjH9kvNc5+Cjt3HJKU9yYjmGu9aKQGjYDqK9Dgq3iKDF/CmPZcRaPVJ8+9sgt1iILkDW4zRw51d/0I19WSgZt4sYLM0NaX0asCgLGzvLVvzQC7HlQUL3DoTfYTIZ5woeyIpo688UizKGQRLv0kj0th8f/+r2lF5P1hTov2amjnA+nVVrnVCjvQChH7riSbntc1o+vYJx9BOvC3cWAcOIGLMvB9E8UgxXXYFlxvu/9J8wqWh8BtP/ZmmZ4g2WvqKV404eml98QOiYEBhsORaJvXKTvmQMZEMoEXZ4s2RgCj7khUkAQ/qkHxYbX1ZZ64QAXCvLiGPGu8IEAzCNLqZoSmDSzYzG30QHwwwbKF5BrhpKJXoX1mX0gbMhSrbs4vHOo+yt2My+950owh8PA6eezNXNuDKWibiIao0PA8mIY+n5XBLVgeKxTLzcoSdy6zm0xH4fKZWQ5plqGP4bBtMSA7GSmx359YnCf65uB/8LSdkG8WZdadf8VZE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR08MB6956.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39850400004)(396003)(376002)(346002)(136003)(366004)(451199015)(478600001)(6486002)(53546011)(31686004)(66476007)(6666004)(316002)(66556008)(5660300002)(26005)(6506007)(6512007)(41300700001)(2906002)(83380400001)(31696002)(66946007)(86362001)(8676002)(38100700002)(8936002)(2616005)(7416002)(186003)(4326008)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SHdlVWhWTVBLODhGVmhnV2ZCWHNFN2RKeFhiY2ExQU1ZYkpDblJDTE9jYlk2?=
- =?utf-8?B?eFU5VDNxOHhVL2VyQ3dIajcxL0JlUmpKMjJhTFEwK3N2b21tbFpjMEN1T1Zp?=
- =?utf-8?B?MC9pcG1QMkFZeFFrODF3VW1nL2s5bUZBWGxjTEdKSW9zaW9hU0ZhYk9DMldU?=
- =?utf-8?B?N3QvaWFMdlh6dmMvY1dlUWZNVzIzTENrbU1LSmRYUmc0NG1vZlIyOTFnMGdi?=
- =?utf-8?B?aTBybXNFNXljQk1BMDNBczlocERFdnYzaWVtd0pYUHdkNGJlOFQyTkhuVXR4?=
- =?utf-8?B?blpBUW5Mb0tSN2FyNkF6L21SdmN0UnVPWkRnR3kzdmJtR3diZjVCTStuUkht?=
- =?utf-8?B?NWpNcFYzQ243ZkR1NHV0ekJyano3R0x1TWdZMU1JK0RRMHBUZnJYanc1M2Z6?=
- =?utf-8?B?L0JZeENXZVV6alUwK3J1TEQxdCtaczdxOXV5RmhQRzMzemREQWs1YTlUQzJy?=
- =?utf-8?B?MjRjbnRyZ1kxbkVhc0hQR0MwUmZNb3oyN0h1R05CQ25tVWVRMkljSm1Qb3Zp?=
- =?utf-8?B?UUMyTjhvTlZNMDFHdHZDaEs1MitYZk5scFlxaTdlWGlOVUtjMlVDckZhNmQ5?=
- =?utf-8?B?K3pRUTV3V1BKWEIrSi84SWRIdUI1bEE0Zys4NHA4eTZkTTY1K0ZDMjd6TTc0?=
- =?utf-8?B?UURxOFZTcHo2TTFyQnh6a0VDVitFVlU5SXpybmRpZjJFVW52OENUcVAra0N4?=
- =?utf-8?B?ZmwzbjlLS3ZQc3Y4a0kxbjFHV0tYd2xaVk5HVWVWcDRncTgrUHhndUV6SldQ?=
- =?utf-8?B?My9xQzNtNXQzVjFZUS9WRGZvSGdSTHNOVjVrSkJ3RWJ5Z2ptTnNZMGNCSDJj?=
- =?utf-8?B?Zm1zRXRLdXhUYktBZjJESlE1Mi9EdmRzbEV3cjJrQlkxY3QzL0ozWDRmcGZi?=
- =?utf-8?B?QTZYR3M4SWpkQUl3RzI0c2YvRTk2aUJucmNObjh6eHBmZ0t2VUxmZUJRc1Ba?=
- =?utf-8?B?emJwK094eWh6NjBDZnQ3NWY2SXpDeUVYZTZuMEhMOG5hMnFTN1JEN3NrbWpH?=
- =?utf-8?B?aDRrSElYTVcxZVdiU1YyVCtqbTB2amJxc21Lc0lvTHFxb0xaVDJmRzM1b3Jk?=
- =?utf-8?B?Q3lQekxVMVYrckZXNUxPOHphd2NpY2UrQ0xlNkU2bzE4ZGlaQzg5SWVXMUtk?=
- =?utf-8?B?LzUyOEtuT2RqZUZiQmRNR24zSHlraDNSeStuN0tqdXRiSi9ybE84ZlpBeVBT?=
- =?utf-8?B?M2ZtckpKT1N2c2lMRXc5UUxqc3hza1lLNys0RGxmZXdEd0g3TlltYmV1MTkw?=
- =?utf-8?B?WVJoNjUwWUd4QU4wOWpDYzBBSGJnNkorUFdqVzdwMzRlM2hua0t0eXZMOG1L?=
- =?utf-8?B?eW9vY2pOckNOWXIzblo5cVU4Zk9KT0dQcEhmUFFnNnErQnRGN3hIYjNNdkhh?=
- =?utf-8?B?cVdpcjF1em5GTEhnTzVtVWlnUXgyQ1pBb3MxdlNXMGttTXVFVFhzS0NkOXZ1?=
- =?utf-8?B?NlVmRHplOXRveTI5WEJhQndHbmlWL1Ara0ppM3VlcWNLTS92cE1nYVlHTDdz?=
- =?utf-8?B?anhub2dWN2diVVBYMVdyeWFUVGpZbmJhMlIrVHVNVTc5aVlYZG10emtFVkhZ?=
- =?utf-8?B?UHFIcVJ6NTJyWWhnd2hSRERiLytMbUk4NGluTjNOdW55UFpLMjhqQmFRTzVh?=
- =?utf-8?B?U1RadlYxeWdiUS83S1huM3VpVGFnc0lXVmdKRmNFTEFuTm84N2RNazB4Zktk?=
- =?utf-8?B?MGd0V1pDeGphWHpLeEVoc0s5bndmTTV4Q3VCeWNKcjlxY1d1STJQNzQxMHhJ?=
- =?utf-8?B?Z1FaV2p5NFczR0Zyb1VMck12eXVFR0QrU0lTTjNEdHFRbWlDM0F4MHhadDJi?=
- =?utf-8?B?czZ2UnhJRjA1dGRZRkZHNTNBci9rTDlpSkdLdlZiR0RkQ2JyZ3hyQnZmczFs?=
- =?utf-8?B?UXd4ZXBXTHNMNlB5aG9WZjhuVmZCVEVkVEFMYVRPSkRBUkRIaFBmcERFampV?=
- =?utf-8?B?NEI1d1QvTWVpeHZTdWFNMXF4K1FBY0NDQTQ2cWNFZS9HMTE2VVU3ZTZnUnVo?=
- =?utf-8?B?N05BdDZnM3l1WFBmVHlwWmJ4VzNYUVpkUTgzQXNVdmkycWlzOURxalZEK29x?=
- =?utf-8?B?empUU2tuU2szcTRQdHM3OW1waUhFUG5DbWZUdXk0a01PMnMxbXo1ZnkvSEM3?=
- =?utf-8?Q?L8XABTIgLx0isn2B3D1dTA7cZ?=
-X-OriginatorOrg: virtuozzo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c175629-71a7-4f17-f3e8-08dabc063f26
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR08MB6956.eurprd08.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2022 12:40:24.2783
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8143a7fa-9218-4be4-ed74-08dabc064695
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2022 12:40:36.6090
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s5L2+5qXQWFJ96F/iS8V5XYmHg5B+Mw+1vBAuxFXm607dRievc5h3rS7KX+L7gfZ0VjUb6OAzAy5OYDhL0tFZg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR08MB9659
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8ZqW42LPJpCsl8sZnfW5sXsTJMHz//Z0I100ZrDuXwE5C73Cj/od00LejhvbQi1I9OqOtp8HljaNpdTz4MDxTA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9480
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/22 13:15, Chen Zhongjin wrote:
-> When IPv6 module gets initialized but hits an error in the middle,
-> kenel panic with:
->
-> KASAN: null-ptr-deref in range [0x0000000000000598-0x000000000000059f]
-> CPU: 1 PID: 361 Comm: insmod
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-> RIP: 0010:__neigh_ifdown.isra.0+0x24b/0x370
-> RSP: 0018:ffff888012677908 EFLAGS: 00000202
-> ...
-> Call Trace:
->   <TASK>
->   neigh_table_clear+0x94/0x2d0
->   ndisc_cleanup+0x27/0x40 [ipv6]
->   inet6_init+0x21c/0x2cb [ipv6]
->   do_one_initcall+0xd3/0x4d0
->   do_init_module+0x1ae/0x670
-> ...
-> Kernel panic - not syncing: Fatal exception
->
-> When ipv6 initialization fails, it will try to cleanup and calls:
->
-> neigh_table_clear()
->    neigh_ifdown(tbl, NULL)
->      pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev == NULL))
->      # dev_net(NULL) triggers null-ptr-deref.
->
-> Fix it by passing NULL to pneigh_queue_purge() in neigh_ifdown() if dev
-> is NULL, to make kernel not panic immediately.
->
-> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
-> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-> ---
->   net/core/neighbour.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 3c4786b99907..a77a85e357e0 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -409,7 +409,7 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
->   	write_lock_bh(&tbl->lock);
->   	neigh_flush_dev(tbl, dev, skip_perm);
->   	pneigh_ifdown_and_unlock(tbl, dev);
-> -	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-> +	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL);
->   	if (skb_queue_empty_lockless(&tbl->proxy_queue))
->   		del_timer_sync(&tbl->proxy_timer);
->   	return 0;
-Reviewed-by: Denis V. Lunev <den@openvz.org>
+On Tue, Nov 01, 2022 at 12:01:32PM +0000, Russell King (Oracle) wrote:
+> On Tue, Nov 01, 2022 at 01:48:06PM +0200, Vladimir Oltean wrote:
+> > Not all DSA drivers provide config->mac_capabilities, for example
+> > mv88e6060, lan9303 and vsc73xx don't. However, there have been users of
+> > those drivers on recent kernels and no one reported that they fail to
+> > establish a link, so I'm guessing that they work (somehow). But I must
+> > admit I don't understand why phylink_generic_validate() works when
+> > mac_capabilities=3D0. Anyway, these drivers did not provide a
+> > phylink_validate() method before and do not provide one now, so nothing
+> > changes for them.
+>=20
+> There is a specific exception:
+>=20
+> When config->mac_capabilities is zero, and there is no phylink_validate()
+> function, dsa_port_phylink_validate() becomes a no-op, and the no-op
+> case basically means "everything is allowed", which is how things worked
+> before the generic validation was added, as you will see from commit
+> 5938bce4b6e2 ("net: dsa: support use of phylink_generic_validate()").
+>=20
+> Changing this as you propose below will likely break these drivers.
+>=20
+> A safer change would be to elimate ds->ops->phylink_validate, leaving
+> the call to phylink_generic_validate() conditional on mac_capabilities
+> having been filled in - which will save breaking these older drivers.
+
+Yes, this is correct, thanks; our emails crossed.
+
+Between keeping a no-op phylink_validate() for these drivers and filling
+in mac_capabilities for them, to remove this extra code path in DSA,
+what would be preferred?
+
+The 3 drivers I mentioned could all get a blanket MAC_10 | MAC_100 |
+MAC1000FD | MAC_ASYM_PAUSE | MAC_SYM_PAUSE to keep advertising what they
+did, even if this may or may not be 100% correct (lan9303 and mv88e6060
+are not gigabit, and I don't know if they do flow control properly), but
+these issues are not new.=
