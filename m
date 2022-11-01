@@ -2,118 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13DB8615234
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 20:22:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 185EA615254
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 20:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbiKATWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 15:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        id S230413AbiKATcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 15:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiKATWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 15:22:30 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420471EAF0
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 12:22:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1667330549; x=1698866549;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
+        with ESMTP id S230261AbiKATc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 15:32:28 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A0512A83;
+        Tue,  1 Nov 2022 12:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667331147; x=1698867147;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TuRuTKaZ1Ug7pjZlrtvnGhujcqqgkFxz346q9lSt/XU=;
-  b=T45pLQeOkuEmQ/956wAdBpChmqMjfIfDmkOqDWpFzM+KlfxjQsR7lTUP
-   Lx9ZSD7FecWNIA1KVo+oSqsjs1DRfS+GteLVW41kuKvrHprt0LvTiEcOx
-   URXk5O8dzOFMBmBDbzVTJHdehAAxCYmnAZt9FE1c5kDRvdAwL77nQ61M4
-   A=;
-X-IronPort-AV: E=Sophos;i="5.95,231,1661817600"; 
-   d="scan'208";a="146547919"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-e651a362.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 19:22:26 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-m6i4x-e651a362.us-east-1.amazon.com (Postfix) with ESMTPS id 0876481FEE;
-        Tue,  1 Nov 2022 19:22:22 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Tue, 1 Nov 2022 19:22:21 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.162.178) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
- Tue, 1 Nov 2022 19:22:19 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <william.xuanziyang@huawei.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <joannelkoong@gmail.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <martin.lau@kernel.org>,
-        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>
-Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
-Date:   Tue, 1 Nov 2022 12:22:11 -0700
-Message-ID: <20221101192211.33498-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <4bd122d2-d606-b71e-dbe7-63fa293f0a73@huawei.com>
-References: <4bd122d2-d606-b71e-dbe7-63fa293f0a73@huawei.com>
+  bh=s+EqHyjaeXVSMyI36GDC5bYTToXoWUTH+2Gxwj5l6jA=;
+  b=QbkGsIo/dzqitljQvuLBde2Ir+di/VTgsfXxU9RNLEzIIUtvqZV6DYrZ
+   Kj5Lm7abhVyU8i9KTk4Xh9/xCCGLtzUGAK7sA/DOaKKDW/MCYEHC3Z3sO
+   fMykL2mjhSJEEGLBudqrQ4r1O8bDCAve7H1jKqx/8qW2QdNkcLDPWEoDN
+   Q8SNifXidUcfohYEQKNiCXc8pTloZDitIiuLw3lIddTHu4fQEtgMHHU0q
+   Io5Ka+OArTuhtObPYjB83s4exlioZsdTGC1W+RrtesMJPnph2edj35M32
+   OL62av+pUjLThWylWeJdvzOmG2cdZcmEYL1fM+F+UdIeVfgHJHggQHuEV
+   A==;
+X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
+   d="scan'208";a="184892260"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 12:32:25 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 1 Nov 2022 12:32:17 -0700
+Received: from den-her-m31857h.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 1 Nov 2022 12:32:14 -0700
+Message-ID: <e78cd61cdac6c1abb27b16908c241fd4f8310af9.camel@microchip.com>
+Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
+ flower keys for the IS2 VCAP
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Casper Andersson <casper.casan@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        "Wan Jiabing" <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Date:   Tue, 1 Nov 2022 20:32:13 +0100
+In-Reply-To: <20221101084925.7d8b7641@kernel.org>
+References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
+         <20221028144540.3344995-3-steen.hegelund@microchip.com>
+         <20221031103747.uk76tudphqdo6uto@wse-c0155>
+         <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
+         <20221031184128.1143d51e@kernel.org>
+         <741b628857168a6844b6c2e0482beb7df9b56520.camel@microchip.com>
+         <20221101084925.7d8b7641@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.178]
-X-ClientProxiedBy: EX13D22UWC004.ant.amazon.com (10.43.162.198) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Date:   Tue, 1 Nov 2022 15:08:15 +0800
-> Hello Kuniyuki Iwashima,
+Hi Jacub,
+
+Thanks for the comments.
+
+On Tue, 2022-11-01 at 08:49 -0700, Jakub Kicinski wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> > Hi,
+> On Tue, 1 Nov 2022 08:31:16 +0100 Steen Hegelund wrote:
+> > > Previous series in this context means previous revision or something
+> > > that was already merged?
 > > 
-> > I want to discuss bhash2 and WARN_ON() being fired every day this month
-> > on my syzkaller instance without repro.
+> > Casper refers to this series (the first of the VCAP related series) that was merged on Oct 24th:
 > > 
-> >   WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> >   ...
-> >   inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
-> >   inet_listen (net/ipv4/af_inet.c:228)
-> >   __sys_listen (net/socket.c:1810)
-> >   __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
-> >   do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> >   entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> > 
-> > For the very first implementation of bhash2, there was a similar report
-> > hitting the same WARN_ON().  The fix was to update the bhash2 bucket when
-> > the kernel changes sk->sk_rcv_saddr from INADDR_ANY.  Then, syzbot has a
-> > repro, so we can indeed confirm that it no longer triggers the warning on
-> > the latest kernel.
-> > 
-> >   https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
-> > 
-> > However, Mat reported at that time that there were at least two variants,
-> > the latter being the same as mine.
-> > 
-> >   https://lore.kernel.org/netdev/4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com/
-> >   https://lore.kernel.org/netdev/23d8e9f4-016-7de1-9737-12c3146872ca@linux.intel.com/
-> > 
-> > This week I started looking into this issue and finally figured out
-> > why we could not catch all cases with a single repro.
-> > 
+> > https://lore.kernel.org/all/20221020130904.1215072-1-steen.hegelund@microchip.com/
 > 
-> Provide another C repro for analysis. See the attachment.
+> Alright, looks like this is only in net-next so no risk of breaking
+> existing users.
 
-Thanks for another variant.
+Yes, this is a new feature.
 
-Your repro also fails to connect() by RST, which resets saddr without
-updating bhash2 bucket, and then listen() hits the WARN_ON().
+> 
+> That said you should reject filters you can't support with an extack
+> message set. Also see below.
 
-I meant to say if there was no difference in failure paths we should
-have caught all places where we need fixes with a single repro.
+That should also be the case.  
 
-Once we know the root cause, it's not so hard to generate variants.
+I just checked that using an unsupported key, action or chain will result in an extack error
+message.
 
-Anyway, I'll post a patch for consistent error handling and later
-another patch to fix the root cause when I find a solid way.
+> 
+> > > > tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \
+> > > 
+> > > How are you using chains?
+> > 
+> > The chain ids are referring to the VCAP instances and their lookups.  There are some more
+> > details
+> > about this in the series I referred to above.
+> > 
+> > The short version is that this allows you to select where in the frame processing flow your rule
+> > will be inserted (using ingress or egress and the chain id).
+> > 
+> > > I thought you need to offload FLOW_ACTION_GOTO to get to a chain,
+> > > and I get no hits on this driver.
+> > 
+> > I have not yet added the goto action, but one use of that is to chain a filter from one VCAP
+> > instance/lookup to another.
+> > 
+> > The goto action will be added in a soon-to-come series.  I just wanted to avoid a series getting
+> > too
+> > large, but on the other hand each of them should provide functionality that you can use in
+> > practice.
+> 
+> The behavior of the offload must be the same as the SW implementation.
+> It sounds like in your case it very much isn't, as adding rules to
+> a magic chain in SW, without the goto will result in the rules being
+> unused.
+
+I will add the goto support to my implementation so that it will be consistent with the SW
+implementation, adding a check to ensure that there is a goto action when HW offloading.
+
+BR
+Steen
+
+
+
+
+
+
