@@ -2,106 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D122614701
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 10:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFEE6146EB
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 10:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbiKAJmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 05:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        id S230204AbiKAJkW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Nov 2022 05:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiKAJl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 05:41:26 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEC21A211;
-        Tue,  1 Nov 2022 02:40:48 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N1lKk3JrZzpW4d;
-        Tue,  1 Nov 2022 17:37:14 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 1 Nov 2022 17:40:40 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 1 Nov 2022 17:40:40 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <kgraul@linux.ibm.com>, <wenjia@linux.ibm.com>,
-        <jaka@linux.ibm.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <guvenc@linux.ibm.com>,
-        <chenzhongjin@huawei.com>
-Subject: [PATCH] net/smc: Fix possible leaked pernet namespace in smc_init()
-Date:   Tue, 1 Nov 2022 17:37:22 +0800
-Message-ID: <20221101093722.127223-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S230185AbiKAJkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 05:40:04 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1FC19026
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 02:39:27 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-187-iRoj6YtCMo2VjsB38UYWMQ-1; Tue, 01 Nov 2022 09:39:24 +0000
+X-MC-Unique: iRoj6YtCMo2VjsB38UYWMQ-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 1 Nov
+ 2022 09:39:22 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.042; Tue, 1 Nov 2022 09:39:22 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Jiri Slaby (SUSE)'" <jirislaby@kernel.org>,
+        "Jason@zx2c4.com" <Jason@zx2c4.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Martin Liska" <mliska@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "wireguard@lists.zx2c4.com" <wireguard@lists.zx2c4.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] wireguard (gcc13): cast enum limits members to int in
+ prints
+Thread-Topic: [PATCH] wireguard (gcc13): cast enum limits members to int in
+ prints
+Thread-Index: AQHY7R5F39fDc134tkipsCBRXoDaea4p0HMQ
+Date:   Tue, 1 Nov 2022 09:39:22 +0000
+Message-ID: <dde406ed000b41d4985599aff0916e2b@AcuMS.aculab.com>
+References: <20221031114424.10438-1-jirislaby@kernel.org>
+In-Reply-To: <20221031114424.10438-1-jirislaby@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In smc_init(), register_pernet_subsys(&smc_net_stat_ops) is called
-without any error handling.
-If it fails, registering of &smc_net_ops won't be reverted.
-And if smc_nl_init() fails, &smc_net_stat_ops itself won't be reverted.
+From: Jiri Slaby (SUSE)
+> Sent: 31 October 2022 11:44
+> 
+> Since gcc13, each member of an enum has the same type as the enum [1]. And
+> that is inherited from its members. Provided "REKEY_AFTER_MESSAGES = 1ULL
+> << 60", the named type is unsigned long.
+> 
+> This generates warnings with gcc-13:
+>   error: format '%d' expects argument of type 'int', but argument 6 has type 'long unsigned int'
+> 
+> Cast the enum members to int when printing them.
+> 
+> Alternatively, we can cast it to ulong (to silence gcc < 12) and use %lu.
+> Alternatively, we can move REKEY_AFTER_MESSAGES away from the enum.
 
-This leaves wild ops in subsystem linkedlist and when another module
-tries to call register_pernet_operations() it triggers page fault:
+I'd suggest moving the 'out of range' value out of the enum.
+Otherwise integer promotion to 'long' might happen elsewhere
+and the effects might not be desirable.
 
-BUG: unable to handle page fault for address: fffffbfff81b964c
-RIP: 0010:register_pernet_operations+0x1b9/0x5f0
-Call Trace:
-  <TASK>
-  register_pernet_subsys+0x29/0x40
-  ebtables_init+0x58/0x1000 [ebtables]
-  ...
+It is a shame that gcc doesn't force you to add the type
+to 'big enums' (or emit a warning) so that the behavioural
+change is properly detected.
 
-Fixes: 194730a9beb5 ("net/smc: Make SMC statistics network namespace aware")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
- net/smc/af_smc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+From reading the gcc bug it seems that C++ has a syntax for that.
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 3ccbf3c201cd..e12d4fa5aece 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -3380,14 +3380,14 @@ static int __init smc_init(void)
- 
- 	rc = register_pernet_subsys(&smc_net_stat_ops);
- 	if (rc)
--		return rc;
-+		goto out_pernet_subsys;
- 
- 	smc_ism_init();
- 	smc_clc_init();
- 
- 	rc = smc_nl_init();
- 	if (rc)
--		goto out_pernet_subsys;
-+		goto out_pernet_subsys_stat;
- 
- 	rc = smc_pnet_init();
- 	if (rc)
-@@ -3480,6 +3480,8 @@ static int __init smc_init(void)
- 	smc_pnet_exit();
- out_nl:
- 	smc_nl_exit();
-+out_pernet_subsys_stat:
-+	unregister_pernet_subsys(&smc_net_stat_ops);
- out_pernet_subsys:
- 	unregister_pernet_subsys(&smc_net_ops);
- 
--- 
-2.17.1
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
