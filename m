@@ -2,92 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2051614446
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 06:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0D28614469
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 06:49:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiKAFaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 01:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
+        id S229689AbiKAFta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 01:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiKAFaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 01:30:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1347F655C
-        for <netdev@vger.kernel.org>; Mon, 31 Oct 2022 22:30:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2C4E6146F
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 05:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0597EC433D7;
-        Tue,  1 Nov 2022 05:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667280618;
-        bh=zlOkRRXkOlJ4CYSuuFnuiD2AbONFJKOoyU38u4eQEqs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IVaNtfmEB1Kq8RXMYbn17y/2zBueLG6u/u1xtcPpmGbXQnooN1zWHE66byCzZydJj
-         jUQE7jxZ2/z1m603Bn3IpGdh3P5h2gN3zs+wu021y1JkfaFvZpyAilS8uSgztWV6hg
-         o9a4qafc6a3RfT+7uz0D1/JwdKliNcG9cuaOV1rAryeUXSodx+FXYr+637ZnLgMVFu
-         fzIfBWN7WrRbjGyQAzNLVgtRUcusqHlbnGoWVo1I09IOL1bfF+KVbWGVOuJzzm3xnZ
-         SanT4DJVwGwI4uVIBrsH1e3Dbmqt9fFQiILrBHdOkYeq18BjFrMOQymI0XmXOiSc2r
-         PKorLqHud0LyA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DAF9DE50D71;
-        Tue,  1 Nov 2022 05:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229511AbiKAFt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 01:49:29 -0400
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93B513EA8;
+        Mon, 31 Oct 2022 22:49:28 -0700 (PDT)
+Received: by mail-wm1-f41.google.com with SMTP id ay14-20020a05600c1e0e00b003cf6ab34b61so2809389wmb.2;
+        Mon, 31 Oct 2022 22:49:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sFiJ1Xl5U/Q9kIWUJyg3ATXUzyGX+xpzIsnQgrcyPqQ=;
+        b=tFK9mkK3gniaO/JeNjMrTt49uv1LYAZio5vps3JcglvunpbpkZJRwoMkxBPOM9f5Vt
+         knwt82eTLzuL6FFmdFLk8u1n0JlAfFPVyVff5AcDvsoChBsPtXtahDg14Mfstmge61uv
+         7QPqj5400eNwmXRoyIf0JAgMW6niJuw+NCTABoakPiNuzd5UWzHzXZMiPQMusy101Heo
+         RmU7P3g6ovkpH2nxCGTE9t1gD7anCqMHZxNqXOw2Ylf6FInUTKhV2CeCcf5gkR2DPAYO
+         nTuE40iaRxs390/zOgRpdj6CL+cAiNBKHJWydEWSDKe5f+keDCAiHwdOUzT4Z5x/JZ9Z
+         hWlw==
+X-Gm-Message-State: ACrzQf2ylfK4j2TM6eRcVk5Ihfpske4O4DvFlpwV2Xr/fFFbnePdPynh
+        yzyGPQIAxnnCLwI4nYzF6iA=
+X-Google-Smtp-Source: AMsMyM78+gzC+G4r0hw11WY5fFkvvC3bal3WJWhhwtOLtGcIGj1F43LHVUwke1fflbbAJ+GtTzEUyQ==
+X-Received: by 2002:a05:600c:3b1a:b0:3c7:132f:eb7f with SMTP id m26-20020a05600c3b1a00b003c7132feb7fmr20478963wms.49.1667281767330;
+        Mon, 31 Oct 2022 22:49:27 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id y2-20020adffa42000000b0022e3538d305sm10350826wrr.117.2022.10.31.22.49.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Oct 2022 22:49:26 -0700 (PDT)
+Message-ID: <833c7f2f-c140-5a0b-1efc-b858348206ec@kernel.org>
+Date:   Tue, 1 Nov 2022 06:49:25 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] ath11k (gcc13): synchronize
+ ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
+Content-Language: en-US
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>, kvalo@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Martin Liska <mliska@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20221031114341.10377-1-jirislaby@kernel.org>
+ <55c4d139-0f22-e7ba-398a-e3e0d8919220@quicinc.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <55c4d139-0f22-e7ba-398a-e3e0d8919220@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/5] inet: add drop monitor support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166728061789.32736.18262365783917725837.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Nov 2022 05:30:17 +0000
-References: <20221029154520.2747444-1-edumazet@google.com>
-In-Reply-To: <20221029154520.2747444-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 29 Oct 2022 15:45:15 +0000 you wrote:
-> I recently tried to analyse flakes in ip_defrag selftest.
-> This failed miserably.
+On 31. 10. 22, 22:16, Jeff Johnson wrote:
+> On 10/31/2022 4:43 AM, Jiri Slaby (SUSE) wrote:
+>> ath11k_mac_he_gi_to_nl80211_he_gi() generates a valid warning with 
+>> gcc-13:
+>>    drivers/net/wireless/ath/ath11k/mac.c:321:20: error: conflicting 
+>> types for 'ath11k_mac_he_gi_to_nl80211_he_gi' due to enum/integer 
+>> mismatch; have 'enum nl80211_he_gi(u8)'
+>>    drivers/net/wireless/ath/ath11k/mac.h:166:5: note: previous 
+>> declaration of 'ath11k_mac_he_gi_to_nl80211_he_gi' with type 'u32(u8)'
+>>
+>> I.e. the type of the return value ath11k_mac_he_gi_to_nl80211_he_gi() in
+>> the declaration is u32, while the definition spells enum nl80211_he_gi.
+>> Synchronize them to the latter.
+>>
+>> Cc: Martin Liska <mliska@suse.cz>
+>> Cc: Kalle Valo <kvalo@kernel.org>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Eric Dumazet <edumazet@google.com>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: Paolo Abeni <pabeni@redhat.com>
+>> Cc: ath11k@lists.infradead.org
+>> Cc: linux-wireless@vger.kernel.org
+>> Cc: netdev@vger.kernel.org
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > 
-> IPv4 and IPv6 reassembly units are causing false kfree_skb()
-> notifications. It is time to deal with this issue.
-> 
-> First two patches are changing core networking to better
-> deal with eventual skb frag_list chains, in respect
-> of kfree_skb/consume_skb status.
-> 
-> [...]
+> Suggest the subject should be
+> wifi: ath11k: synchronize ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
 
-Here is the summary with links:
-  - [v2,net-next,1/5] net: dropreason: add SKB_CONSUMED reason
-    https://git.kernel.org/netdev/net-next/c/0e84afe8ebfb
-  - [v2,net-next,2/5] net: dropreason: propagate drop_reason to skb_release_data()
-    https://git.kernel.org/netdev/net-next/c/511a3eda2f8d
-  - [v2,net-next,3/5] net: dropreason: add SKB_DROP_REASON_DUP_FRAG
-    https://git.kernel.org/netdev/net-next/c/4ecbb1c27c36
-  - [v2,net-next,4/5] net: dropreason: add SKB_DROP_REASON_FRAG_REASM_TIMEOUT
-    https://git.kernel.org/netdev/net-next/c/77adfd3a1d44
-  - [v2,net-next,5/5] net: dropreason: add SKB_DROP_REASON_FRAG_TOO_FAR
-    https://git.kernel.org/netdev/net-next/c/3bdfb04f13eb
+FWIW I copied from:
+$ git log --format=%s  drivers/net/wireless/ath/ath11k/mac.h
+ath11k: Handle keepalive during WoWLAN suspend and resume
+ath11k: reduce the wait time of 11d scan and hw scan while add interface
+ath11k: Add basic WoW functionalities
+ath11k: add support for hardware rfkill for QCA6390
+ath11k: report tx bitrate for iw wlan station dump
+ath11k: add 11d scan offload support
+ath11k: fix read fail for htt_stats and htt_peer_stats for single pdev
+ath11k: add support for BSS color change
+ath11k: add support for 80P80 and 160 MHz bandwidth
+ath11k: Add support for STA to handle beacon miss
+ath11k: add support to configure spatial reuse parameter set
+ath11k: remove "ath11k_mac_get_ar_vdev_stop_status" references
+ath11k: Perform per-msdu rx processing
+ath11k: fix incorrect peer stats counters update
+ath11k: Move mac80211 hw allocation before wmi_init command
+ath11k: fix missed bw conversion in tx completion
+ath11k: driver for Qualcomm IEEE 802.11ax devices
 
-You are awesome, thank you!
+> The reference to gcc in the description should be sufficient.
+> 
+> Kalle can update this when he merges
+
+OK, thanks.
+
+> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+> 
+>> ---
+>>   drivers/net/wireless/ath/ath11k/mac.h | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/wireless/ath/ath11k/mac.h 
+>> b/drivers/net/wireless/ath/ath11k/mac.h
+>> index 2a0d3afb0c99..0231783ad754 100644
+>> --- a/drivers/net/wireless/ath/ath11k/mac.h
+>> +++ b/drivers/net/wireless/ath/ath11k/mac.h
+>> @@ -163,7 +163,7 @@ void ath11k_mac_drain_tx(struct ath11k *ar);
+>>   void ath11k_mac_peer_cleanup_all(struct ath11k *ar);
+>>   int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx);
+>>   u8 ath11k_mac_bw_to_mac80211_bw(u8 bw);
+>> -u32 ath11k_mac_he_gi_to_nl80211_he_gi(u8 sgi);
+>> +enum nl80211_he_gi ath11k_mac_he_gi_to_nl80211_he_gi(u8 sgi);
+>>   enum nl80211_he_ru_alloc 
+>> ath11k_mac_phy_he_ru_to_nl80211_he_ru_alloc(u16 ru_phy);
+>>   enum nl80211_he_ru_alloc 
+>> ath11k_mac_he_ru_tones_to_nl80211_he_ru_alloc(u16 ru_tones);
+>>   enum ath11k_supported_bw ath11k_mac_mac80211_bw_to_ath11k_bw(enum 
+>> rate_info_bw bw);
+> 
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+js
+suse labs
 
