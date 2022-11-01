@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AA8C6149EF
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 12:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7BB36149ED
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 12:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbiKALvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 07:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41118 "EHLO
+        id S230399AbiKALvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 07:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231390AbiKALvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 07:51:01 -0400
+        with ESMTP id S230268AbiKALvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 07:51:02 -0400
 Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130082.outbound.protection.outlook.com [40.107.13.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649596346
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 04:48:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95C41ADAC
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 04:48:28 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WZaOJl8iyWK6Gdsd5ACxZMu+bCCTRbUoU1m3aoIeqwHCZapQu0P4TGolY3pH9uV5QBFZOwAfhfT/dXOil0JgMN1dbDtaIkc02u+8XH43wivar8nwQ10OLz+pbEGbnxqgroshjKMxu80cIOONO8PCCcMTKOaN/vejE1ylxFlDDIme/6EaHWrNOvl1lPLMOuE15AJRzUl+5A5ghLiB/BnIpu/caPg74/db+oxTRZFlKxH0M9k2hRX9c1/szHETVPe1Si4JSmnlsKaK6M5wzFNzhQLMQwEWJ7cDmDf7R9RkSiWqW/55cLAsmiJKKpTWsVfIUtHLGVvS0bKwBH6PEQhqyw==
+ b=ccNveqQaq5iGhvXUUMFVy9npu+0G3liY/braMhnOowQD7OmOIMUYEn8nI0CTsC7rQM1fD72YUhMe31dqDaeQ6mz6IbWU7gWQxGJAMcts9UDYtNcA5botBY/2LAmiUF4kjAL/tLAlWcdgYFtMAU7UJoAMM6N+6I8UlByiQejQjw/fxAqoMO181v7vE6YmEjoeH+riXMLLRleW6a2tf7bjocPc0ovmMcHE9ZhKnaKZwXfynnl9YaLT2iOyFJ605A6J/qm6DOXKvagPbo9tDb3wyS+m7vre2Dr+jtPHOwbJD/xm5v0+TR2xKVDyzr5u+wwWmDB8/R2ddP3ZMKXAMIP/gQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HkfQsMcOF1Byf5KgKN3z+tYc08KgWQ+l4YooQgLoNRc=;
- b=bhpTbeUY2GWd8K3Z8fsoPkkY8EOkFCaqhF9n6yqDePfN416Uv/HZBk4Gg9KWvqOYZ6u6c3Sb5B+Sy0OYepA6DC653QxT0sVrZD5s7RK3ilYC6jKYJOXlteRhym3JY/Hggaj+tz9PCo81x/4TCbNx6nnMVed26AKcelscYVRrOeXF3T3Uxr7eJgLzGI1XjhnR4sPgrcvgLjKA3zx7TGu9xK5S/byV20leWEg45W03Orqdlm8RFdNVvjaTwGEbOjndHsN1etDBSMWwn8IHLlvFw5GaKnh08FKaA+uAlZ4xwbGD/zecMbfXvX6zBT6MtgrtgdtK6gDoBIZR+TwmiqJK3g==
+ bh=oKk5sVvcyzqt3rMJ8IlcA1SvBjBv2NB591Oc73Q5V/s=;
+ b=nE6uDOgj6AglsSyDLkIkzAtYVEur+dQyL6r3s03Wb/wmFS1Y+AjjwlVd/G42JqvhPswAHrG3415zsxmwAhM1ZGe9ZeQpk8J3LoEJrIZ/FJ7/O3yk5PwJBGfoqMrp9GANuxoaRolQF+sZPv/dAwKawHQOd/ckUAlwzqEOjZKnjip+c0mpctIjMpSpGKqseITK9avDDo1S4OC1ksXzBO4E4bTETPnopmunLA8bZOUhxD+WAgLHyxYHC9ui5SwriasKyE5Mo1jFQjBd9KUrvcvD9U5sBTbzfxrkmiaXGGCZhalP20zvAcI3+6S9rfXqyFwxkkrfAUEAjfw436uxykEt6A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HkfQsMcOF1Byf5KgKN3z+tYc08KgWQ+l4YooQgLoNRc=;
- b=DEXxTYnz6LX0JT5mOxTNy2Jf7dNof67bj4fsyYtT3TSQUg4Nbp7VsB7VWKLdcE0SNhYDjkCzhvZPA7x2geM4Imier/sxvmNh3aaK7ElIzkYi4M5XaOTMU4oU+1XEo4L5BJLEB+mOO70sApEdlQZCm0TfVnGHwlir4xO8fV86Fg0=
+ bh=oKk5sVvcyzqt3rMJ8IlcA1SvBjBv2NB591Oc73Q5V/s=;
+ b=DDI0lLS806Vvwz3P38KQifwDxAOHOw6agRsmKuMxzUK4wfhz9iKEe4dPat4+prbSHG1yo10SmT5xejo3hkPSo9DN9+zAy17afnvWsOKsJumQb2BQXBm1h57uvR7L1xDtEjlPM0aoHaBeqxCMEiCU7rqPXhA1Kh36qo8VFsOhEDs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM9PR04MB8453.eurprd04.prod.outlook.com (2603:10a6:20b:410::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Tue, 1 Nov
- 2022 11:48:24 +0000
+ 2022 11:48:25 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::df5b:6133:6d4c:a336]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::df5b:6133:6d4c:a336%7]) with mapi id 15.20.5769.018; Tue, 1 Nov 2022
- 11:48:23 +0000
+ 11:48:25 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
@@ -55,10 +55,12 @@ Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 0/4] Remove phylink_validate() from Felix DSA driver
-Date:   Tue,  1 Nov 2022 13:48:02 +0200
-Message-Id: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 1/4] net: phy: aquantia: add AQR112 and AQR412 PHY IDs
+Date:   Tue,  1 Nov 2022 13:48:03 +0200
+Message-Id: <20221101114806.1186516-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
+References: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM4PR0101CA0057.eurprd01.prod.exchangelabs.com
@@ -67,52 +69,52 @@ X-ClientProxiedBy: AM4PR0101CA0057.eurprd01.prod.exchangelabs.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8453:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3208d6e2-2f10-4536-f2fc-08dabbfefb35
+X-MS-Office365-Filtering-Correlation-Id: d16a67c0-fde1-437d-cea0-08dabbfefc39
 X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Z5JYPetroDmMN5Wkpu1lN64M9hQ73oE/PUPI0iENjhAO2uudII+GiBSmaKqBOERUYlSY0MInMsKE/f6guLDBV8GgR+utdH7eWzgkDu2ezhGtczk22kyqnJG8HN+l1DFFxH5ttfXGmD5/kaMhAJcS/XcJi9nY6SQDbk9+3Eaauw49vDSjN2Wx6jYai506qV0L47KdBtt9xebgWbjNOAP9hIZ4pY+VQaDNKjMneA5N3ugPOOtU1HHELerjDYiFy/tqPQA4OXwZ/V2NnhsbxH2UaEtUtF2xgqAc2sblLtDwx+jYYvE+J1jaq8eECxrE3Wu3t+DtsB0wV+cVzKkZoo6zp6UuGC2fbT3/5lkJ3uhIhaLJq2HkE9HmXVPP4E0GIEidcUAbdqnFE+I2v1ULlVEh1bMQdEG9K0ReZjOq9ITcUbeV7VL6avrSZ7upGDzKxETluWKWgjuJHbPdTgqDqcYVnidW+i+8+PCOuSVSqHRoNmE2Tl1RSAec5wyrnpSB0hbaYHtsNy/B2v8DxmDuIWD6yawJm78phcza7pIF5mqqidyz8lnKfSpR676hbB3gQweywAJIBS7xE3MM8gs+OAE+yc4poLi/hD/5WraNeLtXB8PEMyEeF8UqzVQiPXjxYp0xf9O+TL451L1CPROBSeklJYL3GrhYUFprTaptfM7e6UWWhs4vOl1u9ZZwoEUNJBXdu67VMe5g0pVIyqJaUDRoAcR6NmeqqRZXi5eaHqbNzmj9Kl2yJ066Yj8oI0u+1IjN2OCdqHm8uEQPGmNUmI2Zkpfi52U/hMP7sTeJ+/BTIhg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(396003)(366004)(136003)(451199015)(6486002)(41300700001)(26005)(478600001)(44832011)(7416002)(5660300002)(966005)(2616005)(2906002)(6512007)(83380400001)(6666004)(36756003)(54906003)(6916009)(8936002)(66946007)(52116002)(8676002)(4326008)(66476007)(66556008)(186003)(1076003)(86362001)(38100700002)(38350700002)(316002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: FEnDCqBFws3eTGEOzguzw7PqtwmR2R5tXGEbmMs46QOEryR+a/JFdJcGymcQk4iuOIYicLdZr4OGga34jONr10el0d299skZrrpdkrRqvINqNUnj6ta7926g/CUYDH5oqusOuEVrhat9t8GE2AczJw59azWowmJogbG/WYqyGeo3Blg2SCGRoB8JbaGVoWfKxuEk44s0G01DRc7S21n11PRvyO/ALa6/xfKfeVkDIq18dRqxdXlWmWPU4hx3Ap9aM6noGKbGvvBhQDig4USxelibtuuEeNOM97yTe1rZGT6OSKTvBUdIygKhD1qPkk19G8edhQe+r9JFw8A/gmpPu9qA1feMVHpOnN+QoaJvoR0CU+cbmQbGFEBG8GcOea2pjdYgC0lwTMNR4MPeAEBSW9JQb85O3+ZOXBCsHRkQTkzi0gl9LnZkC+HL4tM0rTUIWMWw++9lHaPesYW1EZXKuXJwyJOO+YoNEG/KWeSthDkIzxlhFCewGlk7QXNfWAoG7T1yUp/YYsObz5g5APuW/RqVxbxlHWwwcuGMVxYTMXmq3HuaXGS6HnYUeWZ2Lj9/Z+oI4CJR/v0CWerwEikp8Ew88hVfbv7F60EonUQSWXQ0a1dXhlRL8MAdie7pIzUeVHp8ECJ5FDaiWwMVGFDr27FLIoC9jbK/mn5HYM+52eVaz+p4ryam75SlQQ7vg6wpkVxyizo0ncu9pat6paMTmaSYPNkfes/Qeb0RWMKlAU0rv7XL0u8F5N/JCiAkdx7h4rCzrHIDOMRpADWbgkyDbQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(396003)(366004)(136003)(451199015)(6486002)(41300700001)(26005)(478600001)(44832011)(7416002)(5660300002)(2616005)(2906002)(6512007)(83380400001)(6666004)(36756003)(54906003)(6916009)(8936002)(66946007)(52116002)(8676002)(4326008)(66476007)(66556008)(186003)(1076003)(86362001)(38100700002)(38350700002)(316002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rwjPjb6wjtq1vLadCYM4/H6c2OqZHYKnkv+1bkrwZp2sKUG4COGj30U7vn9X?=
- =?us-ascii?Q?JeoWhiwIGB41+0KHq+3os0msuFP2ArEQfyUvr2dOjNFiviRHEQ4+M5Z5NdP1?=
- =?us-ascii?Q?RJzkWtQsQqRgmGDI8aKx9XwUY0ThYF1v6twbGnNAQURYxZYzz65SSJXKvYkY?=
- =?us-ascii?Q?QzQjWZOhzH1ioWK8Tfw8SRK6VznWWmYTVVr8p25lcg0UmtDkaJSiy7kLzRe2?=
- =?us-ascii?Q?vRtydvu/1BCHAi0jzbyKGFkgyUehuYE1nuSkpaPX+iu3FF8QxMKxVDkNgaR/?=
- =?us-ascii?Q?SmIuk+yYS0OQTppnJGFfFmjYUJaglOACU5yvEfcK9/Q9Eu0tnOfsaU15K4N7?=
- =?us-ascii?Q?0/dB45CYdEyeh9zmGP/KfuTltMj65iJR5RGPHI0jATXIWRwWPCoO7U9tpGbG?=
- =?us-ascii?Q?speezACxDmXMX3Jj7kwhwX+kJPT6zaLXIMRwDmrv8YYlkERkq3hyqL42Bejb?=
- =?us-ascii?Q?+L7308cg3IofWVl4j2DpypC06HlD8pOGoV8Ct0ToY1sF5AWKWjP3+mR1fwUM?=
- =?us-ascii?Q?TsU8BWbUlefFi1uyUXNYJu1ILBt/LEUbhVCBLX2uxwm+QCvokDp1U6zlYHhz?=
- =?us-ascii?Q?5t4pyD3gXvCAQK+zZx/mp9+oy6ernXFo80rb26pA2vOMoz/SNTFLeOh62QM5?=
- =?us-ascii?Q?jWv2RYPmFGK9xIe8xBf400R9wA+iHL5FBbzE3xmhEeuyfMu5goPRDc25WTdm?=
- =?us-ascii?Q?PlOYBYfwo9qTs9ArsT78mEufaf4D5icrJOzS7kxgSAT+EOqTbrtfom+o5PeA?=
- =?us-ascii?Q?2VIgQOA4F6oEFJSI4WFcHGxHAkqoPjVEA/mK5ZJ/3XYvBFOlHjpTEqrREEqN?=
- =?us-ascii?Q?o7ijML1UozfwOWOQ4CAtMigliQzlbooFGi8lVfF/3ggEnIQDdkj3mGaF6LRz?=
- =?us-ascii?Q?Wb5VfFPeIiBKe7RZ46p3DRERxm8k2+ft8sQkgd1snz6GsD1v0WAA8SgNLQ5d?=
- =?us-ascii?Q?4Dp2OZaov0cEjhg6LTRVmfrNO1Rj5jMARadzMAkC1OJbUJO5KxGgWP94t6hF?=
- =?us-ascii?Q?W8h72yogpxkwjKQn5cMYWVJZkf+qOBNf9maMS4/WVM6wDboli3nvIYYWA+6L?=
- =?us-ascii?Q?UrqftpVhgXLvEsEBRxDPAGRSxyeYzeB8o5bPS7Yrqh0R7sXvzJw3ETVFLJ38?=
- =?us-ascii?Q?m9zP3iHJYWCgEz5PXCPs2ctL0eW9X4c/yei6zV+SKTnufX/y2iv3zyZU1LBe?=
- =?us-ascii?Q?zQUj9hIvQB8Cf9xUg1dSUhruedtyaTbbNmtojTBnct2512W7jZkale8sKCeh?=
- =?us-ascii?Q?o/tiel1rIxRj4kd9hRFTDGzWCSpzv/PxhdJjhoyG/mi4nOTOCCJwte0blr5d?=
- =?us-ascii?Q?A0Nc8O2LgbzcMmB1NwPtjnYT1gikxMiyXtnZ/qylt0bbPnH/0ElECMAgUehn?=
- =?us-ascii?Q?V2JEem+KLx2uaGNRHPdXdFkvjAmMrEdUIe2BCHcCJSVpH8FQfo/23tN5qvgG?=
- =?us-ascii?Q?+efDYFPU6vPC6tXPdDenrzhCwrclIokM7i0Dvfu08PHjfsFNh3X2yzJm5+/1?=
- =?us-ascii?Q?TzXUjctW+s2P9zmsioGyAnATXMn/nOYNLq//fPdx1QIX+0ifcMCfkoVjxcMW?=
- =?us-ascii?Q?0puISuIRSVj1+0C+Y66QWzTSUIaRqeIc6w6oqdv3ogXyYrGBGMKArix4bq4k?=
- =?us-ascii?Q?QA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L+4nwWGvk0zjlu5ytsBWcdaxYog9yUQgpy52UDYEc5El2h7JxOQ0x2s2lEJ7?=
+ =?us-ascii?Q?uLnSoseiskUYmKWjqvrJWBJjZl7GBAYhOibBBQAkUiYtyGihN2TOzuE80uTn?=
+ =?us-ascii?Q?heZcvSsGns8T5lvZATsrigSCdJkJ/2TRQokETzNwNvc/M8qSrLuT4xYNNlZ9?=
+ =?us-ascii?Q?mTEroz25z/yOaCJaUTC0rkZ/jsCogOlQvb4ThkjbPUUdKsNoEepkorK+to9c?=
+ =?us-ascii?Q?07C4GZq2L5KADqIdzn5QuwXE+n+lNw6+tHVZCZGu8NAf70IEfOu3wGynRUJb?=
+ =?us-ascii?Q?Kt8utzhhZO04esgHWot9iPmZH+wmRC9Ogo2ytTxeqamWmXG9/SojcRqJR/RJ?=
+ =?us-ascii?Q?jdmTUUZlbcjSOPNwTa1vCVQm8T4Y4GGbgPSWDm8UoFIJf8iyiWrKDiKPBpXr?=
+ =?us-ascii?Q?n0yUUQj4wnm+rwC8Rp0hteSptMHLW3k+QXh7Dgz0XluX0wjRbkfL9lzbZmQI?=
+ =?us-ascii?Q?a9x8tRh6OGe0u/iFl2ySMai7CJs/oqlkW8RFLhrIbXVXWORrWVCq+FxvYASo?=
+ =?us-ascii?Q?MERNJoFw3BysV/5jmSJ0379peVfr4+q8htLsZUplwT44oBD8ODLuyovUqqkY?=
+ =?us-ascii?Q?htPHoGDIIuV1mrByytvTUswc/M3KNkeVDljbB75XfNAnc+zATaORatbPeoCD?=
+ =?us-ascii?Q?sIdk1kcCjLrUYXV60rdvRU+D2gjQdM/SAdnfxf2UBFziGG8mRJC5tHhz8HUy?=
+ =?us-ascii?Q?SejKc7wpb9selpkS5Vs7I1JitEcJ+UrtNr+TH82MSpGXQvkaekUEWDkpAKp/?=
+ =?us-ascii?Q?YuKWwgs8YnV40ikz3LpxOu7vQK34loiEujd1FjwoACTqEmIrzfaYrPax8pi2?=
+ =?us-ascii?Q?d6OPBtbBeCUN8s0pQizY1LCGvyxqVqnOkcTQFTgtjFDejMfq1gfuNwcJwO9F?=
+ =?us-ascii?Q?irIFM2VZk1sUQzOlOtZwgTcEL3l9fBmx+++maMxszTQ1TMhsWM/a8UHgx/am?=
+ =?us-ascii?Q?aMovPa94WgVE1m+6GCd9LhZOxu/i6USU/NmsvJujFvQAuEAwhcaJu0/RJlGY?=
+ =?us-ascii?Q?e8erM9r74pr2XzGavVTxQXU8im6vUmIdm7u7PXfqXo3PrDT0pUb7XCkoUbUQ?=
+ =?us-ascii?Q?QW7yZvI8OTIWpGOXW1ByjzKWtCXcCH21NYpWLd3DFMe850pAFRHsvpJvQN41?=
+ =?us-ascii?Q?8KMKh9TSzCOdIHJshB4fZg18bzLIOiamG+8vwPWBxMTNGIkbgM721sc6UqSF?=
+ =?us-ascii?Q?ErxEyuAgpqTL6dmmUQRV2Cy0c6eb1+n4uJY03H4dCSbMdgqLwmZwSvKoAfun?=
+ =?us-ascii?Q?e/l8z8l+aFnCcMhy4+CVmVTdSqCM7IuSXXVV+/0wuETb6E3jnOQz1b+oYGjX?=
+ =?us-ascii?Q?T2KRxSQXfSU3rc/UW1i6kQhTUlRT4s0jkuPc6WFcrxZ1t9I5w0UIcYAnU5Rc?=
+ =?us-ascii?Q?hkdyWOhsvCqShmSPLLBI/Jk5MXnqFaO4RjC+6bSdnLdFaRRkZUpx1SqV+JaA?=
+ =?us-ascii?Q?zOGzBvfmHYJKqItXJvVGiZPT9ggdMK3sanKY/nus0ZDwWqOE9TKCZhcaqbMD?=
+ =?us-ascii?Q?wu33YfRd+3Af1Lx0seZitStYkkG8LoX/sRwzH8VghEa98b3oGWkB6MZagx6n?=
+ =?us-ascii?Q?UpGLosCiCXa8Sw7zG4OPh/ukDl29LhFFpNRM5MpK56Tm8zoNA7u0w5+g5EUE?=
+ =?us-ascii?Q?cg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3208d6e2-2f10-4536-f2fc-08dabbfefb35
+X-MS-Exchange-CrossTenant-Network-Message-Id: d16a67c0-fde1-437d-cea0-08dabbfefc39
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2022 11:48:23.9081
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2022 11:48:25.6424
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AeTPRY+EofPrROYdsxj+lZtOkYE0E70clFW+iH9hjsHlcsyiGgNoZAXhvGBYeKg95RZhiLfDw8ic5EJkM9AEMQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: oAYrOtjjtCUfXCVacjiucTa0MhyIEf46tOEmeqTZlwPK4AG1hqAksQDMyHQb6O+eN+r4DnKjbRW5be4YfF55Gw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8453
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,51 +126,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Felix DSA driver still uses its own phylink_validate() procedure
-rather than the (relatively newly introduced) phylink_generic_validate()
-because the latter did not cater for the case where a PHY provides rate
-matching between the Ethernet cable side speed and the SERDES side
-speed (and does not advertise other speeds except for the SERDES speed).
+These are Gen3 Aquantia N-BASET PHYs which support 5GBASE-T,
+2.5GBASE-T, 1000BASE-T and 100BASE-TX (not 10G); also EEE, Sync-E,
+PTP, PoE.
 
-This changed with Sean Anderson's generic support for rate matching PHYs
-in phylib and phylink:
-https://patchwork.kernel.org/project/netdevbpf/cover/20220920221235.1487501-1-sean.anderson@seco.com/
+The 112 is a single PHY package, the 412 is a quad PHY package.
 
-Building upon that support, this patch set makes Linux understand that
-the PHYs used in combination with the Felix DSA driver (SCH-30841 riser
-card with AQR412 PHY, used with SERDES protocol 0x7777 - 4x2500base-x,
-plugged into LS1028A-QDS) do support PAUSE rate matching. This requires
-Aquantia PHY driver support for new PHY IDs.
+The system-side SERDES interface of these PHYs selects its protocol
+depending on the negotiated media side link speed. That protocol can be
+1000BASE-X, 2500BASE-X, 10GBASE-R, SGMII, USXGMII.
 
-To activate the rate matching support in phylink, config->mac_capabilities
-must be populated. Coincidentally, this also opts the Felix driver into
-the generic phylink validation.
+The configuration of which SERDES protocol to use for which link speed
+is made by firmware; even though it could be overwritten over MDIO by
+Linux, we assume that the firmware provisioning is ok for the board on
+which the driver probes.
 
-Next, code that is no longer necessary is eliminated. This includes the
-Felix driver validation procedures for VSC9959 and VSC9953, the
-workaround in the Ocelot switch library to leave RX flow control always
-enabled, as well as DSA plumbing necessary for a custom phylink
-validation procedure to be propagated to the hardware driver level.
+For cases when the system side runs at a fixed rate, we want phylib/phylink
+to detect the PAUSE rate matching ability of these PHYs, so we need to
+use the Aquantia rather than the generic C45 driver. This needs
+aqr107_read_status() -> aqr107_read_rate() to set phydev->rate_matching,
+as well as the aqr107_get_rate_matching() method.
 
-Many thanks go to Sean Anderson for providing generic support for rate
-matching.
+I am a bit unsure about the naming convention in the driver. Since
+AQR107 is a Gen2 PHY, I assume all functions prefixed with "aqr107_"
+rather than "aqr_" mean Gen2+ features. So I've reused this naming
+convention.
 
-Vladimir Oltean (4):
-  net: phy: aquantia: add AQR112 and AQR412 PHY IDs
-  net: dsa: felix: use phylink_generic_validate()
-  net: mscc: ocelot: drop workaround for forcing RX flow control
-  net: dsa: remove phylink_validate() method
+I've tested PHY "SGMII" statistics as well as the .link_change_notify
+method, which prints:
 
- drivers/net/dsa/ocelot/felix.c           | 16 +++-------
- drivers/net/dsa/ocelot/felix.h           |  3 --
- drivers/net/dsa/ocelot/felix_vsc9959.c   | 30 ------------------
- drivers/net/dsa/ocelot/seville_vsc9953.c | 27 ----------------
- drivers/net/ethernet/mscc/ocelot.c       |  6 ++--
- drivers/net/phy/aquantia_main.c          | 40 ++++++++++++++++++++++++
- include/net/dsa.h                        |  3 --
- net/dsa/port.c                           | 18 +----------
- 8 files changed, 47 insertions(+), 96 deletions(-)
+Aquantia AQR412 mdio_mux-0.4:00: Link partner is Aquantia PHY, FW 4.3, fast-retrain downshift advertised, fast reframe advertised
 
+Tested SERDES protocols are usxgmii and 2500base-x (the latter with
+PAUSE rate matching). Tested link modes are 100/1000/2500 Base-T
+(with Aquantia link partner and with other link partners). No notable
+events observed.
+
+The placement of these PHY IDs in the driver is right before AQR113C,
+a Gen4 PHY.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/phy/aquantia_main.c | 40 +++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
+index 47a76df36b74..334a6904ca5a 100644
+--- a/drivers/net/phy/aquantia_main.c
++++ b/drivers/net/phy/aquantia_main.c
+@@ -22,6 +22,8 @@
+ #define PHY_ID_AQR107	0x03a1b4e0
+ #define PHY_ID_AQCS109	0x03a1b5c2
+ #define PHY_ID_AQR405	0x03a1b4b0
++#define PHY_ID_AQR112	0x03a1b662
++#define PHY_ID_AQR412	0x03a1b712
+ #define PHY_ID_AQR113C	0x31c31c12
+ 
+ #define MDIO_PHYXS_VEND_IF_STATUS		0xe812
+@@ -800,6 +802,42 @@ static struct phy_driver aqr_driver[] = {
+ 	.handle_interrupt = aqr_handle_interrupt,
+ 	.read_status	= aqr_read_status,
+ },
++{
++	PHY_ID_MATCH_MODEL(PHY_ID_AQR112),
++	.name		= "Aquantia AQR112",
++	.probe		= aqr107_probe,
++	.config_aneg    = aqr_config_aneg,
++	.config_intr	= aqr_config_intr,
++	.handle_interrupt = aqr_handle_interrupt,
++	.get_tunable    = aqr107_get_tunable,
++	.set_tunable    = aqr107_set_tunable,
++	.suspend	= aqr107_suspend,
++	.resume		= aqr107_resume,
++	.read_status	= aqr107_read_status,
++	.get_rate_matching = aqr107_get_rate_matching,
++	.get_sset_count = aqr107_get_sset_count,
++	.get_strings	= aqr107_get_strings,
++	.get_stats	= aqr107_get_stats,
++	.link_change_notify = aqr107_link_change_notify,
++},
++{
++	PHY_ID_MATCH_MODEL(PHY_ID_AQR412),
++	.name		= "Aquantia AQR412",
++	.probe		= aqr107_probe,
++	.config_aneg    = aqr_config_aneg,
++	.config_intr	= aqr_config_intr,
++	.handle_interrupt = aqr_handle_interrupt,
++	.get_tunable    = aqr107_get_tunable,
++	.set_tunable    = aqr107_set_tunable,
++	.suspend	= aqr107_suspend,
++	.resume		= aqr107_resume,
++	.read_status	= aqr107_read_status,
++	.get_rate_matching = aqr107_get_rate_matching,
++	.get_sset_count = aqr107_get_sset_count,
++	.get_strings	= aqr107_get_strings,
++	.get_stats	= aqr107_get_stats,
++	.link_change_notify = aqr107_link_change_notify,
++},
+ {
+ 	PHY_ID_MATCH_MODEL(PHY_ID_AQR113C),
+ 	.name           = "Aquantia AQR113C",
+@@ -831,6 +869,8 @@ static struct mdio_device_id __maybe_unused aqr_tbl[] = {
+ 	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR107) },
+ 	{ PHY_ID_MATCH_MODEL(PHY_ID_AQCS109) },
+ 	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR405) },
++	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR112) },
++	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR412) },
+ 	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR113C) },
+ 	{ }
+ };
 -- 
 2.34.1
 
