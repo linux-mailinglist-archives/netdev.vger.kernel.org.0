@@ -2,132 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 309EF614831
-	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 12:07:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72CFF614835
+	for <lists+netdev@lfdr.de>; Tue,  1 Nov 2022 12:07:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbiKALHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 07:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
+        id S230128AbiKALHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 07:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKALHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 07:07:20 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71DC18E23;
-        Tue,  1 Nov 2022 04:07:14 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N1nKT3ccCzmVZB;
-        Tue,  1 Nov 2022 19:07:09 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 1 Nov 2022 19:07:12 +0800
-Received: from [10.67.108.67] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 1 Nov
- 2022 19:07:11 +0800
-Message-ID: <210a2edd-8238-173f-9733-6f92289b7e09@huawei.com>
-Date:   Tue, 1 Nov 2022 19:07:11 +0800
+        with ESMTP id S229475AbiKALHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 07:07:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4A719027;
+        Tue,  1 Nov 2022 04:07:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5EE4B81C6E;
+        Tue,  1 Nov 2022 11:07:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7BC3C433C1;
+        Tue,  1 Nov 2022 11:07:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667300870;
+        bh=DQIRA6FEZkpo5HH+L+soeSfMq90M3xQzxc4Lot0+jd0=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=N3EZtqTG68jOjfQwQhAUqB75r1hjKRJzprhtVtLSTrG3kCx3I6o37EaXtFFEH2yMr
+         eWJi6D9Qo0Z5AN+Qmu+q5LP4Zt5C3MAkiyrvJZx/KCRaXShY1M4p/cr9BCJY4HkZK+
+         bE127+MpiTdWUjCbWshlZFLCAMqbonwhAbicu8RpSOsnG4uyMBvGvrDaF/PWysV5Jt
+         0/AFSzSPzxGhY7XpGR4sKqDmRZovuBSgnVnUFVDyfN2LvLPE6CLBmMZX3IqNDP0nFa
+         j70QDomjKF3MY252I7vdwFuwhzSw5/gCcaFYwe8BQdMnlgvoQLKyFBkTiCno0v2Wjp
+         x5iT9cR2/YUHQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH] net/smc: Fix possible leaked pernet namespace in
- smc_init()
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kgraul@linux.ibm.com>,
-        <wenjia@linux.ibm.com>, <jaka@linux.ibm.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <guvenc@linux.ibm.com>
-References: <20221101093722.127223-1-chenzhongjin@huawei.com>
- <Y2D8PvHrKtpjTdJ1@TonyMac-Alibaba>
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <Y2D8PvHrKtpjTdJ1@TonyMac-Alibaba>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH] wifi: wilc1000: sdio: fix module autoloading
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20221027171221.491937-1-michael@walle.cc>
+References: <20221027171221.491937-1-michael@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        stable@vger.kernel.org
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166730086353.21401.9805927122982212508.kvalo@kernel.org>
+Date:   Tue,  1 Nov 2022 11:07:47 +0000 (UTC)
+X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Michael Walle <michael@walle.cc> wrote:
 
-On 2022/11/1 19:00, Tony Lu wrote:
-> On Tue, Nov 01, 2022 at 05:37:22PM +0800, Chen Zhongjin wrote:
->> In smc_init(), register_pernet_subsys(&smc_net_stat_ops) is called
->> without any error handling.
->> If it fails, registering of &smc_net_ops won't be reverted.
->> And if smc_nl_init() fails, &smc_net_stat_ops itself won't be reverted.
->>
->> This leaves wild ops in subsystem linkedlist and when another module
->> tries to call register_pernet_operations() it triggers page fault:
->>
->> BUG: unable to handle page fault for address: fffffbfff81b964c
->> RIP: 0010:register_pernet_operations+0x1b9/0x5f0
->> Call Trace:
->>    <TASK>
->>    register_pernet_subsys+0x29/0x40
->>    ebtables_init+0x58/0x1000 [ebtables]
->>    ...
->>
->> Fixes: 194730a9beb5 ("net/smc: Make SMC statistics network namespace aware")
->> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-> This patch looks good to me.
->
-> The subject of this patch should be in net, the prefix tag is missed.
+> There are no SDIO module aliases included in the driver, therefore,
+> module autoloading isn't working. Add the proper MODULE_DEVICE_TABLE().
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Thanks for review and remind! I will add net tag for the next time I 
-send patch to netdev.
+Patch applied to wireless-next.git, thanks.
 
+57d545b5a3d6 wifi: wilc1000: sdio: fix module autoloading
 
-Best,
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20221027171221.491937-1-michael@walle.cc/
 
-Chen
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
->
-> Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
->
->> ---
->>   net/smc/af_smc.c | 6 ++++--
->>   1 file changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
->> index 3ccbf3c201cd..e12d4fa5aece 100644
->> --- a/net/smc/af_smc.c
->> +++ b/net/smc/af_smc.c
->> @@ -3380,14 +3380,14 @@ static int __init smc_init(void)
->>   
->>   	rc = register_pernet_subsys(&smc_net_stat_ops);
->>   	if (rc)
->> -		return rc;
->> +		goto out_pernet_subsys;
->>   
->>   	smc_ism_init();
->>   	smc_clc_init();
->>   
->>   	rc = smc_nl_init();
->>   	if (rc)
->> -		goto out_pernet_subsys;
->> +		goto out_pernet_subsys_stat;
->>   
->>   	rc = smc_pnet_init();
->>   	if (rc)
->> @@ -3480,6 +3480,8 @@ static int __init smc_init(void)
->>   	smc_pnet_exit();
->>   out_nl:
->>   	smc_nl_exit();
->> +out_pernet_subsys_stat:
->> +	unregister_pernet_subsys(&smc_net_stat_ops);
->>   out_pernet_subsys:
->>   	unregister_pernet_subsys(&smc_net_ops);
->>   
->> -- 
->> 2.17.1
