@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A14B6161DD
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 12:40:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC3A616206
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 12:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbiKBLk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 07:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S230235AbiKBLuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 07:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiKBLk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 07:40:27 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E0165FC;
-        Wed,  2 Nov 2022 04:40:23 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.94.2)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1oqC6I-0002qz-Nw; Wed, 02 Nov 2022 12:40:06 +0100
-Date:   Wed, 2 Nov 2022 11:40:01 +0000
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] net: ethernet: mediatek: ppe: add support for flow
- accounting
-Message-ID: <Y2JXEfRDZO2oPoMT@makrotopia.org>
-References: <Y2HAmYYPd77dz+K5@makrotopia.org>
- <20221101204945.35edb8e6@kernel.org>
+        with ESMTP id S229537AbiKBLuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 07:50:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37C028720
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 04:50:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F742CE209F
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 11:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7BBB4C433D7;
+        Wed,  2 Nov 2022 11:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667389815;
+        bh=6W1V5t0bkW9UU0LWRsCYwGGh4NAAMz7GFA3MEnXEJRI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GCsNSsKsE+h+nOnrPsamu4TEY5fkEgEgA4sQDI//nrWjtxqrXQznseyULlo/LWBmS
+         hpmUH/yjo2LnrFVasrfRGOZkFJXlBXBAymRm3pOPUb/nhaHH8SNMWH+jlh1cZ0VzhO
+         9upBCpQDtZTxVKNjyRBWTYvGGAucYprKIGX7WI9/VhQMPz7IikdfGXEMahUf5E52in
+         S0lBJGVSJRCY/hfsvGbXxXsubnL0gS22LOy6YUsk5jfPJhnTGL0BwtyFtIzLMoOukD
+         5Q4FtJLY4FnHq9m0YwvNtRuwjny04zd4qkXZaC8R3eax2EuaUE55zTDp9qbXlg1XeH
+         e1l1EA90Rc0CA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 62FC9C41620;
+        Wed,  2 Nov 2022 11:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221101204945.35edb8e6@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V7 net-next 1/2] net: wwan: t7xx: use union to group port type
+ specific data
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166738981540.3925.13741131885340014451.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Nov 2022 11:50:15 +0000
+References: <20221028153450.1789279-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20221028153450.1789279-1-m.chetan.kumar@linux.intel.com>
+To:     Kumar@ci.codeaurora.org, M Chetan <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hello:
 
-On Tue, Nov 01, 2022 at 08:49:45PM -0700, Jakub Kicinski wrote:
-> On Wed, 2 Nov 2022 00:58:01 +0000 Daniel Golle wrote:
-> > The PPE units found in MT7622 and newer support packet and byte
-> > accounting of hw-offloaded flows. Add support for reading those
-> > counters as found in MediaTek's SDK[1].
-> > 
-> > [1]: https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/bc6a6a375c800dc2b80e1a325a2c732d1737df92
-> > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> > ---
-> > v4: declare function mtk_mib_entry_read as static
-> > v3: don't bother to set 'false' values in any zero-initialized struct
-> >     use mtk_foe_entry_ib2
-> >     both changes were requested by Felix Fietkau
-> > 
-> > v2: fix wrong variable name in return value check spotted by Denis Kirjanov
-> 
-> Please read the FAQ:
-> 
-> https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#tl-dr
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-I'm sorry for re-submitting the fixes to frequently. I'll give it more
-time in future.
-
+On Fri, 28 Oct 2022 21:04:50 +0530 you wrote:
+> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 > 
-> https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#running-all-the-builds-and-checks-locally-is-a-pain-can-i-post-my-patches-and-have-the-patchwork-bot-validate-them
+> Use union inside t7xx_port to group port type specific data members.
 > 
+> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+> Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+> --
+> v7:
+>  * No change.
+> v5,v6:
+>  * Date correction.
+> 
+> [...]
 
-It wasn't my intention to out-source testing to the patchwork bot.
-I do run checks as recommended locally, which includes checkpatch.pl,
-build and run-time testing. And though in this case an unneeded export
-of a function was also indicated by my local compiler, I must have
-missed it in the output of the kernel build. I will try to improve my
-workflow in such a way that it will be less likely to miss new compiler
-warnings.
+Here is the summary with links:
+  - [V7,net-next,1/2] net: wwan: t7xx: use union to group port type specific data
+    https://git.kernel.org/netdev/net-next/c/fece7a8c65d1
+  - [V7,net-next,2/2] net: wwan: t7xx: Add port for modem logging
+    https://git.kernel.org/netdev/net-next/c/3349e4a48acb
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
