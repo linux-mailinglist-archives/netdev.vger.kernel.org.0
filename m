@@ -2,52 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB254615B3F
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 04:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B107615B48
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 05:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiKBD5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 23:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
+        id S229540AbiKBEFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 00:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiKBD5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 23:57:09 -0400
+        with ESMTP id S229534AbiKBEFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 00:05:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EF520F67;
-        Tue,  1 Nov 2022 20:57:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59179220F0;
+        Tue,  1 Nov 2022 21:05:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2DC4617E1;
-        Wed,  2 Nov 2022 03:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 953F6C433C1;
-        Wed,  2 Nov 2022 03:57:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E393E6177E;
+        Wed,  2 Nov 2022 04:05:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92E26C433C1;
+        Wed,  2 Nov 2022 04:05:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667361427;
-        bh=wgPMwwJKGKYLp+OyaPOh2LlsTDebXX2chCuRXvs6Bhw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eKiDeHbl+uFwIeZIKr8zCP93HEF4YgDt4KS+GYxV0BmusSRayLF6rLaD1Up9bT9bd
-         JIWMWTr7U1+AJWabas8NmVncw82/XdxKhoxY6qhZaL8lfTLGwRgRAcXb18vO/xPftO
-         5wpNxwiFXLkLp0jHHQCR2jDL1FbIgXsYs/4UpbmEVAAEN+e43lVUbGa31/y0h6w8uw
-         oPKDkCQSfcAxO5CovR88o7mZF60Cq/nq6a+l6cRJ3NZzxl7UX+DPcKS72a4ry6OD7o
-         7/FY4jsCCl3PBP5paJswPHL2q5rkF7enZW3q5S3ahKOGPRqBQYsGog+MCdlVHtdSWd
-         beA+4XdkIuq4A==
+        s=k20201202; t=1667361944;
+        bh=zilE+0RPH4nsjm2cmooo/wxfBWawFsnYOnsjqA7FRNk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eXzxB4AFqOshlaCSpr8zLi4B4oS8dxpACsfxpI4no0CyRCqguxDgD3L+sGGoXHlcM
+         7MKaVB0PQD9n9jeXh3W+Te+jFN6vQmKx1biVmtNhkBZYVC/qu6l0VZaWsOMN5YPDph
+         XfTBmq5aBgr/6ABeWRXgYiL4+K7VQsrDrWTRZGC/Rw+DKjc4NVlR7vaxEIaASByMtM
+         xadYLIccjt/VBJXErJTLQXLiRqUIPAkY99ArR1S/lhi2oDaQhYNMISibADY4Xv5b0K
+         WJ48e7rxTYEufCNjbD9k8QUGUnJmMGZ3evh6CMm7uvS4QeQmA9TNpH7dP6KkcNB1Vp
+         rmLoLqjqk5IyQ==
+Date:   Tue, 1 Nov 2022 21:05:42 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andrew Lunn <andrew@lunn.ch>, corbet@lwn.net,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        huangguangbin2@huawei.com, chenhao288@hisilicon.com,
-        moshet@nvidia.com, linux@rempel-privat.de,
-        linux-doc@vger.kernel.org
-Subject: [PATCH net-next v4] ethtool: linkstate: add a statistic for PHY down events
-Date:   Tue,  1 Nov 2022 20:57:04 -0700
-Message-Id: <20221102035704.110304-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
+To:     zhongbaisong <zhongbaisong@huawei.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, <edumazet@google.com>,
+        <davem@davemloft.net>, <pabeni@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@kernel.org>, <song@kernel.org>,
+        <yhs@fb.com>, <haoluo@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Linux MM <linux-mm@kvack.org>, <kasan-dev@googlegroups.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH -next] bpf, test_run: fix alignment problem in
+ bpf_prog_test_run_skb()
+Message-ID: <20221101210542.724e3442@kernel.org>
+In-Reply-To: <ca6253bd-dcf4-2625-bc41-4b9a7774d895@huawei.com>
+References: <20221101040440.3637007-1-zhongbaisong@huawei.com>
+        <eca17bfb-c75f-5db1-f194-5b00c2a0c6f2@iogearbox.net>
+        <ca6253bd-dcf4-2625-bc41-4b9a7774d895@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,249 +63,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous attempt to augment carrier_down (see Link)
-was not met with much enthusiasm so let's do the simple
-thing of exposing what some devices already maintain.
-Add a common ethtool statistic for link going down.
-Currently users have to maintain per-driver mapping
-to extract the right stat from the vendor-specific ethtool -S
-stats. carrier_down does not fit the bill because it counts
-a lot of software related false positives.
+On Wed, 2 Nov 2022 10:59:44 +0800 zhongbaisong wrote:
+> On 2022/11/2 0:45, Daniel Borkmann wrote:
+> > [ +kfence folks ] =20
+>=20
+> + cc: Alexander Potapenko, Marco Elver, Dmitry Vyukov
+>=20
+> Do you have any suggestions about this problem?
 
-Add the statistic to the extended link state API to steer
-vendors towards implementing all of it.
++ Kees who has been sending similar patches for drivers
 
-Implement for bnxt and all Linux-controlled PHYs. mlx5 and (possibly)
-enic also have a counter for this but I leave the implementation
-to their maintainers.
-
-Link: https://lore.kernel.org/r/20220520004500.2250674-1-kuba@kernel.org
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
---
-v4:
- - add a comment about the struct remaining as u64
-v3:
- - make the stat u32 (apart from the ethtool struct which uses u64s
-   for the "not set" detection, whatevs)
-v2:
- - add phylib support
----
-CC: corbet@lwn.net
-CC: michael.chan@broadcom.com
-CC: andrew@lunn.ch
-CC: hkallweit1@gmail.com
-CC: linux@armlinux.org.uk
-CC: huangguangbin2@huawei.com
-CC: chenhao288@hisilicon.com
-CC: moshet@nvidia.com
-CC: linux@rempel-privat.de
-CC: f.fainelli@gmail.com
-CC: linux-doc@vger.kernel.org
----
- Documentation/networking/ethtool-netlink.rst  |  1 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 15 ++++++++++++
- drivers/net/phy/phy.c                         |  1 +
- include/linux/ethtool.h                       | 14 +++++++++++
- include/linux/phy.h                           |  3 +++
- include/uapi/linux/ethtool_netlink.h          |  1 +
- net/ethtool/linkstate.c                       | 24 ++++++++++++++++++-
- 7 files changed, 58 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index d578b8bcd8a4..bede24ef44fd 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -491,6 +491,7 @@ any attributes.
-   ``ETHTOOL_A_LINKSTATE_SQI_MAX``       u32     Max support SQI value
-   ``ETHTOOL_A_LINKSTATE_EXT_STATE``     u8      link extended state
-   ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``  u8      link extended substate
-+  ``ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT``  u32     count of link down events
-   ====================================  ======  ============================
- 
- For most NIC drivers, the value of ``ETHTOOL_A_LINKSTATE_LINK`` returns
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index cc89e5eabcb9..d8f0351df954 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -4112,6 +4112,20 @@ static void bnxt_get_rmon_stats(struct net_device *dev,
- 	*ranges = bnxt_rmon_ranges;
- }
- 
-+static void bnxt_get_link_ext_stats(struct net_device *dev,
-+				    struct ethtool_link_ext_stats *stats)
-+{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u64 *rx;
-+
-+	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS_EXT))
-+		return;
-+
-+	rx = bp->rx_port_stats_ext.sw_stats;
-+	stats->link_down_events =
-+		*(rx + BNXT_RX_STATS_EXT_OFFSET(link_down_events));
-+}
-+
- void bnxt_ethtool_free(struct bnxt *bp)
- {
- 	kfree(bp->test_info);
-@@ -4161,6 +4175,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
- 	.get_eeprom             = bnxt_get_eeprom,
- 	.set_eeprom		= bnxt_set_eeprom,
- 	.get_link		= bnxt_get_link,
-+	.get_link_ext_stats	= bnxt_get_link_ext_stats,
- 	.get_eee		= bnxt_get_eee,
- 	.set_eee		= bnxt_set_eee,
- 	.get_module_info	= bnxt_get_module_info,
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index e741d8aebffe..e5b6cb1a77f9 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -67,6 +67,7 @@ static void phy_link_down(struct phy_device *phydev)
- {
- 	phydev->phy_link_change(phydev, false);
- 	phy_led_trigger_change_speed(phydev);
-+	WRITE_ONCE(phydev->link_down_events, phydev->link_down_events + 1);
- }
- 
- static const char *phy_pause_str(struct phy_device *phydev)
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 99dc7bfbcd3c..fa8e0d52dd30 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -125,6 +125,17 @@ struct ethtool_link_ext_state_info {
- 	};
- };
- 
-+struct ethtool_link_ext_stats {
-+	/* Custom Linux statistic for PHY level link down events.
-+	 * In a simpler world it should be equal to netdev->carrier_down_count
-+	 * unfortunately netdev also counts local reconfigurations which don't
-+	 * actually take the physical link down, not to mention NC-SI which,
-+	 * if present, keeps the link up regardless of host state.
-+	 * This statistic counts when PHY _actually_ went down, or lost link.
-+	 */
-+	u64 link_down_events;
-+};
-+
- /**
-  * ethtool_rxfh_indir_default - get default value for RX flow hash indirection
-  * @index: Index in RX flow hash indirection table
-@@ -481,6 +492,7 @@ struct ethtool_module_power_mode_params {
-  *	do not attach ext_substate attribute to netlink message). If link_ext_state
-  *	and link_ext_substate are unknown, return -ENODATA. If not implemented,
-  *	link_ext_state and link_ext_substate will not be sent to userspace.
-+ * @get_link_ext_stats: Read extra link-related counters.
-  * @get_eeprom_len: Read range of EEPROM addresses for validation of
-  *	@get_eeprom and @set_eeprom requests.
-  *	Returns 0 if device does not support EEPROM access.
-@@ -652,6 +664,8 @@ struct ethtool_ops {
- 	u32	(*get_link)(struct net_device *);
- 	int	(*get_link_ext_state)(struct net_device *,
- 				      struct ethtool_link_ext_state_info *);
-+	void	(*get_link_ext_stats)(struct net_device *,
-+				      struct ethtool_link_ext_stats *);
- 	int	(*get_eeprom_len)(struct net_device *);
- 	int	(*get_eeprom)(struct net_device *,
- 			      struct ethtool_eeprom *, u8 *);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index ddf66198f751..9a3752c0c444 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -600,6 +600,7 @@ struct macsec_ops;
-  * @psec: Pointer to Power Sourcing Equipment control struct
-  * @lock:  Mutex for serialization access to PHY
-  * @state_queue: Work queue for state machine
-+ * @link_down_events: Number of times link was lost
-  * @shared: Pointer to private data shared by phys in one package
-  * @priv: Pointer to driver private data
-  *
-@@ -723,6 +724,8 @@ struct phy_device {
- 
- 	int pma_extable;
- 
-+	unsigned int link_down_events;
-+
- 	void (*phy_link_change)(struct phy_device *phydev, bool up);
- 	void (*adjust_link)(struct net_device *dev);
- 
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index bb57084ac524..aaf7c6963d61 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -262,6 +262,7 @@ enum {
- 	ETHTOOL_A_LINKSTATE_SQI_MAX,		/* u32 */
- 	ETHTOOL_A_LINKSTATE_EXT_STATE,		/* u8 */
- 	ETHTOOL_A_LINKSTATE_EXT_SUBSTATE,	/* u8 */
-+	ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT,	/* u32 */
- 
- 	/* add new constants above here */
- 	__ETHTOOL_A_LINKSTATE_CNT,
-diff --git a/net/ethtool/linkstate.c b/net/ethtool/linkstate.c
-index fb676f349455..2158c17a0b32 100644
---- a/net/ethtool/linkstate.c
-+++ b/net/ethtool/linkstate.c
-@@ -13,6 +13,7 @@ struct linkstate_reply_data {
- 	int					link;
- 	int					sqi;
- 	int					sqi_max;
-+	struct ethtool_link_ext_stats		link_stats;
- 	bool					link_ext_state_provided;
- 	struct ethtool_link_ext_state_info	ethtool_link_ext_state_info;
- };
-@@ -22,7 +23,7 @@ struct linkstate_reply_data {
- 
- const struct nla_policy ethnl_linkstate_get_policy[] = {
- 	[ETHTOOL_A_LINKSTATE_HEADER]		=
--		NLA_POLICY_NESTED(ethnl_header_policy),
-+		NLA_POLICY_NESTED(ethnl_header_policy_stats),
- };
- 
- static int linkstate_get_sqi(struct net_device *dev)
-@@ -107,6 +108,19 @@ static int linkstate_prepare_data(const struct ethnl_req_info *req_base,
- 			goto out;
- 	}
- 
-+	ethtool_stats_init((u64 *)&data->link_stats,
-+			   sizeof(data->link_stats) / 8);
-+
-+	if (req_base->flags & ETHTOOL_FLAG_STATS) {
-+		if (dev->phydev)
-+			data->link_stats.link_down_events =
-+				READ_ONCE(dev->phydev->link_down_events);
-+
-+		if (dev->ethtool_ops->get_link_ext_stats)
-+			dev->ethtool_ops->get_link_ext_stats(dev,
-+							     &data->link_stats);
-+	}
-+
- 	ret = 0;
- out:
- 	ethnl_ops_complete(dev);
-@@ -134,6 +148,9 @@ static int linkstate_reply_size(const struct ethnl_req_info *req_base,
- 	if (data->ethtool_link_ext_state_info.__link_ext_substate)
- 		len += nla_total_size(sizeof(u8)); /* LINKSTATE_EXT_SUBSTATE */
- 
-+	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
-+		len += nla_total_size(sizeof(u32));
-+
- 	return len;
- }
- 
-@@ -166,6 +183,11 @@ static int linkstate_fill_reply(struct sk_buff *skb,
- 			return -EMSGSIZE;
- 	}
- 
-+	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
-+		if (nla_put_u32(skb, ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT,
-+				data->link_stats.link_down_events))
-+			return -EMSGSIZE;
-+
- 	return 0;
- }
- 
--- 
-2.38.1
+> > On 11/1/22 5:04 AM, Baisong Zhong wrote: =20
+> >> Recently, we got a syzkaller problem because of aarch64
+> >> alignment fault if KFENCE enabled.
+> >>
+> >> When the size from user bpf program is an odd number, like
+> >> 399, 407, etc, it will cause skb shard info's alignment access,
+> >> as seen below:
+> >>
+> >> BUG: KFENCE: use-after-free read in __skb_clone+0x23c/0x2a0=20
+> >> net/core/skbuff.c:1032
+> >>
+> >> Use-after-free read at 0xffff6254fffac077 (in kfence-#213):
+> >> =C2=A0 __lse_atomic_add arch/arm64/include/asm/atomic_lse.h:26 [inline]
+> >> =C2=A0 arch_atomic_add arch/arm64/include/asm/atomic.h:28 [inline]
+> >> =C2=A0 arch_atomic_inc include/linux/atomic-arch-fallback.h:270 [inlin=
+e]
+> >> =C2=A0 atomic_inc include/asm-generic/atomic-instrumented.h:241 [inlin=
+e]
+> >> =C2=A0 __skb_clone+0x23c/0x2a0 net/core/skbuff.c:1032
+> >> =C2=A0 skb_clone+0xf4/0x214 net/core/skbuff.c:1481
+> >> =C2=A0 ____bpf_clone_redirect net/core/filter.c:2433 [inline]
+> >> =C2=A0 bpf_clone_redirect+0x78/0x1c0 net/core/filter.c:2420
+> >> =C2=A0 bpf_prog_d3839dd9068ceb51+0x80/0x330
+> >> =C2=A0 bpf_dispatcher_nop_func include/linux/bpf.h:728 [inline]
+> >> =C2=A0 bpf_test_run+0x3c0/0x6c0 net/bpf/test_run.c:53
+> >> =C2=A0 bpf_prog_test_run_skb+0x638/0xa7c net/bpf/test_run.c:594
+> >> =C2=A0 bpf_prog_test_run kernel/bpf/syscall.c:3148 [inline]
+> >> =C2=A0 __do_sys_bpf kernel/bpf/syscall.c:4441 [inline]
+> >> =C2=A0 __se_sys_bpf+0xad0/0x1634 kernel/bpf/syscall.c:4381
+> >>
+> >> kfence-#213: 0xffff6254fffac000-0xffff6254fffac196, size=3D407,=20
+> >> cache=3Dkmalloc-512
+> >>
+> >> allocated by task 15074 on cpu 0 at 1342.585390s:
+> >> =C2=A0 kmalloc include/linux/slab.h:568 [inline]
+> >> =C2=A0 kzalloc include/linux/slab.h:675 [inline]
+> >> =C2=A0 bpf_test_init.isra.0+0xac/0x290 net/bpf/test_run.c:191
+> >> =C2=A0 bpf_prog_test_run_skb+0x11c/0xa7c net/bpf/test_run.c:512
+> >> =C2=A0 bpf_prog_test_run kernel/bpf/syscall.c:3148 [inline]
+> >> =C2=A0 __do_sys_bpf kernel/bpf/syscall.c:4441 [inline]
+> >> =C2=A0 __se_sys_bpf+0xad0/0x1634 kernel/bpf/syscall.c:4381
+> >> =C2=A0 __arm64_sys_bpf+0x50/0x60 kernel/bpf/syscall.c:4381
+> >>
+> >> To fix the problem, we round up allocations with kmalloc_size_roundup()
+> >> so that build_skb()'s use of kize() is always alignment and no special
+> >> handling of the memory is needed by KFENCE.
+> >>
+> >> Fixes: 1cf1cae963c2 ("bpf: introduce BPF_PROG_TEST_RUN command")
+> >> Signed-off-by: Baisong Zhong <zhongbaisong@huawei.com>
+> >> ---
+> >> =C2=A0 net/bpf/test_run.c | 1 +
+> >> =C2=A0 1 file changed, 1 insertion(+)
+> >>
+> >> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> >> index 13d578ce2a09..058b67108873 100644
+> >> --- a/net/bpf/test_run.c
+> >> +++ b/net/bpf/test_run.c
+> >> @@ -774,6 +774,7 @@ static void *bpf_test_init(const union bpf_attr=20
+> >> *kattr, u32 user_size,
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (user_size > size)
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ERR_PTR(=
+-EMSGSIZE);
+> >> +=C2=A0=C2=A0=C2=A0 size =3D kmalloc_size_roundup(size);
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data =3D kzalloc(size + headroom + tail=
+room, GFP_USER); =20
+> >=20
+> > The fact that you need to do this roundup on call sites feels broken, n=
+o?
+> > Was there some discussion / consensus that now all k*alloc() call sites
+> > would need to be fixed up? Couldn't this be done transparently in k*all=
+oc()
+> > when KFENCE is enabled? I presume there may be lots of other such occas=
+ions
+> > in the kernel where similar issue triggers, fixing up all call-sites fe=
+els
+> > like ton of churn compared to api-internal, generic fix.
+> >  =20
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!data)
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ERR_PTR(=
+-ENOMEM);
+> >> =20
+> >=20
+> > Thanks,
+> > Daniel
+> > =20
+>=20
+>=20
 
