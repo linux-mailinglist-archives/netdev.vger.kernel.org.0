@@ -2,139 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61A8161634E
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:03:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01A5361636E
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:11:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiKBNDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 09:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
+        id S231282AbiKBNLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 09:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231236AbiKBNDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:03:51 -0400
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3D1A052;
-        Wed,  2 Nov 2022 06:03:50 -0700 (PDT)
-Received: by mail-wm1-f54.google.com with SMTP id c3-20020a1c3503000000b003bd21e3dd7aso1250685wma.1;
-        Wed, 02 Nov 2022 06:03:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J7wkCq3JYYjQNWqmOzs/TGkUKvgq+3hRmudTaSmEqPs=;
-        b=XwQRABqRLMpxNtweQA7HLIzdDmpCX3HTFZtxdbdmE4O7BWTRFTdIW2y8jSrYx6ZuCt
-         f+zy8LpZB3/MnZ8JlpZrnR8v6X0jCXGOCsm3Yr7LNlsJAco7xirnxKqzklia9egpV7ns
-         f4OL8oyWI8QuqxDbjObzGW4lKCebg9K82FBiLPziuNWgs/W6hnQEhKl9A3EJlzWZkzS3
-         nQ3egEAK5GI/hz869crd1m2mB82Y3NvjfUGxNKP4+vNGXFlJd+25CiB3IEoGHnRmIill
-         RTtNB7BkH64EcQKTkxa1sC7zjVSgfTcaPLs3xMK1LsWzaltA7+DayBFGzN+nmi+L4v0t
-         BK5A==
-X-Gm-Message-State: ACrzQf355X1ULixKmSj/KBCQRnUdIQMfuB5MyKQfvynUXjFdIfYS0ewr
-        ji3QrbRke7/yyeubr8EFdZU=
-X-Google-Smtp-Source: AMsMyM5urS48hBL/wzVvS7zFzNQklaqqSmOGIMX6FChyURbZf69XiCWLf0csz6XJ5vyEJ9FlJC3Q7A==
-X-Received: by 2002:a1c:4b0f:0:b0:3cf:7bdd:e00b with SMTP id y15-20020a1c4b0f000000b003cf7bdde00bmr7064625wma.110.1667394229311;
-        Wed, 02 Nov 2022 06:03:49 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id q9-20020adfdfc9000000b002366d1cc198sm13262890wrn.41.2022.11.02.06.03.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 06:03:48 -0700 (PDT)
-Date:   Wed, 2 Nov 2022 13:03:42 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        isaku.yamahata@intel.com, dan.j.williams@intel.com,
-        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH 02/12] x86/ioapic: Gate decrypted mapping on
- cc_platform_has() attribute
-Message-ID: <Y2Jqrr54LfKqHu1n@liuwe-devbox-debian-v2>
-References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
- <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
+        with ESMTP id S231130AbiKBNLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:11:43 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042E02A42B;
+        Wed,  2 Nov 2022 06:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667394701; x=1698930701;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=MyZzeDiz5FTyiiKbmj7rYEgdW8PqPC9gOy+Y13MENvg=;
+  b=dVuNbbYebDc+z5opb0hehyvEILtgMK+M+2WRAAmQuLU89WhvvKBUSK/0
+   NiZitwSU/LYqRilQ6cBWyJRhmPdzHrmJHmh1UG+5+h0fKEqTmERbo3yZK
+   +C1tfSpFdmQKqD9Ikuvirn58Ck15e5fQHMJXuPzqke4Tc2xoSi2gb1zPc
+   8OXcGwr5UpenBwvH9QxywvXicQu6DFY62+GB0dIFx26oIRLTOuv946b/y
+   9dCNhOtGAx55TZF+4Wyb4YJgxrI9TZ78P7U9dTNKKfq5XN1cE4zY4rwh2
+   iZlHBJKQBfVU/TAemRFz+j2MiFLriYsWrYlxKM6PXYGMZWumbqrLpinQd
+   w==;
+X-IronPort-AV: E=Sophos;i="5.95,234,1661842800"; 
+   d="scan'208";a="185020498"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Nov 2022 06:11:40 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 2 Nov 2022 06:11:40 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 2 Nov 2022 06:11:37 -0700
+Message-ID: <e9d662682b00a976ad1dedf361a18b5f28aac8fb.camel@microchip.com>
+Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
+ flower keys for the IS2 VCAP
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Casper Andersson <casper.casan@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        "Wan Jiabing" <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Date:   Wed, 2 Nov 2022 14:11:37 +0100
+In-Reply-To: <20221101084925.7d8b7641@kernel.org>
+References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
+         <20221028144540.3344995-3-steen.hegelund@microchip.com>
+         <20221031103747.uk76tudphqdo6uto@wse-c0155>
+         <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
+         <20221031184128.1143d51e@kernel.org>
+         <741b628857168a6844b6c2e0482beb7df9b56520.camel@microchip.com>
+         <20221101084925.7d8b7641@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 10:57:05AM -0700, Michael Kelley wrote:
-> Current code always maps the IOAPIC as shared (decrypted) in a
-> confidential VM. But Hyper-V guest VMs on AMD SEV-SNP with vTOM
-> enabled use a paravisor running in VMPL0 to emulate the IOAPIC.
-> In such a case, the IOAPIC must be accessed as private (encrypted).
-> 
-> Fix this by gating the IOAPIC decrypted mapping on a new
-> cc_platform_has() attribute that a subsequent patch in the series
-> will set only for Hyper-V guests. The new attribute is named
-> somewhat generically because similar paravisor emulation cases
-> may arise in the future.
-> 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Hi Jacub,
 
-Reviewed-by: Wei Liu <wei.liu@kernel.org>
+On Tue, 2022-11-01 at 08:49 -0700, Jakub Kicinski wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> On Tue, 1 Nov 2022 08:31:16 +0100 Steen Hegelund wrote:
+> > > Previous series in this context means previous revision or something
+> > > that was already merged?
+> >=20
+> > Casper refers to this series (the first of the VCAP related series) tha=
+t was
+> > merged on Oct 24th:
+> >=20
+> > https://lore.kernel.org/all/20221020130904.1215072-1-steen.hegelund@mic=
+rochip.com/
+>=20
+> Alright, looks like this is only in net-next so no risk of breaking
+> existing users.
+>=20
+> That said you should reject filters you can't support with an extack
+> message set. Also see below.
+>=20
+> > > > tc filter add dev eth3 ingress chain 8000000 prio 10 handle 10 \
+> > >=20
+> > > How are you using chains?
+> >=20
+> > The chain ids are referring to the VCAP instances and their lookups.=C2=
+=A0 There
+> > are some more details
+> > about this in the series I referred to above.
+> >=20
+> > The short version is that this allows you to select where in the frame
+> > processing flow your rule
+> > will be inserted (using ingress or egress and the chain id).
+> >=20
+> > > I thought you need to offload FLOW_ACTION_GOTO to get to a chain,
+> > > and I get no hits on this driver.
+> >=20
+> > I have not yet added the goto action, but one use of that is to chain a
+> > filter from one VCAP
+> > instance/lookup to another.
+> >=20
+> > The goto action will be added in a soon-to-come series.=C2=A0 I just wa=
+nted to
+> > avoid a series getting too
+> > large, but on the other hand each of them should provide functionality =
+that
+> > you can use in practice.
+>=20
+> The behavior of the offload must be the same as the SW implementation.
+> It sounds like in your case it very much isn't, as adding rules to
+> a magic chain in SW, without the goto will result in the rules being
+> unused.
 
-> ---
->  arch/x86/kernel/apic/io_apic.c |  3 ++-
->  include/linux/cc_platform.h    | 13 +++++++++++++
->  2 files changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index a868b76..d2c1bf7 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -2686,7 +2686,8 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
->  	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
->  	 * bits, just like normal ioremap():
->  	 */
-> -	flags = pgprot_decrypted(flags);
-> +	if (!cc_platform_has(CC_ATTR_HAS_PARAVISOR))
-> +		flags = pgprot_decrypted(flags);
->  
->  	__set_fixmap(idx, phys, flags);
->  }
-> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-> index cb0d6cd..b6c4a79 100644
-> --- a/include/linux/cc_platform.h
-> +++ b/include/linux/cc_platform.h
-> @@ -90,6 +90,19 @@ enum cc_attr {
->  	 * Examples include TDX Guest.
->  	 */
->  	CC_ATTR_HOTPLUG_DISABLED,
-> +
-> +	/**
-> +	 * @CC_ATTR_HAS_PARAVISOR: Guest VM is running with a paravisor
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine with
-> +	 * a paravisor in VMPL0. Having a paravisor affects things
-> +	 * like whether the I/O APIC is emulated and operates in the
-> +	 * encrypted or decrypted portion of the guest physical address
-> +	 * space.
-> +	 *
-> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-> +	 */
-> +	CC_ATTR_HAS_PARAVISOR,
->  };
->  
->  #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
-> -- 
-> 1.8.3.1
-> 
+I have sent a version 4 of the series, but I realized after sending it, tha=
+t I
+was probably not understanding the implications of what you were saying
+entirely.
+
+As far as I understand it now, I need to have a matchall rule that does a g=
+oto
+from chain 0 (as this is where all traffic processing starts) to my first I=
+S2
+VCAP chain and this rule activates the IS2 VCAP lookup.
+
+Each of the rules in this VCAP chain need to point to the next chain etc.
+
+If the matchall rule is deleted the IS2 VCAP lookups should be disabled as =
+there
+is no longer any way to reach the VCAP chains.
+
+Does that sound OK?
+
+BR
+Steen
+
