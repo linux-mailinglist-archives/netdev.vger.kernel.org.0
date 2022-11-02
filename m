@@ -2,53 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E1B161570C
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 02:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E9761572C
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 02:59:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbiKBBfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 21:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S229958AbiKBB66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 21:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiKBBfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 21:35:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11981409E;
-        Tue,  1 Nov 2022 18:35:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5357D6179D;
-        Wed,  2 Nov 2022 01:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D6AC433D6;
-        Wed,  2 Nov 2022 01:35:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667352950;
-        bh=FF8QHuSjxvOryJkhng34kc857KZgEPhuHFTpmH+0b94=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LFtVlHEoHqplTdWXgbtJ3seWBlKVRPeTYbaWgYrTUK4DaGFR8LnJek/xLV/eOBJQl
-         byDsNllzrEC9H42JhzBDrulogxavUVAuXrt4CuXKNBEzahyVGogeWYjIJ7Oc4TU4Qr
-         IEimBCCXzbDILokyblt/yqIQpZatZ0mnZT2DLMuU=
-Date:   Wed, 2 Nov 2022 02:36:43 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>, Sasha Levin <sashal@kernel.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <chris.paterson2@renesas.com>,
-        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] can: rcar_canfd: rcar_canfd_handle_global_receive(): fix
- IRQ storm on global FIFO receive
-Message-ID: <Y2HJq/MLElPiN+Hb@kroah.com>
-References: <20221031090420.589386-1-biju.das.jz@bp.renesas.com>
+        with ESMTP id S229964AbiKBB64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 21:58:56 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC33D1400C
+        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 18:58:54 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N296L24vkz15MJ9;
+        Wed,  2 Nov 2022 09:58:50 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 2 Nov
+ 2022 09:58:52 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <dlezcano@fr.ibm.com>, <benjamin.thery@bull.net>,
+        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net] ipv6: fix WARNING in ip6_route_net_exit_late()
+Date:   Wed, 2 Nov 2022 10:06:10 +0800
+Message-ID: <20221102020610.351330-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221031090420.589386-1-biju.das.jz@bp.renesas.com>
-X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,45 +46,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 09:04:20AM +0000, Biju Das wrote:
-> commit 702de2c21eed04c67cefaaedc248ef16e5f6b293 upstream.
-> 
-> We are seeing an IRQ storm on the global receive IRQ line under heavy
-> CAN bus load conditions with both CAN channels enabled.
-> 
-> Conditions:
-> 
-> The global receive IRQ line is shared between can0 and can1, either of
-> the channels can trigger interrupt while the other channel's IRQ line
-> is disabled (RFIE).
-> 
-> When global a receive IRQ interrupt occurs, we mask the interrupt in
-> the IRQ handler. Clearing and unmasking of the interrupt is happening
-> in rx_poll(). There is a race condition where rx_poll() unmasks the
-> interrupt, but the next IRQ handler does not mask the IRQ due to
-> NAPIF_STATE_MISSED flag (e.g.: can0 RX FIFO interrupt is disabled and
-> can1 is triggering RX interrupt, the delay in rx_poll() processing
-> results in setting NAPIF_STATE_MISSED flag) leading to an IRQ storm.
-> 
-> This patch fixes the issue by checking IRQ active and enabled before
-> handling the IRQ on a particular channel.
-> 
-> Fixes: dd3bd23eb438 ("can: rcar_canfd: Add Renesas R-Car CAN FD driver")
-> Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Link: https://lore.kernel.org/all/20221025155657.1426948-2-biju.das.jz@bp.renesas.com
-> Cc: stable@vger.kernel.org # 4.9.x
-> [mkl: adjust commit message]
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> [biju: removed gpriv from RCANFD_RFCC_RFIE macro]
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> Resending to 4.9 with confilcts[1] fixed
-> [1] https://lore.kernel.org/stable/OS0PR01MB59226F2443DFCE7C5D73778786379@OS0PR01MB5922.jpnprd01.prod.outlook.com/T/#t
-> ---
->  drivers/net/can/rcar/rcar_canfd.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+During the initialization of ip6_route_net_init_late(), if file
+ipv6_route or rt6_stats fails to be created, the initialization is
+successful by default. Therefore, the ipv6_route or rt6_stats file
+doesn't be found during the remove in ip6_route_net_exit_late(). It
+will cause WRNING.
 
-All now queued up, thanks.
+The following is the stack information:
+name 'rt6_stats'
+WARNING: CPU: 0 PID: 9 at fs/proc/generic.c:712 remove_proc_entry+0x389/0x460
+Modules linked in:
+Workqueue: netns cleanup_net
+RIP: 0010:remove_proc_entry+0x389/0x460
+PKRU: 55555554
+Call Trace:
+<TASK>
+ops_exit_list+0xb0/0x170
+cleanup_net+0x4ea/0xb00
+process_one_work+0x9bf/0x1710
+worker_thread+0x665/0x1080
+kthread+0x2e4/0x3a0
+ret_from_fork+0x1f/0x30
+</TASK>
 
-greg k-h
+Fixes: cdb1876192db ("[NETNS][IPV6] route6 - create route6 proc files for the namespace")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/ipv6/route.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 69252eb462b2..2f355f0ec32a 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -6555,10 +6555,16 @@ static void __net_exit ip6_route_net_exit(struct net *net)
+ static int __net_init ip6_route_net_init_late(struct net *net)
+ {
+ #ifdef CONFIG_PROC_FS
+-	proc_create_net("ipv6_route", 0, net->proc_net, &ipv6_route_seq_ops,
+-			sizeof(struct ipv6_route_iter));
+-	proc_create_net_single("rt6_stats", 0444, net->proc_net,
+-			rt6_stats_seq_show, NULL);
++	if (!proc_create_net("ipv6_route", 0, net->proc_net,
++			     &ipv6_route_seq_ops,
++			     sizeof(struct ipv6_route_iter)))
++		return -ENOMEM;
++
++	if (!proc_create_net_single("rt6_stats", 0444, net->proc_net,
++				    rt6_stats_seq_show, NULL)) {
++		remove_proc_entry("ipv6_route", net->proc_net);
++		return -ENOMEM;
++	}
+ #endif
+ 	return 0;
+ }
+-- 
+2.17.1
+
