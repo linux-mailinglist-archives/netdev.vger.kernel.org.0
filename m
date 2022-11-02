@@ -2,136 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3769D6160C5
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 11:27:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7EA96160D3
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 11:31:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiKBK1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 06:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        id S230323AbiKBKbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 06:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiKBK1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 06:27:04 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18466BC7
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 03:27:04 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id 66so3837824ybl.11
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 03:27:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=O4IlMzjocpQ3xJ7mqXdVgMQ+/v/ebRCnLK4aF994ATY=;
-        b=KPVnu+85ZKx0bh6CW4cn4sU14+i95U6p4qna3HElBkhCmw34FDpOA/zFYwt5liE78D
-         8CV+XKr83wlYNv9e5Vr4Hj98mok6lsDUXFOM7Srkwrkh9qPctXbYPVy8isiGizD+BnUY
-         44gLesA67le5o8gFfKUIgX+IfpjgreeFqDWtbrtVQ9dES0ChfoTKCxDmS4RYs7CZ6ijN
-         OUB+hKTlE8PPunLjEGCTPbUNGVCqIsesMxMzAdWDto2XDfKksnPz1ufexdM8D4zAMlEn
-         qm5BEvjrTyTy0qTnfEdZn+rPQeXB9/ZqSmX+vawqcq9C9rpANx3qXrSBrZ40zzIDujqx
-         HEaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=O4IlMzjocpQ3xJ7mqXdVgMQ+/v/ebRCnLK4aF994ATY=;
-        b=uwVjjaGsfFzmRTVXCP93bhCXGRN6cPv0r8zhNrCBXT+eb/cBKJ26HOCPMu8KW+bJ3E
-         jPSswgC5i6o6Fi0nutK5wX6/vBjMDlaROxDmd7cPKaV2dIQr45/ogwpM+7tVQh5V/tsm
-         unEydJXr0j8j1AkUvr3+7SVlxy9Rfq4q9zcyLu5qSi/3jrAELcKcXWgC6dbAjlgr6rMp
-         mB+EhVUqs5Z3buiZAMR7E9mIhBEVd6r0HYz40tTaNZmEzkCo7O1ZaZc2JlzAxV5gY1Ad
-         iiIAio2DB5aNFgTohCrJ/6HbKUeevRsJjUSDXyQ9u2fpQwrKxrKjTOLJU6nnN99nh5Ar
-         KAZQ==
-X-Gm-Message-State: ACrzQf0n1A9CMz6jwSnXDMCAG+LKN/JonEhPvsf5irb3ky7lOuZwBR9/
-        E4WMx0uESdy53nfdWmn2R5oziRwCDQC0eVv5vfRYeg==
-X-Google-Smtp-Source: AMsMyM6foZu/ErMZB/+DeimFP1ldhtHUQHUv7K4smYFiRTjB+PFYFh8C29WNRaYbrIDK1B2lP+BgQc7zz77gMEUA0L8=
-X-Received: by 2002:a25:c08b:0:b0:6bf:b095:c192 with SMTP id
- c133-20020a25c08b000000b006bfb095c192mr22243249ybf.143.1667384823192; Wed, 02
- Nov 2022 03:27:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000e9df4305ec7a3fc7@google.com>
-In-Reply-To: <000000000000e9df4305ec7a3fc7@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 2 Nov 2022 11:26:26 +0100
-Message-ID: <CANpmjNMxfFui+ZooJfCNQPwayiHgr6OZgpfGKJH-Tb6UvdT=cQ@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in __perf_event_overflow
-To:     syzbot <syzbot+589d998651a580e6135d@syzkaller.appspotmail.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        bpf@vger.kernel.org, jolsa@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, peterz@infradead.org,
-        syzkaller-bugs@googlegroups.com, Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230292AbiKBKbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 06:31:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033E027CED;
+        Wed,  2 Nov 2022 03:31:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F5246185D;
+        Wed,  2 Nov 2022 10:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBCBBC433D6;
+        Wed,  2 Nov 2022 10:31:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667385109;
+        bh=aTufAObW2je+qnvAz/jiexklJjGnI6PIiZmUAseYC9g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BX/HxPDCs0FeiLmNeiLz7zhMfDo6dSaHBErgH2A5ZUQIK2Kd5zY2Oon7lRd8IaGfE
+         AmM1i928J2u9XtnWTI4LiESVRVvabfsta3tan91JEvyyvAWWPyDbX0TazAQ+F7NAuC
+         eaBjjs/hprAWSZI3rsbgeo/mS7AB6qcisK3KjmkKDzTGf4ow0zIhkdT+b1pDFDbpgC
+         dmRN59rGMLNFm/VEcCHhq3f2GQnFSfLpquZPMRPc8fML+dB0zXF6brvKFZIa94mmi8
+         v/riZLJgb8QP+U9t3Xa9U/Q7AfZSpx7IHR97oFdsN0TvnVSFRewvgQ3C8yWPSZFiiM
+         HZCMfqg1IEIxQ==
+From:   Roger Quadros <rogerq@kernel.org>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, s-vadapalli@ti.com, vigneshr@ti.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roger Quadros <rogerq@kernel.org>, Stable@vger.kernel.org
+Subject: [PATCH] net: ethernet: ti: am65-cpsw: Fix segmentation fault at module unload
+Date:   Wed,  2 Nov 2022 12:31:44 +0200
+Message-Id: <20221102103144.12022-1-rogerq@kernel.org>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Nov 2022 at 11:24, syzbot
-<syzbot+589d998651a580e6135d@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    88619e77b33d net: stmmac: rk3588: Allow multiple gmac cont..
-> git tree:       bpf
-> console+strace: https://syzkaller.appspot.com/x/log.txt?x=11842046880000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a66c6c673fb555e8
-> dashboard link: https://syzkaller.appspot.com/bug?extid=589d998651a580e6135d
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11eabcea880000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f7e632880000
->
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/f8435d5c2c21/disk-88619e77.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/551d8a013e81/vmlinux-88619e77.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/7d3f5c29064d/bzImage-88619e77.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+589d998651a580e6135d@syzkaller.appspotmail.com
->
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 3607 at kernel/events/core.c:9313 __perf_event_overflow+0x498/0x540 kernel/events/core.c:9313
-> Modules linked in:
-> CPU: 0 PID: 3607 Comm: syz-executor100 Not tainted 6.1.0-rc2-syzkaller-00073-g88619e77b33d #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
-> RIP: 0010:__perf_event_overflow+0x498/0x540 kernel/events/core.c:9313
-> Code: 80 3c 02 00 0f 85 b2 00 00 00 48 8b 83 20 02 00 00 48 ff 80 b8 01 00 00 e9 5b fe ff ff 45 31 f6 e9 a2 fd ff ff e8 f8 ae dd ff <0f> 0b e9 47 fe ff ff 4c 89 e7 e8 39 ff 29 00 e9 b2 fb ff ff e8 0f
-> RSP: 0000:ffffc90003c4fb00 EFLAGS: 00010046
-> RAX: 0000000080010000 RBX: ffff888011a891d0 RCX: 0000000000000000
-> RDX: ffff88801a4d57c0 RSI: ffffffff819eecc8 RDI: 0000000000000001
-> RBP: ffffc90003c4fb80 R08: 0000000000000001 R09: 0000000000000000
-> R10: 0000000000000020 R11: 0000000000000001 R12: 0000000000000020
-> R13: ffff888011a895f4 R14: 0000000000000000 R15: 0000000000000000
-> FS:  0000555555a8e300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000020000648 CR3: 000000007c988000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  perf_swevent_hrtimer+0x34f/0x3c0 kernel/events/core.c:10729
->  __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
->  __hrtimer_run_queues+0x1c6/0xfb0 kernel/time/hrtimer.c:1749
->  hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
->  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1096 [inline]
->  __sysvec_apic_timer_interrupt+0x17c/0x640 arch/x86/kernel/apic/apic.c:1113
->  sysvec_apic_timer_interrupt+0x40/0xc0 arch/x86/kernel/apic/apic.c:1107
->  asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-> RIP: 0033:0x7f74350afae5
-> Code: 00 c7 04 25 b0 06 00 20 00 00 00 00 c7 04 25 b4 06 00 20 00 00 00 00 48 c7 04 25 b8 06 00 20 4f ff ff ff e8 ed e2 03 00 31 ff <e8> a6 75 00 00 66 0f 1f 44 00 00 41 57 41 56 41 55 41 54 55 53 48
-> RSP: 002b:00007fffceb2b0e0 EFLAGS: 00000246
-> RAX: 0000000000000003 RBX: 000000000000a025 RCX: 00007f74350edde9
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000008 R09: 00007fffceb2b278
-> R10: 00000000ffffffff R11: 0000000000000246 R12: 00007fffceb2b0ec
-> R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
->  </TASK>
+Move am65_cpsw_nuss_phylink_cleanup() call to after
+am65_cpsw_nuss_cleanup_ndev() so phylink is still valid
+to prevent the below Segmentation fault on module remove when
+first slave link is up.
 
-Proposed fix for this is:
-https://lore.kernel.org/all/20221031093513.3032814-1-elver@google.com/
+[   31.652944] Unable to handle kernel paging request at virtual address 00040008000005f4
+[   31.684627] Mem abort info:
+[   31.687446]   ESR = 0x0000000096000004
+[   31.704614]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   31.720663]   SET = 0, FnV = 0
+[   31.723729]   EA = 0, S1PTW = 0
+[   31.740617]   FSC = 0x04: level 0 translation fault
+[   31.756624] Data abort info:
+[   31.759508]   ISV = 0, ISS = 0x00000004
+[   31.776705]   CM = 0, WnR = 0
+[   31.779695] [00040008000005f4] address between user and kernel address ranges
+[   31.808644] Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+[   31.814928] Modules linked in: wlcore_sdio wl18xx wlcore mac80211 libarc4 cfg80211 rfkill crct10dif_ce phy_gmii_sel ti_am65_cpsw_nuss(-) sch_fq_codel ipv6
+[   31.828776] CPU: 0 PID: 1026 Comm: modprobe Not tainted 6.1.0-rc2-00012-gfabfcf7dafdb-dirty #160
+[   31.837547] Hardware name: Texas Instruments AM625 (DT)
+[   31.842760] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   31.849709] pc : phy_stop+0x18/0xf8
+[   31.853202] lr : phylink_stop+0x38/0xf8
+[   31.857031] sp : ffff80000a0839f0
+[   31.860335] x29: ffff80000a0839f0 x28: ffff000000de1c80 x27: 0000000000000000
+[   31.867462] x26: 0000000000000000 x25: 0000000000000000 x24: ffff80000a083b98
+[   31.874589] x23: 0000000000000800 x22: 0000000000000001 x21: ffff000001bfba90
+[   31.881715] x20: ffff0000015ee000 x19: 0004000800000200 x18: 0000000000000000
+[   31.888842] x17: ffff800076c45000 x16: ffff800008004000 x15: 000058e39660b106
+[   31.895969] x14: 0000000000000144 x13: 0000000000000144 x12: 0000000000000000
+[   31.903095] x11: 000000000000275f x10: 00000000000009e0 x9 : ffff80000a0837d0
+[   31.910222] x8 : ffff000000de26c0 x7 : ffff00007fbd6540 x6 : ffff00007fbd64c0
+[   31.917349] x5 : ffff00007fbd0b10 x4 : ffff00007fbd0b10 x3 : ffff00007fbd3920
+[   31.924476] x2 : d0a07fcff8b8d500 x1 : 0000000000000000 x0 : 0004000800000200
+[   31.931603] Call trace:
+[   31.934042]  phy_stop+0x18/0xf8
+[   31.937177]  phylink_stop+0x38/0xf8
+[   31.940657]  am65_cpsw_nuss_ndo_slave_stop+0x28/0x1e0 [ti_am65_cpsw_nuss]
+[   31.947452]  __dev_close_many+0xa4/0x140
+[   31.951371]  dev_close_many+0x84/0x128
+[   31.955115]  unregister_netdevice_many+0x130/0x6d0
+[   31.959897]  unregister_netdevice_queue+0x94/0xd8
+[   31.964591]  unregister_netdev+0x24/0x38
+[   31.968504]  am65_cpsw_nuss_cleanup_ndev.isra.0+0x48/0x70 [ti_am65_cpsw_nuss]
+[   31.975637]  am65_cpsw_nuss_remove+0x58/0xf8 [ti_am65_cpsw_nuss]
+
+Cc: <Stable@vger.kernel.org> # v5.18+
+Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
+Signed-off-by: Roger Quadros <rogerq@kernel.org>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 7f86068f3ff6..c50b137f92d7 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2823,7 +2823,6 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	am65_cpsw_nuss_phylink_cleanup(common);
+ 	am65_cpsw_unregister_devlink(common);
+ 	am65_cpsw_unregister_notifiers(common);
+ 
+@@ -2831,6 +2830,7 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
+ 	 * dma_deconfigure(dev) before devres_release_all(dev)
+ 	 */
+ 	am65_cpsw_nuss_cleanup_ndev(common);
++	am65_cpsw_nuss_phylink_cleanup(common);
+ 
+ 	of_platform_device_destroy(common->mdio_dev, NULL);
+ 
+-- 
+2.17.1
+
