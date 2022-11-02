@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05481616FE3
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:34:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 940BA616FE2
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:34:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbiKBVeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 17:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        id S231250AbiKBVeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 17:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbiKBVd5 (ORCPT
+        with ESMTP id S231205AbiKBVd5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:33:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0E6E0C9
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389D9EE17
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3356061C3D
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAAC161C63
         for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 21:33:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D4CC433D6;
-        Wed,  2 Nov 2022 21:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B460C4347C;
+        Wed,  2 Nov 2022 21:33:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1667424832;
-        bh=OyUUqT62wHuAQkopsG6WVvfxyGRpyOQctyN3WR0PoPg=;
+        bh=lHkOwTt5zrKyn8u6Ecefu+kmZmT9Esf3m287vU0KqzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aMUSNmY0YFjjfbgJIiqUKTzaon69lyMzA9Q8EUH3JMuzVWNSPWwqAByPOfZwC7k6L
-         aw5LT2zWQHIa9m4vle+p5WXIrgWtl7s6B4myITowzUTvVlTJDGaQGO8qOiABcrBUPB
-         KK2JjwlKtdKFEZFk2V5mRMzpJ/el91G6EsCMieZFOdOgicH6nl8kmpZ/nFSLyMNNLF
-         QVy+VzWcaz4IRX+AY47X1JeS7abC9FT+E8+F6I6yeolLKZLWloBvTa0Ik6xmDHhnKh
-         f8CnlwWpu1UQoev7FEs8K29gJhES71vEEoYtPN8UQzp0ptyUqapudrJVmopn4vVzy/
-         LLK5x1XWSRL5Q==
+        b=hT5z6te3tJyOMe0nHs+cWCrbvBHSJ/RGBdoelQS0VW6Fcny6cqZOoEWkySSPN4H9k
+         /5MofhXq2yA616Aw1PnGUjs6xUFeXX50Nna644UUQWkjm8kxAGnBzat/DvKHMIe9sW
+         57rtzT58WM3wavg3+s+axIvBpnwjEfEgabtSRIxPgPuyhv8KwYDC+BS6FwTdRe3x6+
+         m6JiYqhmurv6dxywouT9tEYJ3z57AMiliD2ZYJfxcgRpOkku9gH/EcFNbS8PKVdayD
+         Xr1GLj0kH09PvMuIIbsRkZuTszwFcdLYCO3aaNf2trzYjBWNNYJqI0WFT/YYAuV6/i
+         Cvl7ZZLUT5yrA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
         gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 12/13] genetlink: allow families to use split ops directly
-Date:   Wed,  2 Nov 2022 14:33:37 -0700
-Message-Id: <20221102213338.194672-13-kuba@kernel.org>
+Subject: [PATCH net-next v2 13/13] genetlink: convert control family to split ops
+Date:   Wed,  2 Nov 2022 14:33:38 -0700
+Message-Id: <20221102213338.194672-14-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221102213338.194672-1-kuba@kernel.org>
 References: <20221102213338.194672-1-kuba@kernel.org>
@@ -54,280 +54,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let families to hook in the new split ops.
-
-They are more flexible and should not be much larger than
-full ops. Each split op is 40B while full op is 48B.
-Devlink for example has 54 dos and 19 dumps, 2 of the dumps
-do not have a do -> 56 full commands = 2688B.
-Split ops would have taken 2920B, so 9% more space while
-allowing individual per/post doit and per-type policies.
+Prove that the split ops work.
+Sadly we need to keep bug-wards compatibility and specify
+the same policy for dump as do, even tho we don't parse
+inputs for the dump.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/genetlink.h |   5 ++
- net/netlink/genetlink.c | 158 +++++++++++++++++++++++++++++++++-------
- 2 files changed, 137 insertions(+), 26 deletions(-)
+ net/netlink/genetlink.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/genetlink.h b/include/net/genetlink.h
-index 4be7989c451b..d21210709f84 100644
---- a/include/net/genetlink.h
-+++ b/include/net/genetlink.h
-@@ -46,6 +46,9 @@ struct genl_info;
-  * @n_ops: number of operations supported by this family
-  * @small_ops: the small-struct operations supported by this family
-  * @n_small_ops: number of small-struct operations supported by this family
-+ * @split_ops: the split do/dump form of operation definition
-+ * @n_split_ops: number of entries in @split_ops, not that with split do/dump
-+ *	ops the number of entries is not the same as number of commands
-  *
-  * Attribute policies (the combination of @policy and @maxattr fields)
-  * can be attached at the family level or at the operation level.
-@@ -63,6 +66,7 @@ struct genl_family {
- 	u8			parallel_ops:1;
- 	u8			n_ops;
- 	u8			n_small_ops;
-+	u8			n_split_ops;
- 	u8			n_mcgrps;
- 	u8			resv_start_op;
- 	const struct nla_policy *policy;
-@@ -74,6 +78,7 @@ struct genl_family {
- 					     struct genl_info *info);
- 	const struct genl_ops *	ops;
- 	const struct genl_small_ops *small_ops;
-+	const struct genl_split_ops *split_ops;
- 	const struct genl_multicast_group *mcgrps;
- 	struct module		*module;
- 
 diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 0a4f1470f442..e95b984fcfe6 100644
+index e95b984fcfe6..1fb04496d94a 100644
 --- a/net/netlink/genetlink.c
 +++ b/net/netlink/genetlink.c
-@@ -118,6 +118,16 @@ static const struct genl_family *genl_family_find_byname(char *name)
- 	return NULL;
- }
- 
-+struct genl_op_iter {
-+	const struct genl_family *family;
-+	struct genl_split_ops doit;
-+	struct genl_split_ops dumpit;
-+	int cmd_idx;
-+	int entry_idx;
-+	u32 cmd;
-+	u8 flags;
-+};
-+
- static void genl_op_from_full(const struct genl_family *family,
- 			      unsigned int i, struct genl_ops *op)
- {
-@@ -176,6 +186,47 @@ static int genl_get_cmd_small(u32 cmd, const struct genl_family *family,
- 	return -ENOENT;
- }
- 
-+static void genl_op_from_split(struct genl_op_iter *iter)
-+{
-+	const struct genl_family *family = iter->family;
-+	int i, cnt = 0;
-+
-+	i = iter->entry_idx - family->n_ops - family->n_small_ops;
-+
-+	if (family->split_ops[i + cnt].flags & GENL_CMD_CAP_DO) {
-+		iter->doit = family->split_ops[i + cnt];
-+		cnt++;
-+	} else {
-+		memset(&iter->doit, 0, sizeof(iter->doit));
-+	}
-+
-+	if (family->split_ops[i + cnt].flags & GENL_CMD_CAP_DUMP) {
-+		iter->dumpit = family->split_ops[i + cnt];
-+		cnt++;
-+	} else {
-+		memset(&iter->dumpit, 0, sizeof(iter->dumpit));
-+	}
-+
-+	WARN_ON(!cnt);
-+	iter->entry_idx += cnt;
-+}
-+
-+static int
-+genl_get_cmd_split(u32 cmd, u8 flag, const struct genl_family *family,
-+		   struct genl_split_ops *op)
-+{
-+	int i;
-+
-+	for (i = 0; i < family->n_split_ops; i++)
-+		if (family->split_ops[i].cmd == cmd &&
-+		    family->split_ops[i].flags & flag) {
-+			*op = family->split_ops[i];
-+			return 0;
-+		}
-+
-+	return -ENOENT;
-+}
-+
- static int
- genl_cmd_full_to_split(struct genl_split_ops *op,
- 		       const struct genl_family *family,
-@@ -227,50 +278,60 @@ genl_get_cmd(u32 cmd, u8 flags, const struct genl_family *family,
- 	err = genl_get_cmd_full(cmd, family, &full);
- 	if (err == -ENOENT)
- 		err = genl_get_cmd_small(cmd, family, &full);
--	if (err) {
--		memset(op, 0, sizeof(*op));
--		return err;
--	}
-+	/* Found one of legacy forms */
-+	if (err == 0)
-+		return genl_cmd_full_to_split(op, family, &full, flags);
- 
--	return genl_cmd_full_to_split(op, family, &full, flags);
-+	err = genl_get_cmd_split(cmd, flags, family, op);
-+	if (err)
-+		memset(op, 0, sizeof(*op));
-+	return err;
- }
- 
--struct genl_op_iter {
--	const struct genl_family *family;
--	struct genl_split_ops doit;
--	struct genl_split_ops dumpit;
--	int i;
--	u32 cmd;
--	u8 flags;
--};
--
- static bool
- genl_op_iter_init(const struct genl_family *family, struct genl_op_iter *iter)
- {
- 	iter->family = family;
--	iter->i = 0;
-+	iter->cmd_idx = 0;
-+	iter->entry_idx = 0;
- 
- 	iter->flags = 0;
- 
--	return iter->family->n_ops + iter->family->n_small_ops;
-+	return iter->family->n_ops +
-+		iter->family->n_small_ops +
-+		iter->family->n_split_ops;
- }
- 
- static bool genl_op_iter_next(struct genl_op_iter *iter)
- {
- 	const struct genl_family *family = iter->family;
-+	bool legacy_op = true;
- 	struct genl_ops op;
- 
--	if (iter->i < family->n_ops)
--		genl_op_from_full(family, iter->i, &op);
--	else if (iter->i < family->n_ops + family->n_small_ops)
--		genl_op_from_small(family, iter->i - family->n_ops, &op);
--	else
-+	if (iter->entry_idx < family->n_ops) {
-+		genl_op_from_full(family, iter->entry_idx, &op);
-+	} else if (iter->entry_idx < family->n_ops + family->n_small_ops) {
-+		genl_op_from_small(family, iter->entry_idx - family->n_ops,
-+				   &op);
-+	} else if (iter->entry_idx <
-+		   family->n_ops + family->n_small_ops + family->n_split_ops) {
-+		legacy_op = false;
-+		/* updates entry_idx */
-+		genl_op_from_split(iter);
-+	} else {
- 		return false;
-+	}
- 
--	iter->i++;
-+	iter->cmd_idx++;
- 
--	genl_cmd_full_to_split(&iter->doit, family, &op, GENL_CMD_CAP_DO);
--	genl_cmd_full_to_split(&iter->dumpit, family, &op, GENL_CMD_CAP_DUMP);
-+	if (legacy_op) {
-+		iter->entry_idx++;
-+
-+		genl_cmd_full_to_split(&iter->doit, family,
-+				       &op, GENL_CMD_CAP_DO);
-+		genl_cmd_full_to_split(&iter->dumpit, family,
-+				       &op, GENL_CMD_CAP_DUMP);
-+	}
- 
- 	iter->cmd = iter->doit.cmd | iter->dumpit.cmd;
- 	iter->flags = iter->doit.flags | iter->dumpit.flags;
-@@ -286,7 +347,7 @@ genl_op_iter_copy(struct genl_op_iter *dst, struct genl_op_iter *src)
- 
- static unsigned int genl_op_iter_idx(struct genl_op_iter *iter)
- {
--	return iter->i;
-+	return iter->cmd_idx;
- }
- 
- static int genl_allocate_reserve_groups(int n_groups, int *first_id)
-@@ -454,12 +515,24 @@ static void genl_unregister_mc_groups(const struct genl_family *family)
- 	}
- }
- 
-+static bool genl_split_op_check(const struct genl_split_ops *op)
-+{
-+	if (WARN_ON(hweight8(op->flags & (GENL_CMD_CAP_DO |
-+					  GENL_CMD_CAP_DUMP)) != 1))
-+		return true;
-+	if (WARN_ON(!op->maxattr || !op->policy))
-+		return true;
-+	return false;
-+}
-+
- static int genl_validate_ops(const struct genl_family *family)
- {
- 	struct genl_op_iter i, j;
-+	unsigned int s;
- 
- 	if (WARN_ON(family->n_ops && !family->ops) ||
--	    WARN_ON(family->n_small_ops && !family->small_ops))
-+	    WARN_ON(family->n_small_ops && !family->small_ops) ||
-+	    WARN_ON(family->n_split_ops && !family->split_ops))
- 		return -EINVAL;
- 
- 	for (genl_op_iter_init(family, &i); genl_op_iter_next(&i); ) {
-@@ -477,6 +550,39 @@ static int genl_validate_ops(const struct genl_family *family)
- 		}
- 	}
- 
-+	if (family->n_split_ops) {
-+		if (genl_split_op_check(&family->split_ops[0]))
-+			return -EINVAL;
-+	}
-+
-+	for (s = 1; s < family->n_split_ops; s++) {
-+		const struct genl_split_ops *a, *b;
-+
-+		a = &family->split_ops[s - 1];
-+		b = &family->split_ops[s];
-+
-+		if (genl_split_op_check(b))
-+			return -EINVAL;
-+
-+		/* Check sort order */
-+		if (a->cmd < b->cmd)
-+			continue;
-+
-+		if (a->internal_flags != b->internal_flags ||
-+		    ((a->flags ^ b->flags) & ~(GENL_CMD_CAP_DO |
-+					       GENL_CMD_CAP_DUMP))) {
-+			WARN_ON(1);
-+			return -EINVAL;
-+		}
-+
-+		if ((a->flags & GENL_CMD_CAP_DO) &&
-+		    (b->flags & GENL_CMD_CAP_DUMP))
-+			continue;
-+
-+		WARN_ON(1);
-+		return -EINVAL;
-+	}
-+
+@@ -1597,14 +1597,22 @@ static int ctrl_dumppolicy_done(struct netlink_callback *cb)
  	return 0;
  }
  
+-static const struct genl_ops genl_ctrl_ops[] = {
++static const struct genl_split_ops genl_ctrl_ops[] = {
+ 	{
+ 		.cmd		= CTRL_CMD_GETFAMILY,
+-		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.validate	= GENL_DONT_VALIDATE_STRICT,
+ 		.policy		= ctrl_policy_family,
+ 		.maxattr	= ARRAY_SIZE(ctrl_policy_family) - 1,
+ 		.doit		= ctrl_getfamily,
++		.flags		= GENL_CMD_CAP_DO,
++	},
++	{
++		.cmd		= CTRL_CMD_GETFAMILY,
++		.validate	= GENL_DONT_VALIDATE_DUMP,
++		.policy		= ctrl_policy_family,
++		.maxattr	= ARRAY_SIZE(ctrl_policy_family) - 1,
+ 		.dumpit		= ctrl_dumpfamily,
++		.flags		= GENL_CMD_CAP_DUMP,
+ 	},
+ 	{
+ 		.cmd		= CTRL_CMD_GETPOLICY,
+@@ -1613,6 +1621,7 @@ static const struct genl_ops genl_ctrl_ops[] = {
+ 		.start		= ctrl_dumppolicy_start,
+ 		.dumpit		= ctrl_dumppolicy,
+ 		.done		= ctrl_dumppolicy_done,
++		.flags		= GENL_CMD_CAP_DUMP,
+ 	},
+ };
+ 
+@@ -1622,8 +1631,8 @@ static const struct genl_multicast_group genl_ctrl_groups[] = {
+ 
+ static struct genl_family genl_ctrl __ro_after_init = {
+ 	.module = THIS_MODULE,
+-	.ops = genl_ctrl_ops,
+-	.n_ops = ARRAY_SIZE(genl_ctrl_ops),
++	.split_ops = genl_ctrl_ops,
++	.n_split_ops = ARRAY_SIZE(genl_ctrl_ops),
+ 	.resv_start_op = CTRL_CMD_GETPOLICY + 1,
+ 	.mcgrps = genl_ctrl_groups,
+ 	.n_mcgrps = ARRAY_SIZE(genl_ctrl_groups),
 -- 
 2.38.1
 
