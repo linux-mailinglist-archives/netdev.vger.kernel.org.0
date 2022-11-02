@@ -2,128 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9338A616D1C
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 19:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 071FF616D23
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 19:49:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbiKBSrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 14:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        id S231678AbiKBStp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 14:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbiKBSrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 14:47:19 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D676B303CC;
-        Wed,  2 Nov 2022 11:47:15 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 7/7] netfilter: ipset: enforce documented limit to prevent allocating huge memory
-Date:   Wed,  2 Nov 2022 19:46:59 +0100
-Message-Id: <20221102184659.2502-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221102184659.2502-1-pablo@netfilter.org>
-References: <20221102184659.2502-1-pablo@netfilter.org>
+        with ESMTP id S231754AbiKBSt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 14:49:28 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D7431220
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 11:49:14 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id s20so5966449qkg.5
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 11:49:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vJYNZtf6bcoMnKqaGiq/9/aXJ5dsTFIfamsATLeB19E=;
+        b=su9C3G8MIg7QWTFg8X40a81l1pos9whecNkXv05SZCVv+Ifq5/Lnwt2vr1Mb3MLuIQ
+         jRDedwfIwrB71P37sh22Y4/0wD8UqyzKEZzEh02MJZUwMEQFcO5dOUAFaR9UtAPt36jH
+         +NNP2HWHC6hFOsr/iEvUj7AbwFGSyb5wYB88wcSSpZEO6YR7ELmy9c791KfrDJIMxUYI
+         ooT60YMIA4kC6fqE9keso+2NvSE2Feil4aQJ8LtpS3yIsbOa+wFRCid3h08+7r2uhoew
+         ZtyOTEQ0l+lhc07lbsGCV/lSw+Lt1gs5woqu8nyK9eFwAXAXjC6jh7xz6zZX0hR+um9A
+         x4Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vJYNZtf6bcoMnKqaGiq/9/aXJ5dsTFIfamsATLeB19E=;
+        b=BSoS5/Y13vel3DCZBa9In4LgLb4z/lK4zNL6je0LYC5uz5iLZ++sRENIA6ciDmcSxF
+         +0rKH4R9XaTxCijrBebSFjfm2R4uRhirSUwudDzdliU06+W6CTmOA7sMBsVrd36NTSOy
+         uBphDzaiPN20NUQ7msGLIZpzl3+crX+bb3KE4fDNi5+XbEyhFqbwcXbqxpZAkS7DwVev
+         XJDSTyvcOmFs99w0UY7DevR49M+JU6l9kQ+jBvR52GwIDh0wFAgjDym/Dur0kgSvpZ7t
+         J14SNnNRD9aa8t9BfIQRmuUo/KosI4WFj/KZyZeLKwbZyC9GWlovsfe5p1xg76GVtM/x
+         dx4A==
+X-Gm-Message-State: ACrzQf1TFb/6brciUSNjz9yB3NhsKNaoIyfxCg6adNcKgTrlyIM+Pqs7
+        kCaRKz+X4I5vuMeHEJaQRg8/xA==
+X-Google-Smtp-Source: AMsMyM4QrsNd0t8S2FzfTh26X1GqKLWJtIRgo6E0399IOn8EDRnsAkEWhLADnj/2PxhsqfSVcY2Vlg==
+X-Received: by 2002:a37:65c9:0:b0:6fa:1ef8:fa10 with SMTP id z192-20020a3765c9000000b006fa1ef8fa10mr15636685qkb.648.1667414953134;
+        Wed, 02 Nov 2022 11:49:13 -0700 (PDT)
+Received: from ?IPV6:2601:586:5000:570:28d9:4790:bc16:cc93? ([2601:586:5000:570:28d9:4790:bc16:cc93])
+        by smtp.gmail.com with ESMTPSA id q4-20020ac87344000000b0039442ee69c5sm6861556qtp.91.2022.11.02.11.49.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Nov 2022 11:49:12 -0700 (PDT)
+Message-ID: <f387a864-5683-f4a1-ee9a-3c92b2ca5e1c@linaro.org>
+Date:   Wed, 2 Nov 2022 14:49:11 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] dt-bindings: net: nxp,sja1105: document spi-cpol
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org
+References: <20221102161211.51139-1-krzysztof.kozlowski@linaro.org>
+ <166741398630.127357.13160524174654511434.robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <166741398630.127357.13160524174654511434.robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jozsef Kadlecsik <kadlec@netfilter.org>
+On 02/11/2022 14:35, Rob Herring wrote:
+> 
+> On Wed, 02 Nov 2022 12:12:11 -0400, Krzysztof Kozlowski wrote:
+>> Some boards use SJA1105 Ethernet Switch with SPI CPOL, so document this
+>> to fix dtbs_check warnings:
+>>
+>>   arch/arm64/boot/dts/freescale/fsl-lx2160a-bluebox3.dtb: ethernet-switch@0: Unevaluated properties are not allowed ('spi-cpol' was unexpected)
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+>>  Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+> 
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
+> 
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+> 
+> Full log is available here: https://patchwork.ozlabs.org/patch/
+> 
+> 
+> ethernet-switch@1: Unevaluated properties are not allowed ('#address-cells', '#size-cells', 'fsl,spi-cs-sck-delay', 'fsl,spi-sck-cs-delay', 'spi-cpha' were unexpected)
+> 	arch/arm/boot/dts/ls1021a-tsn.dtb
 
-Daniel Xu reported that the hash:net,iface type of the ipset subsystem does
-not limit adding the same network with different interfaces to a set, which
-can lead to huge memory usage or allocation failure.
+I'll add cpha, but fsl,spi-cs-sck-delay are coming from unconverted
+schema - spi-fsl-dspi.txt.
 
-The quick reproducer is
+> 
+> switch@0: Unevaluated properties are not allowed ('clocks', 'reset-gpios', 'spi-cpha' were unexpected)
+> 	arch/arm/boot/dts/imx6qp-prtwd3.dtb
+> 	arch/arm/boot/dts/stm32mp151a-prtt1c.dtb
+> 
 
-$ ipset create ACL.IN.ALL_PERMIT hash:net,iface hashsize 1048576 timeout 0
-$ for i in $(seq 0 100); do /sbin/ipset add ACL.IN.ALL_PERMIT 0.0.0.0/0,kaf_$i timeout 0 -exist; done
-
-The backtrace when vmalloc fails:
-
-        [Tue Oct 25 00:13:08 2022] ipset: vmalloc error: size 1073741848, exceeds total pages
-        <...>
-        [Tue Oct 25 00:13:08 2022] Call Trace:
-        [Tue Oct 25 00:13:08 2022]  <TASK>
-        [Tue Oct 25 00:13:08 2022]  dump_stack_lvl+0x48/0x60
-        [Tue Oct 25 00:13:08 2022]  warn_alloc+0x155/0x180
-        [Tue Oct 25 00:13:08 2022]  __vmalloc_node_range+0x72a/0x760
-        [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_add+0x7c0/0xb20
-        [Tue Oct 25 00:13:08 2022]  ? __kmalloc_large_node+0x4a/0x90
-        [Tue Oct 25 00:13:08 2022]  kvmalloc_node+0xa6/0xd0
-        [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_resize+0x99/0x710
-        <...>
-
-The fix is to enforce the limit documented in the ipset(8) manpage:
-
->  The internal restriction of the hash:net,iface set type is that the same
->  network prefix cannot be stored with more than 64 different interfaces
->  in a single set.
-
-Fixes: ccf0a4b7fc68 ("netfilter: ipset: Add bucketsize parameter to all hash types")
-Reported-by: Daniel Xu <dxu@dxuuu.xyz>
-Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/ipset/ip_set_hash_gen.h | 30 ++++++---------------------
- 1 file changed, 6 insertions(+), 24 deletions(-)
-
-diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
-index 6e391308431d..3adc291d9ce1 100644
---- a/net/netfilter/ipset/ip_set_hash_gen.h
-+++ b/net/netfilter/ipset/ip_set_hash_gen.h
-@@ -42,31 +42,8 @@
- #define AHASH_MAX_SIZE			(6 * AHASH_INIT_SIZE)
- /* Max muber of elements in the array block when tuned */
- #define AHASH_MAX_TUNED			64
--
- #define AHASH_MAX(h)			((h)->bucketsize)
- 
--/* Max number of elements can be tuned */
--#ifdef IP_SET_HASH_WITH_MULTI
--static u8
--tune_bucketsize(u8 curr, u32 multi)
--{
--	u32 n;
--
--	if (multi < curr)
--		return curr;
--
--	n = curr + AHASH_INIT_SIZE;
--	/* Currently, at listing one hash bucket must fit into a message.
--	 * Therefore we have a hard limit here.
--	 */
--	return n > curr && n <= AHASH_MAX_TUNED ? n : curr;
--}
--#define TUNE_BUCKETSIZE(h, multi)	\
--	((h)->bucketsize = tune_bucketsize((h)->bucketsize, multi))
--#else
--#define TUNE_BUCKETSIZE(h, multi)
--#endif
--
- /* A hash bucket */
- struct hbucket {
- 	struct rcu_head rcu;	/* for call_rcu */
-@@ -936,7 +913,12 @@ mtype_add(struct ip_set *set, void *value, const struct ip_set_ext *ext,
- 		goto set_full;
- 	/* Create a new slot */
- 	if (n->pos >= n->size) {
--		TUNE_BUCKETSIZE(h, multi);
-+#ifdef IP_SET_HASH_WITH_MULTI
-+		if (h->bucketsize >= AHASH_MAX_TUNED)
-+			goto set_full;
-+		else if (h->bucketsize < multi)
-+			h->bucketsize += AHASH_INIT_SIZE;
-+#endif
- 		if (n->size >= AHASH_MAX(h)) {
- 			/* Trigger rehashing */
- 			mtype_data_next(&h->next, d);
--- 
-2.30.2
+Best regards,
+Krzysztof
 
