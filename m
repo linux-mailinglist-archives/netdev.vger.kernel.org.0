@@ -2,74 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26E0961716E
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 00:10:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0CCE617176
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 00:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiKBXKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 19:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        id S229899AbiKBXLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 19:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiKBXKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 19:10:18 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE8E658F
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 16:10:17 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id l9so113293qkk.11
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 16:10:17 -0700 (PDT)
+        with ESMTP id S230121AbiKBXK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 19:10:59 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9B2DE86
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 16:10:58 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id h18so226519ilq.9
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 16:10:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=zE0kVQMhsKgnJAXV7culWIr2zj+2e0F5QP+AlSJYD+Y=;
-        b=dOV0aaoUE3p9Hy61orb7bJZTfU2WsUVnpXr/iauN/Z+XQgYlGCt+M+YZmHhgYm9moj
-         MitOzjtGguR6/KmO1vxd7HJtIorAeU22lhxkFAA+bVJ0XSZvuTBxE1sDoeOV5FQD2TS1
-         AuT7D/bz13frTlIaq/GCHDUwGY099YbrH4M+U5omCpCCK7GvE6ZapiQmSWfsWunmcXDM
-         yawhV9iiDAEWQb+pmEmOF31y8+HlQlIkC5qOdzuny+/UrWbGCW9eOws1TMn1iQCUlldS
-         dVDzU6h50FRWtZveuLg8POHyK0zimg2RcvuAl/uZarfc3hS0Z46NHpACbLKfIQDf24/k
-         tVKw==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6i3l2ls630yIi3o75TApUSQtOr3lPDRY+XACXcmS2fw=;
+        b=tYUy0H7+MJV+LuECUV327HtU7FoSWaNj+5OgOQiA2ERmz6WO2rYBbo6BShBeAhXbab
+         kEbTBaGKi9gFJvakqoSRcz/0y9nY8aBimVAjqLFqs07iSwhGwstxOXcC/LIF+wiY+1rV
+         /+wrMT2cgNsKSydxIu+Kwc5q9IWH1CFk2qfdv6ZUBciqE2wlfd1+84HoYsVppNvNLj1Q
+         V3fApiyuPWWCH6Ie1F2fiuChoJTyrnGein88AidtNQ3xQQ6oBRTRGfs//AMsXbEvdFp/
+         CGs0NL3MEaIUxuM3fC1Ki7rD3qeyjOOhlhLU8Pu4KSyIvt8iQuch1HU0IL+/U0tIX7R1
+         47gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zE0kVQMhsKgnJAXV7culWIr2zj+2e0F5QP+AlSJYD+Y=;
-        b=PLF3PM5kTnserMFWTPb/hakTYBWsIAexUG1ToVz8ldXQQeLnGoGDfLUCZlicwQXvzN
-         VlphrKTpEWi++JQHUs95MXCLwkBHE3r/heGh9NPeAcIq9GD8Rn4TCSv9wBrMt/Lq89zE
-         3ByBjFW+zQiyi1/kco32O1GTEWNvQvM8m533hJ8+HvPMf702qiTKE+EvbT4HPw+fE1jr
-         yV7GjdbtTIWBwaWLiEqi9Tr+6z8MgjAkXpl49qNiIVaFsiQ81LdopjkVnn72Sy475fn1
-         HPWc0oL6rdXoOZaV3eI+XfXUjcotVivlgI/IHGdi/Vbmwjn2FuTLlTaoQYa40SQvgguH
-         Fs5g==
-X-Gm-Message-State: ACrzQf1Dr7dAP4UgA18p3lqKI3+/IRC7ph7rcpCIHYWuGAXK5rRLRXYG
-        MjqIDqNYWubd1mIfZounMwdEtq359z8=
-X-Google-Smtp-Source: AMsMyM4sXCPasEcXNiSF9BFXXAEgCdn/1Mpu4RB7AuoU/rphVfSL067LixHmhVl0YZAC+0dj1nEFhw==
-X-Received: by 2002:a37:88a:0:b0:6fa:a3e:45d with SMTP id 132-20020a37088a000000b006fa0a3e045dmr19670595qki.346.1667430616261;
-        Wed, 02 Nov 2022 16:10:16 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id b8-20020ac86788000000b003a540320070sm2443163qtp.6.2022.11.02.16.10.15
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Nov 2022 16:10:16 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-370547b8ca0so1005827b3.0
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 16:10:15 -0700 (PDT)
-X-Received: by 2002:a0d:d897:0:b0:36a:fc80:fa9f with SMTP id
- a145-20020a0dd897000000b0036afc80fa9fmr26054201ywe.43.1667430615534; Wed, 02
- Nov 2022 16:10:15 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6i3l2ls630yIi3o75TApUSQtOr3lPDRY+XACXcmS2fw=;
+        b=XDyTLVRxR55/kkNvntnpv4877oD+te1cyU+/txU90VDhrtzZk7qOxMpvGwLnVKii+n
+         H3hgEPPtIr/K1XQBnj1IsfkMhCP0sjxIOO3xuMs06QtoTZyqFn8mCqronUxnMGO/43WQ
+         zZbgfjFxG3tlIZ6aYli5yrlouRsO7mCzKq/Dv4yZZ2d4Urh0RbcuN6bMSDIHls05c6fm
+         36ESjp95v+d4YAywaFpRu+HA38z9kYYnqovBpbizgNGDfAZflgf7rSco34ny7A9qCCxl
+         yNDmPuCuR0ai5f/8r7OMazsriArWqv6hOw3y1MrDvu2rcb6yAqzPjVMW13tGsLbQmRbV
+         1tLQ==
+X-Gm-Message-State: ACrzQf2S5FFrzxaMazoC2eFMxn7rsZP4iGl1h2fCXwq+pKhvGEOsbK3b
+        ikTP23i+Ob6UGBfoK0Wj0/d1UXs/v01Jwrd87CqjJA==
+X-Google-Smtp-Source: AMsMyM6B5+gaE2TZlgZjuY4B2fe17fqqDk+mFKzudbUxGaL3qURYHzYXqV5xQcxeYtJpTxGz912FinKnWZB0ZWo93/Q=
+X-Received: by 2002:a92:5204:0:b0:300:d0b8:5184 with SMTP id
+ g4-20020a925204000000b00300d0b85184mr2980812ilb.118.1667430657771; Wed, 02
+ Nov 2022 16:10:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221030220203.31210-1-axboe@kernel.dk> <CA+FuTSfj5jn8Wui+az2BrcpDFYF5m5ehwLiswwHMPJ2MK+S_Jw@mail.gmail.com>
- <02e5bf45-f877-719b-6bf8-c4ac577187a8@kernel.dk>
-In-Reply-To: <02e5bf45-f877-719b-6bf8-c4ac577187a8@kernel.dk>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 2 Nov 2022 19:09:38 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSd-HvtPVwRto0EGExm-Pz7dGpxAt+1sTb51P_QBd-N9KQ@mail.gmail.com>
-Message-ID: <CA+FuTSd-HvtPVwRto0EGExm-Pz7dGpxAt+1sTb51P_QBd-N9KQ@mail.gmail.com>
-Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20221027200019.4106375-1-sdf@google.com> <635bfc1a7c351_256e2082f@john.notmuch>
+ <20221028110457.0ba53d8b@kernel.org> <CAKH8qBshi5dkhqySXA-Rg66sfX0-eTtVYz1ymHfBxSE=Mt2duA@mail.gmail.com>
+ <635c62c12652d_b1ba208d0@john.notmuch> <20221028181431.05173968@kernel.org>
+ <5aeda7f6bb26b20cb74ef21ae9c28ac91d57fae6.camel@siemens.com>
+ <875yg057x1.fsf@toke.dk> <CAKH8qBvQbgE=oSZoH4xiLJmqMSXApH-ufd-qEKGKD8=POfhrWQ@mail.gmail.com>
+ <77b115a0-bbba-48eb-89bd-3078b5fb7eeb@linux.dev> <CAKH8qBsGB1G60cu91Au816gsB2zF8T0P-yDwxbTEOxX0TN3WgA@mail.gmail.com>
+ <0c00ba33-f37b-dfe6-7980-45920ffa273b@linux.dev> <48ba6e77-1695-50b3-b27f-e82750ee70bb@redhat.com>
+ <87iljx2ey4.fsf@toke.dk>
+In-Reply-To: <87iljx2ey4.fsf@toke.dk>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 2 Nov 2022 16:10:46 -0700
+Message-ID: <CAKH8qBt31WBpDWb+SkNpuzE1PuwC1O_v7seF9TMJfc6SvhN7MQ@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [RFC bpf-next 0/5] xdp: hints via kfuncs
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>, brouer@redhat.com,
+        "Bezdeka, Florian" <florian.bezdeka@siemens.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "alexandr.lobakin@intel.com" <alexandr.lobakin@intel.com>,
+        "anatoly.burakov@intel.com" <anatoly.burakov@intel.com>,
+        "song@kernel.org" <song@kernel.org>,
+        "Deric, Nemanja" <nemanja.deric@siemens.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "Kiszka, Jan" <jan.kiszka@siemens.com>,
+        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
+        "willemb@google.com" <willemb@google.com>,
+        "ast@kernel.org" <ast@kernel.org>, "yhs@fb.com" <yhs@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "mtahhan@redhat.com" <mtahhan@redhat.com>,
+        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "haoluo@google.com" <haoluo@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,79 +96,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 2, 2022 at 1:54 PM Jens Axboe <axboe@kernel.dk> wrote:
+On Wed, Nov 2, 2022 at 3:02 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> On 11/2/22 11:46 AM, Willem de Bruijn wrote:
-> > On Sun, Oct 30, 2022 at 6:02 PM Jens Axboe <axboe@kernel.dk> wrote:
+> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
+>
+> > On 01/11/2022 18.05, Martin KaFai Lau wrote:
+> >> On 10/31/22 6:59 PM, Stanislav Fomichev wrote:
+> >>> On Mon, Oct 31, 2022 at 3:57 PM Martin KaFai Lau
+> >>> <martin.lau@linux.dev> wrote:
+> >>>>
+> >>>> On 10/31/22 10:00 AM, Stanislav Fomichev wrote:
+> >>>>>> 2. AF_XDP programs won't be able to access the metadata without
+> >>>>>> using a
+> >>>>>> custom XDP program that calls the kfuncs and puts the data into th=
+e
+> >>>>>> metadata area. We could solve this with some code in libxdp,
+> >>>>>> though; if
+> >>>>>> this code can be made generic enough (so it just dumps the availab=
+le
+> >>>>>> metadata functions from the running kernel at load time), it may b=
+e
+> >>>>>> possible to make it generic enough that it will be forward-compati=
+ble
+> >>>>>> with new versions of the kernel that add new fields, which should
+> >>>>>> alleviate Florian's concern about keeping things in sync.
+> >>>>>
+> >>>>> Good point. I had to convert to a custom program to use the kfuncs =
+:-(
+> >>>>> But your suggestion sounds good; maybe libxdp can accept some extra
+> >>>>> info about at which offset the user would like to place the metadat=
+a
+> >>>>> and the library can generate the required bytecode?
+> >>>>>
+> >>>>>> 3. It will make it harder to consume the metadata when building
+> >>>>>> SKBs. I
+> >>>>>> think the CPUMAP and veth use cases are also quite important, and =
+that
+> >>>>>> we want metadata to be available for building SKBs in this path. M=
+aybe
+> >>>>>> this can be resolved by having a convenient kfunc for this that ca=
+n be
+> >>>>>> used for programs doing such redirects. E.g., you could just call
+> >>>>>> xdp_copy_metadata_for_skb() before doing the bpf_redirect, and tha=
+t
+> >>>>>> would recursively expand into all the kfunc calls needed to extrac=
+t
+> >>>>>> the
+> >>>>>> metadata supported by the SKB path?
+> >>>>>
+> >>>>> So this xdp_copy_metadata_for_skb will create a metadata layout tha=
+t
+> >>>>
+> >>>> Can the xdp_copy_metadata_for_skb be written as a bpf prog itself?
+> >>>> Not sure where is the best point to specify this prog though.
+> >>>> Somehow during
+> >>>> bpf_xdp_redirect_map?
+> >>>> or this prog belongs to the target cpumap and the xdp prog
+> >>>> redirecting to this
+> >>>> cpumap has to write the meta layout in a way that the cpumap is
+> >>>> expecting?
+> >>>
+> >>> We're probably interested in triggering it from the places where xdp
+> >>> frames can eventually be converted into skbs?
+> >>> So for plain 'return XDP_PASS' and things like bpf_redirect/etc? (IOW=
+,
+> >>> anything that's not XDP_DROP / AF_XDP redirect).
+> >>> We can probably make it magically work, and can generate
+> >>> kernel-digestible metadata whenever data =3D=3D data_meta, but the
+> >>> question - should we?
+> >>> (need to make sure we won't regress any existing cases that are not
+> >>> relying on the metadata)
 > >>
-> >> Hi,
+> >> Instead of having some kernel-digestible meta data, how about calling
+> >> another bpf prog to initialize the skb fields from the meta area after
+> >> __xdp_build_skb_from_frame() in the cpumap, so
+> >> run_xdp_set_skb_fileds_from_metadata() may be a better name.
 > >>
-> >> tldr - we saw a 6-7% CPU reduction with this patch. See patch 6 for
-> >> full numbers.
-> >>
-> >> This adds support for EPOLL_CTL_MIN_WAIT, which allows setting a minimum
-> >> time that epoll_wait() should wait for events on a given epoll context.
-> >> Some justification and numbers are in patch 6, patches 1-5 are really
-> >> just prep patches or cleanups.
-> >>
-> >> Sending this out to get some input on the API, basically. This is
-> >> obviously a per-context type of operation in this patchset, which isn't
-> >> necessarily ideal for any use case. Questions to be debated:
-> >>
-> >> 1) Would we want this to be available through epoll_wait() directly?
-> >>    That would allow this to be done on a per-epoll_wait() basis, rather
-> >>    than be tied to the specific context.
-> >>
-> >> 2) If the answer to #1 is yes, would we still want EPOLL_CTL_MIN_WAIT?
-> >>
-> >> I think there are pros and cons to both, and perhaps the answer to both is
-> >> "yes". There are some benefits to doing this at epoll setup time, for
-> >> example - it nicely isolates it to that part rather than needing to be
-> >> done dynamically everytime epoll_wait() is called. This also helps the
-> >> application code, as it can turn off any busy'ness tracking based on if
-> >> the setup accepted EPOLL_CTL_MIN_WAIT or not.
-> >>
-> >> Anyway, tossing this out there as it yielded quite good results in some
-> >> initial testing, we're running more of it. Sending out a v3 now since
-> >> someone reported that nonblock issue which is annoying. Hoping to get some
-> >> more discussion this time around, or at least some...
 > >
-> > My main question is whether the cycle gains justify the code
-> > complexity and runtime cost in all other epoll paths.
+> > I very much like this idea of calling another bpf prog to initialize th=
+e
+> > SKB fields from the meta area. (As a reminder, data need to come from
+> > meta area, because at this point the hardware RX-desc is out-of-scope).
+> > I'm onboard with xdp_copy_metadata_for_skb() populating the meta area.
 > >
-> > Syscall overhead is quite dependent on architecture and things like KPTI.
+> > We could invoke this BPF-prog inside __xdp_build_skb_from_frame().
+> >
+> > We might need a new BPF_PROG_TYPE_XDP2SKB as this new BPF-prog
+> > run_xdp_set_skb_fields_from_metadata() would need both xdp_buff + SKB a=
+s
+> > context inputs. Right?  (Not sure, if this is acceptable with the BPF
+> > maintainers new rules)
+> >
+> >> The xdp_prog@rx sets the meta data and then redirect.  If the
+> >> xdp_prog@rx can also specify a xdp prog to initialize the skb fields
+> >> from the meta area, then there is no need to have a kfunc to enforce a
+> >> kernel-digestible layout.  Not sure what is a good way to specify this
+> >> xdp_prog though...
+> >
+> > The challenge of running this (BPF_PROG_TYPE_XDP2SKB) BPF-prog inside
+> > __xdp_build_skb_from_frame() is that it need to know howto decode the
+> > meta area for every device driver or XDP-prog populating this (as veth
+> > and cpumap can get redirected packets from multiple device drivers).
 >
-> Definitely interested in experiences from other folks, but what other
-> runtime costs do you see compared to the baseline?
-
-Nothing specific. Possible cost from added branches and moving local
-variables into structs with possibly cold cachelines.
-
-> > Indeed, I was also wondering whether an extra timeout arg to
-> > epoll_wait would give the same feature with less side effects. Then no
-> > need for that new ctrl API.
+> If we have the helper to copy the data "out of" the drivers, why do we
+> need a second BPF program to copy data to the SKB?
 >
-> That was my main question in this posting - what's the best api? The
-> current one, epoll_wait() addition, or both? The nice thing about the
-> current one is that it's easy to integrate into existing use cases, as
-> the decision to do batching on the userspace side or by utilizing this
-> feature can be kept in the setup path. If you do epoll_wait() and get
-> -1/EINVAL or false success on older kernels, then that's either a loss
-> because of thinking it worked, or a fast path need to check for this
-> specifically every time you call epoll_wait() rather than just at
-> init/setup time.
+> I.e., the XDP program calls xdp_copy_metadata_for_skb(); this invokes
+> each of the kfuncs needed for the metadata used by SKBs, all of which
+> get unrolled. The helper takes the output of these metadata-extracting
+> kfuncs and stores it "somewhere". This "somewhere" could well be the
+> metadata area; but in any case, since it's hidden away inside a helper
+> (or kfunc) from the calling XDP program's PoV, the helper can just stash
+> all the data in a fixed format, which __xdp_build_skb_from_frame() can
+> then just read statically. We could even make this format match the
+> field layout of struct sk_buff, so all we have to do is memcpy a
+> contiguous chunk of memory when building the SKB.
+
++1
+
+I'm currently doing exactly what you're suggesting (minus matching skb layo=
+ut):
+
+struct xdp_to_skb_metadata {
+  u32 magic; // randomized at boot
+  ... skb-consumable-metadata in fixed format
+} __randomize_layout;
+
+bpf_xdp_copy_metadata_for_skb() does bpf_xdp_adjust_meta(ctx,
+-sizeof(struct xdp_to_skb_metadata)) and then calls a bunch of kfuncs
+to fill in the actual data.
+
+Then, at __xdp_build_skb_from_frame time, I'm having a regular kernel
+C code that parses that 'struct xdp_to_skb_metadata'.
+(To be precise, I'm trying to parse the metadata from
+skb_metadata_set; it's called from __xdp_build_skb_from_frame, but not
+100% sure that's the right place).
+(I also randomize the layout and magic to make sure userspace doesn't
+depend on it because nothing stops this packet to be routed into xsk
+socket..)
+
+> > Sure, using a common function/helper/macro like
+> > xdp_copy_metadata_for_skb() could help reduce this multiplexing, but
+> > we want to have maximum flexibility to extend this without having to
+> > update the kernel, right.
 >
-> But this is very much the question I already posed and wanted to
-> discuss...
-
-I see the value in being able to detect whether the feature is present.
-
-But a pure epoll_wait implementation seems a lot simpler to me, and
-more elegant: timeout is an argument to epoll_wait already.
-
-A new epoll_wait variant would have to be a new system call, so it
-would be easy to infer support for the feature.
-
+> The extension mechanism is in which kfuncs are available to XDP programs
+> to extract metadata. The kernel then just becomes another consumer of
+> those kfuncs, by way of the xdp_copy_metadata_for_skb(); but there could
+> also be other kfuncs added that are not used for skbs (even
+> vendor-specific ones if we want to allow that).
 >
-> --
-> Jens Axboe
+> -Toke
+>
