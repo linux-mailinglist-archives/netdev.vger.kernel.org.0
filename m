@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25C07616FF8
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E35617005
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiKBVk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 17:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
+        id S231237AbiKBVpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 17:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbiKBVk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:40:27 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BF2F5B8
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:40:21 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id i5-20020a1c3b05000000b003cf47dcd316so2115483wma.4
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 14:40:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6ETKW87oD1PaKF18iDMpYJJYkObMGHPNzp/3KEFUums=;
-        b=PORYkH1v/fjnOxVBN59/9kTAHu6YZoGqHuVEDf8bMVo3lsfN9w8VBUmtGu+1cVkgDM
-         fjRsVL8UHTIH9PEVwcQt6JFsxzOCp/JmPm01YhW3swWVs07hikBpFusuib7khF7skDEN
-         YR+WHF50IGOvLxqV/OU9ZGMyGAFy6CkUNC4yClR9+uiZ2jb0IiHCFEfm+oE7NnuPnPLO
-         O5lwuSbh/2WiJieFuCRSK5WQzCVfFSYz5UaZAAcqD1cT/t1Pke+FUHo5nQiFDwoUqPjq
-         s+pVbPnJPV2CT4mM5itDNJ4JjO6GBG7LqJ3RSArrIv72HR93jl1tUuSoasHQl6KdjHuh
-         pMZg==
+        with ESMTP id S229708AbiKBVo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:44:59 -0400
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CC69FD2;
+        Wed,  2 Nov 2022 14:44:55 -0700 (PDT)
+Received: by mail-ot1-f51.google.com with SMTP id w26-20020a056830061a00b0066c320f5b49so5341oti.5;
+        Wed, 02 Nov 2022 14:44:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6ETKW87oD1PaKF18iDMpYJJYkObMGHPNzp/3KEFUums=;
-        b=gU1aeY47Q/1K+pCVAcacdd1mFBqG5IyYBUX4O9ZlLIU3LprZ46QaXtuiqD1aRFuGML
-         twetG5C49qiH4MUOb1+aZ8ygqgJ8ZdmCZXcL1jUZ7MGrx4KyYF2kPlA84c6rfCG9SEA1
-         An6dJm0/VtqxX0Ig2Tnd37IzepFEd1X/BAWbBWscrDBdFFL1aXpiew6IYhvp8kIaCot8
-         yc5fmyb5YXyXioSBluhUUOz3lSScsdDuoqkTd7x0ahJZjpJ2Bj1QwFbSu8jNsNw2Y4Kc
-         zvKJQwM9fUCkmhmzEuKqPTHdSLyAiDoeh2r2tlhzhTFgdlJx8jCN+T+wdgMq/MoLDWoH
-         6ipw==
-X-Gm-Message-State: ACrzQf1HP6mGSfDimiaxLnaC/mFa8tiRhplroXRjTJhgIn1LvuTmdQNx
-        K/7eAQRDQev0I6bq6ffP4iG6XQ==
-X-Google-Smtp-Source: AMsMyM6t7pF3U9hm+AJ3O65rUN7ZhwXDzF+QUY0HQXvXeMST/0/7qIsalaOB9DCs6rgrHbS4inKhhQ==
-X-Received: by 2002:a05:600c:654f:b0:3c3:b5b7:43a9 with SMTP id dn15-20020a05600c654f00b003c3b5b743a9mr27647075wmb.201.1667425210619;
-        Wed, 02 Nov 2022 14:40:10 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id g7-20020a5d5547000000b00228daaa84aesm13375876wrw.25.2022.11.02.14.40.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Nov 2022 14:40:10 -0700 (PDT)
-Message-ID: <483848f5-8807-fd97-babc-44740db96db4@arista.com>
-Date:   Wed, 2 Nov 2022 21:40:03 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH 2/2] net/tcp: Disable TCP-MD5 static key on
- tcp_md5sig_info destruction
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
+        bh=syOzYtOOOUOYVS4+OlEvCGBduiGZmBKkbZQSbbMUPpA=;
+        b=Ai59QzDF3njfiJ8WmpJm/jR//u4TcX2m7C7weX6z5D8COwCvd81toeiR3L4MgO2b95
+         BW/3Wrrr0T7bTxq9Gv4vrszQX7WPxRSIc9px7skY/DtjbKRRWGDlc9LYP84rJxT7ReKR
+         VCVxUbkpJckIePw/k4jVuPRZokzDBMPa6ppIsOYSeHzScmkH+T2+0CwDQqghzMm9HiE5
+         1yQhXD0FhdinbYQZv8xIBjVnxxeJCJT0DcMaYtSKsuhct0qpj1hTuoI47E0qn+Y7N0Yo
+         SXV1X3Tv9nOeOU3jMSFsS+G9Fkdotc12IzlGQwrNFa/Xot65f9YwA49ppm0Xoz44Ro+A
+         H92A==
+X-Gm-Message-State: ACrzQf1N6Roz79uQN29+1JOxCfLFse9ZycaJN04s1cZWVi1NMwvtO5B6
+        eAvIptbxSd9GboQWnSms6w==
+X-Google-Smtp-Source: AMsMyM5jgp6/w71wsIeSDu5Cp2add+eO31Ja16PdaL5iDF1jEe8kETQjfyntiTk6ehIozKaHEcN28A==
+X-Received: by 2002:a05:6830:108:b0:66a:8d0d:6a73 with SMTP id i8-20020a056830010800b0066a8d0d6a73mr13260759otp.193.1667425495145;
+        Wed, 02 Nov 2022 14:44:55 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q21-20020a056830233500b00661c0747545sm5655710otg.44.2022.11.02.14.44.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Nov 2022 14:44:54 -0700 (PDT)
+Received: (nullmailer pid 522290 invoked by uid 1000);
+        Wed, 02 Nov 2022 21:44:56 -0000
+Date:   Wed, 2 Nov 2022 16:44:56 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
+Cc:     Chester Lin <clin@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org
-References: <20221102211350.625011-1-dima@arista.com>
- <20221102211350.625011-3-dima@arista.com>
- <CANn89iLbOikuG9+Tna9M0Gr-diF2vFpfMV8MDP8rBuN49+Mwrg@mail.gmail.com>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <CANn89iLbOikuG9+Tna9M0Gr-diF2vFpfMV8MDP8rBuN49+Mwrg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jan Petrous <jan.petrous@nxp.com>, netdev@vger.kernel.org,
+        s32@nxp.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Matthias Brugger <mbrugger@suse.com>
+Subject: Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC dwmac
+ glue driver
+Message-ID: <20221102214456.GB459441-robh@kernel.org>
+References: <20221031101052.14956-1-clin@suse.com>
+ <20221031101052.14956-3-clin@suse.com>
+ <20221102155515.GA3959603-robh@kernel.org>
+ <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,73 +75,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/2/22 21:25, Eric Dumazet wrote:
-> On Wed, Nov 2, 2022 at 2:14 PM Dmitry Safonov <dima@arista.com> wrote:
-[..]
->> +int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
->> +                  int family, u8 prefixlen, int l3index, u8 flags,
->> +                  const u8 *newkey, u8 newkeylen)
->> +{
->> +       struct tcp_sock *tp = tcp_sk(sk);
->> +
->> +       if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
->> +               if (tcp_md5sig_info_add(sk, GFP_KERNEL))
->> +                       return -ENOMEM;
->> +
->> +               static_branch_inc(&tcp_md5_needed.key);
->> +       }
->> +
->> +       return __tcp_md5_do_add(sk, addr, family, prefixlen, l3index, flags,
->> +                               newkey, newkeylen, GFP_KERNEL);
->> +}
->>  EXPORT_SYMBOL(tcp_md5_do_add);
->>
->> +int tcp_md5_key_copy(struct sock *sk, const union tcp_md5_addr *addr,
->> +                    int family, u8 prefixlen, int l3index,
->> +                    struct tcp_md5sig_key *key)
->> +{
->> +       struct tcp_sock *tp = tcp_sk(sk);
->> +
->> +       if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
->> +               if (tcp_md5sig_info_add(sk, sk_gfp_mask(sk, GFP_ATOMIC)))
->> +                       return -ENOMEM;
->> +
->> +               atomic_inc(&tcp_md5_needed.key.key.enabled);
+On Wed, Nov 02, 2022 at 06:13:35PM +0100, Andreas Färber wrote:
+> Hi Rob,
 > 
-> static_branch_inc ?
-
-That's the difference between tcp_md5_do_add() and tcp_md5_key_copy():
-the first one can sleep on either allocation or static branch patching,
-while the second one is used where there is md5 key and it can't get
-destroyed during the function call. tcp_md5_key_copy() is called
-somewhere from the softirq handler so it needs an atomic allocation as
-well as this a little bit hacky part.
-
-[..]
->> @@ -337,11 +338,13 @@ EXPORT_SYMBOL(tcp_time_wait);
->>  void tcp_twsk_destructor(struct sock *sk)
->>  {
->>  #ifdef CONFIG_TCP_MD5SIG
->> -       if (static_branch_unlikely(&tcp_md5_needed)) {
->> +       if (static_branch_unlikely(&tcp_md5_needed.key)) {
->>                 struct tcp_timewait_sock *twsk = tcp_twsk(sk);
->>
->> -               if (twsk->tw_md5_key)
->> +               if (twsk->tw_md5_key) {
+> On 02.11.22 16:55, Rob Herring wrote:
+> > On Mon, Oct 31, 2022 at 06:10:49PM +0800, Chester Lin wrote:
+> > > Add the DT schema for the DWMAC Ethernet controller on NXP S32 Common
+> > > Chassis.
+> > > 
+> > > Signed-off-by: Jan Petrous <jan.petrous@nxp.com>
+> > > Signed-off-by: Chester Lin <clin@suse.com>
+> > > ---
+> > >   .../bindings/net/nxp,s32cc-dwmac.yaml         | 145 ++++++++++++++++++
+> > >   1 file changed, 145 insertions(+)
+> > >   create mode 100644 Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml b/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
+> > > new file mode 100644
+> > > index 000000000000..f6b8486f9d42
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
+> > > @@ -0,0 +1,145 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +# Copyright 2021-2022 NXP
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: "http://devicetree.org/schemas/net/nxp,s32cc-dwmac.yaml#"
+> > > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > > +
+> > > +title: NXP S32CC DWMAC Ethernet controller
+> > > +
+> > > +maintainers:
+> > > +  - Jan Petrous <jan.petrous@nxp.com>
+> > > +  - Chester Lin <clin@suse.com>
+> [...]
+> > > +properties:
+> > > +  compatible:
+> > > +    contains:
+> > 
+> > Drop 'contains'.
+> > 
+> > > +      enum:
+> > > +        - nxp,s32cc-dwmac
 > 
-> Orthogonal to this patch, but I wonder why we do not clear
-> twsk->tw_md5_key before kfree_rcu()
+> In the past you were adamant that we use concrete SoC-specific strings. Here
+> that would mean s32g2 or s32g274 instead of s32cc (which aims to share with
+> S32G3 IIUC).
+
+Yes they should be SoC specific. Really, 1 per maskset or die is fine if 
+that level of detail is known. No need for different compatibles for 
+different part numbers created by fused off features or package pinout 
+differences.
+
+
+> [...]
+> > > +  clocks:
+> > > +    items:
+> > > +      - description: Main GMAC clock
+> > > +      - description: Peripheral registers clock
+> > > +      - description: Transmit SGMII clock
+> > > +      - description: Transmit RGMII clock
+> > > +      - description: Transmit RMII clock
+> > > +      - description: Transmit MII clock
+> > > +      - description: Receive SGMII clock
+> > > +      - description: Receive RGMII clock
+> > > +      - description: Receive RMII clock
+> > > +      - description: Receive MII clock
+> > > +      - description:
+> > > +          PTP reference clock. This clock is used for programming the
+> > > +          Timestamp Addend Register. If not passed then the system
+> > > +          clock will be used.
+> > 
+> > If optional, then you need 'minItems'.
+> [snip]
 > 
-> It seems a lookup could catch the invalid pointer.
+> Do we have any precedence of bindings with *MII clocks like these?
+
+Don't know...
+
+> AFAIU the reason there are so many here is that there are in fact physically
+> just five, but different parent clock configurations that SCMI does not
+> currently expose to Linux. Thus I was raising that we may want to extend the
+> SCMI protocol with some SET_PARENT operation that could allow us to use less
+> input clocks here, but obviously such a standardization process will take
+> time...
 > 
->>                         kfree_rcu(twsk->tw_md5_key, rcu);
->> +                       static_branch_slow_dec_deferred(&tcp_md5_needed);
->> +               }
->>         }
->>  #endif
+> What are your thoughts on how to best handle this here?
 
-A good question, let me check on this.
+Perhaps use assigned-clocks if it is static for a board.
 
-Thanks for the review,
-          Dmitry
-
+> Not clear to me has been whether the PHY mode can be switched at runtime
+> (like DPAA2 on Layerscape allows for SFPs) or whether this is fixed by board
+> design. If the latter, the two out of six SCMI IDs could get selected in
+> TF-A, to have only physical clocks here in the binding.
+> 
+> Regards,
+> Andreas
