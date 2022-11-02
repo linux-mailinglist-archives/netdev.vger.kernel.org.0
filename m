@@ -2,119 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DF06169FD
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 18:07:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BCD616A45
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 18:13:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbiKBRHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 13:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33998 "EHLO
+        id S230386AbiKBRNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 13:13:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231185AbiKBRH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 13:07:27 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454C71275A;
-        Wed,  2 Nov 2022 10:07:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667408847; x=1698944847;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T+TGu5fyZMwsB1bNV8M5ZhUO/Mv6ZJpYkYI2sMe6tBU=;
-  b=Wo1lwrNavGPj36brrWbSfBVXl/iumMPS2gaDw7hhcfC9VXrgI8TlKXcw
-   ero3OEJxdnIgz19E+4ZPkiuI1QlMPrDpOfTKeKwHV6cyZZhNuf3mXLjjQ
-   OBGAtVOstTbDGfsyADXsCP6fYGsAXWZqI3Q3j7AUoear/w7k7aIlmTmNh
-   /WlqoFNNtaqfRFGidRwflmM9Q3s/K/6xQuh+UlaYvvpm/FbuqxMYVq4ZX
-   thh9YTNGJTXSTyqSWyanCe5oMbkMZZisAkF6wi17t/+SU65idX5Dp2afz
-   HYX68m4z1ofW06+zS/wVKfbIIlqgxWoxU3e+9CB1ZC/M1+sIPOTeoIzV+
-   g==;
-X-IronPort-AV: E=Sophos;i="5.95,234,1661842800"; 
-   d="scan'208";a="187332013"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Nov 2022 10:07:26 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 2 Nov 2022 10:07:24 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Wed, 2 Nov 2022 10:07:24 -0700
-Date:   Wed, 2 Nov 2022 18:12:07 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <pabeni@redhat.com>, <edumazet@google.com>, <olteanv@gmail.com>,
-        <linux@armlinux.org.uk>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <Ian.Saturley@microchip.com>
-Subject: Re: [PATCH net-next V6 1/2] net: lan743x: Remove unused argument in
- lan743x_common_regs( )
-Message-ID: <20221102171207.omyob44532fu4bvm@soft-dev3-1>
-References: <20221102104834.5555-1-Raju.Lakkaraju@microchip.com>
- <20221102104834.5555-2-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S230353AbiKBRNi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 13:13:38 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2D51DF3C;
+        Wed,  2 Nov 2022 10:13:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D068022AF9;
+        Wed,  2 Nov 2022 17:13:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1667409215; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FjC+X+IGjVIQCN9uPjsHYAeg5Fp899IsmxwXbW3ArI4=;
+        b=EbfWZ5Ab0gfFfbSBI0QUXUrVicapq9089Yr2aPJG9yILWhz4bPAs7Hk2AhP3GF/YbCLwGP
+        Z5wg2sqGnniUp/+GuE8yHePIQbQRDqzhjQRth8zYBED/52vrIpTv+vfIT7YGpcCd88zeLD
+        xCBURvWdi3uVVF2GPCTj3HTfjoPT2vw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1667409215;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FjC+X+IGjVIQCN9uPjsHYAeg5Fp899IsmxwXbW3ArI4=;
+        b=mdwAzgOj/hjLJzRWy7/A+VPgcC2iH8jTbPKjcSx6lAhkQVxtuHVoPT3h+0wvSSrKrwsFym
+        /IiOyLGTMamyQ4BQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7A3A513AE0;
+        Wed,  2 Nov 2022 17:13:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id bNdiHD+lYmPaOQAAMHmgww
+        (envelope-from <afaerber@suse.de>); Wed, 02 Nov 2022 17:13:35 +0000
+Message-ID: <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
+Date:   Wed, 2 Nov 2022 18:13:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20221102104834.5555-2-Raju.Lakkaraju@microchip.com>
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC dwmac glue
+ driver
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>, Chester Lin <clin@suse.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jan Petrous <jan.petrous@nxp.com>, netdev@vger.kernel.org,
+        s32@nxp.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Matthias Brugger <mbrugger@suse.com>
+References: <20221031101052.14956-1-clin@suse.com>
+ <20221031101052.14956-3-clin@suse.com>
+ <20221102155515.GA3959603-robh@kernel.org>
+From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+Organization: SUSE Software Solutions Germany GmbH
+In-Reply-To: <20221102155515.GA3959603-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/02/2022 16:18, Raju Lakkaraju wrote:
+Hi Rob,
 
-Hi Raju,
-
-> Remove the unused argument (i.e. struct ethtool_regs *regs) in
-> lan743x_common_regs( ) function arguments.
+On 02.11.22 16:55, Rob Herring wrote:
+> On Mon, Oct 31, 2022 at 06:10:49PM +0800, Chester Lin wrote:
+>> Add the DT schema for the DWMAC Ethernet controller on NXP S32 Common
+>> Chassis.
+>>
+>> Signed-off-by: Jan Petrous <jan.petrous@nxp.com>
+>> Signed-off-by: Chester Lin <clin@suse.com>
+>> ---
+>>   .../bindings/net/nxp,s32cc-dwmac.yaml         | 145 ++++++++++++++++++
+>>   1 file changed, 145 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml b/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
+>> new file mode 100644
+>> index 000000000000..f6b8486f9d42
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
+>> @@ -0,0 +1,145 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +# Copyright 2021-2022 NXP
+>> +%YAML 1.2
+>> +---
+>> +$id: "http://devicetree.org/schemas/net/nxp,s32cc-dwmac.yaml#"
+>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>> +
+>> +title: NXP S32CC DWMAC Ethernet controller
+>> +
+>> +maintainers:
+>> +  - Jan Petrous <jan.petrous@nxp.com>
+>> +  - Chester Lin <clin@suse.com>
+[...]
+>> +properties:
+>> +  compatible:
+>> +    contains:
 > 
-> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-> ---
->  drivers/net/ethernet/microchip/lan743x_ethtool.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+> Drop 'contains'.
 > 
-> diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-> index 88f9484cc2a7..fd59708ac4b5 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-> @@ -1190,15 +1190,11 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
->  }
->  #endif /* CONFIG_PM */
->  
-> -static void lan743x_common_regs(struct net_device *dev,
-> -				struct ethtool_regs *regs, void *p)
-> -
-> +static void lan743x_common_regs(struct net_device *dev, void *p)
->  {
->  	struct lan743x_adapter *adapter = netdev_priv(dev);
->  	u32 *rb = p;
->  
-> -	memset(p, 0, (MAX_LAN743X_ETH_REGS * sizeof(u32)));
-> -
+>> +      enum:
+>> +        - nxp,s32cc-dwmac
 
-It seems that you do more here than what you said.
-You remove the unused argument but you also remove the memset. And it
-is a problem because p is not initialized anymore.
+In the past you were adamant that we use concrete SoC-specific strings. 
+Here that would mean s32g2 or s32g274 instead of s32cc (which aims to 
+share with S32G3 IIUC).
 
->  	rb[ETH_PRIV_FLAGS] = adapter->flags;
->  	rb[ETH_ID_REV]     = lan743x_csr_read(adapter, ID_REV);
->  	rb[ETH_FPGA_REV]   = lan743x_csr_read(adapter, FPGA_REV);
-> @@ -1230,7 +1226,7 @@ static void lan743x_get_regs(struct net_device *dev,
->  {
->  	regs->version = LAN743X_ETH_REG_VERSION;
->  
-> -	lan743x_common_regs(dev, regs, p);
-> +	lan743x_common_regs(dev, p);
->  }
->  
->  static void lan743x_get_pauseparam(struct net_device *dev,
-> -- 
-> 2.25.1
+[...]
+>> +  clocks:
+>> +    items:
+>> +      - description: Main GMAC clock
+>> +      - description: Peripheral registers clock
+>> +      - description: Transmit SGMII clock
+>> +      - description: Transmit RGMII clock
+>> +      - description: Transmit RMII clock
+>> +      - description: Transmit MII clock
+>> +      - description: Receive SGMII clock
+>> +      - description: Receive RGMII clock
+>> +      - description: Receive RMII clock
+>> +      - description: Receive MII clock
+>> +      - description:
+>> +          PTP reference clock. This clock is used for programming the
+>> +          Timestamp Addend Register. If not passed then the system
+>> +          clock will be used.
 > 
+> If optional, then you need 'minItems'.
+[snip]
+
+Do we have any precedence of bindings with *MII clocks like these?
+
+AFAIU the reason there are so many here is that there are in fact 
+physically just five, but different parent clock configurations that 
+SCMI does not currently expose to Linux. Thus I was raising that we may 
+want to extend the SCMI protocol with some SET_PARENT operation that 
+could allow us to use less input clocks here, but obviously such a 
+standardization process will take time...
+
+What are your thoughts on how to best handle this here?
+
+Not clear to me has been whether the PHY mode can be switched at runtime 
+(like DPAA2 on Layerscape allows for SFPs) or whether this is fixed by 
+board design. If the latter, the two out of six SCMI IDs could get 
+selected in TF-A, to have only physical clocks here in the binding.
+
+Regards,
+Andreas
 
 -- 
-/Horatiu
+SUSE Software Solutions Germany GmbH
+Frankenstr. 146, 90461 Nürnberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nürnberg)
+
