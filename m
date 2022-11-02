@@ -2,49 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 940BA616FE2
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:34:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D522616FF3
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbiKBVeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 17:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        id S230380AbiKBVkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 17:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbiKBVd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:33:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389D9EE17
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:53 -0700 (PDT)
+        with ESMTP id S229590AbiKBVkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1338463D0;
+        Wed,  2 Nov 2022 14:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAAC161C63
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 21:33:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B460C4347C;
-        Wed,  2 Nov 2022 21:33:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32179B82525;
+        Wed,  2 Nov 2022 21:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C7FDC433D6;
+        Wed,  2 Nov 2022 21:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667424832;
-        bh=lHkOwTt5zrKyn8u6Ecefu+kmZmT9Esf3m287vU0KqzU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hT5z6te3tJyOMe0nHs+cWCrbvBHSJ/RGBdoelQS0VW6Fcny6cqZOoEWkySSPN4H9k
-         /5MofhXq2yA616Aw1PnGUjs6xUFeXX50Nna644UUQWkjm8kxAGnBzat/DvKHMIe9sW
-         57rtzT58WM3wavg3+s+axIvBpnwjEfEgabtSRIxPgPuyhv8KwYDC+BS6FwTdRe3x6+
-         m6JiYqhmurv6dxywouT9tEYJ3z57AMiliD2ZYJfxcgRpOkku9gH/EcFNbS8PKVdayD
-         Xr1GLj0kH09PvMuIIbsRkZuTszwFcdLYCO3aaNf2trzYjBWNNYJqI0WFT/YYAuV6/i
-         Cvl7ZZLUT5yrA==
+        s=k20201202; t=1667425194;
+        bh=PmiXzhOEefQJy7eB8akCP/s7HA4Sro+JpQ84GNIMYP4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=t9hQ5YIJDF4ecTpDvEt0KvC+XB1Hyk/ciVuLGAiJ0DaGLa8dUVqV5T1UBNa5ULgA/
+         gszs4XrhL1e8t0ZAtqmofo7FJwegfhhCsKkAIjofulxdu+ANZK+BX8bTJ5SoWSvFI1
+         nuP2U8E6MR9JQjX25/i1UG+aUCBOwuj1lej9ha75EdjISemDyxhsj2JC8pmSdTYM/Z
+         5k6hyHF6S5jQPFJQe2qnAJLBoeBVnwd3hb2B6FMQMvFIKagfC3uLS1hdxPe3EeSQN0
+         CqOSGnp7jth9S9zKWMRC83qV9Q621guhB0WYDXE5jww2gRTA9NSVsYvg1DEjU9bgul
+         OMiyvFpD5bPIw==
+Date:   Wed, 2 Nov 2022 14:39:53 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
-        gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 13/13] genetlink: convert control family to split ops
-Date:   Wed,  2 Nov 2022 14:33:38 -0700
-Message-Id: <20221102213338.194672-14-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221102213338.194672-1-kuba@kernel.org>
-References: <20221102213338.194672-1-kuba@kernel.org>
+To:     Tao Chen <chentao.kernel@linux.alibaba.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Petr Machata <petrm@nvidia.com>,
+        Kees Cook <keescook@chromium.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] netlink: Fix potential skb memleak in
+ netlink_ack
+Message-ID: <20221102143953.001f1247@kernel.org>
+In-Reply-To: <7a382b9503d10d235238ca55938bc933d92a1de7.1667389213.git.chentao.kernel@linux.alibaba.com>
+References: <7a382b9503d10d235238ca55938bc933d92a1de7.1667389213.git.chentao.kernel@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,64 +60,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prove that the split ops work.
-Sadly we need to keep bug-wards compatibility and specify
-the same policy for dump as do, even tho we don't parse
-inputs for the dump.
+On Wed,  2 Nov 2022 20:08:20 +0800 Tao Chen wrote:
+> We should clean the skb resource if nlmsg_put/append failed
+> , so fix it.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/netlink/genetlink.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+The comma should be at the end of the previous line.
+But really the entire ", so fix it." is redundant.
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index e95b984fcfe6..1fb04496d94a 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -1597,14 +1597,22 @@ static int ctrl_dumppolicy_done(struct netlink_callback *cb)
- 	return 0;
- }
- 
--static const struct genl_ops genl_ctrl_ops[] = {
-+static const struct genl_split_ops genl_ctrl_ops[] = {
- 	{
- 		.cmd		= CTRL_CMD_GETFAMILY,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.validate	= GENL_DONT_VALIDATE_STRICT,
- 		.policy		= ctrl_policy_family,
- 		.maxattr	= ARRAY_SIZE(ctrl_policy_family) - 1,
- 		.doit		= ctrl_getfamily,
-+		.flags		= GENL_CMD_CAP_DO,
-+	},
-+	{
-+		.cmd		= CTRL_CMD_GETFAMILY,
-+		.validate	= GENL_DONT_VALIDATE_DUMP,
-+		.policy		= ctrl_policy_family,
-+		.maxattr	= ARRAY_SIZE(ctrl_policy_family) - 1,
- 		.dumpit		= ctrl_dumpfamily,
-+		.flags		= GENL_CMD_CAP_DUMP,
- 	},
- 	{
- 		.cmd		= CTRL_CMD_GETPOLICY,
-@@ -1613,6 +1621,7 @@ static const struct genl_ops genl_ctrl_ops[] = {
- 		.start		= ctrl_dumppolicy_start,
- 		.dumpit		= ctrl_dumppolicy,
- 		.done		= ctrl_dumppolicy_done,
-+		.flags		= GENL_CMD_CAP_DUMP,
- 	},
- };
- 
-@@ -1622,8 +1631,8 @@ static const struct genl_multicast_group genl_ctrl_groups[] = {
- 
- static struct genl_family genl_ctrl __ro_after_init = {
- 	.module = THIS_MODULE,
--	.ops = genl_ctrl_ops,
--	.n_ops = ARRAY_SIZE(genl_ctrl_ops),
-+	.split_ops = genl_ctrl_ops,
-+	.n_split_ops = ARRAY_SIZE(genl_ctrl_ops),
- 	.resv_start_op = CTRL_CMD_GETPOLICY + 1,
- 	.mcgrps = genl_ctrl_groups,
- 	.n_mcgrps = ARRAY_SIZE(genl_ctrl_groups),
--- 
-2.38.1
+> Fiexs: commit 738136a0e375 ("netlink: split up copies in the
+> ack construction")
+
+Please look around to see how to correctly format a Fixes tag
+(including not line wrapping it).
+
+How did you find this bug? An automated tool? Syzbot?
+
+One more note below on the code itself.
+
+> Signed-off-by: Tao Chen <chentao.kernel@linux.alibaba.com>
+> ---
+>  net/netlink/af_netlink.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+> index c6b8207e..9d73dae 100644
+> --- a/net/netlink/af_netlink.c
+> +++ b/net/netlink/af_netlink.c
+> @@ -2500,7 +2500,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+>  
+>  	skb = nlmsg_new(payload + tlvlen, GFP_KERNEL);
+>  	if (!skb)
+> -		goto err_bad_put;
+> +		goto err_skb;
+>  
+>  	rep = nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
+>  			NLMSG_ERROR, sizeof(*errmsg), flags);
+> @@ -2528,6 +2528,8 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+>  	return;
+>  
+>  err_bad_put:
+> +	kfree_skb(skb);
+
+Please use nlmsg_free() since we allocated with nlmsg_new().
+
+> +err_skb:
+>  	NETLINK_CB(in_skb).sk->sk_err = ENOBUFS;
+>  	sk_error_report(NETLINK_CB(in_skb).sk);
+>  }
 
