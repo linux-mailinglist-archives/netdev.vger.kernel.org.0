@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A6CF61625E
+	by mail.lfdr.de (Postfix) with ESMTP id CC5F3616260
 	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 13:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbiKBMAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 08:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
+        id S231166AbiKBMAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 08:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbiKBMAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:00:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859DE28E14
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 05:00:17 -0700 (PDT)
+        with ESMTP id S230446AbiKBMAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:00:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBA21F8;
+        Wed,  2 Nov 2022 05:00:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BB961934
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 12:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 854F9C43144;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3C1BB821D8;
+        Wed,  2 Nov 2022 12:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 78C0DC433D6;
         Wed,  2 Nov 2022 12:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1667390416;
-        bh=R1pmHtKIxnm5tUHckkm5iAJ8CqBdI3lnUpcdeFqrkHw=;
+        bh=MLMiNgKQ47MiTBdvKuAqu/9RyqJIVmLHyYclffVTKdM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R6rmD+X3Oa6nD6YzWc2Q8bXHENGVWiqFnXjimzPVvNt6FJMjyW7XnNLvh5OGA6I89
-         B11Nhawop6Bv8Gt0nzcVpcuVUM5dySgpxTKEn4TjqTZNUiSkaMYf1GPH9FNl+llGlk
-         C/S44iCs06HKbRn44G4uyxTMtaCfUF+ohmrRLhQT63lHvXPi7m2bdzGJi/BUbLdiyP
-         2q3EcNQ6T/FkAcAI4W4ReLTBl/3DXZXO2oMID5AEwEsQi8PW9aibm5NNKSRP3ZL6AR
-         hC5UNc7zztm9eJ+++NVgKlUrcGonwB6qcuGf7/T7WnemhyiH3XNzreDiLdA0y0vbOa
-         +rIsSUEj5zq+g==
+        b=PF0yM/+lZuwqbL4spPvlF9jBe0rjyzaR4mTR2qpe1XkbAEDcLDHy5oDUz5iVveaHl
+         jiGhafvAWwq35dezxfKbNxn3dDTgLaxGopDm+AkXCxSdIoGKoRjb2M0JwFXiG/dnKR
+         yMSqxyRR0mz34R8o9be56+x62QJUIeOuzu4X8q9qFHOGl/suWfEmZjtfnWtymqNeXi
+         ar3jAdlMB+GDB6llfbUP5bm8QQ21+vb/npzPsQMvG8wurbf5wQhkphtQAgVPzbuiwV
+         +cq2z6lAMA85lA7VCocFl4cJykC63btZBgln0z85HcD37VFyTlJUIYHPqmos5Y0yUV
+         nLu38APynC7PA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6DB86E29F4C;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 61F9FC395FF;
         Wed,  2 Nov 2022 12:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] gve: Reduce alloc and copy costs in the GQ rx path
+Subject: Re: [PATCH net-next v2] net: wwan: iosm: add rpc interface for xmm modems
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166739041644.9516.13589359544477751243.git-patchwork-notify@kernel.org>
+Message-Id: <166739041639.9516.5047338636227466746.git-patchwork-notify@kernel.org>
 Date:   Wed, 02 Nov 2022 12:00:16 +0000
-References: <20221029165322.1294983-1-shailend@google.com>
-In-Reply-To: <20221029165322.1294983-1-shailend@google.com>
-To:     Shailend Chand <shailend@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <20221029090355.565200-1-shaneparslow808@gmail.com>
+In-Reply-To: <20221029090355.565200-1-shaneparslow808@gmail.com>
+To:     Shane Parslow <shaneparslow808@gmail.com>
+Cc:     loic.poulain@linaro.org, m.chetan.kumar@intel.com,
+        linuxwwan@intel.com, ryazanov.s.a@gmail.com,
+        johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,20 +63,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat, 29 Oct 2022 09:53:22 -0700 you wrote:
-> Previously, even if just one of the many fragments of a 9k packet
-> required a copy, we'd copy the whole packet into a freshly-allocated
-> 9k-sized linear SKB, and this led to performance issues.
+On Sat, 29 Oct 2022 02:03:56 -0700 you wrote:
+> Add a new iosm wwan port that connects to the modem rpc interface. This
+> interface provides a configuration channel, and in the case of the 7360, is
+> the only way to configure the modem (as it does not support mbim).
 > 
-> By having a pool of pages to copy into, each fragment can be
-> independently handled, leading to a reduced incidence of
-> allocation and copy.
+> The new interface is compatible with existing software, such as
+> open_xdatachannel.py from the xmm7360-pci project [1].
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] gve: Reduce alloc and copy costs in the GQ rx path
-    https://git.kernel.org/netdev/net-next/c/82fd151d38d9
+  - [net-next,v2] net: wwan: iosm: add rpc interface for xmm modems
+    https://git.kernel.org/netdev/net-next/c/d08b0f8f46e4
 
 You are awesome, thank you!
 -- 
