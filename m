@@ -2,84 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08815616E06
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 20:53:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E47616E0F
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 20:55:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiKBTw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 15:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
+        id S229949AbiKBTy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 15:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbiKBTw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 15:52:57 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BAA11445;
-        Wed,  2 Nov 2022 12:52:57 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id e129so17138888pgc.9;
-        Wed, 02 Nov 2022 12:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=aYp24omPHN0bbvzzSbeOByhwh1045NSDj6myAMlpHzs=;
-        b=X0cRKUPXI37K7E3OEd1U5rMMpOGGxC03pJ+1EwjWJdmI5LiX4uczxOBMELWxd9KcAv
-         73WNbc7D4Eag/SnB2DUJCJm5RcLvdceBox8LMtCDqSX5Bf3E/+zLJwZuTIud3FmGaqy7
-         NqTfck6bQQr7c4vYO5rj8eDmBSjGheN4utrC1tkHmdQebMxpOX9FHCT32HD/whTL8w0p
-         r9GyVZDD70+xV8kGpFO2OTmXxj/HD7vTPQ2YeqvoghFMrpH0j6B0hSQfVeH50y+0l0/k
-         IU4B3GEIiBDb/pftzMakfIru1eU9oEkWwW46y+Gci90eEvuukNwPmldLYbWGvTuNHByz
-         SOVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aYp24omPHN0bbvzzSbeOByhwh1045NSDj6myAMlpHzs=;
-        b=HXqTMylk9xB1G2VZJ8hzcC4oP1v2gr68MJbgKxPJvf/KZFUppeAsKF8hcsFKYJ24gf
-         gjRFsQDf6JgUKYpjzqWz8/VQQvpyN1c8YCzO1u9Oi1MWDDVL1uUQRYNh79wOn9G4BNfM
-         lGa0cqD6+pr9KZn8Yx+g+ZqbgAW9KgyhqLQs4/h7Dx4AVz4x7VWWTzi/Iwh09+toTyjX
-         y01/ok2YFLy7HxnmOajULfgQmC5a4b6S39dLdeDnYy6bqFnbxrka4AITsYQjflMWlvrE
-         yPYUPqn5gEJFfLN3YzPKIRlUdGf9EgApbLy9F8t0Im2VLN2X7bHOE+jTQqsU1P9q1fUb
-         8mCQ==
-X-Gm-Message-State: ACrzQf0jTV5XpNKF1Lr0hZuCBAo825e56An0ElbRzpLQmT7tvErv/uMF
-        wAJbdlT89ioFiSqd9IFGmqhGYtznkHuhVnwRHBE=
-X-Google-Smtp-Source: AMsMyM7jyv2hDc2xFubeC6LWZ79sPVywK7e70UBBaJ8PriKu575coH1OTW9AAD17pG20IROdxSkjMJcCos+BZXAV5HU=
-X-Received: by 2002:a63:d905:0:b0:46f:8979:30cf with SMTP id
- r5-20020a63d905000000b0046f897930cfmr21275910pgg.87.1667418776200; Wed, 02
- Nov 2022 12:52:56 -0700 (PDT)
+        with ESMTP id S230311AbiKBTyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 15:54:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E57B4B1;
+        Wed,  2 Nov 2022 12:54:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E416761BC2;
+        Wed,  2 Nov 2022 19:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C05FCC433D6;
+        Wed,  2 Nov 2022 19:54:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667418860;
+        bh=27qzGMYGtNSKlLUnIthNAVdPl5pdVmwU9oEmpTQQiaM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=J6VGthnYPkXbyAEpPL/Y/K/cOGH7h3RnU5GzbqnKLaa5c8Jcc9UDtwFyoQl6R6okl
+         S+T0m3IZ/PE894fnMDvx0Y8wpH2rF+jkS6KIS7p9AdIvxrE7IzclJdhaiCzKddYaHZ
+         /0wOoqqsP4IQCq9YiONTA3Tjozlb6k42Wn16GfWHf2dB8eenDyfdVTAGbXFJJNk2k9
+         rr3QD32Q/h02ZCvHdeojOeZD8KWQ0y2tyf54rTBIaFROMtyVSHmcHJ7YjrScpyCefK
+         GtivOHInc6V76P8OmIld8AgGGKkM7FZH+jpOHmzJ6b/dHlRKBM5HKFfUy01Z4yn6s3
+         1aTnL6QU+6o/g==
+Date:   Wed, 2 Nov 2022 12:54:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Andy Ren <andy.ren@getcruise.com>,
+        netdev@vger.kernel.org, richardbgobert@gmail.com,
+        davem@davemloft.net, wsa+renesas@sang-engineering.com,
+        edumazet@google.com, petrm@nvidia.com, pabeni@redhat.com,
+        corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: Re: [PATCH net-next v2] netconsole: Enable live renaming for
+ network interfaces used by netconsole
+Message-ID: <20221102125418.272c4381@kernel.org>
+In-Reply-To: <Y2KlfhfijyNl8yxT@P9FQF9L96D.corp.robot.car>
+References: <20221102002420.2613004-1-andy.ren@getcruise.com>
+        <Y2G+SYXyZAB/r3X0@lunn.ch>
+        <20221101204006.75b46660@kernel.org>
+        <Y2KlfhfijyNl8yxT@P9FQF9L96D.corp.robot.car>
 MIME-Version: 1.0
-References: <20221023171658.69761-1-michael.lilja@gmail.com>
- <Y1fC5K0EalIYuB7Y@salvia> <381FF5B6-4FEF-45E9-92D6-6FE927A5CC2D@gmail.com>
- <Y1fd+DEPZ8xM2x5B@salvia> <F754AC3A-D89A-4CF7-97AE-CA59B18A758E@gmail.com>
- <Y1kQ9FhrwxCKIdoe@salvia> <25246B91-B5BE-43CA-9D98-67950F17F0A1@gmail.com>
- <03E5D5FA-5A0D-4E5A-BA32-3FE51764C02E@gmail.com> <Y2K8XnFZvZeD4MEg@salvia>
-In-Reply-To: <Y2K8XnFZvZeD4MEg@salvia>
-From:   Michael Lilja <michael.lilja@gmail.com>
-Date:   Wed, 2 Nov 2022 20:52:45 +0100
-Message-ID: <CAHgAcbNOCSzQrCScdGumgFD6+X0BjdMgHdCiY4fkanPN_Qg86Q@mail.gmail.com>
-Subject: Re: [PATCH] Periodically flow expire from flow offload tables
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, 2 Nov 2022 10:14:38 -0700 Roman Gushchin wrote:
+> > Agreed. BTW I wonder if we really want to introduce a netconsole
+> > specific uAPI for this or go ahead with something more general.  
+> 
+> Netconsole is a bit special because it brings an interface up very early.
+> E.g. in our case without the netconsole the renaming is happening before
+> the interface is brought up.
+> 
+> I wonder if the netconsole-specific flag should allow renaming only once.
+>  
+> > A sysctl for global "allow UP rename"?  
+> 
+> This will work for us, but I've no idea what it will break for other users
+> and how to check it without actually trying to break :) And likely we won't
+> learn about it for quite some time, asssuming they don't run net-next.
 
-thanks. I have been too busy elsewhere so I have not yet looked at
-patching the IPS_OFFLOAD myself. When I quickly looked at it last
-week, the IPS_OFFLOAD got set a few places, so I'm not sure there is a
-race somewhere still.
+Then again IFF_LIVE_RENAME_OK was added in 5.2 so quite a while back.
+
+> > We added the live renaming for failover a while back and there were 
+> > no reports of user space breaking as far as I know. So perhaps nobody
+> > actually cares and we should allow renaming all interfaces while UP?
+> > For backwards compat we can add a sysctl as mentioned or a rtnetlink 
+> > "I know what I'm doing" flag? 
+> > 
+> > Maybe print an info message into the logs for a few releases to aid
+> > debug?
+> > 
+> > IOW either there is a reason we don't allow rename while up, and
+> > netconsole being bound to an interface is immaterial. Or there is 
+> > no reason and we should allow all.  
+> 
+> My understanding is that it's not an issue for the kernel, but might be
+> an issue for some userspace apps which do not expect it.
+
+There are in-kernel notifier users which could cache the name on up /
+down. But yes, the user space is the real worry.
+
+> If you prefer to go with the 'global sysctl' approach, how the path forward
+> should look like?
+
+That's the question. The sysctl would really just be to cover our back
+sides, and be able to tell the users "you opted in by setting that
+sysctl, we didn't break backward compat". But practically speaking, 
+its a different entity that'd be flipping the sysctl (e.g. management
+daemon) and different entity that'd be suffering (e.g. routing daemon).
+So the sysctl doesn't actually help anyone :/
+
+So maybe we should just risk it and wonder about workarounds once
+complains surface, if they do. Like generate fake down/up events.
+Or create some form of "don't allow live renames now" lock-like
+thing a process could take.
+
+Adding a couple more CCs and if nobody screams at us I vote we just
+remove the restriction instead of special casing.
