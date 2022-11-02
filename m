@@ -2,93 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 696F3616423
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:55:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F68616425
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230438AbiKBNzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 09:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
+        id S231164AbiKBNz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 09:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiKBNzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:55:48 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F29E29CB2;
-        Wed,  2 Nov 2022 06:55:44 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A2DJtkc008907;
-        Wed, 2 Nov 2022 13:55:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=/Z7RC9gudXnplqLOJpkRm/cVzWIY4sbl/YKHBiRa1Xk=;
- b=nZnE1xt2v6d+TTvEbWj4iBLr0cVOzrrCxADqp+9mOFAWhN58IHAAk7+vn+6Z/w3547AQ
- 4xD32nJiSHSvGb+ULHkQHDWLuLHualCBacIc7Y4/V65ygkWt9uEoc903Ry51AFYHJ6xi
- Tzhb11yyasJdDubhT+KUTkQNAZYsx6SVHheQRHczT2axUE2OvK31jrvRiM2Iai0BREHy
- tu4+/8gZrU/eNjeEe38gaDs6qNC4ppyIn9X43Iq/mkDKxevSnsfOrgAyTU8MJ7hCTqpk
- kS7qmVuevGe/hBCRJYWS4yPwYwcsaXpiCAXiIBFKQ9s/vuTdUX6he+ZKBoxeagA2HsXT MA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kkqxwmkuc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Nov 2022 13:55:37 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A2CAsUx009173;
-        Wed, 2 Nov 2022 13:55:36 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kkqxwmktd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Nov 2022 13:55:36 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A2DpfLo020000;
-        Wed, 2 Nov 2022 13:55:35 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma01dal.us.ibm.com with ESMTP id 3kgutasshj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Nov 2022 13:55:35 +0000
-Received: from smtpav05.wdc07v.mail.ibm.com ([9.208.128.117])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A2DtXRt63439286
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Nov 2022 13:55:34 GMT
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 554B058067;
-        Wed,  2 Nov 2022 13:55:33 +0000 (GMT)
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B5AD858059;
-        Wed,  2 Nov 2022 13:55:31 +0000 (GMT)
-Received: from [9.163.9.174] (unknown [9.163.9.174])
-        by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Wed,  2 Nov 2022 13:55:31 +0000 (GMT)
-Message-ID: <3526d73b-a0cf-e9eb-383b-2ad917f3bcc2@linux.ibm.com>
-Date:   Wed, 2 Nov 2022 14:55:30 +0100
+        with ESMTP id S230452AbiKBNzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:55:53 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastusazon11021022.outbound.protection.outlook.com [52.101.52.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D214629CB2;
+        Wed,  2 Nov 2022 06:55:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H4/RVqoukgjJ6SZ8AQbZC2QT20Tya0cQpXPVjVsEL8+rolErrQuJVkQJ2HG+7yEDwx3ERVtAD3nGIOIGE1OWFLBFkCHJsKvi1KLLpMaAzq+wfgqmxQPyObEu4rUuwusGOsH7CY2boK0vqm1G9f6JJ/S+uwzs0zhYMFE0yh/OrGYRasUk0XkRp5p97jbRoOh2ekJwSERA7SvoJTiVtYGMhgurh1PnPIBbfnfww8lEB0G7h9PPWAHeGhe7vTTZ4tX5O6Dk0qOzxA938lXTsPFVmFDRFWv0cHiw5Lk181EioSQ0nrvQhTqj2j0nlVUhllzoNHGLFBcB3JoRA1NU1idfkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2GwMY7fctFknB4GITi199+ETVJCIK+fY56ehYgytQEU=;
+ b=Mw/D8UDLZ03dXwMO744IbOI1z7AZtlkw9HXu6McQ6DQAvoHY0vtCm9FLFy7U0rNrCz24vt3DAv7tUgNr5FSgqfKahSfNBwxRBvdSwFiQZFE5ApkcFy+8FhSvGyEGaSOlbtW1JFzIxiWYV2ACl0FQK5ufGN0giCjkBmE94rROYq4N5mPjIHYyKDmpH2liAaHaHEzSOKdRM6ATQP3KrPYDkyXbFtjxTwzwxVNQBom9UrI/aOsQwXc+rODBTb7eSl4/5m9en/SnsIRPFOHW5PBZKnwazeoWi2Z4j/NX52z4gG8eDofZ732T33g9Y15yaNn/ZX7zPiNbEIOUHiJ6qZO7Gg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2GwMY7fctFknB4GITi199+ETVJCIK+fY56ehYgytQEU=;
+ b=V0fkG30i3qK4XtyVWI+ui/D3OLayWclYoRQdfpO5ASpfLC/6SdvqcAx2PcDoxpmMdIg9Zir0Qq0oNzVWHKsdSVBaJbECrrkXoOODxXFH/XdpJLvsXmiD8hSnWfiKdlcvugffL60m+Ca0qBAXDdnCntDsjFCfQEa9zR7e4VEINrw=
+Received: from PH7PR21MB3116.namprd21.prod.outlook.com (2603:10b6:510:1d0::10)
+ by DM6PR21MB1417.namprd21.prod.outlook.com (2603:10b6:5:254::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.4; Wed, 2 Nov
+ 2022 13:55:47 +0000
+Received: from PH7PR21MB3116.namprd21.prod.outlook.com
+ ([fe80::4cf9:b21c:c2bf:e5f3]) by PH7PR21MB3116.namprd21.prod.outlook.com
+ ([fe80::4cf9:b21c:c2bf:e5f3%9]) with mapi id 15.20.5813.005; Wed, 2 Nov 2022
+ 13:55:47 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "colin.i.king@googlemail.com" <colin.i.king@googlemail.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Subject: RE: [PATCH] net: mana: Assign interrupts to CPUs based on NUMA nodes
+Thread-Topic: [PATCH] net: mana: Assign interrupts to CPUs based on NUMA nodes
+Thread-Index: AQHY7bgKO9lsOHP8+kCmdcQzq8fpp64rqTJQ
+Date:   Wed, 2 Nov 2022 13:55:47 +0000
+Message-ID: <PH7PR21MB31161ED47D7742D5F499BB93CA399@PH7PR21MB3116.namprd21.prod.outlook.com>
+References: <1667282761-11547-1-git-send-email-ssengar@linux.microsoft.com>
+In-Reply-To: <1667282761-11547-1-git-send-email-ssengar@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9c00726a-d48f-4d95-bec0-f3295df11b37;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-02T13:52:16Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR21MB3116:EE_|DM6PR21MB1417:EE_
+x-ms-office365-filtering-correlation-id: b6041cec-0a14-4613-70b2-08dabcd9f177
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tBHiKJc2RiuRw17r3B5yHBI47UHM2HW2tm0b69ZKtn99Sqg3z6NYWPLp2lo3kWwQA4MA/GG8jGQ3lsWEKHf53YdtXjxTZUXKpLlkFkgvoqxkjp47I1SblxBcrEddlLaPmNmgpsx7IvDQx1BlJmYhhmZBLAH9U1Fj9soqGr9owHBbkMgSOkL3m2dzMckGMjEbqmiH4aCQX1Kexk65n3axNDWmbowiZJ7GZyytakd6/HqayyY153plc9f256EY1u33qvlGn/SXuEjYF3LtamJkCdnqsiEdTDMcapCz5RYti10WmKk4yxFInhaAOkVbFZK8i0VZXcGO4Fa4MKy8QqCUVh9CNJU9n1DOdIcDtymDefn4NZ8Zv5QmrL+bUfmEx5hM0YQTEr6Fo77ZCMeHFTZbae7cxfDRjTY1R0xB/mkCHTEJpPiGAr6h1tTsqjiP1U3vzGxo2CcXiWtdqeiUB9SXBKU/8Oae7rL0hnlZjrIupQhfTJZay5YoI3HZUIcDg9fbLmUaewUWOwurg/KEI5C9idgHZ/pGJyuKhKoCU9Lx8hiS/N49uVDmyHzZpVMIYCfsKxQ2/FEEeIIprSONqE4JyEVW0yX+1297RGmzkjpZYGDp7HhEpFk5jYW6FrSdHGM0wk253VOYBfFbemfqwQg2a54HkZozbH3ihzy9IQG8KB8P4WEGyc0z9rjxJ4Z/2KP23TJUZ27UVK2EuLLXZkgduZf1HjWgYNTcQLE7NiMvV5cKr0zxcr1+H9XScv1D7jFK3CUbj936JRKkSoSahVwoOh0nej9WjtwfNs+uU+o1dPFiqEtuVAI0rQp1XNgHYAOc7yCsjUHPgANFqaIlOqAuCw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3116.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(136003)(376002)(396003)(39860400002)(366004)(451199015)(6636002)(8936002)(52536014)(110136005)(66446008)(41300700001)(66556008)(64756008)(316002)(66476007)(76116006)(5660300002)(66946007)(7416002)(10290500003)(4744005)(8676002)(8990500004)(2906002)(921005)(38070700005)(478600001)(71200400001)(122000001)(6506007)(26005)(9686003)(7696005)(53546011)(38100700002)(83380400001)(33656002)(82960400001)(82950400001)(186003)(55016003)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PfbDs58KK/y6tXQ/DNWuzd8xFa3VKGAxcQyclAqnd7MDYRJTfB2lWF7U6BNE?=
+ =?us-ascii?Q?rL10ZIWSECfImvkeAMwQ6xR3ylph67t4n61d86d3WO0GE6/nZoslqPyWAKyw?=
+ =?us-ascii?Q?gxE7G3eI3rbqm67+Wmpj5gl3ZrL5atbwkQ2BrJMYpjvvDVGJI1yA3tpsKbKk?=
+ =?us-ascii?Q?tj1Yfg54w52oZbCpWbqgifuq+jQOXvpAEtnOc57lX6DgB+721yZ3bfD6kzX4?=
+ =?us-ascii?Q?ectnlcw0lH9Y2BflnJnkhDYUQ3mbDeRqjQS9dXSd87ZKKJkESr6qTxlgeyzG?=
+ =?us-ascii?Q?grpLTnvFqt3NUOt9uXJLwpjmvbGt99D8YECLsWTkcJfAprCHSz1dbhJni12g?=
+ =?us-ascii?Q?LNbt0BqFaHdVsHhFORCwwr4EbsuSKLf23RzywkJP/duCnEqcdnOCwIuQPzwg?=
+ =?us-ascii?Q?V6CMBfXCwO1I7jO4zzCtM0S6niuGQI92BDAjGdimfKkBNkyJDpP+UBcyMQmt?=
+ =?us-ascii?Q?XzZ5rSxENa8eafL5kE9Zzjurrjab3u+Ai+vWmXNg89U3tGfStcMT6FuHfqFk?=
+ =?us-ascii?Q?AWKj+ttKDQIZ1av3Dp5sBvt9+1QNfcc2Z/1ysOiql0mM2RHNEeqXGwqChFGA?=
+ =?us-ascii?Q?8TZNSQZiuDpvABYZs/n85cqM5kmGrBNUJwWLLarbiHS6GgohAgsyg5M+rMVG?=
+ =?us-ascii?Q?23Jpr1QlTbs9wX/XW2Hkvda1lRNmZjTGOm0KL6tx4jRtqjH4m/hv5L9eNGnL?=
+ =?us-ascii?Q?HxEoYDuDHfAYJ7btYW0kwS3krGdCAwV/K+p7yDoUvyVt2PO7lKYPT5iLqf3q?=
+ =?us-ascii?Q?W1OIZBR4LurCCvJnRj68DUWGsDqVtfLDTg/PGGjAn1d7Cs840jUikOe9r5lP?=
+ =?us-ascii?Q?Y+M6Zy9TQoLGPg5VKQdjizftd9c9kKbUnsJgqT1PyeulcGg1+m67XE4UFzSK?=
+ =?us-ascii?Q?RsnGla2zOKL/+AHXDvdi/yOFtyWy08iS8Kh8GxgdHWFUzHmmeCxddvucxvyZ?=
+ =?us-ascii?Q?7lDreoup/+zwC9YZnQ8VlU005nqbPKiIhyOH4hPOUBGSeDSmWuTxjMUWRioi?=
+ =?us-ascii?Q?JTCJ6bDZLaGbp4e5wJ9k1mx+Xa+g/eeFHtiYlkHLPtWEMxWEPKhCq8NZ2kgL?=
+ =?us-ascii?Q?A1a/dQBFtKA+CURrtibEAUZyTktLbcP7sVVBKj6LrvW66bV4l7ZJx85K3qRX?=
+ =?us-ascii?Q?U8om87trIosA/K0oMbgGMUVUoJ9fns/PlpxUwEDbPkag7oPYfWH3SwqUDsCZ?=
+ =?us-ascii?Q?dvCHSUsboVwAZ/1rhGhbSdDZuCU7P8NN2igN2DQ5nwv56zAJZRQxTvWR3yTF?=
+ =?us-ascii?Q?kPeqVF/YAu+uRlXtbtzLtEkNqjAz7mn+ZaN0NlCHXTEHbUFCziDLOe1z0nMC?=
+ =?us-ascii?Q?bsIIdxJsc4b0Dl7xyKSyM2wlJG1gOex/0fiIBkmawM+S7c+/0zuRJY/+EVwI?=
+ =?us-ascii?Q?5dd1gLiDdTu+B/8K9lxJqZKnpEg4OZoIp5aljUY0GUbhz28BGp6REsLD8W/y?=
+ =?us-ascii?Q?/DnxfLTrCinQEprReo9NMru672Wy4kL71ODL061vbok9X3Q7s7HRP1NOnI16?=
+ =?us-ascii?Q?CHZ8kX9B1fi0SDhE4UsQaNXeqpgjj/Qh5K/KPZmqyoxa5zCylJ4o5CihCma1?=
+ =?us-ascii?Q?NlP5nabnYKIVSX6TUBHVtr6cS6wh3ebrFZmgY3dO?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.1
-Subject: Re: [PATCH net-next v4 00/10] optimize the parallelism of SMC-R
- connections
-To:     "D. Wythe" <alibuda@linux.alibaba.com>,
-        Jan Karcher <jaka@linux.ibm.com>, kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1666529042-40828-1-git-send-email-alibuda@linux.alibaba.com>
- <95feb2a1-d17a-6233-d3d0-eaebf26d2284@linux.ibm.com>
- <1615836b-3087-2467-262e-f402ec521716@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <1615836b-3087-2467-262e-f402ec521716@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: oOHqIfjq0sWec8ObU8-fK3oKG44LVwk5
-X-Proofpoint-GUID: wQuwTYwq3y-gzjhSf5OAckg9FeiwQ9m8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-02_10,2022-11-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- impostorscore=0 mlxscore=0 priorityscore=1501 suspectscore=0 phishscore=0
- adultscore=0 lowpriorityscore=0 clxscore=1011 bulkscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211020085
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3116.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6041cec-0a14-4613-70b2-08dabcd9f177
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2022 13:55:47.0783
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1JiY3Xnu207+F55SDxHmPLSmSGXCl+Y4Q2nNAWyKJdHTywUYpEBkGGcyLzsl4RZ/7LcLO1e6pZE5qpHZXEIT6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1417
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -97,270 +130,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 01.11.22 08:22, D. Wythe wrote:
-> 
-> Hi Jan,
-> 
-> Our team conducted some code reviews over this, but unfortunately no 
-> obvious problems were found. Hence
-> we are waiting for Tony Lu's virtual SMC-D device to test, which is 
-> expected to come in this week.  Before that,
-> I wonder if your tests are running separately on separate PATCH? If so, 
-> I would like to please you to test
-> the first PATCH and the second PATCH together. I doubt that the problem 
-> repaired by the second PATCH
-> is the cause of this issues.
-> 
-> Best Wishes.
-> D. Wythe
-> 
+> -----Original Message-----
+> From: Saurabh Sengar <ssengar@linux.microsoft.com>
+> Sent: Tuesday, November 1, 2022 2:06 AM
+> To: Saurabh Singh Sengar <ssengar@microsoft.com>; KY Srinivasan
+> <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>;
+> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>;
+> davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> pabeni@redhat.com; ssengar@linux.microsoft.com;
+> colin.i.king@googlemail.com; vkuznets@redhat.com; linux-
+> hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; Michael Kelley (LINUX) <mikelley@microsoft.com>
+> Subject: [PATCH] net: mana: Assign interrupts to CPUs based on NUMA nodes
+>=20
+> In large VMs with multiple NUMA nodes, network performance is usually
+> best if network interrupts are all assigned to the same virtual NUMA
+> node. This patch assigns online CPU according to a numa aware policy,
+> local cpus are returned first, followed by non-local ones, then it wraps
+> around.
+>=20
+> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
 
-Hi D. Wythe,
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-We did test the series of the patches as a whole. That would be great if 
-you could use Tony's virtual device to test SMC-D. By the way, I'll put 
-your patches in our CI, let's see if it can find something.
+Thank you.
 
-Best,
-Wenjia
-> 
-> On 10/24/22 9:11 PM, Jan Karcher wrote:
->> Hi D. Wythe,
->>
->> I re-run the tests with your fix.
->> SMC-R works fine now. For SMC-D we still have the following problem. 
->> It is kind of the same as i reported in v2 but even weirder:
->>
->> smc stats:
->>
->> t8345011
->> SMC-D Connections Summary
->>    Total connections handled          2465
->> SMC-R Connections Summary
->>    Total connections handled           232
->>
->> t8345010
->> SMC-D Connections Summary
->>    Total connections handled          2290
->> SMC-R Connections Summary
->>    Total connections handled           231
->>
->>
->> smc linkgroups:
->>
->> t8345011
->> [root@t8345011 ~]# smcr linkgroup
->> LG-ID    LG-Role  LG-Type  VLAN  #Conns  PNET-ID
->> 00000400 SERV     SYM         0       0  NET25
->> [root@t8345011 ~]# smcd linkgroup
->> LG-ID    VLAN  #Conns  PNET-ID
->> 00000300    0      16  NET25
->>
->> t8345010
->> [root@t8345010 tela-kernel]# smcr linkgroup
->> LG-ID    LG-Role  LG-Type  VLAN  #Conns  PNET-ID
->> 00000400 CLNT     SYM         0       0  NET25
->> [root@t8345010 tela-kernel]# smcd linkgroup
->> LG-ID    VLAN  #Conns  PNET-ID
->> 00000300    0       1  NET25
->>
->>
->> smcss:
->>
->> t8345011
->> [root@t8345011 ~]# smcss
->> State          UID   Inode   Local Address           Peer Address     
->> Intf Mode
->>
->> t8345010
->> [root@t8345010 tela-kernel]# smcss
->> State          UID   Inode   Local Address           Peer Address     
->> Intf Mode
->>
->>
->> lsmod:
->>
->> t8345011
->> [root@t8345011 ~]# lsmod | grep smc
->> smc                   225280  18 ism,smc_diag
->> t8345010
->> [root@t8345010 tela-kernel]# lsmod | grep smc
->> smc                   225280  3 ism,smc_diag
->>
->> Also smc_dbg and netstat do not show any more information on this 
->> problem. We only see in the dmesg that the code seems to build up 
->> SMC-R linkgroups even tho we are running the SMC-D tests.
->> NOTE: we disabled the syncookies for the tests.
->>
->> dmesg:
->>
->> t8345011
->> smc-tests: test_smcapp_torture_test started
->> kernel: TCP: request_sock_TCP: Possible SYN flooding on port 22465. 
->> Dropping request.  Check SNMP counters.
->> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000401, peerid 
->> 00000401, ibdev mlx5_0, ibport 1
->> kernel: smc: SMC-R lg 00000400 net 1 state changed: SINGLE, pnetid NET25
->> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000402, peerid 
->> 00000402, ibdev mlx5_1, ibport 1
->> kernel: smc: SMC-R lg 00000400 net 1 state changed: SYMMETRIC, pnetid 
->> NET25
->>
->> t8345010
->> smc-tests: test_smcapp_torture_test started
->> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000401, peerid 
->> 00000401, ibdev mlx5_0, ibport 1
->> kernel: smc: SMC-R lg 00000400 net 1 state changed: SINGLE, pnetid NET25
->> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000402, peerid 
->> 00000402, ibdev mlx5_1, ibport 1
->> kernel: smc: SMC-R lg 00000400 net 1 state changed: SYMMETRIC, pnetid 
->> NET25
->>
->> If this output does not help and if you want us to look deeper into it 
->> feel free to let us know and we can debug further.
->>
->> On 23/10/2022 14:43, D.Wythe wrote:
->>> From: "D.Wythe" <alibuda@linux.alibaba.com>
->>>
->>> This patch set attempts to optimize the parallelism of SMC-R 
->>> connections,
->>> mainly to reduce unnecessary blocking on locks, and to fix exceptions 
->>> that
->>> occur after thoses optimization.
->>>
->>> According to Off-CPU graph, SMC worker's off-CPU as that:
->>>
->>> smc_close_passive_work                  (1.09%)
->>>          smcr_buf_unuse                  (1.08%)
->>>                  smc_llc_flow_initiate   (1.02%)
->>>
->>> smc_listen_work                         (48.17%)
->>>          __mutex_lock.isra.11            (47.96%)
->>>
->>>
->>> An ideal SMC-R connection process should only block on the IO events
->>> of the network, but it's quite clear that the SMC-R connection now is
->>> queued on the lock most of the time.
->>>
->>> The goal of this patchset is to achieve our ideal situation where
->>> network IO events are blocked for the majority of the connection 
->>> lifetime.
->>>
->>> There are three big locks here:
->>>
->>> 1. smc_client_lgr_pending & smc_server_lgr_pending
->>>
->>> 2. llc_conf_mutex
->>>
->>> 3. rmbs_lock & sndbufs_lock
->>>
->>> And an implementation issue:
->>>
->>> 1. confirm/delete rkey msg can't be sent concurrently while
->>> protocol allows indeed.
->>>
->>> Unfortunately,The above problems together affect the parallelism of
->>> SMC-R connection. If any of them are not solved. our goal cannot
->>> be achieved.
->>>
->>> After this patch set, we can get a quite ideal off-CPU graph as
->>> following:
->>>
->>> smc_close_passive_work                                  (41.58%)
->>>          smcr_buf_unuse                                  (41.57%)
->>>                  smc_llc_do_delete_rkey                  (41.57%)
->>>
->>> smc_listen_work                                         (39.10%)
->>>          smc_clc_wait_msg                                (13.18%)
->>>                  tcp_recvmsg_locked                      (13.18)
->>>          smc_listen_find_device                          (25.87%)
->>>                  smcr_lgr_reg_rmbs                       (25.87%)
->>>                          smc_llc_do_confirm_rkey         (25.87%)
->>>
->>> We can see that most of the waiting times are waiting for network IO
->>> events. This also has a certain performance improvement on our
->>> short-lived conenction wrk/nginx benchmark test:
->>>
->>> +--------------+------+------+-------+--------+------+--------+
->>> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
->>> +--------------+------+------+-------+--------+------+--------+
->>> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
->>> +--------------+------+------+-------+--------+------+--------+
->>> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
->>> +--------------+------+------+-------+--------+------+--------+
->>> |TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
->>> +--------------+------+------+-------+--------+------+--------+
->>>
->>> The reason why the benefit is not obvious after the number of 
->>> connections
->>> has increased dues to workqueue. If we try to change workqueue to 
->>> UNBOUND,
->>> we can obtain at least 4-5 times performance improvement, reach up to 
->>> half
->>> of TCP. However, this is not an elegant solution, the optimization of it
->>> will be much more complicated. But in any case, we will submit relevant
->>> optimization patches as soon as possible.
->>>
->>> Please note that the premise here is that the lock related problem
->>> must be solved first, otherwise, no matter how we optimize the 
->>> workqueue,
->>> there won't be much improvement.
->>>
->>> Because there are a lot of related changes to the code, if you have
->>> any questions or suggestions, please let me know.
->>>
->>> Thanks
->>> D. Wythe
->>>
->>> v1 -> v2:
->>>
->>> 1. Fix panic in SMC-D scenario
->>> 2. Fix lnkc related hashfn calculation exception, caused by operator
->>> priority
->>> 3. Only wake up one connection if the lnk is not active
->>> 4. Delete obsolete unlock logic in smc_listen_work()
->>> 5. PATCH format, do Reverse Christmas tree
->>> 6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx
->>> 7. PATCH format, add correct fix tag for the patches for fixes.
->>> 8. PATCH format, fix some spelling error
->>> 9. PATCH format, rename slow to do_slow
->>>
->>> v2 -> v3:
->>>
->>> 1. add SMC-D support, remove the concept of link cluster since SMC-D has
->>> no link at all. Replace it by lgr decision maker, who provides 
->>> suggestions
->>> to SMC-D and SMC-R on whether to create new link group.
->>>
->>> 2. Fix the corruption problem described by PATCH 'fix application
->>> data exception' on SMC-D.
->>>
->>> v3 -> v4:
->>>
->>> 1. Fix panic caused by uninitialization map.
->>>
->>> D. Wythe (10):
->>>    net/smc: remove locks smc_client_lgr_pending and
->>>      smc_server_lgr_pending
->>>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
->>>    net/smc: allow confirm/delete rkey response deliver multiplex
->>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
->>>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
->>>    net/smc: use read semaphores to reduce unnecessary blocking in
->>>      smc_buf_create() & smcr_buf_unuse()
->>>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
->>>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
->>>    net/smc: Fix potential panic dues to unprotected
->>>      smc_llc_srv_add_link()
->>>    net/smc: fix application data exception
->>>
->>>   net/smc/af_smc.c   |  70 ++++----
->>>   net/smc/smc_core.c | 478 
->>> +++++++++++++++++++++++++++++++++++++++++++++++------
->>>   net/smc/smc_core.h |  36 +++-
->>>   net/smc/smc_llc.c  | 277 ++++++++++++++++++++++---------
->>>   net/smc/smc_llc.h  |   6 +
->>>   net/smc/smc_wr.c   |  10 --
->>>   net/smc/smc_wr.h   |  10 ++
->>>   7 files changed, 712 insertions(+), 175 deletions(-)
->>>
