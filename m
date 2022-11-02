@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21B0F617071
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 23:12:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 502C1617077
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 23:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231422AbiKBWL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 18:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        id S231572AbiKBWMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 18:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231356AbiKBWLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 18:11:49 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2A6BC96
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 15:11:47 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id r81so7547641iod.2
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 15:11:47 -0700 (PDT)
+        with ESMTP id S231512AbiKBWL4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 18:11:56 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118CC63DB
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 15:11:49 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id o13so170741ilq.6
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 15:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=44inpgxMtLGpYTBDTKxPiEfpRDa0k0SEfGcjuP68SFA=;
-        b=E8zRVS9F27rajNfZCJWIwaTxqcrfrRyozWVG3XQoiJ8geI02YDsiE/2sOfBxZJVxVa
-         77XMug2VsyzU22K+Psprfc76f4gTh5GroQQql8AS8/rwlPm8ohIngsEcqrVz0R0J973P
-         VVDPDtnMWZShk+x9LRnIyJnMzWpM5ohFyjVUCBxfCdlUUbHR1JuIye7p7WGSErPbwF2L
-         K8ZrHNAt28nJUo4rcc4+S7nn/hyabbD0IzRm8pVGxB8lRf1XUSK8K1WI9W5vrd53dC4U
-         IygDp9EIwZOGARqXKtDOows34n75OHdnCz1DrRfPS8RpUVUknEvaIxW81hutDvsFicNy
-         CKdg==
+        bh=ZcCihh0f7Qr/rXNZsx/9L0DCMnXVjeXTxfp8VH2CZiE=;
+        b=bkzPZGX8D5ZtdPtTrfyB8KoUOND6iilJEeMX3Qy+KmyjK+PQWQSuV/2yllmfp/MYR9
+         1/72vdRe7ywfHXQRHQjmJnyOKjZZqrpe7YNFGK24Bf0pglwqK6lWP+qj4CTvYN5fuq2j
+         TJXJ+67xEeEam6NGevPkZKYG2lQJEwajQe7Toyz/+kmcMmh9eYIHEANngZESkscgE4h8
+         TfSVlmtWDr1EHybGUzXNJRYxDr+H1tfiIZNXY3VUZpYhimtt3+LpX52QdamxhcP6qhaS
+         1SZptwnG1pQKlFCdRTvVO13Ox/N8I6l/laM+FDGkiH/edHJHirhIoNEVSpEK+LTjKkrM
+         9H0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=44inpgxMtLGpYTBDTKxPiEfpRDa0k0SEfGcjuP68SFA=;
-        b=r7dkyePErsAjXkGneyI6uauNMn/TWS0DLuwhKnV+vi5xizC8JlEjBYqXQhfzxGUajS
-         fWZ+eOySLGVdtRLGrFOiMTw3WUSmHpiXw8XDiemQQ+h23dLGgg4VvetiP/CST3kQKTSr
-         n3ErwxoDZXT8sgdjifx6U5cwvB9ZjbHLqtkA0HHIilDxHREI6UTTXROiQHqEH5AJecNX
-         xZAPbQeiIabLFxaE20kH+oohUqrE6iEI1H2EoPP81TmDtWdVxkZ1Jyn5+xewFgoCdh+b
-         zmsFEBZTUTOTZwguGaXBETdB22+2sWdOgDm6qpsQUKsFFd3DeU/4h1KidT4ptN7BmKDO
-         fufQ==
-X-Gm-Message-State: ACrzQf2nUgZDdH0I1klJCoNjGOC9owsXdkU5Dpv85f+d1c2WmdxE8uxz
-        Hm34bFSmuBp+XiT5pNTdCwHhTA==
-X-Google-Smtp-Source: AMsMyM7BQ9X4OlwxKp6Z0UVt5tWSmJ3HSKggYZ99QQCfxwC6Gjbz86LMNO/ALVMBbrSkJMN8xXEHRg==
-X-Received: by 2002:a05:6602:134f:b0:6a5:3fdb:574e with SMTP id i15-20020a056602134f00b006a53fdb574emr17598065iov.218.1667427107220;
-        Wed, 02 Nov 2022 15:11:47 -0700 (PDT)
+        bh=ZcCihh0f7Qr/rXNZsx/9L0DCMnXVjeXTxfp8VH2CZiE=;
+        b=s6m7olxrs32eK5ASHhjkhSpr0q4WobigJ+Elq6iEDDCNhP4VmSr/KSPZBmO87ThGD/
+         Aflq7cMaK6ORTanwxVPAXbAzJWqtS4fMH6JW8g8DAmqSxZg4bHzczWAcSkgH5Wt3v826
+         oPmFS9Z8bLJvPH/wOcUK8yo7bUYXtoGR/2L2yyVGn0sNO9463iyn3GsWc34AbU/ZifRk
+         KTNNqGI1YQ7LiMIzINd3aG6bRcTrrjVoS/2c12lLEPKEhlSqx+qYqpKQfjO4LGvF9efS
+         NvK41sIoVtsT8m40uzXcv5BmF2KgWhWXLBP3RBfxTCDo+Q0e44dVziw5N+0O/siGaSEM
+         8EVg==
+X-Gm-Message-State: ACrzQf19Sl9/FSQV75cCBAeDZ3sGfq7NlsnJDn/1TORXb55Hw/NkAClS
+        pkkRDv5g1eLmarZOLKfBgwJGbw==
+X-Google-Smtp-Source: AMsMyM4KWS8/FPX0X0Y7ri8CFkjTzWr65T/eRFQt5jxvr6FUuuHHH3qL14opq7OtqOeS9+vMR33BtQ==
+X-Received: by 2002:a92:c146:0:b0:300:b1b9:dbb0 with SMTP id b6-20020a92c146000000b00300b1b9dbb0mr10302528ilh.73.1667427108335;
+        Wed, 02 Nov 2022 15:11:48 -0700 (PDT)
 Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id f8-20020a02a108000000b0037465a1dd3fsm5073974jag.156.2022.11.02.15.11.46
+        by smtp.gmail.com with ESMTPSA id f8-20020a02a108000000b0037465a1dd3fsm5073974jag.156.2022.11.02.15.11.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 15:11:46 -0700 (PDT)
+        Wed, 02 Nov 2022 15:11:48 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 3/9] net: ipa: add a parameter to aggregation registers
-Date:   Wed,  2 Nov 2022 17:11:33 -0500
-Message-Id: <20221102221139.1091510-4-elder@linaro.org>
+Subject: [PATCH net-next v2 4/9] net: ipa: add a parameter to suspend registers
+Date:   Wed,  2 Nov 2022 17:11:34 -0500
+Message-Id: <20221102221139.1091510-5-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221102221139.1091510-1-elder@linaro.org>
 References: <20221102221139.1091510-1-elder@linaro.org>
@@ -67,219 +67,238 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Starting with IPA v5.0, a single IPA instance can have more than 32
-endpoints defined.  To handle this, each register that holds a
-bitmap of IPA endpoints is replicated as needed to represent the
-available endpoints.
-
-To prepare for this, registers that represent endpoint IDs in a bit
-mask will be defined to have a parameter, with a stride value of 4
-bytes.  The first 32 endpoints are represented in the first 32-bit
-register, then the next (up to) 32 endpoints at an offset 4 bytes
-higher.  When accessing such a register, the endpoint ID divided
-by 32 determines the offset, and the endpoint ID modulo 32 defines
-the endpoint's bit position within the register.
-
-The first two registers we'll update for this are STATE_AGGR_ACTIVE
-and AGGR_FORCE_CLOSE.
-
-Until more than 32 endpoints are supported, this change has no
-practical effect.
+The SUSPEND_INFO, SUSPEND_EN, SUSPEND_CLR registers represent
+endpoint IDs in a bit mask.  When more than 32 endpoints are
+supported, these registers will be replicated as needed to represent
+the number of supported endpoints.  Update the definitions of these
+registers to have a stride of 4 bytes, and update the code that
+operates them to select the proper offset and bit.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c       | 14 ++++++++++----
- drivers/net/ipa/reg/ipa_reg-v3.1.c   |  4 ++--
- drivers/net/ipa/reg/ipa_reg-v3.5.1.c |  4 ++--
- drivers/net/ipa/reg/ipa_reg-v4.11.c  |  4 ++--
- drivers/net/ipa/reg/ipa_reg-v4.2.c   |  4 ++--
- drivers/net/ipa/reg/ipa_reg-v4.5.c   |  4 ++--
- drivers/net/ipa/reg/ipa_reg-v4.9.c   |  4 ++--
- 7 files changed, 22 insertions(+), 16 deletions(-)
+ drivers/net/ipa/ipa_interrupt.c      | 30 ++++++++++++++++++----------
+ drivers/net/ipa/reg/ipa_reg-v3.1.c   |  9 ++++++---
+ drivers/net/ipa/reg/ipa_reg-v3.5.1.c |  9 ++++++---
+ drivers/net/ipa/reg/ipa_reg-v4.11.c  |  9 ++++++---
+ drivers/net/ipa/reg/ipa_reg-v4.2.c   |  9 ++++++---
+ drivers/net/ipa/reg/ipa_reg-v4.5.c   |  9 ++++++---
+ drivers/net/ipa/reg/ipa_reg-v4.9.c   |  9 ++++++---
+ 7 files changed, 55 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 2a6184ea8f5ca..32559ed498c19 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -350,29 +350,35 @@ ipa_endpoint_program_delay(struct ipa_endpoint *endpoint, bool enable)
- 
- static bool ipa_endpoint_aggr_active(struct ipa_endpoint *endpoint)
+diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
+index c269432f9c2ee..a62bc667bda0e 100644
+--- a/drivers/net/ipa/ipa_interrupt.c
++++ b/drivers/net/ipa/ipa_interrupt.c
+@@ -132,11 +132,13 @@ static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
+ 					  u32 endpoint_id, bool enable)
  {
--	u32 mask = BIT(endpoint->endpoint_id);
-+	u32 endpoint_id = endpoint->endpoint_id;
+ 	struct ipa *ipa = interrupt->ipa;
+-	u32 mask = BIT(endpoint_id);
 +	u32 mask = BIT(endpoint_id % 32);
- 	struct ipa *ipa = endpoint->ipa;
 +	u32 unit = endpoint_id / 32;
  	const struct ipa_reg *reg;
+ 	u32 offset;
  	u32 val;
  
 +	/* This works until we actually have more than 32 endpoints */
  	WARN_ON(!(mask & ipa->available));
  
- 	reg = ipa_reg(ipa, STATE_AGGR_ACTIVE);
--	val = ioread32(ipa->reg_virt + ipa_reg_offset(reg));
-+	val = ioread32(ipa->reg_virt + ipa_reg_n_offset(reg, unit));
+ 	/* IPA version 3.0 does not support TX_SUSPEND interrupt control */
+@@ -144,7 +146,7 @@ static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
+ 		return;
  
- 	return !!(val & mask);
- }
- 
- static void ipa_endpoint_force_close(struct ipa_endpoint *endpoint)
+ 	reg = ipa_reg(ipa, IRQ_SUSPEND_EN);
+-	offset = ipa_reg_offset(reg);
++	offset = ipa_reg_n_offset(reg, unit);
+ 	val = ioread32(ipa->reg_virt + offset);
+ 	if (enable)
+ 		val |= mask;
+@@ -171,18 +173,24 @@ ipa_interrupt_suspend_disable(struct ipa_interrupt *interrupt, u32 endpoint_id)
+ void ipa_interrupt_suspend_clear_all(struct ipa_interrupt *interrupt)
  {
--	u32 mask = BIT(endpoint->endpoint_id);
-+	u32 endpoint_id = endpoint->endpoint_id;
-+	u32 mask = BIT(endpoint_id % 32);
- 	struct ipa *ipa = endpoint->ipa;
-+	u32 unit = endpoint_id / 32;
- 	const struct ipa_reg *reg;
+ 	struct ipa *ipa = interrupt->ipa;
+-	const struct ipa_reg *reg;
+-	u32 val;
++	u32 unit_count;
++	u32 unit;
  
-+	/* This works until we actually have more than 32 endpoints */
- 	WARN_ON(!(mask & ipa->available));
+-	reg = ipa_reg(ipa, IRQ_SUSPEND_INFO);
+-	val = ioread32(ipa->reg_virt + ipa_reg_offset(reg));
++	unit_count = roundup(ipa->endpoint_count, 32);
++	for (unit = 0; unit < unit_count; unit++) {
++		const struct ipa_reg *reg;
++		u32 val;
  
- 	reg = ipa_reg(ipa, AGGR_FORCE_CLOSE);
--	iowrite32(mask, ipa->reg_virt + ipa_reg_offset(reg));
-+	iowrite32(mask, ipa->reg_virt + ipa_reg_n_offset(reg, unit));
+-	/* SUSPEND interrupt status isn't cleared on IPA version 3.0 */
+-	if (ipa->version == IPA_VERSION_3_0)
+-		return;
++		reg = ipa_reg(ipa, IRQ_SUSPEND_INFO);
++		val = ioread32(ipa->reg_virt + ipa_reg_n_offset(reg, unit));
+ 
+-	reg = ipa_reg(ipa, IRQ_SUSPEND_CLR);
+-	iowrite32(val, ipa->reg_virt + ipa_reg_offset(reg));
++		/* SUSPEND interrupt status isn't cleared on IPA version 3.0 */
++		if (ipa->version == IPA_VERSION_3_0)
++			continue;
++
++		reg = ipa_reg(ipa, IRQ_SUSPEND_CLR);
++		iowrite32(val, ipa->reg_virt + ipa_reg_n_offset(reg, unit));
++	}
  }
  
- /**
+ /* Simulate arrival of an IPA TX_SUSPEND interrupt */
 diff --git a/drivers/net/ipa/reg/ipa_reg-v3.1.c b/drivers/net/ipa/reg/ipa_reg-v3.1.c
-index 0d002c3c38a26..0b6edc2912bd3 100644
+index 0b6edc2912bd3..677ece3bce9e5 100644
 --- a/drivers/net/ipa/reg/ipa_reg-v3.1.c
 +++ b/drivers/net/ipa/reg/ipa_reg-v3.1.c
-@@ -103,7 +103,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
- IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x0000090);
+@@ -386,13 +386,16 @@ static const u32 ipa_reg_ipa_irq_uc_fmask[] = {
+ IPA_REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000301c + 0x1000 * GSI_EE_AP);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c);
-+IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c, 0x0004);
- 
- IPA_REG(IPA_BCR, ipa_bcr, 0x000001d0);
- 
-@@ -116,7 +116,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+-IPA_REG(IRQ_SUSPEND_INFO, irq_suspend_info, 0x00003030 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
++	       0x00003030 + 0x1000 * GSI_EE_AP, 0x0004);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
-+IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+-IPA_REG(IRQ_SUSPEND_EN, irq_suspend_en, 0x00003034 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
++	       0x00003034 + 0x1000 * GSI_EE_AP, 0x0004);
  
- static const u32 ipa_reg_counter_cfg_fmask[] = {
- 	[EOT_COAL_GRANULARITY]				= GENMASK(3, 0),
+ /* Valid bits defined by ipa->available */
+-IPA_REG(IRQ_SUSPEND_CLR, irq_suspend_clr, 0x00003038 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
++	       0x00003038 + 0x1000 * GSI_EE_AP, 0x0004);
+ 
+ static const struct ipa_reg *ipa_reg_array[] = {
+ 	[COMP_CFG]			= &ipa_reg_comp_cfg,
 diff --git a/drivers/net/ipa/reg/ipa_reg-v3.5.1.c b/drivers/net/ipa/reg/ipa_reg-v3.5.1.c
-index 6e2f939b18f19..10f62f6aaf7a4 100644
+index 10f62f6aaf7a4..b9c6a50de2436 100644
 --- a/drivers/net/ipa/reg/ipa_reg-v3.5.1.c
 +++ b/drivers/net/ipa/reg/ipa_reg-v3.5.1.c
-@@ -108,7 +108,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
- IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x0000090);
+@@ -397,13 +397,16 @@ static const u32 ipa_reg_ipa_irq_uc_fmask[] = {
+ IPA_REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000301c + 0x1000 * GSI_EE_AP);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c);
-+IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c, 0x0004);
- 
- IPA_REG(IPA_BCR, ipa_bcr, 0x000001d0);
- 
-@@ -121,7 +121,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+-IPA_REG(IRQ_SUSPEND_INFO, irq_suspend_info, 0x00003030 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
++	       0x00003030 + 0x1000 * GSI_EE_AP, 0x0004);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
-+IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+-IPA_REG(IRQ_SUSPEND_EN, irq_suspend_en, 0x00003034 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
++	       0x00003034 + 0x1000 * GSI_EE_AP, 0x0004);
  
- static const u32 ipa_reg_counter_cfg_fmask[] = {
- 						/* Bits 0-3 reserved */
+ /* Valid bits defined by ipa->available */
+-IPA_REG(IRQ_SUSPEND_CLR, irq_suspend_clr, 0x00003038 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
++	       0x00003038 + 0x1000 * GSI_EE_AP, 0x0004);
+ 
+ static const struct ipa_reg *ipa_reg_array[] = {
+ 	[COMP_CFG]			= &ipa_reg_comp_cfg,
 diff --git a/drivers/net/ipa/reg/ipa_reg-v4.11.c b/drivers/net/ipa/reg/ipa_reg-v4.11.c
-index 8fd36569bb9f8..113a25c006da1 100644
+index 113a25c006da1..9a315130530dd 100644
 --- a/drivers/net/ipa/reg/ipa_reg-v4.11.c
 +++ b/drivers/net/ipa/reg/ipa_reg-v4.11.c
-@@ -140,7 +140,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
- IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+@@ -453,13 +453,16 @@ static const u32 ipa_reg_ipa_irq_uc_fmask[] = {
+ IPA_REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000401c + 0x1000 * GSI_EE_AP);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
-+IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
- 
- static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- 	[IPA_BASE_ADDR]					= GENMASK(17, 0),
-@@ -151,7 +151,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+-IPA_REG(IRQ_SUSPEND_INFO, irq_suspend_info, 0x00004030 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
++	       0x00004030 + 0x1000 * GSI_EE_AP, 0x0004);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
-+IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+-IPA_REG(IRQ_SUSPEND_EN, irq_suspend_en, 0x00004034 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
++	       0x00004034 + 0x1000 * GSI_EE_AP, 0x0004);
  
- static const u32 ipa_reg_ipa_tx_cfg_fmask[] = {
- 						/* Bits 0-1 reserved */
+ /* Valid bits defined by ipa->available */
+-IPA_REG(IRQ_SUSPEND_CLR, irq_suspend_clr, 0x00004038 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
++	       0x00004038 + 0x1000 * GSI_EE_AP, 0x0004);
+ 
+ static const struct ipa_reg *ipa_reg_array[] = {
+ 	[COMP_CFG]			= &ipa_reg_comp_cfg,
 diff --git a/drivers/net/ipa/reg/ipa_reg-v4.2.c b/drivers/net/ipa/reg/ipa_reg-v4.2.c
-index f8e78e1907c83..c93f2da9290fc 100644
+index c93f2da9290fc..7a95149f8ec7a 100644
 --- a/drivers/net/ipa/reg/ipa_reg-v4.2.c
 +++ b/drivers/net/ipa/reg/ipa_reg-v4.2.c
-@@ -132,7 +132,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
- IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+@@ -399,13 +399,16 @@ static const u32 ipa_reg_ipa_irq_uc_fmask[] = {
+ IPA_REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000301c + 0x1000 * GSI_EE_AP);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
-+IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
- 
- IPA_REG(IPA_BCR, ipa_bcr, 0x000001d0);
- 
-@@ -145,7 +145,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+-IPA_REG(IRQ_SUSPEND_INFO, irq_suspend_info, 0x00003030 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
++	       0x00003030 + 0x1000 * GSI_EE_AP, 0x0004);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
-+IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+-IPA_REG(IRQ_SUSPEND_EN, irq_suspend_en, 0x00003034 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
++	       0x00003034 + 0x1000 * GSI_EE_AP, 0x0004);
  
- static const u32 ipa_reg_counter_cfg_fmask[] = {
- 						/* Bits 0-3 reserved */
+ /* Valid bits defined by ipa->available */
+-IPA_REG(IRQ_SUSPEND_CLR, irq_suspend_clr, 0x00003038 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
++	       0x00003038 + 0x1000 * GSI_EE_AP, 0x0004);
+ 
+ static const struct ipa_reg *ipa_reg_array[] = {
+ 	[COMP_CFG]			= &ipa_reg_comp_cfg,
 diff --git a/drivers/net/ipa/reg/ipa_reg-v4.5.c b/drivers/net/ipa/reg/ipa_reg-v4.5.c
-index d32b805abb11a..1615c5ead8cc1 100644
+index 1615c5ead8cc1..587eb8d4e00f7 100644
 --- a/drivers/net/ipa/reg/ipa_reg-v4.5.c
 +++ b/drivers/net/ipa/reg/ipa_reg-v4.5.c
-@@ -134,7 +134,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
- IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+@@ -472,13 +472,16 @@ static const u32 ipa_reg_ipa_irq_uc_fmask[] = {
+ IPA_REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000301c + 0x1000 * GSI_EE_AP);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
-+IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
- 
- static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- 	[IPA_BASE_ADDR]					= GENMASK(17, 0),
-@@ -145,7 +145,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+-IPA_REG(IRQ_SUSPEND_INFO, irq_suspend_info, 0x00003030 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
++	       0x00003030 + 0x1000 * GSI_EE_AP, 0x0004);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
-+IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+-IPA_REG(IRQ_SUSPEND_EN, irq_suspend_en, 0x00003034 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
++	       0x00003034 + 0x1000 * GSI_EE_AP, 0x0004);
  
- static const u32 ipa_reg_ipa_tx_cfg_fmask[] = {
- 						/* Bits 0-1 reserved */
+ /* Valid bits defined by ipa->available */
+-IPA_REG(IRQ_SUSPEND_CLR, irq_suspend_clr, 0x00003038 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
++	       0x00003038 + 0x1000 * GSI_EE_AP, 0x0004);
+ 
+ static const struct ipa_reg *ipa_reg_array[] = {
+ 	[COMP_CFG]			= &ipa_reg_comp_cfg,
 diff --git a/drivers/net/ipa/reg/ipa_reg-v4.9.c b/drivers/net/ipa/reg/ipa_reg-v4.9.c
-index eabbc5451937b..4efc890d31589 100644
+index 4efc890d31589..1f67a03fe5992 100644
 --- a/drivers/net/ipa/reg/ipa_reg-v4.9.c
 +++ b/drivers/net/ipa/reg/ipa_reg-v4.9.c
-@@ -139,7 +139,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
- IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+@@ -450,13 +450,16 @@ static const u32 ipa_reg_ipa_irq_uc_fmask[] = {
+ IPA_REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000401c + 0x1000 * GSI_EE_AP);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
-+IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
- 
- static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- 	[IPA_BASE_ADDR]					= GENMASK(17, 0),
-@@ -150,7 +150,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
- IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+-IPA_REG(IRQ_SUSPEND_INFO, irq_suspend_info, 0x00004030 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
++	       0x00004030 + 0x1000 * GSI_EE_AP, 0x0004);
  
  /* Valid bits defined by ipa->available */
--IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
-+IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+-IPA_REG(IRQ_SUSPEND_EN, irq_suspend_en, 0x00004034 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
++	       0x00004034 + 0x1000 * GSI_EE_AP, 0x0004);
  
- static const u32 ipa_reg_ipa_tx_cfg_fmask[] = {
- 						/* Bits 0-1 reserved */
+ /* Valid bits defined by ipa->available */
+-IPA_REG(IRQ_SUSPEND_CLR, irq_suspend_clr, 0x00004038 + 0x1000 * GSI_EE_AP);
++IPA_REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
++	       0x00004038 + 0x1000 * GSI_EE_AP, 0x0004);
+ 
+ static const struct ipa_reg *ipa_reg_array[] = {
+ 	[COMP_CFG]			= &ipa_reg_comp_cfg,
 -- 
 2.34.1
 
