@@ -2,231 +2,347 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D015615BCA
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 06:27:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA92615BCC
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 06:28:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiKBF1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 01:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        id S229819AbiKBF2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 01:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiKBF1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 01:27:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E40C248EB;
-        Tue,  1 Nov 2022 22:27:15 -0700 (PDT)
-X-UUID: 8290a26b14ea466da43bf2bbb4db4b4c-20221102
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=fRITEL96tSVeLU5kub1ZOyi1hyhcZ5AxFSehq80q4Ys=;
-        b=YO4G5cAYHWeepyMJUD1Mo93OfeqJ/UneG284uoCpn+nluQCGiEAIchpFM8rRLqwGdFujhol4zb6AKBx/RPIM/6yStCDPBsrl3wCoANQS5F55fKLcferrIVBmiBLxshl54vndsqUsiqm8DLg9WAZY1SzE0HtA8zhU3XQPYrPofYc=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.12,REQID:a994a052-7612-45c3-8e85-d7fdd99e8902,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:1,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-        release,TS:1
-X-CID-INFO: VERSION:1.1.12,REQID:a994a052-7612-45c3-8e85-d7fdd99e8902,IP:0,URL
-        :0,TC:0,Content:0,EDM:0,RT:0,SF:1,FILE:0,BULK:0,RULE:Release_Ham,ACTION:re
-        lease,TS:1
-X-CID-META: VersionHash:62cd327,CLOUDID:57f62beb-84ac-4628-a416-bc50d5503da6,B
-        ulkID:221102132713H7YBEM7B,BulkQuantity:0,Recheck:0,SF:17|19|102,TC:nil,Co
-        ntent:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 8290a26b14ea466da43bf2bbb4db4b4c-20221102
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <haozhe.chang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1186123767; Wed, 02 Nov 2022 13:27:12 +0800
-Received: from mtkmbs10n2.mediatek.inc (172.21.101.183) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 2 Nov 2022 13:27:11 +0800
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (172.21.101.239)
- by mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 2 Nov 2022 13:27:11 +0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Um3SswKk19Hcw0oRVBUoGvw3yFYUEBAYwhBQ6b8okAj7lYqH1NAMUwIhha4sn4jIzGQ+lkfyua5NoW853rR63w7A1KnDGWG9PpHTl/xPjbXcaVZVipBMbl+RIzn1F6uEikIt52A+hmjn5v0Vz4YpRgMU8RIuLOtBqzO2ZChfG82yMm5ryn9NNblSMdtLSBN/fh8L5n5nbC8+3Ky8KUvDAN7AKN3jgG5kBAMPu6dJYcKSCvLsCP1nS4F4L2jfQ99EKQftGONPo3VSgNInMbBACmar8Mz7G55plLMUY8fTCuwMbbSmG+b3J6uj4LEBXi13ly5GyMoMFu9UA5R43ka86A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fRITEL96tSVeLU5kub1ZOyi1hyhcZ5AxFSehq80q4Ys=;
- b=IoG67c/hKa9nlfGT6W/HVVz0y4ujPiXoF/Olt6/VoUSXxod8eJ7+Glu3YcXyxzJ+Hb6N+sktFyr387spbdxRb1yoWaokOAQF3KO/C7I5XgO/1gRE3MFkDx7Blxkiq4Rsi6lgEKxMaLG9lXOScGk42LcardPoF4gCV6w4SyoqIEp5tZ0wgpi2qGKVhunTg94QAOJ2vTzsrdK39iLI18g7tm8NRTvZdfAZItm0i9hA84pUdxt3NxdVpuBe5h/6st9fmui41zDtCfz+hFfpekgxUeWslrr/xlo3rfN06dpOdEHlhiGKuksh/chhVJT7clx+omLu5oU91nd05J7rId3OIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
- dkim=pass header.d=mediatek.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fRITEL96tSVeLU5kub1ZOyi1hyhcZ5AxFSehq80q4Ys=;
- b=LAH5w3aktORC/CYDTcYyvPYgky2YkpkTVLwj3eE859cQQuWgxd4O9QGN35K3XB1Ny8sWk/bJOx1LWgdihXgb5LY2nKecbeiScOaNYgrC5df+7hR78XXXyuU9SJt/4laAQfUU93SWK8vtsJzmLvTG8CF/GxcDFr2DtQKQPY7OahM=
-Received: from PSAPR03MB5653.apcprd03.prod.outlook.com (2603:1096:301:8f::9)
- by KL1PR0302MB5283.apcprd03.prod.outlook.com (2603:1096:820:42::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.17; Wed, 2 Nov
- 2022 05:27:08 +0000
-Received: from PSAPR03MB5653.apcprd03.prod.outlook.com
- ([fe80::4682:d6f1:6744:aca6]) by PSAPR03MB5653.apcprd03.prod.outlook.com
- ([fe80::4682:d6f1:6744:aca6%9]) with mapi id 15.20.5791.017; Wed, 2 Nov 2022
- 05:27:08 +0000
-From:   =?utf-8?B?SGFvemhlIENoYW5nICjluLjmtanlk7Ip?= 
-        <Haozhe.Chang@mediatek.com>
-To:     "loic.poulain@linaro.org" <loic.poulain@linaro.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxwwan@intel.com" <linuxwwan@intel.com>,
-        "m.chetan.kumar@linux.intel.com" <m.chetan.kumar@linux.intel.com>,
-        =?utf-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        "chiranjeevi.rapolu@linux.intel.com" 
-        <chiranjeevi.rapolu@linux.intel.com>,
-        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        =?utf-8?B?WGlheXUgWmhhbmcgKOW8oOWkj+Wuhyk=?= 
-        <Xiayu.Zhang@mediatek.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "chandrashekar.devegowda@intel.com" 
-        <chandrashekar.devegowda@intel.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        =?utf-8?B?TGFtYmVydCBXYW5nICjnjovkvJ8p?= 
-        <Lambert.Wang@mediatek.com>,
-        "ricardo.martinez@linux.intel.com" <ricardo.martinez@linux.intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>
-Subject: Re: [PATCH] wwan: core: Support slicing in port TX flow of WWAN
- subsystem
-Thread-Topic: [PATCH] wwan: core: Support slicing in port TX flow of WWAN
- subsystem
-Thread-Index: AQHY6Nh95ZC9QMr6OU2rT6GQPCNuca4gR4aAgADNu4D//6dKgIABPEEAgAMPhYCABh19gA==
-Date:   Wed, 2 Nov 2022 05:27:07 +0000
-Message-ID: <fc0793c2e87d1944780a243258328cd148088c01.camel@mediatek.com>
-References: <20221026011540.8499-1-haozhe.chang@mediatek.com>
-         <CAMZdPi_XSWeTf-eP+O2ZXGXtn5yviEp=p1Q0rs_fG76UGf2FsQ@mail.gmail.com>
-         <82a7acf3176c90d9bea773bb4ea365745c1a1971.camel@mediatek.com>
-         <CAMZdPi_tTBgqSGCUaB29ifOUSE5nWa6ooOa=4k8T6pXJDfpO-A@mail.gmail.com>
-         <3abbe6ea016b865b6762708fe8234913884a0ed5.camel@mediatek.com>
-         <CAMZdPi-LCzrzM1eGsA_mKH-GZ1LgYXQqs4k8r=8gQAC3BRUFNg@mail.gmail.com>
-In-Reply-To: <CAMZdPi-LCzrzM1eGsA_mKH-GZ1LgYXQqs4k8r=8gQAC3BRUFNg@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=mediatek.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PSAPR03MB5653:EE_|KL1PR0302MB5283:EE_
-x-ms-office365-filtering-correlation-id: c25aa920-99aa-4917-90c0-08dabc92e2a8
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: aCf6aJSi28UES+JaAHW0J9YSwF2iNqjFn97dtR9OkeTmImf/l/7o/A7U9wJjH+v/vpPcwknXr/fQ1SDPDm9Y/ODTd7s0fHoQAImgCfKulvjtAjVGHM4h3Qdzb3yMvVo02hPFRKUpeJfjVvPMQfDPnL2m0DL9Wz3VqBKCzUdQjzi/6S9D3/nT36oOajb5TXagx5j8XmtnwcH9VVHQi4mxJPPy9+Xur3lvDYjmdWH0rXQHr+0g+W3M+5wgbaSldTTjDC+Wz9N/zkI9cChPpvFbeICCJkjUgFA4zZ8HiI0z8ltTDykx3U4Q+pm498DfCMg+bhCjnIqoK/LlvW3G8HfuvopFpMLfqEKvMxZP+RD+GMoyZGAkfUjM/ZdDN3lyUM4DzqTXbw5/jOn3MTALamdjdUcKuQSwmqKsm4Jhnn+eD5r7Ew2ybKIlnbIQPFppMBbq3GFIETo94+8wUy/UatBgq/NUXUJkMsPzQwVfw0q5tVY8DAeqx4MtHcygBhZne3XJ6d1+aReNM3EyvdbsvmM0kceuHtFQjDuysWIRmFJdmPTnZsnUgVfV5IQyngNmtX0ykJ8dx9Mk0KbCtDbsexzqyEbcXtHrLoT9h68w0BoYBt1/poKeS7PkJUmMoRry5bcROHfyC6Q3lc92xsnUHpc39KLyY+qzveIpoo0OtFxpbNCK8zGnlMgd7SjObNvdqRYx4b7pM+fSiSvoSOMvT7ENPnAzF/MudjiC2XIhUyyZhu95CJWnrq6arSOxtIptVEH+qDgRncvJ8dVZeH4EZVeOmqldNgq5yxOW/Dgm3ozb6haAlW+4hQHzzGd1Vkqh70eAeumvGEdRmu13g0zTDiBG6w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PSAPR03MB5653.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(451199015)(85182001)(36756003)(316002)(71200400001)(7416002)(122000001)(38100700002)(38070700005)(86362001)(83380400001)(2616005)(186003)(478600001)(26005)(6512007)(6506007)(6486002)(107886003)(5660300002)(6916009)(4001150100001)(2906002)(64756008)(41300700001)(66476007)(76116006)(8936002)(54906003)(66446008)(4326008)(66556008)(66946007)(91956017)(8676002)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dGdTQzlGbXFpdVowcVBTeE1IUTUvWEVCOENQT1NwY0VTcmVURUoxQWJLRUVH?=
- =?utf-8?B?N1lZbHpnaU40czEwL1pmbXFrWjNaNUxmN3FDOEp5VlkwbG9UQTB6N3hkb3F1?=
- =?utf-8?B?N1RFdUFpN2Q4dk9SVjU0MnZFMkxtNks4am9rRmdEcVZyTmlnVG1VOTBuMnZB?=
- =?utf-8?B?UEFBT2NpMS9wRHMwV3Jpbk05NVJCYkh1YWxsZndoS040ejJ2M01yUDRCeHZj?=
- =?utf-8?B?YU1FUUJBY3pzc1ZNTmptSVdxK1crNUJUOU5sWkdNKzA0MXI3UnBGU0kzTzN6?=
- =?utf-8?B?cEhWYmg2QWZSZTFuVG5Td0FLc2UzS3RuZU8wM3NKdkJ6TmpBaTQ1bGFWakhK?=
- =?utf-8?B?ZEliT2dmc2NRaHJVQjZlUTZJYitZN2VEOGdldmduelZYRFVFMTZTUk9IN0Vm?=
- =?utf-8?B?ZnloL2xvVjBsWHV4RmtpN2NtOGRMSHUzQk4rd3ZXMDIyS3VmTHVOeFNQaS95?=
- =?utf-8?B?N2tVdVdJYTJlZ0dhL1EzZEdyWWhtK3JoWnpFT1VYMG8vcjExbTF0NUhiN2NQ?=
- =?utf-8?B?RnFxdkxjTHl3Sk9FazhpUmUyOU43d21QZEMrMW8yaXFKYThuaDY3M3dOZDFF?=
- =?utf-8?B?emZzQmFuWmhSMkRqTGdxU0pEaUJ5WHdXcVlzMGxiMEdmYkJNUG81NURERHVh?=
- =?utf-8?B?UVpwV1IwNC8rY0xZbHYrU1RWT0pPNStvbEpvVEh0YjVteE1Idkx0TmFPTHMw?=
- =?utf-8?B?emRpVlhIWjdtUnlHSnE0Q1lxTzVFdWppQzFHcnVwRWVTYnNjYXgvS1lidWto?=
- =?utf-8?B?eVdZVkNMTk9YQjgySVE1N2ZXci9uSnhBMjZKNy9TVEFmOHNpcVlJVVNWdjk4?=
- =?utf-8?B?czYzTjcwVWRBSGZXemVQcUduMnptWnVCYlRRZ3I3bFM1UlE4MEFyeDdYMkNx?=
- =?utf-8?B?cHJBVmYwVEkwMnV1eVk4V3lCb0JMekJWajBEOTh4ZzZ4ZFRRSmtMWmxaQkRD?=
- =?utf-8?B?WCtlVGZEVzdUYzdMUmx1NnpxQUpEcnFlWEkyWk5FMmhZbC95WWkxbmg2UGo0?=
- =?utf-8?B?eWpNOW5oUkVVaWp1T1JkdzRrMDRPWk84SUVURFZvSjl3YWY0QkE5VCtuYWU1?=
- =?utf-8?B?aG0ydFE3M0t0SVY0S09uaDBLc2NqS1Jzbk5uVzBmcmRaY2NKSk9BSSs2Umtk?=
- =?utf-8?B?b3dNWEJVanpqaE9RSWl6cnBpQlJIMDYvUlBEOU00UjZjL1YvbStFNHYwb1VT?=
- =?utf-8?B?YzRzVlNwUG16c2NYM3FnVXlacDVoNml1YXVpM0xQYlFSTEFLSFZEZkJOVHF0?=
- =?utf-8?B?TThROFY3QTVEbmVGOCtOazQ3bmpaaCt4WFhDVFU3NlNTTXlXRnZ1YS82MFE2?=
- =?utf-8?B?empSVU5sdGhpQzBKclJ5dE43MTZzL2QvRElRYU9wUytVMVd1OXEzRGcwZmtn?=
- =?utf-8?B?OTIyRTBBa1dQTVJCeHVZbWhXS2M5NFNPcnJvQTQyZ0QwY1B3NStTT2JCOVpE?=
- =?utf-8?B?cnloc09zUDJnNjF5TVVya3Ryamp6SjJYQ3RJZWJqU0R5eVd4UnVRZis3eXFa?=
- =?utf-8?B?ODFHaEdPbGZPTjBDZ1ZGaHM1N2pQWUZ6NCtIR01HYXFFcVluR2tzWW1mdkFp?=
- =?utf-8?B?ZEVRbENJVlg4TFFzaFdqR3lIdjN5WE8vSVdyWUVvUFdCTzdEZlNzUmgyZmc1?=
- =?utf-8?B?a1k0cEtUdDhLNWgzeG5qSEJpdFRTUTErcVhjekdyR2Z3RFZ1UVJGbnJuK0N5?=
- =?utf-8?B?aUtxdWQ4K1hsd1hZc1NINEoxbkU4N3JGRDU2VmJ3SlRQbEl2VFA4T2xuWWhr?=
- =?utf-8?B?bzlRWlZOZk1VWnZ6MTBrZHZiclUzTHNYS1VXQVAzeEhmY05ESDZZa0ZRYzhD?=
- =?utf-8?B?eGxpUmQvNDNNbTc4YWkrVWRiaVV2SWUrUkNsa1NzRU90NlNEbHNROHNQS1hI?=
- =?utf-8?B?b0U1MFNsaitiZk1Td2FWcnN2T3Ircm5zOEl0RHR4WVVUOEdRK0YyZUZnSjUx?=
- =?utf-8?B?T0xJZzBkbjBXQ25nY3FqMGpycVd4MFhXS1c3V1VIRzJZeFQwS3J1QXcreFFH?=
- =?utf-8?B?TXBPYlJ3OUhNdk5IUHBOb1hjQWVLLzJablRwWVd1ZlFYZUlFcjVaQmF3SW9o?=
- =?utf-8?B?bG5wemRZY204N3pMQ3lDL3Ewd0VWaks2bnhHNlBnbmtHdXJTSkZTem1PTE1u?=
- =?utf-8?B?aHp1R0tDMkV2YUFHWGVoWWVGQyt1S21aeGNjYmk2LytXY1l0T0UycjR3K1VM?=
- =?utf-8?B?dVE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F8E9D421F2EDBE46998264E2C648D85E@apcprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229436AbiKBF2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 01:28:16 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CECD2613F;
+        Tue,  1 Nov 2022 22:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667366892; x=1698902892;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SyIHmizcHe/P4I413RE+HTNcFGbVMy6hVLn5EJIM1so=;
+  b=kvHZOkTNZ527qSxJGv+P4sv6cybCiRgFw9eMz5m0N8JqnvmPsH43L9S+
+   tKXayKu2z/EQImSyejXUlimy2uthzpzO+sRSc/a+1huK/FEWTk0kYb4/o
+   wSavBbAD2o4m1tbUMdVV748fUvXdbtYMmHVbtA6Ecfp+A+A/3wmAesEzc
+   uj8cPGT0GfgtX65seh0iJHbCGHoeGQQojROqWJoycC3ea6Y3hfyMN9CeE
+   1idHkktVxjKTC0bLMUGRpgjRE/rqhD0ErEo6OVPW8nGIpTBSPwQQmb71d
+   ECKgsS1u1Txm4rEUjBawuurSkDbT6SaGZ2AWjwkE4vRQZ51yg2mxwzVAE
+   A==;
+X-IronPort-AV: E=Sophos;i="5.95,232,1661842800"; 
+   d="scan'208";a="184954362"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 22:28:11 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 1 Nov 2022 22:28:10 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 1 Nov 2022 22:28:06 -0700
+From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
+        <pabeni@redhat.com>, <edumazet@google.com>, <olteanv@gmail.com>,
+        <linux@armlinux.org.uk>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <Ian.Saturley@microchip.com>
+Subject: [PATCH net-next V5] net: lan743x: Add support to SGMII register dump for PCI11010/PCI11414 chips
+Date:   Wed, 2 Nov 2022 10:58:02 +0530
+Message-ID: <20221102052802.5460-1-Raju.Lakkaraju@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PSAPR03MB5653.apcprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c25aa920-99aa-4917-90c0-08dabc92e2a8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2022 05:27:08.0135
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uub8eDCRN42XXe9ZD1StbOeSarSEreLGUYJndrzqYhouxVTCBfs7yOYsWcurulFqzYSMhho6JatxciAr6iOIj9CguD7FHozrlbrPUv22VuI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0302MB5283
-X-MTK:  N
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDIyLTEwLTI5IGF0IDEwOjA0ICswMjAwLCBMb2ljIFBvdWxhaW4gd3JvdGU6DQo+
-IE9uIFRodSwgMjcgT2N0IDIwMjIgYXQgMDM6MTksIGhhb3poZSBjaGFuZyA8aGFvemhlLmNoYW5n
-QG1lZGlhdGVrLmNvbQ0KPiA+IHdyb3RlOg0KPiA+IA0KPiA+IE9uIFdlZCwgMjAyMi0xMC0yNiBh
-dCAyMjoyNyArMDgwMCwgTG9pYyBQb3VsYWluIHdyb3RlOg0KPiA+ID4gT24gV2VkLCAyNiBPY3Qg
-MjAyMiBhdCAxMzo0NSwgaGFvemhlIGNoYW5nIDwNCj4gPiA+IGhhb3poZS5jaGFuZ0BtZWRpYXRl
-ay5jb20NCj4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+IA0KPiA+ID4gPiBPbiBXZWQsIDIwMjItMTAt
-MjYgYXQgMTU6MjggKzA4MDAsIExvaWMgUG91bGFpbiB3cm90ZToNCj4gPiA+ID4gPiBIaSBIYW96
-aGUsDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gT24gV2VkLCAyNiBPY3QgMjAyMiBhdCAwMzoxNiwg
-PGhhb3poZS5jaGFuZ0BtZWRpYXRlay5jb20+DQo+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4g
-PiANCj4gPiA+ID4gPiA+IEZyb206IGhhb3poZSBjaGFuZyA8aGFvemhlLmNoYW5nQG1lZGlhdGVr
-LmNvbT4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gd3dhbl9wb3J0X2ZvcHNfd3JpdGUgaW5w
-dXRzIHRoZSBTS0IgcGFyYW1ldGVyIHRvIHRoZSBUWA0KPiA+ID4gPiA+ID4gY2FsbGJhY2sgb2YN
-Cj4gPiA+ID4gPiA+IHRoZSBXV0FOIGRldmljZSBkcml2ZXIuIEhvd2V2ZXIsIHRoZSBXV0FOIGRl
-dmljZSAoZS5nLiwNCj4gPiA+ID4gPiA+IHQ3eHgpDQo+ID4gPiA+ID4gPiBtYXkNCj4gPiA+ID4g
-PiA+IGhhdmUgYW4gTVRVIGxlc3MgdGhhbiB0aGUgc2l6ZSBvZiBTS0IsIGNhdXNpbmcgdGhlIFRY
-DQo+ID4gPiA+ID4gPiBidWZmZXIgdG8NCj4gPiA+ID4gPiA+IGJlDQo+ID4gPiA+ID4gPiBzbGlj
-ZWQgYW5kIGNvcGllZCBvbmNlIG1vcmUgaW4gdGhlIFdXQU4gZGV2aWNlIGRyaXZlci4NCj4gPiA+
-ID4gPiANCj4gPiA+ID4gPiBUaGUgYmVuZWZpdCBvZiBwdXR0aW5nIGRhdGEgaW4gYW4gc2tiIGlz
-IHRoYXQgaXQgaXMgZWFzeSB0bw0KPiA+ID4gPiA+IG1hbmlwdWxhdGUsIHNvIG5vdCBzdXJlIHdo
-eSB0aGVyZSBpcyBhbiBhZGRpdGlvbmFsIGNvcHkgaW4NCj4gPiA+ID4gPiB0aGUNCj4gPiA+ID4g
-PiBmaXJzdA0KPiA+ID4gPiA+IHBsYWNlLiBJc24ndCBwb3NzaWJsZSBmb3IgdGhlIHQ3eHggZHJp
-dmVyIHRvIGNvbnN1bWUgdGhlIHNrYg0KPiA+ID4gPiA+IHByb2dyZXNzaXZlbHkgKHdpdGhvdXQg
-aW50ZXJtZWRpYXRlIGNvcHkpLCBhY2NvcmRpbmcgdG8gaXRzDQo+ID4gPiA+ID4gb3duDQo+ID4g
-PiA+ID4gTVRVDQo+ID4gPiA+ID4gbGltaXRhdGlvbj8NCj4gPiA+ID4gPiANCj4gPiA+ID4gDQo+
-ID4gPiA+IHQ3eHggZHJpdmVyIG5lZWRzIHRvIGFkZCBtZXRhZGF0YSB0byB0aGUgU0tCIGhlYWQg
-Zm9yIGVhY2gNCj4gPiA+ID4gZnJhZ21lbnQsIHNvDQo+ID4gPiA+IHRoZSBkcml2ZXIgaGFzIHRv
-IGFsbG9jYXRlIGEgbmV3IGJ1ZmZlciB0byBjb3B5DQo+ID4gPiA+IGRhdGEoc2tiX3B1dF9kYXRh
-KQ0KPiA+ID4gPiBhbmQNCj4gPiA+ID4gaW5zZXJ0IG1ldGFkYXRhLg0KPiA+ID4gDQo+ID4gPiBO
-b3JtYWxseSwgb25jZSB0aGUgZmlyc3QgcGFydCAoY2h1bmspIG9mIHRoZSBza2IgaGFzIGJlZW4N
-Cj4gPiA+IGNvbnN1bWVkDQo+ID4gPiAoc2tiX3B1bGwpIGFuZCB3cml0dGVuIHRvIHRoZSBkZXZp
-Y2UsIGl0IHdpbGwgYmVjb21lIHBhcnQgb2YgdGhlDQo+ID4gPiBza2IgaGVhZHJvb20sIHdoaWNo
-IGNhbiB0aGVuIGJlIHVzZWQgZm9yIGFwcGVuZGluZyAoc2tiX3B1c2gpIHRoZQ0KPiA+ID4gaGVh
-ZGVyIChtZXRhZGF0YSkgb2YgdGhlIHNlY29uZCBjaHVua3MsIGFuZCBzby4uLiByaWdodD8NCj4g
-PiA+IA0KPiA+ID4gSnVzdCB3YW50IHRvIGF2b2lkIGEgYnVuY2ggb2YgdW5uZWNlc3NhcnkgY29w
-eS9hbGxvYyBoZXJlLg0KPiA+ID4gDQo+ID4gDQo+ID4gdDd4eCBETUEgY2FuIHRyYW5zZmVyIG11
-bHRpcGxlIGZyYWdtZW50cyBhdCBvbmNlLCBpZiBkb25lIGFzDQo+ID4gcmVjb21lbmRlZCwgdGhl
-IERNQSBwZXJmb3JtYW5jZSB3aWxsIGJlIGluaGliaXRlZC4NCj4gDQo+IE9LLCBzbyB0aGUgc2ti
-IGZyYWdtZW50YXRpb24gaXMgdmFsaWQgaW4gdDd4eCBjYXNlLCBidXQgdGhlIHdheSBvZg0KPiBk
-b2luZyBpdCBpcyBraW5kIG9mIHNwZWNpZmljIHRvIHQ3eHguIE1heWJlIGEgbW9yZSBhY2NlcHRh
-YmxlDQo+IHNvbHV0aW9uDQo+IGZvciBhIGdlbmVyaWMgZnJhZ21lbnRhdGlvbiBmZWF0dXJlIHdv
-dWxkIGJlIHRvIGtlZXAgdGhlIGV4dHJhDQo+IGZyYWdtZW50cyBwYXJ0IG9mIHRoZSAnbWFpbicg
-c2tiLCB1c2luZyBza2IgY2hhaW5pbmcuIFRoYXQgd291bGQNCj4gYWxsb3cNCj4gdGhlIGZyYWdt
-ZW50cyB0byBzdGF5IGxpbmtlZCB0byBhIHNwZWNpZmljIHVzZXIgdHJhbnNmZXIuIFNvIGlmDQo+
-IGZyYWdtZW50YXRpb24gaXMgZW5hYmxlZCBmb3IgYSBnaXZlbiBkcml2ZXIsIGNvcmUgb25seSBm
-aWxscyB0aGUNCj4gaW5pdGlhbCBza2Igd2l0aCBNVFUgc2l6ZSwgYW5kIGFwcGVuZHMgYWRkaXRp
-b25hbCBza2IgYXMgZnJhZ21lbnRzLA0KPiB5b3UgY2FuIGxvb2sgYXQgbWhpX25ldF9za2JfYWdn
-KCkgZm9yIHNrYiBjaGFpbmluZyBleGFtcGxlLg0KPiANCk9LLCBJdCBpcyBhIGdvb2Qgc3VnZ2Vz
-dGlvbiwgSSB3aWxsIGltcGxlbWVudCBpdCBpbiBwYXRjaCB2Mi4gQWxzbywgYW55DQphZHZpY2Ug
-b24gcmVzZXJ2ZWQgaGVhZHJvb20/DQo+IFJlZ2FyZHMsDQo+IExvaWMNCg==
+Add support to SGMII register dump
+
+Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+---
+Change List:
+============
+V4 -> V5:
+ - Remove the debug read function macro
+ - Add auto variable structure to handle register definitions
+
+V3 -> V4:
+ - No changes. Patch on tags 6.1-rc1
+
+V2 -> V3:
+ - Remove the private flag option.
+   As per review comment, use -w/-W to configure dump flag.
+   But, change to -w/-W option, EEPROM/OTP data might be corrupt
+   in case of wrong flag input.
+   Need to fix this properly in future development.
+
+V1 -> V2:
+ - Add set_dump and get_dump_flag functions
+
+V0 -> V1:
+ - Removed unwanted code
+
+ .../net/ethernet/microchip/lan743x_ethtool.c  | 113 ++++++++++++++++--
+ .../net/ethernet/microchip/lan743x_ethtool.h  |  71 ++++++++++-
+ drivers/net/ethernet/microchip/lan743x_main.c |   2 +-
+ drivers/net/ethernet/microchip/lan743x_main.h |   1 +
+ 4 files changed, 178 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
+index 88f9484cc2a7..0624ce24b44e 100644
+--- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
++++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
+@@ -1190,15 +1190,11 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
+ }
+ #endif /* CONFIG_PM */
+ 
+-static void lan743x_common_regs(struct net_device *dev,
+-				struct ethtool_regs *regs, void *p)
+-
++static void lan743x_common_regs(struct net_device *dev, void *p)
+ {
+ 	struct lan743x_adapter *adapter = netdev_priv(dev);
+ 	u32 *rb = p;
+ 
+-	memset(p, 0, (MAX_LAN743X_ETH_REGS * sizeof(u32)));
+-
+ 	rb[ETH_PRIV_FLAGS] = adapter->flags;
+ 	rb[ETH_ID_REV]     = lan743x_csr_read(adapter, ID_REV);
+ 	rb[ETH_FPGA_REV]   = lan743x_csr_read(adapter, FPGA_REV);
+@@ -1220,17 +1216,120 @@ static void lan743x_common_regs(struct net_device *dev,
+ 	rb[ETH_WK_SRC]     = lan743x_csr_read(adapter, MAC_WK_SRC);
+ }
+ 
++static void lan743x_sgmii_regs(struct net_device *dev, void *p)
++{
++	struct lan743x_adapter *adp = netdev_priv(dev);
++	u32 *rb = p;
++	u16 idx;
++	int val;
++	struct {
++		u8 id;
++		u8 dev;
++		u16 addr;
++	} regs[] = {
++		{ ETH_SR_VSMMD_DEV_ID1,                MDIO_MMD_VEND1, 0x0002},
++		{ ETH_SR_VSMMD_DEV_ID2,                MDIO_MMD_VEND1, 0x0003},
++		{ ETH_SR_VSMMD_PCS_ID1,                MDIO_MMD_VEND1, 0x0004},
++		{ ETH_SR_VSMMD_PCS_ID2,                MDIO_MMD_VEND1, 0x0005},
++		{ ETH_SR_VSMMD_STS,                    MDIO_MMD_VEND1, 0x0008},
++		{ ETH_SR_VSMMD_CTRL,                   MDIO_MMD_VEND1, 0x0009},
++		{ ETH_SR_MII_CTRL,                     MDIO_MMD_VEND2, 0x0000},
++		{ ETH_SR_MII_STS,                      MDIO_MMD_VEND2, 0x0001},
++		{ ETH_SR_MII_DEV_ID1,                  MDIO_MMD_VEND2, 0x0002},
++		{ ETH_SR_MII_DEV_ID2,                  MDIO_MMD_VEND2, 0x0003},
++		{ ETH_SR_MII_AN_ADV,                   MDIO_MMD_VEND2, 0x0004},
++		{ ETH_SR_MII_LP_BABL,                  MDIO_MMD_VEND2, 0x0005},
++		{ ETH_SR_MII_EXPN,                     MDIO_MMD_VEND2, 0x0006},
++		{ ETH_SR_MII_EXT_STS,                  MDIO_MMD_VEND2, 0x000F},
++		{ ETH_SR_MII_TIME_SYNC_ABL,            MDIO_MMD_VEND2, 0x0708},
++		{ ETH_SR_MII_TIME_SYNC_TX_MAX_DLY_LWR, MDIO_MMD_VEND2, 0x0709},
++		{ ETH_SR_MII_TIME_SYNC_TX_MAX_DLY_UPR, MDIO_MMD_VEND2, 0x070A},
++		{ ETH_SR_MII_TIME_SYNC_TX_MIN_DLY_LWR, MDIO_MMD_VEND2, 0x070B},
++		{ ETH_SR_MII_TIME_SYNC_TX_MIN_DLY_UPR, MDIO_MMD_VEND2, 0x070C},
++		{ ETH_SR_MII_TIME_SYNC_RX_MAX_DLY_LWR, MDIO_MMD_VEND2, 0x070D},
++		{ ETH_SR_MII_TIME_SYNC_RX_MAX_DLY_UPR, MDIO_MMD_VEND2, 0x070E},
++		{ ETH_SR_MII_TIME_SYNC_RX_MIN_DLY_LWR, MDIO_MMD_VEND2, 0x070F},
++		{ ETH_SR_MII_TIME_SYNC_RX_MIN_DLY_UPR, MDIO_MMD_VEND2, 0x0710},
++		{ ETH_VR_MII_DIG_CTRL1,                MDIO_MMD_VEND2, 0x8000},
++		{ ETH_VR_MII_AN_CTRL,                  MDIO_MMD_VEND2, 0x8001},
++		{ ETH_VR_MII_AN_INTR_STS,              MDIO_MMD_VEND2, 0x8002},
++		{ ETH_VR_MII_TC,                       MDIO_MMD_VEND2, 0x8003},
++		{ ETH_VR_MII_DBG_CTRL,                 MDIO_MMD_VEND2, 0x8005},
++		{ ETH_VR_MII_EEE_MCTRL0,               MDIO_MMD_VEND2, 0x8006},
++		{ ETH_VR_MII_EEE_TXTIMER,              MDIO_MMD_VEND2, 0x8008},
++		{ ETH_VR_MII_EEE_RXTIMER,              MDIO_MMD_VEND2, 0x8009},
++		{ ETH_VR_MII_LINK_TIMER_CTRL,          MDIO_MMD_VEND2, 0x800A},
++		{ ETH_VR_MII_EEE_MCTRL1,               MDIO_MMD_VEND2, 0x800B},
++		{ ETH_VR_MII_DIG_STS,                  MDIO_MMD_VEND2, 0x8010},
++		{ ETH_VR_MII_ICG_ERRCNT1,              MDIO_MMD_VEND2, 0x8011},
++		{ ETH_VR_MII_GPIO,                     MDIO_MMD_VEND2, 0x8015},
++		{ ETH_VR_MII_EEE_LPI_STATUS,           MDIO_MMD_VEND2, 0x8016},
++		{ ETH_VR_MII_EEE_WKERR,                MDIO_MMD_VEND2, 0x8017},
++		{ ETH_VR_MII_MISC_STS,                 MDIO_MMD_VEND2, 0x8018},
++		{ ETH_VR_MII_RX_LSTS,                  MDIO_MMD_VEND2, 0x8020},
++		{ ETH_VR_MII_GEN2_GEN4_TX_BSTCTRL0,    MDIO_MMD_VEND2, 0x8038},
++		{ ETH_VR_MII_GEN2_GEN4_TX_LVLCTRL0,    MDIO_MMD_VEND2, 0x803A},
++		{ ETH_VR_MII_GEN2_GEN4_TXGENCTRL0,     MDIO_MMD_VEND2, 0x803C},
++		{ ETH_VR_MII_GEN2_GEN4_TXGENCTRL1,     MDIO_MMD_VEND2, 0x803D},
++		{ ETH_VR_MII_GEN4_TXGENCTRL2,          MDIO_MMD_VEND2, 0x803E},
++		{ ETH_VR_MII_GEN2_GEN4_TX_STS,         MDIO_MMD_VEND2, 0x8048},
++		{ ETH_VR_MII_GEN2_GEN4_RXGENCTRL0,     MDIO_MMD_VEND2, 0x8058},
++		{ ETH_VR_MII_GEN2_GEN4_RXGENCTRL1,     MDIO_MMD_VEND2, 0x8059},
++		{ ETH_VR_MII_GEN4_RXEQ_CTRL,           MDIO_MMD_VEND2, 0x805B},
++		{ ETH_VR_MII_GEN4_RXLOS_CTRL0,         MDIO_MMD_VEND2, 0x805D},
++		{ ETH_VR_MII_GEN2_GEN4_MPLL_CTRL0,     MDIO_MMD_VEND2, 0x8078},
++		{ ETH_VR_MII_GEN2_GEN4_MPLL_CTRL1,     MDIO_MMD_VEND2, 0x8079},
++		{ ETH_VR_MII_GEN2_GEN4_MPLL_STS,       MDIO_MMD_VEND2, 0x8088},
++		{ ETH_VR_MII_GEN2_GEN4_LVL_CTRL,       MDIO_MMD_VEND2, 0x8090},
++		{ ETH_VR_MII_GEN4_MISC_CTRL2,          MDIO_MMD_VEND2, 0x8093},
++		{ ETH_VR_MII_GEN2_GEN4_MISC_CTRL0,     MDIO_MMD_VEND2, 0x8099},
++		{ ETH_VR_MII_GEN2_GEN4_MISC_CTRL1,     MDIO_MMD_VEND2, 0x809A},
++		{ ETH_VR_MII_SNPS_CR_CTRL,             MDIO_MMD_VEND2, 0x80A0},
++		{ ETH_VR_MII_SNPS_CR_ADDR,             MDIO_MMD_VEND2, 0x80A1},
++		{ ETH_VR_MII_SNPS_CR_DATA,             MDIO_MMD_VEND2, 0x80A2},
++		{ ETH_VR_MII_DIG_CTRL2,                MDIO_MMD_VEND2, 0x80E1},
++		{ ETH_VR_MII_DIG_ERRCNT,               MDIO_MMD_VEND2, 0x80E2},
++	};
++
++	for (idx = 0; idx < ARRAY_SIZE(regs) / sizeof(regs[0]); idx++) {
++		val = lan743x_sgmii_read(adp, regs[idx].dev, regs[idx].addr);
++		if (val < 0)
++			rb[regs[idx].id] = 0xFFFF;
++		else
++			rb[regs[idx].id] = val;
++	}
++}
++
+ static int lan743x_get_regs_len(struct net_device *dev)
+ {
+-	return MAX_LAN743X_ETH_REGS * sizeof(u32);
++	struct lan743x_adapter *adapter = netdev_priv(dev);
++	u32 num_regs = MAX_LAN743X_ETH_COMMON_REGS;
++
++	if (adapter->is_sgmii_en)
++		num_regs += MAX_LAN743X_ETH_SGMII_REGS;
++
++	return num_regs * sizeof(u32);
+ }
+ 
+ static void lan743x_get_regs(struct net_device *dev,
+ 			     struct ethtool_regs *regs, void *p)
+ {
++	struct lan743x_adapter *adapter = netdev_priv(dev);
++	int regs_len;
++
++	regs_len = lan743x_get_regs_len(dev);
++	memset(p, 0, regs_len);
++
+ 	regs->version = LAN743X_ETH_REG_VERSION;
++	regs->len = regs_len;
+ 
+-	lan743x_common_regs(dev, regs, p);
++	lan743x_common_regs(dev, p);
++	p = (u32 *)p + MAX_LAN743X_ETH_COMMON_REGS;
++
++	if (adapter->is_sgmii_en) {
++		lan743x_sgmii_regs(dev, p);
++		p = (u32 *)p + MAX_LAN743X_ETH_SGMII_REGS;
++	}
+ }
+ 
+ static void lan743x_get_pauseparam(struct net_device *dev,
+diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.h b/drivers/net/ethernet/microchip/lan743x_ethtool.h
+index 7f5996a52488..267d5035b8ad 100644
+--- a/drivers/net/ethernet/microchip/lan743x_ethtool.h
++++ b/drivers/net/ethernet/microchip/lan743x_ethtool.h
+@@ -29,7 +29,76 @@ enum {
+ 	ETH_WK_SRC,
+ 
+ 	/* Add new registers above */
+-	MAX_LAN743X_ETH_REGS
++	MAX_LAN743X_ETH_COMMON_REGS
++};
++
++enum {
++	/* SGMII Register */
++	ETH_SR_VSMMD_DEV_ID1,
++	ETH_SR_VSMMD_DEV_ID2,
++	ETH_SR_VSMMD_PCS_ID1,
++	ETH_SR_VSMMD_PCS_ID2,
++	ETH_SR_VSMMD_STS,
++	ETH_SR_VSMMD_CTRL,
++	ETH_SR_MII_CTRL,
++	ETH_SR_MII_STS,
++	ETH_SR_MII_DEV_ID1,
++	ETH_SR_MII_DEV_ID2,
++	ETH_SR_MII_AN_ADV,
++	ETH_SR_MII_LP_BABL,
++	ETH_SR_MII_EXPN,
++	ETH_SR_MII_EXT_STS,
++	ETH_SR_MII_TIME_SYNC_ABL,
++	ETH_SR_MII_TIME_SYNC_TX_MAX_DLY_LWR,
++	ETH_SR_MII_TIME_SYNC_TX_MAX_DLY_UPR,
++	ETH_SR_MII_TIME_SYNC_TX_MIN_DLY_LWR,
++	ETH_SR_MII_TIME_SYNC_TX_MIN_DLY_UPR,
++	ETH_SR_MII_TIME_SYNC_RX_MAX_DLY_LWR,
++	ETH_SR_MII_TIME_SYNC_RX_MAX_DLY_UPR,
++	ETH_SR_MII_TIME_SYNC_RX_MIN_DLY_LWR,
++	ETH_SR_MII_TIME_SYNC_RX_MIN_DLY_UPR,
++	ETH_VR_MII_DIG_CTRL1,
++	ETH_VR_MII_AN_CTRL,
++	ETH_VR_MII_AN_INTR_STS,
++	ETH_VR_MII_TC,
++	ETH_VR_MII_DBG_CTRL,
++	ETH_VR_MII_EEE_MCTRL0,
++	ETH_VR_MII_EEE_TXTIMER,
++	ETH_VR_MII_EEE_RXTIMER,
++	ETH_VR_MII_LINK_TIMER_CTRL,
++	ETH_VR_MII_EEE_MCTRL1,
++	ETH_VR_MII_DIG_STS,
++	ETH_VR_MII_ICG_ERRCNT1,
++	ETH_VR_MII_GPIO,
++	ETH_VR_MII_EEE_LPI_STATUS,
++	ETH_VR_MII_EEE_WKERR,
++	ETH_VR_MII_MISC_STS,
++	ETH_VR_MII_RX_LSTS,
++	ETH_VR_MII_GEN2_GEN4_TX_BSTCTRL0,
++	ETH_VR_MII_GEN2_GEN4_TX_LVLCTRL0,
++	ETH_VR_MII_GEN2_GEN4_TXGENCTRL0,
++	ETH_VR_MII_GEN2_GEN4_TXGENCTRL1,
++	ETH_VR_MII_GEN4_TXGENCTRL2,
++	ETH_VR_MII_GEN2_GEN4_TX_STS,
++	ETH_VR_MII_GEN2_GEN4_RXGENCTRL0,
++	ETH_VR_MII_GEN2_GEN4_RXGENCTRL1,
++	ETH_VR_MII_GEN4_RXEQ_CTRL,
++	ETH_VR_MII_GEN4_RXLOS_CTRL0,
++	ETH_VR_MII_GEN2_GEN4_MPLL_CTRL0,
++	ETH_VR_MII_GEN2_GEN4_MPLL_CTRL1,
++	ETH_VR_MII_GEN2_GEN4_MPLL_STS,
++	ETH_VR_MII_GEN2_GEN4_LVL_CTRL,
++	ETH_VR_MII_GEN4_MISC_CTRL2,
++	ETH_VR_MII_GEN2_GEN4_MISC_CTRL0,
++	ETH_VR_MII_GEN2_GEN4_MISC_CTRL1,
++	ETH_VR_MII_SNPS_CR_CTRL,
++	ETH_VR_MII_SNPS_CR_ADDR,
++	ETH_VR_MII_SNPS_CR_DATA,
++	ETH_VR_MII_DIG_CTRL2,
++	ETH_VR_MII_DIG_ERRCNT,
++
++	/* Add new registers above */
++	MAX_LAN743X_ETH_SGMII_REGS
+ };
+ 
+ extern const struct ethtool_ops lan743x_ethtool_ops;
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index c0f8ba601c01..534840f9a7ca 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -939,7 +939,7 @@ static int lan743x_sgmii_wait_till_not_busy(struct lan743x_adapter *adapter)
+ 	return ret;
+ }
+ 
+-static int lan743x_sgmii_read(struct lan743x_adapter *adapter, u8 mmd, u16 addr)
++int lan743x_sgmii_read(struct lan743x_adapter *adapter, u8 mmd, u16 addr)
+ {
+ 	u32 mmd_access;
+ 	int ret;
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+index bc5eea4c7b40..8438c3dbcf36 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.h
++++ b/drivers/net/ethernet/microchip/lan743x_main.h
+@@ -1161,5 +1161,6 @@ int lan743x_hs_syslock_acquire(struct lan743x_adapter *adapter, u16 timeout);
+ void lan743x_hs_syslock_release(struct lan743x_adapter *adapter);
+ void lan743x_mac_flow_ctrl_set_enables(struct lan743x_adapter *adapter,
+ 				       bool tx_enable, bool rx_enable);
++int lan743x_sgmii_read(struct lan743x_adapter *adapter, u8 mmd, u16 addr);
+ 
+ #endif /* _LAN743X_H */
+-- 
+2.25.1
+
