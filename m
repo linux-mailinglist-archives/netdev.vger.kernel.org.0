@@ -2,57 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C46615B24
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 04:49:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2297615A96
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 04:34:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbiKBDty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 23:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        id S231286AbiKBDeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 23:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiKBDtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 23:49:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA511F2C8;
-        Tue,  1 Nov 2022 20:49:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1388B82055;
-        Wed,  2 Nov 2022 03:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0095EC433C1;
-        Wed,  2 Nov 2022 03:49:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667360986;
-        bh=rNNhFDFwW2G0G/ZlDlWXuItSrEFoY65rTPZ//6woXrw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TPdWrIu7iH0zfXYRcUjT+c9FS6arh7I1skciZ+JgGrGWzZh8R+gd8l2fNzVBCLqOd
-         7cqjkrBPHQpzOWrrJPb9cIJkS7UWLj6++2VQl92pLVmXliD5fHyjOB68cZ1ZXo/JoM
-         kLl8iiI0bn4cGnN9IwfT7rMRQRVsZsYa4i7uVjrMPEa73NrrJXRWzfqxD3s9gm6+BX
-         8WLdeoNnaegu80MswENmq4M8fXEw7OpGerz6OY0rfuz2sDUeRO/RZpJb+sYD5VjGlt
-         lUXyHdX9bg8ub3odTSaSajdx77wbhybmPl9LmVUmm1ChBIJioyuVob279TK/azVqsk
-         tEhyz+XehMe+g==
-Date:   Tue, 1 Nov 2022 20:49:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] net: ethernet: mediatek: ppe: add support for flow
- accounting
-Message-ID: <20221101204945.35edb8e6@kernel.org>
-In-Reply-To: <Y2HAmYYPd77dz+K5@makrotopia.org>
-References: <Y2HAmYYPd77dz+K5@makrotopia.org>
+        with ESMTP id S231279AbiKBDeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 23:34:05 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31257C9;
+        Tue,  1 Nov 2022 20:34:04 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N2CD64qbpz15MK2;
+        Wed,  2 Nov 2022 11:33:58 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 11:34:01 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <ecree@solarflare.com>,
+        Wang Yufen <wangyufen@huawei.com>
+Subject: [PATCH net] net: Fix memory leaks of napi->rx_list
+Date:   Wed, 2 Nov 2022 11:54:34 +0800
+Message-ID: <1667361274-2621-1-git-send-email-wangyufen@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,24 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Nov 2022 00:58:01 +0000 Daniel Golle wrote:
-> The PPE units found in MT7622 and newer support packet and byte
-> accounting of hw-offloaded flows. Add support for reading those
-> counters as found in MediaTek's SDK[1].
-> 
-> [1]: https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/bc6a6a375c800dc2b80e1a325a2c732d1737df92
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> ---
-> v4: declare function mtk_mib_entry_read as static
-> v3: don't bother to set 'false' values in any zero-initialized struct
->     use mtk_foe_entry_ib2
->     both changes were requested by Felix Fietkau
-> 
-> v2: fix wrong variable name in return value check spotted by Denis Kirjanov
+kmemleak reports after running test_progs:
 
-Please read the FAQ:
+unreferenced object 0xffff8881b1672dc0 (size 232):
+  comm "test_progs", pid 394388, jiffies 4354712116 (age 841.975s)
+  hex dump (first 32 bytes):
+    e0 84 d7 a8 81 88 ff ff 80 2c 67 b1 81 88 ff ff  .........,g.....
+    00 40 c5 9b 81 88 ff ff 00 00 00 00 00 00 00 00  .@..............
+  backtrace:
+    [<00000000c8f01748>] napi_skb_cache_get+0xd4/0x150
+    [<0000000041c7fc09>] __napi_build_skb+0x15/0x50
+    [<00000000431c7079>] __napi_alloc_skb+0x26e/0x540
+    [<000000003ecfa30e>] napi_get_frags+0x59/0x140
+    [<0000000099b2199e>] tun_get_user+0x183d/0x3bb0 [tun]
+    [<000000008a5adef0>] tun_chr_write_iter+0xc0/0x1b1 [tun]
+    [<0000000049993ff4>] do_iter_readv_writev+0x19f/0x320
+    [<000000008f338ea2>] do_iter_write+0x135/0x630
+    [<000000008a3377a4>] vfs_writev+0x12e/0x440
+    [<00000000a6b5639a>] do_writev+0x104/0x280
+    [<00000000ccf065d8>] do_syscall_64+0x3b/0x90
+    [<00000000d776e329>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#tl-dr
+The issue occurs in the following scenarios:
+tun_get_user()
+  napi_gro_frags()
+    napi_frags_finish()
+      case GRO_NORMAL:
+        gro_normal_one()
+          list_add_tail(&skb->list, &napi->rx_list);
+          <-- While napi->rx_count < READ_ONCE(gro_normal_batch),
+          <-- gro_normal_list() is not called, napi->rx_list is not empty
+...
+netif_napi_del()
+  __netif_napi_del()
+  <-- &napi->rx_list is not empty, which caused memory leaks
 
-https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#running-all-the-builds-and-checks-locally-is-a-pain-can-i-post-my-patches-and-have-the-patchwork-bot-validate-them
+To fix, add flush_rx_list() to free skbs in napi->rx_list.
+
+Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+---
+ net/core/dev.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 3be2560..de3bc9c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6461,6 +6461,16 @@ static void flush_gro_hash(struct napi_struct *napi)
+ 	}
+ }
+ 
++static void flush_rx_list(struct napi_struct *napi)
++{
++	struct sk_buff *skb, *next;
++
++	list_for_each_entry_safe(skb, next, &napi->rx_list, list) {
++		skb_list_del_init(skb);
++		kfree_skb(skb);
++	}
++}
++
+ /* Must be called in process context */
+ void __netif_napi_del(struct napi_struct *napi)
+ {
+@@ -6471,6 +6481,7 @@ void __netif_napi_del(struct napi_struct *napi)
+ 	list_del_rcu(&napi->dev_list);
+ 	napi_free_frags(napi);
+ 
++	flush_rx_list(napi);
+ 	flush_gro_hash(napi);
+ 	napi->gro_bitmask = 0;
+ 
+-- 
+1.8.3.1
 
