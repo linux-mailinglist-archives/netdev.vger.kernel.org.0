@@ -2,145 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0929B61653B
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 15:33:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF54616551
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 15:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229934AbiKBOdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 10:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
+        id S229761AbiKBOrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 10:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230487AbiKBOdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 10:33:33 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2B82A735;
-        Wed,  2 Nov 2022 07:33:30 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C169624000A;
-        Wed,  2 Nov 2022 14:33:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1667399609;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ylD505SuiRTh12GS+d78SfZyuPJFm3TcRfpoXBv+HeQ=;
-        b=fPzEfrAldPsEjv9RFEQ5+X7Erd1TbHXqsz6qz6gWNGAgSVON4mcA1pXTFKCIcHMc7Nu3dU
-        tuv+tYzcVizxamIHs9t2OxH7cAoA8/S8omic3eZkUV821mjSXHZt2FbC1MW5j2oxoGD+pv
-        ic6Ug+TZuSSd5kY/mtkhrPciWviMFNrZqux0o50oUxs9ubT3KeAEnCMwd8nB7G8cZb+FS0
-        XTtaZrDFdSWXQpwGKiyq0P7MzNJoLlP24ivG3kK+VHOEJUgYbVDraWZoOzSah9o0bSesLg
-        MXwnRvbbH+yk7kuid2Ma07J0ujzddWRQF5Xk4b4kkC+BRcbo1nvC3cGJTrdoKw==
-Date:   Wed, 2 Nov 2022 15:33:23 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Robert Marko <robert.marko@sartura.hr>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH 5/5] net: mvpp2: Consider NVMEM cells as possible MAC
- address source
-Message-ID: <20221102153323.7b7fc0a5@xps-13>
-In-Reply-To: <30660579be1f7c964eafa825246916ac@walle.cc>
-References: <20221028092337.822840-1-miquel.raynal@bootlin.com>
-        <20221028092337.822840-6-miquel.raynal@bootlin.com>
-        <30660579be1f7c964eafa825246916ac@walle.cc>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229534AbiKBOrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 10:47:08 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AF02A716
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 07:47:04 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-13d604e207aso3105974fac.11
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 07:47:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=VshapdH3qET+2A6w1tOn4K606r3mUYcBf7u3/yyiKmk=;
+        b=X1ZE7dBE8BaXuX49QNjyAiYn/xRrnl37HJQP+g4AAanP5xN2owJH/6UXFJIyxXomaA
+         U9vHvAqFOSeZxeXKizH32CmTQKnDecpwP6keQSD2cVWUa2xRtOsTEiPjpg/fr+5CQ4dH
+         8UvcafbvgUU7l7nJ+ihSc8hKhRMs38ogZaoM+eLCcBPdjYeOxo9qCFQrOPs5YBzRhiEZ
+         T7nUuIFGkBCxWDcdSxNH7XyE68DAiVl5s7SRysSDGVuoVokC0j0SoxQtuU547mDFFO5H
+         DXW4P4QEehA03BUO/uJpRdW8e2g7Vai6zERny4iD35McHq63cSQVclhMwd7QX4repfk3
+         PvVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VshapdH3qET+2A6w1tOn4K606r3mUYcBf7u3/yyiKmk=;
+        b=ZfJjY05leCR71r3SaXyqU6yapvan4ETRNKZkP118nYJmPW/JpQQznapAAMr1lAFC9T
+         T6JXtJpQildfPuBbN8/To/DueuusT1cvpH2Xv4TllLMLaKn4yFYH2I+sBy0QZMdGbwz+
+         JMRNRl4ApKjcrqdJ9cuqPtRxme9NnqtOZ17gZk4mQMu3c3WCux1JSc+6SnLqi1SwLbl/
+         4Jsp17iVPG4lRhjJ/hopE4NRjd64kkl/qM/Fc3nBEOTLaLR3pg9i8LoajzNL79TlObTT
+         BrAGsEl89HuBjBu2hu8gezwPhdINe86CSOtNj4mehM4FIA5ccw3ahVFr1OIVsB+WFXLc
+         Zbuw==
+X-Gm-Message-State: ACrzQf2xYfB8Eb4flikuSc4+gYVcs9QdTkzB5dImQxo2jMac+KI1jVR+
+        l/7LIvVz56FarOvHpwDnyws1mNol2MPIeHK9TbvspA==
+X-Google-Smtp-Source: AMsMyM6QxPwtfVBskW0LjxpxIYQ2c4UogHIRy9qjgf9g6nZKZhC3zZ4Y6yQoBx5UEqAXzC3o99IvOnndpchatQK0HJY=
+X-Received: by 2002:a05:6870:9a05:b0:132:ebf:dc61 with SMTP id
+ fo5-20020a0568709a0500b001320ebfdc61mr14579207oab.76.1667400423352; Wed, 02
+ Nov 2022 07:47:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLACK autolearn=no autolearn_force=no version=3.4.6
+References: <20221102132811.70858-1-luwei32@huawei.com>
+In-Reply-To: <20221102132811.70858-1-luwei32@huawei.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 2 Nov 2022 10:46:36 -0400
+Message-ID: <CADVnQy=uE68AWKuSddKEt3T2X=HUYzs0SQPX31+HgafuysJzkA@mail.gmail.com>
+Subject: Re: [patch net v3] tcp: prohibit TCP_REPAIR_OPTIONS if data was
+ already sent
+To:     Lu Wei <luwei32@huawei.com>
+Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        xemul@parallels.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+On Wed, Nov 2, 2022 at 8:23 AM Lu Wei <luwei32@huawei.com> wrote:
+>
+> If setsockopt with option name of TCP_REPAIR_OPTIONS and opt_code
+> of TCPOPT_SACK_PERM is called to enable sack after data is sent
+> and before data is acked, ...
 
-michael@walle.cc wrote on Fri, 28 Oct 2022 15:33:31 +0200:
+This "before data is acked" phrase does not quite seem to match the
+sequence below, AFAICT?
 
-> Am 2022-10-28 11:23, schrieb Miquel Raynal:
-> > The ONIE standard describes the organization of tlv (type-length-value)
-> > arrays commonly stored within NVMEM devices on common networking
-> > hardware.
-> >=20
-> > Several drivers already make use of NVMEM cells for purposes like
-> > retrieving a default MAC address provided by the manufacturer.
-> >=20
-> > What made ONIE tables unusable so far was the fact that the information
-> > where "dynamically" located within the table depending on the
-> > manufacturer wishes, while Linux NVMEM support only allowed statically
-> > defined NVMEM cells. Fortunately, this limitation was eventually > tack=
-led
-> > with the introduction of discoverable cells through the use of NVMEM
-> > layouts, making it possible to extract and consistently use the content
-> > of tables like ONIE's tlv arrays.
-> >=20
-> > Parsing this table at runtime in order to get various information is > =
-now
-> > possible. So, because many Marvell networking switches already follow
-> > this standard, let's consider using NVMEM cells as a new valid source >=
- of
-> > information when looking for a base MAC address, which is one of the
-> > primary uses of these new fields. Indeed, manufacturers following the
-> > ONIE standard are encouraged to provide a default MAC address there, so
-> > let's eventually use it if no other MAC address has been found using > =
-the
-> > existing methods.
-> >=20
-> > Link: > https://opencomputeproject.github.io/onie/design-spec/hw_requir=
-ements.html
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >=20
-> > Hello, I suppose my change is safe but I don't want to break existing
-> > setups so a review on this would be welcome!
-> >=20
-> >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >=20
-> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > index eb0fb8128096..7c8c323f4411 100644
-> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > @@ -6104,6 +6104,12 @@ static void mvpp2_port_copy_mac_addr(struct
-> > net_device *dev, struct mvpp2 *priv,
-> >  		}
-> >  	}
-> >=20
-> > +	if (!of_get_mac_address(to_of_node(fwnode), hw_mac_addr)) { =20
->=20
-> Mh, the driver already does a fwnode_get_mac_address() which might
-> fetch it from OF. But that variant doesn't try to get the mac address
-> via nvmem; in contrast to the of_get_mac_address() variant which will
-> also try NVMEM.
-> Maybe it would be better to just use device_get_ethdev_address() and
-> extend that one to also try the nvmem store. Just to align all the
-> different variants to get a mac address.
+How about something like:
 
-Actually this choice was made on purpose: I am adding this method to
-retrieve the MAC address only if no other way has succeeded. I don't
-know if the MAC addresses are expected to remain stable over time, I
-assumed it was somehow part of the ABI.
+ If setsockopt TCP_REPAIR_OPTIONS with opt_code TCPOPT_SACK_PERM
+ is called to enable SACK after data is sent and the data sender receives a
+ dupack, ...
 
-Using device_get_ethdev_address() with support for MAC addresses in
-nvmem cells would possibly change the MAC address of many existing
-devices after an update because we found a MAC address in the tlv table
-before checking the device's own registers (as in this driver)
 
-So I assumed it was better avoiding changing the MAC address providers
-order in the probe...
+> ... it will trigger a warning in function
+> tcp_verify_left_out() as follows:
+>
+> ============================================
+> WARNING: CPU: 8 PID: 0 at net/ipv4/tcp_input.c:2132
+> tcp_timeout_mark_lost+0x154/0x160
+> tcp_enter_loss+0x2b/0x290
+> tcp_retransmit_timer+0x50b/0x640
+> tcp_write_timer_handler+0x1c8/0x340
+> tcp_write_timer+0xe5/0x140
+> call_timer_fn+0x3a/0x1b0
+> __run_timers.part.0+0x1bf/0x2d0
+> run_timer_softirq+0x43/0xb0
+> __do_softirq+0xfd/0x373
+> __irq_exit_rcu+0xf6/0x140
+>
+> The warning is caused in the following steps:
+> 1. a socket named socketA is created
+> 2. socketA enters repair mode without build a connection
+> 3. socketA calls connect() and its state is changed to TCP_ESTABLISHED
+>    directly
+> 4. socketA leaves repair mode
+> 5. socketA calls sendmsg() to send data, packets_out and sack_outs(dup
+>    ack receives) increase
+> 6. socketA enters repair mode again
+> 7. socketA calls setsockopt with TCPOPT_SACK_PERM to enable sack
+> 8. retransmit timer expires, it calls tcp_timeout_mark_lost(), lost_out
+>    increases
+> 9. sack_outs + lost_out > packets_out triggers since lost_out and
+>    sack_outs increase repeatly
+>
+> In function tcp_timeout_mark_lost(), tp->sacked_out will be cleared if
+> Step7 not happen and the warning will not be triggered. As suggested by
+> Denis and Eric, TCP_REPAIR_OPTIONS should be prohibited if data was
+> already sent. So this patch checks tp->segs_out, only TCP_REPAIR_OPTIONS
+> can be set only if tp->segs_out is 0.
+>
+> socket-tcp tests in CRIU has been tested as follows:
+> $ sudo ./test/zdtm.py run -t zdtm/static/socket-tcp*  --keep-going \
+>        --ignore-taint
+>
+> socket-tcp* represent all socket-tcp tests in test/zdtm/static/.
+>
+> Fixes: b139ba4e90dc ("tcp: Repair connection-time negotiated parameters")
+> Signed-off-by: Lu Wei <luwei32@huawei.com>
+> ---
+>  net/ipv4/tcp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index ef14efa1fb70..1f5cc32cf0cc 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -3647,7 +3647,7 @@ int do_tcp_setsockopt(struct sock *sk, int level, int optname,
+>         case TCP_REPAIR_OPTIONS:
+>                 if (!tp->repair)
+>                         err = -EINVAL;
+> -               else if (sk->sk_state == TCP_ESTABLISHED)
+> +               else if (sk->sk_state == TCP_ESTABLISHED && !tp->segs_out)
 
-Thanks,
-Miqu=C3=A8l
+The tp->segs_out field is only 32 bits wide. By my math, at 200
+Gbit/sec with 1500 byte MTU it can wrap roughly every 260 secs. So a
+caller could get unlucky or carefully sequence its call to
+TCP_REPAIR_OPTIONS (based on packets sent so far) to mess up the
+accounting and trigger the kernel warning.
+
+How about using some other method to determine if this is safe?
+Perhaps using tp->bytes_sent, which is a 64-bit field, which by my
+math would take 23 years to wrap at 200 Gbit/sec?
+
+If we're more paranoid about wrapping we could also check
+tp->packets_out, and refuse to allow TCP_REPAIR_OPTIONS if either
+tp->bytes_sent or tp->packets_out are non-zero. (Or if we're even more
+paranoid I suppose we could have a special new bit to track whether
+we've ever sent something, but that probably seems like overkill?)
+
+neal
