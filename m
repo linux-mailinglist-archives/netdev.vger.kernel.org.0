@@ -2,165 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 362A56160B8
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 11:18:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 130C56160C0
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 11:24:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbiKBKSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 06:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
+        id S230335AbiKBKYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 06:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiKBKSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 06:18:53 -0400
-Received: from rs07.intra2net.com (rs07.intra2net.com [85.214.138.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B2024BCD
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 03:18:52 -0700 (PDT)
-Received: from mail.m.i2n (unknown [172.17.128.1])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by rs07.intra2net.com (Postfix) with ESMTPS id 5D5381500138;
-        Wed,  2 Nov 2022 11:18:50 +0100 (CET)
-Received: from localhost (mail.m.i2n [127.0.0.1])
-        by localhost (Postfix) with ESMTP id 3178D641;
-        Wed,  2 Nov 2022 11:18:50 +0100 (CET)
-X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.64.216,VDF=8.19.27.68)
-X-Spam-Status: 
-Received: from localhost (storm.m.i2n [172.16.1.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.m.i2n (Postfix) with ESMTPS id C1A17579;
-        Wed,  2 Nov 2022 11:18:48 +0100 (CET)
-Date:   Wed, 2 Nov 2022 11:18:48 +0100
-From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Leon Romanovsky <leon@kernel.org>, Roth Mark <rothm@mail.com>,
-        Zhihao Chen <chenzhihao@meizu.com>,
-        Tobias Brunner <tobias@strongswan.org>, netdev@vger.kernel.org
-Subject: [PATCH v2] xfrm: Fix oops in __xfrm_state_delete()
-Message-ID: <20221102101848.ibvumaxg2jdvk52y@intra2net.com>
-References: <20221031152612.o3h44x3whath4iyp@intra2net.com>
- <Y2CjFGCHGaMMTrHu@gondor.apana.org.au>
- <Y2FvHZiWejxRiIS8@moon.secunet.de>
- <Y2IXTc1M6K7KaQwW@gondor.apana.org.au>
- <20221102083159.2rqu6j27weg2cxtq@intra2net.com>
+        with ESMTP id S229493AbiKBKYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 06:24:47 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F6FBC7
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 03:24:46 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id i3-20020a5d8403000000b006c9271c3465so12972543ion.4
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 03:24:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qe4WNd93mX+EjZAZzx27OolHw122E3xiRIqW7icjVMc=;
+        b=fGXT5DeapXV/vn8mkNiEzzK9MXcdE0BaeSmQokuqH1OR7LZwWlIHsy7VlG8HHpb48a
+         3cWKHtTpBAzNylHnnKFnpW9nsLJ5Mp+kRTFp4rD8/EWyhI608EiN0sFymtg6otZb0hx2
+         Gw2L/wrQoMGWNiBWk+/oJGJhH55BePgK5JCAVx6fzYrCFXEtwpx4K2d5hHxQcI0pVUKy
+         ZGP88QKqXuZlHQK2K3GQxzIHNkaDzCjBdhH5CXIdQy+ryDVGFDplo+OOzt3tU9AGjWhm
+         iJHmOXo1xJrRkIGKlsecvdQlCPh2VcdZCI9TVw6vpBqj/Skq2jQYgunsi2iVZWMoS8Fs
+         7kZg==
+X-Gm-Message-State: ACrzQf3b9bgczs+vLzmdzWhl557i32ksP2fTw88ERJOOdQoUWXmUd5pB
+        HWQ3Xtf0Eojc5zwUBwhtlQfjfd7AJD2L3FK8fOFFwxGF26pz
+X-Google-Smtp-Source: AMsMyM6BTFKYR3WBDxUEE1qjqiyMu0X3uBEGrHLvNH1UP50P/gGpkV0jP/A+hN9YMyE4vRfi26vF2vzKdc+JF1YQLr/a2i+kc7/+
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221102083159.2rqu6j27weg2cxtq@intra2net.com>
-User-Agent: NeoMutt/20180716
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:6710:0:b0:6ce:cc99:b11 with SMTP id
+ b16-20020a6b6710000000b006cecc990b11mr12384343ioc.74.1667384686008; Wed, 02
+ Nov 2022 03:24:46 -0700 (PDT)
+Date:   Wed, 02 Nov 2022 03:24:45 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e9df4305ec7a3fc7@google.com>
+Subject: [syzbot] WARNING in __perf_event_overflow
+From:   syzbot <syzbot+589d998651a580e6135d@syzkaller.appspotmail.com>
+To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        bpf@vger.kernel.org, jolsa@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
+        netdev@vger.kernel.org, peterz@infradead.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel 5.14 added a new "byseq" index to speed
-up xfrm_state lookups by sequence number in commit
-fe9f1d8779cb ("xfrm: add state hashtable keyed by seq")
+Hello,
 
-While the patch was thorough, the function pfkey_send_new_mapping()
-in net/af_key.c also modifies x->km.seq and never added
-the current xfrm_state to the "byseq" index.
+syzbot found the following issue on:
 
-This leads to the following kernel Ooops:
-    BUG: kernel NULL pointer dereference, address: 0000000000000000
-    ..
-    RIP: 0010:__xfrm_state_delete+0xc9/0x1c0
-    ..
-    Call Trace:
-    <TASK>
-    xfrm_state_delete+0x1e/0x40
-    xfrm_del_sa+0xb0/0x110 [xfrm_user]
-    xfrm_user_rcv_msg+0x12d/0x270 [xfrm_user]
-    ? remove_entity_load_avg+0x8a/0xa0
-    ? copy_to_user_state_extra+0x580/0x580 [xfrm_user]
-    netlink_rcv_skb+0x51/0x100
-    xfrm_netlink_rcv+0x30/0x50 [xfrm_user]
-    netlink_unicast+0x1a6/0x270
-    netlink_sendmsg+0x22a/0x480
-    __sys_sendto+0x1a6/0x1c0
-    ? __audit_syscall_entry+0xd8/0x130
-    ? __audit_syscall_exit+0x249/0x2b0
-    __x64_sys_sendto+0x23/0x30
-    do_syscall_64+0x3a/0x90
-    entry_SYSCALL_64_after_hwframe+0x61/0xcb
+HEAD commit:    88619e77b33d net: stmmac: rk3588: Allow multiple gmac cont..
+git tree:       bpf
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=11842046880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a66c6c673fb555e8
+dashboard link: https://syzkaller.appspot.com/bug?extid=589d998651a580e6135d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11eabcea880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f7e632880000
 
-Exact location of the crash in __xfrm_state_delete():
-    if (x->km.seq)
-        hlist_del_rcu(&x->byseq);
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/f8435d5c2c21/disk-88619e77.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/551d8a013e81/vmlinux-88619e77.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/7d3f5c29064d/bzImage-88619e77.xz
 
-The hlist_node "byseq" was never populated.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+589d998651a580e6135d@syzkaller.appspotmail.com
 
-The bug only triggers if a new NAT traversal mapping (changed IP or port)
-is detected in esp_input_done2() / esp6_input_done2(), which in turn
-indirectly calls pfkey_send_new_mapping() *if* the kernel is compiled
-with CONFIG_NET_KEY and "af_key" is active.
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3607 at kernel/events/core.c:9313 __perf_event_overflow+0x498/0x540 kernel/events/core.c:9313
+Modules linked in:
+CPU: 0 PID: 3607 Comm: syz-executor100 Not tainted 6.1.0-rc2-syzkaller-00073-g88619e77b33d #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
+RIP: 0010:__perf_event_overflow+0x498/0x540 kernel/events/core.c:9313
+Code: 80 3c 02 00 0f 85 b2 00 00 00 48 8b 83 20 02 00 00 48 ff 80 b8 01 00 00 e9 5b fe ff ff 45 31 f6 e9 a2 fd ff ff e8 f8 ae dd ff <0f> 0b e9 47 fe ff ff 4c 89 e7 e8 39 ff 29 00 e9 b2 fb ff ff e8 0f
+RSP: 0000:ffffc90003c4fb00 EFLAGS: 00010046
+RAX: 0000000080010000 RBX: ffff888011a891d0 RCX: 0000000000000000
+RDX: ffff88801a4d57c0 RSI: ffffffff819eecc8 RDI: 0000000000000001
+RBP: ffffc90003c4fb80 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000020 R11: 0000000000000001 R12: 0000000000000020
+R13: ffff888011a895f4 R14: 0000000000000000 R15: 0000000000000000
+FS:  0000555555a8e300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000648 CR3: 000000007c988000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ perf_swevent_hrtimer+0x34f/0x3c0 kernel/events/core.c:10729
+ __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
+ __hrtimer_run_queues+0x1c6/0xfb0 kernel/time/hrtimer.c:1749
+ hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1096 [inline]
+ __sysvec_apic_timer_interrupt+0x17c/0x640 arch/x86/kernel/apic/apic.c:1113
+ sysvec_apic_timer_interrupt+0x40/0xc0 arch/x86/kernel/apic/apic.c:1107
+ asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
+RIP: 0033:0x7f74350afae5
+Code: 00 c7 04 25 b0 06 00 20 00 00 00 00 c7 04 25 b4 06 00 20 00 00 00 00 48 c7 04 25 b8 06 00 20 4f ff ff ff e8 ed e2 03 00 31 ff <e8> a6 75 00 00 66 0f 1f 44 00 00 41 57 41 56 41 55 41 54 55 53 48
+RSP: 002b:00007fffceb2b0e0 EFLAGS: 00000246
+RAX: 0000000000000003 RBX: 000000000000a025 RCX: 00007f74350edde9
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000008 R09: 00007fffceb2b278
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007fffceb2b0ec
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-The PF_KEYv2 message SADB_X_NAT_T_NEW_MAPPING is not part of RFC 2367.
-Various implementations have been examined how they handle
-the "sadb_msg_seq" header field:
 
-- racoon (Android): does not process SADB_X_NAT_T_NEW_MAPPING
-- strongswan: does not care about sadb_msg_seq
-- openswan: does not care about sadb_msg_seq
-
-There is no standard how PF_KEYv2 sadb_msg_seq should be populated
-for SADB_X_NAT_T_NEW_MAPPING and it's not used in popular
-implementations either. Herbert Xu suggested we should just
-use the current km.seq value as is. This fixes the root cause
-of the oops since we no longer modify km.seq itself.
-
-The update of "km.seq" looks like a copy'n'paste error
-from pfkey_send_acquire(). SADB_ACQUIRE must indeed assign a unique km.seq
-number according to RFC 2367. It has been verified that code paths
-involving pfkey_send_acquire() don't cause the same Oops.
-
-PF_KEYv2 SADB_X_NAT_T_NEW_MAPPING support was originally added here:
-    https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
-
-    commit cbc3488685b20e7b2a98ad387a1a816aada569d8
-    Author:     Derek Atkins <derek@ihtfp.com>
-    AuthorDate: Wed Apr 2 13:21:02 2003 -0800
-
-        [IPSEC]: Implement UDP Encapsulation framework.
-
-        In particular, implement ESPinUDP encapsulation for IPsec
-        Nat Traversal.
-
-A note on triggering the bug: I was not able to trigger it using VMs.
-There is one VPN using a high latency link on our production VPN server
-that triggered it like once a day though.
-
-Link: https://github.com/strongswan/strongswan/issues/992
-Link: https://lore.kernel.org/netdev/00959f33ee52c4b3b0084d42c430418e502db554.1652340703.git.antony.antony@secunet.com/T/
-Link: https://lore.kernel.org/netdev/20221027142455.3975224-1-chenzhihao@meizu.com/T/
-
-Fixes: fe9f1d8779cb ("xfrm: add state hashtable keyed by seq")
-Reported-by: Roth Mark <rothm@mail.com>
-Reported-by: Zhihao Chen <chenzhihao@meizu.com>
-Tested-by: Roth Mark <rothm@mail.com>
-Signed-off-by: Thomas Jarosch <thomas.jarosch@intra2net.com>
 ---
- net/key/af_key.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index c85df5b958d2..a4c128bab377 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -3382,7 +3382,7 @@ static int pfkey_send_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr,
- 	hdr->sadb_msg_len = size / sizeof(uint64_t);
- 	hdr->sadb_msg_errno = 0;
- 	hdr->sadb_msg_reserved = 0;
--	hdr->sadb_msg_seq = x->km.seq = get_acqseq();
-+	hdr->sadb_msg_seq = x->km.seq;
- 	hdr->sadb_msg_pid = 0;
- 
- 	/* SA */
--- 
-2.37.3
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
