@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A921617013
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E797617017
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:53:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbiKBVtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 17:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
+        id S230116AbiKBVx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 17:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiKBVtv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:49:51 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90EB6428
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:49:50 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-368edbc2c18so178778887b3.13
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 14:49:50 -0700 (PDT)
+        with ESMTP id S229875AbiKBVxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:53:55 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161F56396
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:53:54 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id o70so172591yba.7
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 14:53:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=a+O/DyQ0G+dRjY5LIarEEDWC0+9+Vhve0t7ZqJKRHFo=;
-        b=sctTR2AWCij59qT1LYe9H9J6FYKUKFMKJ0YheKvT7mHc2eIExKHyEFuScm2mQcl39v
-         I/Rkojaphrtl/DkZYSSd9VuOVo0XsIeaS6aYCH0LyQsDw3sR/BloSc1vG5FoquWy2nli
-         EjZHyhip/+635zi8lqkwEJvAuTuFc4+mgvUMAcH7uyfn1KTKrl4j3OsNZUOTYy91ppSK
-         6doaF+atG0VHTvzwmvBYL9ASpAMFml/HvlH0GqU+eR4mQrZ/HJYYQJCPSnxO4yaqiTHp
-         4RZ0IvHaAenXjCsS6jy6qqc/WpEEtstlAdm70ctrCCCvbGz1JFES9f/ButhCfldH6zr+
-         jePw==
+        bh=3EwqQdy31sqBkxYtqTdrt4QtPfV/deRLFG8225Ldd98=;
+        b=UZf0joM4l549onip8pFdW8OQgY6aZiYaKkEt4TgxX+IBBaQBpQ5KUQnNlv1iGJpn7R
+         NFBoW3we16LE5CJa/rZsAT3XtuSi05dKvw2VkVSX9B4dWS/G8jSsobKTP0ZL0nCwoI/a
+         gSy4Lrf/1fAH2y94u89/5CQU8GT/Acl3mGow3Bdum1mxKsUzkxrCitC8XJLyJWTzsqdv
+         eFIqOK5fpC9n5xMwlgkwvrN9vT1Ke8OSvOquY7n1/qoNdeAS3KEpSQxYHFl0xhZlIgpP
+         lAl4WYlhkZMmD1XoDIFgwpuPFL5fna+vTI3Jn2YOnuuK5zs/jRVw/lwxxY5Cz1phPPwv
+         F+IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=a+O/DyQ0G+dRjY5LIarEEDWC0+9+Vhve0t7ZqJKRHFo=;
-        b=gblBGZR2HvzWwlwFP8tkY2cEJuz+v/XNbZhy4H2oTyyQ0h13xT4gZmgCQVoa9/9Xyr
-         rRpY41VidVQxqoBnLREaH9/iZAGkvhqgcdHRX/u4Lr3P6GFyB2mjiVWr7dTi24rhWX6I
-         4Xoj2szU1ZhkGAiUEP2moYYKdGP3I3VNUCq1XGsJ4YYLP0pNHXDOSpWS+YhmS+sT/z12
-         +rGl2gK+dRYkZXRLTKXPwV/Mf5QIyEPXh32dFifOIj4/d4XtrvbRxnRSTWlctxxIORzH
-         iKQZXK5qVwmsL/GJKG5LBrVaiXRSI88cWiPZvq2k52gAH1AEcSZfDP1TlaBbbwencS4+
-         7LzA==
-X-Gm-Message-State: ACrzQf2i4KkjN80ATb+iNTqgB8S2aalXVObluXUS68saYDsgc7ZXVz3k
-        4/NwLBje9hbQrA9iz0Qq2t2aH7lqnXs34BCKp8fkzQ==
-X-Google-Smtp-Source: AMsMyM7R0dIO3FRgY0SoeTGn3cQawzVAjJ1bCkU7NeraXVSDxfjCex/MdSyQJMnoCwoRT4l9P0gK3tCQueCqMuVBAwE=
-X-Received: by 2002:a81:9a4f:0:b0:367:fbf9:b9f1 with SMTP id
- r76-20020a819a4f000000b00367fbf9b9f1mr25684882ywg.55.1667425789743; Wed, 02
- Nov 2022 14:49:49 -0700 (PDT)
+        bh=3EwqQdy31sqBkxYtqTdrt4QtPfV/deRLFG8225Ldd98=;
+        b=ZbEXV1mpgL8JxNErNQ34I0CwOCgZugCugNNnj1Qbco0k/8SqZTWk8ZUaa+DazqGlgr
+         4McIclQvqhQYAF1dBNcffZaRu6/0KBAQPepgQDLUogJlAQr8wbTO8C1VpzzwlbEHyKT0
+         /xLK8G+84OZpSKyvkdLd+md5tgBFL5zsJg/6A2SlzeaZ4mss6Tycy3XvnhjFv4R+ttwF
+         oiK7A93STYrtFEXHqZfLsjpSFzKOrc8xN85O+0fCFdAMFPkln3aKDJv95KzLIng90VZL
+         GCnUbINv3fo97SFJLh4ZTNMBoDTcP2k2V390qyRcKigifU93oyuZnS6jSWHTudnPNifO
+         hjag==
+X-Gm-Message-State: ACrzQf2FPXfuDGLN/rBExafngRK/I4nxIUNGih3lzlld1l7l/bWu1Iza
+        b+12NCccYLfZtAfeQ+GXqiI0GKv3TWh2oEKaGp43WA==
+X-Google-Smtp-Source: AMsMyM4Aqe3QOvqVwoxzyp8kfGjuhdRDMSZxrZzqEdr6wWhKTu98K6UxfkrKnjSuqs/r4TfsspLWLsHS5wzxCFDx6nM=
+X-Received: by 2002:a25:3187:0:b0:6c1:822b:eab1 with SMTP id
+ x129-20020a253187000000b006c1822beab1mr24647957ybx.427.1667426033028; Wed, 02
+ Nov 2022 14:53:53 -0700 (PDT)
 MIME-Version: 1.0
 References: <20221102211350.625011-1-dima@arista.com> <20221102211350.625011-3-dima@arista.com>
- <CANn89iLbOikuG9+Tna9M0Gr-diF2vFpfMV8MDP8rBuN49+Mwrg@mail.gmail.com> <483848f5-8807-fd97-babc-44740db96db4@arista.com>
-In-Reply-To: <483848f5-8807-fd97-babc-44740db96db4@arista.com>
+ <CANn89iLbOikuG9+Tna9M0Gr-diF2vFpfMV8MDP8rBuN49+Mwrg@mail.gmail.com>
+ <483848f5-8807-fd97-babc-44740db96db4@arista.com> <CANn89i+XyQhh0eNMJWNn6NNLDaMtrzX3sq9Atu-ic7P5uqDODg@mail.gmail.com>
+In-Reply-To: <CANn89i+XyQhh0eNMJWNn6NNLDaMtrzX3sq9Atu-ic7P5uqDODg@mail.gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 2 Nov 2022 14:49:38 -0700
-Message-ID: <CANn89i+XyQhh0eNMJWNn6NNLDaMtrzX3sq9Atu-ic7P5uqDODg@mail.gmail.com>
+Date:   Wed, 2 Nov 2022 14:53:42 -0700
+Message-ID: <CANn89i+UxgHwm9apzBXV-afpcfXfuX2S+6i4vPzF2ec4Dr6X0A@mail.gmail.com>
 Subject: Re: [PATCH 2/2] net/tcp: Disable TCP-MD5 static key on
  tcp_md5sig_info destruction
 To:     Dmitry Safonov <dima@arista.com>
@@ -77,57 +78,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 2, 2022 at 2:40 PM Dmitry Safonov <dima@arista.com> wrote:
->
-> On 11/2/22 21:25, Eric Dumazet wrote:
-> > On Wed, Nov 2, 2022 at 2:14 PM Dmitry Safonov <dima@arista.com> wrote:
-> [..]
-> >> +int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
-> >> +                  int family, u8 prefixlen, int l3index, u8 flags,
-> >> +                  const u8 *newkey, u8 newkeylen)
-> >> +{
-> >> +       struct tcp_sock *tp = tcp_sk(sk);
-> >> +
-> >> +       if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
-> >> +               if (tcp_md5sig_info_add(sk, GFP_KERNEL))
-> >> +                       return -ENOMEM;
-> >> +
-> >> +               static_branch_inc(&tcp_md5_needed.key);
-> >> +       }
-> >> +
-> >> +       return __tcp_md5_do_add(sk, addr, family, prefixlen, l3index, flags,
-> >> +                               newkey, newkeylen, GFP_KERNEL);
-> >> +}
-> >>  EXPORT_SYMBOL(tcp_md5_do_add);
-> >>
-> >> +int tcp_md5_key_copy(struct sock *sk, const union tcp_md5_addr *addr,
-> >> +                    int family, u8 prefixlen, int l3index,
-> >> +                    struct tcp_md5sig_key *key)
-> >> +{
-> >> +       struct tcp_sock *tp = tcp_sk(sk);
-> >> +
-> >> +       if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
-> >> +               if (tcp_md5sig_info_add(sk, sk_gfp_mask(sk, GFP_ATOMIC)))
-> >> +                       return -ENOMEM;
-> >> +
-> >> +               atomic_inc(&tcp_md5_needed.key.key.enabled);
-> >
-> > static_branch_inc ?
->
-> That's the difference between tcp_md5_do_add() and tcp_md5_key_copy():
-> the first one can sleep on either allocation or static branch patching,
-> while the second one is used where there is md5 key and it can't get
-> destroyed during the function call. tcp_md5_key_copy() is called
-> somewhere from the softirq handler so it needs an atomic allocation as
-> well as this a little bit hacky part.
->
+On Wed, Nov 2, 2022 at 2:49 PM Eric Dumazet <edumazet@google.com> wrote:
 
-Are you sure ?
+>
+> Are you sure ?
+>
+> static_branch_inc() is what we want here, it is a nice wrapper around
+> the correct internal details,
+> and ultimately boils to an atomic_inc(). It is safe for all contexts.
+>
+> But if/when jump labels get refcount_t one day, we will not have to
+> change TCP stack because
+> it made some implementation assumptions.
 
-static_branch_inc() is what we want here, it is a nice wrapper around
-the correct internal details,
-and ultimately boils to an atomic_inc(). It is safe for all contexts.
+Oh, I think I understand this better now.
 
-But if/when jump labels get refcount_t one day, we will not have to
-change TCP stack because
-it made some implementation assumptions.
+Please provide a helper like
+
+static inline void static_key_fast_inc(struct static_key *key)
+{
+       atomic_inc(&key->enabled);
+}
+
+Something like that.
