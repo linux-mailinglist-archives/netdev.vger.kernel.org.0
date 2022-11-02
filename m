@@ -2,79 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AEAD615FCE
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 10:32:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B53FC615FD2
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 10:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbiKBJcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 05:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        id S230281AbiKBJdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 05:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiKBJcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 05:32:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E2F12AD5
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 02:31:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667381505;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FiXyFbNQfgw1EbxRUL2H94emHZF9fnomkSKKEY8Wyhw=;
-        b=V7MrpPYaCoCQytswCrFkezV6dc19wkNirVYzr3S42jh/mvmaeyRWzgQBV/EKqodoivsRfC
-        M/0lurqfsxhssyWjYte7ZzMXGPOOxP+s7bAmNYF5GPOIf3V8MrcklsYPmETs+5kn0YuO9w
-        vX7mFc1Xqxb1NUp/taSkj35muy9a9FQ=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-235-Hx0Uqyg3N4i4fvq9CIgROg-1; Wed, 02 Nov 2022 05:31:44 -0400
-X-MC-Unique: Hx0Uqyg3N4i4fvq9CIgROg-1
-Received: by mail-qt1-f200.google.com with SMTP id b20-20020ac844d4000000b003a542f9de3dso1518179qto.7
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 02:31:44 -0700 (PDT)
+        with ESMTP id S230216AbiKBJc6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 05:32:58 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90BB13F8A
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 02:32:56 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id sc25so43620449ejc.12
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 02:32:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RV2bi+Arg3PPh2gmWVESDVUwH/ZtxQUyDYdE3wwmynk=;
+        b=LzC7PqYowNtWtKrB7MpbozFX/0KKlidIXFWdjUF/PzqypiZE3ppmsRQ2NY/Tv4GhIx
+         RmVC28gEkgxyBlyb+Wdszxv/J5INcITr3rRd21Rm3RYACszV2NCgBcAQ2YAm7AJKg6E+
+         W/V6Dz6YTt6++WrEkhQFrGge7o4VHpBsj9MgQaynf3ic8xCG6HErzC5FceiLp0U362Ty
+         B+LmGKv2iGyqyJfRgIDRjV6x/KPeXzoI2P1QjmfzJ81FvXB/Z1RTy2UiU6kdwGUcfgG1
+         iaNrSSxrVXs1Fu3u/HF/mQVth7HnwX8VpiVHO/rJyYxbPE3LFM5dQ5G3WhH2zGuEnWGr
+         Ad+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FiXyFbNQfgw1EbxRUL2H94emHZF9fnomkSKKEY8Wyhw=;
-        b=0v/gndbfKAPN2ztiWhoI2yMXxBCEjoJg5qma/FjlPs6GqULLYfA3KK97OWDfRKrKL3
-         MQROS97u5bxJsnNcoYROLAEA4gHiVE0mQdlyKRgpS63gqcL9rdRNBV5ztAURK94szm1u
-         Bey4+ZbwhjAkLYP4FNF6mEiFruIAgid345eggr1y4ozSIzc4nZqETlqr1PhSzFbWd0Bf
-         7czpNggtye6TNSBkgbekUSwK8bnZUgaeX4hwVGTd3JKQIK+dcTmK56m4KozeIOPa8zLY
-         Kz6zZDhiQ9vXt5zx43LivFfWN6heN+yRrmwc2ps/0qoyKOIa5IKNBV8ubuqXoHuPRRkf
-         0t0A==
-X-Gm-Message-State: ACrzQf0K6gWlZ9Rg1c9zNEioQMr3PGBvwLZu9ov1fT4tKjLGx0Vpwyix
-        CW08+1it7kpM051TfVYBS9CTccBqXZd1YAZnmIDRAG+ttsLlSwB3jPyIY41sdtTFyb2dePs8uA5
-        M1Tcl4PGGFcpbfc6o
-X-Received: by 2002:a0c:e2d4:0:b0:4bb:5902:922c with SMTP id t20-20020a0ce2d4000000b004bb5902922cmr20026051qvl.57.1667381504105;
-        Wed, 02 Nov 2022 02:31:44 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7fwcDDdofDJz+WZYfF1ydzjXTJWpUN8/UcIhN3q3TEjSy7NElKUQE03Ks6CSlPZF4dfR2Qnw==
-X-Received: by 2002:a0c:e2d4:0:b0:4bb:5902:922c with SMTP id t20-20020a0ce2d4000000b004bb5902922cmr20026034qvl.57.1667381503910;
-        Wed, 02 Nov 2022 02:31:43 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
-        by smtp.gmail.com with ESMTPSA id bs33-20020a05620a472100b006fa617ac616sm486080qkb.49.2022.11.02.02.31.40
+        bh=RV2bi+Arg3PPh2gmWVESDVUwH/ZtxQUyDYdE3wwmynk=;
+        b=527UqYBPIdAQDJb6/TDqT4V6zE1dXuAlr5IK8JcAAJurtRTnjKL/zGq6ZvgWtt39Xf
+         xM04mceqQEZ4j90YLojuhACaW2fD4vJNkI59U/IHuJIS+tcoJVznzhzqkMw1YDl1wZV8
+         YiZ7laq8sYcyi2cZly+L8tEv/ALQiGncsmNMZ0YgF+bq03puKuHDvJv7w73dFAMa0ABZ
+         aJDEV8EdARWtXzkEBaWx6Lf7fhbVNRVXjr6+zMacYSdSegKUaq9mHJT5qOGCb2Vcezne
+         J+Fb9S0hOxZF0vttz3JUNeAS1YBRI1K7nqE/4Yp/pfFWP7nzyXaL8EMFYVWkUwGR2Jpl
+         d7rQ==
+X-Gm-Message-State: ACrzQf1UUg76kHP1s3e0z85FbmiBD6CwrHtpB/YeB9b1YZjud4UGJMGu
+        klbG44QdywNUDQJO4hWuoAQTVg==
+X-Google-Smtp-Source: AMsMyM6yvI2slLDREEHpW0fkIE/dvGcddUP6M0Z0pmFGZeBg94FTPohCq/nTSyJ+kC6q/O3FmzY6+g==
+X-Received: by 2002:a17:906:5a6e:b0:7ad:9303:65da with SMTP id my46-20020a1709065a6e00b007ad930365damr23497401ejc.638.1667381575298;
+        Wed, 02 Nov 2022 02:32:55 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id 16-20020a170906329000b0073ddb2eff27sm5112047ejw.167.2022.11.02.02.32.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 02:31:43 -0700 (PDT)
-Date:   Wed, 2 Nov 2022 10:31:37 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, arseny.krasnov@kaspersky.com,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, stephen@networkplumber.org,
-        wei.liu@kernel.org, linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] vsock: fix possible infinite sleep in
- vsock_connectible_wait_data()
-Message-ID: <20221102093137.2il5u7opfyddheis@sgarzare-redhat>
-References: <20221101021706.26152-1-decui@microsoft.com>
- <20221101021706.26152-3-decui@microsoft.com>
+        Wed, 02 Nov 2022 02:32:54 -0700 (PDT)
+Date:   Wed, 2 Nov 2022 10:32:52 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, tariqt@nvidia.com, moshe@nvidia.com,
+        saeedm@nvidia.com, linux-rdma@vger.kernel.org
+Subject: Re: [patch net-next v3 05/13] net: devlink: track netdev with
+ devlink_port assigned
+Message-ID: <Y2I5RD6zPDr3MGpG@nanopsycho>
+References: <20221031124248.484405-1-jiri@resnulli.us>
+ <20221031124248.484405-6-jiri@resnulli.us>
+ <20221101092542.26c66235@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221101021706.26152-3-decui@microsoft.com>
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+In-Reply-To: <20221101092542.26c66235@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,47 +73,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 07:17:06PM -0700, Dexuan Cui wrote:
->Currently vsock_connectible_has_data() may miss a wakeup operation
->between vsock_connectible_has_data() == 0 and the prepare_to_wait().
+Tue, Nov 01, 2022 at 05:25:42PM CET, kuba@kernel.org wrote:
+>On Mon, 31 Oct 2022 13:42:40 +0100 Jiri Pirko wrote:
+>> +/*
+>> + * Driver should use this to assign devlink port instance to a netdevice
+>> + * before it registers the netdevice. Therefore devlink_port is static
+>> + * during the netdev lifetime after it is registered.
+>> + */
+>> +#define SET_NETDEV_DEVLINK_PORT(dev, _devlink_port)		\
+>> +({								\
+>> +	WARN_ON(dev->reg_state != NETREG_UNINITIALIZED);	\
+>> +	((dev)->devlink_port = (_devlink_port));		\
+>> +})
 >
->Fix the race by adding the process to the wait queue before checking
->vsock_connectible_has_data().
->
->Fixes: b3f7fd54881b ("af_vsock: separate wait data loop")
->Signed-off-by: Dexuan Cui <decui@microsoft.com>
->---
->
->Changes in v2 (Thanks Stefano!):
->  Fixed a typo in the commit message.
->  Removed the unnecessary finish_wait() at the end of the loop.
+>The argument wrapping is inconsistent here - dev is in brackets
+>on the second line but not on the first. _devlink_port is prefixed 
+>with underscore and dev is not. Let's make this properly secure
+>and define a local var for dev.
 
-LGTM:
+Ok.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
 >
-> net/vmw_vsock/af_vsock.c | 5 ++++-
-> 1 file changed, 4 insertions(+), 1 deletion(-)
+>> @@ -10107,6 +10107,7 @@ int register_netdevice(struct net_device *dev)
+>>  	return ret;
+>>  
+>>  err_uninit:
+>> +	call_netdevice_notifiers(NETDEV_PRE_UNINIT, dev);
 >
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index d258fd43092e..884eca7f6743 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1905,8 +1905,11 @@ static int vsock_connectible_wait_data(struct sock *sk,
-> 	err = 0;
-> 	transport = vsk->transport;
->
->-	while ((data = vsock_connectible_has_data(vsk)) == 0) {
->+	while (1) {
-> 		prepare_to_wait(sk_sleep(sk), wait, TASK_INTERRUPTIBLE);
->+		data = vsock_connectible_has_data(vsk);
->+		if (data != 0)
->+			break;
->
-> 		if (sk->sk_err != 0 ||
-> 		    (sk->sk_shutdown & RCV_SHUTDOWN) ||
->-- 
->2.25.1
->
+>I think we should make this symmetric with POST_INIT.
+>IOW PRE_UNINIT should only be called if POST_INIT was called.
+
+Yep, will check and fix.
 
