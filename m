@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4952C616A53
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 18:15:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE2A6616A59
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 18:15:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbiKBRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 13:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        id S231214AbiKBRP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 13:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiKBRO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 13:14:56 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DEB2186;
-        Wed,  2 Nov 2022 10:14:55 -0700 (PDT)
-Date:   Wed, 2 Nov 2022 10:14:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1667409294;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xtTSxM1Q/qUYa04qDvMF9fQMU1lb3nJ4Yr7MTQ7VghU=;
-        b=HGPpAdSi8jBVZcmLugyVIGYvvWkqF3VSKjIyZSapgYT5aDBIwno6PFiycmuKqNRsi6eCEU
-        00g6vsaXFrHI8ZLMVDXPBYRRjci2zvrdgfTapXezF72FnhcQyMODDDKyeJs8AgdHDo+xZ1
-        Ak9oegP1g8hgVuDq9qb8v6diwqyoY50=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Andy Ren <andy.ren@getcruise.com>,
-        netdev@vger.kernel.org, richardbgobert@gmail.com,
-        davem@davemloft.net, wsa+renesas@sang-engineering.com,
-        edumazet@google.com, petrm@nvidia.com, pabeni@redhat.com,
-        corbet@lwn.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] netconsole: Enable live renaming for network
- interfaces used by netconsole
-Message-ID: <Y2KlfhfijyNl8yxT@P9FQF9L96D.corp.robot.car>
-References: <20221102002420.2613004-1-andy.ren@getcruise.com>
- <Y2G+SYXyZAB/r3X0@lunn.ch>
- <20221101204006.75b46660@kernel.org>
+        with ESMTP id S230500AbiKBRPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 13:15:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69241091;
+        Wed,  2 Nov 2022 10:15:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 965CBB823F6;
+        Wed,  2 Nov 2022 17:15:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B682C433C1;
+        Wed,  2 Nov 2022 17:15:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667409316;
+        bh=qK3bx7QoAh9fwPJHJizhUKV9fbdiG40FN0gZzQ2hwIg=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=n03OxBc7g3UloZP5Z04sZpbPDxEhvFkRIXuQ0rcShfJ0CirVAxiXaKK6TJEJpUQZw
+         JKU0gfhRV03o/QSNwHlTKskHaW7Zeg3jGsvarI1i1naMUOLbus8RMTLOD23ulMuD26
+         FKcz82vtDP50uvekdh1h2tCM7PcWq3Rf+m5EajFQ1eYdHYpLmnpS1qKgE3BYyJvQ4E
+         pMurRK7lH/3wAE+N6SQBdtXsT25zauiLT53iw89YJ2hYVeyzg2rsyJFNcv8l2kQPcs
+         guppyO8qQUwq5UqxHF9MppL02VvMqW1H/vJ0enJ6mFjUALAdhmd1SKug5oY0fQo3Hu
+         24jkyAkKAGxGA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221101204006.75b46660@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Fix QCN9074 firmware boot on x86
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20221022042728.43015-1-stachecki.tyler@gmail.com>
+References: <20221022042728.43015-1-stachecki.tyler@gmail.com>
+To:     "Tyler J. Stachecki" <stachecki.tyler@gmail.com>
+Cc:     unlisted-recipients:; (no To-header on input)
+        "Tyler J. Stachecki" <stachecki.tyler@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        ath11k@lists.infradead.org (open list:QUALCOMM ATHEROS ATH11K WIRELESS
+        DRIVER),
+        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)"Tyler J. Stachecki" <stachecki.tyler@gmail.com>
+                                                                     ^-missing end of address
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166740930971.12704.12404773753216417373.kvalo@kernel.org>
+Date:   Wed,  2 Nov 2022 17:15:13 +0000 (UTC)
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 01, 2022 at 08:40:06PM -0700, Jakub Kicinski wrote:
-> On Wed, 2 Nov 2022 01:48:09 +0100 Andrew Lunn wrote:
-> > Changing the interface name while running is probably not an
-> > issue. There are a few drivers which report the name to the firmware,
-> > presumably for logging, and phoning home, but it should not otherwise
-> > affect the hardware.
+"Tyler J. Stachecki" <stachecki.tyler@gmail.com> wrote:
+
+> The 2.7.0 series of QCN9074's firmware requests 5 segments
+> of memory instead of 3 (as in the 2.5.0 series).
 > 
-> Agreed. BTW I wonder if we really want to introduce a netconsole
-> specific uAPI for this or go ahead with something more general.
-
-Netconsole is a bit special because it brings an interface up very early.
-E.g. in our case without the netconsole the renaming is happening before
-the interface is brought up.
-
-I wonder if the netconsole-specific flag should allow renaming only once.
-
-> A sysctl for global "allow UP rename"?
-
-This will work for us, but I've no idea what it will break for other users
-and how to check it without actually trying to break :) And likely we won't
-learn about it for quite some time, asssuming they don't run net-next.
-
+> The first segment (11M) is too large to be kalloc'd in one
+> go on x86 and requires piecemeal 1MB allocations, as was
+> the case with the prior public firmware (2.5.0, 15M).
 > 
-> We added the live renaming for failover a while back and there were 
-> no reports of user space breaking as far as I know. So perhaps nobody
-> actually cares and we should allow renaming all interfaces while UP?
-> For backwards compat we can add a sysctl as mentioned or a rtnetlink 
-> "I know what I'm doing" flag? 
+> Since f6f92968e1e5, ath11k will break the memory requests,
+> but only if there were fewer than 3 segments requested by
+> the firmware. It seems that 5 segments works fine and
+> allows QCN9074 to boot on x86 with firmware 2.7.0, so
+> change things accordingly.
 > 
-> Maybe print an info message into the logs for a few releases to aid
-> debug?
+> Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
+> Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.16
 > 
-> IOW either there is a reason we don't allow rename while up, and
-> netconsole being bound to an interface is immaterial. Or there is 
-> no reason and we should allow all.
+> Signed-off-by: Tyler J. Stachecki <stachecki.tyler@gmail.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-My understanding is that it's not an issue for the kernel, but might be
-an issue for some userspace apps which do not expect it.
+Patch applied to ath-current branch of ath.git, thanks.
 
-If you prefer to go with the 'global sysctl' approach, how the path forward
-should look like?
+3a89b6dec992 wifi: ath11k: Fix QCN9074 firmware boot on x86
 
-Thanks!
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20221022042728.43015-1-stachecki.tyler@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
