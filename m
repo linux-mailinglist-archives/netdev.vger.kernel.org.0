@@ -2,166 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18651615C1D
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 07:17:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 619BB615C22
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 07:18:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiKBGRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 02:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
+        id S230024AbiKBGSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 02:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbiKBGRJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 02:17:09 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4DA25EB6;
-        Tue,  1 Nov 2022 23:17:06 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1667369824;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MrBR4SF/8VnGnxEIBn/xM0y9bHddbWKFSWf1ZZc7fnI=;
-        b=Oj3SDgsjpty6Kug3fDeNvrVrODvMssx4RpnWoWgHZaQCsW7gHX/mRwJuRa1oZ3Lvq7VdiQ
-        y908Mm16JlFvAum0LpJsaH51Uckb87mYHutkU/Kh859kpzchunMhcqu2wdUd/5QboroSc5
-        HS/zfSkKe1GDKu+aYKjcs785KQ/+0bg=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     kuba@kernel.org
-Cc:     Cai Huoqing <cai.huoqing@linux.dev>,
+        with ESMTP id S229929AbiKBGSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 02:18:04 -0400
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD15225C64;
+        Tue,  1 Nov 2022 23:18:03 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id cl5so11362498wrb.9;
+        Tue, 01 Nov 2022 23:18:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TyoiXD+lZAYyIq5A3unxJbUvSr0umu7gv7mLSuqlSJ4=;
+        b=I/Zy5t0JCiZ7ddN+RFSrntl9sEe/07pscujEFvTKoQS5ZFv6NA456HRmg0+JR/INL0
+         FU1VXyFUa6ngvXRo+jE6p49cr0KSvqWOKWyhYGhhQyiLGBIjMlDyk1iOKEwHeCpqBagy
+         RuwJYCHHjU90z3O/6B2G4j5MnDLvMcqRqQWjrRrR3b635SBD4AYtnXFeok7Fy+M7yeK7
+         pQNFJQUKdpLCs/sZSGlpMa768rhRFlGTKSEPzEaATD0tX8r7m0hVKrxogzILEAXBNzt1
+         /BhuNGPuphqSZvj+pZRrc0z3hMHxFtY1epsy3K+df9O/j+HBngCfzZMBXk+b+rLHmrbA
+         Kkiw==
+X-Gm-Message-State: ACrzQf2tZTi4rMHWSiEXKeaoNcNk5l08D0yy1RkvowyOw0pQxjX6YPHA
+        RRBP1IE0yslf/b8vj/bN23k=
+X-Google-Smtp-Source: AMsMyM6NJ/87OZvYBlrVbXokU9DQLIfp/f10lKRDGr1BCob0gnkUi2pHO6BeN0qKMkHIYSEF8xWWvw==
+X-Received: by 2002:a05:6000:3c3:b0:236:b2ce:593e with SMTP id b3-20020a05600003c300b00236b2ce593emr12638679wrg.580.1667369882322;
+        Tue, 01 Nov 2022 23:18:02 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id 7-20020a056000154700b00236644228besm12830609wry.40.2022.11.01.23.18.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Nov 2022 23:18:01 -0700 (PDT)
+Message-ID: <eeac01aa-5c3d-da4f-3acb-0698de23b2b4@kernel.org>
+Date:   Wed, 2 Nov 2022 07:18:00 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] ath11k (gcc13): synchronize
+ ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>, Randy Dunlap <rdunlap@infradead.org>
+Cc:     Jeff Johnson <quic_jjohnson@quicinc.com>,
+        linux-kernel@vger.kernel.org, Martin Liska <mliska@suse.cz>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Qiao Ma <mqaio@linux.alibaba.com>,
-        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 3/3] net: hinic: Add support for configuration of rx-vlan-filter by ethtool
-Date:   Wed,  2 Nov 2022 14:16:11 +0800
-Message-Id: <20221102061621.10329-3-cai.huoqing@linux.dev>
-In-Reply-To: <20221102061621.10329-1-cai.huoqing@linux.dev>
-References: <20221102061621.10329-1-cai.huoqing@linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20221031114341.10377-1-jirislaby@kernel.org>
+ <55c4d139-0f22-e7ba-398a-e3e0d8919220@quicinc.com>
+ <833c7f2f-c140-5a0b-1efc-b858348206ec@kernel.org> <87bkprgj0b.fsf@kernel.org>
+ <503a3b36-2256-a9ce-cffe-5c0ed51f6f62@infradead.org>
+ <87tu3ifv8z.fsf@kernel.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <87tu3ifv8z.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When ethtool config rx-vlan-filter, the driver will send
-control command to firmware, then set to hardware in this patch.
+On 01. 11. 22, 18:19, Kalle Valo wrote:
+> I did assume it will take at least a year or two before people get used
+> to the new prefix, but my patchwork script has a check for this and it's
+> trivial to fix the subject before I commit the patch. So hopefully the
+> switch goes smoothly.
 
-Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
----
-v1->v3:
-	1.Merge this patch to the series.
-	comments link: https://lore.kernel.org/lkml/20221101214059.464a1d42@kernel.org/
+I think so. It will take some turnarounds for you before this starts 
+appearing in git log output for every wireless driver. Then, people will 
+start picking the prefix up from there ;).
 
- .../net/ethernet/huawei/hinic/hinic_main.c    | 10 ++++++
- .../net/ethernet/huawei/hinic/hinic_port.c    | 33 +++++++++++++++++++
- .../net/ethernet/huawei/hinic/hinic_port.h    | 12 +++++++
- 3 files changed, 55 insertions(+)
-
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 9d4d795e1081..977c41473ab7 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -1092,6 +1092,16 @@ static int set_features(struct hinic_dev *nic_dev,
- 		}
- 	}
- 
-+	if (changed & NETIF_F_HW_VLAN_CTAG_FILTER) {
-+		ret = hinic_set_vlan_fliter(nic_dev,
-+					    !!(features &
-+					       NETIF_F_HW_VLAN_CTAG_FILTER));
-+		if (ret) {
-+			err = ret;
-+			failed_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-+		}
-+	}
-+
- 	if (err) {
- 		nic_dev->netdev->features = features ^ failed_features;
- 		return -EIO;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-index 0a39c3dffa9a..9406237c461e 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-@@ -447,6 +447,39 @@ int hinic_set_rx_vlan_offload(struct hinic_dev *nic_dev, u8 en)
- 	return 0;
- }
- 
-+int hinic_set_vlan_fliter(struct hinic_dev *nic_dev, u32 en)
-+{
-+	struct hinic_hwdev *hwdev = nic_dev->hwdev;
-+	struct hinic_hwif *hwif = hwdev->hwif;
-+	struct pci_dev *pdev = hwif->pdev;
-+	struct hinic_vlan_filter vlan_filter;
-+	u16 out_size = sizeof(vlan_filter);
-+	int err;
-+
-+	if (!hwdev)
-+		return -EINVAL;
-+
-+	vlan_filter.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
-+	vlan_filter.enable = en;
-+
-+	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_VLAN_FILTER,
-+				 &vlan_filter, sizeof(vlan_filter),
-+				 &vlan_filter, &out_size);
-+	if (vlan_filter.status == HINIC_MGMT_CMD_UNSUPPORTED) {
-+		err = HINIC_MGMT_CMD_UNSUPPORTED;
-+	} else if ((err == HINIC_MBOX_VF_CMD_ERROR) &&
-+			   HINIC_IS_VF(hwif)) {
-+		err = HINIC_MGMT_CMD_UNSUPPORTED;
-+	} else if (err || !out_size || vlan_filter.status) {
-+		dev_err(&pdev->dev,
-+			"Failed to set vlan fliter, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, vlan_filter.status, out_size);
-+		err = -EINVAL;
-+	}
-+
-+	return err;
-+}
-+
- int hinic_set_max_qnum(struct hinic_dev *nic_dev, u8 num_rqs)
- {
- 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-index c9ae3d4dc547..c8694ac7c702 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-@@ -351,6 +351,16 @@ struct hinic_vlan_cfg {
- 	u8      rsvd1[5];
- };
- 
-+struct hinic_vlan_filter {
-+	u8	status;
-+	u8	version;
-+	u8	rsvd0[6];
-+
-+	u16	func_idx;
-+	u8	rsvd1[2];
-+	u32	enable;
-+};
-+
- struct hinic_rss_template_mgmt {
- 	u8	status;
- 	u8	version;
-@@ -831,6 +841,8 @@ int hinic_get_vport_stats(struct hinic_dev *nic_dev,
- 
- int hinic_set_rx_vlan_offload(struct hinic_dev *nic_dev, u8 en);
- 
-+int hinic_set_vlan_fliter(struct hinic_dev *nic_dev, u32 en);
-+
- int hinic_get_mgmt_version(struct hinic_dev *nic_dev, u8 *mgmt_ver);
- 
- int hinic_set_link_settings(struct hinic_hwdev *hwdev,
+thanks,
 -- 
-2.25.1
+js
+suse labs
 
