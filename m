@@ -2,99 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0166A61672E
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 17:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E36F616836
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 17:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231267AbiKBQJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 12:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
+        id S231578AbiKBQQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 12:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231124AbiKBQJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 12:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF312C657;
-        Wed,  2 Nov 2022 09:09:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFEF6B823B3;
-        Wed,  2 Nov 2022 16:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F27AC433C1;
-        Wed,  2 Nov 2022 16:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667405380;
-        bh=rH9SDx9gcWaQDKMOE4tQEFHMGlG6Ovr3YPv8YZL1D+E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=X8pvcmTHwIRH0+4izI0TjgR8sfIRkuxnTHfMZzblOT4a3y8IMs74XyARghHp029+7
-         mnsCqXfV+pibXiy7bTkxW1DMbQ+M1x3ziV0FWhiVm43lLK5auqUz6Bils7UUoNhWBQ
-         4VVAe5ANsa9LBPVCE9A9HNvb+eEft9sHqWbklZWzbE29ZVClB4EMAfG5S5koKq5TYi
-         JrNGieTGU6Y2Oqhc6PlXbWfF3EiH0iuGGXCQdqA9B9sphxjIpHVzAEJHS7x7fkzE6I
-         AcLzi2HdT1QH5YSWmILbOQcewhaWMTh12Nxe3Xysy+3SMn8o334Pnlc3Mp+9qy0t8T
-         AcvxEuX4O4ypg==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231795AbiKBQOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 12:14:25 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01362CC81
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 09:12:15 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id i12so12804134qvs.2
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 09:12:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+k46DBLcoCo3dRtPWgKGi27HQ6890qJkjOHhJG/OTD4=;
+        b=lpZHL444MjaOGE7ePEMjfaD14yNrbOlNu054yVz8GPhDIzb+2HJAG8MOD68DWWCWp+
+         8W04hunQV6twCx2v1SY+9oBptITK1UBYixs3+5dMZf7ucBlekZGDkIxvwD5sJDtOUNf4
+         lDVSQIB3TgRshOBNYE/6f7pONQQVQ7VfyzQU3Ezu68cNplD4sg1bgI3n5iZtnJdAFq1a
+         e5ROv6coqDBGKeAferYVuXMGdAExxgqWTxxC7bG5DwbeeRhEgevFKZO1klsVa8hzAxPY
+         j9f+B7AMEL9CbNqMlZWQIhmOTJHmt7P6fycs3aDIbhAj1WkoKifDM1XZ4uuefDpLMszu
+         LKcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+k46DBLcoCo3dRtPWgKGi27HQ6890qJkjOHhJG/OTD4=;
+        b=1Z+6bHRazqk6FU6eisbxxIaUf+7mCaBy53rCkQTeyDY6xNFmbT9QyFOCBs69n5fK58
+         f/iJmLKnrTdfA6kJ+A+UGNkQKj+PXh7ApU2sIS7O7JIULZyVmH8GV42pTYYBgSMV7bbX
+         7FHopvPu8RUI2eT4D2hfP8qlHNr7C3jjAog3wQsIPmSpoFRO6aTQaaO/GltDGe6ECWI6
+         KIdCZqt8M1C4cm+LuoMenFiBnwW4x+m+ydEltpBmxcZOm6O1lp575vHkkL1XhPT/nFT/
+         CbFas5javHoyfZ7vTn+uUKiikok0YRhEwJgma1rUN5rl3fS5JVUso1qST22Tv+JnCAg1
+         LS4A==
+X-Gm-Message-State: ACrzQf3SzidiYBcrkrnP3QOcoAfgjFX9NLjtzGzj7ITybgfmXO/zlma9
+        SWUssXvg9CQlN57XZs3xlDecNw==
+X-Google-Smtp-Source: AMsMyM6YejYkb7b1cyNSYaRPfUs2k1VtqaMOpYa6/fCXbQyE837qgZ9RjnbvgAnAyXvdQlL9agXLJQ==
+X-Received: by 2002:a05:6214:300e:b0:4bb:717e:72a with SMTP id ke14-20020a056214300e00b004bb717e072amr21460970qvb.15.1667405534760;
+        Wed, 02 Nov 2022 09:12:14 -0700 (PDT)
+Received: from krzk-bin.. ([2601:586:5000:570:28d9:4790:bc16:cc93])
+        by smtp.gmail.com with ESMTPSA id s2-20020ac85282000000b0038d9555b580sm6778985qtn.44.2022.11.02.09.12.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Nov 2022 09:12:14 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Kees Cook <keescook@chromium.org>,
-        Sami Tolvanen <samitolvanen@google.com>, llvm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] net: ethernet: ti: Fix return type of netcp_ndo_start_xmit()
-Date:   Wed,  2 Nov 2022 09:09:33 -0700
-Message-Id: <20221102160933.1601260-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: net: nxp,sja1105: document spi-cpol
+Date:   Wed,  2 Nov 2022 12:12:11 -0400
+Message-Id: <20221102161211.51139-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
-indirect call targets are validated against the expected function
-pointer prototype to make sure the call target is valid to help mitigate
-ROP attacks. If they are not identical, there is a failure at run time,
-which manifests as either a kernel panic or thread getting killed. A
-proposed warning in clang aims to catch these at compile time, which
-reveals:
+Some boards use SJA1105 Ethernet Switch with SPI CPOL, so document this
+to fix dtbs_check warnings:
 
-  drivers/net/ethernet/ti/netcp_core.c:1944:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = netcp_ndo_start_xmit,
-                                    ^~~~~~~~~~~~~~~~~~~~
-  1 error generated.
+  arch/arm64/boot/dts/freescale/fsl-lx2160a-bluebox3.dtb: ethernet-switch@0: Unevaluated properties are not allowed ('spi-cpol' was unexpected)
 
-->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of
-netcp_ndo_start_xmit() to match the prototype's to resolve the warning
-and CFI failure.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1750
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/net/ethernet/ti/netcp_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
-index aba70bef4894..9eb9eaff4dc9 100644
---- a/drivers/net/ethernet/ti/netcp_core.c
-+++ b/drivers/net/ethernet/ti/netcp_core.c
-@@ -1261,7 +1261,7 @@ static int netcp_tx_submit_skb(struct netcp_intf *netcp,
- }
+diff --git a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+index 1e26d876d146..a73905a50ee5 100644
+--- a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+@@ -36,6 +36,8 @@ properties:
+   reg:
+     maxItems: 1
  
- /* Submit the packet */
--static int netcp_ndo_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+static netdev_tx_t netcp_ndo_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- {
- 	struct netcp_intf *netcp = netdev_priv(ndev);
- 	struct netcp_stats *tx_stats = &netcp->stats;
-
-base-commit: 9abf2313adc1ca1b6180c508c25f22f9395cc780
++  spi-cpol: true
++
+   # Optional container node for the 2 internal MDIO buses of the SJA1110
+   # (one for the internal 100base-T1 PHYs and the other for the single
+   # 100base-TX PHY). The "reg" property does not have physical significance.
 -- 
-2.38.1
+2.34.1
 
