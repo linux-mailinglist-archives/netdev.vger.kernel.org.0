@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E9761572C
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 02:59:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8219561576A
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 03:15:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiKBB66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 21:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
+        id S229902AbiKBCPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 22:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229964AbiKBB64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 21:58:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC33D1400C
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 18:58:54 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N296L24vkz15MJ9;
-        Wed,  2 Nov 2022 09:58:50 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 2 Nov
- 2022 09:58:52 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <dlezcano@fr.ibm.com>, <benjamin.thery@bull.net>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net] ipv6: fix WARNING in ip6_route_net_exit_late()
-Date:   Wed, 2 Nov 2022 10:06:10 +0800
-Message-ID: <20221102020610.351330-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229534AbiKBCPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 22:15:19 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8504F658D;
+        Tue,  1 Nov 2022 19:15:16 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N29TC38zzzmVVp;
+        Wed,  2 Nov 2022 10:15:11 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 10:15:14 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 10:15:14 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] ipvlan: minor optimization for ipvlan outbound process
+Date:   Wed, 2 Nov 2022 10:15:49 +0800
+Message-ID: <20221102021549.12213-1-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -46,60 +48,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During the initialization of ip6_route_net_init_late(), if file
-ipv6_route or rt6_stats fails to be created, the initialization is
-successful by default. Therefore, the ipv6_route or rt6_stats file
-doesn't be found during the remove in ip6_route_net_exit_late(). It
-will cause WRNING.
+Avoid some local variable initialization and remove some
+redundant assignment in ipvlan outbound process.
 
-The following is the stack information:
-name 'rt6_stats'
-WARNING: CPU: 0 PID: 9 at fs/proc/generic.c:712 remove_proc_entry+0x389/0x460
-Modules linked in:
-Workqueue: netns cleanup_net
-RIP: 0010:remove_proc_entry+0x389/0x460
-PKRU: 55555554
-Call Trace:
-<TASK>
-ops_exit_list+0xb0/0x170
-cleanup_net+0x4ea/0xb00
-process_one_work+0x9bf/0x1710
-worker_thread+0x665/0x1080
-kthread+0x2e4/0x3a0
-ret_from_fork+0x1f/0x30
-</TASK>
-
-Fixes: cdb1876192db ("[NETNS][IPV6] route6 - create route6 proc files for the namespace")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- net/ipv6/route.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/ipvlan/ipvlan_core.c | 56 +++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 30 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 69252eb462b2..2f355f0ec32a 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -6555,10 +6555,16 @@ static void __net_exit ip6_route_net_exit(struct net *net)
- static int __net_init ip6_route_net_init_late(struct net *net)
- {
- #ifdef CONFIG_PROC_FS
--	proc_create_net("ipv6_route", 0, net->proc_net, &ipv6_route_seq_ops,
--			sizeof(struct ipv6_route_iter));
--	proc_create_net_single("rt6_stats", 0444, net->proc_net,
--			rt6_stats_seq_show, NULL);
-+	if (!proc_create_net("ipv6_route", 0, net->proc_net,
-+			     &ipv6_route_seq_ops,
-+			     sizeof(struct ipv6_route_iter)))
-+		return -ENOMEM;
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index bb1c298c1e78..2b715035380b 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -417,7 +417,7 @@ static int ipvlan_process_v4_outbound(struct sk_buff *skb)
+ 	struct net_device *dev = skb->dev;
+ 	struct net *net = dev_net(dev);
+ 	struct rtable *rt;
+-	int err, ret = NET_XMIT_DROP;
++	int err;
+ 	struct flowi4 fl4 = {
+ 		.flowi4_oif = dev->ifindex,
+ 		.flowi4_tos = RT_TOS(ip4h->tos),
+@@ -438,15 +438,14 @@ static int ipvlan_process_v4_outbound(struct sk_buff *skb)
+ 	skb_dst_set(skb, &rt->dst);
+ 	err = ip_local_out(net, skb->sk, skb);
+ 	if (unlikely(net_xmit_eval(err)))
+-		dev->stats.tx_errors++;
+-	else
+-		ret = NET_XMIT_SUCCESS;
+-	goto out;
++		goto tx_errors_inc;
 +
-+	if (!proc_create_net_single("rt6_stats", 0444, net->proc_net,
-+				    rt6_stats_seq_show, NULL)) {
-+		remove_proc_entry("ipv6_route", net->proc_net);
-+		return -ENOMEM;
-+	}
- #endif
- 	return 0;
++	return NET_XMIT_SUCCESS;
+ err:
+-	dev->stats.tx_errors++;
+ 	kfree_skb(skb);
+-out:
+-	return ret;
++tx_errors_inc:
++	dev->stats.tx_errors++;
++	return NET_XMIT_DROP;
  }
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+@@ -456,7 +455,7 @@ static int ipvlan_process_v6_outbound(struct sk_buff *skb)
+ 	struct net_device *dev = skb->dev;
+ 	struct net *net = dev_net(dev);
+ 	struct dst_entry *dst;
+-	int err, ret = NET_XMIT_DROP;
++	int err;
+ 	struct flowi6 fl6 = {
+ 		.flowi6_oif = dev->ifindex,
+ 		.daddr = ip6h->daddr,
+@@ -469,22 +468,23 @@ static int ipvlan_process_v6_outbound(struct sk_buff *skb)
+ 
+ 	dst = ip6_route_output(net, NULL, &fl6);
+ 	if (dst->error) {
+-		ret = dst->error;
++		err = dst->error;
+ 		dst_release(dst);
+ 		goto err;
+ 	}
+ 	skb_dst_set(skb, dst);
+ 	err = ip6_local_out(net, skb->sk, skb);
+-	if (unlikely(net_xmit_eval(err)))
+-		dev->stats.tx_errors++;
+-	else
+-		ret = NET_XMIT_SUCCESS;
+-	goto out;
++	if (unlikely(net_xmit_eval(err))) {
++		err = NET_XMIT_DROP;
++		goto tx_errors_inc;
++	}
++
++	return NET_XMIT_SUCCESS;
+ err:
+-	dev->stats.tx_errors++;
+ 	kfree_skb(skb);
+-out:
+-	return ret;
++tx_errors_inc:
++	dev->stats.tx_errors++;
++	return err;
+ }
+ #else
+ static int ipvlan_process_v6_outbound(struct sk_buff *skb)
+@@ -495,8 +495,6 @@ static int ipvlan_process_v6_outbound(struct sk_buff *skb)
+ 
+ static int ipvlan_process_outbound(struct sk_buff *skb)
+ {
+-	int ret = NET_XMIT_DROP;
+-
+ 	/* The ipvlan is a pseudo-L2 device, so the packets that we receive
+ 	 * will have L2; which need to discarded and processed further
+ 	 * in the net-ns of the main-device.
+@@ -511,7 +509,7 @@ static int ipvlan_process_outbound(struct sk_buff *skb)
+ 				"Dropped {multi|broad}cast of type=[%x]\n",
+ 				ntohs(skb->protocol));
+ 			kfree_skb(skb);
+-			goto out;
++			return NET_XMIT_DROP;
+ 		}
+ 
+ 		skb_pull(skb, sizeof(*ethh));
+@@ -520,16 +518,14 @@ static int ipvlan_process_outbound(struct sk_buff *skb)
+ 	}
+ 
+ 	if (skb->protocol == htons(ETH_P_IPV6))
+-		ret = ipvlan_process_v6_outbound(skb);
++		return ipvlan_process_v6_outbound(skb);
+ 	else if (skb->protocol == htons(ETH_P_IP))
+-		ret = ipvlan_process_v4_outbound(skb);
+-	else {
+-		pr_warn_ratelimited("Dropped outbound packet type=%x\n",
+-				    ntohs(skb->protocol));
+-		kfree_skb(skb);
+-	}
+-out:
+-	return ret;
++		return ipvlan_process_v4_outbound(skb);
++
++	pr_warn_ratelimited("Dropped outbound packet type=%x\n",
++			    ntohs(skb->protocol));
++	kfree_skb(skb);
++	return NET_XMIT_DROP;
+ }
+ 
+ static void ipvlan_multicast_enqueue(struct ipvl_port *port,
 -- 
-2.17.1
+2.33.0
 
