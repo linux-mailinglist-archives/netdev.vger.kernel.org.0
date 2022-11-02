@@ -2,55 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F4B61633C
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:00:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 287EE6162A4
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 13:23:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbiKBNAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 09:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
+        id S230283AbiKBMXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 08:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbiKBNAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:00:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B84329C9D;
-        Wed,  2 Nov 2022 06:00:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7719A61944;
-        Wed,  2 Nov 2022 13:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CAC0EC433B5;
-        Wed,  2 Nov 2022 13:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667394018;
-        bh=10Z6uXDE6nv9we1caDEijEa5FDJ4Ne5WNxQT8wsxKq0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bdVHI4Rc1FXA/QJuXfbM4fFxr7sbY8APi129r0O+8pnK1ATFKTzkn0K5KvjC/JLqA
-         TNvVb/Yq9MhD0BBL2it1zqDCH/KFO6zfDoeK8eojkVwtjMXu2HFnhGpl6GpO0TBPGQ
-         dAXsj2HiMPWu1ZZryImhk+JZT8hkDijfB35OXqZj7Vn/UgPI+sfwftL/ijGa+7EByc
-         VjJWi79wUvdPEOn/Cv2IKyS9NOnCy6pdaWt5SHrg+mmlHQPclvuK21rgN+dKg+fgp2
-         dYO7up3BMmGKk9oyTE1rAqyBMvVfSN6gr/ymzgG3gbteM3OTT0mBVNjDtmUkKaYKTj
-         Ms0BBvXO2PXEg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AE52FE270D2;
-        Wed,  2 Nov 2022 13:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230139AbiKBMXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:23:19 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE6228729;
+        Wed,  2 Nov 2022 05:23:18 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N2Qym37bnzbc7c;
+        Wed,  2 Nov 2022 20:23:12 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 2 Nov
+ 2022 20:23:15 +0800
+From:   Lu Wei <luwei32@huawei.com>
+To:     <edumazet@google.com>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <xemul@parallels.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [patch net v3] tcp: prohibit TCP_REPAIR_OPTIONS if data was already sent
+Date:   Wed, 2 Nov 2022 21:28:11 +0800
+Message-ID: <20221102132811.70858-1-luwei32@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v7 0/3] net: ethernet: renesas: Add support for "Ethernet
- Switch"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166739401870.9062.8744215770877095925.git-patchwork-notify@kernel.org>
-Date:   Wed, 02 Nov 2022 13:00:18 +0000
-References: <20221031123242.2528208-1-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20221031123242.2528208-1-yoshihiro.shimoda.uh@renesas.com>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,33 +45,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+If setsockopt with option name of TCP_REPAIR_OPTIONS and opt_code
+of TCPOPT_SACK_PERM is called to enable sack after data is sent
+and before data is acked, it will trigger a warning in function
+tcp_verify_left_out() as follows:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+============================================
+WARNING: CPU: 8 PID: 0 at net/ipv4/tcp_input.c:2132
+tcp_timeout_mark_lost+0x154/0x160
+tcp_enter_loss+0x2b/0x290
+tcp_retransmit_timer+0x50b/0x640
+tcp_write_timer_handler+0x1c8/0x340
+tcp_write_timer+0xe5/0x140
+call_timer_fn+0x3a/0x1b0
+__run_timers.part.0+0x1bf/0x2d0
+run_timer_softirq+0x43/0xb0
+__do_softirq+0xfd/0x373
+__irq_exit_rcu+0xf6/0x140
 
-On Mon, 31 Oct 2022 21:32:39 +0900 you wrote:
-> This patch series is based on next-20221027.
-> 
-> Add initial support for Renesas "Ethernet Switch" device of R-Car S4-8.
-> The hardware has features about forwarding for an ethernet switch
-> device. But, for now, it acts as ethernet controllers so that any
-> forwarding offload features are not supported. So, any switchdev
-> header files and DSA framework are not used.
-> 
-> [...]
+The warning is caused in the following steps:
+1. a socket named socketA is created
+2. socketA enters repair mode without build a connection
+3. socketA calls connect() and its state is changed to TCP_ESTABLISHED
+   directly
+4. socketA leaves repair mode
+5. socketA calls sendmsg() to send data, packets_out and sack_outs(dup
+   ack receives) increase
+6. socketA enters repair mode again
+7. socketA calls setsockopt with TCPOPT_SACK_PERM to enable sack
+8. retransmit timer expires, it calls tcp_timeout_mark_lost(), lost_out
+   increases
+9. sack_outs + lost_out > packets_out triggers since lost_out and
+   sack_outs increase repeatly
 
-Here is the summary with links:
-  - [v7,1/3] dt-bindings: net: renesas: Document Renesas Ethernet Switch
-    https://git.kernel.org/netdev/net-next/c/f9edd82774c0
-  - [v7,2/3] net: ethernet: renesas: Add support for "Ethernet Switch"
-    https://git.kernel.org/netdev/net-next/c/3590918b5d07
-  - [v7,3/3] net: ethernet: renesas: rswitch: Add R-Car Gen4 gPTP support
-    https://git.kernel.org/netdev/net-next/c/6c6fa1a00ad3
+In function tcp_timeout_mark_lost(), tp->sacked_out will be cleared if
+Step7 not happen and the warning will not be triggered. As suggested by
+Denis and Eric, TCP_REPAIR_OPTIONS should be prohibited if data was
+already sent. So this patch checks tp->segs_out, only TCP_REPAIR_OPTIONS
+can be set only if tp->segs_out is 0.
 
-You are awesome, thank you!
+socket-tcp tests in CRIU has been tested as follows:
+$ sudo ./test/zdtm.py run -t zdtm/static/socket-tcp*  --keep-going \
+       --ignore-taint
+
+socket-tcp* represent all socket-tcp tests in test/zdtm/static/.
+
+Fixes: b139ba4e90dc ("tcp: Repair connection-time negotiated parameters")
+Signed-off-by: Lu Wei <luwei32@huawei.com>
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index ef14efa1fb70..1f5cc32cf0cc 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3647,7 +3647,7 @@ int do_tcp_setsockopt(struct sock *sk, int level, int optname,
+ 	case TCP_REPAIR_OPTIONS:
+ 		if (!tp->repair)
+ 			err = -EINVAL;
+-		else if (sk->sk_state == TCP_ESTABLISHED)
++		else if (sk->sk_state == TCP_ESTABLISHED && !tp->segs_out)
+ 			err = tcp_repair_options_est(sk, optval, optlen);
+ 		else
+ 			err = -EPERM;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
