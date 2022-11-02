@@ -2,263 +2,442 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 692306156CE
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 01:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 380E86156CF
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 01:58:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbiKBA5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Nov 2022 20:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
+        id S229894AbiKBA6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Nov 2022 20:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiKBA5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 20:57:15 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EA01EEE8
-        for <netdev@vger.kernel.org>; Tue,  1 Nov 2022 17:57:13 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id d26so41352442eje.10
-        for <netdev@vger.kernel.org>; Tue, 01 Nov 2022 17:57:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QQMyneVlInu+hiSAQW7mAyB866pX2mTK+T4SHb+XFa4=;
-        b=EhTbSLh2Wju8b8OfMGtKclpkj6DttCwIMp1DOAQW0k/9IdP4hz60FiTXu+BZIpOxPa
-         DBLFXST5dcuAKgC7uKHaaWEW3fc92/rQHOEqF3tORMJu++9EUpCiBh7WxtkTULkJNq7j
-         WzoMG8daWaOdr+Qb+AyQtFqWT7VZA8Ro3+XYpLFQVa9Bg2GOIuHaYbtgn++kdXlu2coQ
-         ELMI1amaJeUGX992RETyPEnryP8zDs3y5eMJi6xM5DvpExTUcaedgtxJWV/MkNF8K7rB
-         +q2uEwrOau1E0xbji/zQ9gPypoqm4lGAmVtnvwjDCclZ/oVMfObUe8CSXXkEjqeKdhIn
-         X5sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QQMyneVlInu+hiSAQW7mAyB866pX2mTK+T4SHb+XFa4=;
-        b=lLG9kYAPZIjx7i7X9RVtdGPGxpQO/oZwXUNSgFBV4b4pGZjupN9b/ZoIM9C5P03HsI
-         NuOs2WEjINjCAbsA2F3Rgu/CMx6ocoAf0Rmnt2ltdRIy4mA7UH9grq3BeXbwxvonJRQC
-         KdSe5GFoMAtVAn9XDIND+trb+M+hyY9IW9dW9hZasTpqnV9gEjXrrQoeX1lVesfilv0x
-         /4FrvJwrX7mLu4tPPZkBxYf3fkH9LmsCN4vgKX+wmTXOnjjZ+BJOMVQblHBV54OLxEtz
-         6ndLKvJgFil1wGzFmUtVcYhLdJctSEosvEcawMIECt209Z4H5IJX11/h2dYVHzZJFrHg
-         gyBw==
-X-Gm-Message-State: ACrzQf3RbdcR7YrZ5F53ZzZ+VGwARMuRZ1JdZqs9w5XdhFmBFF2pQZJa
-        2Av9Lb1T4vwFUyJcwDKPCXZMhJlCVUc2kvWn8uAr1piSDU4=
-X-Google-Smtp-Source: AMsMyM5dkeJa6N5iIKOxwyUmzws+0TnRSYd870ukI8pDzJXBJ/VNd/T2UxbYTRhlz1kNLDnHiKrby7FZ/BTtqYZ9Xpw=
-X-Received: by 2002:a17:907:a4e:b0:77d:94d:8148 with SMTP id
- be14-20020a1709070a4e00b0077d094d8148mr20070138ejc.607.1667350632225; Tue, 01
- Nov 2022 17:57:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221029001249.86337-1-kuniyu@amazon.com> <7083e3fc-a3dd-4b3a-22bf-b68d22494898@linux.dev>
-In-Reply-To: <7083e3fc-a3dd-4b3a-22bf-b68d22494898@linux.dev>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Wed, 2 Nov 2022 00:57:00 +0000
-Message-ID: <CAJnrk1b6=BBEAZTtMPvkqzqjrJrcDo7-dfFvJiYg_Tdd+uShLA@mail.gmail.com>
-Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        with ESMTP id S229528AbiKBA6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Nov 2022 20:58:22 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086E2CF7;
+        Tue,  1 Nov 2022 17:58:21 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1oq251-0007xi-Mu; Wed, 02 Nov 2022 01:58:07 +0100
+Date:   Wed, 2 Nov 2022 00:58:01 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Martin KaFai Lau <martin.lau@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4] net: ethernet: mediatek: ppe: add support for flow
+ accounting
+Message-ID: <Y2HAmYYPd77dz+K5@makrotopia.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 1, 2022 at 11:29 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 10/28/22 5:12 PM, Kuniyuki Iwashima wrote:
-> > Hi,
-> >
-> > I want to discuss bhash2 and WARN_ON() being fired every day this month
-> > on my syzkaller instance without repro.
-> >
-> >    WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> >    ...
-> >    inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
-> >    inet_listen (net/ipv4/af_inet.c:228)
-> >    __sys_listen (net/socket.c:1810)
-> >    __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
-> >    do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> >    entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> >
-> > For the very first implementation of bhash2, there was a similar report
-> > hitting the same WARN_ON().  The fix was to update the bhash2 bucket when
-> > the kernel changes sk->sk_rcv_saddr from INADDR_ANY.  Then, syzbot has a
-> > repro, so we can indeed confirm that it no longer triggers the warning on
-> > the latest kernel.
-> >
-> >    https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
-> >
-> > However, Mat reported at that time that there were at least two variants,
-> > the latter being the same as mine.
-> >
-> >    https://lore.kernel.org/netdev/4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com/
-> >    https://lore.kernel.org/netdev/23d8e9f4-016-7de1-9737-12c3146872ca@linux.intel.com/
-> >
-> > This week I started looking into this issue and finally figured out
-> > why we could not catch all cases with a single repro.
-> >
-> > Please see the source addresses of s2/s3 below after connect() fails.
-> > The s2 case is another variant of the first syzbot report, which has
-> > been already _fixed_.  And the s3 case is a repro for the issue that
-> > Mat and I saw.
-> >
-> >    # sysctl -w net.ipv4.tcp_syn_retries=1
-> >    net.ipv4.tcp_syn_retries = 1
-> >    # python3
-> >    >>> from socket import *
-> >    >>>
-> >    >>> s1 = socket()
-> >    >>> s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >    >>> s1.bind(('0.0.0.0', 10000))
-> >    >>> s1.connect(('127.0.0.1', 10000))
-> >    >>>
-> >    >>> s2 = socket()
-> >    >>> s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >    >>> s2.bind(('0.0.0.0', 10000))
-> >    >>> s2
-> >    <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >    >>>
-> >    >>> s2.connect(('127.0.0.1', 10000))
-> >    Traceback (most recent call last):
-> >      File "<stdin>", line 1, in <module>
-> >    OSError: [Errno 99] Cannot assign requested address
-> >    >>>
-> >    >>> s2
-> >    <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 10000)>
-> >                                                                                                     ^^^ ???
-> >    >>> s3 = socket()
-> >    >>> s3.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >    >>> s3.bind(('0.0.0.0', 10000))
-> >    >>> s3
-> >    <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >    >>>
-> >    >>> s3.connect(('0.0.0.1', 1))
-> >    Traceback (most recent call last):
-> >      File "<stdin>", line 1, in <module>
-> >    TimeoutError: [Errno 110] Connection timed out
-> >    >>>
-> >    >>> s3
-> >    <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >
-> > We can fire the WARN_ON() by s3.listen().
-> >
-> >    >>> s3.listen()
-> >    [ 1096.845905] ------------[ cut here ]------------
-> >    [ 1096.846290] WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
-> >
-> > In the s3 case, connect() resets sk->sk_rcv_saddr to INADDR_ANY without
-> > updating the bhash2 bucket; OTOH sk has the correct non-NULL bhash bucket.
-> > So, when we call listen() for s3, inet_csk_get_port() does not call
-> > inet_bind_hash() and the WARN_ON() for bhash2 fires.
-> >
-> >    if (!inet_csk(sk)->icsk_bind_hash)
-> >       inet_bind_hash(sk, tb, tb2, port);
-> >    WARN_ON(inet_csk(sk)->icsk_bind_hash != tb);
-> >    WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
-> >
-> > Here I think the s2 case also _should_ trigger WARN_ON().  The issue
-> > seems to be fixed, but it's just because we forgot to _fix_ the source
-> > address in error paths after inet6?_hash_connect() in tcp_v[46]_connect().
-> > (Of course, DCCP as well).
-> >
-> > In the s3 case, connect() falls into a different path.  We reach the
-> > sock_error label in __inet_stream_connect() and call sk_prot->disconnect(),
-> > which resets sk->sk_rcv_saddr.
-> >
-> > Then, there could be two subsequent issues.
-> >
-> >    * listen() leaks a newly allocated bhash2 bucket
-> >
-> >    * In inet_put_port(), inet_bhashfn_portaddr() computes a wrong hash for
-> >      inet_csk(sk)->icsk_bind2_hash, resulting in list corruption.
-> >
-> > We can fix these easily but it still leaves inconsistent sockets in bhash2,
-> > so we need to fix the root cause.
-> >
-> > As a side note, this issue only happens when we bind() only port before
-> > connect().  If we do not bind() port, tcp_set_state(sk, TCP_CLOSE) calls
-> > inet_put_port() and unhashes the sk from bhash2.
-> >
-> >
-> > At first, I applied the patch below so that both sk2 and sk3 trigger
-> > WARN_ON().  Then, I tried two approaches:
-> >
-> >    * Fix up the bhash2 entry when calling sk_rcv_saddr
-> >
-> >    * Change the bhash2 entry only when connect() succeeds
-> >
-> > The former does not work when we run out of memory.  When we change saddr
-> > from INADDR_ANY, inet_bhash2_update_saddr() could free (INADDR_ANY, port)
-> > bhash2 bucket.  Then, we possibly could not allocate it again when
-> > restoring saddr in the failure path.
-> >
-> > The latter does not work when a sk is in non-blocking mode.  In this case,
-> > a user might not call the second connect() to fix up the bhash2 bucket.
-> >
-> >    >>> s4 = socket()
-> >    >>> s4.bind(('0.0.0.0', 10000))
-> >    >>> s4.setblocking(False)
-> >    >>> s4
-> >    <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >
-> >    >>> s4.connect(('0.0.0.1', 1))
-> >    Traceback (most recent call last):
-> >      File "<stdin>", line 1, in <module>
-> >    BlockingIOError: [Errno 115] Operation now in progress
-> >    >>> s4
-> >    <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('10.0.2.15', 10000)>
-> >
-> > Also, the former approach does not work for the non-blocking case.  Let's
-> > say the second connect() fails.  What if we fail to allocate an INADDR_ANY
-> > bhash2 bucket?  We have to change saddr to INADDR_ANY but cannot.... but
-> > the connect() actually failed....??
-> >
-> >    >>> s4.connect(('0.0.0.1', 1))
-> >    Traceback (most recent call last):
-> >      File "<stdin>", line 1, in <module>
-> >    ConnectionRefusedError: [Errno 111] Connection refused
-> >    >>> s4
-> >    <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >
-> >
-> > Now, I'm thinking bhash2 bucket needs a refcnt not to be freed while
-> > refcnt is greater than 1.  And we need to change the conflict logic
-> > so that the kernel ignores empty bhash2 bucket.  Such changes could
-> > be big for the net tree, but the next LTS will likely be v6.1 which
-> > has bhash2.
-> >
-> > What do you think is the best way to fix the issue?
->
-> Thanks for the repro script and the detailed analysis on the issue.  iiuc, this
-> is limited to the sk that was bind() to ADDR_ANY:port-1234 (or
-> !SOCK_BINDADDR_LOCK).  Does it make sense to avoid adding the sk with
-> ADDR_ANY:port-1234 to bhash2 at all?  From inet_use_bhash2_on_bind(), it does
-> not seem ADDR_ANY will use bhash2.  or I have missed some cases?
->
+The PPE units found in MT7622 and newer support packet and byte
+accounting of hw-offloaded flows. Add support for reading those
+counters as found in MediaTek's SDK[1].
 
-Thanks for your analysis and your repro instructions, Kuniyuki. And
-apologies for being absent from bhash2 these past ~6 weeks, I've been
-on PTO traveling and should have communicated that better. Thanks
-Martin for taking care of bhash2 during this time.
+[1]: https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/bc6a6a375c800dc2b80e1a325a2c732d1737df92
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+v4: declare function mtk_mib_entry_read as static
+v3: don't bother to set 'false' values in any zero-initialized struct
+    use mtk_foe_entry_ib2
+    both changes were requested by Felix Fietkau
 
-For avoiding adding sockets with ADDR_ANY to the bhash2 hashtable, I
-think the issue is that other sockets need to detect whether there's a
-bind conflict against an ADDR_ANY socket on that port, so if ADDR_ANY
-is not hashed to bhash2, then on binds, we would have to iterate
-through the regular bhash table to check against ADDR_ANY, where the
-bhash table could be very long if there are many sockets bound to that
-port.
+v2: fix wrong variable name in return value check spotted by Denis Kirjanov
 
-I intend to look deeply into this issue this weekend when I fly back
-home and have my dev environment accessible. Kuniyuki, you mentioned
-that the next LTS will likely be v6.1 which has bhash2 - do you know
-what the deadline for this is for getting the fix in by?
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   7 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |   1 +
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 110 +++++++++++++++++-
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  23 +++-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |   7 ++
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +++
+ 7 files changed, 166 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 789268b15106ec..c059315d9c080d 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -4140,7 +4140,9 @@ static int mtk_probe(struct platform_device *pdev)
+ 			u32 ppe_addr = eth->soc->reg_map->ppe_base + i * 0x400;
+ 
+ 			eth->ppe[i] = mtk_ppe_init(eth, eth->base + ppe_addr,
+-						   eth->soc->offload_version, i);
++						   eth->soc->offload_version, i,
++						   eth->soc->has_accounting);
++
+ 			if (!eth->ppe[i]) {
+ 				err = -ENOMEM;
+ 				goto err_free_dev;
+@@ -4259,6 +4261,7 @@ static const struct mtk_soc_data mt7622_data = {
+ 	.required_pctl = false,
+ 	.offload_version = 2,
+ 	.hash_offset = 2,
++	.has_accounting = true,
+ 	.foe_entry_size = sizeof(struct mtk_foe_entry) - 16,
+ 	.txrx = {
+ 		.txd_size = sizeof(struct mtk_tx_dma),
+@@ -4296,6 +4299,7 @@ static const struct mtk_soc_data mt7629_data = {
+ 	.hw_features = MTK_HW_FEATURES,
+ 	.required_clks = MT7629_CLKS_BITMAP,
+ 	.required_pctl = false,
++	.has_accounting = true,
+ 	.txrx = {
+ 		.txd_size = sizeof(struct mtk_tx_dma),
+ 		.rxd_size = sizeof(struct mtk_rx_dma),
+@@ -4315,6 +4319,7 @@ static const struct mtk_soc_data mt7986_data = {
+ 	.required_pctl = false,
+ 	.hash_offset = 4,
+ 	.foe_entry_size = sizeof(struct mtk_foe_entry),
++	.has_accounting = true,
+ 	.txrx = {
+ 		.txd_size = sizeof(struct mtk_tx_dma_v2),
+ 		.rxd_size = sizeof(struct mtk_rx_dma_v2),
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 589f27ddc40163..6c2a0a1826c3c7 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -993,6 +993,7 @@ struct mtk_soc_data {
+ 	u8		hash_offset;
+ 	u16		foe_entry_size;
+ 	netdev_features_t hw_features;
++	bool		has_accounting;
+ 	struct {
+ 		u32	txd_size;
+ 		u32	rxd_size;
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 2d8ca99f2467ff..cad7bb2c3f00d2 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -74,6 +74,46 @@ static int mtk_ppe_wait_busy(struct mtk_ppe *ppe)
+ 	return ret;
+ }
+ 
++static int mtk_ppe_mib_wait_busy(struct mtk_ppe *ppe)
++{
++	int ret;
++	u32 val;
++
++	ret = readl_poll_timeout(ppe->base + MTK_PPE_MIB_SER_CR, val,
++				 !(val & MTK_PPE_MIB_SER_CR_ST),
++				 20, MTK_PPE_WAIT_TIMEOUT_US);
++
++	if (ret)
++		dev_err(ppe->dev, "MIB table busy");
++
++	return ret;
++}
++
++static int mtk_mib_entry_read(struct mtk_ppe *ppe, u16 index, u64 *bytes, u64 *packets)
++{
++	u32 val, cnt_r0, cnt_r1, cnt_r2;
++	u32 byte_cnt_low, byte_cnt_high, pkt_cnt_low, pkt_cnt_high;
++
++	val = FIELD_PREP(MTK_PPE_MIB_SER_CR_ADDR, index) | MTK_PPE_MIB_SER_CR_ST;
++	ppe_w32(ppe, MTK_PPE_MIB_SER_CR, val);
++
++	if (mtk_ppe_mib_wait_busy(ppe))
++		return -ETIMEDOUT;
++
++	cnt_r0 = readl(ppe->base + MTK_PPE_MIB_SER_R0);
++	cnt_r1 = readl(ppe->base + MTK_PPE_MIB_SER_R1);
++	cnt_r2 = readl(ppe->base + MTK_PPE_MIB_SER_R2);
++
++	byte_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R0_BYTE_CNT_LOW, cnt_r0);
++	byte_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R1_BYTE_CNT_HIGH, cnt_r1);
++	pkt_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R1_PKT_CNT_LOW, cnt_r1);
++	pkt_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R2_PKT_CNT_HIGH, cnt_r2);
++	*bytes = ((u64)byte_cnt_high << 32) | byte_cnt_low;
++	*packets = (pkt_cnt_high << 16) | pkt_cnt_low;
++
++	return 0;
++}
++
+ static void mtk_ppe_cache_clear(struct mtk_ppe *ppe)
+ {
+ 	ppe_set(ppe, MTK_PPE_CACHE_CTL, MTK_PPE_CACHE_CTL_CLEAR);
+@@ -438,6 +478,13 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
+ 		hwe->ib1 &= ~MTK_FOE_IB1_STATE;
+ 		hwe->ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE, MTK_FOE_STATE_INVALID);
+ 		dma_wmb();
++		if (ppe->accounting) {
++			struct mtk_foe_accounting *acct;
++
++			acct = ppe->acct_table + entry->hash * sizeof(*acct);
++			acct->packets = 0;
++			acct->bytes = 0;
++		}
+ 	}
+ 	entry->hash = 0xffff;
+ 
+@@ -545,6 +592,9 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
+ 	wmb();
+ 	hwe->ib1 = entry->ib1;
+ 
++	if (ppe->accounting)
++		*mtk_foe_entry_ib2(eth, hwe) |= MTK_FOE_IB2_MIB_CNT;
++
+ 	dma_wmb();
+ 
+ 	mtk_ppe_cache_clear(ppe);
+@@ -710,14 +760,42 @@ int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
+ 	return __mtk_foe_entry_idle_time(ppe, entry->data.ib1);
+ }
+ 
++struct mtk_foe_accounting *mtk_foe_entry_get_mib(struct mtk_ppe *ppe, u32 index,
++						 struct mtk_foe_accounting *diff)
++{
++	struct mtk_foe_accounting *acct;
++	int size = sizeof(struct mtk_foe_accounting);
++	u64 bytes, packets;
++
++	if (!ppe->accounting)
++		return NULL;
++
++	if (mtk_mib_entry_read(ppe, index, &bytes, &packets))
++		return NULL;
++
++	acct = ppe->acct_table + index * size;
++
++	acct->bytes += bytes;
++	acct->packets += packets;
++
++	if (diff) {
++		diff->bytes = bytes;
++		diff->packets = packets;
++	}
++
++	return acct;
++}
++
+ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+-			     int version, int index)
++			     int version, int index, bool accounting)
+ {
+ 	const struct mtk_soc_data *soc = eth->soc;
+ 	struct device *dev = eth->dev;
+ 	struct mtk_ppe *ppe;
+ 	u32 foe_flow_size;
+ 	void *foe;
++	struct mtk_mib_entry *mib;
++	struct mtk_foe_accounting *acct;
+ 
+ 	ppe = devm_kzalloc(dev, sizeof(*ppe), GFP_KERNEL);
+ 	if (!ppe)
+@@ -732,6 +810,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+ 	ppe->eth = eth;
+ 	ppe->dev = dev;
+ 	ppe->version = version;
++	ppe->accounting = accounting;
+ 
+ 	foe = dmam_alloc_coherent(ppe->dev,
+ 				  MTK_PPE_ENTRIES * soc->foe_entry_size,
+@@ -747,6 +826,25 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+ 	if (!ppe->foe_flow)
+ 		return NULL;
+ 
++	if (accounting) {
++		mib = dmam_alloc_coherent(ppe->dev, MTK_PPE_ENTRIES * sizeof(*mib),
++					  &ppe->mib_phys, GFP_KERNEL);
++		if (!mib)
++			return NULL;
++
++		memset(mib, 0, MTK_PPE_ENTRIES * sizeof(*mib));
++
++		ppe->mib_table = mib;
++
++		acct = devm_kzalloc(dev, MTK_PPE_ENTRIES * sizeof(*acct),
++				    GFP_KERNEL);
++
++		if (!acct)
++			return NULL;
++
++		ppe->acct_table = acct;
++	}
++
+ 	mtk_ppe_debugfs_init(ppe, index);
+ 
+ 	return ppe;
+@@ -861,6 +959,16 @@ void mtk_ppe_start(struct mtk_ppe *ppe)
+ 		ppe_w32(ppe, MTK_PPE_DEFAULT_CPU_PORT1, 0xcb777);
+ 		ppe_w32(ppe, MTK_PPE_SBW_CTRL, 0x7f);
+ 	}
++
++	if (ppe->accounting && ppe->mib_phys) {
++		ppe_w32(ppe, MTK_PPE_MIB_TB_BASE, ppe->mib_phys);
++		ppe_m32(ppe, MTK_PPE_MIB_CFG, MTK_PPE_MIB_CFG_EN,
++			MTK_PPE_MIB_CFG_EN);
++		ppe_m32(ppe, MTK_PPE_MIB_CFG, MTK_PPE_MIB_CFG_RD_CLR,
++			MTK_PPE_MIB_CFG_RD_CLR);
++		ppe_m32(ppe, MTK_PPE_MIB_CACHE_CTL, MTK_PPE_MIB_CACHE_CTL_EN,
++			MTK_PPE_MIB_CFG_RD_CLR);
++	}
+ }
+ 
+ int mtk_ppe_stop(struct mtk_ppe *ppe)
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
+index 0b7a67a958e4ca..b77509a2b0fa30 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+@@ -57,6 +57,7 @@ enum {
+ #define MTK_FOE_IB2_MULTICAST		BIT(8)
+ 
+ #define MTK_FOE_IB2_WDMA_QID2		GENMASK(13, 12)
++#define MTK_FOE_IB2_MIB_CNT		BIT(15)
+ #define MTK_FOE_IB2_WDMA_DEVIDX		BIT(16)
+ #define MTK_FOE_IB2_WDMA_WINFO		BIT(17)
+ 
+@@ -284,16 +285,34 @@ struct mtk_flow_entry {
+ 	unsigned long cookie;
+ };
+ 
++struct mtk_mib_entry {
++	u32	byt_cnt_l;
++	u16	byt_cnt_h;
++	u32	pkt_cnt_l;
++	u8	pkt_cnt_h;
++	u8	_rsv0;
++	u32	_rsv1;
++} __packed;
++
++struct mtk_foe_accounting {
++	u64	bytes;
++	u64	packets;
++};
++
+ struct mtk_ppe {
+ 	struct mtk_eth *eth;
+ 	struct device *dev;
+ 	void __iomem *base;
+ 	int version;
+ 	char dirname[5];
++	bool accounting;
+ 
+ 	void *foe_table;
+ 	dma_addr_t foe_phys;
+ 
++	struct mtk_mib_entry *mib_table;
++	dma_addr_t mib_phys;
++
+ 	u16 foe_check_time[MTK_PPE_ENTRIES];
+ 	struct hlist_head *foe_flow;
+ 
+@@ -303,7 +322,7 @@ struct mtk_ppe {
+ };
+ 
+ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+-			     int version, int index);
++			     int version, int index, bool accounting);
+ void mtk_ppe_start(struct mtk_ppe *ppe);
+ int mtk_ppe_stop(struct mtk_ppe *ppe);
+ 
+@@ -354,5 +373,7 @@ int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
+ void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
+ int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
+ int mtk_ppe_debugfs_init(struct mtk_ppe *ppe, int index);
++struct mtk_foe_accounting *mtk_foe_entry_get_mib(struct mtk_ppe *ppe, u32 index,
++						 struct mtk_foe_accounting *diff);
+ 
+ #endif
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+index 391b071bcff38d..39775740340b9e 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+@@ -82,6 +82,7 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
+ 		struct mtk_foe_entry *entry = mtk_foe_get_entry(ppe, i);
+ 		struct mtk_foe_mac_info *l2;
+ 		struct mtk_flow_addr_info ai = {};
++		struct mtk_foe_accounting *acct;
+ 		unsigned char h_source[ETH_ALEN];
+ 		unsigned char h_dest[ETH_ALEN];
+ 		int type, state;
+@@ -95,6 +96,8 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
+ 		if (bind && state != MTK_FOE_STATE_BIND)
+ 			continue;
+ 
++		acct = mtk_foe_entry_get_mib(ppe, i, NULL);
++
+ 		type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);
+ 		seq_printf(m, "%05x %s %7s", i,
+ 			   mtk_foe_entry_state_str(state),
+@@ -153,9 +156,11 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
+ 		*((__be16 *)&h_dest[4]) = htons(l2->dest_mac_lo);
+ 
+ 		seq_printf(m, " eth=%pM->%pM etype=%04x"
+-			      " vlan=%d,%d ib1=%08x ib2=%08x\n",
++			      " vlan=%d,%d ib1=%08x ib2=%08x"
++			      " packets=%lld bytes=%lld\n",
+ 			   h_source, h_dest, ntohs(l2->etype),
+-			   l2->vlan1, l2->vlan2, entry->ib1, ib2);
++			   l2->vlan1, l2->vlan2, entry->ib1, ib2,
++			   acct->packets, acct->bytes);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 28bbd1df3e3059..42b5f279cfa5bb 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -491,6 +491,7 @@ static int
+ mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
+ {
+ 	struct mtk_flow_entry *entry;
++	struct mtk_foe_accounting diff;
+ 	u32 idle;
+ 
+ 	entry = rhashtable_lookup(&eth->flow_table, &f->cookie,
+@@ -501,6 +502,12 @@ mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
+ 	idle = mtk_foe_entry_idle_time(eth->ppe[entry->ppe_index], entry);
+ 	f->stats.lastused = jiffies - idle * HZ;
+ 
++	if (entry->hash != 0xFFFF) {
++		mtk_foe_entry_get_mib(eth->ppe[entry->ppe_index], entry->hash, &diff);
++		f->stats.pkts += diff.packets;
++		f->stats.bytes += diff.bytes;
++	}
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
+index 59596d823d8b8a..be804571b825e7 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
+@@ -143,6 +143,20 @@ enum {
+ 
+ #define MTK_PPE_MIB_TB_BASE			0x338
+ 
++#define MTK_PPE_MIB_SER_CR			0x33C
++#define MTK_PPE_MIB_SER_CR_ST			BIT(16)
++#define MTK_PPE_MIB_SER_CR_ADDR			GENMASK(13, 0)
++
++#define MTK_PPE_MIB_SER_R0			0x340
++#define MTK_PPE_MIB_SER_R0_BYTE_CNT_LOW		GENMASK(31, 0)
++
++#define MTK_PPE_MIB_SER_R1			0x344
++#define MTK_PPE_MIB_SER_R1_PKT_CNT_LOW		GENMASK(31, 16)
++#define MTK_PPE_MIB_SER_R1_BYTE_CNT_HIGH	GENMASK(15, 0)
++
++#define MTK_PPE_MIB_SER_R2			0x348
++#define MTK_PPE_MIB_SER_R2_PKT_CNT_HIGH		GENMASK(23, 0)
++
+ #define MTK_PPE_MIB_CACHE_CTL			0x350
+ #define MTK_PPE_MIB_CACHE_CTL_EN		BIT(0)
+ #define MTK_PPE_MIB_CACHE_CTL_FLUSH		BIT(2)
+-- 
+2.38.1
+
