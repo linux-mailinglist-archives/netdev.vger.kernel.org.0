@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8374B616FD7
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B36616FD8
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:33:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiKBVds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 17:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
+        id S230232AbiKBVdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 17:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbiKBVdr (ORCPT
+        with ESMTP id S229968AbiKBVdr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:33:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3A7C4D
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:46 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338B4CEC
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D7DD61C3F
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4D2461C50
         for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 21:33:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F5AC433C1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C13C433D7;
         Wed,  2 Nov 2022 21:33:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667424825;
-        bh=FqYHztiGZQCauRqR8qo71czSsJf7f6lstt9FTrfbwEY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hp2+wMthKRd2BAx31CgqVJtc8DlIXOBNZQhQ8iNJzhaRGstcgP6LmURAlO9ZxZ2vq
-         FGnKaPTRS2YiYVdx/P7pOURgQ9p5NQ06HFmK06Q1BflH8ZBthFn9Xj7TJuRWFErjgf
-         0x8h8YEdqxdPTybPloB/6JHCAB7vAfs2X523UA+fYfdW0EKkOrTrCnb2VGT/dFe4Uk
-         mvXXRLp5ffK1LczJy9ZHij2Ux8B/bAW+FDqZYiDcavUUonkKl0oDHFXjchAvOdkder
-         FZT7WGxiavveQ5oHcyt72OD8HF2AvMnENpUmuMlAVsunQUX9pLpTTGbqiFmXOH4yKn
-         NwaEYpAdc7GjQ==
+        s=k20201202; t=1667424826;
+        bh=yyQINV0o03vM7B2Khkj9uhVYAakxbih59M+NhlaJIiQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jNel0hBwozpOlWPyPT0XzHNbKtufN0CUYKwmeeMeaKF0KnF/PKw3s+XAm9U4qJz8P
+         chHWcgMrHFdJ7SRmBb5iHe0so4azMStoxDOrWPFPJdebh4u9vvLQQq7CnJa4yxNDgX
+         qGRhedSje+QPYrhi//qVwxE47VmmT3toxuWhwUYtsrv6Hl2Ibw/2FGJ+UaCiNVlvk6
+         L0ETZvQZNIR44oiHcqrYfllXqrLV6CD9P4zfsdT2ZcVqK9h2Hv1lh48y+pzfBrOcHN
+         aO7f4O1bPOgrwya89mbt1m3SKeF+qQ7EZBPsjYFiNIBY6LcS/Mt4TwhVcxVtAblsel
+         Nl3mm2BJOqtVQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
         gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 00/13] genetlink: support per op type policies
-Date:   Wed,  2 Nov 2022 14:33:25 -0700
-Message-Id: <20221102213338.194672-1-kuba@kernel.org>
+Subject: [PATCH net-next v2 01/13] genetlink: refactor the cmd <> policy mapping dump
+Date:   Wed,  2 Nov 2022 14:33:26 -0700
+Message-Id: <20221102213338.194672-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221102213338.194672-1-kuba@kernel.org>
+References: <20221102213338.194672-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -52,48 +54,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While writing new genetlink families I was increasingly annoyed by the fact
-that we don't support different policies for do and dump callbacks.
-This makes it hard to do proper input validation for dumps which usually
-have a lot more narrow range of accepted attributes.
+The code at the top of ctrl_dumppolicy() dumps mappings between
+ops and policies. It supports dumping both the entire family and
+single op if dump is filtered. But both of those cases are handled
+inside a loop, which makes the logic harder to follow and change.
+Refactor to split the two cases more clearly.
 
-There is also a minor inconvenience of not supporting different per_doit
-and post_doit callbacks per op.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v2: bring the comment back
+---
+ net/netlink/genetlink.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-This series addresses those problems by introducing another op format.
-
-v2:
- - wait for net changes to propagate
- - restore the missing comment in patch 1
- - drop extra space in patch 3
- - improve commit message in patch 4
-v1: https://lore.kernel.org/all/20221018230728.1039524-1-kuba@kernel.org/
-
-Jakub Kicinski (13):
-  genetlink: refactor the cmd <> policy mapping dump
-  genetlink: move the private fields in struct genl_family
-  genetlink: introduce split op representation
-  genetlink: load policy based on validation flags
-  genetlink: check for callback type at op load time
-  genetlink: add policies for both doit and dumpit in
-    ctrl_dumppolicy_start()
-  genetlink: support split policies in ctrl_dumppolicy_put_op()
-  genetlink: inline genl_get_cmd()
-  genetlink: add iterator for walking family ops
-  genetlink: use iterator in the op to policy map dumping
-  genetlink: inline old iteration helpers
-  genetlink: allow families to use split ops directly
-  genetlink: convert control family to split ops
-
- include/net/genetlink.h   |  76 +++++-
- net/batman-adv/netlink.c  |   6 +-
- net/core/devlink.c        |   4 +-
- net/core/drop_monitor.c   |   4 +-
- net/ieee802154/nl802154.c |   6 +-
- net/netlink/genetlink.c   | 473 ++++++++++++++++++++++++++++----------
- net/wireless/nl80211.c    |   6 +-
- 7 files changed, 433 insertions(+), 142 deletions(-)
-
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 3e16527beb91..0a7a856e9ce0 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -1319,21 +1319,24 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
+ 	void *hdr;
+ 
+ 	if (!ctx->policies) {
+-		while (ctx->opidx < genl_get_cmd_cnt(ctx->rt)) {
+-			struct genl_ops op;
++		struct genl_ops op;
+ 
+-			if (ctx->single_op) {
+-				int err;
++		if (ctx->single_op) {
++			int err;
+ 
+-				err = genl_get_cmd(ctx->op, ctx->rt, &op);
+-				if (WARN_ON(err))
+-					return skb->len;
++			err = genl_get_cmd(ctx->op, ctx->rt, &op);
++			if (WARN_ON(err))
++				return err;
+ 
+-				/* break out of the loop after this one */
+-				ctx->opidx = genl_get_cmd_cnt(ctx->rt);
+-			} else {
+-				genl_get_cmd_by_index(ctx->opidx, ctx->rt, &op);
+-			}
++			if (ctrl_dumppolicy_put_op(skb, cb, &op))
++				return skb->len;
++
++			/* don't enter the loop below */
++			ctx->opidx = genl_get_cmd_cnt(ctx->rt);
++		}
++
++		while (ctx->opidx < genl_get_cmd_cnt(ctx->rt)) {
++			genl_get_cmd_by_index(ctx->opidx, ctx->rt, &op);
+ 
+ 			if (ctrl_dumppolicy_put_op(skb, cb, &op))
+ 				return skb->len;
 -- 
 2.38.1
 
