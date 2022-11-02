@@ -2,150 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 674F9616512
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 15:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0929B61653B
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 15:33:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiKBOZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 10:25:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        id S229934AbiKBOdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 10:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiKBOZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 10:25:32 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFB728E1F;
-        Wed,  2 Nov 2022 07:25:30 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N2TZ64JlKzRntV;
-        Wed,  2 Nov 2022 22:20:30 +0800 (CST)
-Received: from dggpemm500011.china.huawei.com (7.185.36.110) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 22:25:28 +0800
-Received: from [10.136.114.193] (10.136.114.193) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 22:25:27 +0800
-Message-ID: <7033694f-a4a5-d571-3eec-eec74aaa3e7c@huawei.com>
-Date:   Wed, 2 Nov 2022 22:25:27 +0800
+        with ESMTP id S230487AbiKBOdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 10:33:33 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2B82A735;
+        Wed,  2 Nov 2022 07:33:30 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id C169624000A;
+        Wed,  2 Nov 2022 14:33:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1667399609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ylD505SuiRTh12GS+d78SfZyuPJFm3TcRfpoXBv+HeQ=;
+        b=fPzEfrAldPsEjv9RFEQ5+X7Erd1TbHXqsz6qz6gWNGAgSVON4mcA1pXTFKCIcHMc7Nu3dU
+        tuv+tYzcVizxamIHs9t2OxH7cAoA8/S8omic3eZkUV821mjSXHZt2FbC1MW5j2oxoGD+pv
+        ic6Ug+TZuSSd5kY/mtkhrPciWviMFNrZqux0o50oUxs9ubT3KeAEnCMwd8nB7G8cZb+FS0
+        XTtaZrDFdSWXQpwGKiyq0P7MzNJoLlP24ivG3kK+VHOEJUgYbVDraWZoOzSah9o0bSesLg
+        MXwnRvbbH+yk7kuid2Ma07J0ujzddWRQF5Xk4b4kkC+BRcbo1nvC3cGJTrdoKw==
+Date:   Wed, 2 Nov 2022 15:33:23 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Robert Marko <robert.marko@sartura.hr>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH 5/5] net: mvpp2: Consider NVMEM cells as possible MAC
+ address source
+Message-ID: <20221102153323.7b7fc0a5@xps-13>
+In-Reply-To: <30660579be1f7c964eafa825246916ac@walle.cc>
+References: <20221028092337.822840-1-miquel.raynal@bootlin.com>
+        <20221028092337.822840-6-miquel.raynal@bootlin.com>
+        <30660579be1f7c964eafa825246916ac@walle.cc>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Content-Language: en-US
-To:     <vyasevich@gmail.com>, <nhorman@tuxdriver.com>,
-        <marcelo.leitner@gmail.com>, <linux-sctp@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <caowangbao@huawei.com>, <yanan@huawei.com>
-From:   Zhen Chen <chenzhen126@huawei.com>
-Subject: BUG: kernel NULL pointer dereference in sctp_sched_dequeue_common
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.136.114.193]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500011.china.huawei.com (7.185.36.110)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLACK autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,all
+Hi Michael,
 
-We found the following crash when running fuzz tests on stable-5.10. 
+michael@walle.cc wrote on Fri, 28 Oct 2022 15:33:31 +0200:
 
-------------[ cut here ]------------
-list_del corruption, ffffa035ddf01c18->next is NULL
-WARNING: CPU: 1 PID: 250682 at lib/list_debug.c:49 __list_del_entry_valid+0x59/0xe0
-CPU: 1 PID: 250682 Comm: syz-executor.7 Kdump: loaded Tainted: G           O
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.10.2-0-g5f4c7b1-20181220_000000-szxrtosci10000 04/01/2014
-RIP: 0010:__list_del_entry_valid+0x59/0xe0
-Code: c0 74 5a 4d 8b 00 49 39 f0 75 6a 48 8b 52 08 4c 39 c2 75 79 b8 01 00 00 00 c3 cc cc cc cc 48 c7 c7 68 ae 78 8b e8 d2 3d 4e 00 <0f> 0b 31 c0 c3 cc cc cc cc 48 c7 c7 90 ae 78 8b e8 bd 3d 4e 00 0f
-RSP: 0018:ffffaf7d84a57930 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: ffffa035ddf01c18 RCX: 0000000000000000
-RDX: ffffa035facb0820 RSI: ffffa035faca0410 RDI: ffffa035faca0410
-RBP: ffffa035dddff6f8 R08: 0000000000000000 R09: ffffaf7d84a57770
-R10: ffffaf7d84a57768 R11: ffffffff8bddc248 R12: ffffa035ddf01c18
-R13: ffffaf7d84a57af8 R14: ffffaf7d84a57c28 R15: 0000000000000000
-FS:  00007fb7353ae700(0000) GS:ffffa035fac80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f509a3d0ee8 CR3: 000000010f7c2001 CR4: 00000000001706e0
-Call Trace:
- sctp_sched_dequeue_common+0x17/0x70 [sctp]
- sctp_sched_fcfs_dequeue+0x37/0x50 [sctp]
- sctp_outq_flush_data+0x85/0x360 [sctp]
- sctp_outq_uncork+0x77/0xa0 [sctp]
- sctp_cmd_interpreter.constprop.0+0x164/0x1450 [sctp]
- sctp_side_effects+0x37/0xe0 [sctp]
- sctp_do_sm+0xd0/0x230 [sctp]
- sctp_primitive_SEND+0x2f/0x40 [sctp]
- sctp_sendmsg_to_asoc+0x3fa/0x5c0 [sctp]
- sctp_sendmsg+0x3d5/0x440 [sctp]
- sock_sendmsg+0x5b/0x70
- sock_write_iter+0x97/0x100
- new_sync_write+0x1a1/0x1b0
- vfs_write+0x1b7/0x250
- ksys_write+0xab/0xe0
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x61/0xc6
-RIP: 0033:0x461e3d
-Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb7353adc08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 000000000058c1d0 RCX: 0000000000461e3d
-RDX: 000000000000001e RSI: 0000000020002640 RDI: 0000000000000004
-RBP: 000000000058c1d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb7353ae700 R14: 00007ffc4c20ce00 R15: 0000000000000fff
----[ end trace 332cf75246d5ba68 ]---
-BUG: kernel NULL pointer dereference, address: 0000000000000070
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 800000010c0d4067 P4D 800000010c0d4067 PUD 10f275067 PMD 0
-Oops: 0000 [#1] SMP PTI
-CPU: 1 PID: 250682 Comm: syz-executor.7 Kdump: loaded Tainted: G        W  O
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.10.2-0-g5f4c7b1-20181220_000000-szxrtosci10000 04/01/2014
-RIP: 0010:sctp_sched_dequeue_common+0x5c/0x70 [sctp]
-Code: 5b 08 4c 89 e7 e8 44 c5 cc c9 84 c0 74 0f 48 8b 53 18 48 8b 43 20 48 89 42 08 48 89 10 48 8b 43 38 4c 89 63 18 4c 89 63 20 5b <8b> 40 70 29 45 20 5d 41 5c c3 cc cc cc cc 66 0f 1f 44 00 00 0f 1f
-RSP: 0018:ffffaf7d84a57940 EFLAGS: 00010202
-RAX: 0000000000000000 RBX: ffffaf7d84a579a0 RCX: 0000000000000000
-RDX: ffffa035ddf01c30 RSI: ffffa035ddf01c30 RDI: ffffa035ddf01c30
-RBP: ffffa035dddff6f8 R08: ffffa035ddf01c30 R09: ffffaf7d84a57770
-R10: ffffaf7d84a57768 R11: ffffffff8bddc248 R12: ffffa035ddf01c30
-R13: ffffaf7d84a57af8 R14: ffffaf7d84a57c28 R15: 0000000000000000
-FS:  00007fb7353ae700(0000) GS:ffffa035fac80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000070 CR3: 000000010f7c2001 CR4: 00000000001706e0
-Call Trace:
- sctp_sched_fcfs_dequeue+0x37/0x50 [sctp]
- sctp_outq_flush_data+0x85/0x360 [sctp]
- sctp_outq_uncork+0x77/0xa0 [sctp]
- sctp_cmd_interpreter.constprop.0+0x164/0x1450 [sctp]
- sctp_side_effects+0x37/0xe0 [sctp]
- sctp_do_sm+0xd0/0x230 [sctp]
- sctp_primitive_SEND+0x2f/0x40 [sctp]
- sctp_sendmsg_to_asoc+0x3fa/0x5c0 [sctp]
- sctp_sendmsg+0x3d5/0x440 [sctp]
- sock_sendmsg+0x5b/0x70
- sock_write_iter+0x97/0x100
- new_sync_write+0x1a1/0x1b0
- vfs_write+0x1b7/0x250
- ksys_write+0xab/0xe0
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x61/0xc6
-RIP: 0033:0x461e3d
-Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb7353adc08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 000000000058c1d0 RCX: 0000000000461e3d
-RDX: 000000000000001e RSI: 0000000020002640 RDI: 0000000000000004
-RBP: 000000000058c1d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb7353ae700 R14: 00007ffc4c20ce00 R15: 0000000000000fff
+> Am 2022-10-28 11:23, schrieb Miquel Raynal:
+> > The ONIE standard describes the organization of tlv (type-length-value)
+> > arrays commonly stored within NVMEM devices on common networking
+> > hardware.
+> >=20
+> > Several drivers already make use of NVMEM cells for purposes like
+> > retrieving a default MAC address provided by the manufacturer.
+> >=20
+> > What made ONIE tables unusable so far was the fact that the information
+> > where "dynamically" located within the table depending on the
+> > manufacturer wishes, while Linux NVMEM support only allowed statically
+> > defined NVMEM cells. Fortunately, this limitation was eventually > tack=
+led
+> > with the introduction of discoverable cells through the use of NVMEM
+> > layouts, making it possible to extract and consistently use the content
+> > of tables like ONIE's tlv arrays.
+> >=20
+> > Parsing this table at runtime in order to get various information is > =
+now
+> > possible. So, because many Marvell networking switches already follow
+> > this standard, let's consider using NVMEM cells as a new valid source >=
+ of
+> > information when looking for a base MAC address, which is one of the
+> > primary uses of these new fields. Indeed, manufacturers following the
+> > ONIE standard are encouraged to provide a default MAC address there, so
+> > let's eventually use it if no other MAC address has been found using > =
+the
+> > existing methods.
+> >=20
+> > Link: > https://opencomputeproject.github.io/onie/design-spec/hw_requir=
+ements.html
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >=20
+> > Hello, I suppose my change is safe but I don't want to break existing
+> > setups so a review on this would be welcome!
+> >=20
+> >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >=20
+> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > index eb0fb8128096..7c8c323f4411 100644
+> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > @@ -6104,6 +6104,12 @@ static void mvpp2_port_copy_mac_addr(struct
+> > net_device *dev, struct mvpp2 *priv,
+> >  		}
+> >  	}
+> >=20
+> > +	if (!of_get_mac_address(to_of_node(fwnode), hw_mac_addr)) { =20
+>=20
+> Mh, the driver already does a fwnode_get_mac_address() which might
+> fetch it from OF. But that variant doesn't try to get the mac address
+> via nvmem; in contrast to the of_get_mac_address() variant which will
+> also try NVMEM.
+> Maybe it would be better to just use device_get_ethdev_address() and
+> extend that one to also try the nvmem store. Just to align all the
+> different variants to get a mac address.
 
+Actually this choice was made on purpose: I am adding this method to
+retrieve the MAC address only if no other way has succeeded. I don't
+know if the MAC addresses are expected to remain stable over time, I
+assumed it was somehow part of the ABI.
 
-It is quite similar to the issue (See https://lore.kernel.org/all/CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com/ ) , which was addressed by 181d8d2066c0 (sctp: leave the err path free in sctp_stream_init to sctp_stream_free), but unfortunately the patch do not work with this bug :(
+Using device_get_ethdev_address() with support for MAC addresses in
+nvmem cells would possibly change the MAC address of many existing
+devices after an update because we found a MAC address in the tlv table
+before checking the device's own registers (as in this driver)
 
-It will be welcomed if anyone have any ideas.
+So I assumed it was better avoiding changing the MAC address providers
+order in the probe...
 
-Thanks!
+Thanks,
+Miqu=C3=A8l
