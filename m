@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61CCF616269
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 13:08:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DA95616270
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 13:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiKBMIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 08:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35842 "EHLO
+        id S229715AbiKBMKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 08:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbiKBMIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:08:36 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43B722516;
-        Wed,  2 Nov 2022 05:08:34 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=chentao.kernel@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VTo8Xcs_1667390902;
-Received: from VM20210331-5.tbsite.net(mailfrom:chentao.kernel@linux.alibaba.com fp:SMTPD_---0VTo8Xcs_1667390902)
-          by smtp.aliyun-inc.com;
-          Wed, 02 Nov 2022 20:08:30 +0800
-From:   Tao Chen <chentao.kernel@linux.alibaba.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Petr Machata <petrm@nvidia.com>,
-        Kees Cook <keescook@chromium.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tao Chen <chentao.kernel@linux.alibaba.com>
-Subject: [PATCH net-next] netlink: Fix potential skb memleak in netlink_ack
-Date:   Wed,  2 Nov 2022 20:08:20 +0800
-Message-Id: <7a382b9503d10d235238ca55938bc933d92a1de7.1667389213.git.chentao.kernel@linux.alibaba.com>
-X-Mailer: git-send-email 2.2.1
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229462AbiKBMKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:10:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA7023141
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 05:10:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF54BB82213
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 12:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5F8F8C433C1;
+        Wed,  2 Nov 2022 12:10:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667391015;
+        bh=K2N2s9yVmyKu4TopyIynJDSsSB6xvVHb7HF4h/pIBXI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hUnKq7zlgh+xan5vGaQg89qidSRMk5nzfHI2JXxCL0dbtP+dnQsH1kcSeTW7f4Lns
+         xupm91qpoWSQA9Qxnh/mQAFJWGxYwLnKAAcRnaSXU3PUFMKYjzRUrsekovQh1jdSjy
+         K08hPNAdwwIt8133kIBXF5+0qB9/iE26Lv4Z3iDLQDGJQrdLa0j9ziJ5mIVjd4p5yE
+         rkqNARt06X/QFloln4TVmf99hRBfPPYYotvYug/ZsWXKD3kPFGhfmnUc/3OtT42T7o
+         VnHXAq/CZHRS1ZWY+/jTPKrGBSdLxXAHVlAZHMgkfftH+1F1VBL7oqbpi1NnFNaRRp
+         gKkyFbZOMpMgQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 450BCE270D5;
+        Wed,  2 Nov 2022 12:10:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] nfc: Add KCOV annotations
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166739101527.14028.15470836593361803971.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Nov 2022 12:10:15 +0000
+References: <20221030150337.3379753-1-dvyukov@google.com>
+In-Reply-To: <20221030150337.3379753-1-dvyukov@google.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     bongsu.jeon@samsung.com, krzysztof.kozlowski@linaro.org,
+        netdev@vger.kernel.org, syzkaller@googlegroups.com
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We should clean the skb resource if nlmsg_put/append failed
-, so fix it.
+Hello:
 
-Fiexs: commit 738136a0e375 ("netlink: split up copies in the
-ack construction")
-Signed-off-by: Tao Chen <chentao.kernel@linux.alibaba.com>
----
- net/netlink/af_netlink.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index c6b8207e..9d73dae 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2500,7 +2500,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 
- 	skb = nlmsg_new(payload + tlvlen, GFP_KERNEL);
- 	if (!skb)
--		goto err_bad_put;
-+		goto err_skb;
- 
- 	rep = nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
- 			NLMSG_ERROR, sizeof(*errmsg), flags);
-@@ -2528,6 +2528,8 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 	return;
- 
- err_bad_put:
-+	kfree_skb(skb);
-+err_skb:
- 	NETLINK_CB(in_skb).sk->sk_err = ENOBUFS;
- 	sk_error_report(NETLINK_CB(in_skb).sk);
- }
+On Sun, 30 Oct 2022 16:03:37 +0100 you wrote:
+> Add remote KCOV annotations for NFC processing that is done
+> in background threads. This enables efficient coverage-guided
+> fuzzing of the NFC subsystem.
+> 
+> The intention is to add annotations to background threads that
+> process skb's that were allocated in syscall context
+> (thus have a KCOV handle associated with the current fuzz test).
+> This includes nci_recv_frame() that is called by the virtual nci
+> driver in the syscall context.
+> 
+> [...]
+
+Here is the summary with links:
+  - nfc: Add KCOV annotations
+    https://git.kernel.org/netdev/net-next/c/7e8cdc97148c
+
+You are awesome, thank you!
 -- 
-2.2.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
