@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D3ED616304
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 13:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00F4B61633C
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiKBMss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 08:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
+        id S231245AbiKBNAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 09:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiKBMsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:48:46 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA3BC18
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 05:48:43 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id f37so28026203lfv.8
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 05:48:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Sz/uTvOc0gNmc74MGKA7yKeLqyFqD/joiI1SxwVZLms=;
-        b=FqR0QeEiB2XkiMCLPdFxi+z4XcVgQxKvw6bgHn3f3xPkbDZZRRzN24dytdenTe6b8l
-         ch99MRl7hpPOd5pq0FxAC7Hpx3Hf9L0GVIJfBGmDmF0zB1aCfSy+0jGSjRbNdxlXdPPJ
-         FzLgWoXBC+7DkA84YLFbDBj2NoWfp/0jXSY5OiGPxzUhrAn6RPAKx+0cfp9GDJjiMK6r
-         pMgjx0mlbOPZ/K8KoxL9SpwPeqxDga0QKdNI4mp1RY1Zu1w2rXbW2n0dtdvEiqjaSbNr
-         3qHHG83/qDEd2etMN+qai0vsvj+MVcIrYoO0uZJEI5HwJFre/IMLZTcSftT2BQVKsYPh
-         PVqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sz/uTvOc0gNmc74MGKA7yKeLqyFqD/joiI1SxwVZLms=;
-        b=PjKxGAvRXDY2DwlwT9johNqUpUcXPZb9Aj8rKWC21aFJt3XAkfbiaktHIjlpDB7Ei9
-         AL6O3Xbl7lF/81ffMa6p/J7ZHwov39JTvfp1Jpla6XZbiOF5UBqLZZRMExCpdyOGxytK
-         EC3jS37ag9PFvCGJ5FrsInl2YXp+6bPTuYIGuFYOK5bE2SKfAY8cG9cnuTSr/I6/WsgZ
-         Si495zWGw8MJJoDBxmAnAK7aHOB316bJpf/sYs6gNlSh9djejgjjanYkrLZRP7CZjT7I
-         u52PtBPvvgOjB+U6ssRWNGWJTOVKy1GN9kqh2e03DM8Us7kWK7K3sAZwjybx2KQfk7C/
-         9VJw==
-X-Gm-Message-State: ACrzQf3uvNOgToYjcNXg9ttWU7CiDJF+58GXXJJaWXPD+wd6fipigmNO
-        ErxDEMaiK9FnhZJNedsYUSr8c2vYucqYEfF3j58=
-X-Google-Smtp-Source: AMsMyM7/FLs+utVIQxapsGZ8q2BsAvRjzJUNJuePM8AVHc/il67Sc/dKq8vDyAXfW2derLPPwsbq56bqP7LT15bWbbk=
-X-Received: by 2002:ac2:4986:0:b0:4a2:7b62:747 with SMTP id
- f6-20020ac24986000000b004a27b620747mr8754273lfl.92.1667393321545; Wed, 02 Nov
- 2022 05:48:41 -0700 (PDT)
+        with ESMTP id S231307AbiKBNAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:00:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B84329C9D;
+        Wed,  2 Nov 2022 06:00:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7719A61944;
+        Wed,  2 Nov 2022 13:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CAC0EC433B5;
+        Wed,  2 Nov 2022 13:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667394018;
+        bh=10Z6uXDE6nv9we1caDEijEa5FDJ4Ne5WNxQT8wsxKq0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bdVHI4Rc1FXA/QJuXfbM4fFxr7sbY8APi129r0O+8pnK1ATFKTzkn0K5KvjC/JLqA
+         TNvVb/Yq9MhD0BBL2it1zqDCH/KFO6zfDoeK8eojkVwtjMXu2HFnhGpl6GpO0TBPGQ
+         dAXsj2HiMPWu1ZZryImhk+JZT8hkDijfB35OXqZj7Vn/UgPI+sfwftL/ijGa+7EByc
+         VjJWi79wUvdPEOn/Cv2IKyS9NOnCy6pdaWt5SHrg+mmlHQPclvuK21rgN+dKg+fgp2
+         dYO7up3BMmGKk9oyTE1rAqyBMvVfSN6gr/ymzgG3gbteM3OTT0mBVNjDtmUkKaYKTj
+         Ms0BBvXO2PXEg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AE52FE270D2;
+        Wed,  2 Nov 2022 13:00:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a05:6520:40ee:b0:220:4267:3735 with HTTP; Wed, 2 Nov 2022
- 05:48:40 -0700 (PDT)
-Reply-To: rihabmanyang1993@gmail.com
-From:   Rihab Manyang <bassiroundaw77@gmail.com>
-Date:   Wed, 2 Nov 2022 12:48:40 +0000
-Message-ID: <CAMQfp2i3wveLe1jZUDK9auNy5ghsaAOzXQwOrUeprk0LLwtUQw@mail.gmail.com>
-Subject: HI DEAR..
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:12c listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5080]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [bassiroundaw77[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [rihabmanyang1993[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [bassiroundaw77[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v7 0/3] net: ethernet: renesas: Add support for "Ethernet
+ Switch"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166739401870.9062.8744215770877095925.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Nov 2022 13:00:18 +0000
+References: <20221031123242.2528208-1-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20221031123242.2528208-1-yoshihiro.shimoda.uh@renesas.com>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 31 Oct 2022 21:32:39 +0900 you wrote:
+> This patch series is based on next-20221027.
+> 
+> Add initial support for Renesas "Ethernet Switch" device of R-Car S4-8.
+> The hardware has features about forwarding for an ethernet switch
+> device. But, for now, it acts as ethernet controllers so that any
+> forwarding offload features are not supported. So, any switchdev
+> header files and DSA framework are not used.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v7,1/3] dt-bindings: net: renesas: Document Renesas Ethernet Switch
+    https://git.kernel.org/netdev/net-next/c/f9edd82774c0
+  - [v7,2/3] net: ethernet: renesas: Add support for "Ethernet Switch"
+    https://git.kernel.org/netdev/net-next/c/3590918b5d07
+  - [v7,3/3] net: ethernet: renesas: rswitch: Add R-Car Gen4 gPTP support
+    https://git.kernel.org/netdev/net-next/c/6c6fa1a00ad3
+
+You are awesome, thank you!
 -- 
-My name is Rihab Manyang,i am here to search for a business partner and
-friend who will help me to invest my fund in his country.
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
