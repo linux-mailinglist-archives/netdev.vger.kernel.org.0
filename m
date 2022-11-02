@@ -2,224 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 545CF617082
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 23:12:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E0961716E
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 00:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231630AbiKBWMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 18:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        id S229962AbiKBXKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 19:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231534AbiKBWL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 18:11:58 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F26BCE14
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 15:11:54 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id m15so184390ilq.2
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 15:11:54 -0700 (PDT)
+        with ESMTP id S229531AbiKBXKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 19:10:18 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE8E658F
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 16:10:17 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id l9so113293qkk.11
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 16:10:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+xtIdRfPlPgVtPzZBa18RgWUGmJjs2ni8p7EMA1XR/M=;
-        b=Wlu9sAWkAYKtytrHJSptm5bLfYhtqmKOZxq0vQB6Xbe7ISfAnAYy3/64MSTJM6tnGT
-         uoyWm89UIrjUA3iKlbny0wiZOM1NldRVWeNRm+P1poTzL/o6MCBqVPmoZfnxTG6HZwgF
-         C6Hd5sFMJwyIEs+OzyfP4FkG5EBzAxxIJDMJBQCJYcn7FGAX+8qRf4b/JCbJ1A1Z2yl3
-         esI3uryzAWE4aLokITyfVozcEd5Bd70+Dz+NZg5PTINEKObVeAHMpnpRUBBjTkEUVTWq
-         YABaR371XFKMe1dpmRaOKNEPoHNZqpGvDZtcJbO02wU9OmxzumrypjtakiYovO06m6tq
-         USbw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=zE0kVQMhsKgnJAXV7culWIr2zj+2e0F5QP+AlSJYD+Y=;
+        b=dOV0aaoUE3p9Hy61orb7bJZTfU2WsUVnpXr/iauN/Z+XQgYlGCt+M+YZmHhgYm9moj
+         MitOzjtGguR6/KmO1vxd7HJtIorAeU22lhxkFAA+bVJ0XSZvuTBxE1sDoeOV5FQD2TS1
+         AuT7D/bz13frTlIaq/GCHDUwGY099YbrH4M+U5omCpCCK7GvE6ZapiQmSWfsWunmcXDM
+         yawhV9iiDAEWQb+pmEmOF31y8+HlQlIkC5qOdzuny+/UrWbGCW9eOws1TMn1iQCUlldS
+         dVDzU6h50FRWtZveuLg8POHyK0zimg2RcvuAl/uZarfc3hS0Z46NHpACbLKfIQDf24/k
+         tVKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+xtIdRfPlPgVtPzZBa18RgWUGmJjs2ni8p7EMA1XR/M=;
-        b=lHVsm00gRDfD1k7c14Z7qu1mJLIamxKOM5VK/+MivdmMnAVVtC6hLTVj6ML47VPWPr
-         ZQ6gmcsdoZsMp6aJ+fZJshT9YbFjIxGMShWyRFY7N7Iign1fIRgzmi+ll7OSsGSMW+TW
-         18F/8jrfN346kUGCQCBntBsS7zfX8VAUL7jq2zHS93y0HunkcYe3c+KfrrZRaps/aKyc
-         DTe8hE50YUhUms7+16hnfnc673SOS8vTo6L1pxk1dYfktnXpc/VHsEaEJYKeV99jiaa3
-         RuJBEGU2g619AX2w/TGFc6SiM6m1XkyGYws+LjX//Kgp3OmnOus4A4fY9tk6H/Jice2A
-         Ps+Q==
-X-Gm-Message-State: ACrzQf3uiypg1KS8hBUfSTZ7DG4af8gh2IRsh1gMmP0aLgCrXHaO6IWI
-        bfMygp6c9xgslbmeLFHvHsORuA==
-X-Google-Smtp-Source: AMsMyM45fLWHlrj4gmHAd/3pn69z+QK7aXuuqdfQT4KO1R/jaVShnXVcIiBsfCN2Oaepv/z9baag3g==
-X-Received: by 2002:a92:dac2:0:b0:300:c4e1:8b76 with SMTP id o2-20020a92dac2000000b00300c4e18b76mr6512177ilq.319.1667427114261;
-        Wed, 02 Nov 2022 15:11:54 -0700 (PDT)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id f8-20020a02a108000000b0037465a1dd3fsm5073974jag.156.2022.11.02.15.11.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 15:11:53 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 9/9] net: ipa: use a bitmap for enabled endpoints
-Date:   Wed,  2 Nov 2022 17:11:39 -0500
-Message-Id: <20221102221139.1091510-10-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221102221139.1091510-1-elder@linaro.org>
-References: <20221102221139.1091510-1-elder@linaro.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zE0kVQMhsKgnJAXV7culWIr2zj+2e0F5QP+AlSJYD+Y=;
+        b=PLF3PM5kTnserMFWTPb/hakTYBWsIAexUG1ToVz8ldXQQeLnGoGDfLUCZlicwQXvzN
+         VlphrKTpEWi++JQHUs95MXCLwkBHE3r/heGh9NPeAcIq9GD8Rn4TCSv9wBrMt/Lq89zE
+         3ByBjFW+zQiyi1/kco32O1GTEWNvQvM8m533hJ8+HvPMf702qiTKE+EvbT4HPw+fE1jr
+         yV7GjdbtTIWBwaWLiEqi9Tr+6z8MgjAkXpl49qNiIVaFsiQ81LdopjkVnn72Sy475fn1
+         HPWc0oL6rdXoOZaV3eI+XfXUjcotVivlgI/IHGdi/Vbmwjn2FuTLlTaoQYa40SQvgguH
+         Fs5g==
+X-Gm-Message-State: ACrzQf1Dr7dAP4UgA18p3lqKI3+/IRC7ph7rcpCIHYWuGAXK5rRLRXYG
+        MjqIDqNYWubd1mIfZounMwdEtq359z8=
+X-Google-Smtp-Source: AMsMyM4sXCPasEcXNiSF9BFXXAEgCdn/1Mpu4RB7AuoU/rphVfSL067LixHmhVl0YZAC+0dj1nEFhw==
+X-Received: by 2002:a37:88a:0:b0:6fa:a3e:45d with SMTP id 132-20020a37088a000000b006fa0a3e045dmr19670595qki.346.1667430616261;
+        Wed, 02 Nov 2022 16:10:16 -0700 (PDT)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
+        by smtp.gmail.com with ESMTPSA id b8-20020ac86788000000b003a540320070sm2443163qtp.6.2022.11.02.16.10.15
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Nov 2022 16:10:16 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-370547b8ca0so1005827b3.0
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 16:10:15 -0700 (PDT)
+X-Received: by 2002:a0d:d897:0:b0:36a:fc80:fa9f with SMTP id
+ a145-20020a0dd897000000b0036afc80fa9fmr26054201ywe.43.1667430615534; Wed, 02
+ Nov 2022 16:10:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20221030220203.31210-1-axboe@kernel.dk> <CA+FuTSfj5jn8Wui+az2BrcpDFYF5m5ehwLiswwHMPJ2MK+S_Jw@mail.gmail.com>
+ <02e5bf45-f877-719b-6bf8-c4ac577187a8@kernel.dk>
+In-Reply-To: <02e5bf45-f877-719b-6bf8-c4ac577187a8@kernel.dk>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 2 Nov 2022 19:09:38 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSd-HvtPVwRto0EGExm-Pz7dGpxAt+1sTb51P_QBd-N9KQ@mail.gmail.com>
+Message-ID: <CA+FuTSd-HvtPVwRto0EGExm-Pz7dGpxAt+1sTb51P_QBd-N9KQ@mail.gmail.com>
+Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the 32-bit unsigned used to track enabled endpoints with a
-Linux bitmap, to allow an arbitrary number of endpoints to be
-represented.
+On Wed, Nov 2, 2022 at 1:54 PM Jens Axboe <axboe@kernel.dk> wrote:
+>
+> On 11/2/22 11:46 AM, Willem de Bruijn wrote:
+> > On Sun, Oct 30, 2022 at 6:02 PM Jens Axboe <axboe@kernel.dk> wrote:
+> >>
+> >> Hi,
+> >>
+> >> tldr - we saw a 6-7% CPU reduction with this patch. See patch 6 for
+> >> full numbers.
+> >>
+> >> This adds support for EPOLL_CTL_MIN_WAIT, which allows setting a minimum
+> >> time that epoll_wait() should wait for events on a given epoll context.
+> >> Some justification and numbers are in patch 6, patches 1-5 are really
+> >> just prep patches or cleanups.
+> >>
+> >> Sending this out to get some input on the API, basically. This is
+> >> obviously a per-context type of operation in this patchset, which isn't
+> >> necessarily ideal for any use case. Questions to be debated:
+> >>
+> >> 1) Would we want this to be available through epoll_wait() directly?
+> >>    That would allow this to be done on a per-epoll_wait() basis, rather
+> >>    than be tied to the specific context.
+> >>
+> >> 2) If the answer to #1 is yes, would we still want EPOLL_CTL_MIN_WAIT?
+> >>
+> >> I think there are pros and cons to both, and perhaps the answer to both is
+> >> "yes". There are some benefits to doing this at epoll setup time, for
+> >> example - it nicely isolates it to that part rather than needing to be
+> >> done dynamically everytime epoll_wait() is called. This also helps the
+> >> application code, as it can turn off any busy'ness tracking based on if
+> >> the setup accepted EPOLL_CTL_MIN_WAIT or not.
+> >>
+> >> Anyway, tossing this out there as it yielded quite good results in some
+> >> initial testing, we're running more of it. Sending out a v3 now since
+> >> someone reported that nonblock issue which is annoying. Hoping to get some
+> >> more discussion this time around, or at least some...
+> >
+> > My main question is whether the cycle gains justify the code
+> > complexity and runtime cost in all other epoll paths.
+> >
+> > Syscall overhead is quite dependent on architecture and things like KPTI.
+>
+> Definitely interested in experiences from other folks, but what other
+> runtime costs do you see compared to the baseline?
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa.h          |  4 ++--
- drivers/net/ipa/ipa_endpoint.c | 32 ++++++++++++++++++++------------
- 2 files changed, 22 insertions(+), 14 deletions(-)
+Nothing specific. Possible cost from added branches and moving local
+variables into structs with possibly cold cachelines.
 
-diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index f14d1bd34e7e5..5372db58b5bdc 100644
---- a/drivers/net/ipa/ipa.h
-+++ b/drivers/net/ipa/ipa.h
-@@ -67,7 +67,7 @@ struct ipa_interrupt;
-  * @available:		Bitmap of endpoints supported by hardware
-  * @filtered:		Bitmap of endpoints that support filtering
-  * @set_up:		Bitmap of endpoints that are set up for use
-- * @enabled:		Bit mask indicating endpoints enabled
-+ * @enabled:		Bitmap of currently enabled endpoints
-  * @modem_tx_count:	Number of defined modem TX endoints
-  * @endpoint:		Array of endpoint information
-  * @channel_map:	Mapping of GSI channel to IPA endpoint
-@@ -125,7 +125,7 @@ struct ipa {
- 	unsigned long *available;	/* Supported by hardware */
- 	u64 filtered;			/* Support filtering (AP and modem) */
- 	unsigned long *set_up;
--	u32 enabled;
-+	unsigned long *enabled;
- 
- 	u32 modem_tx_count;
- 	struct ipa_endpoint endpoint[IPA_ENDPOINT_MAX];
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 3fe20b4d9c90b..136932464261c 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1666,6 +1666,7 @@ static void ipa_endpoint_program(struct ipa_endpoint *endpoint)
- 
- int ipa_endpoint_enable_one(struct ipa_endpoint *endpoint)
- {
-+	u32 endpoint_id = endpoint->endpoint_id;
- 	struct ipa *ipa = endpoint->ipa;
- 	struct gsi *gsi = &ipa->gsi;
- 	int ret;
-@@ -1675,37 +1676,35 @@ int ipa_endpoint_enable_one(struct ipa_endpoint *endpoint)
- 		dev_err(&ipa->pdev->dev,
- 			"error %d starting %cX channel %u for endpoint %u\n",
- 			ret, endpoint->toward_ipa ? 'T' : 'R',
--			endpoint->channel_id, endpoint->endpoint_id);
-+			endpoint->channel_id, endpoint_id);
- 		return ret;
- 	}
- 
- 	if (!endpoint->toward_ipa) {
--		ipa_interrupt_suspend_enable(ipa->interrupt,
--					     endpoint->endpoint_id);
-+		ipa_interrupt_suspend_enable(ipa->interrupt, endpoint_id);
- 		ipa_endpoint_replenish_enable(endpoint);
- 	}
- 
--	ipa->enabled |= BIT(endpoint->endpoint_id);
-+	__set_bit(endpoint_id, ipa->enabled);
- 
- 	return 0;
- }
- 
- void ipa_endpoint_disable_one(struct ipa_endpoint *endpoint)
- {
--	u32 mask = BIT(endpoint->endpoint_id);
-+	u32 endpoint_id = endpoint->endpoint_id;
- 	struct ipa *ipa = endpoint->ipa;
- 	struct gsi *gsi = &ipa->gsi;
- 	int ret;
- 
--	if (!(ipa->enabled & mask))
-+	if (!test_bit(endpoint_id, ipa->enabled))
- 		return;
- 
--	ipa->enabled ^= mask;
-+	__clear_bit(endpoint_id, endpoint->ipa->enabled);
- 
- 	if (!endpoint->toward_ipa) {
- 		ipa_endpoint_replenish_disable(endpoint);
--		ipa_interrupt_suspend_disable(ipa->interrupt,
--					      endpoint->endpoint_id);
-+		ipa_interrupt_suspend_disable(ipa->interrupt, endpoint_id);
- 	}
- 
- 	/* Note that if stop fails, the channel's state is not well-defined */
-@@ -1713,7 +1712,7 @@ void ipa_endpoint_disable_one(struct ipa_endpoint *endpoint)
- 	if (ret)
- 		dev_err(&ipa->pdev->dev,
- 			"error %d attempting to stop endpoint %u\n", ret,
--			endpoint->endpoint_id);
-+			endpoint_id);
- }
- 
- void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
-@@ -1722,7 +1721,7 @@ void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
- 	struct gsi *gsi = &endpoint->ipa->gsi;
- 	int ret;
- 
--	if (!(endpoint->ipa->enabled & BIT(endpoint->endpoint_id)))
-+	if (!test_bit(endpoint->endpoint_id, endpoint->ipa->enabled))
- 		return;
- 
- 	if (!endpoint->toward_ipa) {
-@@ -1742,7 +1741,7 @@ void ipa_endpoint_resume_one(struct ipa_endpoint *endpoint)
- 	struct gsi *gsi = &endpoint->ipa->gsi;
- 	int ret;
- 
--	if (!(endpoint->ipa->enabled & BIT(endpoint->endpoint_id)))
-+	if (!test_bit(endpoint->endpoint_id, endpoint->ipa->enabled))
- 		return;
- 
- 	if (!endpoint->toward_ipa)
-@@ -1971,6 +1970,8 @@ void ipa_endpoint_exit(struct ipa *ipa)
- 	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count)
- 		ipa_endpoint_exit_one(&ipa->endpoint[endpoint_id]);
- 
-+	bitmap_free(ipa->enabled);
-+	ipa->enabled = NULL;
- 	bitmap_free(ipa->set_up);
- 	ipa->set_up = NULL;
- 	bitmap_free(ipa->defined);
-@@ -2003,6 +2004,10 @@ int ipa_endpoint_init(struct ipa *ipa, u32 count,
- 	if (!ipa->set_up)
- 		goto err_free_defined;
- 
-+	ipa->enabled = bitmap_zalloc(ipa->endpoint_count, GFP_KERNEL);
-+	if (!ipa->enabled)
-+		goto err_free_set_up;
-+
- 	filtered = 0;
- 	for (name = 0; name < count; name++, data++) {
- 		if (ipa_gsi_endpoint_data_empty(data))
-@@ -2027,6 +2032,9 @@ int ipa_endpoint_init(struct ipa *ipa, u32 count,
- 
- 	return 0;
- 
-+err_free_set_up:
-+	bitmap_free(ipa->set_up);
-+	ipa->set_up = NULL;
- err_free_defined:
- 	bitmap_free(ipa->defined);
- 	ipa->defined = NULL;
--- 
-2.34.1
+> > Indeed, I was also wondering whether an extra timeout arg to
+> > epoll_wait would give the same feature with less side effects. Then no
+> > need for that new ctrl API.
+>
+> That was my main question in this posting - what's the best api? The
+> current one, epoll_wait() addition, or both? The nice thing about the
+> current one is that it's easy to integrate into existing use cases, as
+> the decision to do batching on the userspace side or by utilizing this
+> feature can be kept in the setup path. If you do epoll_wait() and get
+> -1/EINVAL or false success on older kernels, then that's either a loss
+> because of thinking it worked, or a fast path need to check for this
+> specifically every time you call epoll_wait() rather than just at
+> init/setup time.
+>
+> But this is very much the question I already posed and wanted to
+> discuss...
 
+I see the value in being able to detect whether the feature is present.
+
+But a pure epoll_wait implementation seems a lot simpler to me, and
+more elegant: timeout is an argument to epoll_wait already.
+
+A new epoll_wait variant would have to be a new system call, so it
+would be easy to infer support for the feature.
+
+>
+> --
+> Jens Axboe
