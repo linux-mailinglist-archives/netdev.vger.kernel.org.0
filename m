@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E78A2617079
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 23:12:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B0F617071
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 23:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbiKBWLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 18:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S231422AbiKBWL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 18:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231417AbiKBWLs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 18:11:48 -0400
+        with ESMTP id S231356AbiKBWLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 18:11:49 -0400
 Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CC2BC32
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 15:11:46 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id d123so11492784iof.7
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 15:11:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2A6BC96
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 15:11:47 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id r81so7547641iod.2
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 15:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lCQLB8py1X/NJwP3+BLi4r+G0VNoFsbUa3BWr+xCFoQ=;
-        b=SNCDbmVKKb+oXB9d2PZfmQ6sGlOAEy3WH57N0KnFlaRTGlopsX4RUr79DscWszmB8b
-         PvOTMZ/Zje2FeFenOosF179eV+2gHKT+RhYyJJxeqalnyvaFj/Ko9I0uRe1njB26FVIu
-         if4zwr6/CLuEGz7bb0ftItu0VKeJFDYb3ldhClkNqMbeI75zlVEdeD2DrvgaLePddd8C
-         xZtLIB83w2j6hsppp8THKQDIx0y26rOZuf4miBG9qpshQKHxl9uAt3StG5ztrUC8RoYp
-         S58COHsH9YR141+iYlNzVv3Z8O57oS3p220BASIl8IMnBbddAy2l4VCsEiuLe+OF0x2b
-         tG/Q==
+        bh=44inpgxMtLGpYTBDTKxPiEfpRDa0k0SEfGcjuP68SFA=;
+        b=E8zRVS9F27rajNfZCJWIwaTxqcrfrRyozWVG3XQoiJ8geI02YDsiE/2sOfBxZJVxVa
+         77XMug2VsyzU22K+Psprfc76f4gTh5GroQQql8AS8/rwlPm8ohIngsEcqrVz0R0J973P
+         VVDPDtnMWZShk+x9LRnIyJnMzWpM5ohFyjVUCBxfCdlUUbHR1JuIye7p7WGSErPbwF2L
+         K8ZrHNAt28nJUo4rcc4+S7nn/hyabbD0IzRm8pVGxB8lRf1XUSK8K1WI9W5vrd53dC4U
+         IygDp9EIwZOGARqXKtDOows34n75OHdnCz1DrRfPS8RpUVUknEvaIxW81hutDvsFicNy
+         CKdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lCQLB8py1X/NJwP3+BLi4r+G0VNoFsbUa3BWr+xCFoQ=;
-        b=XboBEO73966vr2wa2ej7sMa0/Erd3KVuebLeaVKPWZlTsMf7H6w2zrmRyL/GPaU8DS
-         b6VTU4G31xcStbsw0oR00cC78arW3h3mda9BlzleV1odPcaTFuEXgQIHFCEyzokF+LH1
-         Jk1Qlm+13ke8JlgUxvrGmaBpSfWazGf2f3ePL9YNau9iqxhJopx6um+20omIUASQEcFZ
-         Pu1Ha56QKom4dCZ31bAozQ57sf40tyx7kStCf+cAYvq65c/zCWFDYzqT+IXZyhENifwT
-         gmYxzmvXFkcMBlEx6AiHieuW0P0WrXxAKK2fj+ScmTsTvXjbam2jvNiYPX3leGeg0KQz
-         nMbQ==
-X-Gm-Message-State: ACrzQf3EzU8/CJccuv4fHMDLObaAKMldVePEVkn2VDcYddFBG4hW1EKw
-        ezGYQFfTjok7OkfGIJA9fUm4IQ==
-X-Google-Smtp-Source: AMsMyM4CeoNL38zmvm/YKt29nzHl92WZ/9UIh/QsBpe4nGijPLUyY0M8Rmv2eNDf7KQmZ0ebDa4FiA==
-X-Received: by 2002:a05:6602:2dc7:b0:6a5:14e5:d709 with SMTP id l7-20020a0566022dc700b006a514e5d709mr16658698iow.54.1667427105992;
-        Wed, 02 Nov 2022 15:11:45 -0700 (PDT)
+        bh=44inpgxMtLGpYTBDTKxPiEfpRDa0k0SEfGcjuP68SFA=;
+        b=r7dkyePErsAjXkGneyI6uauNMn/TWS0DLuwhKnV+vi5xizC8JlEjBYqXQhfzxGUajS
+         fWZ+eOySLGVdtRLGrFOiMTw3WUSmHpiXw8XDiemQQ+h23dLGgg4VvetiP/CST3kQKTSr
+         n3ErwxoDZXT8sgdjifx6U5cwvB9ZjbHLqtkA0HHIilDxHREI6UTTXROiQHqEH5AJecNX
+         xZAPbQeiIabLFxaE20kH+oohUqrE6iEI1H2EoPP81TmDtWdVxkZ1Jyn5+xewFgoCdh+b
+         zmsFEBZTUTOTZwguGaXBETdB22+2sWdOgDm6qpsQUKsFFd3DeU/4h1KidT4ptN7BmKDO
+         fufQ==
+X-Gm-Message-State: ACrzQf2nUgZDdH0I1klJCoNjGOC9owsXdkU5Dpv85f+d1c2WmdxE8uxz
+        Hm34bFSmuBp+XiT5pNTdCwHhTA==
+X-Google-Smtp-Source: AMsMyM7BQ9X4OlwxKp6Z0UVt5tWSmJ3HSKggYZ99QQCfxwC6Gjbz86LMNO/ALVMBbrSkJMN8xXEHRg==
+X-Received: by 2002:a05:6602:134f:b0:6a5:3fdb:574e with SMTP id i15-20020a056602134f00b006a53fdb574emr17598065iov.218.1667427107220;
+        Wed, 02 Nov 2022 15:11:47 -0700 (PDT)
 Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id f8-20020a02a108000000b0037465a1dd3fsm5073974jag.156.2022.11.02.15.11.44
+        by smtp.gmail.com with ESMTPSA id f8-20020a02a108000000b0037465a1dd3fsm5073974jag.156.2022.11.02.15.11.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 15:11:45 -0700 (PDT)
+        Wed, 02 Nov 2022 15:11:46 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/9] net: ipa: use ipa_table_mem() in ipa_table_reset_add()
-Date:   Wed,  2 Nov 2022 17:11:32 -0500
-Message-Id: <20221102221139.1091510-3-elder@linaro.org>
+Subject: [PATCH net-next v2 3/9] net: ipa: add a parameter to aggregation registers
+Date:   Wed,  2 Nov 2022 17:11:33 -0500
+Message-Id: <20221102221139.1091510-4-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221102221139.1091510-1-elder@linaro.org>
 References: <20221102221139.1091510-1-elder@linaro.org>
@@ -67,113 +67,219 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the previous commit, pass flags rather than a memory
-region ID to ipa_table_reset_add(), and there use ipa_table_mem() to
-look up the memory region affected based on those flags.
+Starting with IPA v5.0, a single IPA instance can have more than 32
+endpoints defined.  To handle this, each register that holds a
+bitmap of IPA endpoints is replicated as needed to represent the
+available endpoints.
 
-Currently all eight of these table memory regions are assumed to
-exist, because they all have canaries within them.  Stop assuming
-that will always be the case, and in ipa_table_reset_add() allow
-these memory regions to be non-existent.
+To prepare for this, registers that represent endpoint IDs in a bit
+mask will be defined to have a parameter, with a stride value of 4
+bytes.  The first 32 endpoints are represented in the first 32-bit
+register, then the next (up to) 32 endpoints at an offset 4 bytes
+higher.  When accessing such a register, the endpoint ID divided
+by 32 determines the offset, and the endpoint ID modulo 32 defines
+the endpoint's bit position within the register.
+
+The first two registers we'll update for this are STATE_AGGR_ACTIVE
+and AGGR_FORCE_CLOSE.
+
+Until more than 32 endpoints are supported, this change has no
+practical effect.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_table.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c       | 14 ++++++++++----
+ drivers/net/ipa/reg/ipa_reg-v3.1.c   |  4 ++--
+ drivers/net/ipa/reg/ipa_reg-v3.5.1.c |  4 ++--
+ drivers/net/ipa/reg/ipa_reg-v4.11.c  |  4 ++--
+ drivers/net/ipa/reg/ipa_reg-v4.2.c   |  4 ++--
+ drivers/net/ipa/reg/ipa_reg-v4.5.c   |  4 ++--
+ drivers/net/ipa/reg/ipa_reg-v4.9.c   |  4 ++--
+ 7 files changed, 22 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-index 94bb7611e574b..3a14465bf8a64 100644
---- a/drivers/net/ipa/ipa_table.c
-+++ b/drivers/net/ipa/ipa_table.c
-@@ -200,16 +200,17 @@ static dma_addr_t ipa_table_addr(struct ipa *ipa, bool filter_mask, u16 count)
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 2a6184ea8f5ca..32559ed498c19 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -350,29 +350,35 @@ ipa_endpoint_program_delay(struct ipa_endpoint *endpoint, bool enable)
+ 
+ static bool ipa_endpoint_aggr_active(struct ipa_endpoint *endpoint)
+ {
+-	u32 mask = BIT(endpoint->endpoint_id);
++	u32 endpoint_id = endpoint->endpoint_id;
++	u32 mask = BIT(endpoint_id % 32);
+ 	struct ipa *ipa = endpoint->ipa;
++	u32 unit = endpoint_id / 32;
+ 	const struct ipa_reg *reg;
+ 	u32 val;
+ 
++	/* This works until we actually have more than 32 endpoints */
+ 	WARN_ON(!(mask & ipa->available));
+ 
+ 	reg = ipa_reg(ipa, STATE_AGGR_ACTIVE);
+-	val = ioread32(ipa->reg_virt + ipa_reg_offset(reg));
++	val = ioread32(ipa->reg_virt + ipa_reg_n_offset(reg, unit));
+ 
+ 	return !!(val & mask);
  }
  
- static void ipa_table_reset_add(struct gsi_trans *trans, bool filter,
--				u16 first, u16 count, enum ipa_mem_id mem_id)
-+				bool hashed, bool ipv6, u16 first, u16 count)
+ static void ipa_endpoint_force_close(struct ipa_endpoint *endpoint)
  {
- 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
--	const struct ipa_mem *mem = ipa_mem_find(ipa, mem_id);
-+	const struct ipa_mem *mem;
- 	dma_addr_t addr;
- 	u32 offset;
- 	u16 size;
+-	u32 mask = BIT(endpoint->endpoint_id);
++	u32 endpoint_id = endpoint->endpoint_id;
++	u32 mask = BIT(endpoint_id % 32);
+ 	struct ipa *ipa = endpoint->ipa;
++	u32 unit = endpoint_id / 32;
+ 	const struct ipa_reg *reg;
  
--	/* Nothing to do if the table memory region is empty */
--	if (!mem->size)
-+	/* Nothing to do if the memory region is doesn't exist or is empty */
-+	mem = ipa_table_mem(ipa, filter, hashed, ipv6);
-+	if (!mem || !mem->size)
- 		return;
++	/* This works until we actually have more than 32 endpoints */
+ 	WARN_ON(!(mask & ipa->available));
  
- 	if (filter)
-@@ -227,7 +228,7 @@ static void ipa_table_reset_add(struct gsi_trans *trans, bool filter,
-  * for the IPv4 and IPv6 non-hashed and hashed filter tables.
-  */
- static int
--ipa_filter_reset_table(struct ipa *ipa, enum ipa_mem_id mem_id, bool modem)
-+ipa_filter_reset_table(struct ipa *ipa, bool hashed, bool ipv6, bool modem)
- {
- 	u32 ep_mask = ipa->filter_map;
- 	u32 count = hweight32(ep_mask);
-@@ -253,7 +254,7 @@ ipa_filter_reset_table(struct ipa *ipa, enum ipa_mem_id mem_id, bool modem)
- 		if (endpoint->ee_id != ee_id)
- 			continue;
- 
--		ipa_table_reset_add(trans, true, endpoint_id, 1, mem_id);
-+		ipa_table_reset_add(trans, true, hashed, ipv6, endpoint_id, 1);
- 	}
- 
- 	gsi_trans_commit_wait(trans);
-@@ -269,18 +270,18 @@ static int ipa_filter_reset(struct ipa *ipa, bool modem)
- {
- 	int ret;
- 
--	ret = ipa_filter_reset_table(ipa, IPA_MEM_V4_FILTER, modem);
-+	ret = ipa_filter_reset_table(ipa, false, false, modem);
- 	if (ret)
- 		return ret;
- 
--	ret = ipa_filter_reset_table(ipa, IPA_MEM_V4_FILTER_HASHED, modem);
-+	ret = ipa_filter_reset_table(ipa, true, false, modem);
- 	if (ret)
- 		return ret;
- 
--	ret = ipa_filter_reset_table(ipa, IPA_MEM_V6_FILTER, modem);
-+	ret = ipa_filter_reset_table(ipa, false, true, modem);
- 	if (ret)
- 		return ret;
--	ret = ipa_filter_reset_table(ipa, IPA_MEM_V6_FILTER_HASHED, modem);
-+	ret = ipa_filter_reset_table(ipa, true, true, modem);
- 
- 	return ret;
+ 	reg = ipa_reg(ipa, AGGR_FORCE_CLOSE);
+-	iowrite32(mask, ipa->reg_virt + ipa_reg_offset(reg));
++	iowrite32(mask, ipa->reg_virt + ipa_reg_n_offset(reg, unit));
  }
-@@ -312,13 +313,11 @@ static int ipa_route_reset(struct ipa *ipa, bool modem)
- 		count = ipa->route_count - modem_route_count;
- 	}
  
--	ipa_table_reset_add(trans, false, first, count, IPA_MEM_V4_ROUTE);
--	ipa_table_reset_add(trans, false, first, count,
--			    IPA_MEM_V4_ROUTE_HASHED);
-+	ipa_table_reset_add(trans, false, false, false, first, count);
-+	ipa_table_reset_add(trans, false, true, false, first, count);
+ /**
+diff --git a/drivers/net/ipa/reg/ipa_reg-v3.1.c b/drivers/net/ipa/reg/ipa_reg-v3.1.c
+index 0d002c3c38a26..0b6edc2912bd3 100644
+--- a/drivers/net/ipa/reg/ipa_reg-v3.1.c
++++ b/drivers/net/ipa/reg/ipa_reg-v3.1.c
+@@ -103,7 +103,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
+ IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x0000090);
  
--	ipa_table_reset_add(trans, false, first, count, IPA_MEM_V6_ROUTE);
--	ipa_table_reset_add(trans, false, first, count,
--			    IPA_MEM_V6_ROUTE_HASHED);
-+	ipa_table_reset_add(trans, false, false, true, first, count);
-+	ipa_table_reset_add(trans, false, true, true, first, count);
+ /* Valid bits defined by ipa->available */
+-IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c);
++IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c, 0x0004);
  
- 	gsi_trans_commit_wait(trans);
+ IPA_REG(IPA_BCR, ipa_bcr, 0x000001d0);
  
+@@ -116,7 +116,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
++IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+ 
+ static const u32 ipa_reg_counter_cfg_fmask[] = {
+ 	[EOT_COAL_GRANULARITY]				= GENMASK(3, 0),
+diff --git a/drivers/net/ipa/reg/ipa_reg-v3.5.1.c b/drivers/net/ipa/reg/ipa_reg-v3.5.1.c
+index 6e2f939b18f19..10f62f6aaf7a4 100644
+--- a/drivers/net/ipa/reg/ipa_reg-v3.5.1.c
++++ b/drivers/net/ipa/reg/ipa_reg-v3.5.1.c
+@@ -108,7 +108,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
+ IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x0000090);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c);
++IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x0000010c, 0x0004);
+ 
+ IPA_REG(IPA_BCR, ipa_bcr, 0x000001d0);
+ 
+@@ -121,7 +121,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
++IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+ 
+ static const u32 ipa_reg_counter_cfg_fmask[] = {
+ 						/* Bits 0-3 reserved */
+diff --git a/drivers/net/ipa/reg/ipa_reg-v4.11.c b/drivers/net/ipa/reg/ipa_reg-v4.11.c
+index 8fd36569bb9f8..113a25c006da1 100644
+--- a/drivers/net/ipa/reg/ipa_reg-v4.11.c
++++ b/drivers/net/ipa/reg/ipa_reg-v4.11.c
+@@ -140,7 +140,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
+ IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
++IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
+ 
+ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ 	[IPA_BASE_ADDR]					= GENMASK(17, 0),
+@@ -151,7 +151,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
++IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+ 
+ static const u32 ipa_reg_ipa_tx_cfg_fmask[] = {
+ 						/* Bits 0-1 reserved */
+diff --git a/drivers/net/ipa/reg/ipa_reg-v4.2.c b/drivers/net/ipa/reg/ipa_reg-v4.2.c
+index f8e78e1907c83..c93f2da9290fc 100644
+--- a/drivers/net/ipa/reg/ipa_reg-v4.2.c
++++ b/drivers/net/ipa/reg/ipa_reg-v4.2.c
+@@ -132,7 +132,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
+ IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
++IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
+ 
+ IPA_REG(IPA_BCR, ipa_bcr, 0x000001d0);
+ 
+@@ -145,7 +145,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
++IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+ 
+ static const u32 ipa_reg_counter_cfg_fmask[] = {
+ 						/* Bits 0-3 reserved */
+diff --git a/drivers/net/ipa/reg/ipa_reg-v4.5.c b/drivers/net/ipa/reg/ipa_reg-v4.5.c
+index d32b805abb11a..1615c5ead8cc1 100644
+--- a/drivers/net/ipa/reg/ipa_reg-v4.5.c
++++ b/drivers/net/ipa/reg/ipa_reg-v4.5.c
+@@ -134,7 +134,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
+ IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
++IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
+ 
+ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ 	[IPA_BASE_ADDR]					= GENMASK(17, 0),
+@@ -145,7 +145,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
++IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+ 
+ static const u32 ipa_reg_ipa_tx_cfg_fmask[] = {
+ 						/* Bits 0-1 reserved */
+diff --git a/drivers/net/ipa/reg/ipa_reg-v4.9.c b/drivers/net/ipa/reg/ipa_reg-v4.9.c
+index eabbc5451937b..4efc890d31589 100644
+--- a/drivers/net/ipa/reg/ipa_reg-v4.9.c
++++ b/drivers/net/ipa/reg/ipa_reg-v4.9.c
+@@ -139,7 +139,7 @@ static const u32 ipa_reg_filt_rout_hash_flush_fmask[] = {
+ IPA_REG_FIELDS(FILT_ROUT_HASH_FLUSH, filt_rout_hash_flush, 0x000014c);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4);
++IPA_REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x000000b4, 0x0004);
+ 
+ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ 	[IPA_BASE_ADDR]					= GENMASK(17, 0),
+@@ -150,7 +150,7 @@ static const u32 ipa_reg_local_pkt_proc_cntxt_fmask[] = {
+ IPA_REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x000001e8);
+ 
+ /* Valid bits defined by ipa->available */
+-IPA_REG(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec);
++IPA_REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000001ec, 0x0004);
+ 
+ static const u32 ipa_reg_ipa_tx_cfg_fmask[] = {
+ 						/* Bits 0-1 reserved */
 -- 
 2.34.1
 
