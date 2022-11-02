@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56302616FDA
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:33:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32EBB616FDC
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 22:34:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiKBVdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 17:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
+        id S231211AbiKBVeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 17:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbiKBVdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:33:49 -0400
+        with ESMTP id S230431AbiKBVdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 17:33:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7F5C4D
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C37E3B
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 14:33:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 860CA61C52
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A13A561C58
         for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 21:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F32CC43140;
-        Wed,  2 Nov 2022 21:33:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24287C433D7;
+        Wed,  2 Nov 2022 21:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1667424828;
-        bh=RnYLYrm7KDQa3AHHQluXfHsYPXmnB1pwhK77MKOsiH0=;
+        bh=7SZYX6NR/XeFprIop8mPSJT5OAYRZBHBQT0QY3ZYLqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eoDtgU95c0MvIoHJx8rKKLCFLJyOcabZakcUAHuPoF/iahURu9EhVXkTLp4eG5sJG
-         qV7gUPs2t3SxkLx1PMNaGkrWadCXefJRVOlm5ojStQDKN61uJ9R2xLONaEeiIgoo40
-         oaQvkJi50WA7UcpQ0I85CTYGSXoTm4HK76iI1QtboKhJICX2u5ALI0szVIPviKAWbQ
-         Z/GXGXkB/ddFEsNrymVRBF2DDuESuoHTnUVMSOcxtgoWgjGSZFI4B9n1xYWFVURPSx
-         CLDFBhIMbyLe6D+FwaoilgUNghTZRoOO3KD4tVUdv3sHo1FUc2VNbIBLt9D7lqkokH
-         qgs374bSDQyHQ==
+        b=RgOH6F9Q96i/nEAhU/HPYQBY04KTSj4KV3dyLVRyu+fIS/5uSloMiSiw6/JH057W5
+         8C005opdaz3a66BI/ci42b7FOT6mpCqqSWMrq+9pLKbs0+CI5aXiPY8bNCgVvCmkQU
+         n4cNOIFQO7dfwGOdRdl5e8K1nb20ImCR/1yn4qNdj3T1EVAFL0ycdPn1LOTvEDwzks
+         A5f/Qu+LO3GfBDZ7t9ALgHiM4UfQPhcl3E0Yeo4hpKhSWOpLB0SpfM4BfbE+n2WDSB
+         p8xcTVfolKhKgBc8R/0jQxUtJRXwHW/qMk1XUYXgBm6q0w9mNzRsYl6HF3vnlCMBXj
+         QL0p2bjC80BZA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
         gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 04/13] genetlink: load policy based on validation flags
-Date:   Wed,  2 Nov 2022 14:33:29 -0700
-Message-Id: <20221102213338.194672-5-kuba@kernel.org>
+Subject: [PATCH net-next v2 05/13] genetlink: check for callback type at op load time
+Date:   Wed,  2 Nov 2022 14:33:30 -0700
+Message-Id: <20221102213338.194672-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221102213338.194672-1-kuba@kernel.org>
 References: <20221102213338.194672-1-kuba@kernel.org>
@@ -54,59 +54,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the policy and maxattr pointers based on validation flags.
-genl_family_rcv_msg_attrs_parse() will do nothing and return NULL
-if maxattrs is zero, so no behavior change is expected.
+Now that genl_get_cmd_split() is informed what type of callback
+user is trying to access (do or dump) we can check that this
+callback is indeed available and return an error early.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-v2: improve commit msg
----
- net/netlink/genetlink.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ net/netlink/genetlink.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index c66299740c05..770726ac491e 100644
+index 770726ac491e..7c04df1bee2b 100644
 --- a/net/netlink/genetlink.c
 +++ b/net/netlink/genetlink.c
-@@ -204,8 +204,14 @@ genl_cmd_full_to_split(struct genl_split_ops *op,
- 		op->post_doit	= family->post_doit;
+@@ -189,11 +189,17 @@ static int genl_get_cmd(u32 cmd, const struct genl_family *family,
+ 	return genl_get_cmd_small(cmd, family, op);
+ }
+ 
+-static void
++static int
+ genl_cmd_full_to_split(struct genl_split_ops *op,
+ 		       const struct genl_family *family,
+ 		       const struct genl_ops *full, u8 flags)
+ {
++	if ((flags & GENL_CMD_CAP_DO && !full->doit) ||
++	    (flags & GENL_CMD_CAP_DUMP && !full->dumpit)) {
++		memset(op, 0, sizeof(*op));
++		return -ENOENT;
++	}
++
+ 	if (flags & GENL_CMD_CAP_DUMP) {
+ 		op->start	= full->start;
+ 		op->dumpit	= full->dumpit;
+@@ -220,6 +226,8 @@ genl_cmd_full_to_split(struct genl_split_ops *op,
+ 
+ 	/* Make sure flags include the GENL_CMD_CAP_DO / GENL_CMD_CAP_DUMP */
+ 	op->flags		|= flags;
++
++	return 0;
+ }
+ 
+ static int
+@@ -235,9 +243,7 @@ genl_get_cmd_split(u32 cmd, u8 flags, const struct genl_family *family,
+ 		return err;
  	}
  
--	op->policy		= full->policy;
--	op->maxattr		= full->maxattr;
-+	if (flags & GENL_CMD_CAP_DUMP &&
-+	    full->validate & GENL_DONT_VALIDATE_DUMP) {
-+		op->policy	= NULL;
-+		op->maxattr	= 0;
-+	} else {
-+		op->policy	= full->policy;
-+		op->maxattr	= full->maxattr;
-+	}
- 
- 	op->cmd			= full->cmd;
- 	op->internal_flags	= full->internal_flags;
-@@ -638,10 +644,8 @@ static int genl_start(struct netlink_callback *cb)
- 	int rc = 0;
- 
- 	ops = ctx->ops;
--	if (ops->validate & GENL_DONT_VALIDATE_DUMP)
--		goto no_attrs;
+-	genl_cmd_full_to_split(op, family, &full, flags);
 -
--	if (ctx->nlh->nlmsg_len < nlmsg_msg_size(ctx->hdrlen))
-+	if (!(ops->validate & GENL_DONT_VALIDATE_DUMP) &&
-+	    ctx->nlh->nlmsg_len < nlmsg_msg_size(ctx->hdrlen))
- 		return -EINVAL;
+-	return 0;
++	return genl_cmd_full_to_split(op, family, &full, flags);
+ }
  
- 	attrs = genl_family_rcv_msg_attrs_parse(ctx->family, ctx->nlh, ctx->extack,
-@@ -650,7 +654,6 @@ static int genl_start(struct netlink_callback *cb)
- 	if (IS_ERR(attrs))
- 		return PTR_ERR(attrs);
+ static void genl_get_cmd_by_index(unsigned int i,
+@@ -730,9 +736,6 @@ static int genl_family_rcv_msg_dumpit(const struct genl_family *family,
+ 	struct genl_start_context ctx;
+ 	int err;
  
--no_attrs:
- 	info = genl_dumpit_info_alloc();
- 	if (!info) {
- 		genl_family_rcv_msg_attrs_free(attrs);
+-	if (!ops->dumpit)
+-		return -EOPNOTSUPP;
+-
+ 	ctx.family = family;
+ 	ctx.nlh = nlh;
+ 	ctx.extack = extack;
+@@ -777,9 +780,6 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+ 	struct genl_info info;
+ 	int err;
+ 
+-	if (!ops->doit)
+-		return -EOPNOTSUPP;
+-
+ 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
+ 						  ops, hdrlen,
+ 						  GENL_DONT_VALIDATE_STRICT);
 -- 
 2.38.1
 
