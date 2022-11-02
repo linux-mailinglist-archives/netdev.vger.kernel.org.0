@@ -2,106 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D86E0615F8B
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 10:22:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 349CF616023
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 10:43:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbiKBJWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 05:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51730 "EHLO
+        id S229932AbiKBJnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 05:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbiKBJV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 05:21:28 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03AC11C23;
-        Wed,  2 Nov 2022 02:20:47 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N2Lvv3M9KzHvV3;
-        Wed,  2 Nov 2022 17:20:27 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 17:20:45 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <peterpenkov96@gmail.com>,
-        Wang Yufen <wangyufen@huawei.com>
-Subject: [PATCH net v2] net: tun: Fix memory leaks of napi_get_frags
-Date:   Wed, 2 Nov 2022 17:41:19 +0800
-Message-ID: <1667382079-6499-1-git-send-email-wangyufen@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S229487AbiKBJna (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 05:43:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782CA220F2
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 02:42:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667382155;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iA0sGfa+ahBDJMGfDHR9LxRbe1IWFp0fRmP5we1ndrY=;
+        b=XfyYE8VqaHLYhYINxp6XKNcJqPmPft61la9Fl2S5mLzUCjgLq78b8MNcIgMXjZWYAu/S4P
+        Sf6TJXMSjldOnQ3XaEkVqSMKUGRdXp7MP9qikiKHor9boU6hQmwBFtkFtZrROhcqVnkRtL
+        vvsXWPJHCCzuz8+UKmKyrQAQkx6F5fg=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-470-7XljnPo-MxqtiiQqPGUZyQ-1; Wed, 02 Nov 2022 05:42:34 -0400
+X-MC-Unique: 7XljnPo-MxqtiiQqPGUZyQ-1
+Received: by mail-qv1-f71.google.com with SMTP id e13-20020ad450cd000000b004bb49d98da4so9503505qvq.9
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 02:42:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iA0sGfa+ahBDJMGfDHR9LxRbe1IWFp0fRmP5we1ndrY=;
+        b=lAFjjyWPSCKyJLxRpj93nRjwG932lyVhhiixQKfNj1Jqv1EBRSXHtwwrEnvS+Ja5ci
+         4siO22sI+2BX6+xInvTC24JxU3hrU+xiegM1XptKNZb6mV7RRIvjpTnqpN2BnTe3h7b/
+         ZNIASc/Iq2BwW/bTRBo3w+bNXLy4zrl0tD9ebEawSEBhkxCsyFRnAsHoRMFIfvOkucmL
+         7/golSish1+T2nMCvx90szB2XVZgja/h1i+VXjvwn74SbWmgcja3GeX+taC7XsNEU7CS
+         8GRDaiDXFm9eIGIvx7igGszJ8iCVrSpvVbPEvj/RwSJbmZemnqPH0olORFnA1p6ycfd1
+         jNew==
+X-Gm-Message-State: ACrzQf2TwhjUhOugwocl6B5q29la5pT22ETe0Bg4eqx7hPghFywYwUWE
+        AGvBEU9lBOIhkkH2wZVHaOZ55NWvZ6Ko/9NNK0l+6lTyXRiV4nCNpcCJTD+lGXgmKzpPwa6MMl1
+        tg398ijC4ur/I+rMh
+X-Received: by 2002:a0c:e3d3:0:b0:4bb:c033:76fc with SMTP id e19-20020a0ce3d3000000b004bbc03376fcmr19147795qvl.117.1667382154196;
+        Wed, 02 Nov 2022 02:42:34 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4g7XSgjzk5GrqDqTREUMG4zF+wpaO4A5LDwUXjacchdFaECWsUVyjkZbcH8ClLWm8iO8DpNA==
+X-Received: by 2002:a0c:e3d3:0:b0:4bb:c033:76fc with SMTP id e19-20020a0ce3d3000000b004bbc03376fcmr19147785qvl.117.1667382153979;
+        Wed, 02 Nov 2022 02:42:33 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
+        by smtp.gmail.com with ESMTPSA id bj38-20020a05620a192600b006bb366779a4sm1821377qkb.6.2022.11.02.02.42.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Nov 2022 02:42:33 -0700 (PDT)
+Date:   Wed, 2 Nov 2022 10:42:24 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, arseny.krasnov@kaspersky.com,
+        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, stephen@networkplumber.org,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        frederic.dalleau@docker.com
+Subject: Re: [PATCH v2 2/2] vsock: fix possible infinite sleep in
+ vsock_connectible_wait_data()
+Message-ID: <20221102094224.2n2p6cakjtd4n2yf@sgarzare-redhat>
+References: <20221101021706.26152-1-decui@microsoft.com>
+ <20221101021706.26152-3-decui@microsoft.com>
+ <20221102093137.2il5u7opfyddheis@sgarzare-redhat>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221102093137.2il5u7opfyddheis@sgarzare-redhat>
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmemleak reports after running test_progs:
+On Wed, Nov 02, 2022 at 10:31:37AM +0100, Stefano Garzarella wrote:
+>On Mon, Oct 31, 2022 at 07:17:06PM -0700, Dexuan Cui wrote:
+>>Currently vsock_connectible_has_data() may miss a wakeup operation
+>>between vsock_connectible_has_data() == 0 and the prepare_to_wait().
+>>
+>>Fix the race by adding the process to the wait queue before checking
+>>vsock_connectible_has_data().
+>>
+>>Fixes: b3f7fd54881b ("af_vsock: separate wait data loop")
+>>Signed-off-by: Dexuan Cui <decui@microsoft.com>
+>>---
+>>
+>>Changes in v2 (Thanks Stefano!):
+>> Fixed a typo in the commit message.
+>> Removed the unnecessary finish_wait() at the end of the loop.
+>
+>LGTM:
+>
+>Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+>
 
-unreferenced object 0xffff8881b1672dc0 (size 232):
-  comm "test_progs", pid 394388, jiffies 4354712116 (age 841.975s)
-  hex dump (first 32 bytes):
-    e0 84 d7 a8 81 88 ff ff 80 2c 67 b1 81 88 ff ff  .........,g.....
-    00 40 c5 9b 81 88 ff ff 00 00 00 00 00 00 00 00  .@..............
-  backtrace:
-    [<00000000c8f01748>] napi_skb_cache_get+0xd4/0x150
-    [<0000000041c7fc09>] __napi_build_skb+0x15/0x50
-    [<00000000431c7079>] __napi_alloc_skb+0x26e/0x540
-    [<000000003ecfa30e>] napi_get_frags+0x59/0x140
-    [<0000000099b2199e>] tun_get_user+0x183d/0x3bb0 [tun]
-    [<000000008a5adef0>] tun_chr_write_iter+0xc0/0x1b1 [tun]
-    [<0000000049993ff4>] do_iter_readv_writev+0x19f/0x320
-    [<000000008f338ea2>] do_iter_write+0x135/0x630
-    [<000000008a3377a4>] vfs_writev+0x12e/0x440
-    [<00000000a6b5639a>] do_writev+0x104/0x280
-    [<00000000ccf065d8>] do_syscall_64+0x3b/0x90
-    [<00000000d776e329>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+And I would add
 
-The issue occurs in the following scenarios:
-tun_get_user()
-  napi_gro_frags()
-    napi_frags_finish()
-      case GRO_NORMAL:
-        gro_normal_one()
-          list_add_tail(&skb->list, &napi->rx_list);
-          <-- While napi->rx_count < READ_ONCE(gro_normal_batch),
-          <-- gro_normal_list() is not called, napi->rx_list is not empty
-  <-- not ask to complete the gro work, will cause memory leaks in
-  <-- following tun_napi_del()
-...
-tun_napi_del()
-  netif_napi_del()
-    __netif_napi_del()
-    <-- &napi->rx_list is not empty, which caused memory leaks
+Reported-by: Frédéric Dalleau <frederic.dalleau@docker.com>
 
-To fix, add napi_complete() after napi_gro_frags().
+Since Frédéric posted a similar patch some months ago (I lost it because 
+netdev and I were not in cc):
+https://lore.kernel.org/virtualization/20220824074251.2336997-2-frederic.dalleau@docker.com/
 
-Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
----
- drivers/net/tun.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 27c6d23..07a0a61 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1976,6 +1976,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 
- 		local_bh_disable();
- 		napi_gro_frags(&tfile->napi);
-+		napi_complete(&tfile->napi);
- 		local_bh_enable();
- 		mutex_unlock(&tfile->napi_mutex);
- 	} else if (tfile->napi_enabled) {
--- 
-1.8.3.1
+Thanks,
+Stefano
 
