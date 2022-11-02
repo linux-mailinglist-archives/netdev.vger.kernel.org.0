@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C390D616D03
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 19:47:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D183616D0D
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 19:47:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231701AbiKBSrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 14:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42190 "EHLO
+        id S231717AbiKBSrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 14:47:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbiKBSrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 14:47:09 -0400
+        with ESMTP id S231697AbiKBSrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 14:47:10 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1B982CE27;
-        Wed,  2 Nov 2022 11:47:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 511B12FC14;
+        Wed,  2 Nov 2022 11:47:10 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 2/7] netfilter: nf_tables: release flow rule object from commit path
-Date:   Wed,  2 Nov 2022 19:46:54 +0100
-Message-Id: <20221102184659.2502-3-pablo@netfilter.org>
+Subject: [PATCH net 3/7] ipvs: use explicitly signed chars
+Date:   Wed,  2 Nov 2022 19:46:55 +0100
+Message-Id: <20221102184659.2502-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221102184659.2502-1-pablo@netfilter.org>
 References: <20221102184659.2502-1-pablo@netfilter.org>
@@ -34,41 +34,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No need to postpone this to the commit release path, since no packets
-are walking over this object, this is accessed from control plane only.
-This helped uncovered UAF triggered by races with the netlink notifier.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Fixes: 9dd732e0bdf5 ("netfilter: nf_tables: memleak flow rule from commit path")
-Reported-by: syzbot+8f747f62763bc6c32916@syzkaller.appspotmail.com
+The `char` type with no explicit sign is sometimes signed and sometimes
+unsigned. This code will break on platforms such as arm, where char is
+unsigned. So mark it here as explicitly signed, so that the
+todrop_counter decrement and subsequent comparison is correct.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_tables_api.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/netfilter/ipvs/ip_vs_conn.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 2197118aa7b0..76bd4d03dbda 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -8465,9 +8465,6 @@ static void nft_commit_release(struct nft_trans *trans)
- 		nf_tables_chain_destroy(&trans->ctx);
- 		break;
- 	case NFT_MSG_DELRULE:
--		if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
--			nft_flow_rule_destroy(nft_trans_flow_rule(trans));
--
- 		nf_tables_rule_destroy(&trans->ctx, nft_trans_rule(trans));
- 		break;
- 	case NFT_MSG_DELSET:
-@@ -8973,6 +8970,9 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			nft_rule_expr_deactivate(&trans->ctx,
- 						 nft_trans_rule(trans),
- 						 NFT_TRANS_COMMIT);
-+
-+			if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
-+				nft_flow_rule_destroy(nft_trans_flow_rule(trans));
- 			break;
- 		case NFT_MSG_NEWSET:
- 			nft_clear(net, nft_trans_set(trans));
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index 8c04bb57dd6f..7c4866c04343 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1265,8 +1265,8 @@ static inline int todrop_entry(struct ip_vs_conn *cp)
+ 	 * The drop rate array needs tuning for real environments.
+ 	 * Called from timer bh only => no locking
+ 	 */
+-	static const char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+-	static char todrop_counter[9] = {0};
++	static const signed char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
++	static signed char todrop_counter[9] = {0};
+ 	int i;
+ 
+ 	/* if the conn entry hasn't lasted for 60 seconds, don't drop it.
 -- 
 2.30.2
 
