@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30F026163C9
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:25:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5146163D8
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231281AbiKBNZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 09:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
+        id S230446AbiKBNay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 09:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiKBNZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:25:24 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A4C27159
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 06:25:20 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id j15so24539788wrq.3
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 06:25:20 -0700 (PDT)
+        with ESMTP id S230368AbiKBNax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:30:53 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210402A956
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 06:30:53 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id n191so14968570iod.13
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 06:30:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=VpoOzIyshCBPU2NRN3naMF/Ra/n1K3WGYIOqB/gwlHE=;
-        b=HIqGTs2Sun3grbHHeNcwaw0BmvTBT85pOmwOOd4TALZ4fT4N4xfKztJYsthl44aolO
-         mkcJ6uL2FqrY8DHV26Kaqa83fBjIj14/KbsQKrMzXbbiesqM0JPo1BpXZQCAc9N0sJ2l
-         0SdcjJ5SBKtpsbjPr5XfDOmrw7wcCCTZFQAhEyPfC2FDnmbeHU+05khvzX91vaAxEN7o
-         GiWDIDQzJIYHw3pJWgeOcFCO7joEWta0zqKWvWXgx1YEJcmDlt9t40dzb8FN1C7ccyoP
-         Qm/gwD8j/SESxqcdK3s3purirUP8tkiBlqTwTJCv5uAQHVl0z7ODCNmFSTjkqik3Gcws
-         Nxpw==
+        d=docker.com; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jzaJHFBthKI+N9jxIZGxCYyCJNLPmN4e+ahut/KLlwU=;
+        b=Z1G3Uu9Lq7rVn008/R7qQNc36TD/itgKx7kUwlTZfUo5IN+FIIlbjt8ZQMasFfxQv/
+         7ZcXjtTGfguGBZMZeloCNGhQZobrVDESsgnp74DwVEsgMpre+qssJTKu7jorrORpLVug
+         vPsZJ3ucMyUTwOVQQIj5hVtyx8plTk1vOS82g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VpoOzIyshCBPU2NRN3naMF/Ra/n1K3WGYIOqB/gwlHE=;
-        b=E1uDYDteBbRUn0z61OVT6udDbG01f3wmkD7bdD5NKfwuRvldLbl+rAaM1+zfacvZU7
-         V2ufZ8L/1zPRagJAFHb0mBp1kxfT4uiMTiNTU+R9Xt1owzOfFM0DMnS6YoU/mG2eCUSF
-         3JMxivIIyYZCeab+qmgPZ3EhgI4wnr30YngltimwYpXNNTzGvE/IGbLvGOejq70uhSXz
-         8/QbYT3RW4CYDC5qgjShcsIO/1vA00evTAXMqHk2/NNxqvOW44yDcLUyYQExZ1Yk6znH
-         z49e6fesa790rSfmnJ9uBzE8E+2q2NbwR+UwjvSURx+O7KJB+Br0u0d+f721KcRDlkPq
-         B4Bg==
-X-Gm-Message-State: ACrzQf2cEtW/OOB230zXECz2Qw+808goM143ZKZlurNNK2v9ocMK9IdX
-        F4Ejs2On1uoTfrcbsYNLMkQBOA==
-X-Google-Smtp-Source: AMsMyM7M8hjrSk3mi8Gohax5odFc/p4bcQRN5e5M+Gp2y2CDWaj+TVgF5MQot6HSwxlF26aZPhkaaQ==
-X-Received: by 2002:a05:6000:1549:b0:22e:519e:f39d with SMTP id 9-20020a056000154900b0022e519ef39dmr15161903wry.703.1667395519324;
-        Wed, 02 Nov 2022 06:25:19 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:e0c8:95f4:2716:85d9? ([2a01:e0a:b41:c160:e0c8:95f4:2716:85d9])
-        by smtp.gmail.com with ESMTPSA id l2-20020a05600c1d0200b003cf878c4468sm2256039wms.5.2022.11.02.06.25.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Nov 2022 06:25:18 -0700 (PDT)
-Message-ID: <39232de9-9497-3a8b-294a-702ed54e273c@6wind.com>
-Date:   Wed, 2 Nov 2022 14:25:17 +0100
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jzaJHFBthKI+N9jxIZGxCYyCJNLPmN4e+ahut/KLlwU=;
+        b=yO7o+sUyZOguPJVsCfwqIiCAggxcrM/V8umOshttbfe0oX5TaUxA6ykG2g++V+DbYM
+         EfpVsR0yMvhGvb8+2nQ60y8UF4Wy8dETCtWmIhoVAtzHWvNcALQl7+Q+G6a0gmPwlUqR
+         tpxNLWaONkQYAG3BmVl0Nf6lBTgj0LJfgShedJhyIItXWjFa2a2u8Jn3LlA55RCwbAuh
+         hBnBacYPZj4L6YqTaPWuO/R2iE4pfbkGMfx3ZZ5Z6CW87uGatJ3/32HT6LvZa0BJgRAP
+         va5Ixe8EE7KA15eIgOMChuLAmbkQvR+EWoTGb2Hn36mvczFUgNBJvkpLpYcUWhl3o2ky
+         NBkQ==
+X-Gm-Message-State: ACrzQf1fjgJADt7nFUV5bXg5KxyirKbOlXINS1rAGpe5febX0COG5Kz9
+        C2WJpzt8n9LUhlSMVfznVmh7AUlYwCwAJTRN65RgiA==
+X-Google-Smtp-Source: AMsMyM4VY9g5n2ABc5ygSVSDsCFRasTDP+7DPN2cQU3wN0pNpeoFN4/+EvRJlj9i89lTtEQDqsiHOyx4b96d25H0VPQ=
+X-Received: by 2002:a6b:ba83:0:b0:6d3:e190:5abd with SMTP id
+ k125-20020a6bba83000000b006d3e1905abdmr4589591iof.188.1667395852513; Wed, 02
+ Nov 2022 06:30:52 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next] net: tun: bump the link speed from 10Mbps to
- 10Gbps
-Content-Language: en-US
-To:     Ilya Maximets <i.maximets@ovn.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-References: <20221031173953.614577-1-i.maximets@ovn.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20221031173953.614577-1-i.maximets@ovn.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+References: <20221101021706.26152-1-decui@microsoft.com> <20221101021706.26152-3-decui@microsoft.com>
+ <20221102093137.2il5u7opfyddheis@sgarzare-redhat> <20221102094224.2n2p6cakjtd4n2yf@sgarzare-redhat>
+In-Reply-To: <20221102094224.2n2p6cakjtd4n2yf@sgarzare-redhat>
+From:   Frederic Dalleau <frederic.dalleau@docker.com>
+Date:   Wed, 2 Nov 2022 14:30:41 +0100
+Message-ID: <CANWeT6gCfXbGVVySyiG9oQi9EXS2U5aEdN38z9qz1u91vCetyg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] vsock: fix possible infinite sleep in vsock_connectible_wait_data()
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Dexuan Cui <decui@microsoft.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        arseny.krasnov@kaspersky.com, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, stephen@networkplumber.org,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,38 +70,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 31/10/2022 à 18:39, Ilya Maximets a écrit :
-> The 10Mbps link speed was set in 2004 when the ethtool interface was
-> initially added to the tun driver.  It might have been a good
-> assumption 18 years ago, but CPUs and network stack came a long way
-> since then.
-> 
-> Other virtual ports typically report much higher speeds.  For example,
-> veth reports 10Gbps since its introduction in 2007.
-> 
-> Some userspace applications rely on the current link speed in
-> certain situations.  For example, Open vSwitch is using link speed
-> as an upper bound for QoS configuration if user didn't specify the
-> maximum rate.  Advertised 10Mbps doesn't match reality in a modern
-> world, so users have to always manually override the value with
-> something more sensible to avoid configuration issues, e.g. limiting
-> the traffic too much.  This also creates additional confusion among
-> users.
-> 
-> Bump the advertised speed to at least match the veth.
-> 
-> Alternative might be to explicitly report UNKNOWN and let the user
-> decide on a right value for them.  And it is indeed "the right way"
-> of fixing the problem.  However, that may cause issues with bonding
-> or with some userspace applications that may rely on speed value to
-> be reported (even though they should not).  Just changing the speed
-> value should be a safer option.
-> 
-> Users can still override the speed with ethtool, if necessary.
-> 
-> RFC discussion is linked below.
-> 
-> Link: https://lore.kernel.org/lkml/20221021114921.3705550-1-i.maximets@ovn.org/
-> Link: https://mail.openvswitch.org/pipermail/ovs-discuss/2022-July/051958.html
-> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Hi Dexuan, Stefano,
+
+Tested-by: Fr=C3=A9d=C3=A9ric Dalleau <frederic.dalleau@docker.com>
+
+Regards,
+Fr=C3=A9d=C3=A9ric
+
+
+On Wed, Nov 2, 2022 at 10:42 AM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
+>
+> On Wed, Nov 02, 2022 at 10:31:37AM +0100, Stefano Garzarella wrote:
+> >On Mon, Oct 31, 2022 at 07:17:06PM -0700, Dexuan Cui wrote:
+> >>Currently vsock_connectible_has_data() may miss a wakeup operation
+> >>between vsock_connectible_has_data() =3D=3D 0 and the prepare_to_wait()=
+.
+> >>
+> >>Fix the race by adding the process to the wait queue before checking
+> >>vsock_connectible_has_data().
+> >>
+> >>Fixes: b3f7fd54881b ("af_vsock: separate wait data loop")
+> >>Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> >>---
+> >>
+> >>Changes in v2 (Thanks Stefano!):
+> >> Fixed a typo in the commit message.
+> >> Removed the unnecessary finish_wait() at the end of the loop.
+> >
+> >LGTM:
+> >
+> >Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> >
+>
+> And I would add
+>
+> Reported-by: Fr=C3=A9d=C3=A9ric Dalleau <frederic.dalleau@docker.com>
+>
+> Since Fr=C3=A9d=C3=A9ric posted a similar patch some months ago (I lost i=
+t because
+> netdev and I were not in cc):
+> https://lore.kernel.org/virtualization/20220824074251.2336997-2-frederic.=
+dalleau@docker.com/
+>
+> Thanks,
+> Stefano
+>
