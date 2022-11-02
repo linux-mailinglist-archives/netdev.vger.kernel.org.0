@@ -2,176 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70BCD616A45
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 18:13:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4952C616A53
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 18:15:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiKBRNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 13:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        id S230416AbiKBRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 13:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230353AbiKBRNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 13:13:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2D51DF3C;
-        Wed,  2 Nov 2022 10:13:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D068022AF9;
-        Wed,  2 Nov 2022 17:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1667409215; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        with ESMTP id S229531AbiKBRO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 13:14:56 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DEB2186;
+        Wed,  2 Nov 2022 10:14:55 -0700 (PDT)
+Date:   Wed, 2 Nov 2022 10:14:38 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667409294;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=FjC+X+IGjVIQCN9uPjsHYAeg5Fp899IsmxwXbW3ArI4=;
-        b=EbfWZ5Ab0gfFfbSBI0QUXUrVicapq9089Yr2aPJG9yILWhz4bPAs7Hk2AhP3GF/YbCLwGP
-        Z5wg2sqGnniUp/+GuE8yHePIQbQRDqzhjQRth8zYBED/52vrIpTv+vfIT7YGpcCd88zeLD
-        xCBURvWdi3uVVF2GPCTj3HTfjoPT2vw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1667409215;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FjC+X+IGjVIQCN9uPjsHYAeg5Fp899IsmxwXbW3ArI4=;
-        b=mdwAzgOj/hjLJzRWy7/A+VPgcC2iH8jTbPKjcSx6lAhkQVxtuHVoPT3h+0wvSSrKrwsFym
-        /IiOyLGTMamyQ4BQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7A3A513AE0;
-        Wed,  2 Nov 2022 17:13:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id bNdiHD+lYmPaOQAAMHmgww
-        (envelope-from <afaerber@suse.de>); Wed, 02 Nov 2022 17:13:35 +0000
-Message-ID: <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
-Date:   Wed, 2 Nov 2022 18:13:35 +0100
+        bh=xtTSxM1Q/qUYa04qDvMF9fQMU1lb3nJ4Yr7MTQ7VghU=;
+        b=HGPpAdSi8jBVZcmLugyVIGYvvWkqF3VSKjIyZSapgYT5aDBIwno6PFiycmuKqNRsi6eCEU
+        00g6vsaXFrHI8ZLMVDXPBYRRjci2zvrdgfTapXezF72FnhcQyMODDDKyeJs8AgdHDo+xZ1
+        Ak9oegP1g8hgVuDq9qb8v6diwqyoY50=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Andy Ren <andy.ren@getcruise.com>,
+        netdev@vger.kernel.org, richardbgobert@gmail.com,
+        davem@davemloft.net, wsa+renesas@sang-engineering.com,
+        edumazet@google.com, petrm@nvidia.com, pabeni@redhat.com,
+        corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] netconsole: Enable live renaming for network
+ interfaces used by netconsole
+Message-ID: <Y2KlfhfijyNl8yxT@P9FQF9L96D.corp.robot.car>
+References: <20221102002420.2613004-1-andy.ren@getcruise.com>
+ <Y2G+SYXyZAB/r3X0@lunn.ch>
+ <20221101204006.75b46660@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC dwmac glue
- driver
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>, Chester Lin <clin@suse.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jan Petrous <jan.petrous@nxp.com>, netdev@vger.kernel.org,
-        s32@nxp.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Matthias Brugger <mbrugger@suse.com>
-References: <20221031101052.14956-1-clin@suse.com>
- <20221031101052.14956-3-clin@suse.com>
- <20221102155515.GA3959603-robh@kernel.org>
-From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Organization: SUSE Software Solutions Germany GmbH
-In-Reply-To: <20221102155515.GA3959603-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221101204006.75b46660@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
-
-On 02.11.22 16:55, Rob Herring wrote:
-> On Mon, Oct 31, 2022 at 06:10:49PM +0800, Chester Lin wrote:
->> Add the DT schema for the DWMAC Ethernet controller on NXP S32 Common
->> Chassis.
->>
->> Signed-off-by: Jan Petrous <jan.petrous@nxp.com>
->> Signed-off-by: Chester Lin <clin@suse.com>
->> ---
->>   .../bindings/net/nxp,s32cc-dwmac.yaml         | 145 ++++++++++++++++++
->>   1 file changed, 145 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml b/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
->> new file mode 100644
->> index 000000000000..f6b8486f9d42
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/net/nxp,s32cc-dwmac.yaml
->> @@ -0,0 +1,145 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +# Copyright 2021-2022 NXP
->> +%YAML 1.2
->> +---
->> +$id: "http://devicetree.org/schemas/net/nxp,s32cc-dwmac.yaml#"
->> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->> +
->> +title: NXP S32CC DWMAC Ethernet controller
->> +
->> +maintainers:
->> +  - Jan Petrous <jan.petrous@nxp.com>
->> +  - Chester Lin <clin@suse.com>
-[...]
->> +properties:
->> +  compatible:
->> +    contains:
+On Tue, Nov 01, 2022 at 08:40:06PM -0700, Jakub Kicinski wrote:
+> On Wed, 2 Nov 2022 01:48:09 +0100 Andrew Lunn wrote:
+> > Changing the interface name while running is probably not an
+> > issue. There are a few drivers which report the name to the firmware,
+> > presumably for logging, and phoning home, but it should not otherwise
+> > affect the hardware.
 > 
-> Drop 'contains'.
+> Agreed. BTW I wonder if we really want to introduce a netconsole
+> specific uAPI for this or go ahead with something more general.
+
+Netconsole is a bit special because it brings an interface up very early.
+E.g. in our case without the netconsole the renaming is happening before
+the interface is brought up.
+
+I wonder if the netconsole-specific flag should allow renaming only once.
+
+> A sysctl for global "allow UP rename"?
+
+This will work for us, but I've no idea what it will break for other users
+and how to check it without actually trying to break :) And likely we won't
+learn about it for quite some time, asssuming they don't run net-next.
+
 > 
->> +      enum:
->> +        - nxp,s32cc-dwmac
-
-In the past you were adamant that we use concrete SoC-specific strings. 
-Here that would mean s32g2 or s32g274 instead of s32cc (which aims to 
-share with S32G3 IIUC).
-
-[...]
->> +  clocks:
->> +    items:
->> +      - description: Main GMAC clock
->> +      - description: Peripheral registers clock
->> +      - description: Transmit SGMII clock
->> +      - description: Transmit RGMII clock
->> +      - description: Transmit RMII clock
->> +      - description: Transmit MII clock
->> +      - description: Receive SGMII clock
->> +      - description: Receive RGMII clock
->> +      - description: Receive RMII clock
->> +      - description: Receive MII clock
->> +      - description:
->> +          PTP reference clock. This clock is used for programming the
->> +          Timestamp Addend Register. If not passed then the system
->> +          clock will be used.
+> We added the live renaming for failover a while back and there were 
+> no reports of user space breaking as far as I know. So perhaps nobody
+> actually cares and we should allow renaming all interfaces while UP?
+> For backwards compat we can add a sysctl as mentioned or a rtnetlink 
+> "I know what I'm doing" flag? 
 > 
-> If optional, then you need 'minItems'.
-[snip]
+> Maybe print an info message into the logs for a few releases to aid
+> debug?
+> 
+> IOW either there is a reason we don't allow rename while up, and
+> netconsole being bound to an interface is immaterial. Or there is 
+> no reason and we should allow all.
 
-Do we have any precedence of bindings with *MII clocks like these?
+My understanding is that it's not an issue for the kernel, but might be
+an issue for some userspace apps which do not expect it.
 
-AFAIU the reason there are so many here is that there are in fact 
-physically just five, but different parent clock configurations that 
-SCMI does not currently expose to Linux. Thus I was raising that we may 
-want to extend the SCMI protocol with some SET_PARENT operation that 
-could allow us to use less input clocks here, but obviously such a 
-standardization process will take time...
+If you prefer to go with the 'global sysctl' approach, how the path forward
+should look like?
 
-What are your thoughts on how to best handle this here?
-
-Not clear to me has been whether the PHY mode can be switched at runtime 
-(like DPAA2 on Layerscape allows for SFPs) or whether this is fixed by 
-board design. If the latter, the two out of six SCMI IDs could get 
-selected in TF-A, to have only physical clocks here in the binding.
-
-Regards,
-Andreas
-
--- 
-SUSE Software Solutions Germany GmbH
-Frankenstr. 146, 90461 Nürnberg, Germany
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
-HRB 36809 (AG Nürnberg)
-
+Thanks!
