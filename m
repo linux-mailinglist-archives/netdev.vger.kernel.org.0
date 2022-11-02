@@ -2,113 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 287EE6162A4
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 13:23:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A8161634E
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 14:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbiKBMXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 08:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
+        id S231261AbiKBNDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 09:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiKBMXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 08:23:19 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE6228729;
-        Wed,  2 Nov 2022 05:23:18 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N2Qym37bnzbc7c;
-        Wed,  2 Nov 2022 20:23:12 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 2 Nov
- 2022 20:23:15 +0800
-From:   Lu Wei <luwei32@huawei.com>
-To:     <edumazet@google.com>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <xemul@parallels.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [patch net v3] tcp: prohibit TCP_REPAIR_OPTIONS if data was already sent
-Date:   Wed, 2 Nov 2022 21:28:11 +0800
-Message-ID: <20221102132811.70858-1-luwei32@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S231236AbiKBNDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 09:03:51 -0400
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3D1A052;
+        Wed,  2 Nov 2022 06:03:50 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id c3-20020a1c3503000000b003bd21e3dd7aso1250685wma.1;
+        Wed, 02 Nov 2022 06:03:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J7wkCq3JYYjQNWqmOzs/TGkUKvgq+3hRmudTaSmEqPs=;
+        b=XwQRABqRLMpxNtweQA7HLIzdDmpCX3HTFZtxdbdmE4O7BWTRFTdIW2y8jSrYx6ZuCt
+         f+zy8LpZB3/MnZ8JlpZrnR8v6X0jCXGOCsm3Yr7LNlsJAco7xirnxKqzklia9egpV7ns
+         f4OL8oyWI8QuqxDbjObzGW4lKCebg9K82FBiLPziuNWgs/W6hnQEhKl9A3EJlzWZkzS3
+         nQ3egEAK5GI/hz869crd1m2mB82Y3NvjfUGxNKP4+vNGXFlJd+25CiB3IEoGHnRmIill
+         RTtNB7BkH64EcQKTkxa1sC7zjVSgfTcaPLs3xMK1LsWzaltA7+DayBFGzN+nmi+L4v0t
+         BK5A==
+X-Gm-Message-State: ACrzQf355X1ULixKmSj/KBCQRnUdIQMfuB5MyKQfvynUXjFdIfYS0ewr
+        ji3QrbRke7/yyeubr8EFdZU=
+X-Google-Smtp-Source: AMsMyM5urS48hBL/wzVvS7zFzNQklaqqSmOGIMX6FChyURbZf69XiCWLf0csz6XJ5vyEJ9FlJC3Q7A==
+X-Received: by 2002:a1c:4b0f:0:b0:3cf:7bdd:e00b with SMTP id y15-20020a1c4b0f000000b003cf7bdde00bmr7064625wma.110.1667394229311;
+        Wed, 02 Nov 2022 06:03:49 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id q9-20020adfdfc9000000b002366d1cc198sm13262890wrn.41.2022.11.02.06.03.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Nov 2022 06:03:48 -0700 (PDT)
+Date:   Wed, 2 Nov 2022 13:03:42 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        isaku.yamahata@intel.com, dan.j.williams@intel.com,
+        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+        iommu@lists.linux.dev
+Subject: Re: [PATCH 02/12] x86/ioapic: Gate decrypted mapping on
+ cc_platform_has() attribute
+Message-ID: <Y2Jqrr54LfKqHu1n@liuwe-devbox-debian-v2>
+References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
+ <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If setsockopt with option name of TCP_REPAIR_OPTIONS and opt_code
-of TCPOPT_SACK_PERM is called to enable sack after data is sent
-and before data is acked, it will trigger a warning in function
-tcp_verify_left_out() as follows:
+On Thu, Oct 20, 2022 at 10:57:05AM -0700, Michael Kelley wrote:
+> Current code always maps the IOAPIC as shared (decrypted) in a
+> confidential VM. But Hyper-V guest VMs on AMD SEV-SNP with vTOM
+> enabled use a paravisor running in VMPL0 to emulate the IOAPIC.
+> In such a case, the IOAPIC must be accessed as private (encrypted).
+> 
+> Fix this by gating the IOAPIC decrypted mapping on a new
+> cc_platform_has() attribute that a subsequent patch in the series
+> will set only for Hyper-V guests. The new attribute is named
+> somewhat generically because similar paravisor emulation cases
+> may arise in the future.
+> 
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 
-============================================
-WARNING: CPU: 8 PID: 0 at net/ipv4/tcp_input.c:2132
-tcp_timeout_mark_lost+0x154/0x160
-tcp_enter_loss+0x2b/0x290
-tcp_retransmit_timer+0x50b/0x640
-tcp_write_timer_handler+0x1c8/0x340
-tcp_write_timer+0xe5/0x140
-call_timer_fn+0x3a/0x1b0
-__run_timers.part.0+0x1bf/0x2d0
-run_timer_softirq+0x43/0xb0
-__do_softirq+0xfd/0x373
-__irq_exit_rcu+0xf6/0x140
+Reviewed-by: Wei Liu <wei.liu@kernel.org>
 
-The warning is caused in the following steps:
-1. a socket named socketA is created
-2. socketA enters repair mode without build a connection
-3. socketA calls connect() and its state is changed to TCP_ESTABLISHED
-   directly
-4. socketA leaves repair mode
-5. socketA calls sendmsg() to send data, packets_out and sack_outs(dup
-   ack receives) increase
-6. socketA enters repair mode again
-7. socketA calls setsockopt with TCPOPT_SACK_PERM to enable sack
-8. retransmit timer expires, it calls tcp_timeout_mark_lost(), lost_out
-   increases
-9. sack_outs + lost_out > packets_out triggers since lost_out and
-   sack_outs increase repeatly
-
-In function tcp_timeout_mark_lost(), tp->sacked_out will be cleared if
-Step7 not happen and the warning will not be triggered. As suggested by
-Denis and Eric, TCP_REPAIR_OPTIONS should be prohibited if data was
-already sent. So this patch checks tp->segs_out, only TCP_REPAIR_OPTIONS
-can be set only if tp->segs_out is 0.
-
-socket-tcp tests in CRIU has been tested as follows:
-$ sudo ./test/zdtm.py run -t zdtm/static/socket-tcp*  --keep-going \
-       --ignore-taint
-
-socket-tcp* represent all socket-tcp tests in test/zdtm/static/.
-
-Fixes: b139ba4e90dc ("tcp: Repair connection-time negotiated parameters")
-Signed-off-by: Lu Wei <luwei32@huawei.com>
----
- net/ipv4/tcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index ef14efa1fb70..1f5cc32cf0cc 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3647,7 +3647,7 @@ int do_tcp_setsockopt(struct sock *sk, int level, int optname,
- 	case TCP_REPAIR_OPTIONS:
- 		if (!tp->repair)
- 			err = -EINVAL;
--		else if (sk->sk_state == TCP_ESTABLISHED)
-+		else if (sk->sk_state == TCP_ESTABLISHED && !tp->segs_out)
- 			err = tcp_repair_options_est(sk, optval, optlen);
- 		else
- 			err = -EPERM;
--- 
-2.31.1
-
+> ---
+>  arch/x86/kernel/apic/io_apic.c |  3 ++-
+>  include/linux/cc_platform.h    | 13 +++++++++++++
+>  2 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+> index a868b76..d2c1bf7 100644
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -2686,7 +2686,8 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
+>  	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
+>  	 * bits, just like normal ioremap():
+>  	 */
+> -	flags = pgprot_decrypted(flags);
+> +	if (!cc_platform_has(CC_ATTR_HAS_PARAVISOR))
+> +		flags = pgprot_decrypted(flags);
+>  
+>  	__set_fixmap(idx, phys, flags);
+>  }
+> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
+> index cb0d6cd..b6c4a79 100644
+> --- a/include/linux/cc_platform.h
+> +++ b/include/linux/cc_platform.h
+> @@ -90,6 +90,19 @@ enum cc_attr {
+>  	 * Examples include TDX Guest.
+>  	 */
+>  	CC_ATTR_HOTPLUG_DISABLED,
+> +
+> +	/**
+> +	 * @CC_ATTR_HAS_PARAVISOR: Guest VM is running with a paravisor
+> +	 *
+> +	 * The platform/OS is running as a guest/virtual machine with
+> +	 * a paravisor in VMPL0. Having a paravisor affects things
+> +	 * like whether the I/O APIC is emulated and operates in the
+> +	 * encrypted or decrypted portion of the guest physical address
+> +	 * space.
+> +	 *
+> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
+> +	 */
+> +	CC_ATTR_HAS_PARAVISOR,
+>  };
+>  
+>  #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+> -- 
+> 1.8.3.1
+> 
