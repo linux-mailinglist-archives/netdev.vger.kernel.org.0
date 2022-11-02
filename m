@@ -2,102 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB1A616C6B
-	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 19:36:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD48616CA6
+	for <lists+netdev@lfdr.de>; Wed,  2 Nov 2022 19:39:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbiKBSgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 14:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S231552AbiKBSj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 14:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiKBSgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 14:36:41 -0400
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76407303F4;
-        Wed,  2 Nov 2022 11:35:50 -0700 (PDT)
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-13c569e5ff5so20859933fac.6;
-        Wed, 02 Nov 2022 11:35:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=A/CuXeX5BAmh1fy0gv5umwNjOEiAdicnjnxUO4ZSgqI=;
-        b=ZWitSwO2UOAh7n6vGDEFLK0p/52dQ8/7C6YfFjZedEPdFPnvV8QRoiudEJCX/KOxKe
-         eCRF1TaYu3vTIokj9FEjpWGjLFONQgnglYODrhhxKsuHIQFrg8V2VxHO2pjz88CK1m+q
-         lNXcLVOimHCR2+hvD0bt90cbfjaDl61EyPIi70Hm0lt2umSmkNtp9iYHxj2w+TrCUSr3
-         H6HwSUzM0qXq4GzXVuZXiwuUksjsx5P+fTI2eUxxltdRIOw9QagC3LcnxlvAz8IW4Krk
-         tRpq2+cUtcaK0n7krBAWd1eAQ8MN/DPKqb+xayJPMj5kP8dzC3T2zZOTWZcZXKwXwbud
-         qcWg==
-X-Gm-Message-State: ACrzQf3qZKuwVu75OZ2+zaHNCM6pWQwlayUM6TrPza81PjS0HdGBBK3X
-        C0pTm1BJZfML1kesPnsjhQ==
-X-Google-Smtp-Source: AMsMyM7CmXp9Hfz0+ZuQVyxpx2aFwopthUXM7VzE06aXbO1uz1eEkTzlRg4N4mxvNNz525kGB6pndw==
-X-Received: by 2002:a05:6870:4607:b0:127:fd93:4752 with SMTP id z7-20020a056870460700b00127fd934752mr25203464oao.64.1667414149652;
-        Wed, 02 Nov 2022 11:35:49 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id d22-20020a056830045600b0066210467fb1sm5384100otc.41.2022.11.02.11.35.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 11:35:49 -0700 (PDT)
-Received: (nullmailer pid 130546 invoked by uid 1000);
-        Wed, 02 Nov 2022 18:35:50 -0000
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S231410AbiKBSjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 14:39:06 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B77FDC9
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 11:38:45 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A2II0x6012304
+        for <netdev@vger.kernel.org>; Wed, 2 Nov 2022 18:38:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=OJkQlPw32T9fIsYmv7zJ36FG9TJqMKqURPerZNqds2w=;
+ b=HDkKg5jzSOy4D7C+CDv5nxX9djHNSWXhy1RASg1GOVA3QkcOc9wsDADDW0V2F3XJamp2
+ F5qgxH+gCud8UivK7+E4stw+QuPkTpmXdlX5WTpqiS4Kgd13ekhbO/h7tQHqEDYpoV0R
+ dSHYGsdS5Z3R1EXSjWRhSPvCnGZxavovbeY29MzxUwkwR//2I/M7D4loIQYUBj9Nwoup
+ 8zATyCA/CaSwZQN6Ir7HPXseOVIwV0F6KVmvCXTsfIn6ALcd7+MjLG1XjhI/zIYwMZvR
+ QrhGs3Iq5FawtaGwzW3DU2tnDwMxAibqgtiq4/GaXZ0QS07TeXC8ejTD/nmEW7ZuyeYE 1Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kkvh3k5vh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 18:38:45 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A2Iaqlj030483
+        for <netdev@vger.kernel.org>; Wed, 2 Nov 2022 18:38:44 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kkvh3k5vf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Nov 2022 18:38:44 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A2IaOgu022465;
+        Wed, 2 Nov 2022 18:38:44 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma03wdc.us.ibm.com with ESMTP id 3kgut9vgc7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Nov 2022 18:38:44 +0000
+Received: from smtpav02.dal12v.mail.ibm.com ([9.208.128.128])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A2IcgQl47710652
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 2 Nov 2022 18:38:42 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB7715805F;
+        Wed,  2 Nov 2022 18:38:41 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0988A58051;
+        Wed,  2 Nov 2022 18:38:41 +0000 (GMT)
+Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.160.21.137])
+        by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Wed,  2 Nov 2022 18:38:40 +0000 (GMT)
+From:   Nick Child <nnac123@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     nick.child@ibm.com, bjking1@linux.ibm.com, ricklind@us.ibm.com,
+        dave.taht@gmail.com, Nick Child <nnac123@linux.ibm.com>
+Subject: [PATCH v2 net] ibmveth: Reduce maximum tx queues to 8
+Date:   Wed,  2 Nov 2022 13:38:37 -0500
+Message-Id: <20221102183837.157966-1-nnac123@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: rCUw4B497yiK_gXPWGqNvEyi3t-_IRZY
+X-Proofpoint-ORIG-GUID: UIsdIwB-p2kQwLN-2i2SoVkusp-_B07Z
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20221102161211.51139-1-krzysztof.kozlowski@linaro.org>
-References: <20221102161211.51139-1-krzysztof.kozlowski@linaro.org>
-Message-Id: <166741398630.127357.13160524174654511434.robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: net: nxp,sja1105: document spi-cpol
-Date:   Wed, 02 Nov 2022 13:35:50 -0500
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-02_14,2022-11-02_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=465
+ clxscore=1015 impostorscore=0 phishscore=0 priorityscore=1501
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211020120
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Previously, the maximum number of transmit queues allowed was 16. Due to
+resource concerns, limit to 8 queues instead.
 
-On Wed, 02 Nov 2022 12:12:11 -0400, Krzysztof Kozlowski wrote:
-> Some boards use SJA1105 Ethernet Switch with SPI CPOL, so document this
-> to fix dtbs_check warnings:
-> 
->   arch/arm64/boot/dts/freescale/fsl-lx2160a-bluebox3.dtb: ethernet-switch@0: Unevaluated properties are not allowed ('spi-cpol' was unexpected)
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Since the driver is virtualized away from the physical NIC, the purpose
+of multiple queues is purely to allow for parallel calls to the
+hypervisor. Therefore, there is no noticeable effect on performance by
+reducing queue count to 8.
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Reported-by: Dave Taht <dave.taht@gmail.com>
+Signed-off-by: Nick Child <nnac123@linux.ibm.com>
+---
+Relevant links:
+ - Introduce multiple tx queues (accepted in v6.1):
+   https://lore.kernel.org/netdev/20220928214350.29795-2-nnac123@linux.ibm.com/
+ - Resource concerns with 16 queues:
+   https://lore.kernel.org/netdev/CAA93jw5reJmaOvt9vw15C1fo1AN7q5jVKzUocbAoNDC-cpi=KQ@mail.gmail.com/
+  - v1 (only change is commit message length and typo in Reported-by tag):
+    https://lore.kernel.org/netdev/20221102153040.149244-1-nnac123@linux.ibm.com/
+ drivers/net/ethernet/ibm/ibmveth.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-ethernet-switch@1: Unevaluated properties are not allowed ('#address-cells', '#size-cells', 'fsl,spi-cs-sck-delay', 'fsl,spi-sck-cs-delay', 'spi-cpha' were unexpected)
-	arch/arm/boot/dts/ls1021a-tsn.dtb
-
-switch@0: Unevaluated properties are not allowed ('clocks', 'reset-gpios', 'spi-cpha' were unexpected)
-	arch/arm/boot/dts/imx6qp-prtwd3.dtb
-	arch/arm/boot/dts/stm32mp151a-prtt1c.dtb
+diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
+index 4f8357187292..6b5faf1feb0b 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.h
++++ b/drivers/net/ethernet/ibm/ibmveth.h
+@@ -99,7 +99,7 @@ static inline long h_illan_attributes(unsigned long unit_address,
+ #define IBMVETH_FILT_LIST_SIZE 4096
+ #define IBMVETH_MAX_BUF_SIZE (1024 * 128)
+ #define IBMVETH_MAX_TX_BUF_SIZE (1024 * 64)
+-#define IBMVETH_MAX_QUEUES 16U
++#define IBMVETH_MAX_QUEUES 8U
+ 
+ static int pool_size[] = { 512, 1024 * 2, 1024 * 16, 1024 * 32, 1024 * 64 };
+ static int pool_count[] = { 256, 512, 256, 256, 256 };
+-- 
+2.31.1
 
