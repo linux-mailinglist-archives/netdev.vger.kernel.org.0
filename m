@@ -2,103 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D535B617359
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 01:22:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C45617399
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 02:12:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbiKCAWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 20:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
+        id S230265AbiKCBMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 21:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230514AbiKCAWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 20:22:14 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183CEB7CF
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 17:22:13 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id d6so330460lfs.10
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 17:22:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DqmwXDkW21SACvKcpdhhVFrPE7NWfgfEHOY6In7M3pw=;
-        b=TFQVgXlcO80T/lZ4fnFqwhf3FgTLVLSQM3N03ieCqruFY1R8sF3vegh39OS3yEJGGJ
-         dbXrYFH8WHPS3C486QnV8VeXIPX1lpXfW0M0+7VhPTdupikIorwpmPfJh5P/resV7tIp
-         xdSD4MK2/mGrbB3jDSwazj3RbjR3HdCWUpxf2SjIa3LexUzmNjJzTpGydx60OiWg8x5A
-         +M3OsIpMEPJ2xorIqjGX1F2uzdmavWcenlkkltw0IvFjDz51q23Fhl0/vorqyzufgIz7
-         HZDMQgSZmCJMrCxdZmX7hmJTk3arAKPaetpyh+ev68mau0664rIr0y6TIrbEaJY6kj+B
-         yzKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DqmwXDkW21SACvKcpdhhVFrPE7NWfgfEHOY6In7M3pw=;
-        b=XkC7/VAS4tUodHY2t/EaL97fwsQAfIZ3es0dKGsGvL2E3KBtrNgKfxXJ4xblL9gAjb
-         QAd2uJ4G+mYBY5D2IUB3eleuA310C21lSDNYgzbFdviaOwF/yjG+w+OIwnoRDW9uP+67
-         EkQkKZC7aIZqMU0siU7+sjZjo6NcqX9PMl8h9yYBX2ospdzb8vVIw92/T/45xMOK902s
-         P3okMDy56AXT9xzi2cXpyjGEz+Gt9MlixnmRaZFd8kHVfcjPMHT9Kiv6Mebs9Gio769W
-         uczwobGHJEb/yiTU/XdV4ClvG6Own8y7mBimY9MuIQhp5h4ZjyHvQcVu2HUCNWZOPRNh
-         OiAA==
-X-Gm-Message-State: ACrzQf3h7zGsbywCxPeYaGA7IFnMjNxi4J/gji9Zv2+GPbBJbHP9tIB8
-        2fhox0nNTM3FrPimmwzi5qSA5GE0d78XZCzw3MY=
-X-Google-Smtp-Source: AMsMyM74c9w0PokXcasnTQdgqkc2XE3WYmaBQQZ5yp7azaJ9ntaKvieZYztnCW9zQO8PqZuGUczzEwxoF6cRLPpNcvM=
-X-Received: by 2002:a05:6512:104d:b0:4a2:7d13:8579 with SMTP id
- c13-20020a056512104d00b004a27d138579mr10108549lfb.585.1667434931293; Wed, 02
- Nov 2022 17:22:11 -0700 (PDT)
+        with ESMTP id S229591AbiKCBMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 21:12:08 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C942D1263A;
+        Wed,  2 Nov 2022 18:12:07 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N2m1Z4jhPzHvRZ;
+        Thu,  3 Nov 2022 09:11:46 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 3 Nov 2022 09:12:05 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <pablo@netfilter.org>, <kadlec@netfilter.org>, <fw@strlen.de>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netfilter-devel@vger.kernel.org>
+CC:     <coreteam@netfilter.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] netfilter: nfnetlink: fix potential dead lock in nfnetlink_rcv_msg()
+Date:   Thu, 3 Nov 2022 09:12:02 +0800
+Message-ID: <20221103011202.2160107-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Sender: ztechc989@gmail.com
-Received: by 2002:ab2:704a:0:b0:16f:d9eb:fa9c with HTTP; Wed, 2 Nov 2022
- 17:22:10 -0700 (PDT)
-From:   Alassane Bala Sakande <alassanebalasakande98@gmail.com>
-Date:   Wed, 2 Nov 2022 17:22:10 -0700
-X-Google-Sender-Auth: IvWn3sf7UdwK8LalM2sKq7KXKPg
-Message-ID: <CAHfDeE9mkm_Lu2PnT3wW+5nhMVZiz2GE11N3fMr2heO7nL7umQ@mail.gmail.com>
-Subject: GREETINGS
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=6.6 required=5.0 tests=BAYES_50,DEAR_FRIEND,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,NA_DOLLARS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:12e listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5003]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ztechc989[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [alassanebalasakande98[at]gmail.com]
-        *  0.0 NA_DOLLARS BODY: Talks about a million North American dollars
-        *  2.6 DEAR_FRIEND BODY: Dear Friend? That's not very dear!
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  3.2 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- DEAR FRIEND
+When type is NFNL_CB_MUTEX and -EAGAIN error occur in nfnetlink_rcv_msg(),
+it does not execute nfnl_unlock(). That would trigger potential dead lock.
 
-I am MR.Alassane Bala Sakande With the business proposal deal of US(US$18.5
-million  US Dollars) to transfer into your account, if you are
-interested get  back to me for more detail. at my Email
-(alassanebalasakande98@gmail.com )
+Fixes: 50f2db9e368f ("netfilter: nfnetlink: consolidate callback types")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/netfilter/nfnetlink.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best Regard
+diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
+index 9c44518cb70f..6d18fb346868 100644
+--- a/net/netfilter/nfnetlink.c
++++ b/net/netfilter/nfnetlink.c
+@@ -294,6 +294,7 @@ static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			nfnl_lock(subsys_id);
+ 			if (nfnl_dereference_protected(subsys_id) != ss ||
+ 			    nfnetlink_find_client(type, ss) != nc) {
++				nfnl_unlock(subsys_id);
+ 				err = -EAGAIN;
+ 				break;
+ 			}
+-- 
+2.25.1
 
-MR Alassane Bala Sakande
