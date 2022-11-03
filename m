@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E59EF618A3B
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DAB8618A3C
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiKCVHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 17:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59536 "EHLO
+        id S231479AbiKCVHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 17:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231354AbiKCVHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:14 -0400
+        with ESMTP id S231415AbiKCVHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:15 -0400
 Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140053.outbound.protection.outlook.com [40.107.14.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF51B9FFC;
-        Thu,  3 Nov 2022 14:07:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDEF2181E;
+        Thu,  3 Nov 2022 14:07:14 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U++dz/L6A8UpP8XKt5yznG3x1/skno+H0cFw4cNmjJPmL8b346nyYaQ4MbVo6SmSFo7qmF6AdbTsV6bteMKOGznT3YmGGTfd8om1BD+IJSvTbW19Sg0r1FJCN+3x8/ZGs/A6u4xCTkukZdYLtHjxChF3K9M8uzAqG8jUSS/7xSgrY9GnFsSmP2NHtrf3MoTFPyaAr53n5JohBxKkzBf51G87kU5PvefbtCP7AZtdND+Vzo+Vb9QVjETDFEG/7bBupEbGGx6mADqeFj2gJtLcmJ6bwN8156ctBGW5uz38Df0YHT9RZRXa98DA62xJ2eyOKiWZeqiN7S4XKUAFo6QbsA==
+ b=JC1phC1gk2OPaxophj0WrYvZvwajf/X2JNHYDxHsBX9aBg6zVA5aoVKUCmWVEPjMjvolCiKRdClyHOtb0wcczewOTvfWjVap1NGke3qe7UibCKXDrnCqfF2T8ngED6oC9fUbus4yrQ3j1Qs2biNkmM1ms3d2cBZecCxni8i8xua2eLmAVOkQC2/GdJsoqjeevbM4sitRCORXEPBrhCM84ebeNE0v7CboSwh/F3JLOomOK0suHyPXAvEpGGi65BsonuKoW+1RyLObNDbdizyTtT+XxtktERGeRwoDK63G7dD7ia/t3SYJ89H4MCQ4aXOHXxrJzgZ8ep/Pgml4I4bcug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aknaCMtWcsEhrWWEJznCG1QAmIGj6IIAjPXJdfsQHgs=;
- b=ZoDAF78YRGM9BVg3aZWhsOI8wBV1/J6p7W0byx7MEisKRRyRzR+EaJiqA1j8fz3fXfnFKRC1gN3CI2BP+wYiF81xYocqE3UlEN15xUZweNBG6eSfqbeeMokjWg2uSoSGtPxOs/7kT2vsXvbbWFjATpovoa2q2tSZGMnrmM5/K1pcBjLuujSPW0hiX5awRENQAxfaToDQw20crntC5iJN9hpqEbox4+ysitt6ItGig5HKjVASo1M36opeZpGr/D62VstElUTeYO5lzPHMthbbthEF2PsGk3nLHO3sXbkgYWAX96m07OKD93aY1dbSl7P9yLswwZvB0vYMfARUefik1A==
+ bh=ub2D9zTatvWGG6IQyUZpnrTP1/6aaU5Yt4WSqDNSDf8=;
+ b=KyTicMLGpU6kaF8nbGBpR5O3rmbI5MWOym7Yw43ZqXdsWRMcqoA/nB0whXI59yWh1ldBz+tvV82T6u5q+9ej1nqSFmT4Zr3tIAc8nxQu4jNnetS5BQyjSGOgBm+mMGve0yu6oWpjTiy1lNm/qpmxaH6gXfXbj8Hv7GRaabbTNTqwOgpRxqo+xpQ9YinAOw3HIoZiqYgG7jvLMYOvW0LVEcLtMbZhJiHUViiQVU9/F4xv3NT0FToymzVCErRdcnMcojwHCIGl6/TSqpcMmAQ7vrue8n1/MVTu93cOuPVNY5axvJoGILwl6xU1JcpEStvMG9PjdfLtZZkor1std1ibiQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aknaCMtWcsEhrWWEJznCG1QAmIGj6IIAjPXJdfsQHgs=;
- b=NoavuBjo3Nfs2rwTaVds95aRiyw2JuM4YmlpJ/4V/d6q0eU+BkU1Xs1kdkTjNMWaT2qfMCTX5sHbb7t6PncxM4N8+3Nu1wmAPUPVAU3ryjsx6Q8Fav5CaIWAAjK+azSC+hBgXD7lt+fuwyb6zgcji+DQT3fQ1WGqs3VtJp7oOfii1mG/KHcO/3mdQMktxBNO7bftsYq44T/zcgDtzLAcHZAJT4aH1az+MT/6DUOgE0gQEHM1ElPpZB9JgifUjgiQt8DLcAFrLPkjp1EIeND1MteffVXbFL/KyGhf9eUqpK6zhaYKpXpqIREphmwZ7+ZwyHeKPZyjhoJ8N0qj1RXO4w==
+ bh=ub2D9zTatvWGG6IQyUZpnrTP1/6aaU5Yt4WSqDNSDf8=;
+ b=yeKJCzJAhDQmBMqq1wzbebaPuUBNH1UljShhX7ZjagsVpmas7P8EPO/6+7GbawQ3fJwRvnP7PyVg69uF/VS831y8wtPxc/GSCwLPpF3iGV5gXpZvmeOT7Vr46VFzAgLgtxdekHsyJLCClM7YbaBrlDw6ubKcSPNaOk71Z4SrcmUWRx9sAkHsG4phK74AL2SrfBzaHJ5ob0sWfjvMNZgGjlyplvI+BmMecsIOzSXtlATU0H82E7vBs2AsRb1jyzWL3PTus0zaIddd8AIWKsaTrrcHMW8WTOPv9YfU6HdB7MWfw3CTyZw5udieSJjcHkEsFk1eoK22s1BlOnUDPy+ZVg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by PAXPR03MB7746.eurprd03.prod.outlook.com (2603:10a6:102:208::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Thu, 3 Nov
- 2022 21:07:10 +0000
+ 2022 21:07:11 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
- 21:07:10 +0000
+ 21:07:11 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
@@ -50,10 +50,16 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Madalin Bucur <madalin.bucur@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next v2 04/11] net: pcs: Add subsystem
-Date:   Thu,  3 Nov 2022 17:06:43 -0400
-Message-Id: <20221103210650.2325784-5-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next v2 05/11] net: pcs: lynx: Convert to an MDIO driver
+Date:   Thu,  3 Nov 2022 17:06:44 -0400
+Message-Id: <20221103210650.2325784-6-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20221103210650.2325784-1-sean.anderson@seco.com>
 References: <20221103210650.2325784-1-sean.anderson@seco.com>
@@ -65,51 +71,51 @@ X-ClientProxiedBy: BLAP220CA0002.NAMP220.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB7746:EE_
-X-MS-Office365-Filtering-Correlation-Id: c345a60e-819a-4232-124d-08dabddf5f1a
+X-MS-Office365-Filtering-Correlation-Id: 9b9a037a-44b4-4e78-7565-08dabddf6046
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2uu27C4wOqSynBGcMHpwZB0ZCJEUbt6bYCRcFOCVsIAMvI3KuRlXNEWKqWHESHNmz5M0AIpUhaI9blQtHQhXqNyNfbX+OswIG/AB9eaMewYNMJOA94uvqf0PcUK5EJVrWsZvXzVoFSUp8PVcCJV84Wno1oS18hhthSj5Abud4hrgoGzGrKGx+3bNt/OdcbOwvKsw/MXbZP2jhEJQMW73BDcrJI3cgESjU72q58S5CSJWgfwPP05TaohldNDZBo9wiz3UpsujNacT5SaKmkXd74ukB8HvDxOtfC9z5q2gTZaIgT+GRXRfdK9QBrseri7nha0QH5RxmoEwX9HSsyUZtzm2Y06zwI8Bm4YHT7GW0XICaW70OcjXCDm7rYsNbGuQ9vzgFHwgzeUBCpbiK3+yCD9HCRWIPx2kr+YeGj6tFsuZsmvW0qn6kmRV2xiG8W0lnZ5ULWv8tAshXMSVNYAuWczULL52Ug8c3mksOI8EtdOORCJsoR0XH7wyHGohE6h1lzxIKIUHWu0eVl6Fn8p1KHrZaD626R7RYNmFkXeNOGVKi/9gFxkBu26xifncVljz/iAx/jOi+ykcpHeHLJ68ZcZFyxUeGP7vVrNbLmDdl4+X0NwyhbcLRKJwupbalsP/QcbWdmhGQaZPN1JaOWeuoZjauWnBOxpSekVUN0i2cMI+clEwUOSjUSTdadCLhh/7jmznRxQ0L4n+B1moH/eW9GSfw77MTLQ9G+f/pg4hXvMCkndn79m1xaDj1ewrAOtgsmfR9PVXNQBrxj6GSIlQ93wW+9IG+riXrXzwvysbbYE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(107886003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(30864003)(26005)(6512007)(6506007)(966005)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 9CcM09626v1THI9Vr2pJvdQ7PHKECFkLNr0yQMCGHuE8l22Okjk+l9gVFDGcDk3kBC8/gi7QH8cHq9Cuukz2Fy5B3NhA4ceSGOWux0fQYCmkKNXGPs+g24CI7FGFI2VBn0YqRtkwnIox5xg80R/B6dJquqAlUcD2A3djpYZo8uWFGEo+0R3lm2Vj/2OhKqsz8U4BiKorkJ7L0tYizGu+ki3U+RfUPb8YkJ/u4FrXsJOgLqsYCu8KN/kshJEhgWO3EpKOw63d+OR/Y/MIyVg7ON50UDVbUFWjhjNAaDBLmDc3tAtTQgcFdyKDfavQZx81SWqbohK0K9xSyayvEtFZFDT4rNTt3e0NkN8hihq6rvYBZheXwkdBbtWjwnEHDRHdLLD/y5D9x4grz2JK3IzqdKANhT/ald7VYFzc8jOHAFybWMD2BcEAucEDls3qlgguqIHWehoqCbWSxxerWsYbfTQJ6WulyHLBxTSOdNf70M9n+83SWGuvF5C7M5A/hGgGI58QwcsjUJOcpn4DGgLBUm2pbBkldWpy8CCu89pVRqyVC7Vg1WaXQTEFcS+UsgHxPkbyLcBm7zcJ3VRkuSslFdmwhejNafjN6v+LeR/cfUhtnLTbiUFayNsE4fM9FNvijNolE3gd1M+majEprSc98AHwgcN052C+8vOUGeUlA4k2RGxFkPfSz5uLj/KtTqoDB2l6mZhD3PE3cDDQGn83DJWBAjDkwDR8+yE5vtqBZMUDKFgOPzFEnGCvKI7/cufOqHdwhoxeutmNP4mXZomnIQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A3PXb1/ogkKuUfYeN5U16pyUmZkoCZL7PuGOt2b9+E2hW8rBMbL0KgNN2n02?=
- =?us-ascii?Q?8etnbU52PfsCoQ8YogKI3dxruVGxWGcY3la4NrVdO1Fx+jXl/UqWa37mABQS?=
- =?us-ascii?Q?VkKKkk+0v80vu5chaK3Dp3jlPPH4K0La+SJ1DH05jODVICvEfv8ttKxICK4R?=
- =?us-ascii?Q?h81c57GwZoBWpwbDufDPE5gnuqBfkYlRCEVaW6NPTewgE3lP4XHBnqncU5nm?=
- =?us-ascii?Q?N7ylo8BgombK2EH8fKzFFJxCqEH2lIG/Lzfa76OHxkuX8wpd/MSCEC3dmoFq?=
- =?us-ascii?Q?FCnhghz23cBPDL9Lhc+I/UepctVijpEi8DMxwqdZceKQ6Og3bLJWPkDsEmY0?=
- =?us-ascii?Q?8NuZCbVlK7HkXe/wf69oX1Gc9f4eQfAiNev4cQr1zUG2ZGeOWj+U0HI77mnb?=
- =?us-ascii?Q?sTZ/AIBocSPxTxKNKj4wnNA0RFFTS3VrN36kOpi9PTukwV6RdRivF5k/0oUW?=
- =?us-ascii?Q?idR7SRXazK5h4Sji8i9c2AAZk7l9+NJW30H6111cz8NBkCOn+/JS9ksG72FW?=
- =?us-ascii?Q?b0hUKIUThBDYD5elrqzY6A35opYb0o21YpaI/g1O3hgdf9JEGzn7Rndk0bpu?=
- =?us-ascii?Q?V+rQ/rIFNLNzetcIjrIR9jfvAwOmYy8FQ/GmymtvDGsm4VWfTkeKBFy5WsJZ?=
- =?us-ascii?Q?XDYA77vG1RUh5PEhBPqiPtIPuAaBjm4bahHgRewu3YrQnB/Qc2OHreL60nv/?=
- =?us-ascii?Q?LDltO0FYUt+ojMU30rtz/nc/GckTZqF8QiqMheHLe+e2UWIeVpxfvzCGXY14?=
- =?us-ascii?Q?Y2yuzJY42OhLvdrLdAL5rty4uhA25KX4LKnMJVj36pfNF4DmD1vVt5LY63qk?=
- =?us-ascii?Q?E27eCoN61gLbB6RZ/fFqKI43ZGDCNl1LLMEoPpxwGL5GQJq11TaIXnXfN8TX?=
- =?us-ascii?Q?1hr74nhL+JrD+MGaWngFA8Blj2kXu9k59yIF8U1y8BfW27zxv0thLExknub7?=
- =?us-ascii?Q?VsY/Tv2bIdvA+xtcALCClA8cG6cChHq5JuoiQyTT8igP0gOJMJ3XfM0tLRVW?=
- =?us-ascii?Q?5lDj+ISKwWExAPxENxIshzJ08fMo/JUZsJxUa/9AjqMz6u4YaBxBrB184mSr?=
- =?us-ascii?Q?fwLyxYKLHe2u1ZTRvR4XKGNtkxNRjNXjwKt7C4WydkKnkRQuE93RtVHE/eSb?=
- =?us-ascii?Q?njgPsG3Tr9VRebzxCTSBrk2FRYf64UgrbmSEW3MbNeUy7GgPmmz81E42MyHM?=
- =?us-ascii?Q?nnSeYGB8Fxbp1PAZKqNM83/5EDpgBFLSLtljBjs2XueHwzE58RLp34oyNQZ0?=
- =?us-ascii?Q?0g5VvdRUj1Nz0T8gJjh5xSoFbHqAj/m/glNVTTHfszQ4LPlXe05uXbTgcO6l?=
- =?us-ascii?Q?JPBJG9r3yqV6BEm4hIbC3TWE6AHFAjC+0lDLGnvLhSvC2XCAw5fTfSEkeY63?=
- =?us-ascii?Q?2RtQafIQTH1lQAPRoKfgn7+4T8BfIVBEjs2VVY2YqepyXk9wrACVLCYQ80QJ?=
- =?us-ascii?Q?Sbnd9sGnOyfOI8DGDL4ou+FJjlrVv2VKyTq2kNuWLbr41YRSpGH5Esg8i5gN?=
- =?us-ascii?Q?BZSqRLDgJxp1OMdUVuCYPDbUqZSDxIC0B9IncmFVMzH/f9RjI+leDTo/S+f1?=
- =?us-ascii?Q?aO3a0G9crYLfUFdYRIclrIHNuIvDRSHJ1OCXYIEcWYic2iiErhYj5dwTGxUx?=
- =?us-ascii?Q?fw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BiczTNFvWP8n6rZjP9u1uyIW35UHo421V2Qu+Bw83A7Hw6kuxskadim1GmWg?=
+ =?us-ascii?Q?cFyt/LwqRjw4+0AJLZLhxxNGqN9lpVxFywznqL1vTeK1L8HfvgO6j8LYFfiV?=
+ =?us-ascii?Q?+6jRu8pyZB8Mlu5HS006I+kRRE14H6XUbsT5/dTKKeW43jfnl8+g27dxafVM?=
+ =?us-ascii?Q?bdPQuCF66RfkEHAshqvdA0vCgFK68a7rg/Tc8MutE7ZsKSkQPlvrR7CBLDr2?=
+ =?us-ascii?Q?CLwU8qw3HKj7RU76xoAuPFM86x1DgL4voVIHLTcqhybTRrvz2b3AxQzuoQxQ?=
+ =?us-ascii?Q?43Q6SP+znYkOosofneqGCCrLs6UDhdDg1X/8h8S9BajN3omFlqqmZ3SIGghF?=
+ =?us-ascii?Q?avMnG2x98FtykSSwlTh0vgifSGy8iBSUbveOff1bmHTzMiTtA7qQ047Rsxoy?=
+ =?us-ascii?Q?xhTbz51vIOyyL6tgL/5L2nahmmgP/T8aCfavQKxay2A4h+Y8JaCByZcUWz+l?=
+ =?us-ascii?Q?72zSCwx+TQJOg5ovo2SKs0NKLAQYZrmNCx7O0R0C+TGByOEYrxy4ywnrdqvQ?=
+ =?us-ascii?Q?7WAeg3FIvnzy+5hy8WP8xsZ3uu+Ug6UOj8uS20IQdY8+9CDUQswdsO0nUIGO?=
+ =?us-ascii?Q?BwViagRfPeGyT1P95pJ9PNmsjiuaTawOm86Z6dzcYsXhkfYzCMGCF0wyE2EG?=
+ =?us-ascii?Q?sQrelJ9zsgConjuhTw7ax1LIl2iX3bWxH6FWCsyiPcbaAtsoVcXSgw5WvCLr?=
+ =?us-ascii?Q?r7RUV10PvJ2GP9fimSQliOKb/RUqS52ztuapaSEHEdsfx4e+UYtyqeU5UvMj?=
+ =?us-ascii?Q?hncryUdO5RJuj7Bf2wI4V53ds0L+nW+wSgiYP2l/PoRtffLB5DE/FTA0UMwY?=
+ =?us-ascii?Q?7y0f0ZAxxRepKIT1PqSpyO9J4pxiV9RW6IBJcfVbDYcPshrVVAGormPWaq1D?=
+ =?us-ascii?Q?+b8fhcOaiMELLUJ92vOvLq/ajX6S5Bc645220GCl9Q8dnVvJdf8Q/2+Kv2Z6?=
+ =?us-ascii?Q?7hD/liawk84XQM/3jBmOtruO77D+eV9wGRPQlkxM2K86vaOCCxNYKbMkPL73?=
+ =?us-ascii?Q?pGukFWDnOVQrKauRfhV3c8nf+3rHZbiDBbY2ucG0sz9yCqwtFG52g4kTb6K6?=
+ =?us-ascii?Q?GTxeFuhgp68PGL72XdrLTsk+kxAvdISoJOlbhFAi+lu+HwuaD78GNFqhi5fx?=
+ =?us-ascii?Q?bj0oFuQ/YS4V3tK6IOe56c3wk7i7VdP9TUIRfPqZNXapIwOasQuLWxWVcPbC?=
+ =?us-ascii?Q?ghexTK2jXzb8yVF75lqxPvQQDvhursyRbupO8jmQWfAFsPO+EUokTHY7Qaa+?=
+ =?us-ascii?Q?KG+1dNWCwHXKY5qWa6izU6914uJxj2yfH1FiwlsvU5uDTZYGyfLdQG6BPnLG?=
+ =?us-ascii?Q?BbYWnc1qRjAw4L4Ck0ihPN3V1cMFksy4GWnOAn/uVdqg3srPnDE+obJBbpTT?=
+ =?us-ascii?Q?XjPnijRR8CA5YbpuXBsO1T++FDJlK6fHNudxQnUAIRx5bAmD59zbIYaQ8Iva?=
+ =?us-ascii?Q?gnwA/dqBfK4+UkobPXXO4bfCwjgW+BhL18QPx5TdF9+C6mM+jKk6D0BYXdtz?=
+ =?us-ascii?Q?4JnjzyapbMDf/Oi92PmpxqKdzKI0pJ75hkWCb2CRJKl2QUEnoTScJ8RWeMnF?=
+ =?us-ascii?Q?j5CgaToBA9UGqowwbRuTr/yJwbk+TOFQ/4QW0QWAV8USzn24nZZdZGSjz5n/?=
+ =?us-ascii?Q?NA=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c345a60e-819a-4232-124d-08dabddf5f1a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b9a037a-44b4-4e78-7565-08dabddf6046
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:09.9122
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:11.8339
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2uzhOC/tsi0G1C5xnHxnaq8F/ycGP8iuE2KQihD1J1AoNIqn9qRxTEy5elhioMWrDY5lsXHtJmzjrKscoCYW+A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: d/OKgIhvOioNcOFqeabM+Vv7r/GFu1oRdBzhjyAyJ0cJYF3N95HUYuAcxZkQ/EO0K/xvlDu/rgvD14LMS5OVxw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7746
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,628 +127,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for getting PCS devices from the device tree. PCS
-drivers must first register with phylink_register_pcs. After that, MAC
-drivers may look up their PCS using phylink_get_pcs.
+This partially converts the lynx PCS driver to a proper MDIO driver.
+This allows using a more conventional driver lifecycle (e.g. with a
+probe and remove). For compatibility with existing drivers, we retain
+the old lynx_pcs_create/destroy functions. This may result in two
+"drivers" attached to the same device (one real driver, and one attached
+with lynx_pcs_create). However, this should not cause problems because
+consumers will only use one or the other.
 
-We use device links to ensure that PCS consumers are removed before
-their PCSs. This will cause PCS consumers to be removed when their PCSs
-go away. There is no way to avoid this without e.g. converting PCS
-consumers to be composite devices. I think that approach adds
-significant complexity, as PCS devices are unlikely to ever be remved.
+To assist in conversion of existing drivers to the PCS API, we provide a
+lynx_pcs_create_on_bus function which will create an MDIO device on a
+bus, bind our driver, and get the PCS. This should make it easy to
+convert drivers which do not use devicetree.
 
-Device links will not provide correct probe ordering when PCSs are
-children of their consumers. In such cases, the PCS driver should set
-suppress_bind_attrs to prevent incorrect removal order.
+Because this driver may be a direct child of its consumers (especially
+when created with lynx_pcs_create_on_bus), we set suppress_bind_attrs.
+This prevents userspace from causing a segfault by removing the PCS
+before the consumer.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
-This is adapted from [1], primarily incorporating the changes discussed
-there. An example of this series done with composite devices may be
-found at [2].
-
-[1] https://lore.kernel.org/netdev/9f73bc4f-5f99-95f5-78fa-dac96f9e0146@seco.com/
-[2] https://github.com/sean-anderson-seco/linux/tree/pcs_device
 
 Changes in v2:
-- Fix export of _pcs_get_by_fwnode
-- Add device links to ensure correct probe/removal ordering
-- Remove module_get/put, since this is ensured by the device_get/put
-- Reorganize some of the control flow for legibility
-- Add basic documentation
+- Call mdio_device_register
+- Squash in lynx parts of "use pcs_get_by_provider to get PCS"
+- Rewrite probe/remove functions to use create/destroy. This lets us
+  convert existing drivers one at a time, instead of needing a flag day.
 
- Documentation/networking/index.rst |   1 +
- Documentation/networking/pcs.rst   | 109 +++++++++++++
- MAINTAINERS                        |   2 +
- drivers/net/pcs/Kconfig            |  12 ++
- drivers/net/pcs/Makefile           |   2 +
- drivers/net/pcs/core.c             | 243 +++++++++++++++++++++++++++++
- include/linux/pcs.h                | 111 +++++++++++++
- include/linux/phylink.h            |   5 +
- 8 files changed, 485 insertions(+)
- create mode 100644 Documentation/networking/pcs.rst
- create mode 100644 drivers/net/pcs/core.c
- create mode 100644 include/linux/pcs.h
+ drivers/net/pcs/Kconfig    | 11 +++--
+ drivers/net/pcs/pcs-lynx.c | 83 +++++++++++++++++++++++++++++++++++---
+ include/linux/pcs-lynx.h   |  7 +++-
+ 3 files changed, 91 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 4f2d1f682a18..c37f94d9b24a 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -28,6 +28,7 @@ Contents:
-    page_pool
-    phy
-    sfp-phylink
-+   pcs
-    alias
-    bridge
-    snmp_counter
-diff --git a/Documentation/networking/pcs.rst b/Documentation/networking/pcs.rst
-new file mode 100644
-index 000000000000..3f3cafee1a88
---- /dev/null
-+++ b/Documentation/networking/pcs.rst
-@@ -0,0 +1,109 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=============
-+PCS Subsystem
-+=============
-+
-+The PCS (Physical Coding Sublayer) subsystem handles the registration and lookup
-+of PCS devices. These devices contain the upper sublayers of the Ethernet
-+physical layer, generally handling framing, scrambling, and encoding tasks. PCS
-+devices may also include PMA (Physical Medium Attachment) components. PCS
-+devices transfer data between the Link-layer MAC device, and the rest of the
-+physical layer, typically via a SerDes. The output of the SerDes may be
-+connected more-or-less directly to the medium when using Fiber-optic or
-+backplane connections (1000BASE-SX, 1000BASE-KX, etc). It may also communicate
-+with a separate PHY (such as over SGMII) which handles the connection to the
-+medium (such as 1000BASE-T).
-+
-+Looking up PCS Devices
-+----------------------
-+
-+There are generally two ways to look up a PCS device. If the PCS device is
-+internal to a larger device (such as a MAC or switch), and it does not share an
-+implementation with an existing PCS, then it does not need to be registered with
-+the PCS subsystem. Instead, you can populate a :c:type:`phylink_pcs`
-+in your probe function. Otherwise, you must look up the PCS.
-+
-+If your device has a :c:type:`fwnode_handle`, you can add a PCS using the
-+``pcs-handle`` property::
-+
-+    ethernet-controller {
-+        // ...
-+        pcs-handle = <&pcs>;
-+        pcs-handle-names = "internal";
-+    };
-+
-+Then, during your probe function, you can get the PCS using :c:func:`pcs_get`::
-+
-+    mac->pcs = pcs_get(dev, "internal");
-+    if (IS_ERR(mac->pcs)) {
-+        err = PTR_ERR(mac->pcs);
-+        return dev_err_probe(dev, "Could not get PCS\n");
-+    }
-+
-+If your device doesn't have a :c:type:`fwnode_handle`, you can get the PCS
-+based on the providing device using :c:func:`pcs_get_by_dev`. Typically, you
-+will create the device and bind your PCS driver to it before calling this
-+function. This allows reuse of an existing PCS driver.
-+
-+Once you are done using the PCS, you must call :c:func:`pcs_put`.
-+
-+Using PCS Devices
-+-----------------
-+
-+To select the PCS from a MAC driver, implement the ``mac_select_pcs`` callback
-+of :c:type:`phylink_mac_ops`. In this example, the PCS is selected for SGMII
-+and 1000BASE-X, and deselected for other interfaces::
-+
-+    static struct phylink_pcs *mac_select_pcs(struct phylink_config *config,
-+                                              phy_interface_t iface)
-+    {
-+        struct mac *mac = config_to_mac(config);
-+
-+        switch (iface) {
-+        case PHY_INTERFACE_MODE_SGMII:
-+        case PHY_INTERFACE_MODE_1000BASEX:
-+            return mac->pcs;
-+        default:
-+            return NULL;
-+        }
-+    }
-+
-+To do the same from a DSA driver, implement the ``phylink_mac_select_pcs``
-+callback of :c:type:`dsa_switch_ops`.
-+
-+Writing PCS Drivers
-+-------------------
-+
-+To write a PCS driver, first implement :c:type:`phylink_pcs_ops`. Then,
-+register your PCS in your probe function using :c:func:`pcs_register`. You must
-+call :c:func:`pcs_unregister` from your remove function. You can avoid this step
-+by registering with :c:func:`devm_pcs_unregister`.
-+
-+Normally, :ref:`device links <device_link>` will prevent improper ordering of
-+device unbinding/removal. However, if your PCS device can be a child of its
-+consumers (such as if it lives on an MDIO bus created by the MAC which uses the
-+PCS), then no device link will be created. This is because children must be
-+probed/removed after their parents, but a device link implies that the consumer
-+must be probed after the provider. This contradiction is generally resolved by
-+having the consumer probe the provider at an appropriate point in the consumer's
-+probe function. However, the ``unbind`` device attribute can let userspace
-+unbind the provider directly, bypassing this usual process. Therefore, PCS
-+drivers in this situation, must set ``suppress_bind_attrs`` in their
-+:c:type:`device_driver`.
-+
-+
-+API Reference
-+-------------
-+
-+.. kernel-doc:: include/linux/phylink.h
-+   :identifiers: phylink_pcs phylink_pcs_ops
-+
-+.. kernel-doc:: include/linux/pcs.h
-+   :internal:
-+
-+.. kernel-doc:: drivers/net/pcs/core.c
-+   :export:
-+
-+.. kernel-doc:: drivers/net/pcs/core.c
-+   :internal:
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f99100cd37ce..bbea45c02e01 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7705,6 +7705,7 @@ F:	Documentation/ABI/testing/sysfs-class-net-phydev
- F:	Documentation/devicetree/bindings/net/ethernet-phy.yaml
- F:	Documentation/devicetree/bindings/net/mdio*
- F:	Documentation/devicetree/bindings/net/qca,ar803x.yaml
-+F:	Documentation/networking/pcs.rst
- F:	Documentation/networking/phy.rst
- F:	drivers/net/mdio/
- F:	drivers/net/mdio/acpi_mdio.c
-@@ -7718,6 +7719,7 @@ F:	include/linux/*mdio*.h
- F:	include/linux/mdio/*.h
- F:	include/linux/mii.h
- F:	include/linux/of_net.h
-+F:	include/linux/pcs.h
- F:	include/linux/phy.h
- F:	include/linux/phy_fixed.h
- F:	include/linux/platform_data/mdio-bcm-unimac.h
 diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-index 6e7e6c346a3e..8d70fc52a803 100644
+index 8d70fc52a803..5e169e87db74 100644
 --- a/drivers/net/pcs/Kconfig
 +++ b/drivers/net/pcs/Kconfig
-@@ -5,6 +5,18 @@
+@@ -25,10 +25,15 @@ config PCS_XPCS
+ 	  controllers.
  
- menu "PCS device drivers"
- 
-+config PCS
-+	bool "PCS subsystem"
-+	help
-+	  This provides common helper functions for registering and looking up
-+	  Physical Coding Sublayer (PCS) devices. PCS devices translate between
-+	  different interface types. In some use cases, they may either
-+	  translate between different types of Medium-Independent Interfaces
-+	  (MIIs), such as translating GMII to SGMII. This allows using a fast
-+	  serial interface to talk to the phy which translates the MII to the
-+	  Medium-Dependent Interface. Alternatively, they may translate a MII
-+	  directly to an MDI, such as translating GMII to 1000Base-X.
+ config PCS_LYNX
+-	tristate
++	tristate "NXP Lynx PCS driver"
++	depends on PCS && MDIO_DEVICE
+ 	help
+-	  This module provides helpers to phylink for managing the Lynx PCS
+-	  which is part of the Layerscape and QorIQ Ethernet SERDES.
++	  This module provides driver support for the PCSs in Lynx 10g and 28g
++	  SerDes devices. These devices are present in NXP QorIQ SoCs,
++	  including the Layerscape series.
 +
- config PCS_XPCS
- 	tristate
- 	select PHYLINK
-diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
-index 4c780d8f2e98..60cd32126d41 100644
---- a/drivers/net/pcs/Makefile
-+++ b/drivers/net/pcs/Makefile
-@@ -1,6 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
- # Makefile for Linux PCS drivers
++	  If you want to use Ethernet on a QorIQ SoC, say "Y". If compiled as a
++	  module, it will be called "pcs-lynx".
  
-+obj-$(CONFIG_PCS)		+= core.o
-+
- pcs_xpcs-$(CONFIG_PCS_XPCS)	:= pcs-xpcs.o pcs-xpcs-nxp.o
+ config PCS_RZN1_MIIC
+ 	tristate "Renesas RZ/N1 MII converter"
+diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
+index 7d5fc7f54b2f..3ea402049ef1 100644
+--- a/drivers/net/pcs/pcs-lynx.c
++++ b/drivers/net/pcs/pcs-lynx.c
+@@ -1,11 +1,14 @@
+-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+-/* Copyright 2020 NXP
++// SPDX-License-Identifier: GPL-2.0+
++/* Copyright (C) 2022 Sean Anderson <seanga2@gmail.com>
++ * Copyright 2020 NXP
+  * Lynx PCS MDIO helpers
+  */
  
- obj-$(CONFIG_PCS_XPCS)		+= pcs_xpcs.o
-diff --git a/drivers/net/pcs/core.c b/drivers/net/pcs/core.c
-new file mode 100644
-index 000000000000..be59afdac153
---- /dev/null
-+++ b/drivers/net/pcs/core.c
-@@ -0,0 +1,243 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Sean Anderson <sean.anderson@seco.com>
-+ */
-+
-+#include <linux/fwnode.h>
-+#include <linux/list.h>
-+#include <linux/mutex.h>
-+#include <linux/notifier.h>
+ #include <linux/mdio.h>
+-#include <linux/phylink.h>
++#include <linux/of.h>
 +#include <linux/pcs.h>
+ #include <linux/pcs-lynx.h>
 +#include <linux/phylink.h>
-+#include <linux/property.h>
+ 
+ #define SGMII_CLOCK_PERIOD_NS		8 /* PCS is clocked at 125 MHz */
+ #define LINK_TIMER_VAL(ns)		((u32)((ns) / SGMII_CLOCK_PERIOD_NS))
+@@ -333,7 +336,26 @@ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
+ 
+ 	return lynx_to_phylink_pcs(lynx);
+ }
+-EXPORT_SYMBOL(lynx_pcs_create);
++EXPORT_SYMBOL_GPL(lynx_pcs_create);
 +
-+static LIST_HEAD(pcs_devices);
-+static DEFINE_MUTEX(pcs_mutex);
-+
-+/**
-+ * pcs_register() - register a new PCS
-+ * @pcs: the PCS to register
-+ *
-+ * Registers a new PCS which can be attached to a phylink.
-+ *
-+ * Return: 0 on success, or -errno on error
-+ */
-+int pcs_register(struct phylink_pcs *pcs)
++static int lynx_pcs_probe(struct mdio_device *mdio)
 +{
-+	if (!pcs->dev || !pcs->ops)
-+		return -EINVAL;
-+	if (!pcs->ops->pcs_an_restart || !pcs->ops->pcs_config ||
-+	    !pcs->ops->pcs_get_state)
-+		return -EINVAL;
-+
-+	INIT_LIST_HEAD(&pcs->list);
-+	mutex_lock(&pcs_mutex);
-+	list_add(&pcs->list, &pcs_devices);
-+	mutex_unlock(&pcs_mutex);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pcs_register);
-+
-+/**
-+ * pcs_unregister() - unregister a PCS
-+ * @pcs: a PCS previously registered with pcs_register()
-+ */
-+void pcs_unregister(struct phylink_pcs *pcs)
-+{
-+	mutex_lock(&pcs_mutex);
-+	list_del(&pcs->list);
-+	mutex_unlock(&pcs_mutex);
-+}
-+EXPORT_SYMBOL_GPL(pcs_unregister);
-+
-+static void devm_pcs_release(struct device *dev, void *res)
-+{
-+	pcs_unregister(*(struct phylink_pcs **)res);
-+}
-+
-+/**
-+ * devm_pcs_register - resource managed pcs_register()
-+ * @dev: device that is registering this PCS
-+ * @pcs: the PCS to register
-+ *
-+ * Managed pcs_register(). For PCSs registered by this function,
-+ * pcs_unregister() is automatically called on driver detach. See
-+ * pcs_register() for more information.
-+ *
-+ * Return: 0 on success, or -errno on failure
-+ */
-+int devm_pcs_register(struct device *dev, struct phylink_pcs *pcs)
-+{
-+	struct phylink_pcs **pcsp;
++	struct device *dev = &mdio->dev;
++	struct phylink_pcs *pcs;
 +	int ret;
 +
-+	pcsp = devres_alloc(devm_pcs_release, sizeof(*pcsp),
-+			    GFP_KERNEL);
-+	if (!pcsp)
++	pcs = lynx_pcs_create(mdio);
++	if (!pcs)
 +		return -ENOMEM;
 +
++	dev_set_drvdata(dev, pcs);
++	pcs->dev = dev;
 +	ret = pcs_register(pcs);
-+	if (ret) {
-+		devres_free(pcsp);
-+		return ret;
-+	}
-+
-+	*pcsp = pcs;
-+	devres_add(dev, pcsp);
-+
-+	return ret;
++	if (ret)
++		return dev_err_probe(dev, ret, "could not register PCS\n");
++	dev_info(dev, "probed\n");
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(devm_pcs_register);
-+
-+/**
-+ * _pcs_get_tail() - Look up and request a PCS
-+ * @dev: The device requesting the PCS
-+ * @fwnode: The PCS's fwnode
-+ * @pcs_dev: The PCS's device
-+ *
-+ * Search PCSs registered with pcs_register() for one with a matching
-+ * fwnode or device. Either @fwnode or @pcs_dev may be %NULL if matching
-+ * against a fwnode or device is not desired (respectively).
-+ *
-+ * Once a PCS is found, perform common operations necessary when getting a PCS
-+ * (increment reference counts, etc).
-+ *
-+ * Return: A PCS, or an error pointer on failure. If both @fwnode and @pcs_dev are
-+ * *       %NULL, returns %NULL to allow easier chaining.
-+ */
-+struct phylink_pcs *_pcs_get_tail(struct device *dev,
-+				  const struct fwnode_handle *fwnode,
-+				  const struct device *pcs_dev)
+ 
+ void lynx_pcs_destroy(struct phylink_pcs *pcs)
+ {
+@@ -343,4 +365,55 @@ void lynx_pcs_destroy(struct phylink_pcs *pcs)
+ }
+ EXPORT_SYMBOL(lynx_pcs_destroy);
+ 
+-MODULE_LICENSE("Dual BSD/GPL");
++static void lynx_pcs_remove(struct mdio_device *mdio)
 +{
++	struct phylink_pcs *pcs = dev_get_drvdata(&mdio->dev);
++
++	pcs_unregister(pcs);
++	lynx_pcs_destroy(pcs);
++}
++
++static const struct of_device_id lynx_pcs_of_match[] = {
++	{ .compatible = "fsl,lynx-pcs" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, lynx_pcs_of_match);
++
++static struct mdio_driver lynx_pcs_driver = {
++	.probe = lynx_pcs_probe,
++	.remove = lynx_pcs_remove,
++	.mdiodrv.driver = {
++		.name = "lynx-pcs",
++		.of_match_table = of_match_ptr(lynx_pcs_of_match),
++		.suppress_bind_attrs = true,
++	},
++};
++mdio_module_driver(lynx_pcs_driver);
++
++struct phylink_pcs *lynx_pcs_create_on_bus(struct device *dev,
++					   struct mii_bus *bus, int addr)
++{
++	struct mdio_device *mdio;
 +	struct phylink_pcs *pcs;
++	int err;
 +
-+	if (!fwnode && !pcs_dev)
-+		return NULL;
++	mdio = mdio_device_create(bus, addr);
++	if (IS_ERR(mdio))
++		return ERR_CAST(mdio);
 +
-+	/* We need to hold this until we get to device_link_add. Otherwise,
-+	 * someone could unbind the PCS driver.
-+	 */
-+	mutex_lock(&pcs_mutex);
-+	list_for_each_entry(pcs, &pcs_devices, list) {
-+		if (pcs_dev && pcs->dev == pcs_dev)
-+			goto found;
-+		if (fwnode && pcs->dev->fwnode == fwnode)
-+			goto found;
++	mdio->bus_match = mdio_device_bus_match;
++	strncpy(mdio->modalias, "lynx-pcs", sizeof(mdio->modalias));
++	err = mdio_device_register(mdio);
++	if (err) {
++		mdio_device_free(mdio);
++		return ERR_PTR(err);
 +	}
-+	pcs = ERR_PTR(-EPROBE_DEFER);
 +
-+found:
-+	pr_debug("looking for %pfwf or %s %s...%s found\n", fwnode,
-+		 dev ? dev_driver_string(dev) : "(null)",
-+		 dev ? dev_name(dev) : "(null)",
-+		 IS_ERR(pcs) ? " not" : "");
-+	if (IS_ERR(pcs))
-+		goto out;
-+
-+	get_device(pcs->dev);
-+
-+	/* If fwnode is present, this link should have already been created by
-+	 * of_fwnode_add_links. This will mainly fail if pcs->dev is a child of
-+	 * dev.
-+	 */
-+	if (!device_link_add(dev, pcs->dev, DL_FLAG_STATELESS))
-+		dev_dbg(dev, "failed to create device link to %s\n",
-+			dev_name(pcs->dev));
-+
-+out:
-+	mutex_unlock(&pcs_mutex);
++	pcs = pcs_get_by_dev(dev, &mdio->dev);
++	mdio_device_free(mdio);
 +	return pcs;
 +}
-+EXPORT_SYMBOL_GPL(_pcs_get_tail);
++EXPORT_SYMBOL(lynx_pcs_create_on_bus);
 +
-+/**
-+ * pcs_find_fwnode() - Find a PCS's fwnode
-+ * @mac_node: The fwnode referencing the PCS
-+ * @id: The name of the PCS to get. May be %NULL to get the first PCS.
-+ * @optional: Whether the PCS is optional
-+ *
-+ * Find a PCS's fwnode, as referenced by @mac_node. This fwnode can later be
-+ * used with _pcs_get_tail() to get the actual PCS. ``pcs-handle-names`` is
-+ * used to match @id, then the fwnode is found using ``pcs-handle``.
-+ *
-+ * Return: %NULL if @optional is set and the PCS cannot be found. Otherwise,
-+ * *       returns a PCS if found or an error pointer on failure.
-+ */
-+static struct fwnode_handle *pcs_find_fwnode(const struct fwnode_handle *mac_node,
-+					     const char *id, bool optional)
-+{
-+	int index;
-+	struct fwnode_handle *pcs_fwnode;
-+
-+	if (!mac_node)
-+		return optional ? NULL : ERR_PTR(-ENODEV);
-+
-+	if (id)
-+		index = fwnode_property_match_string(mac_node,
-+						     "pcs-handle-names", id);
-+	else
-+		index = 0;
-+
-+	if (index < 0) {
-+		if (optional && (index == -EINVAL || index == -ENODATA))
-+			return NULL;
-+		return ERR_PTR(index);
-+	}
-+
-+	/* First try pcs-handle, and if that doesn't work fall back to the
-+	 * (legacy) pcsphy-handle.
-+	 */
-+	pcs_fwnode = fwnode_find_reference(mac_node, "pcs-handle", index);
-+	if (PTR_ERR(pcs_fwnode) == -ENOENT)
-+		pcs_fwnode = fwnode_find_reference(mac_node, "pcsphy-handle",
-+						   index);
-+	if (optional && !id && PTR_ERR(pcs_fwnode) == -ENOENT)
-+		return NULL;
-+	return pcs_fwnode;
-+}
-+
-+/**
-+ * _pcs_get() - Get a PCS from a fwnode property
-+ * @dev: The device to get a PCS for
-+ * @fwnode: The fwnode to find the PCS with
-+ * @id: The name of the PCS to get. May be %NULL to get the first PCS.
-+ * @optional: Whether the PCS is optional
-+ *
-+ * Find a PCS referenced by @mac_node and return a reference to it. Every call
-+ * to _pcs_get_by_fwnode() must be balanced with one to pcs_put().
-+ *
-+ * Return: a PCS if found, %NULL if not, or an error pointer on failure
-+ */
-+struct phylink_pcs *_pcs_get(struct device *dev, struct fwnode_handle *fwnode,
-+			     const char *id, bool optional)
-+{
-+	struct fwnode_handle *pcs_fwnode;
-+	struct phylink_pcs *pcs;
-+
-+	pcs_fwnode = pcs_find_fwnode(fwnode, id, optional);
-+	if (IS_ERR(pcs_fwnode))
-+		return ERR_CAST(pcs_fwnode);
-+
-+	pcs = _pcs_get_tail(dev, pcs_fwnode, NULL);
-+	fwnode_handle_put(pcs_fwnode);
-+	return pcs;
-+}
-+EXPORT_SYMBOL_GPL(_pcs_get);
-+
-+/**
-+ * pcs_put() - Release a previously-acquired PCS
-+ * @dev: The device used to acquire the PCS
-+ * @pcs: The PCS to put
-+ *
-+ * This frees resources associated with the PCS which were acquired when it was
-+ * gotten.
-+ */
-+void pcs_put(struct device *dev, struct phylink_pcs *pcs)
-+{
-+	if (!pcs)
-+		return;
-+
-+	device_link_remove(dev, pcs->dev);
-+	put_device(pcs->dev);
-+}
-+EXPORT_SYMBOL_GPL(pcs_put);
-diff --git a/include/linux/pcs.h b/include/linux/pcs.h
-new file mode 100644
-index 000000000000..41ea388ae3f7
---- /dev/null
-+++ b/include/linux/pcs.h
-@@ -0,0 +1,111 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Sean Anderson <sean.anderson@seco.com>
-+ */
-+
-+#ifndef _PCS_H
-+#define _PCS_H
-+
-+#include <linux/property.h>
-+
++MODULE_DESCRIPTION("NXP Lynx 10G/28G PCS driver");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
+index 5712cc2ce775..ef073b28fae9 100644
+--- a/include/linux/pcs-lynx.h
++++ b/include/linux/pcs-lynx.h
+@@ -6,12 +6,15 @@
+ #ifndef __LINUX_PCS_LYNX_H
+ #define __LINUX_PCS_LYNX_H
+ 
+-#include <linux/mdio.h>
+-#include <linux/phylink.h>
++struct device;
++struct mii_bus;
 +struct phylink_pcs;
-+
-+int pcs_register(struct phylink_pcs *pcs);
-+void pcs_unregister(struct phylink_pcs *pcs);
-+int devm_pcs_register(struct device *dev, struct phylink_pcs *pcs);
-+struct phylink_pcs *_pcs_get_tail(struct device *dev,
-+				  const struct fwnode_handle *fwnode,
-+				  const struct device *pcs_dev);
-+struct phylink_pcs *_pcs_get(struct device *dev, struct fwnode_handle *fwnode,
-+			     const char *id, bool optional);
-+void pcs_put(struct device *dev, struct phylink_pcs *pcs);
-+
-+/**
-+ * pcs_get() - Get a PCS based on a fwnode
-+ * @dev: The device requesting the PCS
-+ * @id: The name of the PCS
-+ *
-+ * Find and get a PCS, as referenced by @dev's &struct fwnode_handle. See
-+ * pcs_find_fwnode() for details. Each call to this function must be balanced
-+ * with one to pcs_put().
-+ *
-+ * Return: A PCS on success, or an error pointer on failure
-+ */
-+static inline struct phylink_pcs *pcs_get(struct device *dev, const char *id)
-+{
-+	return _pcs_get(dev, dev_fwnode(dev), id, false);
-+}
-+
-+/**
-+ * pcs_get_optional() - Optionally get a PCS based on a fwnode
-+ * @dev: The device requesting the PCS
-+ * @id: The name of the PCS
-+ *
-+ * Optionally find and get a PCS, as referenced by @dev's &struct
-+ * fwnode_handle. See pcs_find_fwnode() for details. Each call to this function
-+ * must be balanced with one to pcs_put().
-+ *
-+ * Return: A PCS on success, %NULL if none was found, or an error pointer on
-+ * *       failure
-+ */
-+static inline struct phylink_pcs *pcs_get_optional(struct device *dev,
-+						   const char *id)
-+{
-+	return _pcs_get(dev, dev_fwnode(dev), id, true);
-+}
-+
-+/**
-+ * pcs_get_by_fwnode() - Get a PCS based on a fwnode
-+ * @dev: The device requesting the PCS
-+ * @fwnode: The &struct fwnode_handle referencing the PCS
-+ * @id: The name of the PCS
-+ *
-+ * Find and get a PCS, as referenced by @fwnode. See pcs_find_fwnode() for
-+ * details. Each call to this function must be balanced with one to pcs_put().
-+ *
-+ * Return: A PCS on success, or an error pointer on failure
-+ */
-+static inline struct phylink_pcs
-+*pcs_get_by_fwnode(struct device *dev, struct fwnode_handle *fwnode,
-+		   const char *id)
-+{
-+	return _pcs_get(dev, fwnode, id, false);
-+}
-+
-+/**
-+ * pcs_get_by_fwnode_optional() - Optionally get a PCS based on a fwnode
-+ * @dev: The device requesting the PCS
-+ * @fwnode: The &struct fwnode_handle referencing the PCS
-+ * @id: The name of the PCS
-+ *
-+ * Optionally find and get a PCS, as referenced by @fwnode. See
-+ * pcs_find_fwnode() for details. Each call to this function must be balanced
-+ * with one to pcs_put().
-+ *
-+ * Return: A PCS on success, %NULL if none was found, or an error pointer on
-+ * *       failure
-+ */
-+static inline struct phylink_pcs
-+*pcs_get_by_fwnode_optional(struct device *dev, struct fwnode_handle *fwnode,
-+			    const char *id)
-+{
-+	return _pcs_get(dev, fwnode, id, true);
-+}
-+
-+/**
-+ * pcs_get_by_dev() - Get a PCS from its providing device
-+ * @dev: The device requesting the PCS
-+ * @pcs_dev: The device providing the PCS
-+ *
-+ * Get the first PCS registered by @pcs_dev. Each call to this function must be
-+ * balanced with one to pcs_put().
-+ *
-+ * Return: A PCS on success, or an error pointer on failure
-+ */
-+static inline struct phylink_pcs *pcs_get_by_dev(struct device *dev,
-+						 const struct device *pcs_dev)
-+{
-+	return _pcs_get_tail(dev, NULL, pcs_dev);
-+}
-+
-+#endif /* PCS_H */
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 63800bf4a7ac..0edbf0d243e0 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -1,6 +1,7 @@
- #ifndef NETDEV_PCS_H
- #define NETDEV_PCS_H
  
-+#include <linux/notifier.h>
- #include <linux/phy.h>
- #include <linux/spinlock.h>
- #include <linux/workqueue.h>
-@@ -432,13 +433,17 @@ struct phylink_pcs_ops;
+ struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs);
  
- /**
-  * struct phylink_pcs - PHYLINK PCS instance
-+ * @dev: the device associated with this PCS
-  * @ops: a pointer to the &struct phylink_pcs_ops structure
-+ * @list: internal list of PCS devices
-  * @poll: poll the PCS for link changes
-  *
-  * This structure is designed to be embedded within the PCS private data,
-  * and will be passed between phylink and the PCS.
-  */
- struct phylink_pcs {
-+	struct list_head list;
-+	struct device *dev;
- 	const struct phylink_pcs_ops *ops;
- 	bool poll;
- };
+ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
++struct phylink_pcs *lynx_pcs_create_on_bus(struct device *dev,
++					   struct mii_bus *bus, int addr);
+ 
+ void lynx_pcs_destroy(struct phylink_pcs *pcs);
+ 
 -- 
 2.35.1.1320.gc452695387.dirty
 
