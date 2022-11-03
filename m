@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F03EF6176F7
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C376176F9
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbiKCG4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 02:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
+        id S229531AbiKCG4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 02:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiKCG4J (ORCPT
+        with ESMTP id S229637AbiKCG4J (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA47625C0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3271122
         for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87859B82675
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE58561CB0
         for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22286C433C1;
-        Thu,  3 Nov 2022 06:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3425DC433D7;
+        Thu,  3 Nov 2022 06:56:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667458566;
-        bh=yCIqxIoXfc5kamIuxwM4Y1tlh9EQbVTy+Nv9vethuz4=;
+        s=k20201202; t=1667458567;
+        bh=j9HTvWwvXk241A0Y/CRPm7I0L0kaJfz2NHFM1IpB91M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ECSIb/M82O5EGvHwbj0T+hpJJD7sjnoHg6/Tz2mpLFO57P/7HLtp2hvCHl8/HCw8Y
-         kbVYPqVnRAzbwmkPr5LopBm03Z5Si4GNpj4cqwsitrqBjRYeTOlEFi1MvYdULYzvRX
-         SwRTLXAMhCD2ypfFXQh/g219ufGA7W/l3VIjqhtStQ4vslPjDeu0TLT/9Rb8cAiwjG
-         vS2Hxyvipy3b3J7xkioxPC/FlILY5Xsli6+Mm7Qk6X3MjyJKTZlLW8dkt2C9dwnf+7
-         jOLCuffCjLxImyTv51RdvtEtz0R8lKwOhIDgbpxidzvRdRQdq3RMAVOFUdrPub5R2m
-         EbjvN4X2+FMPA==
+        b=alHlo0DHQAXUig5JlKpwNuoZZZKY8tMgA3SDx5F+Kq2mNyeIhUnchJAkelQiIc2t3
+         PRjB2+dItVMKemQX9mMWwpun63LnlbezvmWZTcgUBY+G2diCuQsSIBvc250/vXIrOZ
+         kl6H2Cqpo5+Cw9aTGJfOpd6FuVKfR+t+she4kAVLeSeZ4s98JX9EZRmTCsT0eS5SaD
+         hMwv+aQhsT8iMO37bRAyR/rt704YCRl0NLKSRrt/pa+qojHFWJr4CfzsPZ66Mr2GC0
+         Nm7rkb/15oaLUo1BEVZdAh1Vdx2JcyX/TqZS1LeZ4HnjuFd3STW/NVl123EMEoqo/9
+         EJBnupwvlfWjQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Roy Novich <royno@nvidia.com>,
-        Alexander Schmidt <alexschm@de.ibm.com>,
-        Moshe Shemesh <moshe@nvidia.com>
-Subject: [net 02/11] net/mlx5: Allow async trigger completion execution on single CPU systems
-Date:   Wed,  2 Nov 2022 23:55:38 -0700
-Message-Id: <20221103065547.181550-3-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>, Chris Mi <cmi@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: [net 03/11] net/mlx5: E-switch, Set to legacy mode if failed to change switchdev mode
+Date:   Wed,  2 Nov 2022 23:55:39 -0700
+Message-Id: <20221103065547.181550-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221103065547.181550-1-saeed@kernel.org>
 References: <20221103065547.181550-1-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -59,49 +56,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roy Novich <royno@nvidia.com>
+From: Chris Mi <cmi@nvidia.com>
 
-For a single CPU system, the kernel thread executing mlx5_cmd_flush()
-never releases the CPU but calls down_trylock(&cmd→sem) in a busy loop.
-On a single processor system, this leads to a deadlock as the kernel
-thread which executes mlx5_cmd_invoke() never gets scheduled. Fix this,
-by adding the cond_resched() call to the loop, allow the command
-completion kernel thread to execute.
+No need to rollback to the other mode because probably will fail
+again. Just set to legacy mode and clear fdb table created flag.
+So that fdb table will not be cleared again.
 
-Fixes: 8e715cd613a1 ("net/mlx5: Set command entry semaphore up once got index free")
-Signed-off-by: Alexander Schmidt <alexschm@de.ibm.com>
-Signed-off-by: Roy Novich <royno@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Fixes: f019679ea5f2 ("net/mlx5: E-switch, Remove dependency between sriov and eswitch mode")
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c  | 14 ++++++++------
+ .../mellanox/mlx5/core/eswitch_offloads.c      | 18 +++---------------
+ 2 files changed, 11 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-index 46ba4c2faad2..2e0d59ca62b5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -1770,12 +1770,17 @@ void mlx5_cmd_flush(struct mlx5_core_dev *dev)
- 	struct mlx5_cmd *cmd = &dev->cmd;
- 	int i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index c59107fa9e6d..2169486c4bfb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1387,12 +1387,14 @@ void mlx5_eswitch_disable_locked(struct mlx5_eswitch *esw)
+ 		 esw->mode == MLX5_ESWITCH_LEGACY ? "LEGACY" : "OFFLOADS",
+ 		 esw->esw_funcs.num_vfs, esw->enabled_vports);
  
--	for (i = 0; i < cmd->max_reg_cmds; i++)
--		while (down_trylock(&cmd->sem))
-+	for (i = 0; i < cmd->max_reg_cmds; i++) {
-+		while (down_trylock(&cmd->sem)) {
- 			mlx5_cmd_trigger_completions(dev);
-+			cond_resched();
-+		}
+-	esw->fdb_table.flags &= ~MLX5_ESW_FDB_CREATED;
+-	if (esw->mode == MLX5_ESWITCH_OFFLOADS)
+-		esw_offloads_disable(esw);
+-	else if (esw->mode == MLX5_ESWITCH_LEGACY)
+-		esw_legacy_disable(esw);
+-	mlx5_esw_acls_ns_cleanup(esw);
++	if (esw->fdb_table.flags & MLX5_ESW_FDB_CREATED) {
++		esw->fdb_table.flags &= ~MLX5_ESW_FDB_CREATED;
++		if (esw->mode == MLX5_ESWITCH_OFFLOADS)
++			esw_offloads_disable(esw);
++		else if (esw->mode == MLX5_ESWITCH_LEGACY)
++			esw_legacy_disable(esw);
++		mlx5_esw_acls_ns_cleanup(esw);
 +	}
  
--	while (down_trylock(&cmd->pages_sem))
-+	while (down_trylock(&cmd->pages_sem)) {
- 		mlx5_cmd_trigger_completions(dev);
-+		cond_resched();
-+	}
+ 	if (esw->mode == MLX5_ESWITCH_OFFLOADS)
+ 		devl_rate_nodes_destroy(devlink);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 4e50df3139c6..728ca9f2bb9d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2310,7 +2310,7 @@ static int esw_create_restore_table(struct mlx5_eswitch *esw)
+ static int esw_offloads_start(struct mlx5_eswitch *esw,
+ 			      struct netlink_ext_ack *extack)
+ {
+-	int err, err1;
++	int err;
  
- 	/* Unlock cmdif */
- 	up(&cmd->pages_sem);
+ 	esw->mode = MLX5_ESWITCH_OFFLOADS;
+ 	err = mlx5_eswitch_enable_locked(esw, esw->dev->priv.sriov.num_vfs);
+@@ -2318,11 +2318,6 @@ static int esw_offloads_start(struct mlx5_eswitch *esw,
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "Failed setting eswitch to offloads");
+ 		esw->mode = MLX5_ESWITCH_LEGACY;
+-		err1 = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
+-		if (err1) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "Failed setting eswitch back to legacy");
+-		}
+ 		mlx5_rescan_drivers(esw->dev);
+ 	}
+ 	if (esw->offloads.inline_mode == MLX5_INLINE_MODE_NONE) {
+@@ -3389,19 +3384,12 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
+ static int esw_offloads_stop(struct mlx5_eswitch *esw,
+ 			     struct netlink_ext_ack *extack)
+ {
+-	int err, err1;
++	int err;
+ 
+ 	esw->mode = MLX5_ESWITCH_LEGACY;
+ 	err = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
+-	if (err) {
++	if (err)
+ 		NL_SET_ERR_MSG_MOD(extack, "Failed setting eswitch to legacy");
+-		esw->mode = MLX5_ESWITCH_OFFLOADS;
+-		err1 = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
+-		if (err1) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "Failed setting eswitch back to offloads");
+-		}
+-	}
+ 
+ 	return err;
+ }
 -- 
 2.38.1
 
