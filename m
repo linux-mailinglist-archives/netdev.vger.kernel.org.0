@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DAB8618A3C
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 265BD618A40
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231479AbiKCVHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 17:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
+        id S231523AbiKCVHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 17:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231415AbiKCVHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:15 -0400
+        with ESMTP id S231433AbiKCVHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:17 -0400
 Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140053.outbound.protection.outlook.com [40.107.14.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDEF2181E;
-        Thu,  3 Nov 2022 14:07:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE357CE01;
+        Thu,  3 Nov 2022 14:07:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JC1phC1gk2OPaxophj0WrYvZvwajf/X2JNHYDxHsBX9aBg6zVA5aoVKUCmWVEPjMjvolCiKRdClyHOtb0wcczewOTvfWjVap1NGke3qe7UibCKXDrnCqfF2T8ngED6oC9fUbus4yrQ3j1Qs2biNkmM1ms3d2cBZecCxni8i8xua2eLmAVOkQC2/GdJsoqjeevbM4sitRCORXEPBrhCM84ebeNE0v7CboSwh/F3JLOomOK0suHyPXAvEpGGi65BsonuKoW+1RyLObNDbdizyTtT+XxtktERGeRwoDK63G7dD7ia/t3SYJ89H4MCQ4aXOHXxrJzgZ8ep/Pgml4I4bcug==
+ b=Swqp3LtK9xTImVQk7xI5EYsGBk90+eAY3K3jPhWtDP/TLycEZigAxJDqHO96J+maAbSPfEcywnxMAGJH9E/lXQF17TJLOoS8s4CSBYb3aw/vcPz9QKAsA2xbYF6iXC6wtgYZbBUlGhV3XmKR9BBQ7mOUZMDBHcAOhBsb01W8mu8MvKbP9+GmIdgqK2S6AR3F1FG8JO4K1yuKiEFVPslbIe19hpnXfUct66UFae71nRuPaVSO5/We73BqOmLPShCxzGfuRRBTSQSFxdMha+3sW2h6bTqWxRYI7TnsORF+PnnahA/TUnNEUSDNTTNLIWThG39LUjxikL1gLOHYu3cKLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ub2D9zTatvWGG6IQyUZpnrTP1/6aaU5Yt4WSqDNSDf8=;
- b=KyTicMLGpU6kaF8nbGBpR5O3rmbI5MWOym7Yw43ZqXdsWRMcqoA/nB0whXI59yWh1ldBz+tvV82T6u5q+9ej1nqSFmT4Zr3tIAc8nxQu4jNnetS5BQyjSGOgBm+mMGve0yu6oWpjTiy1lNm/qpmxaH6gXfXbj8Hv7GRaabbTNTqwOgpRxqo+xpQ9YinAOw3HIoZiqYgG7jvLMYOvW0LVEcLtMbZhJiHUViiQVU9/F4xv3NT0FToymzVCErRdcnMcojwHCIGl6/TSqpcMmAQ7vrue8n1/MVTu93cOuPVNY5axvJoGILwl6xU1JcpEStvMG9PjdfLtZZkor1std1ibiQ==
+ bh=SuCtP7RlVuZsya4mFYQPAm/vwU+6Ay7rGbjbFvrDQf4=;
+ b=LxlBd29ZEuaR+XRK43u5EyQWunsDthJ5RVhiWEFxOGfKfw+jVCRqchCNTsIqJBqaQ15zSXC9i/myLFdKfcUCEamZs13ofG2xM0Ayss7VZXrR0o4PDi4bEY5+R+gdpSaQy3PhnXKl5zbd/EEllkdNgT4OpWYLMR1kAm54NiCBxyBKh2hXAv0ZoBy88SUppG4cVb5fmDg8eDk7M7Qqqsex1fFUIhKOrt5av71muFcYZ2eWDFMF+zW+xGVGPZEP1QM7o/z0w7+RJN/sPoaYPytl+4QluKysj8ScgaX+ZDPVR4GfPJ1VAs31n4VJo++vYXFDdV+MtHqWgtzQmwrZybvCsg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ub2D9zTatvWGG6IQyUZpnrTP1/6aaU5Yt4WSqDNSDf8=;
- b=yeKJCzJAhDQmBMqq1wzbebaPuUBNH1UljShhX7ZjagsVpmas7P8EPO/6+7GbawQ3fJwRvnP7PyVg69uF/VS831y8wtPxc/GSCwLPpF3iGV5gXpZvmeOT7Vr46VFzAgLgtxdekHsyJLCClM7YbaBrlDw6ubKcSPNaOk71Z4SrcmUWRx9sAkHsG4phK74AL2SrfBzaHJ5ob0sWfjvMNZgGjlyplvI+BmMecsIOzSXtlATU0H82E7vBs2AsRb1jyzWL3PTus0zaIddd8AIWKsaTrrcHMW8WTOPv9YfU6HdB7MWfw3CTyZw5udieSJjcHkEsFk1eoK22s1BlOnUDPy+ZVg==
+ bh=SuCtP7RlVuZsya4mFYQPAm/vwU+6Ay7rGbjbFvrDQf4=;
+ b=WgJ+Z89P83ys0kaKgtxxDvSzMkNivh+oAKb8tPw9/nJPpNRTutIfiNaeR3FjpP3gXO2+MtgJlWXQtaHo9ZCxKeG75oSQGtcr20yfIGVgR666eatNJbn8VJqD4FOIkG+AzUBRz8aMDm3wA9jXEw76ORVSYqyDkhfOpE/5Fl9ZGPQc5m7H1zR+n63TAfKwgY+MZYOxNdZC6yuSUBh382GSKZl/0rhtw5Q3vpfyAofrgmSS83LfWke+plhzLFkZvaglbr8mXl2tUx+pTKocpR7Do8i38PiIqZIGgY+gPDZW+EBUtMRdYZ9WcD/sAfvRq4LLFB/zSngFY5f1NgZ2ygctOQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by PAXPR03MB7746.eurprd03.prod.outlook.com (2603:10a6:102:208::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Thu, 3 Nov
- 2022 21:07:11 +0000
+ 2022 21:07:13 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
- 21:07:11 +0000
+ 21:07:13 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
@@ -50,16 +50,10 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Madalin Bucur <madalin.bucur@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2 05/11] net: pcs: lynx: Convert to an MDIO driver
-Date:   Thu,  3 Nov 2022 17:06:44 -0400
-Message-Id: <20221103210650.2325784-6-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH net-next v2 06/11] net: enetc: Convert to use PCS subsystem
+Date:   Thu,  3 Nov 2022 17:06:45 -0400
+Message-Id: <20221103210650.2325784-7-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20221103210650.2325784-1-sean.anderson@seco.com>
 References: <20221103210650.2325784-1-sean.anderson@seco.com>
@@ -71,51 +65,51 @@ X-ClientProxiedBy: BLAP220CA0002.NAMP220.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB7746:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9b9a037a-44b4-4e78-7565-08dabddf6046
+X-MS-Office365-Filtering-Correlation-Id: 3a990866-a9ba-4519-2a4e-08dabddf6143
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9CcM09626v1THI9Vr2pJvdQ7PHKECFkLNr0yQMCGHuE8l22Okjk+l9gVFDGcDk3kBC8/gi7QH8cHq9Cuukz2Fy5B3NhA4ceSGOWux0fQYCmkKNXGPs+g24CI7FGFI2VBn0YqRtkwnIox5xg80R/B6dJquqAlUcD2A3djpYZo8uWFGEo+0R3lm2Vj/2OhKqsz8U4BiKorkJ7L0tYizGu+ki3U+RfUPb8YkJ/u4FrXsJOgLqsYCu8KN/kshJEhgWO3EpKOw63d+OR/Y/MIyVg7ON50UDVbUFWjhjNAaDBLmDc3tAtTQgcFdyKDfavQZx81SWqbohK0K9xSyayvEtFZFDT4rNTt3e0NkN8hihq6rvYBZheXwkdBbtWjwnEHDRHdLLD/y5D9x4grz2JK3IzqdKANhT/ald7VYFzc8jOHAFybWMD2BcEAucEDls3qlgguqIHWehoqCbWSxxerWsYbfTQJ6WulyHLBxTSOdNf70M9n+83SWGuvF5C7M5A/hGgGI58QwcsjUJOcpn4DGgLBUm2pbBkldWpy8CCu89pVRqyVC7Vg1WaXQTEFcS+UsgHxPkbyLcBm7zcJ3VRkuSslFdmwhejNafjN6v+LeR/cfUhtnLTbiUFayNsE4fM9FNvijNolE3gd1M+majEprSc98AHwgcN052C+8vOUGeUlA4k2RGxFkPfSz5uLj/KtTqoDB2l6mZhD3PE3cDDQGn83DJWBAjDkwDR8+yE5vtqBZMUDKFgOPzFEnGCvKI7/cufOqHdwhoxeutmNP4mXZomnIQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: b1pdKAUyqHYwsHafKX5+4fIJJLdYNc+w6UL751T0GjKKfGFv+sIwQUqCiV04ROiEeBThLmMp3Ojc3hbsbfE6tZ/BYfvy9A2c7NHOz5KgY+5z+h1FQJFIGfIyCbmEFy5Xj2wvJaBK7cn+QooFVxw756e2oE6gC17PE4skUgIWBXa8Y4UFLHhI4eVVtfIrxBSMhp+KfQhZ0PpzdX/LZmzukdQIxd4hmWR+PTmIXdNfD6zHC5ZbXiPmva6N8EZ7KoRMQm5bUstQpFNhX+4eNVYfie7xtXc4XbIG2pu6UBI91H86t8uysY8zA3aomJCY9whLuPH+IuCM8bR5M2ZbH9CzX9zOc12go3+MkSQfeEmvhIJXgANiKICgOvdpWjZAkQSSzM+ggi++cJoic/DIlJv/yjexjVPzIC0o11xftwp4T8jakQpK/662fOyT0tNRI+ipCxYiUXovpot0pGBU8bm9BwVpY2ynacx3ov6xtWagYv1BRvXxvXWmwKzpnBu1MNUBw38WVjnppzCtjVk3+AK/9c61I96jldJJHrq2X7H0P3U4pEa/cLurCaDUUsNw5C/u54TF9SZbeXPmS1POOAp6hFUeKiFR3EJNRhPVXgCfJjxIDxXNvYsV83paAGdHTYgYXBrhl6hhtvMOPaL8teTdXmB6QfIKC1UNQWxfXYyMObQLnnYmcYeDavHRFNxAyd6Zfg7y51y5D0rVdv8DCkrBG+pBJ1O+LM5FiV7rxMGD/gsdcAiTMvCxEL7Gv85D0RMv1HyVZGcH5SxIOaco6qlZNg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(107886003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BiczTNFvWP8n6rZjP9u1uyIW35UHo421V2Qu+Bw83A7Hw6kuxskadim1GmWg?=
- =?us-ascii?Q?cFyt/LwqRjw4+0AJLZLhxxNGqN9lpVxFywznqL1vTeK1L8HfvgO6j8LYFfiV?=
- =?us-ascii?Q?+6jRu8pyZB8Mlu5HS006I+kRRE14H6XUbsT5/dTKKeW43jfnl8+g27dxafVM?=
- =?us-ascii?Q?bdPQuCF66RfkEHAshqvdA0vCgFK68a7rg/Tc8MutE7ZsKSkQPlvrR7CBLDr2?=
- =?us-ascii?Q?CLwU8qw3HKj7RU76xoAuPFM86x1DgL4voVIHLTcqhybTRrvz2b3AxQzuoQxQ?=
- =?us-ascii?Q?43Q6SP+znYkOosofneqGCCrLs6UDhdDg1X/8h8S9BajN3omFlqqmZ3SIGghF?=
- =?us-ascii?Q?avMnG2x98FtykSSwlTh0vgifSGy8iBSUbveOff1bmHTzMiTtA7qQ047Rsxoy?=
- =?us-ascii?Q?xhTbz51vIOyyL6tgL/5L2nahmmgP/T8aCfavQKxay2A4h+Y8JaCByZcUWz+l?=
- =?us-ascii?Q?72zSCwx+TQJOg5ovo2SKs0NKLAQYZrmNCx7O0R0C+TGByOEYrxy4ywnrdqvQ?=
- =?us-ascii?Q?7WAeg3FIvnzy+5hy8WP8xsZ3uu+Ug6UOj8uS20IQdY8+9CDUQswdsO0nUIGO?=
- =?us-ascii?Q?BwViagRfPeGyT1P95pJ9PNmsjiuaTawOm86Z6dzcYsXhkfYzCMGCF0wyE2EG?=
- =?us-ascii?Q?sQrelJ9zsgConjuhTw7ax1LIl2iX3bWxH6FWCsyiPcbaAtsoVcXSgw5WvCLr?=
- =?us-ascii?Q?r7RUV10PvJ2GP9fimSQliOKb/RUqS52ztuapaSEHEdsfx4e+UYtyqeU5UvMj?=
- =?us-ascii?Q?hncryUdO5RJuj7Bf2wI4V53ds0L+nW+wSgiYP2l/PoRtffLB5DE/FTA0UMwY?=
- =?us-ascii?Q?7y0f0ZAxxRepKIT1PqSpyO9J4pxiV9RW6IBJcfVbDYcPshrVVAGormPWaq1D?=
- =?us-ascii?Q?+b8fhcOaiMELLUJ92vOvLq/ajX6S5Bc645220GCl9Q8dnVvJdf8Q/2+Kv2Z6?=
- =?us-ascii?Q?7hD/liawk84XQM/3jBmOtruO77D+eV9wGRPQlkxM2K86vaOCCxNYKbMkPL73?=
- =?us-ascii?Q?pGukFWDnOVQrKauRfhV3c8nf+3rHZbiDBbY2ucG0sz9yCqwtFG52g4kTb6K6?=
- =?us-ascii?Q?GTxeFuhgp68PGL72XdrLTsk+kxAvdISoJOlbhFAi+lu+HwuaD78GNFqhi5fx?=
- =?us-ascii?Q?bj0oFuQ/YS4V3tK6IOe56c3wk7i7VdP9TUIRfPqZNXapIwOasQuLWxWVcPbC?=
- =?us-ascii?Q?ghexTK2jXzb8yVF75lqxPvQQDvhursyRbupO8jmQWfAFsPO+EUokTHY7Qaa+?=
- =?us-ascii?Q?KG+1dNWCwHXKY5qWa6izU6914uJxj2yfH1FiwlsvU5uDTZYGyfLdQG6BPnLG?=
- =?us-ascii?Q?BbYWnc1qRjAw4L4Ck0ihPN3V1cMFksy4GWnOAn/uVdqg3srPnDE+obJBbpTT?=
- =?us-ascii?Q?XjPnijRR8CA5YbpuXBsO1T++FDJlK6fHNudxQnUAIRx5bAmD59zbIYaQ8Iva?=
- =?us-ascii?Q?gnwA/dqBfK4+UkobPXXO4bfCwjgW+BhL18QPx5TdF9+C6mM+jKk6D0BYXdtz?=
- =?us-ascii?Q?4JnjzyapbMDf/Oi92PmpxqKdzKI0pJ75hkWCb2CRJKl2QUEnoTScJ8RWeMnF?=
- =?us-ascii?Q?j5CgaToBA9UGqowwbRuTr/yJwbk+TOFQ/4QW0QWAV8USzn24nZZdZGSjz5n/?=
- =?us-ascii?Q?NA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Mjka91DDSZQSJMSopz79IWT+58rbKSNayLgydFCrkLtGPvlob/LzzYbWgece?=
+ =?us-ascii?Q?3VwBCF76inov45yQ+BXXuzbRy17C1aoLfwM5IPOcNusNFIxkfTatmOYBp3Nn?=
+ =?us-ascii?Q?/klbk6AZQ5xms1EbqFitK/PH/MSgw6V7Ijh9iYiqaQ5H48j8fxyPJsfvrUv9?=
+ =?us-ascii?Q?aHZpnNb6FAe8TzNYxLLdjLBaDDWqnkfADV7DsGgKFv/XhWQ7HPbUTYL9tuRZ?=
+ =?us-ascii?Q?FJ9P8rxZLlyGab+M0UoWFCjgAdYYkPXkDOHcIHA6u2C+qVEZl+WIFwxwk5dI?=
+ =?us-ascii?Q?RdPGH3Fx5sLK5DpRGgCftwqEhJy0kQzDYtahyaDBL07+aNQVe5KmgBkdyBlz?=
+ =?us-ascii?Q?ZRkQsA3aDFW0X1D64G8QZ68gXWr1lrnZb+8bLyItmSx1iEt9UTwwi+8orog9?=
+ =?us-ascii?Q?NFuKFoGxZaZpOXibwsJ0Ckm2Kmg3+Qrbj3RGpaVuywQ3X15wmTUM/dv8Gabt?=
+ =?us-ascii?Q?Aj6Tin/TZWdIV9pBPmSE5AaeZPSNaCEkElmXnZCsdx2rTQ/MKW8D+zrMH/f2?=
+ =?us-ascii?Q?1vOQQXRg2/4W8m3IItkqxw00ApT/B1J7ccIP4N4H9LsOCkrb2PVP58oQ7LRy?=
+ =?us-ascii?Q?2B4PDOozRT7td54O+X1skW1UbP6zGu+CDjdglqnbX/0laO9SZvzbW0nklOTj?=
+ =?us-ascii?Q?xjg3azwfJHh+Eum26rLluVegLoOwerL6oj/eGrmon57bpSCYF+uX4i3V9wSZ?=
+ =?us-ascii?Q?KqV7HUMTMLpA+T1NLLQpvzPkyPZiobTZY7hVxWH6LtFDrF1pfKaSIAGNz9PY?=
+ =?us-ascii?Q?lZXh8HHP1a5BXKt5QC0lxSM3sm8Ke8RA9ES/0yavijsf07qlZ4MGd7pJEc/i?=
+ =?us-ascii?Q?K7ZhZhTYZv3n+j7sxHqMBybzj7KNUJ8mzRRGIrQG6gEkDo+QCkIxqMmPq5O6?=
+ =?us-ascii?Q?9v2i32oBzWCM8jFTWWKMyeF3ilA4ppNZdS9xZ/hh1+MXHXEEKBcBgF0G7SQb?=
+ =?us-ascii?Q?3nltk/b7Use0W7dLmqLOMmFVUmcO26R6Re8E26LL66tOuowfewYuvl7UNCUB?=
+ =?us-ascii?Q?cX6vREfwyHkzcJwofFrZQmbdr7AyXRcr3OXMled8fiPIvG7fzdPfYPY/o2KT?=
+ =?us-ascii?Q?9R4eOHS08UyjuXP07dFIwSZHYZ7bPMeG91z6SAL9MQJS7+KLy+y5IZj1aCIK?=
+ =?us-ascii?Q?0HAv1R4To8A0LSMG9siuifBdwXikp9d9aW/gpwo2ykE+ucL/xG+kZucz84cp?=
+ =?us-ascii?Q?bcNzUSDBk1yvMjxznZs6vgtFc5oJCqaS42MxiUpqlliacnyrbgRA16wWxx+E?=
+ =?us-ascii?Q?GBq/BfKMco8B9sqEYCBHqZcv/fgbIHI945i3r4iA5qKg312SstFgZRrQiDDP?=
+ =?us-ascii?Q?6e94tgBsVekq8UovvvrJNPmD3N6x6MhyS09tSsip8AmlQzfQYNaf47ZlbuOm?=
+ =?us-ascii?Q?wDEb0+OCFSUgoV7pItc2wdFlV29JZXX5i+ebl7KnOJ7fLG6sAzq42RbvllMx?=
+ =?us-ascii?Q?RfENNEdQ81x/5JPIxWlRNlUzg3UtPvzzFXSB2jIoO24KMt+yr+1/kno5PIh9?=
+ =?us-ascii?Q?Fp4Wvncb/b1thMnz9QkxTO+LNbkxcnVeBF3kXgDdoP9C/OxPv/cAJWwnpWjr?=
+ =?us-ascii?Q?US2/FHaTEi+TmYcnAJh4YS+d6drW4m2Ck70NGYy0hN7M/NN+VSSKJ8i/Oy7t?=
+ =?us-ascii?Q?mA=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b9a037a-44b4-4e78-7565-08dabddf6046
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a990866-a9ba-4519-2a4e-08dabddf6143
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:11.8339
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:13.4901
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d/OKgIhvOioNcOFqeabM+Vv7r/GFu1oRdBzhjyAyJ0cJYF3N95HUYuAcxZkQ/EO0K/xvlDu/rgvD14LMS5OVxw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: DSk/oVzKyJYZUz0wyGssBY4FNP+ukViHhKmwqJPkPiOqtnTSAVaHt6Tp/KIbVp+wJONdpeXZoZ4wLcJtbDqeEw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7746
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -127,190 +121,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This partially converts the lynx PCS driver to a proper MDIO driver.
-This allows using a more conventional driver lifecycle (e.g. with a
-probe and remove). For compatibility with existing drivers, we retain
-the old lynx_pcs_create/destroy functions. This may result in two
-"drivers" attached to the same device (one real driver, and one attached
-with lynx_pcs_create). However, this should not cause problems because
-consumers will only use one or the other.
-
-To assist in conversion of existing drivers to the PCS API, we provide a
-lynx_pcs_create_on_bus function which will create an MDIO device on a
-bus, bind our driver, and get the PCS. This should make it easy to
-convert drivers which do not use devicetree.
-
-Because this driver may be a direct child of its consumers (especially
-when created with lynx_pcs_create_on_bus), we set suppress_bind_attrs.
-This prevents userspace from causing a segfault by removing the PCS
-before the consumer.
+This converts the ENETC driver to use the Lynx PCS subsystem, instead of
+attaching the Lynx library to an MDIO device.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
 Changes in v2:
-- Call mdio_device_register
-- Squash in lynx parts of "use pcs_get_by_provider to get PCS"
-- Rewrite probe/remove functions to use create/destroy. This lets us
-  convert existing drivers one at a time, instead of needing a flag day.
+- Split off from the lynx PCS patch
 
- drivers/net/pcs/Kconfig    | 11 +++--
- drivers/net/pcs/pcs-lynx.c | 83 +++++++++++++++++++++++++++++++++++---
- include/linux/pcs-lynx.h   |  7 +++-
- 3 files changed, 91 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/freescale/enetc/Kconfig  |  1 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 23 ++++---------------
+ 2 files changed, 5 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-index 8d70fc52a803..5e169e87db74 100644
---- a/drivers/net/pcs/Kconfig
-+++ b/drivers/net/pcs/Kconfig
-@@ -25,10 +25,15 @@ config PCS_XPCS
- 	  controllers.
- 
- config PCS_LYNX
--	tristate
-+	tristate "NXP Lynx PCS driver"
-+	depends on PCS && MDIO_DEVICE
+diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
+index cdc0ff89388a..c7dcdeb9a333 100644
+--- a/drivers/net/ethernet/freescale/enetc/Kconfig
++++ b/drivers/net/ethernet/freescale/enetc/Kconfig
+@@ -5,6 +5,7 @@ config FSL_ENETC
+ 	select FSL_ENETC_IERB
+ 	select FSL_ENETC_MDIO
+ 	select PHYLINK
++	select PCS
+ 	select PCS_LYNX
+ 	select DIMLIB
  	help
--	  This module provides helpers to phylink for managing the Lynx PCS
--	  which is part of the Layerscape and QorIQ Ethernet SERDES.
-+	  This module provides driver support for the PCSs in Lynx 10g and 28g
-+	  SerDes devices. These devices are present in NXP QorIQ SoCs,
-+	  including the Layerscape series.
-+
-+	  If you want to use Ethernet on a QorIQ SoC, say "Y". If compiled as a
-+	  module, it will be called "pcs-lynx".
- 
- config PCS_RZN1_MIIC
- 	tristate "Renesas RZ/N1 MII converter"
-diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-index 7d5fc7f54b2f..3ea402049ef1 100644
---- a/drivers/net/pcs/pcs-lynx.c
-+++ b/drivers/net/pcs/pcs-lynx.c
-@@ -1,11 +1,14 @@
--// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
--/* Copyright 2020 NXP
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Copyright (C) 2022 Sean Anderson <seanga2@gmail.com>
-+ * Copyright 2020 NXP
-  * Lynx PCS MDIO helpers
-  */
- 
- #include <linux/mdio.h>
--#include <linux/phylink.h>
-+#include <linux/of.h>
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index bdf94335ee99..c7034230d7c0 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -8,6 +8,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
 +#include <linux/pcs.h>
  #include <linux/pcs-lynx.h>
-+#include <linux/phylink.h>
+ #include "enetc_ierb.h"
+ #include "enetc_pf.h"
+@@ -876,7 +877,6 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+ 	struct device *dev = &pf->si->pdev->dev;
+ 	struct enetc_mdio_priv *mdio_priv;
+ 	struct phylink_pcs *phylink_pcs;
+-	struct mdio_device *mdio_device;
+ 	struct mii_bus *bus;
+ 	int err;
  
- #define SGMII_CLOCK_PERIOD_NS		8 /* PCS is clocked at 125 MHz */
- #define LINK_TIMER_VAL(ns)		((u32)((ns) / SGMII_CLOCK_PERIOD_NS))
-@@ -333,7 +336,26 @@ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
+@@ -900,17 +900,9 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+ 		goto free_mdio_bus;
+ 	}
  
- 	return lynx_to_phylink_pcs(lynx);
- }
--EXPORT_SYMBOL(lynx_pcs_create);
-+EXPORT_SYMBOL_GPL(lynx_pcs_create);
-+
-+static int lynx_pcs_probe(struct mdio_device *mdio)
-+{
-+	struct device *dev = &mdio->dev;
-+	struct phylink_pcs *pcs;
-+	int ret;
-+
-+	pcs = lynx_pcs_create(mdio);
-+	if (!pcs)
-+		return -ENOMEM;
-+
-+	dev_set_drvdata(dev, pcs);
-+	pcs->dev = dev;
-+	ret = pcs_register(pcs);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "could not register PCS\n");
-+	dev_info(dev, "probed\n");
-+	return 0;
-+}
+-	mdio_device = mdio_device_create(bus, 0);
+-	if (IS_ERR(mdio_device)) {
+-		err = PTR_ERR(mdio_device);
+-		dev_err(dev, "cannot create mdio device (%d)\n", err);
+-		goto unregister_mdiobus;
+-	}
+-
+-	phylink_pcs = lynx_pcs_create(mdio_device);
+-	if (!phylink_pcs) {
+-		mdio_device_free(mdio_device);
+-		err = -ENOMEM;
++	phylink_pcs = lynx_pcs_create_on_bus(dev, bus, 0);
++	if (IS_ERR(phylink_pcs)) {
++		err = PTR_ERR(phylink_pcs);
+ 		dev_err(dev, "cannot create lynx pcs (%d)\n", err);
+ 		goto unregister_mdiobus;
+ 	}
+@@ -929,13 +921,6 @@ static int enetc_imdio_create(struct enetc_pf *pf)
  
- void lynx_pcs_destroy(struct phylink_pcs *pcs)
+ static void enetc_imdio_remove(struct enetc_pf *pf)
  {
-@@ -343,4 +365,55 @@ void lynx_pcs_destroy(struct phylink_pcs *pcs)
- }
- EXPORT_SYMBOL(lynx_pcs_destroy);
- 
--MODULE_LICENSE("Dual BSD/GPL");
-+static void lynx_pcs_remove(struct mdio_device *mdio)
-+{
-+	struct phylink_pcs *pcs = dev_get_drvdata(&mdio->dev);
-+
-+	pcs_unregister(pcs);
-+	lynx_pcs_destroy(pcs);
-+}
-+
-+static const struct of_device_id lynx_pcs_of_match[] = {
-+	{ .compatible = "fsl,lynx-pcs" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, lynx_pcs_of_match);
-+
-+static struct mdio_driver lynx_pcs_driver = {
-+	.probe = lynx_pcs_probe,
-+	.remove = lynx_pcs_remove,
-+	.mdiodrv.driver = {
-+		.name = "lynx-pcs",
-+		.of_match_table = of_match_ptr(lynx_pcs_of_match),
-+		.suppress_bind_attrs = true,
-+	},
-+};
-+mdio_module_driver(lynx_pcs_driver);
-+
-+struct phylink_pcs *lynx_pcs_create_on_bus(struct device *dev,
-+					   struct mii_bus *bus, int addr)
-+{
-+	struct mdio_device *mdio;
-+	struct phylink_pcs *pcs;
-+	int err;
-+
-+	mdio = mdio_device_create(bus, addr);
-+	if (IS_ERR(mdio))
-+		return ERR_CAST(mdio);
-+
-+	mdio->bus_match = mdio_device_bus_match;
-+	strncpy(mdio->modalias, "lynx-pcs", sizeof(mdio->modalias));
-+	err = mdio_device_register(mdio);
-+	if (err) {
-+		mdio_device_free(mdio);
-+		return ERR_PTR(err);
-+	}
-+
-+	pcs = pcs_get_by_dev(dev, &mdio->dev);
-+	mdio_device_free(mdio);
-+	return pcs;
-+}
-+EXPORT_SYMBOL(lynx_pcs_create_on_bus);
-+
-+MODULE_DESCRIPTION("NXP Lynx 10G/28G PCS driver");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
-index 5712cc2ce775..ef073b28fae9 100644
---- a/include/linux/pcs-lynx.h
-+++ b/include/linux/pcs-lynx.h
-@@ -6,12 +6,15 @@
- #ifndef __LINUX_PCS_LYNX_H
- #define __LINUX_PCS_LYNX_H
- 
--#include <linux/mdio.h>
--#include <linux/phylink.h>
-+struct device;
-+struct mii_bus;
-+struct phylink_pcs;
- 
- struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs);
- 
- struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
-+struct phylink_pcs *lynx_pcs_create_on_bus(struct device *dev,
-+					   struct mii_bus *bus, int addr);
- 
- void lynx_pcs_destroy(struct phylink_pcs *pcs);
- 
+-	struct mdio_device *mdio_device;
+-
+-	if (pf->pcs) {
+-		mdio_device = lynx_get_mdio_device(pf->pcs);
+-		mdio_device_free(mdio_device);
+-		lynx_pcs_destroy(pf->pcs);
+-	}
+ 	if (pf->imdio) {
+ 		mdiobus_unregister(pf->imdio);
+ 		mdiobus_free(pf->imdio);
 -- 
 2.35.1.1320.gc452695387.dirty
 
