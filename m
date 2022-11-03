@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93A10618CD9
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 00:34:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC22C618CD8
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 00:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229487AbiKCXd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 19:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
+        id S230300AbiKCXd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 19:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231180AbiKCXdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 19:33:44 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173D013D1E
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 16:33:44 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id o8so2207054qvw.5
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 16:33:44 -0700 (PDT)
+        with ESMTP id S230171AbiKCXdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 19:33:46 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C78193C9
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 16:33:45 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id x13so2205911qvn.6
+        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 16:33:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=MsubwvLrRKKdjq6ok8GCqHP+4Iuv6fA4iG9Wred+0yM=;
-        b=Fj96E5IQwHSnHbt/tSeMVN2iGQcySdG0qTLURq9n3jP+ZHl0Zgz2Bk2FKX6N9rxRbb
-         uZhWfGrFUTlITbjC6z8ErTmiWNIYcIUGBDkURXq7VB3sNQm13x4TqgjJEFAQ6S8bXJcw
-         /K5BzuhNotPMNxQpkcPrAoCanpJ8guFVXlMcI=
+        bh=s98qI5MR5QUmr1VmzLzImiHCmq7rt1lktOiepsDNiLQ=;
+        b=ArupKVOG30uoNOlq24MKsH/g0A+SEiLtD+39BII6t6LZVD8fn/J4p+ayN9dpIyXpBy
+         bVaPaoN+lhKa58NzrzFvpC6d5JNgjcQiHMZqOVREd7+1PNY9sjIr0jliJytACG2ChkKA
+         812oVWMc+72NOzkaiFRtaY078OW6pad8Rp3dY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MsubwvLrRKKdjq6ok8GCqHP+4Iuv6fA4iG9Wred+0yM=;
-        b=1sH0OlbDkk9y7FwIt6x++RnbCbQwr4JKoi5YwkRIA4CHOJNTrY7txjfpy8bPgCH8ju
-         OkBMU0k+7jFtEvgDbo/hDJmUKH6PuQYr3fDDoYRfnUo/5lvSVw0HWOz1gs8lXfSMWV1e
-         78DcHxU0gHQvuCBAdKEI5Y501olTkGynTUMBVsf/7JT7oDiwqxtKvhb4mq5PhukG5YhE
-         g+ghCEjm/5CaOuA5tecIwM4Rw7eku2IE4cjVwTNBNxPPK9F6/Du4WSD32Gbedo0naT11
-         OtbrJHyxS45w2PYk1dOpt1pZSUy6wHWsvtls4kZRhLR9Fbq9RLLEJyQAi+lZcRoRmJBG
-         GWSA==
-X-Gm-Message-State: ANoB5pnVo3Bf95oKd+D5CpBjABXr/0SRI12Dhw03wh9P8inJH5eG2grB
-        c0WiHBjUCbFM2Uea9u8FEGxq1w==
-X-Google-Smtp-Source: AA0mqf5P+fGOBrwyvHlIAPASgAx9Uf363XreH6VySKkpI34YrYQ0tBq2kuA4Vel/WdXl9XUWrAAdCg==
-X-Received: by 2002:a05:6214:d61:b0:4c1:d4e5:bdd6 with SMTP id 1-20020a0562140d6100b004c1d4e5bdd6mr183461qvs.66.1667518422890;
-        Thu, 03 Nov 2022 16:33:42 -0700 (PDT)
+        bh=s98qI5MR5QUmr1VmzLzImiHCmq7rt1lktOiepsDNiLQ=;
+        b=e4jlljMRh0H/vM+HPEXT+8JrglErEsRQuYbNNW514pIryKkF7k1PmgNKqMYX577jYu
+         l3cxAyDljZak8WPlzHbdumb2mNSRWDzSeIkwocVUf8PZhsalMQypwkvqMdd4NQp9v74E
+         WDOMRxEuAwj320n29c7ePaN8eQS10vE8hXlcRYIjAz+7dPKZKAVh6jJfUCVfCpDyQy4f
+         /PJCHRVPRHMe/NC1yoKsi5KWvBYmZ6rE+HDyBOKwXfhrgEunU+mHCLA5fq3tKe/xufxS
+         ZWFuwLBFIs/SQFgCUX+79ai286slklpPVVvHDSlcfEHg0yK/mhJ4hukviW8+2TnqDXEK
+         fVSg==
+X-Gm-Message-State: ACrzQf2biTMD4XMl1ar6Bb0HHE2dcWZqt/KHCad5sjUxp+vaW/eh9QFD
+        WadH0k6+8ZWAvYIcQW5Cd5kRMtVKIHTXsQ==
+X-Google-Smtp-Source: AMsMyM6gmyAuF3mR4OsGq7u09kiIEA+mEFmv9y7IZO/Jbo72RG7ckxKZE+BEQLUvlcLBP8vKXW0gQw==
+X-Received: by 2002:a05:6214:20ed:b0:4bb:6d76:58a4 with SMTP id 13-20020a05621420ed00b004bb6d7658a4mr28657663qvk.117.1667518424471;
+        Thu, 03 Nov 2022 16:33:44 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u5-20020a37ab05000000b006f8665f483fsm1662020qke.85.2022.11.03.16.33.41
+        by smtp.gmail.com with ESMTPSA id u5-20020a37ab05000000b006f8665f483fsm1662020qke.85.2022.11.03.16.33.43
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Nov 2022 16:33:42 -0700 (PDT)
+        Thu, 03 Nov 2022 16:33:44 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 3/4] bnxt_en: Fix possible crash in bnxt_hwrm_set_coal()
-Date:   Thu,  3 Nov 2022 19:33:26 -0400
-Message-Id: <1667518407-15761-4-git-send-email-michael.chan@broadcom.com>
+        pabeni@redhat.com, gospo@broadcom.com,
+        Alex Barba <alex.barba@broadcom.com>
+Subject: [PATCH net 4/4] bnxt_en: fix potentially incorrect return value for ndo_rx_flow_steer
+Date:   Thu,  3 Nov 2022 19:33:27 -0400
+Message-Id: <1667518407-15761-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1667518407-15761-1-git-send-email-michael.chan@broadcom.com>
 References: <1667518407-15761-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000049465305ec996392"
+        boundary="0000000000005ef58305ec99633a"
 X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,80 +67,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000049465305ec996392
+--0000000000005ef58305ec99633a
 
-During the error recovery sequence, the rtnl_lock is not held for the
-entire duration and some datastructures may be freed during the sequence.
-Check for the BNXT_STATE_OPEN flag instead of netif_running() to ensure
-that the device is fully operational before proceeding to reconfigure
-the coalescing settings.
+From: Alex Barba <alex.barba@broadcom.com>
 
-This will fix a possible crash like this:
+In the bnxt_en driver ndo_rx_flow_steer returns '0' whenever an entry
+that we are attempting to steer is already found.  This is not the
+correct behavior.  The return code should be the value/index that
+corresponds to the entry.  Returning zero all the time causes the
+RFS records to be incorrect unless entry '0' is the correct one.  As
+flows migrate to different cores this can create entries that are not
+correct.
 
-BUG: unable to handle kernel NULL pointer dereference at 0000000000000000
-PGD 0 P4D 0
-Oops: 0000 [#1] SMP NOPTI
-CPU: 10 PID: 181276 Comm: ethtool Kdump: loaded Tainted: G          IOE    --------- -  - 4.18.0-348.el8.x86_64 #1
-Hardware name: Dell Inc. PowerEdge R740/0F9N89, BIOS 2.3.10 08/15/2019
-RIP: 0010:bnxt_hwrm_set_coal+0x1fb/0x2a0 [bnxt_en]
-Code: c2 66 83 4e 22 08 66 89 46 1c e8 10 cb 00 00 41 83 c6 01 44 39 b3 68 01 00 00 0f 8e a3 00 00 00 48 8b 93 c8 00 00 00 49 63 c6 <48> 8b 2c c2 48 8b 85 b8 02 00 00 48 85 c0 74 2e 48 8b 74 24 08 f6
-RSP: 0018:ffffb11c8dcaba50 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff8d168a8b0ac0 RCX: 00000000000000c5
-RDX: 0000000000000000 RSI: ffff8d162f72c000 RDI: ffff8d168a8b0b28
-RBP: 0000000000000000 R08: b6e1f68a12e9a7eb R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000037 R12: ffff8d168a8b109c
-R13: ffff8d168a8b10aa R14: 0000000000000000 R15: ffffffffc01ac4e0
-FS:  00007f3852e4c740(0000) GS:ffff8d24c0080000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000041b3ee003 CR4: 00000000007706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- ethnl_set_coalesce+0x3ce/0x4c0
- genl_family_rcv_msg_doit.isra.15+0x10f/0x150
- genl_family_rcv_msg+0xb3/0x160
- ? coalesce_fill_reply+0x480/0x480
- genl_rcv_msg+0x47/0x90
- ? genl_family_rcv_msg+0x160/0x160
- netlink_rcv_skb+0x4c/0x120
- genl_rcv+0x24/0x40
- netlink_unicast+0x196/0x230
- netlink_sendmsg+0x204/0x3d0
- sock_sendmsg+0x4c/0x50
- __sys_sendto+0xee/0x160
- ? syscall_trace_enter+0x1d3/0x2c0
- ? __audit_syscall_exit+0x249/0x2a0
- __x64_sys_sendto+0x24/0x30
- do_syscall_64+0x5b/0x1a0
- entry_SYSCALL_64_after_hwframe+0x65/0xca
-RIP: 0033:0x7f38524163bb
-
-Fixes: 2151fe0830fd ("bnxt_en: Handle RESET_NOTIFY async event from firmware.")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+Reported-by: Akshay Navgire <anavgire@purestorage.com>
+Signed-off-by: Alex Barba <alex.barba@broadcom.com>
+Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index f57e524c7e30..8cad15c458b3 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -162,7 +162,7 @@ static int bnxt_set_coalesce(struct net_device *dev,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index f44f9367b7fd..c78b6e9dea2c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -12903,8 +12903,8 @@ static int bnxt_rx_flow_steer(struct net_device *dev, const struct sk_buff *skb,
+ 	rcu_read_lock();
+ 	hlist_for_each_entry_rcu(fltr, head, hash) {
+ 		if (bnxt_fltr_match(fltr, new_fltr)) {
++			rc = fltr->sw_id;
+ 			rcu_read_unlock();
+-			rc = 0;
+ 			goto err_free;
+ 		}
  	}
- 
- reset_coalesce:
--	if (netif_running(dev)) {
-+	if (test_bit(BNXT_STATE_OPEN, &bp->state)) {
- 		if (update_stats) {
- 			rc = bnxt_close_nic(bp, true, false);
- 			if (!rc)
 -- 
 2.18.1
 
 
---00000000000049465305ec996392
+--0000000000005ef58305ec99633a
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -210,13 +177,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIO4cKO5r0UazMa0cojZ7sYlDW8+SDoX9
-3D/8PzZCLH8iMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
-MzIzMzM0M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEv/8xavKSZAowCBdVjlVEOKSX0Rym7G
+FwHp31jbbl7zMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
+MzIzMzM0NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBB9Xhxiii20KTrPd6GafNDfjLnsXJ37ckbwzuHNNm3WfCrphox
-x1DpKayrLhXpF/KX+/X0hl9id9WvPfTlhZSYNbQTuz0DhvThAPHGyXnpZwwnrXs2Dt2K3fV8yIiW
-BvIEXmQu+YU5T/jfAJzIgLRfDdAlUNXDTFf4bJz8yLjI7HYqETN1/EoTZFHDnaVcBk7PYM2pBR+A
-acufsIdfImPWcTysWQCoUkaN3jTFja3X4NR2BIC4dFOhlMIxosak9ulFAr5j6NbvGbPb4LmzVLa0
-JzSD+KsxjsY23HbQd/5bBXxxz2MlQfQTQ1uEtmTsVxSflmI0CSttC7YbWrYizTAM
---00000000000049465305ec996392--
+ATANBgkqhkiG9w0BAQEFAASCAQBVFKxgJlhtJNV51cCoEnzd/wCCSF1aPaqWfmWNuof08elDyiIH
+Int5Dc8N6poj732ys0X0rn8nVO4g3iUUeFXhdIav9nVQxrCYTUvaPyo5zwqSTVIgqE/RS+HicjBs
+nGEX7FpptT2BTT5WffJMHh+XQ+Pz+R9iN7xRBPSp8WbjasgXQZxJ+EZ+8HSWyBnaIhs7j20qjWKV
+xTVrKDTkg9cPk2DE5UGFxAj1T4NrIPxhscOU91UdSHWLD4o++3UFnoBbpRcJAi6U32Lf5srOs3ts
+f75KCGhUlk72Mq19d/1yV0t1/4vTNuzRu4muH2k/chW40NeyulRUw7Rjrw1UwgBD
+--0000000000005ef58305ec99633a--
