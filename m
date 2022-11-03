@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE6A618A37
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 727C4618A38
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiKCVHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 17:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
+        id S231419AbiKCVHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 17:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231390AbiKCVHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:10 -0400
+        with ESMTP id S230012AbiKCVHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:11 -0400
 Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140053.outbound.protection.outlook.com [40.107.14.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6921CB864;
-        Thu,  3 Nov 2022 14:07:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C326221254;
+        Thu,  3 Nov 2022 14:07:10 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TJkeCIZLAFDUWx+POs2qCF3YPiqptBPnoN2tDaF7juZG3cimsQ9M3RKwINbUHDwyDZfCeU8Du+ap2GOitrQ1MeEK/gzkJPzTRpgxfid2KEyGbBsAKYgKR1DZ4sPSWlZF9bBD6xsAg//JiE9zcajO7mNbGZ7sanBwX+4JirlQF4XL1cA4BHi8VTzobvEWAgq4kTlhOrii1s4MMWlJtnQsprHLAGN6RlKgnav7EQZIVd0IwJDltYBJjQ7eA8ce/LOsgT7HOwVBuQGPCdO7gCDFpsQjyBYwl4xs/pLZpXAowhcjJYYJLVhkjfc4TO/ZEvEiyYEtEHdb7SiRIJfintNwFw==
+ b=VEL0k8Vx0BaYSzQa9JtrfHvWQ1wZS27f25JySxCu0YcOB/A2IEcYsyX9WioMidJQJFNqssbpLBbQ4AbyNC22HPqSCSzPjN7tI/Jm7e3MDaoF2BILgVN3HonTz0paBRXErNkwxc66uh3H70aERxwzRoGiWGljb4PKWGqVb7frYzS6Nf8F1M1Ess9yNNjnIa/J5ZijoBa96sxj35kt1JHkDS1E/xU08u3eXfB8y2vbjN4vQE/Ex97WXYz1jfdUlOdAommSJ5BsXUqL6SSoh6X0TeqMp7EvCWWICo/lg1O/FMaEn4/lLYLL+hDBOObp3AluFHya8cZPJQc9G5F59BiR+A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XIUBlxgCTbbA73hCtpXysikkhZl2PoB4usvcQMIuKak=;
- b=heCGDRPQ9iwfD6OnHZK+slWoo2RhRJ1eSuXoMvmTBGzRVv3ZO4tThTcs1E2O2rSZQdWlX+XfrmT1LwQmGpJpBeBrS+CCnY5C3ljBFY3JgJaQLVxnNKhYsPTZG/YqfJKk5sfTBCpv60C+4E2B0M5vAcy8dqixOiwy9Z9CnmfFcvk+KXTOE8hwfzQNNWdKb4qDtOCGMZeYkuM/O2teyEhmgkMsnf58fdYSacfMUMVwOggFXPagHb5ATGD6H75lZV1nUtTqk05pqpk+LX6+0IL5RAXJFsudZgzoNV1GdOSLLE30SmRHxkh1TBxLiKD1VMIX8tU66FpzIvW7N8Qoh/VFlg==
+ bh=RbGswBWDLCsP3eJPxSSJJM0p1nxBrU6A1jUu3DhFUo4=;
+ b=k7kXcOCCbVaqZVchpxPxPJg2koQk5QucZvpdDJWsRrBPas5nsTvApXw/ObryAIPfNkmmdGGjgFpGPyhGm4S4/CZo8ZYRWQFlerYdp/ZKoTU+zDAkSbmyS62lzCHoufcrUj0c9pENnpDl2hF1EJk2ogcih2ToFaUOTp3h7jPxlSKBek2HqbOIeVbH03LP1U8vK10JoqfbsKSXwwXWzKm0EyjGUWq/tzU/QhXRB5szdRDeeSxvwIvBecysO+w4V0csHbS5jCetaDPaQNgKlBxrroFSIDvxguYFmqUQirmAyMhQsd+kJti3qdFtf3jDbJTZJ3wcQOqsnI3TB/Lf+YR+Yw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XIUBlxgCTbbA73hCtpXysikkhZl2PoB4usvcQMIuKak=;
- b=lOF558UhNzXMvR/thWm8jKSr2L5iwwNQB13cU2kitcvRoXh1vD43DKy3utAL5pmlezktGkNAkCvQPZQ7OPiGl6NjYzAG7t82UQuuH1mW0BOpyjc/AGvRzqw1UG2Xf//g1tWv1/BaJRHs09c93JOHNmJHjwzcVSVa5/OuKktdDUqk9bsv2Xpi33COfjwUvaejnqbB9KnbhNuvUZ1yO0YIY5ha3Hn5PtXA8RVmYcyjOJJan/IBghUiKAOUk7f8njt9lsZs5HXjv4CpJoxNqKxIDl6KDaU2N8i05NmdZtrNN5hjc+Dt4tDSakCuDZiMEq7jnFpwNSXl9FvGFIXDuU6Prg==
+ bh=RbGswBWDLCsP3eJPxSSJJM0p1nxBrU6A1jUu3DhFUo4=;
+ b=ey1KFeOuR12hSMyLiBk6Vx6EtXGr+SNDceo4fEjQZv9tFYXIqJZy7OxSKfWytafhgXtn5WcBzaq2Z/HSEaA81hrISp/XVrE3u9vIZSgKOpzaQAdPXeIMFDc0ttn1FGVuGgJNdJ4VfJ4cK94ZIVMOJPRYrPYOloK8oCrxRLuyoXbTtrtjZB51wDQFW1WFPNtP2rXSHCOGp8LB0z2kuvZdL4hG8yi6A9NXWuybtYZO/1iJ3d3IRh6sdq40RUKt2L4SvzF0eiicDJksaVnVy+YbjLvQmtzTAnf9tqNXQuHH12pEJImultEYAGEmbVeXmKRG8nfgUpO0zmLDgbwdnEI5yg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by PAXPR03MB7746.eurprd03.prod.outlook.com (2603:10a6:102:208::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Thu, 3 Nov
- 2022 21:07:06 +0000
+ 2022 21:07:08 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
- 21:07:06 +0000
+ 21:07:08 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
@@ -50,16 +50,11 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Madalin Bucur <madalin.bucur@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH net-next v2 02/11] powerpc: dts: Add compatible strings for Lynx PCSs
-Date:   Thu,  3 Nov 2022 17:06:41 -0400
-Message-Id: <20221103210650.2325784-3-sean.anderson@seco.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH net-next v2 03/11] net: dsa: ocelot: suppress PHY device scanning on the internal MDIO bus
+Date:   Thu,  3 Nov 2022 17:06:42 -0400
+Message-Id: <20221103210650.2325784-4-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20221103210650.2325784-1-sean.anderson@seco.com>
 References: <20221103210650.2325784-1-sean.anderson@seco.com>
@@ -71,51 +66,51 @@ X-ClientProxiedBy: BLAP220CA0002.NAMP220.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB7746:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea5f4609-eac7-4b29-08ce-08dabddf5d42
+X-MS-Office365-Filtering-Correlation-Id: 8146fd42-bd1d-4db9-0d90-08dabddf5e2e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xsu6cybi0nZlYACRrt7cOiaVP6Fpp7RV1efseyzXsvH/DBJ6T2l22uxvnyQTZm9ot1Hcbmc1UmoH+kbU808UyapbwZYDUA+6gRXv5IXJTg9RUhayYVatYQ5eG6EI+ynAlJNhEQ7SRjDrXZqYcE+ADS57pF+0Idm6kKSlmVgMOtBRe9+oCYXzckpNWlonpxAyZcYpxojonE0lIn2fRE7AaTLt0tTUMUZm1XQn5BDRrOzJ/+aDfpGCDKsXfMOU7tTVV4sxwhLe66FFLGVhMzTJc7smMPEcztA4Sn3UzukxaWzIcPdb37FWXfb4pz1+B1oJCo+/Wx2jpCeN43p/pYEVkHX1Xo0FULNBYT5CBO9U8v4E22NmX1Ovq8DnEyNVkvFsRmPOlRBOQypip6y7XtVeIJJC4TM7HGA3VkQCLh2l//nLd8BLuRNQVmEjT+gdn5JuGfDnLELuEEla7XMUbrbsE8VPd0P/D+U/+lj2kjo9Y9W0UJcgZ8efYPyaovkBEPAjQ6uLYRkqdtHz/FFOp4CLzRhLb3V1eDQCfIC+0D84BmmRC825g9xiasABZEGUmztaq15PwtdupAi+vEcqSb4MI1Z8wsdNCKpH6vUkhK1YfyoL0YNxGonzQCiBowR3HQqgrd2lbyQej0UCrF+aDzhN3b0e2cduTpS+49dvQI/0bdinyE4YGXh7IszoJQzQMZxNQYsW5DdIdpe+mZHxc8Vd7rKDOJNEYF4sRg4jgmPSKlp2VRykGN61YEcu3F3Bo0T8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(30864003)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: PuCisP1xpDfpu+qv8nEBYi63X1uL7BmjBjlNMDNuTnyZXcClKzqKl9Py7qozZT8zy0WqAd+9a6fIpHYHmUfhoQhtTPuQbFw1dEtb2Ys/Ag8psd+dlfU3U+jdCLyu/IZvq/yT1TEEhQq4E1Jl0Ke2WOUgkNGCgyV2e9BR5tL7SOeu5aHoUqRyCu+w8AOetu54/BzsgWRWoc4/XVhGEIWuiLl/AtHnWoUWsCUz6Jkqd3Vxjt27ywlUiaYb2NjZVXdYW7cX56lAw9qugi2iimnv2+9mqwxT7UomZVdIPNg3BEZMQRRq9jiXrlrSeJBY7Si3D9QyQtnC/1Z7M8Ah8LF98ze5FMBhEMX1CNVkfxDhwsyfUmrU7ezb0Gsc9mAdgKbkxDILjiBYHby1st8GDkXv0BwtPdqOZBX21IkUJ8H/JC5Z3GkGBIHeOesf3XObCE+1X7shzksVTunI79PezidU+Bc+HTsZe/XovT2Ddyhh4nYbb/tMRzu1WvPN2ejdNdE9hhsXWYI6NojYllxXorl7U6C8J/kZbJmf7dz9fO/JYCBrzMtFJ25PolzV9xM2BrROLPCLRrB5ah3d7SEkPqQm/wAbcOtAsyaKd26+wj847aFfNTDCFC149VYyn/btHgQHyeDrnYexkZzRR6OWjg5YwyPL+PPwDPQSnokWPTN8q50ALGygEWSrEz1/Aaaey42XBRISNwyxQz4F7qNLX4WqbQGetggBHsOs+xXc3cznXdv3xi0ad8/2Ks7pPWkAxEDv
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(107886003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8q2+v3I7uzaSgNeupSyhlFZgO9Qwfe7D3MITTSgYFsFzwNKP1Pn+Hu35m3HG?=
- =?us-ascii?Q?gDVsg8e71m+phavU5S4KHUkhwzka0WfOd26DkM7Fx2tKZj3VyJNhnO794VgP?=
- =?us-ascii?Q?dRbQGz/d7tugcrLGMZDF89VDs9TLA+aGl1NUYMOOpy/bwCNFadBYuyPI5nJe?=
- =?us-ascii?Q?QeiN6gU0QoHGjosDfVjaFhigr6SEz2SGvcnjaMhuxjASiw38dXMhSM/ntLLa?=
- =?us-ascii?Q?iFSqLG7eAdSvtapv+U49QuO/dCmpCaDji/y6u8nyLNx0BdXUonLQpFpM+4BT?=
- =?us-ascii?Q?JL4bGejAM0W14J7IeKS9aFfC3arfCPzNFKH18bWG9dtIgOzRzV7GR3X3JKKT?=
- =?us-ascii?Q?O0xqYRzMKCC3ffa1MmKn/p9zYIWgM2kCq/xf3kQDdcu5bFBT+uv1FbqUn89b?=
- =?us-ascii?Q?b7fnppjvVrxsFgrXHBC9laysnMuYdP0BH8M3gLFb2wjN1JkCSW0GtJQV/Sco?=
- =?us-ascii?Q?+z/Pw9tZoKUOUFMWBXeuE5lFLjBJGxZfjWy5orU4G0vHR9YT4g+uLPCUocm0?=
- =?us-ascii?Q?TFLOecbDiug6pZGmMpcD7hByM78iOzO+m+FEeETrJ+F5dUWZP6rNHnqJcWfq?=
- =?us-ascii?Q?KhlE9gCHTgQcAienfRWvNC/uN7Ru3EVnN2ZmRVHl8Rrj+SEuhTR7aEoShJPc?=
- =?us-ascii?Q?0KqBIDwsC+4GwBpa3lw8opJOgbewWfpu/A7ADRlcyrMdMw2gacJPk+x69IoR?=
- =?us-ascii?Q?scoOQfbNm91ZmBA7z1a2u+yAoFm8DkdJLZcibAkVXCsLOpp/ezR+bHrorOO2?=
- =?us-ascii?Q?wL93tI6TGEgR/KtXm13iV3r290Ebcs35EL4/XCjW7B8MMeqCyRIejntwt/Zp?=
- =?us-ascii?Q?b15iAosqmIBSqPzDQfzfHFYtfqcgqFOBhmjwlsb4fnWwjcLVh4YfwGE9zkNk?=
- =?us-ascii?Q?xQNu3NlhThANLbd9C81GtLa99u2oi0EjldHuQm9UEsHh/UrXXipE4+WFwFB0?=
- =?us-ascii?Q?iZfPyWBqqkWrWEJ1VW8QPBrC0Zaekgzk3lPzAIancmvAeNMRTgY+5KCbHCun?=
- =?us-ascii?Q?Ln9Rmg05PfqwGL0XJdOq9FvpKNfGs6CjaCo9GBjQn7UYbfxe528f/98bz6pX?=
- =?us-ascii?Q?Lr0u3cUt3kyaRnjBEUK3GOb4FztWZCIPDtC2aCJM01xhXqNf29FtsH0m9xOd?=
- =?us-ascii?Q?HESTW11yJu05AM1pRZBH4sX9dPGZUUnoQuFlEDikKIV7trM6jpgWNAlZ/ytu?=
- =?us-ascii?Q?iu0GTaOfSIKbs0QbT00LG+tTOEd3yCG10EL0Cwr9oZmHO413JOdnH8Wpg+3a?=
- =?us-ascii?Q?Jegj9Imjq6SpFnhsTevKuzLlE6oxFLqPPdZ9FqB7W/y0r+LaxpkZw/XCXMUi?=
- =?us-ascii?Q?UpTTJdCgaEcG0pGyEhk8aa5/vaEYnbsmw1x+Du++/7+GculGUcPuS9c7Sjyx?=
- =?us-ascii?Q?W7qleR3Uj/MDxqjBiwd/IdqrB78EbdjvxI5kFpCVz2IKAnUpb2hkP5wlnduv?=
- =?us-ascii?Q?G6SOnnUYQmqoHTnnl2WCvwBmwH+3ernpJWaTPgUXufr9zvUGNrdacqT6RkG6?=
- =?us-ascii?Q?6xtf4HUIwbu9shTJClYeZ1nuqpj9ML1hL6ksYxWCLswraTq91AdVhQxf485A?=
- =?us-ascii?Q?MbutqbBsfiVZ1upguByiX5tmnvNPk3l5AsvyoWjISEbOSsFFvzZp9Y4pzjJv?=
- =?us-ascii?Q?pQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E//kU/FbHL93kgDPsKAtl5J2T+pj9f7twUJ1Tn5bHCyAgXQzJfc0W+MzXHkx?=
+ =?us-ascii?Q?IjkK5IQ+xPB4C4MBOHMwEt2O86q8fcTQkm+jfqFOgUc//MykelzEusMVMSSm?=
+ =?us-ascii?Q?6tz9thbUfZ/+aFRVHtaLnH8oF8k3LB81zoxHH81QlW+cBReDa3TcygPGybOd?=
+ =?us-ascii?Q?UIKJQaqttlV9fHsWn/aOtiF+PCvUudrRupniNJ0ow3NQ7S9r+hZ10JrJLdaJ?=
+ =?us-ascii?Q?SeXkxqsBGr0GWG4bo17XNz64WFNQdQ0CL47FfSJ/ILkrb68GL51M1GgUpEKH?=
+ =?us-ascii?Q?rxCFSwFJ354hqxI9yUmSK2fTQ0jKbMSVPYWxBFkzFM7U+Ln6AJqu0a8BlvjB?=
+ =?us-ascii?Q?yAR+cl+R2jQeS0aPCfGcWcTxNhqopGSVSIq19baObac1QLtc73CPhix0e3Ee?=
+ =?us-ascii?Q?07CGSqujKuydR2tVJSLb+cuHwaI+n3Z32PE3RJSivNMH+00pgisluK9azpM0?=
+ =?us-ascii?Q?CdfyAGJhwchsSWq3HXKCtaqOsNzBLDJ8Dip/IAiTCVkIQLQpCBCdSa3LzkZC?=
+ =?us-ascii?Q?qR6euD0P6kJnzTVp1a/Bay7VSiATuSXI3JF3fVO/mjICptpqDiG6Pmi6EUz3?=
+ =?us-ascii?Q?26VHQye9q8t4Kf9WWdfPUpbbEP21yF22hDHe9/bkyCHgtc/213Ynm5rwdN81?=
+ =?us-ascii?Q?Mocb7WaqRHS+rq1IaxAgFzx1P1vaecJb87SHYHxUYdtYVuXfPazRZ0fjE0tH?=
+ =?us-ascii?Q?WnmQaeti4UJukQreoRXT6dSArmbk5I2oHfzEq/wf+16XXNKX0VckYUjlE8pc?=
+ =?us-ascii?Q?WTz4pLH2c9ixanlQzvAYKNrGFe0onK2azBzbBbGeHlIYfH8XmQPPIukTj7NQ?=
+ =?us-ascii?Q?X8Di/8aBOdNVUc9rUChzAvdMw7Nb+P3xFy406pu8rpX5hDFvbhbrCaXYjbHF?=
+ =?us-ascii?Q?8bHETzNg2RNvy6thl8Iz8wytzeCg3DyE1nIGVeyl49w41TIrsVxG6h3EMKCn?=
+ =?us-ascii?Q?3tYPCQcAZy1VJC6qv1AbcCu12YD8y4F/h0OaDxMtJkm4vk3fjABo5qGAwOxP?=
+ =?us-ascii?Q?jz+iBlhr4ZgIDKqrblTCi9GywgLgVXF6GqqX/fcSFB45VIxQFDR62vAlANwY?=
+ =?us-ascii?Q?vEyREYmM7H2W+r1VhmQIJBF8ua2dixaAMkxHy2JZcPXWUNdgxtSmU190hnPe?=
+ =?us-ascii?Q?4aHrerZtt0bopLCcSCDSfo/KyzKSGpAZjnH5xurVU6tAT7KOH6Nka+xbDAh+?=
+ =?us-ascii?Q?2ehVJmSYftGAmZ3N+9PzAIjmkdnIoRol6QSWb7FgU6lLINaeUvKn+qwvrCzU?=
+ =?us-ascii?Q?vU1RFti3r0yo+qj2XpWEBKyY39zBiRNOweKaGW/5W2oryrRr3ImyIXqQU+Ms?=
+ =?us-ascii?Q?R/8g9XJNn4ow2rzFAQg9BG+mQbVLAInUzzmx1VP9bJUajqmH9evy8Dje9eW0?=
+ =?us-ascii?Q?P8ULaGrWAKCeieRL7qk+a0Fvk8Y9s6hJdpKQwnfH96I4c3cgc/qO1Z6nKWG+?=
+ =?us-ascii?Q?tUtMEnYrsVI1gMVIF30clrqeZrnHpIb46hqPmPcOthZn3+bajFzlkcMVkdvv?=
+ =?us-ascii?Q?73GtGisbgWagfhY5hFvIsQzvdOauSOAHfIesTdczWTAWfnjxVvdN8s+6u+3P?=
+ =?us-ascii?Q?c3xH6+ptrQaOI8boU4FkaU9Ax21Un/3VTveFqf0jYjCvqn+2eJ+1dv6hGkuK?=
+ =?us-ascii?Q?Fg=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea5f4609-eac7-4b29-08ce-08dabddf5d42
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8146fd42-bd1d-4db9-0d90-08dabddf5e2e
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:06.7718
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:08.3810
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VBfOJ3+AEZ/+denmksPYJSKbXX6sTSoxdrvN7AcuBNlM90xQcDBqJXU/ZGz5+oGxcdTeziIMPF8mW/FSUzlSfw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: UToT5omneDNC/RqnBZMq+TOBvmqlma3EORakxjzmo31rOXweDleCIG4uOxoMDJP/Tzz4UhI7hTL1sKU2Cfx7yw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7746
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -127,319 +122,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds appropriate compatible strings for Lynx PCSs on PowerPC QorIQ
-platforms. This also changes the node name to avoid warnings from
-ethernet-phy.yaml.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+This bus contains Lynx PCS devices, and if the lynx-pcs driver ever
+decided to call mdio_device_register(), it would fail due to
+mdiobus_scan() having created a dummy phydev for the same address
+(the PCS responds to standard clause 22 PHY ID registers and can
+therefore by autodetected by phylib which thinks it's a PHY).
+
+On the Seville driver, things are a bit more complicated, since bus
+creation is handled by mscc_miim_setup() and that is shared with the
+dedicated mscc-miim driver. Suppress PHY scanning only for the Seville
+internal MDIO bus rather than for the whole mscc-miim driver, since we
+know that on NXP T1040, this bus only contains Lynx PCS devices.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-
 ---
 
-Changes in v2:
-- Add compatibles for qoriq-fman3-0-10g-2/3.dtsi as well
+(no changes since v1)
 
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi             | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi             | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi             | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi             | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi             | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi             | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi              | 3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi              | 3 ++-
- 20 files changed, 40 insertions(+), 20 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c   | 4 ++++
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 6 +++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi
-index 7e70977f282a..61d52044e7b4 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi
-@@ -66,7 +66,8 @@ mdio@e1000 {
- 		reg = <0xe1000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 26a35ae322d1..ba893055b92d 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -990,6 +990,10 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	bus->read = enetc_mdio_read;
+ 	bus->write = enetc_mdio_write;
+ 	bus->parent = dev;
++	/* Suppress PHY device creation in mdiobus_scan(),
++	 * we have Lynx PCSs
++	 */
++	bus->phy_mask = ~0;
+ 	mdio_priv = bus->priv;
+ 	mdio_priv->hw = hw;
+ 	/* This gets added to imdio_regs, which already maps addresses
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+index 7af33b2c685d..1e1c6cd265fd 100644
+--- a/drivers/net/dsa/ocelot/seville_vsc9953.c
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -924,12 +924,16 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+ 	rc = mscc_miim_setup(dev, &bus, "VSC9953 internal MDIO bus",
+ 			     ocelot->targets[GCB],
+ 			     ocelot->map[GCB][GCB_MIIM_MII_STATUS & REG_MASK]);
+-
+ 	if (rc) {
+ 		dev_err(dev, "failed to setup MDIO bus\n");
+ 		return rc;
+ 	}
  
--		pcsphy0: ethernet-phy@0 {
-+		pcsphy0: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi
-index 5f89f7c1761f..78d6e49655f4 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi
-@@ -70,7 +70,8 @@ mdio@f1000 {
- 		reg = <0xf1000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy6: ethernet-phy@0 {
-+		pcsphy6: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi
-index 71eb75e82c2e..5ffd1c2efaee 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi
-@@ -73,7 +73,8 @@ mdio@e3000 {
- 		reg = <0xe3000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy1: ethernet-phy@0 {
-+		pcsphy1: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi
-index fb7032ddb7fc..e0325f09ce5f 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi
-@@ -70,7 +70,8 @@ mdio@f3000 {
- 		reg = <0xf3000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy7: ethernet-phy@0 {
-+		pcsphy7: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
-index 6b3609574b0f..8e6f6c5f0f2e 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
-@@ -38,7 +38,8 @@ mdio@e1000 {
- 		reg = <0xe1000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy0: ethernet-phy@0 {
-+		pcsphy0: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
-index 28ed1a85a436..2cd3f0688cb1 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
-@@ -38,7 +38,8 @@ mdio@e3000 {
- 		reg = <0xe3000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy1: ethernet-phy@0 {
-+		pcsphy1: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi
-index 1089d6861bfb..9f8c38a629cb 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi
-@@ -62,7 +62,8 @@ mdio@e1000 {
- 		reg = <0xe1000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy0: ethernet-phy@0 {
-+		pcsphy0: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi
-index a95bbb4fc827..248a57129d40 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi
-@@ -69,7 +69,8 @@ mdio@e3000 {
- 		reg = <0xe3000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy1: ethernet-phy@0 {
-+		pcsphy1: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi
-index 7d5af0147a25..73cef28db890 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi
-@@ -69,7 +69,8 @@ mdio@e5000 {
- 		reg = <0xe5000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy2: ethernet-phy@0 {
-+		pcsphy2: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi
-index 61e5466ec854..4657b6a8fb78 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi
-@@ -69,7 +69,8 @@ mdio@e7000 {
- 		reg = <0xe7000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy3: ethernet-phy@0 {
-+		pcsphy3: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi
-index 3ba0cdafc069..ac322e5803c2 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi
-@@ -62,7 +62,8 @@ mdio@e9000 {
- 		reg = <0xe9000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy4: ethernet-phy@0 {
-+		pcsphy4: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi
-index 51748de0a289..68ffa2c65e03 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi
-@@ -69,7 +69,8 @@ mdio@eb000 {
- 		reg = <0xeb000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy5: ethernet-phy@0 {
-+		pcsphy5: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi
-index ee4f5170f632..caf28fcbd55c 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi
-@@ -70,7 +70,8 @@ mdio@f1000 {
- 		reg = <0xf1000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy14: ethernet-phy@0 {
-+		pcsphy14: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi
-index 83d2e0ce8f7b..6128b9fb5381 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi
-@@ -70,7 +70,8 @@ mdio@f3000 {
- 		reg = <0xf3000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy15: ethernet-phy@0 {
-+		pcsphy15: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi
-index 3132fc73f133..a7dffe6bbe5b 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi
-@@ -62,7 +62,8 @@ mdio@e1000 {
- 		reg = <0xe1000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy8: ethernet-phy@0 {
-+		pcsphy8: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi
-index 75e904d96602..d0ad92f2ca2d 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi
-@@ -69,7 +69,8 @@ mdio@e3000 {
- 		reg = <0xe3000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy9: ethernet-phy@0 {
-+		pcsphy9: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi
-index 69f2cc7b8f19..b4b893eead2a 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi
-@@ -69,7 +69,8 @@ mdio@e5000 {
- 		reg = <0xe5000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy10: ethernet-phy@0 {
-+		pcsphy10: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi
-index b3aaf01d7da0..6c15a6ff0926 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi
-@@ -69,7 +69,8 @@ mdio@e7000 {
- 		reg = <0xe7000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy11: ethernet-phy@0 {
-+		pcsphy11: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi
-index 18e020432807..14fa4d067ffd 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi
-@@ -62,7 +62,8 @@ mdio@e9000 {
- 		reg = <0xe9000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy12: ethernet-phy@0 {
-+		pcsphy12: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi
-index 55f329d13f19..64737187a577 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi
-@@ -69,7 +69,8 @@ mdio@eb000 {
- 		reg = <0xeb000 0x1000>;
- 		fsl,erratum-a011043; /* must ignore read errors */
- 
--		pcsphy13: ethernet-phy@0 {
-+		pcsphy13: ethernet-pcs@0 {
-+			compatible = "fsl,lynx-pcs";
- 			reg = <0x0>;
- 		};
- 	};
++	/* Suppress PHY device creation in mdiobus_scan(),
++	 * we have Lynx PCSs
++	 */
++	bus->phy_mask = ~0;
++
+ 	/* Needed in order to initialize the bus mutex lock */
+ 	rc = devm_of_mdiobus_register(dev, bus, NULL);
+ 	if (rc < 0) {
 -- 
 2.35.1.1320.gc452695387.dirty
 
