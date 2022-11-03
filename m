@@ -2,74 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AE1618C18
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 23:59:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40D2C618C66
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 00:03:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230521AbiKCW7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 18:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
+        id S231168AbiKCXDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 19:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiKCW7E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 18:59:04 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC84F1EEDA
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 15:59:00 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id o65so2622758iof.4
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 15:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=p6xqdwu59pUUJrkE6Z09sEAyJTFaEXR5o8D6JzImHTI=;
-        b=kEcNJj7LcD3fcM/CPWx9CLDfxe3y4tt3Y+3pgBZZTPQHmahXhq+m1TPA3jXkh4xiBa
-         Lvk8exg9kCKVqZ9iZoh2uY7vW8d1n4z0eMFTxWVmlmRVRT3c9438LYBqv/+ZHDTJkjTr
-         X13Y1tGMQqVpEGHvnIEu4htPuDlqjj69SnuUeU164Z3/IcEJoxuoqw7jUfb6dP+vznLa
-         fGQHJjFIFcRXpW0vLSKYXGfDS6HuO8Pr+tXXpQ0tyD6i488E/ICGRGC67lW9AWhEFcJv
-         EAJWBus1nyGZ7pWCG/ZaPFDu3jxtboogrAKVpmOo4AnpCdiRJyE7Pu2j6dFQN0+9AHRR
-         rIbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=p6xqdwu59pUUJrkE6Z09sEAyJTFaEXR5o8D6JzImHTI=;
-        b=7aU49ZI78bTv/y9NF4scmI78iwWbnrcw417WfQNsUsNfK6f763L4vw6NmoK0hd8ehn
-         khSUGifCXqamz49+53mOZqE2vk3dcar7wO2k2eN0FcPrHPdcEPO/JnTs2U1bHOb/Seci
-         JcINDMb86VfCJTeq5OHM+wcVI6EwZpeFfwFIUghhawJ/F+rEbNrUkoqIHdJ4C2os6kOn
-         xQr3tccB4nxXtT/0kgrEcJ4DULDHG+61pi1fBGkSB1ttyHJBfiPL772zbc4ujQW0S9JH
-         rWNlzg0fd2vjSVCvWPCG2PyQpf7pupCCOrk8hQIvcVtfGQR40hdN34736HU7Et4zzPT2
-         KHpw==
-X-Gm-Message-State: ACrzQf3ZeqrQ6rH/lDc4w8hL4E9AMkxm40OXVqxeenSOdDM86hTEjtPf
-        mJYqbUqpYO8w4XtAqtcpc5mYTErqoRnSWX6HDx1MnA==
-X-Google-Smtp-Source: AMsMyM4Hu1cmv4ECZtnFnuGnUyP0kDTd2FfDL8jeMWhRGnbykk2h21W1+mMaCKKvJJ/1F+uteEB3KbvyPNLBPmYUk8c=
-X-Received: by 2002:a05:6602:13d5:b0:6d6:1ea:3b0c with SMTP id
- o21-20020a05660213d500b006d601ea3b0cmr2984368iov.16.1667516340139; Thu, 03
- Nov 2022 15:59:00 -0700 (PDT)
+        with ESMTP id S229496AbiKCXDV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 19:03:21 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2071.outbound.protection.outlook.com [40.107.20.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2481F2D5
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 16:03:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gkxEc4EpUBn2XqDYFuIMNeH3EDDrKpvJRTv1c/zEwK7lqr7Pe+BtVUwtzyNRnSNJs3vssJZOMPSVbkItdQGwzIjtB8q/Bb2S0APnLFxk268CDEI4a6yioT5t+D/O62IEzs/D8OA/IVqxj7ilnPf4DDW/mRuz7g96QiyfMfvKo101V61ki0/7yHMdgWCfE8YM20ttVyao905mQ1W6DFy+BsXNRn/34Sv18rbPmL8iEoX1/APfKBzt/5/JRdBoGSEB8u1J65cygWtUcgBQU8oYkkXR0NKO/i0pRTK4EGOQ6+NT7uKNERlkiyjviY8w27gBtt01H5rYxufIznJXQTGWjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7FiFlm4/ax/AjGG41OkLLpQOSP9+c75dloMOVtHN7xw=;
+ b=aZhhT9oihyUT4TOvmmcGqdoGQDa+sjAY/PXy2vFjt/bGMoYf89yxhhnvt+EDbZaWRgVtnogtPiPjqsQcfGWBGNVRqOXM+A371+wwVoiFXdFFiQDfKP5ypDDgwG5TI9dYcnFSfzrvH+/olecWyQYMg1afHqlafRMjW+loethstozyqhyjDNRVKZB0yQin5WxBBoILNx1tLcfX09gYqCWzuTkfdoBq6685zQxZ+tOVrh98ji6cLQ122t+aUGv96M8r0UsQW23Ag2GNKl6K7SppjQDNkEvpl06TN4YaediT95vJtOHsVeA3nlpF59wWOUl4q28Pcd6rnA3Wi8c+FNSTIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7FiFlm4/ax/AjGG41OkLLpQOSP9+c75dloMOVtHN7xw=;
+ b=Fx1H7PV+Mn/Ga47KMTTsfD4c7qo26nSyUVZ7gfA47lwGsj4rcnytfPVA/50x/EJzVu4YMs3jzC9dI1oEAXPF3i5CZpo6sz5UdjEjYg2MXpL0sR6/HOHRw1S4Smc1MrFMc+JsYo6t9URStNEhHDYRDc0DIq9ocOxutQL7lECDOos=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB8755.eurprd04.prod.outlook.com (2603:10a6:20b:42e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.16; Thu, 3 Nov
+ 2022 23:03:17 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::df5b:6133:6d4c:a336]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::df5b:6133:6d4c:a336%7]) with mapi id 15.20.5769.022; Thu, 3 Nov 2022
+ 23:03:17 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "petrm@nvidia.com" <petrm@nvidia.com>,
+        "ivecera@redhat.com" <ivecera@redhat.com>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        "razor@blackwall.org" <razor@blackwall.org>,
+        "netdev@kapio-technology.com" <netdev@kapio-technology.com>,
+        "mlxsw@nvidia.com" <mlxsw@nvidia.com>
+Subject: Re: [RFC PATCH net-next 10/16] mlxsw: spectrum_switchdev: Add support
+ for locked FDB notifications
+Thread-Topic: [RFC PATCH net-next 10/16] mlxsw: spectrum_switchdev: Add
+ support for locked FDB notifications
+Thread-Index: AQHY6FjUVuDB5/kMGkqgz4g+zKbN+K4moPuAgAGU3ACABaGZgIAABl+AgAACaQA=
+Date:   Thu, 3 Nov 2022 23:03:17 +0000
+Message-ID: <20221103230316.k5gocnfkdslkdimq@skbuf>
+References: <20221025100024.1287157-1-idosch@nvidia.com>
+ <20221025100024.1287157-1-idosch@nvidia.com>
+ <20221025100024.1287157-11-idosch@nvidia.com>
+ <20221025100024.1287157-11-idosch@nvidia.com>
+ <20221027233939.x5jtqwiic2kmwonk@skbuf> <Y140a2DqcCaT/5uL@shredder>
+ <20221031083210.fxitourrquc4bo6p@skbuf>
+ <20221103223151.cnmlvgnz3maj75iv@skbuf> <Y2RGr9ssyMXbNsC+@shredder>
+In-Reply-To: <Y2RGr9ssyMXbNsC+@shredder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AS8PR04MB8755:EE_
+x-ms-office365-filtering-correlation-id: ce4e20c0-8b4e-46c6-d3da-08dabdef9811
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fDuo40sfZVMg+Uopbowv4AO5oOk71JiKgQu7LBUC2q4T0iZcIyDTWHB79Nv47yZITWboX26Z28rPfkS3hRC0Ly/auu7Wcf1fVe2rCgJN+/KTc7DQycrOq5m13tQp4yF2y9h3wZgmkmQJQ5Wrp0xfDzbtchxVDuq18URvt30q/oUZH/r1T+gALRNKMmPTg7eIq2mJhzDRtQVu4Ng+wqfes364Tfy3klx3dvRnQklT9Bdzd/vKwaw1+vmxrrbRlfy2wF28V2amoaVQNENPpKOc19LQtQW1OBdXwXE6bdEdK0qQEv/cj2fW0q1AJCYFI75P5oU1r2Ia/qwkVMInCd1IKTYwy+6DghzCBIe44mJCvAg2gOiknX3iQJf6yMJZ8bKc14GBahm6c8WIch67Ii+ljxcWVQmFXVob04zGjOiHonK08q3spOIWnWCyKgYfUPwXUxX7SASDO8k5pKjeQ4TW+0WJ6j/+wgDzaA+F2/QVnd+VKtlUnjyVCcHDffaD+Eo7VgQBUjCVebYFWo6zru2brhsMVgFTBYTZbv2cAs53jTsHqzGtCC+ixYp2f+ZiPgTlxHqLiqHIpoRv3K6LKxYAOcQbUuKVIpGix+ZNVgb4cPNQDUTiZrhfcFd55xOEMq/1bLE7gMzXuKf8fnDXbn/Yg0VXIkmI//GQA6mrkdcALYPXHB1nRfeSGtOCZG/dM3GuhzF92bPuOaUEHCbQ4RrQev6VUo5uw0U2DXo9cQknVBtSggdRV2xEz+YbLKRz7uO1b1r+8FLgu+WUZ4dtOts/aQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(376002)(366004)(39860400002)(136003)(346002)(396003)(451199015)(71200400001)(6486002)(478600001)(8676002)(6506007)(316002)(66556008)(54906003)(91956017)(4326008)(76116006)(66946007)(66476007)(66446008)(6916009)(6512007)(2906002)(7416002)(5660300002)(38070700005)(38100700002)(186003)(41300700001)(26005)(8936002)(9686003)(83380400001)(44832011)(122000001)(33716001)(1076003)(64756008)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zHlC6axX4OfU+vyr22yLWyKh95X6p1YyT9nk7LM85yP2ibtzjgZPFV5lIzDj?=
+ =?us-ascii?Q?xsTKPYhsA3T1aPA+Uk00+wkFP0M6qoz1cz8RBqy2cQtgh6wHyhs6mUjjonnV?=
+ =?us-ascii?Q?6aote972Ahz8Sbl37dzuWiB4JEeWwU16KaBZcGTKecMVZXH3Gf7akP2DFIou?=
+ =?us-ascii?Q?lpxs6PW/F5N4RZlcyMHL3qK8zRZTR1GU1xiGuMD1OYzutet4YfYMPXSJ5PFd?=
+ =?us-ascii?Q?6oJfU3SERtdQfinUhOXGEFfVtB69o78OPaExL+rrS3sOS4acOqGSyundPT0h?=
+ =?us-ascii?Q?IrZQJajCnsq4CnI+2Xj8GVVVCKelCP9FejC1fL8nJEwTC2hAS5XPIts/I3J3?=
+ =?us-ascii?Q?kd6mmTAjhVqVvLWygwA+qbV/D3LiQPtzG4lmfmaAFGVdUSjypOKwCoCbrH8P?=
+ =?us-ascii?Q?Vja/Bzm/oER1Lt/5BhUZNUGeJffO5QNFwsB83ZUJpru78g3NE6MeDitKnAHp?=
+ =?us-ascii?Q?OHYRT7t/JvRcnxrmfT0VCZtnyHofL9xHHozMQTgvgfI+OXXXTQIon8A0iJpr?=
+ =?us-ascii?Q?3n9dhclnkoIphJseEi001FOVs+9CTqUX4LaBhh7zd7AX1h5Pq3AT0n0tqJnP?=
+ =?us-ascii?Q?g+fc2ysUqtpJZtrx+n3y+Rfq1mZbhLrG8TF79A58NiycMUrNzpW8wrhzqlLW?=
+ =?us-ascii?Q?Qaet8GkZo/8zVOCOXuu9oFuZvyRXuRPH1DTHOGf5Um2oa4IzTIvOvUbHTvv3?=
+ =?us-ascii?Q?+eOL1/OirMnGn+hS5mSKoPWslde7Ayt1YSUPuFy+7Hge4qy0QYy8FIP93rpS?=
+ =?us-ascii?Q?BzTAJqgI3dClywNhazdE4sdf6f2gw1PYph8b/E/MH0kjpvup6NZ01NQh0K4b?=
+ =?us-ascii?Q?8J00lbFfMxgsQxHvVLrp1QbV0m9OFsmqYu9byxAL/FR2lHyQXRxQi6zu98iP?=
+ =?us-ascii?Q?kU4myPLs8+S097A7lfMrRIZbxNa+PMNc2XxButO94KUSOandCv50YMl8noVD?=
+ =?us-ascii?Q?+IQDyUjSagHtPbgOjWZTyUgp4EjyvSyN79JMY7ENWmR8aXr+hgOvbzcpDlry?=
+ =?us-ascii?Q?GOzCp2Nz5YHLr4k8uRau18dLX6QFLmGW79ArmJCtSi6sVgbqQlnbnFKF3Lph?=
+ =?us-ascii?Q?r9hwsl8QhWkF16u6+4zxAD4sut/rpYiuS2WBY3heR8EtJwCClgmVut0jy5vY?=
+ =?us-ascii?Q?Lcs0sYvA3GCkPt5aqJCC381+b8ygWhImWMUcCHCuiYb8BbXIdiRGGM8OBWge?=
+ =?us-ascii?Q?aky5GK6SF44Kj9Mt4a/ekzbsKgMQ0sWnO/Q/ak9tqPQLgjFvtstmZn6QNzez?=
+ =?us-ascii?Q?0C0UrV04KKqZOY6UQO1OXNILZFltubxEzWRXEQ280sRYiep5cmXTpGpSDcs9?=
+ =?us-ascii?Q?JI7dNAYziL37arkauhG0yLiL+n6gdwR0vHCHNEfNv8JPLbvLRMgc146YAYvR?=
+ =?us-ascii?Q?TkSnQiG1I1GrJ5MzGiYTOs39JwdMeWbnp2LnUbxPiLb6dn+J7vk1JsK5p2km?=
+ =?us-ascii?Q?K5gFL+zfTlC58uKtgkyHZkTIEojz1nSuKTZ7f+r1RNP7/8nRlZvKTNennMXp?=
+ =?us-ascii?Q?jRs5B/dX9phKpCQuGnO/2WCFqsQGyLquf7FcLRxzW27Cjqnjap4kpFLY6s7f?=
+ =?us-ascii?Q?L+RK6kolqAG4HPHxbDSd/4eNCnfnuw6BQ1TL1a2wV+UDq6Hv6Lq+nRA7a+c7?=
+ =?us-ascii?Q?qg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <9BD4B9FFE76B464FA4ED73933BF374E0@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220715115559.139691-1-shaozhengchao@huawei.com>
- <f0bb3cd6-6986-6ca1-aa40-7a10302c8586@linux.dev> <CAKH8qBvLGaX_+ye5Wdmj1FS+p8K8gBsKUEDRb1x8KzxQE+oDuA@mail.gmail.com>
- <0e69cc92-fece-3673-f7f8-24f5397183b3@linux.dev>
-In-Reply-To: <0e69cc92-fece-3673-f7f8-24f5397183b3@linux.dev>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 3 Nov 2022 15:58:49 -0700
-Message-ID: <CAKH8qBtOoQ9ig-+rANhje=NCE7NE2bSAW2dBoGujApp-KxA=aw@mail.gmail.com>
-Subject: Re: [PATCH v4,bpf-next] bpf: Don't redirect packets with invalid pkt_len
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        bigeasy@linutronix.de, imagedong@tencent.com, petrm@nvidia.com,
-        arnd@arndb.de, dsahern@kernel.org, talalahmad@google.com,
-        keescook@chromium.org, haoluo@google.com, jolsa@kernel.org,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, hawk@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce4e20c0-8b4e-46c6-d3da-08dabdef9811
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2022 23:03:17.1860
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QB6be0xPh0i31xjz7owv3arDF8oS92gHIgOemwWbuFkkX7/C0rJUP1AylUmWl5q8RTNsRYLAGyMugJQGqPY0AA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8755
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,122 +136,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 3, 2022 at 3:42 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+On Fri, Nov 04, 2022 at 12:54:39AM +0200, Ido Schimmel wrote:
+> Sorry, forgot to reply... I added a patch (see below) to the offload
+> set. If the bridge patches are accepted and we have disagreements on the
+> offload part I can always split out this patch and send it separately so
+> that mv88e6xxx rejects MAB in 6.2.
 >
-> On 11/3/22 2:36 PM, Stanislav Fomichev wrote:
-> > On Thu, Nov 3, 2022 at 2:07 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
-> >>
-> >> On 7/15/22 4:55 AM, Zhengchao Shao wrote:
-> >>> Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-> >>> skbs, that is, the flow->head is null.
-> >>> The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-> >>> run a bpf prog which redirects empty skbs.
-> >>> So we should determine whether the length of the packet modified by bpf
-> >>> prog or others like bpf_prog_test is valid before forwarding it directly.
-> >>>
-> >>> LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-> >>> LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
-> >>>
-> >>> Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-> >>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> >>> ---
-> >>> v3: modify debug print
-> >>> v2: need move checking to convert___skb_to_skb and add debug info
-> >>> v1: should not check len in fast path
-> >>>
-> >>>    include/linux/skbuff.h | 8 ++++++++
-> >>>    net/bpf/test_run.c     | 3 +++
-> >>>    net/core/dev.c         | 1 +
-> >>>    3 files changed, 12 insertions(+)
-> >>>
-> >>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> >>> index f6a27ab19202..82e8368ba6e6 100644
-> >>> --- a/include/linux/skbuff.h
-> >>> +++ b/include/linux/skbuff.h
-> >>> @@ -2459,6 +2459,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
-> >>>
-> >>>    #endif /* NET_SKBUFF_DATA_USES_OFFSET */
-> >>>
-> >>> +static inline void skb_assert_len(struct sk_buff *skb)
-> >>> +{
-> >>> +#ifdef CONFIG_DEBUG_NET
-> >>> +     if (WARN_ONCE(!skb->len, "%s\n", __func__))
-> >>> +             DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
-> >>> +#endif /* CONFIG_DEBUG_NET */
-> >>> +}
-> >>> +
-> >>>    /*
-> >>>     *  Add data to an sk_buff
-> >>>     */
-> >>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> >>> index 2ca96acbc50a..dc9dc0bedca0 100644
-> >>> --- a/net/bpf/test_run.c
-> >>> +++ b/net/bpf/test_run.c
-> >>> @@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
-> >>>    {
-> >>>        struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
-> >>>
-> >>> +     if (!skb->len)
-> >>> +             return -EINVAL;
-> >>
-> >>   From another recent report [0], I don't think this change is fixing the report
-> >> from syzbot.  It probably makes sense to revert this patch.
-> >>
-> >> afaict, This '!skb->len' test is done after
-> >>          if (is_l2)
-> >>                  __skb_push(skb, hh_len);
-> >>
-> >> Hence, skb->len is not zero in convert___skb_to_skb().  The proper place to test
-> >> skb->len is before __skb_push() to ensure there is some network header after the
-> >> mac or may as well ensure "data_size_in > ETH_HLEN" at the beginning.
-> >
-> > When is_l2==true, __skb_push will result in non-zero skb->len, so we
-> > should be good, right?
-> > The only issue is when we do bpf_redirect into a tunneling device and
-> > do __skb_pull, but that's now fixed by [0].
-> >
-> > When is_l2==false, the existing check in convert___skb_to_skb will
-> > make sure there is something in the l3 headers.
-> >
-> > So it seems like this patch is still needed. Or am I missing something?
+> commit ebdd7363f8c1802af63c35f74d6922b727617a7d
+> Author: Ido Schimmel <idosch@nvidia.com>
+> Date:   Mon Oct 31 19:36:36 2022 +0200
 >
-> Replied in [0].  I think a small change in [0] will make this patch obsolete.
+>     bridge: switchdev: Reflect MAB bridge port flag to device drivers
 >
-> My thinking is the !skb->len test in this patch does not address all cases, at
-> least not the most common one (the sch_cls prog where is_l2 == true) and then it
-> needs another change in __bpf_redirect_no_mac [0].  Then, instead of breaking
-> the existing test cases,  may as well solely depend on the change in
-> __bpf_redirect_no_mac which seems to be the only redirect function that does not
-> have the len check now.
+>     Reflect the 'BR_PORT_MAB' flag to device drivers so that:
+>
+>     * Drivers that support MAB could act upon the flag being toggled.
+>     * Drivers that do not support MAB will prevent MAB from being enabled=
+.
+>
+>     Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+>
+> Notes:
+>     v1:
+>     * New patch.
+>
+> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+> index 8a0abe35137d..7eb6fd5bb917 100644
+> --- a/net/bridge/br_switchdev.c
+> +++ b/net/bridge/br_switchdev.c
+> @@ -71,7 +71,7 @@ bool nbp_switchdev_allowed_egress(const struct net_brid=
+ge_port *p,
+>  }
+>
+>  /* Flags that can be offloaded to hardware */
+> -#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
+> +#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_PORT_MAB |=
+ \
+>                                   BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PO=
+RT_LOCKED | \
+>                                   BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULT=
+ICAST_TO_UNICAST)
 
-Removing this check in convert___skb_to_skb and moving the new one in
-__bpf_redirect_no_mac out of (mlen) SGTM.
-Can follow up unless you or Zhengchao prefer to do it.
-There were some concerns about doing this len check at runtime per
-packet, but not sure whether it really affects anything..
-
-> >> The fix in [0] is applied.  If it turns out there are other cases caused by the
-> >> skb generated by test_run that needs extra fixes in bpf_redirect_*,  it needs to
-> >> revisit an earlier !skb->len check mentioned above and the existing test cases
-> >> outside of test_progs would have to adjust accordingly.
-> >>
-> >> [0]: https://lore.kernel.org/bpf/20221027225537.353077-1-sdf@google.com/
-> >>
-> >>> +
-> >>>        if (!__skb)
-> >>>                return 0;
-> >>>
-> >>> diff --git a/net/core/dev.c b/net/core/dev.c
-> >>> index d588fd0a54ce..716df64fcfa5 100644
-> >>> --- a/net/core/dev.c
-> >>> +++ b/net/core/dev.c
-> >>> @@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-> >>>        bool again = false;
-> >>>
-> >>>        skb_reset_mac_header(skb);
-> >>> +     skb_assert_len(skb);
-> >>>
-> >>>        if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
-> >>>                __skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
-> >>
->
+Yeah, ok, normally the feature would be gated until it really works on
+existing offloading drivers, but I suppose a compromise from 100%
+correctness could be made if you say you're going to send the offload
+bits right away.=
