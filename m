@@ -2,85 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 967E2618305
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 16:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB2161832C
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 16:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbiKCPkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 11:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
+        id S231750AbiKCPoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 11:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbiKCPkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 11:40:20 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCAD1740D
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 08:40:14 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id m7-20020a05600c090700b003cf8a105d9eso1445607wmp.5
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 08:40:14 -0700 (PDT)
+        with ESMTP id S231801AbiKCPoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 11:44:04 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A2E65DD
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 08:44:02 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-13bd19c3b68so2586403fac.7
+        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 08:44:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=heCsF5+oksMkKllVhJuNqNh9mZu8ZtuLSZhGNPkuZUU=;
-        b=awPwB40AqRzdI+kaKO27twDciZZUa4wRghMQ5H/0a2587mmwsT8ce5/+TwRPtir9qb
-         Ue4YnZR0stUuot+GTLmCKAQphR/mSEXhy+ubpz8KJfPCEJzJVhMRNMXQCXLb6NJpUHTL
-         UetbKMthucTcZE/68dqbYKFRtCiOee/L6nb3Ze3h2kWMdIE0zcxUoR/hGw/N9NFbiGxh
-         pzv6WKvTAziZPBzbuivwaweJUDDVw3um7ka3zOz4dyEpmzTL/4Yn6NxxO0srkyX8p2W+
-         NS7wLNG8qRLep0Q7rjQQ9JHVAvJWTrOGOAAgfs6Ly7geOJFMcz0P1WxaVFbFyAgd1EZi
-         CAPA==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jyi7kddwY824pPpQokNOgMXLwnia/FN5Ke8YFyXNTvI=;
+        b=jMbi75qkrKSkJsn/sY+LoqEx3SL5qSrXl+o86foMD1tYG0DUj++mxp3LOOmDdTFk0T
+         9gvs1sLTYl+BlOd+I+FuIcr5FrKpj1fSX1I6K1mCXqMVsWBuaNLUz+QGmdsQQrM0V2tm
+         t3QPwU7z6oZk026+ZeLKOPQQlni5IOD2KF/7jc06CN4DKXgBEgmJHHDeBSBRN9dBB3Fn
+         bNsDZGjbsJoJNBKJqLxnOjWc0Yw5LZ0A4Pc1JKTF8932jiGrwGDfiKX9uLPswVTpGTAE
+         QIHS6xODUe517Bj9y/V4D1v01xRUNu3eRJCjq5Ts/TyhCRhHhz0RsVlNVtr+wSjbRfDQ
+         LAJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=heCsF5+oksMkKllVhJuNqNh9mZu8ZtuLSZhGNPkuZUU=;
-        b=6myXr55BsSxdPz1W8SbjHOUxKdCpYx+LHI6RByMeIDRS+r0XcCUEGpocEkqLKOtS/8
-         X6eHh1dNpIRg0v4kkl5nKAyveNwWxwhCNlOXyc+jqgnf589PercEvxhVRcGeydBb+6tt
-         54/3bEipo3KkZu6mQs8KQ1jrgnlJA5Gfz/39vuJ9gi7+49CYKAZxeGc25B+7GerOBW9x
-         Uyr27YfCq1kCoQSXFS9AO2l2oPsV944GrUI+tu0LGg6WePt6DxqbUdzpvBr8m7G6LcBS
-         Bg6nnMVCc7+njOEsFg+5rIuT/NkOj4mWYoLLbKbf82AA7HUEcTOd+6rAs8TfQk3emJQg
-         UfJA==
-X-Gm-Message-State: ACrzQf07lDTlQgukQ05K8HeQ4TmWWttofWErOPd/xwk57mennOArjpyw
-        E29UXAe8dVH84FW9/vNQVjuk7w==
-X-Google-Smtp-Source: AMsMyM5W3IK+XSPxncETUlmZfWRiaYwnj6m0Q7dFp4g0bufxPolS3y/IKY4/UkTiEiUWOM8xAdLSvw==
-X-Received: by 2002:a05:600c:35cf:b0:3c6:e957:b403 with SMTP id r15-20020a05600c35cf00b003c6e957b403mr31542271wmq.162.1667490013382;
-        Thu, 03 Nov 2022 08:40:13 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id v20-20020adfa1d4000000b002238ea5750csm1459001wrv.72.2022.11.03.08.40.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Nov 2022 08:40:12 -0700 (PDT)
-Message-ID: <ad9be7ae-aeec-b208-8252-7a566534ded4@arista.com>
-Date:   Thu, 3 Nov 2022 15:40:11 +0000
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jyi7kddwY824pPpQokNOgMXLwnia/FN5Ke8YFyXNTvI=;
+        b=PR5/ToVSBeUvaSG4IEKvPqszYJCY1trH8mwCYVFT2M+gWVZFGg94R38ym1WEyW6GwP
+         aDjZ8qZ0a7bf5JxMIoTsmsc1/9Tkiuze+ccyH3sBixb44H29Wrt1i6zK/vKkSUm7eeSq
+         i5/PxBretJIWsH91LsXv6qxsAp3BCFyHW3xIZEVhkz5z1nEI/5oIhWuQ1FgqWPTaV8vo
+         L6xHAmDNVD4I8QK8FqbKqEWM0BG7f7Qm2Y864Smx5Xy+UO/tdF6Srp7GsU72V7GaLJbx
+         WvQXxlP5Yf4S3DU7nhIE8DGboWGaPmyJYbS5IZ/g0k8wx7bqSTXZ+RDTRfJ/hwu36csK
+         q43w==
+X-Gm-Message-State: ACrzQf3kYIguMTcKTKgubdigXxewF9n9wzekHLw1N5e3jbKHexJOGJva
+        ldgYRrgkB9w2HOnGEyZKVKM1CnLaJSo45GPwYFk=
+X-Google-Smtp-Source: AMsMyM5bwzCm6+mnOORkfy06xmJ1D2JAPDF0uG/LrCO9rewiQFpmyvzS+G1F03jRClSjT0HSt6GTCOEubYiKIQbO8pk=
+X-Received: by 2002:a05:6870:523:b0:131:2d50:e09c with SMTP id
+ j35-20020a056870052300b001312d50e09cmr28724388oao.129.1667490240674; Thu, 03
+ Nov 2022 08:44:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH 2/2] net/tcp: Disable TCP-MD5 static key on
- tcp_md5sig_info destruction
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+References: <Y2OmQDjtHmQCHE7x@pevik>
+In-Reply-To: <Y2OmQDjtHmQCHE7x@pevik>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 3 Nov 2022 11:43:36 -0400
+Message-ID: <CADvbK_cA=7czAvftMu9tn+SkDp9-NpdyxeKsf70U8WO7=0i22g@mail.gmail.com>
+Subject: Re: ping (iputils) review (call for help)
+To:     Petr Vorel <pvorel@suse.cz>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org
-References: <20221102211350.625011-1-dima@arista.com>
- <20221102211350.625011-3-dima@arista.com>
- <CANn89iLbOikuG9+Tna9M0Gr-diF2vFpfMV8MDP8rBuN49+Mwrg@mail.gmail.com>
- <483848f5-8807-fd97-babc-44740db96db4@arista.com>
- <CANn89i+XyQhh0eNMJWNn6NNLDaMtrzX3sq9Atu-ic7P5uqDODg@mail.gmail.com>
- <CANn89i+UxgHwm9apzBXV-afpcfXfuX2S+6i4vPzF2ec4Dr6X0A@mail.gmail.com>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <CANn89i+UxgHwm9apzBXV-afpcfXfuX2S+6i4vPzF2ec4Dr6X0A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vasiliy Kulikov <segoon@openwall.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,33 +73,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/2/22 21:53, Eric Dumazet wrote:
-> On Wed, Nov 2, 2022 at 2:49 PM Eric Dumazet <edumazet@google.com> wrote:
-> 
->>
->> Are you sure ?
->>
->> static_branch_inc() is what we want here, it is a nice wrapper around
->> the correct internal details,
->> and ultimately boils to an atomic_inc(). It is safe for all contexts.
->>
->> But if/when jump labels get refcount_t one day, we will not have to
->> change TCP stack because
->> it made some implementation assumptions.
-> 
-> Oh, I think I understand this better now.
-> 
-> Please provide a helper like
-> 
-> static inline void static_key_fast_inc(struct static_key *key)
-> {
->        atomic_inc(&key->enabled);
-> }
-> 
-> Something like that.
+On Thu, Nov 3, 2022 at 7:30 AM Petr Vorel <pvorel@suse.cz> wrote:
+>
+> Hi,
+>
+> I'm sorry to bother you about userspace. I'm preparing new iputils release and
+> I'm not sure about these two patches.  As there has been many regressions,
+> review from experts is more than welcome.
+>
+> If you have time to review them, it does not matter if you post your
+> comments/RBT in github or here (as long as you keep Cc me so that I don't
+> overlook it).
+>
+> BTW I wonder if it make sense to list Hideaki YOSHIFUJI as NETWORKING
+> IPv4/IPv6 maintainer. If I'm not mistaken, it has been a decade since he was active.
+>
+> * ping: Call connect() before sending/receiving
+> https://github.com/iputils/iputils/pull/391
+> => I did not even knew it's possible to connect to ping socket, but looks like
+> it works on both raw socket and on ICMP datagram socket.
+The workaround of not using the PING socket is:
 
-Sure, that sounds like a better thing to do, rather than the hack I had.
+# sysctl -w net.ipv4.ping_group_range="1 0"
 
-Thanks, will send v2 soon,
-          Dmitry
+>
+> * ping: revert "ping: do not bind to device when destination IP is on device
+> https://github.com/iputils/iputils/pull/396
+> => the problem has been fixed in mainline and stable/LTS kernels therefore I
+> suppose we can revert cc44f4c as done in this PR. It's just a question if we
+> should care about people who run new iputils on older (unfixed) kernels.
+cc44f4c has also caused some regression though it's only seen in the
+kselftests, and that is why I made the kernel fix. I don't know which
+regression is more serious regardless of the patch's correctness. :-).
+or can we put some changelog to say that this revert should be
+backported together with the kernel commit?
 
+Thanks.
