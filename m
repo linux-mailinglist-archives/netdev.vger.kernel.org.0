@@ -2,68 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADCF6187E1
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 19:46:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD45618832
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 20:07:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiKCSqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 14:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41042 "EHLO
+        id S231318AbiKCTHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 15:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiKCSqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 14:46:31 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FC619C36
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 11:46:29 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id s4so1816125qtx.6
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 11:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=aXY1lIR6Oeh72A9WHYtvry4LC/dg2Hz0Zvhe7R9kqbk=;
-        b=KJ8xho+tOAa8yoGpeWyD4cJbETY/Iu/USq9OGrxeVIU9Pb5ECUJeQbmUeERcWGAq1A
-         HdUiL8pQ+m+EYpv+SLR78I3ODBgrmKsInord6w7XOWgdjpnA9FmBWrvClA9b3cd6euV7
-         5CCdCKLttRTw+FskRvHxD3JtXK4lKm3Wfy5BBPO5RdYWI5qfe+GAFwLo5KfZC9npBrxD
-         nco4zuN3C3S786JpMOeezvrbASjmUE7CyOVwmrztu/ayO68K/8Am+yKl8+4SrMc8T3vu
-         j1hgSMTWCg22tcB/me6yVZaaf4HLydFdAyI/LFNry+CsHNDQQ82Ib34PITpftkaxHO8H
-         Xmaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aXY1lIR6Oeh72A9WHYtvry4LC/dg2Hz0Zvhe7R9kqbk=;
-        b=J9S30/vHEPWTePMqjW5o1rW3LqXyem3VmDOTovJpOSXHi2Fg3B3MHhzXmenLeO+StI
-         WCTh0feunRAeRcBqECg8qFErbXv0/JzO9M9UAKmex/q6shHfk7WovRD+3RQkDyJ12RDo
-         3JkSlM+U2vOnzN7mNT0e+Cxb/R71YLED4gJjO5+6Yqx9oFqRe4unLi4hz43OIgCxGa8K
-         XFXMHei4Dzdk7aic+tFIQ4nplrBix/7MUYV9UR8YK5nXNS5ZDa88L4LsMEX4er0aKKTQ
-         cyJea8hFKsJCqRuDBMne8PErSb22oCR1YyMl/Pha+vJlpeoLXtvS/NAOY8FIHfE8Zp+6
-         lSSQ==
-X-Gm-Message-State: ACrzQf1bUi07R9l4IkMaXqzYtY3Dn5vgMOToy4uTd3QN1SWdtkrdQFo3
-        cChFos6n7vGkfiLE2eU7jbvArUu1pSU=
-X-Google-Smtp-Source: AMsMyM6qmd85GHb3+oAaPRv2Io/ook1G6+yTdcVuVZ/YZVZq+QG6LSSAra0IxYlLayo6ffUZaY9B+g==
-X-Received: by 2002:a05:622a:15c8:b0:39c:ea8a:82e3 with SMTP id d8-20020a05622a15c800b0039cea8a82e3mr26128003qty.146.1667501188712;
-        Thu, 03 Nov 2022 11:46:28 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:4d91:6911:634f:5b22])
-        by smtp.gmail.com with ESMTPSA id x25-20020a05620a0b5900b006bb82221013sm1259343qkg.0.2022.11.03.11.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 11:46:28 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, Cong Wang <cong.wang@bytedance.com>,
-        syzbot+278279efdd2730dd14bf@syzkaller.appspotmail.com,
-        shaozhengchao <shaozhengchao@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Herbert <tom@herbertland.com>
-Subject: [Patch net v2] kcm: close race conditions on sk_receive_queue
-Date:   Thu,  3 Nov 2022 11:46:20 -0700
-Message-Id: <20221103184620.359451-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229493AbiKCTHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 15:07:19 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80073.outbound.protection.outlook.com [40.107.8.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC771C919;
+        Thu,  3 Nov 2022 12:07:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NtnlcgcH8BEJ88kcVakJ80eNYNAZwpHfkxnRpwlWZPURoh1sfqq2bel10Vf9O3veFsfJ4E6/CWmaFxsSMS7hiUvRmNPdxlZnPqoxntoBlk0sNJ0LYG+XNVkaAmO07EsqLRM6oYsbO1adf/tFHkNzIFMgomfk8FbZBEanMU3TDLooqZ1/kNt5G9z8+w0RyunMYHvT4YFzCwzZI6UwZ/fRWOO1t6frd4dGdmgmGgGRwnvGZRRzo7r68fHso9totE4NHYwJMgHHfFEpSQkYFjsFQ8jVodJevrl4u2TbVR4PwywDEOOwm1DkrTzuRwap8eBRD2SdOgan0u0Z4FHWHZrP8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=63vOloDgoOkq7GvtJQjCA45p3V5uvPt2kBFLRl1OzhA=;
+ b=XSVf5dmQZVBLNxBzUXJLION2tOVS7zfcJTgFD/Yye65PIudhgqFuPdatKJET5HDeF9SHPoIA2KHDOBrJ5tDdR/I2/J9lPYx2lJNtophavS5FdCCF/w/ixit/pLhgtr4F7j48ZKDKWE+mKxfQRgzl2Yk9VWZ9ydUPhySechTsyTWN0ECUvLzBdTnApzJ46Q3Ai4yvMez8AYLIHi0/lIjFcu/2lektKmiEFvgQ7tOOFw/mFGYeSqXRkH7NCVHShk/crMxVqK/nNwloSEmjoweU0Nyc2FdRlWMs2cm9IMTIRzRCjSvGjbdoXl+VuVdXS9TasuBMt/LXv/zU6VYlDiLqZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=63vOloDgoOkq7GvtJQjCA45p3V5uvPt2kBFLRl1OzhA=;
+ b=nGuVAzbO6+Hphn/z/TpstJKLo/AnnHN+jI/7IvdxEFnqpbhmm9uxnDn8ayL4j3f6PIaL94H/L6HcXhF60w/waI/zKg2xw9yziXHA1z0vl3DIhPO9mOPDcak4OOlYq2McsCF7+v1DZ/0Y00XCHypzefLGUPwlteDb3kCokoTgdjKSfTl7u5Y/jYPwUmRcV3Zk0Qeo1xf5l+f3gISKbwbimkXF0C6S8s0jibO7IzDkkRwFgDMZrgti1aM/q1jTF4qcG5y6Mvs/eiV+uAjOZvKTmA0L4kJymLR6k7rimkFS7x/5jBW/fp6unD6RP9clpDJgnsk4ioPMqp/oAHYbvTXgrA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by DB9PR03MB8397.eurprd03.prod.outlook.com (2603:10a6:10:394::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Thu, 3 Nov
+ 2022 19:07:14 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
+ 19:07:14 +0000
+Message-ID: <00d3b2e3-6c93-0e48-e87b-ebd9c6574e00@seco.com>
+Date:   Thu, 3 Nov 2022 15:07:10 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH] net: fman: Unregister ethernet device on removal
+Content-Language: en-US
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>, linux-kernel@vger.kernel.org
+References: <20221103182831.2248833-1-sean.anderson@seco.com>
+From:   Sean Anderson <sean.anderson@seco.com>
+In-Reply-To: <20221103182831.2248833-1-sean.anderson@seco.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0276.namprd13.prod.outlook.com
+ (2603:10b6:208:2bc::11) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|DB9PR03MB8397:EE_
+X-MS-Office365-Filtering-Correlation-Id: abc85213-a7e0-4efa-9059-08dabdce9e5c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5NnfMt66GIQxF0dVcJGVBioSbw0la2F5agTijMyyhP1U32VehUYdzBYIOpmuwaG5MoGYxeGPLqasuaH2nwjsGhQQFhF/GZntD5STRy0bILi4yrqFv1AQ4/N7WHpIV+wemRYYpttLOTXvYiqjtcwqF2m6JGeGqSHB7DvnejglrdM6P1gVQ5MjOztQXzuFRHDwNGLsL6t8ez4REPLTEue2DoUSFhMH6EKoCnQShqu0Us6XwzGrqEKGpRcvHATS98cV2jNYVB47IuejJ0GFhqPmmNlo+Y3TQ5vLwUk6kHlKhYnQAz0pLDTdCC0aVA7K8xT33641iYLXF2/jMQBkKxdSQygvkV/cq6sOel60CUt1T5FDct3fcjallEvxqu89cPufovzd6QJAKIycaq2o9Ovr56STh4MowLi33lgokrLxMcxc3dIHLF3D1+2VLF64qk+H2XU0M+NaIiJmcwZ5tvlodaP+GXOJ8VBfY/9POLKFzdrxvsWe3+ZdSzBv76b++FSelaVAsvYvJPO6/rESQsgZBugZccT/+Gh5ePlGpPwo0pTPi1wxq5oo1Y+w8VBEIWnqttNHSJi0DRefYyfu6dcYgw4YRo4l3kaHxplz6dIfVzl9wmsKuIqwamIdOI7WEqrmdfWTRQGOgrBsOxZaNxtS+FUpV8z6iJxifJt887yXBz+oZQB5u9jQqdQMQuEmSdNq37UnbnO7dChZiB2lbpLzHIpjpVIZC5TQqOReOMJVlbDW8xfBiwS5bWW6ulza0INTlj4zJDAsZEX8XtpBx/39mdv7kkDNrs9583x9KkO8OdzbH/s8/j4j5XWk+Ek/MtX7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39850400004)(396003)(136003)(366004)(376002)(346002)(451199015)(38350700002)(110136005)(5660300002)(36756003)(66556008)(66946007)(8676002)(186003)(6512007)(6506007)(4326008)(2906002)(26005)(53546011)(66476007)(41300700001)(31696002)(38100700002)(316002)(8936002)(52116002)(86362001)(6666004)(44832011)(6486002)(31686004)(2616005)(478600001)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eFJGcWpLcVRIa2ViWDI0UWdlcUlIUUNRaE1TOUtyVWdob09HTWxORGJVQURs?=
+ =?utf-8?B?MkpMdlo2d2p2ZXUzQ2E4KzNxVEcxa0g1dHJXVHNnT0pDVDJ4bEFMcUN2QmhN?=
+ =?utf-8?B?UHNsQndHNXpOVDNEc2c5Nmt3akVTUHI4bVJ0Z2tmRDNYcEJzL01ZTmlCb0Rr?=
+ =?utf-8?B?UFN6cEN4NmtPbXZsc2kzU1k0aFplTkFTZnJSbUNzNWV6QkFEaDRZd3dXV1Zo?=
+ =?utf-8?B?TE15ejlwdXNqRzNKRGlBbmZsSzlqQ0pWNkVKM3AranlxaHFyNG5rOElvM25X?=
+ =?utf-8?B?bVdRRmRNZ2Iwak1wSjMzbERyb2xlRmtHak1vaktMUXhiaUV1M05VYjdlNngw?=
+ =?utf-8?B?bFM5bmRBTDFvN1Q3UDdUNHJxN0doZnoyT0xHOC8vay82YVN3SklodE5JRDdS?=
+ =?utf-8?B?Q2NKL1NVWE40clpIZVhhaFJoaHNReHkwa1ZVUDBad0xmQkNPemZPOGtOU1JL?=
+ =?utf-8?B?eTBWbTlTSGlWYlpIQVo1bTNndTVDR20rS3JFZmpBSmJENDVPOGNOM05YbnJ0?=
+ =?utf-8?B?S2dWektyYnI5eG1pR0d6b2ZBRkQvUHg1VnI4ZGtOMzUwSWR1TUFubEw4NEYy?=
+ =?utf-8?B?SUpKeVBCT2Q5SjRxeitRSVpISkRGNnBCb2ZtNlE4aWEvSml2VUhIQ3A0RVN0?=
+ =?utf-8?B?enlHWWJIajlrdVRGTWxrUTd2VHEzTm9IL0hqZ1g4YmhlMXNRVHhxaFBLeWt3?=
+ =?utf-8?B?cTR5YkFYS2dNS3QzQVYvZUlJRHJvS0FiR3JnT2I3VEt4ZkFvWm9RWWVoVGlS?=
+ =?utf-8?B?Sm5OTVpIM0l4ZWIwei9Xc0o5MmZHVnlaVVlxWGRVM3djQWVHLzFYRVA0SFBP?=
+ =?utf-8?B?dFJITHMvV3g3UW9TV3Fsc1QySUdMZlg1SUIzZ080UElpWTFNQmRBd3Q3MlI5?=
+ =?utf-8?B?U0ZkTnNBOEtsZUJHcHFOekwrNk5QUSt0b1l2UVJOWWxyYkFGdGV6RzRRbVdp?=
+ =?utf-8?B?WGpFUHdJU3dPWE9YdG8wK0ZmbTh5VHEveVN3TjBMVmlYZWNMNEs3em9qQmg2?=
+ =?utf-8?B?WWhKYWRIZmhSRGJFbHNqV2ZmT1JJcEdOOFBTbnU4THkwNFBXbEdxWFovMTRY?=
+ =?utf-8?B?RDZIaGlmNnZGY0s5SGJhWS9mUUdQNWVYNW5zaUdqaFZqbFdEdTlqZU5NWWdQ?=
+ =?utf-8?B?VnpuckFTV256T25hVFBlQmJ2VUlja2NLZ3o3dlFzbFpUbUdnWm9PcWROcXY2?=
+ =?utf-8?B?aWhOZFllYzJPQjlwSkNRdDdYM2dvWXRmcDhEQnBseng5aXFaMDJZOU05ZEJn?=
+ =?utf-8?B?bHhnemZqcW1PWUhtNnM1c0ltR1V3dXZDQVBiN29Fa1Fiem5QR1JSSGE5ZEVZ?=
+ =?utf-8?B?TWZhSjlLVG9IaldWQkRJTzV1dll5djQzLy83WmkrUmpiU0xVRDI5YWg5TmVk?=
+ =?utf-8?B?RUs1UXVqWWZ2WGZJdVVHMi9tRTZYWWxueEd5TDlLUS83OEZiS09SMHRvZEFU?=
+ =?utf-8?B?Y2p3dC91VDRyZVB1RkdMSjBCTDg3Y2tvRXg4c0psN3Rqb016VW9hN0kxbCtn?=
+ =?utf-8?B?Nno1cmhSWVdyVnRtZ3BvRzcrZHpRUi9ZN05HbUFkWGs4WjREMDZFRjk3SXVM?=
+ =?utf-8?B?Q1hHZ2RXZU9jTGZVcnZUMGtRbWdiQm1Rd1dySmtkWjd5Mng5SmNmdXAvekVM?=
+ =?utf-8?B?K0xJWUtodlU0cnpFWTJjd21KMmp6RGRORlIrNkdJckdMYUc5RFZ3NVRqeWZa?=
+ =?utf-8?B?RkxVTVc1WTB3VTQrT0x6M0ZDQUNvdFkxdmVxOGlCWE16M2lsMjBWWmg1Tkpp?=
+ =?utf-8?B?UlZ4Q3AvaDBwYVpQbkpOYWZlaVJuNDBjM2hBN08vUTlOeW1GQUlSVVB3a2lY?=
+ =?utf-8?B?bEF4ODhRbkVBcTJBTzcvRHg3RjBLMzVkdFY3QVpqZ1lPRmtxamNZSU91M2oz?=
+ =?utf-8?B?UFhmOHhEOC9QMENNMmI2UHk5SUtNUGlaM3gxQWJYU3ROYSs1NDRSM1pZUzdZ?=
+ =?utf-8?B?bGJMZ2UvSHNaUS9sUFZQQ3JhaTNZUWljY3BTaDRNdVUwQnhrUGo2UTJCK0Vz?=
+ =?utf-8?B?WklaY2QxeWhTTTV3NVZQZTMxMVIzMHdTdWp3VXB6YWJnQ2JPa21vNGFkaHhW?=
+ =?utf-8?B?M0FHTE1KR2kxYTNZdUZ5RkhYZXRJbWtYT0J0UzB0QjlieVc2MjJHcFY2cnJo?=
+ =?utf-8?B?cFRvSWJiZFFYd0Ira2hSL1BDMUVDVENBSkt6dXMxTzFscytDVHp0NGZ1QzdO?=
+ =?utf-8?B?VGc9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: abc85213-a7e0-4efa-9059-08dabdce9e5c
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 19:07:14.5687
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: o5k8+ha3fLRaZJeXZ86n6sNr2TQk2yXfHacNPnCIrbThYIgwQc718q9XGkAurshCDS7FtxPp8DILcP/upkHDpQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB8397
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,156 +126,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On 11/3/22 14:28, Sean Anderson wrote:
+> When the mac device gets removed, it leaves behind the ethernet device.
+> This will result in a segfault next time the ethernet device accesses
+> mac_dev. Remove the ethernet device when we get removed to prevent
+> this. This is not completely reversible, since some resources aren't
+> cleaned up properly, but that can be addressed later.
+> 
+> Fixes: 3933961682a3 ("fsl/fman: Add FMan MAC driver")
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> So... why *do* we have a separate device for the ethernet interface?
+> Can't the mac device just register the netdev itself?
+> 
+>  drivers/net/ethernet/freescale/fman/mac.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+> index 65df308bad97..13e67f2864be 100644
+> --- a/drivers/net/ethernet/freescale/fman/mac.c
+> +++ b/drivers/net/ethernet/freescale/fman/mac.c
+> @@ -487,12 +487,21 @@ static int mac_probe(struct platform_device *_of_dev)
+>  	return err;
+>  }
+>  
+> +static int mac_remove(struct platform_device *pdev)
+> +{
+> +	struct mac_device *mac_dev = platform_get_drvdata(pdev);
+> +
+> +	platform_device_unregister(mac_dev->priv->eth_dev);
+> +	return 0;
+> +}
+> +
+>  static struct platform_driver mac_driver = {
+>  	.driver = {
+>  		.name		= KBUILD_MODNAME,
+>  		.of_match_table	= mac_match,
+>  	},
+>  	.probe		= mac_probe,
+> +	.remove		= mac_remove,
+>  };
+>  
+>  builtin_platform_driver(mac_driver);
 
-sk->sk_receive_queue is protected by skb queue lock, but for KCM
-sockets its RX path takes mux->rx_lock to protect more than just
-skb queue. However, kcm_recvmsg() still only grabs the skb queue
-lock, so race conditions still exist.
+err, this should be [PATCH net]. Sorry, will fix if necessary for a v2.
 
-We can teach kcm_recvmsg() to grab mux->rx_lock too but this would
-introduce a potential performance regression as struct kcm_mux can
-be shared by multiple KCM sockets. So we have to enforce skb queue
-lock in requeue_rx_msgs() and handle skb peek case carefully in
-kcm_wait_data(). Fortunately, skb_recv_datagram() already handles
-it nicely and is widely used by other sockets, we can just switch
-to skb_recv_datagram() after getting rid of the unnecessary sock
-lock in kcm_recvmsg() and kcm_splice_read().
-
-I ran the original syzbot reproducer for 30 min without seeing any
-issue.
-
-Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
-Reported-by: syzbot+278279efdd2730dd14bf@syzkaller.appspotmail.com
-Reported-by: shaozhengchao <shaozhengchao@huawei.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Tom Herbert <tom@herbertland.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/kcm/kcmsock.c | 58 +++++------------------------------------------
- 1 file changed, 6 insertions(+), 52 deletions(-)
-
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index a5004228111d..890a2423f559 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -222,7 +222,7 @@ static void requeue_rx_msgs(struct kcm_mux *mux, struct sk_buff_head *head)
- 	struct sk_buff *skb;
- 	struct kcm_sock *kcm;
- 
--	while ((skb = __skb_dequeue(head))) {
-+	while ((skb = skb_dequeue(head))) {
- 		/* Reset destructor to avoid calling kcm_rcv_ready */
- 		skb->destructor = sock_rfree;
- 		skb_orphan(skb);
-@@ -1085,53 +1085,17 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	return err;
- }
- 
--static struct sk_buff *kcm_wait_data(struct sock *sk, int flags,
--				     long timeo, int *err)
--{
--	struct sk_buff *skb;
--
--	while (!(skb = skb_peek(&sk->sk_receive_queue))) {
--		if (sk->sk_err) {
--			*err = sock_error(sk);
--			return NULL;
--		}
--
--		if (sock_flag(sk, SOCK_DONE))
--			return NULL;
--
--		if ((flags & MSG_DONTWAIT) || !timeo) {
--			*err = -EAGAIN;
--			return NULL;
--		}
--
--		sk_wait_data(sk, &timeo, NULL);
--
--		/* Handle signals */
--		if (signal_pending(current)) {
--			*err = sock_intr_errno(timeo);
--			return NULL;
--		}
--	}
--
--	return skb;
--}
--
- static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- 		       size_t len, int flags)
- {
- 	struct sock *sk = sock->sk;
- 	struct kcm_sock *kcm = kcm_sk(sk);
- 	int err = 0;
--	long timeo;
- 	struct strp_msg *stm;
- 	int copied = 0;
- 	struct sk_buff *skb;
- 
--	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
--
--	lock_sock(sk);
--
--	skb = kcm_wait_data(sk, flags, timeo, &err);
-+	skb = skb_recv_datagram(sk, flags, &err);
- 	if (!skb)
- 		goto out;
- 
-@@ -1162,14 +1126,11 @@ static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- 			/* Finished with message */
- 			msg->msg_flags |= MSG_EOR;
- 			KCM_STATS_INCR(kcm->stats.rx_msgs);
--			skb_unlink(skb, &sk->sk_receive_queue);
--			kfree_skb(skb);
- 		}
- 	}
- 
- out:
--	release_sock(sk);
--
-+	skb_free_datagram(sk, skb);
- 	return copied ? : err;
- }
- 
-@@ -1179,7 +1140,6 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
- {
- 	struct sock *sk = sock->sk;
- 	struct kcm_sock *kcm = kcm_sk(sk);
--	long timeo;
- 	struct strp_msg *stm;
- 	int err = 0;
- 	ssize_t copied;
-@@ -1187,11 +1147,7 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
- 
- 	/* Only support splice for SOCKSEQPACKET */
- 
--	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
--
--	lock_sock(sk);
--
--	skb = kcm_wait_data(sk, flags, timeo, &err);
-+	skb = skb_recv_datagram(sk, flags, &err);
- 	if (!skb)
- 		goto err_out;
- 
-@@ -1219,13 +1175,11 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
- 	 * finish reading the message.
- 	 */
- 
--	release_sock(sk);
--
-+	skb_free_datagram(sk, skb);
- 	return copied;
- 
- err_out:
--	release_sock(sk);
--
-+	skb_free_datagram(sk, skb);
- 	return err;
- }
- 
--- 
-2.34.1
-
+--Sena
