@@ -2,117 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FEAC617CCB
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 13:39:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E9F617BC9
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 12:41:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231290AbiKCMj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 08:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54730 "EHLO
+        id S230353AbiKCLl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 07:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiKCMjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 08:39:05 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46EC7F62
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 05:38:29 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id l11so2793795edb.4
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 05:38:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=2VY7sFA4LK0fSpDvLUr8PlNvYnUkzd8VOGwY5TsOs4g=;
-        b=RK4j9eEBaoOfPvdQtUYIK4NQ683/DcFToP4KLqXWTZxtuhcJ6HC4tmP51FN6l/wbnJ
-         G3C+n+E7ElXJ/M/smxjuvB4TXypnNUOj2HaRNkFho92zYaybKjhoTwXCjaZmcXnk3oks
-         YulFL2fDyPX5vBsJzjDqdvp6iiBcmXpgj1uCA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2VY7sFA4LK0fSpDvLUr8PlNvYnUkzd8VOGwY5TsOs4g=;
-        b=IdXFNOWNQQPZrvD8PtRVrPERCP9YdkDkGg98qJu82y7CUGU3e2DOBo727lWkcWnFMU
-         2jwbnaisz5ddGooShjpjSqBg7MS1U8yETpgs5kmqtlTNVKxsl69gXV3ojLRGibvYFgnC
-         Ejp0DNTCxtugBEYXVQXK1Zekru6fJfJaoF/U3IaUZjD6/Wi/YoL4HyS2pztELIrhv6Jt
-         /NK4JCxhDayaX6cycIKYuCS/JeMas1hx1WAiQXenXpwr2zdwevURNNAwB4FvED6HYjfY
-         PKyk5rEF79AesbG9OYpBReN1CJLzVHpFAY3+GoQVwJuvaBuB5cVRZbrEhNa9rxbYAFdj
-         Mb1g==
-X-Gm-Message-State: ACrzQf38TZ4MpufSStcMrcQbnbbJTxZag7Loj5JtqAXsZtgXfqH+Vd7V
-        s2nXDpQfVARDxQcnNOY/r9OV7Q==
-X-Google-Smtp-Source: AMsMyM4uePu0vqDFZG1pG+eQ5qDjD2TClEJQZRPczZKit6N+gXLNU7Bt6QVhWCRRUR0ICvhav7RUuQ==
-X-Received: by 2002:aa7:d996:0:b0:461:88b8:c581 with SMTP id u22-20020aa7d996000000b0046188b8c581mr29963174eds.111.1667479107738;
-        Thu, 03 Nov 2022 05:38:27 -0700 (PDT)
-Received: from cloudflare.com (79.191.56.44.ipv4.supernova.orange.pl. [79.191.56.44])
-        by smtp.gmail.com with ESMTPSA id x26-20020aa7d39a000000b00463c475684csm458979edq.73.2022.11.03.05.38.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 05:38:27 -0700 (PDT)
-References: <20221102043417.279409-1-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [Patch bpf v2] sock_map: move cancel_work_sync() out of sock lock
-Date:   Thu, 03 Nov 2022 13:37:36 +0100
-In-reply-to: <20221102043417.279409-1-xiyou.wangcong@gmail.com>
-Message-ID: <87eduk43i5.fsf@cloudflare.com>
+        with ESMTP id S230244AbiKCLl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 07:41:57 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECB51263F;
+        Thu,  3 Nov 2022 04:41:56 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N320Y1jcMzmVcl;
+        Thu,  3 Nov 2022 19:41:49 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 3 Nov
+ 2022 19:41:53 +0800
+From:   Lu Wei <luwei32@huawei.com>
+To:     <edumazet@google.com>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <xemul@parallels.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [patch net v4] tcp: prohibit TCP_REPAIR_OPTIONS if data was already sent
+Date:   Thu, 3 Nov 2022 20:46:52 +0800
+Message-ID: <20221103124652.260085-1-luwei32@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 01, 2022 at 09:34 PM -07, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> Stanislav reported a lockdep warning, which is caused by the
-> cancel_work_sync() called inside sock_map_close(), as analyzed
-> below by Jakub:
->
-> psock->work.func = sk_psock_backlog()
->   ACQUIRE psock->work_mutex
->     sk_psock_handle_skb()
->       skb_send_sock()
->         __skb_send_sock()
->           sendpage_unlocked()
->             kernel_sendpage()
->               sock->ops->sendpage = inet_sendpage()
->                 sk->sk_prot->sendpage = tcp_sendpage()
->                   ACQUIRE sk->sk_lock
->                     tcp_sendpage_locked()
->                   RELEASE sk->sk_lock
->   RELEASE psock->work_mutex
->
-> sock_map_close()
->   ACQUIRE sk->sk_lock
->   sk_psock_stop()
->     sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED)
->     cancel_work_sync()
->       __cancel_work_timer()
->         __flush_work()
->           // wait for psock->work to finish
->   RELEASE sk->sk_lock
->
-> We can move the cancel_work_sync() out of the sock lock protection,
-> but still before saved_close() was called.
->
-> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
-> Reported-by: Stanislav Fomichev <sdf@google.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
+If setsockopt with option name of TCP_REPAIR_OPTIONS and opt_code
+of TCPOPT_SACK_PERM is called to enable sack after data is sent
+and dupacks are received , it will trigger a warning in function
+tcp_verify_left_out() as follows:
 
-[...]
+============================================
+WARNING: CPU: 8 PID: 0 at net/ipv4/tcp_input.c:2132
+tcp_timeout_mark_lost+0x154/0x160
+tcp_enter_loss+0x2b/0x290
+tcp_retransmit_timer+0x50b/0x640
+tcp_write_timer_handler+0x1c8/0x340
+tcp_write_timer+0xe5/0x140
+call_timer_fn+0x3a/0x1b0
+__run_timers.part.0+0x1bf/0x2d0
+run_timer_softirq+0x43/0xb0
+__do_softirq+0xfd/0x373
+__irq_exit_rcu+0xf6/0x140
 
-Thanks!
+The warning is caused in the following steps:
+1. a socket named socketA is created
+2. socketA enters repair mode without build a connection
+3. socketA calls connect() and its state is changed to TCP_ESTABLISHED
+   directly
+4. socketA leaves repair mode
+5. socketA calls sendmsg() to send data, packets_out and sack_outs(dup
+   ack receives) increase
+6. socketA enters repair mode again
+7. socketA calls setsockopt with TCPOPT_SACK_PERM to enable sack
+8. retransmit timer expires, it calls tcp_timeout_mark_lost(), lost_out
+   increases
+9. sack_outs + lost_out > packets_out triggers since lost_out and
+   sack_outs increase repeatly
 
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+In function tcp_timeout_mark_lost(), tp->sacked_out will be cleared if
+Step7 not happen and the warning will not be triggered. As suggested by
+Denis and Eric, TCP_REPAIR_OPTIONS should be prohibited if data was
+already sent. So this patch checks tp->segs_out, only TCP_REPAIR_OPTIONS
+can be set only if tp->segs_out is 0.
+
+socket-tcp tests in CRIU has been tested as follows:
+$ sudo ./test/zdtm.py run -t zdtm/static/socket-tcp*  --keep-going \
+       --ignore-taint
+
+socket-tcp* represent all socket-tcp tests in test/zdtm/static/.
+
+Fixes: b139ba4e90dc ("tcp: Repair connection-time negotiated parameters")
+Signed-off-by: Lu Wei <luwei32@huawei.com>
+---
+v4: use tp->bytes_sent instead of tp->segs_out
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index ef14efa1fb70..54836a6b81d6 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3647,7 +3647,7 @@ int do_tcp_setsockopt(struct sock *sk, int level, int optname,
+ 	case TCP_REPAIR_OPTIONS:
+ 		if (!tp->repair)
+ 			err = -EINVAL;
+-		else if (sk->sk_state == TCP_ESTABLISHED)
++		else if (sk->sk_state == TCP_ESTABLISHED && !tp->bytes_sent)
+ 			err = tcp_repair_options_est(sk, optval, optlen);
+ 		else
+ 			err = -EPERM;
+-- 
+2.31.1
+
