@@ -2,103 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 929BB6177AC
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 08:27:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E4561784B
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 09:05:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231340AbiKCH11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 03:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
+        id S231321AbiKCIFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 04:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbiKCH1Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 03:27:24 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3384155BD
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 00:27:24 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id b16so1263280yba.2
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 00:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6ly+G7+lyR2tgEVR1WMOK4EJ7N76yR8l41oUG1sHf9c=;
-        b=HrG2x4rNnb4SGZ4hQdH5OcFnrmKg4dnJ93AURRjRRNhh/t7Y5qGudWyzIHd8YDrtRa
-         DObcY/k3auLnQaAuraUBk82c/Wwpwgm+xk3l17J96W+F+acGu6yV4gei0zhQOC6O1R66
-         jWQaf1lExl1/9VVnmXSbJd4WpqqqIQie3+Sb9B1i/CyD6+momFmz2mYCMI3q094loyli
-         fDWk0RkkWEFNieHjdo73T4VNq71CAzD832G+/goGZxI/efxl9R7TGepZrtRN27fMHIo+
-         ZzcRFBpXAgam+vl+RSjHaefBGv00Mty/1OPE66QJwQdW65lYDVJhg3AsZ3zAOZMB9XAh
-         t/Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6ly+G7+lyR2tgEVR1WMOK4EJ7N76yR8l41oUG1sHf9c=;
-        b=EJ1v9sbO3pPD8Gzgv1XLaocBHa5Oe3Usz4EOsFjIx98R/22t/o50fk649uDExLGLp7
-         rd3SU+K5kHvJfqY5oF7mQtjP22lzNKFaI7eYr3lKAbCQHwzVwHatIVAjDSz2leyr/y3L
-         AfC0aWLy5W80LFzXOPd0hqo+bNuZpsAQ4WqROM3Tid2X7pjdpFM/Z9OTcZRsP7RX7KEY
-         YfGw1m5mO0vg/+eyfiDGAC6lCdZQmIMETWYRPblk920PNGGp9K+PpeD7Q9iODDDYcuNT
-         JQDqXi8+lGfN9u4pYKAAaMM9XWEfHBupAbO7w+xts4PxewlXupueqZe/XQ510KjBoGrx
-         JXqw==
-X-Gm-Message-State: ACrzQf3YljO0QbPngtZIphyWQM3ziMQwHEgKhvHUSy3/8f/crRpaxjZw
-        mjx5QlNgRDleTI2bKrt0GuILIJzhR26UUb2bq6D3kQ==
-X-Google-Smtp-Source: AMsMyM707h3+vIMmk1iKOcN3+xAYZCYrZqaa6FBSFeXjdm/4+xJAoqfaOX6vvY2T22hmyCyRhvlXxzQ+GytACfWctBk=
-X-Received: by 2002:a25:7b42:0:b0:6ca:1d03:2254 with SMTP id
- w63-20020a257b42000000b006ca1d032254mr26098678ybc.584.1667460443279; Thu, 03
- Nov 2022 00:27:23 -0700 (PDT)
+        with ESMTP id S231364AbiKCIFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 04:05:46 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F245FBC;
+        Thu,  3 Nov 2022 01:05:37 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667462735;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=fS4DJahcVA2UhQt/JNGie83+2z6izS1F4W13/rxGNm4=;
+        b=InuQdXLNdJEbwbOizXDL3/qF1pQ/iPdwCCTgkGMGrshmAoKY/UcBvtgSO37qh1NxUaJ5jw
+        iC+bznIjEmrB+mXVxFGnoFnhUbHbKGQ8rWfIkyZQzL+rvnAjTVWrMKskgpKS1zqEvWUagz
+        5MZfU9d3bLS8c4UhhXeN0B7QEGW+ofI=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     kuba@kernel.org
+Cc:     Cai Huoqing <cai.huoqing@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Qiao Ma <mqaio@linux.alibaba.com>,
+        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 1/3] net: hinic: Convert the cmd code from decimal to hex to be more readable
+Date:   Thu,  3 Nov 2022 16:05:09 +0800
+Message-Id: <20221103080525.26885-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-References: <000000000000e9df4305ec7a3fc7@google.com> <0000000000005912d405ec8a329c@google.com>
-In-Reply-To: <0000000000005912d405ec8a329c@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 3 Nov 2022 08:26:47 +0100
-Message-ID: <CANpmjNNwjCWa0TX4CYShB5KrErWEd-z0BgpZTrpofnJNx-MkvA@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in __perf_event_overflow
-To:     syzbot <syzbot+589d998651a580e6135d@syzkaller.appspotmail.com>
-Cc:     acme@kernel.org, alex.williamson@redhat.com,
-        alexander.shishkin@linux.intel.com, bpf@vger.kernel.org,
-        cohuck@redhat.com, dvyukov@google.com, jgg@ziepe.ca,
-        jolsa@kernel.org, kevin.tian@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, peterz@infradead.org,
-        shameerali.kolothum.thodi@huawei.com,
-        syzkaller-bugs@googlegroups.com, yishaih@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,UPPERCASE_50_75 autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Nov 2022 at 06:26, syzbot
-<syzbot+589d998651a580e6135d@syzkaller.appspotmail.com> wrote:
->
-> syzbot has bisected this issue to:
->
-> commit c1d050b0d169fd60c8acef157db53bd4e3141799
-> Author: Yishai Hadas <yishaih@nvidia.com>
-> Date:   Thu Sep 8 18:34:45 2022 +0000
->
->     vfio/mlx5: Create and destroy page tracker object
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=136eb2da880000
-> start commit:   88619e77b33d net: stmmac: rk3588: Allow multiple gmac cont..
-> git tree:       bpf
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=10eeb2da880000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=176eb2da880000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a66c6c673fb555e8
-> dashboard link: https://syzkaller.appspot.com/bug?extid=589d998651a580e6135d
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11eabcea880000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f7e632880000
->
-> Reported-by: syzbot+589d998651a580e6135d@syzkaller.appspotmail.com
-> Fixes: c1d050b0d169 ("vfio/mlx5: Create and destroy page tracker object")
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+The print cmd code is in hex, so using hex cmd code intead of
+decimal is easy to check the value with print info.
 
-The bisection is wrong - see
-https://lore.kernel.org/all/20221031093513.3032814-1-elver@google.com/
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+v1->v2:
+	1.Add net-next prefix.
+	The comments link: https://lore.kernel.org/lkml/20221027110241.0340abdf@kernel.org/
+v2->v3:
+	1.Merge PATCH 3/3 to this series.
+v3->v4:
+	1.Revert the empty lines.
+	The comments link: https://lore.kernel.org/lkml/20221102203640.1bda5d74@kernel.org/
+
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.h  | 104 +++++++++---------
+ 1 file changed, 52 insertions(+), 52 deletions(-)
+
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+index d2d89b0a5ef0..6dae116a11f8 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+@@ -46,104 +46,104 @@ enum hinic_port_cmd {
+ 	HINIC_PORT_CMD_VF_REGISTER = 0x0,
+ 	HINIC_PORT_CMD_VF_UNREGISTER = 0x1,
+ 
+-	HINIC_PORT_CMD_CHANGE_MTU       = 2,
++	HINIC_PORT_CMD_CHANGE_MTU = 0x2,
+ 
+-	HINIC_PORT_CMD_ADD_VLAN         = 3,
+-	HINIC_PORT_CMD_DEL_VLAN         = 4,
++	HINIC_PORT_CMD_ADD_VLAN = 0x3,
++	HINIC_PORT_CMD_DEL_VLAN = 0x4,
+ 
+-	HINIC_PORT_CMD_SET_PFC		= 5,
++	HINIC_PORT_CMD_SET_PFC = 0x5,
+ 
+-	HINIC_PORT_CMD_SET_MAC          = 9,
+-	HINIC_PORT_CMD_GET_MAC          = 10,
+-	HINIC_PORT_CMD_DEL_MAC          = 11,
++	HINIC_PORT_CMD_SET_MAC = 0x9,
++	HINIC_PORT_CMD_GET_MAC = 0xA,
++	HINIC_PORT_CMD_DEL_MAC = 0xB,
+ 
+-	HINIC_PORT_CMD_SET_RX_MODE      = 12,
++	HINIC_PORT_CMD_SET_RX_MODE = 0xC,
+ 
+-	HINIC_PORT_CMD_GET_PAUSE_INFO	= 20,
+-	HINIC_PORT_CMD_SET_PAUSE_INFO	= 21,
++	HINIC_PORT_CMD_GET_PAUSE_INFO = 0x14,
++	HINIC_PORT_CMD_SET_PAUSE_INFO = 0x15,
+ 
+-	HINIC_PORT_CMD_GET_LINK_STATE   = 24,
++	HINIC_PORT_CMD_GET_LINK_STATE = 0x18,
+ 
+-	HINIC_PORT_CMD_SET_LRO		= 25,
++	HINIC_PORT_CMD_SET_LRO = 0x19,
+ 
+-	HINIC_PORT_CMD_SET_RX_CSUM	= 26,
++	HINIC_PORT_CMD_SET_RX_CSUM = 0x1A,
+ 
+-	HINIC_PORT_CMD_SET_RX_VLAN_OFFLOAD = 27,
++	HINIC_PORT_CMD_SET_RX_VLAN_OFFLOAD = 0x1B,
+ 
+-	HINIC_PORT_CMD_GET_PORT_STATISTICS = 28,
++	HINIC_PORT_CMD_GET_PORT_STATISTICS = 0x1C,
+ 
+-	HINIC_PORT_CMD_CLEAR_PORT_STATISTICS = 29,
++	HINIC_PORT_CMD_CLEAR_PORT_STATISTICS = 0x1D,
+ 
+-	HINIC_PORT_CMD_GET_VPORT_STAT	= 30,
++	HINIC_PORT_CMD_GET_VPORT_STAT = 0x1E,
+ 
+-	HINIC_PORT_CMD_CLEAN_VPORT_STAT	= 31,
++	HINIC_PORT_CMD_CLEAN_VPORT_STAT	= 0x1F,
+ 
+-	HINIC_PORT_CMD_GET_RSS_TEMPLATE_INDIR_TBL = 37,
++	HINIC_PORT_CMD_GET_RSS_TEMPLATE_INDIR_TBL = 0x25,
+ 
+-	HINIC_PORT_CMD_SET_PORT_STATE   = 41,
++	HINIC_PORT_CMD_SET_PORT_STATE = 0x29,
+ 
+-	HINIC_PORT_CMD_SET_RSS_TEMPLATE_TBL = 43,
++	HINIC_PORT_CMD_SET_RSS_TEMPLATE_TBL = 0x2B,
+ 
+-	HINIC_PORT_CMD_GET_RSS_TEMPLATE_TBL = 44,
++	HINIC_PORT_CMD_GET_RSS_TEMPLATE_TBL = 0x2C,
+ 
+-	HINIC_PORT_CMD_SET_RSS_HASH_ENGINE = 45,
++	HINIC_PORT_CMD_SET_RSS_HASH_ENGINE = 0x2D,
+ 
+-	HINIC_PORT_CMD_GET_RSS_HASH_ENGINE = 46,
++	HINIC_PORT_CMD_GET_RSS_HASH_ENGINE = 0x2E,
+ 
+-	HINIC_PORT_CMD_GET_RSS_CTX_TBL  = 47,
++	HINIC_PORT_CMD_GET_RSS_CTX_TBL = 0x2F,
+ 
+-	HINIC_PORT_CMD_SET_RSS_CTX_TBL  = 48,
++	HINIC_PORT_CMD_SET_RSS_CTX_TBL = 0x30,
+ 
+-	HINIC_PORT_CMD_RSS_TEMP_MGR	= 49,
++	HINIC_PORT_CMD_RSS_TEMP_MGR	= 0x31,
+ 
+-	HINIC_PORT_CMD_RD_LINE_TBL	= 57,
++	HINIC_PORT_CMD_RD_LINE_TBL = 0x39,
+ 
+-	HINIC_PORT_CMD_RSS_CFG		= 66,
++	HINIC_PORT_CMD_RSS_CFG = 0x42,
+ 
+-	HINIC_PORT_CMD_FWCTXT_INIT      = 69,
++	HINIC_PORT_CMD_FWCTXT_INIT = 0x45,
+ 
+-	HINIC_PORT_CMD_GET_LOOPBACK_MODE = 72,
+-	HINIC_PORT_CMD_SET_LOOPBACK_MODE,
++	HINIC_PORT_CMD_GET_LOOPBACK_MODE = 0x48,
++	HINIC_PORT_CMD_SET_LOOPBACK_MODE = 0x49,
+ 
+-	HINIC_PORT_CMD_ENABLE_SPOOFCHK = 78,
++	HINIC_PORT_CMD_ENABLE_SPOOFCHK = 0x4E,
+ 
+-	HINIC_PORT_CMD_GET_MGMT_VERSION = 88,
++	HINIC_PORT_CMD_GET_MGMT_VERSION = 0x58,
+ 
+-	HINIC_PORT_CMD_SET_FUNC_STATE   = 93,
++	HINIC_PORT_CMD_SET_FUNC_STATE = 0x5D,
+ 
+-	HINIC_PORT_CMD_GET_GLOBAL_QPN   = 102,
++	HINIC_PORT_CMD_GET_GLOBAL_QPN = 0x66,
+ 
+-	HINIC_PORT_CMD_SET_VF_RATE = 105,
++	HINIC_PORT_CMD_SET_VF_RATE = 0x69,
+ 
+-	HINIC_PORT_CMD_SET_VF_VLAN	= 106,
++	HINIC_PORT_CMD_SET_VF_VLAN = 0x6A,
+ 
+-	HINIC_PORT_CMD_CLR_VF_VLAN,
++	HINIC_PORT_CMD_CLR_VF_VLAN = 0x6B,
+ 
+-	HINIC_PORT_CMD_SET_TSO          = 112,
++	HINIC_PORT_CMD_SET_TSO = 0x70,
+ 
+-	HINIC_PORT_CMD_UPDATE_FW	= 114,
++	HINIC_PORT_CMD_UPDATE_FW = 0x72,
+ 
+-	HINIC_PORT_CMD_SET_RQ_IQ_MAP	= 115,
++	HINIC_PORT_CMD_SET_RQ_IQ_MAP = 0x73,
+ 
+-	HINIC_PORT_CMD_LINK_STATUS_REPORT = 160,
++	HINIC_PORT_CMD_LINK_STATUS_REPORT = 0xA0,
+ 
+-	HINIC_PORT_CMD_UPDATE_MAC = 164,
++	HINIC_PORT_CMD_UPDATE_MAC = 0xA4,
+ 
+-	HINIC_PORT_CMD_GET_CAP          = 170,
++	HINIC_PORT_CMD_GET_CAP = 0xAA,
+ 
+-	HINIC_PORT_CMD_GET_LINK_MODE	= 217,
++	HINIC_PORT_CMD_GET_LINK_MODE = 0xD9,
+ 
+-	HINIC_PORT_CMD_SET_SPEED	= 218,
++	HINIC_PORT_CMD_SET_SPEED = 0xDA,
+ 
+-	HINIC_PORT_CMD_SET_AUTONEG	= 219,
++	HINIC_PORT_CMD_SET_AUTONEG = 0xDB,
+ 
+-	HINIC_PORT_CMD_GET_STD_SFP_INFO = 240,
++	HINIC_PORT_CMD_GET_STD_SFP_INFO = 0xF0,
+ 
+-	HINIC_PORT_CMD_SET_LRO_TIMER	= 244,
++	HINIC_PORT_CMD_SET_LRO_TIMER = 0xF4,
+ 
+-	HINIC_PORT_CMD_SET_VF_MAX_MIN_RATE = 249,
++	HINIC_PORT_CMD_SET_VF_MAX_MIN_RATE = 0xF9,
+ 
+-	HINIC_PORT_CMD_GET_SFP_ABS	= 251,
++	HINIC_PORT_CMD_GET_SFP_ABS = 0xFB,
+ };
+ 
+ /* cmd of mgmt CPU message for HILINK module */
+-- 
+2.25.1
+
