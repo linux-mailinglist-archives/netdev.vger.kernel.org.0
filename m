@@ -2,895 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C7F7618A2D
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7182618A32
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbiKCVFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 17:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
+        id S231174AbiKCVHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 17:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbiKCVFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:05:34 -0400
-Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5E026E0
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 14:05:33 -0700 (PDT)
-Received: by dev0134.prn3.facebook.com (Postfix, from userid 425415)
-        id 5AA52C4F6B9; Thu,  3 Nov 2022 13:40:23 -0700 (PDT)
-From:   Stefan Roesch <shr@devkernel.io>
-To:     kernel-team@fb.com
-Cc:     shr@devkernel.io, axboe@kernel.dk, olivier@trillion01.com,
-        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org
-Subject: [RFC PATCH v1 3/3] liburing: add test programs for napi busy poll
-Date:   Thu,  3 Nov 2022 13:40:17 -0700
-Message-Id: <20221103204017.670757-4-shr@devkernel.io>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221103204017.670757-1-shr@devkernel.io>
-References: <20221103204017.670757-1-shr@devkernel.io>
+        with ESMTP id S229575AbiKCVHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:07:08 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140053.outbound.protection.outlook.com [40.107.14.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E436B4AC;
+        Thu,  3 Nov 2022 14:07:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jllPExm3RcVNhY6b9a5idDdx8wYwmCh4uSX41MXRvEwmYvxU28p8cqQIhSqqULHaJg8KMRBpnSLRiRTgevEoGSTyOPIgKjrapjpXKhQX7ml36JdaHdDXB6wVJBjBUQvhu/YR6G7TcVEzuC0sT2k3Ywhu+RoVknWohFhhnjhSgJRKXFQsnVwDjWfTb17Y+XbuHdWPtq9Ts73VNidw6x/W1T76HnR0RjZO6eGoj93CSaGmqQjwy+fsVu3Js+ipUrnBmQazvKwoBikJkiT6RuypYIYjK9r4MXcTYWc4H825K20MdYjy9ywo2VN2w+GuLUHMykP4Y19SS2+gaN+13VtqdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/aWFpvKdRzDQ6VfdGXlua6p5sRcVU+x/NlwHCOb99dY=;
+ b=ZlMLwSnZN9R3AKW4e/jfneaqqQ1+VBDUB3cThyZQRs4Uv0cHj+sBaKg7EUtplI98uJ0lVr+zwFmIGGoEd1T8PbHgKTtTi9A4fg44sICH08jr0Ivvp1kImkLipwSAICkLDmcGXaQ6ZZnwou6mkIVbsRrCTmSjxlPsMt0DUgGkIJJ+3IxRWL68vjAIa3R3nnXAu/j5kdkbYb5CXWQX8hGEk4IOF9ZIQPickZrVG9d/HYOnasOTrBoBNh184KO1qWJwGAfdzbHv3mhj6s4atb3Wal5Vr90Bxm4h+RYwyS1eS1frXe/NTOafy2Gq5GTR04ug2Unu+DBqPv7EktKQuBVABw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/aWFpvKdRzDQ6VfdGXlua6p5sRcVU+x/NlwHCOb99dY=;
+ b=w9P+xS+9GrOSx4vqAjE0TTvPlyUyS1xaG5wROkpZCJ0YrGGg0bnrzV/uxdvltJnUitlPZhvI+PU8ttv5YfKsK4Oz1HqgtUaF6yE6OQ57/DYVtcGe42+nsZjrX6YvCftiAmx8anSIC36AN0szB0PBv0z52lcecsJkPcSSN7/24u4W45+sc83gEhxIqshwjO5v1Wahjku5gX/6GWscQut9PIKLOtqORES9V0u3kpD1wVJc1r/2fbwwP3cBKTRBXb+3JrPqsm9VKGP7vFGBHhyQr9/ilGEGVr+64zaGM6/H/5Ara4vxS16mRW6/mTdeovZU5Sh6Ot9XQWcKqm7dx2Hjqg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by PAXPR03MB7746.eurprd03.prod.outlook.com (2603:10a6:102:208::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Thu, 3 Nov
+ 2022 21:07:03 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
+ 21:07:02 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH net-next v2 00/11] net: pcs: Add support for devices probed in the "usual" manner
+Date:   Thu,  3 Nov 2022 17:06:39 -0400
+Message-Id: <20221103210650.2325784-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BLAP220CA0002.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:208:32c::7) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
-        SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP autolearn=no autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB7746:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8aab1b63-6efb-4238-570d-08dabddf5add
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 09btDTIzlLeBlMDKz4YE8ZGXnp9YQ6nt3MdGzEn0ZvI1CA0jJ9VkODaQZ1ykVJZiA5llNBtdUuyRdDxToZI6WwU6IBIB0E838XXMxYZWEcW3z1oBqWNSU/tVRBjpBQAULcuTDpWGYcUwOWeoR8BD2lhqqFljkvZ1eNZFuC9XIUwjLb0rcm6S0HGXWwGSA7rWT2Mu/bpco8v952mhT5VYbVvufCw0PvSoHmQ7Lqm0ABvNhVWDtME05bKQwY82X5ct4Pz4Ep/tirAsOQMhA67dr4YX92n2lXFdA8D6lpq1RwVQ73XWzwBRpILbZPcVXNW8/7yjsAtSCjptCB/ufE12NJiWs3VFtE32H9vz4r6NohwAyViQ5Th/oKDTBClOSDPMCsV1kYAvsQPs21h0TUR5NSSMYfhNvuB/Xt+kMQEc0bCkl1IaarSjYYHkN5zLnwCnD5m+QzkPqgCUYl3dWJrZ6DPR6F7ScgPaUK18eY29I3cUeLKjiu7SsJDnlALYH1XONOGjfxsJw/X9qoMJfSToa5WFO+JmEENsMEzlg3K6jv2r57I6k+4/PTsSy8E0a9aRnkRKHSLyegiA5E47cF7NRTODnvvUVvn27uhBoaxhWVIg8nAI0lcYlGki/MoRq4aNOFG9HAoLlPX8o0FrFEZEFryb9rcP1VqLfFnSeT+Iw7hu1+30nJ8x4E0Oh5Eb7LGs/z1WvEI31uhy8DfzIqlPTfYCT1wKhI6GeP/EFV5xBuLJveWV8p5jbFLzAn1pOvZVpW9L6Ux2ChIKF5H249MdFg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(7406005)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FQ3I6ZLZqIYQ9WDB6qjiaQIj8w0wyzcVJPOZ0LcMyjgtGPqKPOrdMK0XGZHi?=
+ =?us-ascii?Q?gHWvxJxJIWmhPe+woqvR4ByeXVFAbW6rirnp5PJJ/pIPxbmxwvehUC0tVHxV?=
+ =?us-ascii?Q?pXJjfctBfYZ9sXnOFM8P31pjiEyETZ0C4gn5SLqjyeJy1+C4wRdWzfofprb5?=
+ =?us-ascii?Q?W8r66UnTbb1m6JPR6J2f3I6mR01bS4uyguVFOoVG8rHoc+PA0BmQBgM5e5sW?=
+ =?us-ascii?Q?AEGYHOBk3Lyk9Xld/Gm8APZD7qxgeQAX5IgQbmhyR4kqCqGVq3QbRHwep7D9?=
+ =?us-ascii?Q?kqntRLdCZLPBjfRD6ynKz7jz+T0HEZKTX+NK/6VI55cXTl/Y1tIpcnC0KMOw?=
+ =?us-ascii?Q?MgcyQIbn6VoOh6UWihX0PQIzfAyKAGEEsbCxpO2XJ5s6rhM8bd8i2m6RGfbD?=
+ =?us-ascii?Q?FWbRGxPizybh5zVG+exT3SGcGrdkZF7FCUGJr7kYQ15ayAsW/R/wqO9QXVqZ?=
+ =?us-ascii?Q?XwCVBdTRXB35btFnBWS/ioNmtWHqlpv2r1V0/lt+ZB+5t/iuSi0ZdSy0F+4C?=
+ =?us-ascii?Q?VlVWby4KvinSsVeQ5gQV5VTiyE2exRsT9Gpf1/Ftig7SaZk0yni6+Q9jULRT?=
+ =?us-ascii?Q?5L/EXlGW38uI6kZmEdbJl+DvhiUuzsGlaL9VzJHeCwSwlQDzVIeRZjTL2+Om?=
+ =?us-ascii?Q?4OQ538qe4WNh35Xwd5nODq9TnuJgiOteGotXghZGbiWVihZmzQb2ay0++zJN?=
+ =?us-ascii?Q?+w5MwA1qJjE7fYSSPjKda1L0NHzKj4HrvDBAgX3x/aEYJqDDMEibMLqEbP1w?=
+ =?us-ascii?Q?G4XEGCOpUyaEsU2Uzp4crfXD0dWTdpjEGhSgjF0BK7USiMEz1L0pvy2KVFhN?=
+ =?us-ascii?Q?zxHyTkZMt+c6NasgUc/9i2JLY9TvMIm6xlOChqJpXmWXzlDGZESaLhzYYX20?=
+ =?us-ascii?Q?eSVOVRPBnPO3m6/dtI+T/KB84aLvTyHyWs2fi0CbX/o/xSekDpyCktQ2WxWS?=
+ =?us-ascii?Q?4xcRd91wpstYYUpmX7B0ogkNEJ/ftGC6HRSfuu7LpyHVgbo+iLzW4KsYZ3e+?=
+ =?us-ascii?Q?99BV2iTxYqq9zZD6OgD1myqjTKIBfHKkAEcBcHIa6iRIyeWFb7G/OTo+vaNk?=
+ =?us-ascii?Q?kfF5j3fTvmKAfvvUVR822Gv45shYIDb9TYmkFASk/wWXKcbrvA5q0/Gehb3r?=
+ =?us-ascii?Q?uoZuYjESrUP1dYQvLDnrNIf//EhVNVNRrT3/Lb8FHszPifizQuwYxZ5ZLTui?=
+ =?us-ascii?Q?1eYezyZJjqzKfZ0ViqlKbC3Q8oTSZylZax0KGKkvmJ/AKAcNNkDwv7xq71J/?=
+ =?us-ascii?Q?rqzuMT9upcktc4RZGvq/w8DcND6OTT+MdMewqyQEyqyt+jXE4I8H+6w05KUO?=
+ =?us-ascii?Q?TFJ8FjpXCq2xfSjIO9l3c2lfm25TVI1DmniOFTHDRgP4aVVdT8WVy3YyyXWb?=
+ =?us-ascii?Q?HaDaKMkeu0uVWwGNTDYdH64TM6q38kSBKE5KMdd8HN+Dc5CdrNfTyvNQI5lT?=
+ =?us-ascii?Q?ZK5oLSxE/meP/akDVo5AO6BusopklNIutg/vh8bi/r3AqOC2rDm9b9shHoCC?=
+ =?us-ascii?Q?KRMKFl0qpf2CEnv6+u3SEpZ7yC0jq+H2++f1pYjKgpqZQCFsJu1ATg2HPwoQ?=
+ =?us-ascii?Q?OGaP0LM/mMWfua5Fi78xhJ5hhr11YyazvIo0APDXDJ+KiwTgmmMCsMJh22ea?=
+ =?us-ascii?Q?Ng=3D=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8aab1b63-6efb-4238-570d-08dabddf5add
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:02.8189
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8VBecs0aoIO1LN7Yqo1ZHJ75wpIS78/JRfimgIDzCn/WuCg4s1V6hI0XWs2Xg2f+F9vTJVzMFG5gyzGiT6BAbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7746
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds two test programs to test the napi busy poll functionality. It
-consists of a client program and a server program. To get a napi id, the
-client and the server program need to be run on different hosts.
+For a long time, PCSs have been tightly coupled with their MACs. For
+this reason, the MAC creates the "phy" or mdio device, and then passes
+it to the PCS to initialize. This has a few disadvantages:
 
-To test the napi busy poll timeout, the -t needs to be specified. A
-reasonable value for the busy poll timeout is 100. By specifying the
-busy poll timeout on the server and the client the best results are
-accomplished.
+- Each MAC must re-implement the same steps to look up/create a PCS
+- The PCS cannot use functions tied to device lifetime, such as devm_*.
+- Generally, the PCS does not have easy access to its device tree node
 
-Signed-off-by: Stefan Roesch <shr@devkernel.io>
----
- test/Makefile                |   2 +
- test/napi-busy-poll-client.c | 419 +++++++++++++++++++++++++++++++++++
- test/napi-busy-poll-server.c | 371 +++++++++++++++++++++++++++++++
- 3 files changed, 792 insertions(+)
- create mode 100644 test/napi-busy-poll-client.c
- create mode 100644 test/napi-busy-poll-server.c
+This series adds a PCS subsystem which MDIO drivers can use to register
+PCSs. It then converts the Lynx PCS library to use this subsystem.
 
-diff --git a/test/Makefile b/test/Makefile
-index e14eb51..3a54571 100644
---- a/test/Makefile
-+++ b/test/Makefile
-@@ -104,6 +104,8 @@ test_srcs :=3D \
- 	mkdir.c \
- 	msg-ring.c \
- 	multicqes_drain.c \
-+	napi-busy-poll-client.c \
-+	napi-busy-poll-server.c \
- 	nolibc.c \
- 	nop-all-sizes.c \
- 	nop.c \
-diff --git a/test/napi-busy-poll-client.c b/test/napi-busy-poll-client.c
-new file mode 100644
-index 0000000..d116469
---- /dev/null
-+++ b/test/napi-busy-poll-client.c
-@@ -0,0 +1,419 @@
-+#include <ctype.h>
-+#include <errno.h>
-+#include <float.h>
-+#include <getopt.h>
-+#include <liburing.h>
-+#include <math.h>
-+#include <sched.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <time.h>
-+#include <unistd.h>
-+#include <arpa/inet.h>
-+#include <netdb.h>
-+#include <netinet/in.h>
-+
-+#define MAXBUFLEN 100
-+#define PORTNOLEN 10
-+#define ADDRLEN   80
-+
-+#define printable(ch) (isprint((unsigned char)ch) ? ch : '#')
-+
-+enum {
-+	IOURING_RECV,
-+	IOURING_SEND,
-+	IOURING_RECVMSG,
-+	IOURING_SENDMSG
-+};
-+
-+struct ctx
-+{
-+	struct io_uring ring;
-+	struct sockaddr_in6 saddr;
-+
-+	int sockfd;
-+	int buffer_len;
-+	int num_pings;
-+	bool napi_check;
-+
-+	union {
-+		char buffer[MAXBUFLEN];
-+		struct timespec ts;
-+	};
-+
-+	int rtt_index;
-+	double *rtt;
-+} ctx;
-+
-+struct options
-+{
-+	int  num_pings;
-+	int  timeout;
-+	bool sq_poll;
-+	bool busy_loop;
-+	char port[PORTNOLEN];
-+	char addr[ADDRLEN];
-+} options;
-+
-+struct option longopts[] =3D
-+{
-+        {"address"  , 1, NULL, 'a'},
-+        {"busy"     , 0, NULL, 'b'},
-+        {"help"     , 0, NULL, 'h'},
-+        {"num_pings", 1, NULL, 'n'},
-+        {"port"     , 1, NULL, 'p'},
-+        {"sqpoll"   , 0, NULL, 's'},
-+	{"timeout"  , 1, NULL, 't'},
-+        {NULL       , 0, NULL,  0 }
-+};
-+
-+void printUsage(const char *name)
-+{
-+	fprintf(stderr,
-+	"Usage: %s [-l|--listen] [-a|--address ip_address] [-p|--port port-no] =
-[-s|--sqpoll]"
-+	" [-b|--busy] [-n|--num pings] [-t|--timeout busy-poll-timeout] [-h|--h=
-elp]\n"
-+	"--address\n"
-+	"-a        : remote or local ipv6 address\n"
-+	"--busy\n"
-+	"-b        : busy poll io_uring instead of blocking.\n"
-+	"--num_pings\n"
-+	"-n        : number of pings\n"
-+	"--port\n"
-+	"-p        : port\n"
-+	"--sqpoll\n"
-+	"-s        : Configure io_uring to use SQPOLL thread\n"
-+	"--timeout\n"
-+	"-t        : Configure NAPI busy poll timeoutn"
-+	"--help\n"
-+	"-h        : Display this usage message\n\n",
-+	name);
-+}
-+
-+void printError(const char *msg, int opt)
-+{
-+	if (msg && opt)
-+		fprintf(stderr, "%s (-%c)\n", msg, printable(opt));
-+}
-+
-+void setProcessScheduler(void)
-+{
-+	struct sched_param param;
-+
-+	param.sched_priority =3D sched_get_priority_max(SCHED_FIFO);
-+	if (sched_setscheduler(0, SCHED_FIFO, &param) < 0)
-+		fprintf(stderr, "sched_setscheduler() failed: (%d) %s\n",
-+			errno, strerror(errno));
-+}
-+
-+double diffTimespec(const struct timespec *time1, const struct timespec =
-*time0)
-+{
-+	return (time1->tv_sec - time0->tv_sec)
-+		+ (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
-+}
-+
-+void *encodeUserData(char type, int fd)
-+{
-+	return (void *)((uint32_t)fd | ((__u64)type << 56));
-+}
-+
-+void decodeUserData(uint64_t data, char *type, int *fd)
-+{
-+	*type =3D data >> 56;
-+	*fd   =3D data & 0xffffffffU;
-+}
-+
-+const char *opTypeToStr(char type)
-+{
-+	const char *res;
-+
-+	switch (type) {
-+	case IOURING_RECV:
-+		res =3D "IOURING_RECV";
-+		break;
-+	case IOURING_SEND:
-+		res =3D "IOURING_SEND";
-+		break;
-+	case IOURING_RECVMSG:
-+		res =3D "IOURING_RECVMSG";
-+		break;
-+	case IOURING_SENDMSG:
-+		res =3D "IOURING_SENDMSG";
-+		break;
-+	default:
-+		res =3D "Unknown";
-+	}
-+
-+	return res;
-+}
-+
-+void reportNapi(struct ctx *ctx)
-+{
-+	unsigned int napi_id =3D 0;
-+	socklen_t len =3D sizeof(napi_id);
-+
-+	getsockopt(ctx->sockfd, SOL_SOCKET, SO_INCOMING_NAPI_ID, &napi_id, &len=
-);
-+	if (napi_id)
-+		printf(" napi id: %d\n", napi_id);
-+	else
-+		printf(" unassigned napi id\n");
-+
-+	ctx->napi_check =3D true;
-+}
-+
-+void sendPing(struct ctx *ctx)
-+{
-+	struct io_uring_sqe *sqe =3D io_uring_get_sqe(&ctx->ring);
-+
-+	clock_gettime(CLOCK_REALTIME, (struct timespec *)ctx->buffer);
-+
-+	io_uring_prep_send(sqe, ctx->sockfd, ctx->buffer, sizeof(struct timespe=
-c), 0);
-+	io_uring_sqe_set_data(sqe, encodeUserData(IOURING_SEND, ctx->sockfd));
-+}
-+
-+void receivePing(struct ctx *ctx)
-+{
-+	struct io_uring_sqe *sqe =3D io_uring_get_sqe(&ctx->ring);
-+
-+	io_uring_prep_recv(sqe, ctx->sockfd, ctx->buffer, MAXBUFLEN, 0);
-+	io_uring_sqe_set_data(sqe, encodeUserData(IOURING_RECV, ctx->sockfd));
-+}
-+
-+void recordRTT(struct ctx *ctx)
-+{
-+    struct timespec startTs =3D ctx->ts;
-+
-+    // Send next ping.
-+    sendPing(ctx);
-+
-+    // Store round-trip time.
-+    ctx->rtt[ctx->rtt_index] =3D diffTimespec(&ctx->ts, &startTs);
-+    ctx->rtt_index++;
-+}
-+
-+void printStats(struct ctx *ctx)
-+{
-+	double minRTT    =3D DBL_MAX;
-+	double maxRTT    =3D 0.0;
-+	double avgRTT    =3D 0.0;
-+	double stddevRTT =3D 0.0;
-+
-+	// Calculate min, max, avg.
-+	for (int i =3D 0; i < ctx->rtt_index; i++) {
-+		if (ctx->rtt[i] < minRTT)
-+			minRTT =3D ctx->rtt[i];
-+		if (ctx->rtt[i] > maxRTT)
-+			maxRTT =3D ctx->rtt[i];
-+
-+        	avgRTT +=3D ctx->rtt[i];
-+	}
-+	avgRTT /=3D ctx->rtt_index;
-+
-+	// Calculate stddev.
-+	for (int i =3D 0; i < ctx->rtt_index; i++)
-+		stddevRTT +=3D fabs(ctx->rtt[i] - avgRTT);
-+	stddevRTT /=3D ctx->rtt_index;
-+
-+	fprintf(stdout, " rtt(us) min/avg/max/mdev =3D %.3f/%.3f/%.3f/%.3f\n",
-+		minRTT * 1000000, avgRTT * 1000000, maxRTT * 1000000, stddevRTT * 1000=
-000);
-+}
-+
-+void completion(struct ctx *ctx, struct io_uring_cqe *cqe)
-+{
-+	char type;
-+	int  fd;
-+	int  res =3D cqe->res;
-+
-+	decodeUserData(cqe->user_data, &type, &fd);
-+	if (res < 0) {
-+		fprintf(stderr, "unexpected %s failure: (%d) %s\n",
-+			opTypeToStr(type), -res, strerror(-res));
-+		abort();
-+	}
-+
-+	switch (type) {
-+	case IOURING_SEND:
-+		receivePing(ctx);
-+		break;
-+	case IOURING_RECV:
-+		if (res !=3D sizeof(struct timespec)) {
-+			fprintf(stderr, "unexpected ping reply len: %d\n", res);
-+			abort();
-+		}
-+
-+		if (!ctx->napi_check) {
-+			reportNapi(ctx);
-+			sendPing(ctx);
-+		} else {
-+			recordRTT(ctx);
-+		}
-+
-+		--ctx->num_pings;
-+		break;
-+
-+	default:
-+		fprintf(stderr, "unexpected %s completion\n",
-+			opTypeToStr(type));
-+		abort();
-+		break;
-+	}
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	struct ctx       ctx;
-+	struct options   opt;
-+	struct __kernel_timespec *tsPtr;
-+	struct __kernel_timespec ts;
-+	struct io_uring_params params;
-+	int flag;   =20
-+
-+	memset(&opt, 0, sizeof(struct options));
-+
-+	// Process flags.
-+	while ((flag =3D getopt_long(argc, argv, ":hsba:n:p:t:", longopts, NULL=
-)) !=3D -1) {
-+		switch (flag) {
-+		case 'a':
-+			strcpy(opt.addr, optarg);
-+			break;
-+		case 'b':
-+			opt.busy_loop =3D true;
-+			break;
-+		case 'h':
-+			printUsage(argv[0]);
-+			exit(0);
-+			break;
-+		case 'n':
-+			opt.num_pings =3D atoi(optarg) + 1;
-+			break;
-+		case 'p':
-+			strcpy(opt.port, optarg);
-+			break;
-+		case 's':
-+                	opt.sq_poll =3D true;
-+			break;
-+		case 't':
-+			opt.timeout =3D atoi(optarg);
-+			break;
-+		case ':':
-+			printError("Missing argument", optopt);
-+			printUsage(argv[0]);
-+			exit(-1);
-+			break;
-+		case '?':
-+			printError("Unrecognized option", optopt);
-+			printUsage(argv[0]);
-+			exit(-1);
-+			break;
-+
-+		default:
-+			fprintf(stderr, "Fatal: Unexpected case in CmdLineProcessor switch()\=
-n");
-+			exit(-1);
-+			break;
-+		}
-+	}
-+
-+	if (strlen(opt.addr) =3D=3D 0) {
-+		fprintf(stderr, "address option is mandatory\n");
-+		printUsage(argv[0]);
-+		exit(-1);
-+	}
-+
-+	ctx.saddr.sin6_port   =3D htons(atoi(opt.port));
-+	ctx.saddr.sin6_family =3D AF_INET6;
-+
-+	if (inet_pton(AF_INET6, opt.addr, &ctx.saddr.sin6_addr) <=3D 0) {
-+        	fprintf(stderr, "inet_pton error for %s\n", optarg);
-+		printUsage(argv[0]);
-+		exit(-1);
-+        }
-+
-+	// Connect to server.
-+	fprintf(stdout, "Connecting to %s... (port=3D%s) to send %d pings\n", o=
-pt.addr, opt.port, opt.num_pings - 1);
-+
-+	if ((ctx.sockfd =3D socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
-+        	fprintf(stderr, "socket() failed: (%d) %s\n", errno, strerror(e=
-rrno));
-+        	exit(-1);
-+	}
-+
-+	if (connect(ctx.sockfd, (struct sockaddr *)&ctx.saddr, sizeof(struct so=
-ckaddr_in6)) < 0) {
-+		fprintf(stderr, "connect() failed: (%d) %s\n", errno, strerror(errno))=
-;
-+		exit(-1);
-+	}
-+
-+	// Setup ring.
-+	memset(&params, 0, sizeof(params));
-+	memset(&ts, 0, sizeof(ts));
-+
-+	if (opt.sq_poll) {
-+		params.flags =3D IORING_SETUP_SQPOLL;
-+		params.sq_thread_idle =3D 50;
-+	}
-+
-+	if (io_uring_queue_init_params(1024, &ctx.ring, &params) < 0) {
-+		fprintf(stderr, "io_uring_queue_init_params() failed: (%d) %s\n",
-+			errno, strerror(errno));
-+		return -1;
-+	}
-+
-+	if (opt.timeout)
-+		io_uring_register_busy_poll_timeout(&ctx.ring, opt.timeout);
-+
-+	if (opt.busy_loop)
-+		tsPtr =3D &ts;
-+	else
-+		tsPtr =3D NULL;
-+
-+
-+	// Use realtime scheduler.
-+	setProcessScheduler();
-+
-+	// Copy payload.
-+	clock_gettime(CLOCK_REALTIME, &ctx.ts);
-+
-+	// Setup context.
-+	ctx.napi_check =3D false;
-+	ctx.buffer_len =3D sizeof(struct timespec);
-+	ctx.num_pings  =3D opt.num_pings;
-+
-+	ctx.rtt_index =3D 0;
-+	ctx.rtt =3D (double *)malloc(sizeof(double) * opt.num_pings);
-+	if (!ctx.rtt) {
-+		fprintf(stderr, "Cannot allocate results array\n");
-+		exit(-1);
-+	}
-+
-+	// Send initial message to get napi id.
-+	sendPing(&ctx);
-+
-+        while (ctx.num_pings !=3D 0) {
-+		int res;
-+		unsigned num_completed =3D 0;
-+		unsigned head;
-+		struct io_uring_cqe *cqe;
-+
-+		do {
-+			res =3D io_uring_submit_and_wait_timeout(&ctx.ring, &cqe, 1, tsPtr, N=
-ULL);
-+		}
-+		while (res < 0 && errno =3D=3D ETIME);
-+
-+		io_uring_for_each_cqe(&ctx.ring, head, cqe) {
-+			++num_completed;
-+			completion(&ctx, cqe);
-+		}
-+
-+		if (num_completed)
-+			io_uring_cq_advance(&ctx.ring, num_completed);
-+	}
-+
-+	printStats(&ctx);
-+	free(ctx.rtt);
-+	io_uring_queue_exit(&ctx.ring);
-+
-+	// Clean up.
-+	close(ctx.sockfd);
-+
-+	return 0;
-+}
-diff --git a/test/napi-busy-poll-server.c b/test/napi-busy-poll-server.c
-new file mode 100644
-index 0000000..2880f64
---- /dev/null
-+++ b/test/napi-busy-poll-server.c
-@@ -0,0 +1,371 @@
-+#include <ctype.h>
-+#include <errno.h>
-+#include <getopt.h>
-+#include <liburing.h>
-+#include <math.h>
-+#include <sched.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <time.h>
-+#include <unistd.h>
-+#include <arpa/inet.h>
-+#include <netdb.h>
-+#include <netinet/in.h>
-+
-+#define MAXBUFLEN 100
-+#define PORTNOLEN 10
-+#define ADDRLEN   80
-+
-+#define printable(ch) (isprint((unsigned char)ch) ? ch : '#')
-+
-+enum {
-+	IOURING_RECV,
-+	IOURING_SEND,
-+	IOURING_RECVMSG,
-+	IOURING_SENDMSG
-+};
-+
-+struct ctx
-+{
-+	struct io_uring     ring;
-+	struct sockaddr_in6 saddr;
-+	struct iovec        iov;
-+	struct msghdr       msg;
-+
-+	int sockfd;
-+	int buffer_len;
-+	int num_pings;
-+	bool napi_check;
-+
-+	union {
-+		char buffer[MAXBUFLEN];
-+		struct timespec ts;
-+	};
-+} ctx;
-+
-+struct options
-+{
-+	int  num_pings;
-+	int  timeout;
-+
-+	bool listen;
-+	bool sq_poll;
-+	bool busy_loop;
-+
-+	char port[PORTNOLEN];
-+	char addr[ADDRLEN];
-+} options;
-+
-+struct option longopts[] =3D
-+{
-+        {"address"  , 1, NULL, 'a'},
-+        {"busy"     , 0, NULL, 'b'},
-+        {"help"     , 0, NULL, 'h'},
-+	{"listen"   , 0, NULL, 'l'},
-+        {"num_pings", 1, NULL, 'n'},
-+        {"port"     , 1, NULL, 'p'},
-+        {"sqpoll"   , 0, NULL, 's'},
-+        {"timeout"  , 1, NULL, 't'},
-+        {NULL       , 0, NULL,  0 }
-+};
-+
-+void printUsage(const char *name)
-+{
-+	fprintf(stderr,
-+        "Usage: %s [-l|--listen] [-a|--address ip_address] [-p|--port po=
-rt-no] [-s|--sqpoll]"
-+        " [-b|--busy] [-n|--num pings] [-t|--timeout busy-poll-timeout] =
-[-h|--help]\n"
-+	" --listen\n"
-+	"-l        : Server mode\n"
-+        "--address\n"
-+        "-a        : remote or local ipv6 address\n"
-+        "--busy\n"
-+        "-b        : busy poll io_uring instead of blocking.\n"
-+        "--num_pings\n"
-+        "-n        : number of pings\n"
-+        "--port\n"
-+        "-p        : port\n"
-+        "--sqpoll\n"
-+        "-s        : Configure io_uring to use SQPOLL thread\n"
-+        "--timeout\n"
-+        "-t        : Configure NAPI busy poll timeoutn"
-+        "--help\n"
-+        "-h        : Display this usage message\n\n",
-+	name);
-+}
-+
-+void printError(const char *msg, int opt)
-+{
-+	if (msg && opt)
-+		fprintf(stderr, "%s (-%c)\n", msg, printable(opt));
-+}
-+
-+void setProcessScheduler()
-+{
-+	struct sched_param param;
-+
-+	param.sched_priority =3D sched_get_priority_max(SCHED_FIFO);
-+	if (sched_setscheduler(0, SCHED_FIFO, &param) < 0)
-+		fprintf(stderr, "sched_setscheduler() failed: (%d) %s\n",
-+			errno, strerror(errno));
-+}
-+
-+void *encodeUserData(char type, int fd)
-+{
-+	return (void *)((uint32_t)fd | ((__u64)type << 56));
-+}
-+
-+void decodeUserData(uint64_t data, char *type, int *fd)
-+{
-+	*type =3D data >> 56;
-+	*fd   =3D data & 0xffffffffU;
-+}
-+
-+const char *opTypeToStr(char type)
-+{
-+	const char *res;
-+
-+	switch (type) {
-+	case IOURING_RECV:
-+		res =3D "IOURING_RECV";
-+		break;
-+	case IOURING_SEND:
-+		res =3D "IOURING_SEND";
-+		break;
-+	case IOURING_RECVMSG:
-+		res =3D "IOURING_RECVMSG";
-+		break;
-+	case IOURING_SENDMSG:
-+		res =3D "IOURING_SENDMSG";
-+		break;
-+	default:
-+		res =3D "Unknown";
-+	}
-+
-+	return res;
-+}
-+
-+void reportNapi(struct ctx *ctx)
-+{
-+	unsigned int napi_id =3D 0;
-+	socklen_t len =3D sizeof(napi_id);
-+
-+	getsockopt(ctx->sockfd, SOL_SOCKET, SO_INCOMING_NAPI_ID, &napi_id, &len=
-);
-+	if (napi_id)
-+		printf(" napi id: %d\n", napi_id);
-+	else
-+		printf(" unassigned napi id\n");
-+
-+	ctx->napi_check =3D true;
-+}
-+
-+void sendPing(struct ctx *ctx)
-+{
-+
-+	struct io_uring_sqe *sqe =3D io_uring_get_sqe(&ctx->ring);
-+
-+	io_uring_prep_sendmsg(sqe, ctx->sockfd, &ctx->msg, 0);
-+	io_uring_sqe_set_data(sqe,
-+                          encodeUserData(IOURING_SENDMSG, ctx->sockfd));
-+}
-+
-+void receivePing(struct ctx *ctx)
-+{
-+	bzero(&ctx->msg, sizeof(struct msghdr));
-+	ctx->msg.msg_name    =3D &ctx->saddr;
-+	ctx->msg.msg_namelen =3D sizeof(struct sockaddr_in6);
-+	ctx->iov.iov_base    =3D ctx->buffer;
-+	ctx->iov.iov_len     =3D MAXBUFLEN;
-+	ctx->msg.msg_iov     =3D &ctx->iov;
-+	ctx->msg.msg_iovlen  =3D 1;
-+
-+	struct io_uring_sqe *sqe =3D io_uring_get_sqe(&ctx->ring);
-+	io_uring_prep_recvmsg(sqe, ctx->sockfd, &ctx->msg, 0);
-+	io_uring_sqe_set_data(sqe,
-+		encodeUserData(IOURING_RECVMSG, ctx->sockfd));
-+}
-+
-+void completion(struct ctx *ctx, struct io_uring_cqe *cqe)
-+{
-+	char type;
-+	int  fd;
-+	int  res =3D cqe->res;
-+
-+	decodeUserData(cqe->user_data, &type, &fd);
-+	if (res < 0) {
-+		fprintf(stderr, "unexpected %s failure: (%d) %s\n",
-+			opTypeToStr(type), -res, strerror(-res));
-+		abort();
-+	}
-+
-+	switch (type) {
-+	case IOURING_SENDMSG:
-+		receivePing(ctx);
-+		--ctx->num_pings;
-+		break;
-+	case IOURING_RECVMSG:
-+		ctx->iov.iov_len =3D res;
-+		sendPing(ctx);
-+		if (!ctx->napi_check)
-+			reportNapi(ctx);
-+		break;
-+	default:
-+		fprintf(stderr, "unexpected %s completion\n",
-+			opTypeToStr(type));
-+		abort();
-+		break;
-+	}
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int flag;   =20
-+	struct ctx       ctx;
-+	struct options   opt;
-+	struct __kernel_timespec *tsPtr;
-+	struct __kernel_timespec ts;
-+	struct io_uring_params params;
-+
-+	memset(&opt, 0, sizeof(struct options));
-+
-+	// Process flags.
-+	while ((flag =3D getopt_long(argc, argv, ":lhsba:n:p:t:", longopts, NUL=
-L)) !=3D -1) {
-+		switch (flag) {
-+		case 'a':
-+			strcpy(opt.addr, optarg);
-+			break;
-+		case 'b':
-+			opt.busy_loop =3D true;
-+			break;
-+		case 'h':
-+			printUsage(argv[0]);
-+			exit(0);
-+			break;
-+		case 'l':
-+			opt.listen =3D true;
-+			break;
-+		case 'n':
-+			opt.num_pings =3D atoi(optarg) + 1;
-+			break;
-+		case 'p':
-+			strcpy(opt.port, optarg);
-+			break;
-+		case 's':
-+                	opt.sq_poll =3D true;
-+			break;
-+		case 't':
-+			opt.timeout =3D atoi(optarg);
-+			break;
-+		case ':':
-+			printError("Missing argument", optopt);
-+			printUsage(argv[0]);
-+			exit(-1);
-+			break;
-+		case '?':
-+			printError("Unrecognized option", optopt);
-+			printUsage(argv[0]);
-+			exit(-1);
-+			break;
-+
-+		default:
-+			fprintf(stderr, "Fatal: Unexpected case in CmdLineProcessor switch()\=
-n");
-+			exit(-1);
-+			break;
-+		}
-+	}
-+
-+	if (strlen(opt.addr) =3D=3D 0) {
-+		fprintf(stderr, "address option is mandatory\n");
-+		printUsage(argv[0]);
-+		exit(-1);
-+	}
-+
-+	ctx.saddr.sin6_port   =3D htons(atoi(opt.port));
-+	ctx.saddr.sin6_family =3D AF_INET6;
-+
-+	if (inet_pton(AF_INET6, opt.addr, &ctx.saddr.sin6_addr) <=3D 0) {
-+        	fprintf(stderr, "inet_pton error for %s\n", optarg);
-+		printUsage(argv[0]);
-+		exit(-1);
-+        }
-+
-+	// Connect to server.
-+	fprintf(stdout, "Listening %s : %s...\n", opt.addr, opt.port);
-+
-+	if ((ctx.sockfd =3D socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
-+        	fprintf(stderr, "socket() failed: (%d) %s\n", errno, strerror(e=
-rrno));
-+        	exit(-1);
-+	}
-+
-+	if (bind(ctx.sockfd, (struct sockaddr *)&ctx.saddr, sizeof(struct socka=
-ddr_in6)) < 0) {
-+		fprintf(stderr, "bind() failed: (%d) %s\n", errno, strerror(errno));
-+		exit(-1);
-+	}
-+
-+	// Setup ring.
-+	memset(&params, 0, sizeof(params));
-+	memset(&ts, 0, sizeof(ts));
-+
-+	if (opt.sq_poll) {
-+		params.flags =3D IORING_SETUP_SQPOLL;
-+		params.sq_thread_idle =3D 50;
-+	}
-+
-+	if (io_uring_queue_init_params(1024, &ctx.ring, &params) < 0) {
-+		fprintf(stderr, "io_uring_queue_init_params() failed: (%d) %s\n",
-+			errno, strerror(errno));
-+		return -1;
-+	}
-+
-+	if (opt.timeout)
-+		io_uring_register_busy_poll_timeout(&ctx.ring, opt.timeout);
-+
-+	if (opt.busy_loop)
-+		tsPtr =3D &ts;
-+	else
-+		tsPtr =3D NULL;
-+
-+
-+	// Use realtime scheduler.
-+	setProcessScheduler();
-+
-+	// Copy payload.
-+	clock_gettime(CLOCK_REALTIME, &ctx.ts);
-+
-+	// Setup context.
-+	ctx.napi_check =3D false;
-+	ctx.buffer_len =3D sizeof(struct timespec);
-+	ctx.num_pings  =3D opt.num_pings;
-+
-+	// Receive initial message to get napi id.
-+	receivePing(&ctx);
-+
-+        while (ctx.num_pings !=3D 0) {
-+		int res;
-+		unsigned int num_completed =3D 0;
-+		unsigned int head;
-+		struct io_uring_cqe *cqe;
-+
-+		do {
-+			res =3D io_uring_submit_and_wait_timeout(&ctx.ring, &cqe, 1, tsPtr, N=
-ULL);
-+		}
-+		while (res < 0 && errno =3D=3D ETIME);
-+
-+		io_uring_for_each_cqe(&ctx.ring, head, cqe) {
-+			++num_completed;
-+			completion(&ctx, cqe);
-+		}
-+
-+		if (num_completed) {
-+			io_uring_cq_advance(&ctx.ring, num_completed);
-+		}
-+	}
-+
-+	// Clean up.
-+	io_uring_queue_exit(&ctx.ring);
-+	close(ctx.sockfd);
-+
-+	return 0;
-+}
---=20
-2.30.2
+Several (later) patches in this series cannot be applied until a stable
+release has occured containing the dts updates. The DTS updates are
+fairly straightforward (and should not affect existing systems), so I
+encourage them to be applied, even if the rest of the series still needs
+review.
+
+Changes in v2:
+- Add compatibles for qoriq-fman3-0-10g-2/3.dtsi as well
+- Fix export of _pcs_get_by_fwnode
+- Add device links to ensure correct probe/removal ordering
+- Remove module_get/put, since this is ensured by the device_get/put
+- Reorganize some of the control flow for legibility
+- Add basic documentation
+- Call mdio_device_register
+- Squash in lynx parts of "use pcs_get_by_provider to get PCS"
+- Rewrite probe/remove functions to use create/destroy. This lets us
+  convert existing drivers one at a time, instead of needing a flag day.
+- Split off driver conversions into their own commits
+- Reorder and rework commits for clarity
+
+Sean Anderson (10):
+  arm64: dts: Add compatible strings for Lynx PCSs
+  powerpc: dts: Add compatible strings for Lynx PCSs
+  net: pcs: Add subsystem
+  net: pcs: lynx: Convert to an MDIO driver
+  net: enetc: Convert to use PCS subsystem
+  net: dsa: felix: Convert to use PCS driver
+  of: property: Add device link support for PCS
+  [DO NOT MERGE] net: dpaa: Convert to use PCS subsystem
+  [DO NOT MERGE] net: dpaa2: Convert to use PCS subsystem
+  [DO NOT MERGE] net: pcs: lynx: Remove non-device functionality
+
+Vladimir Oltean (1):
+  net: dsa: ocelot: suppress PHY device scanning on the internal MDIO
+    bus
+
+ Documentation/networking/index.rst            |   1 +
+ Documentation/networking/pcs.rst              | 109 ++++++++
+ MAINTAINERS                                   |   2 +
+ .../arm64/boot/dts/freescale/fsl-ls208xa.dtsi |  48 ++--
+ .../arm64/boot/dts/freescale/fsl-lx2160a.dtsi |  54 ++--
+ .../dts/freescale/qoriq-fman3-0-10g-0.dtsi    |   3 +-
+ .../dts/freescale/qoriq-fman3-0-10g-1.dtsi    |   3 +-
+ .../dts/freescale/qoriq-fman3-0-1g-0.dtsi     |   3 +-
+ .../dts/freescale/qoriq-fman3-0-1g-1.dtsi     |   3 +-
+ .../dts/freescale/qoriq-fman3-0-1g-2.dtsi     |   3 +-
+ .../dts/freescale/qoriq-fman3-0-1g-3.dtsi     |   3 +-
+ .../dts/freescale/qoriq-fman3-0-1g-4.dtsi     |   3 +-
+ .../dts/freescale/qoriq-fman3-0-1g-5.dtsi     |   3 +-
+ .../fsl/qoriq-fman3-0-10g-0-best-effort.dtsi  |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi     |   3 +-
+ .../fsl/qoriq-fman3-0-10g-1-best-effort.dtsi  |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi     |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi     |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi     |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi     |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi     |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi      |   3 +-
+ drivers/net/dsa/ocelot/Kconfig                |   2 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |  31 +--
+ drivers/net/dsa/ocelot/seville_vsc9953.c      |  33 +--
+ drivers/net/ethernet/freescale/dpaa2/Kconfig  |   1 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  43 +---
+ drivers/net/ethernet/freescale/enetc/Kconfig  |   1 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |  23 +-
+ .../net/ethernet/freescale/fman/fman_memac.c  | 118 +++------
+ drivers/net/pcs/Kconfig                       |  23 +-
+ drivers/net/pcs/Makefile                      |   2 +
+ drivers/net/pcs/core.c                        | 243 ++++++++++++++++++
+ drivers/net/pcs/pcs-lynx.c                    |  76 ++++--
+ drivers/of/property.c                         |   4 +
+ include/linux/pcs-lynx.h                      |  12 +-
+ include/linux/pcs.h                           | 111 ++++++++
+ include/linux/phylink.h                       |   5 +
+ 49 files changed, 758 insertions(+), 268 deletions(-)
+ create mode 100644 Documentation/networking/pcs.rst
+ create mode 100644 drivers/net/pcs/core.c
+ create mode 100644 include/linux/pcs.h
+
+-- 
+2.35.1.1320.gc452695387.dirty
 
