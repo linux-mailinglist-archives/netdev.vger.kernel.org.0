@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 383B66178A8
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 09:27:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E52C16178D0
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 09:36:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbiKCI1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 04:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        id S231216AbiKCIgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 04:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiKCI06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 04:26:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE7E65B1
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 01:25:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667463957;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ESwUy2eq+4xGlz2gugPeoCeYS+tEl3uNRsE/pkcv4uU=;
-        b=hRPiGh8g1xFkbcaOhevBZe/wv6jlx9eslU6SsG5Lr+srIFrTrqJtRz6hcS/V0C7kN4mNEo
-        dL+dq3dt0a3mzTY/Oi2j4nOrv2iKMC3w3SyN7dYIG3pnZIu+7K5cAH0VBNz5kDfjH+Xk8l
-        3L019I11T2Fqeeokd86l6Mrnz55vbRQ=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-170-jQfrisq4NPygTClzMYjDWg-1; Thu, 03 Nov 2022 04:25:54 -0400
-X-MC-Unique: jQfrisq4NPygTClzMYjDWg-1
-Received: by mail-qk1-f198.google.com with SMTP id x22-20020a05620a259600b006b552a69231so1378862qko.18
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 01:25:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ESwUy2eq+4xGlz2gugPeoCeYS+tEl3uNRsE/pkcv4uU=;
-        b=Q/IYSSFu5Teu2SDlmtpgEY4RceelWphkXx6YDEArdZ9uZvQxH7xYJvb/XHzF9ASq+X
-         xat/PPR/mNajifhTqT4bugDa4NV0QWJH5Y4wNblrxrbLd3AeJ4LvkfHjkM0hLayoPpAQ
-         YNoEdhHLc5qV7qNUTYEQDHu1zxDhB7lHv4Zb6WjJsXByJ7/kquCtprEDknZ/bZUTK0Kj
-         WemdmmJD7so+45kHNoJumFevoKb+QaGIf9fW9o2AcRXQY9E7VQZn3RJHb6SPlzWuy5wt
-         RC/Ds9eaURE2hnw8JlHsGPhlXPjQbHgzLAx2c0f9q7kXn7x/5QsNWztMWAAKOz1NBZSc
-         Twjw==
-X-Gm-Message-State: ACrzQf1fRsfOOVnD+7UIoSD0UtySEhzDBME0CqmpKXCGRzIlRr0irKrA
-        HnowFjyzS9VwzFOWACsT2AuA+otgSluRaWHTWwY3difymZW7spUHH/I1SddCGkOJhQ141sCxfAd
-        ClhZe6itw5UzG30/G
-X-Received: by 2002:ad4:5dee:0:b0:4b4:b8a:78db with SMTP id jn14-20020ad45dee000000b004b40b8a78dbmr25706652qvb.12.1667463954007;
-        Thu, 03 Nov 2022 01:25:54 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5lfV1vi64B14zB3N7D3MkOiVDGIgQ3osl+x4gB5yM3fepRQCIsPO64MdGMmDacIaHFZ9iXbg==
-X-Received: by 2002:ad4:5dee:0:b0:4b4:b8a:78db with SMTP id jn14-20020ad45dee000000b004b40b8a78dbmr25706639qvb.12.1667463953770;
-        Thu, 03 Nov 2022 01:25:53 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-100-54.dyn.eolo.it. [146.241.100.54])
-        by smtp.gmail.com with ESMTPSA id o23-20020ac85557000000b0035badb499c7sm133825qtr.21.2022.11.03.01.25.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 01:25:53 -0700 (PDT)
-Message-ID: <477a37b80b01d5eaa895effa20df29bcf02f65b6.camel@redhat.com>
-Subject: Re: [PATCH] uapi: Add missing linux/stddef.h header file to in.h
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Yang Jihong <yangjihong1@huawei.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, keescook@chromium.org,
-        gustavoars@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org, acme@kernel.org
-Date:   Thu, 03 Nov 2022 09:25:49 +0100
-In-Reply-To: <20221031095517.100297-1-yangjihong1@huawei.com>
-References: <20221031095517.100297-1-yangjihong1@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229587AbiKCIgN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 04:36:13 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B8926DF;
+        Thu,  3 Nov 2022 01:36:12 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N2xpD3fL5zpW5r;
+        Thu,  3 Nov 2022 16:32:36 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 3 Nov 2022 16:36:10 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 3 Nov 2022 16:36:09 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <haoluo@google.com>, <jolsa@kernel.org>,
+        <illusionist.neo@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mykolal@fb.com>, <shuah@kernel.org>,
+        <benjamin.tissoires@redhat.com>, <memxor@gmail.com>,
+        <delyank@fb.com>, <asavkov@redhat.com>, <colin.i.king@gmail.com>,
+        <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH 0/4] bpf: Support kernel function call in 32-bit ARM
+Date:   Thu, 3 Nov 2022 16:32:50 +0800
+Message-ID: <20221103083254.237646-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-10-31 at 17:55 +0800, Yang Jihong wrote:
-> commit 5854a09b4957 ("net/ipv4: Use __DECLARE_FLEX_ARRAY() helper") does not
-> include "linux/stddef.h" header file, and tools headers update linux/in.h copy,
-> BPF prog fails to be compiled:
-> 
->     CLNG-BPF [test_maps] bpf_flow.bpf.o
->     CLNG-BPF [test_maps] cgroup_skb_sk_lookup_kern.bpf.o
->   In file included from progs/cgroup_skb_sk_lookup_kern.c:9:
->   /root/linux/tools/include/uapi/linux/in.h:199:3: error: type name requires a specifier or qualifier
->                   __DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
->                   ^
->   /root/linux/tools/include/uapi/linux/in.h:199:32: error: type specifier missing, defaults to 'int' [-Werror,-Wimplicit-int]
->                   __DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
->                                                ^
->   2 errors generated.
-> 
-> To maintain consistency, add missing header file to kernel.
-> Fixes: 5854a09b4957 ("net/ipv4: Use __DECLARE_FLEX_ARRAY() helper")
-> 
-> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+1. Patch 1 and Patch 2 are dependent patches to resolve the BPF check error in
+   32-bit ARM.
+2. Patch 3 supports bpf fkunc in 32-bit ARM.
+3. Patch 4 is used to add test cases to cover some parameter scenarios states
+   by AAPCS.
 
-The 'Fixes' tag must be separated by the commit message by a blank
-line, and you need to remove the empty line between 'Fixes' and SoB.
+The following is the test_progs result in the 32-bit ARM environment:
 
-Additionally, on repost, please specify the target tree in the patch
-subj, and wrap the commit message text to 75 chars per line (that does
-not apply to the build output).
+  # uname -a
+  Linux qemuarm32 6.1.0-rc3+ #2 SMP Thu Nov  3 15:31:29 CST 2022 armv7l armv7l armv7l GNU/Linux
+  # echo 1 > /proc/sys/net/core/bpf_jit_enable
+  # ./test_progs -t kfunc_call
+  #1/1     kfunc_call/kfunc_syscall_test_fail:OK
+  #1/2     kfunc_call/kfunc_syscall_test_null_fail:OK
+  #1/3     kfunc_call/kfunc_call_test_get_mem_fail_rdonly:OK
+  #1/4     kfunc_call/kfunc_call_test_get_mem_fail_use_after_free:OK
+  #1/5     kfunc_call/kfunc_call_test_get_mem_fail_oob:OK
+  #1/6     kfunc_call/kfunc_call_test_get_mem_fail_not_const:OK
+  #1/7     kfunc_call/kfunc_call_test_mem_acquire_fail:OK
+  #1/8     kfunc_call/kfunc_call_test1:OK
+  #1/9     kfunc_call/kfunc_call_test2:OK
+  #1/10    kfunc_call/kfunc_call_test4:OK
+  #1/11    kfunc_call/kfunc_call_test_ref_btf_id:OK
+  #1/12    kfunc_call/kfunc_call_test_get_mem:OK
+  #1/13    kfunc_call/kfunc_syscall_test:OK
+  #1/14    kfunc_call/kfunc_syscall_test_null:OK
+  #1/17    kfunc_call/destructive:OK
 
-Thanks,
+Yang Jihong (4):
+  bpf: Adapt 32-bit return value kfunc for 32-bit ARM when zext
+    extension
+  bpf: Remove size check for sk in bpf_skb_is_valid_access for 32-bit
+    architecture
+  bpf: Add kernel function call support in 32-bit ARM
+  bpf:selftests: Add kfunc_call test for mixing 32-bit and 64-bit
+    parameters
 
-Paolo
+ arch/arm/net/bpf_jit_32.c                     | 130 ++++++++++++++++++
+ kernel/bpf/verifier.c                         |   3 +
+ net/bpf/test_run.c                            |   6 +
+ net/core/filter.c                             |   2 -
+ .../selftests/bpf/prog_tests/kfunc_call.c     |   1 +
+ .../selftests/bpf/progs/kfunc_call_test.c     |  23 ++++
+ 6 files changed, 163 insertions(+), 2 deletions(-)
+
+-- 
+2.30.GIT
 
