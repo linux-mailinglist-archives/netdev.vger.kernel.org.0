@@ -2,108 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 671FC618A14
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 088A26189F3
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 21:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbiKCVA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 17:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
+        id S229877AbiKCUx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 16:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiKCVA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:00:28 -0400
-X-Greylist: delayed 1222 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Nov 2022 14:00:27 PDT
-Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580643896
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 14:00:27 -0700 (PDT)
-Received: by dev0134.prn3.facebook.com (Postfix, from userid 425415)
-        id 516DBC4F60D; Thu,  3 Nov 2022 13:39:54 -0700 (PDT)
-From:   Stefan Roesch <shr@devkernel.io>
-To:     kernel-team@fb.com
-Cc:     shr@devkernel.io, axboe@kernel.dk, olivier@trillion01.com,
-        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org
-Subject: [RFC PATCH v1 2/2] io_uring: add api to set napi busy poll timeout.
-Date:   Thu,  3 Nov 2022 13:39:39 -0700
-Message-Id: <20221103203939.667307-3-shr@devkernel.io>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221103203939.667307-1-shr@devkernel.io>
-References: <20221103203939.667307-1-shr@devkernel.io>
-MIME-Version: 1.0
+        with ESMTP id S229700AbiKCUxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 16:53:24 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C648920F77;
+        Thu,  3 Nov 2022 13:52:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:To:From:Subject:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=Jp6+mYPLdRQOOREydHlPzAY0N6dTwSJyALuM8gordWM=;
+        t=1667508771; x=1668718371; b=QI+OK912Dbu/sWeAo5XZl3Fm8uM6ecgSO7RCDgEmg4xLKeC
+        7s/6l2E0krpUmRuYOpDRn7TLPD+CzXjXkSetzom8hGOz+Wgx0CpafxJsgvwjfWlUadmW+cYU9MfoJ
+        oR51l3YE9gr9l1lFW0nVdZReClEWO/paH7g3DEOrCX0n+aNiKYizBQ1uk6dU8BlVr3h2+TQaA9R5o
+        sScRETi50p9LfK0jNJkGzX6yJNo7TgtjqnBDx9WX6Qp99TvCCOfmPQupVCeZh6fEYq8GzFj9XHN+f
+        J0cMLVQDmSAJ4hQX1qVhvrxdZEyrFR2/2GmwlPHrUwV45QSQMQMWTN3CVvK6Ulog==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oqhCV-0084fg-1k;
+        Thu, 03 Nov 2022 21:52:35 +0100
+Message-ID: <f933bc0de15a4301e43207fe989e519fa25db31f.camel@sipsolutions.net>
+Subject: Re: [PATCH] iwlwifi: fix style warnings in iwl-drv.c
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Linus Probert <linus.probert@gmail.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Date:   Thu, 03 Nov 2022 21:52:34 +0100
+In-Reply-To: <Y2QTLgWVO2sZMnOb@firefly>
+References: <Y2QTLgWVO2sZMnOb@firefly>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
-        SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds an api to register and unregister the busy poll timeout from
-liburing. To be able to use this functionality, the corresponding
-liburing patch is needed.
+On Thu, 2022-11-03 at 20:14 +0100, Linus Probert wrote:
+> Running checkpatch on iwl-drv.c produced a series of minor style
+> warnings. Most of them have been removed. There are some remaining
+> regarding multiple lines of quoted strings as well as some warnings
+> where the suggested fix produces a new warning.
 
-Signed-off-by: Stefan Roesch <shr@devkernel.io>
----
- include/uapi/linux/io_uring.h |  4 ++++
- io_uring/io_uring.c           | 18 ++++++++++++++++++
- 2 files changed, 22 insertions(+)
+No thanks.
 
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.=
-h
-index ab7458033ee3..48670074e1fc 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -490,6 +490,10 @@ enum {
- 	/* register a range of fixed file slots for automatic slot allocation *=
-/
- 	IORING_REGISTER_FILE_ALLOC_RANGE	=3D 25,
-=20
-+	/* set/clear busy poll timeout */
-+	IORING_REGISTER_NAPI_BUSY_POLL_TIMEOUT	=3D 26,
-+	IORING_UNREGISTER_NAPI_BUSY_POLL_TIMEOUT=3D 27,
-+
- 	/* this goes last */
- 	IORING_REGISTER_LAST
- };
-diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
-index f64ccd537d05..c3d277772ca0 100644
---- a/io_uring/io_uring.c
-+++ b/io_uring/io_uring.c
-@@ -4108,6 +4108,12 @@ static __cold int io_register_iowq_max_workers(str=
-uct io_ring_ctx *ctx,
- 	return ret;
- }
-=20
-+static int io_register_napi_busy_poll_timeout(struct io_ring_ctx *ctx, u=
-nsigned int to)
-+{
-+	WRITE_ONCE(ctx->napi_busy_poll_to, to);
-+	return 0;
-+}
-+
- static int __io_uring_register(struct io_ring_ctx *ctx, unsigned opcode,
- 			       void __user *arg, unsigned nr_args)
- 	__releases(ctx->uring_lock)
-@@ -4268,6 +4274,18 @@ static int __io_uring_register(struct io_ring_ctx =
-*ctx, unsigned opcode,
- 			break;
- 		ret =3D io_register_file_alloc_range(ctx, arg);
- 		break;
-+	case IORING_REGISTER_NAPI_BUSY_POLL_TIMEOUT:
-+		ret =3D -EINVAL;
-+		if (arg || !nr_args)
-+			break;
-+		ret =3D io_register_napi_busy_poll_timeout(ctx, nr_args);
-+		break;
-+	case IORING_UNREGISTER_NAPI_BUSY_POLL_TIMEOUT:
-+		ret =3D -EINVAL;
-+		if (arg || nr_args)
-+			break;
-+		ret =3D io_register_napi_busy_poll_timeout(ctx, nr_args);
-+		break;
- 	default:
- 		ret =3D -EINVAL;
- 		break;
---=20
-2.30.2
+Some of these really shouldn't be fixed (like strings be broken?! I
+thought we stopped this nonsense even in checkpatch), and anyway, this
+will probably just cause conflicts for no good reason.
+
+johannes
 
