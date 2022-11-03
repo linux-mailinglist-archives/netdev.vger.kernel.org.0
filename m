@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2063161858E
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 18:02:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B9A61858B
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 18:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbiKCRCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 13:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S231745AbiKCRCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 13:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231941AbiKCRBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 13:01:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF571143;
-        Thu,  3 Nov 2022 10:01:54 -0700 (PDT)
+        with ESMTP id S231956AbiKCRB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 13:01:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9C9396;
+        Thu,  3 Nov 2022 10:01:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D27F61F87;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5CE1B82962;
+        Thu,  3 Nov 2022 17:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C8DC433D7;
         Thu,  3 Nov 2022 17:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2C85C433B5;
-        Thu,  3 Nov 2022 17:01:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667494913;
-        bh=f6y6m1EnUKwUsyjzfNr41VDZUX99wh7+ivnefKR1ZII=;
+        s=k20201202; t=1667494915;
+        bh=D6/fRtPSM2LL/1pNEu7S9mDvRcvLO6bXEXGfxKCxLfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IvELajK622CDtEFS3+Ndom/QAcrk2LdjDsIKm24NObJTK2STWaEF4arbw04pLNHCI
-         YoG29onc7BA/p6VUkguQljzIoQ6N3IppFAGDiFFro5n8rICMp0V619jM6mjpHJONlr
-         H/K4uGzHzHh+uyJ7dusvQBwQEofJaWE1qVWEGXzc3aAWHfASCXjPapjURUL6JyH1Pv
-         xe9Ai/oWFSeNaDl3YdbeQiPRcdBW8qRWztLuBGGKMo2vV9FX0uf1z/1WkJW+cRgwBc
-         +IKFm/7vzni39ewblgUJWogi4H0rO0edEFA+aIOQoRoXy0zx32gon1dapt8/7/9bSA
-         JC/AvS7uXIC8w==
+        b=XMDIuoDVdszuwgtpet7Zhut7+sLQ3lCO+sIwchaG0nneXIBaKXTtNveI6/Ed4b2Pt
+         dcsH02Dfwofx3dgr6jxvcTPCCZjiS7qJGFcBa7gdRajTjVyL1dpFbLZqrqjKUgA8Vk
+         qnPsDUOxD1tl1JsrA73L4wCeH/fVZVPpecXhCXR8j0RNb2dwlfpsL288P3+FHFWIgw
+         wN4rACbk21wqlBUqmyJI/4GKab1pyUhx8u3zGw3NlgUOQVRuqiaaPoHyTuVA8x87KD
+         nkQt1apI4lSBd0jku12nocowT0xOsKZy5cYO560fkLb6ttyU/3iIHOcyGOjn1zjhxU
+         efVmAj/18PjJg==
 From:   Nathan Chancellor <nathan@kernel.org>
 To:     Alexandra Winter <wintera@linux.ibm.com>,
         Wenjia Zhang <wenjia@linux.ibm.com>
@@ -45,9 +45,9 @@ Cc:     Heiko Carstens <hca@linux.ibm.com>,
         Sami Tolvanen <samitolvanen@google.com>, llvm@lists.linux.dev,
         linux-kernel@vger.kernel.org, patches@lists.linux.dev,
         Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH v2 2/3] s390/netiucv: Fix return type of netiucv_tx()
-Date:   Thu,  3 Nov 2022 10:01:29 -0700
-Message-Id: <20221103170130.1727408-2-nathan@kernel.org>
+Subject: [PATCH v2 3/3] s390/lcs: Fix return type of lcs_start_xmit()
+Date:   Thu,  3 Nov 2022 10:01:30 -0700
+Message-Id: <20221103170130.1727408-3-nathan@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221103170130.1727408-1-nathan@kernel.org>
 References: <20221103170130.1727408-1-nathan@kernel.org>
@@ -70,17 +70,17 @@ which manifests as either a kernel panic or thread getting killed. A
 proposed warning in clang aims to catch these at compile time, which
 reveals:
 
-  drivers/s390/net/netiucv.c:1854:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = netiucv_tx,
-                                    ^~~~~~~~~~
+  drivers/s390/net/lcs.c:2090:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
+          .ndo_start_xmit         = lcs_start_xmit,
+                                    ^~~~~~~~~~~~~~
+  drivers/s390/net/lcs.c:2097:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
+          .ndo_start_xmit         = lcs_start_xmit,
+                                    ^~~~~~~~~~~~~~
 
 ->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of netiucv_tx() to
+'netdev_tx_t', not 'int'. Adjust the return type of lcs_start_xmit() to
 match the prototype's to resolve the warning and potential CFI failure,
 should s390 select ARCH_SUPPORTS_CFI_CLANG in the future.
-
-Additionally, while in the area, remove a comment block that is no
-longer relevant.
 
 Link: https://github.com/ClangBuiltLinux/linux/issues/1750
 Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
@@ -89,32 +89,38 @@ Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
 v2:
   - Pick up tags from Alexandra and Kees.
-  - Remove comment block above netiucv_tx() (Alexandra).
-v1: https://lore.kernel.org/20221102163252.49175-2-nathan@kernel.org/
+  - Adjust indentation of modified lines, as they can fit within the
+    line limit (Alexandra).
+v1: https://lore.kernel.org/20221102163252.49175-3-nathan@kernel.org/
 ---
- drivers/s390/net/netiucv.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/s390/net/lcs.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/s390/net/netiucv.c b/drivers/s390/net/netiucv.c
-index 65aa0a96c21d..66076cada8ae 100644
---- a/drivers/s390/net/netiucv.c
-+++ b/drivers/s390/net/netiucv.c
-@@ -1248,15 +1248,8 @@ static int netiucv_close(struct net_device *dev)
+diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
+index 84c8981317b4..38f312664ce7 100644
+--- a/drivers/s390/net/lcs.c
++++ b/drivers/s390/net/lcs.c
+@@ -1519,9 +1519,8 @@ lcs_txbuffer_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
  /*
-  * Start transmission of a packet.
-  * Called from generic network device layer.
-- *
-- * @param skb Pointer to buffer containing the packet.
-- * @param dev Pointer to interface struct.
-- *
-- * @return 0 if packet consumed, !0 if packet rejected.
-- *         Note: If we return !0, then the packet is free'd by
-- *               the generic network layer.
+  * Packet transmit function called by network stack
   */
--static int netiucv_tx(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t netiucv_tx(struct sk_buff *skb, struct net_device *dev)
+-static int
+-__lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
+-		 struct net_device *dev)
++static netdev_tx_t __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
++				    struct net_device *dev)
  {
- 	struct netiucv_priv *privptr = netdev_priv(dev);
+ 	struct lcs_header *header;
+ 	int rc = NETDEV_TX_OK;
+@@ -1582,8 +1581,7 @@ __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
+ 	return rc;
+ }
+ 
+-static int
+-lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct lcs_card *card;
  	int rc;
 -- 
 2.38.1
