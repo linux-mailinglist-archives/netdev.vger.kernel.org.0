@@ -2,154 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8159961842F
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 17:22:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D55618439
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 17:22:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbiKCQWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 12:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        id S231702AbiKCQWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 12:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230261AbiKCQWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 12:22:05 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EB11AD85;
-        Thu,  3 Nov 2022 09:22:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667492521; x=1699028521;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=qiUgXNzS+MR1W5sNXGtCf0GXUaMffr26QOJN1t6Q660=;
-  b=VjEsPt9Qy0foq4A/G8Mi6yS59jJvaM2Y8b/Ybe3PM9085uzO+v32Hmm8
-   7r55YVJ+eTcb+8mkxbhMbVUaNZatR46ll67cQY1Tnj7wZ0TKI6IEhJKTn
-   AZAxJMhali9/Uzj5+mOCaL4ddWk97WUd+J/QpMAR3fGXGeKkNHZL/Yrr1
-   PXNQsItzyv7j8Wk85FdW35vB9IqNLoXXQbywDJ+WjT8aovetznV/J4n54
-   8vCMEVLYP9xBF3tnKMp/SRLrPhtPMod+Aeyhak1uTSp5Kx7/qF45lpr6j
-   SNafFyfaYv7UlHbUvAs1uZ87fah7Ll0YL9Lz/TlDg6phJscaJo9SZj52A
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,134,1665471600"; 
-   d="scan'208";a="198285202"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Nov 2022 09:22:00 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 3 Nov 2022 09:22:01 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 3 Nov 2022 09:21:57 -0700
-Message-ID: <4abec500cb037ca24be496aeaf4355f51a463b69.camel@microchip.com>
-Subject: Re: [PATCH net-next v2 2/5] net: microchip: sparx5: Adding more tc
- flower keys for the IS2 VCAP
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Casper Andersson <casper.casan@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        "Wan Jiabing" <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Date:   Thu, 3 Nov 2022 17:21:57 +0100
-In-Reply-To: <20221102182843.6d14c7ed@kernel.org>
-References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
-         <20221028144540.3344995-3-steen.hegelund@microchip.com>
-         <20221031103747.uk76tudphqdo6uto@wse-c0155>
-         <51622bfd3fe718139cece38493946c2860ebdf77.camel@microchip.com>
-         <20221031184128.1143d51e@kernel.org>
-         <741b628857168a6844b6c2e0482beb7df9b56520.camel@microchip.com>
-         <20221101084925.7d8b7641@kernel.org>
-         <e9d662682b00a976ad1dedf361a18b5f28aac8fb.camel@microchip.com>
-         <20221102182843.6d14c7ed@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.1 
+        with ESMTP id S230261AbiKCQWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 12:22:43 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDCD1B1C3
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 09:22:42 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id n23-20020a056602341700b00689fc6dbfd6so1343050ioz.8
+        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 09:22:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PdS+lEEBebiSo5ay5p6Fn4AnE2FMKU6iakE+zDZEfZ4=;
+        b=HD1/zS2gUi7cx7UuoZQciV2UkEbL3KX5t+mqelLAeMBPibPF+uerPE+ARGA2pzd4xy
+         zfhFngSk7WrFyqSLJ1+a9yJdcF2K2ofTi92ER0qYM7xa0MUbbaSf5I99EealN/NvhH0I
+         ZRWPgjhi1EIJ+v9PVDCsbCTTc0Srry9KQ8OnXJM8SKlDTe2CifJRRA0E6qdIaVI6gM1w
+         PWiVIFpV+rmM2SRE4khba2VNrH7dCGe6Cv4duQxYo5B3KBfM3o5+DtNw8nAcZVsiEwBF
+         rho9ukkUodzprM/dhEiuxqM9o2sYAguqoBcA8A0z5MCqCeBToX4/ai+MR1jtUlcMMP8B
+         XGTw==
+X-Gm-Message-State: ACrzQf17tM6moBqbvoJ+8JGyeiPSvEE1k7UotLehHG16moDNcxPaCwSS
+        ry4edb9IdWYNkOv9Y7iUNiWTiRe9D7LuZMtkHsjEunhCZvtg
+X-Google-Smtp-Source: AMsMyM4oyov1l3/KEhHs4Ya1tY2AXI4A2VcOLdnqwyIjxJKU4caA9EI+Pqbn+kpLgAfmrhu0dW6pCBUZPAl8QRlY7P/uVzJe3KCe
 MIME-Version: 1.0
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:ccab:0:b0:375:4a9b:1804 with SMTP id
+ t11-20020a02ccab000000b003754a9b1804mr18559482jap.145.1667492561757; Thu, 03
+ Nov 2022 09:22:41 -0700 (PDT)
+Date:   Thu, 03 Nov 2022 09:22:41 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cf2ce705ec935d80@google.com>
+Subject: [syzbot] KMSAN: uninit-value in can_send
+From:   syzbot <syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, glider@google.com,
+        kernel@pengutronix.de, kuba@kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
+        mkl@pengutronix.de, netdev@vger.kernel.org, pabeni@redhat.com,
+        robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jacub,
+Hello,
 
-On Wed, 2022-11-02 at 18:28 -0700, Jakub Kicinski wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
-e
-> content is safe
->=20
-> On Wed, 2 Nov 2022 14:11:37 +0100 Steen Hegelund wrote:
-> > I have sent a version 4 of the series, but I realized after sending it,=
- that
-> > I
-> > was probably not understanding the implications of what you were saying
-> > entirely.
-> >=20
-> > As far as I understand it now, I need to have a matchall rule that does=
- a
-> > goto
-> > from chain 0 (as this is where all traffic processing starts) to my fir=
-st
-> > IS2
-> > VCAP chain and this rule activates the IS2 VCAP lookup.
-> >=20
-> > Each of the rules in this VCAP chain need to point to the next chain et=
-c.
-> >=20
-> > If the matchall rule is deleted the IS2 VCAP lookups should be disabled=
- as
-> > there
-> > is no longer any way to reach the VCAP chains.
-> >=20
-> > Does that sound OK?
->=20
-> It does as far as I understand.
->=20
-> I haven't grasped what the purpose of using multiple chains is in
-> case of your design. IIRC correctly other drivers use it for instance
-> to partition TCAMs with each chain having a different set of fields it
-> can match on. But I don't see templates used in sparx5.
+syzbot found the following issue on:
 
-Yes, so far I have only added the IS2 VCAP, but there are 3 more that I am
-planning to to add, and they have very different capabilities in terms of k=
-eys
-and actions, so I think it makes good sense to keep them in separate chains=
-.
+HEAD commit:    4a3e741a3d6a x86: fortify: kmsan: fix KMSAN fortify builds
+git tree:       https://github.com/google/kmsan.git master
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=14247636880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c19210a0c25eebb
+dashboard link: https://syzkaller.appspot.com/bug?extid=d168ec0caca4697e03b1
+compiler:       clang version 15.0.0 (https://github.com/llvm/llvm-project.git 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e16e86880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1535a2f6880000
 
->=20
-> In general in TC offloads you can reject any configuration you can't
-> (or choose not to) support, and make up your own constraints (e.g. only
-> specific priority or chain values are supported).
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/fbb1997bc1e0/disk-4a3e741a.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/d5dd2e1efaa4/vmlinux-4a3e741a.xz
 
-Understood.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com
 
->=20
-> But for a "target" ruleset, i.e. ruleset comprised fully of rules you
-> do offload - the behavior of executing that ruleset in software and in
-> the device must be the same.
->=20
-> Dunno if that helps :)
+=====================================================
+BUG: KMSAN: uninit-value in can_is_canxl_skb include/linux/can/skb.h:128 [inline]
+BUG: KMSAN: uninit-value in can_send+0x269/0x1100 net/can/af_can.c:205
+ can_is_canxl_skb include/linux/can/skb.h:128 [inline]
+ can_send+0x269/0x1100 net/can/af_can.c:205
+ j1939_send_one+0x40f/0x4d0 net/can/j1939/main.c:352
+ j1939_xtp_do_tx_ctl+0x69f/0x9e0 net/can/j1939/transport.c:664
+ j1939_tp_tx_ctl net/can/j1939/transport.c:672 [inline]
+ j1939_session_tx_rts net/can/j1939/transport.c:740 [inline]
+ j1939_xtp_txnext_transmiter net/can/j1939/transport.c:880 [inline]
+ j1939_tp_txtimer+0x35bb/0x4520 net/can/j1939/transport.c:1158
+ __run_hrtimer+0x298/0x910 kernel/time/hrtimer.c:1685
+ __hrtimer_run_queues kernel/time/hrtimer.c:1749 [inline]
+ hrtimer_run_softirq+0x4b0/0x870 kernel/time/hrtimer.c:1766
+ __do_softirq+0x1c5/0x7b9 kernel/softirq.c:571
+ invoke_softirq+0x8f/0x100 kernel/softirq.c:445
+ __irq_exit_rcu+0x5a/0x110 kernel/softirq.c:650
+ irq_exit_rcu+0xe/0x10 kernel/softirq.c:662
+ sysvec_apic_timer_interrupt+0x9a/0xc0 arch/x86/kernel/apic/apic.c:1107
+ asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+ __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
+ _raw_spin_unlock_irqrestore+0x2f/0x50 kernel/locking/spinlock.c:194
+ unlock_hrtimer_base kernel/time/hrtimer.c:1017 [inline]
+ hrtimer_start_range_ns+0xaba/0xb50 kernel/time/hrtimer.c:1301
+ hrtimer_start include/linux/hrtimer.h:418 [inline]
+ j1939_tp_schedule_txtimer+0xbe/0x100 net/can/j1939/transport.c:697
+ j1939_sk_send_loop net/can/j1939/socket.c:1143 [inline]
+ j1939_sk_sendmsg+0x1c2c/0x25d0 net/can/j1939/socket.c:1256
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg net/socket.c:734 [inline]
+ ____sys_sendmsg+0xa8e/0xe70 net/socket.c:2482
+ ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2536
+ __sys_sendmsg net/socket.c:2565 [inline]
+ __do_sys_sendmsg net/socket.c:2574 [inline]
+ __se_sys_sendmsg net/socket.c:2572 [inline]
+ __x64_sys_sendmsg+0x367/0x540 net/socket.c:2572
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-It does, thanks!
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:742 [inline]
+ slab_alloc_node mm/slub.c:3398 [inline]
+ __kmem_cache_alloc_node+0x6ee/0xc90 mm/slub.c:3437
+ __do_kmalloc_node mm/slab_common.c:954 [inline]
+ __kmalloc_node_track_caller+0x117/0x3d0 mm/slab_common.c:975
+ kmalloc_reserve net/core/skbuff.c:437 [inline]
+ __alloc_skb+0x34a/0xca0 net/core/skbuff.c:509
+ alloc_skb include/linux/skbuff.h:1267 [inline]
+ j1939_tp_tx_dat_new net/can/j1939/transport.c:593 [inline]
+ j1939_xtp_do_tx_ctl+0xa3/0x9e0 net/can/j1939/transport.c:654
+ j1939_tp_tx_ctl net/can/j1939/transport.c:672 [inline]
+ j1939_session_tx_rts net/can/j1939/transport.c:740 [inline]
+ j1939_xtp_txnext_transmiter net/can/j1939/transport.c:880 [inline]
+ j1939_tp_txtimer+0x35bb/0x4520 net/can/j1939/transport.c:1158
+ __run_hrtimer+0x298/0x910 kernel/time/hrtimer.c:1685
+ __hrtimer_run_queues kernel/time/hrtimer.c:1749 [inline]
+ hrtimer_run_softirq+0x4b0/0x870 kernel/time/hrtimer.c:1766
+ __do_softirq+0x1c5/0x7b9 kernel/softirq.c:571
 
-I been fireing up a QEMU instance so I have been able to test my understand=
-ing,
-and it looks like I now have the same experience when I test the same rule =
-there
-and in the hardware of Sparx5.
+CPU: 0 PID: 3506 Comm: syz-executor289 Not tainted 6.1.0-rc2-syzkaller-61955-g4a3e741a3d6a #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
+=====================================================
 
-BR
-Steen
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
