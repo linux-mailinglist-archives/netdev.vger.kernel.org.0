@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7446176F5
+	by mail.lfdr.de (Postfix) with ESMTP id DFA1B6176F6
 	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiKCG4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 02:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
+        id S229825AbiKCG4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 02:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiKCG4J (ORCPT
+        with ESMTP id S229600AbiKCG4J (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5813FD2
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9341098
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FFA4B82520
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F093AC433C1;
-        Thu,  3 Nov 2022 06:56:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D8CEB82682
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BAF5C433D7;
+        Thu,  3 Nov 2022 06:56:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667458564;
-        bh=mHm4OL3kx0lL+voYY4HeQDdxdbRTLPLGgZWYYwxXpDM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=e2evmnhBPO+u8uCK77iqaOdOjC/BGGZzMLI7pHL4r/nG4y88Ebod86XfTZNgax5Ul
-         d6ZlBVCsHgPJh9aoOMvnZxTkfalmyaeXU4bOjr13v5ygueJdl+1zj50h1yIeKkFY9e
-         OIvIq8dBRzFZ0BGE8FcJut4OcFZcXGuUATLC5Hl0GpqrmyoWKOoJHNeRg+75CMb0g4
-         bLGUybFJXb6FYv9mD1MOEk0uZdu9XfZ2Zh3JhT8ba+blAaqeOdN9V0+O83IX5Rk+Vd
-         1nfiah7H2SCwbVFfs59Or0V+r6a7kbHHZJONYse4TTOw9MPacPaTr7xAVWmZ6H5eO/
-         km75PlnIL7XBQ==
+        s=k20201202; t=1667458565;
+        bh=Lo8jrs1lmJ3QoGyxf8HZxETLFlIIBGD29oWUrjTRWf8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MYb/CPTDTkLBE6d98WfRibm3u+qsp8f8rVUHN3xiEBB9wReE+lhN/Y1j5XHVVwMB1
+         WYGa8dwTGoeEePTQEs3J+Qc/iuNDK+4NHr+TlWwyIrFMPXNt9pI33aYBy2mQD+uOKs
+         5nk1h+Z9ywDrO3zKOXwN42ukjmNJAFzruo4nbfy2oYGmwukxI7xLn3RY4BDUGn96m4
+         A4Ys1rWPd7jEQ4VDTjbb0hiYtkGGVg9HfAx6zP8K0ubIiOrZHqff3P1L34N8o/B4ZC
+         pCuVVEC5WcMBPQmzyDx5zKnnU16uHHGxtt8MJt+MSWPwvub78Kkeufg6FAO1o9rw+L
+         Jk7c0D4IEsfDg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net 00/11] mlx5 fixes 2022-11-02
-Date:   Wed,  2 Nov 2022 23:55:36 -0700
-Message-Id: <20221103065547.181550-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>
+Subject: [net 01/11] net/mlx5: Bridge, verify LAG state when adding bond to bridge
+Date:   Wed,  2 Nov 2022 23:55:37 -0700
+Message-Id: <20221103065547.181550-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221103065547.181550-1-saeed@kernel.org>
+References: <20221103065547.181550-1-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -54,69 +57,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-This series provides bug fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+Mlx5 LAG is initialized asynchronously on a workqueue which means that for
+a brief moment after setting mlx5 UL representors as lower devices of a
+bond netdevice the LAG itself is not fully initialized in the driver. When
+adding such bond device to a bridge mlx5 bridge code will not consider it
+as offload-capable, skip creating necessary bookkeeping and fail any
+further bridge offload-related commands with it (setting VLANs, offloading
+FDBs, etc.). In order to make the error explicit during bridge
+initialization stage implement the code that detects such condition during
+NETDEV_PRECHANGEUPPER event and returns an error.
 
-Thanks,
-Saeed.
+Fixes: ff9b7521468b ("net/mlx5: Bridge, support LAG")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../mellanox/mlx5/core/en/rep/bridge.c        | 31 +++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+index 39ef2a2561a3..8099a21e674c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+@@ -164,6 +164,36 @@ static int mlx5_esw_bridge_port_changeupper(struct notifier_block *nb, void *ptr
+ 	return err;
+ }
+ 
++static int
++mlx5_esw_bridge_changeupper_validate_netdev(void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++	struct netdev_notifier_changeupper_info *info = ptr;
++	struct net_device *upper = info->upper_dev;
++	struct net_device *lower;
++	struct list_head *iter;
++
++	if (!netif_is_bridge_master(upper) || !netif_is_lag_master(dev))
++		return 0;
++
++	netdev_for_each_lower_dev(dev, lower, iter) {
++		struct mlx5_core_dev *mdev;
++		struct mlx5e_priv *priv;
++
++		if (!mlx5e_eswitch_rep(lower))
++			continue;
++
++		priv = netdev_priv(lower);
++		mdev = priv->mdev;
++		if (!mlx5_lag_is_active(mdev))
++			return -EAGAIN;
++		if (!mlx5_lag_is_shared_fdb(mdev))
++			return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static int mlx5_esw_bridge_switchdev_port_event(struct notifier_block *nb,
+ 						unsigned long event, void *ptr)
+ {
+@@ -171,6 +201,7 @@ static int mlx5_esw_bridge_switchdev_port_event(struct notifier_block *nb,
+ 
+ 	switch (event) {
+ 	case NETDEV_PRECHANGEUPPER:
++		err = mlx5_esw_bridge_changeupper_validate_netdev(ptr);
+ 		break;
+ 
+ 	case NETDEV_CHANGEUPPER:
+-- 
+2.38.1
 
-The following changes since commit 768b3c745fe5789f2430bdab02f35a9ad1148d97:
-
-  ipv6: fix WARNING in ip6_route_net_exit_late() (2022-11-02 20:47:14 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-11-02
-
-for you to fetch changes up to f1ec3df7835e6df6090f65ff682978281230f9e6:
-
-  net/mlx5e: TC, Fix slab-out-of-bounds in parse_tc_actions (2022-11-02 23:53:51 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2022-11-02
-
-----------------------------------------------------------------
-Chris Mi (1):
-      net/mlx5: E-switch, Set to legacy mode if failed to change switchdev mode
-
-Jianbo Liu (1):
-      net/mlx5e: TC, Fix wrong rejection of packet-per-second policing
-
-Maxim Mikityanskiy (2):
-      net/mlx5e: Add missing sanity checks for max TX WQE size
-      net/mlx5e: Fix usage of DMA sync API
-
-Moshe Shemesh (1):
-      net/mlx5: Fix possible deadlock on mlx5e_tx_timeout_work
-
-Roi Dayan (3):
-      net/mlx5e: Fix tc acts array not to be dependent on enum order
-      net/mlx5e: E-Switch, Fix comparing termination table instance
-      net/mlx5e: TC, Fix slab-out-of-bounds in parse_tc_actions
-
-Roy Novich (1):
-      net/mlx5: Allow async trigger completion execution on single CPU systems
-
-Shay Drory (1):
-      net/mlx5: fw_reset: Don't try to load device in case PCI isn't working
-
-Vlad Buslov (1):
-      net/mlx5: Bridge, verify LAG state when adding bond to bridge
-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 11 ++-
- .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    | 31 ++++++++
- .../ethernet/mellanox/mlx5/core/en/tc/act/act.c    | 92 ++++++++--------------
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  | 24 +++++-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |  4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 13 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 27 ++++---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 14 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  6 ++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 14 ++--
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 18 +----
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  | 14 ++--
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |  3 +-
- 13 files changed, 154 insertions(+), 117 deletions(-)
