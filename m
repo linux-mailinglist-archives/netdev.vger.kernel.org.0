@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EED7C6179D4
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 10:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFCA96179FB
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 10:30:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbiKCJZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 05:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
+        id S231218AbiKCJ3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 05:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231375AbiKCJYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 05:24:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BC9F02A;
-        Thu,  3 Nov 2022 02:24:39 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N2yy85xD6zmVCW;
-        Thu,  3 Nov 2022 17:24:32 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 3 Nov 2022 17:24:37 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 3 Nov 2022 17:24:36 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>,
-        <illusionist.neo@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mykolal@fb.com>, <shuah@kernel.org>,
-        <benjamin.tissoires@redhat.com>, <memxor@gmail.com>,
-        <delyank@fb.com>, <asavkov@redhat.com>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     <yangjihong1@huawei.com>
-Subject: [PATCH bpf RESEND 4/4] bpf:selftests: Add kfunc_call test for mixing 32-bit and 64-bit parameters
-Date:   Thu, 3 Nov 2022 17:21:18 +0800
-Message-ID: <20221103092118.248600-5-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-In-Reply-To: <20221103092118.248600-1-yangjihong1@huawei.com>
-References: <20221103092118.248600-1-yangjihong1@huawei.com>
+        with ESMTP id S231206AbiKCJ3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 05:29:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF664E0C1;
+        Thu,  3 Nov 2022 02:28:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7992B61DD4;
+        Thu,  3 Nov 2022 09:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FF3CC433C1;
+        Thu,  3 Nov 2022 09:28:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667467718;
+        bh=S/F8Xv1K2g426RUX/9UHQYE4rfAx8qVSyI51yE7iV6k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SqCSdZcJuEOc4qeMi3Hspx4fiaEzeIqa9FJ++XSyVVNQE/wfiYBqeUjDONbXo7Mqm
+         9FwJdcHUcWsjGditUGL3HKwZhdgkY2X2WdZYxO3bZ7znv8huK232/gFKYb85qtqrkj
+         Nqh/ivuGh2PTfKhSObHehx2nwR0ex3BykLR4nhbwpqE65VepPIDWjQUsj1tPbK0KT8
+         uOIvO1sUT0m5wGqWTNWL5z5wCfdd/4z4XDwY19PBIJQ/6EstUVK23lU66kPthuNSKB
+         ANN+YrH4ZG0p+YKhGlF2qMueWR+unsPjcgvgEu6FfjGGWbt6xAh8pUN8sl06wZBVLt
+         8GC23EdQ6vWVw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        daniel@makrotopia.org, krzysztof.kozlowski+dt@linaro.org
+Subject: [PATCH v3 net-next 0/8] introduce WED RX support to MT7986 SoC
+Date:   Thu,  3 Nov 2022 10:27:59 +0100
+Message-Id: <cover.1667466887.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,98 +56,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-for function foo(u32 a, u64 b, u32 c) in 32-bit ARM: a is in r0, b is in
-r2-r3, c is stored on the stack.
-Because the AAPCS states:
-"A double-word sized type is passed in two consecutive registers (e.g., r0
-and r1, or r2 and r3). The content of the registers is as if the value had
-been loaded from memory representation with a single LDM instruction."
-Supplement the test cases in this case.
+Similar to TX counterpart available on MT7622 and MT7986, introduce
+RX Wireless Ethernet Dispatch available on MT7986 SoC in order to
+offload traffic received by wlan nic to the wired interfaces (lan/wan).
 
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
----
- net/bpf/test_run.c                            |  6 +++++
- .../selftests/bpf/prog_tests/kfunc_call.c     |  1 +
- .../selftests/bpf/progs/kfunc_call_test.c     | 23 +++++++++++++++++++
- 3 files changed, 30 insertions(+)
+Changes since v2:
+- rely on of_reserved_mem APIs in mcu code
+- add some dts fixes
+- rename {tx,rx}_wdma in {rx,tx}_wdma
+- update entry in maintainers file
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 13d578ce2a09..bdfb3081e1ce 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -551,6 +551,11 @@ struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
- 	return sk;
- }
- 
-+u64 noinline bpf_kfunc_call_test4(struct sock *sk, u64 a, u64 b, u32 c, u32 d)
-+{
-+	return a + b + c + d;
-+}
-+
- struct prog_test_member1 {
- 	int a;
- };
-@@ -739,6 +744,7 @@ BTF_SET8_START(test_sk_check_kfunc_ids)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test1)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test2)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test3)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test4)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_acquire, KF_ACQUIRE | KF_RET_NULL)
- BTF_ID_FLAGS(func, bpf_kfunc_call_memb_acquire, KF_ACQUIRE | KF_RET_NULL)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_release, KF_RELEASE)
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-index 5af1ee8f0e6e..13a105bb05ed 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -72,6 +72,7 @@ static struct kfunc_test_params kfunc_tests[] = {
- 	/* success cases */
- 	TC_TEST(kfunc_call_test1, 12),
- 	TC_TEST(kfunc_call_test2, 3),
-+	TC_TEST(kfunc_call_test4, 16),
- 	TC_TEST(kfunc_call_test_ref_btf_id, 0),
- 	TC_TEST(kfunc_call_test_get_mem, 42),
- 	SYSCALL_TEST(kfunc_syscall_test, 0),
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-index f636e50be259..7cccb014d26e 100644
---- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-@@ -6,6 +6,8 @@
- extern int bpf_kfunc_call_test2(struct sock *sk, __u32 a, __u32 b) __ksym;
- extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
- 				  __u32 c, __u64 d) __ksym;
-+extern __u64 bpf_kfunc_call_test4(struct sock *sk, __u64 a, __u64 b,
-+				  __u32 c, __u32 d) __ksym;
- 
- extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
- extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
-@@ -17,6 +19,27 @@ extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
- extern int *bpf_kfunc_call_test_get_rdwr_mem(struct prog_test_ref_kfunc *p, const int rdwr_buf_size) __ksym;
- extern int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size) __ksym;
- 
-+SEC("tc")
-+int kfunc_call_test4(struct __sk_buff *skb)
-+{
-+	struct bpf_sock *sk = skb->sk;
-+	__u64 a = 1ULL << 32;
-+	__u32 ret;
-+
-+	if (!sk)
-+		return -1;
-+
-+	sk = bpf_sk_fullsock(sk);
-+	if (!sk)
-+		return -1;
-+
-+	a = bpf_kfunc_call_test4((struct sock *)sk, a | 2, a | 3, 4, 5);
-+	ret = a >> 32;   /* ret should be 2 */
-+	ret += (__u32)a; /* ret should be 16 */
-+
-+	return ret;
-+}
-+
- SEC("tc")
- int kfunc_call_test2(struct __sk_buff *skb)
- {
+Changes since v1:
+- fix sparse warnings
+- rely on memory-region property in mt7622-wed.yaml
+- some more binding fixes
+
+Lorenzo Bianconi (7):
+  arm64: dts: mediatek: mt7986: add support for RX Wireless Ethernet
+    Dispatch
+  dt-bindings: net: mediatek: add WED RX binding for MT7986 eth driver
+  net: ethernet: mtk_wed: introduce wed wo support
+  net: ethernet: mtk_wed: rename tx_wdma array in rx_wdma
+  net: ethernet: mtk_wed: add configure wed wo support
+  net: ethernet: mtk_wed: add rx mib counters
+  MAINTAINERS: update MEDIATEK ETHERNET entry
+
+Sujuan Chen (1):
+  net: ethernet: mtk_wed: introduce wed mcu support
+
+ .../arm/mediatek/mediatek,mt7622-wed.yaml     |  62 +-
+ .../arm/mediatek/mediatek,mt7986-wo-boot.yaml |  47 ++
+ .../arm/mediatek/mediatek,mt7986-wo-ccif.yaml |  50 ++
+ .../arm/mediatek/mediatek,mt7986-wo-dlm.yaml  |  50 ++
+ MAINTAINERS                                   |   1 +
+ arch/arm64/boot/dts/mediatek/mt7986a.dtsi     |  75 +++
+ drivers/net/ethernet/mediatek/Makefile        |   2 +-
+ drivers/net/ethernet/mediatek/mtk_wed.c       | 609 ++++++++++++++++--
+ drivers/net/ethernet/mediatek/mtk_wed.h       |  21 +
+ .../net/ethernet/mediatek/mtk_wed_debugfs.c   |  87 +++
+ drivers/net/ethernet/mediatek/mtk_wed_mcu.c   | 392 +++++++++++
+ drivers/net/ethernet/mediatek/mtk_wed_regs.h  | 129 +++-
+ drivers/net/ethernet/mediatek/mtk_wed_wo.c    | 508 +++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_wed_wo.h    | 284 ++++++++
+ include/linux/soc/mediatek/mtk_wed.h          | 106 ++-
+ 15 files changed, 2366 insertions(+), 57 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_wo.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_wo.h
+
 -- 
-2.30.GIT
+2.38.1
 
