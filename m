@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8123618B17
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 23:04:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3243E618B1C
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 23:06:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbiKCWE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 18:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S231330AbiKCWGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 18:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiKCWE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 18:04:26 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B03BE3C;
-        Thu,  3 Nov 2022 15:04:26 -0700 (PDT)
-Received: from [10.7.7.5] (unknown [182.253.183.90])
-        by gnuweeb.org (Postfix) with ESMTPSA id 82B3881441;
-        Thu,  3 Nov 2022 22:04:23 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1667513065;
-        bh=VfzmpAbAcBU3OdTyJA75CAnErDaaFDHFlzkEa8sfAq8=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=NGHbK6DzFoS/08cefO0sLUXVL0DDBWO/HlQ6X00Rn0tBl5/pcM187Gv6WB5NI8DZ4
-         nSF4eZmyOmQP1RDRGOA7wm2FmuXQYmql7SBB18Lk96GBHb+m1/nyenY0Cobcp6P6GP
-         Znq1jEOCE1sZKfWRECrhwlST81co5ZUaWgIW9QtCAB6UnQ8N/K/Ew+SMFfP6j/bQWk
-         pu2Cg+3Gbbr17IKiCF95kW7AaXKNh73oYqlKZGkpTPr7r0CyEH7JTf+Lo+QbHOVd8M
-         E9Tr1ovd4429VqYPBcvutwEHY8ma3kBcNnizyRffT9OfQ4tcOxAtRti3XjXGhf7duA
-         2SR1q5BxukFeA==
-Message-ID: <d9761f0b-0a31-1ec9-66b8-371cb22250f9@gnuweeb.org>
-Date:   Fri, 4 Nov 2022 05:04:16 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Content-Language: en-US
-To:     Stefan Roesch <shr@devkernel.io>,
-        Facebook Kernel Team <kernel-team@fb.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Olivier Langlois <olivier@trillion01.com>,
+        with ESMTP id S229770AbiKCWGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 18:06:50 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D563F22293;
+        Thu,  3 Nov 2022 15:06:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=v4cHUAKIN1alQhVRV36kZWuJBkfRVyQW/FYiebl3tq8=; b=1mhhdmhlzvYWloNOey+D2i8JgM
+        91UFtRrqSK/mkAGorKaZEdD5UWadNP2o1zk/EGSnAbI7YjzEGWRTHPzeA5Ubf/Zb+35h6da4u/AhW
+        kJP7UbkRlgCWC6ZsNOMYIWIZSv3VnBckU4ZMP2WUCzW4f6jn63Ltb/XNznNY5RzdrquE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oqiL4-001Lyy-Pq; Thu, 03 Nov 2022 23:05:30 +0100
+Date:   Thu, 3 Nov 2022 23:05:30 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
+Cc:     Rob Herring <robh@kernel.org>, Chester Lin <clin@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev Mailing List <netdev@vger.kernel.org>,
-        io-uring Mailing List <io-uring@vger.kernel.org>
-References: <20221103204017.670757-1-shr@devkernel.io>
- <20221103204017.670757-4-shr@devkernel.io>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: Re: [RFC PATCH v1 3/3] liburing: add test programs for napi busy poll
-In-Reply-To: <20221103204017.670757-4-shr@devkernel.io>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jan Petrous <jan.petrous@nxp.com>, netdev@vger.kernel.org,
+        s32@nxp.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Matthias Brugger <mbrugger@suse.com>
+Subject: Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC dwmac
+ glue driver
+Message-ID: <Y2Q7KtYkvpRz76tn@lunn.ch>
+References: <20221031101052.14956-1-clin@suse.com>
+ <20221031101052.14956-3-clin@suse.com>
+ <20221102155515.GA3959603-robh@kernel.org>
+ <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/4/22 3:40 AM, Stefan Roesch wrote:
-> +struct option longopts[] =
-> +{
-> +        {"address"  , 1, NULL, 'a'},
-> +        {"busy"     , 0, NULL, 'b'},
-> +        {"help"     , 0, NULL, 'h'},
-> +        {"num_pings", 1, NULL, 'n'},
-> +        {"port"     , 1, NULL, 'p'},
-> +        {"sqpoll"   , 0, NULL, 's'},
-> +	{"timeout"  , 1, NULL, 't'},
+> > > +      - description: Main GMAC clock
+> > > +      - description: Peripheral registers clock
+> > > +      - description: Transmit SGMII clock
+> > > +      - description: Transmit RGMII clock
+> > > +      - description: Transmit RMII clock
+> > > +      - description: Transmit MII clock
+> > > +      - description: Receive SGMII clock
+> > > +      - description: Receive RGMII clock
+> > > +      - description: Receive RMII clock
+> > > +      - description: Receive MII clock
+> > > +      - description:
+> > > +          PTP reference clock. This clock is used for programming the
+> > > +          Timestamp Addend Register. If not passed then the system
+> > > +          clock will be used.
 
-Inconsistent indentation.
+> Not clear to me has been whether the PHY mode can be switched at runtime
+> (like DPAA2 on Layerscape allows for SFPs) or whether this is fixed by board
+> design.
 
-> +	if (strlen(opt.addr) == 0) {
-> +		fprintf(stderr, "address option is mandatory\n");
-> +		printUsage(argv[0]);
-> +		exit(-1);
-> +	}
-Don't use integer literal like 0 or -1 as the exit code in tests, use the
-exit code protocol:
+Does the hardware support 1000BaseX? Often the hardware implementing
+SGMII can also do 1000BaseX, since SGMII is an extended/hacked up
+1000BaseX.
 
-   T_EXIT_PASS
-   T_EXIT_FAIL
-   T_EXIT_SKIP
+If you have an SFP connected to the SERDES, a fibre module will want
+1000BaseX and a copper module will want SGMII. phylink will tell you
+what phy-mode you need to use depending on what module is in the
+socket. This however might be a mute point, since both of these are
+probably using the SGMII clocks.
 
-They are defined in test/helpers.h.
+Of the other MII modes listed, it is very unlikely a runtime swap will
+occur.
 
--- 
-Ammar Faizi
-
+	Andrew
