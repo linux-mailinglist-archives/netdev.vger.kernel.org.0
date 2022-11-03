@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C376176F9
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D066176F8
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiKCG4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 02:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
+        id S229887AbiKCG4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 02:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiKCG4J (ORCPT
+        with ESMTP id S229791AbiKCG4J (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3271122
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612C22ADE
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE58561CB0
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3425DC433D7;
-        Thu,  3 Nov 2022 06:56:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F00B861D65
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50ACFC433D6;
+        Thu,  3 Nov 2022 06:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667458567;
-        bh=j9HTvWwvXk241A0Y/CRPm7I0L0kaJfz2NHFM1IpB91M=;
+        s=k20201202; t=1667458568;
+        bh=j/IkUxT0bNiaJ6xKi/w6cAeDxSi7neNNh5ho+eQtYOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=alHlo0DHQAXUig5JlKpwNuoZZZKY8tMgA3SDx5F+Kq2mNyeIhUnchJAkelQiIc2t3
-         PRjB2+dItVMKemQX9mMWwpun63LnlbezvmWZTcgUBY+G2diCuQsSIBvc250/vXIrOZ
-         kl6H2Cqpo5+Cw9aTGJfOpd6FuVKfR+t+she4kAVLeSeZ4s98JX9EZRmTCsT0eS5SaD
-         hMwv+aQhsT8iMO37bRAyR/rt704YCRl0NLKSRrt/pa+qojHFWJr4CfzsPZ66Mr2GC0
-         Nm7rkb/15oaLUo1BEVZdAh1Vdx2JcyX/TqZS1LeZ4HnjuFd3STW/NVl123EMEoqo/9
-         EJBnupwvlfWjQ==
+        b=UMtccHC0LGAWvyQSdRPBQ6LVrxUcyFgSo8kyZTEi6v0xzuuDmi0pggT+GOUisCuL2
+         XDKK/vQPXeE8Aav72KTmvPkhtdo3vDTbk3nF7299bsVjWWfvZrz/bgjYw4cpPcwuPb
+         21HBTGr4fH4LUE1JCVkkGOkt72iB4/O7eXBi4cLKJBuSqs+QVfYFt5aPvsSj37aK8v
+         oX8n9GruujVLcVi/5j1USN5QJfDLzEJfDP37ukNnyuFs4BSvCvEWKSschAFUcMPxhu
+         my42vnHeluVMklvq7pqKhF07+UpfWLGwyog8kAibrA/BJB63gukYys/onn9KGJiPIW
+         HfgVAdIab+w7w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Chris Mi <cmi@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Subject: [net 03/11] net/mlx5: E-switch, Set to legacy mode if failed to change switchdev mode
-Date:   Wed,  2 Nov 2022 23:55:39 -0700
-Message-Id: <20221103065547.181550-4-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+Subject: [net 04/11] net/mlx5: fw_reset: Don't try to load device in case PCI isn't working
+Date:   Wed,  2 Nov 2022 23:55:40 -0700
+Message-Id: <20221103065547.181550-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221103065547.181550-1-saeed@kernel.org>
 References: <20221103065547.181550-1-saeed@kernel.org>
@@ -56,93 +56,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Mi <cmi@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-No need to rollback to the other mode because probably will fail
-again. Just set to legacy mode and clear fdb table created flag.
-So that fdb table will not be cleared again.
+In case PCI reads fail after unload, there is no use in trying to
+load the device.
 
-Fixes: f019679ea5f2 ("net/mlx5: E-switch, Remove dependency between sriov and eswitch mode")
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 5ec697446f46 ("net/mlx5: Add support for devlink reload action fw activate")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/eswitch.c  | 14 ++++++++------
- .../mellanox/mlx5/core/eswitch_offloads.c      | 18 +++---------------
- 2 files changed, 11 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index c59107fa9e6d..2169486c4bfb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1387,12 +1387,14 @@ void mlx5_eswitch_disable_locked(struct mlx5_eswitch *esw)
- 		 esw->mode == MLX5_ESWITCH_LEGACY ? "LEGACY" : "OFFLOADS",
- 		 esw->esw_funcs.num_vfs, esw->enabled_vports);
- 
--	esw->fdb_table.flags &= ~MLX5_ESW_FDB_CREATED;
--	if (esw->mode == MLX5_ESWITCH_OFFLOADS)
--		esw_offloads_disable(esw);
--	else if (esw->mode == MLX5_ESWITCH_LEGACY)
--		esw_legacy_disable(esw);
--	mlx5_esw_acls_ns_cleanup(esw);
-+	if (esw->fdb_table.flags & MLX5_ESW_FDB_CREATED) {
-+		esw->fdb_table.flags &= ~MLX5_ESW_FDB_CREATED;
-+		if (esw->mode == MLX5_ESWITCH_OFFLOADS)
-+			esw_offloads_disable(esw);
-+		else if (esw->mode == MLX5_ESWITCH_LEGACY)
-+			esw_legacy_disable(esw);
-+		mlx5_esw_acls_ns_cleanup(esw);
-+	}
- 
- 	if (esw->mode == MLX5_ESWITCH_OFFLOADS)
- 		devl_rate_nodes_destroy(devlink);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 4e50df3139c6..728ca9f2bb9d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2310,7 +2310,7 @@ static int esw_create_restore_table(struct mlx5_eswitch *esw)
- static int esw_offloads_start(struct mlx5_eswitch *esw,
- 			      struct netlink_ext_ack *extack)
- {
--	int err, err1;
-+	int err;
- 
- 	esw->mode = MLX5_ESWITCH_OFFLOADS;
- 	err = mlx5_eswitch_enable_locked(esw, esw->dev->priv.sriov.num_vfs);
-@@ -2318,11 +2318,6 @@ static int esw_offloads_start(struct mlx5_eswitch *esw,
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Failed setting eswitch to offloads");
- 		esw->mode = MLX5_ESWITCH_LEGACY;
--		err1 = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
--		if (err1) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Failed setting eswitch back to legacy");
--		}
- 		mlx5_rescan_drivers(esw->dev);
- 	}
- 	if (esw->offloads.inline_mode == MLX5_INLINE_MODE_NONE) {
-@@ -3389,19 +3384,12 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- static int esw_offloads_stop(struct mlx5_eswitch *esw,
- 			     struct netlink_ext_ack *extack)
- {
--	int err, err1;
-+	int err;
- 
- 	esw->mode = MLX5_ESWITCH_LEGACY;
- 	err = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
--	if (err) {
-+	if (err)
- 		NL_SET_ERR_MSG_MOD(extack, "Failed setting eswitch to legacy");
--		esw->mode = MLX5_ESWITCH_OFFLOADS;
--		err1 = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
--		if (err1) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Failed setting eswitch back to offloads");
--		}
--	}
- 
- 	return err;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 07c583996c29..9d908a0ccfef 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -152,7 +152,8 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ 		mlx5_unload_one(dev);
+ 		if (mlx5_health_wait_pci_up(dev))
+ 			mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
+-		mlx5_load_one(dev, false);
++		else
++			mlx5_load_one(dev, false);
+ 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
+ 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
 -- 
 2.38.1
 
