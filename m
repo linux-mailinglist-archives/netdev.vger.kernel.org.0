@@ -2,155 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9CB617F9E
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 15:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46371617FF2
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 15:49:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiKCObf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 10:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S231734AbiKCOs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 10:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiKCObd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 10:31:33 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3036DF5D
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 07:31:32 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id bp15so3086181lfb.13
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 07:31:32 -0700 (PDT)
+        with ESMTP id S231757AbiKCOs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 10:48:56 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4F118B15;
+        Thu,  3 Nov 2022 07:48:55 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id bs21so3145786wrb.4;
+        Thu, 03 Nov 2022 07:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hPR7/0o5sZORvIjDuGdyoFuwN3lYbX8ONLuHVOyiI9s=;
-        b=L232aSwFaiuvBuuJCYabtV+4J9vpiaMZm31Mh1glJsQ8r+cU91vW8Eb5GbhQzYH8hG
-         DYsywGe1lewcWZfvW5QDl4HAeO9aQ5OWyZL4Go1duOVHZ62tZoleXI2UW9cQleVK/KH5
-         DvTxOjS+oTp5wes6ZYeI6cUH7HbkDMlv7JmQs=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OyyRFN6o9cSPSQOmcN/1EM+CmiHfqIcoRrnXjizSh5k=;
+        b=UiD6Sw+BCc8/v2kAxBpA4XlTQDkFfgJLJVlGwLZvxlPlnD5+ynC6Eq8DbPlt3NW9h0
+         bAD0JrWxYpZyk+g5EL9zTxmBD11V4eHsfrpY9GQ+5UfPRnbePRyzxV5OEA/zcUhujJDC
+         Gy/COKqcAtQUFIeQ2Eo3dlOvoUYxm4Dbu87s45v+vvUNU5352mEb7lfuIpX/V4Re5rhz
+         n+oHq03FKxelkwBIr7lr2YsKRfX3+6J3GhjH7PAw1a790wpPGH90M0pVryi1iA2ObvPO
+         cih1QQKeW350S+iC7phkiyqumk3RQOxihOSnl3wQH8CyC4VMH4VixE5QRKtHMfFCumYF
+         xscQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hPR7/0o5sZORvIjDuGdyoFuwN3lYbX8ONLuHVOyiI9s=;
-        b=7hQm2Wpu+fXb3WiLCJvJPFbhN5ub1qUUY0/gdmSAdyLmOSSvqAghA3H0eCoukKA3Pi
-         HDrh26/LvyL2IIO2SHZSu8BY21E59yHWVGIKtwibvafsAHvTOTjCFuZcTKjbi1t5UzOp
-         MqZXldiLhuych8lPJfNiD4coPVZ4wAp3aoheHjB3rT5pFB4t9uBQahUeLXhHqrCBcARY
-         Zp7k6V/tnG0oqbMr2hKmw0E1SEkyUSx3vZtkS0LP0QZOe5GmZUvxEy2Q0AXOgNrKbN96
-         zgyO0ttMNrEyk9+14GDjhaa1ZWisIgDfijezCw/QqgzHjB4pg3toyJCSeJ/vagi/1tUp
-         G2nw==
-X-Gm-Message-State: ACrzQf2Wa+9tHOqUz1IsrONYzFDa5+J6m6W+jWgU0mtIa7kxVfQB3vls
-        kS3cJtWh5as6/Yxf8hIy2OPGvQ==
-X-Google-Smtp-Source: AMsMyM4qo9IUgKGxtlfS2PE0KZVrx81zWVB2S8HnnZ4uODbUefXXdfXJz9VrzGRu5R8NWpNZrkNq0w==
-X-Received: by 2002:a05:6512:39c2:b0:4a2:500f:aed5 with SMTP id k2-20020a05651239c200b004a2500faed5mr12705658lfu.111.1667485890534;
-        Thu, 03 Nov 2022 07:31:30 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id a13-20020a056512200d00b00494643db68bsm151951lfb.78.2022.11.03.07.31.29
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OyyRFN6o9cSPSQOmcN/1EM+CmiHfqIcoRrnXjizSh5k=;
+        b=GxIz5prZ/YlGxQ5hY8NrIhraw7SyW9sCXtLMaTPizmWYhS8DvTmhPtsMl2F7UMRlhP
+         /Ez4tjByWTRpKHiuB3bZ2ATwzLHXx2y+klywaT8jo5Wdt3pMoOCrXbdQc+HIPS+7eH1n
+         hV6abGqE8VVVRFYYg1oVKCx+FmrClFBSn0pWFc+AVKIEn7zgYB4rfHQ6X+olvvTH6X2O
+         HwJtdUGuFK0Oml5NZxoelGwy3JgGprU/ytb+E5Q186zm8eOhU6j4NpBmMONJdgtdD1Ma
+         qGEMdqBbI4WZX5qVfos50sdpbtFV5JPWCJ60+UGs2ufpeS+aY9ta2iZiDF4FwWq0kSnt
+         mohQ==
+X-Gm-Message-State: ACrzQf1M5FpuPrJeeQsqPeU4X6G8lkCvKFD+BAPdkzwv2p5xOLbVJgyj
+        bT6mDOGSUswzrwXS1RcOP9E5Ff3V38Er4A==
+X-Google-Smtp-Source: AMsMyM4K/tdvIzFule6PjRafCbDb6HsmdP5OBU7nmsT0oVnHvqtXJEI3fBPFQ1oYPtFAPthl+pvllg==
+X-Received: by 2002:adf:f687:0:b0:236:481f:83a6 with SMTP id v7-20020adff687000000b00236481f83a6mr19368811wrp.342.1667486933978;
+        Thu, 03 Nov 2022 07:48:53 -0700 (PDT)
+Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
+        by smtp.gmail.com with ESMTPSA id y16-20020adff6d0000000b0023647841c5bsm1038753wrp.60.2022.11.03.07.48.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 07:31:29 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH 2/2] net: phy: dp83867: implement support for ti,ledX-active-low bindings
-Date:   Thu,  3 Nov 2022 15:31:18 +0100
-Message-Id: <20221103143118.2199316-3-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221103143118.2199316-1-linux@rasmusvillemoes.dk>
-References: <20221103143118.2199316-1-linux@rasmusvillemoes.dk>
+        Thu, 03 Nov 2022 07:48:53 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Thu, 3 Nov 2022 15:48:51 +0100
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     olsajiri@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, bjorn@kernel.org, toke@redhat.com,
+        David.Laight@aculab.com, rostedt@goodmis.org
+Subject: Re: [PATCH 0/2] bpf: Yet another approach to fix the BPF dispatcher
+ thing
+Message-ID: <Y2PU01h0hy+6dI0J@krava>
+References: <20221103120012.717020618@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221103120012.717020618@infradead.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LED_X_POLARITY bits in the LEDCR2 register are default 1, meaning
-the LEDs are driven as active high. On some boards, the LEDs are
-active low, so implement support for clearing those bits when the
-corresponding ti,ledX-active-low DT property is present.
+On Thu, Nov 03, 2022 at 01:00:12PM +0100, Peter Zijlstra wrote:
+> Hi!
+> 
+> Even thought the __attribute__((patchable_function_entry())) solution to the
+> BPF dispatcher woes works, it turns out to not be supported by the whole range
+> of ageing compilers we support. Specifically this attribute seems to be GCC-8
+> and later.
+> 
+> This is another approach -- using static_call() to rewrite the dispatcher
+> function. I've compile tested this on:
+> 
+>   x86_64  (inline static-call support)
+>   i386    (out-of-line static-call support)
+>   aargh64 (no static-call support)
+> 
+> A previous version was tested and found working by Bjorn.
+> 
+> It is split in two patches; first reverting the current approach and then
+> introducing the new for ease of review.
+> 
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/net/phy/dp83867.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Tested-by: Jiri Olsa <jolsa@kernel.org>
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 417527f8bbf5..8e8078ef2881 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -26,6 +26,7 @@
- #define MII_DP83867_MICR	0x12
- #define MII_DP83867_ISR		0x13
- #define DP83867_CFG2		0x14
-+#define DP83867_LEDCR2		0x19
- #define DP83867_CFG3		0x1e
- #define DP83867_CTRL		0x1f
- 
-@@ -140,6 +141,11 @@
- #define DP83867_DOWNSHIFT_8_COUNT	8
- #define DP83867_SGMII_AUTONEG_EN	BIT(7)
- 
-+/* LEDCR2 bits */
-+#define DP83867_LEDCR2_LED_0_POLARITY		BIT(2)
-+#define DP83867_LEDCR2_LED_1_POLARITY		BIT(6)
-+#define DP83867_LEDCR2_LED_2_POLARITY		BIT(10)
-+
- /* CFG3 bits */
- #define DP83867_CFG3_INT_OE			BIT(7)
- #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
-@@ -167,6 +173,9 @@ struct dp83867_private {
- 	bool set_clk_output;
- 	u32 clk_output_sel;
- 	bool sgmii_ref_clk_en;
-+	bool led0_active_low;
-+	bool led1_active_low;
-+	bool led2_active_low;
- };
- 
- static int dp83867_ack_interrupt(struct phy_device *phydev)
-@@ -658,6 +667,13 @@ static int dp83867_of_init(struct phy_device *phydev)
- 		return -EINVAL;
- 	}
- 
-+	dp83867->led0_active_low = of_property_read_bool(of_node,
-+							 "ti,led0-active-low");
-+	dp83867->led1_active_low = of_property_read_bool(of_node,
-+							 "ti,led1-active-low");
-+	dp83867->led2_active_low = of_property_read_bool(of_node,
-+							 "ti,led2-active-low");
-+
- 	return 0;
- }
- #else
-@@ -890,6 +906,22 @@ static int dp83867_config_init(struct phy_device *phydev)
- 			       mask, val);
- 	}
- 
-+	if (dp83867->led0_active_low) {
-+		ret = phy_modify(phydev, DP83867_LEDCR2, DP83867_LEDCR2_LED_0_POLARITY, 0);
-+		if (ret)
-+			return ret;
-+	}
-+	if (dp83867->led1_active_low) {
-+		ret = phy_modify(phydev, DP83867_LEDCR2, DP83867_LEDCR2_LED_1_POLARITY, 0);
-+		if (ret)
-+			return ret;
-+	}
-+	if (dp83867->led2_active_low) {
-+		ret = phy_modify(phydev, DP83867_LEDCR2, DP83867_LEDCR2_LED_2_POLARITY, 0);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.37.2
-
+thanks,
+jirka
