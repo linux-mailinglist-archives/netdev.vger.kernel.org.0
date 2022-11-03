@@ -2,53 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3D06617700
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:57:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B676B61777F
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 08:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiKCG4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 02:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
+        id S230476AbiKCHTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 03:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiKCG4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833171836A
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38D83B82684
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F3BC433D7;
-        Thu,  3 Nov 2022 06:56:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667458575;
-        bh=6pIZP/jKC3ZVZlyTRgfW+sifjVGnnRn7fktayp6Os8g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E5hF8A/AUHa7rI0Fn2YCdfo/X5Ocjank9RmolQKBVtU1rGFbTsnxJSeI66TMXx7Ht
-         mOfy3bdN9oy99j8sFjjYYN2RDdXiRvuO2g8n+z4Bf61s98/vH/ju98YFjwjmq0D8fH
-         Os3MwPsiL4NGlBBbZG+AvWHhrwRkxbVWotMeL+Whb/PBHRLgIWZTdaafzyDMIaKXcc
-         5Wqu6+cdJHPpTWZWmwH0hi54VL+gY6CjuXGInrpuQCXR17ne482diB3F8KsM/j6kd4
-         s4cYunqYRffAwNRlIZsgl7PPKLJop8wFUpQGl/HatsAqQBZjwJoQ8BUGt/iTM7Im21
-         eQbRj1oKPGQJQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>
-Subject: [net 11/11] net/mlx5e: TC, Fix slab-out-of-bounds in parse_tc_actions
-Date:   Wed,  2 Nov 2022 23:55:47 -0700
-Message-Id: <20221103065547.181550-12-saeed@kernel.org>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221103065547.181550-1-saeed@kernel.org>
-References: <20221103065547.181550-1-saeed@kernel.org>
+        with ESMTP id S229699AbiKCHTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 03:19:53 -0400
+Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [221.176.66.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA6FDFC7;
+        Thu,  3 Nov 2022 00:19:48 -0700 (PDT)
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.97])
+        by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee563636b913d6-f6bf7;
+        Thu, 03 Nov 2022 15:19:46 +0800 (CST)
+X-RM-TRANSID: 2ee563636b913d6-f6bf7
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost.localdomain (unknown[223.108.79.100])
+        by rmsmtp-syy-appsvrnew09-12034 (RichMail) with SMTP id 2f0263636b8f318-b48e2;
+        Thu, 03 Nov 2022 15:19:45 +0800 (CST)
+X-RM-TRANSID: 2f0263636b8f318-b48e2
+From:   Tang Bin <tangbin@cmss.chinamobile.com>
+To:     jiawenwu@trustnetic.com, mengyuanlou@net-swift.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tang Bin <tangbin@cmss.chinamobile.com>
+Subject: [PATCH] net: libwx: Remove variable dev to simplify code
+Date:   Thu,  3 Nov 2022 15:19:56 +0800
+Message-Id: <20221103071956.17480-1-tangbin@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.20.1.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,53 +46,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+In the function wx_get_pcie_msix_counts(), the variable dev
+is redundant, so remove it.
 
-esw_attr is only allocated if namespace is fdb.
-
-BUG: KASAN: slab-out-of-bounds in parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
-Write of size 4 at addr ffff88815f185b04 by task tc/2135
-
-CPU: 5 PID: 2135 Comm: tc Not tainted 6.1.0-rc2+ #2
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x57/0x7d
- print_report+0x170/0x471
- ? parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
- kasan_report+0xbc/0xf0
- ? parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
- parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
-
-Fixes: 94d651739e17 ("net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 372dfb89e396..5a6aa61ec82a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3633,10 +3633,14 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	attr2->action = 0;
- 	attr2->flags = 0;
- 	attr2->parse_attr = parse_attr;
--	attr2->esw_attr->out_count = 0;
--	attr2->esw_attr->split_count = 0;
- 	attr2->dest_chain = 0;
- 	attr2->dest_ft = NULL;
-+
-+	if (ns_type == MLX5_FLOW_NAMESPACE_FDB) {
-+		attr2->esw_attr->out_count = 0;
-+		attr2->esw_attr->split_count = 0;
-+	}
-+
- 	return attr2;
- }
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
+index 1eb7388f1..a7d79490e 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
++++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
+@@ -883,13 +883,12 @@ EXPORT_SYMBOL(wx_reset_misc);
+ int wx_get_pcie_msix_counts(struct wx_hw *wxhw, u16 *msix_count, u16 max_msix_count)
+ {
+ 	struct pci_dev *pdev = wxhw->pdev;
+-	struct device *dev = &pdev->dev;
+ 	int pos;
  
+ 	*msix_count = 1;
+ 	pos = pci_find_capability(pdev, PCI_CAP_ID_MSIX);
+ 	if (!pos) {
+-		dev_err(dev, "Unable to find MSI-X Capabilities\n");
++		dev_err(&pdev->dev, "Unable to find MSI-X Capabilities\n");
+ 		return -EINVAL;
+ 	}
+ 	pci_read_config_word(pdev,
 -- 
-2.38.1
+2.27.0
+
+
 
