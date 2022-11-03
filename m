@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 919296176FE
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3D06617700
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:57:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbiKCG4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 02:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36454 "EHLO
+        id S229790AbiKCG4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 02:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbiKCG4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF39A5FB0
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:15 -0700 (PDT)
+        with ESMTP id S229643AbiKCG4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833171836A
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C39461D4E
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC94C43143;
-        Thu,  3 Nov 2022 06:56:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38D83B82684
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F3BC433D7;
+        Thu,  3 Nov 2022 06:56:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667458574;
-        bh=Vd56ekN04I5yWVLjGwPX3iqBCBsZTm95ln4Eu0/PCfk=;
+        s=k20201202; t=1667458575;
+        bh=6pIZP/jKC3ZVZlyTRgfW+sifjVGnnRn7fktayp6Os8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fwK6lxrteiHv3STrd9i1BlvzEHOmIFh5bwzu9gM/x23q/dq++Q5ZJ44s9l4tr45bu
-         r5HrQOXwQaZaOdZUX6YF+A575h5acnCAukxiC5xtHswUB/u7aqif4jDSpFYsNnRCNb
-         HJLdTYWSGIFrdoe/b8UZWAY71/37lI5vFM0gLUbHDpJvGKH33jzIiTYKoL8wuj6PkL
-         x90qo4VQruhjfAIbPS8zpohs/IzCsXSF2SBOULY9emJz3y8NHx6s/nOHJLYrftYNQ0
-         cjuRN35q/cap0aXARYV225wUKYEasUZvikIoBdKQdkA/1eM0lCnYjT8CIVNszMuD9O
-         rmLi7KIMUYLaw==
+        b=E5hF8A/AUHa7rI0Fn2YCdfo/X5Ocjank9RmolQKBVtU1rGFbTsnxJSeI66TMXx7Ht
+         mOfy3bdN9oy99j8sFjjYYN2RDdXiRvuO2g8n+z4Bf61s98/vH/ju98YFjwjmq0D8fH
+         Os3MwPsiL4NGlBBbZG+AvWHhrwRkxbVWotMeL+Whb/PBHRLgIWZTdaafzyDMIaKXcc
+         5Wqu6+cdJHPpTWZWmwH0hi54VL+gY6CjuXGInrpuQCXR17ne482diB3F8KsM/j6kd4
+         s4cYunqYRffAwNRlIZsgl7PPKLJop8wFUpQGl/HatsAqQBZjwJoQ8BUGt/iTM7Im21
+         eQbRj1oKPGQJQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Chris Mi <cmi@nvidia.com>
-Subject: [net 10/11] net/mlx5e: E-Switch, Fix comparing termination table instance
-Date:   Wed,  2 Nov 2022 23:55:46 -0700
-Message-Id: <20221103065547.181550-11-saeed@kernel.org>
+        Maor Dickman <maord@nvidia.com>
+Subject: [net 11/11] net/mlx5e: TC, Fix slab-out-of-bounds in parse_tc_actions
+Date:   Wed,  2 Nov 2022 23:55:47 -0700
+Message-Id: <20221103065547.181550-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221103065547.181550-1-saeed@kernel.org>
 References: <20221103065547.181550-1-saeed@kernel.org>
@@ -58,53 +58,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-The pkt_reformat pointer being saved under flow_act and not
-dest attribute in the termination table instance.
-Fix the comparison pointers.
+esw_attr is only allocated if namespace is fdb.
 
-Also fix returning success if one pkt_reformat pointer is null
-and the other is not.
+BUG: KASAN: slab-out-of-bounds in parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
+Write of size 4 at addr ffff88815f185b04 by task tc/2135
 
-Fixes: 249ccc3c95bd ("net/mlx5e: Add support for offloading traffic from uplink to uplink")
+CPU: 5 PID: 2135 Comm: tc Not tainted 6.1.0-rc2+ #2
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x57/0x7d
+ print_report+0x170/0x471
+ ? parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
+ kasan_report+0xbc/0xf0
+ ? parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
+ parse_tc_actions+0xdc6/0x10e0 [mlx5_core]
+
+Fixes: 94d651739e17 ("net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed")
 Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-index ee568bf34ae2..108a3503f413 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-@@ -30,9 +30,9 @@ mlx5_eswitch_termtbl_hash(struct mlx5_flow_act *flow_act,
- 		     sizeof(dest->vport.num), hash);
- 	hash = jhash((const void *)&dest->vport.vhca_id,
- 		     sizeof(dest->vport.num), hash);
--	if (dest->vport.pkt_reformat)
--		hash = jhash(dest->vport.pkt_reformat,
--			     sizeof(*dest->vport.pkt_reformat),
-+	if (flow_act->pkt_reformat)
-+		hash = jhash(flow_act->pkt_reformat,
-+			     sizeof(*flow_act->pkt_reformat),
- 			     hash);
- 	return hash;
- }
-@@ -53,9 +53,11 @@ mlx5_eswitch_termtbl_cmp(struct mlx5_flow_act *flow_act1,
- 	if (ret)
- 		return ret;
- 
--	return dest1->vport.pkt_reformat && dest2->vport.pkt_reformat ?
--	       memcmp(dest1->vport.pkt_reformat, dest2->vport.pkt_reformat,
--		      sizeof(*dest1->vport.pkt_reformat)) : 0;
-+	if (flow_act1->pkt_reformat && flow_act2->pkt_reformat)
-+		return memcmp(flow_act1->pkt_reformat, flow_act2->pkt_reformat,
-+			      sizeof(*flow_act1->pkt_reformat));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 372dfb89e396..5a6aa61ec82a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3633,10 +3633,14 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
+ 	attr2->action = 0;
+ 	attr2->flags = 0;
+ 	attr2->parse_attr = parse_attr;
+-	attr2->esw_attr->out_count = 0;
+-	attr2->esw_attr->split_count = 0;
+ 	attr2->dest_chain = 0;
+ 	attr2->dest_ft = NULL;
 +
-+	return !(flow_act1->pkt_reformat == flow_act2->pkt_reformat);
++	if (ns_type == MLX5_FLOW_NAMESPACE_FDB) {
++		attr2->esw_attr->out_count = 0;
++		attr2->esw_attr->split_count = 0;
++	}
++
+ 	return attr2;
  }
  
- static int
 -- 
 2.38.1
 
