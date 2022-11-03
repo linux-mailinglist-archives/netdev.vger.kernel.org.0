@@ -2,141 +2,483 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF867618990
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 21:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA27618A19
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbiKCU2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 16:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S231312AbiKCVBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 17:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiKCU2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 16:28:22 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1171F2E4
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 13:28:19 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id r76so3195252oie.13
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 13:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=jz9oya0mAQbN17Ux09dhqha/NVhy+XUohDccZRU9/28=;
-        b=INJbEY8Lm6nwBG7KujAHSw20M+tt+Te4grRfQmVpLflT/OXVlEluF1zLCDhEXZVACl
-         V7wxW3yNnn0K2wenxNIV/dUgjwvz7SG35Sc9b1Z9a4nfskgaqZLJAMRGNltFSOyAjOfa
-         DbOwRBkdcYg2NW5ppPsSrv0oWNlUuHN7QV/JQTnbnAJCCiq362Cj54cWwIIrYhsV2t7I
-         XlLjwYGDMUCZNxLH87DykklNrr2+X0ettNh+7PVDX6DcschgI14dDjufz6VKYhO8AnBr
-         2pZ1ZBE46Q5bqkfReXxH1IpnP1ZMVX5sz6xuXRMDcoorhJzS+RjiieYloT1+Z/mIJgJw
-         hXcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jz9oya0mAQbN17Ux09dhqha/NVhy+XUohDccZRU9/28=;
-        b=oA9cUnzG4DWII15w28b4IXwmb1KRFFWEJQ/aTZMZTXFWfuSeJHgih6lHQzU2pS0E+Q
-         xPMLQubM15l1dDSH6/JDI42RsBmTkqxON2iZWphM1w9QnU5s98h7s/HMxt1VWer2zRjw
-         0NIXbEuz5MWulu4y4kgJI+kB/FGWyey35tMxRavrIP33yJelt1GOErby4ZYztUlKxUO3
-         ezPFxvtM37zQS3K7rXz9VlokGsvv6Z/C3RSVWGFDP2U8Sj7rcxKicUW3oQEMRfiWnLC4
-         IUXLkjwlYZzWvxdTUqNSEPI9nID9fq+wR6bVKoHNzivLXJHTHDgzfd8jux2szzf5r/1s
-         0kbg==
-X-Gm-Message-State: ACrzQf1+7zXNEBdMGIIPf9hXeqw2Wme8S+PHVD8i+tXGuTvCvViVwDjA
-        DnMy/3liAcMVd/f/z75IxbXMpJxNrD2iDT+uOXw=
-X-Google-Smtp-Source: AMsMyM5Bzj/lnbnHLbjGgi+ja3zN2eML7hMk1NSVhptcsIl0smHB+60lbCWHUJh2WrDiMNqXuB5TQZrr1FfdsSL8IXQ=
-X-Received: by 2002:a05:6808:1826:b0:35a:573f:c8b5 with SMTP id
- bh38-20020a056808182600b0035a573fc8b5mr1341506oib.190.1667507298887; Thu, 03
- Nov 2022 13:28:18 -0700 (PDT)
+        with ESMTP id S230389AbiKCVBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:01:16 -0400
+Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2C212D3C
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 14:01:15 -0700 (PDT)
+Received: by dev0134.prn3.facebook.com (Postfix, from userid 425415)
+        id 4E2A3C4F60B; Thu,  3 Nov 2022 13:39:54 -0700 (PDT)
+From:   Stefan Roesch <shr@devkernel.io>
+To:     kernel-team@fb.com
+Cc:     shr@devkernel.io, axboe@kernel.dk, olivier@trillion01.com,
+        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org
+Subject: [RFC PATCH v1 1/2] io_uring: add napi busy polling support
+Date:   Thu,  3 Nov 2022 13:39:38 -0700
+Message-Id: <20221103203939.667307-2-shr@devkernel.io>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221103203939.667307-1-shr@devkernel.io>
+References: <20221103203939.667307-1-shr@devkernel.io>
 MIME-Version: 1.0
-References: <Y2OmQDjtHmQCHE7x@pevik> <CADvbK_cA=7czAvftMu9tn+SkDp9-NpdyxeKsf70U8WO7=0i22g@mail.gmail.com>
- <Y2P5YsTuko5tgYJK@pevik>
-In-Reply-To: <Y2P5YsTuko5tgYJK@pevik>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 3 Nov 2022 16:27:53 -0400
-Message-ID: <CADvbK_eEOPJa5JXCysaywF9JYSd2vZUcjbKZ9T5ZZmbwrCLupw@mail.gmail.com>
-Subject: Re: ping (iputils) review (call for help)
-To:     Petr Vorel <pvorel@suse.cz>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vasiliy Kulikov <segoon@openwall.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+        SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 3, 2022 at 1:24 PM Petr Vorel <pvorel@suse.cz> wrote:
->
-> Hi Xin,
->
-> > On Thu, Nov 3, 2022 at 7:30 AM Petr Vorel <pvorel@suse.cz> wrote:
->
-> > > Hi,
->
-> > > I'm sorry to bother you about userspace. I'm preparing new iputils release and
-> > > I'm not sure about these two patches.  As there has been many regressions,
-> > > review from experts is more than welcome.
->
-> > > If you have time to review them, it does not matter if you post your
-> > > comments/RBT in github or here (as long as you keep Cc me so that I don't
-> > > overlook it).
->
-> > > BTW I wonder if it make sense to list Hideaki YOSHIFUJI as NETWORKING
-> > > IPv4/IPv6 maintainer. If I'm not mistaken, it has been a decade since he was active.
->
-> > > * ping: Call connect() before sending/receiving
-> > > https://github.com/iputils/iputils/pull/391
-> > > => I did not even knew it's possible to connect to ping socket, but looks like
-> > > it works on both raw socket and on ICMP datagram socket.
-> > The workaround of not using the PING socket is:
->
-> > # sysctl -w net.ipv4.ping_group_range="1 0"
->
-> Well raw socket requires capabilities or setuid. Because some distros has moved to
-> ICMP datagram socket, this approach requires root.
->
->
-> > > * ping: revert "ping: do not bind to device when destination IP is on device
-> > > https://github.com/iputils/iputils/pull/396
-> > > => the problem has been fixed in mainline and stable/LTS kernels therefore I
-> > > suppose we can revert cc44f4c as done in this PR. It's just a question if we
-> > > should care about people who run new iputils on older (unfixed) kernels.
-> > cc44f4c has also caused some regression though it's only seen in the
-> > kselftests, and that is why I made the kernel fix. I don't know which
-> > regression is more serious regardless of the patch's correctness. :-).
-> I'd prefer users not being affected than fixed tests and ping not working.
->
-> BTW can you be more specific, which kselftests is affected?
-> Ideally link to lore. In [1] you just mentioned "Jianlin noticed", I haven't
-> found anything on lore.
-Sure, here is the bz you can check for more details:
+This adds the napi busy polling support in io_uring.c. It adds a new
+napi_list to the io_ring_ctx structure. This list contains the list of
+napi_id's that are currently enabled for busy polling. The list is
+synchronized by the new napi_lock spin lock. The current default napi
+busy polling time is stored in napi_busy_poll_to. If napi busy polling
+is not enabled, the value is 0.
 
-https://bugzilla.redhat.com/show_bug.cgi?id=2054023
+The busy poll timeout is also stored as part of the io_wait_queue. This
+is necessary as for sq polling the poll interval needs to be adjusted
+and the napi callback allows only to pass in one value.
 
->
-> > or can we put some changelog to say that this revert should be
-> > backported together with the kernel commit?
-> Well, this practically means new iputils (compiled from git) will not work on
-> older (unfixed) kernel. Probably not many people will be affected, but why
-> to upset anybody?
->
-> If the problem now is just broken kselftests, I'd prefer keeping it long enough
-> (at least 1 year?) before reverting it.
-I'm okay with it as no real customers complain about it so far.
+Testing has shown that the round-trip times are reduced to 38us from
+55us by enabling napi busy polling with a busy poll timeout of 100us.
 
-Thanks.
+Signed-off-by: Stefan Roesch <shr@devkernel.io>
+Suggested-by: Olivier Langlois <olivier@trillion01.com>
+---
+ include/linux/io_uring_types.h |   6 +
+ io_uring/io_uring.c            | 237 +++++++++++++++++++++++++++++++++
+ io_uring/napi.h                |  22 +++
+ io_uring/poll.c                |   3 +
+ io_uring/sqpoll.c              |   9 ++
+ 5 files changed, 277 insertions(+)
+ create mode 100644 io_uring/napi.h
 
->
-> Kind regards,
-> Petr
->
-> [1] https://lore.kernel.org/all/ea03066bc7256ab86df8d3501f3440819305be57.1644988852.git.lucien.xin@gmail.com/
+diff --git a/include/linux/io_uring_types.h b/include/linux/io_uring_type=
+s.h
+index f5b687a787a3..84b446b0d215 100644
+--- a/include/linux/io_uring_types.h
++++ b/include/linux/io_uring_types.h
+@@ -270,6 +270,12 @@ struct io_ring_ctx {
+ 	struct xarray		personalities;
+ 	u32			pers_next;
+=20
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	struct list_head	napi_list;	/* track busy poll napi_id */
++	spinlock_t		napi_lock;	/* napi_list lock */
++	unsigned int		napi_busy_poll_to; /* napi busy poll default timeout */
++#endif
++
+ 	struct {
+ 		/*
+ 		 * We cache a range of free CQEs we can use, once exhausted it
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index ac8c488e3077..f64ccd537d05 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -90,6 +90,7 @@
+ #include "rsrc.h"
+ #include "cancel.h"
+ #include "net.h"
++#include "napi.h"
+ #include "notif.h"
+=20
+ #include "timeout.h"
+@@ -327,6 +328,13 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(=
+struct io_uring_params *p)
+ 	INIT_WQ_LIST(&ctx->locked_free_list);
+ 	INIT_DELAYED_WORK(&ctx->fallback_work, io_fallback_req_func);
+ 	INIT_WQ_LIST(&ctx->submit_state.compl_reqs);
++
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	INIT_LIST_HEAD(&ctx->napi_list);
++	spin_lock_init(&ctx->napi_lock);
++	ctx->napi_busy_poll_to =3D READ_ONCE(sysctl_net_busy_poll);
++#endif
++
+ 	return ctx;
+ err:
+ 	kfree(ctx->dummy_ubuf);
+@@ -2303,6 +2311,10 @@ struct io_wait_queue {
+ 	struct io_ring_ctx *ctx;
+ 	unsigned cq_tail;
+ 	unsigned nr_timeouts;
++
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	unsigned int busy_poll_to;
++#endif
+ };
+=20
+ static inline bool io_has_work(struct io_ring_ctx *ctx)
+@@ -2376,6 +2388,197 @@ static inline int io_cqring_wait_schedule(struct =
+io_ring_ctx *ctx,
+ 	return 1;
+ }
+=20
++#ifdef CONFIG_NET_RX_BUSY_POLL
++#define NAPI_TIMEOUT		(60 * SEC_CONVERSION)
++
++struct io_napi_entry {
++	struct list_head	list;
++	unsigned int		napi_id;
++	unsigned long		timeout;
++};
++
++static bool io_napi_busy_loop_on(struct io_ring_ctx *ctx)
++{
++	return READ_ONCE(ctx->napi_busy_poll_to);
++}
++
++/*
++ * io_napi_add() - Add napi id to the busy poll list
++ * @file: file pointer for socket
++ * @ctx:  io-uring context
++ *
++ * Add the napi id of the socket to the napi busy poll list.
++ */
++void io_napi_add(struct file *file, struct io_ring_ctx *ctx)
++{
++	unsigned int napi_id;
++	struct socket *sock;
++	struct sock *sk;
++	struct io_napi_entry *ne;
++
++	if (!io_napi_busy_loop_on(ctx))
++		return;
++
++	sock =3D sock_from_file(file);
++	if (!sock)
++		return;
++
++	sk =3D sock->sk;
++	if (!sk)
++		return;
++
++	napi_id =3D READ_ONCE(sk->sk_napi_id);
++
++	/* Non-NAPI IDs can be rejected */
++	if (napi_id < MIN_NAPI_ID)
++		return;
++
++	spin_lock(&ctx->napi_lock);
++	list_for_each_entry(ne, &ctx->napi_list, list) {
++		if (ne->napi_id =3D=3D napi_id) {
++			ne->timeout =3D jiffies + NAPI_TIMEOUT;
++			goto out;
++		}
++	}
++
++	ne =3D kmalloc(sizeof(*ne), GFP_NOWAIT);
++	if (!ne)
++		goto out;
++
++	ne->napi_id =3D napi_id;
++	ne->timeout =3D jiffies + NAPI_TIMEOUT;
++	list_add_tail(&ne->list, &ctx->napi_list);
++
++out:
++	spin_unlock(&ctx->napi_lock);
++}
++
++void io_napi_free_list(struct io_ring_ctx *ctx)
++{
++	spin_lock(&ctx->napi_lock);
++	while (!list_empty(&ctx->napi_list)) {
++		struct io_napi_entry *ne =3D
++			list_first_entry(&ctx->napi_list,
++					struct io_napi_entry, list);
++
++		list_del(&ne->list);
++		kfree(ne);
++	}
++	spin_unlock(&ctx->napi_lock);
++}
++
++void io_napi_adjust_busy_loop_timeout(unsigned int poll_to,
++				struct timespec64 *ts, unsigned int *new_poll_to)
++{
++	struct timespec64 pollto =3D ns_to_timespec64(1000 * (s64)poll_to);
++
++	if (timespec64_compare(ts, &pollto) > 0) {
++		*ts =3D timespec64_sub(*ts, pollto);
++		*new_poll_to =3D poll_to;
++	} else {
++		u64 to =3D timespec64_to_ns(ts);
++
++		do_div(to, 1000);
++		*new_poll_to =3D to;
++		ts->tv_sec =3D 0;
++		ts->tv_nsec =3D 0;
++	}
++}
++
++static inline bool io_napi_busy_loop_timeout(unsigned long start_time,
++					unsigned long bp_usec)
++{
++	if (bp_usec) {
++		unsigned long end_time =3D start_time + bp_usec;
++		unsigned long now =3D busy_loop_current_time();
++
++		return time_after(now, end_time);
++	}
++	return true;
++}
++
++static inline void io_napi_check_entry_timeout(struct io_napi_entry *ne)
++{
++	if (time_after(jiffies, ne->timeout)) {
++		list_del(&ne->list);
++		kfree(ne);
++	}
++}
++
++/*
++ * io_napi_busy_loop() - napi busy poll loop
++ * @napi_list: list of napi_id's supporting busy polling
++ *
++ * This invokes the napi busy poll loop if sockets have been added to th=
+e
++ * napi busy poll list.
++ *
++ * Returns if all napi-id's in the list have been processed.
++ */
++bool io_napi_busy_loop(struct list_head *napi_list)
++{
++	struct io_napi_entry *ne;
++	struct io_napi_entry *n;
++
++	list_for_each_entry_safe(ne, n, napi_list, list) {
++		napi_busy_loop(ne->napi_id, NULL, NULL, true, BUSY_POLL_BUDGET);
++		io_napi_check_entry_timeout(ne);
++	}
++
++	return !list_empty(napi_list);
++}
++
++bool io_napi_busy_loop_end(void *p, unsigned long start_time)
++{
++	struct io_wait_queue *iowq =3D p;
++
++	return signal_pending(current) ||
++	       io_should_wake(iowq) ||
++	       io_napi_busy_loop_timeout(start_time, iowq->busy_poll_to);
++}
++
++void io_napi_blocking_busy_loop(struct list_head *napi_list,
++				struct io_wait_queue *iowq)
++{
++	unsigned long start_time =3D list_is_singular(napi_list)
++					? 0
++					: busy_loop_current_time();
++
++	do {
++		if (list_is_singular(napi_list)) {
++			struct io_napi_entry *ne =3D
++				list_first_entry(napi_list,
++						 struct io_napi_entry, list);
++
++			napi_busy_loop(ne->napi_id, io_napi_busy_loop_end, iowq,
++				       true, BUSY_POLL_BUDGET);
++			io_napi_check_entry_timeout(ne);
++			break;
++		}
++	} while (io_napi_busy_loop(napi_list) &&
++		 !io_napi_busy_loop_end(iowq, start_time));
++}
++
++void io_napi_putback_list(struct io_ring_ctx *ctx,
++			  struct list_head *napi_list)
++{
++	struct io_napi_entry *cne;
++	struct io_napi_entry *lne;
++
++	spin_lock(&ctx->napi_lock);
++	list_for_each_entry(cne, &ctx->napi_list, list) {
++		list_for_each_entry(lne, napi_list, list) {
++			if (cne->napi_id =3D=3D lne->napi_id) {
++				list_del(&lne->list);
++				kfree(lne);
++				break;
++			}
++		}
++	}
++	list_splice(napi_list, &ctx->napi_list);
++	spin_unlock(&ctx->napi_lock);
++}
++#endif
++
+ /*
+  * Wait until events become available, if we don't already have some. Th=
+e
+  * application must reap them itself, as they reside on the shared cq ri=
+ng.
+@@ -2388,6 +2591,9 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, =
+int min_events,
+ 	struct io_rings *rings =3D ctx->rings;
+ 	ktime_t timeout =3D KTIME_MAX;
+ 	int ret;
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	LIST_HEAD(local_napi_list);
++#endif
+=20
+ 	if (!io_allowed_run_tw(ctx))
+ 		return -EEXIST;
+@@ -2416,13 +2622,34 @@ static int io_cqring_wait(struct io_ring_ctx *ctx=
+, int min_events,
+ 			return ret;
+ 	}
+=20
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	iowq.busy_poll_to =3D 0;
++	if (!(ctx->flags & IORING_SETUP_SQPOLL)) {
++		spin_lock(&ctx->napi_lock);
++		list_splice_init(&ctx->napi_list, &local_napi_list);
++		spin_unlock(&ctx->napi_lock);
++	}
++#endif
++
+ 	if (uts) {
+ 		struct timespec64 ts;
+=20
+ 		if (get_timespec64(&ts, uts))
+ 			return -EFAULT;
++
++#ifdef CONFIG_NET_RX_BUSY_POLL
++		if (!list_empty(&local_napi_list)) {
++			io_napi_adjust_busy_loop_timeout(READ_ONCE(ctx->napi_busy_poll_to),
++						&ts, &iowq.busy_poll_to);
++		}
++#endif
+ 		timeout =3D ktime_add_ns(timespec64_to_ktime(ts), ktime_get_ns());
+ 	}
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	else if (!list_empty(&local_napi_list)) {
++		iowq.busy_poll_to =3D READ_ONCE(ctx->napi_busy_poll_to);
++	}
++#endif
+=20
+ 	init_waitqueue_func_entry(&iowq.wq, io_wake_function);
+ 	iowq.wq.private =3D current;
+@@ -2432,6 +2659,15 @@ static int io_cqring_wait(struct io_ring_ctx *ctx,=
+ int min_events,
+ 	iowq.cq_tail =3D READ_ONCE(ctx->rings->cq.head) + min_events;
+=20
+ 	trace_io_uring_cqring_wait(ctx, min_events);
++
++#ifdef CONFIG_NET_RX_BUSY_POLL
++	if (iowq.busy_poll_to)
++		io_napi_blocking_busy_loop(&local_napi_list, &iowq);
++
++	if (!list_empty(&local_napi_list))
++		io_napi_putback_list(ctx, &local_napi_list);
++#endif
++
+ 	do {
+ 		/* if we can't even flush overflow, don't wait for more */
+ 		if (!io_cqring_overflow_flush(ctx)) {
+@@ -2631,6 +2867,7 @@ static __cold void io_ring_ctx_free(struct io_ring_=
+ctx *ctx)
+ 	io_req_caches_free(ctx);
+ 	if (ctx->hash_map)
+ 		io_wq_put_hash(ctx->hash_map);
++	io_napi_free_list(ctx);
+ 	kfree(ctx->cancel_table.hbs);
+ 	kfree(ctx->cancel_table_locked.hbs);
+ 	kfree(ctx->dummy_ubuf);
+diff --git a/io_uring/napi.h b/io_uring/napi.h
+new file mode 100644
+index 000000000000..d3c8b09afd69
+--- /dev/null
++++ b/io_uring/napi.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef IOU_NAPI_H
++#define IOU_NAPI_H
++
++#include <linux/kernel.h>
++#include <linux/io_uring.h>
++#include <net/busy_poll.h>
++
++#ifdef CONFIG_NET_RX_BUSY_POLL
++
++void io_napi_add(struct file *file, struct io_ring_ctx *ctx);
++bool io_napi_busy_loop(struct list_head *napi_list);
++
++#else
++
++static void io_napi_add(struct file *file, struct io_ring_ctx *ctx)
++{
++}
++
++#endif
++#endif
+diff --git a/io_uring/poll.c b/io_uring/poll.c
+index 0d9f49c575e0..38ed9f254075 100644
+--- a/io_uring/poll.c
++++ b/io_uring/poll.c
+@@ -15,6 +15,7 @@
+=20
+ #include "io_uring.h"
+ #include "refs.h"
++#include "napi.h"
+ #include "opdef.h"
+ #include "kbuf.h"
+ #include "poll.h"
+@@ -248,6 +249,7 @@ static int io_poll_check_events(struct io_kiocb *req,=
+ bool *locked)
+ 				io_req_set_res(req, mask, 0);
+ 				return IOU_POLL_REMOVE_POLL_USE_RES;
+ 			}
++			io_napi_add(req->file, ctx);
+ 		} else {
+ 			ret =3D io_poll_issue(req, locked);
+ 			if (ret =3D=3D IOU_STOP_MULTISHOT)
+@@ -564,6 +566,7 @@ static int __io_arm_poll_handler(struct io_kiocb *req=
+,
+ 		__io_poll_execute(req, mask);
+ 		return 0;
+ 	}
++	io_napi_add(req->file, req->ctx);
+=20
+ 	if (ipt->owning) {
+ 		/*
+diff --git a/io_uring/sqpoll.c b/io_uring/sqpoll.c
+index 559652380672..8c0a1c09a9a6 100644
+--- a/io_uring/sqpoll.c
++++ b/io_uring/sqpoll.c
+@@ -15,6 +15,7 @@
+ #include <uapi/linux/io_uring.h>
+=20
+ #include "io_uring.h"
++#include "napi.h"
+ #include "sqpoll.h"
+=20
+ #define IORING_SQPOLL_CAP_ENTRIES_VALUE 8
+@@ -193,6 +194,14 @@ static int __io_sq_thread(struct io_ring_ctx *ctx, b=
+ool cap_entries)
+ 			ret =3D io_submit_sqes(ctx, to_submit);
+ 		mutex_unlock(&ctx->uring_lock);
+=20
++#ifdef CONFIG_NET_RX_BUSY_POLL
++		spin_lock(&ctx->napi_lock);
++		if (!list_empty(&ctx->napi_list) &&
++		    io_napi_busy_loop(&ctx->napi_list))
++			++ret;
++		spin_unlock(&ctx->napi_lock);
++#endif
++
+ 		if (to_submit && wq_has_sleeper(&ctx->sqo_sq_wait))
+ 			wake_up(&ctx->sqo_sq_wait);
+ 		if (creds)
+--=20
+2.30.2
+
