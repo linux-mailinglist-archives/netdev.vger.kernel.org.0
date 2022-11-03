@@ -2,119 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CE6361731D
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 00:59:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A334617337
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 01:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbiKBX7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Nov 2022 19:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
+        id S230477AbiKCAI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Nov 2022 20:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230045AbiKBX7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 19:59:30 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED5A2AFE;
-        Wed,  2 Nov 2022 16:59:30 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id k7so365277pll.6;
-        Wed, 02 Nov 2022 16:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iByqjDsI8yxVjMZdPIB03/uaN8B4xJBEg5Q2hHGB0cU=;
-        b=LLsd3G17eaWY1UxRCpi+0/xGUOzYwv3fwRWk/2UOhIAf6OO+bWSOk9yw6b8DZwZESx
-         IA62NLYYpwLINEij7RAURObd/Q4bFNryA/6OEDnyqD5TYU76gd0RGgGW6fy2E2NA/RS/
-         Qbe7JeKW3ApFgrwzEVHOFGq/WnChpgFd2AAtq9f20k3crodAYxjCHRW4UxzEQOUq5ud9
-         +MK39u5egxOnzBHJYiGp4ThhpoCvk1+qIf2VxSS5Zi7ZFgYLaoQylmlXe5yrUhhuXiYU
-         7BMfa0AWn6m9oGtIImfTA2SozvOXQaGfudS59jnlvALb/Vo9AEKmkv7I/ztJSANuZKX9
-         CrDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=iByqjDsI8yxVjMZdPIB03/uaN8B4xJBEg5Q2hHGB0cU=;
-        b=rMEk82u4+w8FQ7Z1brBkZnb6hvC5knnF5DLo6HFFsD3ov3EgQMInutZhiIekwYrK5v
-         7vhh6Gn0KXPFlarbFhVw/HvEvEuCs+nvxKJv9FozUqrcV2W2LxMSPd1ePHzEkczgQaJF
-         /2SB3DxbPnbuEDwdpkxnzP/CaKodpDLa+9mhBl/6wkV/70mAnGe+EwguHsZFMnGQZyJp
-         K5b9KosfLyFzAMB6YcR84bMQfCla5IKvCh1MgdqzjrPQRJL9tmrrfVm9ltmTIUX5Z7is
-         DA6x6KErbiYa68ihGH9BbW/TBORHEj0J1jgPGnl9jk7Hs8g1divK4zIHcCLs57vIJtFz
-         SC7A==
-X-Gm-Message-State: ACrzQf12UDo7BR0zEpH2DWnRP54J8YxfeyXsdbzGNBoPCAMfgkvsZ4mL
-        /MUmu6qZkinneMnVLOy3tGvk1uamPXs=
-X-Google-Smtp-Source: AMsMyM4R41P97nKS+jW57b21Q5FJEOt0OxM3zaDBKxbavSfOu9bTDGOtY0eB/Umu2VDZKlafJGKiLw==
-X-Received: by 2002:a17:903:1c2:b0:187:feb:1f31 with SMTP id e2-20020a17090301c200b001870feb1f31mr23657217plh.92.1667433569666;
-        Wed, 02 Nov 2022 16:59:29 -0700 (PDT)
-Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id d13-20020a170902654d00b00172f6726d8esm8852548pln.277.2022.11.02.16.59.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 16:59:28 -0700 (PDT)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull-request: bluetooth 2022-10-02
-Date:   Wed,  2 Nov 2022 16:59:27 -0700
-Message-Id: <20221102235927.3324891-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S230077AbiKCAI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Nov 2022 20:08:56 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AFF6331;
+        Wed,  2 Nov 2022 17:08:54 -0700 (PDT)
+Date:   Wed, 2 Nov 2022 17:08:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667434133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aIozy4Ujz7Z2c69qFsPkkFtnJ9hdh3LiSwrKTFpiRvQ=;
+        b=DgLbHAsLaCguIy0yqRz54f/htsOrLHkRG82+AISqC+6I57/JxLvtZbdjW7cPqrcIz2xFdg
+        mXZIOLVyssiat6QSG4GmU0LCDVrkLvI355jgG4u7AXfUlYLMCmMyHxb6r1h3TUclGnNF/U
+        8lDLXWV9HQtNr1twgZNpwLH1nAYYQwk=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Andy Ren <andy.ren@getcruise.com>,
+        netdev@vger.kernel.org, richardbgobert@gmail.com,
+        davem@davemloft.net, wsa+renesas@sang-engineering.com,
+        edumazet@google.com, petrm@nvidia.com, pabeni@redhat.com,
+        corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: Re: [PATCH net-next v2] netconsole: Enable live renaming for network
+ interfaces used by netconsole
+Message-ID: <Y2MGgPLFiZQYDEzE@P9FQF9L96D.corp.robot.car>
+References: <20221102002420.2613004-1-andy.ren@getcruise.com>
+ <Y2G+SYXyZAB/r3X0@lunn.ch>
+ <20221101204006.75b46660@kernel.org>
+ <Y2KlfhfijyNl8yxT@P9FQF9L96D.corp.robot.car>
+ <20221102125418.272c4381@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221102125418.272c4381@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit ba9169f57090efdee6b13601fced57e123db8777:
+On Wed, Nov 02, 2022 at 12:54:18PM -0700, Jakub Kicinski wrote:
+> On Wed, 2 Nov 2022 10:14:38 -0700 Roman Gushchin wrote:
+> > > Agreed. BTW I wonder if we really want to introduce a netconsole
+> > > specific uAPI for this or go ahead with something more general.  
+> > 
+> > Netconsole is a bit special because it brings an interface up very early.
+> > E.g. in our case without the netconsole the renaming is happening before
+> > the interface is brought up.
+> > 
+> > I wonder if the netconsole-specific flag should allow renaming only once.
+> >  
+> > > A sysctl for global "allow UP rename"?  
+> > 
+> > This will work for us, but I've no idea what it will break for other users
+> > and how to check it without actually trying to break :) And likely we won't
+> > learn about it for quite some time, asssuming they don't run net-next.
+> 
+> Then again IFF_LIVE_RENAME_OK was added in 5.2 so quite a while back.
+> 
+> > > We added the live renaming for failover a while back and there were 
+> > > no reports of user space breaking as far as I know. So perhaps nobody
+> > > actually cares and we should allow renaming all interfaces while UP?
+> > > For backwards compat we can add a sysctl as mentioned or a rtnetlink 
+> > > "I know what I'm doing" flag? 
+> > > 
+> > > Maybe print an info message into the logs for a few releases to aid
+> > > debug?
+> > > 
+> > > IOW either there is a reason we don't allow rename while up, and
+> > > netconsole being bound to an interface is immaterial. Or there is 
+> > > no reason and we should allow all.  
+> > 
+> > My understanding is that it's not an issue for the kernel, but might be
+> > an issue for some userspace apps which do not expect it.
+> 
+> There are in-kernel notifier users which could cache the name on up /
+> down. But yes, the user space is the real worry.
+> 
+> > If you prefer to go with the 'global sysctl' approach, how the path forward
+> > should look like?
+> 
+> That's the question. The sysctl would really just be to cover our back
+> sides, and be able to tell the users "you opted in by setting that
+> sysctl, we didn't break backward compat". But practically speaking, 
+> its a different entity that'd be flipping the sysctl (e.g. management
+> daemon) and different entity that'd be suffering (e.g. routing daemon).
+> So the sysctl doesn't actually help anyone :/
 
-  Merge branch 'misdn-fixes' (2022-11-02 12:34:48 +0000)
+Yeah, I agree, adding another sysctl for this looks like an overkill.
 
-are available in the Git repository at:
+> 
+> So maybe we should just risk it and wonder about workarounds once
+> complains surface, if they do. Like generate fake down/up events.
+> Or create some form of "don't allow live renames now" lock-like
+> thing a process could take.
+> 
+> Adding a couple more CCs and if nobody screams at us I vote we just
+> remove the restriction instead of special casing.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-10-02
+Great, thanks!
 
-for you to fetch changes up to b1a2cd50c0357f243b7435a732b4e62ba3157a2e:
+Let's do this and if there will be serious concernes raised, let's
+fallback to the netconsole-specific thing (maybe with the "allow
+single renaming" semantics).
 
-  Bluetooth: L2CAP: Fix attempting to access uninitialized memory (2022-11-02 16:37:00 -0700)
-
-----------------------------------------------------------------
-bluetooth pull request for net:
-
- - Fix memory leak in hci_vhci driver
- - Fix handling of skb on virtio_bt driver
- - Fix accepting connection for invalid L2CAP PSM
- - Fix attemting to access uninitialized memory
- - Fix use-after-free in l2cap_reassemble_sdu
- - Fix use-after-free in l2cap_conn_del
- - Fix handling of destination address type for CIS
- - Fix not restoring ISO buffer count on disconnect
-
-----------------------------------------------------------------
-Hawkins Jiawei (1):
-      Bluetooth: L2CAP: Fix memory leak in vhci_write
-
-Luiz Augusto von Dentz (4):
-      Bluetooth: hci_conn: Fix not restoring ISO buffer count on disconnect
-      Bluetooth: L2CAP: Fix accepting connection request for invalid SPSM
-      Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm
-      Bluetooth: L2CAP: Fix attempting to access uninitialized memory
-
-Maxim Mikityanskiy (1):
-      Bluetooth: L2CAP: Fix use-after-free caused by l2cap_reassemble_sdu
-
-Pauli Virtanen (1):
-      Bluetooth: hci_conn: Fix CIS connection dst_type handling
-
-Soenke Huster (1):
-      Bluetooth: virtio_bt: Use skb_put to set length
-
-Zhengchao Shao (1):
-      Bluetooth: L2CAP: fix use-after-free in l2cap_conn_del()
-
- drivers/bluetooth/virtio_bt.c |  2 +-
- net/bluetooth/hci_conn.c      | 18 ++++++---
- net/bluetooth/iso.c           | 14 ++++++-
- net/bluetooth/l2cap_core.c    | 86 ++++++++++++++++++++++++++++++++++++-------
- 4 files changed, 98 insertions(+), 22 deletions(-)
+Thanks,
+Roman
