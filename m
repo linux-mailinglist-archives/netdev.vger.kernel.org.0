@@ -2,106 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CC06176AF
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7446176F5
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 07:56:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbiKCGVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 02:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
+        id S229811AbiKCG4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 02:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiKCGVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:21:07 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D811611A13;
-        Wed,  2 Nov 2022 23:21:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=O6247AfvaUgQ4rTBCdd6tE2mIQfoQgtQipevCW2V8Gc=; b=b9/Cvzcw/DDnuJJ9vN3ipvsaju
-        4oQ6egvCVXOHGrJRyzLcqIzr62msYSqb1p31F4mewQMUowUDW1oPtTP/W4KtsPEukjnatcZjSgmqW
-        QpCKUK4mTlZt78BA9EjdLA6Z+MrJnq/kgPRMV54ZG5TW3gsHYN75WpJLs4jwNhJpRQFSKy31eLa/6
-        xZUR6N76Myq+Oc2qCEZBmn4VKAsUxIr8nvjHIYHCaQ0w6UQRt3ymgvpMlLcphCw7mNSHDQOwCpHE1
-        gAyTHnTsV+mg9hyv7w9yaGXLqEKQ7exlT381hJeOB1vMpuQElWndJ5yjZCF9mN+MKrQ0qLj8bN+Nh
-        y9a1WwiQ==;
-Received: from [2601:1c2:d80:3110:e65e:37ff:febd:ee53]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oqTb6-00GHKc-C8; Thu, 03 Nov 2022 06:21:04 +0000
-Message-ID: <3efd119a-6814-7f39-3c7c-c17490adc876@infradead.org>
-Date:   Wed, 2 Nov 2022 23:21:03 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH] ath11k (gcc13): synchronize
- ath11k_mac_he_gi_to_nl80211_he_gi()'s return type
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        linux-kernel@vger.kernel.org, Martin Liska <mliska@suse.cz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229487AbiKCG4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 02:56:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5813FD2
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 23:56:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FFA4B82520
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 06:56:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F093AC433C1;
+        Thu,  3 Nov 2022 06:56:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667458564;
+        bh=mHm4OL3kx0lL+voYY4HeQDdxdbRTLPLGgZWYYwxXpDM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=e2evmnhBPO+u8uCK77iqaOdOjC/BGGZzMLI7pHL4r/nG4y88Ebod86XfTZNgax5Ul
+         d6ZlBVCsHgPJh9aoOMvnZxTkfalmyaeXU4bOjr13v5ygueJdl+1zj50h1yIeKkFY9e
+         OIvIq8dBRzFZ0BGE8FcJut4OcFZcXGuUATLC5Hl0GpqrmyoWKOoJHNeRg+75CMb0g4
+         bLGUybFJXb6FYv9mD1MOEk0uZdu9XfZ2Zh3JhT8ba+blAaqeOdN9V0+O83IX5Rk+Vd
+         1nfiah7H2SCwbVFfs59Or0V+r6a7kbHHZJONYse4TTOw9MPacPaTr7xAVWmZ6H5eO/
+         km75PlnIL7XBQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-References: <20221031114341.10377-1-jirislaby@kernel.org>
- <55c4d139-0f22-e7ba-398a-e3e0d8919220@quicinc.com>
- <833c7f2f-c140-5a0b-1efc-b858348206ec@kernel.org> <87bkprgj0b.fsf@kernel.org>
- <503a3b36-2256-a9ce-cffe-5c0ed51f6f62@infradead.org>
- <87tu3ifv8z.fsf@kernel.org>
- <1041acdb-2978-7413-5567-ae9c14471605@infradead.org>
- <87cza4ftkf.fsf@kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <87cza4ftkf.fsf@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net 00/11] mlx5 fixes 2022-11-02
+Date:   Wed,  2 Nov 2022 23:55:36 -0700
+Message-Id: <20221103065547.181550-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.38.1
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
+
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
 
 
-On 11/2/22 23:20, Kalle Valo wrote:
-> Randy Dunlap <rdunlap@infradead.org> writes:
-> 
->>>>> Yeah, using "wifi:" is a new prefix we started using with wireless
->>>>> patches this year.
->>>>>
->>>>
->>>> It would be nice if that was documented somewhere...
->>>
->>> It is mentioned on our wiki but I doubt anyone reads it :)
->>
->> I think that you are correct. ;)
->>
->>> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#subject
->>>
->>> Do let me know if there are other places which should have this info.
->>
->> Ideally it would be in the subsystem's profile document as described in the
->> MAINTAINERS file:
->>
->> 	P: Subsystem Profile document for more details submitting
->> 	   patches to the given subsystem. This is either an in-tree file,
->> 	   or a URI. See Documentation/maintainer/maintainer-entry-profile.rst
->> 	   for details.
->>
->> although that seems to be overkill IMHO just to add a prefix: setting.
->>
->> You could just clone some other maintainer's Profile document and then modify it
->> to anything that you would like to have in it as far as Maintaining and patching
->> are concerned.
-> 
-> Ah, we should add that doc for wireless. Thanks for the idea, I added
-> that to my todo list.
-> 
+The following changes since commit 768b3c745fe5789f2430bdab02f35a9ad1148d97:
 
-Thank you. :)
+  ipv6: fix WARNING in ip6_route_net_exit_late() (2022-11-02 20:47:14 -0700)
 
--- 
-~Randy
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-11-02
+
+for you to fetch changes up to f1ec3df7835e6df6090f65ff682978281230f9e6:
+
+  net/mlx5e: TC, Fix slab-out-of-bounds in parse_tc_actions (2022-11-02 23:53:51 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2022-11-02
+
+----------------------------------------------------------------
+Chris Mi (1):
+      net/mlx5: E-switch, Set to legacy mode if failed to change switchdev mode
+
+Jianbo Liu (1):
+      net/mlx5e: TC, Fix wrong rejection of packet-per-second policing
+
+Maxim Mikityanskiy (2):
+      net/mlx5e: Add missing sanity checks for max TX WQE size
+      net/mlx5e: Fix usage of DMA sync API
+
+Moshe Shemesh (1):
+      net/mlx5: Fix possible deadlock on mlx5e_tx_timeout_work
+
+Roi Dayan (3):
+      net/mlx5e: Fix tc acts array not to be dependent on enum order
+      net/mlx5e: E-Switch, Fix comparing termination table instance
+      net/mlx5e: TC, Fix slab-out-of-bounds in parse_tc_actions
+
+Roy Novich (1):
+      net/mlx5: Allow async trigger completion execution on single CPU systems
+
+Shay Drory (1):
+      net/mlx5: fw_reset: Don't try to load device in case PCI isn't working
+
+Vlad Buslov (1):
+      net/mlx5: Bridge, verify LAG state when adding bond to bridge
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 11 ++-
+ .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    | 31 ++++++++
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.c    | 92 ++++++++--------------
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  | 24 +++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |  4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 13 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 27 ++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 14 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  6 ++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 14 ++--
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 18 +----
+ .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  | 14 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |  3 +-
+ 13 files changed, 154 insertions(+), 117 deletions(-)
