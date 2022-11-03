@@ -2,387 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A96E6184CC
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 17:36:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CF661852E
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 17:47:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232315AbiKCQgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 12:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60240 "EHLO
+        id S232341AbiKCQrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 12:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232360AbiKCQf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 12:35:56 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527F01F2FA
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 09:33:32 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-369426664f9so20326797b3.12
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 09:33:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=itUlbh1Xh7/PuAoYNIWaUdqbv33g5mFBXS/9ENt/Cg8=;
-        b=dQ3GcLzwDX22k8D8p7i7xYh3f47chIgB3BCnzAVgFvdL3z6PBxihXJp5jfy95t1egk
-         j+abmFXA9fzUOybt1Yt9GS22qTeGHtFlRKJ3thKai8P+Ke6sN3wVj+Ic/yb6nnmMiFjW
-         J8owbQZ9XaIXX4CxNAixgdRgxrIJvZNq35b0HHyAhfsMlHFXpICAQp0+o3QOD6FmHP7j
-         eLGggZzhfTyRV7FLMb3cKx7e/7T/IzoVOsi3GQqO8UcvkuGOue2xC5gqRRjSF0uhU8Xk
-         6qcjb+aemVI2IGx5MfD0nP2D+7X+1TUl6FBwXMU41cqzeQG2skFCyTx5QbSiDK0C4U/z
-         FE7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=itUlbh1Xh7/PuAoYNIWaUdqbv33g5mFBXS/9ENt/Cg8=;
-        b=eqq//U+ZxsHhaGQkjBx5PcjXk7cVJQfCG6DwfQOfz68f51FOhMu1CXeuewlJ7shBry
-         GA6aXFAwbe8tXoQq1LxdQAQNOhcUIhLucphfTMg2TFPNpsb7anqICJVGu0aad1p/y7uF
-         ChaEzCqm4FwU48l1JiuvvBsJb3wPLqPgBtSssFR7RDXc/LG7aolPa/ZWnxAVB/m5LXEQ
-         s0s7zDtsz6GTvgi7goh9hdv7G/DUxACtR8PegDtbKrL6F5mlqTizZd22ipNSj0wpi5NE
-         3oH9jgyPD7vtpI0/2hyy150Jbq2XdJ0BPlxnC/AJ5HKe7ji6OahqNMr+6DGvm0skxK4y
-         l7lA==
-X-Gm-Message-State: ACrzQf26mqkx2jqaS+OOs1GOEOcOn1zwLdG8HnmG1QcpBwHpLJVPUAMk
-        yJ3ksSASbUL5inbb9y86x8y6/ql9e6cdY7VaBbyBCg==
-X-Google-Smtp-Source: AMsMyM6Pf06m3YK54CgTDk7CHKac3ADCuGHJSLZiCeHEQt+gwkQr3XR25u6dpsgjLntfp/QACbHZtyMmU4w4fyLLrF8=
-X-Received: by 2002:a81:7585:0:b0:368:28bd:9932 with SMTP id
- q127-20020a817585000000b0036828bd9932mr28990187ywc.332.1667493211089; Thu, 03
- Nov 2022 09:33:31 -0700 (PDT)
+        with ESMTP id S232544AbiKCQrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 12:47:13 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F0E1AD8D;
+        Thu,  3 Nov 2022 09:46:40 -0700 (PDT)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A3CAX6c010312;
+        Thu, 3 Nov 2022 09:46:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=1yS1L3/liCEdLLENYhdELoAWCVOw2X1dSDjoWPUcDmU=;
+ b=QNlzsiAk1e4pQRz8Fd6ZjrXBA2Vquy5276hWFgBbuPmt0wzJZZbXn1829ERJFQwGklVL
+ m7BCcarU4gzlR+Au+VaSJE8gIMBmO3UQppoIHHLPrW47yYIX8W4uzVRWW+eganyk3BbQ
+ 0hVsa3B07VT+fLc8WsU0qRIzjsA6HYkLJxciKBc71T5XMGDezCr/kYm6/8TvhhlRDtd3
+ qCwH3W5wcsUVkU9BNNzmvfZQLvGzqudkXsSVYUdR9QSQPBLUY3CS3CVPHr9KIFiy2CAU
+ MQfUQVOK5hfdcQvmoEUhibIVWFdAyQbC+8xksa0q32joX/f0Wy+EQCwFeI0LGo2mKlMX tQ== 
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2047.outbound.protection.outlook.com [104.47.56.47])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3kmddh2d9p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Nov 2022 09:46:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jnz8WQPQHck7/PtE+H+FQwbRaKbzhrCgP0oyMkgS9ZnIUuiTqBGIOCBuoMm7jUoZrp+8MWEUv7YEa6Vk1KW0jviNcSbkkj0N4zdmOqGelC9BzGQAFMPamCXLqixd7K/eUmk9YQC0TARO1B4bmw6bytMu8HOm+KW1/50bmYXEqwQtilZGSoQ75u0vW++7hwzx4Nkm0RR2DWwWj4Vn+WKimq33plkhXFxifqTQCF8lx+A2gxS0heYwmHfeeZd3vH2RiDo0q93HbcxHdpxyXI0v55dII/cKrBkbuuGnFJgPfdc3xq3T2QQGydMC5UFfYbI2dlNwAAlt/OIyi2gdYRmoKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1yS1L3/liCEdLLENYhdELoAWCVOw2X1dSDjoWPUcDmU=;
+ b=RpwyXYCpacc1MBmo7Dq1otk28k0imEUhXR1xGJTgEqkKIDHg0kTCr3cFWOlI+MewmbDPP113HSB7xRA0cqcfWasoU36F4AOuZt6X6xhY6ewnDKtwezsBt6HGdUcqapF8bD6aPeiGdJO02q7XgJymrN3Pp929+DeP0lYFhKh7/iqW9DPlwM0lbNOOhtfu0/mdrletmFJMnRJZRV/Z+dtFpruUCetDX2r2z7ulli7yhG1Ig9DdTOTow2muJ0mGqr/d8GEhC6hnIbpCgRE2djPxefC4VIccICHsfu+DWmUqWlO/+geVV6TIH+OolHoCCH7XFKsopwADxn4ldItRr1+4Dg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from MW4PR15MB4490.namprd15.prod.outlook.com (2603:10b6:303:103::23)
+ by DM5PR15MB1484.namprd15.prod.outlook.com (2603:10b6:3:cf::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Thu, 3 Nov
+ 2022 16:46:23 +0000
+Received: from MW4PR15MB4490.namprd15.prod.outlook.com
+ ([fe80::c42b:4da0:5bf4:177]) by MW4PR15MB4490.namprd15.prod.outlook.com
+ ([fe80::c42b:4da0:5bf4:177%5]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
+ 16:46:23 +0000
+Message-ID: <8e7802a4-9854-aabc-bc4b-3aba21440f7f@meta.com>
+Date:   Thu, 3 Nov 2022 09:46:19 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.1
+Subject: Re: [PATCH bpf-next 10/10] selftests/bpf: support stat filtering in
+ comparison mode in veristat
+To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        kuba@kernel.org
+Cc:     kernel-team@fb.com
+References: <20221103055304.2904589-1-andrii@kernel.org>
+ <20221103055304.2904589-11-andrii@kernel.org>
+Content-Language: en-US
+From:   Alexei Starovoitov <ast@meta.com>
+In-Reply-To: <20221103055304.2904589-11-andrii@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0124.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d::9) To MW4PR15MB4490.namprd15.prod.outlook.com
+ (2603:10b6:303:103::23)
 MIME-Version: 1.0
-References: <20221018203258.2793282-1-edumazet@google.com> <162f9155-dfe3-9d78-c59f-f47f7dcf83f5@nvidia.com>
- <CANn89iKwN9tgrNTngYrqWdi_Ti0nb1-02iehJ=tL7oT5wOte2Q@mail.gmail.com>
- <20221103082751.353faa4d@kernel.org> <CANn89iJGcYDqiCHu25X7Eg=s2ypVNLfbNZMomcqvD-7f0SagMw@mail.gmail.com>
- <CAKErNvoCWWHrWGDT+rqKzGgzeaTexss=tNTm0+9Vr-TOH_8y=Q@mail.gmail.com>
-In-Reply-To: <CAKErNvoCWWHrWGDT+rqKzGgzeaTexss=tNTm0+9Vr-TOH_8y=Q@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Nov 2022 09:33:19 -0700
-Message-ID: <CANn89iL2Jajn65L7YhqtjTAVMKNpkH0+-zJtQwFVcgrtJwxEWg@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: fix race condition in qdisc_graft()
-To:     Maxim Mikityanskiy <maxtram95@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Gal Pressman <gal@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>, eric.dumazet@gmail.com,
-        syzbot <syzkaller@googlegroups.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW4PR15MB4490:EE_|DM5PR15MB1484:EE_
+X-MS-Office365-Filtering-Correlation-Id: aa78e191-9934-467f-a6e2-08dabdbaf133
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s44HLjjas0WAATUEUZvDyG2k1yIoEeGBY+S2I3qW+XGF/2Lm3Dqog24mWno+jJC6kBZGKorVEzy3qM1bZtYZPmq1xLLMPrXXgJA4T0Cbz1lSkO5Uy7fG1l1TUxGDcLy7VrBdI2JnG3eydq4jtFpNOwfTDThFWEW2ofAT9FbEHywDZVcJMCvIVE/jjYbb3Fyh5qtxLVJNNCsncj9SRs4arSHmA/el60AqSmYExbPacfmgH8JgvHRH4r2AqomZIt7DKPMKm72b5etdPsKPv4jEn7FZA7GsTjrb0Mg8Lov3rr2q07RdGgplLT8VEthlbX7wzs9D2IUviEEvfMSpiqUhovPTVGi+szgRYoM8r9UgRk5h7IfjphVeilt6OhRRc0A9lfAR5NqirzuCCbYofwJTUJZ2OP2OohUWQUxd8ZD3o0fgnIYV5lMEyyJfsOuxcpFAdwhho9ebUh6Zt2pkHetccpzGjkLZr445HxyLThE0sNppy9RmzPtPvbzIpfYTz5f4PXTgVJcU2kpWXWC5Dh6WZ4KYTyfRs10aRdq3VOswuQllvYnifDIXqiZt4nxsLFO+wZaf51Ft5MW6E5W0rE3mp+fZSkupbkMts8J9WpGZV65TPZBSLRDrIXczgeo+BQO8exQcwvTkRl273NNKDCxi3460bcpZoI3QyBWwFtsRu93YxBJcnD2OjfE8TC4Jtk4DBLitqGKjJy2kfu4TPW4k2Bj27tG1YFNFU1ie73pU01J+VD5eqhH2LTus3LVW7RBkEXBxiO1CuGQIW1CurYrq3JpGuFEDJ0Ip/YhqJnbvNJk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4490.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(366004)(376002)(396003)(346002)(451199015)(36756003)(478600001)(6666004)(6486002)(4326008)(2906002)(4744005)(66556008)(66476007)(66946007)(5660300002)(86362001)(8936002)(31696002)(41300700001)(38100700002)(316002)(8676002)(83380400001)(186003)(31686004)(2616005)(6506007)(6512007)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bmZIQ3hEV0pxYzBEWGEvUTNtQXdlYk9tZmRQaTQ4Ly9Wc3VIbjZwQ0ptUVV4?=
+ =?utf-8?B?MjgrUWFlMVBkMUxTUkpxWGRzMVQ5R0tIV1pxYkdoODc4MjBXVGI1OWhITkZu?=
+ =?utf-8?B?eHZiN1FPQXp3bVFSa0lwZlBxR08zNXVXaW02VXJqcG51NVZEY1RyY0p1cmQz?=
+ =?utf-8?B?Z3pPQ0FLUVY0Z3pWYS9Nclp2TEQ4K1VSMUFabEZkSEg5WDlERjdvNUlnekJh?=
+ =?utf-8?B?NThkOWJmTFU4ZUpYU2drRnF3b0VpSkhwS1FpYTJHaXp0NkJCY2VmNEpWTkFt?=
+ =?utf-8?B?VU1aYmo1TmpWdzFhREdEVTdmUnRIRkoxU1p5dXlrSzh0dnJRazZRY05RZVAw?=
+ =?utf-8?B?WUhwaERXczlwaGJCQ0p3ZUZ0VG1wOXA2aVUybDNzM3RyaVNzMXQxZVVDSHFL?=
+ =?utf-8?B?RHZuNC80V2VSUENuYS9PcnhSOTkwRmZlV2Qyc3V4RnljY1Nka3pFVmJwYkNu?=
+ =?utf-8?B?VnROdGZycjFwRXJVK21yckh0NlFFcVgzZW5kZkJVRmxDOTgzRkJzVExyKzVr?=
+ =?utf-8?B?RDk1Z1EwajZIajlVNjlSczF5Q3dSb3RkYTdXSmZvVmtsRS8yR3RQMnVMSEJY?=
+ =?utf-8?B?RWhPOG1jZmFiSWZCNWpINEUzaERGckI2bXlYYTV3b0IwRmNXSVFDdmRRWmlO?=
+ =?utf-8?B?ZVAwNVdHM0VsUmh6U0tla2ZHbXFjRHRJY3RTOFBkc0xrTk9UdUc5YmhzRlNZ?=
+ =?utf-8?B?Q0Y2R0FCNmVPcm8zclBxYWR6Qm1VREN1ZDhJY2Z0Ukxkdjk5SFZjcVlVM0dj?=
+ =?utf-8?B?M0NTbDJOUExBRXJWZGxzaHNLYStqTjNoWEFQM2RRY2FDZGpCZENiZkF4WWVN?=
+ =?utf-8?B?TUFBbUYzcHNHWkg3TEJtVXU0V3ZaUUJndE0zSnFvUXpqMVpsTEdPVGs1TWJW?=
+ =?utf-8?B?L0Q1MkJTTlUwWWswQTgvZk5Ja1JzQktENjliZmNLZkE5ZHpQcXc5VHdHT0hN?=
+ =?utf-8?B?K2V4dGdKM05LU2pUSTlrV3k2UkRWVVJrWm5ZNWNWSVVzY2ZNbWZ2QXhrYlNr?=
+ =?utf-8?B?QlZaeEhaY2pVMktON0RxcWppV0ViU2NocENsV2QyMXJXV3BoUFRKclplQnFm?=
+ =?utf-8?B?V1N3aml6NDZ2ckdYVW9EV1psb0JzdWNoSDlGNU1INkVlNWhydE5KWXNTUFZM?=
+ =?utf-8?B?ckR1UUxQait1MGEzcEF6SGl2QVBiVmYrdmhoY2tyVlBiUFE1MVlUMUlDZG12?=
+ =?utf-8?B?M3VvWDFhcDZ1NGtRQ2t0cTc4MU1oblFwcVcvMTBFeG4zUWdTWWZWekZvZDdJ?=
+ =?utf-8?B?ZlBvclkwVzQ5V0lIcC9NY0REQi9pM2pKdW9mUDVUL3dGYmpMZ1lZcERZSUVF?=
+ =?utf-8?B?bE0xU3JXOTlCMUsvaHRaOXg0bHRHWUJ0Z0Z3ajhLNHVOa0hxUUR0Mlk5U0Nr?=
+ =?utf-8?B?Nmc0eGVOMVluR3l4c3lmQ3B3bE5BY2MyY2lXelFCcnVraWlESGxHbnFhZ0h3?=
+ =?utf-8?B?ZVJIc0w2bHltanlyN1BLY255SzF4bkgzSWsrUlpObWhpY25lMzJYNUxBLzJN?=
+ =?utf-8?B?aTh4c0NEV1ZVS0ZQalJWZGNBcnphS3orWUcwQWJjaGxvblcwRUQvSzFza3NN?=
+ =?utf-8?B?OVhXYWZ6UVVBeVlvN2EvTjR5Z000cm9xbTVoVUZRNjlmSUJxYTBWZTUrRjgw?=
+ =?utf-8?B?MGxlNEFvS1Fra1Z0ZjRTNVNpcUpNUFFQV3FLQnArZ3J0eFNtV3p6VGxjdGsv?=
+ =?utf-8?B?a2x5U3RzYUhJWXpRU0ZGaFp0cWFZQ3lFV2pMRDNzVVlwYWoxeXpZTmM1NFJJ?=
+ =?utf-8?B?aWpOZDVlRlgvY0RIbXl0dkpXUzltKzBET3JUSTFLb0YreDN6VVVKczh4M1JZ?=
+ =?utf-8?B?c3Mvc05hV29Eb3hDVnJMMkJ3bDVFUFlWT0x2S1EvZ2QvUDdMV1FGNk9Ybnly?=
+ =?utf-8?B?Q3IydjRIUWxhNUxvWVUyWUlteHZnQmovT083eUR2ckJuVk1FV0liZ2FQOXJK?=
+ =?utf-8?B?RUJWZ1o5R0F2WEpOQXdKZHNQT0JGRmxtSmtNVTZYYkMvYVhqaG8yeEFoempl?=
+ =?utf-8?B?aG1uNm0rR1lnRjVvbWoyeG4zc0Y1VHErZGxmSTBodWVrZ1o1a0ZBQXluS1NX?=
+ =?utf-8?B?Q0IydnVMWFFOejJsaThBOW5hRUZxT3RIekd0enJac2Rka1MzT29sa0JLTDVm?=
+ =?utf-8?B?NE5DdTFNSWNFU3BXY3JQQThPbGZpcVlrU3liQ2toVmxrL1N6WmdoaVNJTXJ4?=
+ =?utf-8?B?N2c9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa78e191-9934-467f-a6e2-08dabdbaf133
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4490.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 16:46:23.7419
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rMU6quXwGQL7g+9XK4kixsQV8dZtfRPCPNT/IEi4N4g+REGyx4r7quqXX5z61Kc0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1484
+X-Proofpoint-ORIG-GUID: 6rNBkznU14ZKj8GQB5p2gbDo5xnKdogo
+X-Proofpoint-GUID: 6rNBkznU14ZKj8GQB5p2gbDo5xnKdogo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-03_04,2022-11-03_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 3, 2022 at 9:31 AM Maxim Mikityanskiy <maxtram95@gmail.com> wrote:
->
-> On Thu, 3 Nov 2022 at 17:30, Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Thu, Nov 3, 2022 at 8:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > On Thu, 3 Nov 2022 08:17:06 -0700 Eric Dumazet wrote:
-> > > > On Thu, Nov 3, 2022 at 6:34 AM Gal Pressman <gal@nvidia.com> wrote:
-> > > > >
-> > > > > On 18/10/2022 23:32, Eric Dumazet wrote:
-> > > > > > We had one syzbot report [1] in syzbot queue for a while.
-> > > > > > I was waiting for more occurrences and/or a repro but
-> > > > > > Dmitry Vyukov spotted the issue right away.
-> > > > > >
-> > > > > > <quoting Dmitry>
-> > > > > > qdisc_graft() drops reference to qdisc in notify_and_destroy
-> > > > > > while it's still assigned to dev->qdisc
-> > > > > > </quoting>
-> > > > > >
-> > > > > > Indeed, RCU rules are clear when replacing a data structure.
-> > > > > > The visible pointer (dev->qdisc in this case) must be updated
-> > > > > > to the new object _before_ RCU grace period is started
-> > > > > > (qdisc_put(old) in this case).
-> > > > > >
-> > > > > > [1]
-> > > > > > BUG: KASAN: use-after-free in __tcf_qdisc_find.part.0+0xa3a/0xac0 net/sched/cls_api.c:1066
-> > > > > > Read of size 4 at addr ffff88802065e038 by task syz-executor.4/21027
-> > > > > >
-> > > > > > CPU: 0 PID: 21027 Comm: syz-executor.4 Not tainted 6.0.0-rc3-syzkaller-00363-g7726d4c3e60b #0
-> > > > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-> > > > > > Call Trace:
-> > > > > > <TASK>
-> > > > > > __dump_stack lib/dump_stack.c:88 [inline]
-> > > > > > dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> > > > > > print_address_description mm/kasan/report.c:317 [inline]
-> > > > > > print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
-> > > > > > kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
-> > > > > > __tcf_qdisc_find.part.0+0xa3a/0xac0 net/sched/cls_api.c:1066
-> > > > > > __tcf_qdisc_find net/sched/cls_api.c:1051 [inline]
-> > > > > > tc_new_tfilter+0x34f/0x2200 net/sched/cls_api.c:2018
-> > > > > > rtnetlink_rcv_msg+0x955/0xca0 net/core/rtnetlink.c:6081
-> > > > > > netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
-> > > > > > netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-> > > > > > netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
-> > > > > > netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
-> > > > > > sock_sendmsg_nosec net/socket.c:714 [inline]
-> > > > > > sock_sendmsg+0xcf/0x120 net/socket.c:734
-> > > > > > ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
-> > > > > > ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
-> > > > > > __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
-> > > > > > do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > > > > > do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> > > > > > entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > > > > RIP: 0033:0x7f5efaa89279
-> > > > > > Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> > > > > > RSP: 002b:00007f5efbc31168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> > > > > > RAX: ffffffffffffffda RBX: 00007f5efab9bf80 RCX: 00007f5efaa89279
-> > > > > > RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000005
-> > > > > > RBP: 00007f5efaae32e9 R08: 0000000000000000 R09: 0000000000000000
-> > > > > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> > > > > > R13: 00007f5efb0cfb1f R14: 00007f5efbc31300 R15: 0000000000022000
-> > > > > > </TASK>
-> > > > > >
-> > > > > > Allocated by task 21027:
-> > > > > > kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
-> > > > > > kasan_set_track mm/kasan/common.c:45 [inline]
-> > > > > > set_alloc_info mm/kasan/common.c:437 [inline]
-> > > > > > ____kasan_kmalloc mm/kasan/common.c:516 [inline]
-> > > > > > ____kasan_kmalloc mm/kasan/common.c:475 [inline]
-> > > > > > __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
-> > > > > > kmalloc_node include/linux/slab.h:623 [inline]
-> > > > > > kzalloc_node include/linux/slab.h:744 [inline]
-> > > > > > qdisc_alloc+0xb0/0xc50 net/sched/sch_generic.c:938
-> > > > > > qdisc_create_dflt+0x71/0x4a0 net/sched/sch_generic.c:997
-> > > > > > attach_one_default_qdisc net/sched/sch_generic.c:1152 [inline]
-> > > > > > netdev_for_each_tx_queue include/linux/netdevice.h:2437 [inline]
-> > > > > > attach_default_qdiscs net/sched/sch_generic.c:1170 [inline]
-> > > > > > dev_activate+0x760/0xcd0 net/sched/sch_generic.c:1229
-> > > > > > __dev_open+0x393/0x4d0 net/core/dev.c:1441
-> > > > > > __dev_change_flags+0x583/0x750 net/core/dev.c:8556
-> > > > > > rtnl_configure_link+0xee/0x240 net/core/rtnetlink.c:3189
-> > > > > > rtnl_newlink_create net/core/rtnetlink.c:3371 [inline]
-> > > > > > __rtnl_newlink+0x10b8/0x17e0 net/core/rtnetlink.c:3580
-> > > > > > rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3593
-> > > > > > rtnetlink_rcv_msg+0x43a/0xca0 net/core/rtnetlink.c:6090
-> > > > > > netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
-> > > > > > netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-> > > > > > netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
-> > > > > > netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
-> > > > > > sock_sendmsg_nosec net/socket.c:714 [inline]
-> > > > > > sock_sendmsg+0xcf/0x120 net/socket.c:734
-> > > > > > ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
-> > > > > > ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
-> > > > > > __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
-> > > > > > do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > > > > > do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> > > > > > entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > > > >
-> > > > > > Freed by task 21020:
-> > > > > > kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
-> > > > > > kasan_set_track+0x21/0x30 mm/kasan/common.c:45
-> > > > > > kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
-> > > > > > ____kasan_slab_free mm/kasan/common.c:367 [inline]
-> > > > > > ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:329
-> > > > > > kasan_slab_free include/linux/kasan.h:200 [inline]
-> > > > > > slab_free_hook mm/slub.c:1754 [inline]
-> > > > > > slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
-> > > > > > slab_free mm/slub.c:3534 [inline]
-> > > > > > kfree+0xe2/0x580 mm/slub.c:4562
-> > > > > > rcu_do_batch kernel/rcu/tree.c:2245 [inline]
-> > > > > > rcu_core+0x7b5/0x1890 kernel/rcu/tree.c:2505
-> > > > > > __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
-> > > > > >
-> > > > > > Last potentially related work creation:
-> > > > > > kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
-> > > > > > __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
-> > > > > > call_rcu+0x99/0x790 kernel/rcu/tree.c:2793
-> > > > > > qdisc_put+0xcd/0xe0 net/sched/sch_generic.c:1083
-> > > > > > notify_and_destroy net/sched/sch_api.c:1012 [inline]
-> > > > > > qdisc_graft+0xeb1/0x1270 net/sched/sch_api.c:1084
-> > > > > > tc_modify_qdisc+0xbb7/0x1a00 net/sched/sch_api.c:1671
-> > > > > > rtnetlink_rcv_msg+0x43a/0xca0 net/core/rtnetlink.c:6090
-> > > > > > netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
-> > > > > > netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-> > > > > > netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
-> > > > > > netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
-> > > > > > sock_sendmsg_nosec net/socket.c:714 [inline]
-> > > > > > sock_sendmsg+0xcf/0x120 net/socket.c:734
-> > > > > > ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
-> > > > > > ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
-> > > > > > __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
-> > > > > > do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > > > > > do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> > > > > > entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > > > >
-> > > > > > Second to last potentially related work creation:
-> > > > > > kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
-> > > > > > __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
-> > > > > > kvfree_call_rcu+0x74/0x940 kernel/rcu/tree.c:3322
-> > > > > > neigh_destroy+0x431/0x630 net/core/neighbour.c:912
-> > > > > > neigh_release include/net/neighbour.h:454 [inline]
-> > > > > > neigh_cleanup_and_release+0x1f8/0x330 net/core/neighbour.c:103
-> > > > > > neigh_del net/core/neighbour.c:225 [inline]
-> > > > > > neigh_remove_one+0x37d/0x460 net/core/neighbour.c:246
-> > > > > > neigh_forced_gc net/core/neighbour.c:276 [inline]
-> > > > > > neigh_alloc net/core/neighbour.c:447 [inline]
-> > > > > > ___neigh_create+0x18b5/0x29a0 net/core/neighbour.c:642
-> > > > > > ip6_finish_output2+0xfb8/0x1520 net/ipv6/ip6_output.c:125
-> > > > > > __ip6_finish_output net/ipv6/ip6_output.c:195 [inline]
-> > > > > > ip6_finish_output+0x690/0x1160 net/ipv6/ip6_output.c:206
-> > > > > > NF_HOOK_COND include/linux/netfilter.h:296 [inline]
-> > > > > > ip6_output+0x1ed/0x540 net/ipv6/ip6_output.c:227
-> > > > > > dst_output include/net/dst.h:451 [inline]
-> > > > > > NF_HOOK include/linux/netfilter.h:307 [inline]
-> > > > > > NF_HOOK include/linux/netfilter.h:301 [inline]
-> > > > > > mld_sendpack+0xa09/0xe70 net/ipv6/mcast.c:1820
-> > > > > > mld_send_cr net/ipv6/mcast.c:2121 [inline]
-> > > > > > mld_ifc_work+0x71c/0xdc0 net/ipv6/mcast.c:2653
-> > > > > > process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-> > > > > > worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-> > > > > > kthread+0x2e4/0x3a0 kernel/kthread.c:376
-> > > > > > ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-> > > > > >
-> > > > > > The buggy address belongs to the object at ffff88802065e000
-> > > > > > which belongs to the cache kmalloc-1k of size 1024
-> > > > > > The buggy address is located 56 bytes inside of
-> > > > > > 1024-byte region [ffff88802065e000, ffff88802065e400)
-> > > > > >
-> > > > > > The buggy address belongs to the physical page:
-> > > > > > page:ffffea0000819600 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x20658
-> > > > > > head:ffffea0000819600 order:3 compound_mapcount:0 compound_pincount:0
-> > > > > > flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-> > > > > > raw: 00fff00000010200 0000000000000000 dead000000000001 ffff888011841dc0
-> > > > > > raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-> > > > > > page dumped because: kasan: bad access detected
-> > > > > > page_owner tracks the page as allocated
-> > > > > > page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 3523, tgid 3523 (sshd), ts 41495190986, free_ts 41417713212
-> > > > > > prep_new_page mm/page_alloc.c:2532 [inline]
-> > > > > > get_page_from_freelist+0x109b/0x2ce0 mm/page_alloc.c:4283
-> > > > > > __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5515
-> > > > > > alloc_pages+0x1a6/0x270 mm/mempolicy.c:2270
-> > > > > > alloc_slab_page mm/slub.c:1824 [inline]
-> > > > > > allocate_slab+0x27e/0x3d0 mm/slub.c:1969
-> > > > > > new_slab mm/slub.c:2029 [inline]
-> > > > > > ___slab_alloc+0x7f1/0xe10 mm/slub.c:3031
-> > > > > > __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
-> > > > > > slab_alloc_node mm/slub.c:3209 [inline]
-> > > > > > __kmalloc_node_track_caller+0x2f2/0x380 mm/slub.c:4955
-> > > > > > kmalloc_reserve net/core/skbuff.c:358 [inline]
-> > > > > > __alloc_skb+0xd9/0x2f0 net/core/skbuff.c:430
-> > > > > > alloc_skb_fclone include/linux/skbuff.h:1307 [inline]
-> > > > > > tcp_stream_alloc_skb+0x38/0x580 net/ipv4/tcp.c:861
-> > > > > > tcp_sendmsg_locked+0xc36/0x2f80 net/ipv4/tcp.c:1325
-> > > > > > tcp_sendmsg+0x2b/0x40 net/ipv4/tcp.c:1483
-> > > > > > inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
-> > > > > > sock_sendmsg_nosec net/socket.c:714 [inline]
-> > > > > > sock_sendmsg+0xcf/0x120 net/socket.c:734
-> > > > > > sock_write_iter+0x291/0x3d0 net/socket.c:1108
-> > > > > > call_write_iter include/linux/fs.h:2187 [inline]
-> > > > > > new_sync_write fs/read_write.c:491 [inline]
-> > > > > > vfs_write+0x9e9/0xdd0 fs/read_write.c:578
-> > > > > > ksys_write+0x1e8/0x250 fs/read_write.c:631
-> > > > > > page last free stack trace:
-> > > > > > reset_page_owner include/linux/page_owner.h:24 [inline]
-> > > > > > free_pages_prepare mm/page_alloc.c:1449 [inline]
-> > > > > > free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1499
-> > > > > > free_unref_page_prepare mm/page_alloc.c:3380 [inline]
-> > > > > > free_unref_page+0x19/0x4d0 mm/page_alloc.c:3476
-> > > > > > __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2548
-> > > > > > qlink_free mm/kasan/quarantine.c:168 [inline]
-> > > > > > qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
-> > > > > > kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
-> > > > > > __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:447
-> > > > > > kasan_slab_alloc include/linux/kasan.h:224 [inline]
-> > > > > > slab_post_alloc_hook mm/slab.h:727 [inline]
-> > > > > > slab_alloc_node mm/slub.c:3243 [inline]
-> > > > > > slab_alloc mm/slub.c:3251 [inline]
-> > > > > > __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
-> > > > > > kmem_cache_alloc+0x267/0x3b0 mm/slub.c:3268
-> > > > > > kmem_cache_zalloc include/linux/slab.h:723 [inline]
-> > > > > > alloc_buffer_head+0x20/0x140 fs/buffer.c:2974
-> > > > > > alloc_page_buffers+0x280/0x790 fs/buffer.c:829
-> > > > > > create_empty_buffers+0x2c/0xee0 fs/buffer.c:1558
-> > > > > > ext4_block_write_begin+0x1004/0x1530 fs/ext4/inode.c:1074
-> > > > > > ext4_da_write_begin+0x422/0xae0 fs/ext4/inode.c:2996
-> > > > > > generic_perform_write+0x246/0x560 mm/filemap.c:3738
-> > > > > > ext4_buffered_write_iter+0x15b/0x460 fs/ext4/file.c:270
-> > > > > > ext4_file_write_iter+0x44a/0x1660 fs/ext4/file.c:679
-> > > > > > call_write_iter include/linux/fs.h:2187 [inline]
-> > > > > > new_sync_write fs/read_write.c:491 [inline]
-> > > > > > vfs_write+0x9e9/0xdd0 fs/read_write.c:578
-> > > > > >
-> > > > > > Fixes: af356afa010f ("net_sched: reintroduce dev->qdisc for use by sch_api")
-> > > > > > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > > > > > Diagnosed-by: Dmitry Vyukov <dvyukov@google.com>
-> > > > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > > > > ---
-> > > > > >  net/sched/sch_api.c | 5 +++--
-> > > > > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > > > > >
-> > > > > > diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> > > > > > index c98af0ada706efee202a20a6bfb6f2b984106f45..4a27dfb1ba0faab3692a82969fb8b78768742779 100644
-> > > > > > --- a/net/sched/sch_api.c
-> > > > > > +++ b/net/sched/sch_api.c
-> > > > > > @@ -1099,12 +1099,13 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
-> > > > > >
-> > > > > >  skip:
-> > > > > >               if (!ingress) {
-> > > > > > -                     notify_and_destroy(net, skb, n, classid,
-> > > > > > -                                        rtnl_dereference(dev->qdisc), new);
-> > > > > > +                     old = rtnl_dereference(dev->qdisc);
-> > > > > >                       if (new && !new->ops->attach)
-> > > > > >                               qdisc_refcount_inc(new);
-> > > > > >                       rcu_assign_pointer(dev->qdisc, new ? : &noop_qdisc);
-> > > > > >
-> > > > > > +                     notify_and_destroy(net, skb, n, classid, old, new);
-> > > > > > +
-> > > > > >                       if (new && new->ops->attach)
-> > > > > >                               new->ops->attach(new);
-> > > > > >               } else {
-> > > > >
-> > > > > Hi Eric,
-> > > > > We started seeing the following WARN_ON happening on htb destroy
-> > > > > following your patch:
-> > > > > https://elixir.bootlin.com/linux/v6.1-rc3/source/net/sched/sch_htb.c#L1561
-> > > > >
-> > > > > Anything comes to mind?
-> > > >
-> > > > Not really. Let's ask Maxim Mikityanskiy <maximmi@nvidia.com>
-> > >
-> > > CC: Maxim on non-nvidia address
-> > >
-> >
-> >
-> > Wild guess is that we need this fix:
-> >
-> > diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-> > index e5b4bbf3ce3d5f36edb512d4017ebd97209bb377..f82c07bd3d60e26e5a1fe2b335dbec29aebb602e
-> > 100644
-> > --- a/net/sched/sch_htb.c
-> > +++ b/net/sched/sch_htb.c
-> > @@ -1558,7 +1558,7 @@ static int htb_destroy_class_offload(struct
-> > Qdisc *sch, struct htb_class *cl,
-> >                 /* Before HTB is destroyed, the kernel grafts noop_qdisc to
-> >                  * all queues.
-> >                  */
-> > -               WARN_ON(!(old->flags & TCQ_F_BUILTIN));
-> > +               WARN_ON(old && !(old->flags & TCQ_F_BUILTIN));
->
-> I don't think it's the right fix. If the WARN_ON happens and doesn't
-> complain about old == NULL, it's not NULL, so this extra check won't
-> help. In any case, old comes from dev_graft_qdisc, which should never
-> return NULL.
->
-> Maybe something changed after Eric's patch, so that the statement
-> above is no longer true? I.e. I expect a noop_qdisc here, but there is
-> some other qdisc attached to the queue. I need to recall what was the
-> destroy flow and what code assigned noop_qdisc there...
+On 11/2/22 10:53 PM, Andrii Nakryiko wrote:
+> Finally add support for filtering stats values, similar to
+> non-comparison mode filtering. For comparison mode 4 variants of stats
+> are important for filtering, as they allow to filter either A or B side,
+> but even more importantly they allow to filter based on value
+> difference, and for verdict stat value difference is MATCH/MISMATCH
+> classification. So with these changes it's finally possible to easily
+> check if there were any mismatches between failure/success outcomes on
+> two separate data sets. Like in an example below:
+> 
+>    $ ./veristat -e file,prog,verdict,insns -C ~/baseline-results.csv ~/shortest-results.csv -f verdict_diff=mismatch
 
-Gal please provide a repro. It is not clear if you get a WARN or a NULL deref.
+All these improvements to veristat look great.
+What is the way to do negative filter ?
+In other words what is the way to avoid using " | grep -v '+0' " ?
 
->
-> >         else
-> >                 WARN_ON(old != q);
-> >
-> >
-> > > > > I can provide the exact shell commands and more info if needed.
-> > > > >
-> > > > > Thanks
-> > >
