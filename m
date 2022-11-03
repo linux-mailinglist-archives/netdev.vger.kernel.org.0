@@ -2,101 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46371617FF2
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 15:49:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8EE6617FF9
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 15:50:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbiKCOs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 10:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
+        id S231767AbiKCOuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 10:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiKCOs4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 10:48:56 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4F118B15;
-        Thu,  3 Nov 2022 07:48:55 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bs21so3145786wrb.4;
-        Thu, 03 Nov 2022 07:48:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=OyyRFN6o9cSPSQOmcN/1EM+CmiHfqIcoRrnXjizSh5k=;
-        b=UiD6Sw+BCc8/v2kAxBpA4XlTQDkFfgJLJVlGwLZvxlPlnD5+ynC6Eq8DbPlt3NW9h0
-         bAD0JrWxYpZyk+g5EL9zTxmBD11V4eHsfrpY9GQ+5UfPRnbePRyzxV5OEA/zcUhujJDC
-         Gy/COKqcAtQUFIeQ2Eo3dlOvoUYxm4Dbu87s45v+vvUNU5352mEb7lfuIpX/V4Re5rhz
-         n+oHq03FKxelkwBIr7lr2YsKRfX3+6J3GhjH7PAw1a790wpPGH90M0pVryi1iA2ObvPO
-         cih1QQKeW350S+iC7phkiyqumk3RQOxihOSnl3wQH8CyC4VMH4VixE5QRKtHMfFCumYF
-         xscQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OyyRFN6o9cSPSQOmcN/1EM+CmiHfqIcoRrnXjizSh5k=;
-        b=GxIz5prZ/YlGxQ5hY8NrIhraw7SyW9sCXtLMaTPizmWYhS8DvTmhPtsMl2F7UMRlhP
-         /Ez4tjByWTRpKHiuB3bZ2ATwzLHXx2y+klywaT8jo5Wdt3pMoOCrXbdQc+HIPS+7eH1n
-         hV6abGqE8VVVRFYYg1oVKCx+FmrClFBSn0pWFc+AVKIEn7zgYB4rfHQ6X+olvvTH6X2O
-         HwJtdUGuFK0Oml5NZxoelGwy3JgGprU/ytb+E5Q186zm8eOhU6j4NpBmMONJdgtdD1Ma
-         qGEMdqBbI4WZX5qVfos50sdpbtFV5JPWCJ60+UGs2ufpeS+aY9ta2iZiDF4FwWq0kSnt
-         mohQ==
-X-Gm-Message-State: ACrzQf1M5FpuPrJeeQsqPeU4X6G8lkCvKFD+BAPdkzwv2p5xOLbVJgyj
-        bT6mDOGSUswzrwXS1RcOP9E5Ff3V38Er4A==
-X-Google-Smtp-Source: AMsMyM4K/tdvIzFule6PjRafCbDb6HsmdP5OBU7nmsT0oVnHvqtXJEI3fBPFQ1oYPtFAPthl+pvllg==
-X-Received: by 2002:adf:f687:0:b0:236:481f:83a6 with SMTP id v7-20020adff687000000b00236481f83a6mr19368811wrp.342.1667486933978;
-        Thu, 03 Nov 2022 07:48:53 -0700 (PDT)
-Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
-        by smtp.gmail.com with ESMTPSA id y16-20020adff6d0000000b0023647841c5bsm1038753wrp.60.2022.11.03.07.48.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 07:48:53 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Thu, 3 Nov 2022 15:48:51 +0100
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     olsajiri@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, bjorn@kernel.org, toke@redhat.com,
-        David.Laight@aculab.com, rostedt@goodmis.org
-Subject: Re: [PATCH 0/2] bpf: Yet another approach to fix the BPF dispatcher
- thing
-Message-ID: <Y2PU01h0hy+6dI0J@krava>
-References: <20221103120012.717020618@infradead.org>
+        with ESMTP id S231719AbiKCOuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 10:50:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C142317AAA;
+        Thu,  3 Nov 2022 07:50:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75E7CB828AD;
+        Thu,  3 Nov 2022 14:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A2CEC433D6;
+        Thu,  3 Nov 2022 14:50:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667487017;
+        bh=8UbJGgWQ+0k15DJORAN0LQwZhQX4buwss6b2qtLMZRM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FFwzMHVW4by733yxdQKiAnhXgaPbbu3d9NByg0TEvM5MHqy4tRfyMKeRpi2pgPfVL
+         8weiKr4puY8Kg4yN3nh+rWyWiQFCA1bvWxrP0hygHLWLNmqZL/SWWuO9gU9ZVc2juk
+         erj09nuyfvco9JpYmUGvogsbSa24/+AuO4w6wpTn8JLpeocGHyFBoeKlJ/WK2Rl6ZF
+         ylMYRCFK2ah/7SjppcxqOx6Xv96wMgDp/g1ygcEwv2QBsXEkEQmeKiHKruykn/RavI
+         A7BeFpLcvWIYZWvw1ZNnjWxilFgc424j8n6SlpKc52HCbNlY89046RoI1PS9EQw3uV
+         +qEltqiXodVfw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E2636E270DF;
+        Thu,  3 Nov 2022 14:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221103120012.717020618@infradead.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v6 0/6] Add new PCP and APPTRUST attributes to dcbnl
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166748701692.25352.5231557884677033562.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Nov 2022 14:50:16 +0000
+References: <20221101094834.2726202-1-daniel.machon@microchip.com>
+In-Reply-To: <20221101094834.2726202-1-daniel.machon@microchip.com>
+To:     Daniel Machon <daniel.machon@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
+        maxime.chevallier@bootlin.com, thomas.petazzoni@bootlin.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, joe@perches.com,
+        linux@armlinux.org.uk, horatiu.vultur@microchip.com,
+        Julia.Lawall@inria.fr, vladimir.oltean@nxp.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 03, 2022 at 01:00:12PM +0100, Peter Zijlstra wrote:
-> Hi!
-> 
-> Even thought the __attribute__((patchable_function_entry())) solution to the
-> BPF dispatcher woes works, it turns out to not be supported by the whole range
-> of ageing compilers we support. Specifically this attribute seems to be GCC-8
-> and later.
-> 
-> This is another approach -- using static_call() to rewrite the dispatcher
-> function. I've compile tested this on:
-> 
->   x86_64  (inline static-call support)
->   i386    (out-of-line static-call support)
->   aargh64 (no static-call support)
-> 
-> A previous version was tested and found working by Bjorn.
-> 
-> It is split in two patches; first reverting the current approach and then
-> introducing the new for ease of review.
-> 
+Hello:
 
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Tested-by: Jiri Olsa <jolsa@kernel.org>
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-thanks,
-jirka
+On Tue, 1 Nov 2022 10:48:28 +0100 you wrote:
+> This patch series adds new extension attributes to dcbnl, to support PCP
+> prioritization (and thereby hw offloadable pcp-based queue
+> classification) and per-selector trust and trust order. Additionally,
+> the microchip sparx5 driver has been dcb-enabled to make use of the new
+> attributes to offload PCP, DSCP and Default prio to the switch, and
+> implement trust order of selectors.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v6,1/6] net: dcb: add new pcp selector to app object
+    https://git.kernel.org/netdev/net-next/c/ec32c0c42d0a
+  - [net-next,v6,2/6] net: dcb: add new apptrust attribute
+    https://git.kernel.org/netdev/net-next/c/6182d5875c33
+  - [net-next,v6,3/6] net: microchip: sparx5: add support for offloading pcp table
+    https://git.kernel.org/netdev/net-next/c/92ef3d011e17
+  - [net-next,v6,4/6] net: microchip: sparx5: add support for apptrust
+    https://git.kernel.org/netdev/net-next/c/23f8382cd95d
+  - [net-next,v6,5/6] net: microchip: sparx5: add support for offloading dscp table
+    https://git.kernel.org/netdev/net-next/c/8dcf69a64118
+  - [net-next,v6,6/6] net: microchip: sparx5: add support for offloading default prio
+    https://git.kernel.org/netdev/net-next/c/c58ff3ed432d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
