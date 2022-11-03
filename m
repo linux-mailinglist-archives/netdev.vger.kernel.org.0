@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 966C761766A
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 06:54:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0935261766E
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 06:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbiKCFyL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Nov 2022 01:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S230305AbiKCFyh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Nov 2022 01:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbiKCFxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 01:53:38 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A7160DE
-        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 22:53:33 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A2NVs8x022925
-        for <netdev@vger.kernel.org>; Wed, 2 Nov 2022 22:53:33 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3kkj3bb32c-5
+        with ESMTP id S230366AbiKCFxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 01:53:34 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0E52DDF
+        for <netdev@vger.kernel.org>; Wed,  2 Nov 2022 22:53:30 -0700 (PDT)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A2NVsQk010857
+        for <netdev@vger.kernel.org>; Wed, 2 Nov 2022 22:53:30 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3kkhkvttgs-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 22:53:33 -0700
-Received: from twshared19054.43.prn1.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 02 Nov 2022 22:53:29 -0700
+Received: from twshared25017.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 2 Nov 2022 22:53:30 -0700
+ 15.1.2375.31; Wed, 2 Nov 2022 22:53:26 -0700
 Received: by devbig019.vll3.facebook.com (Postfix, from userid 137359)
-        id 5A3CD2102ED31; Wed,  2 Nov 2022 22:53:22 -0700 (PDT)
+        id 669692102ED3B; Wed,  2 Nov 2022 22:53:24 -0700 (PDT)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 08/10] selftests/bpf: handle missing records in comparison mode better in veristat
-Date:   Wed, 2 Nov 2022 22:53:02 -0700
-Message-ID: <20221103055304.2904589-9-andrii@kernel.org>
+Subject: [PATCH bpf-next 09/10] selftests/bpf: support stats ordering in comparison mode in veristat
+Date:   Wed, 2 Nov 2022 22:53:03 -0700
+Message-ID: <20221103055304.2904589-10-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221103055304.2904589-1-andrii@kernel.org>
 References: <20221103055304.2904589-1-andrii@kernel.org>
@@ -41,14 +41,14 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: EWUAGR_OL2qiz2XMEfnEfnjLYDu4y-K3
-X-Proofpoint-GUID: EWUAGR_OL2qiz2XMEfnEfnjLYDu4y-K3
+X-Proofpoint-GUID: i8nM83kruL9EWKyZToo5kmpD5EO9TL0U
+X-Proofpoint-ORIG-GUID: i8nM83kruL9EWKyZToo5kmpD5EO9TL0U
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-11-02_15,2022-11-02_01,2022-06-22_01
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,317 +56,355 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When comparing two datasets, if either side is missing corresponding
-record with the same file and prog name, currently veristat emits
-misleading zeros/failures, and even tried to calculate a difference,
-even though there is no data to compare against.
+Introduce the concept of "stat variant", by which it's possible to
+specify whether to use the value from A (baseline) side, B (comparison
+or control) side, the absolute difference value or relative (percentage)
+difference value.
 
-This patch improves internal logic of handling such situations. Now
-we'll emit "N/A" in places where data is missing and comparison is
-non-sensical.
+To support specifying this, veristat recognizes `_a`, `_b`, `_diff`,
+`_pct` suffixes, which can be appended to stat name(s). In
+non-comparison mode variants are ignored (there is only `_a` variant
+effectively), if no variant suffix is provided, `_b` is assumed, as
+control group is of primary interest in comparison mode.
 
-As an example, in an artificially truncated and mismatched Cilium
-results, the output looks like below:
+These stat variants can be flexibly combined with asc/desc orders.
 
-  $ ./veristat -e file,prog,verdict,insns -C ~/base.csv ~/comp.csv
+Here's an example of ordering results first by verdict match/mismatch (or n/a
+if one of the sides is missing; n/a is always considered to be the lowest
+value), and within each match/mismatch/n/a group further sort by number of
+instructions in B side. In this case we don't have MISMATCH cases, but N/A are
+split from MATCH, demonstrating this custom ordering.
+
+  $ ./veristat -e file,prog,verdict,insns -s verdict_diff,insns_b_ -C ~/base.csv ~/comp.csv
   File                Program                         Verdict (A)  Verdict (B)  Verdict (DIFF)  Insns (A)  Insns (B)  Insns   (DIFF)
   ------------------  ------------------------------  -----------  -----------  --------------  ---------  ---------  --------------
-  bpf_alignchecker.o  __send_drop_notify              success      N/A          N/A                    53        N/A             N/A
-  bpf_alignchecker.o  tail_icmp6_handle_ns            failure      failure      MATCH                  33         33     +0 (+0.00%)
+  bpf_xdp.o           tail_lb_ipv6                    N/A          success      N/A                   N/A     151895             N/A
+  bpf_xdp.o           tail_nodeport_nat_egress_ipv4   N/A          success      N/A                   N/A      15619             N/A
+  bpf_xdp.o           tail_nodeport_ipv6_dsr          N/A          success      N/A                   N/A       1206             N/A
+  bpf_xdp.o           tail_nodeport_ipv4_dsr          N/A          success      N/A                   N/A       1162             N/A
   bpf_alignchecker.o  tail_icmp6_send_echo_reply      N/A          failure      N/A                   N/A         74             N/A
+  bpf_alignchecker.o  __send_drop_notify              success      N/A          N/A                    53        N/A             N/A
   bpf_host.o          __send_drop_notify              success      N/A          N/A                    53        N/A             N/A
   bpf_host.o          cil_from_host                   success      N/A          N/A                   762        N/A             N/A
-  bpf_xdp.o           __send_drop_notify              success      success      MATCH                 151        151     +0 (+0.00%)
-  bpf_xdp.o           cil_xdp_entry                   success      success      MATCH                 423        423     +0 (+0.00%)
-  bpf_xdp.o           tail_handle_nat_fwd_ipv4        success      success      MATCH               21547      20920   -627 (-2.91%)
-  bpf_xdp.o           tail_handle_nat_fwd_ipv6        success      success      MATCH               16974      17039    +65 (+0.38%)
   bpf_xdp.o           tail_lb_ipv4                    success      success      MATCH               71736      73430  +1694 (+2.36%)
-  bpf_xdp.o           tail_lb_ipv6                    N/A          success      N/A                   N/A     151895             N/A
-  bpf_xdp.o           tail_nodeport_ipv4_dsr          N/A          success      N/A                   N/A       1162             N/A
-  bpf_xdp.o           tail_nodeport_ipv6_dsr          N/A          success      N/A                   N/A       1206             N/A
-  bpf_xdp.o           tail_nodeport_nat_egress_ipv4   N/A          success      N/A                   N/A      15619             N/A
+  bpf_xdp.o           tail_handle_nat_fwd_ipv4        success      success      MATCH               21547      20920   -627 (-2.91%)
+  bpf_xdp.o           tail_rev_nodeport_lb6           success      success      MATCH               17954      17905    -49 (-0.27%)
+  bpf_xdp.o           tail_handle_nat_fwd_ipv6        success      success      MATCH               16974      17039    +65 (+0.38%)
   bpf_xdp.o           tail_nodeport_nat_ingress_ipv4  success      success      MATCH                7658       7713    +55 (+0.72%)
+  bpf_xdp.o           tail_rev_nodeport_lb4           success      success      MATCH                7126       6934   -192 (-2.69%)
   bpf_xdp.o           tail_nodeport_nat_ingress_ipv6  success      success      MATCH                6405       6397     -8 (-0.12%)
   bpf_xdp.o           tail_nodeport_nat_ipv6_egress   failure      failure      MATCH                 752        752     +0 (+0.00%)
-  bpf_xdp.o           tail_rev_nodeport_lb4           success      success      MATCH                7126       6934   -192 (-2.69%)
-  bpf_xdp.o           tail_rev_nodeport_lb6           success      success      MATCH               17954      17905    -49 (-0.27%)
+  bpf_xdp.o           cil_xdp_entry                   success      success      MATCH                 423        423     +0 (+0.00%)
+  bpf_xdp.o           __send_drop_notify              success      success      MATCH                 151        151     +0 (+0.00%)
+  bpf_alignchecker.o  tail_icmp6_handle_ns            failure      failure      MATCH                  33         33     +0 (+0.00%)
   ------------------  ------------------------------  -----------  -----------  --------------  ---------  ---------  --------------
-
-Internally veristat now separates joining two datasets and remembering the
-join, and actually emitting a comparison view. This will come handy when we add
-support for filtering and custom ordering in comparison mode.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/testing/selftests/bpf/veristat.c | 147 ++++++++++++++++++-------
- 1 file changed, 110 insertions(+), 37 deletions(-)
+ tools/testing/selftests/bpf/veristat.c | 192 +++++++++++++++++++++++--
+ 1 file changed, 182 insertions(+), 10 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/veristat.c b/tools/testing/selftests/bpf/veristat.c
-index ec1a8ba7791c..5a9568a8c0bf 100644
+index 5a9568a8c0bf..f2ea825ee80a 100644
 --- a/tools/testing/selftests/bpf/veristat.c
 +++ b/tools/testing/selftests/bpf/veristat.c
-@@ -41,6 +41,15 @@ struct verif_stats {
- 	long stats[NUM_STATS_CNT];
+@@ -17,6 +17,7 @@
+ #include <bpf/libbpf.h>
+ #include <libelf.h>
+ #include <gelf.h>
++#include <float.h>
+ 
+ enum stat_id {
+ 	VERDICT,
+@@ -34,6 +35,45 @@ enum stat_id {
+ 	NUM_STATS_CNT = FILE_NAME - VERDICT,
  };
  
-+/* joined comparison mode stats */
-+struct verif_stats_join {
-+	char *file_name;
-+	char *prog_name;
-+
-+	const struct verif_stats *stats_a;
-+	const struct verif_stats *stats_b;
++/* In comparison mode each stat can specify up to four different values:
++ *   - A side value;
++ *   - B side value;
++ *   - absolute diff value;
++ *   - relative (percentage) diff value.
++ *
++ * When specifying stat specs in comparison mode, user can use one of the
++ * following variant suffixes to specify which exact variant should be used for
++ * ordering or filtering:
++ *   - `_a` for A side value;
++ *   - `_b` for B side value;
++ *   - `_diff` for absolute diff value;
++ *   - `_pct` for relative (percentage) diff value.
++ *
++ * If no variant suffix is provided, then `_b` (control data) is assumed.
++ *
++ * As an example, let's say instructions stat has the following output:
++ *
++ * Insns (A)  Insns (B)  Insns   (DIFF)
++ * ---------  ---------  --------------
++ * 21547      20920       -627 (-2.91%)
++ *
++ * Then:
++ *   - 21547 is A side value (insns_a);
++ *   - 20920 is B side value (insns_b);
++ *   - -627 is absolute diff value (insns_diff);
++ *   - -2.91% is relative diff value (insns_pct).
++ *
++ * For verdict there is no verdict_pct variant.
++ * For file and program name, _a and _b variants are equivalent and there are
++ * no _diff or _pct variants.
++ */
++enum stat_variant {
++	VARIANT_A,
++	VARIANT_B,
++	VARIANT_DIFF,
++	VARIANT_PCT,
 +};
 +
+ struct verif_stats {
+ 	char *file_name;
+ 	char *prog_name;
+@@ -53,6 +93,7 @@ struct verif_stats_join {
  struct stat_specs {
  	int spec_cnt;
  	enum stat_id ids[ALL_STATS_CNT];
-@@ -97,6 +106,9 @@ static struct env {
- 	struct verif_stats *baseline_stats;
- 	int baseline_stat_cnt;
- 
-+	struct verif_stats_join *join_stats;
-+	int join_stat_cnt;
-+
- 	struct stat_specs output_spec;
- 	struct stat_specs sort_spec;
- 
-@@ -518,6 +530,15 @@ static const struct stat_specs default_sort_spec = {
- 	.asc = { true, true, },
++	enum stat_variant variants[ALL_STATS_CNT];
+ 	bool asc[ALL_STATS_CNT];
+ 	int lens[ALL_STATS_CNT * 3]; /* 3x for comparison mode */
+ };
+@@ -86,6 +127,7 @@ struct filter {
+ 	/* FILTER_STAT */
+ 	enum operator_kind op;
+ 	int stat_id;
++	enum stat_variant stat_var;
+ 	long value;
  };
  
-+/* sorting for comparison mode to join two data sets */
-+static const struct stat_specs join_sort_spec = {
-+	.spec_cnt = 2,
-+	.ids = {
-+		FILE_NAME, PROG_NAME,
-+	},
-+	.asc = { true, true, },
-+};
-+
- static struct stat_def {
- 	const char *header;
- 	const char *names[4];
-@@ -934,13 +955,16 @@ static void prepare_value(const struct verif_stats *s, enum stat_id id,
+@@ -360,7 +402,7 @@ static struct {
+ 	{ OP_EQ, "=" },
+ };
+ 
+-static bool parse_stat_id(const char *name, size_t len, int *id);
++static bool parse_stat_id_var(const char *name, size_t len, int *id, enum stat_variant *var);
+ 
+ static int append_filter(struct filter **filters, int *cnt, const char *str)
  {
- 	switch (id) {
- 	case FILE_NAME:
--		*str = s->file_name;
-+		*str = s ? s->file_name : "N/A";
- 		break;
- 	case PROG_NAME:
--		*str = s->prog_name;
-+		*str = s ? s->prog_name : "N/A";
- 		break;
- 	case VERDICT:
--		*str = s->stats[VERDICT] ? "success" : "failure";
-+		if (!s)
-+			*str = "N/A";
-+		else
-+			*str = s->stats[VERDICT] ? "success" : "failure";
- 		break;
- 	case DURATION:
- 	case TOTAL_INSNS:
-@@ -948,7 +972,7 @@ static void prepare_value(const struct verif_stats *s, enum stat_id id,
- 	case PEAK_STATES:
- 	case MAX_STATES_PER_INSN:
- 	case MARK_READ_MAX_LEN:
--		*val = s->stats[id];
-+		*val = s ? s->stats[id] : 0;
- 		break;
- 	default:
- 		fprintf(stderr, "Unrecognized stat #%d\n", id);
-@@ -1223,9 +1247,11 @@ static void output_comp_headers(enum resfmt fmt)
- 		output_comp_header_underlines();
- }
- 
--static void output_comp_stats(const struct verif_stats *base, const struct verif_stats *comp,
-+static void output_comp_stats(const struct verif_stats_join *join_stats,
- 			      enum resfmt fmt, bool last)
- {
-+	const struct verif_stats *base = join_stats->stats_a;
-+	const struct verif_stats *comp = join_stats->stats_b;
- 	char base_buf[1024] = {}, comp_buf[1024] = {}, diff_buf[1024] = {};
- 	int i;
- 
-@@ -1243,33 +1269,45 @@ static void output_comp_stats(const struct verif_stats *base, const struct verif
- 		/* normalize all the outputs to be in string buffers for simplicity */
- 		if (is_key_stat(id)) {
- 			/* key stats (file and program name) are always strings */
--			if (base != &fallback_stats)
-+			if (base)
- 				snprintf(base_buf, sizeof(base_buf), "%s", base_str);
- 			else
- 				snprintf(base_buf, sizeof(base_buf), "%s", comp_str);
- 		} else if (base_str) {
- 			snprintf(base_buf, sizeof(base_buf), "%s", base_str);
- 			snprintf(comp_buf, sizeof(comp_buf), "%s", comp_str);
--			if (strcmp(base_str, comp_str) == 0)
-+			if (!base || !comp)
-+				snprintf(diff_buf, sizeof(diff_buf), "%s", "N/A");
-+			else if (strcmp(base_str, comp_str) == 0)
- 				snprintf(diff_buf, sizeof(diff_buf), "%s", "MATCH");
- 			else
- 				snprintf(diff_buf, sizeof(diff_buf), "%s", "MISMATCH");
- 		} else {
- 			double p = 0.0;
- 
--			snprintf(base_buf, sizeof(base_buf), "%ld", base_val);
--			snprintf(comp_buf, sizeof(comp_buf), "%ld", comp_val);
-+			if (base)
-+				snprintf(base_buf, sizeof(base_buf), "%ld", base_val);
-+			else
-+				snprintf(base_buf, sizeof(base_buf), "%s", "N/A");
-+			if (comp)
-+				snprintf(comp_buf, sizeof(comp_buf), "%ld", comp_val);
-+			else
-+				snprintf(comp_buf, sizeof(comp_buf), "%s", "N/A");
- 
- 			diff_val = comp_val - base_val;
--			if (base == &fallback_stats || comp == &fallback_stats || base_val == 0) {
--				if (comp_val == base_val)
--					p = 0.0; /* avoid +0 (+100%) case */
--				else
--					p = comp_val < base_val ? -100.0 : 100.0;
-+			if (!base || !comp) {
-+				snprintf(diff_buf, sizeof(diff_buf), "%s", "N/A");
- 			} else {
--				 p = diff_val * 100.0 / base_val;
-+				if (base_val == 0) {
-+					if (comp_val == base_val)
-+						p = 0.0; /* avoid +0 (+100%) case */
-+					else
-+						p = comp_val < base_val ? -100.0 : 100.0;
-+				} else {
-+					 p = diff_val * 100.0 / base_val;
-+				}
-+				snprintf(diff_buf, sizeof(diff_buf), "%+ld (%+.2lf%%)", diff_val, p);
- 			}
--			snprintf(diff_buf, sizeof(diff_buf), "%+ld (%+.2lf%%)", diff_val, p);
- 		}
- 
- 		switch (fmt) {
-@@ -1328,6 +1366,7 @@ static int cmp_stats_key(const struct verif_stats *base, const struct verif_stat
- static int handle_comparison_mode(void)
- {
- 	struct stat_specs base_specs = {}, comp_specs = {};
-+	struct stat_specs tmp_sort_spec;
- 	enum resfmt cur_fmt;
- 	int err, i, j;
- 
-@@ -1370,31 +1409,26 @@ static int handle_comparison_mode(void)
- 		}
- 	}
- 
-+	/* Replace user-specified sorting spec with file+prog sorting rule to
-+	 * be able to join two datasets correctly. Once we are done, we will
-+	 * restore the original sort spec.
-+	 */
-+	tmp_sort_spec = env.sort_spec;
-+	env.sort_spec = join_sort_spec;
- 	qsort(env.prog_stats, env.prog_stat_cnt, sizeof(*env.prog_stats), cmp_prog_stats);
- 	qsort(env.baseline_stats, env.baseline_stat_cnt, sizeof(*env.baseline_stats), cmp_prog_stats);
-+	env.sort_spec = tmp_sort_spec;
- 
--	/* for human-readable table output we need to do extra pass to
--	 * calculate column widths, so we substitute current output format
--	 * with RESFMT_TABLE_CALCLEN and later revert it back to RESFMT_TABLE
--	 * and do everything again.
--	 */
--	if (env.out_fmt == RESFMT_TABLE)
--		cur_fmt = RESFMT_TABLE_CALCLEN;
--	else
--		cur_fmt = env.out_fmt;
--
--one_more_time:
--	output_comp_headers(cur_fmt);
--
--	/* If baseline and comparison datasets have different subset of rows
--	 * (we match by 'object + prog' as a unique key) then assume
--	 * empty/missing/zero value for rows that are missing in the opposite
--	 * data set
-+	/* Join two datasets together. If baseline and comparison datasets
-+	 * have different subset of rows (we match by 'object + prog' as
-+	 * a unique key) then assume empty/missing/zero value for rows that
-+	 * are missing in the opposite data set.
+@@ -388,6 +430,7 @@ static int append_filter(struct filter **filters, int *cnt, const char *str)
+ 	 * glob filter.
  	 */
- 	i = j = 0;
- 	while (i < env.baseline_stat_cnt || j < env.prog_stat_cnt) {
--		bool last = (i == env.baseline_stat_cnt - 1) || (j == env.prog_stat_cnt - 1);
- 		const struct verif_stats *base, *comp;
-+		struct verif_stats_join *join;
-+		void *tmp;
- 		int r;
+ 	for (i = 0; i < ARRAY_SIZE(operators); i++) {
++		enum stat_variant var;
+ 		int id;
+ 		long val;
+ 		const char *end = str;
+@@ -398,7 +441,7 @@ static int append_filter(struct filter **filters, int *cnt, const char *str)
+ 		if (!p)
+ 			continue;
  
- 		base = i < env.baseline_stat_cnt ? &env.baseline_stats[i] : &fallback_stats;
-@@ -1411,18 +1445,56 @@ static int handle_comparison_mode(void)
+-		if (!parse_stat_id(str, p - str, &id)) {
++		if (!parse_stat_id_var(str, p - str, &id, &var)) {
+ 			fprintf(stderr, "Unrecognized stat name in '%s'!\n", str);
  			return -EINVAL;
  		}
+@@ -431,6 +474,7 @@ static int append_filter(struct filter **filters, int *cnt, const char *str)
  
-+		tmp = realloc(env.join_stats, (env.join_stat_cnt + 1) * sizeof(*env.join_stats));
-+		if (!tmp)
-+			return -ENOMEM;
-+		env.join_stats = tmp;
+ 		f->kind = FILTER_STAT;
+ 		f->stat_id = id;
++		f->stat_var = var;
+ 		f->op = operators[i].op_kind;
+ 		f->value = val;
+ 
+@@ -556,22 +600,52 @@ static struct stat_def {
+ 	[MARK_READ_MAX_LEN] = { "Max mark read length", {"max_mark_read_len", "mark_read"}, },
+ };
+ 
+-static bool parse_stat_id(const char *name, size_t len, int *id)
++static bool parse_stat_id_var(const char *name, size_t len, int *id, enum stat_variant *var)
+ {
+-	int i, j;
++	static const char *var_sfxs[] = {
++		[VARIANT_A] = "_a",
++		[VARIANT_B] = "_b",
++		[VARIANT_DIFF] = "_diff",
++		[VARIANT_PCT] = "_pct",
++	};
++	int i, j, k;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(stat_defs); i++) {
+ 		struct stat_def *def = &stat_defs[i];
++		size_t alias_len, sfx_len;
++		const char *alias;
+ 
+ 		for (j = 0; j < ARRAY_SIZE(stat_defs[i].names); j++) {
++			alias = def->names[j];
++			if (!alias)
++				continue;
+ 
+-			if (!def->names[j] ||
+-			    strlen(def->names[j]) != len ||
+-			    strncmp(def->names[j], name, len) != 0)
++			alias_len = strlen(alias);
++			if (strncmp(name, alias, alias_len) != 0)
+ 				continue;
+ 
+-			*id = i;
+-			return true;
++			if (alias_len == len) {
++				/* If no variant suffix is specified, we
++				 * assume control group (just in case we are
++				 * in comparison mode. Variant is ignored in
++				 * non-comparison mode.
++				 */
++				*var = VARIANT_B;
++				*id = i;
++				return true;
++			}
 +
-+		join = &env.join_stats[env.join_stat_cnt];
-+		memset(join, 0, sizeof(*join));
++			for (k = 0; k < ARRAY_SIZE(var_sfxs); k++) {
++				sfx_len = strlen(var_sfxs[k]);
++				if (alias_len + sfx_len != len)
++					continue;
 +
- 		r = cmp_stats_key(base, comp);
- 		if (r == 0) {
--			output_comp_stats(base, comp, cur_fmt, last);
-+			join->file_name = base->file_name;
-+			join->prog_name = base->prog_name;
-+			join->stats_a = base;
-+			join->stats_b = comp;
- 			i++;
- 			j++;
- 		} else if (comp == &fallback_stats || r < 0) {
--			output_comp_stats(base, &fallback_stats, cur_fmt, last);
-+			join->file_name = base->file_name;
-+			join->prog_name = base->prog_name;
-+			join->stats_a = base;
-+			join->stats_b = NULL;
- 			i++;
- 		} else {
--			output_comp_stats(&fallback_stats, comp, cur_fmt, last);
-+			join->file_name = comp->file_name;
-+			join->prog_name = comp->prog_name;
-+			join->stats_a = NULL;
-+			join->stats_b = comp;
- 			j++;
++				if (strncmp(name + alias_len, var_sfxs[k], sfx_len) == 0) {
++					*var = (enum stat_variant)k;
++					*id = i;
++					return true;
++				}
++			}
  		}
-+		env.join_stat_cnt += 1;
-+	}
-+
-+	/* for human-readable table output we need to do extra pass to
-+	 * calculate column widths, so we substitute current output format
-+	 * with RESFMT_TABLE_CALCLEN and later revert it back to RESFMT_TABLE
-+	 * and do everything again.
-+	 */
-+	if (env.out_fmt == RESFMT_TABLE)
-+		cur_fmt = RESFMT_TABLE_CALCLEN;
-+	else
-+		cur_fmt = env.out_fmt;
-+
-+one_more_time:
-+	output_comp_headers(cur_fmt);
-+
-+	for (i = 0; i < env.join_stat_cnt; i++) {
-+		const struct verif_stats_join *join = &env.join_stats[i];
-+		bool last = i == env.join_stat_cnt - 1;
-+
-+		output_comp_stats(join, cur_fmt, last);
  	}
  
- 	if (cur_fmt == RESFMT_TABLE_CALCLEN) {
-@@ -1594,6 +1666,7 @@ int main(int argc, char **argv)
+@@ -593,6 +667,7 @@ static int parse_stat(const char *stat_name, struct stat_specs *specs)
+ 	int id;
+ 	bool has_order = false, is_asc = false;
+ 	size_t len = strlen(stat_name);
++	enum stat_variant var;
  
- 	free_verif_stats(env.prog_stats, env.prog_stat_cnt);
- 	free_verif_stats(env.baseline_stats, env.baseline_stat_cnt);
-+	free(env.join_stats);
- 	for (i = 0; i < env.filename_cnt; i++)
- 		free(env.filenames[i]);
- 	free(env.filenames);
+ 	if (specs->spec_cnt >= ARRAY_SIZE(specs->ids)) {
+ 		fprintf(stderr, "Can't specify more than %zd stats\n", ARRAY_SIZE(specs->ids));
+@@ -605,12 +680,13 @@ static int parse_stat(const char *stat_name, struct stat_specs *specs)
+ 		len -= 1;
+ 	}
+ 
+-	if (!parse_stat_id(stat_name, len, &id)) {
++	if (!parse_stat_id_var(stat_name, len, &id, &var)) {
+ 		fprintf(stderr, "Unrecognized stat name '%s'\n", stat_name);
+ 		return -ESRCH;
+ 	}
+ 
+ 	specs->ids[specs->spec_cnt] = id;
++	specs->variants[specs->spec_cnt] = var;
+ 	specs->asc[specs->spec_cnt] = has_order ? is_asc : stat_defs[id].asc_by_default;
+ 	specs->spec_cnt++;
+ 
+@@ -900,6 +976,99 @@ static int cmp_prog_stats(const void *v1, const void *v2)
+ 	return strcmp(s1->prog_name, s2->prog_name);
+ }
+ 
++static void fetch_join_stat_value(const struct verif_stats_join *s,
++				  enum stat_id id, enum stat_variant var,
++				  const char **str_val,
++				  double *num_val)
++{
++	long v1, v2;
++
++	if (id == FILE_NAME) {
++		*str_val = s->file_name;
++		return;
++	}
++	if (id == PROG_NAME) {
++		*str_val = s->prog_name;
++		return;
++	}
++
++	v1 = s->stats_a ? s->stats_a->stats[id] : 0;
++	v2 = s->stats_b ? s->stats_b->stats[id] : 0;
++
++	switch (var) {
++	case VARIANT_A:
++		if (!s->stats_a)
++			*num_val = -DBL_MAX;
++		else
++			*num_val = s->stats_a->stats[id];
++		return;
++	case VARIANT_B:
++		if (!s->stats_b)
++			*num_val = -DBL_MAX;
++		else
++			*num_val = s->stats_b->stats[id];
++		return;
++	case VARIANT_DIFF:
++		if (!s->stats_a || !s->stats_b)
++			*num_val = -DBL_MAX;
++		else
++			*num_val = (double)(v2 - v1);
++		return;
++	case VARIANT_PCT:
++		if (!s->stats_a || !s->stats_b) {
++			*num_val = -DBL_MAX;
++		} else if (v1 == 0) {
++			if (v1 == v2)
++				*num_val = 0.0;
++			else
++				*num_val = v2 < v1 ? -100.0 : 100.0;
++		} else {
++			 *num_val = (v2 - v1) * 100.0 / v1;
++		}
++		return;
++	}
++}
++
++static int cmp_join_stat(const struct verif_stats_join *s1,
++			 const struct verif_stats_join *s2,
++			 enum stat_id id, enum stat_variant var, bool asc)
++{
++	const char *str1 = NULL, *str2 = NULL;
++	double v1, v2;
++	int cmp = 0;
++
++	fetch_join_stat_value(s1, id, var, &str1, &v1);
++	fetch_join_stat_value(s2, id, var, &str2, &v2);
++
++	if (str1)
++		cmp = strcmp(str1, str2);
++	else if (v1 != v2)
++		cmp = v1 < v2 ? -1 : 1;
++
++	return asc ? cmp : -cmp;
++}
++
++static int cmp_join_stats(const void *v1, const void *v2)
++{
++	const struct verif_stats_join *s1 = v1, *s2 = v2;
++	int i, cmp;
++
++	for (i = 0; i < env.sort_spec.spec_cnt; i++) {
++		cmp = cmp_join_stat(s1, s2,
++				    env.sort_spec.ids[i],
++				    env.sort_spec.variants[i],
++				    env.sort_spec.asc[i]);
++		if (cmp != 0)
++			return cmp;
++	}
++
++	/* always disambiguate with file+prog, which are unique */
++	cmp = strcmp(s1->file_name, s2->file_name);
++	if (cmp != 0)
++		return cmp;
++	return strcmp(s1->prog_name, s2->prog_name);
++}
++
+ #define HEADER_CHAR '-'
+ #define COLUMN_SEP "  "
+ 
+@@ -1477,6 +1646,9 @@ static int handle_comparison_mode(void)
+ 		env.join_stat_cnt += 1;
+ 	}
+ 
++	/* now sort joined results accorsing to sort spec */
++	qsort(env.join_stats, env.join_stat_cnt, sizeof(*env.join_stats), cmp_join_stats);
++
+ 	/* for human-readable table output we need to do extra pass to
+ 	 * calculate column widths, so we substitute current output format
+ 	 * with RESFMT_TABLE_CALCLEN and later revert it back to RESFMT_TABLE
 -- 
 2.30.2
 
