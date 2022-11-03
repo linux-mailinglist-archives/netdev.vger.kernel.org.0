@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D166179DB
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 10:26:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3562B6179E0
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 10:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiKCJZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 05:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
+        id S231449AbiKCJZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 05:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiKCJYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 05:24:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B75F00F;
-        Thu,  3 Nov 2022 02:24:36 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N2yxp6gWxzHtch;
-        Thu,  3 Nov 2022 17:24:14 +0800 (CST)
+        with ESMTP id S231361AbiKCJYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 05:24:55 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDD6EE13;
+        Thu,  3 Nov 2022 02:24:37 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N2yy7002Rz15MHB;
+        Thu,  3 Nov 2022 17:24:30 +0800 (CST)
 Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 3 Nov 2022 17:24:34 +0800
+ 15.1.2375.31; Thu, 3 Nov 2022 17:24:35 +0800
 Received: from ubuntu1804.huawei.com (10.67.174.61) by
  kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 3 Nov 2022 17:24:33 +0800
+ 15.1.2375.31; Thu, 3 Nov 2022 17:24:34 +0800
 From:   Yang Jihong <yangjihong1@huawei.com>
 To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
@@ -39,10 +39,12 @@ To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>
 CC:     <yangjihong1@huawei.com>
-Subject: [PATCH bpf RESEND 0/4] bpf: Support kernel function call in 32-bit ARM
-Date:   Thu, 3 Nov 2022 17:21:14 +0800
-Message-ID: <20221103092118.248600-1-yangjihong1@huawei.com>
+Subject: [PATCH bpf RESEND 1/4] bpf: Adapt 32-bit return value kfunc for 32-bit ARM when zext extension
+Date:   Thu, 3 Nov 2022 17:21:15 +0800
+Message-ID: <20221103092118.248600-2-yangjihong1@huawei.com>
 X-Mailer: git-send-email 2.30.GIT
+In-Reply-To: <20221103092118.248600-1-yangjihong1@huawei.com>
+References: <20221103092118.248600-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -58,51 +60,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Patch 1 and Patch 2 are dependent patches to resolve the BPF check
-   error in 32-bit ARM.
-2. Patch 3 supports bpf fkunc in 32-bit ARM.
-3. Patch 4 is used to add test cases to cover some parameter scenarios
-   states by AAPCS.
+For ARM32 architecture, if data width of kfunc return value is 32 bits,
+need to do explicit zero extension for high 32-bit, insn_def_regno should
+return dst_reg for BPF_JMP type of BPF_PSEUDO_KFUNC_CALL. Otherwise,
+opt_subreg_zext_lo32_rnd_hi32 returns -EFAULT, resulting in BPF failure.
 
-The following is the test_progs result in the 32-bit ARM environment:
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+---
+ kernel/bpf/verifier.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-  # uname -a
-  Linux qemuarm32 6.1.0-rc3+ #2 SMP Thu Nov  3 15:31:29 CST 2022 armv7l armv7l armv7l GNU/Linux
-  # echo 1 > /proc/sys/net/core/bpf_jit_enable
-  # ./test_progs -t kfunc_call
-  #1/1     kfunc_call/kfunc_syscall_test_fail:OK
-  #1/2     kfunc_call/kfunc_syscall_test_null_fail:OK
-  #1/3     kfunc_call/kfunc_call_test_get_mem_fail_rdonly:OK
-  #1/4     kfunc_call/kfunc_call_test_get_mem_fail_use_after_free:OK
-  #1/5     kfunc_call/kfunc_call_test_get_mem_fail_oob:OK
-  #1/6     kfunc_call/kfunc_call_test_get_mem_fail_not_const:OK
-  #1/7     kfunc_call/kfunc_call_test_mem_acquire_fail:OK
-  #1/8     kfunc_call/kfunc_call_test1:OK
-  #1/9     kfunc_call/kfunc_call_test2:OK
-  #1/10    kfunc_call/kfunc_call_test4:OK
-  #1/11    kfunc_call/kfunc_call_test_ref_btf_id:OK
-  #1/12    kfunc_call/kfunc_call_test_get_mem:OK
-  #1/13    kfunc_call/kfunc_syscall_test:OK
-  #1/14    kfunc_call/kfunc_syscall_test_null:OK
-  #1/17    kfunc_call/destructive:OK
-
-Yang Jihong (4):
-  bpf: Adapt 32-bit return value kfunc for 32-bit ARM when zext
-    extension
-  bpf: Remove size check for sk in bpf_skb_is_valid_access for 32-bit
-    architecture
-  bpf: Add kernel function call support in 32-bit ARM
-  bpf:selftests: Add kfunc_call test for mixing 32-bit and 64-bit
-    parameters
-
- arch/arm/net/bpf_jit_32.c                     | 130 ++++++++++++++++++
- kernel/bpf/verifier.c                         |   3 +
- net/bpf/test_run.c                            |   6 +
- net/core/filter.c                             |   2 -
- .../selftests/bpf/prog_tests/kfunc_call.c     |   1 +
- .../selftests/bpf/progs/kfunc_call_test.c     |  23 ++++
- 6 files changed, 163 insertions(+), 2 deletions(-)
-
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 7f0a9f6cb889..bac37757ffca 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2404,6 +2404,9 @@ static int insn_def_regno(const struct bpf_insn *insn)
+ {
+ 	switch (BPF_CLASS(insn->code)) {
+ 	case BPF_JMP:
++		if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL)
++			return insn->dst_reg;
++		fallthrough;
+ 	case BPF_JMP32:
+ 	case BPF_ST:
+ 		return -1;
 -- 
 2.30.GIT
 
