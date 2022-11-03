@@ -2,183 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 014F26183BB
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 17:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB0F66183DD
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 17:11:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbiKCQII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 12:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37092 "EHLO
+        id S231363AbiKCQLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 12:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiKCQHp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 12:07:45 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EF81705F;
-        Thu,  3 Nov 2022 09:07:21 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id u6so2338443plq.12;
-        Thu, 03 Nov 2022 09:07:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ObeLcsj3nE9gnGWSU04jueaoflUbLzWwQVpy0WCWEUg=;
-        b=Ydy4NwzRVs+sKAteh+nyUyz52gUutmhusxHJwQH9FMye8SKVC5WA1kdkQ98hTeWT43
-         w7LbJCyJlUmmcfIbs+trw7uxcKaNPb8tTxFiZmBWcm7+n+6hxxcjGOJUR+TixFyYoSip
-         9goUSWAQ/FrIyQwhli4NEPCZ397seRc+ahfKT/nvSldrU/hlsufE6eS/V+ur8TMQLwWo
-         /cCkF/RtwKSAbzplVZ1HqWTCLNycCeflRkfQmgG2MePwpbc0w96VDcmBZ1FZFmgOmD2W
-         Y1a3t5Cjpya7+n6Dw8g2DqGScG3syFpAbehDtqj3R2lTrA0NW/mbHuRNLn0H7TSqmyAy
-         Z+dA==
+        with ESMTP id S231324AbiKCQLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 12:11:46 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1841094
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 09:11:44 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id o13-20020a056e0214cd00b00300a27f9424so1898129ilk.10
+        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 09:11:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ObeLcsj3nE9gnGWSU04jueaoflUbLzWwQVpy0WCWEUg=;
-        b=jPzLQ9LfeGL14ZqjyVYn6JiJH6T7ZRRLIhdrOphXXaB1rT3Wf0Hv1XSu9TIPvOZwbh
-         Nb/5v2f0Psss7KecIPL9ewjQbAH89oqO9+S8bX/Vu70VFvlRd9cGYyrZsutcio35PEX4
-         6ZU/+RUGyZJZPyp33H9AoJ710M3MQHdC3NUls6IO/ni7NHOn0cdlt8+KMHzMT3pQiD7F
-         6na5x0ACCi6O4lZlf0aCeb70LoS1W7kms3mEYn890sgkhFhvdcumSaAYHV1EHet/wjVB
-         IwsqoqY7/P5UaWMv1i+Xk6ViEBPV2qUqrmuWQlo0hr1xNlirNUlvr+yem3txf1kG8q6P
-         G9vQ==
-X-Gm-Message-State: ACrzQf1Yn1s/KXjpsT/EcK8IDlVLfaDm89Kc2vnAABtAS5slxABuINui
-        dJzG6woHHHBu7Yok2tQh2M0=
-X-Google-Smtp-Source: AMsMyM4AspEOOfYu1TOrjbycqVKFRnhD6LEjYnSnNrzdmQhhrtoarPaLPkLM6np/pZIb1yaYehHjBA==
-X-Received: by 2002:a17:90b:1982:b0:212:fe7f:4a49 with SMTP id mv2-20020a17090b198200b00212fe7f4a49mr49645540pjb.156.1667491641125;
-        Thu, 03 Nov 2022 09:07:21 -0700 (PDT)
-Received: from localhost ([223.104.41.9])
-        by smtp.gmail.com with ESMTPSA id nw1-20020a17090b254100b00205db4ff6dfsm138640pjb.46.2022.11.03.09.07.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 09:07:20 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     kuba@kernel.org
-Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
-        jhs@mojatatu.com, jiri@resnulli.us, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
-        yin31149@gmail.com
-Subject: Re: [PATCH] net: sched: fix memory leak in tcindex_set_parms
-Date:   Fri,  4 Nov 2022 00:07:00 +0800
-Message-Id: <20221103160659.22581-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221102202604.0d316982@kernel.org>
-References: <20221102202604.0d316982@kernel.org>
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+Auj3vQKcwoQNezul/j4Pp/aHoO2hjUoalXp0Uezz5k=;
+        b=cZXuei8d4eRt8Z/OdcxRgkhPh/4znUhZjHI1IaRhT7UFLHLqWdv0VtyJ008twOzsoF
+         4FjhLH1lxO1XtxmU29uJ4Kgka1gn/9cEgljf3PtYBDFiLLiFTQw6oqCB+3rccTU2qNA6
+         hJ1XzBEbEUZ601rCNg2Brf+i9dluRLEaJv2NhzPnH0cHN7x3KSmwzejfgjcAEJm4V5+A
+         kmQBRnJCdbmco2yBYI4ycZ7hVetMThpx/2TI+oqgQYoAUvXI7RfcbWqi4pp9KMFQhUXo
+         vskINyUlr70vIXccCus3cdXRGnfxH/7Kgx1GiW9juU7/et/wBAOUs8U8xJeVJEOm0XhB
+         U07g==
+X-Gm-Message-State: ACrzQf2FBfl9Ihvbt6xo+8GzisZVcNxZGX/ZrnKzUz8xThiktwbpBw8c
+        hkvymdsqSqTkwrisTgG9mWrdka9i4+THifvsAkyif/tOx3CB
+X-Google-Smtp-Source: AMsMyM6Cq+gQg8eyNqw4rYJ8YQP4nUd68IJMs2MKZpTHB9Z1Kmh1+J6eGzjJHMtAA/ETZBx0uNAOVioZc89X9VBHwL/pLJhr3PIA
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:c26e:0:b0:2fc:1a4f:bfb with SMTP id
+ h14-20020a92c26e000000b002fc1a4f0bfbmr17311052ild.58.1667491903453; Thu, 03
+ Nov 2022 09:11:43 -0700 (PDT)
+Date:   Thu, 03 Nov 2022 09:11:43 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000092429f05ec933622@google.com>
+Subject: [syzbot] bpf-next boot error: WARNING in genl_register_family
+From:   syzbot <syzbot+7cc0a430776e7900c5e7@syzkaller.appspotmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        edumazet@google.com, jacob.e.keller@intel.com, jiri@nvidia.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, paul@paul-moore.com,
+        razor@blackwall.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-On Thu, 3 Nov 2022 at 11:26, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 31 Oct 2022 14:08:35 +0800 Hawkins Jiawei wrote:
-> > Kernel will uses tcindex_change() to change an existing
->
-> s/will//
->
-> > traffic-control-indices filter properties. During the
-> > process of changing, kernel will clears the old
->
-> s/will//
->
-> > traffic-control-indices filter result, and updates it
-> > by RCU assigning new traffic-control-indices data.
-> >
-> > Yet the problem is that, kernel will clears the old
->
-> s/will//
-Thanks for the suggestion. I will amend these in the v2 patch.
+Hello,
 
->
-> > traffic-control-indices filter result, without destroying
-> > its tcf_exts structure, which triggers the above
-> > memory leak.
-> >
-> > This patch solves it by using tcf_exts_destroy() to
-> > destroy the tcf_exts structure in old
-> > traffic-control-indices filter result.
-> >
->
-> Please provide a Fixes tag to where the problem was introduced
-> (or the initial git commit).
-Thanks for reminding, it seems that the problem was 
-introduced by commit 
-b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()"),
-because it was in this commit that kernel allocated the struct tcf_exts
-for new traffic-control-indices filter result in tcindex_alloc_perfect_hash().
+syzbot found the following issue on:
 
-I will add the tag in the v2 patch.
+HEAD commit:    b54a0d4094f5 Merge tag 'for-netdev' of https://git.kernel...
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=144ee346880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=53cedb500b7b74c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=7cc0a430776e7900c5e7
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
->
-> > Link: https://lore.kernel.org/all/0000000000001de5c505ebc9ec59@google.com/
-> > Reported-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
-> > Tested-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
-> > Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
-> > ---
-> >  net/sched/cls_tcindex.c | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> >
-> > diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-> > index 1c9eeb98d826..dc872a794337 100644
-> > --- a/net/sched/cls_tcindex.c
-> > +++ b/net/sched/cls_tcindex.c
-> > @@ -338,6 +338,9 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-> >       struct tcf_result cr = {};
-> >       int err, balloc = 0;
-> >       struct tcf_exts e;
-> > +#ifdef CONFIG_NET_CLS_ACT
-> > +     struct tcf_exts old_e = {};
-> > +#endif
->
-> Why all the ifdefs?
-Thanks for suggestion, it seems that these ifdefs are not needed.
-I will delete these in the v2 patch.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/e00a07d34b58/disk-b54a0d40.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/677c38c41b63/vmlinux-b54a0d40.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/2433cd47d109/bzImage-b54a0d40.xz
 
->
-> >       err = tcf_exts_init(&e, net, TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
-> >       if (err < 0)
-> > @@ -479,6 +482,14 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-> >       }
-> >
-> >       if (old_r && old_r != r) {
-> > +#ifdef CONFIG_NET_CLS_ACT
-> > +             /* r->exts is not copied from old_r->exts, and
-> > +              * the following code will clears the old_r, so
-> > +              * we need to destroy it after updating the tp->root,
-> > +              * to avoid memory leak bug.
-> > +              */
-> > +             old_e = old_r->exts;
-> > +#endif
->
-> Can't you localize all the changes to this if block?
->
-> Maybe add a function called tcindex_filter_result_reinit()
-> which will act more appropriately?
-I think we shouldn't put the tcf_exts_destroy(&old_e)
-into this if block, or other RCU readers may derefer the
-freed memory (Please correct me If I am wrong).
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7cc0a430776e7900c5e7@syzkaller.appspotmail.com
 
-So I put the tcf_exts_destroy(&old_e) near the tcindex 
-destroy work, after the RCU updateing.
+can: controller area network core
+NET: Registered PF_CAN protocol family
+can: raw protocol
+can: broadcast manager protocol
+can: netlink gateway - max_hops=1
+can: SAE J1939
+can: isotp protocol
+Bluetooth: RFCOMM TTY layer initialized
+Bluetooth: RFCOMM socket layer initialized
+Bluetooth: RFCOMM ver 1.11
+Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+Bluetooth: BNEP filters: protocol multicast
+Bluetooth: BNEP socket layer initialized
+Bluetooth: CMTP (CAPI Emulation) ver 1.0
+Bluetooth: CMTP socket layer initialized
+Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+Bluetooth: HIDP socket layer initialized
+NET: Registered PF_RXRPC protocol family
+Key type rxrpc registered
+Key type rxrpc_s registered
+NET: Registered PF_KCM protocol family
+lec:lane_module_init: lec.c: initialized
+mpoa:atm_mpoa_init: mpc.c: initialized
+l2tp_core: L2TP core driver, V2.0
+l2tp_ppp: PPPoL2TP kernel driver, V2.0
+l2tp_ip: L2TP IP encapsulation support (L2TPv3)
+l2tp_netlink: L2TP netlink interface
+l2tp_eth: L2TP ethernet pseudowire support (L2TPv3)
+l2tp_ip6: L2TP IP encapsulation support for IPv6 (L2TPv3)
+NET: Registered PF_PHONET protocol family
+8021q: 802.1Q VLAN Support v1.8
+DCCP: Activated CCID 2 (TCP-like)
+DCCP: Activated CCID 3 (TCP-Friendly Rate Control)
+sctp: Hash tables configured (bind 32/56)
+NET: Registered PF_RDS protocol family
+Registered RDS/infiniband transport
+Registered RDS/tcp transport
+tipc: Activated (version 2.0.0)
+NET: Registered PF_TIPC protocol family
+tipc: Started in single node mode
+NET: Registered PF_SMC protocol family
+9pnet: Installing 9P2000 support
+NET: Registered PF_CAIF protocol family
+NET: Registered PF_IEEE802154 protocol family
+Key type dns_resolver registered
+Key type ceph registered
+libceph: loaded (mon/osd proto 15/24)
+batman_adv: B.A.T.M.A.N. advanced 2022.3 (compatibility version 15) loaded
+openvswitch: Open vSwitch switching datapath
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 1 at net/netlink/genetlink.c:383 genl_validate_ops net/netlink/genetlink.c:383 [inline]
+WARNING: CPU: 1 PID: 1 at net/netlink/genetlink.c:383 genl_register_family+0x298/0x1450 net/netlink/genetlink.c:414
+Modules linked in:
+CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.1.0-rc2-syzkaller-10728-gb54a0d4094f5 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
+RIP: 0010:genl_validate_ops net/netlink/genetlink.c:383 [inline]
+RIP: 0010:genl_register_family+0x298/0x1450 net/netlink/genetlink.c:414
+Code: dd 0f 82 b1 06 00 00 e8 e6 d0 e4 f9 0f b6 9c 24 b7 00 00 00 31 ff 89 de e8 65 cd e4 f9 84 db 0f 84 93 06 00 00 e8 c8 d0 e4 f9 <0f> 0b e8 c1 d0 e4 f9 41 bc ea ff ff ff e8 b6 d0 e4 f9 48 b8 00 00
+RSP: 0000:ffffc90000067c50 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff88813fe50000 RSI: ffffffff8797d148 RDI: 0000000000000001
+RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000000
+R13: ffffffff8b9a7a26 R14: ffffffff8b9a7a00 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000bc8e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ dp_register_genl net/openvswitch/datapath.c:2578 [inline]
+ dp_init+0x148/0x25d net/openvswitch/datapath.c:2707
+ do_one_initcall+0x13d/0x780 init/main.c:1303
+ do_initcall_level init/main.c:1376 [inline]
+ do_initcalls init/main.c:1392 [inline]
+ do_basic_setup init/main.c:1411 [inline]
+ kernel_init_freeable+0x6ff/0x788 init/main.c:1631
+ kernel_init+0x1a/0x1d0 init/main.c:1519
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
 
->
-> >               err = tcindex_filter_result_init(old_r, cp, net);
-> >               if (err < 0) {
-> >                       kfree(f);
-> > @@ -510,6 +521,9 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-> >               tcf_exts_destroy(&new_filter_result.exts);
-> >       }
-> >
-> > +#ifdef CONFIG_NET_CLS_ACT
-> > +     tcf_exts_destroy(&old_e);
-> > +#endif
-> >       if (oldp)
-> >               tcf_queue_work(&oldp->rwork, tcindex_partial_destroy_work);
-> >       return 0;
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
