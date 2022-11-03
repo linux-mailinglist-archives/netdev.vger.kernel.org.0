@@ -2,153 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99820617B96
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 12:34:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 688B3617BA3
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 12:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbiKCLec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 07:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46934 "EHLO
+        id S231337AbiKCLfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 07:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbiKCLe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 07:34:26 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2053.outbound.protection.outlook.com [40.107.96.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C7712606;
-        Thu,  3 Nov 2022 04:34:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mk8FKi+zpJS9eVRKdwiXWtEIDT+wiU4q0/vP8zTh98sFRNyGj2zyx+CcGxLqhUIkTsAtTAsqp1hCEx52Qbj/OXQLb5uKAN+SYUjv6jn/ETHhkjttYrwLfZLleI5Piz+gsVj5Vi1pwPEqNl3/EO91EKuRoiKbwVAOvOqLWT2/9JfZZnNP6czkpjaTlGWVGizxmKWzPaoTVY7T8KwHRYtZxHUJCXatSUfk7lTaWHY1g2bhIguThCNmzemc/j8eMZp0cudCuqLbbPwgSjAjFAS2rMRaAHgE/j3ImOoY/4OyUqZ7vcMlPUTQTXhV9XzRz9MEVnE9681um2bsmYYQaBC9lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=80sUDZgLqWj9NTbV3MXrxl0hZfKhyGxhpo19Q7lGvJE=;
- b=TwR7gZwY/1dA12woejwOsokg4yR6f3gDyCpvX2xFRGNLgjIEiSuy3VcFWdTaBBiVdUBmpZKCp/Knl8W7DWO7+VHjWg1ZmAw/XPshDVmeKK5nMLjfdjuF8mCxlU7/JXAhVpe9WwSOujDk/TuiLQigprIbhr1cnb9kgofO60Cj8wnstgSBsNOmZYaFdohDrQaUodUFWQD9l89S8feehTNw0awrf3RvCLVSkQ/QCP5hH+Se+izFtJOIrBCmdrJLi+Vw3+SSMDPueaYCUxtL0H0+Z+jwvsbbVkJZdYHuq49bNRAna67xVKAm33ekmFq/J5SPAm8L1mn6sO+TV0ifGN3v9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=80sUDZgLqWj9NTbV3MXrxl0hZfKhyGxhpo19Q7lGvJE=;
- b=LyvVGjOfsT0ilfYAK3wGvr/nHbeh66N4QsfV++UxvLdj/qsFSmhvb+oaIaHV2hMBamdO66Sqm5uf+FZyBOOkcAk/iLoP10SmEZeDVPeTVVgVwcq4sx4oQv8emudu3hvPJROVV3krTrBSZqlDD0aG5yBoXfHLdgjuoBZiUOO3znE=
-Received: from MW4PR03CA0216.namprd03.prod.outlook.com (2603:10b6:303:b9::11)
- by CY5PR12MB6454.namprd12.prod.outlook.com (2603:10b6:930:36::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Thu, 3 Nov
- 2022 11:34:24 +0000
-Received: from CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b9:cafe::81) by MW4PR03CA0216.outlook.office365.com
- (2603:10b6:303:b9::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.21 via Frontend
- Transport; Thu, 3 Nov 2022 11:34:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT003.mail.protection.outlook.com (10.13.175.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5791.20 via Frontend Transport; Thu, 3 Nov 2022 11:34:23 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 3 Nov
- 2022 06:34:18 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 3 Nov
- 2022 06:33:58 -0500
-Received: from xhdpranavis40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.31 via Frontend
- Transport; Thu, 3 Nov 2022 06:33:55 -0500
-From:   Pranavi Somisetty <pranavi.somisetty@amd.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <git@amd.com>, <pranavi.somisetty@amd.com>,
-        <harini.katakam@amd.com>, <radhey.shyam.pandey@amd.com>,
-        <michal.simek@amd.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [RFC PATCH net-next 2/2] include: uapi: Add Frame preemption parameters
-Date:   Thu, 3 Nov 2022 05:33:48 -0600
-Message-ID: <20221103113348.17378-3-pranavi.somisetty@amd.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20221103113348.17378-1-pranavi.somisetty@amd.com>
-References: <20221103113348.17378-1-pranavi.somisetty@amd.com>
+        with ESMTP id S231336AbiKCLfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 07:35:48 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB7B11C27;
+        Thu,  3 Nov 2022 04:35:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cODXvOWILXssuf2hSihjNWxlG+Nis9Z446oDoCKvjaY=; b=maw3pryN8lZOU0IdsOp6Unnp2B
+        0u3eYTW7E8E9A4i53UAc5exT8CsEdtLNR+ICUDriV9QDKFQsNDfjf7fXw++vuCHx+AM+11t3lyioP
+        mR2mLNzr/ejmwGvN8UpTmIIXWB6MZVD7ZYPoAsO/qQPcjNZN4CrTguPNoQfHuOt+lcD+Va3D+VTgq
+        Kfns1g6ZI/cskQSnNt+nGVRMaofodc2kBUEI60MtgQHs1fpaGoOay6jTDmG0PkBWFg6qZVOUMQjsM
+        qISp20JQ0uLG1jRlf3Tv9zXo7gcFxMvepwxZ6mIK2XGWHapcN9cSq9yElgaO+JGod+sN+NVZPHMWr
+        FlA/+eEw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35092)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oqYVH-0006F9-QI; Thu, 03 Nov 2022 11:35:23 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oqYVF-0008K2-Uw; Thu, 03 Nov 2022 11:35:21 +0000
+Date:   Thu, 3 Nov 2022 11:35:21 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Yang Jihong <yangjihong1@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, illusionist.neo@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mykolal@fb.com, shuah@kernel.org,
+        benjamin.tissoires@redhat.com, memxor@gmail.com, delyank@fb.com,
+        asavkov@redhat.com, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf RESEND 3/4] bpf: Add kernel function call support in
+ 32-bit ARM
+Message-ID: <Y2OnedQdQaIQEPDQ@shell.armlinux.org.uk>
+References: <20221103092118.248600-1-yangjihong1@huawei.com>
+ <20221103092118.248600-4-yangjihong1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT003:EE_|CY5PR12MB6454:EE_
-X-MS-Office365-Filtering-Correlation-Id: f52c76f4-2fbd-45ee-dc2a-08dabd8f5b6a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: H7EY6xlcnJxW5/65UXoFk4348FnQDpAb7kvGFlW2krM9hXoaDkSzyHzgyAHHUuQWfN81dT3tLDN2qgdP5rLHHDUssrCiPB+TKkStF0l3rYf0cDrS5/5BMJ3LZB1+dV+28mXe64ymyX6BZAb0wRylsfiK6+wA0NmfUl/wluyioxgEhvd0+t6+2qs15Nox/hsgW23cgjk5r1M9OJyG5mMWoXz4e1CqIltN0aLAxbPmMnlWsHD94KddMJgrydPamfMOwWn1G10z7PuJKsqkN7V3HZZO93u+cbx30sZVhxfI83S5RiQxxPJSx21+l60AWeDyo9mT6ZSMaJ7lmvtJr+/6lDtxFmOPEaZ4os1mugVHx6Eq1+VY//3bL19+pHyIb/59ds2lgS8ZFgTHT8arvnDLDJBgjl5Al4v5DstHs+HukpNsEZnHusntrsE2y7p4Xy44AIcYeZdV6PvmIybsvG0NCQS72XOrPExY1gFrFblx21pzUNP1a64ukYYL23VhgRMXb+uzIwD0qi0eQNoZqyuTDvSBJ3AnglhOP8U1yeoXyWBwny2DM/nKZFET9KoQPjtLPxRAlT6/45gRwN9ARBg27yImJy1HmJqDuNRh88DqQ/fK+pueyuWQFUmBRN4Nj2bMtV8MUAuW37RyFOm6DgwT5e1XDFxiLOWzSwS6DEvPR+rUUeZol2WLvvIVoTunQu5s3yJQrlO2pkeQOXY6+gjB95dfwzUhKx6ALahh7WjEhVsbKslJKJSH6AT6tWrZs0TkIT30WAQjPdc/bXG38n7gHv+mswzmqpcv/aMrUpB04TI4vy5LuQtVRXnGNOd6VxeZ
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(39860400002)(376002)(451199015)(46966006)(40470700004)(36840700001)(47076005)(316002)(54906003)(426003)(186003)(26005)(83380400001)(81166007)(36860700001)(4326008)(8676002)(6666004)(110136005)(336012)(478600001)(70586007)(5660300002)(70206006)(41300700001)(44832011)(2906002)(1076003)(82740400003)(356005)(40480700001)(8936002)(40460700003)(86362001)(2616005)(82310400005)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 11:34:23.6643
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f52c76f4-2fbd-45ee-dc2a-08dabd8f5b6a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6454
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221103092118.248600-4-yangjihong1@huawei.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a header file for Frame preemption parameters.
+On Thu, Nov 03, 2022 at 05:21:17PM +0800, Yang Jihong wrote:
+> This patch adds kernel function call support to the 32-bit ARM bpf jit.
+> 
+> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+> ---
+>  arch/arm/net/bpf_jit_32.c | 130 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 130 insertions(+)
+> 
+> diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+> index 6a1c9fca5260..51428c82bec6 100644
+> --- a/arch/arm/net/bpf_jit_32.c
+> +++ b/arch/arm/net/bpf_jit_32.c
+> @@ -1337,6 +1337,118 @@ static void build_epilogue(struct jit_ctx *ctx)
+>  #endif
+>  }
+>  
+> +/*
+> + * Input parameters of function in 32-bit ARM architecture:
+> + * The first four word-sized parameters passed to a function will be
+> + * transferred in registers R0-R3. Sub-word sized arguments, for example,
+> + * char, will still use a whole register.
+> + * Arguments larger than a word will be passed in multiple registers.
+> + * If more arguments are passed, the fifth and subsequent words will be passed
+> + * on the stack.
+> + *
+> + * The first for args of a function will be considered for
+> + * putting into the 32bit register R1, R2, R3 and R4.
+> + *
+> + * Two 32bit registers are used to pass a 64bit arg.
+> + *
+> + * For example,
+> + * void foo(u32 a, u32 b, u32 c, u32 d, u32 e):
+> + *      u32 a: R0
+> + *      u32 b: R1
+> + *      u32 c: R2
+> + *      u32 d: R3
+> + *      u32 e: stack
+> + *
+> + * void foo(u64 a, u32 b, u32 c, u32 d):
+> + *      u64 a: R0 (lo32) R1 (hi32)
+> + *      u32 b: R2
+> + *      u32 c: R3
+> + *      u32 d: stack
+> + *
+> + * void foo(u32 a, u64 b, u32 c, u32 d):
+> + *       u32 a: R0
+> + *       u64 b: R2 (lo32) R3 (hi32)
+> + *       u32 c: stack
+> + *       u32 d: stack
 
-Signed-off-by: Pranavi Somisetty <pranavi.somisetty@amd.com>
----
- include/uapi/linux/preemption_8023br.h | 30 ++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
- create mode 100644 include/uapi/linux/preemption_8023br.h
+This code supports both EABI and OABI, but the above is EABI-only.
+Either we need to decide not to support OABI, or we need to add code
+for both. That can probably be done by making:
 
-diff --git a/include/uapi/linux/preemption_8023br.h b/include/uapi/linux/preemption_8023br.h
-new file mode 100644
-index 000000000000..762fe4dd1906
---- /dev/null
-+++ b/include/uapi/linux/preemption_8023br.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+#ifndef PREEMPTION_H
-+#define PREEMPTION_H
-+/*
-+ * IEEE 802.3br - Frame Preemption header
-+ */
-+
-+/**
-+ *  struct preempt_ctrl_sts:	Preemption configuration and status.
-+ *  @version:			version for backward compatibility
-+ *  @preemp_sup:		Preemption capable
-+ *  @preemp_enabled:		Preemption enabled
-+ *  @tx_preemp_sts:		TX Preemption Status
-+ *  @mac_tx_verify_sts:		MAC Merge TX Verify Status
-+ *  @verify_timer_value:	Verify Timer Value
-+ *  @additional_frag_size:	Additional Fragment Size
-+ *  @disable_preemp_verify:	Disable Preemption Verification
-+ */
-+struct preempt_ctrl_sts {
-+	unsigned int version;
-+	unsigned int preemp_sup;
-+	unsigned int preemp_en;
-+	unsigned int tx_preemp_sts;
-+	unsigned int mac_tx_verify_sts;
-+	unsigned int verify_timer_value;
-+	unsigned int additional_frag_size;
-+	unsigned int disable_preemp_verify;
-+};
-+#endif
-+
+> +	for (i = 0; i < fm->nr_args; i++) {
+> +		if (fm->arg_size[i] > sizeof(u32)) {
+> +			if (arg_regs_idx + 1 < nr_arg_regs) {
+> +				/*
+> +				 * AAPCS states:
+> +				 * A double-word sized type is passed in two
+> +				 * consecutive registers (e.g., r0 and r1, or
+> +				 * r2 and r3). The content of the registers is
+> +				 * as if the value had been loaded from memory
+> +				 * representation with a single LDM instruction.
+> +				 */
+> +				if (arg_regs_idx & 1)
+> +					arg_regs_idx++;
+
+... this conditional on IS_ENABLED(CONFIG_AEABI).
+
+> +				emit(ARM_LDRD_I(arg_regs[arg_regs_idx], ARM_FP,
+> +						EBPF_SCRATCH_TO_ARM_FP(
+> +							bpf2a32[BPF_REG_1 + i][1])), ctx);
+
+You probably want to re-use the internals of arm_bpf_get_reg64() to load
+the register.
+
+> +
+> +				arg_regs_idx += 2;
+> +			} else {
+> +				stack_off = ALIGN(stack_off, STACK_ALIGNMENT);
+> +
+> +				emit(ARM_LDRD_I(tmp[1], ARM_FP,
+> +						EBPF_SCRATCH_TO_ARM_FP(
+> +							bpf2a32[BPF_REG_1 + i][1])), ctx);
+
+Same here.
+
+> +				emit(ARM_STRD_I(tmp[1], ARM_SP, stack_off), ctx);
+
+and the internals of arm_bpf_put_reg64() here. Not all Arm CPUs that
+this code runs on supports ldrd and strd.
+
 -- 
-2.36.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
