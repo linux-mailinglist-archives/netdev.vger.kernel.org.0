@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DDC7618A49
-	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA31E618A4C
+	for <lists+netdev@lfdr.de>; Thu,  3 Nov 2022 22:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231556AbiKCVJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 17:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
+        id S231557AbiKCVJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 17:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiKCVIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:08:41 -0400
+        with ESMTP id S231511AbiKCVJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 17:09:03 -0400
 Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140053.outbound.protection.outlook.com [40.107.14.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E8521E26;
-        Thu,  3 Nov 2022 14:07:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0841022BD6;
+        Thu,  3 Nov 2022 14:07:34 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jikYOXH0vHXpayigu3PkKbmPxIJBU0T1b2lA64Il7acca8KtX0huheXEFjtYJY6sCi1BPYcaBkrJME+Bt0roID7hvI/0NAQIB2QbLAkz7HnYRZxnJCiPvtNU4q1TxzGFb2uuuEUkd33mSWf6zXrPAkSerq81k/BHOEy3hj52Rrc09gC2lYdJT4ThIVAoVkz2+rd+ABOUp4o0ZJpDm5xEG+6D75sQ3XZeNpJCbijHsmfqVmM/TEKopbOvbtttvytK//U2kKh+jDxd0I3qbPJyL2PpA/hhaPTCCHuv442Ouo9GkAZI1CCntdRV+vDhKR7djVpBOpv/wIQSejRKSwYHeA==
+ b=NJFVj9ZvnIPbN/eJA8fYzIc2GYXh4RHz8pJX1VFzyW2a081EUFyS+kvGLSY2goIfFliS0OiTNkXA/dWI6whFLEXOLYl5yjaoZIW+IvTdcTiazOv/lq6H6ppkYfcJYHE6DiJoKm7qdw3fiylX5yexRHs+1agt2GQcI13KLFWu4OngGw+LdZCsSgcS1X39/7nYLSn2BucCBjlbUzALSoOHAF1OZIFFGaWhPXd+CX93ZfRQSP9yz9X476mqs9Uxny7GztMzD5oD7CkkZBNC7P0LwK9/3BpvS5vMpuDP+QMser/dL/zzeZ1p6JbleEF45BwNUrr0y6blm7F+eECt99oj6A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9P97/4EQiRknWb1rlkyfzH0nFWRbN8q/Zzg6R8X7mQc=;
- b=fOSJdEcD/v0IfrrtL/KZt74N+crYXJDKI6tiQQWyfbSrZ6AUTAFw+hnPPVr3eoTw3J1Zly3PbcWY9/siWjquzb5SxANGwCxwGYDj5GBvbaxuMfWIbJGJLNT/CuvCsa3cOVEZUBVQ+BITuxRKu+WU7kmpQHUvHoHdO6cWdNRvRp6Pwk+DQKwOfrJ9hUiPuDxUUYJhgAq/0ubTZB1tyhw3aeiEoa8lLH2Us7WqDqxQ3Q3aRSZ3ikHvecYsU1cQatEkw0KmtEEfxvAnZURJSP4ZdEg/BoPv46dhFG6UGcDktL/fzt3FiiTyUw2ltXe0XFs1JCRMoUxM4vET3Z3Kg43mRA==
+ bh=c3MtNRL413X3k/X7nxqUTT+4HJJ3KpfmqPoEDHL/cGo=;
+ b=MN9e8tcAxpwdf+Rb7ZYPz5bwPb2hdL7KsNfmNSc5yFuuJE/5KRBMzVlkV00DvB7w71V00KMbnR4IXHdNeDFhRvnNK20RqKfpCy/ZiRBSdQ/ysbmAVyYRfcFlQ1Xdm3PgUzHBWo2tKcNyEIT/1QqulGs8rMG9hEbL4RHr6Rz0rbU1pTBpqlaTLIPlDQFA88G4ybgvCR56wYuXquW8JqYhrzaws1EiPyTG/KraNLMugBMzhGKPSZj599NQrfU5nYjI7NYx9ZtavgBmlEF+UyRRuG/PKl01sVg4JjZ7tHCzxm/ACe88RNlYb7MB3/z+0KC0eVRu5RnItCL4oCVJGGreAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9P97/4EQiRknWb1rlkyfzH0nFWRbN8q/Zzg6R8X7mQc=;
- b=s4HfYFPNiW4dsP24NRd8sh5omXGmqbCttIMNLeIMOIS57cIpBUGXgyKzh/RseqA2+Qrehq/EBaX4iFdnp3G4CDQGOUHlX9YOeJTXqcdZOsL0mSFDF9tkbGCz4sQiELo8+oE6T4p5DUfD37WVuhQZ4A6GzfXecH3SasgZZVovS4IGUnZO08UnKsy6BxyFndTS2pfMEX46hmRAqQkU3UgxlXaXhI+bfG3V6z0cPLVTur03Kvst14V23hBiolu6/7HBwsDLpPMJ67AJKbfZGjs0ttAZ2iR0j6BhaSte8sxhNQrfuLhNzoJfLYf4PRuBdNE1vO1hjIBgXejNI+XpQShtqA==
+ bh=c3MtNRL413X3k/X7nxqUTT+4HJJ3KpfmqPoEDHL/cGo=;
+ b=W6NQfrVH5CvjXO59tIKLMPHd9AmVMFibiyIMhX6/7kQlD9pr44FXO4HD0EduZJcCDaNAxO8tK78mrfbKiBeNlBR7TR6tkmw+SAdgyDUmWhU079cK0F8mpb2VPRDYOAD1rjYQnhCvJyWXtWsw1odXHNs92iND+bzub/YtALm0Vvy6IentNozfmlRFdMmW1jqzo2kPOCeE4Qf9o8tM9tNC4VSRf2DoTxyu01+GiNLRQ7U1LX31zGBWX7nacmh0xV+j0wrVMHwQysN6UJEE3FunsAkLXLc3q+JtrpQDnXaK7nsKHZVRaR1i0ib/JI51guY3y7elmk5O1Hn1NSHIpQuwJg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by PAXPR03MB7746.eurprd03.prod.outlook.com (2603:10a6:102:208::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Thu, 3 Nov
- 2022 21:07:18 +0000
+ 2022 21:07:19 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
- 21:07:18 +0000
+ 21:07:19 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
@@ -51,9 +51,9 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Madalin Bucur <madalin.bucur@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next v2 09/11] [DO NOT MERGE] net: dpaa: Convert to use PCS subsystem
-Date:   Thu,  3 Nov 2022 17:06:48 -0400
-Message-Id: <20221103210650.2325784-10-sean.anderson@seco.com>
+Subject: [PATCH net-next v2 10/11] [DO NOT MERGE] net: dpaa2: Convert to use PCS subsystem
+Date:   Thu,  3 Nov 2022 17:06:49 -0400
+Message-Id: <20221103210650.2325784-11-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20221103210650.2325784-1-sean.anderson@seco.com>
 References: <20221103210650.2325784-1-sean.anderson@seco.com>
@@ -65,51 +65,51 @@ X-ClientProxiedBy: BLAP220CA0002.NAMP220.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB7746:EE_
-X-MS-Office365-Filtering-Correlation-Id: 478137ce-7086-4cd6-241f-08dabddf6413
+X-MS-Office365-Filtering-Correlation-Id: 1e0949d7-8751-466a-3d49-08dabddf64f3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UDgP5K5Z41luvkVYudipssbPpTdg+iC7YfpRZB+mAUpuigq2mpJwOd/vruM9kvoLuPQNfqJ+tVx2hl/HBYBP+PWAsQTMgDO4mnqM0THSDVEm75CbKKBqHh70E9r55qVArGpkr51RBeGpQRHEGa3M7ApMkcPj711bTst3f+0f021zaiHqH/zAf0CsZyQTOgQ4KSIXKkVT9ULh33U7ocE99nYcSC/f/Ir3r/lDMqVninj+4tnTlblxpzJRsghn26w3Lo+i7X/PLID4n6Gwzqa3oh6XxeP9YCzjUD9a8e4wEG3IDPGjnfjnC53KQt3E0WKAtUI/90f8yZPum52vbh4Vu2W+QiNStfy1yL7FS8DZBZZfCxIdQOROuB60+iU8K1wclqxSe/u7yP3INDBwtQFKMMku8Z4VV+w3kArc06wSzW8+2JNd3MaGS+BwqpfBjZPEMByX38WWQommh5vhbew7tQYVc792Yg60pRm44UkR4cJo1zhQfAQGTdL28raTGDo037DOR/3eNcW8mD0/3rDmEEWtQ6ZwwvemZGcXk36EJn1Hu2yjIxPfjyDkb5sImVwyQIsWIhecCq011rWcKEiDQ6VCdp0WOE/DuuvIQj23y3ZEliQkZJ9dEja1tGdvg4rcKAJQkeraFH0n9vRvfeE9VcSusgCOj7Oth/HjNbt615Mjbkd2Nsr/TLaozOV7qugEHvl01SpokpLzpO7Z/ni6xOvsSo2AkEieu19pJ8MiS2ENHxvkCt5yUCdWZmEQgqZ/
+X-Microsoft-Antispam-Message-Info: dvstXsSKBG78h/k2mxolxow1Fk35OKzeyZ6KcYSmjCa5VEoMYf+3bXwyg40xEOv4T5jHbXQvO8jzviEYNgkgl+ryYjrNBjM+nOsS1MHWyFmaFF+7UuMghFWEl418h3lvbJ2pkQc6pjTJ0N1+nFsP2trKi6h9CU6onJ4pREsCtEm21NhExGVCaBdIwkBpqBuPN8pN9XfDbh2MRVi9oI0EenfpwnxFLPfB9qdMjywRoh0vHPQZ1cg5MKIsPpKlg4Q8uJZeSbAmRxldLwMATi1sTv/ga6UHGocn5RODyiJAozGVnxx/QUa2MhOPuYlTl8sPWG5gSCPkZvkjbXMjM5pDswQwYl1/uSyDVCY8p4yx9tXck2FUtG6OeuR0YP/yzZMU/6kLJ/zkfyV9ehBJm8mk8aXaO8/sOS2VAzUoODbQOS1UXf1vxulcECPCaayI+OiW9VF8XZf82SZTKb9Jy8dMOPASw8nrha1hLr8VTfz2SpJbH/ajQKw2vrv/gkcNdu9ojS89khraeVffE+h+2Ms/BbvhYv8fY7IQXKcY4TLfkyUKtQ9E4qdCCfOmoQ+kfvQtyfJ3qyY/cWur7f5L5ii7tJQ+RzTygXtuBcfhCKOw3sZ6t125Xl+H8g8+bFz5GVeExBkqJO5Ftaq1QFSzZmtyVvgHR/nHoO1rxVYAbBHPTG7yocpRHFDC8bCFg3gjGVbIzk78rwWhjDmM+5Dnv1nE9GJErRtH9xdo/NcvkMwZtvwiLOgzoMldjUh9czoc8tcn
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39850400004)(376002)(346002)(396003)(451199015)(8936002)(86362001)(36756003)(107886003)(478600001)(6486002)(44832011)(5660300002)(2906002)(52116002)(26005)(6512007)(6506007)(1076003)(38350700002)(38100700002)(186003)(83380400001)(2616005)(7416002)(41300700001)(6666004)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?v9MsnWXReTj8O5dNS2dYLJhMhZBsyBGCdfp3tMMgGWHY30Og4w3eCyn8TRAI?=
- =?us-ascii?Q?3LOOokFovyPknMB5RRYRrqL9T/6V7Kr03R5Woa8dnazmSYR9Reho+Mgg9KA4?=
- =?us-ascii?Q?8t5tiTPsdt1Bwd3fnNYmY9qlzpDvsomXDbtYU1H90FJ7f/Zfsp97CC0kGULT?=
- =?us-ascii?Q?6IxGFtw9YsccmaASffcnKj5reIwJZW2+8X3/Phvwdf1kl/zq2yn+jNxZqmnl?=
- =?us-ascii?Q?rv/9aQVrMF/QQj59fAj2P5H03+MGnSVwcoB6J+NDJDVLaUpJ1268uBwmPaA1?=
- =?us-ascii?Q?W2lt+nlcH1uazklq+a8p0jMXYfKe0JEiyLaSr5YaMuCcpaLnbD2mwe324x87?=
- =?us-ascii?Q?PMlJ+GdxzAEzjc7T6Lqy9o3+yRe1wTRGu8/WDdJ/6Ai9qlzcWhJKR1QvyDSD?=
- =?us-ascii?Q?SdgqFLibmOpFS/pYR0F7UcGcsCmUPFefRw7yAlSvj7dGqY5hNWFLAiJRhA9K?=
- =?us-ascii?Q?6uJ21sdTEgfHabF07nzkXoLA1n6w3Lb8yh40WJxVMzk8lHAR3A0lp3DhD+bD?=
- =?us-ascii?Q?t245zQ2rmWMG7hkQsNMk2ifU3Dcy+4zBFhiaDg9yTlU46Ig81rr0FVRaW5ws?=
- =?us-ascii?Q?2iTQqw19QiRDPtKeEEzbpZkgh46rR5vT3K1jAMuonmfQEin7JSh7zUhKRZjc?=
- =?us-ascii?Q?ALVIC5aOoLLr9pm9KYlLl6LcoMQP8jk8dX7lpHk1GRE33DaZAgMcxZsXu7d7?=
- =?us-ascii?Q?nSxvzAm2qVzEw4pvrMZcrRQ5eYFCiCU8Ts4C3S1K3QuVBsLZmlD6/Ia6oNmc?=
- =?us-ascii?Q?BCLaMVUVlDw9Ed6KOnJTepsRzjKF983TPGw2wzncRSQF2aMEkzGcdzhYOgNH?=
- =?us-ascii?Q?CRI+AvfmANuPse10w93EfaGladkmDoe4Sg2gRk6dHHumL7orW13UltLwt4GH?=
- =?us-ascii?Q?0DD5lUbGO2H/zkpGJ0o1+2bc+WTg8PEMJ41eU7bc+bd5RwtQ6Zx1a66YmAkF?=
- =?us-ascii?Q?tCSDiMpQzHgp4wRjTy5pEyieQk0PGAXk0N2sdVDQe4P6dx3Pc+2BFlEDvula?=
- =?us-ascii?Q?/qfyZ4LRHqic+3+Zi7Jp6k5UANN20HKeS7pnBDBv5PZbHxAP/ifYHNBrgGrE?=
- =?us-ascii?Q?6xW5t2zxhYOPMr4UzoXs7aUl1LszvS1u2RkL6eqh/2McmM/+ODSjUDK9X+Oh?=
- =?us-ascii?Q?f2Q09zvlJ7Wqwm3AO1gfqLFiyT47HlwxAb3U1Ntjv/xlGe21R5djRXz7odtc?=
- =?us-ascii?Q?zTOIi5XpEUuHdvorq0eM2Y7hD2/4hjyx+vzxQItDqSMU+/XPkJdZPq2Jj5XT?=
- =?us-ascii?Q?UClkI3sU6bkT1whd4euBECNljOLhecq1aXliiWSIpIa8lyjn9y46F3ak4zVu?=
- =?us-ascii?Q?WCWCU908JA1E3SwUT75hGpMIvHhWCLpuyoaI1wt93kjBf0p+zRNltlJylnCG?=
- =?us-ascii?Q?UsbKFl+1QAu4j2pjZo/m/WnwQm0JeJZomE5jNKOBIzkgrlWTocVqH1JCvcgR?=
- =?us-ascii?Q?sQUYYayKDVxMqbxaD8b170SjyvfuHPTbVqVnoF/N4brUuiK6CRLeV7yy6afr?=
- =?us-ascii?Q?UZTinWKdh+aBq7h1xZb79/GPbhlcDY3ujMXCUttYMp2qO7pE4V1erjq5h28+?=
- =?us-ascii?Q?xgXwgy7sblWpbnc81H6edDI9zaFaMuoNOGj/b5aeNmebVd+8ija3RoyqM5TU?=
- =?us-ascii?Q?wQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kM4TUtl7DHANAom/zlxZSZTfjU2hA56MpxLiI8GXHUrTAUOpRZ+K27Xm/8ez?=
+ =?us-ascii?Q?YtS061E5+oq8hUwuDZkq+4xMpidjnpmS8+QBoVbWbfzrt7vRjdRmjVs380YU?=
+ =?us-ascii?Q?vgDJuBlF4FvnyyptfvOvSfkwirb6uJd8JK5q6PHYG0bBwnxiVIzpl82BdS2C?=
+ =?us-ascii?Q?7hbhkPh2HuukHKSMyjvW8Hs2wlc+NQ9lYenWzkePZpjzuKGnobFZ47thA241?=
+ =?us-ascii?Q?sVm2vHAeyyTUFqqzNQReaLlg0DP86kXLe14QDFwB35ycnLExp7dRbVMuruec?=
+ =?us-ascii?Q?KtVUoeOpfkig3JMhT5IM/LwRzLjGxIiJcPUwEXUl74ToB9mvkJy31v9uz1fI?=
+ =?us-ascii?Q?pCq+NoE+Q1kXtS4u650eSFSEntRNOBT1vfxfpRrfEkVDAI0H+xqwdjQq7+nF?=
+ =?us-ascii?Q?XiNqoPUfZIjavz0Tvd3YuIgDHbSzaV+cPXg1VBTqe1XlPXxmbqxOXFQoM/oR?=
+ =?us-ascii?Q?P4+rC/vdcfkNtY8OxjqCsf7IndR2KfDSBL4TR4/1HviTVAXTVGpA1zPgwPLr?=
+ =?us-ascii?Q?uahENXdbCGzTm8TtcZ2NaXFabx3N9w8FYMyDx8aqZeP/3H301b3LUCmoPyaT?=
+ =?us-ascii?Q?3eAFnU0wxs8sQJKuYP72DHrwVceJRdOFqEgfGjwZUza162n4rDh4k1Er16Fg?=
+ =?us-ascii?Q?9KEjayPydAQnY5WP3og+dlFzjX+bHqXfJKybY++ipDo0+kUjqN/rwrc58FFj?=
+ =?us-ascii?Q?zy802PajXCoKN2Nkrl9dpJZsdbVSBJhsk3MA2f9s24vtdLh2SaVUCHeXhPCq?=
+ =?us-ascii?Q?MaE8nUJhk4gY6OlDmMpkXsbblddOSPcDGwiny5HRxshrOgG8l5sk22TUR+56?=
+ =?us-ascii?Q?6fdtluNa6hSvODnRhfR1nwkAvSGcQWWtnmWUrmJ0/4Kn5l4Wr8JxTsTOV1Ln?=
+ =?us-ascii?Q?Be0WEkTha7EkKTKnWiDe7hfx70mKyB7qSgmM17G/iWHcNKFA/h+Vv30erMhq?=
+ =?us-ascii?Q?FDhFmLuyunhU3SxmEI7C07uN1DfcG/G0ek3J2CxyPdnlFEpWCMR9d+ERcTmM?=
+ =?us-ascii?Q?qGCZ6i4xWHAacLor4433YxoLsnsi/bFqYrggkIosHmG8VHF8jzZ/5th2cZ+5?=
+ =?us-ascii?Q?1jGlVq99RpXaKkARSb9Uda2m7gLUzfG1+TG59W0tGmmNzhGVIEkg4wjJ/VXC?=
+ =?us-ascii?Q?ghr4qFewNUMBLGi6Z4YMKVE553W13gnDoYdc3kb1bwYRogItmos2CANIGbEM?=
+ =?us-ascii?Q?5wauhqFad2N8qydnk94Rm9PVRNWrsn8wf0DDATHKL9VXTH4cPDHif4LzoY8z?=
+ =?us-ascii?Q?XAXnSPV749MJcCJJjGrTvzQTuHL6q+eC+9ZBpWYIprH3gRD3wM85zy5+w6vw?=
+ =?us-ascii?Q?TSgxWET7tZDuIOiH+qCmEDTWNTdI3CtxwcbGKH/HmymxyVolKdvvHle+hpg6?=
+ =?us-ascii?Q?PBMg8SBRsWeDm5DIKCKOXe/kwp8Bf/K9wi4ZhPEBUyiniTahZM6pvj1dxSAJ?=
+ =?us-ascii?Q?R8EAQbjdNuf5PT49taESwzd625DUCl9vXLp2Qa8JtOVhbQyzSqdKrLSyXutA?=
+ =?us-ascii?Q?MgCBDMzZFjiiSlQu85Gqn3vNICFBmfgAX1FiFqtOUTnktT8P4Xfyk5jj59PX?=
+ =?us-ascii?Q?6V1q50ZjfU1JLfG+oNbI0HIsiMUnSmErpR8hXaDNzUPJl9T0UyDFC6Eee3Zg?=
+ =?us-ascii?Q?lg=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 478137ce-7086-4cd6-241f-08dabddf6413
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e0949d7-8751-466a-3d49-08dabddf64f3
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:18.1929
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2022 21:07:19.6771
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o97kLHUxCjOc058wkOCyMuJywwrPnrVAlxvTmCes0bbQ9bPK8uMsG+qpveJvEFZ4H/HXkeBpcH5Rb99HnD6SMQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: mAAxq4b9khpzurBgAAgMHQvcv+utKDs5aw7zi/AU36Tc05r86fam2dpv6nQxG5OaUQYhZElUbHrcO81tlsjjEQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7746
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,10 +121,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This converts the ENETC driver to use the PCS subsystem, instead of
-attaching the Lynx library to an MDIO device. The control flow is now a
-bit different, since we don't know whether pcs-handle-names necessarily
-exists.
+This converts the DPAA2 driver to use the PCS subsystem, instead of
+attaching the Lynx library to an MDIO device.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
@@ -132,179 +130,90 @@ Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 Changes in v2:
 - Split off from the lynx PCS patch
 
- .../net/ethernet/freescale/fman/fman_memac.c  | 118 ++++++------------
- 1 file changed, 41 insertions(+), 77 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/Kconfig  |  1 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 43 +++----------------
+ 2 files changed, 8 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-index 9349f841bd06..a88fcfbcb5e6 100644
---- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-@@ -11,7 +11,7 @@
+diff --git a/drivers/net/ethernet/freescale/dpaa2/Kconfig b/drivers/net/ethernet/freescale/dpaa2/Kconfig
+index d029b69c3f18..2648e9fb6e13 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/Kconfig
++++ b/drivers/net/ethernet/freescale/dpaa2/Kconfig
+@@ -3,6 +3,7 @@ config FSL_DPAA2_ETH
+ 	tristate "Freescale DPAA2 Ethernet"
+ 	depends on FSL_MC_BUS && FSL_MC_DPIO
+ 	select PHYLINK
++	select PCS
+ 	select PCS_LYNX
+ 	select FSL_XGMAC_MDIO
+ 	select NET_DEVLINK
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index 49ff85633783..18f8f9f8d161 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -2,6 +2,7 @@
+ /* Copyright 2019 NXP */
  
- #include <linux/slab.h>
- #include <linux/io.h>
--#include <linux/pcs-lynx.h>
+ #include <linux/acpi.h>
 +#include <linux/pcs.h>
- #include <linux/phy.h>
- #include <linux/phy_fixed.h>
+ #include <linux/pcs-lynx.h>
  #include <linux/phy/phy.h>
-@@ -974,25 +974,17 @@ static int memac_init(struct fman_mac *memac)
- 	return 0;
- }
- 
--static void pcs_put(struct phylink_pcs *pcs)
--{
+ #include <linux/property.h>
+@@ -246,32 +247,10 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
+ 			    struct fwnode_handle *dpmac_node,
+ 			    int id)
+ {
 -	struct mdio_device *mdiodev;
+-	struct fwnode_handle *node;
 -
--	if (IS_ERR_OR_NULL(pcs))
--		return;
+-	node = fwnode_find_reference(dpmac_node, "pcs-handle", 0);
+-	if (IS_ERR(node)) {
+-		/* do not error out on old DTS files */
+-		netdev_warn(mac->net_dev, "pcs-handle node not found\n");
+-		return 0;
+-	}
 -
--	mdiodev = lynx_get_mdio_device(pcs);
--	lynx_pcs_destroy(pcs);
--	mdio_device_free(mdiodev);
--}
+-	if (!fwnode_device_is_available(node)) {
+-		netdev_err(mac->net_dev, "pcs-handle node not available\n");
+-		fwnode_handle_put(node);
+-		return -ENODEV;
+-	}
 -
- static int memac_free(struct fman_mac *memac)
+-	mdiodev = fwnode_mdio_find_device(node);
+-	fwnode_handle_put(node);
+-	if (!mdiodev)
+-		return -EPROBE_DEFER;
+-
+-	mac->pcs = lynx_pcs_create(mdiodev);
+-	if (!mac->pcs) {
+-		netdev_err(mac->net_dev, "lynx_pcs_create() failed\n");
+-		put_device(&mdiodev->dev);
+-		return -ENOMEM;
++	mac->pcs = pcs_get_by_fwnode(&mac->mc_dev->dev, dpmac_node, NULL);
++	if (IS_ERR(mac->pcs)) {
++		netdev_err(mac->net_dev, "pcs_get_by_fwnode() failed\n");
++		return PTR_ERR(mac->pcs);
+ 	}
+ 
+ 	return 0;
+@@ -279,16 +258,8 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
+ 
+ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
  {
- 	free_init_resources(memac);
- 
--	pcs_put(memac->sgmii_pcs);
--	pcs_put(memac->qsgmii_pcs);
--	pcs_put(memac->xfi_pcs);
-+	if (!IS_ERR(memac->xfi_pcs))
-+		pcs_put(memac->dev_id->dev, memac->xfi_pcs);
-+	if (!IS_ERR(memac->qsgmii_pcs))
-+		pcs_put(memac->dev_id->dev, memac->qsgmii_pcs);
-+	if (!IS_ERR(memac->sgmii_pcs))
-+		pcs_put(memac->dev_id->dev, memac->sgmii_pcs);
-+
- 	kfree(memac->memac_drv_param);
- 	kfree(memac);
- 
-@@ -1039,25 +1031,6 @@ static struct fman_mac *memac_config(struct mac_device *mac_dev,
- 	return memac;
+-	struct phylink_pcs *phylink_pcs = mac->pcs;
+-
+-	if (phylink_pcs) {
+-		struct mdio_device *mdio = lynx_get_mdio_device(phylink_pcs);
+-		struct device *dev = &mdio->dev;
+-
+-		lynx_pcs_destroy(phylink_pcs);
+-		put_device(dev);
+-		mac->pcs = NULL;
+-	}
++	pcs_put(&mac->mc_dev->dev, mac->pcs);
++	mac->pcs = NULL;
  }
  
--static struct phylink_pcs *memac_pcs_create(struct device_node *mac_node,
--					    int index)
--{
--	struct device_node *node;
--	struct mdio_device *mdiodev = NULL;
--	struct phylink_pcs *pcs;
--
--	node = of_parse_phandle(mac_node, "pcsphy-handle", index);
--	if (node && of_device_is_available(node))
--		mdiodev = of_mdio_find_device(node);
--	of_node_put(node);
--
--	if (!mdiodev)
--		return ERR_PTR(-EPROBE_DEFER);
--
--	pcs = lynx_pcs_create(mdiodev);
--	return pcs;
--}
--
- static bool memac_supports(struct mac_device *mac_dev, phy_interface_t iface)
- {
- 	/* If there's no serdes device, assume that it's been configured for
-@@ -1076,7 +1049,6 @@ int memac_initialization(struct mac_device *mac_dev,
- {
- 	int			 err;
- 	struct device_node      *fixed;
--	struct phylink_pcs	*pcs;
- 	struct fman_mac		*memac;
- 	unsigned long		 capabilities;
- 	unsigned long		*supported;
-@@ -1101,56 +1073,48 @@ int memac_initialization(struct mac_device *mac_dev,
- 	memac->memac_drv_param->max_frame_length = fman_get_max_frm();
- 	memac->memac_drv_param->reset_on_init = true;
- 
--	err = of_property_match_string(mac_node, "pcs-handle-names", "xfi");
--	if (err >= 0) {
--		memac->xfi_pcs = memac_pcs_create(mac_node, err);
--		if (IS_ERR(memac->xfi_pcs)) {
--			err = PTR_ERR(memac->xfi_pcs);
--			dev_err_probe(mac_dev->dev, err, "missing xfi pcs\n");
--			goto _return_fm_mac_free;
--		}
--	} else if (err != -EINVAL && err != -ENODATA) {
-+	memac->xfi_pcs = pcs_get_optional(mac_dev->dev, "xfi");
-+	if (IS_ERR(memac->xfi_pcs)) {
-+		err = PTR_ERR(memac->xfi_pcs);
-+		dev_err_probe(mac_dev->dev, err, "missing xfi pcs\n");
- 		goto _return_fm_mac_free;
- 	}
- 
--	err = of_property_match_string(mac_node, "pcs-handle-names", "qsgmii");
--	if (err >= 0) {
--		memac->qsgmii_pcs = memac_pcs_create(mac_node, err);
--		if (IS_ERR(memac->qsgmii_pcs)) {
--			err = PTR_ERR(memac->qsgmii_pcs);
--			dev_err_probe(mac_dev->dev, err,
--				      "missing qsgmii pcs\n");
--			goto _return_fm_mac_free;
--		}
--	} else if (err != -EINVAL && err != -ENODATA) {
-+	memac->qsgmii_pcs = pcs_get_optional(mac_dev->dev, "qsgmii");
-+	if (IS_ERR(memac->qsgmii_pcs)) {
-+		err = PTR_ERR(memac->qsgmii_pcs);
-+		dev_err_probe(mac_dev->dev, err, "missing qsgmii pcs\n");
- 		goto _return_fm_mac_free;
- 	}
- 
--	/* For compatibility, if pcs-handle-names is missing, we assume this
--	 * phy is the first one in pcsphy-handle
--	 */
--	err = of_property_match_string(mac_node, "pcs-handle-names", "sgmii");
--	if (err == -EINVAL || err == -ENODATA)
--		pcs = memac_pcs_create(mac_node, 0);
--	else if (err < 0)
--		goto _return_fm_mac_free;
--	else
--		pcs = memac_pcs_create(mac_node, err);
--
--	if (IS_ERR(pcs)) {
--		err = PTR_ERR(pcs);
--		dev_err_probe(mac_dev->dev, err, "missing pcs\n");
-+	memac->sgmii_pcs = pcs_get_optional(mac_dev->dev, "sgmii");
-+	if (IS_ERR(memac->sgmii_pcs)) {
-+		err = PTR_ERR(memac->sgmii_pcs);
-+		dev_err_probe(mac_dev->dev, err, "missing sgmii pcs\n");
- 		goto _return_fm_mac_free;
- 	}
- 
--	/* If err is set here, it means that pcs-handle-names was missing above
--	 * (and therefore that xfi_pcs cannot be set). If we are defaulting to
--	 * XGMII, assume this is for XFI. Otherwise, assume it is for SGMII.
--	 */
--	if (err && mac_dev->phy_if == PHY_INTERFACE_MODE_XGMII)
--		memac->xfi_pcs = pcs;
--	else
--		memac->sgmii_pcs = pcs;
-+	if (!memac->sgmii_pcs && !memac->qsgmii_pcs && !memac->xfi_pcs) {
-+		struct phylink_pcs *pcs;
-+
-+		/* For compatibility, if pcs-handle-names is missing, we assume
-+		 * this phy is the first one in pcsphy-handle
-+		 */
-+		pcs = pcs_get_optional(mac_dev->dev, NULL);
-+		if (IS_ERR(pcs)) {
-+			err = PTR_ERR(pcs);
-+			dev_err_probe(mac_dev->dev, err, "missing pcs\n");
-+			goto _return_fm_mac_free;
-+		}
-+
-+		/* If the interface mode is XGMII, assume this is for XFI.
-+		 * Otherwise, assume this PCS is for SGMII.
-+		 */
-+		if (memac->dev_id->phy_if == PHY_INTERFACE_MODE_XGMII)
-+			memac->xfi_pcs = pcs;
-+		else
-+			memac->sgmii_pcs = pcs;
-+	}
- 
- 	memac->serdes = devm_of_phy_get(mac_dev->dev, mac_node, "serdes");
- 	err = PTR_ERR(memac->serdes);
+ static void dpaa2_mac_set_supported_interfaces(struct dpaa2_mac *mac)
 -- 
 2.35.1.1320.gc452695387.dirty
 
