@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0352618CD6
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 00:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB4E618CD7
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 00:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230258AbiKCXdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 19:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S229445AbiKCXdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 19:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231334AbiKCXdn (ORCPT
+        with ESMTP id S230526AbiKCXdn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 19:33:43 -0400
 Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC6A60DA
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 16:33:40 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id c8so2195095qvn.10
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 16:33:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664841F601
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 16:33:42 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id lf15so1769589qvb.9
+        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 16:33:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=GwjVrTLjk/2DTuEYqgj33B9QwHOr4MHvVJMI7ODUMBI=;
-        b=FG/INWbBsp6JfLjz+7gcGjvZgwQi1U7Wmb+YXga0qmk0JAMkrQMKiSD+nSXtaLezn8
-         yAQSLM32W42Li3JhiF+BE95p/Xe0Sz7IQwkudUAh6xPpowhUHZnC88QI1VfaczGifbPG
-         7jrXrn1xOkCdlolWW4cyPdTSvSlNFA4t6C0q0=
+        bh=fjpoGPWitZo5THASj897Q3piy9HFxpQJkTh6mAPsQ8E=;
+        b=IEOFM46cLahn3Q3PnysJDAdKm6QLVV/vZk3eaZsfHJDTLF5AqcNzs7g9+j6lcyIs6F
+         sRlkHAxx41fVZWmpFN8vicqXcropp7Nc8Ihg7k8u9rbU7tO+JxMoGywI6cuQgb7GsQ/V
+         v+xYcXvnpOS29V6pZankcwOJdT3Mv+9OduwME=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GwjVrTLjk/2DTuEYqgj33B9QwHOr4MHvVJMI7ODUMBI=;
-        b=YZpxHRUthg/sIIvc2NNIS2iBIsejhuX1eITrOOlSDdDsTQYCLMJZlbsWqwIwTdPPAU
-         GAfqcmPgGDIk3z8bf6GphJ0nTl6z7c1+SEIsDqeUXW9boj06oGoBhx1EBkIZeGKVU4mi
-         7BzSMzUq5IBmqcz6StvbgQg/gq9vQLFu6eu09AHqxlSYZq2sxubv8CrlzrCYxCRARZrX
-         3A5I7tMKkCX+UQkMKPMizDn5KH9p9C+Nf/s7xPjldPGCqngiw8qa1SqEWVB0hIhfpct5
-         A5QSMRHgGaCx2l2PofLX09lrV4T9UGJaeSl182/p1qWOGzgmKB6w9omqeOqAN41E2W+O
-         ImOQ==
-X-Gm-Message-State: ACrzQf2B9xRU5P3V757QiKl4aTUnN00J2ueB0eqNWr7FxIV0Rz1vw/kG
-        JC7bkgSBXb2K6lTyghVr/UTxPA==
-X-Google-Smtp-Source: AMsMyM5CUNjE0I9m64mXkx5VegxJfxhTgAMxA+R4YJyzuOevZgGa5/xPcUFIgRiTj+9gJlcQfhrVjg==
-X-Received: by 2002:a05:6214:519a:b0:4bc:11e5:9927 with SMTP id kl26-20020a056214519a00b004bc11e59927mr15458828qvb.53.1667518419711;
-        Thu, 03 Nov 2022 16:33:39 -0700 (PDT)
+        bh=fjpoGPWitZo5THASj897Q3piy9HFxpQJkTh6mAPsQ8E=;
+        b=6QrIf4fHmtj2ucQtV8SQITlS/UzXimCWLLcVWxN2gpX3TSixWZOXPOBrvR+ia5mkId
+         QH9GH0BOQCTV/AdHgEbSDwzQTn2W3zwV0PoB9/Bj+vC66nwaTnT1gMl46uYLOFHnKbnt
+         2DzPgnqb7eooNrmQW0CuJ33w+zYF7/uqbkWhvwNsRf6aTd1+kQMKMSG2MhB9nZuenmYG
+         eihVxzFLez7S1S9JBmohfwYsiiqDNmLDGK3CIYE9gHg40B15ROtNQTHBVqW7f83kFhhC
+         UsjoEC6Jl2AmtA/iHNEQQ7CZudOx3TA7yoAXOSmbnAv0pbEVqbL/vt+zmb7ETrVC7imN
+         WwWw==
+X-Gm-Message-State: ACrzQf24mVGOPC68uN7iA4J7ttSMCmGLgPPaJZwl8XIMhJBstzS0fzSy
+        ks1it709CX2sBS9kxURifOZJCw==
+X-Google-Smtp-Source: AMsMyM6df//BgDApaZsfTMEI6Xfx3iXqmhgrEMcL17Dzcu0ULClVuPbNybfdzw4fqsHBMSJ6dRzyXQ==
+X-Received: by 2002:a0c:ac49:0:b0:4b1:ccd5:6bd6 with SMTP id m9-20020a0cac49000000b004b1ccd56bd6mr29798024qvb.130.1667518421386;
+        Thu, 03 Nov 2022 16:33:41 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u5-20020a37ab05000000b006f8665f483fsm1662020qke.85.2022.11.03.16.33.38
+        by smtp.gmail.com with ESMTPSA id u5-20020a37ab05000000b006f8665f483fsm1662020qke.85.2022.11.03.16.33.39
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Nov 2022 16:33:39 -0700 (PDT)
+        Thu, 03 Nov 2022 16:33:40 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com,
         Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net 1/4] bnxt_en: refactor bnxt_cancel_reservations()
-Date:   Thu,  3 Nov 2022 19:33:24 -0400
-Message-Id: <1667518407-15761-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 2/4] bnxt_en: fix the handling of PCIE-AER
+Date:   Thu,  3 Nov 2022 19:33:25 -0400
+Message-Id: <1667518407-15761-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1667518407-15761-1-git-send-email-michael.chan@broadcom.com>
 References: <1667518407-15761-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000016449e05ec9963a0"
+        boundary="0000000000002fefdd05ec99637e"
 X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -67,69 +67,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000016449e05ec9963a0
+--0000000000002fefdd05ec99637e
 
 From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-Introduce bnxt_clear_reservations() to clear the reserved attributes only.
-This will be used in the next patch to fix PCI AER handling.
+Fix the sequence required for PCIE-AER. While slot reset occurs, firmware
+might not be ready and the driver needs to check for its recovery.  We
+also need to remap the health registers for some chips and clear the
+resource reservations.  The resources will be allocated again during
+bnxt_io_resume().
 
+Fixes: fb1e6e562b37 ("bnxt_en: Fix AER recovery.")
 Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 29 ++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    |  3 +-
+ 3 files changed, 31 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 04cf7684f1b0..3743d9755eb4 100644
+index 3743d9755eb4..f44f9367b7fd 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -9983,17 +9983,12 @@ static int bnxt_try_recover_fw(struct bnxt *bp)
- 	return -ENODEV;
- }
+@@ -13922,7 +13922,9 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
+ 	pci_ers_result_t result = PCI_ERS_RESULT_DISCONNECT;
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct bnxt *bp = netdev_priv(netdev);
+-	int err = 0, off;
++	int retry = 0;
++	int err = 0;
++	int off;
  
--int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset)
-+static void bnxt_clear_reservations(struct bnxt *bp, bool fw_reset)
- {
- 	struct bnxt_hw_resc *hw_resc = &bp->hw_resc;
--	int rc;
+ 	netdev_info(bp->dev, "PCI Slot Reset\n");
  
- 	if (!BNXT_NEW_RM(bp))
--		return 0; /* no resource reservations required */
--
--	rc = bnxt_hwrm_func_resc_qcaps(bp, true);
--	if (rc)
--		netdev_err(bp->dev, "resc_qcaps failed\n");
-+		return; /* no resource reservations required */
+@@ -13950,11 +13952,36 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
+ 		pci_restore_state(pdev);
+ 		pci_save_state(pdev);
  
- 	hw_resc->resv_cp_rings = 0;
- 	hw_resc->resv_stat_ctxs = 0;
-@@ -10006,6 +10001,20 @@ int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset)
- 		bp->tx_nr_rings = 0;
- 		bp->rx_nr_rings = 0;
++		bnxt_inv_fw_health_reg(bp);
++		bnxt_try_map_fw_health_reg(bp);
++
++		/* In some PCIe AER scenarios, firmware may take up to
++		 * 10 seconds to become ready in the worst case.
++		 */
++		do {
++			err = bnxt_try_recover_fw(bp);
++			if (!err)
++				break;
++			retry++;
++		} while (retry < BNXT_FW_SLOT_RESET_RETRY);
++
++		if (err) {
++			dev_err(&pdev->dev, "Firmware not ready\n");
++			goto reset_exit;
++		}
++
+ 		err = bnxt_hwrm_func_reset(bp);
+ 		if (!err)
+ 			result = PCI_ERS_RESULT_RECOVERED;
++
++		bnxt_ulp_irq_stop(bp);
++		bnxt_clear_int_mode(bp);
++		err = bnxt_init_int_mode(bp);
++		bnxt_ulp_irq_restart(bp, err);
  	}
-+}
-+
-+int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset)
-+{
-+	int rc;
-+
-+	if (!BNXT_NEW_RM(bp))
-+		return 0; /* no resource reservations required */
-+
-+	rc = bnxt_hwrm_func_resc_qcaps(bp, true);
-+	if (rc)
-+		netdev_err(bp->dev, "resc_qcaps failed\n");
-+
-+	bnxt_clear_reservations(bp, fw_reset);
  
- 	return rc;
- }
++reset_exit:
++	bnxt_clear_reservations(bp, true);
+ 	rtnl_unlock();
+ 
+ 	return result;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index b1b17f911300..d5fa43cfe524 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1621,6 +1621,7 @@ struct bnxt_fw_health {
+ 
+ #define BNXT_FW_RETRY			5
+ #define BNXT_FW_IF_RETRY		10
++#define BNXT_FW_SLOT_RESET_RETRY	4
+ 
+ enum board_idx {
+ 	BCM57301,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+index b01d42928a53..132442f16fe6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+@@ -476,7 +476,8 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 		memset(ctx->resp, 0, PAGE_SIZE);
+ 
+ 	req_type = le16_to_cpu(ctx->req->req_type);
+-	if (BNXT_NO_FW_ACCESS(bp) && req_type != HWRM_FUNC_RESET) {
++	if (BNXT_NO_FW_ACCESS(bp) &&
++	    (req_type != HWRM_FUNC_RESET && req_type != HWRM_VER_GET)) {
+ 		netdev_dbg(bp->dev, "hwrm req_type 0x%x skipped, FW channel down\n",
+ 			   req_type);
+ 		goto exit;
 -- 
 2.18.1
 
 
---00000000000016449e05ec9963a0
+--0000000000002fefdd05ec99637e
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -200,13 +239,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGlGByTUxhwXdzpXjpSeAfOxys0b3XsL
-F7wKA2zQvy1lMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
-MzIzMzM0MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMBmAKX7dh9iTyvzI2799I9V+dlTzVXk
+X+lSSdYUqhbSMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
+MzIzMzM0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQA1va0mQiCqWbu/ooo1shNRNOZJlNlgZtMpAHy80wyZp0NM9rsG
-4IsFRA9HtPlWk+vUwOMzkbHhlVsI1QDNv7eH4/vAmFZ0bBIrqmILHbtlJ9NSnV0FOyAeaGp1tUDp
-poLVUlF0pIyIEe6XS7i/fgJ6XFXcPViYbHt5UePA+zUNc+7X5Bm82QOSkCXzo1S9g99scIHgL0X+
-mLS/NZJqag7LJKBDCzyE5SNGGdyqKI1VaXbiWPRlcZDUmgoaCVjp2AdEmUfYx+40VU8Aegq3YWw1
-ykPoQMeEWZSRjhXQcVhzbkD7ju6yMXN3Ye9WP87SRTePgk4M1QlsB+J8jdl2fzNm
---00000000000016449e05ec9963a0--
+ATANBgkqhkiG9w0BAQEFAASCAQANt9nYUQq28xM8GyZA+jZqGdHp3CwvV0r/hTgUT6P78evmBQU4
+no3tbnQwJP/Cg+eX0S69808qSGMGEQVbJ3JWWg7bH5zML7Ptj9q8MefkAbzPgQSUCRQfI1umzO5j
+yKze9LQICHRo+ODQjxRJr4U1bYv1fOjlnFGVDDzqd3pveKcpUNY3cgADtaplZUqCdda0KznRUFxe
+yHOIY5JIoCkEjjEn6UeyHjsqd4WIh//8+f/gpukGlkQDnXFYH7YSmCaNz9NzW/iSofoAPlRBEh2L
+Jp8MterVUs9Niu3fq/0PIX8YNh0JPqq4BynsuwUf8NC3SS11E718gdjlH/b9h22x
+--0000000000002fefdd05ec99637e--
