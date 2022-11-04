@@ -2,53 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01749619504
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 12:00:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5783C619508
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 12:01:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbiKDLAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 07:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S231922AbiKDLBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 07:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231695AbiKDLAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 07:00:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB70F2C126;
-        Fri,  4 Nov 2022 04:00:27 -0700 (PDT)
+        with ESMTP id S231827AbiKDLBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 07:01:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364D32CDFE;
+        Fri,  4 Nov 2022 04:00:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BE4562159;
-        Fri,  4 Nov 2022 11:00:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD2CFC433D7;
-        Fri,  4 Nov 2022 11:00:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0479B82CF8;
+        Fri,  4 Nov 2022 11:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14151C433C1;
+        Fri,  4 Nov 2022 11:00:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667559626;
-        bh=/MGecyQmJdqPsReJBSYYANujGfYMhCik3e8q0K1i5p4=;
+        s=k20201202; t=1667559650;
+        bh=QjAFhO9rFtgXWFIUq0wyH0sI8tEe72854Gae7+q/lWg=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=rZDLQ8p/FknkmIXRK1vRJjz6MsTjqH71aZVu+TDZUbvp3uLCM/Ym82+78mxKOMcSB
-         9iRVJAZ/hnDYwVeczGhu9Vi13ZEp7i8Wyjofo7bbW5eDPuR3RQVWVz1OK20Hfy/mhA
-         9mEmiXRLmaXGucT5u3/VvVBUudO1d71Lk23tYVhHbUi3ADbGz5oaCWi1NqxGjAkBPt
-         2AjVy6aSzWK5FayQ++S9/Jc1s4L8QnDCG/sPmGJrv9e5VJeSTaqlAy9ruAjlEs+s7N
-         8dM46hkeN8kA4UWlaIEVgw01fEAbfqO775+4IKTf+P19XRLQe4daFaAonGtEl/dxId
-         B2/b9X9GauWBQ==
+        b=NeQtTOHCQnw7d8Ih/+HtrpcJ17OZwKqPQpGZH9oRnonRYehh4GDZ3hM6FfZJ9gdUt
+         ukkXWsE7hQUjCqMOE8exubsThdIA1k/6fpUF9OQe6nYEFbvOU9rkKCOicRQA20GfTp
+         yH1aJMNe6nISa0uhpB1BO9Tj/UYxWe02WlIp0EFAjkPqogDAWWouv3G1p9+Ia44GrE
+         Z2aZD8aiQvvgNTJG+fPf9eATBSYcaWC8h7DNu7mra21SgG3e1XnDkYNN+eEiLKwwoK
+         irnQuD8j/OaPtHID9ViQTr0cmID4ujmwIrov2Yio7GiwDdtIzjq5A/nL7Ne5Um92f4
+         BXJ0kzg72IdwA==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: wifi: rtlwifi: rtl8192ee: remove static variable stop_report_cnt
+Content-Transfer-Encoding: 8bit
+Subject: Re: wifi: brcmfmac: Fix a typo "unknow"
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221031155637.871164-1-colin.i.king@gmail.com>
-References: <20221031155637.871164-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
+In-Reply-To: <20221101170252.1032085-1-j.neuschaefer@gmx.net>
+References: <20221101170252.1032085-1-j.neuschaefer@gmx.net>
+To:     =?utf-8?q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Cc:     brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        =?utf-8?q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+        Hector Martin <marcan@marcan.st>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?utf-8?q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marek Vasut <marex@denx.de>,
+        Danny van Heumen <danny@dannyvanheumen.nl>,
+        linux-wireless@vger.kernel.org, SHA-cyfmac-dev-list@infineon.com,
+        linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166755962299.3283.14022973939524774032.kvalo@kernel.org>
-Date:   Fri,  4 Nov 2022 11:00:24 +0000 (UTC)
+Message-ID: <166755964415.3283.6960559954104062381.kvalo@kernel.org>
+Date:   Fri,  4 Nov 2022 11:00:45 +0000 (UTC)
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,21 +70,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin Ian King <colin.i.king@gmail.com> wrote:
+Jonathan Neuschäfer <j.neuschaefer@gmx.net> wrote:
 
-> Variable stop_report_cnt is being set or incremented but is never
-> being used for anything meaningful. The variable and code relating
-> to it's use is redundant and can be removed.
+> It should be "unknown".
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
 Patch applied to wireless-next.git, thanks.
 
-cdeee8540952 wifi: rtlwifi: rtl8192ee: remove static variable stop_report_cnt
+22ebc2640cc7 wifi: brcmfmac: Fix a typo "unknow"
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221031155637.871164-1-colin.i.king@gmail.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20221101170252.1032085-1-j.neuschaefer@gmx.net/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
