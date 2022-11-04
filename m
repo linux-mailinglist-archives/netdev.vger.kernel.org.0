@@ -2,160 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33829619EA3
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F074F619EC1
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:31:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231356AbiKDRZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 13:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34866 "EHLO
+        id S229964AbiKDRb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 13:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231902AbiKDRZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:25:06 -0400
-Received: from repost01.tmes.trendmicro.eu (repost01.tmes.trendmicro.eu [18.185.115.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D39F42F48;
-        Fri,  4 Nov 2022 10:24:38 -0700 (PDT)
-Received: from 104.47.11.176_.trendmicro.com (unknown [172.21.188.236])
-        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 9DB9910000633;
-        Fri,  4 Nov 2022 17:24:36 +0000 (UTC)
-X-TM-MAIL-RECEIVED-TIME: 1667582676.127000
-X-TM-MAIL-UUID: c07fce66-e2f2-494b-b643-533fa3f1d375
-Received: from DEU01-FR2-obe.outbound.protection.outlook.com (unknown [104.47.11.176])
-        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 1F4ED100010B7;
-        Fri,  4 Nov 2022 17:24:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VWiqZD9hYWwfdMeUnnUZZZW1tXnadU0ekQa1LMRsJM7Y+Glz3aw6LcVG++hxP5/iXlCwlbVO5i7EFVK0qc48rMlT+gi/pqYAdUrBpuPeQ9W+W8AYFMbx1pd7dIYDOiI3RXRI9Z7yQ/H7gdUVZuMP47Mts6M9acJ/y5/rENpb09bctloO5RYKdSDBXsV9z+QSt60pEt4ImbWQ/LBrcNgsLDTzbtfOmNhWh/W7Jv00uiU7qn5kXWrufjKHBGpET6OSA0UM1g0VX8OGr2635EzgQ0AsghCXOSI1xzRvFYQd9cw8LNj1pdXBuUVB0iAT2WVahtrh6gG5RWuee86eGOLe9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BZpYqoea4Jv7WiheUn5w4tO4MXgzYIcW61fIfqK8mK4=;
- b=CnI+bA8QbsOG/2X3yQnK1LFrUYy+JRSKo7E8knjkl6ZbF4jLUfzBVAiHHBUFBaGAZMh/SFNiAmwdtw4YSKMCQaKP7T05tOS1EhrxtjlZ5EJadIfWWV55ielhMF1ni+hpii60Z/0mFJ6lSTZj2Pby6Kt/qti22O3Ez/7JbE0/tn9eKU/AAZEtFIelVh7HnETK9Oi+cgk5FEIM6GBkLc2ZzCySJt3B+XahLq5TO6LLLWgAqQChChncMQIwQ2m29SkAvtgYX6AWTuCh6CQSAj/2ku9Z4HE9hj1imrFnsxqKqBi7S20oFMDCZ1BKF/+brAKS59M2akh6xYG46enxYP+rLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 217.66.60.4) smtp.rcpttodomain=davemloft.net smtp.mailfrom=opensynergy.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=opensynergy.com;
- dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
- smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=opensynergy.com;
-Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
- designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
-From:   Harald Mommer <Harald.Mommer@opensynergy.com>
-To:     virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229496AbiKDRb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:31:26 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F458260D;
+        Fri,  4 Nov 2022 10:31:25 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ud5so15121844ejc.4;
+        Fri, 04 Nov 2022 10:31:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mZ0izagsWsWpZ2eRmetpEcRkpCuUlicVMhHGefzebh0=;
+        b=YbNyMXSka7FRytIouv7tfbb6N7z89pGJO4T/iUbSkft8jqa3wdJrTLk4YoUh3D9B+J
+         G/9zF02FZOLSHJSHf0lYMSQ0b563hLY5yINDvyLUMfuRvmcePBACGAMG+jyWVTMp3U7H
+         kJYvDuGhftrSTjQIvtMlbrhO1iLwFYVj5rR/4TwU6U5RgLc9BVLAVbW+WnERxREtQNja
+         JoQx89avoufoRoA2dpNNgElcDetlvBTOnRKOM9gakzIURVJY4t5arp1j22WmIWfQfnxe
+         /We67ju9yTUSUpDVuNKH9h6zHM8C7LtsNvGsl4F2I+U9P5HgbCwL1xTYBcaEXZnSztkY
+         ixLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mZ0izagsWsWpZ2eRmetpEcRkpCuUlicVMhHGefzebh0=;
+        b=3yPhEicy9Sy78hERIJ0/qGYa3FKTQyEN27CrVjieNQ8g5T4FbIj0lvXNRWRRYghy9k
+         RlmGtFE+n/YLDzlCx3cdMooGXom2ZmJbR4cMSxgvqJguPAUl+Rd7o4E4L5D7AurrYFl8
+         2WFzeRljW4kAFwrOtiVL1PsqAs6hNyYLz9gLu1UFWW1ynK7aFezUibFoWqyzHCXqNct5
+         sMaB1CTBlN2cij/XclRJ4nfY7FTsMkuZkfJ1B0g8McuprjJ92XPFXMyxONBN0CBf2Qmn
+         4J0vJjAkEN7tScy1Z5ETmDE6ZhppRLlfcpsv9kXjJ1OW+6dsi0wbwkw0TpINaMSZoa4z
+         Nqpg==
+X-Gm-Message-State: ACrzQf2WlsQuB/JdSESivwtPZUffT31pPztJsPIlqXu1eZVzkt5RQoQe
+        5nMkwYVQkcmw3wTphF6vqgo=
+X-Google-Smtp-Source: AMsMyM4LiMQV9yN6h4mkyapS1m6VnkL8UnT/CgIhxokQePY8xhhIosglBIdpc9HcgPhCCxjNQITFtQ==
+X-Received: by 2002:a17:906:5dcc:b0:78d:e76a:ef23 with SMTP id p12-20020a1709065dcc00b0078de76aef23mr34272171ejv.317.1667583083516;
+        Fri, 04 Nov 2022 10:31:23 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id n28-20020a5099dc000000b004619f024864sm2221083edb.81.2022.11.04.10.31.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 10:31:23 -0700 (PDT)
+Date:   Fri, 4 Nov 2022 19:31:20 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>,
-        Harald Mommer <harald.mommer@opensynergy.com>,
-        Harald Mommer <Harald.Mommer@opensynergy.com>
-Subject: [RFC PATCH v2 2/2] can: virtio: Add virtio_can to MAINTAINERS file.
-Date:   Fri,  4 Nov 2022 18:24:21 +0100
-Message-Id: <20221104172421.8271-3-Harald.Mommer@opensynergy.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221104172421.8271-1-Harald.Mommer@opensynergy.com>
-References: <20221104172421.8271-1-Harald.Mommer@opensynergy.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM6EUR05FT048:EE_|FR2P281MB1480:EE_
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: net: nxp,sja1105: document spi-cpol/cpha
+Message-ID: <20221104173120.ho6a624lqnzboz2g@skbuf>
+References: <20221102185232.131168-1-krzysztof.kozlowski@linaro.org>
+ <20221103233319.m2wq5o2w3ccvw5cu@skbuf>
+ <698c3a72-f694-01ac-80ba-13bd40bb6534@linaro.org>
+ <20221104020326.4l63prl7vxgi3od7@skbuf>
+ <6056fe63-26f8-bbda-112a-5b7cf25570ad@linaro.org>
+ <20221104165230.oquh3dzisai2dt7e@skbuf>
+ <61945062-4261-ba3d-0d39-8c1cc46ad33b@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: b37a73fb-24c0-4bfa-8fd3-08dabe8970d9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1b91LlsAdZT/PTvnFeutfs4Jsvde3vHZTQn+NTEYi+qd3fPzq8MLnxGm8DczeAu0yBtCVP0ulE381Qo53rUIxBM4mv4aN3YnWgf+r45KsGgLlU76qWGb6wQCVQKfRszrNaJTm8/evAuJc3WiMSk02Kld4IHMuXymHxknZrIyPyb5q81oxOyIkt1NAzbzg4/wRryI7BFZqL58fFIdm3PCbqpw3jnz8mq45DGCe2SagFFMl2VrNZ28eY2SikC/XYgL8pOhqKpEUh0Sl11UeEe42ZDgdzy6nt/+4ZwzwfZf2LLM0EglCAvCWKBnJiWrz2SiRSu+9IMoC7l7wiWqI6XtH8TFlYaLOsgP4coiXjk0g+XK1NhjaSiWyLjQG1ye1l+130jBAbR4zailn7k3i90ywRNcXVwlSo/0/w29KRbOrHntLG3sBqy7QtlP1G8m4DdFtPh4fV2xOPXkHlZ44USxcnn3+6PH57ngo4WNwaRNsKKKLQqvVYSgsnhE316DJ/nmndB4q58ukD6IdF/MvPDBTvEdfT9D91qeOVBbZ63Cty4n+WpZCDtAvB01TDlHsy46SBJss72ZFKkcoOeIg3gmEoeBjmCOFywaLTcRA5EySKUV8p328aKYWSEQ6gfJlySr3v0TRdLfCuGctSZMl846u0czqYJjbFg/eQtt76hkN1RwWr/nWm4lk0Df/eB/KHGXQ1nuQNCmlirhL1UhMJ+hSSEieC6ha7F6X+C37Wd0IYAbM7OILb+NDnnRaZ9pr/qqlgg233bprUGU7L7nsYDKQA==
-X-Forefront-Antispam-Report: CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(39830400003)(376002)(136003)(346002)(396003)(451199015)(36840700001)(46966006)(7416002)(336012)(5660300002)(186003)(1076003)(2616005)(478600001)(47076005)(26005)(42186006)(316002)(36756003)(107886003)(54906003)(40480700001)(8676002)(4326008)(70586007)(70206006)(41300700001)(8936002)(82310400005)(2906002)(36860700001)(86362001)(81166007)(83380400001)(36900700001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2022 17:24:33.8668
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b37a73fb-24c0-4bfa-8fd3-08dabe8970d9
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM6EUR05FT048.eop-eur05.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB1480
-X-TM-AS-ERS: 104.47.11.176-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.0.1006-27244.001
-X-TMASE-Result: 10-0.757300-4.000000
-X-TMASE-MatchedRID: 4RK2gbhxGJOnnQ0nwnZDJLnHu4BcYSmtwTlc9CcHMZerwqxtE531VCzy
-        bVqWyY2NvJSHCxH3pnSZmElRg36A9RBxp8+zDVacK1L6TVkdgzuyzcnjmIvqX1c/CedjlcvkM9B
-        ACw3vR8HF+Jbfj1Z0dyudgPSw6RX/7O2kJKpKRcp+yskgwrfsC30tCKdnhB58FMkUvzgg/cWVHV
-        xP1hp9BfVTBEcb2VRMjaPj0W1qn0Q7AFczfjr/7LOb5nUQ6M6s4TnyFDNU8mbX6Pg6yOl4aHNcG
-        1dP75ywKY6EyLG+LCM=
-X-TMASE-XGENCLOUD: a0b47f48-abe1-4be4-8422-97c03b833fb9-0-0-200-0
-X-TM-Deliver-Signature: 89AEB2F255038E32A7611941B5459584
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
-        s=TM-DKIM-20210503141657; t=1667582676;
-        bh=PJXRTHkOhPhnUijtkWHMPzqtRhjmU6Lee+Q9bJH6h/4=; l=1597;
-        h=From:To:Date;
-        b=ensthVaPf40u+XlT7SGvnvy5ZR+zKYBLONJU1lhoslb5HNVBLpT3STqHTQwThGMLp
-         Qbjfy6fUvmJ9mDRlcbYRfb8yitPZj/I7FaOOsGjgJnTGfAqCRrsKJKZ2uc7HOvorDL
-         MIFg+9XfGJWLHGwrBLrW4ac6LDtWNvNXCKHH61jpXElak3WLuFXVXMEmSl3YaBXQ5k
-         mtU86DSkIOWzdjHbBT7GVSo4SS5wTPPhROW2cE4/Seb0lcWsxSmj95dYTDe5tXKzYr
-         cLEFqeu2JKY4riJXUVRO7L0EkRDUdw6l5ONmKwuPw7WICwfbApu6nPg/znnwysXeBf
-         ZHYkyP5R5aEwA==
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61945062-4261-ba3d-0d39-8c1cc46ad33b@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Harald Mommer <harald.mommer@opensynergy.com>
+On Fri, Nov 04, 2022 at 01:13:34PM -0400, Krzysztof Kozlowski wrote:
+> On 04/11/2022 12:52, Vladimir Oltean wrote:
+> > Ok, then this patch is not correct either. The "nxp,sja1105*" devices
+> > need to have only "spi-cpha", and the "nxp,sja1110*" devices need to
+> > have only "spi-cpol".
+> 
+> Sure, I'll add allOf:if:then based on your input.
 
-Signed-off-by: Harald Mommer <Harald.Mommer@opensynergy.com>
----
- MAINTAINERS                  | 7 +++++++
- drivers/net/can/virtio_can.c | 6 ++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+No, actually my input is that removing such core properties as spi-cpol/
+spi-cpha from spi-peripheral-props.yaml challenges the whole purpose of
+that schema fragment.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 379945f82a64..01b2738b7c16 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21692,6 +21692,13 @@ F:	drivers/vhost/scsi.c
- F:	include/uapi/linux/virtio_blk.h
- F:	include/uapi/linux/virtio_scsi.h
- 
-+VIRTIO CAN DRIVER
-+M:	"Harald Mommer" <harald.mommer@opensynergy.com>
-+L:	linux-can@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/can/virtio_can.c
-+F:	include/uapi/linux/virtio_can.h
-+
- VIRTIO CONSOLE DRIVER
- M:	Amit Shah <amit@kernel.org>
- L:	virtualization@lists.linux-foundation.org
-diff --git a/drivers/net/can/virtio_can.c b/drivers/net/can/virtio_can.c
-index 43cf1c9e4afd..0e87172bbddf 100644
---- a/drivers/net/can/virtio_can.c
-+++ b/drivers/net/can/virtio_can.c
-@@ -1,7 +1,7 @@
--// SPDX-License-Identifier: GPL-2.0+
-+// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * CAN bus driver for the Virtio CAN controller
-- * Copyright (C) 2021 OpenSynergy GmbH
-+ * Copyright (C) 2021-2022 OpenSynergy GmbH
-  */
- 
- #include <linux/atomic.h>
-@@ -793,8 +793,6 @@ static void virtio_can_populate_vqs(struct virtio_device *vdev)
- 	unsigned int idx;
- 	int ret;
- 
--	// TODO: Think again a moment if here locks already may be needed!
--
- 	/* Fill RX queue */
- 	vq = priv->vqs[VIRTIO_CAN_QUEUE_RX];
- 	for (idx = 0u; idx < ARRAY_SIZE(priv->rpkt); idx++) {
--- 
-2.17.1
+I can go back at it and complain all day that my peripheral doesn't need
+spi-cs-high, spi-lsb-first, spi-rx-bus-width, spi-tx-bus-width,
+stacked-memories, parallel-memories and what not. Or that the SJA1105
+switch will never need the properties of nvidia,tegra210-quad-peripheral-props.yaml#,
+because the former speaks SPI and the latter speaks QSPI (for flashes).
+By this logic, eventually that schema will be reduced to nothing.
 
+Yet I don't believe that including just the intersection of properties
+that actually lead to functional hardware for all peripherals was the
+*intention* of that schema. Just the properties which are semantically
+valid, and cpol/cpha are absolutely semantically valid.
+The justification that cpol/cpha are "not valid" for some peripherals
+(or correctly said, those peripherals only work in mode 0) is very weak
+to begin with, and restricting the SPI modes to only those that
+physically work should IMO be the duty of the hardware schema and not
+the common schema. The common schema just provides the type and
+description, the hardware gives the valid ranges.
