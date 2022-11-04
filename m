@@ -2,209 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DCD4618FD8
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 06:10:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C5D618FF6
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 06:22:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiKDFKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 01:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
+        id S230504AbiKDFW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 01:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiKDFKE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 01:10:04 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D33926C2
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 22:09:59 -0700 (PDT)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20221104050956epoutp029e844dade102149c3bfb0ff9638d6651~kSYTDIFx73212332123epoutp02Z
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 05:09:56 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20221104050956epoutp029e844dade102149c3bfb0ff9638d6651~kSYTDIFx73212332123epoutp02Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1667538596;
-        bh=kFXiZY9u9FX3UKuxEiw+Kz+AMuZoZ4ULT/KUjFkXCn0=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=fu/K/pikNq5QXbVVfKFE0HJyZqmwnvn/gzC63N1Nr4FQmL0SoprrL5fiJnF9XWvjy
-         ErItbocHrI5z6UkDBKx/+JPcUcaYGoJypJwfE3B7DshQQ6ifGQJXE9LOgxFkHsudtv
-         j5K/xHOnCqiUTm1D1OK+DA4QJX1tnpR0NXQ7Ahbg=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20221104050955epcas5p25a1a29f6c3f40d263d7d248130bdff48~kSYSScPMM1390813908epcas5p2l;
-        Fri,  4 Nov 2022 05:09:55 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.174]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4N3TFt0MzPz4x9Q9; Fri,  4 Nov
-        2022 05:09:54 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        04.AF.39477.1AE94636; Fri,  4 Nov 2022 14:09:53 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20221104050835epcas5p21514293206d887aa3d6c746d529dc2f2~kSXHPQVCp0883508835epcas5p2p;
-        Fri,  4 Nov 2022 05:08:35 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20221104050835epsmtrp2b0ac17b844e76936b270c2277ef7ebbe~kSXHOPsX10166101661epsmtrp2N;
-        Fri,  4 Nov 2022 05:08:35 +0000 (GMT)
-X-AuditID: b6c32a4a-259fb70000019a35-b9-63649ea18e0f
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A6.CC.18644.35E94636; Fri,  4 Nov 2022 14:08:35 +0900 (KST)
-Received: from cheetah.sa.corp.samsungelectronics.net (unknown
-        [107.109.115.53]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20221104050833epsmtip28b294adbf295f9083024bf59522d5f68~kSXFRcQwl2150221502epsmtip2g;
-        Fri,  4 Nov 2022 05:08:32 +0000 (GMT)
-From:   Vivek Yadav <vivek.2311@samsung.com>
-To:     rcsekar@samsung.com, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, pankaj.dubey@samsung.com,
-        ravi.patel@samsung.com, alim.akhtar@samsung.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Vivek Yadav <vivek.2311@samsung.com>
-Subject: [PATCH] can: m_can: sort header inclusion alphabetically
-Date:   Fri,  4 Nov 2022 10:46:17 +0530
-Message-Id: <20221104051617.21173-1-vivek.2311@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLKsWRmVeSWpSXmKPExsWy7bCmlu7CeSnJBmv7rS0ezNvGZjHnfAuL
-        xdNjj9gtLmzrY7VY9X0qs8XlXXPYLNYvmsJicWyBmMW3028YLRZt/cJu8fDDHnaLWRd2sFr8
-        WniYxWLpvZ2sDnweW1beZPJYsKnU4+Ol24wem1Z1snn0/zXweL/vKptH35ZVjB6fN8kFcERl
-        22SkJqakFimk5iXnp2TmpdsqeQfHO8ebmhkY6hpaWpgrKeQl5qbaKrn4BOi6ZeYAXa2kUJaY
-        UwoUCkgsLlbSt7Mpyi8tSVXIyC8usVVKLUjJKTAp0CtOzC0uzUvXy0stsTI0MDAyBSpMyM7Y
-        11pYMFOs4s6hyywNjLOEuxg5OCQETCQ+3vDpYuTiEBLYzShx6dE/NgjnE6NEb89NKOczo8T3
-        HxPYuxg5wTquX93ACpHYxShxfWYbO4TTyiQx/dsHZpAqNgEticedC1hAbBGBu4wS1xZnguxj
-        FqiWOHCEDyQsLOAocebiAUYQm0VAVWLHgTdMICW8AtYSR18kQOySl1i94QAzyHgJga/sEjsO
-        nWeCSLhIXOj7ywJhC0u8Or4F6jgpic/v9rJB2MkSO/51skLYGRILJu5hhLDtJQ5cmcMCcY6m
-        xPpd+hBhWYmpp9aBjWcW4JPo/f0EahWvxI55MLaKxIvPE1ghIScl0XtOGCLsITHj5hKwsJBA
-        rMTMA+4TGGVnIcxfwMi4ilEytaA4Nz212LTAKC+1HB5Hyfm5mxjB6VDLawfjwwcf9A4xMnEw
-        HmKU4GBWEuH9tC05WYg3JbGyKrUoP76oNCe1+BCjKTDAJjJLiSbnAxNyXkm8oYmlgYmZmZmJ
-        pbGZoZI47+IZWslCAumJJanZqakFqUUwfUwcnFINTLz53/5K3p3ollw/61Glpu87hdffdx5i
-        WKFd9VoqTnvZooWJs1a8WPt8xi3eGm4ZXkeW+4bMlmG/LA+7/Nm9Pijk3/ytRZ7zchS1RX8U
-        TNL/aj3P4c92O6bkWJ3vwhbPV+347qmjfLws3evm2/v/Eh/vMHqRwLAobolMMfOv56uWSfvd
-        aJuTVuk76yfjUc6FctfFX5+xt0o7Z30wMSRo5e3cj6KTv3iKv4oo+bjoWO6PmSrmM3YF9vD8
-        +6RV/vPknzdsUZ+FVvPaiB/RD2v7c+xCzZmZX69dnST8QVd00YOYrKXch81edtf8YbN69+2w
-        EvOjaVqsjbte9ZcUcCdvFF3lJ9Yct8Q3Nu3HekNGtsdKLMUZiYZazEXFiQDASpl9EAQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrDLMWRmVeSWpSXmKPExsWy7bCSvG7wvJRkg9lTWSwezNvGZjHnfAuL
-        xdNjj9gtLmzrY7VY9X0qs8XlXXPYLNYvmsJicWyBmMW3028YLRZt/cJu8fDDHnaLWRd2sFr8
-        WniYxWLpvZ2sDnweW1beZPJYsKnU4+Ol24wem1Z1snn0/zXweL/vKptH35ZVjB6fN8kFcERx
-        2aSk5mSWpRbp2yVwZexrLSyYKVZx59BllgbGWcJdjJwcEgImEtevbmDtYuTiEBLYwShx69NT
-        doiElMSUMy9ZIGxhiZX/nrNDFDUzSew6chqsiE1AS+Jx5wKwIhGBl4wSLWfZQGxmgXqJd2du
-        gtUICzhKnLl4gBHEZhFQldhx4A1TFyMHB6+AtcTRFwkQ8+UlVm84wDyBkWcBI8MqRsnUguLc
-        9NxiwwKjvNRyveLE3OLSvHS95PzcTYzgANXS2sG4Z9UHvUOMTByMhxglOJiVRHg/bUtOFuJN
-        SaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJanZqakFqEUyWiYNTqoFp5g7T6S8PzGNu
-        L40p9Iqx5ItuOLt7ku3LyF7WsL6Y73XH3K/leqf/C2D4/62zl2HvZKWiPWoLmp52HPqnnu+r
-        Efhi4aQJ9VcNpRe0hjjavIsqNK15unBT3aTKdSdzrhq9OjyvY5fEW+cZkT+OuXZ+vb6S+2Z4
-        VIb48l0p37nVHb77NkYLy2Z272VPEb1emvPh6Mq+d5unfX9xoUGeLfMt860ChUdzJ33rn+sz
-        XUPnk5/qLnczW+9Za6bPcHS5d+rezimWze0PfK1/vsv2ut7K7NHwYY/1px8RBsc+RW6XS5QO
-        MqtRKJvsJVogKPFsSQ7jlGYtmfDq5TblG9XlWc7OSrPpadqR/9VFiz1xxTIlluKMREMt5qLi
-        RACisYHbvwIAAA==
-X-CMS-MailID: 20221104050835epcas5p21514293206d887aa3d6c746d529dc2f2
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20221104050835epcas5p21514293206d887aa3d6c746d529dc2f2
-References: <CGME20221104050835epcas5p21514293206d887aa3d6c746d529dc2f2@epcas5p2.samsung.com>
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230394AbiKDFWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 01:22:53 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40C220BED
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 22:22:51 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oqpA8-0005ZX-3a; Fri, 04 Nov 2022 06:22:40 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oqpA3-0003A0-Tk; Fri, 04 Nov 2022 06:22:35 +0100
+Date:   Fri, 4 Nov 2022 06:22:35 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     linux@rempel-privat.de,
+        syzbot <syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, glider@google.com,
+        kernel@pengutronix.de, kuba@kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        netdev@vger.kernel.org, pabeni@redhat.com, robin@protonic.nl,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KMSAN: uninit-value in can_send
+Message-ID: <20221104052235.GA6474@pengutronix.de>
+References: <000000000000cf2ce705ec935d80@google.com>
+ <cc1a0240-2b51-0d97-3606-02e29d0346c1@hartkopp.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <cc1a0240-2b51-0d97-3606-02e29d0346c1@hartkopp.net>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,GB_FAKE_RF_SHORT,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sort header inclusion alphabetically.
+Hi Oliver,
 
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
----
- drivers/net/can/m_can/m_can.c          |  8 ++++----
- drivers/net/can/m_can/m_can.h          | 16 ++++++++--------
- drivers/net/can/m_can/m_can_platform.c |  2 +-
- 3 files changed, 13 insertions(+), 13 deletions(-)
+On Thu, Nov 03, 2022 at 10:21:15PM +0100, Oliver Hartkopp wrote:
+> Good catch!
+> 
+> That's a correct issue caused by only filling the CAN frame header with
+> can_id and len in j1939_send_one():
+> 
+> https://elixir.bootlin.com/linux/v6.0.6/source/net/can/j1939/main.c#L345
+> 
+> @Oleksij: Can you please (zero)initialize the unused elements in struct
+> can_frame (namely __pad, __res0, len8_dlc) in j1939_send_one()?
+> 
+> Or do you want me to create a patch for it?
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 59deb185fd6b..145f55d4b9b4 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -9,20 +9,20 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/can/dev.h>
- #include <linux/ethtool.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/phy/phy.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
--#include <linux/iopoll.h>
--#include <linux/can/dev.h>
--#include <linux/pinctrl/consumer.h>
--#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index 52563c048732..a839dc71dc9b 100644
---- a/drivers/net/can/m_can/m_can.h
-+++ b/drivers/net/can/m_can/m_can.h
-@@ -7,27 +7,27 @@
- #define _CAN_M_CAN_H_
- 
- #include <linux/can/core.h>
-+#include <linux/can/dev.h>
- #include <linux/can/rx-offload.h>
-+#include <linux/clk.h>
- #include <linux/completion.h>
-+#include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/dma-mapping.h>
- #include <linux/freezer.h>
--#include <linux/slab.h>
--#include <linux/uaccess.h>
--#include <linux/clk.h>
--#include <linux/delay.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
--#include <linux/pm_runtime.h>
--#include <linux/iopoll.h>
--#include <linux/can/dev.h>
--#include <linux/pinctrl/consumer.h>
- #include <linux/phy/phy.h>
-+#include <linux/pinctrl/consumer.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
- 
- /* m_can lec values */
- enum m_can_lec_type {
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index eee47bad0592..b5a5bedb3116 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -5,8 +5,8 @@
- //
- // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
- 
--#include <linux/platform_device.h>
- #include <linux/phy/phy.h>
-+#include <linux/platform_device.h>
- 
- #include "m_can.h"
- 
+I'll not be able to make it today. I'll be glad if you could do it 
+
+Thanks and best regards,
+Oleksij
+
+> 
+> On 03.11.22 17:22, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    4a3e741a3d6a x86: fortify: kmsan: fix KMSAN fortify builds
+> > git tree:       https://github.com/google/kmsan.git master
+> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=14247636880000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c19210a0c25eebb
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=d168ec0caca4697e03b1
+> > compiler:       clang version 15.0.0 (https://github.com/llvm/llvm-project.git 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e16e86880000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1535a2f6880000
+> > 
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/fbb1997bc1e0/disk-4a3e741a.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/d5dd2e1efaa4/vmlinux-4a3e741a.xz
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com
+> > 
+> > =====================================================
+> > BUG: KMSAN: uninit-value in can_is_canxl_skb include/linux/can/skb.h:128 [inline]
+> > BUG: KMSAN: uninit-value in can_send+0x269/0x1100 net/can/af_can.c:205
+> >   can_is_canxl_skb include/linux/can/skb.h:128 [inline]
+> >   can_send+0x269/0x1100 net/can/af_can.c:205
+> >   j1939_send_one+0x40f/0x4d0 net/can/j1939/main.c:352
+> >   j1939_xtp_do_tx_ctl+0x69f/0x9e0 net/can/j1939/transport.c:664
+> >   j1939_tp_tx_ctl net/can/j1939/transport.c:672 [inline]
+> >   j1939_session_tx_rts net/can/j1939/transport.c:740 [inline]
+> >   j1939_xtp_txnext_transmiter net/can/j1939/transport.c:880 [inline]
+> >   j1939_tp_txtimer+0x35bb/0x4520 net/can/j1939/transport.c:1158
+> >   __run_hrtimer+0x298/0x910 kernel/time/hrtimer.c:1685
+> >   __hrtimer_run_queues kernel/time/hrtimer.c:1749 [inline]
+> >   hrtimer_run_softirq+0x4b0/0x870 kernel/time/hrtimer.c:1766
+> >   __do_softirq+0x1c5/0x7b9 kernel/softirq.c:571
+> >   invoke_softirq+0x8f/0x100 kernel/softirq.c:445
+> >   __irq_exit_rcu+0x5a/0x110 kernel/softirq.c:650
+> >   irq_exit_rcu+0xe/0x10 kernel/softirq.c:662
+> >   sysvec_apic_timer_interrupt+0x9a/0xc0 arch/x86/kernel/apic/apic.c:1107
+> >   asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+> >   __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
+> >   _raw_spin_unlock_irqrestore+0x2f/0x50 kernel/locking/spinlock.c:194
+> >   unlock_hrtimer_base kernel/time/hrtimer.c:1017 [inline]
+> >   hrtimer_start_range_ns+0xaba/0xb50 kernel/time/hrtimer.c:1301
+> >   hrtimer_start include/linux/hrtimer.h:418 [inline]
+> >   j1939_tp_schedule_txtimer+0xbe/0x100 net/can/j1939/transport.c:697
+> >   j1939_sk_send_loop net/can/j1939/socket.c:1143 [inline]
+> >   j1939_sk_sendmsg+0x1c2c/0x25d0 net/can/j1939/socket.c:1256
+> >   sock_sendmsg_nosec net/socket.c:714 [inline]
+> >   sock_sendmsg net/socket.c:734 [inline]
+> >   ____sys_sendmsg+0xa8e/0xe70 net/socket.c:2482
+> >   ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2536
+> >   __sys_sendmsg net/socket.c:2565 [inline]
+> >   __do_sys_sendmsg net/socket.c:2574 [inline]
+> >   __se_sys_sendmsg net/socket.c:2572 [inline]
+> >   __x64_sys_sendmsg+0x367/0x540 net/socket.c:2572
+> >   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >   do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+> >   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > 
+> > Uninit was created at:
+> >   slab_post_alloc_hook mm/slab.h:742 [inline]
+> >   slab_alloc_node mm/slub.c:3398 [inline]
+> >   __kmem_cache_alloc_node+0x6ee/0xc90 mm/slub.c:3437
+> >   __do_kmalloc_node mm/slab_common.c:954 [inline]
+> >   __kmalloc_node_track_caller+0x117/0x3d0 mm/slab_common.c:975
+> >   kmalloc_reserve net/core/skbuff.c:437 [inline]
+> >   __alloc_skb+0x34a/0xca0 net/core/skbuff.c:509
+> >   alloc_skb include/linux/skbuff.h:1267 [inline]
+> >   j1939_tp_tx_dat_new net/can/j1939/transport.c:593 [inline]
+> >   j1939_xtp_do_tx_ctl+0xa3/0x9e0 net/can/j1939/transport.c:654
+> >   j1939_tp_tx_ctl net/can/j1939/transport.c:672 [inline]
+> >   j1939_session_tx_rts net/can/j1939/transport.c:740 [inline]
+> >   j1939_xtp_txnext_transmiter net/can/j1939/transport.c:880 [inline]
+> >   j1939_tp_txtimer+0x35bb/0x4520 net/can/j1939/transport.c:1158
+> >   __run_hrtimer+0x298/0x910 kernel/time/hrtimer.c:1685
+> >   __hrtimer_run_queues kernel/time/hrtimer.c:1749 [inline]
+> >   hrtimer_run_softirq+0x4b0/0x870 kernel/time/hrtimer.c:1766
+> >   __do_softirq+0x1c5/0x7b9 kernel/softirq.c:571
+> > 
+> > CPU: 0 PID: 3506 Comm: syz-executor289 Not tainted 6.1.0-rc2-syzkaller-61955-g4a3e741a3d6a #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
+> > =====================================================
+> > 
+> > 
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > 
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > syzbot can test patches for this issue, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches
+> 
+
 -- 
-2.17.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
