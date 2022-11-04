@@ -2,122 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A02CE6192EB
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 09:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A16B66192FD
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 09:55:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiKDIpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 04:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S230338AbiKDIzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 04:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiKDIpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 04:45:15 -0400
-Received: from out28-173.mail.aliyun.com (out28-173.mail.aliyun.com [115.124.28.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3BADA8;
-        Fri,  4 Nov 2022 01:45:13 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.3188103|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0085301-0.000443442-0.991026;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047212;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=16;RT=16;SR=0;TI=SMTPD_---.Q.GlfjF_1667551464;
-Received: from sunhua.motor-comm.com(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.Q.GlfjF_1667551464)
-          by smtp.aliyun-inc.com;
-          Fri, 04 Nov 2022 16:44:49 +0800
-From:   Frank <Frank.Sae@motor-comm.com>
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229481AbiKDIzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 04:55:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9D527911
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 01:54:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667552055;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gr1wY6sSt1hoS3mYpommqdVuyVTPiwyA2H0wzIyKK8M=;
+        b=NP9JpIuX+i9pu5EXpTpCIzsoF/1n5l3C8GBlfNjXl3UJiXxn9A0L1TVddeFmQyGhb2Izji
+        bXEuZ0CKCHpZoUEYU9taghQLvKGzVH2E+NSt2nzptlOGWhnInnP+fd8c6xIqoZUevE4Svs
+        5L3pV4xqJMptU6Pz8WlwY0M5mUjAzvQ=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-614-d9ndw2-vPrqn_pmo6xN-Qg-1; Fri, 04 Nov 2022 04:54:14 -0400
+X-MC-Unique: d9ndw2-vPrqn_pmo6xN-Qg-1
+Received: by mail-wm1-f70.google.com with SMTP id 187-20020a1c02c4000000b003cf6fce8005so2016506wmc.9
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 01:54:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gr1wY6sSt1hoS3mYpommqdVuyVTPiwyA2H0wzIyKK8M=;
+        b=SoipQEW2157XCGe98GRLlHVGuB4PeqOQyxyc9+FRZSzwuJz/9Qe2hGnv+SmdokRHpx
+         QP+ml9uUK+03MutF36WFG9VWSopeCkCuMcoo1IbXFJVR/o+Jxa1XM5gb/x3swWzHE5qH
+         9NFqEqAmtTpocNDvELniT8igjD0moUAfDOB3O5NZfWaeHoOKsgKwCV8hvfM4JOUYicOI
+         x+U7kMVlRHRhtD47Hcmono5KxKTrZxXeTQ3XdXWDqT+kd0klOGrYiP9hhrhWbPzU5XYS
+         tBkkcdXEuz9al+5mU6X0VmCXFThdnp/hAgK8x/Wa95RkQi39OPUQAZmZuGmN6IDNLb+X
+         vjXA==
+X-Gm-Message-State: ACrzQf2HSuQB+epRwCAbUNjegFUWXclWp/q26EaoDSK5zY1luf+Honsl
+        aS4HlevOJQbFOGL7u7euQql8OYn+pLcoMJc+I5L5uOr35R9T3PBuOKcYCseBeA3OI2KenvGR82W
+        EEXanh+Xl6iSeUrgz
+X-Received: by 2002:a05:6000:118c:b0:236:bc26:7e0d with SMTP id g12-20020a056000118c00b00236bc267e0dmr19218590wrx.662.1667552052685;
+        Fri, 04 Nov 2022 01:54:12 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7yXnIGxikq2vzqVFl87h+g1TzaFa9UX/NPHekL+f5fGRz5+gG0TPEkydfQE8mAAeCzMDGaCg==
+X-Received: by 2002:a05:6000:118c:b0:236:bc26:7e0d with SMTP id g12-20020a056000118c00b00236bc267e0dmr19218581wrx.662.1667552052425;
+        Fri, 04 Nov 2022 01:54:12 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-124-216.dyn.eolo.it. [146.241.124.216])
+        by smtp.gmail.com with ESMTPSA id h19-20020a05600c351300b003b4ff30e566sm10543308wmq.3.2022.11.04.01.54.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 01:54:11 -0700 (PDT)
+Message-ID: <da8cb23e4b0909a3bdde8e267b4df7df4c1575f7.camel@redhat.com>
+Subject: Re: [PATCH] selftests/net: give more time to udpgro bg processes to
+ complete startup
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Adrien Thierry <athierry@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     yinghong.zhang@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>,
-        kernel test robot <lkp@intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>
-Subject: [PATCH net-next v2] net: phy: fix yt8521 duplicated argument to & or |
-Date:   Fri,  4 Nov 2022 16:44:41 +0800
-Message-Id: <20221104084441.1024-1-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.31.0.windows.1
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Date:   Fri, 04 Nov 2022 09:54:10 +0100
+In-Reply-To: <20221103204607.520b36ac@kernel.org>
+References: <20221101184809.50013-1-athierry@redhat.com>
+         <20221103204607.520b36ac@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cocci warnings: (new ones prefixed by >>)
->> drivers/net/phy/motorcomm.c:1122:8-35: duplicated argument to & or |
-  drivers/net/phy/motorcomm.c:1126:8-35: duplicated argument to & or |
-  drivers/net/phy/motorcomm.c:1130:8-34: duplicated argument to & or |
-  drivers/net/phy/motorcomm.c:1134:8-34: duplicated argument to & or |
+On Thu, 2022-11-03 at 20:46 -0700, Jakub Kicinski wrote:
+> On Tue,  1 Nov 2022 14:48:08 -0400 Adrien Thierry wrote:
+> > In some conditions, background processes in udpgro don't have enough
+> > time to set up the sockets. When foreground processes start, this
+> > results in the test failing with "./udpgso_bench_tx: sendmsg: Connection
+> > refused". For instance, this happens from time to time on a Qualcomm
+> > SA8540P SoC running CentOS Stream 9.
+> > 
+> > To fix this, increase the time given to background processes to
+> > complete the startup before foreground processes start.
+> > 
+> > Signed-off-by: Adrien Thierry <athierry@redhat.com>
+> > ---
+> > This is a continuation of the hack that's present in those tests. Other
+> > ideas are welcome to fix this in a more permanent way.
+> 
+> Perhaps we can add an option to the Rx side to daemonize itself after
+> setting up the socket, that way the bash script will be locked until 
+> Rx is ready?
 
- The second YT8521_RC1R_GE_TX_DELAY_xx should be YT8521_RC1R_FE_TX_DELAY_xx.
+Then it will be less straigh-forward for the running shell waiting for
+all the running processes. 
 
-Fixes: 70479a40954c ("net: phy: Add driver for Motorcomm yt8521 gigabit ethernet phy")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Julia Lawall <julia.lawall@lip6.fr>
-Signed-off-by: Frank <Frank.Sae@motor-comm.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-Hi Jakub
+Another option would be replacing the sleep with a loop waiting for 
+the rx UDP socket to appear in the procfs or diag interface, alike what
+mptcp self-tests (random example;) are doing:
 
->  On Thu,  3 Nov 2022 10:50:47 +0800 Frank wrote:
->  >  The second YT8521_RC1R_GE_TX_DELAY_xx should be YT8521_RC1R_FE_TX_DELAY_xx.
->  > 
->  >  Fixes: 70479a40954c ("[net-next,v8.2] net: phy: Add driver for Motorcomm yt8521 gigabit ethernet phy")
->  
->  There's a spurious space before the Fixes tag, please remove it.
->  
->  The patches does not apply to the net tree:
->  
->  https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
->  
->  please rebase and repost.
+https://elixir.bootlin.com/linux/v6.1-rc3/source/tools/testing/selftests/net/mptcp/mptcp_join.sh#L424
 
- spurious space has been removed.
- This pach should be work on following commit in net-next tree.
-  - [net-next,v8.2] net: phy: Add driver for Motorcomm yt8521 gigabit ethernet phy
-    https://git.kernel.org/netdev/net-next/c/70479a40954c
+Cheers,
 
-v2 change:
- -add "Reviewed-by: Andrew Lunn <andrew@lunn.ch>"
- -fix tag name (full legal name)
- -change PATCH net to PATCH net-next
- -add warnings info
- 
- 
- drivers/net/phy/motorcomm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index c7593f224177..bd1ab5d0631f 100644
---- a/drivers/net/phy/motorcomm.c
-+++ b/drivers/net/phy/motorcomm.c
-@@ -1119,19 +1119,19 @@ static int yt8521_config_init(struct phy_device *phydev)
- 
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
--		val = YT8521_RC1R_GE_TX_DELAY_DIS | YT8521_RC1R_GE_TX_DELAY_DIS;
-+		val = YT8521_RC1R_GE_TX_DELAY_DIS | YT8521_RC1R_FE_TX_DELAY_DIS;
- 		val |= YT8521_RC1R_RX_DELAY_DIS;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
--		val = YT8521_RC1R_GE_TX_DELAY_DIS | YT8521_RC1R_GE_TX_DELAY_DIS;
-+		val = YT8521_RC1R_GE_TX_DELAY_DIS | YT8521_RC1R_FE_TX_DELAY_DIS;
- 		val |= YT8521_RC1R_RX_DELAY_EN;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
--		val = YT8521_RC1R_GE_TX_DELAY_EN | YT8521_RC1R_GE_TX_DELAY_EN;
-+		val = YT8521_RC1R_GE_TX_DELAY_EN | YT8521_RC1R_FE_TX_DELAY_EN;
- 		val |= YT8521_RC1R_RX_DELAY_DIS;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_ID:
--		val = YT8521_RC1R_GE_TX_DELAY_EN | YT8521_RC1R_GE_TX_DELAY_EN;
-+		val = YT8521_RC1R_GE_TX_DELAY_EN | YT8521_RC1R_FE_TX_DELAY_EN;
- 		val |= YT8521_RC1R_RX_DELAY_EN;
- 		break;
- 	case PHY_INTERFACE_MODE_SGMII:
--- 
-2.31.0.windows.1
+Paolo
 
