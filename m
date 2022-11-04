@@ -2,75 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B71B618F44
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 04:50:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4251618F49
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 04:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiKDDuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 23:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
+        id S229560AbiKDDyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 23:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiKDDui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 23:50:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F225D13DE2;
-        Thu,  3 Nov 2022 20:50:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 872A8B82B60;
-        Fri,  4 Nov 2022 03:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B019FC433C1;
-        Fri,  4 Nov 2022 03:50:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667533834;
-        bh=FyzXENV7WIn5Uu5Adesc2hv84yU5ZUifhCcXpjv7AxY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rRUafkPmNamHHAzrr9ZpHYSQa0E9OV1llpGUVJYgC5gMPCmEqmkIznEaAC4rCxtHl
-         d43Curjpua5SgxtS2MEc1dj4orWiAWSucQU8WJ2wM8agLFcHrLm2cBVLP1DBch7vtQ
-         36l7OJnobeVu7AhEGByHzS3i+tb2hBxzPBz0GiWQdCVZQioqOZfWqLmNOEDcrE83nO
-         rhs3gZslZGNFaOgSBPf/KN/0HGM2Zhw7Qpdaws8AJrLf3X5B+Vgz5EogM1DJBF/QO/
-         nIHTZAikqPzVVNJFpDRWSKgtCry1WDnCYERwx1HkATQHOUmAMATsRtGY8ZofMddYCO
-         DoAcyqlyzTXMQ==
-Date:   Thu, 3 Nov 2022 20:50:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     zhang.songyi@zte.com.cn
-Cc:     Shannon Nelson <shnelson@amd.com>, snelson@pensando.io,
-        drivers@pensando.io, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, brett@pensando.io, mohamed@pensando.io,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jiang.xuexin@zte.com.cn, xue.zhihong@zte.com.cn
-Subject: Re: [PATCH linux-next] ionic: remove redundant ret variable
-Message-ID: <20221103205032.4fe32f58@kernel.org>
-In-Reply-To: <17ef4641-7cb3-fea8-4b1a-30b90c1719a1@amd.com>
-References: <202211022148203360503@zte.com.cn>
-        <17ef4641-7cb3-fea8-4b1a-30b90c1719a1@amd.com>
+        with ESMTP id S229507AbiKDDyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 23:54:00 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6884918E15;
+        Thu,  3 Nov 2022 20:53:59 -0700 (PDT)
+Date:   Fri, 4 Nov 2022 11:53:53 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667534037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8nB/E03kl7uOrvaquUmBlRn6qOLu+r8pqOVk2ws5Fok=;
+        b=K3vS7a+/YCFhKzg5rIoVLcu42SrLfKYm91sdVGcIX9raOj3LZt8CVE+w8BQzYdOYb+AjaD
+        fP+BkVEwz4Z440qs43RgBvQbIcF6baudaYhIKmNK/sZFt4UJ57koN8sx+hvAgAiQpdvuru
+        IOkMBHIW9dpU8mKpxJt908Fr/umqghs=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        SeongJae Park <sj@kernel.org>,
+        Peter Chen <peter.chen@kernel.org>,
+        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] net: hinic: Convert the cmd code from
+ decimal to hex to be more readable
+Message-ID: <20221104035353.GA10583@chq-T47>
+References: <20221101060358.7837-1-cai.huoqing@linux.dev>
+ <20221102203640.1bda5d74@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221102203640.1bda5d74@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Nov 2022 09:07:34 -0700 Shannon Nelson wrote:
-> On 11/2/22 6:48 AM, zhang.songyi@zte.com.cn wrote:
-> >  From 06579895d9e3f6441fa30d52e3b585b2015c7e2e Mon Sep 17 00:00:00 2001
-> > From: zhang songyi <zhang.songyi@zte.com.cn>
-> > Date: Wed, 2 Nov 2022 20:57:40 +0800
-> > Subject: [PATCH linux-next] ionic: remove redundant ret variable
-> > 
-> > Return value from ionic_set_features() directly instead of taking this in
-> > another redundant variable.
-> > 
-> > Reported-by: Zeal Robot <zealci@zte.com.cn>
-> > Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>  
+On 02 11月 22 20:36:40, Jakub Kicinski wrote:
+> On Tue,  1 Nov 2022 14:03:38 +0800 Cai Huoqing wrote:
+> > The print cmd code is in hex, so using hex cmd code intead of
+> > decimal is easy to check the value with print info.
 > 
-> Acked-by: Shannon Nelson <snelson@pensando.io>
-> 
-> ... although these changes usually go through the net or net-next trees.
+> You're still removing empty lines making this patch much harder 
+> to review. Once again - it should be a pure conversion to dec -> hex.
+> Don't make any other changes.
+Hi, Jakub 
 
-net-next in this case, but it doesn't apply, please rebase and repost.
+I fix it, and resend v4
+https://lore.kernel.org/lkml/20221103080525.26885-1-cai.huoqing@linux.dev/
+
+Thanks,
+Cai
