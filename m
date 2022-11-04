@@ -2,84 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA1D6190D3
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 07:18:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0687561912A
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 07:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiKDGSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 02:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        id S231128AbiKDGhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 02:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiKDGSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 02:18:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D90228E1E
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 23:18:50 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N3VnG22xlzmVdM;
-        Fri,  4 Nov 2022 14:18:42 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 4 Nov 2022 14:18:48 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 4 Nov
- 2022 14:18:48 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     Yang Yingliang <yangyingliang@huawei.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        Shailend Chand <shailend@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] gve: Fix error return code in gve_prefill_rx_pages()
-Date:   Fri, 4 Nov 2022 14:17:36 +0800
-Message-ID: <20221104061736.1621866-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230005AbiKDGhj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 02:37:39 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CE821E18;
+        Thu,  3 Nov 2022 23:37:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VTvrMNq_1667543853;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VTvrMNq_1667543853)
+          by smtp.aliyun-inc.com;
+          Fri, 04 Nov 2022 14:37:34 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     richardcochran@gmail.com, bagasdotme@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next v3] net: ethernet: Simplify bool conversion
+Date:   Fri,  4 Nov 2022 14:37:31 +0800
+Message-Id: <20221104063731.84008-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If alloc_page() fails in gve_prefill_rx_pages(), it should return
-an error code in the error path.
+The result of 'scaled_ppm < 0' is Boolean, and the question mark
+expression is redundant, remove it to clear the below warning:
 
-Fixes: 82fd151d38d9 ("gve: Reduce alloc and copy costs in the GQ rx path")
-Cc: Jeroen de Borst <jeroendb@google.com>
-Cc: Catherine Sullivan <csully@google.com>
-Cc: Shailend Chand <shailend@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+./drivers/net/ethernet/renesas/rcar_gen4_ptp.c:32:40-45: WARNING: conversion to bool not needed here
+
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2729
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- drivers/net/ethernet/google/gve/gve_rx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index e2f4494c65fb..1f55137722b0 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -150,8 +150,10 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
- 		for (j = 0; j < rx->qpl_copy_pool_mask + 1; j++) {
- 			struct page *page = alloc_page(GFP_KERNEL);
+change in v3:
+--According to Richard's suggestion, to preserve reverse Christmas tree order.
+
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/renesas/rcar_gen4_ptp.c b/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+index c007e33c47e1..0dc80f6bbf94 100644
+--- a/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
++++ b/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+@@ -29,8 +29,8 @@ static const struct rcar_gen4_ptp_reg_offset s4_offs = {
+ static int rcar_gen4_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct rcar_gen4_ptp_private *ptp_priv = ptp_to_priv(ptp);
+-	bool neg_adj = scaled_ppm < 0 ? true : false;
+ 	s64 addend = ptp_priv->default_addend;
++	bool neg_adj = scaled_ppm < 0;
+ 	s64 diff;
  
--			if (!page)
-+			if (!page) {
-+				err = -ENOMEM;
- 				goto alloc_err_qpl;
-+			}
- 
- 			rx->qpl_copy_pool[j].page = page;
- 			rx->qpl_copy_pool[j].page_offset = 0;
+ 	if (neg_adj)
 -- 
-2.25.1
+2.20.1.7.g153144c
 
