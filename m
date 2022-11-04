@@ -2,143 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E74619F88
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 19:15:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA60619F8D
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 19:17:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbiKDSPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 14:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37964 "EHLO
+        id S231522AbiKDSR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 14:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiKDSPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 14:15:50 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC113137F
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 11:15:49 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A4Hk498011916;
-        Fri, 4 Nov 2022 18:15:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=rhbi4DdQZskap4yRXsCNXUYPxeK5CejE22dWmCNB7S8=;
- b=eCZAdYC/BZmHxqFlNjWiMnjQCdKwFkqaH9RwZV0N7r2FfgZHK+DrFkqs7W5RgItRKHST
- 8Svq0X1EUTJBdjM2xEoFLRUu6KYeqOje47lTRwbGQDUbQhze3uc5QmudHWI0LC/+xowF
- F4/GrR4ObO/4OmURLhYYFaGemrg1U6AELfRAayUuV98GxJ9GV8JjgrmO2QxZ2V+hKcC3
- NkWpoHeR/8x89rnFK/1o+ASRyQSXV+uzy7a6lmfWwpzFUNinBmltaMyCpwu0o9SAaLnz
- 12FYEPCIG52UfDnx4HSnLAnlaY8gZ/h5UuwdJVkbyQZzBDDjCV6abziQad6x30Lo+zSu VQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kmpna1ce0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Nov 2022 18:15:45 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A4F7gsC012855;
-        Fri, 4 Nov 2022 18:15:44 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kmpna1cdj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Nov 2022 18:15:44 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A4I4xRf000520;
-        Fri, 4 Nov 2022 18:15:44 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma04dal.us.ibm.com with ESMTP id 3kgutav2j7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Nov 2022 18:15:43 +0000
-Received: from smtpav02.wdc07v.mail.ibm.com ([9.208.128.114])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A4IFgrv13304506
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 4 Nov 2022 18:15:42 GMT
-Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D7CA95806A;
-        Fri,  4 Nov 2022 18:15:41 +0000 (GMT)
-Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BB1B858058;
-        Fri,  4 Nov 2022 18:15:40 +0000 (GMT)
-Received: from [9.160.12.76] (unknown [9.160.12.76])
-        by smtpav02.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Fri,  4 Nov 2022 18:15:40 +0000 (GMT)
-Message-ID: <a2924a54-7e44-952d-8544-d14e44d9d8f5@linux.ibm.com>
-Date:   Fri, 4 Nov 2022 13:15:39 -0500
+        with ESMTP id S230182AbiKDSR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 14:17:27 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E10E43AEA;
+        Fri,  4 Nov 2022 11:17:25 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E0B90FF80C;
+        Fri,  4 Nov 2022 18:17:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1667585844;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ISRFFPjShTa523N4UQrt9CFTP3J9ZkKLKH2wGQjF6+I=;
+        b=WCpFNL2Fhkhx9xLT6Oaoi8MzRECtIrJwjZkcHhqdmCWXk677VdZosfNA5mUmuykNKTkk0z
+        LdPyOUTfn3jzvAUmromUGULR9hr9/4qrEdndec6tgAMUubeRWQOqtyrclVJKO/+XxcAVJ5
+        5sQWSFbbeZ/TUIo6Ba5dwM/6oaADnWP2MBg0DHoRR3hnf9reKHE1MKYMnnhuiQcZMmkmwH
+        EO7GW+L2IqroI8XFzz44pIcTwYiLTP9vukWpNKQglbL8Lp/D3BN4UgEr2izrvVpaD0SXs+
+        Nq7QY9j52fiOaix0SBl/+j2EgZO1ayqFf8xm9x+fWtQIwfN6wmSyu4N+Y96DqA==
+Date:   Fri, 4 Nov 2022 19:17:20 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next v2 0/3] IEEE 802.15.4: Add coordinator
+ interfaces
+Message-ID: <20221104191720.776d033e@xps-13>
+In-Reply-To: <CAK-6q+hi1dhyfoYAGET55Ku=_in7BbNNaqWQVX2Z_iOg1+0Nyg@mail.gmail.com>
+References: <20221026093502.602734-1-miquel.raynal@bootlin.com>
+        <CAK-6q+jXPyruvdtS3jgzkuH=f599EiPk7vWTWLhREFCMj5ayNg@mail.gmail.com>
+        <20221102155240.71a1d205@xps-13>
+        <CAK-6q+hi1dhyfoYAGET55Ku=_in7BbNNaqWQVX2Z_iOg1+0Nyg@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v2 net] ibmveth: Reduce maximum tx queues to 8
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, nick.child@ibm.com, bjking1@linux.ibm.com,
-        ricklind@us.ibm.com, dave.taht@gmail.com
-References: <20221102183837.157966-1-nnac123@linux.ibm.com>
- <20221103205945.40aacd90@kernel.org>
- <4f84f10b-9a79-17f6-7e2e-f65f0d2934cb@linux.ibm.com>
- <20221104105955.2c3c74a7@kernel.org>
-From:   Nick Child <nnac123@linux.ibm.com>
-In-Reply-To: <20221104105955.2c3c74a7@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: zn7g-P2RaP93UX4Mr0XYEFVjMbYhqrxT
-X-Proofpoint-ORIG-GUID: dEQKHaDQ-XWQAPwqCWNCkR7KWBbKeXzg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-04_11,2022-11-03_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
- spamscore=0 mlxlogscore=913 lowpriorityscore=0 impostorscore=0
- clxscore=1015 adultscore=0 bulkscore=0 suspectscore=0 priorityscore=1501
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211040114
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Alexander,
 
+aahringo@redhat.com wrote on Thu, 3 Nov 2022 20:55:38 -0400:
 
-On 11/4/22 12:59, Jakub Kicinski wrote:
-> On Fri, 4 Nov 2022 09:06:02 -0500 Nick Child wrote:
->> On 11/3/22 22:59, Jakub Kicinski wrote:
->>> On Wed,  2 Nov 2022 13:38:37 -0500 Nick Child wrote:
->>>> Previously, the maximum number of transmit queues allowed was 16. Due to
->>>> resource concerns, limit to 8 queues instead.
->>>>
->>>> Since the driver is virtualized away from the physical NIC, the purpose
->>>> of multiple queues is purely to allow for parallel calls to the
->>>> hypervisor. Therefore, there is no noticeable effect on performance by
->>>> reducing queue count to 8.
->>>
->>> I'm not sure if that's the point Dave was making but we should be
->>> influencing the default, not the MAX. Why limit the MAX?
->>
->> The MAX is always allocated in the drivers probe function. In the
->> drivers open and ethtool-set-channels functions we set
->> real_num_tx_queues. So the number of allocated queues is always MAX
->> but the number of queues actually in use may differ and can be set by
->> the user.
->> I hope this explains. Otherwise, please let me know.
-> 
-> Perhaps I don't understand the worry. Is allowing 16 queues a problem
-> because it limits how many instances the hypervisor can support?
+> Hi,
+>=20
+> On Wed, Nov 2, 2022 at 10:52 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > Hi Alexander,
+> >
+> > aahringo@redhat.com wrote on Sun, 30 Oct 2022 22:20:03 -0400:
+> > =20
+> > > Hi,
+> > >
+> > > On Wed, Oct 26, 2022 at 5:35 AM Miquel Raynal <miquel.raynal@bootlin.=
+com> wrote: =20
+> > > >
+> > > > Hello,
+> > > > These three patches allow the creation of coordinator interfaces, w=
+hich
+> > > > were already defined without being usable. The idea behind is to use
+> > > > them advertizing PANs through the beaconing feature.
+> > > > =20
+> > >
+> > > I still don't know how exactly those "leaves" and "non-leaves" are
+> > > acting here regarding the coordinator interfaces. If this is just a
+> > > bit here to set in the interface I am fine with it. But yea,
+> > > "relaying" feature is a project on its own, as we said previously.
+> > >
+> > > Another mail I was asking myself what a node interface is then,
+> > > currently it is a mesh interface with none of those 802.15.4 PAN
+> > > management functionality? =20
+> >
+> > Not "none", because I would expect a NODE to be able to perform minimal
+> > management operations, such as:
+> > - scanning
+> > - requesting an association
+> > But in no case it is supposed to:
+> > - send beacons
+> > - manage associations
+> > - be the PAN coordinator
+> > - act as a relay
+> > =20
+>=20
+> perfect, thanks. But still there is something which I don't get.
+>=20
+> The split you mentioned about the functionality is for me being a
+> coordinator (IEEE spec) or pan coordinator (IEEE spec) which has the
+> additional functionality of "send beacons, manage assocs, act as
+> relay".
 
-No, the hypervisor is unaware of the number of netdev queues. The reason
-for adding more netdev queues in the first place is to allow the higher
-networking layers to make parallel calls to the drivers xmit function,
-which the hypervisor can handle.
+I would expect any coordinator (IEEE spec) to be able to send beacons
+and relay (but in this case it only makes sense to send beacons if
+relaying is supported, IMHO).
 
-> Or is the concern coming from your recent work on BQL and having many
-> queues exacerbating buffer bloat?
+The PAN coordinator (IEEE spec) only has the following additional
+capability: managing assocs within the PAN. But in practice it is very
+likely that it is the one with the greater computational resources and
+the highest networking capabilities (it is usually the one which acts
+as a bridge with eg. the internet, says the spec).
 
-Yes, and Dave can jump in here if I am wrong, but, from my 
-understanding, if the NIC cannot send packets at the rate that
-they are queued then these queues will inevitably fill to txqueuelen.
-In this case, having more queues will not mean better throughput but
-will result in a large number of allocations sitting in queues 
-(bufferbloat). I believe Dave's point was, if more queues does not
-allow for better performance (and can risk bufferbloat) then why
-have so many at all.
+> So a coordinator (iftype) is a pan coordinator (IEEE spec) and a node
+> (iftype) is a coordinator (IEEE spec), but _only_ when it's
+> associated, before it is just a manually setup mesh node?
 
-After going through testing and seeing no difference in performance
-with 8 vs 16 queues, I would rather not have the driver be a culprit
-of potential resource hogging.
+Mmmh, actually this is not how I see it. My current mental model:
+- COORD (iftype) may act as:
+  * a leaf device (associating with the PAN coordinator, sending data)
+  * a coordinator (like above + beaconing and relaying) once associated
+  * a PAN coordinator (like above + assoc management) if the device
+    started the PAN or after a PAN coordinator handover.
+  Note: physically, it can only be authorized on FFD.
+- NODE (iftype) may only be a leaf device no matter its association
+  status, this is typically a sensor that sends data.
+  Note: can be authorized on any type of device (FFD or RFD).
+
+If I understand correctly, your idea was to change the interface type
+depending of the role of the device within the network. But IMHO the
+interface type should only be picked up once for all in the lifetime of
+the device. Of course we can switch from one to another by quickly
+turning off and on again the device, but this is not a common use case.
+We must keep in mind that PAN coordinator handover may happen, which
+means the interface must stay on but stop acting as the PAN
+coordinator. Using two different interface types for that is not
+impossible, but does not seem relevant to me.
+
+Would you agree?
+
+> I hope it's clear when meaning iftype and when meaning IEEE spec, but
+> for the manual setup thing (node iftype) there is no IEEE spec,
+> although it is legal to do it in my opinion.
+
+It's clear, no problem. In my previous e-mails, when talking about the
+interfaces I used the uppercase NODE and COORD keywords, while I used
+the plain english lowercase "[leaf] node", "coordinator" or "PAN
+coordinator" words when talking about the IEEE definitions.
+
+Thanks,
+Miqu=C3=A8l
