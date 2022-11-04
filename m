@@ -2,93 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C51619DED
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 303FC619E03
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbiKDRA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 13:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49854 "EHLO
+        id S231936AbiKDRAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 13:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiKDRAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:00:24 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF00F31F8C
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 10:00:23 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id x21so3464851qkj.0
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 10:00:23 -0700 (PDT)
+        with ESMTP id S232024AbiKDRAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:00:42 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA2A32B8A;
+        Fri,  4 Nov 2022 10:00:36 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id i21so8485107edj.10;
+        Fri, 04 Nov 2022 10:00:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=/jNIi3NLp/0QE0eLEgGhnlZnXslRxZtVSsauwMnJ52A=;
-        b=TyCMiI4ARMPxd18RVlEv+qm2LWR7zC104Hlivn40qb5lZJslIeDFuCNMNvjneFE/Nj
-         LFwCX5vAwmEX/R8qjGO9x9K9/hgdwoRd2q59WUqMzWoiDvISQjer+tTT1jJ7UfSLA8Vn
-         fR3VeAjk206NeR5DC2lSXJH82ZME8JVM9jplc=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4fCPgYoU3waghJpT2drBRUhqOVkGsUgsTwOK67tZmqg=;
+        b=Ht82vcHMVwPq3LT34TKeasNFC8pTIDwoCLnJRlNCC98iJgHfCTNzEJeDxzk3A3ohug
+         jLtoIymFu2Oswv0tOi810qrKr0w/l5BGT9MIPpRZyYMGjlw/phjcRUeWV2H4l5MW2aSQ
+         jQr2KKUaMOPaCXTCjNP1csPQuoQyk8RP5QBjrgETkmBrD5cMbj3bIuAQotfR6tf8omf8
+         ebGk3wFo1UVsyhVZTWXkxXUpjlX3ZadReH4FC33TsUqw2axUguK23Z8M+YBhFW/tPmmu
+         UZCwoUnMhXSfxJtftrKxnKsvg6zip4kG54lK+DkaYXsglc3GizwiYaV+7PMpph0N5kCf
+         3l6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/jNIi3NLp/0QE0eLEgGhnlZnXslRxZtVSsauwMnJ52A=;
-        b=hRIvOw1yEmeQtJKzuTndTlyXmKEDkKDWE3U/Ik4zi26DZ+WGxFiYJZiFLT0o+2VEj9
-         AhrynxW5OuOqoEzIWIZ5tytK+13+33XGXBEwH6EflXDgWDyITf0HR7gOJrXHac5tetCC
-         4KblZOoo3VVxTeYa/flWD4LrEE1vgdFjz+KRZbGzoGVOopkXh3C7eAd5BGl5k8oeZRd3
-         gydUXjs/rrnFtNX525WRnkxmbjuVnCHOOws+xGVM1YZwM1xWsrGCX3+yHaI7r77I9EJ1
-         4d7uEoVdug1IdEvVoclcbCRTB3z0U6F+KxwNuvB2ejitWuHoKjmWc15UviDqUTMLrv3W
-         Nzcw==
-X-Gm-Message-State: ACrzQf2lWUJskGktD/FsQabb9lKVITRB7Cxpbsuydb0oRvQpuV3EepfE
-        LANmRr0jD9Go9xwkaf8Z8mFlOJrp4dtqEw==
-X-Google-Smtp-Source: AMsMyM5wdZ1aWPI2V6p8EUNYWi19GOavM72CX+R92UtCVbfj7rSSwfCarBh+vpt7glStatpPcUH7Yw==
-X-Received: by 2002:a05:620a:30e:b0:6fa:65bb:cc23 with SMTP id s14-20020a05620a030e00b006fa65bbcc23mr10415881qkm.558.1667581222842;
-        Fri, 04 Nov 2022 10:00:22 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id v5-20020a05620a0f0500b006bba46e5eeasm3241862qkl.37.2022.11.04.10.00.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Nov 2022 10:00:20 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-36a4b86a0abso48989827b3.7
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 10:00:20 -0700 (PDT)
-X-Received: by 2002:a81:8241:0:b0:370:5fad:47f0 with SMTP id
- s62-20020a818241000000b003705fad47f0mr27409344ywf.441.1667581219811; Fri, 04
- Nov 2022 10:00:19 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4fCPgYoU3waghJpT2drBRUhqOVkGsUgsTwOK67tZmqg=;
+        b=YQbat+RbNF/dxF17LdXI9UOdIwdGFGsaRnScsfWN2Aqi00qXEvEO5GaE6VuW4bDMYY
+         KcoausmFnJGHt2wOZAO00ntbOtf88A60s2bSXOO3HeGfeSe42vaKV1AFuK2jeGp1dCnt
+         tXUE/fXhiDvMFw2vsjjLVJV5/C6z2CBYy22nkIQJKLDrPbVDpHgwOCCHMErsCp8OpuRz
+         lqhfm4As/bO6LychfP18abbnNV9IRyN0CgfWCI4YZ9ybJmGFJ1kjUBeB63WFDteL0AwK
+         jTDU93yf7kpRwWlXpJ1lJqvqLKZOWbFSDu5x67g/84AbyiYuitsZGS4TM7V1MWUra0vk
+         NAmQ==
+X-Gm-Message-State: ACrzQf1kwyBIgYa4qFzoHfjpv6IzKqsDecI3M55dmK4WLsyIE/LUeofV
+        uS743NKC1xgMDMGdUIvTEhw=
+X-Google-Smtp-Source: AMsMyM6Q67g1IANmQQk15dltdaZClCbJ+Ghab1+AATzVI42UbkrjzVMioHiyXyHMHgMzu6lYDFC8pw==
+X-Received: by 2002:a05:6402:3896:b0:45c:93c3:3569 with SMTP id fd22-20020a056402389600b0045c93c33569mr5949061edb.37.1667581235155;
+        Fri, 04 Nov 2022 10:00:35 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id qp18-20020a170907207200b007ad86f86b4fsm2049454ejb.69.2022.11.04.10.00.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 10:00:34 -0700 (PDT)
+Date:   Fri, 4 Nov 2022 19:00:31 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: net: nxp,sja1105: document spi-cpol/cpha
+Message-ID: <20221104170031.zr76bv6u5yuxhsyq@skbuf>
+References: <20221102185232.131168-1-krzysztof.kozlowski@linaro.org>
+ <20221103233319.m2wq5o2w3ccvw5cu@skbuf>
+ <698c3a72-f694-01ac-80ba-13bd40bb6534@linaro.org>
+ <20221104020326.4l63prl7vxgi3od7@skbuf>
+ <6056fe63-26f8-bbda-112a-5b7cf25570ad@linaro.org>
 MIME-Version: 1.0
-References: <20221104054053.431922658@goodmis.org>
-In-Reply-To: <20221104054053.431922658@goodmis.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 4 Nov 2022 10:00:03 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whKE5UL+AuCC2wK8oq8D_ueSO_T7-9Acx4POouqVi8ZHg@mail.gmail.com>
-Message-ID: <CAHk-=whKE5UL+AuCC2wK8oq8D_ueSO_T7-9Acx4POouqVi8ZHg@mail.gmail.com>
-Subject: Re: [RFC][PATCH v3 00/33] timers: Use timer_shutdown*() before
- freeing timers
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>, rcu@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-edac@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, drbd-dev@lists.linbit.com,
-        linux-bluetooth@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
-        linux-input@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-leds@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-ext4@vger.kernel.org, linux-nilfs@vger.kernel.org,
-        bridge@lists.linux-foundation.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, lvs-devel@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6056fe63-26f8-bbda-112a-5b7cf25570ad@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,32 +83,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 3, 2022 at 10:48 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> Ideally, I would have the first patch go into this rc cycle, which is mostly
-> non functional as it will allow the other patches to come in via the respective
-> subsystems in the next merge window.
+On Fri, Nov 04, 2022 at 09:09:02AM -0400, Krzysztof Kozlowski wrote:
+> It is not valid to put spi-max-frequency = 1 GHz in
+> spi-peripheral-props.yaml.
+...
+> IOW, CPHA/CPOL are not valid for most devices, so they cannot be in
+> spi-peripheral-props.yaml.
 
-Ack.
-
-I also wonder if we could do the completely trivially correct
-conversions immediately.
-
-I'm talking about the scripted ones where it's currently a
-"del_timer_sync()", and the very next action is freeing whatever data
-structure the timer is in (possibly with something like free_irq() in
-between - my point is that there's an unconditional free that is very
-clear and unambiguous), so that there is absolutely no question about
-whether they should use "timer_shutdown_sync()" or not.
-
-IOW, things like patches 03, 17 and 31, and at least parts others in
-this series.
-
-This series clearly has several much more complex cases that need
-actual real code review, and I think it would help to have the
-completely unambiguous cases out of the way, just to get rid of noise.
-
-So I'd take that first patch, and a scripted set of "this cannot
-change any semantics" patches early.
-
-                Linus
+Your understanding of SPI clock polarity/phase is probably not the same
+as mine. "Not valid for most devices" is a gross misrepresentation.
+There are 4 electrical modes of communication between a SPI controller
+and a peripheral, formed by the 0/1 combination of the CPOL and CPHA bits.
+Some peripherals support only a subset of these modes of operation, that
+is completely true and I agree with it. But they're still SPI devices,
+and all 4 modes of communication apply to them all. That's why I made
+the comparison with the 1 GHz frequency. The spi-peripheral-props.yaml
+schema only says what properties are valid for a peripheral, and both
+CPOL and CPHA are valid for all SPI peripherals, even if some combos
+don't work (when neither spi-cpol nor spi-cpha is present, they are 0
+and 0, so the connection works in SPI mode 0).
