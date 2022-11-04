@@ -2,287 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E21D7619A2F
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:37:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4743A619A46
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232102AbiKDOhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 10:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
+        id S232279AbiKDOkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 10:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232374AbiKDOhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:37:13 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071A46548
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 07:34:52 -0700 (PDT)
+        with ESMTP id S232230AbiKDOkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:40:11 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52972197;
+        Fri,  4 Nov 2022 07:38:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667572492; x=1699108492;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=v2aDk/VgdtM7QJtVXNNpLHHnhTpXH7FZMFIWfUlVqzQ=;
-  b=SwfSqjgsodXlhxqsEpCkvZUCwiRaiZdpUHb1cAhsPAWuMLTJcNMrkUx8
-   V3SG61dwI05pcl9U9/nZnhlChGPm6ibw1SlA4+M/CVPWbEyXqJxjtJ81E
-   c41sfQCP4QzvMIxUuwz5/uu8DzSj3IoYsKCO3gK/ZexwmwhbFBaXW5+N6
-   icC6I0ESA6+Axm2/NYPKCdO4QiGW0eyE8Q5VwukXuEXC4GVUcCuPOFFLH
-   WDlXcGtCKj/qx68UGld5M3WKLvuJD2SBk2cy0lFpzrqbce/hnM5pqZPr+
-   t+5C/60iDeFi654AMJM9QqkiR+B571WURZ24nen9quFM5l1N4DezfjRGV
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="308691345"
+  t=1667572703; x=1699108703;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=5Qz6/3spwrqUoYTSX0DPgHA9Qlrgln4MaaCK1iydmAI=;
+  b=PoivtNennRl7Fiy8cScE7Fa7ICr82I76maqEH9TbQWH/zguXIVdxZrOI
+   Py94i4mllP6IwpTGA5EQv+QwMhxWn9WV2xOLWz/3widJa8N6xAbP9ebfr
+   utgRgrRTlLUg7MeFslbdDnxAUoHsJdzy0lGOdVnl5Q/QHNo80iluEEV0s
+   vhA582cLmfOBrXmIB1As1P+zxfLdYD9+dFgTBonX1SHuSnwTZWRZk7l7J
+   +GzdYHJ0jUHd1NKzwYD6br3nyfUaY5lVuICV1++1l5mkM4VIS691FASsQ
+   xJXKzDT7s1MDxLyOH8/Fg9bmBldTP3HFTCIR5gEHnTFEdN7zMVgqYv1kF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="372087137"
 X-IronPort-AV: E=Sophos;i="5.96,137,1665471600"; 
-   d="scan'208";a="308691345"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 07:34:51 -0700
+   d="scan'208";a="372087137"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 07:38:23 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="760344223"
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="704101828"
 X-IronPort-AV: E=Sophos;i="5.96,137,1665471600"; 
-   d="scan'208";a="760344223"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP; 04 Nov 2022 07:34:50 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 4 Nov 2022 07:34:50 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Fri, 4 Nov 2022 07:34:50 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Fri, 4 Nov 2022 07:34:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l3vn+Ll0rfr+rcfXFcgzcr6yR0f9YEAn+ohNt2dev7FtM7IzG0dDviwQaL7zlQ8visA14jKDcZxWp5j6UTwDEemCbktxOSYHrndQZwPxWWIYgs4T5UP/9LVH3huS/DUWk23TqahdfYlIs5oB8vLj2H/PoffUzod51L9sD28NVLHD4zct1sXrnKczV/rnH/cD12ZgpnBUX4mXe7X3lQKNbD1/bnVxfI+C6SoS+XbDgG3uqDszULuy3qW1LG2aO2L+b4RmUeaNnfsuPEsGtpLYI7jSD9FA8YFIm3NemVaVP8q07ozx11/rBtNIOXTlnWKi+8LOIVkUOevNiUy1qVSHhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mhNcpisXQVHwsVF5WcxNV2wH/K7wZk5OiTCsfTf0bOI=;
- b=Ytn8u0zIbEwfqHYptWgitPsaGdQY/p/qc5JVXI+c1rplZkAf4WGlFc3AftTzwIgGZ2SgHkpp7BbISsx9tMCnskP5MFi+hujFOIxkfEiDkRO78q4aOSf2QDPwJ59Xf+7DMpvJfSQcntkLTEn+nlEkePdYBjlxPp2RZPXkX6dHdRODnKeZ5u8YkkxafnNDOSrJZQkkhykg6YSBgycMUzDA+zLh2SgskeaABv09QTSLT7z3nwHA5S3kJfqhywL+1hiIDvLlmEzJwr/ykPxydCRmDBYKqaKqiCW8I3IuLvkLIGVkGDtHm4SkXPlTbyLNVgapquNCDWbIBX1K/GpiMhvZpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO6PR11MB5603.namprd11.prod.outlook.com (2603:10b6:5:35c::12)
- by BL1PR11MB5509.namprd11.prod.outlook.com (2603:10b6:208:31f::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Fri, 4 Nov
- 2022 14:34:42 +0000
-Received: from CO6PR11MB5603.namprd11.prod.outlook.com
- ([fe80::712e:208e:f167:1634]) by CO6PR11MB5603.namprd11.prod.outlook.com
- ([fe80::712e:208e:f167:1634%8]) with mapi id 15.20.5791.022; Fri, 4 Nov 2022
- 14:34:42 +0000
-Message-ID: <5b9e1247-ce31-bb8a-b787-bb7b9a92f03e@intel.com>
-Date:   Fri, 4 Nov 2022 15:34:35 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH net-next v8 3/9] devlink: Enable creation of the
- devlink-rate nodes from the driver
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     <netdev@vger.kernel.org>, <alexandr.lobakin@intel.com>,
-        <jacob.e.keller@intel.com>, <jesse.brandeburg@intel.com>,
-        <przemyslaw.kitszel@intel.com>, <anthony.l.nguyen@intel.com>,
-        <kuba@kernel.org>, <ecree.xilinx@gmail.com>
-References: <20221028105143.3517280-1-michal.wilczynski@intel.com>
- <20221028105143.3517280-4-michal.wilczynski@intel.com>
- <Y1+hLUPkXn3YWIlA@nanopsycho>
-From:   "Wilczynski, Michal" <michal.wilczynski@intel.com>
-In-Reply-To: <Y1+hLUPkXn3YWIlA@nanopsycho>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0044.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:48::7) To CO6PR11MB5603.namprd11.prod.outlook.com
- (2603:10b6:5:35c::12)
+   d="scan'208";a="704101828"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Nov 2022 07:38:19 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2A4EcHMF021328;
+        Fri, 4 Nov 2022 14:38:17 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [RFC bpf-next v2 10/14] ice: Support rx timestamp metadata for xdp
+Date:   Fri,  4 Nov 2022 15:35:47 +0100
+Message-Id: <20221104143547.3575615-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221104032532.1615099-11-sdf@google.com>
+References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-11-sdf@google.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO6PR11MB5603:EE_|BL1PR11MB5509:EE_
-X-MS-Office365-Filtering-Correlation-Id: b8bae399-2579-4027-80f6-08dabe71b62a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ke2j2w10VqfiJPxwk1cy9IWXUMxk/2CJohlcpAClMT3gTnHQQ99pXjNDW7o2ML5Ol7EKJpVO69XHNvuuH/Ik7rGrHSX2zbfno/OJCOYA4vIV8w0deduc4UUa99Z0QszeVqiYlHGAbrVjlkiSrQyk/AKwrzKlHWJhlxZQq8eesJnDuFkxFVN/1JfydWzbDX4SmjANPG6EaA5JXETZ/doY1YLkBYd+wyLSuCEn/ubaQmwFNXmIa7raAAT9b4YT3wEu/XZbS610oC/CnvrKEgMP+t/YuVX/qSSkXZna/OA7kiVqi+ZYUOva/c8H96Ab21rpZAytbmYNjXvng9tZ0n6qnBqDk57R3z032ub9IRGmvZ00bbY3+OvaRRakDVDNuDHEg48caxVs2UVm9BOci9EOmAbX0PhdltcIlrnsOLNG4mkPAf8mSKaTmDoHgDlFHUDDpdj7ZC/Jtjva1B+X73vn0fcxxef1bna1LSCxuVtpTF1M/r+dkgv9rFzAHnFSepuLqVc3K7HTPby8b4+FciPOauEn6NibNVy4UbdHGxL06HhudYBznY0bEVcEpRtsdm/MuQaQlwdJpaB1/vV3nG1iSs6tuuBvjpaeYizBuE40L+wU6xfIDa7yNQFFKSPcPAgqhOd1l9YnYQXUQQxZuuXxsOrJ3BgcY+iwyokawu9RQk5bio4FZFDYNMeZ1u7qAXaPVSByzAlgxcnerperptcPBnJxkGG85ATkZD/YvViu8eWz/7I+ClbSNp82nreJo41ilNO/w1ixrn8AfUVLJvxmRjGOWgbUYkYcvr6b/vMc/AI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(346002)(136003)(396003)(366004)(39860400002)(451199015)(316002)(186003)(5660300002)(2616005)(83380400001)(66556008)(66946007)(41300700001)(66476007)(4326008)(8676002)(26005)(6512007)(2906002)(53546011)(6506007)(36756003)(8936002)(31686004)(478600001)(6486002)(82960400001)(6666004)(31696002)(86362001)(6916009)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cHhROFB1OStYbHpJem4vN2gwQ0VPbDVJS3hPbEZKeDBoRnNQRUZzRzY2UkNh?=
- =?utf-8?B?c3NZaGFZcXBVMTJma0tja1Q2VFYwVDhvcTk1d2xncE9VTWtEVnMzcGFRc2Jj?=
- =?utf-8?B?cndDUDkwNFZuMm1CaFJ0N2tlbEcxU0NHcGdnMlNRNElXWjRkZEhhVUFTQXgv?=
- =?utf-8?B?dWJFR2dqNnJYdmNqZ2F5RDVFNHZJSzB6Znlublo1UXAzOHYxUjA0dmR6aHdx?=
- =?utf-8?B?QWVDa0liVHkvdmdtdG9rUGNHYklZeiszTlB5dmhIOHllY2tJZGl3dmI1R1ZM?=
- =?utf-8?B?czRUZ1ovRTRzZnEySVp6V0RKMjVPNmVLblBHaStGdDhEdlRjaW05NG51aXpW?=
- =?utf-8?B?T28vNmErMG1BZGhtcHB6NWZ3dVNNcTNZVHRxWTUxdlNXdXYxTmRMa0RDWnlH?=
- =?utf-8?B?NWFla3kyRVZUbE9JUzYrSm9FNDF5TEg5SFRmaUlkUEJ6Z1RTaUdLcy8xYXNz?=
- =?utf-8?B?T1BLOCtDWTBjMjZhamJlemI3SHk3SW9tekJNL2RaZHB1ZjFWYXp0YjNsY3Rv?=
- =?utf-8?B?SlZuQ1FsQUpYeGhoSG4yaTZCYkhjbTNRYys5eDZrMDdkUEIxdUpRendpT3Z6?=
- =?utf-8?B?QjR0aVVJdERkazRsS2RVTWhFZVd0VXlKVDZnaC9adEgwcHhLUkQ1bHpwVDln?=
- =?utf-8?B?WHdtV0JuY244S1haZThuM1pIUFU0NFlPQ3JwT2ZOTWZFc0pQMVlRMlY1YVFG?=
- =?utf-8?B?eDJpclE4b1djMkJ5REh5cDJjeFRZOXZHWjZ1TXNKQUpJVSszcUJ0VG5tZWo5?=
- =?utf-8?B?WklBNHRoVHZoU0llclUrZ043WTE0MXdoYUU1RFhLb3ErUTJLcjBJUmRKZytE?=
- =?utf-8?B?MTBySFRMRkt0WHpzRVNodTM4Nk9NOUUxeFlRc29JOGVYWG16dWt1SDgwckND?=
- =?utf-8?B?YjFNWDZDeWdpMU1DY0RicEtQSmlvSUlnV01QL2l4SFFtVWxMd0NRUEM0OCtm?=
- =?utf-8?B?Z3FhaVdwbElSQVd0ZTBQSk8rT0JHbWdFUTE4Z0lXS1dtd0UzeW9MV3JEVndC?=
- =?utf-8?B?eVZITmFmQm9HMnQ4cWZiSlJZMGVtOUgzbVlmNVlxbFo5RVV1VmJKV1FxVmlW?=
- =?utf-8?B?RnJjSmVmemxsSHFYL01PTzRXUXMwN3BCUnVmUHZVMVFPWWdYZXg2aW5TUFVT?=
- =?utf-8?B?WFJVMTQ3SGZWdDVuMmw5S0hrT0ZMRkN2TVdwb2crZ3dCd255Zmh5Vm91aWhs?=
- =?utf-8?B?UVFwUmpzWlBocDhidktMY0Vub0NkaXppZGhHUysyT3M5bXgzOVp1NmJKaStQ?=
- =?utf-8?B?dVJZbGJZNndmNkU3MjhRMFVJczJTeThnaEROWDYwV1BTbXliYm01akFRSXNn?=
- =?utf-8?B?aG44MVg4M2J1cUxkeXFSZTBxNk9ya2tQVCtieU5QSWdTUXZuOXdYa2NmS3BF?=
- =?utf-8?B?Z2lSMFJwaFZGcFNTVHhjaE1GdlRzOXR5OTNsQUpxeFR4YVIySi9kRXZJcTd5?=
- =?utf-8?B?WmtpLzM0U2tBSi9TWXk4M1dzQlg0a2NmNVFpRjdFUlpQQ1lFWnNhQUN2SU1O?=
- =?utf-8?B?bUlPUUxMa0t0ZDBZclB4NkI2QTFpV3dMVW5zOHIwOGQvcDRiN3dTMWpFTnVC?=
- =?utf-8?B?OUVTM2FzU1dEOUFDQ3dWV0FMZmxZOGhQcW8vTVN0ZUdtdW10SjExU3hjd0Jq?=
- =?utf-8?B?OVBhQmcvQXF5a1JGaXlpeXZZdUM3YlFCRFRWOTdzL1FyLys0aFRVZTJxbGdp?=
- =?utf-8?B?U3doRGE3QjRZYldxMFJFc1pRbkVKQmJhVWh6YlpVMHkvaXBhOTg3aHNWVk5Q?=
- =?utf-8?B?VHROdmVvbEU2Y2FkcFcwdkl4MXNaaEFFaHY5a08rS2gxK0ZjSmxNRDlMWE5S?=
- =?utf-8?B?ZDZGRk9tYjUvSyt2VnRJdmR5eG5JL0VJelQ1ZTlxMUFXeEhVZ0swbGE5ZDl2?=
- =?utf-8?B?T2NRZ0cycDhMQnlPenFGNmFhWHYvTUc0NzNzTmVydkJva2ltSWJmOVpKdWtv?=
- =?utf-8?B?K2RSOTRsRE1QSWhBMHBETW5Iam9JTE9uS1Z6Z3JHZjEzaGJmQnpTUUxndVBW?=
- =?utf-8?B?MWFHYUxNQ3VrWHE2eTJ5d1hCZ2ZXNHNaQmV3SXQ2ME14b0ZDTW9IeXRrSmFq?=
- =?utf-8?B?ajlLRDlod3c1Rmd3OXRhZHNjT3ZKdjdEcUxCdi9qZnp5TmRad0lwN2E5NWRp?=
- =?utf-8?B?Tk8xM0I3ejlZVTUyRVVMblNZYXVBYlYyTHNyUmpIdmFjZnlxTXMvMGFXZHdW?=
- =?utf-8?B?TXc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8bae399-2579-4027-80f6-08dabe71b62a
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2022 14:34:42.8013
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6jQcmeb7kinBB9FDX5UhqlQjD1hGcO+VMwXy/3XhY3dvWXyyxJBUjqkSEGgCjO6kDzCH6HrsRz9MU7vtpPkn3mHIl6JmSi06XvMHalQKxt8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5509
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Stanislav Fomichev <sdf@google.com>
+Date: Thu,3 Nov 2022 20:25:28 -0700
 
+> COMPILE-TESTED ONLY!
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> Cc: Maryam Tahhan <mtahhan@redhat.com>
+> Cc: xdp-hints@xdp-project.net
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice.h      |  5 ++
+>  drivers/net/ethernet/intel/ice/ice_main.c |  1 +
+>  drivers/net/ethernet/intel/ice/ice_txrx.c | 75 +++++++++++++++++++++++
+>  3 files changed, 81 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+> index f88ee051e71c..c51a392d64a4 100644
+> --- a/drivers/net/ethernet/intel/ice/ice.h
+> +++ b/drivers/net/ethernet/intel/ice/ice.h
+> @@ -925,6 +925,11 @@ int ice_open_internal(struct net_device *netdev);
+>  int ice_stop(struct net_device *netdev);
+>  void ice_service_task_schedule(struct ice_pf *pf);
+>  
+> +struct bpf_insn;
+> +struct bpf_patch;
+> +void ice_unroll_kfunc(const struct bpf_prog *prog, u32 func_id,
+> +		      struct bpf_patch *patch);
+> +
+>  /**
+>   * ice_set_rdma_cap - enable RDMA support
+>   * @pf: PF struct
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index 1f27dc20b4f1..8ddc6851ef86 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -9109,4 +9109,5 @@ static const struct net_device_ops ice_netdev_ops = {
+>  	.ndo_xdp_xmit = ice_xdp_xmit,
+>  	.ndo_xsk_wakeup = ice_xsk_wakeup,
+>  	.ndo_get_devlink_port = ice_get_devlink_port,
+> +	.ndo_unroll_kfunc = ice_unroll_kfunc,
+>  };
+> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+> index 1b6afa168501..e9b5e883753e 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/netdevice.h>
+>  #include <linux/prefetch.h>
+>  #include <linux/bpf_trace.h>
+> +#include <linux/bpf_patch.h>
+>  #include <net/dsfield.h>
+>  #include <net/mpls.h>
+>  #include <net/xdp.h>
+> @@ -1098,8 +1099,80 @@ ice_is_non_eop(struct ice_rx_ring *rx_ring, union ice_32b_rx_flex_desc *rx_desc)
+>  
+>  struct ice_xdp_buff {
+>  	struct xdp_buff xdp;
+> +	struct ice_rx_ring *rx_ring;
+> +	union ice_32b_rx_flex_desc *rx_desc;
+>  };
+>  
+> +void ice_unroll_kfunc(const struct bpf_prog *prog, u32 func_id,
+> +		      struct bpf_patch *patch)
+> +{
+> +	if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_EXPORT_TO_SKB)) {
+> +		return xdp_metadata_export_to_skb(prog, patch);
 
-On 10/31/2022 11:19 AM, Jiri Pirko wrote:
-> Fri, Oct 28, 2022 at 12:51:37PM CEST, michal.wilczynski@intel.com wrote:
->> Intel 100G card internal firmware hierarchy for Hierarchicial QoS is very
->> rigid and can't be easily removed. This requires an ability to export
->> default hierarchy to allow user to modify it. Currently the driver is
->> only able to create the 'leaf' nodes, which usually represent the vport.
->> This is not enough for HQoS implemented in Intel hardware.
->>
->> Introduce new function devl_rate_node_create() that allows for creation
->> of the devlink-rate nodes from the driver.
->>
->> Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
->> ---
->> include/net/devlink.h |  4 ++++
->> net/core/devlink.c    | 49 +++++++++++++++++++++++++++++++++++++++++++
->> 2 files changed, 53 insertions(+)
->>
->> diff --git a/include/net/devlink.h b/include/net/devlink.h
->> index 929cb72ef412..9d0a424712fd 100644
->> --- a/include/net/devlink.h
->> +++ b/include/net/devlink.h
->> @@ -98,6 +98,8 @@ struct devlink_port_attrs {
->> 	};
->> };
->>
->> +#define DEVLINK_RATE_NAME_MAX_LEN 30
->> +
->> struct devlink_rate {
->> 	struct list_head list;
->> 	enum devlink_rate_type type;
->> @@ -1601,6 +1603,8 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
->> 				   u32 controller, u16 pf, u32 sf,
->> 				   bool external);
->> int devl_rate_leaf_create(struct devlink_port *port, void *priv);
->> +int devl_rate_node_create(struct devlink *devlink, void *priv, char *node_name,
->> +			  char *parent_name);
->> void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
->> void devl_rate_nodes_destroy(struct devlink *devlink);
->> void devlink_port_linecard_set(struct devlink_port *devlink_port,
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index b97c077cf66e..08f1bbd54c43 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -10270,6 +10270,55 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
->> }
->> EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
->>
->> +/**
->> + * devl_rate_node_create - create devlink rate node
->> + * @devlink: devlink instance
->> + * @priv: driver private data
->> + * @node_name: name of the resulting node
->> + * @parent_name: name of the parent node
->> + *
->> + * Create devlink rate object of type node
->> + */
->> +int devl_rate_node_create(struct devlink *devlink, void *priv, char *node_name, char *parent_name)
-> Nope, this is certainly incorrect. Do not refer to kernel object by
-> string. You also don't have internal kernel api based on ifname to refer
-> to struct net_device instance.
->
-> Please have "struct devlink_rate *parent" to refer to parent node and
-> make this function return "struct devlink_rate *".
+Hey,
 
-Okay, I changed that and re-sent. The downside is I have to
-store devlink_rate pointers in the driver instead of just names.
+FYI, our team wants to write a follow-up patch with ice support
+added, not like a draft, more of a mature code. I'm thinking of
+calling ice C function which would process Rx descriptors from
+that BPF code from the unrolling callback -- otherwise,
+implementing a couple hundred C code lines from ice_txrx_lib.c
+would be a bit too much :D
 
->
->
->> +{
->> +	struct devlink_rate *rate_node;
->> +	struct devlink_rate *parent;
->> +
->> +	rate_node = devlink_rate_node_get_by_name(devlink, node_name);
->> +	if (!IS_ERR(rate_node))
->> +		return -EEXIST;
->> +
->> +	rate_node = kzalloc(sizeof(*rate_node), GFP_KERNEL);
->> +	if (!rate_node)
->> +		return -ENOMEM;
->> +
->> +	if (parent_name) {
->> +		parent = devlink_rate_node_get_by_name(devlink, parent_name);
->> +		if (IS_ERR(parent)) {
->> +			kfree(rate_node);
->> +			return -ENODEV;
->> +		}
->> +		rate_node->parent = parent;
->> +		refcount_inc(&rate_node->parent->refcnt);
->> +	}
->> +
->> +	rate_node->type = DEVLINK_RATE_TYPE_NODE;
->> +	rate_node->devlink = devlink;
->> +	rate_node->priv = priv;
->> +
->> +	rate_node->name = kstrndup(node_name, DEVLINK_RATE_NAME_MAX_LEN, GFP_KERNEL);
-> Why do you limit the name length? We don't limit the length passed from
-> user, I see no reason to do it for driver.
+> +	} else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
+> +		/* return true; */
+> +		bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
+> +	} else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
 
-I thought it's safer to limit this to avoid buffer overflow.
-Changed this in v9.
+[...]
 
->
->
->> +	if (!rate_node->name) {
->> +		kfree(rate_node);
->> +		return -ENOMEM;
->> +	}
->> +
->> +	refcount_set(&rate_node->refcnt, 1);
->> +	list_add(&rate_node->list, &devlink->rate_list);
->> +	devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(devl_rate_node_create);
->> +
->> /**
->>   * devl_rate_leaf_create - create devlink rate leaf
->>   * @devlink_port: devlink port object to create rate object on
->> -- 
->> 2.37.2
->>
+> -- 
+> 2.38.1.431.g37b22c650d-goog
 
+Thanks,
+Olek
