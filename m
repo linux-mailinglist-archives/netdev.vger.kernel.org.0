@@ -2,51 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CE4619716
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 14:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F7DB619715
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 14:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbiKDNJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 09:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
+        id S231404AbiKDNJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 09:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231545AbiKDNJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 09:09:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3BB764B
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 06:09:06 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oqwRQ-0000Io-48; Fri, 04 Nov 2022 14:09:00 +0100
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5E89F112F56;
-        Fri,  4 Nov 2022 13:08:58 +0000 (UTC)
-Date:   Fri, 4 Nov 2022 14:08:57 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH net-next 0/14] pull-request: can-next 2022-10-31
-Message-ID: <20221104130857.amzwa2mzmwhbljmk@pengutronix.de>
-References: <20221031154406.259857-1-mkl@pengutronix.de>
- <20221031202714.1eada551@kernel.org>
- <Y2CpRfuto8wFrXX+@kroah.com>
+        with ESMTP id S231230AbiKDNJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 09:09:06 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B8820F6C
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 06:09:04 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id hh9so2931750qtb.13
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 06:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vZ8hfa5U3lUaaForj2mH3Ulz54E7m/Sy69csnuU6d1I=;
+        b=jthoUqjMA2TjIz8CooFEFC1WQHTjAz/A4lZ+uBXFlARKTaTZm0FEj8AbAXdQKI/C5Q
+         s5rK/pzYhtrNhlJ5wBSI5+hhTg4UUXPAkUvsRr3XwWqJinBUi1Q4kzZXxDjsVAPh6Hl1
+         +9x+timhhVAL+4VreRxB0tjGF1qNPvFsYLMstc9yva/ZlxvtGeicL1/pjSJ2HfXU+9f9
+         ts6q52vkNK0dz3lVoZ6CKZqUtdW1lSDCGforMu9FuS8OkmcEXoO90fw2BpMGRDH5GzfL
+         MqYithP93WSyajXKzqz24RY9kZDWosc5lI0a7VDDklwwxRUtErdMU7nmUTW1VQeaFKZI
+         vgLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vZ8hfa5U3lUaaForj2mH3Ulz54E7m/Sy69csnuU6d1I=;
+        b=qZDA/FETvWN8bPwpg8aSf8UO8iMhSSVkhzaFkrshQq4bGVYaNrm0xkpjyGc0lXAYQ5
+         ZSQEdisctFTFAc54Nd63yDVHd0PxokonVnQJD5+/iozhsADfvg+jnUZfOb3cxcGrqYm7
+         yX9ucK8iM3btCj0Kb/4jGRtrdPgRtlUqvivApSRfnSkQ9VVxtg07Ak7Z5FrLBphFzfus
+         xefoahLvVIe7JsIrAIvuOFSY/cPPadYJgdoflAMdflCghYz66EPHjcSqPlZPcChAKebT
+         gFGgFAPy3yFbX0EuU+wMY+2H44AVZyusxa0KkSMMkDICWg7ZqRb+hxey/q4PXfQOg2Sq
+         hF0Q==
+X-Gm-Message-State: ACrzQf3A0ZNFHtSauikl6vPjez0jHP43sZycqRdx+TvBHsxBbdsY4WF5
+        iNmxXF8BoM4cE6PC1kuFd7cjeQ==
+X-Google-Smtp-Source: AMsMyM6Mj8AWm3KMbV3ZCvDwJXJMgtC//MdJssJ2i8xP7YwpBQ+mizNHgB8VAwFkINWnPdaT9J8FPA==
+X-Received: by 2002:a05:622a:12:b0:3a5:6899:5add with SMTP id x18-20020a05622a001200b003a568995addmr1816091qtw.629.1667567343572;
+        Fri, 04 Nov 2022 06:09:03 -0700 (PDT)
+Received: from ?IPV6:2601:586:5000:570:aad6:acd8:4ed9:299b? ([2601:586:5000:570:aad6:acd8:4ed9:299b])
+        by smtp.gmail.com with ESMTPSA id b6-20020a05620a0cc600b006e6a7c2a269sm2861212qkj.22.2022.11.04.06.09.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Nov 2022 06:09:03 -0700 (PDT)
+Message-ID: <6056fe63-26f8-bbda-112a-5b7cf25570ad@linaro.org>
+Date:   Fri, 4 Nov 2022 09:09:02 -0400
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fk2qhj5vkx72nsjx"
-Content-Disposition: inline
-In-Reply-To: <Y2CpRfuto8wFrXX+@kroah.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2] dt-bindings: net: nxp,sja1105: document spi-cpol/cpha
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221102185232.131168-1-krzysztof.kozlowski@linaro.org>
+ <20221103233319.m2wq5o2w3ccvw5cu@skbuf>
+ <698c3a72-f694-01ac-80ba-13bd40bb6534@linaro.org>
+ <20221104020326.4l63prl7vxgi3od7@skbuf>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221104020326.4l63prl7vxgi3od7@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -55,105 +86,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 03/11/2022 22:03, Vladimir Oltean wrote:
+> On Thu, Nov 03, 2022 at 09:44:36PM -0400, Krzysztof Kozlowski wrote:
+>>> Don't these belong to spi-peripheral-props.yaml?
+>>
+>> No, they are device specific, not controller specific. Every device
+>> requiring them must explicitly include them.
+>>
+>> See:
+>> https://lore.kernel.org/all/20220816124321.67817-1-krzysztof.kozlowski@linaro.org/
+>>
+>> Best regards,
+>> Krzysztof
+>>
+> 
+> I think you really mean to link to:
+> https://lore.kernel.org/all/20220718220012.GA3625497-robh@kernel.org/
+> 
+> oh and btw, doesn't that mean that the patch is missing
+> Fixes: 233363aba72a ("spi/panel: dt-bindings: drop CPHA and CPOL from common properties")
+> ?
+> 
+> but I'm not sure I understand the reasoning? I mean, from the
+> perspective of the common schema, isn't it valid to put "spi-cpha" on a
+> SPI peripheral OF node even if the hardware doesn't support it, in the
+> same way that it's valid to put spi-max-frequency = 1 GHz even if the
 
---fk2qhj5vkx72nsjx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It is not valid to put spi-max-frequency = 1 GHz in
+spi-peripheral-props.yaml.
 
-On 01.11.2022 06:06:13, Greg Kroah-Hartman wrote:
-> On Mon, Oct 31, 2022 at 08:27:14PM -0700, Jakub Kicinski wrote:
-> > On Mon, 31 Oct 2022 16:43:52 +0100 Marc Kleine-Budde wrote:
-> > > The first 7 patches are by Stephane Grosjean and Lukas Magel and
-> > > target the peak_usb driver. Support for flashing a user defined device
-> > > ID via the ethtool flash interface is added. A read only sysfs
-> >=20
-> > nit: ethtool eeprom set !=3D ethtool flash
-> >=20
-> > > attribute for that value is added to distinguish between devices via
-> > > udev.
-> >=20
-> > So the user can write an arbitrary u32 value into flash which then
-> > persistently pops up in sysfs across reboots (as a custom attribute
-> > called "user_devid")?
-> >=20
-> > I don't know.. the whole thing strikes me as odd. Greg do you have any
-> > feelings about such.. solutions?
-> >=20
-> > patches 5 and 6 here:
-> > https://lore.kernel.org/all/20221031154406.259857-1-mkl@pengutronix.de/
->=20
-> Device-specific attributes should be in the device-specific directory,
-> not burried in a class directory somewhere that is generic like this one
-> is.
->
-> Why isn't this an attribute of the usb device instead?
+> hardware doesn't support it? Or maybe I'm missing the point of
+> spi-peripheral-props.yaml entirely? Since when is stacked-memories/
+> parallel-memories something that should be accepted by all schemas of
+> all SPI peripherals (for example here, an Ethernet switch)?
 
-What about:
+Since we discussed it last time.  What is not clear in Rob's response?
+He nicely explained the purpose of spi-peripheral-props.yaml.
 
-| /sys/devices/pci0000:00/0000:00:13.0/usb1/1-1/1-1:1.0/device_id
+> I think that spi-cpha/spi-cpol belongs to spi-peripheral-props.yaml just
+> as much as the others do.
+> 
+> The distinction "device specific, not controller specific" is arbitrary
+> to me. These are settings that the controller has to make in order to
+> talk to that specific peripheral. Same as many others in that file.
 
-> And there's no need to reorder the .h file includes in patch 06 while
-> you are adding a sysfs entry, that should be a separate commit, right?
+Not every fruit is an orange, but every orange is a fruit. You do not
+put "color: orange" to schema for fruits. You put it to the schema for
+oranges.
 
-ACK
+IOW, CPHA/CPOL are not valid for most devices, so they cannot be in
+spi-peripheral-props.yaml.
 
-> Also, the line:
->=20
-> +	.attrs	=3D (struct attribute **)peak_usb_sysfs_attrs,
->=20
-> Is odd, there should never be a need to cast anything like this if you
-> are doing things properly.
+Best regards,
+Krzysztof
 
-After marking the struct attribute not as const, we can remove the cast:
-
-| --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-| +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-| @@ -64,14 +64,14 @@ static ssize_t user_devid_show(struct device *dev, st=
-ruct device_attribute *attr
-|  }
-|  static DEVICE_ATTR_RO(user_devid);
-| =20
-| -static const struct attribute *peak_usb_sysfs_attrs[] =3D {
-| +static struct attribute *peak_usb_sysfs_attrs[] =3D {
-|         &dev_attr_user_devid.attr,
-|         NULL,
-|  };
-| =20
-|  static const struct attribute_group peak_usb_sysfs_group =3D {
-|         .name   =3D "peak_usb",
-| -       .attrs  =3D (struct attribute **)peak_usb_sysfs_attrs,
-| +       .attrs  =3D peak_usb_sysfs_attrs,
-|  };
-| =20
-|  /*
-
-But this code is obsolete, if we move the sysfs entry into the USB
-device.
-
-> So this still needs work, sorry.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---fk2qhj5vkx72nsjx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNlDucACgkQrX5LkNig
-011PgQgAp0mgwOKFanZDebpnwjPwKyWmpaqX4Ulkp3TpScC8eXoyx95ZG5kOZUr2
-4fEBvWK+ueMfo5Xl8a2G8LpZ47CnEMcumX1pf5Gvl5IWz5JF7LocH9PZdmgppcMb
-gav4U5r3jrgTRgSGChTZyQ5KIbZhK98h3N1TDGJeAEjs0W1gNOBzTVF2gBguEbuw
-zK5d0OojEcXhejwO0bArj3QUXALHNcmDEj4tF2lgkPudhgSns/9kRwuV9SgRGveA
-GggKqvGklV9TUx2j1pBckl0jsogN30shZkZ1Evisev5RetAay51NxCIrUV03YZX4
-wgjaZA/0yfE34oS3cQJwfMPmFX2GQA==
-=fRxp
------END PGP SIGNATURE-----
-
---fk2qhj5vkx72nsjx--
