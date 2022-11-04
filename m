@@ -2,69 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FAB1618FAB
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 05:59:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4DB618FB9
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 06:00:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229969AbiKDE7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 00:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        id S230105AbiKDFAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 01:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiKDE7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 00:59:02 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5D4165B7
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 21:59:00 -0700 (PDT)
-Message-ID: <187eec2c-f7d5-7c5a-1c75-aae9f7c98998@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1667537939;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UydbECnD7LrTu+BxE+4fJ+MVeHIxpUfHr6RXQYOSM8U=;
-        b=OL0WqDADk9Six+m4ZlPCLcXh0LZ5nCfhQCyfXd2k6L4TyXoTR8RDVFOoYqnjLDlvH7usSG
-        VXz7LNdxWLbbJ8al5U8e9pUhc31xDC0nNzinzZjKsRbdEFiWaRBxDdPXvLGc2I9kGCzvVy
-        5Q9GJgR6d4aVG2/bLQvoF7OfqKZX2zY=
-Date:   Thu, 3 Nov 2022 21:58:48 -0700
+        with ESMTP id S229539AbiKDFA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 01:00:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2299E165BA
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 22:00:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA75B6202D
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 05:00:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0BB8BC43150;
+        Fri,  4 Nov 2022 05:00:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667538027;
+        bh=vut8U3mbOQUh8I5EUdhyCpgdugXnN6I63nUMRZwQzSc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HPCw4fxXUpzc0I1Wg9iKjbfS48d3Y+ZOhmQQDP9jInHnRHju8WRavl/z/X0/sRqxV
+         aChWj8ta6hKh1CofjDSXppSkcA36kKhHKBRqv+5nZKWCjyMtuNboshIEVoYaRoGf9c
+         Dv2HLosR4mCAcIo6vMN55dyK9p7DFpLg/jCXWVdc1q7w2G9s8kI6KsJez7c5x1420p
+         EtPpUh/3FDSOIvM31Q3tNEhBj1VxdJPQWOntHFJnrZ03oXqsC5vCiqs3nSVCzEqu/d
+         xIlY6StiKzvkEU01BjOy45A/Pa5PrimCAbWCOs1jBACtp4juKZoRgPFTAoYkioIwNs
+         g/Z5RQyU84/9A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DDA56E270E2;
+        Fri,  4 Nov 2022 05:00:26 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
-Content-Language: en-US
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>, joannelkoong@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        kuni1840@gmail.com, martin.lau@kernel.org,
-        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
-        pabeni@redhat.com
-References: <CAJnrk1b6=BBEAZTtMPvkqzqjrJrcDo7-dfFvJiYg_Tdd+uShLA@mail.gmail.com>
- <20221102183512.24744-1-kuniyu@amazon.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20221102183512.24744-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7][pull request] Intel Wired LAN Driver Updates
+ 2022-11-02 (i40e, iavf)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166753802690.27738.1583721793443380430.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Nov 2022 05:00:26 +0000
+References: <20221102211011.2944983-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20221102211011.2944983-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/2/22 11:35 AM, Kuniyuki Iwashima wrote:
->> For avoiding adding sockets with ADDR_ANY to the bhash2 hashtable, I
->> think the issue is that other sockets need to detect whether there's a
->> bind conflict against an ADDR_ANY socket on that port, so if ADDR_ANY
->> is not hashed to bhash2, then on binds, we would have to iterate
->> through the regular bhash table to check against ADDR_ANY, where the
->> bhash table could be very long if there are many sockets bound to that
->> port.
-> 
-> Right, inet_bhash2_addr_any_conflict() will not work then and it means
-> we cannot enjoy the very merit of bhash2.
+Hello:
 
-One thought is to have the ADDR_ANY sk linked at either end of the bhash (head 
-or tail) so that it can get to the ADDRY_ANY sk faster in bhash when checking 
-conflict.  However, only the 'struct hlist_node owner' alone may not be good 
-enough.  Just an idea.
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
+
+On Wed,  2 Nov 2022 14:10:04 -0700 you wrote:
+> This series contains updates to i40e and iavf drivers.
+> 
+> Joe Damato adds tracepoint information to i40e_napi_poll to expose helpful
+> debug information for users who'd like to get a better understanding of
+> how their NIC is performing as they adjust various parameters and tuning
+> knobs.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/7] i40e: Store the irq number in i40e_q_vector
+    https://git.kernel.org/netdev/net-next/c/6b85a4f39ff7
+  - [net-next,2/7] i40e: Record number TXes cleaned during NAPI
+    https://git.kernel.org/netdev/net-next/c/8c1a595cc63e
+  - [net-next,3/7] i40e: Record number of RXes cleaned during NAPI
+    https://git.kernel.org/netdev/net-next/c/717b5bc43c1f
+  - [net-next,4/7] i40e: Add i40e_napi_poll tracepoint
+    https://git.kernel.org/netdev/net-next/c/6d4d584a7ea8
+  - [net-next,5/7] i40e: Add appropriate error message logged for incorrect duplex setting
+    https://git.kernel.org/netdev/net-next/c/30872d834bdb
+  - [net-next,6/7] iavf: Replace __FUNCTION__ with __func__
+    https://git.kernel.org/netdev/net-next/c/619058eca509
+  - [net-next,7/7] iavf: Change information about device removal in dmesg
+    https://git.kernel.org/netdev/net-next/c/69b957440a63
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
