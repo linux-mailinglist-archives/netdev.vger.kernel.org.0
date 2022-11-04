@@ -2,81 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD26619F56
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:56:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD2F8619F60
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 19:00:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231907AbiKDR4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 13:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
+        id S231904AbiKDSAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 14:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiKDR4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:56:22 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACB247335
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 10:56:21 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id w16-20020a6b4a10000000b006a5454c789eso3483103iob.20
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 10:56:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HFLDZrSmrKf3eaUSPUfU/z0D34JmXW5qNTObPr5a3dE=;
-        b=iub0+ZQZhLZSabk+4OtTLmkiBA4zMnRkujrrdq5RCfQ5rSKilot1X03iTfZVbnitrp
-         ZXgEo0Fi3ckyp4It77S60m3C8NawnDncIgfpx6IbrQs/INfLCwY8C0tLIstO8cx1buBi
-         ZbRvDfKmPSEBRZnKIEuMNLemSP0rH7M7kVDBchVRWlEGGcujx2OOnb9iuVZcGcnAtDtU
-         l0EVzWUuG5nUdmm9IieIq3x2+PlL220yCU+uSudh8CL1d1tr7vc3SLizNVk8fSFJbGl6
-         hMsZu/nEML+nL2hrNia/owa0g/SxiyrGUecr02nCDiYvgNkO0mvjnhAsNYFh1AQtGStO
-         6uaA==
-X-Gm-Message-State: ACrzQf09gvGTTWuqxyNqLtBtselANW7kYog0NATa99C7m/A+bq73dmPU
-        h0nyl58iOUy+UdSAakNRHJL3tQu+oSMU3MExzd2ml6efYmWu
-X-Google-Smtp-Source: AMsMyM5jISVm+ThnehVRlGr4SGLsiESwHWORrPJaHVN2Gla1RS8HH7b06ZPnW17OhSwF1wbMM8K1f2L1F/XbPusoit6A69WxSHeM
+        with ESMTP id S231204AbiKDR77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:59:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A0A45A16
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 10:59:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79CF4B82EFF
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 17:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EABADC433C1;
+        Fri,  4 Nov 2022 17:59:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667584796;
+        bh=q5TKB1CM8Jc0B8Zxl83Fxzre7gqt/p60B+6q28/l8hY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nWBuwabCdZtGb53K5xdYbO3q3YO6VJ7ScX0bKvGEgGwWUsmvDuwGcj7GzB3XW+dUx
+         7451tXNaXBdCpLr+XFuxLvyicwENhyW+EX9cMy4/dxn4ngm6Gg/zMY2l7FlR2lQU9q
+         Dgb9PJjj4VPHGTty/In3t+nSKuLJpzHFoGame44qgIVNH5wv3XinudRElSE7VZygC8
+         lKBa/k+e2i/LLqk0UaZVfpG8MZASjY+JOHpMu92DJ5C3txydJjExLc9dj7qTn/LgsZ
+         AHo0kUQUo4ANVOw9jh5KnnK1sgU4HBD2u6qBW0lqHrSySnWJ+p3iLBQcNUdTyxWau4
+         CXCL+6BFUkdqQ==
+Date:   Fri, 4 Nov 2022 10:59:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nick Child <nnac123@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, nick.child@ibm.com, bjking1@linux.ibm.com,
+        ricklind@us.ibm.com, dave.taht@gmail.com
+Subject: Re: [PATCH v2 net] ibmveth: Reduce maximum tx queues to 8
+Message-ID: <20221104105955.2c3c74a7@kernel.org>
+In-Reply-To: <4f84f10b-9a79-17f6-7e2e-f65f0d2934cb@linux.ibm.com>
+References: <20221102183837.157966-1-nnac123@linux.ibm.com>
+        <20221103205945.40aacd90@kernel.org>
+        <4f84f10b-9a79-17f6-7e2e-f65f0d2934cb@linux.ibm.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1210:b0:375:4aa6:ff85 with SMTP id
- n16-20020a056638121000b003754aa6ff85mr19651201jas.227.1667584580937; Fri, 04
- Nov 2022 10:56:20 -0700 (PDT)
-Date:   Fri, 04 Nov 2022 10:56:20 -0700
-In-Reply-To: <0000000000000bab2c05e95a81a3@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000946f3005eca8cafe@google.com>
-Subject: Re: [syzbot] BUG: corrupted list in hci_conn_add_sysfs
-From:   syzbot <syzbot+b30ccad4684cce846cef@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        gregkh@linuxfoundation.org, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        luiz.von.dentz@intel.com, marcel@holtmann.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, rafael@kernel.org,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On Fri, 4 Nov 2022 09:06:02 -0500 Nick Child wrote:
+> On 11/3/22 22:59, Jakub Kicinski wrote:
+> > On Wed,  2 Nov 2022 13:38:37 -0500 Nick Child wrote:  
+> >> Previously, the maximum number of transmit queues allowed was 16. Due to
+> >> resource concerns, limit to 8 queues instead.
+> >>
+> >> Since the driver is virtualized away from the physical NIC, the purpose
+> >> of multiple queues is purely to allow for parallel calls to the
+> >> hypervisor. Therefore, there is no noticeable effect on performance by
+> >> reducing queue count to 8.  
+> > 
+> > I'm not sure if that's the point Dave was making but we should be
+> > influencing the default, not the MAX. Why limit the MAX?  
+> 
+> The MAX is always allocated in the drivers probe function. In the 
+> drivers open and ethtool-set-channels functions we set 
+> real_num_tx_queues. So the number of allocated queues is always MAX
+> but the number of queues actually in use may differ and can be set by 
+> the user.
+> I hope this explains. Otherwise, please let me know.
 
-commit 448a496f760664d3e2e79466aa1787e6abc922b5
-Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Date:   Mon Sep 19 17:56:59 2022 +0000
-
-    Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1052f8fe880000
-start commit:   dc164f4fb00a Merge tag 'for-linus-6.0-rc7' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=122d7bd4fc8e0ecb
-dashboard link: https://syzkaller.appspot.com/bug?extid=b30ccad4684cce846cef
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1110db8c880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13e58aef080000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Perhaps I don't understand the worry. Is allowing 16 queues a problem
+because it limits how many instances the hypervisor can support?
+Or is the concern coming from your recent work on BQL and having many
+queues exacerbating buffer bloat?
