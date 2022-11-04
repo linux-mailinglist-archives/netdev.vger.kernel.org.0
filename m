@@ -2,114 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1427618E75
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 03:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2F0618E8E
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 04:03:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230383AbiKDCul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 22:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        id S230022AbiKDDDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 23:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiKDCuk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 22:50:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD1A65FE;
-        Thu,  3 Nov 2022 19:50:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A1C462066;
-        Fri,  4 Nov 2022 02:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B30C433D6;
-        Fri,  4 Nov 2022 02:50:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667530238;
-        bh=xUMe7WcxDjcNixtO8e13bMn6UtwNVzh9mKBW9tU/MGQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DIZ8XoqQ63peEAmLWU+06RPEkk6UMsZYWqwmehfcyi21ly9/D3DTh4I8iKBQUA9+A
-         F62lb6dYmFMtA1bdhMYY4goCon/xg/fwfAyjUcSmR1kRXZonD+mXwbGgC7DXRDGQkg
-         hRcSVaj4RMSxZI2aRXulEtH0U6px8fJvqDVfmkoCHx7Ls970BAAiYQP5QloC0PMMHu
-         IoPZCsmUw/NX2MkBQuqljeOW2TiSeughtHG8Kksw4Ub5/s+rdb1JSxFicKhRfhHCv7
-         2PCt5Fwi17WPmM5ynQLjX/57ogldynNlpT8ZxoWTajF9XeJUbLC4CjR1chUARUnxN1
-         xMb/ioviiXHbQ==
-Date:   Thu, 3 Nov 2022 19:50:37 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andy Ren <andy.ren@getcruise.com>
-Cc:     netdev@vger.kernel.org, richardbgobert@gmail.com,
-        davem@davemloft.net, wsa+renesas@sang-engineering.com,
-        edumazet@google.com, petrm@nvidia.com, pabeni@redhat.com,
-        corbet@lwn.net, andrew@lunn.ch, dsahern@gmail.com,
-        sthemmin@microsoft.com, idosch@idosch.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        roman.gushchin@linux.dev
-Subject: Re: [PATCH net-next] net/core: Allow live renaming when an
- interface is up
-Message-ID: <20221103195037.13ff8caf@kernel.org>
-In-Reply-To: <20221103235847.3919772-1-andy.ren@getcruise.com>
-References: <20221103235847.3919772-1-andy.ren@getcruise.com>
+        with ESMTP id S229756AbiKDDDW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 23:03:22 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCB61F2DD;
+        Thu,  3 Nov 2022 20:03:18 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VTv7Wur_1667530994;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VTv7Wur_1667530994)
+          by smtp.aliyun-inc.com;
+          Fri, 04 Nov 2022 11:03:15 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     bagasdotme@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next v2] net: ethernet: Simplify bool conversion
+Date:   Fri,  4 Nov 2022 11:03:13 +0800
+Message-Id: <20221104030313.81670-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  3 Nov 2022 16:58:47 -0700 Andy Ren wrote:
-> @@ -1691,7 +1690,6 @@ enum netdev_priv_flags {
->  	IFF_FAILOVER			= 1<<27,
->  	IFF_FAILOVER_SLAVE		= 1<<28,
->  	IFF_L3MDEV_RX_HANDLER		= 1<<29,
-> -	IFF_LIVE_RENAME_OK		= 1<<30,
+The result of 'scaled_ppm < 0' is Boolean, and the question mark
+expression is redundant, remove it to clear the below warning:
 
-As Stephen says the hole should be somehow noted.
-Comment saying what it was, or just a comment saying there 
-is a hole that can be reused.
+./drivers/net/ethernet/renesas/rcar_gen4_ptp.c:32:40-45: WARNING: conversion to bool not needed here
 
->  	IFF_TX_SKB_NO_LINEAR		= BIT_ULL(31),
->  	IFF_CHANGE_PROTO_DOWN		= BIT_ULL(32),
->  };
-> @@ -1726,7 +1724,6 @@ enum netdev_priv_flags {
->  #define IFF_FAILOVER			IFF_FAILOVER
->  #define IFF_FAILOVER_SLAVE		IFF_FAILOVER_SLAVE
->  #define IFF_L3MDEV_RX_HANDLER		IFF_L3MDEV_RX_HANDLER
-> -#define IFF_LIVE_RENAME_OK		IFF_LIVE_RENAME_OK
->  #define IFF_TX_SKB_NO_LINEAR		IFF_TX_SKB_NO_LINEAR
->  
->  /* Specifies the type of the struct net_device::ml_priv pointer */
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 2e4f1c97b59e..a2d650ae15d7 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -1163,22 +1163,6 @@ int dev_change_name(struct net_device *dev, const char *newname)
->  
->  	net = dev_net(dev);
->  
-> -	/* Some auto-enslaved devices e.g. failover slaves are
-> -	 * special, as userspace might rename the device after
-> -	 * the interface had been brought up and running since
-> -	 * the point kernel initiated auto-enslavement. Allow
-> -	 * live name change even when these slave devices are
-> -	 * up and running.
-> -	 *
-> -	 * Typically, users of these auto-enslaving devices
-> -	 * don't actually care about slave name change, as
-> -	 * they are supposed to operate on master interface
-> -	 * directly.
-> -	 */
-> -	if (dev->flags & IFF_UP &&
-> -	    likely(!(dev->priv_flags & IFF_LIVE_RENAME_OK)))
-> -		return -EBUSY;
-> -
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2729
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
 
-Let's leave a hint for potential triage and add something extra to the
-netdev_info() print a few lines down in case the interface is renamed
-while UP. Perhaps:
+change in v2:
+--According to Bagas's suggestion, describe what this patch does to fix this warning. 
 
-	netdev_info(dev, "renamed from %s%s\n", oldname,
-		    dev->flags & IFF_UP ? " (while UP)" : "");
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-or some such.
+diff --git a/drivers/net/ethernet/renesas/rcar_gen4_ptp.c b/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+index c007e33c47e1..37f7359678e5 100644
+--- a/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
++++ b/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+@@ -29,7 +29,7 @@ static const struct rcar_gen4_ptp_reg_offset s4_offs = {
+ static int rcar_gen4_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct rcar_gen4_ptp_private *ptp_priv = ptp_to_priv(ptp);
+-	bool neg_adj = scaled_ppm < 0 ? true : false;
++	bool neg_adj = scaled_ppm < 0;
+ 	s64 addend = ptp_priv->default_addend;
+ 	s64 diff;
+ 
+-- 
+2.20.1.7.g153144c
+
