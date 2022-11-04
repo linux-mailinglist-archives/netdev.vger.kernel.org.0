@@ -2,48 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 638E46190C6
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 07:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 050F76190CD
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 07:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbiKDGPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 02:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
+        id S230410AbiKDGR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 02:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiKDGPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 02:15:46 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44B127DC6;
-        Thu,  3 Nov 2022 23:15:44 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R271e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=chentao.kernel@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VTvV9Ei_1667542539;
-Received: from 30.221.117.118(mailfrom:chentao.kernel@linux.alibaba.com fp:SMTPD_---0VTvV9Ei_1667542539)
-          by smtp.aliyun-inc.com;
-          Fri, 04 Nov 2022 14:15:40 +0800
-Message-ID: <a0084580-7956-0825-42de-90c0b220cc21@linux.alibaba.com>
-Date:   Fri, 4 Nov 2022 14:15:39 +0800
+        with ESMTP id S230358AbiKDGRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 02:17:23 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1AD28E30;
+        Thu,  3 Nov 2022 23:17:22 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id l11so6202583edb.4;
+        Thu, 03 Nov 2022 23:17:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vnXXi3dtDeA8axtgZhnSxDrgwZYg0E3gMcTkynU2jnc=;
+        b=oweGMtYqZ7/L36euTghQ0xwNttLV0blhlZdGd9z30tXMFbZEG4H5+VveF/DO7F4dzg
+         dCVcer72QSzmCGOEKz0FB+EwrXXfhXlfJU6Secs2DOy8XP7AHE31KtbL+OUUE0OCJ6Hr
+         yrA91oVSsY7IRPk6F8QVClJAutQGbgIpB9s/hd0wYjdUTZGEp7ByXlZ2g8ZjS1hv6rQS
+         ndeVc8Mmmt2q2ha7muD2EUHJPgMQ4FYk9ZRyIdjwVXQSGGIbXEYlJedplscA5n36dygm
+         RZ86iK2RMdudYVhtuV5SFhEcL9qy3ueArwoFUt/9OJZx4f1oXyEiIQK40Jern8LvLyLd
+         +rlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vnXXi3dtDeA8axtgZhnSxDrgwZYg0E3gMcTkynU2jnc=;
+        b=xNSuiMT3va9rqi4j7ej7hJTJEIzH+ynqfSWPW+/1hkT8iWZ1FIy+/Zlr8AZh8AHS5y
+         QiNoe1sOVCLPK3IhkawJCZvEzQD5jB+mq0+ZBZOBsNlQaNRa+3bV4kYw866Kbh+QPbEU
+         litg1xb5N0fwNGrFbH6vu4vALSab/aXFBkhq6bVy86+5srAtC3UJo0fbGirFMRLDchmL
+         nmVZ3d7lco3EB2Qu9TUYh2jWqmT2TY0Rf5dn8xDw/exwSHiQNEoNkNn2UWLwlYSPm/59
+         IwzRyYa1zj4NkUwACIu2D0tgSjDM5kgg93MUR3ttctqLPIYROfEvtRHtBnDjjwrhbB+5
+         5hOg==
+X-Gm-Message-State: ACrzQf3dYrjuC8Gw5SarGW9ER8i2yH0rhcWa8+T+FysQ4icjGA+PlNd0
+        7agMUPpIM4uo7Dg8S09ygp4=
+X-Google-Smtp-Source: AMsMyM5qJJYQVnfTuAbfE974R0XTKpxn5urBJZVGPKiOREWaPv/BYEeOguBJ8dHuTJY+GO5bYVeW8w==
+X-Received: by 2002:aa7:df94:0:b0:461:aff8:d3e1 with SMTP id b20-20020aa7df94000000b00461aff8d3e1mr34530709edy.10.1667542641116;
+        Thu, 03 Nov 2022 23:17:21 -0700 (PDT)
+Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
+        by smtp.gmail.com with ESMTPSA id sg43-20020a170907a42b00b0077d37a5d401sm1406870ejc.33.2022.11.03.23.17.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Nov 2022 23:17:20 -0700 (PDT)
+Date:   Thu, 3 Nov 2022 23:17:18 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     bagasdotme@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next v2] net: ethernet: Simplify bool conversion
+Message-ID: <Y2SubudMxMLV8R8D@hoboy.vegasvil.org>
+References: <20221104030313.81670-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.3.3
-Subject: Re: [PATCH net-next] netlink: Fix potential skb memleak in
- netlink_ack
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Petr Machata <petrm@nvidia.com>,
-        Kees Cook <keescook@chromium.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <7a382b9503d10d235238ca55938bc933d92a1de7.1667389213.git.chentao.kernel@linux.alibaba.com>
- <20221102143953.001f1247@kernel.org>
-From:   Tao Chen <chentao.kernel@linux.alibaba.com>
-In-Reply-To: <20221102143953.001f1247@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221104030313.81670-1-yang.lee@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,54 +72,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/11/3 上午5:39, Jakub Kicinski 写道:
-> On Wed,  2 Nov 2022 20:08:20 +0800 Tao Chen wrote:
->> We should clean the skb resource if nlmsg_put/append failed
->> , so fix it.
-> 
-> The comma should be at the end of the previous line.
-> But really the entire ", so fix it." is redundant.
-> 
-Thank you, i will pay attention next time
->> Fiexs: commit 738136a0e375 ("netlink: split up copies in the
->> ack construction")
-> 
-> Please look around to see how to correctly format a Fixes tag
-> (including not line wrapping it).
-> 
-> How did you find this bug? An automated tool? Syzbot?
-> 
-> One more note below on the code itself.
-> 
-This was found by the coverity tool, i will add it.
->> Signed-off-by: Tao Chen <chentao.kernel@linux.alibaba.com>
->> ---
->>   net/netlink/af_netlink.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
->> index c6b8207e..9d73dae 100644
->> --- a/net/netlink/af_netlink.c
->> +++ b/net/netlink/af_netlink.c
->> @@ -2500,7 +2500,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
->>   
->>   	skb = nlmsg_new(payload + tlvlen, GFP_KERNEL);
->>   	if (!skb)
->> -		goto err_bad_put;
->> +		goto err_skb;
->>   
->>   	rep = nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
->>   			NLMSG_ERROR, sizeof(*errmsg), flags);
->> @@ -2528,6 +2528,8 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
->>   	return;
->>   
->>   err_bad_put:
->> +	kfree_skb(skb);
-> 
-> Please use nlmsg_free() since we allocated with nlmsg_new().
-> 
-Ok, i will send it in v2.
->> +err_skb:
->>   	NETLINK_CB(in_skb).sk->sk_err = ENOBUFS;
->>   	sk_error_report(NETLINK_CB(in_skb).sk);
->>   }
+On Fri, Nov 04, 2022 at 11:03:13AM +0800, Yang Li wrote:
+
+> diff --git a/drivers/net/ethernet/renesas/rcar_gen4_ptp.c b/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+> index c007e33c47e1..37f7359678e5 100644
+> --- a/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+> +++ b/drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+> @@ -29,7 +29,7 @@ static const struct rcar_gen4_ptp_reg_offset s4_offs = {
+>  static int rcar_gen4_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+>  {
+>  	struct rcar_gen4_ptp_private *ptp_priv = ptp_to_priv(ptp);
+> -	bool neg_adj = scaled_ppm < 0 ? true : false;
+> +	bool neg_adj = scaled_ppm < 0;
+>  	s64 addend = ptp_priv->default_addend;
+>  	s64 diff;
+
+Please preserve reverse Christmas tree order.
+
+Thanks,
+Richard
