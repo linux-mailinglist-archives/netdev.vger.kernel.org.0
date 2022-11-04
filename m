@@ -2,44 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 262E8618F54
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 04:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F02D618F56
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 05:01:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiKDD7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 23:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S229831AbiKDEBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 00:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230209AbiKDD7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 23:59:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC61A1D310
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 20:59:49 -0700 (PDT)
+        with ESMTP id S229748AbiKDEB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 00:01:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB2C1D679;
+        Thu,  3 Nov 2022 21:01:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63C7BB80B19
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 03:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 665F6C433D6;
-        Fri,  4 Nov 2022 03:59:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F41D61FC0;
+        Fri,  4 Nov 2022 04:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F144C433D6;
+        Fri,  4 Nov 2022 04:01:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667534387;
-        bh=rwSwWaX+gLsEJDwYUtiWkMcj0d97WuzUM1DNg2yOUwI=;
+        s=k20201202; t=1667534486;
+        bh=WuJW+uuO8TeM/6fod4sapYBm3CSeI8w0DSzwMpGbSw8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XlpG/iEw4yU0I2D5JrhHH5VzQNHzduxQqocaxfhSpX5zhvS+N0A4sVQOHR0V9Tb48
-         ZkasHvUwqNMwXCKV+eoU0Yk3Te697zOzAcKnAtGrepvjDevTrZCwt8DYPneodiBQs7
-         3rttXtROSnpoKcNyDjqS0JTxOD28yth7acxLamCyC+6Ozz0vtB71Bi/K7sz8pYXFLK
-         bxCypEMcZKc2CPk5qNoYd99rW3rHXgxiV2JyAUmxcdezWLcu/1D5KAOOH6dTT7iz6E
-         oWcXuRIgr5fSle+bUIaQh3f/TK9tJ0V+wT0PimnHDZPqxCYOJ9xsctuyBvR4eBZ0yx
-         l2f393p/IhE2A==
-Date:   Thu, 3 Nov 2022 20:59:45 -0700
+        b=iOpoB13S0QYGy+F0D8nRQ8PPcpX+L/IxQhcBlPPkAkEAMRvH8+xkd7uIk48wJung7
+         ujXUBeOBp60iFhHK6iLnoV4YlTHaLCwV2WCi500Oop/tdal2WGqGCxQkBMRx3D9FzF
+         OVYjgLa6BvAOlQrscmxo4Cd4xGez4fUFG4DeGUGXEGlsA/gy7jRWQ7JvruPxsE5dJh
+         Ou60Wd8zj4DwtX/ksCZbUno7UAf87iz0oRClSZi8erujcHdOyScSQ3OO+3r0VW0ihT
+         n9ErIPSY05p0vISwzxHvW6JV5Y8qKbNr740yUuBV/RTmob1OI8w9Z8mfXolPFbemhS
+         jm21n5ZBGLxyg==
+Date:   Thu, 3 Nov 2022 21:01:25 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nick Child <nnac123@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, nick.child@ibm.com, bjking1@linux.ibm.com,
-        ricklind@us.ibm.com, dave.taht@gmail.com
-Subject: Re: [PATCH v2 net] ibmveth: Reduce maximum tx queues to 8
-Message-ID: <20221103205945.40aacd90@kernel.org>
-In-Reply-To: <20221102183837.157966-1-nnac123@linux.ibm.com>
-References: <20221102183837.157966-1-nnac123@linux.ibm.com>
+To:     Frank <Frank.Sae@motor-comm.com>
+Cc:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH net] net: phy: fix yt8521 duplicated argument to & or
+Message-ID: <20221103210125.255dea97@kernel.org>
+In-Reply-To: <20221103025047.1862-1-Frank.Sae@motor-comm.com>
+References: <20221103025047.1862-1-Frank.Sae@motor-comm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,14 +60,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Nov 2022 13:38:37 -0500 Nick Child wrote:
-> Previously, the maximum number of transmit queues allowed was 16. Due to
-> resource concerns, limit to 8 queues instead.
+On Thu,  3 Nov 2022 10:50:47 +0800 Frank wrote:
+>  The second YT8521_RC1R_GE_TX_DELAY_xx should be YT8521_RC1R_FE_TX_DELAY_xx.
 > 
-> Since the driver is virtualized away from the physical NIC, the purpose
-> of multiple queues is purely to allow for parallel calls to the
-> hypervisor. Therefore, there is no noticeable effect on performance by
-> reducing queue count to 8.
+>  Fixes: 70479a40954c ("[net-next,v8.2] net: phy: Add driver for Motorcomm yt8521 gigabit ethernet phy")
 
-I'm not sure if that's the point Dave was making but we should be
-influencing the default, not the MAX. Why limit the MAX?
+There's a spurious space before the Fixes tag, please remove it.
+
+The patches does not apply to the net tree:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
+
+please rebase and repost.
+
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Julia Lawall <julia.lawall@lip6.fr>
+> Signed-off-by: Frank <Frank.Sae@motor-comm.com>
