@@ -2,141 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ECCA618D59
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 01:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEB35618D5A
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 01:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbiKDA4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 20:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        id S229916AbiKDA70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 20:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiKDA4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 20:56:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199F01C418
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 17:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667523352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0bu70cyek0T6oUQkJvlNZ6y2ULUUanZ7+edNBuJSUrk=;
-        b=d6jjz7MsTUZRoWLPr5WPxWV+E5iJlU7JPClcDVcSknQpa/W1iGG8a4eX8bd3lRR167lpNf
-        kWcUf7YEZBMOEfcRMcGglw4IKVIMQilOPChvOncrCXZqfxS00usAczeT0Q1baa/kbEB9hG
-        2hHDR1s95G4ikVpMEncgjEwYwgjUmjw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-150-G2N57yjePZ2A6ma6qztZdA-1; Thu, 03 Nov 2022 20:55:51 -0400
-X-MC-Unique: G2N57yjePZ2A6ma6qztZdA-1
-Received: by mail-ed1-f69.google.com with SMTP id q13-20020a056402518d00b00462b0599644so2475931edd.20
-        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 17:55:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0bu70cyek0T6oUQkJvlNZ6y2ULUUanZ7+edNBuJSUrk=;
-        b=fvxt2EuvisInF4v8zE2iGDrQeElKM9p3HDFydSpE/fttc7fxSNk0PyHEQGkjNfFkBC
-         scjuVNSb9cD9UOkt+BL6aiTZXACVxUUrbWdFxN+8yOJ947ZglklJ8Yhl0f8GUpFg0wJs
-         F/qE2FL5E1mVB0f6r3qXb/JPX0J1iyvi9eoXbJgygi4c0vAQon3ROhXcSo0ET8ekGFH+
-         IgXeho6FbMwT6dUsTuHggH/tro6JO9SRtxIeeehXf6+ETJKp4QQyzyptt7764PuIiAnp
-         Kf4K6ddvfnz6NBAmGGp6P82Ww2SOoct/JiXMWus522fOY4iw84Akbm54Il6NLbTL5nW+
-         QnEQ==
-X-Gm-Message-State: ACrzQf16EyYZSFQwTT/ODP8Kwo0pH2eRzuM5xFazaIguE4my1QsRc6xg
-        5neVrwwW87ogHBOOC1UjBHeyXurWx0u1ir22dT+ii9me0y7HUEMcGB/+EmixTvzJxmjN1o3OYh8
-        /oHRiCp2OFnwQwn0yC6RXQhpvw1vxFqN+
-X-Received: by 2002:aa7:dad9:0:b0:462:e628:185b with SMTP id x25-20020aa7dad9000000b00462e628185bmr33269899eds.33.1667523349436;
-        Thu, 03 Nov 2022 17:55:49 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7JBM5gBOz2wO5X4Ev6BkgDVLxPc5660eoJpGMo11FEdj4Hf8i2SAHcrGjmMv+l0Efq66jD/X2tRnVLmK/Tv9Q=
-X-Received: by 2002:aa7:dad9:0:b0:462:e628:185b with SMTP id
- x25-20020aa7dad9000000b00462e628185bmr33269880eds.33.1667523349230; Thu, 03
- Nov 2022 17:55:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221026093502.602734-1-miquel.raynal@bootlin.com>
- <CAK-6q+jXPyruvdtS3jgzkuH=f599EiPk7vWTWLhREFCMj5ayNg@mail.gmail.com> <20221102155240.71a1d205@xps-13>
-In-Reply-To: <20221102155240.71a1d205@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 3 Nov 2022 20:55:38 -0400
-Message-ID: <CAK-6q+hi1dhyfoYAGET55Ku=_in7BbNNaqWQVX2Z_iOg1+0Nyg@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 0/3] IEEE 802.15.4: Add coordinator interfaces
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229634AbiKDA7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 20:59:25 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56DA62D7
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 17:59:23 -0700 (PDT)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20221104005919epoutp023a84013146bbe83a141cc3837fceea32~kO9edu8Qa3069230692epoutp02Y
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 00:59:19 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20221104005919epoutp023a84013146bbe83a141cc3837fceea32~kO9edu8Qa3069230692epoutp02Y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1667523559;
+        bh=VA2j6JFdcbgNkArZv+VB/jK2mp0CN7fHg/StXtrg1J8=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=OMMw5IhcriQbYjVMiftLjZuV/hJg/8lw0FS9e1QOBa+Yrg/iAjgJOlKzLksIeSVMq
+         r2/j8bxIUBTkBUORaxszpdnlBUjVedquI4ZXlqWGoI3jUZxRauWYTL2igXwI3Scpt3
+         ze7WdsufZi5BZvUHMRQLHrJ7vIbREad9RTY+N7l8=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20221104005918epcas2p115bcdd1035d372e491a79af4fbd2df36~kO9d_E8vK1007910079epcas2p1B;
+        Fri,  4 Nov 2022 00:59:18 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.100]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4N3Mhk1FDVz4x9Q6; Fri,  4 Nov
+        2022 00:59:18 +0000 (GMT)
+X-AuditID: b6c32a47-ac5b870000002127-56-636463e5f7c5
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        8D.92.08487.5E364636; Fri,  4 Nov 2022 09:59:18 +0900 (KST)
+Mime-Version: 1.0
+Subject: RE: [PATCH net-next v2] nfc: Allow to create multiple virtual nci
+ devices
+Reply-To: bongsu.jeon@samsung.com
+Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
+From:   Bongsu Jeon <bongsu.jeon@samsung.com>
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Bongsu Jeon <bongsu.jeon@samsung.com>,
+        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <20221103181836.766399-1-dvyukov@google.com>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20221104005917epcms2p228981fa87d326a8d4f503911f3472703@epcms2p2>
+Date:   Fri, 04 Nov 2022 09:59:17 +0900
+X-CMS-MailID: 20221104005917epcms2p228981fa87d326a8d4f503911f3472703
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpik+LIzCtJLcpLzFFi42LZdljTVPdZckqywdl/rBZbmiexW0x42MZu
+        sff1VnaLKb+WMlscWyBmceRNN7MDm8eCTaUeeyaeZPPYtKqTzePOtT1sHn1bVjF6fN4kF8AW
+        lW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ibaqvk4hOg65aZA3SEkkJZ
+        Yk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafAvECvODG3uDQvXS8vtcTK0MDAyBSoMCE7
+        4/redewFM8QqXq3bzdrAuEuoi5GTQ0LARGLOzaOsXYxcHEICOxglHqxoZOti5ODgFRCU+LtD
+        GMQUFgiRaJubAVIuJKAo8b/jHBuILSygK/Hi71Ewm01AW2Lt0UYmkDEiAu8YJS4ffcECkmAW
+        sJV4+HsDE8QuXokZ7U9ZIGxpie3LtzKCzOcUsJRouucAEdaQ+LGslxnCFpW4ufotO4z9/th8
+        RghbRKL13lmoGkGJBz93Q8WlJD49PMMKYedLvNzVwQZhl0g8PrMIqt5cYs+bXWBxXgFfiRM3
+        f4GdwyKgKjGz7xnULheJhm8nGCHOl5fY/nYOM8iZzAKaEut36YOYEgLKEkduQT3IJ9Fx+C87
+        zIM75j2BelZVorf5CxPMs5Nnt0Bd6SEx/9MRxgmMirMQwTwLya5ZCLsWMDKvYhRLLSjOTU8t
+        Niowhsdscn7uJkZwYtRy38E44+0HvUOMTByMhxglOJiVRHg/bUtOFuJNSaysSi3Kjy8qzUkt
+        PsRoCvTlRGYp0eR8YGrOK4k3NLE0MDEzMzQ3MjUwVxLn7ZqhlSwkkJ5YkpqdmlqQWgTTx8TB
+        KdXAlMO05IB3cuurr/OYq6cVTHncnZ6rcjlaxtBJcenJF47q+z/G65i5Fa1dn1UsLPlJyOO1
+        lkj5CvNvMxf3c+zs3Lprg878V6x6iVd+f1nL+L5J1/PMI5U7S9Jb/5wWuCo1/6/fsq1/VziZ
+        bWd/dmH2BnOB+xax6T/WuIv3BqomHV/oVdJRxHm9V+2DS7VjVPjrW9pndFKDZh+JXzDPr/S5
+        eGHWzZkRC91mGMreu9l6XKZChunTV4ZZ79dG+odsPv3gWXF2zYfM6co7nv0NkA6Sy0s+vz40
+        JNv/fVnlqYNH25Z4t4crW2wy0TrwLNFR6iK3rShTXUbJj5m1jQ38D+4VG7eaMH4QvvP9wLpo
+        /+/PlFiKMxINtZiLihMB9WfhKhUEAAA=
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20221103181845epcas2p2d3e49699d634440046fc8a9deb9785be
+References: <20221103181836.766399-1-dvyukov@google.com>
+        <CGME20221103181845epcas2p2d3e49699d634440046fc8a9deb9785be@epcms2p2>
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Wed, Nov 2, 2022 at 10:52 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Fri, Nov 4, 2022 at 3:19 AM Dmitry Vyukov<dvyukov@google.com> wrote:
 >
-> Hi Alexander,
+>The current virtual nci driver is great for testing and fuzzing.
+>But it allows to create at most one "global" device which does not allow
+>to run parallel tests and harms fuzzing isolation and reproducibility.
+>Restructure the driver to allow creation of multiple independent devices.
+>This should be backwards compatible for existing tests.
 >
-> aahringo@redhat.com wrote on Sun, 30 Oct 2022 22:20:03 -0400:
+>Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+>Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
+>Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>Cc: netdev@vger.kernel.org
 >
-> > Hi,
-> >
-> > On Wed, Oct 26, 2022 at 5:35 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > Hello,
-> > > These three patches allow the creation of coordinator interfaces, which
-> > > were already defined without being usable. The idea behind is to use
-> > > them advertizing PANs through the beaconing feature.
-> > >
-> >
-> > I still don't know how exactly those "leaves" and "non-leaves" are
-> > acting here regarding the coordinator interfaces. If this is just a
-> > bit here to set in the interface I am fine with it. But yea,
-> > "relaying" feature is a project on its own, as we said previously.
-> >
-> > Another mail I was asking myself what a node interface is then,
-> > currently it is a mesh interface with none of those 802.15.4 PAN
-> > management functionality?
+>---
+>Changes in v2:
+> - check return value of skb_clone()
+> - rebase onto currnet net-next
+>---
+> drivers/nfc/virtual_ncidev.c | 146 +++++++++++++++++------------------
+> 1 file changed, 70 insertions(+), 76 deletions(-)
 >
-> Not "none", because I would expect a NODE to be able to perform minimal
-> management operations, such as:
-> - scanning
-> - requesting an association
-> But in no case it is supposed to:
-> - send beacons
-> - manage associations
-> - be the PAN coordinator
-> - act as a relay
+>diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
+>index 85c06dbb2c449..48d6d09e2f6fd 100644
+>--- a/drivers/nfc/virtual_ncidev.c
+>+++ b/drivers/nfc/virtual_ncidev.c
+>@@ -13,12 +13,6 @@
+
+<...>
+
+> static int virtual_ncidev_open(struct inode *inode, struct file *file)
+> {
+> 	int ret = 0;
+>+	struct virtual_nci_dev *vdev;
+> 
+>-	mutex_lock(&nci_mutex);
+>-	if (state != virtual_ncidev_disabled) {
+>-		mutex_unlock(&nci_mutex);
+>-		return -EBUSY;
+>-	}
+>-
+>-	ndev = nci_allocate_device(&virtual_nci_ops, VIRTUAL_NFC_PROTOCOLS,
+>-				   0, 0);
+>-	if (!ndev) {
+>-		mutex_unlock(&nci_mutex);
+>+	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+>+	if (!vdev)
+>+		return -ENOMEM;
+>+	vdev->ndev = nci_allocate_device(&virtual_nci_ops,
+>+		VIRTUAL_NFC_PROTOCOLS, 0, 0);
+>+	if (!vdev->ndev) {
+>+		kfree(vdev);
+> 		return -ENOMEM;
+> 	}
+> 
+>-	ret = nci_register_device(ndev);
+>+	mutex_init(&vdev->mtx);
+>+	init_waitqueue_head(&vdev->wq);
+>+	file->private_data = vdev;
+>+	nci_set_drvdata(vdev->ndev, vdev);
+>+
+>+	ret = nci_register_device(vdev->ndev);
+> 	if (ret < 0) {
+>-		nci_free_device(ndev);
+>-		mutex_unlock(&nci_mutex);
+>+		mutex_destroy(&vdev->mtx);
+>+		nci_free_device(vdev->ndev);
+>+		kfree(vdev);
+> 		return ret;
+> 	}
+>-	state = virtual_ncidev_enabled;
+>-	mutex_unlock(&nci_mutex);
+> 
+> 	return 0;
+> }
+> 
+> static int virtual_ncidev_close(struct inode *inode, struct file *file)
+> {
+>-	mutex_lock(&nci_mutex);
+>-
+>-	if (state == virtual_ncidev_enabled) {
+>-		state = virtual_ncidev_disabling;
+>-		mutex_unlock(&nci_mutex);
+>+	struct virtual_nci_dev *vdev = file->private_data;
+> 
+>-		nci_unregister_device(ndev);
+>-		nci_free_device(ndev);
+>-
+>-		mutex_lock(&nci_mutex);
+>-	}
+>-
+>-	state = virtual_ncidev_disabled;
+>-	mutex_unlock(&nci_mutex);
+>+	nci_unregister_device(vdev->ndev);
+>+	nci_free_device(vdev->ndev);
+>+	mutex_destroy(&vdev->mtx);
+
+    Isn't kfree(vdev) necessary?
+
+> 
+> 	return 0;
+> }
 >
-
-perfect, thanks. But still there is something which I don't get.
-
-The split you mentioned about the functionality is for me being a
-coordinator (IEEE spec) or pan coordinator (IEEE spec) which has the
-additional functionality of "send beacons, manage assocs, act as
-relay".
-So a coordinator (iftype) is a pan coordinator (IEEE spec) and a node
-(iftype) is a coordinator (IEEE spec), but _only_ when it's
-associated, before it is just a manually setup mesh node?
-
-I hope it's clear when meaning iftype and when meaning IEEE spec, but
-for the manual setup thing (node iftype) there is no IEEE spec,
-although it is legal to do it in my opinion.
-
-Thanks.
-
-- Alex
-
