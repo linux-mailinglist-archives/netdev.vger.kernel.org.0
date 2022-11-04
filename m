@@ -2,54 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE7B61923B
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 08:53:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCC561926A
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 09:08:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229532AbiKDHxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 03:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
+        id S229952AbiKDIIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 04:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiKDHxf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 03:53:35 -0400
-X-Greylist: delayed 184 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Nov 2022 00:53:32 PDT
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B551E15;
-        Fri,  4 Nov 2022 00:53:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1667548219;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=7n/shGnfP1l0uRtNIQNgUJX4uMoz9OqYhtqOImv6qnk=;
-    b=JhUQ6jLty4ryG0uaVYXYC6wuQ1KgBnaVJwLIe2DIyTrJftW4MURaUGlOJoBp/Zb8Or
-    TqAECd/s8jr4xIw51uLWlVxwRzTmLtpT7dhKqGE6odrXr+QtAJw3vazDObRGD1Eexogt
-    owmIF92Bc3PZa/uPC5Ou/Z3LKPf0mNL68MeT4Ju4oV3OfklxEIGgJxrFRUMAKkyQ8raz
-    L6lM+sMCKJa5LKdktwBHNqlK0lHKJ8FIlHExzHNWREkps69mUXNgGKXfBHVx/jvvEeKy
-    NiC9ObJQLG31QDEb9mex79P6bnmFyJGfb4KEnjLdOvsxBuXv5J4z1dKURw4xzPEWuaMu
-    V+hg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS/xvEBL7X5sbo3UIh9JiLceSWJaYxMWqfZ"
-X-RZG-CLASS-ID: mo00
-Received: from silver.lan
-    by smtp.strato.de (RZmta 48.2.1 AUTH)
-    with ESMTPSA id Dde783yA47oJPCK
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 4 Nov 2022 08:50:19 +0100 (CET)
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com
-Subject: [PATCH] can: j1939: fix missing CAN header initialization
-Date:   Fri,  4 Nov 2022 08:50:00 +0100
-Message-Id: <20221104075000.105414-1-socketcan@hartkopp.net>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229496AbiKDIIc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 04:08:32 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A1F21266
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 01:08:31 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso7564327pjc.0
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 01:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=n+M9jSVS5yN6WBH23Kfpy/+DIv5SCL7QqYC3ii5kmyE=;
+        b=QaWlkve6wfj75MhOg1CYM1m0OxfnTUqg6ext8zUkoo/d9macxsSI60/6ZbuxaHbShD
+         Xhitk8+b7VvCeBF7SMAaVtIYbFxRXrWMnp/+hbV/qrv9XFbnwPyzwXYXnuDKLUryW/EK
+         YhTQtJEjef4qquhso8xsq1kVuGVyBqkk4wP4By6dlK9/zC2xUoY/uvn1yEwrokJlrSYP
+         fdzb97mvSP8Q9174mlWfyJU2SEG73qNodDUR/37vsb4qZF6F6YR2ClaJVs7H049o+B/S
+         zVBkeO/kZykRQDl//p6on136F9n9TuE/xw+QKKDYybP4rXxT5qVLKOE0+FHLTW1zlz6K
+         EKtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n+M9jSVS5yN6WBH23Kfpy/+DIv5SCL7QqYC3ii5kmyE=;
+        b=rn9tKroO7Dv4RVMRVZ2nzkoTYddmndNnCw7BpqQ1JlvIi2gp1OCL0AhDfgMwXNBq1A
+         TZC1uymvqcllawxPMn4+7f5Gx5hxduHiyDgBkoXk2cZwR4iOY8tUq/WgIlmuqylOEcAu
+         c2wBKjIDtB6rgDmXOOFZOMhx60qUEtumFpnidArM+tJ7IBsUQDom9AVKJL2JVrUwx5bh
+         RwGQdvxdSu/1iPte9OeYhlJKeGPb2S4hseDyTUaFIX9Bd47rKdwToO/TX/ZpF5Xq+7m0
+         IlsbkZe2EL5FeuJn/u92pbERLho5Mu5KLGRR6FHnl3qoZ5xuLyMCiHz6bvN9QDyixK/m
+         DwKQ==
+X-Gm-Message-State: ACrzQf3feO0IP4fgtpINMBGFRaEJc5MjbGlmDfOIf0o+NtW8kvPsvHVg
+        5JZn4qDz/Y6FoilbqVRYRgs=
+X-Google-Smtp-Source: AMsMyM4u064fXWFeyQhPhuqdcpusnn3Lq2BVSFRDr8m4Eu4oYGZvK0JrzKc+XmpPDf/vt+QT8bld3w==
+X-Received: by 2002:a17:902:efc7:b0:183:9254:cc70 with SMTP id ja7-20020a170902efc700b001839254cc70mr282887plb.18.1667549310721;
+        Fri, 04 Nov 2022 01:08:30 -0700 (PDT)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id k14-20020a170902ce0e00b0016dbdf7b97bsm1924970plg.266.2022.11.04.01.08.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 01:08:30 -0700 (PDT)
+Date:   Fri, 4 Nov 2022 16:08:26 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>, Liang Li <liali@redhat.com>
+Subject: Re: [PATCH net] bonding: fix ICMPv6 header handling when receiving
+ IPv6 messages
+Message-ID: <Y2TIeiI1s+hdBPlL@Laptop-X1>
+References: <20221101091356.531160-1-liuhangbin@gmail.com>
+ <72467.1667297563@vermin>
+ <Y2Ehg4AGAwaDRSy1@Laptop-X1>
+ <Y2EqgyAChS1/6VqP@Laptop-X1>
+ <171898.1667491439@vermin>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <171898.1667491439@vermin>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,39 +78,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The read access to struct canxl_frame::len inside of a j1939 created skbuff
-revealed a missing initialization of reserved and later filled elements in
-struct can_frame.
+On Thu, Nov 03, 2022 at 05:03:59PM +0100, Jay Vosburgh wrote:
+> 	Briefly looking at the patch, the commit message needs updating,
+> and I'm curious to know why pskb_may_pull can't be used.
 
-This patch initializes the 8 byte CAN header with zero.
+Oh, forgot to reply this. pskb_may_pull() need "struct sk_buff *skb" but we
+defined "const struct sk_buff *skb" in bond_na_rcv().
 
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/linux-can/20221104052235.GA6474@pengutronix.de/T/#t
-Reported-by: syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- net/can/j1939/main.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
-index 144c86b0e3ff..821d4ff303b3 100644
---- a/net/can/j1939/main.c
-+++ b/net/can/j1939/main.c
-@@ -334,10 +334,13 @@ int j1939_send_one(struct j1939_priv *priv, struct sk_buff *skb)
- 	dlc = skb->len;
- 
- 	/* re-claim the CAN_HDR from the SKB */
- 	cf = skb_push(skb, J1939_CAN_HDR);
- 
-+	/* initialize header structure */
-+	memset(cf, 0, J1939_CAN_HDR);
-+
- 	/* make it a full can frame again */
- 	skb_put(skb, J1939_CAN_FTR + (8 - dlc));
- 
- 	canid = CAN_EFF_FLAG |
- 		(skcb->priority << 26) |
--- 
-2.30.2
-
+Thanks
+Hangbin
