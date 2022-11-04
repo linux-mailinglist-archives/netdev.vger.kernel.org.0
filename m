@@ -2,121 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B3D619B81
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 16:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 444CC619B85
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 16:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232548AbiKDPZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 11:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34978 "EHLO
+        id S232594AbiKDP02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 11:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbiKDPYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 11:24:52 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6253A2B25C
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 08:24:29 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id a13so8177155edj.0
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 08:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JVU7TnXd5cogkDgCDXra7nnkaaEFn78CxwiCWNKiLHE=;
-        b=WA+t5n/vbTIKaQfHMLkPNWqUlNX56cat+oF/BOX/wpc3od6g+jVbVQI/eDvqnwZvio
-         nKS85x4aeslwFcaRGr9BDPVIxlF3rIUfj8Zkc8wZWbE/qikD8Mx+O1Bvs0vIq1eUT9hI
-         77uteI4GADBTLPY/aecgdYD+clneNCm8xC6vQ/K28xn9VjNI5NjGGOhVCfzvHUJHMSis
-         qkVDcY12FMzqf9ehAFIyDpp3ib/hcjdnpwF6271EMMi9C3ffTt/1/P15OdYIn/ufCLDA
-         R/KBXDE9Tf4bGyp1qYNF75px49zIcVZy2lPeSaH0ZR2puLlH/cIl3/DEbyeiYi4lLwp1
-         uxlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JVU7TnXd5cogkDgCDXra7nnkaaEFn78CxwiCWNKiLHE=;
-        b=gcUtE0Gr+tt6/bZ/cUCYRgOJ0mjGwoeM8NqFop2GUC3JXDoydDeKXEE0DCS6h+Ze6L
-         h1GQ6/KivjLFcXFPGd65dKsHfACAyrT5u2FeNIvOkOyslR2t0FJ4H50QAqs36JgOBLgJ
-         tfPJ9m//OAYO6+zgxSLXoMAYMbbVkEJFQe8ruMhALcGk+rJIRxbFbPs2JJtbeZib0RAw
-         TORkLVidWkxp6efGkzNshGjsfTUMggS1jliQoBqG7zX7bNykLBBnRZO22ioLw//z5dD2
-         oj+9ymDisZFEO8cWeoYjwWbYXPHgNbkdfXWxUEHbL4UUphjs9bDh+TwhKs6FONyUtVTG
-         YwOQ==
-X-Gm-Message-State: ACrzQf2ub5FlJSGTcMSE4lKnE66+fsUait5W60U/UnTR3oLBtmrkCuzI
-        mHctJ/ZocWpW2u3QRtN/fgkWPzFsfk8fe9sH
-X-Google-Smtp-Source: AMsMyM46j8bdz+GmKlUIReaiBV3eR4uS8W2wcVvmGm2rGD1kdiFR+uLxadtNtpbKx9U2ZovDmTk+Ig==
-X-Received: by 2002:a05:6402:50d3:b0:461:ba8a:8779 with SMTP id h19-20020a05640250d300b00461ba8a8779mr36801244edb.411.1667575467823;
-        Fri, 04 Nov 2022 08:24:27 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id 1-20020a170906310100b007933047f923sm1941259ejx.118.2022.11.04.08.24.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Nov 2022 08:24:27 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Subject: [patch net-next] net: devlink: expose the info about version representing a component
-Date:   Fri,  4 Nov 2022 16:24:25 +0100
-Message-Id: <20221104152425.783701-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S232597AbiKDP0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 11:26:09 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED85F25;
+        Fri,  4 Nov 2022 08:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=du3wTT7gZIcCx7MAzovG5KucdTPH1Tr3pydnZK/Rz0I=; b=46kNXdi9RR7s+GQLUwE/lyN5uE
+        QNAC+e9tLj7U5tRxlATNLGezHv0SjgZPlhIU19uT5SK2VHL+JVpC1xJlQ2ZcvKpW1kTHaOjrzNp5j
+        kNrSxT0EnKQEkUSbPLjBu0gTxdkdHzsa5J/eWp6yzsE9OHp4S0U58k0K/cRvHQp2mbeI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oqyZD-001RGc-Rq; Fri, 04 Nov 2022 16:25:11 +0100
+Date:   Fri, 4 Nov 2022 16:25:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sriranjani P <sriranjani.p@samsung.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Chandrasekar R <rcsekar@samsung.com>,
+        Suresh Siddha <ssiddha@tesla.com>
+Subject: Re: [PATCH 2/4] net: stmmac: dwc-qos: Add FSD EQoS support
+Message-ID: <Y2Uu16RSF9Py5AdC@lunn.ch>
+References: <20221104120517.77980-1-sriranjani.p@samsung.com>
+ <CGME20221104115854epcas5p4ca280f9c4cc4d1fa564d80016e9f0061@epcas5p4.samsung.com>
+ <20221104120517.77980-3-sriranjani.p@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221104120517.77980-3-sriranjani.p@samsung.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+> +static int dwc_eqos_setup_rxclock(struct platform_device *pdev)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +
+> +	if (np && of_property_read_bool(np, "rx-clock-mux")) {
+> +		unsigned int reg, val;
+> +		struct regmap *syscon = syscon_regmap_lookup_by_phandle(np,
+> +			"rx-clock-mux");
+> +
+> +		if (IS_ERR(syscon)) {
+> +			dev_err(&pdev->dev, "couldn't get the rx-clock-mux syscon!\n");
+> +			return PTR_ERR(syscon);
+> +		}
+> +
+> +		if (of_property_read_u32_index(np, "rx-clock-mux", 1, &reg)) {
+> +			dev_err(&pdev->dev, "couldn't get the rx-clock-mux reg. offset!\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (of_property_read_u32_index(np, "rx-clock-mux", 2, &val)) {
+> +			dev_err(&pdev->dev, "couldn't get the rx-clock-mux reg. val!\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		regmap_write(syscon, reg, val);
 
-If certain version exposed by a driver is marked to be representing a
-component, expose this info to the user.
+This appears to be one of those binds which allows any magic value to
+be placed into any register. That is not how DT should be used.
 
-Example:
-$ devlink dev info
-netdevsim/netdevsim10:
-  driver netdevsim
-  versions:
-      running:
-        fw.mgmt 10.20.30
-      flash_components:
-        fw.mgmt
-
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- include/uapi/linux/devlink.h | 2 ++
- net/core/devlink.c           | 5 +++++
- 2 files changed, 7 insertions(+)
-
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 2f24b53a87a5..7f2874189188 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -607,6 +607,8 @@ enum devlink_attr {
- 
- 	DEVLINK_ATTR_SELFTESTS,			/* nested */
- 
-+	DEVLINK_ATTR_INFO_VERSION_IS_COMPONENT,	/* u8 0 or 1 */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 2dcf2bcc3527..31bca879f9cf 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6621,6 +6621,11 @@ static int devlink_info_version_put(struct devlink_info_req *req, int attr,
- 	if (err)
- 		goto nla_put_failure;
- 
-+	err = nla_put_u8(req->msg, DEVLINK_ATTR_INFO_VERSION_IS_COMPONENT,
-+			 version_type == DEVLINK_INFO_VERSION_TYPE_COMPONENT);
-+	if (err)
-+		goto nla_put_failure;
-+
- 	nla_nest_end(req->msg, nest);
- 
- 	return 0;
--- 
-2.37.3
-
+   Andrew
