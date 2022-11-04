@@ -2,117 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3045061A0A9
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 20:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D934A61A0B2
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 20:17:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbiKDTOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 15:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
+        id S229533AbiKDTRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 15:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiKDTOI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 15:14:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2EE4D5D6
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 12:13:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F9D1B82F66
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 19:13:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FDBCC433D7;
-        Fri,  4 Nov 2022 19:13:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667589233;
-        bh=lGUowKPCdleRRa1Z8ZxxHSDgl6l5BApGhJyHI8oZM3Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b9R1B/+1N1Us9/YbsPDVCqrCKQ77Py32XcqnKyn7u4+IXGW4VjXFRA4Q1/pOnpMcl
-         yoyD1dkUZPnG4KFKBShu4r6oqNTx9cWZD8Ja0zD1R9dzvGTQllg9NvKGtHH4VDoMZV
-         NEW882MxPEmdyiisVkr6+WI6OQd7TBZN2DC0WOoHBZ/o3bQfHE4O+9CQfGtOmwd8UD
-         lREPoS7Lg3fMD/tHaKdbqmb1KUibuYL7ZtznJM0JsrnF+vGIxaSuxsMNN/vOI0rGPI
-         DZv0e3K2pvaRDP+uFSDYNc+27zTEBqzfAnMUP37eyFEDvOIzglrMH85ekZD0WYwA56
-         tqGyu2aiyzgow==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
-        gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 13/13] genetlink: convert control family to split ops
-Date:   Fri,  4 Nov 2022 12:13:43 -0700
-Message-Id: <20221104191343.690543-14-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221104191343.690543-1-kuba@kernel.org>
-References: <20221104191343.690543-1-kuba@kernel.org>
+        with ESMTP id S229582AbiKDTRB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 15:17:01 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFD548740
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 12:16:59 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id l2so5728157pld.13
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 12:16:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uwf9cNrPS5Rc31CwAis9I5k42+w3JYRmcdVU7DdGiu4=;
+        b=N6TFAIctV4hgpYE38ZyX/b+J/o7aIK0+cR8rBnXD24Pic0BLxQcHU237p09FZeLrX9
+         6yj0AmbLE6V1HcPmWLID7VETZlaV+M9dng3VlpfIN3WNRO3xTYAAiE2momLGKWMNEkhQ
+         G4VT1cqNjnQ6Oe4tlUOO1WbSzvJVPgeHtyRA8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uwf9cNrPS5Rc31CwAis9I5k42+w3JYRmcdVU7DdGiu4=;
+        b=GvSjRWq+knWTEAq0OAa5NKJsvfQKVmE6P/t8ydrMJJCghs7WvjIORfqiG8KnLprw8B
+         P48nW3Jq/Xm2hAe1fwwJTW9H2/RK/3p2ydWTLQSeBayDcGZ4oElcn28UcgkRLPUrAOHE
+         2KeXURLWjkGB9vbXByGqrH354RGO6I+1zr0WvldZ4++BTalnT+9CmDDShko9OiHhxuhH
+         37hHgvZsE2gL+Ig9jdbHBTnSCE+wBwmHICoKUorxhUtrUjSlrz4fCK1KUEfo1C8PC7R6
+         EUpC4nrIPeLwZFzaF8DTFSfElRQOxoJSP/NI1BN0q6T8PGYM34393PZT39bjROoy15w1
+         T/9A==
+X-Gm-Message-State: ACrzQf3rY0pwGLGu+BZZ1JTVB/CQa4L8z27LK2XvzAn78KJ7JPdQEc9s
+        8dQKFPtTWoHUmm7maZf8UHVOkg==
+X-Google-Smtp-Source: AMsMyM723xbKuDkCJ7wXLAB+SxhuL5RfQWSJSVDW6OhzUsKHC44G/DKWPnsbHUAvL7N0/sG7WSCPRg==
+X-Received: by 2002:a17:902:8693:b0:17a:f71:98fd with SMTP id g19-20020a170902869300b0017a0f7198fdmr37053238plo.25.1667589419426;
+        Fri, 04 Nov 2022 12:16:59 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e38-20020a631e26000000b0046497308480sm74704pge.77.2022.11.04.12.16.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 12:16:58 -0700 (PDT)
+Date:   Fri, 4 Nov 2022 12:16:57 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Sami Tolvanen <samitolvanen@google.com>, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH net-next] net: ethernet: renesas: Fix return type of
+ rswitch_start_xmit()
+Message-ID: <202211041216.AEE2A8A353@keescook>
+References: <20221103220032.2142122-1-nathan@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221103220032.2142122-1-nathan@kernel.org>
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prove that the split ops work.
-Sadly we need to keep bug-wards compatibility and specify
-the same policy for dump as do, even tho we don't parse
-inputs for the dump.
+On Thu, Nov 03, 2022 at 03:00:32PM -0700, Nathan Chancellor wrote:
+> With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
+> indirect call targets are validated against the expected function
+> pointer prototype to make sure the call target is valid to help mitigate
+> ROP attacks. If they are not identical, there is a failure at run time,
+> which manifests as either a kernel panic or thread getting killed. A
+> proposed warning in clang aims to catch these at compile time, which
+> reveals:
+> 
+>   drivers/net/ethernet/renesas/rswitch.c:1533:20: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
+>           .ndo_start_xmit = rswitch_start_xmit,
+>                           ^~~~~~~~~~~~~~~~~~
+>   1 error generated.
+> 
+> ->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
+> 'netdev_tx_t', not 'int'. Adjust the return type of rswitch_start_xmit()
+> to match the prototype's to resolve the warning and CFI failure.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1750
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
----
- net/netlink/genetlink.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 90b0feb5eb73..362a61179036 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -1609,14 +1609,22 @@ static int ctrl_dumppolicy_done(struct netlink_callback *cb)
- 	return 0;
- }
- 
--static const struct genl_ops genl_ctrl_ops[] = {
-+static const struct genl_split_ops genl_ctrl_ops[] = {
- 	{
- 		.cmd		= CTRL_CMD_GETFAMILY,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.validate	= GENL_DONT_VALIDATE_STRICT,
- 		.policy		= ctrl_policy_family,
- 		.maxattr	= ARRAY_SIZE(ctrl_policy_family) - 1,
- 		.doit		= ctrl_getfamily,
-+		.flags		= GENL_CMD_CAP_DO,
-+	},
-+	{
-+		.cmd		= CTRL_CMD_GETFAMILY,
-+		.validate	= GENL_DONT_VALIDATE_DUMP,
-+		.policy		= ctrl_policy_family,
-+		.maxattr	= ARRAY_SIZE(ctrl_policy_family) - 1,
- 		.dumpit		= ctrl_dumpfamily,
-+		.flags		= GENL_CMD_CAP_DUMP,
- 	},
- 	{
- 		.cmd		= CTRL_CMD_GETPOLICY,
-@@ -1625,6 +1633,7 @@ static const struct genl_ops genl_ctrl_ops[] = {
- 		.start		= ctrl_dumppolicy_start,
- 		.dumpit		= ctrl_dumppolicy,
- 		.done		= ctrl_dumppolicy_done,
-+		.flags		= GENL_CMD_CAP_DUMP,
- 	},
- };
- 
-@@ -1634,8 +1643,8 @@ static const struct genl_multicast_group genl_ctrl_groups[] = {
- 
- static struct genl_family genl_ctrl __ro_after_init = {
- 	.module = THIS_MODULE,
--	.ops = genl_ctrl_ops,
--	.n_ops = ARRAY_SIZE(genl_ctrl_ops),
-+	.split_ops = genl_ctrl_ops,
-+	.n_split_ops = ARRAY_SIZE(genl_ctrl_ops),
- 	.resv_start_op = CTRL_CMD_GETPOLICY + 1,
- 	.mcgrps = genl_ctrl_groups,
- 	.n_mcgrps = ARRAY_SIZE(genl_ctrl_groups),
 -- 
-2.38.1
-
+Kees Cook
