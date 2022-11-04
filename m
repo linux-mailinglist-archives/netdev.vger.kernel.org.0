@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 577B3619A12
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:34:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64BAB619A17
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232113AbiKDOen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 10:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        id S229700AbiKDOeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 10:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231994AbiKDOeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:34:23 -0400
+        with ESMTP id S231534AbiKDOeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:34:25 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95181DC
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 07:31:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F78D31DE4
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 07:31:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667572309; x=1699108309;
+  t=1667572310; x=1699108310;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QV+0lAHqM39dIGwnfxMloKlp6nvUovajDP8sjnYg1SU=;
-  b=Ru5moaEcgKZJYBlpUG9gciblW4VxJ5t5wCmnt33OnHe1tVovHElyzzo9
-   WVndK6JyrgScNxOiu5N9J+ZWvEJMdJ0nZAvr6cTLepVtsajvjtHRCLgPP
-   7gGr2hDRsohcfnVqBw61Rx7cqDApHGjXHs6tz0nsvjv1aeRQjHDBR/y9c
-   R/XwYMC4c/D+b+b+Bf0gIGPkfqGp1iNJG5KWHy1Qc7Mvz+0TOQxZM93xY
-   yzHlpbR/hQKfsTFpMWXI9FE+bj6ldje0jIhciNZfgAOTqhCHviviWsCQT
-   TEzGUX/W7PNy4IYMPJZPL2yXAiFYwODG9zRIdl5bxVEq6LkVRAhZImTTA
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="290367528"
+  bh=4v8iFnQc1G2RbFTRNGmk4QRRe4KCQduPWVXVefNNip8=;
+  b=e5YYtyKTMq08HLwDirhkcU7uR4+7I0zR9gOhZq+vpY1BMn6dN7ZYVbQh
+   GzGHNpVKWyHcYkSnOgV8oriJL+Tv0Lb3oS7CMX1BDSeOL9dfYo9YLq1Zs
+   +tybKxGbk1arQyAcv+wm31ZA+7FP6buytbFJVNWK3+bgfmEOxbwdWLxNG
+   FidfltjYIXhCELzC2UyEJ8r7XhHU3oj3b/KsACwxYNk9P7p8/eDLmnp8d
+   DRTWbZ/SoD3BzXx/YeXen1pejUgkegZEM7WiJuqxuNMqRR4hc7iecPkbb
+   iiJl/p27eqTnBG1tg3GO8Xck9o3VqC2LTdsSTcFcfBlQsdzOZaeAZ17Xw
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="290367534"
 X-IronPort-AV: E=Sophos;i="5.96,137,1665471600"; 
-   d="scan'208";a="290367528"
+   d="scan'208";a="290367534"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 07:31:34 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="777730324"
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 07:31:37 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="777730359"
 X-IronPort-AV: E=Sophos;i="5.96,137,1665471600"; 
-   d="scan'208";a="777730324"
+   d="scan'208";a="777730359"
 Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 07:31:32 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 07:31:35 -0700
 From:   Michal Wilczynski <michal.wilczynski@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
@@ -44,9 +44,9 @@ Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
         anthony.l.nguyen@intel.com, kuba@kernel.org,
         ecree.xilinx@gmail.com, jiri@resnulli.us,
         Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v9 5/9] devlink: Allow to set up parent in devl_rate_leaf_create()
-Date:   Fri,  4 Nov 2022 15:30:58 +0100
-Message-Id: <20221104143102.1120076-6-michal.wilczynski@intel.com>
+Subject: [PATCH net-next v9 6/9] ice: Introduce new parameters in ice_sched_node
+Date:   Fri,  4 Nov 2022 15:30:59 +0100
+Message-Id: <20221104143102.1120076-7-michal.wilczynski@intel.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221104143102.1120076-1-michal.wilczynski@intel.com>
 References: <20221104143102.1120076-1-michal.wilczynski@intel.com>
@@ -61,106 +61,279 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the driver is able to create leaf nodes for the devlink-rate,
-but is unable to set parent for them. This wasn't as issue, before the
-possibility to export hierarchy from the driver. After adding the export
-feature, in order for the driver to supply correct hierarchy, it's
-necessary for it to be able to supply a parent name to
-devl_rate_leaf_create().
+To support new devlink-rate API ice_sched_node struct needs to store
+a number of additional parameters. This includes tx_max, tx_share,
+tx_weight, and tx_priority.
 
-Introduce a new parameter 'parent_name' in devl_rate_leaf_create().
+Add new fields to ice_sched_node struct. Add new functions to configure
+the hardware with new parameters. Introduce new xarray to identify
+nodes uniquely.
 
 Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/esw/devlink_port.c   | 4 ++--
- drivers/net/netdevsim/dev.c                              | 2 +-
- include/net/devlink.h                                    | 4 +++-
- net/core/devlink.c                                       | 9 ++++++++-
- 4 files changed, 14 insertions(+), 5 deletions(-)
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  3 +
+ drivers/net/ethernet/intel/ice/ice_sched.c    | 79 +++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_sched.h    | 27 +++++++
+ drivers/net/ethernet/intel/ice/ice_type.h     |  8 ++
+ 5 files changed, 114 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-index 9bc7be95db54..084a910bb4e7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-@@ -91,7 +91,7 @@ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_
- 	if (err)
- 		goto reg_err;
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 1bdc70aa979d..958c1e435232 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -848,9 +848,9 @@ struct ice_aqc_txsched_elem {
+ 	u8 generic;
+ #define ICE_AQC_ELEM_GENERIC_MODE_M		0x1
+ #define ICE_AQC_ELEM_GENERIC_PRIO_S		0x1
+-#define ICE_AQC_ELEM_GENERIC_PRIO_M	(0x7 << ICE_AQC_ELEM_GENERIC_PRIO_S)
++#define ICE_AQC_ELEM_GENERIC_PRIO_M	        GENMASK(3, 1)
+ #define ICE_AQC_ELEM_GENERIC_SP_S		0x4
+-#define ICE_AQC_ELEM_GENERIC_SP_M	(0x1 << ICE_AQC_ELEM_GENERIC_SP_S)
++#define ICE_AQC_ELEM_GENERIC_SP_M	        GENMASK(4, 4)
+ #define ICE_AQC_ELEM_GENERIC_ADJUST_VAL_S	0x5
+ #define ICE_AQC_ELEM_GENERIC_ADJUST_VAL_M	\
+ 	(0x3 << ICE_AQC_ELEM_GENERIC_ADJUST_VAL_S)
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 039342a0ed15..e2e661010176 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -1105,6 +1105,9 @@ int ice_init_hw(struct ice_hw *hw)
  
--	err = devl_rate_leaf_create(dl_port, vport);
-+	err = devl_rate_leaf_create(dl_port, vport, NULL);
- 	if (err)
- 		goto rate_err;
+ 	hw->evb_veb = true;
  
-@@ -160,7 +160,7 @@ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_p
- 	if (err)
- 		return err;
- 
--	err = devl_rate_leaf_create(dl_port, vport);
-+	err = devl_rate_leaf_create(dl_port, vport, NULL);
- 	if (err)
- 		goto rate_err;
- 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 387c05953a8b..a5bd6dcca980 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1401,7 +1401,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
- 
- 	if (nsim_dev_port_is_vf(nsim_dev_port)) {
- 		err = devl_rate_leaf_create(&nsim_dev_port->devlink_port,
--					    nsim_dev_port);
-+					    nsim_dev_port, NULL);
- 		if (err)
- 			goto err_nsim_destroy;
- 	}
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 4562364b8ce1..81389ac54857 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1608,10 +1608,12 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
- void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
- 				   u32 controller, u16 pf, u32 sf,
- 				   bool external);
--int devl_rate_leaf_create(struct devlink_port *port, void *priv);
- struct devlink_rate *
- devl_rate_node_create(struct devlink *devlink, void *priv, char *node_name,
- 		      struct devlink_rate *parent);
-+int
-+devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv,
-+		      struct devlink_rate *parent);
- void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
- void devl_rate_nodes_destroy(struct devlink *devlink);
- void devlink_port_linecard_set(struct devlink_port *devlink_port,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 80233c750f00..91f89d1b663d 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -10428,10 +10428,12 @@ EXPORT_SYMBOL_GPL(devl_rate_node_create);
-  * devl_rate_leaf_create - create devlink rate leaf
-  * @devlink_port: devlink port object to create rate object on
-  * @priv: driver private data
-+ * @parent: parent devlink_rate struct
-  *
-  * Create devlink rate object of type leaf on provided @devlink_port.
-  */
--int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
-+int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv,
-+			  struct devlink_rate *parent)
- {
- 	struct devlink *devlink = devlink_port->devlink;
- 	struct devlink_rate *devlink_rate;
-@@ -10445,6 +10447,11 @@ int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
- 	if (!devlink_rate)
- 		return -ENOMEM;
- 
-+	if (parent) {
-+		devlink_rate->parent = parent;
-+		refcount_inc(&devlink_rate->parent->refcnt);
-+	}
++	/* init xarray for identifying scheduling nodes uniquely */
++	xa_init_flags(&hw->port_info->sched_node_ids, XA_FLAGS_ALLOC);
 +
- 	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
- 	devlink_rate->devlink = devlink;
- 	devlink_rate->devlink_port = devlink_port;
+ 	/* Query the allocated resources for Tx scheduler */
+ 	status = ice_sched_query_res_alloc(hw);
+ 	if (status) {
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 118595763bba..80cde5683371 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2018, Intel Corporation. */
+ 
++#include <net/devlink.h>
+ #include "ice_sched.h"
+ 
+ /**
+@@ -355,6 +356,9 @@ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node)
+ 	/* leaf nodes have no children */
+ 	if (node->children)
+ 		devm_kfree(ice_hw_to_dev(hw), node->children);
++
++	kfree(node->name);
++	xa_erase(&pi->sched_node_ids, node->id);
+ 	devm_kfree(ice_hw_to_dev(hw), node);
+ }
+ 
+@@ -875,7 +879,7 @@ void ice_sched_cleanup_all(struct ice_hw *hw)
+  *
+  * This function add nodes to HW as well as to SW DB for a given layer
+  */
+-static int
++int
+ ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
+ 		    struct ice_sched_node *parent, u8 layer, u16 num_nodes,
+ 		    u16 *num_nodes_added, u32 *first_node_teid)
+@@ -940,6 +944,22 @@ ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
+ 
+ 		new_node->sibling = NULL;
+ 		new_node->tc_num = tc_node->tc_num;
++		new_node->tx_weight = ICE_SCHED_DFLT_BW_WT;
++		new_node->tx_share = ICE_SCHED_DFLT_BW;
++		new_node->tx_max = ICE_SCHED_DFLT_BW;
++		new_node->name = kzalloc(SCHED_NODE_NAME_MAX_LEN, GFP_KERNEL);
++		if (!new_node->name)
++			return -ENOMEM;
++
++		status = xa_alloc(&pi->sched_node_ids, &new_node->id, NULL, XA_LIMIT(0, UINT_MAX),
++				  GFP_KERNEL);
++		if (status) {
++			ice_debug(hw, ICE_DBG_SCHED, "xa_alloc failed for sched node status =%d\n",
++				  status);
++			break;
++		}
++
++		snprintf(new_node->name, SCHED_NODE_NAME_MAX_LEN, "node_%u", new_node->id);
+ 
+ 		/* add it to previous node sibling pointer */
+ 		/* Note: siblings are not linked across branches */
+@@ -2154,7 +2174,7 @@ ice_sched_get_free_vsi_parent(struct ice_hw *hw, struct ice_sched_node *node,
+  * This function removes the child from the old parent and adds it to a new
+  * parent
+  */
+-static void
++void
+ ice_sched_update_parent(struct ice_sched_node *new_parent,
+ 			struct ice_sched_node *node)
+ {
+@@ -2188,7 +2208,7 @@ ice_sched_update_parent(struct ice_sched_node *new_parent,
+  *
+  * This function move the child nodes to a given parent.
+  */
+-static int
++int
+ ice_sched_move_nodes(struct ice_port_info *pi, struct ice_sched_node *parent,
+ 		     u16 num_items, u32 *list)
+ {
+@@ -3560,7 +3580,7 @@ ice_sched_set_eir_srl_excl(struct ice_port_info *pi,
+  * node's RL profile ID of type CIR, EIR, or SRL, and removes old profile
+  * ID from local database. The caller needs to hold scheduler lock.
+  */
+-static int
++int
+ ice_sched_set_node_bw(struct ice_port_info *pi, struct ice_sched_node *node,
+ 		      enum ice_rl_type rl_type, u32 bw, u8 layer_num)
+ {
+@@ -3596,6 +3616,55 @@ ice_sched_set_node_bw(struct ice_port_info *pi, struct ice_sched_node *node,
+ 				       ICE_AQC_RL_PROFILE_TYPE_M, old_id);
+ }
+ 
++/**
++ * ice_sched_set_node_priority - set node's priority
++ * @pi: port information structure
++ * @node: tree node
++ * @priority: number 0-7 representing priority among siblings
++ *
++ * This function sets priority of a node among it's siblings.
++ */
++int
++ice_sched_set_node_priority(struct ice_port_info *pi, struct ice_sched_node *node,
++			    u16 priority)
++{
++	struct ice_aqc_txsched_elem_data buf;
++	struct ice_aqc_txsched_elem *data;
++
++	buf = node->info;
++	data = &buf.data;
++
++	data->valid_sections |= ICE_AQC_ELEM_VALID_GENERIC;
++	data->generic |= FIELD_PREP(ICE_AQC_ELEM_GENERIC_MODE_M, 0x1);
++	data->generic |= FIELD_PREP(ICE_AQC_ELEM_GENERIC_PRIO_M, priority);
++
++	return ice_sched_update_elem(pi->hw, node, &buf);
++}
++
++/**
++ * ice_sched_set_node_weight - set node's weight
++ * @pi: port information structure
++ * @node: tree node
++ * @weight: number 1-200 representing weight for WFQ
++ *
++ * This function sets weight of the node for WFQ algorithm.
++ */
++int
++ice_sched_set_node_weight(struct ice_port_info *pi, struct ice_sched_node *node, u16 weight)
++{
++	struct ice_aqc_txsched_elem_data buf;
++	struct ice_aqc_txsched_elem *data;
++
++	buf = node->info;
++	data = &buf.data;
++
++	data->valid_sections = ICE_AQC_ELEM_VALID_CIR | ICE_AQC_ELEM_VALID_EIR;
++	data->cir_bw.bw_alloc = cpu_to_le16(weight);
++	data->eir_bw.bw_alloc = cpu_to_le16(weight);
++
++	return ice_sched_update_elem(pi->hw, node, &buf);
++}
++
+ /**
+  * ice_sched_set_node_bw_lmt - set node's BW limit
+  * @pi: port information structure
+@@ -3606,7 +3675,7 @@ ice_sched_set_node_bw(struct ice_port_info *pi, struct ice_sched_node *node,
+  * It updates node's BW limit parameters like BW RL profile ID of type CIR,
+  * EIR, or SRL. The caller needs to hold scheduler lock.
+  */
+-static int
++int
+ ice_sched_set_node_bw_lmt(struct ice_port_info *pi, struct ice_sched_node *node,
+ 			  enum ice_rl_type rl_type, u32 bw)
+ {
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.h b/drivers/net/ethernet/intel/ice/ice_sched.h
+index 4f91577fed56..920db43ed4fa 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.h
++++ b/drivers/net/ethernet/intel/ice/ice_sched.h
+@@ -6,6 +6,8 @@
+ 
+ #include "ice_common.h"
+ 
++#define SCHED_NODE_NAME_MAX_LEN 32
++
+ #define ICE_QGRP_LAYER_OFFSET	2
+ #define ICE_VSI_LAYER_OFFSET	4
+ #define ICE_AGG_LAYER_OFFSET	6
+@@ -69,6 +71,28 @@ int
+ ice_aq_query_sched_elems(struct ice_hw *hw, u16 elems_req,
+ 			 struct ice_aqc_txsched_elem_data *buf, u16 buf_size,
+ 			 u16 *elems_ret, struct ice_sq_cd *cd);
++
++int
++ice_sched_set_node_bw_lmt(struct ice_port_info *pi, struct ice_sched_node *node,
++			  enum ice_rl_type rl_type, u32 bw);
++
++int
++ice_sched_set_node_bw(struct ice_port_info *pi, struct ice_sched_node *node,
++		      enum ice_rl_type rl_type, u32 bw, u8 layer_num);
++
++int
++ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
++		    struct ice_sched_node *parent, u8 layer, u16 num_nodes,
++		    u16 *num_nodes_added, u32 *first_node_teid);
++
++int
++ice_sched_move_nodes(struct ice_port_info *pi, struct ice_sched_node *parent,
++		     u16 num_items, u32 *list);
++
++int ice_sched_set_node_priority(struct ice_port_info *pi, struct ice_sched_node *node,
++				u16 priority);
++int ice_sched_set_node_weight(struct ice_port_info *pi, struct ice_sched_node *node, u16 weight);
++
+ int ice_sched_init_port(struct ice_port_info *pi);
+ int ice_sched_query_res_alloc(struct ice_hw *hw);
+ void ice_sched_get_psm_clk_freq(struct ice_hw *hw);
+@@ -82,6 +106,9 @@ ice_sched_find_node_by_teid(struct ice_sched_node *start_node, u32 teid);
+ int
+ ice_sched_add_node(struct ice_port_info *pi, u8 layer,
+ 		   struct ice_aqc_txsched_elem_data *info);
++void
++ice_sched_update_parent(struct ice_sched_node *new_parent,
++			struct ice_sched_node *node);
+ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node);
+ struct ice_sched_node *ice_sched_get_tc_node(struct ice_port_info *pi, u8 tc);
+ struct ice_sched_node *
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index e1abfcee96dc..c93f2449d3c3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -524,8 +524,15 @@ struct ice_sched_node {
+ 	struct ice_sched_node *sibling; /* next sibling in the same layer */
+ 	struct ice_sched_node **children;
+ 	struct ice_aqc_txsched_elem_data info;
++	char *name;
++	struct devlink_rate *rate_node;
++	u64 tx_max;
++	u64 tx_share;
+ 	u32 agg_id;			/* aggregator group ID */
++	u32 id;
+ 	u16 vsi_handle;
++	u16 tx_priority;
++	u16 tx_weight;
+ 	u8 in_use;			/* suspended or in use */
+ 	u8 tx_sched_layer;		/* Logical Layer (1-9) */
+ 	u8 num_children;
+@@ -706,6 +713,7 @@ struct ice_port_info {
+ 	/* List contain profile ID(s) and other params per layer */
+ 	struct list_head rl_prof_list[ICE_AQC_TOPO_MAX_LEVEL_NUM];
+ 	struct ice_qos_cfg qos_cfg;
++	struct xarray sched_node_ids;
+ 	u8 is_vf:1;
+ };
+ 
 -- 
 2.37.2
 
