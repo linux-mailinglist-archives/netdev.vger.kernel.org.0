@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7974161A0ED
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 20:26:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0D561A0EC
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 20:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229501AbiKDT0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 15:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
+        id S229468AbiKDTYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 15:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiKDT0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 15:26:06 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC20926DE
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 12:26:04 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id 64so5188591pgc.5
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 12:26:04 -0700 (PDT)
+        with ESMTP id S229615AbiKDTYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 15:24:19 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCAAF78
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 12:24:19 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id c15-20020a17090a1d0f00b0021365864446so5347840pjd.4
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 12:24:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+        d=magic-biz-com.20210112.gappssmtp.com; s=20210112;
+        h=importance:content-language:thread-index:content-transfer-encoding
+         :mime-version:message-id:date:subject:in-reply-to:references:to:from
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ytLIhKZuYdmh84oUVdzM6+Xt1URUXrJYojk/wKNfrD8=;
-        b=O+tMUcOtLUO27foXcasLA7fBSvjCJZGLiylgapTnNf+R617vScp8qdh672FH/pq5zD
-         j0hL6YPGSsYuAZoaqzebFkEkndKOT1MhyYcL6iFHjuWmCGwP4w3vGyJlG9Q0+4H7M1rx
-         lju2sCW+AdCH3dasrSOBNaahaBnnyHEisA/Yw=
+        bh=a01HKBq+YM6w+MVN5U0M0jx5bnfgZpao5x+lzAfOY/0=;
+        b=4lb83jesme7vPCPaFDoCw/8KqYTelwVudTiXnU9KWxQO5YKvSk7f/Zx1LREyNSjZT4
+         jIqQDtBX8HnDJgztc2uiDzXGDbXTkHGpjPhAGLct8t4l/45+2cQbSZ5ukXh0aJAFJ35k
+         gzjDNa9bvDQ+nhAIZj3Cqxw1TlNaJoqaq6kmAsoCkDJWsbN3w/7MXmJZHGN5rcA/jSEU
+         E0qYR4CfrTaMXLKppHp81DQGxQbUQE1YorGhW+HS3tSdRDmxh7FqeDKCmj6ZiTQiSwZp
+         ymYPt26eWEbVcLx2BWsqCe/Szttw1qC8b/xBBtNp8UeIh20YjLUyDToh1eEP5b3VFgDG
+         Xn0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+        h=importance:content-language:thread-index:content-transfer-encoding
+         :mime-version:message-id:date:subject:in-reply-to:references:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ytLIhKZuYdmh84oUVdzM6+Xt1URUXrJYojk/wKNfrD8=;
-        b=VIGwFff0iU01tZ+FH3jLFzwlv3/dEzMlPssutl4Zp+6EybmHWdti/JALAW21CczZ6d
-         8GG+TL1honVTOjM0QWgj9fzm9m9tbsAqwO9rhNKxHORysr7RlD/CijLHoVND4OzHKnjR
-         hXQuADRjZmpFnf/I8NaHxNEbG5DJ9xl6xu/MOxRKdJkZK1o9o3U49+4LLQXoymNOwkZu
-         3ZLTcDtAWPMNVppvolXxDZKv6L4QJgYenmb6ZF+oexNX8dD7GUIRpiv13OQ2evBMTKxI
-         ZSKnQet9UHevBuws+6yXZ16MRZ4kq5hmP7PdWacS1hfY4hLTQmy61i3hBzYzVx0PxEK/
-         BZAg==
-X-Gm-Message-State: ACrzQf2nJsLq8+8L+BG2cxS4gH1j8PRBuCgcB86LuWE/+JY9Ay8vdIVh
-        OImRGOAKXGbCNJksqAE4oZeDrg==
-X-Google-Smtp-Source: AMsMyM4puBHy4Rz/W6PItnEMR/7sY4Ht+hZTcYiZeHp4JNp/zgQEonPnvSrDu9FZgasYBNB+TeWwvw==
-X-Received: by 2002:a63:3182:0:b0:46f:ed32:54a6 with SMTP id x124-20020a633182000000b0046fed3254a6mr17225891pgx.69.1667589941673;
-        Fri, 04 Nov 2022 12:25:41 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w128-20020a626286000000b0056ca3569a66sm3045377pfb.129.2022.11.04.12.25.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Nov 2022 12:25:41 -0700 (PDT)
-From:   coverity-bot <keescook@chromium.org>
-X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
-Date:   Fri, 4 Nov 2022 12:25:40 -0700
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mengyuan Lou <mengyuanlou@net-swift.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Coverity: txgbe_calc_eeprom_checksum(): Control flow issues
-Message-ID: <202211041225.FF75B11482@keescook>
+        bh=a01HKBq+YM6w+MVN5U0M0jx5bnfgZpao5x+lzAfOY/0=;
+        b=h+6wQWnvYhgb1BPao305qd718r4zoywFYV+1nadH5gcWGjk8ky36V8rH1hvRBTs4N2
+         VLcStWeVD4CkLp5Xuv8ixRonZ2A4n2qwceocyHpBDe0bFOQqU4mIeynMU5kz7B9oUmWp
+         LLGG+58TqeuhAsCUHYvpz4ystgSJaaqr9ZWU1Q8gYNYj7cyvZ3o9Ccs49pKaYej9P3jx
+         0eyO7M+lu6q834IY9h+GvO5GRRqAp3DYlJMlf/3239MX0q+PJCjcpR1NhAOzap767svz
+         vEYPZ08xgBG6i6B07J1HyWWGGEhFLRE/QjcuOSzv7bS7KFMf/wTqtHOyv6lcQLwNRpW/
+         0bmQ==
+X-Gm-Message-State: ACrzQf1tCZ2Q1Gkb3J8YOgpmLWeTPP48AwlkOUDI6qtHdQyIaj6lGb5l
+        CLeNu/rol0+G/uDb+9o/HWbBCQ==
+X-Google-Smtp-Source: AMsMyM62BqK0g383HETKHzTleywNocFT/ftVeBWrbF3ceSs5OPfYDVT5hkyH6pvqz7aeo/M74YHNbA==
+X-Received: by 2002:a17:902:8693:b0:17a:f71:98fd with SMTP id g19-20020a170902869300b0017a0f7198fdmr37081124plo.25.1667589858670;
+        Fri, 04 Nov 2022 12:24:18 -0700 (PDT)
+Received: from DESKTOP6C94MB6 ([2406:7400:63:f7e5:255b:7208:7bcc:6c8f])
+        by smtp.gmail.com with ESMTPSA id d20-20020a170902e15400b00182d25a1e4bsm98103pla.259.2022.11.04.12.24.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Nov 2022 12:24:18 -0700 (PDT)
+From:   "Veronica Paige" <veronica@magic-biz.com>
+To:     <veronica@magic-biz.com>
+References: 
+In-Reply-To: 
+Subject: RE: RSNA Annual Meeting Attendees Email List-2022
+Date:   Fri, 4 Nov 2022 14:26:21 -0500
+Message-ID: <362b01d8f083$b1707970$14516c50$@magic-biz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Priority: 1 (Highest)
+X-MSMail-Priority: High
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: Adjwgpts0Q3fv7t+R3uFYLuSDPKSSAAAGLrgAAAA0BAAAAAqMAAAACXAAAAAI1AAAAAugAAAADBwAAAALdAAAAAsgAAAACbgAAAAJkAAAAAnYAAAAC/AAAAAShAAAAAj0AAAACjwAAAAKbAAAAAoQAAAACrQAAAAOzAAAAArgAAAADKgAAAAKqAAAAAtwAAAADxQAAAAMUAAAAA2MAAAAEfw
+Content-Language: en-us
+Importance: High
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi,
 
-This is an experimental semi-automated report about issues detected by
-Coverity from a scan of next-20221104 as part of the linux-next scan project:
-https://scan.coverity.com/projects/linux-next-weekly-scan
+I hope you're doing great and staying healthy!
 
-You're getting this email because you were associated with the identified
-lines of code (noted below) that were touched by commits:
+Would you be interested in acquiring Radiological Society of North America
+Attendees Data List 2022?
 
-  Wed Nov 2 12:31:23 2022 +0000
-    049fe5365324 ("net: txgbe: Add operations to interact with firmware")
+List contains: Company Name, Contact Name, First Name, Middle Name, Last
+Name, Title, Address, Street, City, Zip code, State, Country, Telephone,
+Email address and more,
 
-Coverity reported the following:
+No of Contacts: - 40,385
+Cost: $1,928
 
-*** CID 1527152:  Control flow issues  (NO_EFFECT)
-drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c:200 in txgbe_calc_eeprom_checksum()
-194
-195     	for (i = 0; i < TXGBE_EEPROM_LAST_WORD; i++)
-196     		if (i != wxhw->eeprom.sw_region_offset + TXGBE_EEPROM_CHECKSUM)
-197     			*checksum += local_buffer[i];
-198
-199     	*checksum = TXGBE_EEPROM_SUM - *checksum;
-vvv     CID 1527152:  Control flow issues  (NO_EFFECT)
-vvv     This less-than-zero comparison of an unsigned value is never true. "*checksum < 0".
-200     	if (*checksum < 0)
-201     		return -EINVAL;
-202
-203     	if (eeprom_ptrs)
-204     		kvfree(eeprom_ptrs);
-205
+Looking forward for your response,
 
-If this is a false positive, please let us know so we can mark it as
-such, or teach the Coverity rules to be smarter. If not, please make
-sure fixes get into linux-next. :) For patches fixing this, please
-include these lines (but double-check the "Fixes" first):
+Kind Regards,
+Veronica Paige
+Marketing Coordinator
 
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Addresses-Coverity-ID: 1527152 ("Control flow issues")
-Fixes: 049fe5365324 ("net: txgbe: Add operations to interact with firmware")
 
-Thanks for your attention!
 
--- 
-Coverity-bot
+
+
+
+
