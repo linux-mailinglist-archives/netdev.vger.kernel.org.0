@@ -2,53 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25DE9618E36
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 03:23:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C059618E22
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 03:18:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbiKDCXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 22:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        id S231292AbiKDCSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 22:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiKDCXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 22:23:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E48AD;
-        Thu,  3 Nov 2022 19:23:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3B29B80B03;
-        Fri,  4 Nov 2022 02:23:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC252C433D6;
-        Fri,  4 Nov 2022 02:23:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667528590;
-        bh=sERIijRv5mOrbGOW9mvfJzqTJ1+FOZaz8mhSLFBBd2A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Muj7FGnRW/uE4Y+G0y4jisxp6d22RyfEzb72tuLQb/iU8GYSSDYv/ibtFqF0gSwlG
-         J7hGBVPU/4/CJohlewT4uWrkFaHXrfFWeNwrUsNrdk27u8s/L2DLdRPHmw99lu4ZI6
-         gDx1GwK5Kjev0MOrV1kLCiriEEspKiGYxP+57oH2MmlRuIrjLWvlt73RkGYVHgIa8X
-         wMjLxbC/pLONZDNkux4MiQUxmedf/iBYvHLjeuDOtHIHLWUkv9qmDY4PLXlEQcWg5Q
-         V4EsjmNL6zWmG4n5cdddhbck7TqOUoAPSnyHkKb15FWBq/BaGwXLpTvdPhxx6xW9Pw
-         u19p0Sq4y8vuA==
-Date:   Thu, 3 Nov 2022 19:23:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hawkins Jiawei <yin31149@gmail.com>
-Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
-        jhs@mojatatu.com, jiri@resnulli.us, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Subject: Re: [PATCH] net: sched: fix memory leak in tcindex_set_parms
-Message-ID: <20221103192308.581a9124@kernel.org>
-In-Reply-To: <20221103160659.22581-1-yin31149@gmail.com>
-References: <20221102202604.0d316982@kernel.org>
-        <20221103160659.22581-1-yin31149@gmail.com>
+        with ESMTP id S231144AbiKDCSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 22:18:03 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FE620F
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 19:18:02 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N3PN85wjMzJnSx;
+        Fri,  4 Nov 2022 10:15:04 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 4 Nov
+ 2022 10:18:00 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next] net: remove redundant check in ip_metrics_convert()
+Date:   Fri, 4 Nov 2022 10:25:13 +0800
+Message-ID: <20221104022513.168868-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,30 +45,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Nov 2022 00:07:00 +0800 Hawkins Jiawei wrote:
-> > Can't you localize all the changes to this if block?
-> >
-> > Maybe add a function called tcindex_filter_result_reinit()
-> > which will act more appropriately?  
-> 
-> I think we shouldn't put the tcf_exts_destroy(&old_e)
-> into this if block, or other RCU readers may derefer the
-> freed memory (Please correct me If I am wrong).
-> 
-> So I put the tcf_exts_destroy(&old_e) near the tcindex 
-> destroy work, after the RCU updateing.
+Now ip_metrics_convert() is only called by ip_fib_metrics_init(). Before
+ip_fib_metrics_init() invokes ip_metrics_convert(), it checks whether
+input parameter fc_mx is NULL. Therefore, ip_metrics_convert() doesn't
+need to check fc_mx.
 
-I'm not sure what this code is trying to do, to be honest.
-Your concern that there may be a concurrent reader is valid,
-but then again tcindex_filter_result_init() just wipes the
-entire structure with a memset() so concurrent readers are
-already likely broken?
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/ipv4/metrics.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Maybe tcindex_filter_result_init() dates back to times when
-exts were a list (see commit 22dc13c837c) and calling 
-tcf_exts_init() wasn't that different than cleaning it up?
-In other words this code is trying to destroy old_r, not
-reinitialize it?
+diff --git a/net/ipv4/metrics.c b/net/ipv4/metrics.c
+index 25ea6ac44db9..7fcfdfd8f9de 100644
+--- a/net/ipv4/metrics.c
++++ b/net/ipv4/metrics.c
+@@ -14,9 +14,6 @@ static int ip_metrics_convert(struct net *net, struct nlattr *fc_mx,
+ 	struct nlattr *nla;
+ 	int remaining;
+ 
+-	if (!fc_mx)
+-		return 0;
+-
+ 	nla_for_each_attr(nla, fc_mx, fc_mx_len, remaining) {
+ 		int type = nla_type(nla);
+ 		u32 val;
+-- 
+2.17.1
 
-> >  
-> > >               err = tcindex_filter_result_init(old_r, cp, net);
