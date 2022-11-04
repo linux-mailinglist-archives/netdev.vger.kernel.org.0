@@ -2,310 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF7661A078
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 20:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCE161A082
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 20:06:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229516AbiKDTB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 15:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        id S229668AbiKDTGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 15:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiKDTBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 15:01:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8E82E9D3;
-        Fri,  4 Nov 2022 12:01:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B2FD622FF;
-        Fri,  4 Nov 2022 19:01:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29759C433C1;
-        Fri,  4 Nov 2022 19:01:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667588507;
-        bh=kvUXqvw0zqo2xck7gjriXlfUuW1WN4zUjRtyPKD5WKk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hk2MJFLGCH6lA8cRwTKcmCf4kQI46K+UER57mxC23sO5twlHQdVRTSan2uCuP7d1X
-         5/O3JTFV6wrsM9Glr0K1NXzFcRV+bzPzrM6MbQnHRhCIRugxKDLEv4s0NdDVWdHqWy
-         XDHPC8hOV+KcsUiwggjp5Xd7xWC7LcvDA/aaq9gUb1hsSwwc6AMbAREd0QAOzd0hbh
-         pIvdkTSIJs8uxR7O2ueYhhV2FTPDLz99Q6aradJ8z+C/dRNUBrwpglR68ltKtptg8p
-         5p7saHW/kzdfM5EEOd1a+PwPd7EpUP2sFAwHulPeJ34epbkeAKBOHjskBmKn7h7uoJ
-         qhJ1/wq19Bm2Q==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andrew Lunn <andrew@lunn.ch>, corbet@lwn.net,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        huangguangbin2@huawei.com, chenhao288@hisilicon.com,
-        moshet@nvidia.com, linux@rempel-privat.de,
-        linux-doc@vger.kernel.org
-Subject: [PATCH net-next v5] ethtool: linkstate: add a statistic for PHY down events
-Date:   Fri,  4 Nov 2022 12:01:25 -0700
-Message-Id: <20221104190125.684910-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229636AbiKDTGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 15:06:35 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3151543AF9
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 12:06:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667588794; x=1699124794;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=uAc+xb4EqPLwQ2Lx1339sGccPanHF+EiSdjoCGn62eo=;
+  b=fL888xZbwk49G2QcCdRwU+dhKiChGyB293kU4PC6BsIOwZSHB7IvLYHn
+   Eg+ybjsgFq2zHqJY23TtHIn1FNcHNexi4hzxEtulq1SlCKYGfpMbOZTBH
+   1XbW8NvYd2KlKC4OFxtMavzIP1LZBh5GaDp8T8LgPpC4qDEo94LndLQiu
+   05VjOXOc9thlkhAtHzK6m7gVzyFcAnnwQJR03tFL8O97sEaVyCE9QIJVD
+   eVK5AjL6a62BYJhl9WBnWPwBqMXgxI+eaakV4IF8Yj7zqzAxkcft0XNgN
+   QtSSNnKnCJ5+ufW7P2xcONUxpIi40Ff4xkGDtGmn+7BtAMWBrRZXoMGls
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="290436865"
+X-IronPort-AV: E=Sophos;i="5.96,138,1665471600"; 
+   d="scan'208";a="290436865"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 12:06:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="760430476"
+X-IronPort-AV: E=Sophos;i="5.96,138,1665471600"; 
+   d="scan'208";a="760430476"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga004.jf.intel.com with ESMTP; 04 Nov 2022 12:06:33 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 4 Nov 2022 12:05:49 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 4 Nov 2022 12:05:39 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Fri, 4 Nov 2022 12:05:39 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Fri, 4 Nov 2022 12:04:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CiRLbFrGCnfFO9VfrdrDJ0HUfV+kqQjI4tHw94isRq3UQTMtge5LP2w/LbkIJpMgv+yPyvbzs1k3EE5QGrtcE4gjoO549nAnZ7rz1bmzXSx3riiyUCRU79dSc7zdGRvxVFGOtkQYUukIVC6ce5j8gcDmTfg7EcuWW/+iTkvCqiz3c1nDS/t1HtkhavjC07c2feeLjkcawsTMIc2ntE+Xqht93We0rVXtkYZTQCV50qdHEy2hqr+0SmkVzEoPP/R6lDPd/+gRi7lMNlHHGvbZLxPyr6BkVMi0J4zAKKE3ybOJMUtA7OML7FUSXr4nRHxxaRM82/G5FOU6CaymPC0A/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t2Ht4IJwkhRkxRGCYWV2M+LDP5QCdpY00ctnIZawsJc=;
+ b=DJeqpAFrHBC4/mkP9F0vr2cAU+gcybyv+4KadIfVWU8eS/EuhWgdK3lTTr6uKHzS0UDcpxoy2Y4mfEccXHxt0leBgHFmWJi4nUWegTKADoXXSHM4GtTaFCriiFBlnCZ57rfjPj5XmAsktlrseLeVwNi+/4xPXLGr3CqVwn4Vu7ZSslxzix5yEDWCP5vZ8/37zmpvfj6N0wnJNnes4T5trb3k9a6nllyOidKg3p5ARKbJSSaD3cdCljCI3kNN0ZsHGg0cPD/aQfNAKnI8UwonIEtiG+607lzzuRme83fmkzgz/KSghmdficzmPjizi46MfFygo2ZshBN+yBFHi8k3sg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from IA1PR11MB6266.namprd11.prod.outlook.com (2603:10b6:208:3e6::12)
+ by CY5PR11MB6368.namprd11.prod.outlook.com (2603:10b6:930:38::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Fri, 4 Nov
+ 2022 19:04:45 +0000
+Received: from IA1PR11MB6266.namprd11.prod.outlook.com
+ ([fe80::c669:1d22:cfd3:da07]) by IA1PR11MB6266.namprd11.prod.outlook.com
+ ([fe80::c669:1d22:cfd3:da07%7]) with mapi id 15.20.5791.022; Fri, 4 Nov 2022
+ 19:04:45 +0000
+From:   "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: RE: [PATCH net-next] ethtool: add netlink based get rxfh support
+Thread-Topic: [PATCH net-next] ethtool: add netlink based get rxfh support
+Thread-Index: AQHY78m0wgcJEiaCt0SS8duS6dhOvq4txmAAgAE7EHA=
+Date:   Fri, 4 Nov 2022 19:04:45 +0000
+Message-ID: <IA1PR11MB62668635AB345ADA118BA9BCE43B9@IA1PR11MB6266.namprd11.prod.outlook.com>
+References: <20221103211419.2615321-1-sudheer.mogilappagari@intel.com>
+ <Y2Q/gmS0v8i6SNi4@lunn.ch>
+In-Reply-To: <Y2Q/gmS0v8i6SNi4@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR11MB6266:EE_|CY5PR11MB6368:EE_
+x-ms-office365-filtering-correlation-id: 4b436fef-91a5-4a30-efa0-08dabe976fea
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +fdufYqbfH+Sc1+48W9es1hfht5O5P+mABH4fkaDwrfV2VxR4FAFdBOaEfmeZZI34pYcq0Ge4dGA7KRmrMsU41bAYSvUBu0tbjYpIt/v6Hbw2gQnV7jxA4zPnKQW6XzCmILd/0QbWel0f95PeLSw3swRSi+kdKXZ6yhITrIUEFNUuZkiiBlnl5pcEIqaS7SlHYjDleJrhC+oEvHP4hKRwGWKZ+G6QDb3QklMMEVRFcOVd21hZ9zAUyJHUf67oEHeMboQHX42srklIv1Q/K/ETGpqP0T9UD1FbxuclXtc86EBARdkcvvTMKW3mr6scPvngze/vtb5ULsRar5MUY7WDbln0mNEXqDiKJ6rrtpt1M3oAIrajfkrW0YQ9k5hrPAXIcK14AeXipUUgVVvp4CkJOgU7zQ8UHNRKo/pCM31GoULfT4s1z24ZIrZzj1wPFUPRQ5RWa8KXEBaTikdDEoK2VAHHuApz1hf0ThQN+EMsH3g1px69ltGl2VeZRZZB3wUp/UHDixgtEVUmzmdGikzF0yZkuAmx3cPc1tr2AsfmqQ4MAr/BxGy3MFEl8TfSqF3jRmalxD/aXRUx+8Q+P6+iM3GKVmwKJK27cXyaCqGAKRldbEHadYZz+hjpkui5PDdGeItNtXxhd37xWsL93c5tDri281t133W6AWyefP+EkYTgPa7vQkmGajb8bCsGc7gAp1UqyyeyU3nuq9yxGvsvYUDtEsqm4W44nNBNLwqtCSrFNDOy0BOWIlEgxLNW7JJ/AcLwNEq+LZWGptV2xLAdg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6266.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(366004)(136003)(396003)(39860400002)(346002)(451199015)(9686003)(478600001)(82960400001)(107886003)(26005)(122000001)(6506007)(54906003)(6916009)(64756008)(316002)(7696005)(66946007)(33656002)(66556008)(8676002)(86362001)(4326008)(66446008)(66476007)(38070700005)(8936002)(55016003)(52536014)(71200400001)(41300700001)(5660300002)(83380400001)(38100700002)(76116006)(2906002)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ChF2njnX30NjT9ojL35eLhdl3gRIjR02B6F4ooswUNPIFEwb0kJX2rJot8/u?=
+ =?us-ascii?Q?6HuBGb0etRo+UZ+XVn6vZ7lXr2evqgQrCvNODk9pOX3r5PBBIWc4TAAm24Yc?=
+ =?us-ascii?Q?ClE1Yqhzc5VBGLGxmAUMux2xkO6IzBYTO+8nxHfukUn3rXuDnku92YOksWwE?=
+ =?us-ascii?Q?Ec7SD1SGv7y7NM3FssG4k5AjLfBqrrfwS/aM0k4ixbGkPY29JfIc+QzUzTJs?=
+ =?us-ascii?Q?Yi5SExE4S2D7KbwAriXfrGfeb3OinQkhGpotnJDPxytgGeFZ0ySMws57yV/K?=
+ =?us-ascii?Q?0wZaDEtRkjB9NYX9JICLWSsM71ERysGo94P/o5UH4rCYOrewVcHF/3T000tp?=
+ =?us-ascii?Q?yK2Uz/BzF3JbP//zeS8LQphtlStMAywQJ3ADMUNQ44NyI2TcLXWZntCXNYsj?=
+ =?us-ascii?Q?7NhQnkJrmZjaNx1XvCDpzZ27ZBrKfu25zeYWm7vnaPDPbBk833PNHMqDOJKu?=
+ =?us-ascii?Q?pEHWrQOvpKIZhrAPcFw5HxGD1KCF4+5N8GXH02lVWpXeniGZR3Uu4AwnwyUN?=
+ =?us-ascii?Q?W85HHi76CxDQxJuHvcjwj5Zke7wuu/WcTyyGiOZhtkbbHJJT+BE7N9R787Yt?=
+ =?us-ascii?Q?pBsW+IxUtnTamFLAw1Yby5/7zVcwk2ZFV49JTeSlAlC/XCUUBLdBrzKzrjyd?=
+ =?us-ascii?Q?G95s/glPhrebwOQ76Z1X+VAYD8aYdBKsqq4i+hw/cb/viyJDbrx15+voYYe7?=
+ =?us-ascii?Q?Xcj6uh5WSXyeTWKLijDZ+xCybvkU4Abqf2KFNAIRa49LaKxy2NhP2omQcnUC?=
+ =?us-ascii?Q?BGi1YOi1y5KXq2QskBeUajSSQIH93bwHH+yvqOoEXY7hOKK3Y2EdOXpC0Ahl?=
+ =?us-ascii?Q?fRO8fSr+0IA8ffna3Ul/LtGqrXEfaBBkPqirP8CT0d3nI7AsO7MgY7Ihkr8l?=
+ =?us-ascii?Q?U36YqFiFh1ZFC0MfRBfdN2ZoAoyXswpVd4+w2G9bmQHGMHO6jSRBa/e28KVd?=
+ =?us-ascii?Q?qhHVUIz9vEZjiJaJmo2r0MXF4W6q879kFMTaHcvq4jnkfBh9rwrPUxNfvr7v?=
+ =?us-ascii?Q?RW1+IFqO7vFeF5tu0OIACqDnH8PGGZeZZrEpPar04PSnS+apGrlUI3bjWHkQ?=
+ =?us-ascii?Q?QhvLOUJIxWRWAGBTZURx41zTU2oPSu08f9zdP169AA8xikqYSLVcIAcBVf0C?=
+ =?us-ascii?Q?bL7Q0W0M6GFhUzu97qqVbeoU6k9QyOSx819P+erl9fuJ8RLW+JIrmLUStm8X?=
+ =?us-ascii?Q?pSE/G5WfbvWr1kgg9Jsv6/SBp1CEsnSS+D2ikSPb3PiSoEFa7gre9hmNhNpL?=
+ =?us-ascii?Q?iLsxL49RxLqQ4Cs8Y0j/oMLgVM5CQ4NTPvfqhiyI2pS86wg5QhRw09mbeq4L?=
+ =?us-ascii?Q?vau7e9CUSghbspEmQb48S2Vnclt0hOQo7fdFQ7osJNyRcNhZLjJysXnLgPER?=
+ =?us-ascii?Q?S6gq/AubKOMvpfiKRbIBYae/mIN220ek+ZZx3a8ePunwQyhZqVWWl2dKdexc?=
+ =?us-ascii?Q?JgXaPSvFVcIhmOZxAEXM3t0uf3vvh+B7P40QsMHQ6C9QG9W9NhZsOEVU3Wv9?=
+ =?us-ascii?Q?ZiufFORIbGU+K9dXOivcTIgF5IyML2nVuzZtr1c2QFfdgmDXvWQeXfJ6H7Fu?=
+ =?us-ascii?Q?6Bw/NNascSqXyfilcYUjmFkX4CGZDAcxcRJxRqiXcwLWtEX0/PSk/wxupdaR?=
+ =?us-ascii?Q?aA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6266.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b436fef-91a5-4a30-efa0-08dabe976fea
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2022 19:04:45.3040
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Jnor9kBmY8rSPNLg5QvfLag5zk4VUUQA3yKKZaNxt/s/vHblYKl4qw3mv5okkiUB0iKswq4sCQm8Ytx5OhpvI7mhi5EyLrbCfL9TP9t0bGQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6368
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous attempt to augment carrier_down (see Link)
-was not met with much enthusiasm so let's do the simple
-thing of exposing what some devices already maintain.
-Add a common ethtool statistic for link going down.
-Currently users have to maintain per-driver mapping
-to extract the right stat from the vendor-specific ethtool -S
-stats. carrier_down does not fit the bill because it counts
-a lot of software related false positives.
 
-Add the statistic to the extended link state API to steer
-vendors towards implementing all of it.
 
-Implement for bnxt and all Linux-controlled PHYs. mlx5 and (possibly)
-enic also have a counter for this but I leave the implementation
-to their maintainers.
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Subject: Re: [PATCH net-next] ethtool: add netlink based get rxfh
+> support
+>=20
+> > +static int rxfh_prepare_data(const struct ethnl_req_info *req_base,
+> > +			     struct ethnl_reply_data *reply_base,
+> > +			     struct genl_info *info)
+> > +{
+>=20
+> ...
+>=20
+> > +
+> > +	ret =3D ethnl_ops_begin(dev);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	/* Some drivers don't handle rss_context */
+> > +	if (rxfh->rss_context && !ops->get_rxfh_context)
+> > +		return -EOPNOTSUPP;
+>=20
+> You called ethnl_ops_begin(). Just returning here is going to mess up
+> rumtime power control, and any driver which expects is
+> ethtool_ops->complete() call to be called.
+>=20
+> 	Andrew
 
-Link: https://lore.kernel.org/r/20220520004500.2250674-1-kuba@kernel.org
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
---
-v5:
- - actually add the comment
- - make checkpatch happy and add names to arguments of the op
-v4: https://lore.kernel.org/all/20221102035704.110304-1-kuba@kernel.org/
- - add a comment about the struct remaining as u64
-v3: https://lore.kernel.org/all/20221101052601.162708-1-kuba@kernel.org/
- - make the stat u32 (apart from the ethtool struct which uses u64s
-   for the "not set" detection, whatevs)
-v2: https://lore.kernel.org/all/20221028012719.2702267-1-kuba@kernel.org/
- - add phylib support
----
-CC: corbet@lwn.net
-CC: michael.chan@broadcom.com
-CC: andrew@lunn.ch
-CC: hkallweit1@gmail.com
-CC: linux@armlinux.org.uk
-CC: huangguangbin2@huawei.com
-CC: chenhao288@hisilicon.com
-CC: moshet@nvidia.com
-CC: linux@rempel-privat.de
-CC: f.fainelli@gmail.com
-CC: linux-doc@vger.kernel.org
----
- Documentation/networking/ethtool-netlink.rst  |  1 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 15 ++++++++++++
- drivers/net/phy/phy.c                         |  1 +
- include/linux/ethtool.h                       | 17 +++++++++++++
- include/linux/phy.h                           |  3 +++
- include/uapi/linux/ethtool_netlink.h          |  1 +
- net/ethtool/linkstate.c                       | 24 ++++++++++++++++++-
- 7 files changed, 61 insertions(+), 1 deletion(-)
+Hi Andrew,
+Had used other get implementations as reference (which return early=20
+since _dev_get is not used). However, this patch uses dev_get/put=20
+due to input parameter. Will fix in v2.=20
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index d578b8bcd8a4..bede24ef44fd 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -491,6 +491,7 @@ any attributes.
-   ``ETHTOOL_A_LINKSTATE_SQI_MAX``       u32     Max support SQI value
-   ``ETHTOOL_A_LINKSTATE_EXT_STATE``     u8      link extended state
-   ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``  u8      link extended substate
-+  ``ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT``  u32     count of link down events
-   ====================================  ======  ============================
- 
- For most NIC drivers, the value of ``ETHTOOL_A_LINKSTATE_LINK`` returns
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index cc89e5eabcb9..d8f0351df954 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -4112,6 +4112,20 @@ static void bnxt_get_rmon_stats(struct net_device *dev,
- 	*ranges = bnxt_rmon_ranges;
- }
- 
-+static void bnxt_get_link_ext_stats(struct net_device *dev,
-+				    struct ethtool_link_ext_stats *stats)
-+{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u64 *rx;
-+
-+	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS_EXT))
-+		return;
-+
-+	rx = bp->rx_port_stats_ext.sw_stats;
-+	stats->link_down_events =
-+		*(rx + BNXT_RX_STATS_EXT_OFFSET(link_down_events));
-+}
-+
- void bnxt_ethtool_free(struct bnxt *bp)
- {
- 	kfree(bp->test_info);
-@@ -4161,6 +4175,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
- 	.get_eeprom             = bnxt_get_eeprom,
- 	.set_eeprom		= bnxt_set_eeprom,
- 	.get_link		= bnxt_get_link,
-+	.get_link_ext_stats	= bnxt_get_link_ext_stats,
- 	.get_eee		= bnxt_get_eee,
- 	.set_eee		= bnxt_set_eee,
- 	.get_module_info	= bnxt_get_module_info,
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index e741d8aebffe..e5b6cb1a77f9 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -67,6 +67,7 @@ static void phy_link_down(struct phy_device *phydev)
- {
- 	phydev->phy_link_change(phydev, false);
- 	phy_led_trigger_change_speed(phydev);
-+	WRITE_ONCE(phydev->link_down_events, phydev->link_down_events + 1);
- }
- 
- static const char *phy_pause_str(struct phy_device *phydev)
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 99dc7bfbcd3c..5c51c7fda32a 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -125,6 +125,20 @@ struct ethtool_link_ext_state_info {
- 	};
- };
- 
-+struct ethtool_link_ext_stats {
-+	/* Custom Linux statistic for PHY level link down events.
-+	 * In a simpler world it should be equal to netdev->carrier_down_count
-+	 * unfortunately netdev also counts local reconfigurations which don't
-+	 * actually take the physical link down, not to mention NC-SI which,
-+	 * if present, keeps the link up regardless of host state.
-+	 * This statistic counts when PHY _actually_ went down, or lost link.
-+	 *
-+	 * Note that we need u64 for ethtool_stats_init() and comparisons
-+	 * to ETHTOOL_STAT_NOT_SET, but only u32 is exposed to the user.
-+	 */
-+	u64 link_down_events;
-+};
-+
- /**
-  * ethtool_rxfh_indir_default - get default value for RX flow hash indirection
-  * @index: Index in RX flow hash indirection table
-@@ -481,6 +495,7 @@ struct ethtool_module_power_mode_params {
-  *	do not attach ext_substate attribute to netlink message). If link_ext_state
-  *	and link_ext_substate are unknown, return -ENODATA. If not implemented,
-  *	link_ext_state and link_ext_substate will not be sent to userspace.
-+ * @get_link_ext_stats: Read extra link-related counters.
-  * @get_eeprom_len: Read range of EEPROM addresses for validation of
-  *	@get_eeprom and @set_eeprom requests.
-  *	Returns 0 if device does not support EEPROM access.
-@@ -652,6 +667,8 @@ struct ethtool_ops {
- 	u32	(*get_link)(struct net_device *);
- 	int	(*get_link_ext_state)(struct net_device *,
- 				      struct ethtool_link_ext_state_info *);
-+	void	(*get_link_ext_stats)(struct net_device *dev,
-+				      struct ethtool_link_ext_stats *stats);
- 	int	(*get_eeprom_len)(struct net_device *);
- 	int	(*get_eeprom)(struct net_device *,
- 			      struct ethtool_eeprom *, u8 *);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index ddf66198f751..9a3752c0c444 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -600,6 +600,7 @@ struct macsec_ops;
-  * @psec: Pointer to Power Sourcing Equipment control struct
-  * @lock:  Mutex for serialization access to PHY
-  * @state_queue: Work queue for state machine
-+ * @link_down_events: Number of times link was lost
-  * @shared: Pointer to private data shared by phys in one package
-  * @priv: Pointer to driver private data
-  *
-@@ -723,6 +724,8 @@ struct phy_device {
- 
- 	int pma_extable;
- 
-+	unsigned int link_down_events;
-+
- 	void (*phy_link_change)(struct phy_device *phydev, bool up);
- 	void (*adjust_link)(struct net_device *dev);
- 
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index bb57084ac524..aaf7c6963d61 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -262,6 +262,7 @@ enum {
- 	ETHTOOL_A_LINKSTATE_SQI_MAX,		/* u32 */
- 	ETHTOOL_A_LINKSTATE_EXT_STATE,		/* u8 */
- 	ETHTOOL_A_LINKSTATE_EXT_SUBSTATE,	/* u8 */
-+	ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT,	/* u32 */
- 
- 	/* add new constants above here */
- 	__ETHTOOL_A_LINKSTATE_CNT,
-diff --git a/net/ethtool/linkstate.c b/net/ethtool/linkstate.c
-index fb676f349455..2158c17a0b32 100644
---- a/net/ethtool/linkstate.c
-+++ b/net/ethtool/linkstate.c
-@@ -13,6 +13,7 @@ struct linkstate_reply_data {
- 	int					link;
- 	int					sqi;
- 	int					sqi_max;
-+	struct ethtool_link_ext_stats		link_stats;
- 	bool					link_ext_state_provided;
- 	struct ethtool_link_ext_state_info	ethtool_link_ext_state_info;
- };
-@@ -22,7 +23,7 @@ struct linkstate_reply_data {
- 
- const struct nla_policy ethnl_linkstate_get_policy[] = {
- 	[ETHTOOL_A_LINKSTATE_HEADER]		=
--		NLA_POLICY_NESTED(ethnl_header_policy),
-+		NLA_POLICY_NESTED(ethnl_header_policy_stats),
- };
- 
- static int linkstate_get_sqi(struct net_device *dev)
-@@ -107,6 +108,19 @@ static int linkstate_prepare_data(const struct ethnl_req_info *req_base,
- 			goto out;
- 	}
- 
-+	ethtool_stats_init((u64 *)&data->link_stats,
-+			   sizeof(data->link_stats) / 8);
-+
-+	if (req_base->flags & ETHTOOL_FLAG_STATS) {
-+		if (dev->phydev)
-+			data->link_stats.link_down_events =
-+				READ_ONCE(dev->phydev->link_down_events);
-+
-+		if (dev->ethtool_ops->get_link_ext_stats)
-+			dev->ethtool_ops->get_link_ext_stats(dev,
-+							     &data->link_stats);
-+	}
-+
- 	ret = 0;
- out:
- 	ethnl_ops_complete(dev);
-@@ -134,6 +148,9 @@ static int linkstate_reply_size(const struct ethnl_req_info *req_base,
- 	if (data->ethtool_link_ext_state_info.__link_ext_substate)
- 		len += nla_total_size(sizeof(u8)); /* LINKSTATE_EXT_SUBSTATE */
- 
-+	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
-+		len += nla_total_size(sizeof(u32));
-+
- 	return len;
- }
- 
-@@ -166,6 +183,11 @@ static int linkstate_fill_reply(struct sk_buff *skb,
- 			return -EMSGSIZE;
- 	}
- 
-+	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
-+		if (nla_put_u32(skb, ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT,
-+				data->link_stats.link_down_events))
-+			return -EMSGSIZE;
-+
- 	return 0;
- }
- 
--- 
-2.38.1
+Got a question wrt rtnl_lock usage. I see lock is acquired for SET
+operations and not for GET operations. Is rtnl_lock needed in this
+case due to slightly different flow than rest of GET ops?
 
+I apologize regarding lkp error. Had fixed the issue but sent out
+old patch by mistake.
+
+Thanks,
+Sudheer   =20
