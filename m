@@ -2,182 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C5D618FF6
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 06:22:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E2D861905C
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 06:49:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbiKDFW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 01:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
+        id S231316AbiKDFsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 01:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbiKDFWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 01:22:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40C220BED
-        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 22:22:51 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oqpA8-0005ZX-3a; Fri, 04 Nov 2022 06:22:40 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oqpA3-0003A0-Tk; Fri, 04 Nov 2022 06:22:35 +0100
-Date:   Fri, 4 Nov 2022 06:22:35 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     linux@rempel-privat.de,
-        syzbot <syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, glider@google.com,
-        kernel@pengutronix.de, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, pabeni@redhat.com, robin@protonic.nl,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KMSAN: uninit-value in can_send
-Message-ID: <20221104052235.GA6474@pengutronix.de>
-References: <000000000000cf2ce705ec935d80@google.com>
- <cc1a0240-2b51-0d97-3606-02e29d0346c1@hartkopp.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <cc1a0240-2b51-0d97-3606-02e29d0346c1@hartkopp.net>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,GB_FAKE_RF_SHORT,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231150AbiKDFsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 01:48:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FBA28E11;
+        Thu,  3 Nov 2022 22:48:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 460CCB82BFA;
+        Fri,  4 Nov 2022 05:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4911C433D6;
+        Fri,  4 Nov 2022 05:48:45 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.96)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1oqpZo-0070xm-08;
+        Fri, 04 Nov 2022 01:49:12 -0400
+Message-ID: <20221104054053.431922658@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Fri, 04 Nov 2022 01:40:53 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>, rcu@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-edac@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-pm@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-bluetooth@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
+        linux-input@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-leds@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-ext4@vger.kernel.org, linux-nilfs@vger.kernel.org,
+        bridge@lists.linux-foundation.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, lvs-devel@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
+Subject: [RFC][PATCH v3 00/33] timers: Use timer_shutdown*() before freeing timers
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oliver,
 
-On Thu, Nov 03, 2022 at 10:21:15PM +0100, Oliver Hartkopp wrote:
-> Good catch!
-> 
-> That's a correct issue caused by only filling the CAN frame header with
-> can_id and len in j1939_send_one():
-> 
-> https://elixir.bootlin.com/linux/v6.0.6/source/net/can/j1939/main.c#L345
-> 
-> @Oleksij: Can you please (zero)initialize the unused elements in struct
-> can_frame (namely __pad, __res0, len8_dlc) in j1939_send_one()?
-> 
-> Or do you want me to create a patch for it?
+Back in April, I posted an RFC patch set to help mitigate a common issue
+where a timer gets armed just before it is freed, and when the timer
+goes off, it crashes in the timer code without any evidence of who the
+culprit was. I got side tracked and never finished up on that patch set.
+Since this type of crash is still our #1 crash we are seeing in the field,
+it has become a priority again to finish it.
 
-I'll not be able to make it today. I'll be glad if you could do it 
+This is v3 of that patch set. Thomas Gleixner posted an untested version
+that makes timer->function NULL as the flag that it is shutdown. I took that
+code, tested it (fixed it up), added more comments, and changed the
+name to timer_shutdown_sync(). I also converted it to use WARN_ON_ONCE()
+instead of just WARN_ON() as Linus asked for.
 
-Thanks and best regards,
-Oleksij
+I then created a trivial coccinelle script to find where del_timer*()
+is called before being freed, and converted them all to timer_shutdown*()
+(There was a couple that still used del_timer() instead of del_timer_sync()).
 
-> 
-> On 03.11.22 17:22, syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following issue on:
-> > 
-> > HEAD commit:    4a3e741a3d6a x86: fortify: kmsan: fix KMSAN fortify builds
-> > git tree:       https://github.com/google/kmsan.git master
-> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=14247636880000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c19210a0c25eebb
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=d168ec0caca4697e03b1
-> > compiler:       clang version 15.0.0 (https://github.com/llvm/llvm-project.git 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e16e86880000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1535a2f6880000
-> > 
-> > Downloadable assets:
-> > disk image: https://storage.googleapis.com/syzbot-assets/fbb1997bc1e0/disk-4a3e741a.raw.xz
-> > vmlinux: https://storage.googleapis.com/syzbot-assets/d5dd2e1efaa4/vmlinux-4a3e741a.xz
-> > 
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com
-> > 
-> > =====================================================
-> > BUG: KMSAN: uninit-value in can_is_canxl_skb include/linux/can/skb.h:128 [inline]
-> > BUG: KMSAN: uninit-value in can_send+0x269/0x1100 net/can/af_can.c:205
-> >   can_is_canxl_skb include/linux/can/skb.h:128 [inline]
-> >   can_send+0x269/0x1100 net/can/af_can.c:205
-> >   j1939_send_one+0x40f/0x4d0 net/can/j1939/main.c:352
-> >   j1939_xtp_do_tx_ctl+0x69f/0x9e0 net/can/j1939/transport.c:664
-> >   j1939_tp_tx_ctl net/can/j1939/transport.c:672 [inline]
-> >   j1939_session_tx_rts net/can/j1939/transport.c:740 [inline]
-> >   j1939_xtp_txnext_transmiter net/can/j1939/transport.c:880 [inline]
-> >   j1939_tp_txtimer+0x35bb/0x4520 net/can/j1939/transport.c:1158
-> >   __run_hrtimer+0x298/0x910 kernel/time/hrtimer.c:1685
-> >   __hrtimer_run_queues kernel/time/hrtimer.c:1749 [inline]
-> >   hrtimer_run_softirq+0x4b0/0x870 kernel/time/hrtimer.c:1766
-> >   __do_softirq+0x1c5/0x7b9 kernel/softirq.c:571
-> >   invoke_softirq+0x8f/0x100 kernel/softirq.c:445
-> >   __irq_exit_rcu+0x5a/0x110 kernel/softirq.c:650
-> >   irq_exit_rcu+0xe/0x10 kernel/softirq.c:662
-> >   sysvec_apic_timer_interrupt+0x9a/0xc0 arch/x86/kernel/apic/apic.c:1107
-> >   asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
-> >   __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
-> >   _raw_spin_unlock_irqrestore+0x2f/0x50 kernel/locking/spinlock.c:194
-> >   unlock_hrtimer_base kernel/time/hrtimer.c:1017 [inline]
-> >   hrtimer_start_range_ns+0xaba/0xb50 kernel/time/hrtimer.c:1301
-> >   hrtimer_start include/linux/hrtimer.h:418 [inline]
-> >   j1939_tp_schedule_txtimer+0xbe/0x100 net/can/j1939/transport.c:697
-> >   j1939_sk_send_loop net/can/j1939/socket.c:1143 [inline]
-> >   j1939_sk_sendmsg+0x1c2c/0x25d0 net/can/j1939/socket.c:1256
-> >   sock_sendmsg_nosec net/socket.c:714 [inline]
-> >   sock_sendmsg net/socket.c:734 [inline]
-> >   ____sys_sendmsg+0xa8e/0xe70 net/socket.c:2482
-> >   ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2536
-> >   __sys_sendmsg net/socket.c:2565 [inline]
-> >   __do_sys_sendmsg net/socket.c:2574 [inline]
-> >   __se_sys_sendmsg net/socket.c:2572 [inline]
-> >   __x64_sys_sendmsg+0x367/0x540 net/socket.c:2572
-> >   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >   do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
-> >   entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > 
-> > Uninit was created at:
-> >   slab_post_alloc_hook mm/slab.h:742 [inline]
-> >   slab_alloc_node mm/slub.c:3398 [inline]
-> >   __kmem_cache_alloc_node+0x6ee/0xc90 mm/slub.c:3437
-> >   __do_kmalloc_node mm/slab_common.c:954 [inline]
-> >   __kmalloc_node_track_caller+0x117/0x3d0 mm/slab_common.c:975
-> >   kmalloc_reserve net/core/skbuff.c:437 [inline]
-> >   __alloc_skb+0x34a/0xca0 net/core/skbuff.c:509
-> >   alloc_skb include/linux/skbuff.h:1267 [inline]
-> >   j1939_tp_tx_dat_new net/can/j1939/transport.c:593 [inline]
-> >   j1939_xtp_do_tx_ctl+0xa3/0x9e0 net/can/j1939/transport.c:654
-> >   j1939_tp_tx_ctl net/can/j1939/transport.c:672 [inline]
-> >   j1939_session_tx_rts net/can/j1939/transport.c:740 [inline]
-> >   j1939_xtp_txnext_transmiter net/can/j1939/transport.c:880 [inline]
-> >   j1939_tp_txtimer+0x35bb/0x4520 net/can/j1939/transport.c:1158
-> >   __run_hrtimer+0x298/0x910 kernel/time/hrtimer.c:1685
-> >   __hrtimer_run_queues kernel/time/hrtimer.c:1749 [inline]
-> >   hrtimer_run_softirq+0x4b0/0x870 kernel/time/hrtimer.c:1766
-> >   __do_softirq+0x1c5/0x7b9 kernel/softirq.c:571
-> > 
-> > CPU: 0 PID: 3506 Comm: syz-executor289 Not tainted 6.1.0-rc2-syzkaller-61955-g4a3e741a3d6a #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
-> > =====================================================
-> > 
-> > 
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> > 
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > syzbot can test patches for this issue, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
-> 
+I also updated DEBUG_OBJECTS_TIMERS to check from where the timer is ever
+armed, to calling of timer_shutdown_sync(), and it will trigger if a timer
+is freed in between. The current way is to only check if the timer is armed,
+but that means it only triggers if the race condition is hit, and with
+experience, it's not run on enough machines to catch all of them. By triggering
+it from the time the timer is armed to the time it is shutdown, it catches
+all potential cases even if the race condition is not hit.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+I went though the result of the cocinelle script, and updated the locations.
+Some locations were caught by DEBUG_OBJECTS_TIMERS as the coccinelle script
+only checked for timers being freed in the same function as the del_timer*().
+
+Ideally, I would have the first patch go into this rc cycle, which is mostly
+non functional as it will allow the other patches to come in via the respective
+subsystems in the next merge window.
+
+Changes since v2: https://lore.kernel.org/all/20221027150525.753064657@goodmis.org/
+
+ - Talking with Thomas Gleixner, he wanted a better name space and to remove
+   the "del_" portion of the API.
+
+ - Since there's now a shutdown interface that does not synchronize, to keep
+   it closer to del_timer() and del_timer_sync(), the API is now:
+
+    timer_shutdown() - same as del_timer() but deactivates the timer.
+
+    timer_shutdown_sync() - same as del_timer_sync() but deactivates the timer.
+
+ - Added a few more locations that got converted.
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+trace/timers
+
+Head SHA1: 25106f0bb7968b3e8c746a7853f44b51840746c3
+
+
+Steven Rostedt (Google) (33):
+      timers: Add timer_shutdown_sync() and timer_shutdown() to be called before freeing timers
+      timers: s390/cmm: Use timer_shutdown_sync() before freeing timer
+      timers: sh: Use timer_shutdown_sync() before freeing timer
+      timers: block: Use timer_shutdown_sync() before freeing timer
+      timers: ACPI: Use timer_shutdown_sync() before freeing timer
+      timers: atm: Use timer_shutdown_sync() before freeing timer
+      timers: PM: Use timer_shutdown_sync()
+      timers: Bluetooth: Use timer_shutdown_sync() before freeing timer
+      timers: hangcheck: Use timer_shutdown_sync() before freeing timer
+      timers: ipmi: Use timer_shutdown_sync() before freeing timer
+      random: use timer_shutdown_sync() before freeing timer
+      timers: dma-buf: Use timer_shutdown_sync() before freeing timer
+      timers: drm: Use timer_shutdown_sync() before freeing timer
+      timers: HID: Use timer_shutdown_sync() before freeing timer
+      timers: Input: Use timer_shutdown_sync() before freeing timer
+      timers: mISDN: Use timer_shutdown_sync() before freeing timer
+      timers: leds: Use timer_shutdown_sync() before freeing timer
+      timers: media: Use timer_shutdown_sync() before freeing timer
+      timers: net: Use timer_shutdown_sync() before freeing timer
+      timers: usb: Use timer_shutdown_sync() before freeing timer
+      timers: cgroup: Use timer_shutdown_sync() before freeing timer
+      timers: workqueue: Use timer_shutdown_sync() before freeing timer
+      timers: nfc: pn533: Use timer_shutdown_sync() before freeing timer
+      timers: pcmcia: Use timer_shutdown_sync() before freeing timer
+      timers: scsi: Use timer_shutdown_sync() and timer_shutdown() before freeing timer
+      timers: tty: Use timer_shutdown_sync() before freeing timer
+      timers: ext4: Use timer_shutdown_sync() before freeing timer
+      timers: fs/nilfs2: Use timer_shutdown_sync() before freeing timer
+      timers: ALSA: Use timer_shutdown_sync() before freeing timer
+      timers: jbd2: Use timer_shutdown() before freeing timer
+      timers: sched/psi: Use timer_shutdown_sync() before freeing timer
+      timers: x86/mce: Use __init_timer() for resetting timers
+      timers: Expand DEBUG_OBJECTS_TIMER to check if it ever was used
+
+----
+ .../RCU/Design/Requirements/Requirements.rst       |   2 +-
+ Documentation/core-api/local_ops.rst               |   2 +-
+ Documentation/kernel-hacking/locking.rst           |   5 +
+ arch/s390/mm/cmm.c                                 |   4 +-
+ arch/sh/drivers/push-switch.c                      |   2 +-
+ arch/x86/kernel/cpu/mce/core.c                     |  14 ++-
+ block/blk-iocost.c                                 |   2 +-
+ block/blk-iolatency.c                              |   2 +-
+ block/blk-stat.c                                   |   2 +-
+ block/blk-throttle.c                               |   2 +-
+ block/kyber-iosched.c                              |   2 +-
+ drivers/acpi/apei/ghes.c                           |   2 +-
+ drivers/atm/idt77105.c                             |   4 +-
+ drivers/atm/idt77252.c                             |   4 +-
+ drivers/atm/iphase.c                               |   2 +-
+ drivers/base/power/wakeup.c                        |   7 +-
+ drivers/block/drbd/drbd_main.c                     |   2 +-
+ drivers/block/loop.c                               |   2 +-
+ drivers/block/sunvdc.c                             |   2 +-
+ drivers/bluetooth/hci_bcsp.c                       |   2 +-
+ drivers/bluetooth/hci_h5.c                         |   2 +-
+ drivers/bluetooth/hci_qca.c                        |   4 +-
+ drivers/char/hangcheck-timer.c                     |   4 +-
+ drivers/char/ipmi/ipmi_msghandler.c                |   2 +-
+ drivers/char/ipmi/ipmi_ssif.c                      |   4 +-
+ drivers/char/random.c                              |   2 +-
+ drivers/dma-buf/st-dma-fence.c                     |   2 +-
+ drivers/gpu/drm/gud/gud_pipe.c                     |   2 +-
+ drivers/gpu/drm/i915/i915_sw_fence.c               |   2 +-
+ drivers/hid/hid-wiimote-core.c                     |   2 +-
+ drivers/input/keyboard/locomokbd.c                 |   2 +-
+ drivers/input/keyboard/omap-keypad.c               |   2 +-
+ drivers/input/mouse/alps.c                         |   2 +-
+ drivers/input/serio/hil_mlc.c                      |   2 +-
+ drivers/input/serio/hp_sdc.c                       |   2 +-
+ drivers/isdn/hardware/mISDN/hfcmulti.c             |   6 +-
+ drivers/isdn/mISDN/l1oip_core.c                    |   4 +-
+ drivers/isdn/mISDN/timerdev.c                      |   4 +-
+ drivers/leds/trigger/ledtrig-activity.c            |   2 +-
+ drivers/leds/trigger/ledtrig-heartbeat.c           |   2 +-
+ drivers/leds/trigger/ledtrig-pattern.c             |   2 +-
+ drivers/leds/trigger/ledtrig-transient.c           |   2 +-
+ drivers/media/pci/ivtv/ivtv-driver.c               |   2 +-
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c            |  18 ++--
+ drivers/media/usb/s2255/s2255drv.c                 |   4 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   6 +-
+ drivers/net/ethernet/marvell/sky2.c                |   2 +-
+ drivers/net/ethernet/sun/sunvnet.c                 |   2 +-
+ drivers/net/usb/sierra_net.c                       |   2 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c   |   2 +-
+ drivers/net/wireless/intersil/hostap/hostap_ap.c   |   2 +-
+ drivers/net/wireless/marvell/mwifiex/main.c        |   2 +-
+ drivers/net/wireless/microchip/wilc1000/hif.c      |   8 +-
+ drivers/nfc/pn533/pn533.c                          |   2 +-
+ drivers/nfc/pn533/uart.c                           |   2 +-
+ drivers/pcmcia/bcm63xx_pcmcia.c                    |   2 +-
+ drivers/pcmcia/electra_cf.c                        |   2 +-
+ drivers/pcmcia/omap_cf.c                           |   2 +-
+ drivers/pcmcia/pd6729.c                            |   4 +-
+ drivers/pcmcia/yenta_socket.c                      |   4 +-
+ drivers/scsi/qla2xxx/qla_edif.c                    |   4 +-
+ drivers/scsi/scsi_lib.c                            |   1 +
+ drivers/staging/media/atomisp/i2c/atomisp-lm3554.c |   2 +-
+ drivers/tty/n_gsm.c                                |   2 +-
+ drivers/tty/sysrq.c                                |   2 +-
+ drivers/usb/gadget/udc/m66592-udc.c                |   2 +-
+ drivers/usb/serial/garmin_gps.c                    |   2 +-
+ drivers/usb/serial/mos7840.c                       |   2 +-
+ fs/ext4/super.c                                    |   2 +-
+ fs/jbd2/journal.c                                  |   2 +
+ fs/nilfs2/segment.c                                |   2 +-
+ include/linux/timer.h                              | 100 +++++++++++++++++--
+ include/linux/workqueue.h                          |   4 +-
+ kernel/cgroup/cgroup.c                             |   2 +-
+ kernel/sched/psi.c                                 |   1 +
+ kernel/time/timer.c                                | 106 ++++++++++++++-------
+ kernel/workqueue.c                                 |   4 +-
+ net/802/garp.c                                     |   2 +-
+ net/802/mrp.c                                      |   2 +-
+ net/bridge/br_multicast.c                          |   6 +-
+ net/bridge/br_multicast_eht.c                      |   4 +-
+ net/core/gen_estimator.c                           |   2 +-
+ net/core/neighbour.c                               |   2 +
+ net/ipv4/inet_connection_sock.c                    |   2 +-
+ net/ipv4/inet_timewait_sock.c                      |   3 +-
+ net/ipv4/ipmr.c                                    |   2 +-
+ net/ipv6/ip6mr.c                                   |   2 +-
+ net/mac80211/mesh_pathtbl.c                        |   2 +-
+ net/netfilter/ipset/ip_set_list_set.c              |   2 +-
+ net/netfilter/ipvs/ip_vs_lblc.c                    |   2 +-
+ net/netfilter/ipvs/ip_vs_lblcr.c                   |   2 +-
+ net/netfilter/xt_LED.c                             |   2 +-
+ net/rxrpc/conn_object.c                            |   2 +-
+ net/sched/cls_flow.c                               |   2 +-
+ net/sunrpc/svc.c                                   |   2 +-
+ net/sunrpc/xprt.c                                  |   2 +-
+ net/tipc/discover.c                                |   2 +-
+ net/tipc/monitor.c                                 |   2 +-
+ sound/i2c/other/ak4117.c                           |   2 +-
+ sound/synth/emux/emux.c                            |   2 +-
+ 100 files changed, 310 insertions(+), 175 deletions(-)
