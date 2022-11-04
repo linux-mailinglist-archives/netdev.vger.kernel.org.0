@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01BBC619F07
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:42:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD17D619F0D
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 18:42:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiKDRmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 13:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49456 "EHLO
+        id S231889AbiKDRm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 13:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbiKDRmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:42:10 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D1925C57;
-        Fri,  4 Nov 2022 10:42:08 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BBEB5FF809;
-        Fri,  4 Nov 2022 17:42:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1667583725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=83QGcbtcOeqlJkeeAX4hkjo8iH3nECZWbrV/g+zKq+c=;
-        b=YvEx1oBfbfOOoA8FkhZ2uTxqrIQ+5eEIbZBVT4ZB7FXG+t4OnVcj98GCa1wmoh91tD0qcu
-        5SkyybqQY62m+7Ih+OFxMV0YsxMo/yzSxWSgI4pD7WFPaWzp/JErascxg6ySzNwAb1JcAG
-        Lwb0NL6+R44WXPMnrtkUTp/PNIAht5GabCL1cY/iMI1tOzaS68pQBVExw/qx4h0RBLewe3
-        /qLosNcMe/qldHPgSA+ZGSqOtkZu97TvsjBhIYLQWNTIR92OF85UmaOkhqNAceFngaZ2Z3
-        t/ABcILWcJSt/wYGQuOsvqF6iv+gnrPuN62hP/mLwvVm69Y9dccVXMCbOvuYGg==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S231721AbiKDRmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 13:42:46 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A3E4730E;
+        Fri,  4 Nov 2022 10:42:18 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id bk15so8000572wrb.13;
+        Fri, 04 Nov 2022 10:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=jKlyHrBk6uetU/GVQyEI1FfJUyJLjj13qeWJVqCWCUM=;
+        b=kedX8sosCJ5qsYkfX3RaW9LaKcF//hxYQInYXGNpWqO+5gsqpmT64lPNUv0xUdJIY3
+         Q2RbyK/Rbo04l1uKRr4b+OkpAOTZ5kovkoUqbKuX5DSASMlCmUNAuR7+pwLOvJNza/SH
+         hcqMjHo556IB+A7NiMKAok+UuBQoL1huUHEYassvFbCkfP8Mj6JrZ6LBtQINnWFM7vEw
+         hEJmN11WswX4vj4Mqgdr5SmSPIXmN8WaqMYsNFq1SeYf8mQ2i9BHBOa0v1acn9NrnvpF
+         CaD1NoUwa2bhNWy7AVrUDMoMeeLOS2we01NFiwuLoz53bvWiqValEp5IohI5jP5TJGT9
+         qTew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jKlyHrBk6uetU/GVQyEI1FfJUyJLjj13qeWJVqCWCUM=;
+        b=fkmtis8D2its74OyyCpjs+payPkTFAovx2Alzsk5+0XDCIMbETMUq+Qj04x4V5Zk/R
+         VLb2TtloFT1OExt4RunqEznnsbsKird27trIgLJtdOhUpIhDIEmPu4FBQfRakz7vfBRr
+         Wm59w64ccGpxZs7SETB387caW9elQQ1gDvypQFrc3IanKzJOLfsjGLdjxJP8PP8FjU+F
+         QsXHVvyFlI/364xfqSwxY8yDoJtBDmlxa8SszYRt0tLgbgRG/1sAGsvdsVJ7v3f9uSp1
+         gJAGeFpLYnSbZ7ZCcmPqOWMPVZdjst3xwJJYl7Kn1rfLC1F9HFKjKW8ytRGVCLJtkL+J
+         1gcQ==
+X-Gm-Message-State: ACrzQf14tQ5H5Ihe9CUJIzQJUD/Okvhk3dXFs8WFIuv5v+ya/Q5rvJ3o
+        QzBTl2DKNZFSCwfAc1IoB2U=
+X-Google-Smtp-Source: AMsMyM7jgtxsu+d5K0f8IK2VIuL73JmgFxHBkTy+pp6UiMCYdBAw9LwXNcPCOMZowPc9kYkoBSElSA==
+X-Received: by 2002:adf:e804:0:b0:236:657e:756e with SMTP id o4-20020adfe804000000b00236657e756emr23723114wrm.452.1667583736992;
+        Fri, 04 Nov 2022 10:42:16 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id b3-20020a05600c150300b003c6c1686b10sm3232113wmg.7.2022.11.04.10.42.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 10:42:16 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Jes Sorensen <jes@trained-monkey.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH net-next v8 5/5] ARM: dts: qcom: ipq4019: Add description for the IPQESS Ethernet controller
-Date:   Fri,  4 Nov 2022 18:41:51 +0100
-Message-Id: <20221104174151.439008-6-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
-References: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-acenic@sunsite.dk,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ethernet: alteon: remove unused variable len
+Date:   Fri,  4 Nov 2022 17:42:15 +0000
+Message-Id: <20221104174215.242539-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,98 +73,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Qualcomm IPQ4019 includes an internal 5 ports switch, which is
-connected to the CPU through the internal IPQESS Ethernet controller.
+Variable len is being used to accumulate the skb_frag_size but it
+is never used afterwards. The variable is redundant and can be
+removed.
 
-Add support for this internal interface, which is internally connected to a
-modified version of the QCA8K Ethernet switch.
-
-This Ethernet controller only support a specific internal interface mode
-for connection to the switch.
-
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
+ drivers/net/ethernet/alteon/acenic.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-V7->V8:
- - Added fixed-link
- - Removed ethernet0 alias
-V6->V7:
- - No Changes
-V5->V6:
- - Removed extra blank lines
- - Put the status property last
-V4->V5:
- - Reword the commit log
-V3->V4:
- - No Changes
-V2->V3:
- - No Changes
-V1->V2:
- - Added clock and resets
-
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 48 +++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index b23591110bd2..c681b13aa3d9 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -591,6 +591,54 @@ wifi1: wifi@a800000 {
- 			status = "disabled";
- 		};
+diff --git a/drivers/net/ethernet/alteon/acenic.c b/drivers/net/ethernet/alteon/acenic.c
+index d7762da8b2c0..eafef84fe3be 100644
+--- a/drivers/net/ethernet/alteon/acenic.c
++++ b/drivers/net/ethernet/alteon/acenic.c
+@@ -2435,7 +2435,7 @@ static netdev_tx_t ace_start_xmit(struct sk_buff *skb,
+ 	} else {
+ 		dma_addr_t mapping;
+ 		u32 vlan_tag = 0;
+-		int i, len = 0;
++		int i;
  
-+		gmac: ethernet@c080000 {
-+			compatible = "qcom,ipq4019-ess-edma";
-+			reg = <0xc080000 0x8000>;
-+			resets = <&gcc ESS_RESET>;
-+			reset-names = "ess";
-+			clocks = <&gcc GCC_ESS_CLK>;
-+			clock-names = "ess";
-+			interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
-+			phy-mode = "internal";
-+			status = "disabled";
-+			fixed-link {
-+				speed = <1000>;
-+				full-duplex;
-+				pause;
-+			};
-+		};
-+
- 		mdio: mdio@90000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+ 		mapping = ace_map_tx_skb(ap, skb, NULL, idx);
+ 		flagsize = (skb_headlen(skb) << 16);
+@@ -2454,7 +2454,6 @@ static netdev_tx_t ace_start_xmit(struct sk_buff *skb,
+ 			const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+ 			struct tx_ring_info *info;
+ 
+-			len += skb_frag_size(frag);
+ 			info = ap->skb->tx_skbuff + idx;
+ 			desc = ap->tx_ring + idx;
+ 
 -- 
-2.37.3
+2.38.1
 
