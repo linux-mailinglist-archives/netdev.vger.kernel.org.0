@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4251618F49
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 04:54:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C083618F4B
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 04:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiKDDyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Nov 2022 23:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
+        id S229992AbiKDDy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Nov 2022 23:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiKDDyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 23:54:00 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6884918E15;
-        Thu,  3 Nov 2022 20:53:59 -0700 (PDT)
-Date:   Fri, 4 Nov 2022 11:53:53 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1667534037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8nB/E03kl7uOrvaquUmBlRn6qOLu+r8pqOVk2ws5Fok=;
-        b=K3vS7a+/YCFhKzg5rIoVLcu42SrLfKYm91sdVGcIX9raOj3LZt8CVE+w8BQzYdOYb+AjaD
-        fP+BkVEwz4Z440qs43RgBvQbIcF6baudaYhIKmNK/sZFt4UJ57koN8sx+hvAgAiQpdvuru
-        IOkMBHIW9dpU8mKpxJt908Fr/umqghs=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Peter Chen <peter.chen@kernel.org>,
-        Bin Chen <bin.chen@corigine.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/2] net: hinic: Convert the cmd code from
- decimal to hex to be more readable
-Message-ID: <20221104035353.GA10583@chq-T47>
-References: <20221101060358.7837-1-cai.huoqing@linux.dev>
- <20221102203640.1bda5d74@kernel.org>
+        with ESMTP id S229812AbiKDDy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Nov 2022 23:54:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669361901F;
+        Thu,  3 Nov 2022 20:54:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17EA2B82B60;
+        Fri,  4 Nov 2022 03:54:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD4EC433D6;
+        Fri,  4 Nov 2022 03:54:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667534093;
+        bh=cgk8bAGCXjLTHkp04F3M3kpC5CeHKGy0POfMeBP5xJE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=V2zukL0zGIOtipmrzaVTryTfLf58o0EAuhaxZJYTtQWPX4uhkBRX/9Vf0iiPk4wab
+         x7Obgs+Zp51C6rNXa5OKw5rT7n4EW8WB+j2SjoTtnRizDkCEVQ0XiisoKzUscXomch
+         +vPoqRORXxgYsW/e1ozjbbnZUGLW1PVuFFeuQozvkWpKyqDC63FV+M/Ay1D2L+SR7v
+         SYxHcVFIjJy77cALMlVsdQ+tQOMisf+AJ9YZy24NirLLIRRSrYND5OLDDNYZEBpMN+
+         OipiOeV6c1EGzy0go6hMdAF/nlHr2kZiB5wNBj2YR5PO1J2nTPPEaj8nsdGYHbBqWj
+         I4UBRul/bvk5w==
+Date:   Thu, 3 Nov 2022 20:54:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ratheesh Kannoth <rkannoth@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <sgoutham@marvell.com>
+Subject: Re: [net PATCH] octeontx2-pf: Fix SQE threshold checking
+Message-ID: <20221103205452.6d58cbf9@kernel.org>
+In-Reply-To: <20221102033240.1923677-1-rkannoth@marvell.com>
+References: <20221102033240.1923677-1-rkannoth@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221102203640.1bda5d74@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02 11月 22 20:36:40, Jakub Kicinski wrote:
-> On Tue,  1 Nov 2022 14:03:38 +0800 Cai Huoqing wrote:
-> > The print cmd code is in hex, so using hex cmd code intead of
-> > decimal is easy to check the value with print info.
-> 
-> You're still removing empty lines making this patch much harder 
-> to review. Once again - it should be a pure conversion to dec -> hex.
-> Don't make any other changes.
-Hi, Jakub 
+On Wed, 2 Nov 2022 09:02:40 +0530 Ratheesh Kannoth wrote:
+> @@ -1599,7 +1600,6 @@ int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable)
+>  	req->bpid_per_chan = 0;
+>  #endif
+>  
+> -
+>  	return otx2_sync_mbox_msg(&pfvf->mbox);
+>  }
+>  EXPORT_SYMBOL(otx2_nix_config_bp);
 
-I fix it, and resend v4
-https://lore.kernel.org/lkml/20221103080525.26885-1-cai.huoqing@linux.dev/
-
-Thanks,
-Cai
+The patch looks good but we can't have spurious cleanups in fixes,
+please repost without this chunk.
