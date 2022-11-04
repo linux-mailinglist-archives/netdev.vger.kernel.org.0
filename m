@@ -2,51 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7984761970C
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 14:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37CE4619716
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 14:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231733AbiKDNF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 09:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S231564AbiKDNJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 09:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbiKDNFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 09:05:50 -0400
+        with ESMTP id S231545AbiKDNJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 09:09:10 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66612E9F9
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 06:05:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3BB764B
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 06:09:06 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oqwOF-000878-8X
-        for netdev@vger.kernel.org; Fri, 04 Nov 2022 14:05:43 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 6B4E4112F24
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 13:05:42 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        id 1oqwRQ-0000Io-48; Fri, 04 Nov 2022 14:09:00 +0100
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 0E0D6112F06;
-        Fri,  4 Nov 2022 13:05:40 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 86e97196;
-        Fri, 4 Nov 2022 13:05:36 +0000 (UTC)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5E89F112F56;
+        Fri,  4 Nov 2022 13:08:58 +0000 (UTC)
+Date:   Fri, 4 Nov 2022 14:08:57 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Biju Das <biju.das.jz@bp.renesas.com>, stable@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 5/5] can: rcar_canfd: Add missing ECC error checks for channels 2-7
-Date:   Fri,  4 Nov 2022 14:05:35 +0100
-Message-Id: <20221104130535.732382-6-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221104130535.732382-1-mkl@pengutronix.de>
-References: <20221104130535.732382-1-mkl@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH net-next 0/14] pull-request: can-next 2022-10-31
+Message-ID: <20221104130857.amzwa2mzmwhbljmk@pengutronix.de>
+References: <20221031154406.259857-1-mkl@pengutronix.de>
+ <20221031202714.1eada551@kernel.org>
+ <Y2CpRfuto8wFrXX+@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="fk2qhj5vkx72nsjx"
+Content-Disposition: inline
+In-Reply-To: <Y2CpRfuto8wFrXX+@kroah.com>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -60,65 +55,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-When introducing support for R-Car V3U, which has 8 instead of 2
-channels, the ECC error bitmask was extended to take into account the
-extra channels, but rcar_canfd_global_error() was not updated to act
-upon the extra bits.
+--fk2qhj5vkx72nsjx
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Replace the RCANFD_GERFL_EEF[01] macros by a new macro that takes the
-channel number, fixing R-Car V3U while simplifying the code.
+On 01.11.2022 06:06:13, Greg Kroah-Hartman wrote:
+> On Mon, Oct 31, 2022 at 08:27:14PM -0700, Jakub Kicinski wrote:
+> > On Mon, 31 Oct 2022 16:43:52 +0100 Marc Kleine-Budde wrote:
+> > > The first 7 patches are by Stephane Grosjean and Lukas Magel and
+> > > target the peak_usb driver. Support for flashing a user defined device
+> > > ID via the ethtool flash interface is added. A read only sysfs
+> >=20
+> > nit: ethtool eeprom set !=3D ethtool flash
+> >=20
+> > > attribute for that value is added to distinguish between devices via
+> > > udev.
+> >=20
+> > So the user can write an arbitrary u32 value into flash which then
+> > persistently pops up in sysfs across reboots (as a custom attribute
+> > called "user_devid")?
+> >=20
+> > I don't know.. the whole thing strikes me as odd. Greg do you have any
+> > feelings about such.. solutions?
+> >=20
+> > patches 5 and 6 here:
+> > https://lore.kernel.org/all/20221031154406.259857-1-mkl@pengutronix.de/
+>=20
+> Device-specific attributes should be in the device-specific directory,
+> not burried in a class directory somewhere that is generic like this one
+> is.
+>
+> Why isn't this an attribute of the usb device instead?
 
-Fixes: 45721c406dcf50d4 ("can: rcar_canfd: Add support for r8a779a0 SoC")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/all/4edb2ea46cc64d0532a08a924179827481e14b4f.1666951503.git.geert+renesas@glider.be
-Cc: stable@vger.kernel.org
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/rcar/rcar_canfd.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+What about:
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index d530e986f7fa..b306cf554634 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -81,8 +81,7 @@ enum rcanfd_chip_id {
- 
- /* RSCFDnCFDGERFL / RSCFDnGERFL */
- #define RCANFD_GERFL_EEF0_7		GENMASK(23, 16)
--#define RCANFD_GERFL_EEF1		BIT(17)
--#define RCANFD_GERFL_EEF0		BIT(16)
-+#define RCANFD_GERFL_EEF(ch)		BIT(16 + (ch))
- #define RCANFD_GERFL_CMPOF		BIT(3)	/* CAN FD only */
- #define RCANFD_GERFL_THLES		BIT(2)
- #define RCANFD_GERFL_MES		BIT(1)
-@@ -90,7 +89,7 @@ enum rcanfd_chip_id {
- 
- #define RCANFD_GERFL_ERR(gpriv, x) \
- 	((x) & (reg_v3u(gpriv, RCANFD_GERFL_EEF0_7, \
--			RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1) | \
-+			RCANFD_GERFL_EEF(0) | RCANFD_GERFL_EEF(1)) | \
- 		RCANFD_GERFL_MES | \
- 		((gpriv)->fdmode ? RCANFD_GERFL_CMPOF : 0)))
- 
-@@ -936,12 +935,8 @@ static void rcar_canfd_global_error(struct net_device *ndev)
- 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
- 
- 	gerfl = rcar_canfd_read(priv->base, RCANFD_GERFL);
--	if ((gerfl & RCANFD_GERFL_EEF0) && (ch == 0)) {
--		netdev_dbg(ndev, "Ch0: ECC Error flag\n");
--		stats->tx_dropped++;
--	}
--	if ((gerfl & RCANFD_GERFL_EEF1) && (ch == 1)) {
--		netdev_dbg(ndev, "Ch1: ECC Error flag\n");
-+	if (gerfl & RCANFD_GERFL_EEF(ch)) {
-+		netdev_dbg(ndev, "Ch%u: ECC Error flag\n", ch);
- 		stats->tx_dropped++;
- 	}
- 	if (gerfl & RCANFD_GERFL_MES) {
--- 
-2.35.1
+| /sys/devices/pci0000:00/0000:00:13.0/usb1/1-1/1-1:1.0/device_id
 
+> And there's no need to reorder the .h file includes in patch 06 while
+> you are adding a sysfs entry, that should be a separate commit, right?
 
+ACK
+
+> Also, the line:
+>=20
+> +	.attrs	=3D (struct attribute **)peak_usb_sysfs_attrs,
+>=20
+> Is odd, there should never be a need to cast anything like this if you
+> are doing things properly.
+
+After marking the struct attribute not as const, we can remove the cast:
+
+| --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+| +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+| @@ -64,14 +64,14 @@ static ssize_t user_devid_show(struct device *dev, st=
+ruct device_attribute *attr
+|  }
+|  static DEVICE_ATTR_RO(user_devid);
+| =20
+| -static const struct attribute *peak_usb_sysfs_attrs[] =3D {
+| +static struct attribute *peak_usb_sysfs_attrs[] =3D {
+|         &dev_attr_user_devid.attr,
+|         NULL,
+|  };
+| =20
+|  static const struct attribute_group peak_usb_sysfs_group =3D {
+|         .name   =3D "peak_usb",
+| -       .attrs  =3D (struct attribute **)peak_usb_sysfs_attrs,
+| +       .attrs  =3D peak_usb_sysfs_attrs,
+|  };
+| =20
+|  /*
+
+But this code is obsolete, if we move the sysfs entry into the USB
+device.
+
+> So this still needs work, sorry.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--fk2qhj5vkx72nsjx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNlDucACgkQrX5LkNig
+011PgQgAp0mgwOKFanZDebpnwjPwKyWmpaqX4Ulkp3TpScC8eXoyx95ZG5kOZUr2
+4fEBvWK+ueMfo5Xl8a2G8LpZ47CnEMcumX1pf5Gvl5IWz5JF7LocH9PZdmgppcMb
+gav4U5r3jrgTRgSGChTZyQ5KIbZhK98h3N1TDGJeAEjs0W1gNOBzTVF2gBguEbuw
+zK5d0OojEcXhejwO0bArj3QUXALHNcmDEj4tF2lgkPudhgSns/9kRwuV9SgRGveA
+GggKqvGklV9TUx2j1pBckl0jsogN30shZkZ1Evisev5RetAay51NxCIrUV03YZX4
+wgjaZA/0yfE34oS3cQJwfMPmFX2GQA==
+=fRxp
+-----END PGP SIGNATURE-----
+
+--fk2qhj5vkx72nsjx--
