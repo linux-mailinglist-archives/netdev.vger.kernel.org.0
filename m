@@ -2,161 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F98C6199EC
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:30:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CED9A619A0C
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiKDOaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 10:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S231768AbiKDOeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 10:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232269AbiKDO3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:29:51 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC605317E6;
-        Fri,  4 Nov 2022 07:28:07 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3B0CF240008;
-        Fri,  4 Nov 2022 14:28:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1667572086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N4H9heDGWlyybibpeQVan2sHfk653swA/LCvVtdBxVE=;
-        b=RE2XDDxBtp/NvYYadbfvp1yz/fdy6gDteYOCHBLfJTzvrE32UNrHWXUfHlHdldaL73R2LR
-        vZnRBog4uesBXX1U3YCMgMr6Hj/g3bWSePWao1ZVtDdEolO9+6Spg2kGwyQmFZL8C67tIh
-        HZZVdYr1kimNBN6FpzwjCwiw+r9vlVZcVCaccCQHXMlbO33SZIgNEzkeOc4W0EOKZNZ2cW
-        HkTi6R2S8Z1mgexJ48Ou5tNjH50A567qkYf4vtTT5Rg/7D8dmvar2DaTVmcfBhxJVus2cj
-        5RaJomUAkDnfIEfdUUl5pMXMBuWAiN50JIfld1TGsYcX1vhed2E97Y888bHuJg==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH net-next v7 5/5] ARM: dts: qcom: ipq4019: Add description for the IPQESS Ethernet controller
-Date:   Fri,  4 Nov 2022 15:27:46 +0100
-Message-Id: <20221104142746.350468-6-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221104142746.350468-1-maxime.chevallier@bootlin.com>
-References: <20221104142746.350468-1-maxime.chevallier@bootlin.com>
+        with ESMTP id S231826AbiKDOdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:33:21 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194FB4AF2E;
+        Fri,  4 Nov 2022 07:31:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1667572097;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=1iIpXFsuyPQINneA2wCr5wWDQHSoRuYe4hV6XN+OD6A=;
+    b=pllalSucjoTv1gml5YxbETpWUUKScNTvvb8Jwt1hcUcwguIQDW5HcTDKVJfMO4bujL
+    URyPHBWQb+aWL3FG+D+Wx3Krhwp88tSFqLXgJTD1WVMBbxPFKZVsFe3Vdfl+v/JrNNYU
+    srLA+mIQg/sVZPVwgXE7eAm8Nu96JLNoSx8kehnhQMqaXjevNCZGL0yRJsQyh5rriXGB
+    eS132vH7l12Cvvl+g/oP7XPBVwfdYZGv7YjjuVm4SrfskheM31ToJ7t9BLtqGw9lFc4Z
+    +VFY9Iv4jSRrCrQ/fxme3yadboO579VIKEHLC7wKyD35eXB5l4v3xniig/mocFNyXnH5
+    wm9A==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytISr6hZqJAw=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfd:d104::923]
+    by smtp.strato.de (RZmta 48.2.1 AUTH)
+    with ESMTPSA id Dde783yA4ESHQrC
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 4 Nov 2022 15:28:17 +0100 (CET)
+Message-ID: <f8a22e38-a7e9-0643-d6a6-6c5901dee7b4@hartkopp.net>
+Date:   Fri, 4 Nov 2022 15:28:11 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH] can: isotp: fix tx state handling for echo tx processing
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        Wei Chen <harperchen1110@gmail.com>, stable@vger.kernel.org
+References: <20221101212902.10702-1-socketcan@hartkopp.net>
+ <20221104121059.kbhrpwbumuc6q3iv@pengutronix.de>
+Content-Language: en-US
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20221104121059.kbhrpwbumuc6q3iv@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Qualcomm IPQ4019 includes an internal 5 ports switch, which is
-connected to the CPU through the internal IPQESS Ethernet controller.
+Hi Marc,
 
-Add support for this internal interface, which is internally connected to a
-modified version of the QCA8K Ethernet switch.
+On 04.11.22 13:10, Marc Kleine-Budde wrote:
+> On 01.11.2022 22:29:02, Oliver Hartkopp wrote:
+>> In commit 4b7fe92c0690 ("can: isotp: add local echo tx processing for
+>> consecutive frames") the data flow for consecutive frames (CF) has been
+>> reworked to improve the reliability of long data transfers.
+>>
+>> This rework did not touch the transmission and the tx state changes of
+>> single frame (SF) transfers which likely led to the WARN in the
+>> isotp_tx_timer_handler() catching a wrong tx state. This patch makes use
+>> of the improved frame processing for SF frames and sets the ISOTP_SENDING
+>> state in isotp_sendmsg() within the cmpxchg() condition handling.
+>>
+>> A review of the state machine and the timer handling additionally revealed
+>> a missing echo timeout handling in the case of the burst mode in
+>> isotp_rcv_echo() and removes a potential timer configuration uncertainty
+>> in isotp_rcv_fc() when the receiver requests consecutive frames.
+>>
+>> Fixes: 4b7fe92c0690 ("can: isotp: add local echo tx processing for consecutive frames")
+>> Link: https://lore.kernel.org/linux-can/CAO4mrfe3dG7cMP1V5FLUkw7s+50c9vichigUMQwsxX4M=45QEw@mail.gmail.com/T/#u
+>> Reported-by: Wei Chen <harperchen1110@gmail.com>
+>> Cc: stable@vger.kernel.org # v6.0
+>> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> 
+> [...]
+> 
+>> @@ -905,10 +915,11 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+>>   		so->tx.state = ISOTP_IDLE;
+>>   		wake_up_interruptible(&so->wait);
+>>   		break;
+>>   
+>>   	default:
+>> +		pr_notice_once("can-isotp: tx timer state %X\n", so->tx.state);
+>>   		WARN_ON_ONCE(1);
+> 
+> Can you use WARN_ONCE() instead of pr_notice_once() + WARN_ON_ONCE() here?
+> 
 
-This Ethernet controller only support a specific internal interface mode
-for connection to the switch.
+Yes. That was a good idea! V2 is sent.
 
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-V6->V7:
- - No Changes
-V5->V6:
- - Removed extra blank lines
- - Put the status property last
-V4->V5:
- - Reword the commit log
-V3->V4:
- - No Changes
-V2->V3:
- - No Changes
-V1->V2:
- - Added clock and resets
+It also allowed me to print another relevant variable.
 
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 44 +++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index b23591110bd2..5fa1af147df9 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -38,6 +38,7 @@ aliases {
- 		spi1 = &blsp1_spi2;
- 		i2c0 = &blsp1_i2c3;
- 		i2c1 = &blsp1_i2c4;
-+		ethernet0 = &gmac;
- 	};
- 
- 	cpus {
-@@ -591,6 +592,49 @@ wifi1: wifi@a800000 {
- 			status = "disabled";
- 		};
- 
-+		gmac: ethernet@c080000 {
-+			compatible = "qcom,ipq4019-ess-edma";
-+			reg = <0xc080000 0x8000>;
-+			resets = <&gcc ESS_RESET>;
-+			reset-names = "ess";
-+			clocks = <&gcc GCC_ESS_CLK>;
-+			clock-names = "ess";
-+			interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
-+			phy-mode = "internal";
-+			status = "disabled";
-+		};
-+
- 		mdio: mdio@90000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-2.37.3
-
+Thanks,
+Oliver
