@@ -2,102 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A650D619068
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 06:49:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A89D61909B
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 07:03:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231571AbiKDFtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 01:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        id S229805AbiKDGDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 02:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231343AbiKDFsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 01:48:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E50E27B2A;
-        Thu,  3 Nov 2022 22:48:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD41F620D3;
-        Fri,  4 Nov 2022 05:48:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9491C4314D;
-        Fri,  4 Nov 2022 05:48:49 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.96)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1oqpZs-0071Ai-0q;
-        Fri, 04 Nov 2022 01:49:16 -0400
-Message-ID: <20221104054916.096085393@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Fri, 04 Nov 2022 01:41:16 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengfeng Ye <cyeaa@connect.ust.hk>, Lin Ma <linma@zju.edu.cn>,
-        Duoming Zhou <duoming@zju.edu.cn>, netdev@vger.kernel.org
-Subject: [RFC][PATCH v3 23/33] timers: nfc: pn533: Use timer_shutdown_sync() before freeing timer
-References: <20221104054053.431922658@goodmis.org>
+        with ESMTP id S229563AbiKDGDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 02:03:12 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3237CC6
+        for <netdev@vger.kernel.org>; Thu,  3 Nov 2022 23:03:11 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id p21so3986247plr.7
+        for <netdev@vger.kernel.org>; Thu, 03 Nov 2022 23:03:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ny14B6KlAe56RF9kWIk6DLDgrchIrYGi8bnqimW6jNE=;
+        b=WKD+m9Ui3aSvrITuTnmo9GmAmWwgR2N9XBdnz8qho3kqZsKmtHhiNoK60wzHy0Foln
+         Q6e3woyi1S/zE2zh4ubE+AfWgTjqSljZXvoMi9tW7fvfjDjVtJGgnqSnP3XY0gVJhgYY
+         ZRWYjUcK5cPJXSIsFqlXWx5X4M4w43diEkoPtZ37Xjb+OLXIbOP8Wewe3tmqlz4G+xpV
+         wnyXfU3e1l53VZxPLP46UfTwfzmPiM14vk0wmRYPYnvmXlSaogpTdJn5U0cZmGPmTkPL
+         gBJoCRE1yW1eImbBivPRfVcwkKWlGHegybRiOpPOdGQK+PtX4iiC1XWPQ2F8b/xVGjMN
+         zHAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ny14B6KlAe56RF9kWIk6DLDgrchIrYGi8bnqimW6jNE=;
+        b=RaF3FTkCMyHKuRuE0L2kEMAL1pCasS/A3HEZosRg+yTv9BBcGdP8cNVWjkDjKCQJ0S
+         WmPogXsdN3Ruc0o4BfzK+LW1ymwO2FQnuwoTUPtl9KGjbojV1kImkECal30w+0hUBASe
+         vj2q/HlJ5x3x6F19baMGu6SW6t1waFa/5t3aott7yfFns9+Iox+2CfpBERXtand+xk/1
+         WI8TshX9eSC4oE5NIACCYafKtzk94Rk2nW/0wyK0w2a5R80KRX8lDbGOeKzlJn6w7qha
+         SYckapr2JpOirHSd2SuCamN74FGoK9cXOfeAyT+TxnDz0jdp0I3kuu9bo62AfGu3RraF
+         WRlA==
+X-Gm-Message-State: ACrzQf3qRvIVN4H3H5GFioMFZr/ifoYay5xni69Ft0SIBUbnll0v9zJ+
+        awXyuhc3ign9sJrXu6qicM9YPg==
+X-Google-Smtp-Source: AMsMyM4gxgvR0YXa+wNLREj3kBlJSR2N3mfUaU1dcmn+RNqQBB8qbDaOae0cq300NfOmTfUyaYk98w==
+X-Received: by 2002:a17:902:ce0f:b0:187:640:42f with SMTP id k15-20020a170902ce0f00b001870640042fmr32613868plg.115.1667541791209;
+        Thu, 03 Nov 2022 23:03:11 -0700 (PDT)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id f15-20020a170902684f00b00186bc66d2cbsm1727180pln.73.2022.11.03.23.03.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Nov 2022 23:03:10 -0700 (PDT)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     davem@davemloft.net, andrew@lunn.ch, kuba@kernel.org,
+        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, andy.chiu@sifive.com,
+        greentime.hu@sifive.com
+Subject: [PATCH v3 net-next 0/3] net: axienet: Use a DT property to configure frequency of the MDIO bus
+Date:   Fri,  4 Nov 2022 14:03:02 +0800
+Message-Id: <20221104060305.1025215-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Some FPGA platforms have to set frequency of the MDIO bus lower than 2.5
+MHz. Thus, we use a DT property, which is "clock-frequency", to work
+with it at boot time. The default 2.5 MHz would be set if the property
+is not pressent. Also, factor out mdio enable/disable functions due to
+the api change since 253761a0e61b7.
 
-Before a timer is freed, timer_shutdown_sync() must be called.
+Changelog:
+--- v3 ---
+1. Fix coding style, and make probing of the driver fail if MDC overflow
+--- v2 ---
+1. Use clock-frequency, as defined in mdio.yaml, to configure MDIO
+   clock.
+2. Only print out frequency if it is set to a non-standard value.
+3. Reduce the scope of axienet_mdio_enable and remove
+   axienet_mdio_disable because no one really uses it anymore.
 
-Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home/
+Andy Chiu (3):
+  net: axienet: Unexport and remove unused mdio functions
+  net: axienet: set mdio clock according to bus-frequency
+  dt-bindings: describe the support of "clock-frequency" in mdio
 
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Chengfeng Ye <cyeaa@connect.ust.hk>
-Cc: Lin Ma <linma@zju.edu.cn>
-Cc: Duoming Zhou <duoming@zju.edu.cn>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- drivers/nfc/pn533/pn533.c | 2 +-
- drivers/nfc/pn533/uart.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/net/xilinx_axienet.txt           |  2 +
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  2 -
+ .../net/ethernet/xilinx/xilinx_axienet_mdio.c | 57 +++++++++++--------
+ 3 files changed, 34 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index d9f6367b9993..0a1d0b4e3bb8 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2788,7 +2788,7 @@ void pn53x_common_clean(struct pn533 *priv)
- 	struct pn533_cmd *cmd, *n;
- 
- 	/* delete the timer before cleanup the worker */
--	del_timer_sync(&priv->listen_timer);
-+	timer_shutdown_sync(&priv->listen_timer);
- 
- 	flush_delayed_work(&priv->poll_work);
- 	destroy_workqueue(priv->wq);
-diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
-index 07596bf5f7d6..a556acdb947b 100644
---- a/drivers/nfc/pn533/uart.c
-+++ b/drivers/nfc/pn533/uart.c
-@@ -310,7 +310,7 @@ static void pn532_uart_remove(struct serdev_device *serdev)
- 	pn53x_unregister_nfc(pn532->priv);
- 	serdev_device_close(serdev);
- 	pn53x_common_clean(pn532->priv);
--	del_timer_sync(&pn532->cmd_timeout);
-+	timer_shutdown_sync(&pn532->cmd_timeout);
- 	kfree_skb(pn532->recv_skb);
- 	kfree(pn532);
- }
 -- 
-2.35.1
+2.36.0
+
