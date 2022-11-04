@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4DB619705
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 14:05:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1ABE619708
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 14:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231700AbiKDNFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 09:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
+        id S231722AbiKDNF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 09:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbiKDNFq (ORCPT
+        with ESMTP id S231567AbiKDNFq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 09:05:46 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9197D2E6A3
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 06:05:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9F62E9E1
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 06:05:43 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oqwOD-00081r-0e
-        for netdev@vger.kernel.org; Fri, 04 Nov 2022 14:05:41 +0100
+        id 1oqwOE-00084i-AA
+        for netdev@vger.kernel.org; Fri, 04 Nov 2022 14:05:42 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4CEED112F0A
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 13:05:40 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 76F68112F1A
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 13:05:41 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 46DC1112EF0;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id C42B8112EF6;
         Fri,  4 Nov 2022 13:05:38 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a40011fb;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b71e46cc;
         Fri, 4 Nov 2022 13:05:36 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Zhengchao Shao <shaozhengchao@huawei.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 2/5] can: af_can: fix NULL pointer dereference in can_rx_register()
-Date:   Fri,  4 Nov 2022 14:05:32 +0100
-Message-Id: <20221104130535.732382-3-mkl@pengutronix.de>
+        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com,
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net 3/5] can: j1939: j1939_send_one(): fix missing CAN header initialization
+Date:   Fri,  4 Nov 2022 14:05:33 +0100
+Message-Id: <20221104130535.732382-4-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221104130535.732382-1-mkl@pengutronix.de>
 References: <20221104130535.732382-1-mkl@pengutronix.de>
@@ -58,59 +60,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-It causes NULL pointer dereference when testing as following:
-(a) use syscall(__NR_socket, 0x10ul, 3ul, 0) to create netlink socket.
-(b) use syscall(__NR_sendmsg, ...) to create bond link device and vxcan
-    link device, and bind vxcan device to bond device (can also use
-    ifenslave command to bind vxcan device to bond device).
-(c) use syscall(__NR_socket, 0x1dul, 3ul, 1) to create CAN socket.
-(d) use syscall(__NR_bind, ...) to bind the bond device to CAN socket.
+The read access to struct canxl_frame::len inside of a j1939 created
+skbuff revealed a missing initialization of reserved and later filled
+elements in struct can_frame.
 
-The bond device invokes the can-raw protocol registration interface to
-receive CAN packets. However, ml_priv is not allocated to the dev,
-dev_rcv_lists is assigned to NULL in can_rx_register(). In this case,
-it will occur the NULL pointer dereference issue.
+This patch initializes the 8 byte CAN header with zero.
 
-The following is the stack information:
-BUG: kernel NULL pointer dereference, address: 0000000000000008
-PGD 122a4067 P4D 122a4067 PUD 1223c067 PMD 0
-Oops: 0000 [#1] PREEMPT SMP
-RIP: 0010:can_rx_register+0x12d/0x1e0
-Call Trace:
-<TASK>
-raw_enable_filters+0x8d/0x120
-raw_enable_allfilters+0x3b/0x130
-raw_bind+0x118/0x4f0
-__sys_bind+0x163/0x1a0
-__x64_sys_bind+0x1e/0x30
-do_syscall_64+0x35/0x80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
-</TASK>
-
-Fixes: 4e096a18867a ("net: introduce CAN specific pointer in the struct net_device")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Reviewed-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/all/20221028085650.170470-1-shaozhengchao@huawei.com
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/linux-can/20221104052235.GA6474@pengutronix.de
+Reported-by: syzbot+d168ec0caca4697e03b1@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Link: https://lore.kernel.org/all/20221104075000.105414-1-socketcan@hartkopp.net
+Cc: stable@vger.kernel.org
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/af_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/can/j1939/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 5e9e3e1e9825..27dcdcc0b808 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -450,7 +450,7 @@ int can_rx_register(struct net *net, struct net_device *dev, canid_t can_id,
+diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
+index 144c86b0e3ff..821d4ff303b3 100644
+--- a/net/can/j1939/main.c
++++ b/net/can/j1939/main.c
+@@ -336,6 +336,9 @@ int j1939_send_one(struct j1939_priv *priv, struct sk_buff *skb)
+ 	/* re-claim the CAN_HDR from the SKB */
+ 	cf = skb_push(skb, J1939_CAN_HDR);
  
- 	/* insert new receiver  (dev,canid,mask) -> (func,data) */
++	/* initialize header structure */
++	memset(cf, 0, J1939_CAN_HDR);
++
+ 	/* make it a full can frame again */
+ 	skb_put(skb, J1939_CAN_FTR + (8 - dlc));
  
--	if (dev && dev->type != ARPHRD_CAN)
-+	if (dev && (dev->type != ARPHRD_CAN || !can_get_ml_priv(dev)))
- 		return -ENODEV;
- 
- 	if (dev && !net_eq(net, dev_net(dev)))
 -- 
 2.35.1
 
