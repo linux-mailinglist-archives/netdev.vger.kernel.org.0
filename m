@@ -2,117 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2534E619D32
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 17:27:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B5C7619D34
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 17:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiKDQ10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 12:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53690 "EHLO
+        id S231475AbiKDQ1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 12:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230165AbiKDQ1X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 12:27:23 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3684205DA
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 09:27:22 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id w14so7764270wru.8
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 09:27:22 -0700 (PDT)
+        with ESMTP id S231536AbiKDQ1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 12:27:44 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F70E205DA
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 09:27:42 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id fz10so3344627qtb.3
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 09:27:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lU5/XEKeEYTgyjlFy5jQKXE6sh1CHCZXxKWhDyd9wVo=;
-        b=fgzu6MAfeHRhUzrucU8YesBtIheIVBMu0VNr0KIsxCqRBtqdoZFgxV3X7IAFHFx493
-         5FGfBwFl+m8gWwF8QiR3ua0PPnUsvbexQJXV9x3mvfhmFYmlEjVZ6bSouDU42tzEMpul
-         5lSXTLnggEhHBZQtMArbjL0DkWzKJXF0LtkI7f2ZjRXZnBP7kvUT9l7PA47m9DTXhad8
-         Mc9dZf0dwcS+YIiTLf3TKW16EPxvwEIUHahyxh0ENVdlrj8FeKAyZie7AXfu11+i0D3R
-         Y4bhOIa+06qpVu+TfKIep1qQsb+RU1lQUxhNrBcIwEa+UG1LIsz18REhuAqWgEeqwUb1
-         KaXQ==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lprgkkX+6FlZjo5KuogGNYXzzrUmE1gOIKUIAETT9J8=;
+        b=QLl15efq1MCw1csm9O1OoxmlB4EODNRxKiKhEBu9QyYUzqeZ4UZ24UYJcaOOP4xQHe
+         zF1VhXq0sVNWmY8v/UtdSz1b7SLsROpUZ3cdrX7YIkAZZ78Ehr29d7qeyhsFiCPuncZb
+         ryrfa0P3RtgZmyjLz/T3GcTuDLg9aBQHDK87Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lU5/XEKeEYTgyjlFy5jQKXE6sh1CHCZXxKWhDyd9wVo=;
-        b=m+Y0VQcHV3/WBEJUuW/yOfBwq8hG1fZ314QJDAyBs3NqqaSDg+MmnJShwE77cJ9GBX
-         c13IoTRCCoo1rdVytY6+TSWNikVrOS23dB+vl5Bey9Oh9sfzbcVslrfh4aPCqjunrfPn
-         /w7DBjKK+aYtcm7uNEAAyeBRwUB7CSWHmmXx4tfQssuchcbo/O+g2wRivgd8o00DkOSi
-         3WGHjYSOJdLokgtEscMwuSwlbk/IkDefRYloL0us32RAhM0Xj36DMgOZ6joa4wZMVDwh
-         8qHueUtRu3jeCbHJ83Aij7674XxtO0skYUp2wocRXGPZpN5kgXFG1JjjX+cwAWdtjLMD
-         RkZg==
-X-Gm-Message-State: ACrzQf0SsYdKB5unZ+sRNQKlHXCNIlGcXK1U7WLeIR+UJEAwAOv0vDEc
-        fZyTMlfov3chQ7K+0/lKVELo9w==
-X-Google-Smtp-Source: AMsMyM6cCn+CwsvflYaQp+z8TaAzPo/W2awtYM4W4qvCyUK82FR9LYt4fg4+LBEIbw5PXKbpt7TM0Q==
-X-Received: by 2002:adf:dd12:0:b0:236:6ef7:dacf with SMTP id a18-20020adfdd12000000b002366ef7dacfmr22849219wrm.204.1667579241392;
-        Fri, 04 Nov 2022 09:27:21 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id d4-20020adff2c4000000b002366b17ca8bsm4326719wrp.108.2022.11.04.09.27.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Nov 2022 09:27:20 -0700 (PDT)
-Message-ID: <89d05f19-ca8e-7906-e3ca-973225d8300f@arista.com>
-Date:   Fri, 4 Nov 2022 16:27:13 +0000
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lprgkkX+6FlZjo5KuogGNYXzzrUmE1gOIKUIAETT9J8=;
+        b=UMcKXvMKjr8C4W2ws2kQX9VCJ70Im1CPQwoG9RicfpZsFqnfjYAh67g2MCvc39hx7t
+         Z2dqq593+wGRkUsWUi6Q2YFnmjbtB5ijnxvF/EZTwfKvgnfr1nCQ4RSgDKZV/CotLL45
+         vpYTjRkr3q52PJKKesYtgNcKFg1Mat0Mxeu9u4AuoFOM8mfdD7Y0O7PfbAjRBJWTgCBP
+         RnzP7Njyt8QTclffxZDMr1opzNlhMwtcKyXz01lZG0VsutJmwHxqzjs1BiQLZJrPXBw6
+         CDCEDmkPUcpzg+4rcWjj98hDh4fAzQyC8K6r3i7kzIEXTwDU4cdDNet1uEpAfwfrgeTM
+         w4uQ==
+X-Gm-Message-State: ACrzQf29wjlyd5zKgejsADcY3ciLGtLFW0L1EF/epudxyqSIjAXgqr0g
+        7udO7R/QT3O817x1rI4oYsmr5A==
+X-Google-Smtp-Source: AMsMyM6yoe+efDWXwP8vQxWPO4YRugL9V+5YE3z270qrcSFgnkWoZ6cihb7wAblVNHVbzwpgOp25Iw==
+X-Received: by 2002:ac8:44d0:0:b0:3a5:3623:c0e with SMTP id b16-20020ac844d0000000b003a536230c0emr18126158qto.251.1667579261189;
+        Fri, 04 Nov 2022 09:27:41 -0700 (PDT)
+Received: from C02GC2QQMD6T.wifi.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x17-20020a05620a449100b006fa31bf2f3dsm3290395qkp.47.2022.11.04.09.27.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Nov 2022 09:27:38 -0700 (PDT)
+From:   Ajit Khaparde <ajit.khaparde@broadcom.com>
+To:     ajit.khaparde@broadcom.com
+Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
+        leon@kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        selvin.xavier@broadcom.com
+Subject: [PATCH v3 0/6] Add Auxiliary driver support
+Date:   Fri,  4 Nov 2022 09:27:27 -0700
+Message-Id: <20221104162733.73345-1-ajit.khaparde@broadcom.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+In-Reply-To: <CACZ4nhtmE9Dh9z_O9-A934+q0_8yHEyj+V-DcEsuEWFbPH6BGg@mail.gmail.com>
+References: <CACZ4nhtmE9Dh9z_O9-A934+q0_8yHEyj+V-DcEsuEWFbPH6BGg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH v2 1/3] jump_label: Add static_key_fast_inc()
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Bob Gilligan <gilligan@arista.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Jason Baron <jbaron@akamai.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-References: <20221103212524.865762-1-dima@arista.com>
- <20221103212524.865762-2-dima@arista.com>
- <Y2Q1laQoklgDtVg9@hirez.programming.kicks-ass.net>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <Y2Q1laQoklgDtVg9@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000008327d905eca78d37"
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/22 21:41, Peter Zijlstra wrote:
-> On Thu, Nov 03, 2022 at 09:25:22PM +0000, Dmitry Safonov wrote:
->> A helper to add another user for an existing enabled static key.
-> 
-> Utter lack of clue what for.
-> 
->> +/***
->> + * static_key_fast_inc - adds a user for a static key
->> + * @key: static key that must be already enabled
->> + *
->> + * The caller must make sure that the static key can't get disabled while
->> + * in this function. It doesn't patch jump labels, only adds a user to
->> + * an already enabled static key.
->> + */
->> +static inline void static_key_fast_inc(struct static_key *key)
->> +{
->> +	STATIC_KEY_CHECK_USE(key);
->> +	WARN_ON_ONCE(atomic_read(&key->enabled) < 1);
->> +	atomic_inc(&key->enabled);
->> +}
-> 
-> And no, that's racy as heck. We have things like atomic_inc_not_zero(),
-> I suggest looking into it.
+--0000000000008327d905eca78d37
+Content-Transfer-Encoding: 8bit
 
-Thanks for the review, I'll look into that for v3.
+Add auxiliary device driver for Broadcom devices.
+The bnxt_en driver will register and initialize an aux device
+if RDMA is enabled in the underlying device.
+The bnxt_re driver will then probe and initialize the
+RoCE interfaces with the infiniband stack.
 
-Thanks,
-          Dmitry
+v1->v2:
+- Incorporated review comments including usage of ulp_id &
+  complex function indirections.
+- Used function calls provided by the auxiliary bus interface
+  instead of proprietary calls.
+- Refactor code to remove ROCE driver's access to bnxt structure.
+
+v2->v3:
+- Addressed review comments including cleanup of some unnecessary wrappers
+- Fixed warnings seen during cross compilation
+
+Please apply. Thanks.
+
+Ajit Khaparde (5):
+  bnxt_en: Add auxiliary driver support
+  RDMA/bnxt_re: Use auxiliary driver interface
+  bnxt_en: Remove usage of ulp_id
+  bnxt_en: Use direct API instead of indirection
+  bnxt_en: Use auxiliary bus calls over proprietary calls
+
+Hongguang Gao (1):
+  bnxt_en: Remove struct bnxt access from RoCE driver
+
+ drivers/infiniband/hw/bnxt_re/bnxt_re.h       |   9 +-
+ drivers/infiniband/hw/bnxt_re/main.c          | 578 +++++++-----------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  10 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 399 ++++++------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  49 +-
+ 6 files changed, 480 insertions(+), 573 deletions(-)
+
+-- 
+2.37.1 (Apple Git-137.1)
+
+
+--0000000000008327d905eca78d37
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+pZEyqKnwS1lKCzjX7mV5W955rFsFxChdAKfw0HilwtqdY24mhy62+GeaEkD0gYIj1tCmw9gnQToc
+K+0s7xEunfR9pBrzmOwS3OQbcP0nJ8SmQ8R+reroH6LYuFpaqK1rgQIDAQABo4IB2zCCAdcwDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAlBgNVHREEHjAcgRphaml0LmtoYXBhcmRlQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEF
+BQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUbrcTuh0mr2qP
+xYdtyDgFeRIiE/gwDQYJKoZIhvcNAQELBQADggEBALrc1TljKrDhXicOaZlzIQyqOEkKAZ324i8X
+OwzA0n2EcPGmMZvgARurvanSLD3mLeeuyq1feCcjfGM1CJFh4+EY7EkbFbpVPOIdstSBhbnAJnOl
+aC/q0wTndKoC/xXBhXOZB8YL/Zq4ZclQLMUO6xi/fFRyHviI5/IrosdrpniXFJ9ukJoOXtvdrEF+
+KlMYg/Deg9xo3wddCqQIsztHSkR4XaANdn+dbLRQpctZ13BY1lim4uz5bYn3M0IxyZWkQ1JuPHCK
+aRJv0SfR88PoI4RB7NCEHqFwARTj1KvFPQi8pK/YISFydZYbZrxQdyWDidqm4wSuJfpE6i0cWvCd
+u50xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNh
+MTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwM2Vrj
+4nZK0WWosNswDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHeBcKZWezKNWf8S4//J
+Kbw1gTFDKEnc+6sTahJuq+cUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
+MQ8XDTIyMTEwNDE2Mjc0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsG
+CWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQChcP2QLrBTLspqCJjSRkn3YFwd62w9KAK9VZ5Q
+B9Sp9OuUMqn/6AV5c8/WEPDdpA8pM3k+eRV4v4+rQA4N3hy1CQCNKyTt0ILs+bUx1aYmVtooy3ys
+4TTZioESbNK5JAipuG26GCy1RIHAF6ReodvYdqyfeCYW6qKPwR1NBPcVB8TGIeb2qrSUKMiABUmw
+9Z6iqva6M+2ALudq0Bgr4pgZYyLCmh7YokaB4/h556oRPt7Lrh8Jl1MrTsDqDFMjREQd4FJg+03n
+8GqhjEO2Q+diUyztEmr6v0QMOAZKoynCxKNQib2A7p9KaSZpXQaq5sCbllEaKa9OjKlNA1HPtpo0
+--0000000000008327d905eca78d37--
