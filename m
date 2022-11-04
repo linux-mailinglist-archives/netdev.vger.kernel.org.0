@@ -2,123 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9050E619A7C
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:48:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AD7A619A8A
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231587AbiKDOsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 10:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
+        id S231394AbiKDOuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 10:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbiKDOsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:48:19 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07042AC68
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 07:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=sw3B1qMBWh6mIdfa85clZs4lXC928i7LrwUgl5JsKyM=; b=ifZ5E70XJqlLKkxuq9xSfm4uZg
-        sNkrDe6/64NmUGauEufGG1k0liXxXnR7ImSWL7F9vQQuM2OYtxyCmsA6f1cgGSNpOf3FyhhkndTqX
-        Sdm9Crd2wwx4SYBkGY+bcs2dd13EZBGSeCot9fRNbvEoRVU1QItIfMG64eTESB3XYDy+mh0du5chG
-        6fWicgJnllZNNE1lwvRr8Jf4nEqusCDJvQ0OvHq2wtEAq0XwHVJ2eu1WWYen8zYZk6Uhsvrk0id2A
-        T3h6wSosnzLfDzWAVTo1jiJ2Ci785PGAO9sF6Mhps1PAvlNeBf91GPLf7d07sgUHMoRgwXiVIh7i3
-        R9ge5xQg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35110)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oqxzS-0007jf-EB; Fri, 04 Nov 2022 14:48:14 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oqxzP-0000yp-K0; Fri, 04 Nov 2022 14:48:11 +0000
-Date:   Fri, 4 Nov 2022 14:48:11 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 4/4] net: dsa: remove phylink_validate() method
-Message-ID: <Y2UmK/z92VEUaMd9@shell.armlinux.org.uk>
-References: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
- <20221101114806.1186516-5-vladimir.oltean@nxp.com>
- <Y2T2fIb5SBRQbn8I@shell.armlinux.org.uk>
- <Y2T47CorBztXGgS4@shell.armlinux.org.uk>
- <20221104133247.4cfzt4wcm6oei563@skbuf>
- <Y2UbK8/LLJwIZ3st@shell.armlinux.org.uk>
- <20221104142549.gdgolb6uljq3b7kc@skbuf>
+        with ESMTP id S230491AbiKDOuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BFDF45;
+        Fri,  4 Nov 2022 07:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B682062228;
+        Fri,  4 Nov 2022 14:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0821C433D6;
+        Fri,  4 Nov 2022 14:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667573415;
+        bh=jSXc5912qZ6K35ZCxxlFpfB7oyU7Fv9+teBw18osnAk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kklccCp8MUSVLKGvA4xseNVGbE3AvoUMSWdzvgk2+8PhtfJRdofKTWPW2LNz132Zi
+         jqhJPv9kk56fmt2ceXJnpy2SgBMyr5cCNQ5bEVen754e920gi9gIBVB++IWJAA9Jfl
+         u+3J535SyWibOVX4Sla4GUvX98o/2qzpECwcMXQR9TUE4yqZYKNxlJaj5QgD17U5I8
+         fivpzZcmCM1djnr4seYQ52S9zxlS1qZ9jJxlYlpqpiMehJQeGfTOXxIK/d/hTC0ihH
+         +dHfC9h4EqqXznhSFMDS1LncQ9O/OfkzD+gJ+87c9P2cyP0n3TKcRDTXLmu3JuB8zZ
+         DFkyJU2Kedsaw==
+Message-ID: <73f88a48-72e8-e6e7-faae-1d4b92e0e13b@kernel.org>
+Date:   Fri, 4 Nov 2022 08:50:13 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221104142549.gdgolb6uljq3b7kc@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [PATCH] ipv6: addrlabel: fix infoleak when sending struct
+ ifaddrlblmsg to network
+Content-Language: en-US
+To:     Alexander Potapenko <glider@google.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        syzbot+3553517af6020c4f2813f1003fe76ef3cbffe98d@syzkaller.appspotmail.com
+References: <20221104103216.2576427-1-glider@google.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20221104103216.2576427-1-glider@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 04, 2022 at 02:25:50PM +0000, Vladimir Oltean wrote:
-> On Fri, Nov 04, 2022 at 02:01:15PM +0000, Russell King (Oracle) wrote:
-> > On Fri, Nov 04, 2022 at 01:32:48PM +0000, Vladimir Oltean wrote:
-> > > On Fri, Nov 04, 2022 at 11:35:08AM +0000, Russell King (Oracle) wrote:
-> > > > On Fri, Nov 04, 2022 at 11:24:44AM +0000, Russell King (Oracle) wrote:
-> > > > > There is one remaining issue that needs to be properly addressed,
-> > > > > which is the bcm_sf2 driver, which is basically buggy. The recent
-> > > > > kernel build bot reports reminded me of this.
-> > > > > 
-> > > > > I've tried talking to Florian about it, and didn't make much progress,
-> > > > > so I'm carrying a patch in my tree which at least makes what is
-> > > > > provided to phylink correct.
-> > > > > 
-> > > > > See
-> > > > > http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=63d77c1f9db167fd74994860a4a899df5c957aab
-> > > > > and all the FIXME comments in there.
-> > > > > 
-> > > > > This driver really needs to be fixed before we kill DSA's
-> > > > > phylink_validate method (although doing so doesn't change anything
-> > > > > in mainline, but will remove my reminder that bcm_sf2 is still
-> > > > > technically broken.)
-> > > > 
-> > > > Here's the corrected patch, along with a bit more commentry about the
-> > > > problems that I had kicking around in another commit.
-> > > 
-> > > The inconsistencies in the sf2 driver seem valid - I don't know why/if
-> > > the hardware doesn't support flow control on MoCA, internal ports and
-> > > (some but not all?!) RGMII modes. I hope Florian can make some clarifications.
-> > > 
-> > > However, I don't exactly understand your choice of fixing this
-> > > inconsistency (by providing a phylink_validate method). Why don't you
-> > > simply set MAC_ASYM_PAUSE | MAC_SYM_PAUSE in config->mac_capabilities
-> > > from within bcm_sf2_sw_get_caps(), only if we know this is an xMII port
-> > > (and not for MoCA and internal PHYs)? Then, phylink_generic_validate()
-> > > would know to exclude the "pause" link modes, right?
-> > 
-> > bcm_sf2_sw_get_caps() doesn't have visibility of which interface mode
-> > will be used.
+On 11/4/22 4:32 AM, Alexander Potapenko wrote:
+> When copying a `struct ifaddrlblmsg` to the network, __ifal_reserved
+> remained uninitialized, resulting in a 1-byte infoleak:
 > 
-> Update your tree, commit 4d2f6dde4daa ("net: dsa: bcm_sf2: Have PHYLINK
-> configure CPU/IMP port(s)") has appeared in net-next and now the check
-> in mac_link_up() is for phy_interface_is_rgmii().
+>   BUG: KMSAN: kernel-network-infoleak in __netdev_start_xmit ./include/linux/netdevice.h:4841
+>    __netdev_start_xmit ./include/linux/netdevice.h:4841
+>    netdev_start_xmit ./include/linux/netdevice.h:4857
+>    xmit_one net/core/dev.c:3590
+>    dev_hard_start_xmit+0x1dc/0x800 net/core/dev.c:3606
+>    __dev_queue_xmit+0x17e8/0x4350 net/core/dev.c:4256
+>    dev_queue_xmit ./include/linux/netdevice.h:3009
+>    __netlink_deliver_tap_skb net/netlink/af_netlink.c:307
+>    __netlink_deliver_tap+0x728/0xad0 net/netlink/af_netlink.c:325
+>    netlink_deliver_tap net/netlink/af_netlink.c:338
+>    __netlink_sendskb net/netlink/af_netlink.c:1263
+>    netlink_sendskb+0x1d9/0x200 net/netlink/af_netlink.c:1272
+>    netlink_unicast+0x56d/0xf50 net/netlink/af_netlink.c:1360
+>    nlmsg_unicast ./include/net/netlink.h:1061
+>    rtnl_unicast+0x5a/0x80 net/core/rtnetlink.c:758
+>    ip6addrlbl_get+0xfad/0x10f0 net/ipv6/addrlabel.c:628
+>    rtnetlink_rcv_msg+0xb33/0x1570 net/core/rtnetlink.c:6082
+>   ...
+>   Uninit was created at:
+>    slab_post_alloc_hook+0x118/0xb00 mm/slab.h:742
+>    slab_alloc_node mm/slub.c:3398
+>    __kmem_cache_alloc_node+0x4f2/0x930 mm/slub.c:3437
+>    __do_kmalloc_node mm/slab_common.c:954
+>    __kmalloc_node_track_caller+0x117/0x3d0 mm/slab_common.c:975
+>    kmalloc_reserve net/core/skbuff.c:437
+>    __alloc_skb+0x27a/0xab0 net/core/skbuff.c:509
+>    alloc_skb ./include/linux/skbuff.h:1267
+>    nlmsg_new ./include/net/netlink.h:964
+>    ip6addrlbl_get+0x490/0x10f0 net/ipv6/addrlabel.c:608
+>    rtnetlink_rcv_msg+0xb33/0x1570 net/core/rtnetlink.c:6082
+>    netlink_rcv_skb+0x299/0x550 net/netlink/af_netlink.c:2540
+>    rtnetlink_rcv+0x26/0x30 net/core/rtnetlink.c:6109
+>    netlink_unicast_kernel net/netlink/af_netlink.c:1319
+>    netlink_unicast+0x9ab/0xf50 net/netlink/af_netlink.c:1345
+>    netlink_sendmsg+0xebc/0x10f0 net/netlink/af_netlink.c:1921
+>   ...
+> 
+> This patch ensures that the reserved field is always initialized.
+> 
+> Reported-by: syzbot+3553517af6020c4f2813f1003fe76ef3cbffe98d@syzkaller.appspotmail.com
+> Fixes: 2a8cc6c89039 ("[IPV6] ADDRCONF: Support RFC3484 configurable address selection policy table.")
+> Signed-off-by: Alexander Potapenko <glider@google.com>
+> ---
+>  net/ipv6/addrlabel.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Great, one less fixme. Still a couple remaining open.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
