@@ -2,81 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D98619D06
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 17:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 111F9619D17
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 17:24:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbiKDQVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 12:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S230324AbiKDQX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 12:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiKDQVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 12:21:54 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0444220F6C;
-        Fri,  4 Nov 2022 09:21:51 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7C33CFF804;
-        Fri,  4 Nov 2022 16:21:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1667578909;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9HchoTCX6YVHNGcWcXAvQMr2LjZVh92FKk3oVYUFEoE=;
-        b=lebu3URtD5BNezq33EsxC2+z6KVIPWxxOIs/C1qOa68hmd9pGGfslmZdX1DTeetA7ZCrYq
-        TjEHbptgAtpUIFDItmvRdeSVeG7CJRlvXC2znfVUFWNPHiUx+dIUekntTwCEYx4Q4cBpjU
-        tPMDmJG8y4eoQ3q82a94kteyLX9xHVH8OT2+TcNfiJGUaAWCQ1bpvqSXFUu3TV8bjoBOXi
-        wpn2Ugh0G3H5G66nnv5P4R/XqOfNQQ+Bicf3r4OM4+TvzgHIgsGyCicCHF0io+ffg0FUJO
-        OfhBCh1arriKA55pkIxHdZHTi3OVeWlhyl3I8CJdYABnMEXTs8QzWadSkTphBQ==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230194AbiKDQXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 12:23:53 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214E3267B;
+        Fri,  4 Nov 2022 09:23:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=QPfTEW1yEsUmv2SnsC8Z/iqqatNA8YdvlM9LwrrznSE=;
+        t=1667579033; x=1668788633; b=wFm8vAEfwSC93OcWSskboyN2Bkn107w4oC4lMLI8lI2XSxX
+        yeHnsyXy+j8mKPHZWk45hXassq9y4gDTkKkFkHxIGROiDsG5U35+2s3juuzmZ0FYYeSU5fBUxgTaB
+        EZ7Bv8rZIeHxCW4HuH1SqEPW8J1/uOAJUKVP9asdit9Xc0MXt/KjPlbZzhrLKqhyl/aNh0T3XAg1L
+        XYTcV/Dr6jHN1Nth6Lk068o7BvucvEsh2keuKJztvj9/W31hlFXKHj9x4zBYRPpbWUQTqbrlfFt+C
+        LgvwNqdhqn0cJkfplMbEc5CD6M9sTe7Fw0GGPYvMoGrhBqEhHOlRynbQXhjJwAEg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oqzTp-008uqO-2L;
+        Fri, 04 Nov 2022 17:23:42 +0100
+Message-ID: <d6c8594159368034d47a169ccdd50bc65a1ad894.camel@sipsolutions.net>
+Subject: Re: [PATCH v3] wifi: rsi: Fix handling of 802.3 EAPOL frames sent
+ via control port
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Marek Vasut <marex@denx.de>, linux-wireless@vger.kernel.org
+Cc:     Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH net-next] dt-bindings: net: tsnep: Fix typo on generic nvmem property
-Date:   Fri,  4 Nov 2022 17:21:47 +0100
-Message-Id: <20221104162147.1288230-1-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.34.1
+        Kalle Valo <kvalo@kernel.org>,
+        Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+Date:   Fri, 04 Nov 2022 17:23:40 +0100
+In-Reply-To: <a3ef782d-9c85-d752-52b5-589d5e1f1bd5@denx.de>
+References: <20221104155841.213387-1-marex@denx.de>
+         <cf7da8e9a135fee1a9ac0e8f768a2a13bbba058d.camel@sipsolutions.net>
+         <a3ef782d-9c85-d752-52b5-589d5e1f1bd5@denx.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While working on the nvmem description I figured out this file had the
-"nvmem-cell-names" property name misspelled. Fix the typo, as
-"nvmem-cells-names" has never existed.
+On Fri, 2022-11-04 at 17:09 +0100, Marek Vasut wrote:
+>=20
+> In V2 it was suggested I deduplicate this into a separate function,=20
+> since the test is done in multiple places. I would like to keep it=20
+> deduplicated.
 
-Fixes: 603094b2cdb7 ("dt-bindings: net: Add tsnep Ethernet controller")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- Documentation/devicetree/bindings/net/engleder,tsnep.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Well, it's now a lot simpler, so one might argue that it's not needed.
 
-diff --git a/Documentation/devicetree/bindings/net/engleder,tsnep.yaml b/Documentation/devicetree/bindings/net/engleder,tsnep.yaml
-index 5bd964a46a9d..a6921e805e37 100644
---- a/Documentation/devicetree/bindings/net/engleder,tsnep.yaml
-+++ b/Documentation/devicetree/bindings/net/engleder,tsnep.yaml
-@@ -47,7 +47,7 @@ properties:
- 
-   nvmem-cells: true
- 
--  nvmem-cells-names: true
-+  nvmem-cell-names: true
- 
-   phy-connection-type:
-     enum:
--- 
-2.34.1
+But anyway you're touching the hot-path of this driver, and making it an
+inline still keeps it de-duplicated, so not sure why you wouldn't just
+move the rsi_is_tx_eapol into the header file as static inline?
 
+johannes
