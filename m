@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 747C9619460
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 11:23:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0962619462
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 11:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiKDKXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 06:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
+        id S230172AbiKDKXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 06:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiKDKXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 06:23:33 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA3526116
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 03:23:32 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id b2so12065216eja.6
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 03:23:31 -0700 (PDT)
+        with ESMTP id S229995AbiKDKXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 06:23:35 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170766162
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 03:23:34 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id y69so6908710ede.5
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 03:23:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=irJGxnB6lI423ouSCEisjudoHdWnd9CyFS0idBBdmaY=;
-        b=0k2w99n6N17/Ex8B3hXaRtgi6mviL2wBQu+tLh/0zUFtCIuEGytUT8Z3+X4Dfu9HlV
-         0iEQdd5baLiE7/3SQkkvxJ7QPlqvOpZdHENzrheuF4Jhnj63SeQoruNkpqZJgW0Wd3Bu
-         8ecZLBlLdgBQg8Dpn/cvOr+hxyemgEQ09LDIDZMh4oJHSGO0Z7tsOqUnEE2Lk3ejMUT7
-         f0sSD4UhMzDTjr0r/N1gan1P02/3rA6r2UHtpQm4djkrOReAa88DBuNrSbipoT7vCc12
-         eIwRg5m6G20oJ5XLdRn4LYh+FFE2fu7G/MuUJ62osAm6KTspwzsSStAJp0Z36GP4mWh5
-         UyhQ==
+        bh=fcGcAtlq/o7IzGPxNxAFXmEIy7PcM1PZTpjalkDoN3w=;
+        b=UzkLe3VMw/Yh6Pup3fSziOoVD7+PpwAbJO4FxbwB5k4313mkhk3PDlpVKGsk9DjyDT
+         DNGQSJVV0RLeciwiybP8Tw9VPYfRSU6RRoGQyaN0alraPF7eizDdMDJlNFa1sc0JZWIA
+         IE1hr4yjJ9LgR+TR1UeuT5bCPTSBpBetqz+9ty+13kLgq94yk7vrYKmv7OXvHEz6SlGK
+         xwCB5DDiB1+4O+0Gp31GCRwWwRIuOi2eAW+7UKAg9CvuKaPTF3Dpc+U0724zVUrA+5k5
+         fFPt3k2Re2MQdRoIJDk76eQps1bGMm6qua1pf/A5ftg+sl2D7NMf4E93KtWUHm3b1YFH
+         Qk4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=irJGxnB6lI423ouSCEisjudoHdWnd9CyFS0idBBdmaY=;
-        b=uR+ssvY/BbY445EFYmWb0PjfnJ3abAYZLem7XUW/WeWleRzzjgIqMBS5Hwuv8pnBMI
-         ezPLked6btb0thfcsYFwXb59oBLB4Qog4sYBuEc0XtaEz/0IvO6x4qmiaP7fRYofvZhA
-         q/bkxKUxmyiyFAvy8FHgDRogjMsCgG5SnbBDy5zoOhpPlkv8p7jckqXbJRWMl4MecsB+
-         8cxWb3MstESeVf6WnjVCnNLzCsCdAsOmli68lV4jJaKOcloHCypEC1E/73iMcAQGL6hP
-         zCfEuQwLIhZWZwQfeODV/t26nnBngSICuquCUzltoWL+24DOm+CNKGzcqT4RWEyPsUiA
-         Yl/A==
-X-Gm-Message-State: ACrzQf3+48KQqlD3UnI5t6MnW+jGzPB4hB5/er5bM9ZluinF01XjOs7C
-        UjohUgMlLB0g4f518uvMVg38e2QJQV8YMFy4
-X-Google-Smtp-Source: AMsMyM5t1DYOuxR9UvqrRqknw5bO/rbPFlj567IJRFGdp3dkznELtlK9mm32Lfu+1AKtEsb4FaLMWw==
-X-Received: by 2002:a17:907:25c5:b0:782:978d:c3da with SMTP id ae5-20020a17090725c500b00782978dc3damr32274187ejc.623.1667557410637;
-        Fri, 04 Nov 2022 03:23:30 -0700 (PDT)
+        bh=fcGcAtlq/o7IzGPxNxAFXmEIy7PcM1PZTpjalkDoN3w=;
+        b=hpyVo81vy+NEFyz7mAf27ST3dXFe7aKL8RsoTjSJItyUIuVh8fWnQ0ZlUZgUGGGExj
+         9HlIIwy3onrNTxDs+G5F/QhoB1A7kv77Fkekdw5ylGLVNFUq6uxI9stuKLwMjUyIwKlr
+         y7JVLeWi5lY+nAPbcv1/vr3rS6VnLqjrOruh7p8fRpiG9d6LCNAxJa4wsfc39UedM5hP
+         gQEQxyVtupR6c/1CjRarfdI+aJI6iCO83g8yxJCdAm+uer9yaWU7o/R7Eygu7OojSze3
+         hia1pKEZHmwLin9gT1/wS4Cg/yAKhSZ3KnPusG7LiY4SblzHQsLy/92zl0whZav8qH71
+         EwPg==
+X-Gm-Message-State: ACrzQf1vILBsgrl5ZpDAOaLfWneL55PK2zCis+xR4OPgRUxXBxKYFfaP
+        4PgvhZ6U20oC5h7e+n8HW4KMCR9wOovM1QQI
+X-Google-Smtp-Source: AMsMyM7RcRdPiB3iXM/j9/JD7XKn4L5ZJJJ75At2XO4yqR81u1uja4lGN4VxgJlMTjpTxs4GYEX1oQ==
+X-Received: by 2002:aa7:cd61:0:b0:461:de5e:ba3b with SMTP id ca1-20020aa7cd61000000b00461de5eba3bmr33935776edb.74.1667557412618;
+        Fri, 04 Nov 2022 03:23:32 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id l2-20020a1709063d2200b00730bfe6adc4sm1633085ejf.37.2022.11.04.03.23.29
+        by smtp.gmail.com with ESMTPSA id lr27-20020a170906fb9b00b007a6c25819f1sm1623229ejb.145.2022.11.04.03.23.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Nov 2022 03:23:30 -0700 (PDT)
+        Fri, 04 Nov 2022 03:23:31 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     sthemmin@microsoft.com, dsahern@gmail.com, kuba@kernel.org,
         moshe@nvidia.com, aeedm@nvidia.com
-Subject: [patch iproute2-next 1/3] devlink: query ifname for devlink port instead of map lookup
-Date:   Fri,  4 Nov 2022 11:23:25 +0100
-Message-Id: <20221104102327.770260-2-jiri@resnulli.us>
+Subject: [patch iproute2-next 2/3] devlink: add ifname_map_add/del() helpers
+Date:   Fri,  4 Nov 2022 11:23:26 +0100
+Message-Id: <20221104102327.770260-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221104102327.770260-1-jiri@resnulli.us>
 References: <20221104102327.770260-1-jiri@resnulli.us>
@@ -72,81 +72,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-ifname map is created once during init. However, ifnames can easily
-change during the devlink process runtime (e. g. devlink mon).
-Therefore, query ifname during each devlink port print.
+Add couple of helpers to alloc/free of map object alongside with list
+addition/removal.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- devlink/devlink.c | 46 +++++++++++++++++++++++++++++++---------------
- 1 file changed, 31 insertions(+), 15 deletions(-)
+ devlink/devlink.c | 30 +++++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 8aefa101b2f8..680936f891cf 100644
+index 680936f891cf..6e8e03aa14b7 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -864,21 +864,38 @@ static int ifname_map_lookup(struct dl *dl, const char *ifname,
- 	return -ENOENT;
+@@ -774,16 +774,35 @@ static int function_attr_cb(const struct nlattr *attr, void *data)
+ 	return MNL_CB_OK;
  }
  
--static int ifname_map_rev_lookup(struct dl *dl, const char *bus_name,
--				 const char *dev_name, uint32_t port_index,
--				 char **p_ifname)
-+static int port_ifname_get_cb(const struct nlmsghdr *nlh, void *data)
- {
--	struct ifname_map *ifname_map;
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-+	char **p_ifname = data;
-+	const char *ifname;
- 
--	list_for_each_entry(ifname_map, &dl->ifname_map_list, list) {
--		if (strcmp(bus_name, ifname_map->bus_name) == 0 &&
--		    strcmp(dev_name, ifname_map->dev_name) == 0 &&
--		    port_index == ifname_map->port_index) {
--			*p_ifname = ifname_map->ifname;
--			return 0;
--		}
--	}
--	return -ENOENT;
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+	if (!tb[DEVLINK_ATTR_PORT_NETDEV_NAME])
-+		return MNL_CB_ERROR;
++static int ifname_map_add(struct dl *dl, const char *ifname,
++			  const char *bus_name, const char *dev_name,
++			  uint32_t port_index)
++{
++	struct ifname_map *ifname_map;
 +
-+	ifname = mnl_attr_get_str(tb[DEVLINK_ATTR_PORT_NETDEV_NAME]);
-+	*p_ifname = strdup(ifname);
-+	if (!*p_ifname)
-+		return MNL_CB_ERROR;
-+
-+	return MNL_CB_OK;
++	ifname_map = ifname_map_alloc(bus_name, dev_name, port_index, ifname);
++	if (!ifname_map)
++		return -ENOMEM;
++	list_add(&ifname_map->list, &dl->ifname_map_list);
++	return 0;
 +}
 +
-+static int port_ifname_get(struct dl *dl, const char *bus_name,
-+			   const char *dev_name, uint32_t port_index,
-+			   char **p_ifname)
++static void ifname_map_del(struct ifname_map *ifname_map)
 +{
-+	struct nlmsghdr *nlh;
++	list_del(&ifname_map->list);
++	ifname_map_free(ifname_map);
++}
 +
-+	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_PORT_GET,
-+			       NLM_F_REQUEST | NLM_F_ACK);
-+	mnl_attr_put_strz(nlh, DEVLINK_ATTR_BUS_NAME, bus_name);
-+	mnl_attr_put_strz(nlh, DEVLINK_ATTR_DEV_NAME, dev_name);
-+	mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_INDEX, port_index);
-+	return mnlu_gen_socket_sndrcv(&dl->nlg, nlh, port_ifname_get_cb,
-+				      p_ifname);
+ static int ifname_map_cb(const struct nlmsghdr *nlh, void *data)
+ {
+ 	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
+ 	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
+ 	struct dl *dl = data;
+-	struct ifname_map *ifname_map;
+ 	const char *bus_name;
+ 	const char *dev_name;
+ 	uint32_t port_index;
+ 	const char *port_ifname;
++	int err;
+ 
+ 	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
+ 	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
+@@ -797,11 +816,9 @@ static int ifname_map_cb(const struct nlmsghdr *nlh, void *data)
+ 	dev_name = mnl_attr_get_str(tb[DEVLINK_ATTR_DEV_NAME]);
+ 	port_index = mnl_attr_get_u32(tb[DEVLINK_ATTR_PORT_INDEX]);
+ 	port_ifname = mnl_attr_get_str(tb[DEVLINK_ATTR_PORT_NETDEV_NAME]);
+-	ifname_map = ifname_map_alloc(bus_name, dev_name,
+-				      port_index, port_ifname);
+-	if (!ifname_map)
++	err = ifname_map_add(dl, port_ifname, bus_name, dev_name, port_index);
++	if (err)
+ 		return MNL_CB_ERROR;
+-	list_add(&ifname_map->list, &dl->ifname_map_list);
+ 
+ 	return MNL_CB_OK;
+ }
+@@ -812,8 +829,7 @@ static void ifname_map_fini(struct dl *dl)
+ 
+ 	list_for_each_entry_safe(ifname_map, tmp,
+ 				 &dl->ifname_map_list, list) {
+-		list_del(&ifname_map->list);
+-		ifname_map_free(ifname_map);
++		ifname_map_del(ifname_map);
+ 	}
  }
  
- static int strtobool(const char *str, bool *p_val)
-@@ -2577,8 +2594,7 @@ static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
- 	char *ifname = NULL;
- 
- 	if (dl->no_nice_names || !try_nice ||
--	    ifname_map_rev_lookup(dl, bus_name, dev_name,
--				  port_index, &ifname) != 0)
-+	    port_ifname_get(dl, bus_name, dev_name, port_index, &ifname) != 0)
- 		sprintf(buf, "%s/%s/%d", bus_name, dev_name, port_index);
- 	else
- 		sprintf(buf, "%s", ifname);
 -- 
 2.37.3
 
