@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BCD061950D
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 12:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1206B619544
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 12:18:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231464AbiKDLCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 07:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39572 "EHLO
+        id S231406AbiKDLSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 07:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbiKDLBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 07:01:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BDC2CC98;
-        Fri,  4 Nov 2022 04:01:48 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N3d3n0z11z15MJP;
-        Fri,  4 Nov 2022 19:01:41 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 4 Nov
- 2022 19:01:46 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <johannes@sipsolutions.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net] wifi: mac80211: fix WARNING in ieee80211_link_info_change_notify()
-Date:   Fri, 4 Nov 2022 19:08:56 +0800
-Message-ID: <20221104110856.364410-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S231324AbiKDLSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 07:18:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9539B63BD
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 04:18:36 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oquiF-00014k-Q7; Fri, 04 Nov 2022 12:18:15 +0100
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 7C0DE112D6E;
+        Fri,  4 Nov 2022 11:18:12 +0000 (UTC)
+Date:   Fri, 4 Nov 2022 12:18:11 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vivek Yadav <vivek.2311@samsung.com>
+Cc:     rcsekar@samsung.com, wg@grandegger.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        pankaj.dubey@samsung.com, ravi.patel@samsung.com,
+        alim.akhtar@samsung.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: m_can: sort header inclusion alphabetically
+Message-ID: <20221104111811.dxavkstmmr3ltgje@pengutronix.de>
+References: <CGME20221104050835epcas5p21514293206d887aa3d6c746d529dc2f2@epcas5p2.samsung.com>
+ <20221104051617.21173-1-vivek.2311@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6pliafhzmh4d6t5e"
+Content-Disposition: inline
+In-Reply-To: <20221104051617.21173-1-vivek.2311@samsung.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syz reports the following WARNING:
-wlan0: Failed check-sdata-in-driver check, flags: 0x0
-WARNING: CPU: 3 PID: 5384 at net/mac80211/main.c:287
-ieee80211_link_info_change_notify+0x1c2/0x230
-Modules linked in:
-RIP: 0010:ieee80211_link_info_change_notify+0x1c2/0x230
-Call Trace:
-<TASK>
-ieee80211_set_mcast_rate+0x3e/0x50
-nl80211_set_mcast_rate+0x316/0x650
-genl_family_rcv_msg_doit+0x20b/0x300
-genl_rcv_msg+0x39f/0x6a0
-netlink_rcv_skb+0x13b/0x3b0
-genl_rcv+0x24/0x40
-netlink_unicast+0x4a2/0x740
-netlink_sendmsg+0x83e/0xce0
-sock_sendmsg+0xc5/0x100
-____sys_sendmsg+0x583/0x690
-___sys_sendmsg+0xe8/0x160
-__sys_sendmsg+0xbf/0x160
-do_syscall_64+0x35/0x80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
-</TASK>
 
-The execution process is as follows:
-Thread A:
-ieee80211_open()
-    ieee80211_do_open()
-        drv_add_interface()     //set IEEE80211_SDATA_IN_DRIVER flag
-...
-cfg80211_shutdown_all_interfaces()
-    ...
-    ieee80211_stop()
-        ieee80211_do_stop()
-            drv_remove_interface() //clear flag
-...
-nl80211_set_mcast_rate()
-    ieee80211_set_mcast_rate()
-        ieee80211_link_info_change_notify()
-            check_sdata_in_driver() //WARNING because flag is cleared
+--6pliafhzmh4d6t5e
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-When the wlan device stops, the IEEE80211_SDATA_IN_ DRIVER flag is cleared
-after the interface is removed. And then after the set mcast rate command
-is executed, a WARNING is generated because the flag bit is cleared.
+On 04.11.2022 10:46:17, Vivek Yadav wrote:
+> Sort header inclusion alphabetically.
+>=20
+> Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
 
-Fixes: 591e73ee3f73 ("wifi: mac80211: properly skip link info driver update")
-Reported-by: syzbot+bce2ca140cc00578ed07@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/mac80211/main.c | 3 +++
- 1 file changed, 3 insertions(+)
+Applied to linux-can-next.
 
-diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index 46f3eddc2388..8a727b532f77 100644
---- a/net/mac80211/main.c
-+++ b/net/mac80211/main.c
-@@ -284,6 +284,9 @@ void ieee80211_link_info_change_notify(struct ieee80211_sub_if_data *sdata,
- 	if (!changed || sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
- 		return;
- 
-+	if (!ieee80211_sdata_running(sdata))
-+		return;
-+
- 	if (!check_sdata_in_driver(sdata))
- 		return;
- 
--- 
-2.17.1
+Thanks,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--6pliafhzmh4d6t5e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNk9PAACgkQrX5LkNig
+010FTwf9GqkzaJBflCl8wOQRT5Lzl2Dt4d+WGLEwo88Zin/NT5aU/mMfVXikhoTo
+XZXpiZCcrNbO2CuVdjiZNnNBH6aL/tx/R1roxTzspNGf2uDl57x/P8VFXpw+30d8
+V+HttrqvAkPJwbs0x9wffr5VC/LdmeLvjKrt62AeEQOu4BH2rC60G33NilRIPfNX
+qw4SzqgON+GsyE7bfbAz/B6QckTELEnV1czFHDf28D5tm/A7OzfqbfX5zsN0FUyL
+Y/Dpvd4VZpXQ5m+HfbNHVTad5/nxXSzjSk/ViY5yE4CHTuJoShuohNbd65In2J0t
+inzQPVFnpBWqnl/90Gcplc/V8Jug0Q==
+=qvrq
+-----END PGP SIGNATURE-----
+
+--6pliafhzmh4d6t5e--
