@@ -2,180 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FA16199D3
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D32A36199D8
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 15:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbiKDO2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 10:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44190 "EHLO
+        id S232179AbiKDO2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 10:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232220AbiKDO2H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:28:07 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140049.outbound.protection.outlook.com [40.107.14.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DC031F8C
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 07:25:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HfBqpxefgeSmOlv/GIVx6NQR7U0GuJ3XhQBq1xh7IIZVEm7/Y/1BGRvrjoWXN9tenrCosoEw2g4Fgf7cFqeOSH7aDG6ciejB2V8IlaSMheTFb64cxNfZKxrBjDLopla6SJYaYK8ZyXMb11sIqoVv9hGXOtSJsdoe2fZW+o6qza8FV7cea05DSYSy1BNQ8Mr0Tp61wcSz7duiaE1nPOzYaDDAgviTlSuK/9K1eK0lg3/MfkM+5d04tCGjbJ+kZc9YDUTZdz4taIV8vNXTqXu76NQc/NhBthtjNQtFR21tMkqqYzo3GyQVTvUXLVunqXbD0P2bbw0bc0vCSA+XtVnukQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uxm6Dtme6/6MPHWtqX5k2LVCfUmfD7wn/ReG9h4LRT8=;
- b=gUtjCzBIF3qgm5Q/+j3tjVpNjh1GnGv6vGlZy2wJ/NXZbF8EUhHLwAzEU13rJWEax2qfmsj3+35BvqfaPd1XoEFd7DPtF9LAz5p73CWXrn01qxau44VPyc7qc7ZQay1nBSq0BWekBY4jC2UjOCxEKW4Oo/gHqsJKIJQlWrb2/hdwMAdXrPT81Wy4ov1SLQpoJ7sZ2CsdgSrpOCPEPhHvvBqRoqkxmZjKf2lBvRNfrGrtVerpjURjiLqI/f3a9W2EsR8kXPz9ogM5V3eJ9MORQQXAK4/efXjXH0wjEQfucpHmURsx2FSVSeb2twvZvudHxsVvsCoL8aQDKZ9FRZ25+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uxm6Dtme6/6MPHWtqX5k2LVCfUmfD7wn/ReG9h4LRT8=;
- b=P2CtRuCp3OvMs6+1FdoURhYYgsSr5DIpFQ+fIvMFSy6yVt465ix4ZLkruIF3ll4dH2IotQOgR1kB3qvJx/WLMIMOGYU/6f5uo8ZDXjSRKa+hPsLmdn/emVZWDj+x+B04DKSirPeOjiTapzNfcniNaYRwIUxUUNb6oiQz6hphvsQ=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM7PR04MB7095.eurprd04.prod.outlook.com (2603:10a6:20b:11c::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Fri, 4 Nov
- 2022 14:25:51 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::df5b:6133:6d4c:a336]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::df5b:6133:6d4c:a336%7]) with mapi id 15.20.5769.022; Fri, 4 Nov 2022
- 14:25:50 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 4/4] net: dsa: remove phylink_validate() method
-Thread-Topic: [PATCH net-next 4/4] net: dsa: remove phylink_validate() method
-Thread-Index: AQHY7efc5i1n/1Oz0kGxX/wEp9VJma4upEMAgAAC6ACAACDfgIAAB/SAgAAG3YA=
-Date:   Fri, 4 Nov 2022 14:25:50 +0000
-Message-ID: <20221104142549.gdgolb6uljq3b7kc@skbuf>
-References: <20221101114806.1186516-1-vladimir.oltean@nxp.com>
- <20221101114806.1186516-5-vladimir.oltean@nxp.com>
- <Y2T2fIb5SBRQbn8I@shell.armlinux.org.uk>
- <Y2T47CorBztXGgS4@shell.armlinux.org.uk>
- <20221104133247.4cfzt4wcm6oei563@skbuf>
- <Y2UbK8/LLJwIZ3st@shell.armlinux.org.uk>
-In-Reply-To: <Y2UbK8/LLJwIZ3st@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AM7PR04MB7095:EE_
-x-ms-office365-filtering-correlation-id: 2e177f9f-4f05-45ee-e988-08dabe707930
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: c+BtyWcr18QAvGndWDa5aJSWKHdhhc/9nIezw8f1r5oi9IjwryUHIwMW/bpR7SJt+q+rOPBPMnhtnuM48I2DRB2+3B6PWbgJrsfQ3RCjTO6LseWSTHeLNnQQH5RNK8NrCGrQ0ZsLagqo59nHAC6DYmG5wQCgfpfVnWWoa0wWe/kg1sz3HQzmGrdCp9uf39TJgh3z44g4W7ndZJ/3fsrL2gST2HYvxXkFYfNpeNbNs6LkgDo+AhtbuEQMGm6rC4QXghC2NyTOwFBV4+5bQah/lbLkSx27TFw43+/w674Hh09MYVO9kq+3d2enD3kdGsoQrXcwSHn/Zji/Ju1RoocAC8XukcnWcZZeDSMWj/o6YHMKQ3MMmFyPJIxkZpDEnrs2Wxl7GiCumF2GNtCKqbNldqXwBaaUXwtU44nK4Mf7RJSketK+ifYwDmyF/qK7QgyaRyQTLBd0VY4o7vvh+JrwuiBcVxpA7b2Ayaa5fEXMP2L//V8ZUap6XTQSSR+JIEnqYnP5NT9TT40z1c0PttsNow5SITQ7s6My1KrBzNxCgRU1oZHVJz5/pzAOYppbVhDZXPIKi1AJzHTA1tgrLAIclwgdP+MmccQ6/344D//SJv5iVC/O2Q1959VZx72yClUPIHWrivwkDFm05PrQSyeACvtnJ/WyegMd3oFgruxPfKP01fd3/ocaayETjGH8JEIKxGYjiJiYmTSqH9+p/FeEi8nMtIjYMWDlXDPBN1/ZBnwugjWZWow5p4dxf1eflWMtMDa8+66/xtMFBdZ65wnGn4GV9N96vgUS8CS0gu8jLpU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(39860400002)(346002)(376002)(396003)(136003)(366004)(451199015)(8936002)(66446008)(26005)(38100700002)(478600001)(38070700005)(7416002)(44832011)(9686003)(86362001)(122000001)(83380400001)(5660300002)(2906002)(8676002)(66476007)(66556008)(66946007)(64756008)(6506007)(33716001)(316002)(1076003)(966005)(6486002)(6512007)(41300700001)(54906003)(71200400001)(6916009)(4326008)(76116006)(91956017)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?7SXFrFDYZRGG62TrajbzPxqlN+pgzm/aG6vEkjekHjIT4Xsv7G1UjhmcICjg?=
- =?us-ascii?Q?44t96ACqko3YmyjosOQnHTGXN5KMtAiRSr9JSyaqTTT0TFXUjpDC4pWtnzxN?=
- =?us-ascii?Q?bVKHeceXavlwx5t6PFe1sMHpt6qJxH3w3sMhpCTsUhRsgX5WjMGjG47r2IkT?=
- =?us-ascii?Q?pteiCWOPkGeWI0GZ7ekqdFlYnvpHMUjtcYYfqIQ1Wpz7IaaRZ2G4ZzWEDRNH?=
- =?us-ascii?Q?7xu1Dp+GxHsq/qitt+OvfVbc5ew+UB4EJOmpPDZcrjvbWPf/mpG93mmHp7K3?=
- =?us-ascii?Q?uY8yULunZajb96WJnEG9NXYKcUWBkioohtebPyKRbhtJt/NTR13UsIlPtuJL?=
- =?us-ascii?Q?IALYLt1VrvJDJgHWSbUCiKjKorxiAUZBIkQHGJfCLNJxs39xLrGOCilCftaI?=
- =?us-ascii?Q?O69t5uaUHI7micxpznC5sfD/iCTa/93SMFZ5jcB50CWwDudDhpOYfSRoIV7E?=
- =?us-ascii?Q?VsJ8EoCcJ0dIrDmJhCYKqV96/NgcffxThHreNKXyTVBWj1PpM0jQkLCSb7gF?=
- =?us-ascii?Q?esZIoTj/kA5lp7s/3zWYMh9sThPlg4Z28Uu5/7Bj2biyhQvnn4CMX1gozna1?=
- =?us-ascii?Q?4tiabOB5KFtFLOc/xzNESBzntbHT9trlX36/5ciP5Joc20euDsMPif4extH1?=
- =?us-ascii?Q?rgA/4XPSHOv4BLnzC9tV85xWS67U9oeHG4uy7tpr1RfxMsNqQiKoJDFBCToN?=
- =?us-ascii?Q?OsIk+8Id7pnhRGqyeXono3OnqT+JGE3ii+zsB4+Tjz8iK6fcZMPG090IPiQC?=
- =?us-ascii?Q?LcOzqzDsDXGOnNffB5WvRkqlJTaA15gB2X7exAJIz3YtiS2CzBvgXzlrQd8G?=
- =?us-ascii?Q?rMXvWj0nfPswKuDTClYIr0OLLffdEGTtIcxcNrCawxlazwkBE+47m060QrHa?=
- =?us-ascii?Q?elpID294iW8joZzjv/i9lNVOtO8wtDiqv+NEabix9GkUylYRN59RJs9X08WE?=
- =?us-ascii?Q?5PU4anTQPUJC8IuaDLGxSbenjlXLZ3F/1lb5KjqSIq5h71US/nzOXro1EQpt?=
- =?us-ascii?Q?L5iuvI0t5z1hkFCKHF/Wnn0+l9RjTq4MN/Omttaz61jLR7z7AaA0bn9sRAC5?=
- =?us-ascii?Q?Y+D3asoqc5pppQpYodAqZc1dyUUIa/C+u8k7wNWJJTBfbt7rXzAdAmooOTDO?=
- =?us-ascii?Q?nFzH9zZ6tF1fS/rD/LtaYYEO2Ki2Spdd1CUfCt4NzaFN6Oi9nnJWWzsNsJLK?=
- =?us-ascii?Q?nbjexiUIRhTlNtj4yH/hSWTCAjovLNKwc0IrQx0MIvmwwFNjKDMvsP0jBduW?=
- =?us-ascii?Q?yvpxXppk1aSBQ10dvipxC1WhdsMiLblVCO/InzgDrlsEgMrkjIQa2LpL3Xv9?=
- =?us-ascii?Q?NPpnr8DnEBXwrDe4eSIchVlz6VCPoAgyHmDIOuqFGCoXPyBLgvwXhyRblJs3?=
- =?us-ascii?Q?7FKCAD1L4msmfU6A5thLJKfq5xYiobrg+GrBCUyTf6QnN9kYttBMvszsPFd4?=
- =?us-ascii?Q?8m3F9bG3tftzjedt7vhJIRoGQf49sEVV6Lj3/CG4+CtXwn7PjJCw1TVWw3Oi?=
- =?us-ascii?Q?dmtmHIljJQbvybyXr9VWxSrGyYwkHwtj3ThFj2dVkGKaCPgrh8TfxyXyVtWS?=
- =?us-ascii?Q?IjEN6Wr5cEpghM/E1eZO1gQqB2hIGhACchjxBDj/zM1K61WHBCnLLRFPCRu3?=
- =?us-ascii?Q?3g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6C286AB9FC88F74FBAEAF481471610FF@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232100AbiKDO2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 10:28:17 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37CD26DC;
+        Fri,  4 Nov 2022 07:26:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1667571980;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=SVrYhIP3OS1ASlyGo7ULVXa44yep2VZq6SONHEF0xj4=;
+    b=eOrSvK/U4/V0Nyfe4biQiJpb9TWv+QFe21L/lyTFV8bBJzZkcmYaXfnh3i893u2ISF
+    DTXrbaq+7OAXPLkOxcS3gtj4q4ZWYsdRbIPDuKfqWOmph6N6z1vSzYj4iRwWllvcXcVp
+    lWRrstF0cWHSLKQig83ieyn7T0jZGfu76aABjPb0qXVlMPOTBNvgJNQXlbaAFdzpqq7E
+    lcrqjSHIcquVBp7nHaBzMo5JaAHAaCtzq8Nx/ZpXLS4u5/mebMma33XWsM1kH5bpNKIM
+    nUBCDsRRWFIe210xYHPGtKPxK8gdwBdZTOXtcZC0G87FSKzk1feRPPFFfU/EnglAPqyl
+    7NUQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS/xvEBL7X5sbo3UIh9JiLceSWNadhq4/jU"
+X-RZG-CLASS-ID: mo00
+Received: from silver.lan
+    by smtp.strato.de (RZmta 48.2.1 AUTH)
+    with ESMTPSA id Dde783yA4EQKQqq
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 4 Nov 2022 15:26:20 +0100 (CET)
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wei Chen <harperchen1110@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH v2] can: isotp: fix tx state handling for echo tx processing
+Date:   Fri,  4 Nov 2022 15:25:51 +0100
+Message-Id: <20221104142551.16924-1-socketcan@hartkopp.net>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e177f9f-4f05-45ee-e988-08dabe707930
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2022 14:25:50.4897
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rE117OITk/uY9Dd4n/P7s/GTuX5y7LCe7M27zCqR+vKRLXHIYAHbZ/QWwbUUnN62V5x9pP08YOUNhy369KpNwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7095
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 04, 2022 at 02:01:15PM +0000, Russell King (Oracle) wrote:
-> On Fri, Nov 04, 2022 at 01:32:48PM +0000, Vladimir Oltean wrote:
-> > On Fri, Nov 04, 2022 at 11:35:08AM +0000, Russell King (Oracle) wrote:
-> > > On Fri, Nov 04, 2022 at 11:24:44AM +0000, Russell King (Oracle) wrote=
-:
-> > > > There is one remaining issue that needs to be properly addressed,
-> > > > which is the bcm_sf2 driver, which is basically buggy. The recent
-> > > > kernel build bot reports reminded me of this.
-> > > >=20
-> > > > I've tried talking to Florian about it, and didn't make much progre=
-ss,
-> > > > so I'm carrying a patch in my tree which at least makes what is
-> > > > provided to phylink correct.
-> > > >=20
-> > > > See
-> > > > http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=3Dnet-queue=
-&id=3D63d77c1f9db167fd74994860a4a899df5c957aab
-> > > > and all the FIXME comments in there.
-> > > >=20
-> > > > This driver really needs to be fixed before we kill DSA's
-> > > > phylink_validate method (although doing so doesn't change anything
-> > > > in mainline, but will remove my reminder that bcm_sf2 is still
-> > > > technically broken.)
-> > >=20
-> > > Here's the corrected patch, along with a bit more commentry about the
-> > > problems that I had kicking around in another commit.
-> >=20
-> > The inconsistencies in the sf2 driver seem valid - I don't know why/if
-> > the hardware doesn't support flow control on MoCA, internal ports and
-> > (some but not all?!) RGMII modes. I hope Florian can make some clarific=
-ations.
-> >=20
-> > However, I don't exactly understand your choice of fixing this
-> > inconsistency (by providing a phylink_validate method). Why don't you
-> > simply set MAC_ASYM_PAUSE | MAC_SYM_PAUSE in config->mac_capabilities
-> > from within bcm_sf2_sw_get_caps(), only if we know this is an xMII port
-> > (and not for MoCA and internal PHYs)? Then, phylink_generic_validate()
-> > would know to exclude the "pause" link modes, right?
->=20
-> bcm_sf2_sw_get_caps() doesn't have visibility of which interface mode
-> will be used.
+In commit 4b7fe92c0690 ("can: isotp: add local echo tx processing for
+consecutive frames") the data flow for consecutive frames (CF) has been
+reworked to improve the reliability of long data transfers.
 
-Update your tree, commit 4d2f6dde4daa ("net: dsa: bcm_sf2: Have PHYLINK
-configure CPU/IMP port(s)") has appeared in net-next and now the check
-in mac_link_up() is for phy_interface_is_rgmii().=
+This rework did not touch the transmission and the tx state changes of
+single frame (SF) transfers which likely led to the WARN in the
+isotp_tx_timer_handler() catching a wrong tx state. This patch makes use
+of the improved frame processing for SF frames and sets the ISOTP_SENDING
+state in isotp_sendmsg() within the cmpxchg() condition handling.
+
+A review of the state machine and the timer handling additionally revealed
+a missing echo timeout handling in the case of the burst mode in
+isotp_rcv_echo() and removes a potential timer configuration uncertainty
+in isotp_rcv_fc() when the receiver requests consecutive frames.
+
+Fixes: 4b7fe92c0690 ("can: isotp: add local echo tx processing for consecutive frames")
+Link: https://lore.kernel.org/linux-can/CAO4mrfe3dG7cMP1V5FLUkw7s+50c9vichigUMQwsxX4M=45QEw@mail.gmail.com/T/#u
+Reported-by: Wei Chen <harperchen1110@gmail.com>
+Cc: stable@vger.kernel.org # v6.0
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ net/can/isotp.c | 71 ++++++++++++++++++++++++++-----------------------
+ 1 file changed, 38 insertions(+), 33 deletions(-)
+
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index a9d1357f8489..608f8c24ae46 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -109,10 +109,13 @@ MODULE_ALIAS("can-proto-6");
+ /* Flow Status given in FC frame */
+ #define ISOTP_FC_CTS 0		/* clear to send */
+ #define ISOTP_FC_WT 1		/* wait */
+ #define ISOTP_FC_OVFLW 2	/* overflow */
+ 
++#define ISOTP_FC_TIMEOUT 1	/* 1 sec */
++#define ISOTP_ECHO_TIMEOUT 2	/* 2 secs */
++
+ enum {
+ 	ISOTP_IDLE = 0,
+ 	ISOTP_WAIT_FIRST_FC,
+ 	ISOTP_WAIT_FC,
+ 	ISOTP_WAIT_DATA,
+@@ -256,11 +259,12 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
+ 
+ 	/* reset last CF frame rx timestamp for rx stmin enforcement */
+ 	so->lastrxcf_tstamp = ktime_set(0, 0);
+ 
+ 	/* start rx timeout watchdog */
+-	hrtimer_start(&so->rxtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
++	hrtimer_start(&so->rxtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
++		      HRTIMER_MODE_REL_SOFT);
+ 	return 0;
+ }
+ 
+ static void isotp_rcv_skb(struct sk_buff *skb, struct sock *sk)
+ {
+@@ -342,10 +346,12 @@ static int check_pad(struct isotp_sock *so, struct canfd_frame *cf,
+ 				return 1;
+ 	}
+ 	return 0;
+ }
+ 
++static void isotp_send_cframe(struct isotp_sock *so);
++
+ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ {
+ 	struct sock *sk = &so->sk;
+ 
+ 	if (so->tx.state != ISOTP_WAIT_FC &&
+@@ -396,18 +402,19 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ 
+ 	switch (cf->data[ae] & 0x0F) {
+ 	case ISOTP_FC_CTS:
+ 		so->tx.bs = 0;
+ 		so->tx.state = ISOTP_SENDING;
+-		/* start cyclic timer for sending CF frame */
+-		hrtimer_start(&so->txtimer, so->tx_gap,
++		/* send CF frame and enable echo timeout handling */
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
++		isotp_send_cframe(so);
+ 		break;
+ 
+ 	case ISOTP_FC_WT:
+ 		/* start timer to wait for next FC frame */
+-		hrtimer_start(&so->txtimer, ktime_set(1, 0),
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		break;
+ 
+ 	case ISOTP_FC_OVFLW:
+ 		/* overflow on receiver side - report 'message too long' */
+@@ -598,11 +605,11 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+ 	}
+ 
+ 	/* perform blocksize handling, if enabled */
+ 	if (!so->rxfc.bs || ++so->rx.bs < so->rxfc.bs) {
+ 		/* start rx timeout watchdog */
+-		hrtimer_start(&so->rxtimer, ktime_set(1, 0),
++		hrtimer_start(&so->rxtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		return 0;
+ 	}
+ 
+ 	/* no creation of flow control frames */
+@@ -827,11 +834,11 @@ static void isotp_rcv_echo(struct sk_buff *skb, void *data)
+ {
+ 	struct sock *sk = (struct sock *)data;
+ 	struct isotp_sock *so = isotp_sk(sk);
+ 	struct canfd_frame *cf = (struct canfd_frame *)skb->data;
+ 
+-	/* only handle my own local echo skb's */
++	/* only handle my own local echo CF/SF skb's (no FF!) */
+ 	if (skb->sk != sk || so->cfecho != *(u32 *)cf->data)
+ 		return;
+ 
+ 	/* cancel local echo timeout */
+ 	hrtimer_cancel(&so->txtimer);
+@@ -847,17 +854,20 @@ static void isotp_rcv_echo(struct sk_buff *skb, void *data)
+ 	}
+ 
+ 	if (so->txfc.bs && so->tx.bs >= so->txfc.bs) {
+ 		/* stop and wait for FC with timeout */
+ 		so->tx.state = ISOTP_WAIT_FC;
+-		hrtimer_start(&so->txtimer, ktime_set(1, 0),
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		return;
+ 	}
+ 
+ 	/* no gap between data frames needed => use burst mode */
+ 	if (!so->tx_gap) {
++		/* enable echo timeout handling */
++		hrtimer_start(&so->txtimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
++			      HRTIMER_MODE_REL_SOFT);
+ 		isotp_send_cframe(so);
+ 		return;
+ 	}
+ 
+ 	/* start timer to send next consecutive frame with correct delay */
+@@ -877,11 +887,11 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+ 		/* cfecho should be consumed by isotp_rcv_echo() here */
+ 		if (!so->cfecho) {
+ 			/* start timeout for unlikely lost echo skb */
+ 			hrtimer_set_expires(&so->txtimer,
+ 					    ktime_add(ktime_get(),
+-						      ktime_set(2, 0)));
++						      ktime_set(ISOTP_ECHO_TIMEOUT, 0)));
+ 			restart = HRTIMER_RESTART;
+ 
+ 			/* push out the next consecutive frame */
+ 			isotp_send_cframe(so);
+ 			break;
+@@ -905,11 +915,12 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+ 		so->tx.state = ISOTP_IDLE;
+ 		wake_up_interruptible(&so->wait);
+ 		break;
+ 
+ 	default:
+-		WARN_ON_ONCE(1);
++		WARN_ONCE(1, "can-isotp: tx timer state %08X cfecho %08X\n",
++			  so->tx.state, so->cfecho);
+ 	}
+ 
+ 	return restart;
+ }
+ 
+@@ -921,11 +932,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	struct sk_buff *skb;
+ 	struct net_device *dev;
+ 	struct canfd_frame *cf;
+ 	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
+ 	int wait_tx_done = (so->opt.flags & CAN_ISOTP_WAIT_TX_DONE) ? 1 : 0;
+-	s64 hrtimer_sec = 0;
++	s64 hrtimer_sec = ISOTP_ECHO_TIMEOUT;
+ 	int off;
+ 	int err;
+ 
+ 	if (!so->bound)
+ 		return -EADDRNOTAVAIL;
+@@ -940,10 +951,12 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 
+ 		/* wait for complete transmission of current pdu */
+ 		err = wait_event_interruptible(so->wait, so->tx.state == ISOTP_IDLE);
+ 		if (err)
+ 			goto err_out;
++
++		so->tx.state = ISOTP_SENDING;
+ 	}
+ 
+ 	if (!size || size > MAX_MSG_LENGTH) {
+ 		err = -EINVAL;
+ 		goto err_out_drop;
+@@ -984,10 +997,14 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	so->tx.idx = 0;
+ 
+ 	cf = (struct canfd_frame *)skb->data;
+ 	skb_put_zero(skb, so->ll.mtu);
+ 
++	/* cfecho should have been zero'ed by init / former isotp_rcv_echo() */
++	if (so->cfecho)
++		pr_notice_once("can-isotp: uninit cfecho %08X\n", so->cfecho);
++
+ 	/* check for single frame transmission depending on TX_DL */
+ 	if (size <= so->tx.ll_dl - SF_PCI_SZ4 - ae - off) {
+ 		/* The message size generally fits into a SingleFrame - good.
+ 		 *
+ 		 * SF_DL ESC offset optimization:
+@@ -1009,15 +1026,12 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 		if (off)
+ 			cf->data[SF_PCI_SZ4 + ae] = size;
+ 		else
+ 			cf->data[ae] |= size;
+ 
+-		so->tx.state = ISOTP_IDLE;
+-		wake_up_interruptible(&so->wait);
+-
+-		/* don't enable wait queue for a single frame transmission */
+-		wait_tx_done = 0;
++		/* set CF echo tag for isotp_rcv_echo() (SF-mode) */
++		so->cfecho = *(u32 *)cf->data;
+ 	} else {
+ 		/* send first frame */
+ 
+ 		isotp_create_fframe(cf, so, ae);
+ 
+@@ -1029,35 +1043,27 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 				so->tx_gap = ktime_set(0, so->frame_txtime);
+ 
+ 			/* disable wait for FCs due to activated block size */
+ 			so->txfc.bs = 0;
+ 
+-			/* cfecho should have been zero'ed by init */
+-			if (so->cfecho)
+-				pr_notice_once("can-isotp: no fc cfecho %08X\n",
+-					       so->cfecho);
+-
+-			/* set consecutive frame echo tag */
++			/* set CF echo tag for isotp_rcv_echo() (CF-mode) */
+ 			so->cfecho = *(u32 *)cf->data;
+-
+-			/* switch directly to ISOTP_SENDING state */
+-			so->tx.state = ISOTP_SENDING;
+-
+-			/* start timeout for unlikely lost echo skb */
+-			hrtimer_sec = 2;
+ 		} else {
+ 			/* standard flow control check */
+ 			so->tx.state = ISOTP_WAIT_FIRST_FC;
+ 
+ 			/* start timeout for FC */
+-			hrtimer_sec = 1;
+-		}
++			hrtimer_sec = ISOTP_FC_TIMEOUT;
+ 
+-		hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
+-			      HRTIMER_MODE_REL_SOFT);
++			/* no CF echo tag for isotp_rcv_echo() (FF-mode) */
++			so->cfecho = 0;
++		}
+ 	}
+ 
++	hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
++		      HRTIMER_MODE_REL_SOFT);
++
+ 	/* send the first or only CAN frame */
+ 	cf->flags = so->ll.tx_flags;
+ 
+ 	skb->dev = dev;
+ 	skb->sk = sk;
+@@ -1066,12 +1072,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	if (err) {
+ 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
+ 			       __func__, ERR_PTR(err));
+ 
+ 		/* no transmission -> no timeout monitoring */
+-		if (hrtimer_sec)
+-			hrtimer_cancel(&so->txtimer);
++		hrtimer_cancel(&so->txtimer);
+ 
+ 		/* reset consecutive frame echo tag */
+ 		so->cfecho = 0;
+ 
+ 		goto err_out_drop;
+-- 
+2.30.2
+
