@@ -2,83 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E0561A4E1
-	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 23:52:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 776A161A4FA
+	for <lists+netdev@lfdr.de>; Fri,  4 Nov 2022 23:59:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbiKDWwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 18:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
+        id S229575AbiKDW7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 18:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231365AbiKDWwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 18:52:15 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41334E428
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 15:50:23 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id l4-20020a056e021aa400b00300ad9535c8so4776330ilv.1
-        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 15:50:23 -0700 (PDT)
+        with ESMTP id S229517AbiKDW66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 18:58:58 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F89C2ED77;
+        Fri,  4 Nov 2022 15:58:57 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 21so9714815edv.3;
+        Fri, 04 Nov 2022 15:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=M4zXUdcVCX3c23AicDOLlGTR/ORxR8Jao2PW3uoSzvs=;
+        b=joyYSaSkOzgLUqD8oCmjd1bqKOhWeMIFy8SjMP4jr+7RxZRTkAexZmqY8JX7GRZ6ZR
+         B6FG21OUGJkRrqfCvYO8M52jgqqRZA5vKrdGOzffKeDuPdRCmtUAB0YJSm/KgVDrH5Ch
+         B9e3SXrh3Xd46V/aRq0vMSDSf4aYqa1lyTORaPaItPThrsmwjgRhDU/3AhjFrn6HnDvU
+         jXs88GCamZKWtg97NeDQQ/EdKfqQ7+eQUXB22ZbAmeH80m81k7UunEyaVP0xf5K7LAU4
+         /qmqgLo2e0h4dermmuacKWbWL+r6aHuLVgox1z90xhXBUM43ZGHzZdD0i06+MKkUqhQ+
+         taXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mQUV465XYKy6BEOy3Swc3M1CyT3Q1DkqUbMYNjsBM7w=;
-        b=prvpd5C4+rphffv77krFpXdSPgJXNH2hFye6ypOb0G17bPiCf6Dq/MSsJMPh9BUxRl
-         ccDIyI7GmBuGYg/3ztvbD2XPv/O1L/rXdxHnNIPibunjnqKZRqZRsM36cMVw0cqLGr1I
-         cscm67otl3f3aKldSr7D3odV49wOhS29UqNPyS3sccEzKjVl92ayHQLmw/2SOfK72MMW
-         Zz6cYuXOUPQONdl303XUcTpjAgVz6JB9Oo+qqMD36XBW90Y+I1umwEvyCE9KHqAN1kyJ
-         QDUnDrUaNH5007mwOevVtEqTiBAEEQJG+WT83/e9Q5FXQvv9Tzj0C7PYADuO9eZd3xng
-         bsUg==
-X-Gm-Message-State: ACrzQf0aCuBTg2/6r+xhTmGd/CaFQhTGZMvQKAdri1u98w6HhHIEzlfj
-        95syyP3tcKeLKBIqYYUgSlNuJKv6R5dmN3olUQlGS8cavjZA
-X-Google-Smtp-Source: AMsMyM5nTnIogJYJ095mPEs92Yep38gpfi+2iOs4VSUyK/pRUwAakFTI8laAK2zkHMNKd64/tVLlrFqFcjq22AiZc4BVcdLyhALO
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=M4zXUdcVCX3c23AicDOLlGTR/ORxR8Jao2PW3uoSzvs=;
+        b=G5ufcIeXZ9TtlPHXc+Sd3GwXK5qCBTIInUiHI8qc740GyHg6mUkMyea/mkkH+XQEiw
+         MrivVu6BJN6xHdv21MjdZVNUaEce28O2HnX3GvsaDe98DTTMCBVCgvU8/Fox9rXBZrj2
+         C7FtB3+GfDxND5iAMRcoOFjxS1UaM/tiN84NgpR4zoEuDhcF+w41A4U+PJzcmRPMIiTu
+         doalCJeNcmtHTqZe0l70wSEiiV4wsXtvbLvnxPwClYlsCXCz6l+f3udRlVKqY6FQF4Wy
+         kieTpkUCOi2SrIKv1SwpUAQDM/2I+kaVRI9mQv9G1qqYouX1Q4J/VCnsL4aygG0KC1Rq
+         59jQ==
+X-Gm-Message-State: ACrzQf0ORc4AsTVYO4Xy3dKxoedNfPSxycROTEAGdunykGshjHmw7v3G
+        IDYvuUeTHLcm4vbE0/xatoAAGhwr2ZsITZkkN8vtiI5YOuI=
+X-Google-Smtp-Source: AMsMyM4252Wv0qS7bkwVSMftE60NOVkz2p8f1GS/al25RmX59Rdy7FYtodBbhhBqnPtlpZbhOtnWDxNULmEJz/rg3wY=
+X-Received: by 2002:aa7:c504:0:b0:461:122b:882b with SMTP id
+ o4-20020aa7c504000000b00461122b882bmr38785966edq.14.1667602735596; Fri, 04
+ Nov 2022 15:58:55 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2107:b0:375:ddb:54c0 with SMTP id
- n7-20020a056638210700b003750ddb54c0mr21194896jaj.244.1667602223078; Fri, 04
- Nov 2022 15:50:23 -0700 (PDT)
-Date:   Fri, 04 Nov 2022 15:50:23 -0700
-In-Reply-To: <0000000000009da4c705dcb87735@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002227cf05ecace68c@google.com>
-Subject: Re: [syzbot] WARNING in check_map_prog_compatibility
-From:   syzbot <syzbot+e3f8d4df1e1981a97abb@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, haoluo@google.com,
-        hawk@kernel.org, john.fastabend@gmail.com, jolsa@kernel.org,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        martin.lau@linux.dev, memxor@gmail.com, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org, sdf@google.com,
-        song@kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, trix@redhat.com, yhs@fb.com
+References: <20221104094016.102049-1-asavkov@redhat.com> <CACYkzJ4E37F9iyPU0Qux4ZazHMxz0oV=dANOaDNZ4O8cuWVYhg@mail.gmail.com>
+ <5e6b5345-fc44-b577-e379-cedfe3263066@iogearbox.net>
+In-Reply-To: <5e6b5345-fc44-b577-e379-cedfe3263066@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 4 Nov 2022 15:58:43 -0700
+Message-ID: <CAEf4BzZO+4znx4VzQ9LwzFXv0=NfQL4DKBZCGB36ojYNbRoCzQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix build-id for liburandom_read.so
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     KP Singh <kpsingh@kernel.org>, Artem Savkov <asavkov@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ykaliuta@redhat.com,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On Fri, Nov 4, 2022 at 10:38 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Hi Artem,
+>
+> On 11/4/22 2:29 PM, KP Singh wrote:
+> > On Fri, Nov 4, 2022 at 10:41 AM Artem Savkov <asavkov@redhat.com> wrote:
+> >>
+> >> lld produces "fast" style build-ids by default, which is inconsistent
+> >> with ld's "sha1" style. Explicitly specify build-id style to be "sha1"
+> >> when linking liburandom_read.so the same way it is already done for
+> >> urandom_read.
+> >>
+> >> Signed-off-by: Artem Savkov <asavkov@redhat.com>
+> >
+> > Acked-by: KP Singh <kpsingh@kernel.org>
+> >
+> > This was done in
+> > https://lore.kernel.org/bpf/20200922232140.1994390-1-morbo@google.com
+>
+> When you say "fix", does it actually fix a failing test case or is it more
+> of a cleanup to align liburandom_read build with urandom_read? From glancing
+> at the code, we only check build id for urandom_read.
 
-commit 34dd3bad1a6f1dc7d18ee8dd53f1d31bffd2aee8
-Author: Alexei Starovoitov <ast@kernel.org>
-Date:   Fri Sep 2 21:10:47 2022 +0000
+I reworded the subject to "selftests/bpf: Use consistent build-id type
+for liburandom_read.so" and pushed. Thanks!
 
-    bpf: Relax the requirement to use preallocated hash maps in tracing progs.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1599d319880000
-start commit:   200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1b664fba5e66c4bf
-dashboard link: https://syzkaller.appspot.com/bug?extid=e3f8d4df1e1981a97abb
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165415a7080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1716f705080000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: bpf: Relax the requirement to use preallocated hash maps in tracing progs.
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>
+> Cheers,
+> Daniel
