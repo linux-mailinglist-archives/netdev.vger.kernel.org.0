@@ -2,179 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C065F61A5B9
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 00:27:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEEA561A5C0
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 00:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiKDX1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 19:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
+        id S229517AbiKDXcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 19:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiKDX1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 19:27:06 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39663267
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 16:27:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667604426; x=1699140426;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=64KMr3dhKlUOkvbY12SZccFccvNGfepz56qbaHy/TZY=;
-  b=FGkeW61GpDu8E53r1Q6QXlzirSpZzVM04HAxAdrD9FriOo96FxsGfZTX
-   oqBxMG49KH0T+5uzP0LlMUQRz5mg1Y2sVKgp6XHtSjH2gIJQkFNI02zkh
-   NnRZ8dS9zLO1aQEnVuGADTlgGBpd7PJaQjqIiDtzdSCHRa8OUAlf/GM/l
-   k4uacotv2i8LbNU64JOV2AHMO8d1AO4Jo4r6sCFNwz8IiSLseSg0vdgyk
-   L+hD+lyFcHLat6MEKwg/GmtmFPZCBMDtSWQwX4y9eCUbzsAa+6MC40j83
-   GaMhRW8nRFtpruTpfv6M+vbZ7q4N2t5Q4AYlfPjVfrsx4ErUh7aUShOQa
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="310097519"
-X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
-   d="scan'208";a="310097519"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 16:27:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="724516692"
-X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
-   d="scan'208";a="724516692"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Nov 2022 16:27:05 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 4 Nov 2022 16:27:05 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Fri, 4 Nov 2022 16:27:05 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Fri, 4 Nov 2022 16:27:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VLuZGBm9W9mSGgFqavUpZqAQkazGmCtuPee0lZuRlA4ou4KVTbbm0i0tvAuUu8jsqJi36anPgTMVDDh9JfU9suA+wnLdrqQgs+1IbzXsF2pIrvISaKdGjvh0pBISlaWDnkfUcO82R0gScqdnl5BeALmols7DcluTPVvzflCRgJS15G/AdH+8XTQARhIUjpIp0dGgIzTU/Lj2BY7TPK2MSMdDW3h16jfV0Q7X36HtcEqc4siXVP5byULptkA5ZTqNUyNh0e0hHvUYsJVWsVm1ybOhAcnNxLnuJq1OXyNPak8X6+Rrug0UqIwOcuJ/9VuM68xZu5wDqJqtsdP7oObvxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OJp8jpQfHg9z7gSmQmDwueeYjV80Vm0xzVb10olEnOU=;
- b=blkjsmVRbD6Ono1L8liiv2tL+1b/PUkC8EQDngGi7PglmD1eB7KRlBIAPMrKYEyHLUYVr9d3skvUt53y1SnQf3PJ5Wgy+FBG+tXDFRSa/w59iwNT4B/Nve89KwI2t/OEmv98ov0hZKG0j125kASAliMcxwKEleq1G++4D2nZ8i8RN/lZAFMgqTgpa0S/IUNxUJgr/3Ngc53t9hUusf6w0kyoTusxCJ9rWfv0I5S7bmuTwQJ9YWvd8r5OwnkYfg9yMVBIabwEK1GFgyr0LqO16BYqznKWUCL+FFlwJXpAMrjZQUCeaZ3iZ/5fHHaaT+HIEzSzMjAQxz/4BGvYGRBc1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from IA1PR11MB6266.namprd11.prod.outlook.com (2603:10b6:208:3e6::12)
- by PH7PR11MB6698.namprd11.prod.outlook.com (2603:10b6:510:1ac::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.24; Fri, 4 Nov
- 2022 23:27:03 +0000
-Received: from IA1PR11MB6266.namprd11.prod.outlook.com
- ([fe80::c669:1d22:cfd3:da07]) by IA1PR11MB6266.namprd11.prod.outlook.com
- ([fe80::c669:1d22:cfd3:da07%7]) with mapi id 15.20.5791.022; Fri, 4 Nov 2022
- 23:27:03 +0000
-From:   "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Subject: RE: [PATCH net-next] ethtool: add netlink based get rxfh support
-Thread-Topic: [PATCH net-next] ethtool: add netlink based get rxfh support
-Thread-Index: AQHY78m0wgcJEiaCt0SS8duS6dhOvq4txmAAgAE7EHCAACn4AIAAOssg
-Date:   Fri, 4 Nov 2022 23:27:03 +0000
-Message-ID: <IA1PR11MB62668A4445C791151B657ACCE43B9@IA1PR11MB6266.namprd11.prod.outlook.com>
-References: <20221103211419.2615321-1-sudheer.mogilappagari@intel.com>
- <Y2Q/gmS0v8i6SNi4@lunn.ch>
- <IA1PR11MB62668635AB345ADA118BA9BCE43B9@IA1PR11MB6266.namprd11.prod.outlook.com>
- <Y2VrAh4hha0y95Lv@lunn.ch>
-In-Reply-To: <Y2VrAh4hha0y95Lv@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.500.17
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR11MB6266:EE_|PH7PR11MB6698:EE_
-x-ms-office365-filtering-correlation-id: 86a61c85-2f59-4218-3be8-08dabebc149f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DS5vKcC5M1fA5KrdhGSr/urcPApmZkwcjiZQegn4I37o0pTbytqljLIbYv/LBnHGv78E7AMypShscaR8tJ0E21PGpO2WJ2Ro4TGBfNdwszQ3oMoXjLrBnZvkP3yUVrGx1J0b9KC0ehur8GzhFnMvp4Us80PUOnu9lORLiw57KtMwu+Cd08heiQQ0veeaK5jP+wVuESd2pP19wnih3ezhIF+5KtokHSRq8rDJIuBCPMMSsxzuCJNzwy42Bib2rfLCXQDutdyxjORF6/u6PHg9YOb+n3QB/u5EFwMZNQGLlV/Ah1CDNaPsKqjKgsjqAMxHVwyS+0RxC1eYmM/UAPjfQYAjL7ewtXbkm8zuhNij/8gM64xsdEIDzuznlynAekgeczYtlBOgjaRao20a5yrWRFf0A/Pl/Px+XJCrZyuO3o7xXD5bdz7TKMp59C52Z6PafW9phpWrDPoxgUxZ71FpjgIY1NZG6RNXlwNoSuStPy2o36Dw/GRoHXu0zeZTk+M9pJIqc+VWhgj/z47QL3DMm5fjXYHhxRbBVsLs/favZbe7vcmRB4s1gcw6at99gMwpl87wBjrK+KBMcwbGWdbipDBaPDXBYYpmm88kmcua+jJodmz5wMxpVL9ic8XR9Dr1A/+Q4hD1U6kW1IyB1B8/B6dw2M7R0sjdrDmRNKnmpJ71XyHHDS62YyTAiI4+E0OJF8wT8Og89WWz0eQoPEej1OD/AX3YER3PbRYvkWx7AJrQznmnrUpekDYK7+elGBq2+1biS3TAJZdqgId6wEigqw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6266.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(376002)(346002)(396003)(136003)(39860400002)(451199015)(71200400001)(55016003)(8676002)(4326008)(107886003)(54906003)(6916009)(316002)(86362001)(6506007)(7696005)(66446008)(64756008)(66946007)(66556008)(66476007)(76116006)(33656002)(478600001)(41300700001)(122000001)(2906002)(26005)(9686003)(38100700002)(52536014)(38070700005)(82960400001)(4744005)(186003)(83380400001)(8936002)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DrRGVA0QzdcYUs7j0/9/uMOPtT/GZbDcLq4d6kB7Dmr8glJ/hxQXX5ZlKVhk?=
- =?us-ascii?Q?X5S3kydaiOuYtth54MPpQ52vPUxK1H1uKyudrlxKlXPgewF+tg9GPl/Hm7sE?=
- =?us-ascii?Q?lKKaBjh3s6R0EoLshs6YIZWAtQ39J2Bbj/UIiQIiBOkhQ34lKvs5mcdj2bZR?=
- =?us-ascii?Q?ClTEP4Tj3F20oDS9Idzm4nNghHMDQAohFK7L1lRwPmyBSo9PxM0PDMnz6/oJ?=
- =?us-ascii?Q?2qfAc/agFCBEOhAwLz6IFYr7bKNlcvaxs7rWK5Go/vq4Zl2JpQ/iJNnu62CA?=
- =?us-ascii?Q?X/3W8QOSnK+T7EGXTopFuGdgUyQi3s2G/FOs4qPjAfLWZn+NAtOAWl1u0mgW?=
- =?us-ascii?Q?d4mhefHnwzZAkWfpJeh1mCcDkN+n++spQG++dHfKDx6bctTKcdgLXL3y5g/W?=
- =?us-ascii?Q?hYHrTRDIINtNcLuoirJxvZNDMJK+eaAp+rtoR8aHmd23cI31YlPLqyJCKJra?=
- =?us-ascii?Q?36pg5K96dCIK0QAeQ7bTpVasxnMvmn+UIwgQvJjPCztG8XuGVpNZDzPIopNM?=
- =?us-ascii?Q?UOHkOCQ1DzM6iJU91ES4BQ6tpkhyQFhpLxAjK8Q4BrRh3IOEOVTFugwhfCRA?=
- =?us-ascii?Q?5D8CmUqcTNVsG/JoYrykHsHjutTUDArIwdVGa7Fj9qkzaOHY65Xyd0AsGpN8?=
- =?us-ascii?Q?UcWhMzvHD3323IwU2cLMDdNDp+OlZKWh9i2YYb2ft4SxhTeltdNfMAnr8d2E?=
- =?us-ascii?Q?w33rv96xSkFwolA0VDmhuR2upOL/6n3Ij845OtXoVp6nLxiIZ1CkVoZ9UTht?=
- =?us-ascii?Q?/EyQYvvKfSsSzyM18ZXuJ4YrEiSA9BT1nMro8lpOqDwQam9b4LsVoBmMfmKo?=
- =?us-ascii?Q?ZPzhtRfLwufP3fYwAoFa1C8TDi5QTQcQyEthL/A4Ea0BlfvtnKYe04/MyLna?=
- =?us-ascii?Q?A6twtXDvk+C8F814jk0+tLPtxdyRb/W191neldGH+5cq+//TOCfZgP1x/ocD?=
- =?us-ascii?Q?ey5OttmFIb6b1HZ447t1ljGXfZIygWHX1GRSEe0i8hBiRvuQwfkxgUHjwn4I?=
- =?us-ascii?Q?wVJGc1lLrQ6WEQIQHagv9/IR2tBeM+u8GB+UE/aM0IVi3ffl3GSuSbEjVTvR?=
- =?us-ascii?Q?c7tZVi15uUgCDUt+yoSCTKF8mU2GzEN589i/Lrt1peRQ+xiC7ohCGdaVJgLh?=
- =?us-ascii?Q?6Un8UA2gPpDXQpVaGZsUu52fO7iHtDVGSQJggs4Raf0vDASew9Q7FI+At3vV?=
- =?us-ascii?Q?/TmVJJsd7Vo4Mgrx0KzBC7CbixQcne9zmidXLk1FwIMS0nT9rtjDsYOMJlDW?=
- =?us-ascii?Q?nd/nZyeCziG6OjsebZxdAaOUZI8MB9drf/z9ls6Eip350+N5qB8OquvlzoMg?=
- =?us-ascii?Q?Stg6Eh6LJYg5VRRaLM+nh0NMHo14fNgAn17MyfE0PId51H7wFFO3XJfb6c+0?=
- =?us-ascii?Q?lCGlIE/BOMvDzm8iwwRQ2jkQsncXzgw2iHTSrs1KP2DR713+ghvyVyCFzgoa?=
- =?us-ascii?Q?zfUBtjpl72caltvZdaW7LiiopVWUJiN6nkk5waUD5cAXgXCkh8JlD97zSTwP?=
- =?us-ascii?Q?WpWnpr5jzD2pDSdK5AbkKMSvdJUWGtBISUx1Db4o8amfxcK/0suhghLee/km?=
- =?us-ascii?Q?f70SStEZOpaF087ZJ5HHW490Sq9zAq0+HZpEaMFMH7d3icIPxFDERIr/U+Da?=
- =?us-ascii?Q?XA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229477AbiKDXck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 19:32:40 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D246BCAD;
+        Fri,  4 Nov 2022 16:32:39 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id q9so17171827ejd.0;
+        Fri, 04 Nov 2022 16:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gPS2+UU8iwApZPhZmjyMJQFgHkJsGSiJkrP0Ew3CwIY=;
+        b=BmQGcD73WnyuFV/7Pot3nedscTK62DmVc12N4FcDIvImStdkUFZDh4hZKO42rJ02Zu
+         VMh/FVUD2QZzfxs2GllIlzAsqUMvC5HMksiSH2/rCUDlA9/eDNkGNzDy47YkJC6xlPAY
+         SP+xoEUHZTdosyPZx3gQFj50ks3/MU8sZyD+YLONJLEAAM0rSqAdbaNeXn2CBJQYpoyi
+         sZwlIOIZb7L3D0HWBtJcUxj7mPzL5HHrkb8vI5z5mAxXVKEeaMdWYYLI9kT+ZdT8feen
+         3GNFHA3T42qODuwdCwkWYcgXOHnmsqof+oJCtdQKuwMGW60Ta8JFD2pm2n+3D9+1Ha0s
+         1kwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gPS2+UU8iwApZPhZmjyMJQFgHkJsGSiJkrP0Ew3CwIY=;
+        b=i+/HHn9sxMqkqfJit+MZ8fpxmkhgbpvGBFEp90rGNGvjB+u/wPvs38BD+8gIppZqWI
+         R0iMBaDC2i3E1Fo0f36yHex2UVNqazmPz8YK7HpvNIQrMS5DxxHDf+0AWS1nRAR9HISn
+         OhQK7Q+tZY49QnrFwFQDTali0YNEt5m0cbR06VE2wLUZMdGoRlnWnlnnCN12GFhclaEs
+         vOwaLFw9EUmG7ynWLgy5BcawXp4EukWjEdLLs7Jwin0JrL/f0AgZu5UgC3EImE6gxAVb
+         tHb/2mCXfO9BM93xROyreMOUsGOZr/KMHYDseI1FFR+eAjVMYMha7VV7E4I/JhZRUzOl
+         NHPQ==
+X-Gm-Message-State: ACrzQf0AI6bpoBTBTbuWuhHspZpFdPDhmOKZdrou5DZkCtDs371ZJc7v
+        VzVdMyKhzmeLiESZKdUC54uPgdwlfsgKyaVuGeY=
+X-Google-Smtp-Source: AMsMyM6wL9MjIdR5P3j3LJ6Nj5xyEoU2ZIqIYSsUj1+WT42blhstrelc0SJRLDa/devhSy4vZ+X2hSsoEOwzxeileEI=
+X-Received: by 2002:a17:906:8a73:b0:7ae:3962:47e7 with SMTP id
+ hy19-20020a1709068a7300b007ae396247e7mr4500472ejc.502.1667604758005; Fri, 04
+ Nov 2022 16:32:38 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6266.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86a61c85-2f59-4218-3be8-08dabebc149f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2022 23:27:03.4987
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4g78FfJ7NIqB201bjm1iA4PGHJLOHFR1rxgS/9xt98VoMZ+M8hh2slGzF8U0A9NXXus4AJFO89IEKubD8rBKK5Y5K7TjbfyMZykjWTBBQFg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6698
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221103083254.237646-1-yangjihong1@huawei.com>
+ <20221103083254.237646-3-yangjihong1@huawei.com> <CAEf4BzY+qP1wwVddjg7_rypcUAW8iPRzSa=1O6aFG5dSLX+1Gg@mail.gmail.com>
+In-Reply-To: <CAEf4BzY+qP1wwVddjg7_rypcUAW8iPRzSa=1O6aFG5dSLX+1Gg@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 4 Nov 2022 16:32:26 -0700
+Message-ID: <CAADnVQJW3CisB3L2nNOC0aGkPPBTHnyM-ZCXoZJc-KtNNEj+QQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4] bpf: Remove size check for sk in bpf_skb_is_valid_access
+ for 32-bit architecture
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yang Jihong <yangjihong1@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        Artem Savkov <asavkov@redhat.com>, colin.i.king@gmail.com,
+        bpf <bpf@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 4, 2022 at 2:56 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, Nov 3, 2022 at 1:36 AM Yang Jihong <yangjihong1@huawei.com> wrote:
+> >
+> > The error code -EACCES is returned when bpf prog is tested in 32-bit environment,
+> > This is because bpf_object__relocate modifies the instruction to change memory
+> > size to 4 bytes, as shown in the following messages:
+> >
+> > libbpf: prog 'kfunc_call_test1': relo #2: matching candidate #0 <byte_off> [18342] struct __sk_buff.sk (0:30:0 @ offset 168)
+> > libbpf: prog 'kfunc_call_test1': relo #2: patched insn #1 (LDX/ST/STX) off 168 -> 168
+> > libbpf: prog 'kfunc_call_test1': relo #2: patched insn #1 (LDX/ST/STX) mem_sz 8 -> 4
+> >
+> > As a result, the bpf_skb_is_valid_access check fails. For 32-bit architecture,
+> > unnecessary checks need to be deleted.
+> >
+> > Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+> > ---
+> >  net/core/filter.c | 2 --
+> >  1 file changed, 2 deletions(-)
+> >
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index bb0136e7a8e4..eab7ce89740c 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -8269,8 +8269,6 @@ static bool bpf_skb_is_valid_access(int off, int size, enum bpf_access_type type
+> >                         return false;
+> >                 break;
+> >         case offsetof(struct __sk_buff, sk):
+> > -               if (type == BPF_WRITE || size != sizeof(__u64))
+> > -                       return false;
+>
+> this probably should be specific to host architecture bitness? I'd
+> imagine that size = 4 should be invalid on 64-bit arches (reading half
+> of the pointer is bad)
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Subject: Re: [PATCH net-next] ethtool: add netlink based get rxfh
-> support
->=20
-> > Got a question wrt rtnl_lock usage. I see lock is acquired for SET
-> > operations and not for GET operations. Is rtnl_lock needed in this
-> > case due to slightly different flow than rest of GET ops?
->=20
-> The ioctl path takes the lock, so i don't see why the netlink code
-> should not take the lock.
->=20
->        Andrew
-
-Hi Andrew,
-Added locking changes but testing failed. Looks like locking is taken care =
-of earlier in the flow for GET requests. ethnl_default_doit is acquiring rt=
-nl_lock for GET.=20
-
-Thanks
-Sudheer=20
+Not quite.
+In __sk_buff the field 'sk' is defined as:
+__bpf_md_ptr(struct bpf_sock *, sk);
+so it's always 64-bit load when bpf prog reads it.
+In this case CO_RE shouldn't have been applied to uapi struct __sk_buff.
