@@ -2,126 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 569EF61DDAF
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 20:23:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C60E61DDD0
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 20:32:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiKETXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 15:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33960 "EHLO
+        id S230076AbiKETbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 15:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiKETX3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 15:23:29 -0400
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Nov 2022 12:23:27 PDT
-Received: from shiva-su1.sorbonne-universite.fr (shiva-su1.sorbonne-universite.fr [134.157.0.152])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20ACDBC83;
-        Sat,  5 Nov 2022 12:23:26 -0700 (PDT)
-Received: from nirriti.ent.upmc.fr (nirriti.dsi.upmc.fr [134.157.0.215])
-        by shiva-su1.sorbonne-universite.fr (Postfix) with ESMTP id 7E061414EC8B;
-        Sat,  5 Nov 2022 20:07:03 +0100 (CET)
-Received: from [44.168.19.230] (lfbn-idf1-1-1846-125.w90-91.abo.wanadoo.fr [90.91.31.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pidoux)
-        by nirriti.ent.upmc.fr (Postfix) with ESMTPSA id 568F112973D9A;
-        Sat,  5 Nov 2022 20:07:03 +0100 (CET)
-Message-ID: <0549f15a-181c-1719-987c-d5641fac3f8e@free.fr>
-Date:   Sat, 5 Nov 2022 20:07:02 +0100
+        with ESMTP id S229791AbiKETbe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 15:31:34 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5A2DEF4;
+        Sat,  5 Nov 2022 12:31:33 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id r76so8402035oie.13;
+        Sat, 05 Nov 2022 12:31:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CTlAHc9k7qwIZyOhFoXagieaQq5pwRyAvyi0mAOE5RE=;
+        b=jURw19XL/xOvCrYwmv2aWUKdeAoWjP9YO+FTg9LO7kNLGP2qrxnNI/DeaM/hhYlqsP
+         YdQYptnzjKsYbbyAKOY5T5QWBhSSLuRj9tx/h3x3Iolz6OENad9xOgpnNTl3bQfF4abr
+         IGnRZ+gwoVhjhy8eDyzb76gdYWeTNG8HbYJzf+upnNf3q7GfCqhXHTbMnctQM+lT4ISN
+         LgN+zILvYp/x3cxyWSBN67VcIOLSthpIiMe3XVQLxJ5DNQbV3DpA0r2y4Xi6Om/6kI/T
+         +bTGJHJtUOpMMkvOkxDlr0Z5JMnZYu43sVpFgzYDCR/HFlqDOFJ8Z5bQFtUlln66Rbqg
+         ggdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CTlAHc9k7qwIZyOhFoXagieaQq5pwRyAvyi0mAOE5RE=;
+        b=3DN3uBBAdumw9VRPsShfHfGp73Pg4PdCRiFdzkXf4cQLPgUI3pIjIYusLO/xd0R2gR
+         QuYZ/Xws0VAO77AMSHRQ5wdaRFUSGKKMMbqEYFZ6TsA2vhLmtunk+nupZkRZXGmhBvrh
+         5p/+4oEbhaD8swG9EG8Z50T4n2zombjsdIabydzMxcs4gcqc6ipVQB3DWfH2zmRRUnew
+         lcHC11W4wjvOZGZ4rUviAzsPfF/yB4hao89JFEMiYiqIcRGxBMKhy/OoLYq9yy3ebsCP
+         7yNTmvKwlXPW/BFzvIAoM20+n+k2E6sFGEK/6qkWNLkIUBHXqqUNluOhiKCYbpG6Eogm
+         7atw==
+X-Gm-Message-State: ACrzQf11t7q3jaYlAkphgg7NJBD5WOyGhSOhya0Qwt9AX+c3YRUaOnBT
+        nU/fFlMyVx+7ndXLi+M6jec=
+X-Google-Smtp-Source: AMsMyM7VRYR4ja1354r4nOb4sGsFC9SF+e+FSsFCXSIKNyBk3irIl03bXoaveyKZeBBPlTvKUXlEMQ==
+X-Received: by 2002:a05:6808:1708:b0:351:728b:3a03 with SMTP id bc8-20020a056808170800b00351728b3a03mr22106906oib.275.1667676692450;
+        Sat, 05 Nov 2022 12:31:32 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id l14-20020a4ac60e000000b00499499a8e18sm834040ooq.5.2022.11.05.12.31.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Nov 2022 12:31:31 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sat, 5 Nov 2022 12:31:29 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>, rcu@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, linux-edac@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-acpi@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-pm@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-bluetooth@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
+        linux-input@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-leds@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-ext4@vger.kernel.org, linux-nilfs@vger.kernel.org,
+        bridge@lists.linux-foundation.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, lvs-devel@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
+Subject: Re: [PATCH v4a 00/38] timers: Use timer_shutdown*() before freeing
+ timers
+Message-ID: <20221105193129.GA1487775@roeck-us.net>
+References: <20221105060024.598488967@goodmis.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH] rose: Fix NULL pointer dereference in rose_send_frame()
-Content-Language: fr
-To:     Zhang Qilong <zhangqilong3@huawei.com>, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org
-References: <20221028161049.113625-1-zhangqilong3@huawei.com>
-From:   F6BVP <f6bvp@free.fr>
-In-Reply-To: <20221028161049.113625-1-zhangqilong3@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,FREEMAIL_FROM,
-        NICE_REPLY_A,SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221105060024.598488967@goodmis.org>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ZhangQilong ni hao,
+On Sat, Nov 05, 2022 at 02:00:24AM -0400, Steven Rostedt wrote:
+> 
+> Back in April, I posted an RFC patch set to help mitigate a common issue
+> where a timer gets armed just before it is freed, and when the timer
+> goes off, it crashes in the timer code without any evidence of who the
+> culprit was. I got side tracked and never finished up on that patch set.
+> Since this type of crash is still our #1 crash we are seeing in the field,
+> it has become a priority again to finish it.
+> 
+> The last version of that patch set is here:
+> 
+>   https://lore.kernel.org/all/20221104054053.431922658@goodmis.org/
+> 
+> I'm calling this version 4a as it only has obvious changes were the timer that
+> is being shutdown is in the same function where it will be freed or released,
+> as this series should be "safe" for adding. I'll be calling the other patches
+> 4b for the next merge window.
+> 
 
-I have just pulled net-next 6.1.0-rc3 including  the rose_link.c patch 
-on my FPAC/ROSE hamradio node F6BVP.
+For the series, as far as my testbed goes:
 
-Xie xie ni
+Build results:
+	total: 152 pass: 152 fail: 0
+Qemu test results:
+	total: 500 pass: 500 fail: 0
 
-Zaitien
+No runtime crashes or warnings observed.
 
-Bernard,
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-http://f6bvp.org
+Guenter
 
-Le 28/10/2022 à 18:10, Zhang Qilong a écrit :
-> The syzkaller reported an issue:
->
-> KASAN: null-ptr-deref in range [0x0000000000000380-0x0000000000000387]
-> CPU: 0 PID: 4069 Comm: kworker/0:15 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-> Workqueue: rcu_gp srcu_invoke_callbacks
-> RIP: 0010:rose_send_frame+0x1dd/0x2f0 net/rose/rose_link.c:101
-> Call Trace:
->   <IRQ>
->   rose_transmit_clear_request+0x1d5/0x290 net/rose/rose_link.c:255
->   rose_rx_call_request+0x4c0/0x1bc0 net/rose/af_rose.c:1009
->   rose_loopback_timer+0x19e/0x590 net/rose/rose_loopback.c:111
->   call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
->   expire_timers kernel/time/timer.c:1519 [inline]
->   __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
->   __run_timers kernel/time/timer.c:1768 [inline]
->   run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
->   __do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
->   [...]
->   </IRQ>
->
-> It triggers NULL pointer dereference when 'neigh->dev->dev_addr' is
-> called in the rose_send_frame(). It's the first occurrence of the
-> `neigh` is in rose_loopback_timer() as `rose_loopback_neigh', and
-> the 'dev' in 'rose_loopback_neigh' is initialized sa nullptr.
->
-> It had been fixed by commit 3b3fd068c56e3fbea30090859216a368398e39bf
-> ("rose: Fix Null pointer dereference in rose_send_frame()") ever.
-> But it's introduced by commit 3c53cd65dece47dd1f9d3a809f32e59d1d87b2b8
-> ("rose: check NULL rose_loopback_neigh->loopback") again.
->
-> We fix it by add NULL check in rose_transmit_clear_request(). When
-> the 'dev' in 'neigh' is NULL, we don't reply the request and just
-> clear it.
->
-> syzkaller don't provide repro, and I provide a syz repro like:
-> r0 = syz_init_net_socket$bt_sco(0x1f, 0x5, 0x2)
-> ioctl$sock_inet_SIOCSIFFLAGS(r0, 0x8914, &(0x7f0000000180)={'rose0\x00', 0x201})
-> r1 = syz_init_net_socket$rose(0xb, 0x5, 0x0)
-> bind$rose(r1, &(0x7f00000000c0)=@full={0xb, @dev, @null, 0x0, [@null, @null, @netrom, @netrom, @default, @null]}, 0x40)
-> connect$rose(r1, &(0x7f0000000240)=@short={0xb, @dev={0xbb, 0xbb, 0xbb, 0x1, 0x0}, @remote={0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0x1}, 0x1, @netrom={0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0x0, 0x0}}, 0x1c)
->
-> Fixes: 3c53cd65dece ("rose: check NULL rose_loopback_neigh->loopback")
-> Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-> ---
->   net/rose/rose_link.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/net/rose/rose_link.c b/net/rose/rose_link.c
-> index 8b96a56d3a49..0f77ae8ef944 100644
-> --- a/net/rose/rose_link.c
-> +++ b/net/rose/rose_link.c
-> @@ -236,6 +236,9 @@ void rose_transmit_clear_request(struct rose_neigh *neigh, unsigned int lci, uns
->   	unsigned char *dptr;
->   	int len;
->   
-> +	if (!neigh->dev)
-> +		return;
-> +
->   	len = AX25_BPQ_HEADER_LEN + AX25_MAX_HEADER_LEN + ROSE_MIN_LEN + 3;
->   
->   	if ((skb = alloc_skb(len, GFP_ATOMIC)) == NULL)
