@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 083AC61D7A5
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 07:01:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 490A461D7D1
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 07:03:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229472AbiKEGBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 02:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
+        id S229813AbiKEGCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 02:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiKEGBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 02:01:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2FC30F7A;
-        Fri,  4 Nov 2022 23:01:31 -0700 (PDT)
+        with ESMTP id S229582AbiKEGBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 02:01:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AC631238;
+        Fri,  4 Nov 2022 23:01:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CD3660A55;
-        Sat,  5 Nov 2022 06:01:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C30C43143;
-        Sat,  5 Nov 2022 06:01:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3582960AB2;
+        Sat,  5 Nov 2022 06:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10253C4347C;
+        Sat,  5 Nov 2022 06:01:33 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1orCFi-007OpY-1Y;
-        Sat, 05 Nov 2022 02:01:58 -0400
-Message-ID: <20221105060158.322031906@goodmis.org>
+        id 1orCFl-007Oy1-0o;
+        Sat, 05 Nov 2022 02:02:01 -0400
+Message-ID: <20221105060201.081948530@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 05 Nov 2022 02:00:43 -0400
+Date:   Sat, 05 Nov 2022 02:00:58 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
@@ -36,12 +36,9 @@ Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Guenter Roeck <linux@roeck-us.net>,
         Anna-Maria Gleixner <anna-maria@linutronix.de>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengfeng Ye <cyeaa@connect.ust.hk>, Lin Ma <linma@zju.edu.cn>,
-        Duoming Zhou <duoming@zju.edu.cn>, netdev@vger.kernel.org
-Subject: [PATCH v4a 19/38] timers: nfc: pn533: Use timer_shutdown_sync() before freeing timer
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH v4a 34/38] timers: atm: Use timer_shutdown_sync() before a module is released
 References: <20221105060024.598488967@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,48 +53,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Before a timer is freed, timer_shutdown_sync() must be called.
+Before a module is released, timer_shutdown_sync() must be called on its
+timers.
 
 Link: https://lore.kernel.org/all/20221104054053.431922658@goodmis.org/
 
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Chengfeng Ye <cyeaa@connect.ust.hk>
-Cc: Lin Ma <linma@zju.edu.cn>
-Cc: Duoming Zhou <duoming@zju.edu.cn>
+Cc: Chas Williams <3chas3@gmail.com>
+Cc: linux-atm-general@lists.sourceforge.net
 Cc: netdev@vger.kernel.org
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/nfc/pn533/pn533.c | 2 +-
- drivers/nfc/pn533/uart.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/atm/idt77105.c | 4 ++--
+ drivers/atm/iphase.c   | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index d9f6367b9993..0a1d0b4e3bb8 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2788,7 +2788,7 @@ void pn53x_common_clean(struct pn533 *priv)
- 	struct pn533_cmd *cmd, *n;
- 
- 	/* delete the timer before cleanup the worker */
--	del_timer_sync(&priv->listen_timer);
-+	timer_shutdown_sync(&priv->listen_timer);
- 
- 	flush_delayed_work(&priv->poll_work);
- 	destroy_workqueue(priv->wq);
-diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
-index 07596bf5f7d6..a556acdb947b 100644
---- a/drivers/nfc/pn533/uart.c
-+++ b/drivers/nfc/pn533/uart.c
-@@ -310,7 +310,7 @@ static void pn532_uart_remove(struct serdev_device *serdev)
- 	pn53x_unregister_nfc(pn532->priv);
- 	serdev_device_close(serdev);
- 	pn53x_common_clean(pn532->priv);
--	del_timer_sync(&pn532->cmd_timeout);
-+	timer_shutdown_sync(&pn532->cmd_timeout);
- 	kfree_skb(pn532->recv_skb);
- 	kfree(pn532);
+diff --git a/drivers/atm/idt77105.c b/drivers/atm/idt77105.c
+index bfca7b8a6f31..cc4a5449ca42 100644
+--- a/drivers/atm/idt77105.c
++++ b/drivers/atm/idt77105.c
+@@ -366,8 +366,8 @@ EXPORT_SYMBOL(idt77105_init);
+ static void __exit idt77105_exit(void)
+ {
+ 	/* turn off timers */
+-	del_timer_sync(&stats_timer);
+-	del_timer_sync(&restart_timer);
++	timer_shutdown_sync(&stats_timer);
++	timer_shutdown_sync(&restart_timer);
  }
+ 
+ module_exit(idt77105_exit);
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index 324148686953..9be45d9d66b3 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -3280,7 +3280,7 @@ static void __exit ia_module_exit(void)
+ {
+ 	pci_unregister_driver(&ia_driver);
+ 
+-	del_timer_sync(&ia_timer);
++	timer_shutdown_sync(&ia_timer);
+ }
+ 
+ module_init(ia_module_init);
 -- 
 2.35.1
