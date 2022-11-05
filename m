@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3106F61DB2B
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 15:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35B5F61DBA4
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 16:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbiKEOrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 10:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46004 "EHLO
+        id S229563AbiKEP1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 11:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiKEOri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 10:47:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6D3DFCB;
-        Sat,  5 Nov 2022 07:47:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S229517AbiKEP1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 11:27:13 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7176222515
+        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 08:27:12 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 874D5201E4;
+        Sat,  5 Nov 2022 16:27:10 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ew7IdnLSI5OQ; Sat,  5 Nov 2022 16:27:10 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 402A5B800C1;
-        Sat,  5 Nov 2022 14:47:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51DE4C433C1;
-        Sat,  5 Nov 2022 14:47:32 +0000 (UTC)
-Date:   Sat, 5 Nov 2022 10:47:30 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>, rcu@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-edac@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, drbd-dev@lists.linbit.com,
-        linux-bluetooth@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org,
-        linux-input@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-leds@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-ext4@vger.kernel.org, linux-nilfs@vger.kernel.org,
-        bridge@lists.linux-foundation.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, lvs-devel@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
-Subject: Re: [PATCH v4a 00/38] timers: Use timer_shutdown*() before freeing
- timers
-Message-ID: <20221105104730.2bfd6740@rorschach.local.home>
-In-Reply-To: <20221105141817.GF1606271@roeck-us.net>
-References: <20221105060024.598488967@goodmis.org>
-        <20221105141817.GF1606271@roeck-us.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0D09A201E2;
+        Sat,  5 Nov 2022 16:27:10 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 0304180004A;
+        Sat,  5 Nov 2022 16:27:10 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 5 Nov 2022 16:27:09 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 5 Nov
+ 2022 16:27:09 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id BFFB531829E1; Sat,  5 Nov 2022 16:27:08 +0100 (CET)
+Date:   Sat, 5 Nov 2022 16:27:08 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Leon Romanovsky <leon@kernel.org>,
+        "Chentian Liu" <chengtian.liu@corigine.com>,
+        Huanhuan Wang <huanhuan.wang@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        <netdev@vger.kernel.org>, <oss-drivers@corigine.com>
+Subject: Re: [PATCH net-next v3 0/3] nfp: IPsec offload support
+Message-ID: <20221105152708.GB2602992@gauss3.secunet.de>
+References: <20221101110248.423966-1-simon.horman@corigine.com>
+ <20221103204800.23e3adcf@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20221103204800.23e3adcf@kernel.org>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 5 Nov 2022 07:18:17 -0700
-Guenter Roeck <linux@roeck-us.net> wrote:
-
-> Just in case you didn't notice:
+On Thu, Nov 03, 2022 at 08:48:00PM -0700, Jakub Kicinski wrote:
+> On Tue,  1 Nov 2022 12:02:45 +0100 Simon Horman wrote:
+> > It covers three enhancements:
+> > 
+> > 1. Patches 1/3:
+> >    - Extend the capability word and control word to to support
+> >      new features.
+> > 
+> > 2. Patch 2/3:
+> >    - Add framework to support IPsec offloading for NFP driver,
+> >      but IPsec offload control plane interface xfrm callbacks which
+> >      interact with upper layer are not implemented in this patch.
+> > 
+> > 3. Patch 3/3:
+> >    - IPsec control plane interface xfrm callbacks are implemented
+> >      in this patch.
 > 
-> Looking through the resulting code, I think some of the remaining
-> calls to del_singleshot_timer_sync() can be converted as well.
-> 
-> The calls in drivers/staging/wlan-ng/prism2usb.c:prism2sta_disconnect_usb()
-> are obvious (the containing data structure is freed in the same function).
-> For drivers/char/tpm/tpm-dev-common.c:tpm_common_release(), the containing
-> data structure is freed in the calling code.
+> Steffen, Leon, does this look good to you?
 
-Well, actually it is. In patch 5/38:
+The xfrm offload API is used correct, but can't speak
+for the driver code.
 
--#define del_singleshot_timer_sync(t) del_timer_sync(t)
-+#define del_singleshot_timer_sync(t) timer_shutdown_sync(t)
+For the xfrm API related part:
 
-This was the reason for patch 1. It was the only user of that function
-that reused the timer after calling that function.
-
--- Steve
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
