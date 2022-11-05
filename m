@@ -2,107 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2B061DC93
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 18:39:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ACF561DCA2
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 18:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiKERjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 13:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S229555AbiKERmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 13:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiKERjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 13:39:18 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3521C917
-        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 10:39:17 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id q9so7125521pfg.5
-        for <netdev@vger.kernel.org>; Sat, 05 Nov 2022 10:39:17 -0700 (PDT)
+        with ESMTP id S229517AbiKERmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 13:42:10 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E743A1C91E
+        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 10:42:08 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id y16so10898977wrt.12
+        for <netdev@vger.kernel.org>; Sat, 05 Nov 2022 10:42:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WWrco+vXh1FbuoaRINj7wlDyd8eAZjNE4VHFGZp67xQ=;
-        b=tIMJvPzkHDIyKiPdGwqxg/svC3w0FkTPRJansTyXplDRdyay7bQCFAoI+4+Fba1aiy
-         8gWl1frw0GVmz5q147uAckoYIQlfraawpo9HctXDE7iij+90PUr7wwVjhM8Ti4ND/BNJ
-         Nk6/dViWcvSVqsLoWMwiKOsexmZ1cUpbr09x3zFlKIGUPLZUb8kxtQRySNTsX3LoZXMD
-         2h3SpRuuvPxM69XIab10T8Mb4GGy5IGkC5QhmrcWzLol9g19wSpfYg2/1pIgqh7hYgDq
-         UX5Q5blWMEiBeWdtZJKK87s002w7fiswuJzzy0UmGbMrv3KcvKcfC7ugLnMO53w8YVG4
-         jsZQ==
+        d=gmail.com; s=20210112;
+        h=content-language:thread-index:content-transfer-encoding
+         :mime-version:message-id:date:subject:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=gXqF6ghsV1QeTgqO0S2aYcU47u1LrV7dTF/uSEqXBHM=;
+        b=ijWuuOAYOBaTmQndk/UjF3NQ7lzal8YjmiXFN9PUifZN85UrzZe7rk+HmW0LdjTfOD
+         v7ClkGK5rAoN1UomlFhhOIM/Dk9Xt2McUHWmQYb+hWJM2sQLcQmUzLybRy5+PNNc0r6Q
+         LGOELuq80Et214ex52VS8Uzhb50hAVyZYrjPG04oGpGrbFrtdSxTo3XDxZ7UmlvsBUxN
+         q9dzSJDlBUn/3681kUmP0/Z7FFK8xf+m7QrC/d+RZ6WsiqLwnniuVYAzjyLw2Z2XzEl0
+         nfMwxyxmO/v4VnpbeB3xG0/2VSRAPA2bNWEyrT1Mf27tWKzoQZCPQQ5KIWx4ZNb6CPyJ
+         aHQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WWrco+vXh1FbuoaRINj7wlDyd8eAZjNE4VHFGZp67xQ=;
-        b=IgXzHXAcPuc0hSmlL4sapH//mvfbe2NCqKZiUG5Lm/3wNhncK5Jy2yj1rgpWcX7gUn
-         ZIQkYn+tHfotJqByFsI4u+02jToXFOBeAaXohiv1ba2GWimB6PRzU0OLSpabA1XvG/Sa
-         Xs8+mzhGT5cECUjB+rA4MusytGDhBCwrbbGaZMqx3fRA4dhnxk7bQv1uVlM8j38X5fgA
-         fNi62qAZ2nNC5mxhYKoJ3UztlKCNyLWm3YmNhitg3BRRylil0OF0N448sT94pJL2/b3F
-         nTI7NJ5HQjTVleF8Mc9P5jdAuZ6b7Fxwkq8pOuEHp5CVC2TJ3Xga2yvjx9HWI++QTPWP
-         ze2g==
-X-Gm-Message-State: ACrzQf23WAnhuVB3QYH4tCbgydzVk+plTxcSnqXh7JKP1pacqmj3vTlM
-        33wRBpNBG1WHPNDcupSqfl8lzg==
-X-Google-Smtp-Source: AMsMyM6whexvajtuOncywX1ipcU7re5Fgjil52gkJ4VtzeHnP+Xj9pb3WrlwK4d2B7vJ6DVmp81RCg==
-X-Received: by 2002:a63:1748:0:b0:46f:18be:4880 with SMTP id 8-20020a631748000000b0046f18be4880mr35434657pgx.128.1667669956645;
-        Sat, 05 Nov 2022 10:39:16 -0700 (PDT)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id l13-20020a170903120d00b00186a1b243basm1934278plh.226.2022.11.05.10.39.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Nov 2022 10:39:15 -0700 (PDT)
-Message-ID: <fe28e9fa-b57b-8da6-383c-588f6e84f04f@kernel.dk>
-Date:   Sat, 5 Nov 2022 11:39:14 -0600
+        h=content-language:thread-index:content-transfer-encoding
+         :mime-version:message-id:date:subject:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gXqF6ghsV1QeTgqO0S2aYcU47u1LrV7dTF/uSEqXBHM=;
+        b=23w9AJQKb+fhDpgKL9I/rp+aeBlZ2/lNn/qm/lsPZw5yuB8cpS5Q2mH1ZDUbNkODr/
+         XqskayYij6ws+QfecWoNBspS89RK00EO3MgOV6hdyxmgiMEjYooQc68vuX1Ua+Megb+e
+         0ViDOevKRcpq9qu/aoVO+foWSldIbePmkfFT1mCibOdpXPCDY/L78jH9CqQtgt2LVsns
+         51fvLNZLuZb4O4qPEVnCrc3sMoh30IHHpQPEIcFLDXouut3zrjz0lMzPnivX94GDG/SX
+         Y67xbi27X/LXU9aZg33g9Tbr68qBoFqaUKcP2EgS9RKKPNHWpcOhE+e4DEHg3F5bFPjA
+         Thvw==
+X-Gm-Message-State: ACrzQf1AB5s5LgWe8BpxHDJtNbNrPHOe8NUmR0yed0nGZxUXtjBVPU76
+        5qmTf9Kyipt/odN0MXTmBN4NmERCxWV89A==
+X-Google-Smtp-Source: AMsMyM4c+SI4t34Ujrc1MmFsxZODP/l19JyOSjohyUHctBMyjUb8gtPWQM2soXv/ikmBMW5wMxIGQA==
+X-Received: by 2002:a5d:5186:0:b0:236:79a2:af1 with SMTP id k6-20020a5d5186000000b0023679a20af1mr26264451wrv.648.1667670127085;
+        Sat, 05 Nov 2022 10:42:07 -0700 (PDT)
+Received: from zbpt9gl1 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id bg27-20020a05600c3c9b00b003a5f3f5883dsm7334291wmb.17.2022.11.05.10.42.06
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 05 Nov 2022 10:42:06 -0700 (PDT)
+From:   <piergiorgio.beruto@gmail.com>
+To:     <netdev@vger.kernel.org>
+Subject: Adding IEEE802.3cg Clause 148 PLCA support to Linux
+Date:   Sat, 5 Nov 2022 18:42:10 +0100
+Message-ID: <026701d8f13d$ef0c2800$cd247800$@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
-Content-Language: en-US
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20221030220203.31210-1-axboe@kernel.dk>
- <CA+FuTSfj5jn8Wui+az2BrcpDFYF5m5ehwLiswwHMPJ2MK+S_Jw@mail.gmail.com>
- <02e5bf45-f877-719b-6bf8-c4ac577187a8@kernel.dk>
- <CA+FuTSd-HvtPVwRto0EGExm-Pz7dGpxAt+1sTb51P_QBd-N9KQ@mail.gmail.com>
- <88353f13-d1d8-ef69-bcdc-eb2aa17c7731@kernel.dk>
- <CA+FuTSdEKsN_47RtW6pOWEnrKkewuDBdsv_qAhR1EyXUr3obrg@mail.gmail.com>
- <46cb04ca-467c-2e33-f221-3e2a2eaabbda@kernel.dk>
-In-Reply-To: <46cb04ca-467c-2e33-f221-3e2a2eaabbda@kernel.dk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AdjxO1BPMo/qcrVLSfirwB2eLOeyww==
+Content-Language: en-us
+X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_20,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> FWIW, when adding nsec resolution I initially opted for an init-based
->> approach, passing a new flag to epoll_create1. Feedback then was that
->> it was odd to have one syscall affect the behavior of another. The
->> final version just added a new epoll_pwait2 with timespec.
-> 
-> I'm fine with just doing a pure syscall variant too, it was my original
-> plan. Only changed it to allow for easier experimentation and adoption,
-> and based on the fact that most use cases would likely use a fixed value
-> per context anyway.
-> 
-> I think it'd be a shame to drop the ctl, unless there's strong arguments
-> against it. I'm quite happy to add a syscall variant too, that's not a
-> big deal and would be a minor addition. Patch 6 should probably cut out
-> the ctl addition and leave that for a patch 7, and then a patch 8 for
-> adding a syscall.
-I split the ctl patch out from the core change, and then took a look at
-doing a syscall variant too. But there are a few complications there...
-It would seem to make the most sense to build this on top of the newest
-epoll wait syscall, epoll_pwait2(). But we're already at the max number
-of arguments there...
+Hello,
+I would like to add IEEE 802.3cg-2019 PLCA support to Linux.
+PLCA (Physical Layer Collision Avoidance) is an enhanced media-access =
+protocol for multi-drop networks, and it is currently specified for the =
+10BASE-T1S PHY defined in Clause 147 of the same standard.
+This feature is fully integrated into PHY and MACPHY implementations =
+such as the onsemi NCN26010 and Microchip LAN867x, which are available =
+on the market.
+And, I am the inventor of the PLCA protocol =F0=9F=98=8A.
 
-Arguably pwait2 should've been converted to use some kind of versioned
-struct instead. I'm going to take a stab at pwait3 with that kind of
-interface.
+I am writing here because I am seeking advice on what is the best way =
+forward.
+In practice, what we need to do is configuring some additional =
+parameters of the PHY: PLCA ID, TO_TIMER, NODE_COUNT, BURST.
+The PHY registers for PLCA configuration are further documented in the =
+OPEN alliance SIG public specifications (see =
+https://www.opensig.org/about/specifications/ -> PLCA Management =
+Registers)
 
--- 
-Jens Axboe
+The parameters I mentioned has to be configured dynamically. Therefore, =
+I think we should not use module parameters or static DT configurations.
+Based on my personal experience, It looks to me that extending ethtool =
+is the way to go. Maybe we should consider those as =
+=E2=80=9Ctunables=E2=80=9D?
+
+I am really interested to hear the opinion of the relevant Linux network =
+experts on this topic.
+
+Kind Regards,
+Piergiorgio
+
 
