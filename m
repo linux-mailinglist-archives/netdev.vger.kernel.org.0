@@ -2,74 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7120361D772
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 06:26:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44ADA61D776
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 06:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbiKEF0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 01:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
+        id S229595AbiKEF1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 01:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiKEF0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 01:26:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BD810B6;
-        Fri,  4 Nov 2022 22:26:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDA86B82F6C;
-        Sat,  5 Nov 2022 05:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB688C433D6;
-        Sat,  5 Nov 2022 05:25:56 +0000 (UTC)
-Date:   Sat, 5 Nov 2022 01:25:55 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengfeng Ye <cyeaa@connect.ust.hk>, Lin Ma <linma@zju.edu.cn>,
-        Duoming Zhou <duoming@zju.edu.cn>, netdev@vger.kernel.org
-Subject: Re: [RFC][PATCH v3 23/33] timers: nfc: pn533: Use
- timer_shutdown_sync() before freeing timer
-Message-ID: <20221105012555.2b065c4a@rorschach.local.home>
-In-Reply-To: <2f80c103-4b35-122d-b30f-4bdd8f643a31@linaro.org>
-References: <20221104054053.431922658@goodmis.org>
-        <20221104054916.096085393@goodmis.org>
-        <2f80c103-4b35-122d-b30f-4bdd8f643a31@linaro.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229499AbiKEF1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 01:27:19 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FB210B6
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 22:27:18 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id f17-20020a5d8591000000b006bcbe59b6cdso4261645ioj.14
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 22:27:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5ASnNDxhoqSLaBjncwLtyuIp6tFD08p3uNjxVPZiJKI=;
+        b=nKR6Nmciyj5CUE0yQ2gE4JExRoB4R5lOD2Mz/16TUJMJapftOZyLw/0xncElC6/j0S
+         uzHFXseWAJXxQ6g6p0MkjHyq9uif+Tw6cTuE9v1DNlhOKpmxwN9WlIK4UA5om920hQkJ
+         9P3mBrQtnfBgz7oWQ5CFmCOtpcj3WTznRS9AxOB8X61c4ueh5zPtmwEEhL41cEnGWNLy
+         vP/6Ud+TtpCp/lBYBci3ilHJLBxUjCEHBWFaRhSLekmtgzocp9fuTaVR0pEXkaOX4Qsf
+         M7clNc/hu7Q8TCqfJEcO8A3JgRhQoQLZmi1cMop1lA+RCtbDPgG4J33uYIVM7r2EyP90
+         IcPg==
+X-Gm-Message-State: ACrzQf0EGRVDXGVw9BjaHu9i+N689DsKdXOqrFxTdGLYDBYzxH6muzjR
+        OHpuyDCvt6G8C3diwgOheoVPdYxaaWHwLH8uqc11Vfw+i8ej
+X-Google-Smtp-Source: AMsMyM6VWI4Vk3WRzJfNJhb6um+SW7Ecd5WwtI1YxMBLKoya+XpAkwf4Adj2jolavy1c/SExku6Efe+lBuQpH9G+Y3dNw75iPtHB
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:a00f:0:b0:375:7166:2dac with SMTP id
+ a15-20020a02a00f000000b0037571662dacmr14017102jah.49.1667626037516; Fri, 04
+ Nov 2022 22:27:17 -0700 (PDT)
+Date:   Fri, 04 Nov 2022 22:27:17 -0700
+In-Reply-To: <00000000000041f5bc05e678fa9f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000959e6405ecb271a3@google.com>
+Subject: Re: [syzbot] WARNING in __cancel_work
+From:   syzbot <syzbot+10e37d0d88cbc2ea19e4@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, hdanton@sina.com,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, luiz.von.dentz@intel.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        penguin-kernel@I-love.SAKURA.ne.jp,
+        penguin-kernel@i-love.sakura.ne.jp, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Nov 2022 11:46:26 -0400
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+syzbot suspects this issue was fixed by commit:
 
-> On 04/11/2022 01:41, Steven Rostedt wrote:
-> > From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> > 
-> > Before a timer is freed, timer_shutdown_sync() must be called.
-> > 
-> > Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home/  
-> 
-> I think link has to be updated.
+commit 2d2cb3066f2c90cd8ca540b36ba7a55e7f2406e0
+Author: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Date:   Sat Sep 3 15:32:56 2022 +0000
 
-Yes, I was lazy on that. My next patch series will point to 00 of this series.
+    Bluetooth: L2CAP: initialize delayed works at l2cap_chan_create()
 
-Thanks,
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1469d541880000
+start commit:   7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20bc0b329895d963
+dashboard link: https://syzkaller.appspot.com/bug?extid=10e37d0d88cbc2ea19e4
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13537803080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12e68315080000
 
--- Steve
+If the result looks correct, please mark the issue as fixed by replying with:
 
+#syz fix: Bluetooth: L2CAP: initialize delayed works at l2cap_chan_create()
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
