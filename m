@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24DA361DC68
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 18:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2B061DC93
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 18:39:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiKERZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 13:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
+        id S229825AbiKERjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 13:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiKERZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 13:25:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64F712608
-        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 10:25:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80F9160B77
-        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 17:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD99C433D6;
-        Sat,  5 Nov 2022 17:25:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667669146;
-        bh=6MUkXPWXkX5uSssmigqg/8HK2NzMBL77Wj/776PSTWY=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=o6cyfT6qGQ57dunstEybawRPZdO8/vj9fKonfTiyqE9PSfJvAiZIZTjyAxVpzuvIs
-         Xw8RUHmLLdG5zcAfJxzLVRUMLQjpI1/TKQ6ALR0FNTCm21CUFz7cgkiLHmcGhAKXED
-         7pia+2xJFXL7jZD/6WMwXPA9F53sqmgMDalHqSdnafAnBxhYCxsRdd7eN1z7DE7Bg9
-         DDF55tmq3ffYXleesYyJtc3T3OWgBckIUP7kwlslUi4GZYAq95mXKzC6thR6i6Dc0L
-         qH/xz42sA2+MEraMx8qmlSnqQ4ac61tm1TgfccFnfudNZN5zxfV4aOPCslnTlVxHri
-         MaefpH+qFPKfQ==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 31A3A27C0054;
-        Sat,  5 Nov 2022 13:25:45 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute2.internal (MEProxy); Sat, 05 Nov 2022 13:25:45 -0400
-X-ME-Sender: <xms:l5xmY8fW03wV1tv40YETCdG6_Pvo43pbD3uGUE5y-O61hhDk-QOJ8w>
-    <xme:l5xmY-NYk1IHed-80V5M7ZErEyT0suoNvpLZZEZcsKbLxf9lKMVavjwDJiAbOzypM
-    Wh3HvGrlMvKa93tUt0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrvdefgddutddtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedfnfgv
-    ohhnucftohhmrghnohhvshhkhidfuceolhgvohhnsehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepgeejveelieejhfffjeegvdfhueefvddtvddvvdfhleetjeetleeg
-    ieefvdfgveegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheplhgvohhnodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduvdeftdeh
-    feelkeegqddvjeejleejjedvkedqlhgvohhnpeepkhgvrhhnvghlrdhorhhgsehlvghonh
-    drnhhu
-X-ME-Proxy: <xmx:mJxmY9giPU26wMCMCjsG_sOW45YOQKq_geTZmTeokYjIKT-ZM-nH0Q>
-    <xmx:mJxmYx9SWYQfyMxVE62qBGS_fAKQT8wwni2LBgmUX9L56xobeWYZ9Q>
-    <xmx:mJxmY4uVp2yH6NpL_9gAbJVWfQjr6j9HESruq8eqCgdcdsdg3bRqCA>
-    <xmx:mZxmY6I4c0CZgHTOMy2Vy7ZSDFbapZysC0-sCZWRNQ00JYD2_VK88w>
-Feedback-ID: i927946fb:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id E57DB1700089; Sat,  5 Nov 2022 13:25:43 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1087-g968661d8e1-fm-20221021.001-g968661d8
-Mime-Version: 1.0
-Message-Id: <4299887e-d9a4-4f8d-99fc-2964674f978a@app.fastmail.com>
-In-Reply-To: <20221103204800.23e3adcf@kernel.org>
-References: <20221101110248.423966-1-simon.horman@corigine.com>
- <20221103204800.23e3adcf@kernel.org>
-Date:   Sat, 05 Nov 2022 19:25:23 +0200
-From:   "Leon Romanovsky" <leon@kernel.org>
-To:     "Jakub Kicinski" <kuba@kernel.org>,
-        "Simon Horman" <simon.horman@corigine.com>
-Cc:     "David Miller" <davem@davemloft.net>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Steffen Klassert" <steffen.klassert@secunet.com>,
-        "Herbert Xu" <herbert@gondor.apana.org.au>,
-        "Chentian Liu" <chengtian.liu@corigine.com>,
-        "Huanhuan Wang" <huanhuan.wang@corigine.com>,
-        "Yinjun Zhang" <yinjun.zhang@corigine.com>,
-        "Louis Peens" <louis.peens@corigine.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
-Subject: Re: [PATCH net-next v3 0/3] nfp: IPsec offload support
-Content-Type: text/plain
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229821AbiKERjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 13:39:18 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3521C917
+        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 10:39:17 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id q9so7125521pfg.5
+        for <netdev@vger.kernel.org>; Sat, 05 Nov 2022 10:39:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WWrco+vXh1FbuoaRINj7wlDyd8eAZjNE4VHFGZp67xQ=;
+        b=tIMJvPzkHDIyKiPdGwqxg/svC3w0FkTPRJansTyXplDRdyay7bQCFAoI+4+Fba1aiy
+         8gWl1frw0GVmz5q147uAckoYIQlfraawpo9HctXDE7iij+90PUr7wwVjhM8Ti4ND/BNJ
+         Nk6/dViWcvSVqsLoWMwiKOsexmZ1cUpbr09x3zFlKIGUPLZUb8kxtQRySNTsX3LoZXMD
+         2h3SpRuuvPxM69XIab10T8Mb4GGy5IGkC5QhmrcWzLol9g19wSpfYg2/1pIgqh7hYgDq
+         UX5Q5blWMEiBeWdtZJKK87s002w7fiswuJzzy0UmGbMrv3KcvKcfC7ugLnMO53w8YVG4
+         jsZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WWrco+vXh1FbuoaRINj7wlDyd8eAZjNE4VHFGZp67xQ=;
+        b=IgXzHXAcPuc0hSmlL4sapH//mvfbe2NCqKZiUG5Lm/3wNhncK5Jy2yj1rgpWcX7gUn
+         ZIQkYn+tHfotJqByFsI4u+02jToXFOBeAaXohiv1ba2GWimB6PRzU0OLSpabA1XvG/Sa
+         Xs8+mzhGT5cECUjB+rA4MusytGDhBCwrbbGaZMqx3fRA4dhnxk7bQv1uVlM8j38X5fgA
+         fNi62qAZ2nNC5mxhYKoJ3UztlKCNyLWm3YmNhitg3BRRylil0OF0N448sT94pJL2/b3F
+         nTI7NJ5HQjTVleF8Mc9P5jdAuZ6b7Fxwkq8pOuEHp5CVC2TJ3Xga2yvjx9HWI++QTPWP
+         ze2g==
+X-Gm-Message-State: ACrzQf23WAnhuVB3QYH4tCbgydzVk+plTxcSnqXh7JKP1pacqmj3vTlM
+        33wRBpNBG1WHPNDcupSqfl8lzg==
+X-Google-Smtp-Source: AMsMyM6whexvajtuOncywX1ipcU7re5Fgjil52gkJ4VtzeHnP+Xj9pb3WrlwK4d2B7vJ6DVmp81RCg==
+X-Received: by 2002:a63:1748:0:b0:46f:18be:4880 with SMTP id 8-20020a631748000000b0046f18be4880mr35434657pgx.128.1667669956645;
+        Sat, 05 Nov 2022 10:39:16 -0700 (PDT)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id l13-20020a170903120d00b00186a1b243basm1934278plh.226.2022.11.05.10.39.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Nov 2022 10:39:15 -0700 (PDT)
+Message-ID: <fe28e9fa-b57b-8da6-383c-588f6e84f04f@kernel.dk>
+Date:   Sat, 5 Nov 2022 11:39:14 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
+Content-Language: en-US
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20221030220203.31210-1-axboe@kernel.dk>
+ <CA+FuTSfj5jn8Wui+az2BrcpDFYF5m5ehwLiswwHMPJ2MK+S_Jw@mail.gmail.com>
+ <02e5bf45-f877-719b-6bf8-c4ac577187a8@kernel.dk>
+ <CA+FuTSd-HvtPVwRto0EGExm-Pz7dGpxAt+1sTb51P_QBd-N9KQ@mail.gmail.com>
+ <88353f13-d1d8-ef69-bcdc-eb2aa17c7731@kernel.dk>
+ <CA+FuTSdEKsN_47RtW6pOWEnrKkewuDBdsv_qAhR1EyXUr3obrg@mail.gmail.com>
+ <46cb04ca-467c-2e33-f221-3e2a2eaabbda@kernel.dk>
+In-Reply-To: <46cb04ca-467c-2e33-f221-3e2a2eaabbda@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+>> FWIW, when adding nsec resolution I initially opted for an init-based
+>> approach, passing a new flag to epoll_create1. Feedback then was that
+>> it was odd to have one syscall affect the behavior of another. The
+>> final version just added a new epoll_pwait2 with timespec.
+> 
+> I'm fine with just doing a pure syscall variant too, it was my original
+> plan. Only changed it to allow for easier experimentation and adoption,
+> and based on the fact that most use cases would likely use a fixed value
+> per context anyway.
+> 
+> I think it'd be a shame to drop the ctl, unless there's strong arguments
+> against it. I'm quite happy to add a syscall variant too, that's not a
+> big deal and would be a minor addition. Patch 6 should probably cut out
+> the ctl addition and leave that for a patch 7, and then a patch 8 for
+> adding a syscall.
+I split the ctl patch out from the core change, and then took a look at
+doing a syscall variant too. But there are a few complications there...
+It would seem to make the most sense to build this on top of the newest
+epoll wait syscall, epoll_pwait2(). But we're already at the max number
+of arguments there...
 
+Arguably pwait2 should've been converted to use some kind of versioned
+struct instead. I'm going to take a stab at pwait3 with that kind of
+interface.
 
-On Fri, Nov 4, 2022, at 05:48, Jakub Kicinski wrote:
-> On Tue,  1 Nov 2022 12:02:45 +0100 Simon Horman wrote:
->> It covers three enhancements:
->> 
->> 1. Patches 1/3:
->>    - Extend the capability word and control word to to support
->>      new features.
->> 
->> 2. Patch 2/3:
->>    - Add framework to support IPsec offloading for NFP driver,
->>      but IPsec offload control plane interface xfrm callbacks which
->>      interact with upper layer are not implemented in this patch.
->> 
->> 3. Patch 3/3:
->>    - IPsec control plane interface xfrm callbacks are implemented
->>      in this patch.
->
-> Steffen, Leon, does this look good to you
+-- 
+Jens Axboe
 
-I'm sorry but didn't look yet. We had onsite IPsec workshop at that time.  I'll take look on Sunday.
-
-Thanks 
