@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 490A461D7D1
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 07:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F177A61D7F2
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 07:37:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbiKEGCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Nov 2022 02:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
+        id S229516AbiKEGhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Nov 2022 02:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbiKEGBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 02:01:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AC631238;
-        Fri,  4 Nov 2022 23:01:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3582960AB2;
-        Sat,  5 Nov 2022 06:01:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10253C4347C;
-        Sat,  5 Nov 2022 06:01:33 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.96)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1orCFl-007Oy1-0o;
-        Sat, 05 Nov 2022 02:02:01 -0400
-Message-ID: <20221105060201.081948530@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Sat, 05 Nov 2022 02:00:58 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH v4a 34/38] timers: atm: Use timer_shutdown_sync() before a module is released
-References: <20221105060024.598488967@goodmis.org>
+        with ESMTP id S229505AbiKEGhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Nov 2022 02:37:19 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98A7F03C
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 23:36:18 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N473F4HXKzJnQY;
+        Sat,  5 Nov 2022 14:32:57 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 5 Nov 2022 14:35:54 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 5 Nov
+ 2022 14:35:54 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <sbhatta@marvell.com>, <sgoutham@marvell.com>,
+        <davem@davemloft.net>
+Subject: [PATCH net] octeontx2-pf: fix build error when CONFIG_OCTEONTX2_PF=y
+Date:   Sat, 5 Nov 2022 14:34:42 +0800
+Message-ID: <20221105063442.2013981-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+If CONFIG_MACSEC=m and CONFIG_OCTEONTX2_PF=y, it leads a build error:
 
-Before a module is released, timer_shutdown_sync() must be called on its
-timers.
+  ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.o: in function `otx2_pfaf_mbox_up_handler':
+  otx2_pf.c:(.text+0x181c): undefined reference to `cn10k_handle_mcs_event'
+  ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.o: in function `otx2_probe':
+  otx2_pf.c:(.text+0x437e): undefined reference to `cn10k_mcs_init'
+  ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.o: in function `otx2_remove':
+  otx2_pf.c:(.text+0x5031): undefined reference to `cn10k_mcs_free'
+  ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.o: in function `otx2_mbox_up_handler_mcs_intr_notify':
+  otx2_pf.c:(.text+0x5f11): undefined reference to `cn10k_handle_mcs_event'
 
-Link: https://lore.kernel.org/all/20221104054053.431922658@goodmis.org/
+Make CONFIG_OCTEONTX2_PF depends on CONFIG_MACSEC to fix it. Because
+it has empty stub functions of cn10k, CONFIG_OCTEONTX2_PF can be enabled
+if CONFIG_MACSEC is disabled
 
-Cc: Chas Williams <3chas3@gmail.com>
-Cc: linux-atm-general@lists.sourceforge.net
-Cc: netdev@vger.kernel.org
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: c54ffc73601c ("octeontx2-pf: mcs: Introduce MACSEC hardware offloading")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/atm/idt77105.c | 4 ++--
- drivers/atm/iphase.c   | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/atm/idt77105.c b/drivers/atm/idt77105.c
-index bfca7b8a6f31..cc4a5449ca42 100644
---- a/drivers/atm/idt77105.c
-+++ b/drivers/atm/idt77105.c
-@@ -366,8 +366,8 @@ EXPORT_SYMBOL(idt77105_init);
- static void __exit idt77105_exit(void)
- {
- 	/* turn off timers */
--	del_timer_sync(&stats_timer);
--	del_timer_sync(&restart_timer);
-+	timer_shutdown_sync(&stats_timer);
-+	timer_shutdown_sync(&restart_timer);
- }
- 
- module_exit(idt77105_exit);
-diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
-index 324148686953..9be45d9d66b3 100644
---- a/drivers/atm/iphase.c
-+++ b/drivers/atm/iphase.c
-@@ -3280,7 +3280,7 @@ static void __exit ia_module_exit(void)
- {
- 	pci_unregister_driver(&ia_driver);
- 
--	del_timer_sync(&ia_timer);
-+	timer_shutdown_sync(&ia_timer);
- }
- 
- module_init(ia_module_init);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+index 993ac180a5db..6b4f640163f7 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
++++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+@@ -32,6 +32,7 @@ config OCTEONTX2_PF
+ 	tristate "Marvell OcteonTX2 NIC Physical Function driver"
+ 	select OCTEONTX2_MBOX
+ 	select NET_DEVLINK
++	depends on MACSEC || !MACSEC
+ 	depends on (64BIT && COMPILE_TEST) || ARM64
+ 	select DIMLIB
+ 	depends on PCI
 -- 
-2.35.1
+2.25.1
+
