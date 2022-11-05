@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D181D61A6F0
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 03:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9134361A712
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 03:53:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiKECkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 22:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S229570AbiKECxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 22:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiKECkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 22:40:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDF395BB
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 19:40:19 -0700 (PDT)
+        with ESMTP id S229499AbiKECxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 22:53:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263142B6
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 19:53:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A10CDB83064
-        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 02:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 227C2C433C1;
-        Sat,  5 Nov 2022 02:40:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3C4A6239D
+        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 02:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6CB0C433D6;
+        Sat,  5 Nov 2022 02:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667616016;
-        bh=kvHJGNF/BIc3pEO5uyH3JPesXpwQvV8xQ5r+lAv6Ex0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fuOR6V1ZlR9W71OzBd8uMRITdQ1HEM9zEOyNKXXCCu72GPAaphjSBLz5GMk7ejmUu
-         5wZY81qh3A34ONdeS6lx0OeOryaB0Be5qpF9kv+DbjY7nItn1KMS+0RIhvCkZvp0TR
-         Ayv2mGweEfYav5uhIL7fIvjQ8Ox0vDytU6piWevW20eRnyIaHYtq8X6UvKSdZkkd/I
-         h+qc00vZFEdTlPQ6qHFn7o2sRQ1fiNVJoKMEkUldHipKEQMWsV2/QepieK+wTlFAeQ
-         CkBo0/wMAkDUrwJE3riJ4Mx7JzxTDuyxUbYg1ILTHYxce8pFIaLGWxN0wNUATsCTy9
-         YFN7GkIKT/Xzg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 07D9CE29F4C;
-        Sat,  5 Nov 2022 02:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1667616825;
+        bh=KyakwN8KnaumyotG2geQY3yVUJ091goaHayiW4Wc3dk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W6l3XlV36CtxzFTmS2e28TCWv4nuKEVYJFAx5jkeESca1Pu9MJp5bW/UYRWN2lWmU
+         MUbjktxmXJtU0OVw2ryreNnEelU7iREV8mocS/85vse9sZRxeMxprAx5Pld6z7lL+B
+         KWOZkzgS/DKXsLHbdyL6ReiEF0Ynp6Ols/pjO2shNRHzS160xeMs24R4vK5JKBDWzb
+         tIDoRwiNoSk+hiaVvWM9U51ykLOMxS+MH+xGfa56suman9raI2aXwSTkzonCSDjY3P
+         W65hEZt2sTQnLP4QkYycb9cMpSfVd4UgFfq6/5rMaiqbJh73aP1NVnl9srzgZvH5sr
+         8/k33SCSkDgew==
+Date:   Fri, 4 Nov 2022 19:53:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Jurgens <danielj@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <parav@nvidia.com>, <saeedm@nvidia.com>, <yishaih@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH 1/2] devlink: Expose port function commands to control
+ roce
+Message-ID: <20221104195343.5033e62d@kernel.org>
+In-Reply-To: <20221102163954.279266-2-danielj@nvidia.com>
+References: <20221102163954.279266-1-danielj@nvidia.com>
+        <20221102163954.279266-2-danielj@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] bnxt_en: Bug fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166761601602.5821.12423020008499338624.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Nov 2022 02:40:16 +0000
-References: <1667518407-15761-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1667518407-15761-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, gospo@broadcom.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,36 +55,161 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu,  3 Nov 2022 19:33:23 -0400 you wrote:
-> This bug fix series includes fixes for PCIE AER, a crash that may occur
-> when doing ethtool -C in the middle of error recovery, and aRFS.
+On Wed, 2 Nov 2022 18:39:53 +0200 Daniel Jurgens wrote:
+> From: Yishai Hadas <yishaih@nvidia.com>
 > 
-> Alex Barba (1):
->   bnxt_en: fix potentially incorrect return value for ndo_rx_flow_steer
+> Expose port function commands to turn on / off roce, this is used to
+> control the port roce device capabilities.
 > 
-> Michael Chan (1):
->   bnxt_en: Fix possible crash in bnxt_hwrm_set_coal()
+> When roce is disabled for a function of the port, function cannot create
+> any roce specific resources (e.g GID table).
+> It also saves system memory utilization. For example disabling roce on a
+> VF/SF saves 1 Mbytes of system memory per function.
 > 
-> [...]
+> Example of a PCI VF port which supports function configuration:
+> Set roce of the VF's port function.
+> 
+> $ devlink port show pci/0000:06:00.0/2
+> pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
+>     function:
+>         hw_addr 00:00:00:00:00:00 roce on
+> 
+> $ devlink port function set pci/0000:06:00.0/2 roce off
+> 
+> $ devlink port show pci/0000:06:00.0/2
+> pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
+>     function:
+>         hw_addr 00:11:22:33:44:55 roce off
+> 
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Daniel Jurgens <danielj@nvidia.com>
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-Here is the summary with links:
-  - [net,1/4] bnxt_en: refactor bnxt_cancel_reservations()
-    https://git.kernel.org/netdev/net/c/b4c66425771d
-  - [net,2/4] bnxt_en: fix the handling of PCIE-AER
-    https://git.kernel.org/netdev/net/c/0cf736a18a1e
-  - [net,3/4] bnxt_en: Fix possible crash in bnxt_hwrm_set_coal()
-    https://git.kernel.org/netdev/net/c/6d81ea3765df
-  - [net,4/4] bnxt_en: fix potentially incorrect return value for ndo_rx_flow_steer
-    https://git.kernel.org/netdev/net/c/02597d39145b
+LGTM, handful of minor nit picks:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
+> index 7627b1da01f2..fd191622ab68 100644
+> --- a/Documentation/networking/devlink/devlink-port.rst
+> +++ b/Documentation/networking/devlink/devlink-port.rst
+> @@ -110,7 +110,7 @@ devlink ports for both the controllers.
+>  Function configuration
+>  ======================
+>  
+> -A user can configure the function attribute before enumerating the PCI
+> +A user can configure one or more function attributes before enumerating the PCI
 
+I'm not an expert on English grammar, but this sounds odd. I think it
+is a generic reference, so the most suitable form would to use plural
+"Users". Since we're touching this line anyway...
+
+>  function. Usually it means, user should configure function attribute
+>  before a bus specific device for the function is created. However, when
+>  SRIOV is enabled, virtual function devices are created on the PCI bus.
+> @@ -122,6 +122,9 @@ A user may set the hardware address of the function using
+>  'devlink port function set hw_addr' command. For Ethernet port function
+>  this means a MAC address.
+>  
+> +A user may set also the roce capability of the function using
+
+... and adding another instance here. "also" before "set". roce -> RoCE.
+
+> +'devlink port function set roce' command.
+> +
+>  Subfunction
+>  ============
+
+> +	/**
+> +	 * @port_function_roce_get: Port function's roce get function.
+> +	 *
+> +	 * Should be used by device drivers to report the roce state of
+> +	 * a function managed by the devlink port. Driver should return
+> +	 * -EOPNOTSUPP if it doesn't support port function handling for
+> +	 * a particular port.
+
+Use imperative:
+
+	* Query RoCE state of a function managed ...
+	* Return -EOPNOTSUPP if port function handing is not supported.
+
+> +	int (*port_function_roce_get)(struct devlink_port *port, bool *on,
+> +				      struct netlink_ext_ack *extack);
+> +	/**
+> +	 * @port_function_roce_set: Port function's roce set function.
+> +	 *
+> +	 * Should be used by device drivers to enable/disable the roce state of
+> +	 * a function managed by the devlink port. Driver should return
+> +	 * -EOPNOTSUPP if it doesn't support port function handling for
+> +	 * a particular port.
+> +	 */
+> +	int (*port_function_roce_set)(struct devlink_port *port, bool on,
+
+> +	DEVLINK_PORT_FN_ATTR_ROCE,	/* u8 */
+
+Please use u32, forget u8 and u16 exist, netlink rounds up the size of
+attributes to 4B, anyway.
+
+>  
+>  	__DEVLINK_PORT_FUNCTION_ATTR_MAX,
+>  	DEVLINK_PORT_FUNCTION_ATTR_MAX = __DEVLINK_PORT_FUNCTION_ATTR_MAX - 1
+
+> +static int
+> +devlink_port_fn_roce_set(struct devlink_port *port,
+> +			 const struct nlattr *attr,
+> +			 struct netlink_ext_ack *extack)
+> +{
+> +	const struct devlink_ops *ops = port->devlink->ops;
+> +	bool on;
+> +
+> +	on = nla_get_u8(attr);
+> +
+> +	if (!ops->port_function_roce_set) {
+> +		NL_SET_ERR_MSG_MOD(extack,
+
+NL_SET_ERR_MSG_ATTR(), please
+
+> +				   "Port doesn't support roce function attribute");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return ops->port_function_roce_set(port, on, extack);
+> +}
+> +
+>  static int
+>  devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *port,
+>  				   struct netlink_ext_ack *extack)
+> @@ -1266,6 +1313,12 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
+>  					   &msg_updated);
+>  	if (err)
+>  		goto out;
+> +
+> +	err = devlink_port_function_roce_fill(ops, port, msg, extack,
+> +					      &msg_updated);
+> +	if (err)
+> +		goto out;
+> +
+>  	err = devlink_port_fn_state_fill(ops, port, msg, extack, &msg_updated);
+>  out:
+>  	if (err || !msg_updated)
+> @@ -1670,6 +1723,14 @@ static int devlink_port_function_set(struct devlink_port *port,
+>  		if (err)
+>  			return err;
+>  	}
+> +
+> +	attr = tb[DEVLINK_PORT_FN_ATTR_ROCE];
+> +	if (attr) {
+> +		err = devlink_port_fn_roce_set(port, attr, extack);
+
+We should try a little harder to avoid partial request processing.
+Let's check if the device has the callbacks for all the settings in
+the request upfront?
+
+> +		if (err)
+> +			return err;
+> +	}
+> +
+>  	/* Keep this as the last function attribute set, so that when
+>  	 * multiple port function attributes are set along with state,
+>  	 * Those can be applied first before activating the state.
 
