@@ -2,96 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A2AD61A737
-	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 04:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1909061A74B
+	for <lists+netdev@lfdr.de>; Sat,  5 Nov 2022 04:32:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbiKEDKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Nov 2022 23:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
+        id S229741AbiKEDcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Nov 2022 23:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiKEDKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 23:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A0012A9C
-        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 20:10:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0E0B62394
-        for <netdev@vger.kernel.org>; Sat,  5 Nov 2022 03:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A29BC433D7;
-        Sat,  5 Nov 2022 03:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667617817;
-        bh=JQcJMzO0ZHvVMc7Dr3fhL46gUiypz6V+APdJXzQAaNg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o+cazX/lEZw6afeXn4PEO05sFJDCotzqtqTrwOO3sutzSSWa3vkxJNVl3h56H7Yty
-         wHKdES5tkV+FokV5/wzuUyzq3mIUKiIuA4PpxgX28moBMZPbcR4GdgfaLBHk6Buskl
-         YXWt1It6+LZnNsHpQRglUlqp4OjMIpPJt+Kxjs8mvnikAsP96xdCZxJu1VmJXRnhF7
-         q+giyMZrNp5ERTKMr7Gbl90KLAJFgReRnG7dNe/HJpaRvx9j4ip7NZyx6OQsPrvyOW
-         JbWP/fH8TxOFiAVxN9maSiHhLXGaWc8qj/RhgpCfUnpEClIggAhkqKao+CrImPDDyn
-         DzXbiqQQZqnXQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0F826E29F4C;
-        Sat,  5 Nov 2022 03:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229730AbiKEDcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Nov 2022 23:32:21 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADAF3F066
+        for <netdev@vger.kernel.org>; Fri,  4 Nov 2022 20:32:17 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-13be3ef361dso7464125fac.12
+        for <netdev@vger.kernel.org>; Fri, 04 Nov 2022 20:32:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=d4+BKZsVBq8bd37OinE8qYinDnCTidi21Q348dbcKy4=;
+        b=KJf7VFwcT+YVVBNAPenxOJu/4YS/diN/7i9W/htsQ/5tp1JZP3DozwpEAf8H3vKkji
+         X+4MpscL3xOWpcvrnW84WYjaxxH4M1dlVxGqFNTDB7/8j0psbwj3ED++gWDrVt0kb/vI
+         0/vXovGK8MTifQ9ZNiVd8X3v8hAUMfcG3U2FIpiaStJ/mE8jY7akxk4VP7YlX2dBHkkr
+         3GH7lVz0SGjhCZF0D3xHRcQ91/dv/46JcqJceZfscVYsw6ttR97xpDyeXmOyNmdI6jA9
+         1E0C3IDedFc8hB5ZvCbf9vptfLD2WU8ByXqP3CWwV/IiJN+KuQRxF2mXN+/y+YJWy82S
+         fKcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=d4+BKZsVBq8bd37OinE8qYinDnCTidi21Q348dbcKy4=;
+        b=NMLafSYCKI60LRDHhf5R5+jEXLh+EhjH8aCHs1C/e8kvIZc66+OEsG0w+ycjpogOsx
+         XKANXYxK5jcE4bz9DuzguajFeUhYpxiHRKCIJ9PLwTcjmMDY8QPMDnEiqD2gW3Bpn/Z9
+         n5G7rZdLtUrCFwhKDqMdBXM0xTesLtQaCyJGsb9zArBnhgGoUdWzo3+0JdhkgkAEKUbJ
+         NX5wapgALvpPIER7cOiJ4kIHDshAwDYwaq21BCm2Ows+d9tw33R9U0b17jZV3RaG9p1z
+         dhzPSbwqxJAeEpz8c/IOx6hwjQe5f+qXMA8Bl1KJZsiR+KXlCNLvUYm/OzbU0KY2nmPZ
+         6O/Q==
+X-Gm-Message-State: ACrzQf3+3b+NfMcbukOYspb98KODi3Uh/6uQ3R1pcC8v8xSIH5/aDJTL
+        2JjI6hgPJLgXrphACkR8HSd8RAaBCl5PAp7zkncn
+X-Google-Smtp-Source: AMsMyM4lIjXVS0Uqtg79Zx/856WEPiWU5BfMOAtTf7/NpVC/VL/OBl4Sj6nXaf7IwvrV4SYRLGK5mwnutHnyZ0ovh/M=
+X-Received: by 2002:a05:6870:f299:b0:13b:ad21:934d with SMTP id
+ u25-20020a056870f29900b0013bad21934dmr23417023oap.172.1667619137195; Fri, 04
+ Nov 2022 20:32:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/5] sfc: add basic flower matches to offload
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166761781705.20771.9065271264242447801.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Nov 2022 03:10:17 +0000
-References: <cover.1667412458.git.ecree.xilinx@gmail.com>
-In-Reply-To: <cover.1667412458.git.ecree.xilinx@gmail.com>
-To:     <edward.cree@amd.com>
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, habetsm.xilinx@gmail.com,
-        ecree.xilinx@gmail.com
-X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <166543910984.474337.2779830480340611497.stgit@olly> <c8ce1c62-84ac-f39e-6c4e-5108b55c3515@canonical.com>
+In-Reply-To: <c8ce1c62-84ac-f39e-6c4e-5108b55c3515@canonical.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 4 Nov 2022 23:32:05 -0400
+Message-ID: <CAHC9VhSfc4sta0t9B-N1fV9CYO2tQUo8-cA3np-tz2AeXUSi1g@mail.gmail.com>
+Subject: Re: [PATCH] lsm: make security_socket_getpeersec_stream() sockptr_t safe
+To:     John Johansen <john.johansen@canonical.com>
+Cc:     linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Oct 31, 2022 at 5:59 AM John Johansen
+<john.johansen@canonical.com> wrote:
+> On 10/10/22 14:58, Paul Moore wrote:
+> > Commit 4ff09db1b79b ("bpf: net: Change sk_getsockopt() to take the
+> > sockptr_t argument") made it possible to call sk_getsockopt()
+> > with both user and kernel address space buffers through the use of
+> > the sockptr_t type.  Unfortunately at the time of conversion the
+> > security_socket_getpeersec_stream() LSM hook was written to only
+> > accept userspace buffers, and in a desire to avoid having to change
+> > the LSM hook the commit author simply passed the sockptr_t's
+> > userspace buffer pointer.  Since the only sk_getsockopt() callers
+> > at the time of conversion which used kernel sockptr_t buffers did
+> > not allow SO_PEERSEC, and hence the
+> > security_socket_getpeersec_stream() hook, this was acceptable but
+> > also very fragile as future changes presented the possibility of
+> > silently passing kernel space pointers to the LSM hook.
+> >
+> > There are several ways to protect against this, including careful
+> > code review of future commits, but since relying on code review to
+> > catch bugs is a recipe for disaster and the upstream eBPF maintainer
+> > is "strongly against defensive programming", this patch updates the
+> > LSM hook, and all of the implementations to support sockptr_t and
+> > safely handle both user and kernel space buffers.
+> >
+> > Signed-off-by: Paul Moore <paul@paul-moore.com>
+>
+> looks good to me
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Thanks.  I just merged this into lsm/next.
 
-On Thu, 3 Nov 2022 15:27:26 +0000 you wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> Support offloading TC flower rules with matches on L2-L4 fields.
-> 
-> Changed in v2:
->  * changed CHECK macro to not hide control flow.  Annoyingly, gcc complains
->    if we don't use the result of the OR-expression we're using to get short-
->    circuiting behaviour (ensuring we only report the first error), so we
->    have to have an if-statement that's semantically redundant.
->  * added explanation to patch #1 of why these checks aren't vital for
->    correctness (and thus don't need to have a Fixes tag or go to net).
-> 
-> [...]
+> Acked-by: John Johansen <john.johansen@canonical.com>
 
-Here is the summary with links:
-  - [v2,net-next,1/5] sfc: check recirc_id match caps before MAE offload
-    https://git.kernel.org/netdev/net-next/c/f0b59ad11e29
-  - [v2,net-next,2/5] sfc: add Layer 2 matches to ef100 TC offload
-    https://git.kernel.org/netdev/net-next/c/6d1c604d1098
-  - [v2,net-next,3/5] sfc: add Layer 3 matches to ef100 TC offload
-    https://git.kernel.org/netdev/net-next/c/c178dff3f92d
-  - [v2,net-next,4/5] sfc: add Layer 3 flag matches to ef100 TC offload
-    https://git.kernel.org/netdev/net-next/c/5ca7ef293866
-  - [v2,net-next,5/5] sfc: add Layer 4 matches to ef100 TC offload
-    https://git.kernel.org/netdev/net-next/c/5d1d24da00db
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+paul-moore.com
