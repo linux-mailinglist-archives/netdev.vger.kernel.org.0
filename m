@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEA961E5F0
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 21:34:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D404561E5EF
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 21:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbiKFUea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230115AbiKFUea (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 6 Nov 2022 15:34:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbiKFUe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 15:34:27 -0500
+        with ESMTP id S230057AbiKFUe2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 15:34:28 -0500
 Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1846A11444
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 12:34:26 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id k2so6187606qkk.7
-        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 12:34:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693AD11479
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 12:34:27 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id k4so6187281qkj.8
+        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 12:34:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1YaNOJM8jkX+x4IRM1cU8ASldVaWWDUSowx6SMgxA88=;
-        b=Ug3MUHb0JJdn+BrH45Gu4GpWV011VTqAPpyZk1DgMjEptcMHYcYrAvr2QM7h2t7m+e
-         buz+3tgFdnpiD5hGlzBESPFmYoeRAKSThETL/ceXM20yr5OnqITt1/yPzcdV6gAwFecL
-         xKCyKQUgy9FCHBWNgUFRqalCThdqIxd7XF1NHmayYFL0i0llls3uL1ghlF7OG/dKHJji
-         sBKh8BRSeRY74HMgvWlAN4yGtVH/Zswxvmqp6ee/rAxfDotFfeicXBKjsXvcIzKZPOHI
-         Ff3YiDDj8WgedQSjbZjjFh5ZBSh3IO41IwCrSCelMDI4x3dxACDr4XANyvpz5G4Jruxe
-         opfw==
+        bh=UWT0jOuXhE0Q7uIZzOugbz09aVE+DCkuvqop6cLxWAM=;
+        b=dgYvyC2AEbzmJPbrmIiOV3r3QhTV3YvX2Ks11ypmdF3fhzn30KED8T7n5DHhORrPM5
+         qN0EhWk9RSGlqQiLVRIKRrn4S63c56B6YIqXFqYNJNAdrFLa757IFpNQ2JHAtfqPpEiD
+         ehT8nP/elaFUQKeeD71OKZ3jsNCiNl7Avss2Kh+bF2GbRUAJ6IPT9Ppq6CILQySl7M1M
+         wBUFw18Lb02uqGRtd6TKH5jNwTFnArtnL9vjGGi1KCIxygAR4KBgG8K8ur1bvAx3hHTc
+         w/WM0Y5QyBfUxy1L3MmSfogHPKLQPKu+ZIIMEwbuBS2DBB2C6IbpLQHEVIqxBbT4hOR4
+         od+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1YaNOJM8jkX+x4IRM1cU8ASldVaWWDUSowx6SMgxA88=;
-        b=P0zY1Te7tyGRyMTWJrs3WAWgnprpS/1vcBUCYoC3i9xnv+HhNSov1aBSd1Jp545FsN
-         dtaBkTMb5qVfSO8zRGb75jcDQSVTJ8uUoEwt4Jm9rTkpiQSXcc/4ryE2Dunaih1CcnCT
-         A0YcbrsFJDnMMHAGZtHwvRulKqCBmwuolkFMhlKlb0j0wVT0cqP8ko7dR9YF7purUvRi
-         53jWGX3SnXyVapMSeQh7B9ffCCmaPgkm1enb+RW+PrIzeH/MckF8pq8bVS80orOkq32R
-         UnPT13eIn0SSNw2FpW14SuniGW6VVHKLrqdJyOVkNxiJNECMwr9C4OK4FmXcoRroQQm3
-         EAAg==
-X-Gm-Message-State: ACrzQf2gG/d3/rvG+invhNTy/zDZo5N93debI3D7bDwTjfMNQvFRqtRD
-        bonGORd/awUK7D1xxTqPe7bLMvvMQQ1syA==
-X-Google-Smtp-Source: AMsMyM6HjuuvIrnLLV4zTqjkdCRnLT+kC3KbvzJvvc0Br4IkZ1ansf2YhGN22ek9OrOkl5B3NduE0w==
-X-Received: by 2002:a37:c202:0:b0:6fa:5762:d418 with SMTP id i2-20020a37c202000000b006fa5762d418mr19430265qkm.154.1667766864999;
-        Sun, 06 Nov 2022 12:34:24 -0800 (PST)
+        bh=UWT0jOuXhE0Q7uIZzOugbz09aVE+DCkuvqop6cLxWAM=;
+        b=f+CdpUueLsnQWVmScMDse5nJiOTcj1sJdCURcrFC4W5Jdl7Mf7vRxg84MuB+0Kv/sK
+         Y/1p0TIXIrXUFYLPMcQDAdz+jHwMc2UzG6wQXnQWg6f3ZsufrnAunEBp0EmtwcyqLNum
+         Avcs+NvEjEx6bMHXBXgQE8aVLmvaK6LPkkCbt15NTi5WcFCjH3iIqPFc8XwlDikwNE2S
+         IkMsF/q9+pV5trHz+Wtl58mMi7Ke7IQZq3f/XAfSad+h6rPwlogXhNJ1UIrucEqj6cGM
+         iRP2RKw4NDYyBu9KlOcnwxWhj1TjOwS77oFkgcTc1X+nFqNvs9M+4Ok7xSSUgvMbak5L
+         Y+Tw==
+X-Gm-Message-State: ACrzQf3GQKdVFKsUJL8GcivI0BCLMebqQ8DrvDevjaTyaaN7YNqGZJe9
+        82vscLCfJvPRfJCvMybShpJpHEwvRuuA5w==
+X-Google-Smtp-Source: AMsMyM4DITP2/mBMymG1J9HURfXIihvJP3NtMk0g4DSomvrY5ZguIspy6uHfs2Ii5We4b5KSWZ3+7A==
+X-Received: by 2002:a05:620a:13fa:b0:6fa:15e3:a277 with SMTP id h26-20020a05620a13fa00b006fa15e3a277mr31606155qkl.479.1667766866351;
+        Sun, 06 Nov 2022 12:34:26 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id t31-20020a05622a181f00b003a540320070sm4703551qtc.6.2022.11.06.12.34.23
+        by smtp.gmail.com with ESMTPSA id t31-20020a05622a181f00b003a540320070sm4703551qtc.6.2022.11.06.12.34.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Nov 2022 12:34:24 -0800 (PST)
+        Sun, 06 Nov 2022 12:34:25 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
         ovs-dev@openvswitch.org
@@ -67,9 +67,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Ilya Maximets <i.maximets@ovn.org>,
         Eelco Chaudron <echaudro@redhat.com>,
         Aaron Conole <aconole@redhat.com>
-Subject: [PATCHv4 net-next 2/4] net: move add ct helper function to nf_conntrack_helper for ovs and tc
-Date:   Sun,  6 Nov 2022 15:34:15 -0500
-Message-Id: <2a0b53c840afd1af4c12e424adc53fc4dd0b436a.1667766782.git.lucien.xin@gmail.com>
+Subject: [PATCHv4 net-next 3/4] net: sched: call tcf_ct_params_free to free params in tcf_ct_init
+Date:   Sun,  6 Nov 2022 15:34:16 -0500
+Message-Id: <380dabb8c6386df41ac66324791925fc3f8594d1.1667766782.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1667766782.git.lucien.xin@gmail.com>
 References: <cover.1667766782.git.lucien.xin@gmail.com>
@@ -85,136 +85,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move ovs_ct_add_helper from openvswitch to nf_conntrack_helper and
-rename as nf_ct_add_helper, so that it can be used in TC act_ct in
-the next patch.
+This patch is to make the err path simple by calling tcf_ct_params_free(),
+so that it won't cause problems when more members are added into param and
+need freeing on the err path.
 
 Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/netfilter/nf_conntrack_helper.h |  2 +
- net/netfilter/nf_conntrack_helper.c         | 31 +++++++++++++++
- net/openvswitch/conntrack.c                 | 44 +++------------------
- 3 files changed, 38 insertions(+), 39 deletions(-)
+ net/sched/act_ct.c | 35 ++++++++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack_helper.h b/include/net/netfilter/nf_conntrack_helper.h
-index b6676249eeeb..f30b1694b690 100644
---- a/include/net/netfilter/nf_conntrack_helper.h
-+++ b/include/net/netfilter/nf_conntrack_helper.h
-@@ -117,6 +117,8 @@ int __nf_ct_try_assign_helper(struct nf_conn *ct, struct nf_conn *tmpl,
- 
- int nf_ct_helper(struct sk_buff *skb, struct nf_conn *ct,
- 		 enum ip_conntrack_info ctinfo, u16 proto);
-+int nf_ct_add_helper(struct nf_conn *ct, const char *name, u8 family,
-+		     u8 proto, bool nat, struct nf_conntrack_helper **hp);
- 
- void nf_ct_helper_destroy(struct nf_conn *ct);
- 
-diff --git a/net/netfilter/nf_conntrack_helper.c b/net/netfilter/nf_conntrack_helper.c
-index 88039eedadea..48ea6d0264b5 100644
---- a/net/netfilter/nf_conntrack_helper.c
-+++ b/net/netfilter/nf_conntrack_helper.c
-@@ -309,6 +309,37 @@ int nf_ct_helper(struct sk_buff *skb, struct nf_conn *ct,
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index b38d91d6b249..193a460a9d7f 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -345,11 +345,9 @@ static void tcf_ct_flow_table_cleanup_work(struct work_struct *work)
+ 	module_put(THIS_MODULE);
  }
- EXPORT_SYMBOL_GPL(nf_ct_helper);
  
-+int nf_ct_add_helper(struct nf_conn *ct, const char *name, u8 family,
-+		     u8 proto, bool nat, struct nf_conntrack_helper **hp)
-+{
-+	struct nf_conntrack_helper *helper;
-+	struct nf_conn_help *help;
-+	int ret = 0;
-+
-+	helper = nf_conntrack_helper_try_module_get(name, family, proto);
-+	if (!helper)
-+		return -EINVAL;
-+
-+	help = nf_ct_helper_ext_add(ct, GFP_KERNEL);
-+	if (!help) {
-+		nf_conntrack_helper_put(helper);
-+		return -ENOMEM;
-+	}
-+#if IS_ENABLED(CONFIG_NF_NAT)
-+	if (nat) {
-+		ret = nf_nat_helper_try_module_get(name, family, proto);
-+		if (ret) {
-+			nf_conntrack_helper_put(helper);
-+			return ret;
-+		}
-+	}
-+#endif
-+	rcu_assign_pointer(help->helper, helper);
-+	*hp = helper;
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_add_helper);
-+
- /* appropriate ct lock protecting must be taken by caller */
- static int unhelp(struct nf_conn *ct, void *me)
+-static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
++static void tcf_ct_flow_table_put(struct tcf_ct_flow_table *ct_ft)
  {
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 18f54fa38e8f..4348321856af 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -1291,43 +1291,6 @@ int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key)
- 	return 0;
+-	struct tcf_ct_flow_table *ct_ft = params->ct_ft;
+-
+-	if (refcount_dec_and_test(&params->ct_ft->ref)) {
++	if (refcount_dec_and_test(&ct_ft->ref)) {
+ 		rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
+ 		INIT_RCU_WORK(&ct_ft->rwork, tcf_ct_flow_table_cleanup_work);
+ 		queue_rcu_work(act_ct_wq, &ct_ft->rwork);
+@@ -832,18 +830,23 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 	return err;
  }
  
--static int ovs_ct_add_helper(struct ovs_conntrack_info *info, const char *name,
--			     const struct sw_flow_key *key, bool log)
--{
--	struct nf_conntrack_helper *helper;
--	struct nf_conn_help *help;
--	int ret = 0;
+-static void tcf_ct_params_free(struct rcu_head *head)
++static void tcf_ct_params_free(struct tcf_ct_params *params)
+ {
+-	struct tcf_ct_params *params = container_of(head,
+-						    struct tcf_ct_params, rcu);
 -
--	helper = nf_conntrack_helper_try_module_get(name, info->family,
--						    key->ip.proto);
--	if (!helper) {
--		OVS_NLERR(log, "Unknown helper \"%s\"", name);
--		return -EINVAL;
--	}
+-	tcf_ct_flow_table_put(params);
 -
--	help = nf_ct_helper_ext_add(info->ct, GFP_KERNEL);
--	if (!help) {
--		nf_conntrack_helper_put(helper);
--		return -ENOMEM;
--	}
--
--#if IS_ENABLED(CONFIG_NF_NAT)
--	if (info->nat) {
--		ret = nf_nat_helper_try_module_get(name, info->family,
--						   key->ip.proto);
--		if (ret) {
--			nf_conntrack_helper_put(helper);
--			OVS_NLERR(log, "Failed to load \"%s\" NAT helper, error: %d",
--				  name, ret);
--			return ret;
--		}
--	}
--#endif
--	rcu_assign_pointer(help->helper, helper);
--	info->helper = helper;
--	return ret;
--}
--
++	if (params->ct_ft)
++		tcf_ct_flow_table_put(params->ct_ft);
+ 	if (params->tmpl)
+ 		nf_ct_put(params->tmpl);
+ 	kfree(params);
+ }
+ 
++static void tcf_ct_params_free_rcu(struct rcu_head *head)
++{
++	struct tcf_ct_params *params;
++
++	params = container_of(head, struct tcf_ct_params, rcu);
++	tcf_ct_params_free(params);
++}
++
  #if IS_ENABLED(CONFIG_NF_NAT)
- static int parse_nat(const struct nlattr *attr,
- 		     struct ovs_conntrack_info *info, bool log)
-@@ -1661,9 +1624,12 @@ int ovs_ct_copy_action(struct net *net, const struct nlattr *attr,
- 	}
+ /* Modelled after nf_nat_ipv[46]_fn().
+  * range is only used for new, uninitialized NAT state.
+@@ -1390,7 +1393,7 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
  
- 	if (helper) {
--		err = ovs_ct_add_helper(&ct_info, helper, key, log);
--		if (err)
-+		err = nf_ct_add_helper(ct_info.ct, helper, ct_info.family,
-+				       key->ip.proto, ct_info.nat, &ct_info.helper);
-+		if (err) {
-+			OVS_NLERR(log, "Failed to add %s helper %d", helper, err);
- 			goto err_free_ct;
-+		}
- 	}
+ 	err = tcf_ct_flow_table_get(net, params);
+ 	if (err)
+-		goto cleanup_params;
++		goto cleanup;
  
- 	err = ovs_nla_add_action(sfa, OVS_ACTION_ATTR_CT, &ct_info,
+ 	spin_lock_bh(&c->tcf_lock);
+ 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+@@ -1401,17 +1404,15 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
+ 	if (goto_ch)
+ 		tcf_chain_put_by_act(goto_ch);
+ 	if (params)
+-		call_rcu(&params->rcu, tcf_ct_params_free);
++		call_rcu(&params->rcu, tcf_ct_params_free_rcu);
+ 
+ 	return res;
+ 
+-cleanup_params:
+-	if (params->tmpl)
+-		nf_ct_put(params->tmpl);
+ cleanup:
+ 	if (goto_ch)
+ 		tcf_chain_put_by_act(goto_ch);
+-	kfree(params);
++	if (params)
++		tcf_ct_params_free(params);
+ 	tcf_idr_release(*a, bind);
+ 	return err;
+ }
+@@ -1423,7 +1424,7 @@ static void tcf_ct_cleanup(struct tc_action *a)
+ 
+ 	params = rcu_dereference_protected(c->params, 1);
+ 	if (params)
+-		call_rcu(&params->rcu, tcf_ct_params_free);
++		call_rcu(&params->rcu, tcf_ct_params_free_rcu);
+ }
+ 
+ static int tcf_ct_dump_key_val(struct sk_buff *skb,
 -- 
 2.31.1
 
