@@ -2,107 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 122A861E510
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 18:49:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB94461E533
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 19:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiKFRtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 12:49:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
+        id S230374AbiKFSDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 13:03:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbiKFRtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 12:49:19 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C144BD;
-        Sun,  6 Nov 2022 09:49:18 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id x18so6056237qki.4;
-        Sun, 06 Nov 2022 09:49:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yi6dfTij4IZpgiQaleZPgThvdhGcr1NeDjqN55rBrh4=;
-        b=Fsxhnt+S8VHlLTegM+VbWSvq09DEYo/1dn8XqlDATd62IILtb9BeOVrfQ4Um30pzYe
-         /kvthCsraw93ufy3qhyrQTCm7nt1DFxw3EqjGcDybumY17+Lqi8+xswHcS0IWQSE2s7w
-         wbtzi6Kojv0EA1kWxtx3WxVSQ+pBYdpn3so516ju1qTj+96716ZuC7JXMw6Kh9CfP7G8
-         xvlbg9OZzV2po/5am0vFNtJ3bX0yf+SqGAAf/K0MVW5gwKJuxQ+VZUvaSJImjTygIjpL
-         KqHgqPQOkTbRql2T+Oxdlfw+QoPijTxX2TlIcBcFavJ3cWj1F4b9ylK8PtzBVSbdAR+v
-         FopA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yi6dfTij4IZpgiQaleZPgThvdhGcr1NeDjqN55rBrh4=;
-        b=VCTa1OdshmI3hwfCncFwhzwHXs5dVmHS73VG/JGReRzL8eFEh1AVoOo4xo/fRMR1f6
-         qpf7VDKlCndfHbKPQlf0hYYNjQdfOKCEKuP9Ap+D1e5ZRXOBIFOGEvmDAKIU8/Gc4Tjh
-         0jdsuDA/vPbFRUcEfijBpiNfbqIfc2N1nyn+vtiKqewbH3Z7LozOSgDDQ+Hw2ld7J6+p
-         sO4MJ8D7xSnGWiEwp3at3hAE/6kHHfnyUAqc5ZkRzDgb0hQX3Q5V5C3+bt3DDJ9B25QF
-         ePWy0z9HwAfsvZw0X6tv4Qo70dj/aQxftRvLkftqmmbGMb3tKD/SZ6RTawRU3PrNObna
-         8NJg==
-X-Gm-Message-State: ACrzQf17WCQBT9ttX8PYYG1td+dO8vQkZbwhBKtLVGqCYeXxTc0ZBBhn
-        I9IFF7uh5rtJSEVl3etK3hGWgfhVAc8=
-X-Google-Smtp-Source: AMsMyM6TmTSIMVvSx45NvR//r5wdwa+REIBJXFj0qjJ4IYioZz2X/7H9KrWMhxlA1NgdwT0wQccFZQ==
-X-Received: by 2002:a05:620a:1492:b0:6fa:2e33:c003 with SMTP id w18-20020a05620a149200b006fa2e33c003mr27609215qkj.587.1667756957684;
-        Sun, 06 Nov 2022 09:49:17 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:320c:c2b1:6732:81ff])
-        by smtp.gmail.com with ESMTPSA id fg26-20020a05622a581a00b00399b73d06f0sm4307254qtb.38.2022.11.06.09.49.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Nov 2022 09:49:17 -0800 (PST)
-Date:   Sun, 6 Nov 2022 09:49:16 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Hawkins Jiawei <yin31149@gmail.com>
-Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
-        jhs@mojatatu.com, jiri@resnulli.us, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [PATCH] net: sched: fix memory leak in tcindex_set_parms
-Message-ID: <Y2fznI8JgkTBCVAA@pop-os.localdomain>
-References: <Y2a+eXr20BcI3JDe@pop-os.localdomain>
- <20221106145530.3717-1-yin31149@gmail.com>
+        with ESMTP id S229947AbiKFSDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 13:03:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98821B4A1;
+        Sun,  6 Nov 2022 10:03:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CF3860D32;
+        Sun,  6 Nov 2022 18:03:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF18EC433D6;
+        Sun,  6 Nov 2022 18:03:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667757785;
+        bh=uuxDn1OITqIDqXPA7ridGX3rAXW+cFLB1pbNkqErXvY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cKOlW8pTjdb8KK9IW6NYiUtQVKx+CHTSjHFA53h2KnIDxSXC80moVIwZ62X90iVTv
+         YoODVvHeoVTjjtnnKQWuyzITRnfZqlsUuDpL/j9vxn2Zl3HVbbRPcPORFohLhFmQtg
+         9MoRuv3IzEnL6uyDcUY3qTNIkbUDvsia7CAkCLpnRa1DtL+dfUX3Z8PL5hbZBNV9Di
+         YwWkeZRX/RAfH1S3DL63aVkTCwvL8OcRogfsbk/nxectFS9PMG4fqnIcyX9FIt8Ug8
+         E/Rz0hnfUIQBF0mTJXPOz+bU3yoI+y//JEhQjFhVPtOxDhevWpM7SS9jyFjEpfKMcu
+         MGaB+BMURUc6Q==
+Date:   Sun, 6 Nov 2022 20:03:00 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Rohit Nair <rohit.sajan.kumar@oracle.com>
+Cc:     jgg@ziepe.ca, saeedm@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, manjunath.b.patil@oracle.com,
+        rama.nichanamatlu@oracle.com,
+        Michael Guralnik <michaelgur@nvidia.com>
+Subject: Re: [External] : Re: [PATCH 1/1] IB/mlx5: Add a signature check to
+ received EQEs and CQEs
+Message-ID: <Y2f21JKWkQg8KtyK@unreal>
+References: <20221005174521.63619-1-rohit.sajan.kumar@oracle.com>
+ <Y0UYml07lb1I38MQ@unreal>
+ <5bab650a-3c0b-cfd2-d6a7-2e39c8474514@oracle.com>
+ <Y1p4OEIWNObQCDoG@unreal>
+ <fdb9f874-1998-5270-4360-61c74c34294d@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221106145530.3717-1-yin31149@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <fdb9f874-1998-5270-4360-61c74c34294d@oracle.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 06, 2022 at 10:55:31PM +0800, Hawkins Jiawei wrote:
-> Hi Cong,
+On Fri, Oct 28, 2022 at 04:48:53PM -0700, Rohit Nair wrote:
+> On 10/27/22 5:23 AM, Leon Romanovsky wrote:
+> > On Tue, Oct 25, 2022 at 10:44:12AM -0700, Rohit Nair wrote:
+> > > Hey Leon,
+> > > 
+> > > Please find my replies to your comments here below:
+> > 
+> > <...>
+> > 
+> > > > 
+> > > > > This patch does not introduce any significant performance degradations
+> > > > > and has been tested using qperf.
+> > > > What does it mean? You made changes in kernel verbs flow, they are not
+> > > > executed through qperf.
+> > > We also conducted several extensive performance tests using our test-suite
+> > > which utilizes rds-stress and also saw no significant performance
+> > > degrdations in those results.
+> > 
+> > What does it mean "also"? Your change is applicable ONLY for kernel path.
+> > 
+> > Anyway, I'm not keen adding rare debug code to performance critical path.
+> > 
+> > Thanks
 > 
-> >
-> >
-> > diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-> > index 1c9eeb98d826..00a6c04a4b42 100644
-> > --- a/net/sched/cls_tcindex.c
-> > +++ b/net/sched/cls_tcindex.c
-> > @@ -479,6 +479,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-> >         }
-> >
-> >         if (old_r && old_r != r) {
-> > +               tcf_exts_destroy(&old_r->exts);
-> >                 err = tcindex_filter_result_init(old_r, cp, net);
-> >                 if (err < 0) {
-> >                         kfree(f);
+> rds-stress exercises the codepath we are modifying here. rds-stress didn't
+> show much of performance degrade when we ran internally. We also requested
+> our DB team for performance regression testing and this change passed their
+> test suite. This motivated us to submit this to upstream.
 > 
-> As for the position of the tcf_exts_destroy(), should we
-> call it after the RCU updating, after
-> `rcu_assign_pointer(tp->root, cp)` ?
+> If there is any other test that is better suited for this change, I am
+> willing to test it. Please let me know if you have something in mind. We can
+> revisit this patch after such a test may be.
 > 
-> Or the concurrent RCU readers may derefer this freed memory
-> (Please correct me If I am wrong).
+> I agree that, this was a rare debug scenario, but it took lot more than
+> needed to narrow down[engaged vendor on live sessions]. We are adding this
+> in the hope to finding the cause at the earliest or at least point us which
+> direction to look at. We also requested the vendor[mlx] to include some
+> diagnostics[HW counter], which can help us narrow it faster next time. This
+> is our attempt to add kernel side of diagnostics.
 
-I don't think so, because we already have tcf_exts_change() in multiple
-places within tcindex_set_parms(). Even if this is really a problem,
-moving it after rcu_assign_pointer() does not help, you need to wait for
-a grace period.
+The thing is that "vendor" failed to explain internally if this debug
+code is useful. Like I said, extremely rare debug code shouldn't be part
+of main data path.
 
-Thanks.
+Thanks
+
+> 
+> Feel free to share your suggestions
+> 
+> Thanks
+> 
