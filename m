@@ -2,102 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 372FE61E56C
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 20:00:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4632A61E570
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 20:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiKFTAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 14:00:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
+        id S230017AbiKFTF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 14:05:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiKFTAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 14:00:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F862FCEA
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 11:00:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E19360D24
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 19:00:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEA3C433C1;
-        Sun,  6 Nov 2022 19:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667761204;
-        bh=EsmKcdYf/wnxOGxIH5rpUGHKyJI21vqGSgY8jy5NG9E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oXV2D7XfIjaYDyLTVDu+pmHWg24C2Oqjin5dwo9OmjYfa6plL2TMDfrFXo8iD7os4
-         z4vJwjGgG0HaPdAEUSQwEQS6AbUvmo4RYe/Rt211lIblBCgk3RrnnmtUJvlndMZYmV
-         KFwDImQfSjO6EfVo6iyfhBaRkrlvOUWGIvwQQHps8EJIXkxT0a4wsQDs1ySULZWLS0
-         2wPxL39l1mjWoY4QM9GBrj3VXwMNHYoJMlpbBAMihq97mS3lWfYBWj6j+leFOAsPRc
-         TnO8B+qCF9ysd6Ray9eVRn2htbpnNSZFpleNkoYlcERS35OpUPFBgH6cz6BjQ9ZNiH
-         NAiZddwiQ8NuA==
-Date:   Sun, 6 Nov 2022 21:00:00 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Nick Child <nnac123@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, nick.child@ibm.com, bjking1@linux.ibm.com,
-        ricklind@us.ibm.com, dave.taht@gmail.com
-Subject: Re: [PATCH net] ibmveth: Reduce maximum tx queues to 8
-Message-ID: <Y2gEMKaeL18bFi5t@unreal>
-References: <20221102153040.149244-1-nnac123@linux.ibm.com>
+        with ESMTP id S229641AbiKFTFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 14:05:55 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652A6A473
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 11:05:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YO6lRtrreV6zsW7H+VJmc50+F118z0QUpjKWLiFh1LU=; b=Z//moUSDmqHd62p/h8bla9NOPP
+        SzCFZIB5930fn/e52OikFm3mvjB1EHTBUHUqGq1s81Gn5Twt1htlspxgKzxZy32iE089ZdRlmobSo
+        tFEe99ey8/te3xA0f1jLquLG3tTE2wFiqVIQZEWdRABV9OZco3sSDgX0uYyMZ5M/jKsY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1orkxr-001dwF-GJ; Sun, 06 Nov 2022 20:05:51 +0100
+Date:   Sun, 6 Nov 2022 20:05:51 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     piergiorgio.beruto@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: Adding IEEE802.3cg Clause 148 PLCA support to Linux
+Message-ID: <Y2gFj9wZzJO6z2v8@lunn.ch>
+References: <026701d8f13d$ef0c2800$cd247800$@gmail.com>
+ <Y2fp9Eqe9icT/7DE@lunn.ch>
+ <000001d8f20b$33f0f0e0$9bd2d2a0$@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221102153040.149244-1-nnac123@linux.ibm.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <000001d8f20b$33f0f0e0$9bd2d2a0$@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 02, 2022 at 10:30:40AM -0500, Nick Child wrote:
-> Previously, the maximum number of transmit queues
-> allowed was 16. Due to resource concerns, limit
-> to 8 queues instead.
+On Sun, Nov 06, 2022 at 07:11:32PM +0100, piergiorgio.beruto@gmail.com wrote:
+> > I suggest you define new ethtool netlink messages. I don't think PHY tunables would make a good interface, since you have > multiple values which need configuring, and you also have some status information.
+
+Your email client is messing up emails. I follow the netique rules, my
+lines are wrapped at around 75 characters. This is recommended
+practice for all Linux kernel mailing lists. Your mailer has destroyed
+this. Please also wrap your own text at about 75 characters.
+
+> That sounds fair to me, thanks for your advice.
 > 
-> Since the driver is virtualized away from the
-> physical NIC, the purpose of multiple queues is
-> purely to allow for parallel calls to the
-> hypervisor. Therefore, there is no noticeable
-> effect on performance by reducing queue count to 8.
-
-Very odd typography of this commit message. You have upto 80 chars in
-one line, use them.
-
+> > So you probably want a message to set the configuration, and another to get the current configuration. For the set, you 
+> > probably want an attribute per configuration value, and allow a subset of attributes to be included in the message. The get 
+> > configuration should by default return all the attributes, but not enforce this, since some vendor will implement it wrong 
+> > and miss something out.
 > 
-> Reported-by: Reported-by: Dave Taht <dave.taht@gmail.com>
+> Yes, that sounds about right. If you have any hint on where in the code to start looking at, I'll start from there.
 
-Double Reported-by.
+ethtool --cable-test packs a number of optional attributes into a
+netlink message. It then gets passed to phylib. You could use that as
+an example. The way cable tests results are passed back later is
+pretty unusual, so don't copy that code!
 
-> Signed-off-by: Nick Child <nnac123@linux.ibm.com>
-
-And missing Fixes line for "net".
-
-> ---
-> Relevant links:
->  - Introduce multiple tx queues (accepted in v6.1):
->    https://lore.kernel.org/netdev/20220928214350.29795-2-nnac123@linux.ibm.com/
->  - Resource concerns with 16 queues:
->    https://lore.kernel.org/netdev/CAA93jw5reJmaOvt9vw15C1fo1AN7q5jVKzUocbAoNDC-cpi=KQ@mail.gmail.com/
+> > What I don't see in the Open Alliance spec is anything about interrupts. It would be interesting to see if any vendor triggers 
+> > an interrupt when PST changes. A PHY which has this should probably send a linkstate message to userspace reporting the 
+> > state change. For PHYs without interrupts, phylib will poll the read_status method once per second. You probably want to 
+> > check the PST bit during that poll. If EN is true, but PST is false, is the link considered down?
 > 
->  drivers/net/ethernet/ibm/ibmveth.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
-> index 4f8357187292..6b5faf1feb0b 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.h
-> +++ b/drivers/net/ethernet/ibm/ibmveth.h
-> @@ -99,7 +99,7 @@ static inline long h_illan_attributes(unsigned long unit_address,
->  #define IBMVETH_FILT_LIST_SIZE 4096
->  #define IBMVETH_MAX_BUF_SIZE (1024 * 128)
->  #define IBMVETH_MAX_TX_BUF_SIZE (1024 * 64)
-> -#define IBMVETH_MAX_QUEUES 16U
-> +#define IBMVETH_MAX_QUEUES 8U
->  
->  static int pool_size[] = { 512, 1024 * 2, 1024 * 16, 1024 * 32, 1024 * 64 };
->  static int pool_count[] = { 256, 512, 256, 256, 256 };
-> -- 
-> 2.31.1
-> 
+
+> This is actually an interesting point. First of all, yes, vendors do have IRQs for the PST. At least, the products I'm working on do, including the already released NCN26010.
+
+Each PHY driver is going to need its own code for enabling the
+interrupt, handling etc, since none of this is standardized. This is
+one reason why you provide helpers, but don't force there use.
+
+> My thinking is that the PST should be taken into account to evaluate the status of the link. On a multi-drop network with no autoneg and no link training the link status would not make much sense anyway, just like the connected status of an UDP socket wouldn't make sense.
+
+So the read_status() call should evaluate the PST bit, along with
+EN. Again, a helper to do that would be useful.
+
+The user API is the most important bit of this work. Linux considers
+the uAPI an stable ABI. Once you have defined it, it cannot change in
+ways which break backwards compatibility. So the initial reviews of
+code you present will concentrate on the uAPI. Once that is good,
+reviews will then swap to all the implementation details in phylib and
+the drivers.
+
+    Andrew
