@@ -2,96 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F75661E218
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 13:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 488F361E24F
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 14:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiKFMbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 07:31:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        id S229884AbiKFNV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 08:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiKFMbk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 07:31:40 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2055.outbound.protection.outlook.com [40.107.243.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBD110FC
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 04:31:38 -0800 (PST)
+        with ESMTP id S229844AbiKFNVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 08:21:25 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6092C744
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 05:21:24 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xl3zVPL/cT85XP4g7NvFpyop6yL2N1C5o9eTyn18pPVn97yHReshQPuIzYLIfbXn2DkJtABSZPt1jHiMpovp+mG0MiCQ95XIhka0eh4JqnkVsOmUc1QvIOsgnnnO29CzN4yyf8CSsaBHLHdDlB8A6ANzqmfbSpz1/MvBbqN1wWKDV506WaKzsEdSq4FYLsJDrzSvtpSp7QzcBnXk0BDj/07bnA53rIwrvHXGOctXl8eA/HI8YxsQ6uEAk3TXPFUkXzaqlZXQ5OAFQByoDs0zAqFJLiJ3O0G3ttVwynwVcRO4VRtjp3LmWFLJM0CiaIMvxQG2esLJuiGUsadDNSTF9w==
+ b=NMj51UVKUKJBgQpeeqfD5Q6xLwFlgRpJFZZH5WFoZ7F0//O+Gx5xQ745aU1JMmp1qYUeyQtQmAOKpSSrnC1x5smZbEC5M96LVa0zISJ3N4xQXc6uBpDjMLUwErODnylYepCcDYshyd2ZcL/bVL4hCG8Ql1oSEUxfNRzDRen5+iOiOnpA/zSMHxFoslNagBaG9+z9Z6MA1AOHlCTKBtPSucnEFtX93PXwuzK6t1v/KE3TNXvsskv+HuHt54pHrY7Cict8UX6fIZSp0x4K1D1Jc8pUjq/TgpE1tPghyIcoHPJ0jQaShBqp/IstDf8CGbcHXaH0gerpdZT04bUB6p9cAQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fH0YuYGr1cO3jYEm8L4tMr70KRStJb1WDunbxzuVSCU=;
- b=AZe9RaXEIUnSQmHkzbkjA8fuaic+qoLA9WgZw7DTk8g3qgvv06wd2gW5oOuqLhn51kngyzrsBNDcL3TMKQckq8KzHeu9u4R8y698icUptw/wgHmX6loyIwMjwXmUNhxMYazXmyXOnJTk5QwOdN5NlStrYsjLcRA5tLL7WJDnYKmBDPlUA71aqt2rrMov4SP18rKnKaNy2p8snASi3OTFi5phTYaQderNtXUuqqPj72eV9HbL5+dgRsLUSYR2qs79senFM0LpD8kgAW1VkSJ1DBNtVK1kiUf05Qv9dApnseD7wjIpaL77WkVpQkhm/xOzSpYjyC5mnwJPR57LZx1oBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=UNMMKE0TtKx3v/Z85KrxgERvP1I9hgJEE5AmlDHoavw=;
+ b=C+xZqeZTTLtos3xEBB7OPB+5YohPEzhcpJSEL1Ykx10r+NubxMMbajwojniu2e8CksrLThILOtomz9j6WAyNew0uNZ5HiF8wQ0SVvr5u82s7tT70TULaVI37lTdh6ePHjGkFtpLwu1jMYd3qqEgoE4WmZ25d3Wa0LHkjFKXSkX8DEKGDnna00ya4yYePkEyRWWLkvUfSdgcvekQlWb2pnhrSXLzOJZWZZmpJzUaEThxqj4NyIbzNAW/kc+XO/jslXEfyaapLwKpSn0wQhZfrfEHt7JYNdeiWuGrdRDrYlBY/u11ZG4jmXvgzbN8iHmV7kkwiFC67+jfqpuj/bpt/BA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fH0YuYGr1cO3jYEm8L4tMr70KRStJb1WDunbxzuVSCU=;
- b=RUOE6omwUiLMnL08nzWrKRRN1AqrrHyHbJ3t7+MIeKjB3Z7poU1z9dWCD6jvAnRbQzWwPjd3MxFmPIZvJQ3cjYGz25OJc61Rz1NXPubloPgBPvp9OCcug/7sz30jnlbrG55nuR/tL4nwIEg0uTyisaNSmOFRl9t9dqEXDHXnjHtWQmPyXTKKAFj6k5CqP5dO6nkgDzObOOjQ9Q+cDYr1+d3/7841OauTQYRj4W1e9Y7qIp7/xYea3Vl7xwnn3mrDYEDYilQrqAw/4IdkR/Uva00oPoGIb/KnOI18cfom7d6WAC3AS3vvkmxWKtJMRHJV4G2r00FUT3ZWC2U6CJYXBQ==
-Received: from DM6PR02CA0122.namprd02.prod.outlook.com (2603:10b6:5:1b4::24)
- by IA0PR12MB7775.namprd12.prod.outlook.com (2603:10b6:208:431::19) with
+ bh=UNMMKE0TtKx3v/Z85KrxgERvP1I9hgJEE5AmlDHoavw=;
+ b=nviudDU7ogCBuPg3K3HxuATbvqN8FgfW443qX3yzbzjKKTQJfuAA7l7TIl0pNh/kL2trEZ2rP7qYvPpNs3f/t/B6KQ3AX0F5Lh4IyxM8RSnkqeNqKgGb1j1F+l88pqCdH16b0t19xKcKmD4g4qwSq12+kYhgmTCD0QkL3TNS930pEhY8y2+X94kajbQdAUs9eserK26nQ+wE7akihUXwYOfbl5QoG2x/+vI1XT3WO3p6dTmaKfgeiQGJieuz+fuYaYpja3v7TB2o8oWK50EuNp4z47HxCFvj5iqNUavqbBsvvSugh2O3nyYnXemlPPkzeJguQre2PY6zOgkp4ZqH3g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by SA0PR12MB4542.namprd12.prod.outlook.com (2603:10b6:806:73::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.24; Sun, 6 Nov
- 2022 12:31:37 +0000
-Received: from DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b4:cafe::de) by DM6PR02CA0122.outlook.office365.com
- (2603:10b6:5:1b4::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.25 via Frontend
- Transport; Sun, 6 Nov 2022 12:31:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DM6NAM11FT079.mail.protection.outlook.com (10.13.173.4) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5791.20 via Frontend Transport; Sun, 6 Nov 2022 12:31:36 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Sun, 6 Nov 2022
- 04:31:34 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Sun, 6 Nov 2022 04:31:33 -0800
-Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Sun, 6 Nov 2022 04:31:32 -0800
-From:   Gal Pressman <gal@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Jacob Keller <jacob.e.keller@intel.com>,
-        "Gal Pressman" <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net-next v2] ethtool: Fail number of channels change when it conflicts with rxnfc
-Date:   Sun, 6 Nov 2022 14:31:27 +0200
-Message-ID: <20221106123127.522985-1-gal@nvidia.com>
-X-Mailer: git-send-email 2.26.3
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Sun, 6 Nov
+ 2022 13:21:21 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::3409:6c36:1a7f:846e]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::3409:6c36:1a7f:846e%4]) with mapi id 15.20.5791.025; Sun, 6 Nov 2022
+ 13:21:21 +0000
+Date:   Sun, 6 Nov 2022 15:21:16 +0200
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@kapio-technology.com
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, jiri@nvidia.com, petrm@nvidia.com,
+        ivecera@redhat.com, roopa@nvidia.com, razor@blackwall.org,
+        vladimir.oltean@nxp.com, mlxsw@nvidia.com
+Subject: Re: [RFC PATCH net-next 00/16] bridge: Add MAC Authentication Bypass
+ (MAB) support with offload
+Message-ID: <Y2e0zHgzIClULTIB@shredder>
+References: <20221025100024.1287157-1-idosch@nvidia.com>
+ <e6c4c3755e4aba80b3c7ebf31c8cdb58@kapio-technology.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e6c4c3755e4aba80b3c7ebf31c8cdb58@kapio-technology.com>
+X-ClientProxiedBy: VI1PR08CA0112.eurprd08.prod.outlook.com
+ (2603:10a6:800:d4::14) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT079:EE_|IA0PR12MB7775:EE_
-X-MS-Office365-Filtering-Correlation-Id: 385750df-7d2b-4e51-65d0-08dabff2d8ac
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SA0PR12MB4542:EE_
+X-MS-Office365-Filtering-Correlation-Id: d5d4f8b7-8d11-4b95-d539-08dabff9cbee
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yJtkbOyHpl62f2qd47o9Qm5nk6j27/lVx8bMubqQEIOACJYv0ubJpqOJ/tqoteg93tmv7KZpDbXiR6ZOWO3ktXbpy5JytozvT8NtDTm0+Ed6Q3QmRbeaMUuNcfMhk0fcfT66SoH6VZPsVgozX8/gm65bJUeHcYmbqCuZjyRD3iP6mjYScoxflmzk2tlRQHCTJRqfLQNJ/cZU4AjZDFNe8VEtN0of5NAOxtvaTZjpV4TFgRDGwlOX+DZxVWO6A1yGKlOv7dnsgSPFhch9GTmjJM2OMkntQkuXzgOxk6i2Ir3QlKQIbylsjo0WPm3PAd5wTo1ZTe6e9B+6X//6FleEz+TgZokNC86PzqZrTW8xOArUv6BjM3QgoVAw0/rYbJ05/xv0q16iAeQ6YZSt6WCTBwj04ffR+gEy2L2SzYMw4uktqDGGC+RYLq/OZNbgpLLu62aH/SlBP0YKnxoXEcu/smM5zbkO1XX2K+yDs/BZhPaIJO+LSdPLhaBCG2IL/UJ2IvoFbJhwVsLXWa816tJ0Y9rVKiZoxxEZIr//5LyWzdOy/teNxwUwiFKjV1wCrhL9t6kzY6tTwDJZQE/Ywd6ICrpb9bOB8duIU2vRJuZZAJVz++YGmVyRmWkWjU0AW/1pBmW4a/GvPieqtudr9zw53oi5GynBh+vHKV/mwVQPzh2UWEcSRtHfrd6abJpONE1FpjmEyYjI4g9Z/wR59zNKGb3xRtl/t7fVa6v94LlpbUIezoBMrFgXGtYBGXjuZUOsVk5KbQNzu9gvjc1oOuL8Re45pw3dqUDW0XbMk4fh/wqHkDQLfLIFFsoPCuNBpzcVcKvujmDJ1Dfb7auvYSMChYQZ4wRKXYFXScbhgKdD9zL8EK1uFTDLD7tEC7MJJkgx
-X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199015)(46966006)(40470700004)(36840700001)(4326008)(8676002)(316002)(478600001)(54906003)(110136005)(70586007)(8936002)(41300700001)(70206006)(40460700003)(36756003)(1076003)(47076005)(82310400005)(40480700001)(86362001)(426003)(5660300002)(2906002)(82740400003)(336012)(7696005)(356005)(107886003)(6666004)(2616005)(83380400001)(36860700001)(7636003)(966005)(26005)(186003)(17423001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: bMnCnG/wFW5MXEvnrO3MRk0zHF/Na/XV0oFfE0Dg7vq94/tEFv0rxOuVnomBYUPYZO4ArQf+lXLWEC/C3wbpMF3y3nVBORPXk7bR0uM8UzBiF/J+t8LLY1U9/atiidYz5HArtsMD8AFDipDDM9bs5r8TP91DxzS8uvDTPhEaNMs1zxLQ9xl4OMkHZr1ZVVrnkxCIRoEeVNgtY3OIzARdqYA8nIxTFaBs2aBWlH60DE1EH/2AaDVqpaGm5OXPAud98GSPZAt25iA4X5BaECzQTkQhPF0F3rSs0okkdHJds5W6C/YJvmEv7lkRKR6QTh+yZ+H/Aba4UvPDdrUCV5Tg4+oXajmQeKO1PcRVR51APxjzIDA7UC87ZMqCxqJUzhz2PeEmOACrStGotNr4lxZ1m9S5u77li/16VJ8OKzXLzZo3LW0Hjh61pV+DSYEVztiG1dKjSFExV4SS8xiAExokyKB31MJDmQMgwA3toRFnzaic1IlzmEzTyvr+KL0VK3ceXtNbzNKyNz7zH5zo7epronXfyKKWHBu4i6QRtq/Qe+3Hi6hbhzU4Bo67F6lP0SEAK2QNfUzJh8q897sXkZqmgCzQclvoHXgaRdMHlcf6VwDyv2BZtQZPkcx90QH3UoboDXUHNiHIczflr6CLUoAPBZKnKk8RcT1TE3zZv2uPBKZBAuBhrO6B8XovxR1Zz9Losr5XhEOu4B5gkX1p39rWS91FHvUwE0FKRBxagKGFHl95KFXOR98gID1VskOM3iFdl/D4g2Tt8KiiD0658ndtt9mhPuskpdyC0MiXQuHQnaE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(136003)(396003)(346002)(39860400002)(376002)(366004)(451199015)(107886003)(6506007)(66946007)(53546011)(41300700001)(6916009)(26005)(966005)(66556008)(38100700002)(86362001)(6486002)(33716001)(4326008)(6512007)(9686003)(66476007)(478600001)(5660300002)(8676002)(316002)(6666004)(186003)(4001150100001)(7416002)(2906002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6J2+/XK05lY+6I5DR2Ih32XemjyvtIhANCWOEjYKuuk5asywJPPnaRMBrXLm?=
+ =?us-ascii?Q?dq1jf3H8dfmvBhygxQzVqq9EH2HNbQHmPoNC8HXtxqqdFeMx8199Bx2kuDK3?=
+ =?us-ascii?Q?niTXLvGf5Jt1r+Lr7Hy1k0BDOkpLReyvdLy9SaLsIvh0II1aT7Yb0/oVL40N?=
+ =?us-ascii?Q?KYOtLGgclHgoo435evFfqVkdyMJEovy88FHDEZtf+jf1D59wNw01q1mxSsC/?=
+ =?us-ascii?Q?a04VnHvF/gJQ4DgHQxnCNQZLubCDUcJL2sVPlRtX/9ptGiqiWr9498hy3Um+?=
+ =?us-ascii?Q?wfBD7MuQwe0RQVwKkN9tg8by+ktw+qV+FtmqRoGTn/oYqT9PU6yfI11oayj+?=
+ =?us-ascii?Q?3wWHlmPWBNBHPvL+KHvqx53mVdEO6X9IYElnpjZZsSabShthS4AF/ET+eyke?=
+ =?us-ascii?Q?Q+mP7hI1IdtxM6Yq/MtJnl9CKEiW4PoR0fIWtG2PNWZLdYbHqD7Nui/vg530?=
+ =?us-ascii?Q?p4G4CwdNW7MJ34zNKw2qlj4ThUaX1z+7EnQBUVz3Pgo89w6aiKxSdUpyIi3h?=
+ =?us-ascii?Q?fbE9ySYcePcJNZ20RwIoaHs0cNISTexMUqG7H0oZ7aso3rdWWkApKXneCcwM?=
+ =?us-ascii?Q?31xa4mZX0v2nhidnlz6JPdP8NMGTUVxbLEb+GAlq2zGmRu3Pv5oJ4cRqLa2L?=
+ =?us-ascii?Q?qMbnd3YQuKU89x+Wfq5r4ubXDbOsRGI1N2/uKuURKjcD6GM03m18s15WxtAX?=
+ =?us-ascii?Q?E1cGK/2Y7MXjrS9fx2eE8Yycbqgbi+PLKK+T2DXNmWcK+cPZd0mJISjZpV7E?=
+ =?us-ascii?Q?89u4OUYHFaHTskdfOu2BOGOoG35UNoatkBi6bqa2XjxfYDu5t9hh2wtvmpen?=
+ =?us-ascii?Q?KiYVmmCe19ZROkm2taj+7rNItejyBN0u2rs0VnNImj7ZwzFKnleXfoW5WadY?=
+ =?us-ascii?Q?XOj0EaMBY6avSPmgUbr3EliTqiUE7uqnqVjzwWb4Ly3Qs6iA+QshGfOAzt5/?=
+ =?us-ascii?Q?NYV3oVdigYaKmSNQqp6UCLgH8qevL5Nuu/Fi0R9u54KpbYl+xkMQWwkzh9+I?=
+ =?us-ascii?Q?P6FOATwhfX7loFmNt2Ysy2ALXsrRdt44qznCVRQsXpMqT/hNeFELmJ24dW/p?=
+ =?us-ascii?Q?4MnwvVe695N7HvEz0QXAOZ7ZxfpwbDcpnHuGpAcTyxnYZ6Kr2++AuDJ43QuQ?=
+ =?us-ascii?Q?PfDZYCG3LlgOJBlUpN8LoxDrBvwbBnx7cEdkdOcMOCNGnkuJaBle9zWH5MrG?=
+ =?us-ascii?Q?8VMtk9kWkUQMWOYTgb+z/IBVRK5q77GQXqGzPlM3Cb75lmLL7pmAspArPdrN?=
+ =?us-ascii?Q?PBwC+EyP36G4calH5SF30SpHzCjvbZ6qHNi6Ck2gAk46v5DoQXnqAyWDcphq?=
+ =?us-ascii?Q?RoyIAaZpuXlQ2X94fsXLXTJJbkbgcM/vL3yoiS9v0Ej9VLD3NaoW+RBRf58P?=
+ =?us-ascii?Q?TtAZv7mrbh/vCayiacWYE+imh9oRbCItavUR0KR2LN+5FnAJM6J5a6fBqEmj?=
+ =?us-ascii?Q?7FYlYWQocQyO6NrneKjJZiSu7tbExtHGOaXo/1yTlz+F1Tzr+cFW6HaWdQg5?=
+ =?us-ascii?Q?J0t9UvGsPM8Q2lML/gUcVXCxProS9CEJJUvBpFn6OrSJ7Ld17K6r987I2fvg?=
+ =?us-ascii?Q?VFVeCPADD103FIGzX5pvc9egdCEJgx2Pr85ldu8Y?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2022 12:31:36.2951
+X-MS-Exchange-CrossTenant-Network-Message-Id: d5d4f8b7-8d11-4b95-d539-08dabff9cbee
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2022 13:21:21.6472
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 385750df-7d2b-4e51-65d0-08dabff2d8ac
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7775
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3vOkyOn6GgwqPy+k5k4ywA0g1uXUh7YUHDVZgyCB1HJw9bQvyWCQxbWi9oK3QAzqJ4a1wy5+mEIRQzdQ7JwmUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4542
 X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -102,200 +117,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to what we do with the hash indirection table [1], when network
-flow classification rules are forwarding traffic to channels greater
-than the requested number of channels, fail the operation.
-Without this, traffic could be directed to channels which no longer
-exist (dropped) after changing number of channels.
+On Sun, Nov 06, 2022 at 01:04:36PM +0100, netdev@kapio-technology.com wrote:
+> On 2022-10-25 12:00, Ido Schimmel wrote:
+> > Merge plan
+> > ==========
+> > 
+> > We need to agree on a merge plan that allows us to start submitting
+> > patches for inclusion and finally conclude this work. In my experience,
+> > it is best to work in small batches. I therefore propose the following
+> > plan:
+> > 
+> > * Add MAB support in the bridge driver. This corresponds to patches
+> >   #1-#2.
+> > 
+> > * Switchdev extensions for MAB offload together with mlxsw
+> >   support. This corresponds to patches #3-#16. I can reduce the number
+> >   of patches by splitting out the selftests to a separate submission.
+> > 
+> > * mv88e6xxx support. I believe the blackhole stuff is an optimization,
+> >   so I suggest getting initial MAB offload support without that. Support
+> >   for blackhole entries together with offload can be added in a separate
+> >   submission.
+> 
+> As I understand for the mv88e6xxx support, we will be sending
+> SWITCHDEV_FDB_ADD_TO_BRIDGE
+> events from the driver to the bridge without installing entries in the
+> driver.
+> Just to note, that will of course imply that the bridge FDB will be out of
+> sync with the
+> FDB in the driver (ATU).
 
-[1] commit d4ab4286276f ("ethtool: correctly ensure {GS}CHANNELS doesn't conflict with GS{RXFH}")
+Stated explicitly here:
+https://lore.kernel.org/netdev/20221025100024.1287157-4-idosch@nvidia.com/
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Gal Pressman <gal@nvidia.com>
----
-Changelog -
-v1->v2: https://lore.kernel.org/all/20221031100016.6028-1-gal@nvidia.com/
-* Make sure to check ethtool_get_flow_spec_ring_vf() == 0 as pointed out
-  by Jakub & Jacob.
+Don't see a way around it and it's not critical IMO. The entries will
+not appear with the "offload" flag so user space knows they are not in
+hardware. Once the "blackhole" flag is supported, user space can replace
+such entries and set the "blackhole" flag, which will result in the
+entries being programmed to hardware (assuming hardware/driver support).
 
-n.b:
-Another desirable fix would be handling the fact that additional RSS
-contexts could be created and point to higher channels.
----
- net/ethtool/channels.c | 19 ++++++++----
- net/ethtool/common.c   | 66 ++++++++++++++++++++++++++++++++++++++++++
- net/ethtool/common.h   |  1 +
- net/ethtool/ioctl.c    | 17 +++++++----
- 4 files changed, 92 insertions(+), 11 deletions(-)
-
-diff --git a/net/ethtool/channels.c b/net/ethtool/channels.c
-index 403158862011..c7e37130647e 100644
---- a/net/ethtool/channels.c
-+++ b/net/ethtool/channels.c
-@@ -116,9 +116,10 @@ int ethnl_set_channels(struct sk_buff *skb, struct genl_info *info)
- 	struct ethtool_channels channels = {};
- 	struct ethnl_req_info req_info = {};
- 	struct nlattr **tb = info->attrs;
--	u32 err_attr, max_rx_in_use = 0;
-+	u32 err_attr, max_rxfh_in_use;
- 	const struct ethtool_ops *ops;
- 	struct net_device *dev;
-+	u64 max_rxnfc_in_use;
- 	int ret;
- 
- 	ret = ethnl_parse_header_dev_get(&req_info,
-@@ -189,15 +190,23 @@ int ethnl_set_channels(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	/* ensure the new Rx count fits within the configured Rx flow
--	 * indirection table settings
-+	 * indirection table/rxnfc settings
- 	 */
--	if (netif_is_rxfh_configured(dev) &&
--	    !ethtool_get_max_rxfh_channel(dev, &max_rx_in_use) &&
--	    (channels.combined_count + channels.rx_count) <= max_rx_in_use) {
-+	if (ethtool_get_max_rxnfc_channel(dev, &max_rxnfc_in_use))
-+		max_rxnfc_in_use = 0;
-+	if (!netif_is_rxfh_configured(dev) ||
-+	    ethtool_get_max_rxfh_channel(dev, &max_rxfh_in_use))
-+		max_rxfh_in_use = 0;
-+	if (channels.combined_count + channels.rx_count <= max_rxfh_in_use) {
- 		ret = -EINVAL;
- 		GENL_SET_ERR_MSG(info, "requested channel counts are too low for existing indirection table settings");
- 		goto out_ops;
- 	}
-+	if (channels.combined_count + channels.rx_count <= max_rxnfc_in_use) {
-+		ret = -EINVAL;
-+		GENL_SET_ERR_MSG(info, "requested channel counts are too low for existing ntuple filter settings");
-+		goto out_ops;
-+	}
- 
- 	/* Disabling channels, query zero-copy AF_XDP sockets */
- 	from_channel = channels.combined_count +
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index ee3e02da0013..21cfe8557205 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -512,6 +512,72 @@ int __ethtool_get_link(struct net_device *dev)
- 	return netif_running(dev) && dev->ethtool_ops->get_link(dev);
- }
- 
-+static int ethtool_get_rxnfc_rule_count(struct net_device *dev)
-+{
-+	const struct ethtool_ops *ops = dev->ethtool_ops;
-+	struct ethtool_rxnfc info = {
-+		.cmd = ETHTOOL_GRXCLSRLCNT,
-+	};
-+	int err;
-+
-+	err = ops->get_rxnfc(dev, &info, NULL);
-+	if (err)
-+		return err;
-+
-+	return info.rule_cnt;
-+}
-+
-+int ethtool_get_max_rxnfc_channel(struct net_device *dev, u64 *max)
-+{
-+	const struct ethtool_ops *ops = dev->ethtool_ops;
-+	struct ethtool_rxnfc *info;
-+	int err, i, rule_cnt;
-+	u64 max_ring = 0;
-+
-+	if (!ops->get_rxnfc)
-+		return -EOPNOTSUPP;
-+
-+	rule_cnt = ethtool_get_rxnfc_rule_count(dev);
-+	if (rule_cnt <= 0)
-+		return -EINVAL;
-+
-+	info = kvzalloc(struct_size(info, rule_locs, rule_cnt), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+
-+	info->cmd = ETHTOOL_GRXCLSRLALL;
-+	info->rule_cnt = rule_cnt;
-+	err = ops->get_rxnfc(dev, info, info->rule_locs);
-+	if (err)
-+		goto err_free_info;
-+
-+	for (i = 0; i < rule_cnt; i++) {
-+		struct ethtool_rxnfc rule_info = {
-+			.cmd = ETHTOOL_GRXCLSRULE,
-+			.fs.location = info->rule_locs[i],
-+		};
-+
-+		err = ops->get_rxnfc(dev, &rule_info, NULL);
-+		if (err)
-+			goto err_free_info;
-+
-+		if (rule_info.fs.ring_cookie != RX_CLS_FLOW_DISC &&
-+		    rule_info.fs.ring_cookie != RX_CLS_FLOW_WAKE &&
-+		    !(rule_info.flow_type & FLOW_RSS) &&
-+		    !ethtool_get_flow_spec_ring_vf(rule_info.fs.ring_cookie))
-+			max_ring =
-+				max_t(u64, max_ring, rule_info.fs.ring_cookie);
-+	}
-+
-+	kvfree(info);
-+	*max = max_ring;
-+	return 0;
-+
-+err_free_info:
-+	kvfree(info);
-+	return err;
-+}
-+
- int ethtool_get_max_rxfh_channel(struct net_device *dev, u32 *max)
- {
- 	u32 dev_size, current_max = 0;
-diff --git a/net/ethtool/common.h b/net/ethtool/common.h
-index c1779657e074..b1b9db810eca 100644
---- a/net/ethtool/common.h
-+++ b/net/ethtool/common.h
-@@ -43,6 +43,7 @@ bool convert_legacy_settings_to_link_ksettings(
- 	struct ethtool_link_ksettings *link_ksettings,
- 	const struct ethtool_cmd *legacy_settings);
- int ethtool_get_max_rxfh_channel(struct net_device *dev, u32 *max);
-+int ethtool_get_max_rxnfc_channel(struct net_device *dev, u64 *max);
- int __ethtool_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info);
- 
- extern const struct ethtool_phy_ops *ethtool_phy_ops;
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 57e7238a4136..4831fd82796a 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -1796,7 +1796,8 @@ static noinline_for_stack int ethtool_set_channels(struct net_device *dev,
- {
- 	struct ethtool_channels channels, curr = { .cmd = ETHTOOL_GCHANNELS };
- 	u16 from_channel, to_channel;
--	u32 max_rx_in_use = 0;
-+	u64 max_rxnfc_in_use;
-+	u32 max_rxfh_in_use;
- 	unsigned int i;
- 	int ret;
- 
-@@ -1827,11 +1828,15 @@ static noinline_for_stack int ethtool_set_channels(struct net_device *dev,
- 		return -EINVAL;
- 
- 	/* ensure the new Rx count fits within the configured Rx flow
--	 * indirection table settings */
--	if (netif_is_rxfh_configured(dev) &&
--	    !ethtool_get_max_rxfh_channel(dev, &max_rx_in_use) &&
--	    (channels.combined_count + channels.rx_count) <= max_rx_in_use)
--	    return -EINVAL;
-+	 * indirection table/rxnfc settings */
-+	if (ethtool_get_max_rxnfc_channel(dev, &max_rxnfc_in_use))
-+		max_rxnfc_in_use = 0;
-+	if (!netif_is_rxfh_configured(dev) ||
-+	    ethtool_get_max_rxfh_channel(dev, &max_rxfh_in_use))
-+		max_rxfh_in_use = 0;
-+	if (channels.combined_count + channels.rx_count <=
-+	    max_t(u64, max_rxnfc_in_use, max_rxfh_in_use))
-+		return -EINVAL;
- 
- 	/* Disabling channels, query zero-copy AF_XDP sockets */
- 	from_channel = channels.combined_count +
--- 
-2.26.3
-
+I plan to submit the offload patches later this week.
