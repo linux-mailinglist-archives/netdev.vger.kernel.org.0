@@ -2,158 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 488F361E24F
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 14:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E28E261E2CA
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 15:55:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbiKFNV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 08:21:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        id S229992AbiKFOz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 09:55:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiKFNVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 08:21:25 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6092C744
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 05:21:24 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NMj51UVKUKJBgQpeeqfD5Q6xLwFlgRpJFZZH5WFoZ7F0//O+Gx5xQ745aU1JMmp1qYUeyQtQmAOKpSSrnC1x5smZbEC5M96LVa0zISJ3N4xQXc6uBpDjMLUwErODnylYepCcDYshyd2ZcL/bVL4hCG8Ql1oSEUxfNRzDRen5+iOiOnpA/zSMHxFoslNagBaG9+z9Z6MA1AOHlCTKBtPSucnEFtX93PXwuzK6t1v/KE3TNXvsskv+HuHt54pHrY7Cict8UX6fIZSp0x4K1D1Jc8pUjq/TgpE1tPghyIcoHPJ0jQaShBqp/IstDf8CGbcHXaH0gerpdZT04bUB6p9cAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UNMMKE0TtKx3v/Z85KrxgERvP1I9hgJEE5AmlDHoavw=;
- b=C+xZqeZTTLtos3xEBB7OPB+5YohPEzhcpJSEL1Ykx10r+NubxMMbajwojniu2e8CksrLThILOtomz9j6WAyNew0uNZ5HiF8wQ0SVvr5u82s7tT70TULaVI37lTdh6ePHjGkFtpLwu1jMYd3qqEgoE4WmZ25d3Wa0LHkjFKXSkX8DEKGDnna00ya4yYePkEyRWWLkvUfSdgcvekQlWb2pnhrSXLzOJZWZZmpJzUaEThxqj4NyIbzNAW/kc+XO/jslXEfyaapLwKpSn0wQhZfrfEHt7JYNdeiWuGrdRDrYlBY/u11ZG4jmXvgzbN8iHmV7kkwiFC67+jfqpuj/bpt/BA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UNMMKE0TtKx3v/Z85KrxgERvP1I9hgJEE5AmlDHoavw=;
- b=nviudDU7ogCBuPg3K3HxuATbvqN8FgfW443qX3yzbzjKKTQJfuAA7l7TIl0pNh/kL2trEZ2rP7qYvPpNs3f/t/B6KQ3AX0F5Lh4IyxM8RSnkqeNqKgGb1j1F+l88pqCdH16b0t19xKcKmD4g4qwSq12+kYhgmTCD0QkL3TNS930pEhY8y2+X94kajbQdAUs9eserK26nQ+wE7akihUXwYOfbl5QoG2x/+vI1XT3WO3p6dTmaKfgeiQGJieuz+fuYaYpja3v7TB2o8oWK50EuNp4z47HxCFvj5iqNUavqbBsvvSugh2O3nyYnXemlPPkzeJguQre2PY6zOgkp4ZqH3g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by SA0PR12MB4542.namprd12.prod.outlook.com (2603:10b6:806:73::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Sun, 6 Nov
- 2022 13:21:21 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::3409:6c36:1a7f:846e]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::3409:6c36:1a7f:846e%4]) with mapi id 15.20.5791.025; Sun, 6 Nov 2022
- 13:21:21 +0000
-Date:   Sun, 6 Nov 2022 15:21:16 +0200
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, jiri@nvidia.com, petrm@nvidia.com,
-        ivecera@redhat.com, roopa@nvidia.com, razor@blackwall.org,
-        vladimir.oltean@nxp.com, mlxsw@nvidia.com
-Subject: Re: [RFC PATCH net-next 00/16] bridge: Add MAC Authentication Bypass
- (MAB) support with offload
-Message-ID: <Y2e0zHgzIClULTIB@shredder>
-References: <20221025100024.1287157-1-idosch@nvidia.com>
- <e6c4c3755e4aba80b3c7ebf31c8cdb58@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e6c4c3755e4aba80b3c7ebf31c8cdb58@kapio-technology.com>
-X-ClientProxiedBy: VI1PR08CA0112.eurprd08.prod.outlook.com
- (2603:10a6:800:d4::14) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S229835AbiKFOz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 09:55:56 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E077C2ADF;
+        Sun,  6 Nov 2022 06:55:55 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id b185so8472468pfb.9;
+        Sun, 06 Nov 2022 06:55:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bzFP6fXSVaa/k6s5JY3J/zzifpQhv/3TCU4QFuakK6Y=;
+        b=d9p5ti0yWa1iS+O7oyxrnwyn6ic1QKIe23kB5B6EPFKZIaDj9Z04RiwAVFrRNVT1Nv
+         LVSPFL+A8WcYmDnsdu1hk5aPXpf+l72WfhVfkv4botuBPqondTp/wBppTAIPF18Uxd1p
+         HO2xy0DSxj0WLnCYmKnjP8QjBTVckusv5Cd616piFjwYAjDjrVEv3obm8xrl0TW3zBER
+         ypSIUVTbiZTB5MNHEMAKLfxTay0xKQXXHJi/C/rZ74u/UkbmZOaTirP+JTpMN/pgrebk
+         7dCoAWZOKcLKJBONnf9fubOo1pp4KfiixNOm/MmKEaXTTFfTFmWOq/G6HGMOtwagiakg
+         CFzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bzFP6fXSVaa/k6s5JY3J/zzifpQhv/3TCU4QFuakK6Y=;
+        b=lRNLn+0+jJ1j/hmGdJwkM61YwJJ7xgCH1TlWkXtDo0CAbavLvSgMiu9hwCala8/32w
+         djZ4YuyLI56vISHV75vvVF/M8TmrWrAmxnHqQEJ9YymQpKp6h5n92EqHnqjBmKn8vKUJ
+         m43nhePqsYAR8txcA2of/on6HVNG3knZHePrAMo/UJoa6XSYCYiX97/ez7Qwf5+OMvHs
+         xpb5U8/bbQREx3nje1pJE6WNYhanu8B1bRuSRNW7hs9WKwZBvCCrWNHZ9PBabKNYlxNh
+         NVonsBDfN68weq8VthIW+lmP0FfNU23GHA+w7eXgcCwptSe28D98pdWt7+ivt2ZdkWo1
+         e6EA==
+X-Gm-Message-State: ACrzQf1X853CyLhKLe9ZT+b/xSMp+5ZtGPSnLSIruJOFJRQyof6m6YGu
+        JIA21WtYpO0JKhPdz1sHsO8=
+X-Google-Smtp-Source: AMsMyM5OclPprfXFsek0mCLflxWPWDkxJ8EFOQs2v+XUDq4NpE5tXIz4v36Q7tBzH7NNJl7ifddakw==
+X-Received: by 2002:a63:205f:0:b0:46e:f589:6096 with SMTP id r31-20020a63205f000000b0046ef5896096mr38250431pgm.622.1667746555285;
+        Sun, 06 Nov 2022 06:55:55 -0800 (PST)
+Received: from localhost ([159.226.94.113])
+        by smtp.gmail.com with ESMTPSA id c16-20020a056a00009000b0056299fd2ba2sm2702227pfj.162.2022.11.06.06.55.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Nov 2022 06:55:54 -0800 (PST)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     xiyou.wangcong@gmail.com
+Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
+        jhs@mojatatu.com, jiri@resnulli.us, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com,
+        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] net: sched: fix memory leak in tcindex_set_parms
+Date:   Sun,  6 Nov 2022 22:55:31 +0800
+Message-Id: <20221106145530.3717-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <Y2a+eXr20BcI3JDe@pop-os.localdomain>
+References: <Y2a+eXr20BcI3JDe@pop-os.localdomain>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SA0PR12MB4542:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5d4f8b7-8d11-4b95-d539-08dabff9cbee
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bMnCnG/wFW5MXEvnrO3MRk0zHF/Na/XV0oFfE0Dg7vq94/tEFv0rxOuVnomBYUPYZO4ArQf+lXLWEC/C3wbpMF3y3nVBORPXk7bR0uM8UzBiF/J+t8LLY1U9/atiidYz5HArtsMD8AFDipDDM9bs5r8TP91DxzS8uvDTPhEaNMs1zxLQ9xl4OMkHZr1ZVVrnkxCIRoEeVNgtY3OIzARdqYA8nIxTFaBs2aBWlH60DE1EH/2AaDVqpaGm5OXPAud98GSPZAt25iA4X5BaECzQTkQhPF0F3rSs0okkdHJds5W6C/YJvmEv7lkRKR6QTh+yZ+H/Aba4UvPDdrUCV5Tg4+oXajmQeKO1PcRVR51APxjzIDA7UC87ZMqCxqJUzhz2PeEmOACrStGotNr4lxZ1m9S5u77li/16VJ8OKzXLzZo3LW0Hjh61pV+DSYEVztiG1dKjSFExV4SS8xiAExokyKB31MJDmQMgwA3toRFnzaic1IlzmEzTyvr+KL0VK3ceXtNbzNKyNz7zH5zo7epronXfyKKWHBu4i6QRtq/Qe+3Hi6hbhzU4Bo67F6lP0SEAK2QNfUzJh8q897sXkZqmgCzQclvoHXgaRdMHlcf6VwDyv2BZtQZPkcx90QH3UoboDXUHNiHIczflr6CLUoAPBZKnKk8RcT1TE3zZv2uPBKZBAuBhrO6B8XovxR1Zz9Losr5XhEOu4B5gkX1p39rWS91FHvUwE0FKRBxagKGFHl95KFXOR98gID1VskOM3iFdl/D4g2Tt8KiiD0658ndtt9mhPuskpdyC0MiXQuHQnaE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(136003)(396003)(346002)(39860400002)(376002)(366004)(451199015)(107886003)(6506007)(66946007)(53546011)(41300700001)(6916009)(26005)(966005)(66556008)(38100700002)(86362001)(6486002)(33716001)(4326008)(6512007)(9686003)(66476007)(478600001)(5660300002)(8676002)(316002)(6666004)(186003)(4001150100001)(7416002)(2906002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6J2+/XK05lY+6I5DR2Ih32XemjyvtIhANCWOEjYKuuk5asywJPPnaRMBrXLm?=
- =?us-ascii?Q?dq1jf3H8dfmvBhygxQzVqq9EH2HNbQHmPoNC8HXtxqqdFeMx8199Bx2kuDK3?=
- =?us-ascii?Q?niTXLvGf5Jt1r+Lr7Hy1k0BDOkpLReyvdLy9SaLsIvh0II1aT7Yb0/oVL40N?=
- =?us-ascii?Q?KYOtLGgclHgoo435evFfqVkdyMJEovy88FHDEZtf+jf1D59wNw01q1mxSsC/?=
- =?us-ascii?Q?a04VnHvF/gJQ4DgHQxnCNQZLubCDUcJL2sVPlRtX/9ptGiqiWr9498hy3Um+?=
- =?us-ascii?Q?wfBD7MuQwe0RQVwKkN9tg8by+ktw+qV+FtmqRoGTn/oYqT9PU6yfI11oayj+?=
- =?us-ascii?Q?3wWHlmPWBNBHPvL+KHvqx53mVdEO6X9IYElnpjZZsSabShthS4AF/ET+eyke?=
- =?us-ascii?Q?Q+mP7hI1IdtxM6Yq/MtJnl9CKEiW4PoR0fIWtG2PNWZLdYbHqD7Nui/vg530?=
- =?us-ascii?Q?p4G4CwdNW7MJ34zNKw2qlj4ThUaX1z+7EnQBUVz3Pgo89w6aiKxSdUpyIi3h?=
- =?us-ascii?Q?fbE9ySYcePcJNZ20RwIoaHs0cNISTexMUqG7H0oZ7aso3rdWWkApKXneCcwM?=
- =?us-ascii?Q?31xa4mZX0v2nhidnlz6JPdP8NMGTUVxbLEb+GAlq2zGmRu3Pv5oJ4cRqLa2L?=
- =?us-ascii?Q?qMbnd3YQuKU89x+Wfq5r4ubXDbOsRGI1N2/uKuURKjcD6GM03m18s15WxtAX?=
- =?us-ascii?Q?E1cGK/2Y7MXjrS9fx2eE8Yycbqgbi+PLKK+T2DXNmWcK+cPZd0mJISjZpV7E?=
- =?us-ascii?Q?89u4OUYHFaHTskdfOu2BOGOoG35UNoatkBi6bqa2XjxfYDu5t9hh2wtvmpen?=
- =?us-ascii?Q?KiYVmmCe19ZROkm2taj+7rNItejyBN0u2rs0VnNImj7ZwzFKnleXfoW5WadY?=
- =?us-ascii?Q?XOj0EaMBY6avSPmgUbr3EliTqiUE7uqnqVjzwWb4Ly3Qs6iA+QshGfOAzt5/?=
- =?us-ascii?Q?NYV3oVdigYaKmSNQqp6UCLgH8qevL5Nuu/Fi0R9u54KpbYl+xkMQWwkzh9+I?=
- =?us-ascii?Q?P6FOATwhfX7loFmNt2Ysy2ALXsrRdt44qznCVRQsXpMqT/hNeFELmJ24dW/p?=
- =?us-ascii?Q?4MnwvVe695N7HvEz0QXAOZ7ZxfpwbDcpnHuGpAcTyxnYZ6Kr2++AuDJ43QuQ?=
- =?us-ascii?Q?PfDZYCG3LlgOJBlUpN8LoxDrBvwbBnx7cEdkdOcMOCNGnkuJaBle9zWH5MrG?=
- =?us-ascii?Q?8VMtk9kWkUQMWOYTgb+z/IBVRK5q77GQXqGzPlM3Cb75lmLL7pmAspArPdrN?=
- =?us-ascii?Q?PBwC+EyP36G4calH5SF30SpHzCjvbZ6qHNi6Ck2gAk46v5DoQXnqAyWDcphq?=
- =?us-ascii?Q?RoyIAaZpuXlQ2X94fsXLXTJJbkbgcM/vL3yoiS9v0Ej9VLD3NaoW+RBRf58P?=
- =?us-ascii?Q?TtAZv7mrbh/vCayiacWYE+imh9oRbCItavUR0KR2LN+5FnAJM6J5a6fBqEmj?=
- =?us-ascii?Q?7FYlYWQocQyO6NrneKjJZiSu7tbExtHGOaXo/1yTlz+F1Tzr+cFW6HaWdQg5?=
- =?us-ascii?Q?J0t9UvGsPM8Q2lML/gUcVXCxProS9CEJJUvBpFn6OrSJ7Ld17K6r987I2fvg?=
- =?us-ascii?Q?VFVeCPADD103FIGzX5pvc9egdCEJgx2Pr85ldu8Y?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5d4f8b7-8d11-4b95-d539-08dabff9cbee
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2022 13:21:21.6472
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3vOkyOn6GgwqPy+k5k4ywA0g1uXUh7YUHDVZgyCB1HJw9bQvyWCQxbWi9oK3QAzqJ4a1wy5+mEIRQzdQ7JwmUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4542
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 06, 2022 at 01:04:36PM +0100, netdev@kapio-technology.com wrote:
-> On 2022-10-25 12:00, Ido Schimmel wrote:
-> > Merge plan
-> > ==========
-> > 
-> > We need to agree on a merge plan that allows us to start submitting
-> > patches for inclusion and finally conclude this work. In my experience,
-> > it is best to work in small batches. I therefore propose the following
-> > plan:
-> > 
-> > * Add MAB support in the bridge driver. This corresponds to patches
-> >   #1-#2.
-> > 
-> > * Switchdev extensions for MAB offload together with mlxsw
-> >   support. This corresponds to patches #3-#16. I can reduce the number
-> >   of patches by splitting out the selftests to a separate submission.
-> > 
-> > * mv88e6xxx support. I believe the blackhole stuff is an optimization,
-> >   so I suggest getting initial MAB offload support without that. Support
-> >   for blackhole entries together with offload can be added in a separate
-> >   submission.
-> 
-> As I understand for the mv88e6xxx support, we will be sending
-> SWITCHDEV_FDB_ADD_TO_BRIDGE
-> events from the driver to the bridge without installing entries in the
-> driver.
-> Just to note, that will of course imply that the bridge FDB will be out of
-> sync with the
-> FDB in the driver (ATU).
+Hi Cong,
 
-Stated explicitly here:
-https://lore.kernel.org/netdev/20221025100024.1287157-4-idosch@nvidia.com/
+On Sun, 6 Nov 2022 at 03:50, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Mon, Oct 31, 2022 at 02:08:35PM +0800, Hawkins Jiawei wrote:
+> > Syzkaller reports a memory leak as follows:
+> > ====================================
+> > BUG: memory leak
+> > unreferenced object 0xffff88810c287f00 (size 256):
+> >   comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
+> >   hex dump (first 32 bytes):
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >   backtrace:
+> >     [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
+> >     [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
+> >     [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
+> >     [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
+> >     [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
+> >     [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+> >     [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+> >     [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+> >     [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
+> >     [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
+> >     [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+> >     [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+> >     [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+> >     [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
+> >     [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
+> >     [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
+> >     [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+> >     [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
+> >     [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
+> >     [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
+> >     [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
+> >     [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >     [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >     [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > ====================================
+> >
+> > Kernel will uses tcindex_change() to change an existing
+> > traffic-control-indices filter properties. During the
+> > process of changing, kernel will clears the old
+> > traffic-control-indices filter result, and updates it
+> > by RCU assigning new traffic-control-indices data.
+> >
+> > Yet the problem is that, kernel will clears the old
+> > traffic-control-indices filter result, without destroying
+> > its tcf_exts structure, which triggers the above
+> > memory leak.
+> >
+> > This patch solves it by using tcf_exts_destroy() to
+> > destroy the tcf_exts structure in old
+> > traffic-control-indices filter result.
+>
+> So... your patch can be just the following one-liner, right?
 
-Don't see a way around it and it's not critical IMO. The entries will
-not appear with the "offload" flag so user space knows they are not in
-hardware. Once the "blackhole" flag is supported, user space can replace
-such entries and set the "blackhole" flag, which will result in the
-entries being programmed to hardware (assuming hardware/driver support).
+Yes, as you and Jakub points out, all ifdefs can be removed,
+and I will refactor those in v2 patch.
 
-I plan to submit the offload patches later this week.
+>
+>
+> diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+> index 1c9eeb98d826..00a6c04a4b42 100644
+> --- a/net/sched/cls_tcindex.c
+> +++ b/net/sched/cls_tcindex.c
+> @@ -479,6 +479,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+>         }
+>
+>         if (old_r && old_r != r) {
+> +               tcf_exts_destroy(&old_r->exts);
+>                 err = tcindex_filter_result_init(old_r, cp, net);
+>                 if (err < 0) {
+>                         kfree(f);
+
+As for the position of the tcf_exts_destroy(), should we
+call it after the RCU updating, after
+`rcu_assign_pointer(tp->root, cp)` ?
+
+Or the concurrent RCU readers may derefer this freed memory
+(Please correct me If I am wrong).
