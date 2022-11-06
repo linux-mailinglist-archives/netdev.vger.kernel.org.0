@@ -2,87 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7F9761E4B4
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 18:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 122A861E510
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 18:49:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231403AbiKFROr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 12:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        id S230338AbiKFRtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 12:49:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbiKFROd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 12:14:33 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24143A6
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 09:08:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=CYOp9TEjZPt2SFKYzNCxTI5mAGHUZfD3p7qRbjGGKAg=; b=oR
-        Je1gopPlzhWnARY7Bp+5/sv6ZzCI96uvUT5vN43Bb40qgKpB2LBECE3+LfPTyz/558w8HlkD55FR8
-        VFglgDJw0nEaoe8m7zhdPOQTnG/kU4WpG5l3ju68uCpQ6e6uOH+81LUKqoM4AuD2NVWBInZTDkuZO
-        7K/UDCfuxiaR6vE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1orj7s-001cDX-Cd; Sun, 06 Nov 2022 18:08:04 +0100
-Date:   Sun, 6 Nov 2022 18:08:04 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     piergiorgio.beruto@gmail.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: Adding IEEE802.3cg Clause 148 PLCA support to Linux
-Message-ID: <Y2fp9Eqe9icT/7DE@lunn.ch>
-References: <026701d8f13d$ef0c2800$cd247800$@gmail.com>
+        with ESMTP id S230188AbiKFRtT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 12:49:19 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C144BD;
+        Sun,  6 Nov 2022 09:49:18 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id x18so6056237qki.4;
+        Sun, 06 Nov 2022 09:49:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yi6dfTij4IZpgiQaleZPgThvdhGcr1NeDjqN55rBrh4=;
+        b=Fsxhnt+S8VHlLTegM+VbWSvq09DEYo/1dn8XqlDATd62IILtb9BeOVrfQ4Um30pzYe
+         /kvthCsraw93ufy3qhyrQTCm7nt1DFxw3EqjGcDybumY17+Lqi8+xswHcS0IWQSE2s7w
+         wbtzi6Kojv0EA1kWxtx3WxVSQ+pBYdpn3so516ju1qTj+96716ZuC7JXMw6Kh9CfP7G8
+         xvlbg9OZzV2po/5am0vFNtJ3bX0yf+SqGAAf/K0MVW5gwKJuxQ+VZUvaSJImjTygIjpL
+         KqHgqPQOkTbRql2T+Oxdlfw+QoPijTxX2TlIcBcFavJ3cWj1F4b9ylK8PtzBVSbdAR+v
+         FopA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yi6dfTij4IZpgiQaleZPgThvdhGcr1NeDjqN55rBrh4=;
+        b=VCTa1OdshmI3hwfCncFwhzwHXs5dVmHS73VG/JGReRzL8eFEh1AVoOo4xo/fRMR1f6
+         qpf7VDKlCndfHbKPQlf0hYYNjQdfOKCEKuP9Ap+D1e5ZRXOBIFOGEvmDAKIU8/Gc4Tjh
+         0jdsuDA/vPbFRUcEfijBpiNfbqIfc2N1nyn+vtiKqewbH3Z7LozOSgDDQ+Hw2ld7J6+p
+         sO4MJ8D7xSnGWiEwp3at3hAE/6kHHfnyUAqc5ZkRzDgb0hQX3Q5V5C3+bt3DDJ9B25QF
+         ePWy0z9HwAfsvZw0X6tv4Qo70dj/aQxftRvLkftqmmbGMb3tKD/SZ6RTawRU3PrNObna
+         8NJg==
+X-Gm-Message-State: ACrzQf17WCQBT9ttX8PYYG1td+dO8vQkZbwhBKtLVGqCYeXxTc0ZBBhn
+        I9IFF7uh5rtJSEVl3etK3hGWgfhVAc8=
+X-Google-Smtp-Source: AMsMyM6TmTSIMVvSx45NvR//r5wdwa+REIBJXFj0qjJ4IYioZz2X/7H9KrWMhxlA1NgdwT0wQccFZQ==
+X-Received: by 2002:a05:620a:1492:b0:6fa:2e33:c003 with SMTP id w18-20020a05620a149200b006fa2e33c003mr27609215qkj.587.1667756957684;
+        Sun, 06 Nov 2022 09:49:17 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:320c:c2b1:6732:81ff])
+        by smtp.gmail.com with ESMTPSA id fg26-20020a05622a581a00b00399b73d06f0sm4307254qtb.38.2022.11.06.09.49.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Nov 2022 09:49:17 -0800 (PST)
+Date:   Sun, 6 Nov 2022 09:49:16 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Hawkins Jiawei <yin31149@gmail.com>
+Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
+        jhs@mojatatu.com, jiri@resnulli.us, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com,
+        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH] net: sched: fix memory leak in tcindex_set_parms
+Message-ID: <Y2fznI8JgkTBCVAA@pop-os.localdomain>
+References: <Y2a+eXr20BcI3JDe@pop-os.localdomain>
+ <20221106145530.3717-1-yin31149@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <026701d8f13d$ef0c2800$cd247800$@gmail.com>
+In-Reply-To: <20221106145530.3717-1-yin31149@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Based on my personal experience, It looks to me that extending
-> ethtool is the way to go. Maybe we should consider those as
-> “tunables”?
+On Sun, Nov 06, 2022 at 10:55:31PM +0800, Hawkins Jiawei wrote:
+> Hi Cong,
+> 
+> >
+> >
+> > diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+> > index 1c9eeb98d826..00a6c04a4b42 100644
+> > --- a/net/sched/cls_tcindex.c
+> > +++ b/net/sched/cls_tcindex.c
+> > @@ -479,6 +479,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+> >         }
+> >
+> >         if (old_r && old_r != r) {
+> > +               tcf_exts_destroy(&old_r->exts);
+> >                 err = tcindex_filter_result_init(old_r, cp, net);
+> >                 if (err < 0) {
+> >                         kfree(f);
+> 
+> As for the position of the tcf_exts_destroy(), should we
+> call it after the RCU updating, after
+> `rcu_assign_pointer(tp->root, cp)` ?
+> 
+> Or the concurrent RCU readers may derefer this freed memory
+> (Please correct me If I am wrong).
 
-I suggest you define new ethtool netlink messages. I don't think PHY
-tunables would make a good interface, since you have multiple values
-which need configuring, and you also have some status information.
+I don't think so, because we already have tcf_exts_change() in multiple
+places within tcindex_set_parms(). Even if this is really a problem,
+moving it after rcu_assign_pointer() does not help, you need to wait for
+a grace period.
 
-So you probably want a message to set the configuration, and another
-to get the current configuration. For the set, you probably want an
-attribute per configuration value, and allow a subset of attributes to
-be included in the message. The get configuration should by default
-return all the attributes, but not enforce this, since some vendor
-will implement it wrong and miss something out.
-
-The get status message should return the PST value. This is something
-you might also want to append to the linkstate message, next to the
-SQI values.
-
-What i don't see in the Open Alliance spec is anything about
-interrupts. It would be interesting to see if any vendor triggers an
-interrupt when PST changes. A PHY which has this should probably send
-a linkstate message to userspace reporting the state change. For PHYs
-without interrupts, phylib will poll the read_status method once per
-second. You probably want to check the PST bit during that poll. If EN
-is true, but PST is false, is the link considered down?
-
-I would also include a check in the phylib core. If the set request
-tries to set EN to true, check the current link mode and if it is not
-half duplex return -EINVAL. An extack messages would be good here as
-well.
-
-For the interface between phylib and the PHY driver, you should
-probably add to the struct phy_driver a set configuration method, a
-get configuration method, and maybe a get status method. You can
-provide implementations for these methods in phy-c45.c which any PHY
-driver which conforms to the standard can use.
-
-    Andrew
+Thanks.
