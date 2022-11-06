@@ -2,51 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9334961E569
-	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 19:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 372FE61E56C
+	for <lists+netdev@lfdr.de>; Sun,  6 Nov 2022 20:00:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbiKFS4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 13:56:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        id S229909AbiKFTAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 14:00:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiKFS4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 13:56:50 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CE3E0CC;
-        Sun,  6 Nov 2022 10:56:49 -0800 (PST)
+        with ESMTP id S229787AbiKFTAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 14:00:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F862FCEA
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 11:00:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 06F43CE0E13;
-        Sun,  6 Nov 2022 18:56:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA91C433D6;
-        Sun,  6 Nov 2022 18:56:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E19360D24
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 19:00:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEA3C433C1;
+        Sun,  6 Nov 2022 19:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667761006;
-        bh=XcaDx53ZZHUc0l8ILKX5RE1+LHLJaPD85TpWG4xZmSE=;
+        s=k20201202; t=1667761204;
+        bh=EsmKcdYf/wnxOGxIH5rpUGHKyJI21vqGSgY8jy5NG9E=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j6IzSq3k0h5KjSirg/QJ8lx6E8Apm+NQX1Doljh7fIZYFotY2ymGtw+EJyRSqw5af
-         8sMP+xaZUHm3uCnPffidyUOPMYOTLhb6sQ0tvyBko/ZUNIXYT8F4FMxTHjQEB/3GD5
-         VPs4rvvDitbDYaj0DDpptcRXk/03xHbrgWCePFILnKGto864G4qKMssz1iOTb912za
-         fn2ouqiN74KaDOpPNmDEFXXXXkZoCUdMPTF2ICrrlXjcH7B9/McQDXC0tafpfft0qR
-         sCfkTP/GaAgM9Ya1+bvJ9AAqtsGNtB1BZL159zPrfyeRm7M/MW+KqbaPIcV0cQLdYa
-         laPBcOUceGQlA==
-Date:   Sun, 6 Nov 2022 20:56:41 +0200
+        b=oXV2D7XfIjaYDyLTVDu+pmHWg24C2Oqjin5dwo9OmjYfa6plL2TMDfrFXo8iD7os4
+         z4vJwjGgG0HaPdAEUSQwEQS6AbUvmo4RYe/Rt211lIblBCgk3RrnnmtUJvlndMZYmV
+         KFwDImQfSjO6EfVo6iyfhBaRkrlvOUWGIvwQQHps8EJIXkxT0a4wsQDs1ySULZWLS0
+         2wPxL39l1mjWoY4QM9GBrj3VXwMNHYoJMlpbBAMihq97mS3lWfYBWj6j+leFOAsPRc
+         TnO8B+qCF9ysd6Ray9eVRn2htbpnNSZFpleNkoYlcERS35OpUPFBgH6cz6BjQ9ZNiH
+         NAiZddwiQ8NuA==
+Date:   Sun, 6 Nov 2022 21:00:00 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     zhang.songyi@zte.com.cn
-Cc:     saeedm@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, kliteyn@nvidia.com,
-        shunh@nvidia.com, rongweil@nvidia.com, valex@nvidia.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jiang.xuexin@zte.com.cn,
-        xue.zhihong@zte.com.cn
-Subject: Re: [PATCH linux-next] net/mlx5: remove redundant ret variable
-Message-ID: <Y2gDaRc3t7WiWoTT@unreal>
-References: <202211022150403300510@zte.com.cn>
+To:     Nick Child <nnac123@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, nick.child@ibm.com, bjking1@linux.ibm.com,
+        ricklind@us.ibm.com, dave.taht@gmail.com
+Subject: Re: [PATCH net] ibmveth: Reduce maximum tx queues to 8
+Message-ID: <Y2gEMKaeL18bFi5t@unreal>
+References: <20221102153040.149244-1-nnac123@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202211022150403300510@zte.com.cn>
+In-Reply-To: <20221102153040.149244-1-nnac123@linux.ibm.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,49 +52,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 02, 2022 at 09:50:40PM +0800, zhang.songyi@zte.com.cn wrote:
-> From 74562e313cf9a1b96c7030f27964f826a0c2572d Mon Sep 17 00:00:00 2001
-> From: zhang songyi <zhang.songyi@zte.com.cn>
-> Date: Wed, 2 Nov 2022 20:48:08 +0800
-> Subject: [PATCH linux-next] net/mlx5: remove redundant ret variable
+On Wed, Nov 02, 2022 at 10:30:40AM -0500, Nick Child wrote:
+> Previously, the maximum number of transmit queues
+> allowed was 16. Due to resource concerns, limit
+> to 8 queues instead.
+> 
+> Since the driver is virtualized away from the
+> physical NIC, the purpose of multiple queues is
+> purely to allow for parallel calls to the
+> hypervisor. Therefore, there is no noticeable
+> effect on performance by reducing queue count to 8.
 
-Subject line should be "[PATCH net-next] ..." for all net patches.
-And please use git send-email utility to send the patches.
-
-Thanks
+Very odd typography of this commit message. You have upto 80 chars in
+one line, use them.
 
 > 
-> Return value from mlx5dr_send_postsend_action() directly instead of taking
-> this in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
+> Reported-by: Reported-by: Dave Taht <dave.taht@gmail.com>
+
+Double Reported-by.
+
+> Signed-off-by: Nick Child <nnac123@linux.ibm.com>
+
+And missing Fixes line for "net".
+
 > ---
->  drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
+> Relevant links:
+>  - Introduce multiple tx queues (accepted in v6.1):
+>    https://lore.kernel.org/netdev/20220928214350.29795-2-nnac123@linux.ibm.com/
+>  - Resource concerns with 16 queues:
+>    https://lore.kernel.org/netdev/CAA93jw5reJmaOvt9vw15C1fo1AN7q5jVKzUocbAoNDC-cpi=KQ@mail.gmail.com/
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-> index a4476cb4c3b3..fd2d31cdbcf9 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-> @@ -724,7 +724,6 @@ int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
->                 struct mlx5dr_action *action)
->  {
->     struct postsend_info send_info = {};
-> -   int ret;
+>  drivers/net/ethernet/ibm/ibmveth.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->     send_info.write.addr = (uintptr_t)action->rewrite->data;
->     send_info.write.length = action->rewrite->num_of_actions *
-> @@ -734,9 +733,7 @@ int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
->         mlx5dr_icm_pool_get_chunk_mr_addr(action->rewrite->chunk);
->     send_info.rkey = mlx5dr_icm_pool_get_chunk_rkey(action->rewrite->chunk);
+> diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
+> index 4f8357187292..6b5faf1feb0b 100644
+> --- a/drivers/net/ethernet/ibm/ibmveth.h
+> +++ b/drivers/net/ethernet/ibm/ibmveth.h
+> @@ -99,7 +99,7 @@ static inline long h_illan_attributes(unsigned long unit_address,
+>  #define IBMVETH_FILT_LIST_SIZE 4096
+>  #define IBMVETH_MAX_BUF_SIZE (1024 * 128)
+>  #define IBMVETH_MAX_TX_BUF_SIZE (1024 * 64)
+> -#define IBMVETH_MAX_QUEUES 16U
+> +#define IBMVETH_MAX_QUEUES 8U
+>  
+>  static int pool_size[] = { 512, 1024 * 2, 1024 * 16, 1024 * 32, 1024 * 64 };
+>  static int pool_count[] = { 256, 512, 256, 256, 256 };
+> -- 
+> 2.31.1
 > 
-> -   ret = dr_postsend_icm_data(dmn, &send_info);
-> -
-> -   return ret;
-> +   return dr_postsend_icm_data(dmn, &send_info);
->  }
-> 
->  static int dr_modify_qp_rst2init(struct mlx5_core_dev *mdev,
-> --
-> 2.15.2
