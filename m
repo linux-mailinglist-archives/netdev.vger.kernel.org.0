@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F5461FD1C
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 19:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A3B061FD1F
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 19:16:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233126AbiKGSQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 13:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
+        id S233092AbiKGSQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 13:16:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233029AbiKGSPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 13:15:20 -0500
+        with ESMTP id S232691AbiKGSPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 13:15:23 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E6C1AF06
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 10:14:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08A7248D9
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 10:14:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667844869; x=1699380869;
+  t=1667844873; x=1699380873;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Lfzl13qwrcNbN6FCqEK46vNdGB2/sGRcHSXnQxBh3DE=;
-  b=LanPWuxs+fj8CqE2CtKdiTwEuXFxsMWkR7lTIMb/jGj3eJgS/8uNZdN3
-   1hmJLrQ8roEnY2pvfTCslU+gBgeaaKjiPh95YxfIhex2GG7iwiMZczVrW
-   LzNslOSZW6B6ZpurXYzDWg3dj3Me+yhZ33ao2TMZcCkAy/SA1ZPtXyq+/
-   P50HYqPr8G9aab2ziYisSX4kj/+I0FxFhNp0cYBW6OseGj1m0Ni2ZCBpw
-   IEXkElLdfnaOBZZmVs4zDO7zD9fpCKMRRgMJXNbOYVH8b08YTZN8J3jv+
-   QRfKad+yZHjsgcx9gQMmdQz7Av6ftZQx4do9UYhaWFwOaOm+vKojXUM/W
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="293852072"
+  bh=qXJlQ2sMQgULa1Ri8zHce9DklMcm3UCrPn8SQWqBes0=;
+  b=dhXLkYSZbB6hTNyPqN+W9MS70vAKuwhUB70wSWmM+IPN6ner8psUwq/G
+   DR7tgq2UqC/1yrMOSHSgcIS1A19dx36cwtUuwyGdXChtTyI7gyoW0LrUM
+   mzRLuKWm6DZlkPelYME2x1HwwgclfN/+R1l8PT4thyk/wow3LoGVJuIjM
+   xvuwzNjneXrjlAUWxzp6Kp+42aOhjX9gaCKi6uM9nmQc2KGwZ69pUw9eg
+   68KhrEZ6UEYPKX5yJPZMFmVx5QHNmXjqtJuqucHBX2nG4DYdZ7jLH6BM5
+   H+i8aEK+OIZ2L9tOUgDH2yFT+57QCrQ8Oicmn5+fm6BFt9xNvJHuwxqQF
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="293852085"
 X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
-   d="scan'208";a="293852072"
+   d="scan'208";a="293852085"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:14:28 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="613962825"
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:14:33 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="613962840"
 X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
-   d="scan'208";a="613962825"
+   d="scan'208";a="613962840"
 Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:14:26 -0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:14:31 -0800
 From:   Michal Wilczynski <michal.wilczynski@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
@@ -44,9 +44,9 @@ Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
         anthony.l.nguyen@intel.com, kuba@kernel.org,
         ecree.xilinx@gmail.com, jiri@resnulli.us,
         Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v10 10/10] ice: add documentation for devlink-rate implementation
-Date:   Mon,  7 Nov 2022 19:13:26 +0100
-Message-Id: <20221107181327.379007-11-michal.wilczynski@intel.com>
+Subject: [PATCH net-next v10 10/10] ice: Add documentation for devlink-rate implementation
+Date:   Mon,  7 Nov 2022 19:13:27 +0100
+Message-Id: <20221107181327.379007-12-michal.wilczynski@intel.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221107181327.379007-1-michal.wilczynski@intel.com>
 References: <20221107181327.379007-1-michal.wilczynski@intel.com>
@@ -62,7 +62,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Add documentation to a newly added devlink-rate feature. Provide some
-examples on how to use the features, which netlink attributes are
+examples on how to use the commands, which netlink attributes are
 supported and descriptions of the attributes.
 
 Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
