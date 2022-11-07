@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D6161F49C
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 14:47:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0120361F4A7
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 14:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbiKGNrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 08:47:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
+        id S231734AbiKGNzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 08:55:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231420AbiKGNrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 08:47:08 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EBE1CFD3
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 05:47:07 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id v1so16252947wrt.11
-        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 05:47:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1AC3YGIaP9V1NcYduZ2gjnjW3VyF2paTalXWaqNImmI=;
-        b=KLK3MEHraVuw0BOWHmqR+3FnxAOspxOavkgD/w0ogGrKoqK4J7grUD3vCU9UiMvvkk
-         anTuvcA3puB2XEMmJccwxTgT0KnO3dgE0uqJSlw7oM7gYjxHgaRLPtvZClknXpDBz7N0
-         Igz22I5YxH7BOclDKEKmpw3QZl2IThI/e9XBuNEbcwmszPnk/fQXie5HQP1tnTp51d2K
-         139rhA+cd8yjFyCN8JYf0sEnJsQSAKriyxORFpdJZTzFyXtgv3NmoaCZ5yGD0JPa/OG8
-         MscUMDNjE+skdsVGX00144TF9odadea0kL6mqWhSW7pZbzxrt4OtPjEmkOBQKX9W5Zpg
-         pRbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1AC3YGIaP9V1NcYduZ2gjnjW3VyF2paTalXWaqNImmI=;
-        b=LLEb2d/qZ+/8MnSDQJjBimYTnDrie18YCeKLlWod0SVhTamdEsFtQk5IVXq+D7hKOh
-         VuXfI+EJ9UoGGgBeuw896vUFs71eB7uD6YC4gMe1q5nSl3QOOnvJ3mFMf6Pq4xASFuBU
-         HrBUdDHRsxf6NbjDKPPUeLABWVp0W8CrubHclT+y2aybtKWelnMAz/gtnPP0RwQzWZ+C
-         e9mHlrypdPpmXMiMp+rHfO+YNZJtn7MJztKCX4CgZ0soAgJCW8ABt4Mjow1LKvv0ie/G
-         UtGw6fsSgY+AcFJSSIGtIEYuDbT2vwwSzIS1ndqmYbp7h+Sw43rMOO5KmtOHxUBn3q1+
-         +8VQ==
-X-Gm-Message-State: ACrzQf2fpEEOhrB8+Ufks6Jo977PUFHtRBStdrybHpY4T6BM0KoQHDs3
-        tz33CrHSnXcSidtZztP2T0KD81TQ45BFG1eBDQ5Cn6JI3NU=
-X-Google-Smtp-Source: AMsMyM6VsyV3GUEU7A+sgU0cqpAT4MmNpY2dA52ocj/n4oPUEh0wtdHEKdSgxjNFgVTLvmgUnIE9aPQF/edsvVebtCA=
-X-Received: by 2002:adf:e84a:0:b0:236:5f2d:9027 with SMTP id
- d10-20020adfe84a000000b002365f2d9027mr31265063wrn.89.1667828825558; Mon, 07
- Nov 2022 05:47:05 -0800 (PST)
+        with ESMTP id S231563AbiKGNzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 08:55:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D281CFCC;
+        Mon,  7 Nov 2022 05:55:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF42B811B8;
+        Mon,  7 Nov 2022 13:55:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B33C433C1;
+        Mon,  7 Nov 2022 13:54:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667829300;
+        bh=YmHzZ1me/URX0OErpUUTrYtcYN0+M7i/wabiD4jO+zY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=paW98QAcHGYOPQmIhc64P4PCa5Sd8UrU7apa81sMI2p3j4IB1/m5Kn07yeFTYaR2Y
+         07LZzTNfjivsKCo40T4Dpj9xORW+XR1jcm5Fghz9xBVLWWJ264M7Yu3pUD63MP8cdV
+         8Ij40TVjHSDoKG8vTf8jiWTFRgD7jqtcqPI04lxGzC8aEnevsSZbTD8iD0DnrLzbwH
+         Amcs1WyhO+vEkkRhkbuRnQPyOUGE1PxL1YmCIuSVCWZfcIJ9QYXXSHz3JADDaEwanV
+         iVkjjIzHf1SG2F8lPYioBOs9mowphmSzVFcv/hXpsGYnXQ6h4A9/EFsTh+Pi5wbB/L
+         Dco7mCfq9GxEw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-wireless@vger.kernel.org,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v5] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via control port
+In-Reply-To: <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de> (Marek Vasut's
+        message of "Mon, 7 Nov 2022 14:23:37 +0100")
+References: <20221104163339.227432-1-marex@denx.de>
+        <87o7tjszyg.fsf@kernel.org>
+        <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Date:   Mon, 07 Nov 2022 15:54:52 +0200
+Message-ID: <877d06g98z.fsf@kernel.org>
 MIME-Version: 1.0
-References: <CAGRyCJGWQagceLhnECBcpPfG5jMPZrjbsHrio1BvgpZJhk0pbA@mail.gmail.com>
- <20221107115856.GE2220@thinkpad>
-In-Reply-To: <20221107115856.GE2220@thinkpad>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 7 Nov 2022 14:46:29 +0100
-Message-ID: <CAMZdPi-=AkfKnyPRBgV-7RxczePnB4shLq2bdj+q3kh+7Web3w@mail.gmail.com>
-Subject: Re: MHI DTR client implementation
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Daniele Palmas <dnlplm@gmail.com>, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,61 +63,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Nov 2022 at 12:59, Manivannan Sadhasivam <mani@kernel.org> wrote:
->
-> + Loic
->
-> On Tue, Sep 20, 2022 at 04:23:25PM +0200, Daniele Palmas wrote:
-> > Hello all,
-> >
-> > I'm looking for some guidance related to  a possible MHI client for
-> > serial ports signals management implementation.
-> >
-> > Testing the AT channels with Telit modems I noted that unsolicited
-> > indications do not show: the root cause for this is DTR not set for
-> > those ports through MHI channels 18/19, something that with current
-> > upstream code can't be done due to the missing DTR client driver.
-> >
-> > I currently have an hack, based on the very first mhi stack submission
-> > (see https://lore.kernel.org/lkml/1524795811-21399-2-git-send-email-sdias@codeaurora.org/#Z31drivers:bus:mhi:core:mhi_dtr.c),
-> > solving my issue, but I would like to understand which would be the
-> > correct way, so maybe I can contribute some code.
-> >
-> > Should the MHI DTR client be part of the WWAN subsystem?
->
-> Yes, since WWAN is going to be the consumer of this channel, it makes sense to
-> host the client driver there.
+Marek Vasut <marex@denx.de> writes:
 
-Agree.
-
+>> BTW did you test this on a real device?
 >
-> > If yes, does it make sense to have an associated port exposed as a char
-> > device?
->
-> If the goal is to control the DTR settings from userspace, then you can use
-> the "AT" chardev node and handle the DTR settings in this client driver.
-> Because at the end of the day, user is going to read/write from AT port only.
-> Adding one more ctrl port and have it configured before using AT port is going
-> to be a pain.
->
-> Thanks,
-> Mani
->
-> > I guess the answer is no, since it should be used just by the AT ports
-> > created by mhi_wwan_ctrl, but I'm not sure if that's possible.
-> >
-> > Or should the DTR management be somehow part of the MHI stack and
-> > mhi_wwan_ctrl interacts with that through exported functions?
+> Yes, SDIO RS9116 on next-20221104 and 5.10.153 .
 
-Is this DTR thing Telit specific?
+Very good, thanks.
 
-Noticed you're using the IP_CTRL channel for this, do you have more
-information about the protocol to use?
+> What prompts this question ?
 
-At first glance, I would say you can create a simple driver for
-IP_CTRL channel (that could be part of mhi_wwan_ctrl), but instead of
-exposing it rawly to the user, simply enable DTR unconditionally at
-probe time?
+I get too much "fixes" which have been nowhere near real hardware and
+can break the driver instead of fixing anything, especially syzbot
+patches have been notorious. So I have become cautious.
 
-Regards,
-Loic
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
