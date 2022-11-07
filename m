@@ -2,140 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1E261EC4A
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 08:41:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1626C61EC6D
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 08:51:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbiKGHlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 02:41:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        id S230480AbiKGHvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 02:51:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231460AbiKGHk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 02:40:58 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F3A6242
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 23:40:56 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id y14so27704186ejd.9
-        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 23:40:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+lfqb3ol7Bxs1iGAL3+ufgu0TErNNc1giAdMYt6uKPM=;
-        b=cW1t/VwiMKWxA4SN2v1Y0mHvJ1cXEz7U//6W6hF0Z4EtLbf0OdZC6e3CkDmCKlz8wN
-         lgi8jsuJ0R4QE4Z4bcwdn0A8voLCw4n8+ElyD7iWVR43HFlzk6JTZJtFh+JdfcDueWwZ
-         qKoIrTcHDp1H5hTnya3I8VfNR9e/L/c7rtYQZoukJK0n2ZmhqDG8054NLk5etk+u8Y8g
-         4Lm5smnAk1WwT5sD+y0S/uCjfE3N2FAWHRVXC3z0JXCRN34fhnsFNbaEi+jcmoNLyzkE
-         7JMydLUs8vDwsVmJSZRajJ0YQSoxWKYRhkVA4+2SPdUZKjh/P2sne3QY2wn2mL4jhaWL
-         SS5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+lfqb3ol7Bxs1iGAL3+ufgu0TErNNc1giAdMYt6uKPM=;
-        b=CbQu2qnn0yCXA49MTsbfRzLVWgd9/YcCPLQtWrihfeZDLY0KhxIVJQrGFJsAR2/3h1
-         cLoBmI3e1/xbmY6jL1Ljio9JwJnzTfYQOUhSdV4CY7Pu9lcxCdy5HmzgoK/rw89Nhb2m
-         hIuAIOfr8YAbOnGtrpyUY+LNL7p4xjrWAblBDYzWpx7fS5kXpEP35Uh0sKgCd79VPYNj
-         IkdPAnvvXqiF4P9gViQgy7Mr4EFd61NMj+dJiF/iybqkK2B52dbCDPDu3qOncendoZmz
-         XBCmlREGQOmxhy4K/NzsyBFVbKPuoNBCGFSL1O5iOyX34k57+vB1/+m4wfHc/B927D4c
-         L9zw==
-X-Gm-Message-State: ACrzQf2jgGONNHwtCLpSVCTKI+dJ4hsbOA1N2vQ9qdsSVahXXkPBJbck
-        fAoL/4Epu50PwhyhuzgDOVLQBw==
-X-Google-Smtp-Source: AMsMyM7NNxcrWFoAkGOeywH6FbaQtbGu/aIFcEvDK8+Tjs7QAXpU+sMoWM4xhFKVLMpV+B4QHixSaA==
-X-Received: by 2002:a17:907:2063:b0:7ad:fa6b:e84b with SMTP id qp3-20020a170907206300b007adfa6be84bmr28298711ejb.69.1667806854713;
-        Sun, 06 Nov 2022 23:40:54 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id eh9-20020a0564020f8900b004587f9d3ce8sm3711460edb.56.2022.11.06.23.40.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Nov 2022 23:40:53 -0800 (PST)
-Date:   Mon, 7 Nov 2022 08:40:53 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, tariqt@nvidia.com,
-        moshe@nvidia.com, saeedm@nvidia.com, linux-rdma@vger.kernel.org
-Subject: Re: [patch net-next v4 05/13] net: devlink: track netdev with
- devlink_port assigned
-Message-ID: <Y2i2hTt2txFoo2aR@nanopsycho>
-References: <20221102160211.662752-1-jiri@resnulli.us>
- <20221102160211.662752-6-jiri@resnulli.us>
- <Y2d51izTZV1rThOc@shredder>
+        with ESMTP id S229687AbiKGHva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 02:51:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C575111E
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 23:51:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82DA4B80E19
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 07:51:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A17FC433C1;
+        Mon,  7 Nov 2022 07:51:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667807487;
+        bh=Bb/zsbwgFRgGEihwIYInEo76l09yNmCnXP2HTwFYj24=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U0D4A/H38FWvRXUMnPgJmtK6UTLuZUuRwZScX+Ay/rb0Sx6OHhtYXnqW9tUzORgUV
+         qpX4LfRSu+qbwRVijDJl4dcBLZjTarlBjP73KOEWDL83gnIZ9LFqxnRMtV45r5CVqJ
+         sJYasKIlnhbwTZMqJhAxe92Ma5ak0Uk3yDxW55reJA7va3kISJeODt25aoJZs+GR4q
+         RyGcshuqfcV41Bj9IU8wCPgAvgN+UKICkkXOnmuJ8bdCtElbpi9zVF0t/yi1PFb45d
+         0Z3Mqw9gLrTMVTqfZhP490WMeNfk60tqzWurHB6NhQ6vVw7Sopiqr5LZayaPq1cIeB
+         1HvMSWyS8L2tg==
+Date:   Mon, 7 Nov 2022 09:51:22 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, gospo@broadcom.com,
+        pavan.chebbi@broadcom.com
+Subject: Re: [PATCH net-next 1/3] bnxt_en: refactor VNIC RSS update functions
+Message-ID: <Y2i4+vudfY71/yn3@unreal>
+References: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
+ <1667780192-3700-2-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y2d51izTZV1rThOc@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <1667780192-3700-2-git-send-email-michael.chan@broadcom.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Nov 06, 2022 at 10:09:42AM CET, idosch@idosch.org wrote:
->On Wed, Nov 02, 2022 at 05:02:03PM +0100, Jiri Pirko wrote:
->> @@ -9645,10 +9649,13 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
->>  
->>  	ret = xa_alloc_cyclic(&devlinks, &devlink->index, devlink, xa_limit_31b,
->>  			      &last_id, GFP_KERNEL);
->> -	if (ret < 0) {
->> -		kfree(devlink);
->> -		return NULL;
->> -	}
->> +	if (ret < 0)
->> +		goto err_xa_alloc;
->> +
->> +	devlink->netdevice_nb.notifier_call = devlink_netdevice_event;
->> +	ret = register_netdevice_notifier_net(net, &devlink->netdevice_nb);
->> +	if (ret)
->> +		goto err_register_netdevice_notifier;
->>  
->>  	devlink->dev = dev;
->>  	devlink->ops = ops;
->> @@ -9675,6 +9682,12 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
->>  	init_completion(&devlink->comp);
->>  
->>  	return devlink;
->> +
->> +err_register_netdevice_notifier:
->> +	xa_erase(&devlinks, devlink->index);
->> +err_xa_alloc:
->> +	kfree(devlink);
->> +	return NULL;
->>  }
->>  EXPORT_SYMBOL_GPL(devlink_alloc_ns);
->>  
->> @@ -9828,6 +9841,10 @@ void devlink_free(struct devlink *devlink)
->>  	WARN_ON(!list_empty(&devlink->port_list));
->>  
->>  	xa_destroy(&devlink->snapshot_ids);
->> +
->> +	unregister_netdevice_notifier_net(devlink_net(devlink),
->> +					  &devlink->netdevice_nb);
->> +
->>  	xa_erase(&devlinks, devlink->index);
->>  
->>  	kfree(devlink);
->
->The network namespace of the devlink instance can change throughout the
->lifetime of the devlink instance, but the notifier block is always
->registered in the initial namespace. This leads to
->unregister_netdevice_notifier_net() failing to unregister the notifier
->block, which leads to use-after-free. Reproduce (with KASAN enabled):
->
-># echo "10 0" > /sys/bus/netdevsim/new_device
-># ip netns add bla
-># devlink dev reload netdevsim/netdevsim10 netns bla
-># echo 10 > /sys/bus/netdevsim/del_device
-># ip link add dummy10 up type dummy
->
->I see two possible solutions:
->
->1. Use register_netdevice_notifier() instead of
->register_netdevice_notifier_net().
->
->2. Move the notifier block to the correct namespace in devlink_reload().
+On Sun, Nov 06, 2022 at 07:16:30PM -0500, Michael Chan wrote:
+> From: Edwin Peer <edwin.peer@broadcom.com>
+> 
+> Extract common code into a new function. This will avoid duplication
+> in the next patch, which changes the update algorithm for both the P5
+> and legacy code paths.
+> 
+> No functional changes.
+> 
+> Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 34 +++++++++++------------
+>  1 file changed, 16 insertions(+), 18 deletions(-)
 
-Yep, this was my intension, slipped my mind. Thanks! Will send a
-follow-up.
+<...>
+
+> +static void
+> +__bnxt_hwrm_vnic_set_rss(struct bnxt *bp, struct hwrm_vnic_rss_cfg_input *req,
+> +			 struct bnxt_vnic_info *vnic)
+
+The "__" prefix in __func_name() usually means in kernel that this function
+is locked externally.
+
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
