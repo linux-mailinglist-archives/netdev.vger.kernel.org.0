@@ -2,244 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EE461FD0F
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 19:15:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ECF461FD10
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 19:15:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233142AbiKGSPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 13:15:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        id S233133AbiKGSPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 13:15:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232986AbiKGSOs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 13:14:48 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779CA25C4D
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 10:13:47 -0800 (PST)
+        with ESMTP id S233039AbiKGSOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 13:14:53 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCCB28E0F
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 10:13:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667844827; x=1699380827;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vpy5+Kt/qJ1BERnL8HJxdQ/jagQG8JZdvbyl3JzdBAM=;
-  b=BGAVQ1rstuulINx+G85B8seoaUZf1WndhCqUQv/GLL4jsoqXjELLjAt/
-   Ghvv+MJ/0yPUcyuDBuBJyAe51x/zbcuXZ4NlTVrjFLBzS0Gf/RBh6hpjn
-   /2o+Zx8rEEbe16pXJoFEY7BH6Ift245UYvh55xvaoS1FkihC7uHIO6AG0
-   OWewmMp6YGfsNhEitN0e0crm657o53WPlc34fo2QtzO1pvzRC0G4MoJFc
-   sXRG7z/woYv1fOrDlxcwHJj2gkfuuSyB1e4c/lJgXdf7Qx8mJiRnezOYg
-   gDTSH5FO+QDxRZaEkRcgma5nG2ShPW8C73DZOSIVpL7WAP9t1zjBQWTY9
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="308107589"
+  t=1667844835; x=1699380835;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1M2AvKUZK0K5Sx4EdpD/aj+chFXPtI+mPWuPZnSgDVE=;
+  b=RLyVoxyLbZnOhXdh2JyMeIsIKNBgKBHpjyJyIZBcenW8iTsPC6uDFVh9
+   hT0hp2YQknby5rqk/dkS8xQ4u/xJjtKBTo/oHHWVXjtuX4ymle4RjCtG2
+   097OV9QJbK8mXdEEhCRqvoNbyAUa9BhmZ0jYvfzyuLnRVyatASDekk8ST
+   84/DMJvOpHvUw/VKgohuBZQnDdrhox7aoKWz7Hgcl1ER30JXBqLsaLv5F
+   +7ULPMAZWUZ694Mx06iMnSs6c1DZQnRC+JM2C8o+nTjt/1N4B64uLIGHc
+   PVUc9untdVMOSk6rhiOJSxPE25RbCqya5XmyC8JrhwhAtHghKFzaYCzzp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="293851895"
 X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
-   d="scan'208";a="308107589"
+   d="scan'208";a="293851895"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:13:47 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="613962521"
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:13:55 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="613962581"
 X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
-   d="scan'208";a="613962521"
+   d="scan'208";a="613962581"
 Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:13:44 -0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 10:13:52 -0800
 From:   Michal Wilczynski <michal.wilczynski@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
         jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
         anthony.l.nguyen@intel.com, kuba@kernel.org,
         ecree.xilinx@gmail.com, jiri@resnulli.us,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v10 00/10] Implement devlink-rate API and extend it
-Date:   Mon,  7 Nov 2022 19:13:16 +0100
-Message-Id: <20221107181327.379007-1-michal.wilczynski@intel.com>
+        Michal Wilczynski <michal.wilczynski@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net-next v10 01/10] devlink: Introduce new attribute 'tx_priority' to devlink-rate
+Date:   Mon,  7 Nov 2022 19:13:17 +0100
+Message-Id: <20221107181327.379007-2-michal.wilczynski@intel.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20221107181327.379007-1-michal.wilczynski@intel.com>
+References: <20221107181327.379007-1-michal.wilczynski@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series implements devlink-rate for ice driver. Unfortunately
-current API isn't flexible enough for our use case, so there is a need to
-extend it. Some functions have been introduced to enable the driver to
-export current Tx scheduling configuration.
+To fully utilize offload capabilities of Intel 100G card QoS capabilities
+new attribute 'tx_priority' needs to be introduced. This attribute allows
+for usage of strict priority arbiter among siblings. This arbitration
+scheme attempts to schedule nodes based on their priority as long as the
+nodes remain within their bandwidth limit.
 
-Pasting justification for this series from commit implementing devlink-rate
-in ice driver(that is a part of this series):
+Introduce new attribute in devlink-rate that will allow for configuration
+of strict priority. New attribute is optional.
 
-There is a need to support modification of Tx scheduler tree, in the
-ice driver. This will allow user to control Tx settings of each node in
-the internal hierarchy of nodes. As a result user will be able to use
-Hierarchy QoS implemented entirely in the hardware.
+Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ include/net/devlink.h        |  6 ++++++
+ include/uapi/linux/devlink.h |  1 +
+ net/core/devlink.c           | 31 +++++++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+)
 
-This patch implemenents devlink-rate API. It also exports initial
-default hierarchy. It's mostly dictated by the fact that the tree
-can't be removed entirely, all we can do is enable the user to modify
-it. For example root node shouldn't ever be removed, also nodes that
-have children are off-limits.
-
-Example initial tree with 2 VF's:
-
-[root@fedora ~]# devlink port function rate show
-pci/0000:4b:00.0/node_27: type node parent node_26
-pci/0000:4b:00.0/node_26: type node parent node_0
-pci/0000:4b:00.0/node_34: type node parent node_33
-pci/0000:4b:00.0/node_33: type node parent node_32
-pci/0000:4b:00.0/node_32: type node parent node_16
-pci/0000:4b:00.0/node_19: type node parent node_18
-pci/0000:4b:00.0/node_18: type node parent node_17
-pci/0000:4b:00.0/node_17: type node parent node_16
-pci/0000:4b:00.0/node_21: type node parent node_20
-pci/0000:4b:00.0/node_20: type node parent node_3
-pci/0000:4b:00.0/node_14: type node parent node_5
-pci/0000:4b:00.0/node_5: type node parent node_3
-pci/0000:4b:00.0/node_13: type node parent node_4
-pci/0000:4b:00.0/node_12: type node parent node_4
-pci/0000:4b:00.0/node_11: type node parent node_4
-pci/0000:4b:00.0/node_10: type node parent node_4
-pci/0000:4b:00.0/node_9: type node parent node_4
-pci/0000:4b:00.0/node_8: type node parent node_4
-pci/0000:4b:00.0/node_7: type node parent node_4
-pci/0000:4b:00.0/node_6: type node parent node_4
-pci/0000:4b:00.0/node_4: type node parent node_3
-pci/0000:4b:00.0/node_3: type node parent node_16
-pci/0000:4b:00.0/node_16: type node parent node_15
-pci/0000:4b:00.0/node_15: type node parent node_0
-pci/0000:4b:00.0/node_2: type node parent node_1
-pci/0000:4b:00.0/node_1: type node parent node_0
-pci/0000:4b:00.0/node_0: type node
-pci/0000:4b:00.0/1: type leaf parent node_27
-pci/0000:4b:00.0/2: type leaf parent node_27
-
-
-Let me visualize part of the tree:
-
-                        +---------+
-                        |  node_0 |
-                        +---------+
-                             |
-                        +----v----+
-                        | node_26 |
-                        +----+----+
-                             |
-                        +----v----+
-                        | node_27 |
-                        +----+----+
-                             |
-                    |-----------------|
-               +----v----+       +----v----+
-               |   VF 1  |       |   VF 2  |
-               +----+----+       +----+----+
-
-So at this point there is a couple things that can be done.
-For example we could only assign parameters to VF's.
-
-[root@fedora ~]# devlink port function rate set pci/0000:4b:00.0/1 \
-                 tx_max 5Gbps
-
-This would cap the VF 1 BW to 5Gbps.
-
-But let's say you would like to create a completely new branch.
-This can be done like this:
-
-[root@fedora ~]# devlink port function rate add \
-                 pci/0000:4b:00.0/node_custom parent node_0
-[root@fedora ~]# devlink port function rate add \
-                 pci/0000:4b:00.0/node_custom_1 parent node_custom
-[root@fedora ~]# devlink port function rate set \
-                 pci/0000:4b:00.0/1 parent node_custom_1
-
-This creates a completely new branch and reassigns VF 1 to it.
-
-A number of parameters is supported per each node: tx_max, tx_share,
-tx_priority and tx_weight.
-
-V10:
- - changed attributes type from u16 to u32 as they are padded to u32
-   anyway
- - changed NL_SET_ERR_MSG_MOD to NL_SET_ERR_MSG_ATTR as it points to
-   a problem with specific attribute
- - fixed function parameter not described
- - added documentation in ice.rst
-
-V9:
- - changed misleading name from 'parameter' to 'attribute'
- - removed mechanism referring for kernel object by string,
-   now it's referring to them as pointers
- - removed limiting name size in devl_rate_node_create()
- - removed commit that allowed for change of priv in set_parent
-   callback
- - added commit that allows for pre-allocation of ice_sched
-   elements
-
-V8:
-- address minor formatting issues
-- fix memory leak
-- address warnings
-
-V7:
-- split into smaller commits
-- paste justification for this series to cover letter
-
-V6:
-- replaced strncpy with strscpy
-- renamed rate_vport -> rate_leaf
-
-V5:
-- removed queue support per community request
-- fix division of 64bit variable with 32bit divisor by using div_u64()
-- remove RDMA, ADQ exlusion as it's not necessary anymore
-- changed how driver exports configuration, as queues are not supported
-  anymore
-- changed IDA to Xarray for unique node identification
-
-
-V4:
-- changed static variable counter to per port IDA to
-  uniquely identify nodes
-
-V3:
-- removed shift macros, since FIELD_PREP is used
-- added static_assert for struct
-- removed unnecessary functions
-- used tab instead of space in define
-
-V2:
-- fixed Alexandr comments
-- refactored code to fix checkpatch issues
-- added mutual exclusion for RDMA, DCB
-
-
-Michal Wilczynski (10):
-  devlink: Introduce new attribute 'tx_priority' to devlink-rate
-  devlink: Introduce new attribute 'tx_weight' to devlink-rate
-  devlink: Enable creation of the devlink-rate nodes from the driver
-  devlink: Allow for devlink-rate nodes parent reassignment
-  devlink: Allow to set up parent in devl_rate_leaf_create()
-  ice: Introduce new parameters in ice_sched_node
-  ice: Add an option to pre-allocate memory for ice_sched_node
-  ice: Implement devlink-rate API
-  ice: Prevent ADQ, DCB coexistence with Custom Tx scheduler
-  ice: add documentation for devlink-rate implementation
-
- Documentation/networking/devlink/ice.rst      | 106 ++++
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |   7 +-
- drivers/net/ethernet/intel/ice/ice_dcb.c      |   2 +-
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   4 +
- drivers/net/ethernet/intel/ice/ice_devlink.c  | 486 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
- drivers/net/ethernet/intel/ice/ice_repr.c     |  13 +
- drivers/net/ethernet/intel/ice/ice_sched.c    | 102 +++-
- drivers/net/ethernet/intel/ice/ice_sched.h    |  31 +-
- drivers/net/ethernet/intel/ice/ice_type.h     |   9 +
- .../mellanox/mlx5/core/esw/devlink_port.c     |   4 +-
- drivers/net/netdevsim/dev.c                   |   2 +-
- include/net/devlink.h                         |  18 +-
- include/uapi/linux/devlink.h                  |   3 +
- net/core/devlink.c                            | 130 ++++-
- 16 files changed, 896 insertions(+), 27 deletions(-)
-
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index fa6e936af1a5..849c87832f55 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -114,6 +114,8 @@ struct devlink_rate {
+ 			refcount_t refcnt;
+ 		};
+ 	};
++
++	u32 tx_priority;
+ };
+ 
+ struct devlink_port {
+@@ -1502,10 +1504,14 @@ struct devlink_ops {
+ 				      u64 tx_share, struct netlink_ext_ack *extack);
+ 	int (*rate_leaf_tx_max_set)(struct devlink_rate *devlink_rate, void *priv,
+ 				    u64 tx_max, struct netlink_ext_ack *extack);
++	int (*rate_leaf_tx_priority_set)(struct devlink_rate *devlink_rate, void *priv,
++					 u32 tx_priority, struct netlink_ext_ack *extack);
+ 	int (*rate_node_tx_share_set)(struct devlink_rate *devlink_rate, void *priv,
+ 				      u64 tx_share, struct netlink_ext_ack *extack);
+ 	int (*rate_node_tx_max_set)(struct devlink_rate *devlink_rate, void *priv,
+ 				    u64 tx_max, struct netlink_ext_ack *extack);
++	int (*rate_node_tx_priority_set)(struct devlink_rate *devlink_rate, void *priv,
++					 u32 tx_priority, struct netlink_ext_ack *extack);
+ 	int (*rate_node_new)(struct devlink_rate *rate_node, void **priv,
+ 			     struct netlink_ext_ack *extack);
+ 	int (*rate_node_del)(struct devlink_rate *rate_node, void *priv,
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 2f24b53a87a5..1a9214d35ef5 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -607,6 +607,7 @@ enum devlink_attr {
+ 
+ 	DEVLINK_ATTR_SELFTESTS,			/* nested */
+ 
++	DEVLINK_ATTR_RATE_TX_PRIORITY,		/* u32 */
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 40fcdded57e6..d8310dd7e429 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -1203,6 +1203,9 @@ static int devlink_nl_rate_fill(struct sk_buff *msg,
+ 			      devlink_rate->tx_max, DEVLINK_ATTR_PAD))
+ 		goto nla_put_failure;
+ 
++	if (nla_put_u32(msg, DEVLINK_ATTR_RATE_TX_PRIORITY,
++			devlink_rate->tx_priority))
++		goto nla_put_failure;
+ 	if (devlink_rate->parent)
+ 		if (nla_put_string(msg, DEVLINK_ATTR_RATE_PARENT_NODE_NAME,
+ 				   devlink_rate->parent->name))
+@@ -1936,6 +1939,7 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
+ {
+ 	struct nlattr *nla_parent, **attrs = info->attrs;
+ 	int err = -EOPNOTSUPP;
++	u32 priority;
+ 	u64 rate;
+ 
+ 	if (attrs[DEVLINK_ATTR_RATE_TX_SHARE]) {
+@@ -1964,6 +1968,20 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
+ 		devlink_rate->tx_max = rate;
+ 	}
+ 
++	if (attrs[DEVLINK_ATTR_RATE_TX_PRIORITY]) {
++		priority = nla_get_u32(attrs[DEVLINK_ATTR_RATE_TX_PRIORITY]);
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_tx_priority_set(devlink_rate, devlink_rate->priv,
++							     priority, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_tx_priority_set(devlink_rate, devlink_rate->priv,
++							     priority, info->extack);
++
++		if (err)
++			return err;
++		devlink_rate->tx_priority = priority;
++	}
++
+ 	nla_parent = attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME];
+ 	if (nla_parent) {
+ 		err = devlink_nl_rate_parent_node_set(devlink_rate, info,
+@@ -1995,6 +2013,12 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
+ 			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the leafs");
+ 			return false;
+ 		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_PRIORITY] && !ops->rate_leaf_tx_priority_set) {
++			NL_SET_ERR_MSG_ATTR(info->extack,
++					    attrs[DEVLINK_ATTR_RATE_TX_PRIORITY],
++					    "TX priority set isn't supported for the leafs");
++			return false;
++		}
+ 	} else if (type == DEVLINK_RATE_TYPE_NODE) {
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_SHARE] && !ops->rate_node_tx_share_set) {
+ 			NL_SET_ERR_MSG_MOD(info->extack, "TX share set isn't supported for the nodes");
+@@ -2009,6 +2033,12 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
+ 			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the nodes");
+ 			return false;
+ 		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_PRIORITY] && !ops->rate_node_tx_priority_set) {
++			NL_SET_ERR_MSG_ATTR(info->extack,
++					    attrs[DEVLINK_ATTR_RATE_TX_PRIORITY],
++					    "TX priority set isn't supported for the nodes");
++			return false;
++		}
+ 	} else {
+ 		WARN(1, "Unknown type of rate object");
+ 		return false;
+@@ -9184,6 +9214,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+ 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
+ 	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
+ 	[DEVLINK_ATTR_SELFTESTS] = { .type = NLA_NESTED },
++	[DEVLINK_ATTR_RATE_TX_PRIORITY] = { .type = NLA_U32 },
+ };
+ 
+ static const struct genl_small_ops devlink_nl_ops[] = {
 -- 
 2.37.2
 
