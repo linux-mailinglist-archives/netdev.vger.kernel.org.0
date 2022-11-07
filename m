@@ -2,67 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BFC361FDB5
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 19:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D00361FDC2
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 19:40:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbiKGSkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 13:40:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S233192AbiKGSkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 13:40:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233281AbiKGSjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 13:39:47 -0500
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4AB1D66E
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 10:38:35 -0800 (PST)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-13d9a3bb27aso12893068fac.11
-        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 10:38:35 -0800 (PST)
+        with ESMTP id S232180AbiKGSkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 13:40:19 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9026520198;
+        Mon,  7 Nov 2022 10:40:18 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id s20so7721932qkg.5;
+        Mon, 07 Nov 2022 10:40:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=WGgA/jbKO4JQAAsJp9RT0dW94NCjKARWPEOvpL95HYE=;
-        b=Uua6qgwrRWcza2QRHwHWLa3SZT99hdlAyqZwHc/vThkgGOKvj9V2HAXUKB2Oy8Ps5z
-         SN2YM2+SNip4YVYfOQPe8OfXHPmKcPrDESzQmMUa3a6rh2xbplZ1kdASRiYhPvgvSjZN
-         4GNPzllyoZ0bXwK+5sTI397llX1LJK0XQK3oM6/Skd4VIge3V3S+fHbv1Jayp//BxQNO
-         ZFBNmHggBxfvT0I04WwoDCsYWejuSesjtFKK55HXhM7Xi0Q9LJJw4A1KKz4Ido4rJtl+
-         tkUnQDXgQznWtkMBKSxHX0aPPy0SOMoUqDZfTTWnXzDxxYpyggoQaflZw+wWYM+8md17
-         xHfg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oSEQrw4mhcPxa7ZRyjeV+zh0S8mxURHBDWDQBmjbbK4=;
+        b=AqlOOA0Fl2iAW3i+Stm7LaJg3ozlLIaZ+P1yzZWfO4Hn1nu6xfAkrCGNefOTQ706zR
+         XdCpHIWj5ESNONNNF+5Y42r6ctTYUxr3jrId+h64hw4FYno2/yEFSQDro8fr5LpVSOZP
+         2qCHD0RQtjRRczreB10WroM3RmZC5yIY0SqhFjacrNc3/ynZZ/uAbrwPW82w3ak9nCfd
+         SAJKEiIqiyUipPKqRI+a91xXDx3cWIiCng8Vy5ZnYMG5GT/nQapaZaKA3/qGQC1p+RPd
+         QDzKIx0dvU/u58fxUguv8B1wv5xyIoZtk68u0F6+HA/19sMi0ZNVOGnTxAhXnuLplnum
+         qM/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WGgA/jbKO4JQAAsJp9RT0dW94NCjKARWPEOvpL95HYE=;
-        b=NhUA/vUolYZsNAveRa9Vxb9cp/sXCLQpV3E53ZbINXp7u5spSTxT7ZnijBY9oQpLa8
-         yJfTvz9R7tQcVMQvFtwF9h+qxivfmQd5xEVAeFamdDqANa/jLXQZP1JDFQd3Effe7wHa
-         Gcv8T2kfLXi8Y8xIKTvCkGS4tqd5qbobHm5YpbMUbg4lcdli5s0W+9vTcARz1l9s2Y/P
-         q7GogHXo5LgQXSmJioQXXiPQPAXdqwTlUjCMuyE8HPiS4iBuv3jJ4Kq8FAPBl0Nciy+w
-         6AwoLvMLeBBVCEOSs3TogGfzgyQoXPDTGHeS/p4cnRBRIp6kT3R5F59hDUgBRrmX2o2l
-         8jUg==
-X-Gm-Message-State: ACrzQf0R1mfXPar/BaglQN5ceWxscOYrKmtfA+i5J0M881nfj/B+tVfi
-        EevdbQxUrz/6Q5eDkvKxoPlmexxDpFr4k1r2QrfHRA==
-X-Google-Smtp-Source: AMsMyM5fGqHfNwMgVm5Lhwk1H6u/sTi8v26v9PbwH/88UUzkCtKBD3pPWrbafrYdkg3b4+mSHDvWRzKXigTiETl891c=
-X-Received: by 2002:a05:6870:b6a3:b0:13b:f4f1:7dec with SMTP id
- cy35-20020a056870b6a300b0013bf4f17decmr30779188oab.282.1667846313926; Mon, 07
- Nov 2022 10:38:33 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=oSEQrw4mhcPxa7ZRyjeV+zh0S8mxURHBDWDQBmjbbK4=;
+        b=xRu43Y9LH0+WNQ/TG1eG9ixtScwW9NrVm9JZQ2ngwxDFa5+Mg2aqhA/z7IdLrgQdEt
+         isdgAWVDIhiAJ+ef+B9ravgVQ22lZ5PWrpo8BwVl1wK1FzJg8c2gD/bhdW/bcbOld4It
+         Xqvz+A0TVD1UXTXtyUqmnt1yB6/LVLZHx0UGeeOzy6UvTWYoi9JcKTDp79E7kBg+sIGp
+         x/U27AUgTKHm/4aiajQOOag46jvpzJ1YT93zhPiQiRsWijglPjlwwmF9wZpzK5k4xNH/
+         9jHdX0vu0ynI9yW9f9WTdvz30aiwFgmqnUznFlfj5ZVNtDXnw14sPHCyjreZO1ViXsR2
+         GeNg==
+X-Gm-Message-State: ACrzQf3mdjmiQ8WSRmy5OpRueAtgWR8Swkvf0/uHPeIJysYKmpPH75NA
+        ZflgJVbHY34P1KnqBnBMKr8=
+X-Google-Smtp-Source: AMsMyM7y2ySxIqnP3Q7GjsbWSKl/8WqMGzRHoBQJ0/3bAJawFA7WegxPK3tZmYwDbwfFwIodoXImeA==
+X-Received: by 2002:a05:620a:29c7:b0:6fa:aba4:f853 with SMTP id s7-20020a05620a29c700b006faaba4f853mr8971241qkp.208.1667846417660;
+        Mon, 07 Nov 2022 10:40:17 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id c22-20020ac87d96000000b003a5416da03csm6592007qtd.96.2022.11.07.10.40.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Nov 2022 10:40:17 -0800 (PST)
+Message-ID: <02d0cc2d-26b4-e655-c2b9-9514a29074f5@gmail.com>
+Date:   Mon, 7 Nov 2022 10:40:13 -0800
 MIME-Version: 1.0
-References: <CGME20221104170430epcas2p1d854f31557e623e8fd9d16f6c162d90d@epcms2p1>
- <20221104170422.979558-1-dvyukov@google.com> <20221107024604epcms2p174f8813f4e18607b93813021f5b048b0@epcms2p1>
-In-Reply-To: <20221107024604epcms2p174f8813f4e18607b93813021f5b048b0@epcms2p1>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 7 Nov 2022 10:38:22 -0800
-Message-ID: <CACT4Y+aVXi5hWNMrYavfhmhr3+FVyJoq8KhzrLp1gJFiSCxpxg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] nfc: Allow to create multiple virtual nci devices
-To:     bongsu.jeon@samsung.com
-Cc:     "leon@kernel.org" <leon@kernel.org>,
-        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH net-next v8 3/5] net: dsa: add out-of-band tagging
+ protocol
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "linux-arm-kernel@lists.infradead.org\"" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
+ <20221104174151.439008-4-maxime.chevallier@bootlin.com>
+ <20221104200530.3bbe18c6@kernel.org> <20221107112736.mbdfflh6z37sijwg@skbuf>
+ <20221107084535.61317862@kernel.org> <20221107172846.y5nmi3plzd4wemmv@skbuf>
+ <20221107102440.1aecdbdb@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20221107102440.1aecdbdb@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,106 +98,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 6 Nov 2022 at 18:46, Bongsu Jeon <bongsu.jeon@samsung.com> wrote:
->
-> On Sat, Nov 5, 2022 at 2:04 AM Dmitry Vyukov<dvyukov@google.com> wrote:
-> > The current virtual nci driver is great for testing and fuzzing.
-> > But it allows to create at most one "global" device which does not allow
-> > to run parallel tests and harms fuzzing isolation and reproducibility.
-> > Restructure the driver to allow creation of multiple independent devices.
-> > This should be backwards compatible for existing tests.
->
-> I totally agree with you for parallel tests and good design.
-> Thanks for good idea.
-> But please check the abnormal situation.
-> for example virtual device app is closed(virtual_ncidev_close) first and then
-> virtual nci driver from nci app tries to call virtual_nci_send or virtual_nci_close.
-> (there would be problem in virtual_nci_send because of already destroyed mutex)
-> Before this patch, this driver used virtual_ncidev_mode state and nci_mutex that isn't destroyed.
+On 11/7/22 10:24, Jakub Kicinski wrote:
 
-I assumed nci core must stop calling into a driver at some point
-during the driver destruction. And I assumed that point is return from
-nci_unregister_device(). Basically when nci_unregister_device()
-returns, no new calls into the driver must be made. Calling into a
-driver after nci_unregister_device() looks like a bug in nci core.
+[snip]
 
-If this is not true, how do real drivers handle this? They don't use
-global vars. So they should either have the same use-after-free bugs
-you described, or they handle shutdown differently. We just need to do
-the same thing that real drivers do.
+> Yeah, it's a balancing act. Please explore the metadata option, I think
+> most people jump to the skb extension because they don't know about
+> metadata. If you still want skb extension after, I'll look away.
 
-As far as I see they are doing the same what I did in this patch:
-https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/fdp/i2c.c#L343
-https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/nfcmrvl/usb.c#L354
+It seems to me like we are trying too hard to have a generic out of band 
+solution to provide tagger information coming from a DMA descriptor as 
+opposed to just introducing a DSA tagger variant specific to the format 
+being used and specific to the switch + integrated MAC. Something like 
+DSA_TAG_IPQDMA or whatever the name chosen would be, may be fine.
 
-They call nci_unregister_device() and then free all resources:
-https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/nfcmrvl/main.c#L186
+The only value I see at this point in just in telling me that the tagger 
+format is coming from a DMA descriptor, but other than that, it is just 
+a middle layer that requires marshalling of data on both sides, so sure 
+the idea behind DSA was to be able to mix and match any Ethernet MAC 
+with any discrete switch, but integrating both into the same ASIC does 
+nullify the design goal.
+-- 
+Florian
 
-What am I missing here?
-
-
-> > Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-> > Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
-> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > Cc: netdev@vger.kernel.org
-> >
-> > ---
-> > Changes in v3:
-> >  - free vdev in virtual_ncidev_close()
-> >
-> > Changes in v2:
-> >  - check return value of skb_clone()
-> >  - rebase onto currnet net-next
-> > ---
-> >  drivers/nfc/virtual_ncidev.c | 147 +++++++++++++++++------------------
-> >  1 file changed, 71 insertions(+), 76 deletions(-)
-> >
-> > diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
-> > index 85c06dbb2c449..bb76c7c7cc822 100644
-> > --- a/drivers/nfc/virtual_ncidev.c
-> > +++ b/drivers/nfc/virtual_ncidev.c
-> > @@ -13,12 +13,6 @@
-> >
-> >  static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
-> >  {
-> > -     mutex_lock(&nci_mutex);
-> > -     if (state != virtual_ncidev_enabled) {
-> > -             mutex_unlock(&nci_mutex);
-> > +     struct virtual_nci_dev *vdev = nci_get_drvdata(ndev);
-> > +
-> > +     mutex_lock(&vdev->mtx);
->
->   I think this vdev and vdev->mtx are already destroyed so that it would be problem.
->
-> > +     if (vdev->send_buff) {
-> > +             mutex_unlock(&vdev->mtx);
-> >               kfree_skb(skb);
-> > -             return 0;
-> > +             return -1;
-> >       }
-> >
-> >
-> >  static int virtual_ncidev_close(struct inode *inode, struct file *file)
-> >  {
-> > -     mutex_lock(&nci_mutex);
-> > -
-> > -     if (state == virtual_ncidev_enabled) {
-> > -             state = virtual_ncidev_disabling;
-> > -             mutex_unlock(&nci_mutex);
-> > +     struct virtual_nci_dev *vdev = file->private_data;
-> >
-> > -             nci_unregister_device(ndev);
-> > -             nci_free_device(ndev);
-> > -
-> > -             mutex_lock(&nci_mutex);
-> > -     }
-> > -
-> > -     state = virtual_ncidev_disabled;
-> > -     mutex_unlock(&nci_mutex);
-> > +     nci_unregister_device(vdev->ndev);
-> > +     nci_free_device(vdev->ndev);
-> > +     mutex_destroy(&vdev->mtx);
-> > +     kfree(vdev);
-> >
-> >       return 0;
-> >  }
