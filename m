@@ -2,263 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AFBB61F73D
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 16:10:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB8A761F761
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 16:16:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232805AbiKGPKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 10:10:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
+        id S232867AbiKGPQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 10:16:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbiKGPKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 10:10:45 -0500
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E321DDF3;
-        Mon,  7 Nov 2022 07:10:44 -0800 (PST)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2A7CsHxa031939;
-        Mon, 7 Nov 2022 15:10:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=97DbRwlEk3E6duDpQtGKjxqvG1D5WOcOP9p0tcjFgXE=;
- b=Lc3yKjHnk+IV2o0LBlfgxbG8KG48i23CqyNy7JCuKeD0VM6nnFtY+aqpZj7sEzh71ef1
- TlCUK1Bow4DXQ8GEa3c3iV3kt3Ti6dURmm1NwX7kCCxBpywzBTsfRfBKJxXpxzLiS6ut
- 2kWeXFZO2fn31qlyec1rB1/BpmE7RbYikhLnOIUNhz2MYG6djd3eKndrv5N5VscglIlu
- WscGewWLQXqhUHGT70UW/OPc1CpuDUMIS6fQYspI5DPgcwyeq0Xpksk8dclEQ6VfY/iZ
- fiA0r97RrbrBogI14shN46CE4UUGBNKGdVI7PgBZnM/FSyFAlkUp2ZHnpdpYiuNW+Zdv PQ== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3kpx6nrvxr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Nov 2022 15:10:01 +0000
-Received: from pps.filterd (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2A7FA1Ak003502;
-        Mon, 7 Nov 2022 15:10:01 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 3kngwkqfyw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Nov 2022 15:10:01 +0000
-Received: from NALASPPMTA01.qualcomm.com (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A7FA0lF003480;
-        Mon, 7 Nov 2022 15:10:00 GMT
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 2A7FA03l003473
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Nov 2022 15:10:00 +0000
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 7 Nov 2022
- 07:09:59 -0800
-Message-ID: <9d61676a-888a-b172-141d-62257e2e9e84@quicinc.com>
-Date:   Mon, 7 Nov 2022 08:09:58 -0700
+        with ESMTP id S232849AbiKGPQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 10:16:49 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71541EAF9
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 07:16:44 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id z9so5985512ilu.10
+        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 07:16:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rxS8UhN1J+Ehig9XWWNbU/JxmCXj6PJxz5yUXVWMKYE=;
+        b=UeqWg9jKUxdMz45Nrp5sELRpSA203R3PT5kAgzNvdQgWprBRBkZIIua2+Mn6voiWx3
+         xJ1Ybp+EzfXm2cU75Z7OwK+n74v+ljv7zB8OlP91EKfOKyqdOXivS6yO4DW33l6cYJQE
+         q6fONV/1l3DLK+etK6g/aEJVx9PXiGkY+LkzDLn3UGppK9ccT7/AqLu0KZi7Q0M6SRoB
+         dGywMaS3UXHawZ4jzIdDJLHwCWok+JVsinIzuAtqMzOqOogK9bGblHXtDsOsvhOvRJSt
+         7cMGFvrId1TYthcfmjl8h9+ha/VcGClGm9WoAmqxW5P6AW/qtISOIR1AlC3CiffqhF20
+         qHwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rxS8UhN1J+Ehig9XWWNbU/JxmCXj6PJxz5yUXVWMKYE=;
+        b=cxPatZc7PsY1VU6/T5ISd1rWYRXlLKnD5Hti3lpPHdgDJ32DnZMOOTeT85Cnx6qoVz
+         rYy6hy1iLuDXKASt3mIyAC3U7+ynY5t+SuHMjx2oujxm63GcZUiCcDgBmbkmYkCt/XLH
+         Vm91YcaUqJJyjOgCt2HxO9l4mhxwxGA6c95tp1/dKrivlx77s4Jtj03Wnye4EGIVL8wL
+         jsXnd4IAxqfuXAjOn66BIT+xzY6frV1WJpcyvUaJ3JFqiUfDsBcmgF26wbaC4nK55blV
+         ZAl9TtMImlKg9vWNDH+G0IZ3z4UNwcg3p9fjEzOWLGpAx8DtkJESCOxKXiZiu54RKmlb
+         hWVg==
+X-Gm-Message-State: ACrzQf0vzlhDWPKM3ExaRLKlRsErOzqCfqkj3kdi9mB/IZc9lT6M3qGL
+        owmP4/0E4TVTaoJhSh/+Juk=
+X-Google-Smtp-Source: AMsMyM4RoagWFCAgiInMA6GsiZuQN9oeSxXaltB5Bd/eeVOMM6FtjnZI8+W1Mlh/XLkTOmRjTeideQ==
+X-Received: by 2002:a05:6e02:e43:b0:2f5:739f:7d4d with SMTP id l3-20020a056e020e4300b002f5739f7d4dmr29772787ilk.100.1667834204073;
+        Mon, 07 Nov 2022 07:16:44 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:a10c:23e5:6dc3:8e07? ([2601:282:800:dc80:a10c:23e5:6dc3:8e07])
+        by smtp.googlemail.com with ESMTPSA id o17-20020a92dad1000000b002fb78f6c166sm2932167ilq.10.2022.11.07.07.16.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Nov 2022 07:16:43 -0800 (PST)
+Message-ID: <6903f920-dd02-9df0-628a-23d581c4aac6@gmail.com>
+Date:   Mon, 7 Nov 2022 08:16:42 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 2/2] wifi: ath11k: use unique QRTR instance ID
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [patch iproute2-next 1/3] devlink: query ifname for devlink port
+ instead of map lookup
 Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, <mani@kernel.org>,
-        <kvalo@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <gregkh@linuxfoundation.org>, <elder@linaro.org>,
-        <hemantk@codeaurora.org>, <quic_qianyu@quicinc.com>,
-        <bbhatt@codeaurora.org>, <mhi@lists.linux.dev>,
-        <linux-arm-msm@vger.kernel.org>, <ath11k@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ansuelsmth@gmail.com>
-References: <20221105194943.826847-1-robimarko@gmail.com>
- <20221105194943.826847-2-robimarko@gmail.com>
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <20221105194943.826847-2-robimarko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     sthemmin@microsoft.com, kuba@kernel.org, moshe@nvidia.com,
+        aeedm@nvidia.com
+References: <20221104102327.770260-1-jiri@resnulli.us>
+ <20221104102327.770260-2-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20221104102327.770260-2-jiri@resnulli.us>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: knkLWmPQr3B5uSc_8E1wZY65TFXQrRd_
-X-Proofpoint-ORIG-GUID: knkLWmPQr3B5uSc_8E1wZY65TFXQrRd_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-07_08,2022-11-07_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
- clxscore=1011 priorityscore=1501 adultscore=0 mlxlogscore=999
- lowpriorityscore=0 mlxscore=0 phishscore=0 suspectscore=0 malwarescore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211070122
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/2022 1:49 PM, Robert Marko wrote:
-> Currently, trying to use AHB + PCI/MHI cards or multiple PCI/MHI cards
-> will cause a clash in the QRTR instance node ID and prevent the driver
-> from talking via QMI to the card and thus initializing it with:
-> [    9.836329] ath11k c000000.wifi: host capability request failed: 1 90
-> [    9.842047] ath11k c000000.wifi: failed to send qmi host cap: -22
+On 11/4/22 4:23 AM, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
 > 
-> So, in order to allow for this combination of cards, especially AHB + PCI
-> cards like IPQ8074 + QCN9074 (Used by me and tested on) set the desired
-> QRTR instance ID offset by calculating a unique one based on PCI domain
-> and bus ID-s and writing it to bits 7-0 of BHI_ERRDBG2 MHI register by
-> using the SBL state callback that is added as part of the series.
-> We also have to make sure that new QRTR offset is added on top of the
-> default QRTR instance ID-s that are currently used in the driver.
+> ifname map is created once during init. However, ifnames can easily
+> change during the devlink process runtime (e. g. devlink mon).
+
+why not update the cache on name changes? Doing a query on print has
+extra overhead. And, if you insist a per-print query is needed, why
+leave ifname_map_list? what value does it serve if you query each time?
+
+
+> Therefore, query ifname during each devlink port print.
 > 
-> This finally allows using AHB + PCI or multiple PCI cards on the same
-> system.
-> 
-> Before:
-> root@OpenWrt:/# qrtr-lookup
->    Service Version Instance Node  Port
->       1054       1        0    7     1 <unknown>
->         69       1        2    7     3 ATH10k WLAN firmware service
-> 
-> After:
-> root@OpenWrt:/# qrtr-lookup
->    Service Version Instance Node  Port
->       1054       1        0    7     1 <unknown>
->         69       1        2    7     3 ATH10k WLAN firmware service
->         15       1        0    8     1 Test service
->         69       1        8    8     2 ATH10k WLAN firmware service
-> 
-> Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
-> Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 > ---
->   drivers/net/wireless/ath/ath11k/mhi.c | 47 ++++++++++++++++++---------
->   drivers/net/wireless/ath/ath11k/mhi.h |  3 ++
->   drivers/net/wireless/ath/ath11k/pci.c |  5 ++-
->   3 files changed, 38 insertions(+), 17 deletions(-)
+>  devlink/devlink.c | 46 +++++++++++++++++++++++++++++++---------------
+>  1 file changed, 31 insertions(+), 15 deletions(-)
 > 
-> diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-> index 86995e8dc913..23e85ea902f5 100644
-> --- a/drivers/net/wireless/ath/ath11k/mhi.c
-> +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-> @@ -294,6 +294,32 @@ static void ath11k_mhi_op_runtime_put(struct mhi_controller *mhi_cntrl)
->   {
->   }
->   
-> +static int ath11k_mhi_op_read_reg(struct mhi_controller *mhi_cntrl,
-> +				  void __iomem *addr,
-> +				  u32 *out)
-> +{
-> +	*out = readl(addr);
+> diff --git a/devlink/devlink.c b/devlink/devlink.c
+> index 8aefa101b2f8..680936f891cf 100644
+> --- a/devlink/devlink.c
+> +++ b/devlink/devlink.c
+> @@ -864,21 +864,38 @@ static int ifname_map_lookup(struct dl *dl, const char *ifname,
+>  	return -ENOENT;
+>  }
+>  
+> -static int ifname_map_rev_lookup(struct dl *dl, const char *bus_name,
+> -				 const char *dev_name, uint32_t port_index,
+> -				 char **p_ifname)
+> +static int port_ifname_get_cb(const struct nlmsghdr *nlh, void *data)
+>  {
+> -	struct ifname_map *ifname_map;
+> +	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
+> +	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
+> +	char **p_ifname = data;
+> +	const char *ifname;
+>  
+> -	list_for_each_entry(ifname_map, &dl->ifname_map_list, list) {
+> -		if (strcmp(bus_name, ifname_map->bus_name) == 0 &&
+> -		    strcmp(dev_name, ifname_map->dev_name) == 0 &&
+> -		    port_index == ifname_map->port_index) {
+> -			*p_ifname = ifname_map->ifname;
+> -			return 0;
+> -		}
+> -	}
+> -	return -ENOENT;
+> +	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
+> +	if (!tb[DEVLINK_ATTR_PORT_NETDEV_NAME])
+> +		return MNL_CB_ERROR;
 > +
-> +	return 0;
+> +	ifname = mnl_attr_get_str(tb[DEVLINK_ATTR_PORT_NETDEV_NAME]);
+> +	*p_ifname = strdup(ifname);
+> +	if (!*p_ifname)
+> +		return MNL_CB_ERROR;
+> +
+> +	return MNL_CB_OK;
 > +}
 > +
-> +static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
-> +				    void __iomem *addr,
-> +				    u32 val)
+> +static int port_ifname_get(struct dl *dl, const char *bus_name,
+> +			   const char *dev_name, uint32_t port_index,
+> +			   char **p_ifname)
 > +{
-> +	writel(val, addr);
-> +}
+> +	struct nlmsghdr *nlh;
 > +
-> +static void ath11k_mhi_qrtr_instance_set(struct mhi_controller *mhi_cntrl)
-> +{
-> +	struct ath11k_base *ab = dev_get_drvdata(mhi_cntrl->cntrl_dev);
-> +
-> +	ath11k_mhi_op_write_reg(mhi_cntrl,
-> +				mhi_cntrl->bhi + BHI_ERRDBG2,
-> +				FIELD_PREP(QRTR_INSTANCE_MASK,
-> +				ab->qmi.service_ins_id - ab->hw_params.qmi_service_ins_id));
-> +}
-
-What kind of synchronization is there for this?
-
-Does SBL spin until this is set?
-
-What would prevent SBL from booting, sending the notification to the 
-host, and then quickly entering runtime mode before the host had a 
-chance to get here?
-
-
-> +
->   static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
->   {
->   	switch (reason) {
-> @@ -315,6 +341,8 @@ static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
->   		return "MHI_CB_FATAL_ERROR";
->   	case MHI_CB_BW_REQ:
->   		return "MHI_CB_BW_REQ";
-> +	case MHI_CB_EE_SBL_MODE:
-> +		return "MHI_CB_EE_SBL_MODE";
->   	default:
->   		return "UNKNOWN";
->   	}
-> @@ -336,27 +364,14 @@ static void ath11k_mhi_op_status_cb(struct mhi_controller *mhi_cntrl,
->   		if (!(test_bit(ATH11K_FLAG_UNREGISTERING, &ab->dev_flags)))
->   			queue_work(ab->workqueue_aux, &ab->reset_work);
->   		break;
-> +	case MHI_CB_EE_SBL_MODE:
-> +		ath11k_mhi_qrtr_instance_set(mhi_cntrl);
-> +		break;
->   	default:
->   		break;
->   	}
->   }
->   
-> -static int ath11k_mhi_op_read_reg(struct mhi_controller *mhi_cntrl,
-> -				  void __iomem *addr,
-> -				  u32 *out)
-> -{
-> -	*out = readl(addr);
-> -
-> -	return 0;
-> -}
-> -
-> -static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
-> -				    void __iomem *addr,
-> -				    u32 val)
-> -{
-> -	writel(val, addr);
-> -}
-> -
->   static int ath11k_mhi_read_addr_from_dt(struct mhi_controller *mhi_ctrl)
->   {
->   	struct device_node *np;
-> diff --git a/drivers/net/wireless/ath/ath11k/mhi.h b/drivers/net/wireless/ath/ath11k/mhi.h
-> index 8d9f852da695..0db308bc3047 100644
-> --- a/drivers/net/wireless/ath/ath11k/mhi.h
-> +++ b/drivers/net/wireless/ath/ath11k/mhi.h
-> @@ -16,6 +16,9 @@
->   #define MHICTRL					0x38
->   #define MHICTRL_RESET_MASK			0x2
->   
-> +#define BHI_ERRDBG2				0x38
-> +#define QRTR_INSTANCE_MASK			GENMASK(7, 0)
-> +
->   int ath11k_mhi_start(struct ath11k_pci *ar_pci);
->   void ath11k_mhi_stop(struct ath11k_pci *ar_pci);
->   int ath11k_mhi_register(struct ath11k_pci *ar_pci);
-> diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-> index 99cf3357c66e..cd26c1567415 100644
-> --- a/drivers/net/wireless/ath/ath11k/pci.c
-> +++ b/drivers/net/wireless/ath/ath11k/pci.c
-> @@ -370,13 +370,16 @@ static void ath11k_pci_sw_reset(struct ath11k_base *ab, bool power_on)
->   static void ath11k_pci_init_qmi_ce_config(struct ath11k_base *ab)
->   {
->   	struct ath11k_qmi_ce_cfg *cfg = &ab->qmi.ce_cfg;
-> +	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
-> +	struct pci_bus *bus = ab_pci->pdev->bus;
->   
->   	cfg->tgt_ce = ab->hw_params.target_ce_config;
->   	cfg->tgt_ce_len = ab->hw_params.target_ce_count;
->   
->   	cfg->svc_to_ce_map = ab->hw_params.svc_to_ce_map;
->   	cfg->svc_to_ce_map_len = ab->hw_params.svc_to_ce_map_len;
-> -	ab->qmi.service_ins_id = ab->hw_params.qmi_service_ins_id;
-> +	ab->qmi.service_ins_id = ab->hw_params.qmi_service_ins_id +
-> +	(((pci_domain_nr(bus) & 0xF) << 4) | (bus->number & 0xF));
->   
->   	ath11k_ce_get_shadow_config(ab, &cfg->shadow_reg_v2,
->   				    &cfg->shadow_reg_v2_len);
+> +	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_PORT_GET,
+> +			       NLM_F_REQUEST | NLM_F_ACK);
+> +	mnl_attr_put_strz(nlh, DEVLINK_ATTR_BUS_NAME, bus_name);
+> +	mnl_attr_put_strz(nlh, DEVLINK_ATTR_DEV_NAME, dev_name);
+> +	mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_INDEX, port_index);
+> +	return mnlu_gen_socket_sndrcv(&dl->nlg, nlh, port_ifname_get_cb,
+> +				      p_ifname);
+>  }
+>  
+>  static int strtobool(const char *str, bool *p_val)
+> @@ -2577,8 +2594,7 @@ static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
+>  	char *ifname = NULL;
+>  
+>  	if (dl->no_nice_names || !try_nice ||
+> -	    ifname_map_rev_lookup(dl, bus_name, dev_name,
+> -				  port_index, &ifname) != 0)
+> +	    port_ifname_get(dl, bus_name, dev_name, port_index, &ifname) != 0)
+>  		sprintf(buf, "%s/%s/%d", bus_name, dev_name, port_index);
+>  	else
+>  		sprintf(buf, "%s", ifname);
 
