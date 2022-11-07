@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B559361F4B8
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 14:58:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8BAC61F4BC
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 14:58:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231890AbiKGN6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 08:58:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45636 "EHLO
+        id S231789AbiKGN6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 08:58:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231790AbiKGN6J (ORCPT
+        with ESMTP id S231818AbiKGN6J (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 08:58:09 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC2D1D0EF
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 05:58:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FFD1D315
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 05:58:08 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1os2dS-0003FV-KS; Mon, 07 Nov 2022 14:57:58 +0100
+        id 1os2dS-0003FU-R8; Mon, 07 Nov 2022 14:57:58 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1os2dQ-002rmH-OX; Mon, 07 Nov 2022 14:57:57 +0100
+        id 1os2dQ-002rmE-KF; Mon, 07 Nov 2022 14:57:57 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1os2dQ-00BBIu-Iu; Mon, 07 Nov 2022 14:57:56 +0100
+        id 1os2dQ-00BBJ3-Jh; Mon, 07 Nov 2022 14:57:56 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v2 1/3] net: dsa: microchip: move max mtu to one location
-Date:   Mon,  7 Nov 2022 14:57:53 +0100
-Message-Id: <20221107135755.2664997-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 2/3] net: dsa: microchip: add ksz_rmw8() function
+Date:   Mon,  7 Nov 2022 14:57:54 +0100
+Message-Id: <20221107135755.2664997-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221107135755.2664997-1-o.rempel@pengutronix.de>
 References: <20221107135755.2664997-1-o.rempel@pengutronix.de>
@@ -60,132 +60,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are no HW specific registers, so we can process all of them
-in one location.
+Add ksz_rmw8(), it will be used in the next patch.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz9477.c     |  5 -----
- drivers/net/dsa/microchip/ksz9477.h     |  1 -
- drivers/net/dsa/microchip/ksz9477_reg.h |  2 --
- drivers/net/dsa/microchip/ksz_common.c  | 21 ++++++++++++++++-----
- drivers/net/dsa/microchip/ksz_common.h  |  3 ++-
- 5 files changed, 18 insertions(+), 14 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index a6a0321a8931..e3adb126fdff 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -60,11 +60,6 @@ int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu)
- 				  REG_SW_MTU_MASK, max_frame);
- }
- 
--int ksz9477_max_mtu(struct ksz_device *dev, int port)
--{
--	return KSZ9477_MAX_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
--}
--
- static int ksz9477_wait_vlan_ctrl_ready(struct ksz_device *dev)
- {
- 	unsigned int val;
-diff --git a/drivers/net/dsa/microchip/ksz9477.h b/drivers/net/dsa/microchip/ksz9477.h
-index 00862c4cfb7f..7c5bb3032772 100644
---- a/drivers/net/dsa/microchip/ksz9477.h
-+++ b/drivers/net/dsa/microchip/ksz9477.h
-@@ -50,7 +50,6 @@ int ksz9477_mdb_add(struct ksz_device *dev, int port,
- int ksz9477_mdb_del(struct ksz_device *dev, int port,
- 		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
- int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu);
--int ksz9477_max_mtu(struct ksz_device *dev, int port);
- void ksz9477_config_cpu_port(struct dsa_switch *ds);
- int ksz9477_enable_stp_addr(struct ksz_device *dev);
- int ksz9477_reset_switch(struct ksz_device *dev);
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 53c68d286dd3..cc457fa64939 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -1615,6 +1615,4 @@
- #define PTP_TRIG_UNIT_M			(BIT(MAX_TRIG_UNIT) - 1)
- #define PTP_TS_UNIT_M			(BIT(MAX_TIMESTAMP_UNIT) - 1)
- 
--#define KSZ9477_MAX_FRAME_SIZE		9000
--
- #endif /* KSZ9477_REGS_H */
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index d612181b3226..486ad03d0acf 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -14,6 +14,7 @@
- #include <linux/phy.h>
- #include <linux/etherdevice.h>
- #include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
- #include <linux/irq.h>
- #include <linux/irqdomain.h>
- #include <linux/of_mdio.h>
-@@ -206,7 +207,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.mdb_add = ksz9477_mdb_add,
- 	.mdb_del = ksz9477_mdb_del,
- 	.change_mtu = ksz9477_change_mtu,
--	.max_mtu = ksz9477_max_mtu,
- 	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
- 	.config_cpu_port = ksz9477_config_cpu_port,
- 	.enable_stp_addr = ksz9477_enable_stp_addr,
-@@ -243,7 +243,6 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
- 	.mdb_add = ksz9477_mdb_add,
- 	.mdb_del = ksz9477_mdb_del,
- 	.change_mtu = lan937x_change_mtu,
--	.max_mtu = ksz9477_max_mtu,
- 	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
- 	.config_cpu_port = lan937x_config_cpu_port,
- 	.enable_stp_addr = ksz9477_enable_stp_addr,
-@@ -2473,10 +2472,22 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
- {
- 	struct ksz_device *dev = ds->priv;
- 
--	if (!dev->dev_ops->max_mtu)
--		return -EOPNOTSUPP;
-+	switch (dev->chip_id) {
-+	case KSZ8563_CHIP_ID:
-+	case KSZ9477_CHIP_ID:
-+	case KSZ9567_CHIP_ID:
-+	case KSZ9893_CHIP_ID:
-+	case KSZ9896_CHIP_ID:
-+	case KSZ9897_CHIP_ID:
-+	case LAN9370_CHIP_ID:
-+	case LAN9371_CHIP_ID:
-+	case LAN9372_CHIP_ID:
-+	case LAN9373_CHIP_ID:
-+	case LAN9374_CHIP_ID:
-+		return KSZ9477_MAX_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
-+	}
- 
--	return dev->dev_ops->max_mtu(dev, port);
-+	return -EOPNOTSUPP;
- }
- 
- static void ksz_set_xmii(struct ksz_device *dev, int port,
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 9cfa179575ce..7de5070637ec 100644
+index 7de5070637ec..85ce6ec573ba 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -320,7 +320,6 @@ struct ksz_dev_ops {
- 	void (*get_caps)(struct ksz_device *dev, int port,
- 			 struct phylink_config *config);
- 	int (*change_mtu)(struct ksz_device *dev, int port, int mtu);
--	int (*max_mtu)(struct ksz_device *dev, int port);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	void (*phylink_mac_config)(struct ksz_device *dev, int port,
-@@ -585,6 +584,8 @@ static inline int is_lan937x(struct ksz_device *dev)
+@@ -453,6 +453,11 @@ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
+ 	return regmap_bulk_write(dev->regmap[2], reg, val, 2);
+ }
  
- #define PORT_SRC_PHY_INT		1
- 
-+#define KSZ9477_MAX_FRAME_SIZE		9000
++static inline int ksz_rmw8(struct ksz_device *dev, int offset, u8 mask, u8 val)
++{
++	return regmap_update_bits(dev->regmap[0], offset, mask, val);
++}
 +
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
+ static inline int ksz_pread8(struct ksz_device *dev, int port, int offset,
+ 			     u8 *data)
+ {
 -- 
 2.30.2
 
