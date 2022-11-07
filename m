@@ -2,60 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0035861FBC4
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 18:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D207C61FBD0
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 18:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232308AbiKGRpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 12:45:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53840 "EHLO
+        id S232634AbiKGRsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 12:48:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232132AbiKGRpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 12:45:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430AA22297
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 09:45:23 -0800 (PST)
+        with ESMTP id S232990AbiKGRro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 12:47:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FE617A97;
+        Mon,  7 Nov 2022 09:47:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA37FB81608
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 17:45:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00C71C433C1;
-        Mon,  7 Nov 2022 17:45:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA9CD611E9;
+        Mon,  7 Nov 2022 17:47:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36564C433D6;
+        Mon,  7 Nov 2022 17:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667843120;
-        bh=cL0Cmn1wMSgyZwA7z18q8ng4pj7xfO231EleFGDrTNs=;
+        s=k20201202; t=1667843262;
+        bh=7WUGMjbQAmJLzpGQPB3dMUjNgFPkqKZ4u1QV1AW//uM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cKLweVQxAximlaYYUdVyVnlFYThWpbJvwt/OhHpsbx0ZhBjl+pqGe2N05tE5v4gzH
-         FEIC13zcYsdlm/CSLM/RCPBYrbq+CEj7lePrRvbyt1bXIDq93WRKQ49ZEYsgsN2eKI
-         pZfRawMG4B3K3I41fnUDcXRApzmmojsuoX/V/n8Io0K+3aYyMXQ1JwGgN6RKIDl2T1
-         H3oIaOpCLds4DQbsa8aGZ8TTm65XPqyb1cBTgIF/GSRuP/uKm5hDQmtN5vDvLb1Rg3
-         HaWmEdKsh2IJCixttrZZ4yUtiyAfFFYy1P/CkxTVoaHOAfBSgH59G+4P0QH/ipCX8t
-         Xh8taIO0hAnng==
-Date:   Mon, 7 Nov 2022 19:45:15 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Ruhl, Michael J" <michael.j.ruhl@intel.com>
-Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net-next 5/6] igb: Do not free q_vector unless new one
- was allocated
-Message-ID: <Y2lEK4CMdCyEMBLf@unreal>
-References: <20221104205414.2354973-1-anthony.l.nguyen@intel.com>
- <20221104205414.2354973-6-anthony.l.nguyen@intel.com>
- <Y2itqqGQm6uZ/2Wf@unreal>
- <DM5PR11MB1324FDF4D4399A6A99727B5EC13C9@DM5PR11MB1324.namprd11.prod.outlook.com>
+        b=QKVrLSoKk6VveD4mEiq0tyP6ZWWZy6zJq0azmvsoVf3N/PJK21QvWCb3UWNXi11my
+         p4byXoesl/ETA0NdclkejgJalCRfpF5uf1TqyKTyTkhjUcA8z0Nl5oYZEDA/bEgIlc
+         P51p41dxF3U+y/WKbelikyBFyomeVrn2O1iMP7Ll8lVVkMpKfbftkw8EJ3/QnOgF35
+         dwb71wuhLDecU+w/8qsRYRD/+6xZKvvIC5+a3jY1gEzwtgHqIg4YoVWbXW1lsEIeKM
+         gq8mc8rLYHgBXZeMDA+guPFWi+UR1wzH6aUKyF+QUGG4jV/aND6eWJWIUCdqBNfbEq
+         Sxu2L/rqSMAQg==
+Date:   Mon, 7 Nov 2022 23:17:27 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     mani@kernel.org, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, elder@linaro.org,
+        hemantk@codeaurora.org, quic_jhugo@quicinc.com,
+        quic_qianyu@quicinc.com, bbhatt@codeaurora.org,
+        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, ansuelsmth@gmail.com
+Subject: Re: [PATCH 2/2] wifi: ath11k: use unique QRTR instance ID
+Message-ID: <20221107174727.GA7535@thinkpad>
+References: <20221105194943.826847-1-robimarko@gmail.com>
+ <20221105194943.826847-2-robimarko@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <DM5PR11MB1324FDF4D4399A6A99727B5EC13C9@DM5PR11MB1324.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221105194943.826847-2-robimarko@gmail.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -65,99 +60,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 01:55:58PM +0000, Ruhl, Michael J wrote:
-> >-----Original Message-----
-> >From: Leon Romanovsky <leon@kernel.org>
-> >Sent: Monday, November 7, 2022 2:03 AM
-> >To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
-> >Cc: davem@davemloft.net; kuba@kernel.org; pabeni@redhat.com;
-> >edumazet@google.com; Kees Cook <keescook@chromium.org>;
-> >netdev@vger.kernel.org; Brandeburg, Jesse <jesse.brandeburg@intel.com>;
-> >intel-wired-lan@lists.osuosl.org; Ruhl, Michael J <michael.j.ruhl@intel.com>;
-> >Keller, Jacob E <jacob.e.keller@intel.com>; G, GurucharanX
-> ><gurucharanx.g@intel.com>
-> >Subject: Re: [PATCH net-next 5/6] igb: Do not free q_vector unless new one
-> >was allocated
-> >
-> >On Fri, Nov 04, 2022 at 01:54:13PM -0700, Tony Nguyen wrote:
-> >> From: Kees Cook <keescook@chromium.org>
-> >>
-> >> Avoid potential use-after-free condition under memory pressure. If the
-> >> kzalloc() fails, q_vector will be freed but left in the original
-> >> adapter->q_vector[v_idx] array position.
-> >>
-> >> Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> >> Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-> >> Cc: "David S. Miller" <davem@davemloft.net>
-> >> Cc: Eric Dumazet <edumazet@google.com>
-> >> Cc: Jakub Kicinski <kuba@kernel.org>
-> >> Cc: Paolo Abeni <pabeni@redhat.com>
-> >> Cc: intel-wired-lan@lists.osuosl.org
-> >> Cc: netdev@vger.kernel.org
-> >> Signed-off-by: Kees Cook <keescook@chromium.org>
-> >> Reviewed-by: Michael J. Ruhl <michael.j.ruhl@intel.com>
-> >> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> >> Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker
-> >at Intel)
-> >
-> >You should use first and last names here.
-> >
-> >> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> >> ---
-> >>  drivers/net/ethernet/intel/igb/igb_main.c | 8 ++++++--
-> >>  1 file changed, 6 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
-> >b/drivers/net/ethernet/intel/igb/igb_main.c
-> >> index d6c1c2e66f26..c2bb658198bf 100644
-> >> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> >> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> >> @@ -1202,8 +1202,12 @@ static int igb_alloc_q_vector(struct igb_adapter
-> >*adapter,
-> >>  	if (!q_vector) {
-> >>  		q_vector = kzalloc(size, GFP_KERNEL);
-> >>  	} else if (size > ksize(q_vector)) {
-> >> -		kfree_rcu(q_vector, rcu);
-> >> -		q_vector = kzalloc(size, GFP_KERNEL);
-> >> +		struct igb_q_vector *new_q_vector;
-> >> +
-> >> +		new_q_vector = kzalloc(size, GFP_KERNEL);
-> >> +		if (new_q_vector)
-> >> +			kfree_rcu(q_vector, rcu);
-> >> +		q_vector = new_q_vector;
-> >
-> >I wonder if this is correct.
-> >1. if new_q_vector is NULL, you will overwrite q_vector without releasing it.
-> >2. kfree_rcu() doesn't immediately release memory, but after grace
-> >period, but here you are overwriting the pointer which is not release
-> >yet.
+On Sat, Nov 05, 2022 at 08:49:43PM +0100, Robert Marko wrote:
+> Currently, trying to use AHB + PCI/MHI cards or multiple PCI/MHI cards
+> will cause a clash in the QRTR instance node ID and prevent the driver
+> from talking via QMI to the card and thus initializing it with:
+> [    9.836329] ath11k c000000.wifi: host capability request failed: 1 90
+> [    9.842047] ath11k c000000.wifi: failed to send qmi host cap: -22
 > 
-> The actual pointer is: adapter->q_vector[v_idx]
-> 
-> q_vector is just a convenience pointer.
-> 
-> If the allocation succeeds, the q_vector[v_idx] will be replaced (later in the code).
-> 
-> If the allocation fails, this is not being freed.  The original code freed the adapter
-> pointer but didn't not remove the pointer.
-> 
-> If q_vector is NULL,  (i.e. the allocation failed), the function exits, but the original
-> pointer is left in place.
-> 
-> I think this logic is correct.
-> 
-> The error path leaves the original allocation in place.  If this is incorrect behavior,
-> a different change would be:
-> 
-> 	q_vector = adapter->q_vector[v_idx];
-> 	adapter->q_vector[v_idx] = NULL;
-> 	... the original code...
-> 
-> But I am not sure if that is what is desired?
 
-I understand the issue what you are trying to solve, I just don't
-understand your RCU code. I would expect calls to rcu_dereference()
-in order to get q_vector and rcu_assign_pointer() to clear
-adapter->q_vector[v_idx], but igb has none.
+There is still an outstanding issue where you cannot connect two WLAN modules
+with same node id.
 
-Thanks
+> So, in order to allow for this combination of cards, especially AHB + PCI
+> cards like IPQ8074 + QCN9074 (Used by me and tested on) set the desired
+> QRTR instance ID offset by calculating a unique one based on PCI domain
+> and bus ID-s and writing it to bits 7-0 of BHI_ERRDBG2 MHI register by
+> using the SBL state callback that is added as part of the series.
+> We also have to make sure that new QRTR offset is added on top of the
+> default QRTR instance ID-s that are currently used in the driver.
+> 
+
+Register BHI_ERRDBG2 is listed as Read only from Host as per the BHI spec.
+So I'm not sure if this solution is going to work on all ath11k supported
+chipsets.
+
+Kalle, can you confirm?
+
+> This finally allows using AHB + PCI or multiple PCI cards on the same
+> system.
+> 
+> Before:
+> root@OpenWrt:/# qrtr-lookup
+>   Service Version Instance Node  Port
+>      1054       1        0    7     1 <unknown>
+>        69       1        2    7     3 ATH10k WLAN firmware service
+> 
+> After:
+> root@OpenWrt:/# qrtr-lookup
+>   Service Version Instance Node  Port
+>      1054       1        0    7     1 <unknown>
+>        69       1        2    7     3 ATH10k WLAN firmware service
+>        15       1        0    8     1 Test service
+>        69       1        8    8     2 ATH10k WLAN firmware service
+> 
+> Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> ---
+>  drivers/net/wireless/ath/ath11k/mhi.c | 47 ++++++++++++++++++---------
+>  drivers/net/wireless/ath/ath11k/mhi.h |  3 ++
+>  drivers/net/wireless/ath/ath11k/pci.c |  5 ++-
+>  3 files changed, 38 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+> index 86995e8dc913..23e85ea902f5 100644
+> --- a/drivers/net/wireless/ath/ath11k/mhi.c
+> +++ b/drivers/net/wireless/ath/ath11k/mhi.c
+> @@ -294,6 +294,32 @@ static void ath11k_mhi_op_runtime_put(struct mhi_controller *mhi_cntrl)
+>  {
+>  }
+>  
+> +static int ath11k_mhi_op_read_reg(struct mhi_controller *mhi_cntrl,
+> +				  void __iomem *addr,
+> +				  u32 *out)
+> +{
+> +	*out = readl(addr);
+> +
+> +	return 0;
+> +}
+> +
+> +static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
+> +				    void __iomem *addr,
+> +				    u32 val)
+> +{
+> +	writel(val, addr);
+> +}
+> +
+> +static void ath11k_mhi_qrtr_instance_set(struct mhi_controller *mhi_cntrl)
+> +{
+> +	struct ath11k_base *ab = dev_get_drvdata(mhi_cntrl->cntrl_dev);
+> +
+> +	ath11k_mhi_op_write_reg(mhi_cntrl,
+> +				mhi_cntrl->bhi + BHI_ERRDBG2,
+> +				FIELD_PREP(QRTR_INSTANCE_MASK,
+> +				ab->qmi.service_ins_id - ab->hw_params.qmi_service_ins_id));
+> +}
+> +
+>  static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
+>  {
+>  	switch (reason) {
+> @@ -315,6 +341,8 @@ static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
+>  		return "MHI_CB_FATAL_ERROR";
+>  	case MHI_CB_BW_REQ:
+>  		return "MHI_CB_BW_REQ";
+> +	case MHI_CB_EE_SBL_MODE:
+> +		return "MHI_CB_EE_SBL_MODE";
+>  	default:
+>  		return "UNKNOWN";
+>  	}
+> @@ -336,27 +364,14 @@ static void ath11k_mhi_op_status_cb(struct mhi_controller *mhi_cntrl,
+>  		if (!(test_bit(ATH11K_FLAG_UNREGISTERING, &ab->dev_flags)))
+>  			queue_work(ab->workqueue_aux, &ab->reset_work);
+>  		break;
+> +	case MHI_CB_EE_SBL_MODE:
+> +		ath11k_mhi_qrtr_instance_set(mhi_cntrl);
+
+I still don't understand how SBL could make use of this information during
+boot without waiting for an update.
+
+Thanks,
+Mani
+
+> +		break;
+>  	default:
+>  		break;
+>  	}
+>  }
+>  
+> -static int ath11k_mhi_op_read_reg(struct mhi_controller *mhi_cntrl,
+> -				  void __iomem *addr,
+> -				  u32 *out)
+> -{
+> -	*out = readl(addr);
+> -
+> -	return 0;
+> -}
+> -
+> -static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
+> -				    void __iomem *addr,
+> -				    u32 val)
+> -{
+> -	writel(val, addr);
+> -}
+> -
+>  static int ath11k_mhi_read_addr_from_dt(struct mhi_controller *mhi_ctrl)
+>  {
+>  	struct device_node *np;
+> diff --git a/drivers/net/wireless/ath/ath11k/mhi.h b/drivers/net/wireless/ath/ath11k/mhi.h
+> index 8d9f852da695..0db308bc3047 100644
+> --- a/drivers/net/wireless/ath/ath11k/mhi.h
+> +++ b/drivers/net/wireless/ath/ath11k/mhi.h
+> @@ -16,6 +16,9 @@
+>  #define MHICTRL					0x38
+>  #define MHICTRL_RESET_MASK			0x2
+>  
+> +#define BHI_ERRDBG2				0x38
+> +#define QRTR_INSTANCE_MASK			GENMASK(7, 0)
+> +
+>  int ath11k_mhi_start(struct ath11k_pci *ar_pci);
+>  void ath11k_mhi_stop(struct ath11k_pci *ar_pci);
+>  int ath11k_mhi_register(struct ath11k_pci *ar_pci);
+> diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+> index 99cf3357c66e..cd26c1567415 100644
+> --- a/drivers/net/wireless/ath/ath11k/pci.c
+> +++ b/drivers/net/wireless/ath/ath11k/pci.c
+> @@ -370,13 +370,16 @@ static void ath11k_pci_sw_reset(struct ath11k_base *ab, bool power_on)
+>  static void ath11k_pci_init_qmi_ce_config(struct ath11k_base *ab)
+>  {
+>  	struct ath11k_qmi_ce_cfg *cfg = &ab->qmi.ce_cfg;
+> +	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
+> +	struct pci_bus *bus = ab_pci->pdev->bus;
+>  
+>  	cfg->tgt_ce = ab->hw_params.target_ce_config;
+>  	cfg->tgt_ce_len = ab->hw_params.target_ce_count;
+>  
+>  	cfg->svc_to_ce_map = ab->hw_params.svc_to_ce_map;
+>  	cfg->svc_to_ce_map_len = ab->hw_params.svc_to_ce_map_len;
+> -	ab->qmi.service_ins_id = ab->hw_params.qmi_service_ins_id;
+> +	ab->qmi.service_ins_id = ab->hw_params.qmi_service_ins_id +
+> +	(((pci_domain_nr(bus) & 0xF) << 4) | (bus->number & 0xF));
+>  
+>  	ath11k_ce_get_shadow_config(ab, &cfg->shadow_reg_v2,
+>  				    &cfg->shadow_reg_v2_len);
+> -- 
+> 2.38.1
+> 
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
