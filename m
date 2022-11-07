@@ -2,111 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B4466200FE
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:22:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD9762010D
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:25:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbiKGVWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 16:22:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
+        id S233186AbiKGVZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 16:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233299AbiKGVWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:22:19 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D1AD2F7;
-        Mon,  7 Nov 2022 13:22:17 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id v17so19639944edc.8;
-        Mon, 07 Nov 2022 13:22:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ddfhd8XwpJplivFsJcCTYCRWaroeD5Sk1QzcIWWbS0c=;
-        b=Vy+4wxJA858HcqoCK36dhDhINBXnhv2nNfAeudikvcqnMjt4BeCjjPNOutf2MHEISB
-         rKnZa/bY+ndMJsOY+D9hqnnFJj7SVekwqfY7YUzgvyZnC2WFkL749Fqcvw2Ua7yddi58
-         J6VIqP+D9q0qWbMsDy6/Szyr+JjA8lByTCbKEbR/SbeWxHVT1ATRe//GcFKGfKLGNwCk
-         WtS5mG9Y+Uq4IA2KxpKxFDZNNNaB2m9+1qDhGs3TuBKJlW75KGc5Zi4EAuBUoxdpzFMy
-         qW7IInIrO9+7KZCObQPN7q0BRVaj6cf6HDk3e2Pb1jF5aW4VwTPxS6Xu8Dybb2d4v7CN
-         LIKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ddfhd8XwpJplivFsJcCTYCRWaroeD5Sk1QzcIWWbS0c=;
-        b=CeVBJp/efL1y0RCOtdHIyU49T5hxl226DwWayhPIicP5rn26q94CxFGMHXvRNgUoTa
-         Jipq4cV03lBe1LtvueegYI0fNL9G/j6tvMUkemSVXzs4arhcgJZEG7z6LtJ1WnuOj+Oc
-         OEufQ2GbQ57PEQFZ1ITA6hhJvq4SbE4WiewuVrajP1Kmhjg1fuFeqKrAn57/L3zBb8ne
-         t3Zg8avn5PUuOTxpbyuQ8jpSc4u8LWTHn4e1cz7NMKtdmojN9SOHquDWCLt0lAZbz1xw
-         uMchYHgt2LTIiZ2p8vQNu/4bTRlgEl8P1T0UwOf535d3Kl/M/bQcQKxQ1tVlb1CnZLvS
-         LUUA==
-X-Gm-Message-State: ACrzQf2i2SoslPIhhKpW/Ms6KaZOzLqnWmw9ASJEX0LniJiyC9GxdRKR
-        jm0OH4X8IcCOaI2cISsAgII=
-X-Google-Smtp-Source: AMsMyM547z9exzJ4wJkpKqv+MqMTl8XFdxtr/iBjb4PZ9RziUaFERL6bJernT2uTQc2z4uSNEne6xg==
-X-Received: by 2002:aa7:d5c1:0:b0:459:2515:b27b with SMTP id d1-20020aa7d5c1000000b004592515b27bmr843867eds.338.1667856135756;
-        Mon, 07 Nov 2022 13:22:15 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id m19-20020a056402051300b00459cd13fd34sm4615155edv.85.2022.11.07.13.22.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 13:22:15 -0800 (PST)
-Date:   Mon, 7 Nov 2022 23:22:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S233357AbiKGVYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:24:43 -0500
+Received: from smtp.smtpout.orange.fr (smtp-24.smtpout.orange.fr [80.12.242.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6BA2F663
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 13:24:12 -0800 (PST)
+Received: from [192.168.1.18] ([86.243.100.34])
+        by smtp.orange.fr with ESMTPA
+        id s9bCo3csCUoLVs9bCoTgdm; Mon, 07 Nov 2022 22:24:10 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 07 Nov 2022 22:24:10 +0100
+X-ME-IP: 86.243.100.34
+Message-ID: <6a0adc0d-da54-9c9b-3596-3422353e285d@wanadoo.fr>
+Date:   Mon, 7 Nov 2022 22:24:05 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [RFC PATCH v3 01/11] virtio/vsock: rework packet allocation logic
+Content-Language: fr, en-CA
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        "edumazet@google.com" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/14] net: dsa: tag_mtk: assign per-port queues
-Message-ID: <20221107212209.4pmoctkze4m2ggbv@skbuf>
-References: <20221107185452.90711-1-nbd@nbd.name>
- <20221107185452.90711-5-nbd@nbd.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221107185452.90711-5-nbd@nbd.name>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+References: <f60d7e94-795d-06fd-0321-6972533700c5@sberdevices.ru>
+ <f896b8fd-50d2-2512-3966-3775245e9b96@sberdevices.ru>
+ <3c6de80a-8fc1-0c63-6d2d-3eee294fe0a7@wanadoo.fr>
+ <278ee0cc-83ae-5c26-7718-d0472841e049@sberdevices.ru>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <278ee0cc-83ae-5c26-7718-d0472841e049@sberdevices.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 07:54:43PM +0100, Felix Fietkau wrote:
-> Keeps traffic sent to the switch within link speed limits
+Le 07/11/2022 à 06:23, Arseniy Krasnov a écrit :
+> On 06.11.2022 22:50, Christophe JAILLET wrote:
+>> Le 06/11/2022 à 20:36, Arseniy Krasnov a écrit :
+>>> To support zerocopy receive, packet's buffer allocation is changed: for
+>>> buffers which could be mapped to user's vma we can't use 'kmalloc()'(as
+>>> kernel restricts to map slab pages to user's vma) and raw buddy
+>>> allocator now called. But, for tx packets(such packets won't be mapped
+>>> to user), previous 'kmalloc()' way is used, but with special flag in
+>>> packet's structure which allows to distinguish between 'kmalloc()' and
+>>> raw pages buffers.
+>>>
+>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>> ---
+>>>    drivers/vhost/vsock.c                   |  1 +
+>>>    include/linux/virtio_vsock.h            |  1 +
+>>>    net/vmw_vsock/virtio_transport.c        |  8 ++++++--
+>>>    net/vmw_vsock/virtio_transport_common.c | 10 +++++++++-
+>>>    4 files changed, 17 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>>> index 5703775af129..65475d128a1d 100644
+>>> --- a/drivers/vhost/vsock.c
+>>> +++ b/drivers/vhost/vsock.c
+>>> @@ -399,6 +399,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+>>>            return NULL;
+>>>        }
+>>>    +    pkt->slab_buf = true;
+>>>        pkt->buf_len = pkt->len;
+>>>          nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
+>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>> index 35d7eedb5e8e..d02cb7aa922f 100644
+>>> --- a/include/linux/virtio_vsock.h
+>>> +++ b/include/linux/virtio_vsock.h
+>>> @@ -50,6 +50,7 @@ struct virtio_vsock_pkt {
+>>>        u32 off;
+>>>        bool reply;
+>>>        bool tap_delivered;
+>>> +    bool slab_buf;
+>>>    };
+>>>      struct virtio_vsock_pkt_info {
+>>> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>>> index ad64f403536a..19909c1e9ba3 100644
+>>> --- a/net/vmw_vsock/virtio_transport.c
+>>> +++ b/net/vmw_vsock/virtio_transport.c
+>>> @@ -255,16 +255,20 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
+>>>        vq = vsock->vqs[VSOCK_VQ_RX];
+>>>          do {
+>>> +        struct page *buf_page;
+>>> +
+>>>            pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
+>>>            if (!pkt)
+>>>                break;
+>>>    -        pkt->buf = kmalloc(buf_len, GFP_KERNEL);
+>>> -        if (!pkt->buf) {
+>>> +        buf_page = alloc_page(GFP_KERNEL);
+>>> +
+>>> +        if (!buf_page) {
+>>>                virtio_transport_free_pkt(pkt);
+>>>                break;
+>>>            }
+>>>    +        pkt->buf = page_to_virt(buf_page);
+>>>            pkt->buf_len = buf_len;
+>>>            pkt->len = buf_len;
+>>>    diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>> index a9980e9b9304..37e8dbfe2f5d 100644
+>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>> @@ -69,6 +69,7 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+>>>            if (!pkt->buf)
+>>>                goto out_pkt;
+>>>    +        pkt->slab_buf = true;
+>>>            pkt->buf_len = len;
+>>>              err = memcpy_from_msg(pkt->buf, info->msg, len);
+>>> @@ -1339,7 +1340,14 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
+>>>      void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
+>>>    {
+>>> -    kvfree(pkt->buf);
+>>> +    if (pkt->buf_len) {
+>>> +        if (pkt->slab_buf)
+>>> +            kvfree(pkt->buf);
+>>
+>> Hi,
+>>
+>> kfree()? (according to virtio_transport_alloc_pkt() in -next) or something else need to be changed.
+>>
+> Hello Cristophe,
 > 
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
->  net/dsa/tag_mtk.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-> index 415d8ece242a..445d6113227f 100644
-> --- a/net/dsa/tag_mtk.c
-> +++ b/net/dsa/tag_mtk.c
-> @@ -25,6 +25,9 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
->  	u8 xmit_tpid;
->  	u8 *mtk_tag;
->  
-> +	/* Reserve the first three queues for packets not passed through DSA */
-> +	skb_set_queue_mapping(skb, 3 + dp->index);
-> +
+> I think, 'kvfree()' is still needed here, because buffer for packet could be allocated by 'kvmalloc()'
+> in drivers/vhost/vsock.c. Correct me if i'm wrong.
 
-Should DSA have to care about this detail, or could you rework your
-mtk_select_queue() procedure to adjust the queue mapping as needed?
+Agreed.
 
->  	/* Build the special tag after the MAC Source Address. If VLAN header
->  	 * is present, it's required that VLAN header and special tag is
->  	 * being combined. Only in this way we can allow the switch can parse
-> -- 
-> 2.38.1
 > 
+>>> +        else
+>>> +            free_pages((unsigned long)pkt->buf,
+>>> +                   get_order(pkt->buf_len));
+>>
+>> In virtio_vsock_rx_fill(), only alloc_page() is used.
+>>
+>> Should this be alloc_pages(.., get_order(buf_len)) or free_page() (without an 's') here?
+> This function frees packets which were allocated in vhost path also. In vhost, for zerocopy
+> packets alloc_pageS() is used.
+
+Ok. Seen in patch 5/11.
+
+But wouldn't it be cleaner and future-proof to also have alloc_pageS() 
+in virtio_vsock_rx_fill(), even if get_order(buf->len) is kwown to be 0?
+
+What, if for some reason a PAGE_SIZE was < 4kb for a given arch, or 
+VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE increased?
+
+CJ
+
+> 
+> Thank You, Arseniy
+>>
+>> Just my 2c,
+>>
+>> CJ
+>>
+>>> +    }
+>>> +
+>>>        kfree(pkt);
+>>>    }
+>>>    EXPORT_SYMBOL_GPL(virtio_transport_free_pkt);
+>>
+> 
+
