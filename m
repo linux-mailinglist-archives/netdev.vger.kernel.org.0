@@ -2,138 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D60361FAF9
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 18:16:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8319761FAF7
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 18:15:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232630AbiKGRP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 12:15:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
+        id S232558AbiKGRPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 12:15:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiKGRP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 12:15:57 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466D220BC6;
-        Mon,  7 Nov 2022 09:15:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667841356; x=1699377356;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=N1bnCz4fk3zMX9lzTCpsSxKGgJYz7Wz+oYj3aAcVq6I=;
-  b=M8zJiIevJBoIWRdXlqL7+Wnc43deBHi+Jayqwj1mAK2JCamHVdHYE7nd
-   6snzMMI84L3rtQ7Kyq4fJ4e6hm1fzvjNeSYuoAjrUaL70SbPKfVyyWRm7
-   gUC014I9UGyiSKrnsyfPhBB1FApMUgKrXQ4k9ZoiHynYzxg/JSsnkb8FL
-   HFn9NDrjnZLwFfFUoHqoTbzNRFAeBU0sg8RCPof0/Bx3NqKsIvM/HRgIa
-   r1seZozBwNZu7vgXA97/xRkDnnORNTeBfvFEjsXcLL4y6qlNvq/lQzZzg
-   pCDT2SKI6o6uGfulDIdo3KSlqgrOcuaUIoxqjkwhvWHN5tlODUD+3bC7i
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="337190057"
-X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
-   d="scan'208";a="337190057"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 09:14:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="761167231"
-X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
-   d="scan'208";a="761167231"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 07 Nov 2022 09:14:45 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2A7HEhNj031969;
-        Mon, 7 Nov 2022 17:14:43 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [RFC bpf-next v2 10/14] ice: Support rx timestamp metadata for xdp
-Date:   Mon,  7 Nov 2022 18:11:30 +0100
-Message-Id: <20221107171130.559191-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <CAKH8qBuaJ1usZEirN9=ReugusS8t_=Mn0LoFdy93iOYpHs2+Yg@mail.gmail.com>
-References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-11-sdf@google.com> <20221104143547.3575615-1-alexandr.lobakin@intel.com> <CAKH8qBuaJ1usZEirN9=ReugusS8t_=Mn0LoFdy93iOYpHs2+Yg@mail.gmail.com>
+        with ESMTP id S232426AbiKGRPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 12:15:49 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22CB1C918;
+        Mon,  7 Nov 2022 09:15:48 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso15317021pjc.0;
+        Mon, 07 Nov 2022 09:15:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LTjXi97uR4XogIu6puuF858HlEW2qY3mXXi3YgbVyuQ=;
+        b=TzCU+QAP9K5fMmrp7SlNAU4rY+0hRfCIESlt1z0me4mn2THUsK1UtyGPAQld6+Hnpw
+         NA2o9y0cNj+ATFzYyPJrJzvkWxkOjGJyK4k1+K3flYRsm177BsPJ77EFEqM9T1Yei3Wv
+         ZHtd4T6CVTutX2U2tn/yH5M4jKJiDdFU+tVBiiXCtc5clXsAOhDUhMYpi1fbwZiqN2Tw
+         iz6rBAT3GfnmlWjHzTymOaZV7EL9tHyo1LQz2uAtOVH3QzlQcUIZ4saKMNq4hcNaDDMV
+         OMbiYrK6ih2C+5ABlf5+TNI0wVDTkEcxr6i1t9A3vRlp7OrzwCFIM7sfTNoktWyAiIfz
+         pQhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LTjXi97uR4XogIu6puuF858HlEW2qY3mXXi3YgbVyuQ=;
+        b=7AQcFqOSPHXkO+ZfsE2VR9e0XppgI74uy7JmOy9Pu+Gxt2Cw4GRSiaqh414qyHoykV
+         3t5TCSsw8w4LxiCThpnM2s9WgdnpzhYcy+4A+0SLfp66QjnKmeT/2YXECyLMIUd+aNDs
+         69di6KEwpeghOhgLcZhh+2zq9Gk9pI2fIHeXvO1k0sWfrzLRP3k+NMoXAASDMn6fsDFj
+         kd7AmV5BepXyQGHDdEmt/0il5sxBWcjSpnZdR+eTp1Q3t0f9HWy7qKk2Gm9loCjXkFit
+         sbu7lRCfStiqY6HzAMMtb3YZQyoG//5veYkV+8R5dR8+4EbYMxMJVc1YtaQJaa4fVtKU
+         zSbg==
+X-Gm-Message-State: ACrzQf1uxpSRAIVIVn1A5F80i2o/0cl3f9+OZH+CS5eGcatV68txqmzP
+        8exkKZA1ecqsxwxsBnpX0DVbBxLMmO+StOEpHCw=
+X-Google-Smtp-Source: AMsMyM7Ta3jOzYwDilL3rRtbb8+XPHLNKrKcMutr0lEqim5tMfJfS/76spKVnPU0bryeuEMbct8w03U+qXcdmCxAV14=
+X-Received: by 2002:a17:90a:86c6:b0:213:36b6:1b4c with SMTP id
+ y6-20020a17090a86c600b0021336b61b4cmr53258702pjv.7.1667841348032; Mon, 07 Nov
+ 2022 09:15:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221105194943.826847-1-robimarko@gmail.com> <20221105194943.826847-2-robimarko@gmail.com>
+ <9d61676a-888a-b172-141d-62257e2e9e84@quicinc.com>
+In-Reply-To: <9d61676a-888a-b172-141d-62257e2e9e84@quicinc.com>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Mon, 7 Nov 2022 18:15:36 +0100
+Message-ID: <CAOX2RU6NGVi1j-Es=t5LkqbOb9LCfWC9Rkqa4x00dPWqXUDfKw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] wifi: ath11k: use unique QRTR instance ID
+To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
+Cc:     mani@kernel.org, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, elder@linaro.org,
+        hemantk@codeaurora.org, quic_qianyu@quicinc.com,
+        bbhatt@codeaurora.org, mhi@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        ansuelsmth@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stanislav Fomichev <sdf@google.com>
-Date: Fri, 4 Nov 2022 11:21:47 -0700
-
-> On Fri, Nov 4, 2022 at 7:38 AM Alexander Lobakin
-> <alexandr.lobakin@intel.com> wrote:
+On Mon, 7 Nov 2022 at 16:10, Jeffrey Hugo <quic_jhugo@quicinc.com> wrote:
+>
+> On 11/5/2022 1:49 PM, Robert Marko wrote:
+> > Currently, trying to use AHB + PCI/MHI cards or multiple PCI/MHI cards
+> > will cause a clash in the QRTR instance node ID and prevent the driver
+> > from talking via QMI to the card and thus initializing it with:
+> > [    9.836329] ath11k c000000.wifi: host capability request failed: 1 90
+> > [    9.842047] ath11k c000000.wifi: failed to send qmi host cap: -22
 > >
-> > From: Stanislav Fomichev <sdf@google.com>
-> > Date: Thu,3 Nov 2022 20:25:28 -0700
-
-[...]
-
-> > Hey,
+> > So, in order to allow for this combination of cards, especially AHB + PCI
+> > cards like IPQ8074 + QCN9074 (Used by me and tested on) set the desired
+> > QRTR instance ID offset by calculating a unique one based on PCI domain
+> > and bus ID-s and writing it to bits 7-0 of BHI_ERRDBG2 MHI register by
+> > using the SBL state callback that is added as part of the series.
+> > We also have to make sure that new QRTR offset is added on top of the
+> > default QRTR instance ID-s that are currently used in the driver.
 > >
-> > FYI, our team wants to write a follow-up patch with ice support
-> > added, not like a draft, more of a mature code. I'm thinking of
-> > calling ice C function which would process Rx descriptors from
-> > that BPF code from the unrolling callback -- otherwise,
-> > implementing a couple hundred C code lines from ice_txrx_lib.c
-> > would be a bit too much :D
-> 
-> Sounds good! I would gladly drop all/most of the driver changes for
-> the non-rfc posting :-)
-> I'll probably have a mlx4 one because there is a chance I might find
-> HW, but the rest I'll drop most likely.
-> (they are here to show how the driver changes might look like, hence
-> compile-tested only)
-> 
-> Btw, does it make sense to have some small xsk selftest binary that
-> can be used to test the metadata with the real device?
-> The one I'm having right now depends on veth/namespaces; having a
-> similar one for the real hardware to qualify it sounds useful?
-> Something simple that sets up af_xdp for all queues, divers some
-> traffic, and exposes to the userspace consumer all the info about
-> frame metadata...
-> Or maybe there is something I can reuse already?
-
-There's XSk selftest already and recently Maciej added support for
-executing it on a physical device (via `-i <iface>` cmdline arg)[0].
-I guess the most optimal solution is to expand it to cover metadata
-cases as it has some sort of useful helper functions / infra? In the
-set I posted in June, I simply expanded xdp_meta selftest, but there
-weren't any XSk bits, so I don't think it's a way to go.
-
-> 
-> 
-> > > +     } else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
-> > > +             /* return true; */
-> > > +             bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
-> > > +     } else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
+> > This finally allows using AHB + PCI or multiple PCI cards on the same
+> > system.
 > >
-> > [...]
+> > Before:
+> > root@OpenWrt:/# qrtr-lookup
+> >    Service Version Instance Node  Port
+> >       1054       1        0    7     1 <unknown>
+> >         69       1        2    7     3 ATH10k WLAN firmware service
 > >
-> > > --
-> > > 2.38.1.431.g37b22c650d-goog
+> > After:
+> > root@OpenWrt:/# qrtr-lookup
+> >    Service Version Instance Node  Port
+> >       1054       1        0    7     1 <unknown>
+> >         69       1        2    7     3 ATH10k WLAN firmware service
+> >         15       1        0    8     1 Test service
+> >         69       1        8    8     2 ATH10k WLAN firmware service
 > >
-> > Thanks,
-> > Olek
+> > Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> > Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > ---
+> >   drivers/net/wireless/ath/ath11k/mhi.c | 47 ++++++++++++++++++---------
+> >   drivers/net/wireless/ath/ath11k/mhi.h |  3 ++
+> >   drivers/net/wireless/ath/ath11k/pci.c |  5 ++-
+> >   3 files changed, 38 insertions(+), 17 deletions(-)
+> >
+> > diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+> > index 86995e8dc913..23e85ea902f5 100644
+> > --- a/drivers/net/wireless/ath/ath11k/mhi.c
+> > +++ b/drivers/net/wireless/ath/ath11k/mhi.c
+> > @@ -294,6 +294,32 @@ static void ath11k_mhi_op_runtime_put(struct mhi_controller *mhi_cntrl)
+> >   {
+> >   }
+> >
+> > +static int ath11k_mhi_op_read_reg(struct mhi_controller *mhi_cntrl,
+> > +                               void __iomem *addr,
+> > +                               u32 *out)
+> > +{
+> > +     *out = readl(addr);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
+> > +                                 void __iomem *addr,
+> > +                                 u32 val)
+> > +{
+> > +     writel(val, addr);
+> > +}
+> > +
+> > +static void ath11k_mhi_qrtr_instance_set(struct mhi_controller *mhi_cntrl)
+> > +{
+> > +     struct ath11k_base *ab = dev_get_drvdata(mhi_cntrl->cntrl_dev);
+> > +
+> > +     ath11k_mhi_op_write_reg(mhi_cntrl,
+> > +                             mhi_cntrl->bhi + BHI_ERRDBG2,
+> > +                             FIELD_PREP(QRTR_INSTANCE_MASK,
+> > +                             ab->qmi.service_ins_id - ab->hw_params.qmi_service_ins_id));
+> > +}
+>
+> What kind of synchronization is there for this?
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=a693ff3ed5610a07b1b0dd831d10f516e13cf6c6
+None from what I could tell.
+>
+> Does SBL spin until this is set?
 
-Thank,
-Olek
+No, the default value is 0x0 and it will boot with that.
+>
+> What would prevent SBL from booting, sending the notification to the
+> host, and then quickly entering runtime mode before the host had a
+> chance to get here?
+
+As far as I know nothing really, but this is a question for QCA.
+I have tried to make a generic solution from various bits and pieces they
+are using downstream but which are really not suitable for upstream.
+
+I agree it's not ideal, but the worst that could happen is that card
+won't work which is current
+behavior anyway.
+
+Not being able to use AHB + PCI or multiple PCI cards is really
+annoying as I am not able
+to utilize most of the 5GHz spectrum on my router due to this.
+
+Regards,
+Robert
+>
+>
+> > +
+> >   static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
+> >   {
+> >       switch (reason) {
+> > @@ -315,6 +341,8 @@ static char *ath11k_mhi_op_callback_to_str(enum mhi_callback reason)
+> >               return "MHI_CB_FATAL_ERROR";
+> >       case MHI_CB_BW_REQ:
+> >               return "MHI_CB_BW_REQ";
+> > +     case MHI_CB_EE_SBL_MODE:
+> > +             return "MHI_CB_EE_SBL_MODE";
+> >       default:
+> >               return "UNKNOWN";
+> >       }
+> > @@ -336,27 +364,14 @@ static void ath11k_mhi_op_status_cb(struct mhi_controller *mhi_cntrl,
+> >               if (!(test_bit(ATH11K_FLAG_UNREGISTERING, &ab->dev_flags)))
+> >                       queue_work(ab->workqueue_aux, &ab->reset_work);
+> >               break;
+> > +     case MHI_CB_EE_SBL_MODE:
+> > +             ath11k_mhi_qrtr_instance_set(mhi_cntrl);
+> > +             break;
+> >       default:
+> >               break;
+> >       }
+> >   }
+> >
+> > -static int ath11k_mhi_op_read_reg(struct mhi_controller *mhi_cntrl,
+> > -                               void __iomem *addr,
+> > -                               u32 *out)
+> > -{
+> > -     *out = readl(addr);
+> > -
+> > -     return 0;
+> > -}
+> > -
+> > -static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
+> > -                                 void __iomem *addr,
+> > -                                 u32 val)
+> > -{
+> > -     writel(val, addr);
+> > -}
+> > -
+> >   static int ath11k_mhi_read_addr_from_dt(struct mhi_controller *mhi_ctrl)
+> >   {
+> >       struct device_node *np;
+> > diff --git a/drivers/net/wireless/ath/ath11k/mhi.h b/drivers/net/wireless/ath/ath11k/mhi.h
+> > index 8d9f852da695..0db308bc3047 100644
+> > --- a/drivers/net/wireless/ath/ath11k/mhi.h
+> > +++ b/drivers/net/wireless/ath/ath11k/mhi.h
+> > @@ -16,6 +16,9 @@
+> >   #define MHICTRL                                     0x38
+> >   #define MHICTRL_RESET_MASK                  0x2
+> >
+> > +#define BHI_ERRDBG2                          0x38
+> > +#define QRTR_INSTANCE_MASK                   GENMASK(7, 0)
+> > +
+> >   int ath11k_mhi_start(struct ath11k_pci *ar_pci);
+> >   void ath11k_mhi_stop(struct ath11k_pci *ar_pci);
+> >   int ath11k_mhi_register(struct ath11k_pci *ar_pci);
+> > diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+> > index 99cf3357c66e..cd26c1567415 100644
+> > --- a/drivers/net/wireless/ath/ath11k/pci.c
+> > +++ b/drivers/net/wireless/ath/ath11k/pci.c
+> > @@ -370,13 +370,16 @@ static void ath11k_pci_sw_reset(struct ath11k_base *ab, bool power_on)
+> >   static void ath11k_pci_init_qmi_ce_config(struct ath11k_base *ab)
+> >   {
+> >       struct ath11k_qmi_ce_cfg *cfg = &ab->qmi.ce_cfg;
+> > +     struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
+> > +     struct pci_bus *bus = ab_pci->pdev->bus;
+> >
+> >       cfg->tgt_ce = ab->hw_params.target_ce_config;
+> >       cfg->tgt_ce_len = ab->hw_params.target_ce_count;
+> >
+> >       cfg->svc_to_ce_map = ab->hw_params.svc_to_ce_map;
+> >       cfg->svc_to_ce_map_len = ab->hw_params.svc_to_ce_map_len;
+> > -     ab->qmi.service_ins_id = ab->hw_params.qmi_service_ins_id;
+> > +     ab->qmi.service_ins_id = ab->hw_params.qmi_service_ins_id +
+> > +     (((pci_domain_nr(bus) & 0xF) << 4) | (bus->number & 0xF));
+> >
+> >       ath11k_ce_get_shadow_config(ab, &cfg->shadow_reg_v2,
+> >                                   &cfg->shadow_reg_v2_len);
+>
