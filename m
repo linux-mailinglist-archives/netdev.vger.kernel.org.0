@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC6B61EAF7
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 07:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8866A61EB04
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 07:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiKGG0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 01:26:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        id S231314AbiKGGar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 01:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbiKGG0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 01:26:31 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF2712AFA;
-        Sun,  6 Nov 2022 22:26:28 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VU6xedu_1667802385;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VU6xedu_1667802385)
-          by smtp.aliyun-inc.com;
-          Mon, 07 Nov 2022 14:26:26 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, fw@strlen.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] lib: Fix some kernel-doc comments
-Date:   Mon,  7 Nov 2022 14:26:23 +0800
-Message-Id: <20221107062623.6709-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S231244AbiKGGao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 01:30:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042686255;
+        Sun,  6 Nov 2022 22:30:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 532BC60EEB;
+        Mon,  7 Nov 2022 06:30:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A89C433D6;
+        Mon,  7 Nov 2022 06:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667802642;
+        bh=is7koPTcZDEnFNOJRPVb338b8e/3q5j2AqlbfcYHkmE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QJTCuKCm87Be10r/k5HD0ZRvWiqX5u/rJM6ymjxaWh/yHV2uiY3IlyHbm4cfpvRuo
+         ir/O+u+bWfrXo9bcRzsoWROfdzl91bxj3tPSrYjzBvUtBNO8XI6T9AyoKYpFBDEp9d
+         cHZeWTTNZt5argt234bBDipTv1DV8kzOl95ePIPoTDAuRDYfv/TR0/UOn9EyzwXX4N
+         2FZXC9t8m/GMbMVGHDAeP/VHPPLZO7yfs8f5BaEpllb/f8JjmDN/nI9VY05WBs5Olt
+         z9ciSBRy6rWhRfuamlvku2X7BIs64XX8OaIbLFX+WDXpAgCz2zFb/7s7tyrLdzA4qw
+         DhPO9JYXNT7Jg==
+Date:   Mon, 7 Nov 2022 08:30:37 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
+        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH net-next] net: flow_offload: add support for ARP frame
+ matching
+Message-ID: <Y2imDVTGD4hv78tp@unreal>
+References: <20221104123314.1349814-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221104123314.1349814-1-steen.hegelund@microchip.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the description of @policy to @p in nla_policy_len()
-to clear the below warnings:
+On Fri, Nov 04, 2022 at 01:33:14PM +0100, Steen Hegelund wrote:
+> This adds a new flow_rule_match_arp function that allows drivers
+> to be able to dissect APR frames.
+> 
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> ---
+>  include/net/flow_offload.h | 6 ++++++
+>  net/core/flow_offload.c    | 7 +++++++
+>  2 files changed, 13 insertions(+)
 
-lib/nlattr.c:660: warning: Function parameter or member 'p' not described in 'nla_policy_len'
-lib/nlattr.c:660: warning: Excess function parameter 'policy' description in 'nla_policy_len'
+I don't see any usage of this new API.
+Please send this as part of the code that actually uses it.
 
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2736
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- lib/nlattr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index b67a53e29b8f..9055e8b4d144 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -646,7 +646,7 @@ EXPORT_SYMBOL(__nla_validate);
- 
- /**
-  * nla_policy_len - Determine the max. length of a policy
-- * @policy: policy to use
-+ * @p: policy to use
-  * @n: number of policies
-  *
-  * Determines the max. length of the policy.  It is currently used
--- 
-2.20.1.7.g153144c
-
+Thanks
