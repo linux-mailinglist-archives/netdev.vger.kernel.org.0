@@ -2,150 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E75F961EF90
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 10:50:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4195961EFE7
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 11:04:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbiKGJuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 04:50:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
+        id S231643AbiKGKEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 05:04:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230449AbiKGJun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 04:50:43 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2113.outbound.protection.outlook.com [40.107.94.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC06389
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 01:50:43 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JwJg+1Yudf8JuCbK2Og0TXocXpX7z+axVcQXiZP9kfMXpnXSIdtWv/d/PnIOS9noiI63NwFg/7yrH73IVpBRLqvZ/yJh1nxsAULQd0mtSysmYop5Gf0XKAV+n8JuGiCLz3SmK6GF0JS9HP6dh4qVoYhiyhhzLGoLmJ+lv/ISEyyZwP03kh4GzNPqg7afAFKEyPbylgnINv3ZeE+aiPVKXtk5Vk7W0CNZONJhTi5DvuswkGDS6c0ggIGzywQE9N5dHR1F3CzMQCI06T1qSSDCobFPwBPJlGkegSgjDmn3hbeWuXn/jeDnrV0loQToEOF6tazT8z/aXoTGWg1ekxH0lg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LFKtiCOSJQ5ZSABmi58KG3Zq/pZ2osVGyHJaNdkh3qA=;
- b=hlMVO/3+4tS+5F0YFTjCIdnXjMG6o/m0jJzzqw91cVPx9LL0IeLkbzIVKYrw+n9ZXh4/YTylW34X4gsjF2IGxb5SL8JrCIdF2BztuJCghyJenpW3pNKCXifpDvOqc/JI+dQlOj85jTvp2/C1YhnCE9sEA3woA1zqGB6v7fqdfCXysb97s1MThOj1dFEjTuGba8IRaJCU3QLVKJl91aMsqDtKKVtWQllfHMsZCt3FTDvXDbH5fXP+YTR/NrvQUyV4k7xM+S9ZpBp/R76cQAJaEUTZrq1vhsxhc6tPdjJvy1GCdvVl1ndvLA0QHqYJIpdT0QdN6QM+s+aA8G19rxqmeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LFKtiCOSJQ5ZSABmi58KG3Zq/pZ2osVGyHJaNdkh3qA=;
- b=hVamZus90VU3RnF5gocgWMIxQeNCFqWNPtcxlAArNhLvHsMrw4vKmFmj/ywaMYhqC1SfTfStvB1UupaSWq8An7gmXB6FhS+YF2RNeRQYvH24iHDL77tKyqV2XqyQYMgzz2BUEBnnCvuiOWvU5VHtXOT4YPorWUIgjctVso111Gw=
-Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
- by SA1PR13MB5419.namprd13.prod.outlook.com (2603:10b6:806:232::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Mon, 7 Nov
- 2022 09:50:41 +0000
-Received: from DM6PR13MB3705.namprd13.prod.outlook.com
- ([fe80::3442:65a7:de0a:4d35]) by DM6PR13MB3705.namprd13.prod.outlook.com
- ([fe80::3442:65a7:de0a:4d35%9]) with mapi id 15.20.5791.025; Mon, 7 Nov 2022
- 09:50:41 +0000
-From:   Yinjun Zhang <yinjun.zhang@corigine.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Chengtian Liu <chengtian.liu@corigine.com>,
-        HuanHuan Wang <huanhuan.wang@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        oss-drivers <oss-drivers@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: RE: [PATCH net-next v3 3/3] nfp: implement xfrm callbacks and expose
- ipsec offload feature to upper layer
-Thread-Topic: [PATCH net-next v3 3/3] nfp: implement xfrm callbacks and expose
- ipsec offload feature to upper layer
-Thread-Index: AQHY7eGMPasXy6hiXkqW0Y9zNHZbuK4yVaIAgADqb+A=
-Date:   Mon, 7 Nov 2022 09:50:41 +0000
-Message-ID: <DM6PR13MB3705F0963A853D5C794FC639FC3C9@DM6PR13MB3705.namprd13.prod.outlook.com>
-References: <20221101110248.423966-1-simon.horman@corigine.com>
- <20221101110248.423966-4-simon.horman@corigine.com> <Y2gPelnt3xfgDGYd@unreal>
-In-Reply-To: <Y2gPelnt3xfgDGYd@unreal>
-Accept-Language: en-US, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR13MB3705:EE_|SA1PR13MB5419:EE_
-x-ms-office365-filtering-correlation-id: cf566674-e8a3-4e48-f36e-08dac0a58835
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HoSbBbgKBj2HHtRZIkxSns0uFXRJlUzfP8qoDeXQZAeZpIG9k87X3AkA26d2fA1aPkBxaefLidVuZaNMpF4mq5eP6j+vUlV4ka+GiuJm4CPvWkb3QsjJvvhxjQMKAEnHD3RKyy8QXa/QbcI7MkjAyHJ5ghtYX+ifBisSolqBm9Qe1l4m4rgDbR3gnQP0cE2CYEtMr3tq/IrFJuwW79waHw+lK3Bc98i1r0h2fY8Z1tsdjBfCgv31JiYmMbc893JK5mOswIv0tX0C3v/l3+GnyIXwkMdR6UAKcSFb8KD5tDza5tr7+3bxiD/S+CN2/4REaf8bVYNCOUsRPBNprgo4zNKE53m2b0lwkiJJyXOicFGGTnMuQpvDWXintBk5TkMq4shbuN1Tw7mHqkuAzDl0gA/X5GcKtWYHRMdylh9lENhfMA11DDOeAz37EDrSqmX91nsCe6hCCnhYFuxIwRdQqZbE5f97pAuNMK8UPQdqABgsP0cLabBIysjEGpxZtIy4xlzSR5daxEu6fT33wxC6z1CYrPWAKO1oNkmL3QzrVRBLWW5dDX1FUFEfzmt1VP4PGKCzrA2Tgc6yEMWHzcxTOg8OLeEbRh3ZtrzDXOylsnp5VshICjlbQLMLlJHUG23ItVotfdn8ioLFqpZIQVG054pncim4s5EdzrX/3BROQAvGC/ywSdNgOGZU9mnkxo7yCDcsabUUtyEzfDPLAx7zpQR8BxexHiN94fLKaaOFLUxN7XZBezhwanDCrH9o3S+NCcN1rY7z3wHC8SdmCMWNjj56avbT1s7vk7nEMslC3rli1Hc7rBd4EAyPLzV7ba6v
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(136003)(396003)(346002)(39830400003)(451199015)(33656002)(186003)(38100700002)(122000001)(38070700005)(44832011)(4744005)(2906002)(41300700001)(86362001)(8936002)(52536014)(5660300002)(55016003)(107886003)(7696005)(478600001)(26005)(6506007)(9686003)(66476007)(8676002)(64756008)(66446008)(66556008)(66946007)(76116006)(4326008)(71200400001)(316002)(6916009)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?w1DMPp113ZIA5dpJaLqYffaylIagS2i34TY6Sj0WnVH4kOm0SQqu4EfMSSsi?=
- =?us-ascii?Q?SXxoqov8forr7woxleT9XEb23esWG4NiCl2affquQymUOAmRz0noHwgn52kI?=
- =?us-ascii?Q?JbA+toyVABrc8+0QCcAdUDATKBuWbq/bVHfkN0wL5fonwBL3cAEIoFpw0ZoK?=
- =?us-ascii?Q?R45fIADrjYigxNCkHYVaQ22qCL7FHA+i1oCkyqHcarIoCZGUrDoId82hkL25?=
- =?us-ascii?Q?k7de4yo5WSEyRR4Nj1mWAjkzH3AxsrJXiauqBK0Mv7ge8KJceqU8oVwhqSQH?=
- =?us-ascii?Q?8AnCjRIKkL3R00znRJ7DLZh//2ONKQAzkslKHxy8PpAjeecoJxfBgZVIwNmX?=
- =?us-ascii?Q?V7w2jwpbDMDCEMANpYb7OAeqGlPVoHkyDSekhhdHC3FTbib8LraCdaqyUGxZ?=
- =?us-ascii?Q?48LSYDpkklFYsEERwoNhMZP1Kjv4XyN5GhTBnsJN5EAucmscnbwMYxYwNz6p?=
- =?us-ascii?Q?4alsHLHlxCWh6mE0FRm0csenixwf0LYdx9NWbnJstADiMyp9/Zy037Sx6zsr?=
- =?us-ascii?Q?+voDMXZYvXEHBMm/xD/UUySSmvOnOH/gCj6AUP3OWC77C/XxLI6zRjjh3OM1?=
- =?us-ascii?Q?H6wXuJvea1VFNHwRafXz3T2495uJaFMvH20CKrLDlZDNTleC/D0joEvzzpyF?=
- =?us-ascii?Q?J/oDBvp5vB4Mj+1t9Nz3LTAw6GRkySp9bYE0HCTGTxSRQPNrHRPV1nELa7Ee?=
- =?us-ascii?Q?3ms/2BmsmVW2t29isLmxQ55BZqnV6nP8RcwGT57ZRWQKmaudrpbLLJcf0wEK?=
- =?us-ascii?Q?0nt1seeddfbZFepKHK9xSCI4ifJDJUoQtW/YGlv8zxORWLk4TiqvopM9D1C8?=
- =?us-ascii?Q?rpbehpB5v2cI1zuDejISyhtEtEtUDZJfpW3cDUZ7K4IZy/WAhfw3/a2+wSUA?=
- =?us-ascii?Q?/fpppX/5kwyxLfVFKamM3PDlJXv+sdwbRUAlCHeCfDU76kbgoiqNzIc42SAM?=
- =?us-ascii?Q?hYGoGZGLyFKo72LPqkStcPfbweH8x86EG4mbC5pfj7CD+QFhKw7dFomdOJxj?=
- =?us-ascii?Q?KQE/ycNUvEBEW9i2cDN/dMNjADwFmYQtjM+7boOW7cCn8ywX8APZz1jvFAsL?=
- =?us-ascii?Q?LxT2VJ1U2BoBn5yRyK2po9mvvlKDrcW4A/6RmasFR+1YL8xnnZOu4zc1srWY?=
- =?us-ascii?Q?wgedg2g9VD9J9W49tk6XH7LCcKfyRh6PbFgc4QiUuOZibiMgaFQJlkII7V5I?=
- =?us-ascii?Q?9sAD4BFquGah6XCKYjCEkmy6Ud4vncXhdb7kcqUQAKeTlmOE3MiM1pwSOhdV?=
- =?us-ascii?Q?p3KMKB8ZEi/1mrv3zDLDg+xFqpCePJyiUdLxaPcIvLOlqJVBdJcOauPkYPWv?=
- =?us-ascii?Q?+TOwg0AxJJ1/l11A58pE2f44XzLyHTXGrtibrW/ZTk6E8K5ajAQoGl1vysdH?=
- =?us-ascii?Q?YGf/E8dxC/4Edo6t7Jf8p6zYcXsTVIdKNwsDaT36CRpMpsiOX95xan0VEAZn?=
- =?us-ascii?Q?lW4nZlUDWrR1QotI1ZR9Q6X0rCrMhj9bGbY0IPRV3YWMzz6uFORMuRrw/NIC?=
- =?us-ascii?Q?LnQuTiJnkDrLLm0ocTq9rqOSbuDf+s6djJg2FnXT9+/bO6qJnu9K4T42jQMR?=
- =?us-ascii?Q?7MZggXmKvIBtgV912g8k427Jj8B+NMndsjZzPRit?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231226AbiKGKEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 05:04:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94A52BDD
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 02:03:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667815424;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WVPlGEN+jBge51QDdbzaYyCPALlfQ+WWPtMxuqvpef4=;
+        b=Woy2xx5ZKaqqdnxdd9nJZSoAZjYnRSpOEjzJaG3LESXOXkI/GnZ5i8MivYQHddc/KMnZS3
+        LWKYoXFG9l+tHCx5g7l7NQ52mM7F84BzFO2auW/QBOThCkfDWtHV/NQLNNeg+mK/us9plT
+        a52lumYUAPbdcngFv7nIOc7+vCra1zc=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-482-3JJu2BpXOWK8lPLh8F11tQ-1; Mon, 07 Nov 2022 05:03:43 -0500
+X-MC-Unique: 3JJu2BpXOWK8lPLh8F11tQ-1
+Received: by mail-qk1-f200.google.com with SMTP id bp10-20020a05620a458a00b006fa29f253dcso9683408qkb.11
+        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 02:03:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WVPlGEN+jBge51QDdbzaYyCPALlfQ+WWPtMxuqvpef4=;
+        b=zQNxmJrVruzWLYNJqPeqb0nnXlMVyhBw1e1Jl1/QUSinW7oCy4/svOzZ7f3pcwp4Cy
+         HpnsBNEptfV6LiGQanaljfjb19AcBwX1h9ntJC0qJritcvfhlP97cOjBAnyJKCDgSgPB
+         Vp2SSnNZAg0r80ziC2tS3vyezfduBIdgwqk721z0Qm83xDo32fn4e58KWYGAcWHqePSl
+         d1qgvt17t6rphyrI7VMrtB2k4nPMnKwlsA1DS9Vo05ChDyZbBa5VfiOG9q8vSatfMjPI
+         yMlivwvf9GStXYreKM6dBt9IMe7z6UgqVXks1TMVGDiI+IoBbYnfMDBD5FRqUoFA7ROm
+         iYBA==
+X-Gm-Message-State: ACrzQf028k+3oUwzWvDxU0729hoj0uhEhXnIDK6/fuyB+g5NE1eyT8rD
+        64Ma/i9WllSG7E/HmTqgc1isq25VWbeqmEuODc7ZxEE2sJK+cTYuIaXbe2ejcLXQjhl/AAsTepQ
+        Q/DJ3pnSyLaILRfLW
+X-Received: by 2002:a05:622a:4ccc:b0:3a5:26e0:f60a with SMTP id fa12-20020a05622a4ccc00b003a526e0f60amr674969qtb.372.1667815422482;
+        Mon, 07 Nov 2022 02:03:42 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM62PPWp2Uq9IoITo3d8iLLiIlCa/zn3XXOskKLpd9PLhY01pkbQGZNM39qdXoj1iOf+c84DqQ==
+X-Received: by 2002:a05:622a:4ccc:b0:3a5:26e0:f60a with SMTP id fa12-20020a05622a4ccc00b003a526e0f60amr674968qtb.372.1667815422153;
+        Mon, 07 Nov 2022 02:03:42 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-124-216.dyn.eolo.it. [146.241.124.216])
+        by smtp.gmail.com with ESMTPSA id t19-20020a05620a451300b006ce2c3c48ebsm6615197qkp.77.2022.11.07.02.03.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Nov 2022 02:03:41 -0800 (PST)
+Message-ID: <77aa882a0ac72cf434ecb44590f83ab9ece3b2f8.camel@redhat.com>
+Subject: Re: [PATCH v1 net-next 6/6] udp: Introduce optional per-netns hash
+ table.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+Date:   Mon, 07 Nov 2022 11:03:38 +0100
+In-Reply-To: <20221104190612.24206-7-kuniyu@amazon.com>
+References: <20221104190612.24206-1-kuniyu@amazon.com>
+         <20221104190612.24206-7-kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf566674-e8a3-4e48-f36e-08dac0a58835
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2022 09:50:41.3252
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8dUXAU2ipJEsXt3v5rypAxSwCfawdqPheBHWW5esqmkk7yijBvmXNLU5l6MJ0DUHijfCkiV4eFWrS4bldqRZ02yTJA1QbovuR308UL4uL7g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5419
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 6 Nov 2022 21:48:10 +0200, Leon Romanovsky wrote:
-<...>
-> > +	if (x->aalg) {
-> > +		p =3D (__be32 *)x->aalg->alg_key;
-> > +		key_len =3D DIV_ROUND_UP(x->aalg->alg_key_len,
-> BITS_PER_BYTE);
-> > +		if (key_len > sizeof(cfg->auth_key)) {
-> > +			nn_err(nn, "Insufficient space for offloaded auth
-> key\n");
-> > +			return -EINVAL;
-> > +		}
-> > +		for (i =3D 0; i < key_len / sizeof(cfg->auth_key[0]) ; i++)
-> > +			cfg->auth_key[i] =3D ntohl(*p++);
->=20
-> I wonder if you can't declare p as u32 and use memcpy here instead of
-> u32->__be32->u32 conversions.
+On Fri, 2022-11-04 at 12:06 -0700, Kuniyuki Iwashima wrote:
+> The maximum hash table size is 64K due to the nature of the protocol. [0]
+> It's smaller than TCP, and fewer sockets can cause a performance drop.
+> 
+> On an EC2 c5.24xlarge instance (192 GiB memory), after running iperf3 in
+> different netns, creating 32Mi sockets without data transfer in the root
+> netns causes regression for the iperf3's connection.
+> 
+>   uhash_entries		sockets		length		Gbps
+> 	    64K		      1		     1		5.69
+> 			    1Mi		    16		5.27
+> 			    2Mi		    32		4.90
+> 			    4Mi		    64		4.09
+> 			    8Mi		   128		2.96
+> 			   16Mi		   256		2.06
+> 			   32Mi		   512		1.12
+> 
+> The per-netns hash table breaks the lengthy lists into shorter ones.  It is
+> useful on a multi-tenant system with thousands of netns.  With smaller hash
+> tables, we can look up sockets faster, isolate noisy neighbours, and reduce
+> lock contention.
+> 
+> The max size of the per-netns table is 64K as well.  This is because the
+> possible hash range by udp_hashfn() always fits in 64K within the same
+> netns and we cannot make full use of the whole buckets larger than 64K.
+> 
+>   /* 0 < num < 64K  ->  X < hash < X + 64K */
+>   (num + net_hash_mix(net)) & mask;
+> 
+> The sysctl usage is the same with TCP:
+> 
+>   $ dmesg | cut -d ' ' -f 6- | grep "UDP hash"
+>   UDP hash table entries: 65536 (order: 9, 2097152 bytes, vmalloc)
+> 
+>   # sysctl net.ipv4.udp_hash_entries
+>   net.ipv4.udp_hash_entries = 65536  # can be changed by uhash_entries
+> 
+>   # sysctl net.ipv4.udp_child_hash_entries
+>   net.ipv4.udp_child_hash_entries = 0  # disabled by default
+> 
+>   # ip netns add test1
+>   # ip netns exec test1 sysctl net.ipv4.udp_hash_entries
+>   net.ipv4.udp_hash_entries = -65536  # share the global table
+> 
+>   # sysctl -w net.ipv4.udp_child_hash_entries=100
+>   net.ipv4.udp_child_hash_entries = 100
+> 
+>   # ip netns add test2
+>   # ip netns exec test2 sysctl net.ipv4.udp_hash_entries
+>   net.ipv4.udp_hash_entries = 128  # own a per-netns table with 2^n buckets
+> 
+> We could optimise the hash table lookup/iteration further by removing
+> the netns comparison for the per-netns one in the future.  Also, we
+> could optimise the sparse udp_hslot layout by putting it in udp_table.
+> 
+> [0]: https://lore.kernel.org/netdev/4ACC2815.7010101@gmail.com/
+> 
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst |  27 ++++++
+>  include/linux/udp.h                    |   2 +
+>  include/net/netns/ipv4.h               |   2 +
+>  net/ipv4/sysctl_net_ipv4.c             |  38 ++++++++
+>  net/ipv4/udp.c                         | 119 ++++++++++++++++++++++---
+>  5 files changed, 178 insertions(+), 10 deletions(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 815efc89ad73..ea788ef4def0 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -1177,6 +1177,33 @@ udp_rmem_min - INTEGER
+>  udp_wmem_min - INTEGER
+>  	UDP does not have tx memory accounting and this tunable has no effect.
+>  
+> +udp_hash_entries - INTEGER
+> +	Show the number of hash buckets for UDP sockets in the current
+> +	networking namespace.
+> +
+> +	A negative value means the networking namespace does not own its
+> +	hash buckets and shares the initial networking namespace's one.
+> +
+> +udp_child_ehash_entries - INTEGER
+> +	Control the number of hash buckets for UDP sockets in the child
+> +	networking namespace, which must be set before clone() or unshare().
+> +
+> +	If the value is not 0, the kernel uses a value rounded up to 2^n
+> +	as the actual hash bucket size.  0 is a special value, meaning
+> +	the child networking namespace will share the initial networking
+> +	namespace's hash buckets.
+> +
+> +	Note that the child will use the global one in case the kernel
+> +	fails to allocate enough memory.  In addition, the global hash
+> +	buckets are spread over available NUMA nodes, but the allocation
+> +	of the child hash table depends on the current process's NUMA
+> +	policy, which could result in performance differences.
+> +
+> +	Possible values: 0, 2^n (n: 0 - 16 (64K))
 
-The BE/LE process is necessary as HW requires it, we'll use get_ unaligned_=
-be32
-instead to make it simpler.
+If you constraint the non-zero minum size to UDP_HTABLE_SIZE_MIN - not
+sure if that makes sense - than you could avoid dynamically allocating
+the bitmap in udp_lib_get_port(). 
 
->=20
-> Thanks
+Cheers,
+
+Paolo
+
