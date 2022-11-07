@@ -2,165 +2,365 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C0DB61EA64
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 06:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A18D261EAD4
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 07:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229986AbiKGFYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 00:24:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
+        id S231194AbiKGGOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 01:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbiKGFYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 00:24:31 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AFADED9;
-        Sun,  6 Nov 2022 21:24:27 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 267C45FD03;
-        Mon,  7 Nov 2022 08:24:25 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1667798665;
-        bh=N/FJrbNYXYSHo6GVXdgb2GwN2aXLggaKpUpoNvMndF8=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=AI6aNfQmzkvbMKP5een6s3GFl/6zamWOUECSUIevf2b42d+8O7rWzSD/XExHclZUT
-         t5rsmQCuWdAUnpbiZwhOpwJf67ttTYfmKrIVsc+gT1s7nxt/lF7kvoo6hT556DBd17
-         8+xizvcXp3TJ59HSEZAaa5f0iMFxjjrcyboMM5qnAolSnjzUmwIg+RXOAUCuG75hbS
-         kbNavo7VmHbYg4vjabqhoLGw5f8XcKA6fHX17WFy6bbk5NtFYmyHAgffuJgBP2UJWo
-         8zwqUJ4+aLgWhlttio9CSPP8KMTqGydWPp+a+dZL+3aD+AcTlEtBYVEvw0sVM1oZ1S
-         R4yWrf/7TcJ7A==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Mon,  7 Nov 2022 08:24:21 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
+        with ESMTP id S229586AbiKGGOV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 01:14:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4EDFCCE
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 22:14:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E841AB80D15
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 06:14:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC62C433C1;
+        Mon,  7 Nov 2022 06:14:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667801657;
+        bh=WvjfOU2RGhn6iwH6/Qyt+iTwBe66sVxxVvw9Y9eeA30=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TvCC/AFjGkMJQUgRyEaHcn2qQ5+HQq1exlag6xPgN9O32JawfeO3Ss66LLu+hjv26
+         5qjEx0INpTUrKbrClZcBK9wf+0W+lhyCWJCecDSDofk1i0FI6g75OrZi4zPZ9uTPjy
+         Lm8+hW3RHff+szfQMpVPafCKJ0DdN6UfBgweOfA6pB5ED4WmX7nJNqYdfq+bVMUzvI
+         4Ccnlhj/PF63irTDrc19blmRbw0/QPBK/qdM31BFuNZ0/3NBaWe5lOY924a53C0tJU
+         OiTcXYphUh2ob4SRLDYvdc09TRHnU6LG0nb9K3yHELdtvVBqC9zaXRJreVH63MH3oL
+         pMVM+nkc+JkIw==
+Date:   Mon, 7 Nov 2022 08:14:12 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Krasnov Arseniy" <oxffffaa@gmail.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v3 01/11] virtio/vsock: rework packet allocation logic
-Thread-Topic: [RFC PATCH v3 01/11] virtio/vsock: rework packet allocation
- logic
-Thread-Index: AQHY8hcBEbxDmf4aG021vuOLUMusCa4yG6IAgACgBwA=
-Date:   Mon, 7 Nov 2022 05:23:47 +0000
-Message-ID: <278ee0cc-83ae-5c26-7718-d0472841e049@sberdevices.ru>
-References: <f60d7e94-795d-06fd-0321-6972533700c5@sberdevices.ru>
- <f896b8fd-50d2-2512-3966-3775245e9b96@sberdevices.ru>
- <3c6de80a-8fc1-0c63-6d2d-3eee294fe0a7@wanadoo.fr>
-In-Reply-To: <3c6de80a-8fc1-0c63-6d2d-3eee294fe0a7@wanadoo.fr>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <08141BE9C325D14E9FD1A056E8394ECB@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Chentian Liu <chengtian.liu@corigine.com>,
+        Huanhuan Wang <huanhuan.wang@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH net-next v3 3/3] nfp: implement xfrm callbacks and expose
+ ipsec offload feature to upper layer
+Message-ID: <Y2iiNMxr3IeDgIaA@unreal>
+References: <20221101110248.423966-1-simon.horman@corigine.com>
+ <20221101110248.423966-4-simon.horman@corigine.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/11/06 22:06:00 #20575944
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221101110248.423966-4-simon.horman@corigine.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDYuMTEuMjAyMiAyMjo1MCwgQ2hyaXN0b3BoZSBKQUlMTEVUIHdyb3RlOg0KPiBMZSAwNi8x
-MS8yMDIyIMOgIDIwOjM2LCBBcnNlbml5IEtyYXNub3YgYSDDqWNyaXTCoDoNCj4+IFRvIHN1cHBv
-cnQgemVyb2NvcHkgcmVjZWl2ZSwgcGFja2V0J3MgYnVmZmVyIGFsbG9jYXRpb24gaXMgY2hhbmdl
-ZDogZm9yDQo+PiBidWZmZXJzIHdoaWNoIGNvdWxkIGJlIG1hcHBlZCB0byB1c2VyJ3Mgdm1hIHdl
-IGNhbid0IHVzZSAna21hbGxvYygpJyhhcw0KPj4ga2VybmVsIHJlc3RyaWN0cyB0byBtYXAgc2xh
-YiBwYWdlcyB0byB1c2VyJ3Mgdm1hKSBhbmQgcmF3IGJ1ZGR5DQo+PiBhbGxvY2F0b3Igbm93IGNh
-bGxlZC4gQnV0LCBmb3IgdHggcGFja2V0cyhzdWNoIHBhY2tldHMgd29uJ3QgYmUgbWFwcGVkDQo+
-PiB0byB1c2VyKSwgcHJldmlvdXMgJ2ttYWxsb2MoKScgd2F5IGlzIHVzZWQsIGJ1dCB3aXRoIHNw
-ZWNpYWwgZmxhZyBpbg0KPj4gcGFja2V0J3Mgc3RydWN0dXJlIHdoaWNoIGFsbG93cyB0byBkaXN0
-aW5ndWlzaCBiZXR3ZWVuICdrbWFsbG9jKCknIGFuZA0KPj4gcmF3IHBhZ2VzIGJ1ZmZlcnMuDQo+
-Pg0KPj4gU2lnbmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmlj
-ZXMucnU+DQo+PiAtLS0NCj4+IMKgIGRyaXZlcnMvdmhvc3QvdnNvY2suY8KgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMSArDQo+PiDCoCBpbmNsdWRlL2xpbnV4L3ZpcnRp
-b192c29jay5owqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMSArDQo+PiDCoCBuZXQvdm13X3Zz
-b2NrL3ZpcnRpb190cmFuc3BvcnQuY8KgwqDCoMKgwqDCoMKgIHzCoCA4ICsrKysrKy0tDQo+PiDC
-oCBuZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMgfCAxMCArKysrKysrKyst
-DQo+PiDCoCA0IGZpbGVzIGNoYW5nZWQsIDE3IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0p
-DQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmhvc3QvdnNvY2suYyBiL2RyaXZlcnMvdmhv
-c3QvdnNvY2suYw0KPj4gaW5kZXggNTcwMzc3NWFmMTI5Li42NTQ3NWQxMjhhMWQgMTAwNjQ0DQo+
-PiAtLS0gYS9kcml2ZXJzL3Zob3N0L3Zzb2NrLmMNCj4+ICsrKyBiL2RyaXZlcnMvdmhvc3QvdnNv
-Y2suYw0KPj4gQEAgLTM5OSw2ICszOTksNyBAQCB2aG9zdF92c29ja19hbGxvY19wa3Qoc3RydWN0
-IHZob3N0X3ZpcnRxdWV1ZSAqdnEsDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIE5VTEw7
-DQo+PiDCoMKgwqDCoMKgIH0NCj4+IMKgICvCoMKgwqAgcGt0LT5zbGFiX2J1ZiA9IHRydWU7DQo+
-PiDCoMKgwqDCoMKgIHBrdC0+YnVmX2xlbiA9IHBrdC0+bGVuOw0KPj4gwqAgwqDCoMKgwqDCoCBu
-Ynl0ZXMgPSBjb3B5X2Zyb21faXRlcihwa3QtPmJ1ZiwgcGt0LT5sZW4sICZpb3ZfaXRlcik7DQo+
-PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC92aXJ0aW9fdnNvY2suaCBiL2luY2x1ZGUvbGlu
-dXgvdmlydGlvX3Zzb2NrLmgNCj4+IGluZGV4IDM1ZDdlZWRiNWU4ZS4uZDAyY2I3YWE5MjJmIDEw
-MDY0NA0KPj4gLS0tIGEvaW5jbHVkZS9saW51eC92aXJ0aW9fdnNvY2suaA0KPj4gKysrIGIvaW5j
-bHVkZS9saW51eC92aXJ0aW9fdnNvY2suaA0KPj4gQEAgLTUwLDYgKzUwLDcgQEAgc3RydWN0IHZp
-cnRpb192c29ja19wa3Qgew0KPj4gwqDCoMKgwqDCoCB1MzIgb2ZmOw0KPj4gwqDCoMKgwqDCoCBi
-b29sIHJlcGx5Ow0KPj4gwqDCoMKgwqDCoCBib29sIHRhcF9kZWxpdmVyZWQ7DQo+PiArwqDCoMKg
-IGJvb2wgc2xhYl9idWY7DQo+PiDCoCB9Ow0KPj4gwqAgwqAgc3RydWN0IHZpcnRpb192c29ja19w
-a3RfaW5mbyB7DQo+PiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0
-LmMgYi9uZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnQuYw0KPj4gaW5kZXggYWQ2NGY0MDM1
-MzZhLi4xOTkwOWMxZTliYTMgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZpcnRpb190
-cmFuc3BvcnQuYw0KPj4gKysrIGIvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0LmMNCj4+
-IEBAIC0yNTUsMTYgKzI1NSwyMCBAQCBzdGF0aWMgdm9pZCB2aXJ0aW9fdnNvY2tfcnhfZmlsbChz
-dHJ1Y3QgdmlydGlvX3Zzb2NrICp2c29jaykNCj4+IMKgwqDCoMKgwqAgdnEgPSB2c29jay0+dnFz
-W1ZTT0NLX1ZRX1JYXTsNCj4+IMKgIMKgwqDCoMKgwqAgZG8gew0KPj4gK8KgwqDCoMKgwqDCoMKg
-IHN0cnVjdCBwYWdlICpidWZfcGFnZTsNCj4+ICsNCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBwa3Qg
-PSBremFsbG9jKHNpemVvZigqcGt0KSwgR0ZQX0tFUk5FTCk7DQo+PiDCoMKgwqDCoMKgwqDCoMKg
-wqAgaWYgKCFwa3QpDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBicmVhazsNCj4+IMKg
-IC3CoMKgwqDCoMKgwqDCoCBwa3QtPmJ1ZiA9IGttYWxsb2MoYnVmX2xlbiwgR0ZQX0tFUk5FTCk7
-DQo+PiAtwqDCoMKgwqDCoMKgwqAgaWYgKCFwa3QtPmJ1Zikgew0KPj4gK8KgwqDCoMKgwqDCoMKg
-IGJ1Zl9wYWdlID0gYWxsb2NfcGFnZShHRlBfS0VSTkVMKTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKg
-wqDCoCBpZiAoIWJ1Zl9wYWdlKSB7DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB2aXJ0
-aW9fdHJhbnNwb3J0X2ZyZWVfcGt0KHBrdCk7DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBicmVhazsNCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9DQo+PiDCoCArwqDCoMKgwqDCoMKgwqAg
-cGt0LT5idWYgPSBwYWdlX3RvX3ZpcnQoYnVmX3BhZ2UpOw0KPj4gwqDCoMKgwqDCoMKgwqDCoMKg
-IHBrdC0+YnVmX2xlbiA9IGJ1Zl9sZW47DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcGt0LT5sZW4g
-PSBidWZfbGVuOw0KPj4gwqAgZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5z
-cG9ydF9jb21tb24uYyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0K
-Pj4gaW5kZXggYTk5ODBlOWI5MzA0Li4zN2U4ZGJmZTJmNWQgMTAwNjQ0DQo+PiAtLS0gYS9uZXQv
-dm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCj4+ICsrKyBiL25ldC92bXdfdnNv
-Y2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KPj4gQEAgLTY5LDYgKzY5LDcgQEAgdmlydGlv
-X3RyYW5zcG9ydF9hbGxvY19wa3Qoc3RydWN0IHZpcnRpb192c29ja19wa3RfaW5mbyAqaW5mbywN
-Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoIXBrdC0+YnVmKQ0KPj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgZ290byBvdXRfcGt0Ow0KPj4gwqAgK8KgwqDCoMKgwqDCoMKgIHBrdC0+c2xh
-Yl9idWYgPSB0cnVlOw0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHBrdC0+YnVmX2xlbiA9IGxlbjsN
-Cj4+IMKgIMKgwqDCoMKgwqDCoMKgwqDCoCBlcnIgPSBtZW1jcHlfZnJvbV9tc2cocGt0LT5idWYs
-IGluZm8tPm1zZywgbGVuKTsNCj4+IEBAIC0xMzM5LDcgKzEzNDAsMTQgQEAgRVhQT1JUX1NZTUJP
-TF9HUEwodmlydGlvX3RyYW5zcG9ydF9yZWN2X3BrdCk7DQo+PiDCoCDCoCB2b2lkIHZpcnRpb190
-cmFuc3BvcnRfZnJlZV9wa3Qoc3RydWN0IHZpcnRpb192c29ja19wa3QgKnBrdCkNCj4+IMKgIHsN
-Cj4+IC3CoMKgwqAga3ZmcmVlKHBrdC0+YnVmKTsNCj4+ICvCoMKgwqAgaWYgKHBrdC0+YnVmX2xl
-bikgew0KPj4gK8KgwqDCoMKgwqDCoMKgIGlmIChwa3QtPnNsYWJfYnVmKQ0KPj4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAga3ZmcmVlKHBrdC0+YnVmKTsNCj4gDQo+IEhpLA0KPiANCj4ga2ZyZWUo
-KT8gKGFjY29yZGluZyB0byB2aXJ0aW9fdHJhbnNwb3J0X2FsbG9jX3BrdCgpIGluIC1uZXh0KSBv
-ciBzb21ldGhpbmcgZWxzZSBuZWVkIHRvIGJlIGNoYW5nZWQuDQo+IA0KSGVsbG8gQ3Jpc3RvcGhl
-LA0KDQpJIHRoaW5rLCAna3ZmcmVlKCknIGlzIHN0aWxsIG5lZWRlZCBoZXJlLCBiZWNhdXNlIGJ1
-ZmZlciBmb3IgcGFja2V0IGNvdWxkIGJlIGFsbG9jYXRlZCBieSAna3ZtYWxsb2MoKScNCmluIGRy
-aXZlcnMvdmhvc3QvdnNvY2suYy4gQ29ycmVjdCBtZSBpZiBpJ20gd3JvbmcuDQoNCj4+ICvCoMKg
-wqDCoMKgwqDCoCBlbHNlDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBmcmVlX3BhZ2VzKCh1
-bnNpZ25lZCBsb25nKXBrdC0+YnVmLA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBnZXRfb3JkZXIocGt0LT5idWZfbGVuKSk7DQo+IA0KPiBJbiB2aXJ0aW9fdnNvY2tf
-cnhfZmlsbCgpLCBvbmx5IGFsbG9jX3BhZ2UoKSBpcyB1c2VkLg0KPiANCj4gU2hvdWxkIHRoaXMg
-YmUgYWxsb2NfcGFnZXMoLi4sIGdldF9vcmRlcihidWZfbGVuKSkgb3IgZnJlZV9wYWdlKCkgKHdp
-dGhvdXQgYW4gJ3MnKSBoZXJlPw0KVGhpcyBmdW5jdGlvbiBmcmVlcyBwYWNrZXRzIHdoaWNoIHdl
-cmUgYWxsb2NhdGVkIGluIHZob3N0IHBhdGggYWxzby4gSW4gdmhvc3QsIGZvciB6ZXJvY29weQ0K
-cGFja2V0cyBhbGxvY19wYWdlUygpIGlzIHVzZWQuDQoNClRoYW5rIFlvdSwgQXJzZW5peQ0KPiAN
-Cj4gSnVzdCBteSAyYywNCj4gDQo+IENKDQo+IA0KPj4gK8KgwqDCoCB9DQo+PiArDQo+PiDCoMKg
-wqDCoMKgIGtmcmVlKHBrdCk7DQo+PiDCoCB9DQo+PiDCoCBFWFBPUlRfU1lNQk9MX0dQTCh2aXJ0
-aW9fdHJhbnNwb3J0X2ZyZWVfcGt0KTsNCj4gDQoNCg==
+On Tue, Nov 01, 2022 at 12:02:48PM +0100, Simon Horman wrote:
+> From: Huanhuan Wang <huanhuan.wang@corigine.com>
+> 
+> Xfrm callbacks are implemented to offload SA info into firmware
+> by mailbox. It supports 16K SA info in total.
+> 
+> Expose ipsec offload feature to upper layer, this feature will
+> signal the availability of the offload.
+> 
+> Based on initial work of Norm Bagley <norman.bagley@netronome.com>.
+> 
+> Signed-off-by: Huanhuan Wang <huanhuan.wang@corigine.com>
+> Reviewed-by: Louis Peens <louis.peens@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> ---
+>  .../net/ethernet/netronome/nfp/crypto/ipsec.c | 532 +++++++++++++++++-
+>  .../ethernet/netronome/nfp/nfp_net_common.c   |   6 +
+>  .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |   4 +-
+>  3 files changed, 538 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c b/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
+> index 11575a9cb3b0..664a36be60e7 100644
+> --- a/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
+> +++ b/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
+> @@ -16,18 +16,546 @@
+
+<...>
+
+> +/* IPSEC_CFG_MSSG_ADD_SA */
+> +struct nfp_ipsec_cfg_add_sa {
+> +	u32 ciph_key[8];		  /* Cipher Key */
+> +	union {
+> +		u32 auth_key[16];	  /* Authentication Key */
+> +		struct nfp_ipsec_aesgcm { /* AES-GCM-ESP fields */
+> +			u32 salt;	  /* Initialized with SA */
+> +			u32 iv[2];	  /* Firmware use only */
+> +			u32 cntr;
+> +			u32 zeros[4];	  /* Init to 0 with SA */
+> +			u32 len_a[2];	  /* Firmware use only */
+> +			u32 len_c[2];
+> +			u32 spare0[4];
+> +		} aesgcm_fields;
+> +	};
+> +	struct sa_ctrl_word {
+> +		uint32_t hash   :4;	  /* From nfp_ipsec_sa_hash_type */
+> +		uint32_t cimode :4;	  /* From nfp_ipsec_sa_cipher_mode */
+> +		uint32_t cipher :4;	  /* From nfp_ipsec_sa_cipher */
+> +		uint32_t mode   :2;	  /* From nfp_ipsec_sa_mode */
+> +		uint32_t proto  :2;	  /* From nfp_ipsec_sa_prot */
+> +		uint32_t dir :1;	  /* SA direction */
+> +		uint32_t ena_arw:1;	  /* Anti-Replay Window */
+> +		uint32_t ext_seq:1;	  /* 64-bit Sequence Num */
+> +		uint32_t ext_arw:1;	  /* 64b Anti-Replay Window */
+> +		uint32_t spare2 :9;	  /* Must be set to 0 */
+> +		uint32_t encap_dsbl:1;	  /* Encap/Decap disable */
+> +		uint32_t gen_seq:1;	  /* Firmware Generate Seq */
+> +		uint32_t spare8 :1;	  /* Must be set to 0 */
+> +	} ctrl_word;
+> +	u32 spi;			  /* SPI Value */
+> +	uint32_t pmtu_limit :16;	  /* PMTU Limit */
+> +	uint32_t spare3     :1;
+> +	uint32_t frag_check :1;		  /* Stateful fragment checking flag */
+> +	uint32_t bypass_DSCP:1;		  /* Bypass DSCP Flag */
+> +	uint32_t df_ctrl    :2;		  /* DF Control bits */
+> +	uint32_t ipv6       :1;		  /* Outbound IPv6 addr format */
+> +	uint32_t udp_enable :1;		  /* Add/Remove UDP header for NAT */
+> +	uint32_t tfc_enable :1;		  /* Traffic Flow Confidentiality */
+> +	uint32_t spare4	 :8;
+> +	u32 soft_lifetime_byte_count;
+> +	u32 hard_lifetime_byte_count;
+
+These fields are not relevant for IPsec crypto offload. I would be more
+than happy to see only used fields here.
+
+> +	u32 src_ip[4];			  /* Src IP addr */
+> +	u32 dst_ip[4];			  /* Dst IP addr */
+> +	uint32_t natt_dst_port :16;	  /* NAT-T UDP Header dst port */
+> +	uint32_t natt_src_port :16;	  /* NAT-T UDP Header src port */
+> +	u32 soft_lifetime_time_limit;
+> +	u32 hard_lifetime_time_limit;
+> +	u32 sa_creation_time_lo_32;	  /* Ucode fills this in */
+> +	u32 sa_creation_time_hi_32;	  /* Ucode fills this in */
+> +	uint32_t reserved0   :16;
+> +	uint32_t tfc_padding :16;	  /* Traffic Flow Confidential Pad */
+> +};
+> +
+> +/* IPSEC_CFG_MSSG_INV_SA */
+> +struct nfp_ipsec_cfg_inv_sa {
+> +	u32 spare6;
+> +};
+> +
+> +/* IPSEC_CFG_MSSG_GET_SA_STATS */
+> +struct nfp_ipsec_cfg_get_sa_stats {
+> +	u32 seq_lo;					/* Sequence Number (low 32bits) */
+> +	u32 seq_high;					/* Sequence Number (high 32bits) */
+> +	u32 arw_counter_lo;				/* Anti-replay wndw cntr */
+> +	u32 arw_counter_high;				/* Anti-replay wndw cntr */
+> +	u32 arw_bitmap_lo;				/* Anti-replay wndw bitmap */
+> +	u32 arw_bitmap_high;				/* Anti-replay wndw bitmap */
+> +	uint32_t reserved1:1;
+> +	uint32_t soft_lifetime_byte_cnt_exceeded :1;	/* Soft cnt_exceeded */
+> +	uint32_t hard_lifetime_byte_cnt_exceeded :1;	/* Hard cnt_exceeded */
+> +	uint32_t soft_lifetime_time_limit_exceeded :1;	/* Soft cnt_exceeded */
+> +	uint32_t hard_lifetime_time_limit_exceeded :1;	/* Hard cnt_exceeded */
+
+Not relevant for crypto.
+
+> +	uint32_t spare7:27;
+> +	u32 lifetime_byte_count;
+
+Ditto
+
+> +	u32 pkt_count;
+> +	u32 discards_auth;				/* Auth failures */
+> +	u32 discards_unsupported;			/* Unsupported crypto mode */
+> +	u32 discards_alignment;				/* Alignment error */
+> +	u32 discards_hard_bytelimit;			/* Byte Count limit */
+> +	u32 discards_seq_num_wrap;			/* Sequ Number wrap */
+> +	u32 discards_pmtu_limit_exceeded;		/* PMTU Limit */
+> +	u32 discards_arw_old_seq;			/* Anti-Replay seq small */
+> +	u32 discards_arw_replay;			/* Anti-Replay seq rcvd */
+> +	u32 discards_ctrl_word;				/* Bad SA Control word */
+> +	u32 discards_ip_hdr_len;			/* Hdr offset from too high */
+> +	u32 discards_eop_buf;				/* No EOP buffer */
+> +	u32 ipv4_id_counter;				/* IPv4 ID field counter */
+> +	u32 discards_isl_fail;				/* Inbound SPD Lookup failure */
+> +	u32 discards_ext_not_found;			/* Ext header end */
+> +	u32 discards_max_ext_hdrs;			/* Max ext header */
+> +	u32 discards_non_ext_hdrs;			/* Non-extension headers */
+> +	u32 discards_ext_hdr_too_big;			/* Ext header chain */
+> +	u32 discards_hard_timelimit;			/* Time Limit */
+> +};
+
+<...>
+
+> +static int nfp_ipsec_cfg_cmd_issue(struct nfp_net *nn, int type, int saidx,
+> +				   struct nfp_ipsec_cfg_mssg *msg)
+> +{
+> +	int i, msg_size, ret;
+> +
+> +	msg->cmd = type;
+> +	msg->sa_idx = saidx;
+> +	msg->rsp = 0;
+> +	msg_size = ARRAY_SIZE(msg->raw);
+> +
+> +	for (i = 0; i < msg_size; i++)
+> +		nn_writel(nn, NFP_NET_CFG_MBOX_VAL + 4 * i, msg->raw[i]);
+> +
+> +	ret = nfp_net_mbox_reconfig(nn, NFP_NET_CFG_MBOX_CMD_IPSEC);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* For now we always read the whole message response back */
+> +	for (i = 0; i < msg_size; i++)
+> +		msg->raw[i] = nn_readl(nn, NFP_NET_CFG_MBOX_VAL + 4 * i);
+> +
+> +	switch (msg->rsp) {
+> +	case NFP_IPSEC_CFG_MSSG_OK:
+> +		return 0;
+> +	case NFP_IPSEC_CFG_MSSG_SA_INVALID_CMD:
+> +		return -EINVAL;
+> +	case NFP_IPSEC_CFG_MSSG_SA_VALID:
+> +		return -EEXIST;
+> +	case NFP_IPSEC_CFG_MSSG_FAILED:
+> +	case NFP_IPSEC_CFG_MSSG_SA_HASH_ADD_FAILED:
+> +	case NFP_IPSEC_CFG_MSSG_SA_HASH_DEL_FAILED:
+> +		return -EIO;
+> +	default:
+> +		return -EDOM;
+
+Let's not bring cool error numbers when they don't need to be such.
+It is -EINVAL here.
+
+> +	}
+> +}
+> +
+> +static int set_aes_keylen(struct nfp_ipsec_cfg_add_sa *cfg, int alg, int keylen)
+> +{
+> +	if (alg == SADB_X_EALG_NULL_AES_GMAC) {
+> +		if (keylen == 128)
+> +			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES128_NULL;
+> +		else if (keylen == 192)
+> +			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES192_NULL;
+> +		else if (keylen == 256)
+> +			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES256_NULL;
+> +		else
+> +			return -EINVAL;
+
+Place "return 0;" here and get rid of "else".
+
+> +	} else {
+> +		if (keylen == 128)
+> +			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES128;
+> +		else if (keylen == 192)
+> +			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES192;
+> +		else if (keylen == 256)
+> +			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES256;
+> +		else
+> +			return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int nfp_net_xfrm_add_state(struct xfrm_state *x)
+>  {
+> -	return -EOPNOTSUPP;
+> +	struct net_device *netdev = x->xso.dev;
+> +	struct nfp_ipsec_cfg_mssg msg = {0};
+> +	int i, key_len, trunc_len, err = 0;
+> +	struct nfp_ipsec_cfg_add_sa *cfg;
+> +	struct nfp_net *nn;
+> +	unsigned int saidx;
+> +	__be32 *p;
+> +
+> +	nn = netdev_priv(netdev);
+> +	cfg = &msg.cfg_add_sa;
+> +
+> +	/* General */
+> +	switch (x->props.mode) {
+> +	case XFRM_MODE_TUNNEL:
+> +		cfg->ctrl_word.mode = NFP_IPSEC_PROTMODE_TUNNEL;
+> +		break;
+> +	case XFRM_MODE_TRANSPORT:
+> +		cfg->ctrl_word.mode = NFP_IPSEC_PROTMODE_TRANSPORT;
+> +		break;
+
+Why is it important for IPsec crypto? The HW logic must be the same for
+all modes. There are no differences between transport and tunnel.
+
+> +	default:
+> +		nn_err(nn, "Unsupported mode for xfrm offload\n");
+
+There are no other modes.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	switch (x->id.proto) {
+> +	case IPPROTO_ESP:
+> +		cfg->ctrl_word.proto = NFP_IPSEC_PROTOCOL_ESP;
+> +		break;
+> +	case IPPROTO_AH:
+> +		cfg->ctrl_word.proto = NFP_IPSEC_PROTOCOL_AH;
+> +		break;
+> +	default:
+> +		nn_err(nn, "Unsupported protocol for xfrm offload\n");
+> +		return -EINVAL;
+> +	}
+
+<...>
+
+> +	err = xa_alloc(&nn->xa_ipsec, &saidx, x,
+> +		       XA_LIMIT(0, NFP_NET_IPSEC_MAX_SA_CNT - 1), GFP_KERNEL);
+
+Create XArray with XA_FLAGS_ALLOC1, it will cause to xarray skip 0.
+See DEFINE_XARRAY_ALLOC1() for more info.
+
+
+> +	if (err < 0) {
+> +		nn_err(nn, "Unable to get sa_data number for IPsec\n");
+> +		return err;
+> +	}
+> +
+> +	/* Allocate saidx and commit the SA */
+> +	err = nfp_ipsec_cfg_cmd_issue(nn, NFP_IPSEC_CFG_MSSG_ADD_SA, saidx, &msg);
+> +	if (err) {
+> +		xa_erase(&nn->xa_ipsec, saidx);
+> +		nn_err(nn, "Failed to issue IPsec command err ret=%d\n", err);
+> +		return err;
+> +	}
+> +
+> +	/* 0 is invalid offload_handle for kernel */
+> +	x->xso.offload_handle = saidx + 1;
+
+If you create XArray as I said above, you won't need to add +1.
+
+> +	return 0;
+>  }
+
+<...>
+
+>  static bool nfp_net_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
+>  {
+> -	return false;
+> +	if (x->props.family == AF_INET) {
+> +		/* Offload with IPv4 options is not supported yet */
+> +		if (ip_hdr(skb)->ihl != 5)
+> +			return false;
+
+return here and remove "else" from all places.
+
+> +	} else {
+> +		/* Offload with IPv6 extension headers is not support yet */
+> +		if (ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr))
+> +			return false;
+> +	}
+> +
+> +	return true;
+>  }
+
+Thanks
