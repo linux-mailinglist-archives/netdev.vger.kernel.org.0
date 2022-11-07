@@ -2,54 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A9FD61EC8F
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 09:07:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C1E561ECA5
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 09:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231553AbiKGIHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 03:07:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S231567AbiKGIKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 03:10:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbiKGIHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 03:07:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160C012AB3;
-        Mon,  7 Nov 2022 00:06:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9E78B80E15;
-        Mon,  7 Nov 2022 08:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F5D1C433C1;
-        Mon,  7 Nov 2022 08:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667808413;
-        bh=VMhzbizg8eVkxMezhIH4pAP81sAj1v2PIczFUrJQNBs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l7dAMeIFM07kbd04EWFxjHqh5+VIPkLEjnO85T2jF+8G4MkOTBAJDH6BGbaxsHCY4
-         kAoLNnR6xeS+GiDVZkvDH2DVYv8LPAmjMf57aQdqKpW45qXtw4y4XuonW9QvNsZpJE
-         TyVScLedExIpxKhx/GV8klikbJ41PJ0w1920b/UaHRYKIYBgghGe5Km76bvPo18Ofb
-         CqHZ9/fXf03qZesFeYbQDYrwThYRXjjbBcqgNxTbNYUiAFjisr+JWsxyUJ6acB11k4
-         SPYvcfQAjzBhcttBBNMOC84xcjYoX2jPdxpM7ZyJ6+HAlvnxpuzUQ9O5pIXO5cJ5SF
-         7McepBrgvzO3Q==
-Date:   Mon, 7 Nov 2022 10:06:48 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mkubecek@suse.cz
-Subject: Re: [PATCH net] xfrm: Fix ignored return value in xfrm6_init()
-Message-ID: <Y2i8mC0fNrs4MJsq@unreal>
-References: <20221103090713.188740-1-chenzhongjin@huawei.com>
- <Y2gGIuwY368X8Won@unreal>
- <917fab11-ae57-07b9-ae67-7c290c7c6723@huawei.com>
+        with ESMTP id S231351AbiKGIKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 03:10:33 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A739013F61;
+        Mon,  7 Nov 2022 00:10:30 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.96,143,1665414000"; 
+   d="scan'208";a="141750250"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 07 Nov 2022 17:10:29 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E05C94002C03;
+        Mon,  7 Nov 2022 17:10:29 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        coverity-bot <keescook+coverity-bot@chromium.org>
+Subject: [PATCH] net: ethernet: renesas: rswitch: Fix endless loop in error paths
+Date:   Mon,  7 Nov 2022 17:10:21 +0900
+Message-Id: <20221107081021.2955122-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <917fab11-ae57-07b9-ae67-7c290c7c6723@huawei.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,47 +41,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 11:22:40AM +0800, Chen Zhongjin wrote:
-> Hi,
-> 
-> On 2022/11/7 3:08, Leon Romanovsky wrote:
-> > On Thu, Nov 03, 2022 at 05:07:13PM +0800, Chen Zhongjin wrote:
-> > > When IPv6 module initializing in xfrm6_init(), register_pernet_subsys()
-> > > is possible to fail but its return value is ignored.
-> > > 
-> > > If IPv6 initialization fails later and xfrm6_fini() is called,
-> > > removing uninitialized list in xfrm6_net_ops will cause null-ptr-deref:
-> > > 
-> > > KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> > > CPU: 1 PID: 330 Comm: insmod
-> > > RIP: 0010:unregister_pernet_operations+0xc9/0x450
-> > > Call Trace:
-> > >   <TASK>
-> > >   unregister_pernet_subsys+0x31/0x3e
-> > >   xfrm6_fini+0x16/0x30 [ipv6]
-> > >   ip6_route_init+0xcd/0x128 [ipv6]
-> > >   inet6_init+0x29c/0x602 [ipv6]
-> > >   ...
-> > > 
-> > > Fix it by catching the error return value of register_pernet_subsys().
-> > > 
-> > > Fixes: 8d068875caca ("xfrm: make gc_thresh configurable in all namespaces")
-> > > Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-> > > ---
-> > >   net/ipv6/xfrm6_policy.c | 6 +++++-
-> > >   1 file changed, 5 insertions(+), 1 deletion(-)
-> > I see same error in net/ipv4/xfrm4_policy.c which introduced by same
-> > commit mentioned in Fixes line.
-> 
-> It's true that in xfrm4_init() the ops->init is possible to fail as well.
-> 
-> However there is no error handling or exit path for ipv4, so IIUC the ops
-> won't be unregistered anyway.
-> 
-> Considering that ipv4 don't handle most of error in initialization, maybe
-> it's better to keep it as it is?
+Coverity reported that the error path in rswitch_gwca_queue_alloc_skb()
+has an issue to cause endless loop. So, fix the issue by changing
+variables' types from u32 to int. After changed the types,
+rswitch_tx_free() should use rswitch_get_num_cur_queues() to
+calculate number of current queues.
 
-Yeah, makes sense.
+Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
+Addresses-Coverity-ID: 1527147 ("Control flow issues")
+Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ drivers/net/ethernet/renesas/rswitch.c | 17 +++++++++--------
+ drivers/net/ethernet/renesas/rswitch.h |  6 +++---
+ 2 files changed, 12 insertions(+), 11 deletions(-)
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+index f0168fedfef9..3bd5e6239855 100644
+--- a/drivers/net/ethernet/renesas/rswitch.c
++++ b/drivers/net/ethernet/renesas/rswitch.c
+@@ -219,9 +219,9 @@ static void rswitch_ack_data_irq(struct rswitch_private *priv, int index)
+ 	iowrite32(BIT(index % 32), priv->addr + offs);
+ }
+ 
+-static u32 rswitch_next_queue_index(struct rswitch_gwca_queue *gq, bool cur, u32 num)
++static int rswitch_next_queue_index(struct rswitch_gwca_queue *gq, bool cur, int num)
+ {
+-	u32 index = cur ? gq->cur : gq->dirty;
++	int index = cur ? gq->cur : gq->dirty;
+ 
+ 	if (index + num >= gq->ring_size)
+ 		index = (index + num) % gq->ring_size;
+@@ -231,7 +231,7 @@ static u32 rswitch_next_queue_index(struct rswitch_gwca_queue *gq, bool cur, u32
+ 	return index;
+ }
+ 
+-static u32 rswitch_get_num_cur_queues(struct rswitch_gwca_queue *gq)
++static int rswitch_get_num_cur_queues(struct rswitch_gwca_queue *gq)
+ {
+ 	if (gq->cur >= gq->dirty)
+ 		return gq->cur - gq->dirty;
+@@ -250,9 +250,9 @@ static bool rswitch_is_queue_rxed(struct rswitch_gwca_queue *gq)
+ }
+ 
+ static int rswitch_gwca_queue_alloc_skb(struct rswitch_gwca_queue *gq,
+-					u32 start_index, u32 num)
++					int start_index, int num)
+ {
+-	u32 i, index;
++	int i, index;
+ 
+ 	for (i = 0; i < num; i++) {
+ 		index = (i + start_index) % gq->ring_size;
+@@ -410,12 +410,12 @@ static int rswitch_gwca_queue_format(struct net_device *ndev,
+ 
+ static int rswitch_gwca_queue_ts_fill(struct net_device *ndev,
+ 				      struct rswitch_gwca_queue *gq,
+-				      u32 start_index, u32 num)
++				      int start_index, int num)
+ {
+ 	struct rswitch_device *rdev = netdev_priv(ndev);
+ 	struct rswitch_ext_ts_desc *desc;
+ 	dma_addr_t dma_addr;
+-	u32 i, index;
++	int i, index;
+ 
+ 	for (i = 0; i < num; i++) {
+ 		index = (i + start_index) % gq->ring_size;
+@@ -736,7 +736,8 @@ static int rswitch_tx_free(struct net_device *ndev, bool free_txed_only)
+ 	int free_num = 0;
+ 	int size;
+ 
+-	for (; gq->cur - gq->dirty > 0; gq->dirty = rswitch_next_queue_index(gq, false, 1)) {
++	for (; rswitch_get_num_cur_queues(gq) > 0;
++	     gq->dirty = rswitch_next_queue_index(gq, false, 1)) {
+ 		desc = &gq->ring[gq->dirty];
+ 		if (free_txed_only && (desc->desc.die_dt & DT_MASK) != DT_FEMPTY)
+ 			break;
+diff --git a/drivers/net/ethernet/renesas/rswitch.h b/drivers/net/ethernet/renesas/rswitch.h
+index 778177ec8d4f..edbdd1b98d3d 100644
+--- a/drivers/net/ethernet/renesas/rswitch.h
++++ b/drivers/net/ethernet/renesas/rswitch.h
+@@ -908,9 +908,9 @@ struct rswitch_gwca_queue {
+ 		struct rswitch_ext_ts_desc *ts_ring;
+ 	};
+ 	dma_addr_t ring_dma;
+-	u32 ring_size;
+-	u32 cur;
+-	u32 dirty;
++	int ring_size;
++	int cur;
++	int dirty;
+ 	struct sk_buff **skbs;
+ 
+ 	struct net_device *ndev;	/* queue to ndev for irq */
+-- 
+2.25.1
+
