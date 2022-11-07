@@ -2,42 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFA1F61EEF0
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 10:27:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F13161EF43
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 10:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiKGJ12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 04:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50704 "EHLO
+        id S231607AbiKGJkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 04:40:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiKGJ1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 04:27:22 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334EC1742E
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 01:27:21 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N5QqK5fLCz15MQL;
-        Mon,  7 Nov 2022 17:27:09 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 7 Nov
- 2022 17:27:19 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <rajur@chelsio.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <jeffrey.t.kirsher@intel.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net] net: cxgb3_main: disable napi when bind qsets failed in cxgb_up()
-Date:   Mon, 7 Nov 2022 17:34:23 +0800
-Message-ID: <20221107093423.50810-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S231487AbiKGJkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 04:40:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE25BCB6
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 01:40:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 893D260FA5
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 09:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6CEAC4314B;
+        Mon,  7 Nov 2022 09:40:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667814015;
+        bh=czT+AnDfLW5M+kUfr4ICtFVOsSGUgwgY9Q8QammmOyI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=g7ukVbla4H4o9qo0gClmKeputTDjlPhacuw5mwfBPjIZicAYCvt/0bbRBBIlYhkn7
+         rHDY9Mfv/G1YrjTqtocAcvTbdcy5AqvGkqAEtIwl7cnaycBa1wD0PZJesdKPEq2Fpo
+         YYfIaOMcdNTCh4tnYnH+FQgTTyjTqDua9Uq5BnB1qXdWbUjy2ui7Xd9FNIKJw8zkoX
+         NqCCzWO28UOXQbUBoz3qbC8QYOXHCKPiHOZtMWEu65n7i9qZNK5QmS//tJ0T1ZarrO
+         F6tuh6/r4yvo09fRtq2Tygx/kotgC2xd6aPddm1BHqMtDY8bp37ytkply1S86WtQxh
+         Ib4YqoCAei2WA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D1156C73FFC;
+        Mon,  7 Nov 2022 09:40:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3 1/2] net: wwan: t7xx: Use needed_headroom instead
+ of hard_header_len
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166781401585.17779.13219230975466028783.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Nov 2022 09:40:15 +0000
+References: <20221103091829.28432-1-sreehari.kancharla@linux.intel.com>
+In-Reply-To: <20221103091829.28432-1-sreehari.kancharla@linux.intel.com>
+To:     Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, m.chetan.kumar@intel.com,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        ricardo.martinez@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
+        ilpo.jarvinen@linux.intel.com, moises.veleta@intel.com,
+        sreehari.kancharla@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,28 +63,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When failed to bind qsets in cxgb_up() for opening device, napi isn't
-disabled. When open cxgb3 device next time, it will reports a invalid
-opcode issue. Fix it. Only be compiled, not be tested.
+Hello:
 
-Fixes: f7917c009c28 ("chelsio: Move the Chelsio drivers")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c | 1 +
- 1 file changed, 1 insertion(+)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-index a52e6b6e2876..9b84c8d8d309 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-@@ -1301,6 +1301,7 @@ static int cxgb_up(struct adapter *adap)
- 		if (ret < 0) {
- 			CH_ERR(adap, "failed to bind qsets, err %d\n", ret);
- 			t3_intr_disable(adap);
-+			quiesce_rx(adap);
- 			free_irq_resources(adap);
- 			err = ret;
- 			goto out;
+On Thu,  3 Nov 2022 14:48:28 +0530 you wrote:
+> From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> hard_header_len is used by gro_list_prepare() but on Rx, there
+> is no header so use needed_headroom instead.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
+> Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+> --
+> v2, v3:
+>  * No change.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v3,1/2] net: wwan: t7xx: Use needed_headroom instead of hard_header_len
+    https://git.kernel.org/netdev/net-next/c/c053d7b6bdcb
+  - [net-next,v3,2/2] net: wwan: t7xx: Add NAPI support
+    https://git.kernel.org/netdev/net-next/c/5545b7b9f294
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
