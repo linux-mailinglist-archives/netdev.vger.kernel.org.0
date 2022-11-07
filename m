@@ -2,76 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DE3561FFE0
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 21:56:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EC7161FFE8
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 21:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiKGU4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 15:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S232328AbiKGU5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 15:57:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232191AbiKGU4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 15:56:02 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38081098;
-        Mon,  7 Nov 2022 12:56:01 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id a13so19597921edj.0;
-        Mon, 07 Nov 2022 12:56:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aZz5lIxuDB7I0z1jD8r02lw8MXfBIpXPRDPu83kXprE=;
-        b=lcXa8yD0SgTUPQeGlv227tDRMrB5NnfEInO0NrD4HykU0N5ueMLTDPxXEpe4pJTJY5
-         +wK/aRIZRTyxwXuzqNVBd8eKLBMBlIyI/JgcV3eN5CfMcZaVcgbh1cmGfJ4qY6CMN1pS
-         y/WPX1gnhv8dezjEePLyT+6MI5cREwiKs0FzVshIW0A2tUUuBECTwEfygyBjw0EIzIL7
-         bfOsiCsZuwm/C0dTUElfowYYH8InVD+HVNS3XC3piOewEAbrSbFNpOExugQl+Ah8DPmh
-         pGple9hGCOZkPNH3sAjqfQjV9Zgi8FmSPGJWBpDRSz8UD13WzNVlwGZoXX9OoGjyNQ0W
-         ldww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aZz5lIxuDB7I0z1jD8r02lw8MXfBIpXPRDPu83kXprE=;
-        b=tqrH1ILb3YYK/CddF403I/7JhZRp7qR99lwwxmryHEUgflOD5Oj3qA21WfphVLCxnS
-         9ZBYx84fxa5hCfy6SCvM+AZjGk8nVnUe7CczTV/kcz2a3n7QYI+6jqMXEhcH5tA7jDkc
-         LFT+ghUNwMCkpcsQdcCEbgE5zvS/q4FYLCdmDzHL5KXKyrnK0mCV0V2k1/5uAGytvHy6
-         4wLNPDCHlY0SZDegw/bPWfuLwdvxbcG/zkHE4XSkkh5gTyXfTCxPKNIrB2vN3brxa2oI
-         OT6TPH530/2A8gZYvn3O0AFevqZOmu3mlp1eyq13ZGrrw8QBGe6CJ24TaAcQ/KUlr7Qx
-         bMMg==
-X-Gm-Message-State: ACrzQf22NhMLBkkDcqkzmlMlIG8utC9fuFst6DpojgcXUJT5XU+1QYdV
-        ClLf2Zu5gRZSTVZLKvcLhIE=
-X-Google-Smtp-Source: AMsMyM6ioc0P0uojdmQ1u0VY0uZvTZqZ5dbDJ15EFDJgrrKmfO6nqvWye/xti1qfyvHjVNe1PfWaDA==
-X-Received: by 2002:a50:ef06:0:b0:463:2605:d24d with SMTP id m6-20020a50ef06000000b004632605d24dmr47036181eds.43.1667854560277;
-        Mon, 07 Nov 2022 12:56:00 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id g18-20020a17090604d200b0073dc5bb7c32sm3882261eja.64.2022.11.07.12.55.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 12:55:59 -0800 (PST)
-Date:   Mon, 7 Nov 2022 22:55:53 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/14] net: ethernet: mtk_eth_soc: account for vlan in rx
- header length
-Message-ID: <20221107205553.cnydzeh3tmilqblx@skbuf>
-References: <20221107185452.90711-1-nbd@nbd.name>
+        with ESMTP id S232850AbiKGU5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 15:57:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED682B622
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 12:56:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667854567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to; bh=p+9lgL7H2RIGtfkSoGTjpiKZE0I9zaPI5GTcWtttsjQ=;
+        b=F48/G5PzftlLgn2qXwxQF06kFU8UMfaGneeWnl3NsEUgvlE7YtQFhdn/cc8nXflxk5mYEP
+        81Nf2+5OeEJTOrmhTPupm58CELFeJeeVXi4c6WqbYANzYXZk+371qvpcn4Nn//MDBs1qG5
+        hX4o3hkqs+kwbsHM8x/W34ocQRkNP08=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-186-iEq1w5kIOlK6GvW4vDu2-w-1; Mon, 07 Nov 2022 15:56:04 -0500
+X-MC-Unique: iEq1w5kIOlK6GvW4vDu2-w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9A2D93833287;
+        Mon,  7 Nov 2022 20:56:03 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.151])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2E64F140EBF5;
+        Mon,  7 Nov 2022 20:56:02 +0000 (UTC)
+Date:   Mon, 7 Nov 2022 15:56:01 -0500
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     axboe@kernel.dk
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
+Message-ID: <Y2lw4Qc1uI+Ep+2C@fedora>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="XyBYP9056XoM9x6e"
 Content-Disposition: inline
-In-Reply-To: <20221107185452.90711-1-nbd@nbd.name>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20221030220203.31210-1-axboe@kernel.dk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,34 +57,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 07:54:39PM +0100, Felix Fietkau wrote:
-> This may be needed for correct MTU settings on devices using DSA
-> 
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> index 589f27ddc401..dcf2a0d5da33 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> @@ -29,7 +29,7 @@
->  #define MTK_TX_DMA_BUF_LEN_V2	0xffff
->  #define MTK_DMA_SIZE		512
->  #define MTK_MAC_COUNT		2
-> -#define MTK_RX_ETH_HLEN		(ETH_HLEN + ETH_FCS_LEN)
-> +#define MTK_RX_ETH_HLEN		(VLAN_ETH_HLEN + ETH_HLEN + ETH_FCS_LEN)
 
-Commit title says account for VLAN (VLAN_HLEN, 4 bytes), code says add
-VLAN_ETH_HLEN (18) more bytes.
+--XyBYP9056XoM9x6e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Also, why is DSA mentioned in the commit message? Is accounting for VLAN
-hlen not needed if DSA is not used? Why?
+Hi Jens,
+NICs and storage controllers have interrupt mitigation/coalescing
+mechanisms that are similar.
 
->  #define MTK_RX_HLEN		(NET_SKB_PAD + MTK_RX_ETH_HLEN + NET_IP_ALIGN)
->  #define MTK_DMA_DUMMY_DESC	0xffffffff
->  #define MTK_DEFAULT_MSG_ENABLE	(NETIF_MSG_DRV | \
-> -- 
-> 2.38.1
-> 
+NVMe has an Aggregation Time (timeout) and an Aggregation Threshold
+(counter) value. When a completion occurs, the device waits until the
+timeout or until the completion counter value is reached.
+
+If I've read the code correctly, min_wait is computed at the beginning
+of epoll_wait(2). NVMe's Aggregation Time is computed from the first
+completion.
+
+It makes me wonder which approach is more useful for applications. With
+the Aggregation Time approach applications can control how much extra
+latency is added. What do you think about that approach?
+
+Stefan
+
+--XyBYP9056XoM9x6e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmNpcOEACgkQnKSrs4Gr
+c8gDagf/YbI6zJoHxLPIL1cGSlayG7NOYya+8Vp+4dfv13V7/ZD6T/RQLJ0xhPhL
+OZZ7TJ0zdOQL7a0J3RxUElcs06gIh7IHupL0YvX9ng0mVNl8DwkfsuLWdxj5Z2x/
+gLD1YjCPHHAEwzHOcma7QR1I36SfxJhXSiyCUNhB3VF4jl9EZV2LIrA1fEUD4MBY
+PNqILWWv81tm93jAFe1JrT/Ak20psPMXRIBfIkWkZfeH4totmbcUEoZLgV8HS4kF
+kEodTyZGwS6kUt7512BC/CDXaiMi3XinLwjqJ42vq+jIHWxEfjwcEMa7KJpL6dg5
+ULilMUkNtaXoeqzicuOv2m+qm3TqxQ==
+=lz3z
+-----END PGP SIGNATURE-----
+
+--XyBYP9056XoM9x6e--
+
