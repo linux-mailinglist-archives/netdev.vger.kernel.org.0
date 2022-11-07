@@ -2,108 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E4261FA7B
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 17:50:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1EB261FA8F
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 17:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbiKGQup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 11:50:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        id S232655AbiKGQw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 11:52:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232796AbiKGQuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 11:50:25 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AF92253B
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 08:50:18 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id u11so17194903ljk.6
-        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 08:50:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=flowbird.group; s=google;
-        h=cc:to:subject:message-id:date:from:reply-to:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GgzzWqrBpFMjyv/cMeIb5f7bPeTWAWqiSMHL1sdKRZ4=;
-        b=huYNwGsDAALHfmyw7HfLONQCj8S0phBsrkDf8EQHhijiBMn8rTTrlzY5Yd/Klh7rR7
-         htqkTwXoCeL8SGAq2ZlB/sn9Ma+FY4frUZtCCCIxENbLksp92tJHfllGjmGT31SIKows
-         2Q67ivT6/OuTKMmB7x/Rab9Wo9Y6hiTwp1VRfPAgED+NCLCEVL0WtDbyhMKxH+6nqnlk
-         +TA1DVN7ruq0c1LOz6MLw+UmSC7HDY2AOTwHcxcuvPulTyChfF+oK6xyXb0MRfafwSqU
-         3j7uLEOnqbevjB8zZouiR8Gn4QNCPNX+FGciwMQeFdLMXp8Cuag4giJjfBz8Y2baDju6
-         0n/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:reply-to:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GgzzWqrBpFMjyv/cMeIb5f7bPeTWAWqiSMHL1sdKRZ4=;
-        b=2FftnHflZpoX/a7Ews+ERAKZfVP8J2hmdM/0Bu2j9YTzpMb3b1c3i5d7pxhmpNflMo
-         WoNrdOABxdpsWEz8beOthY/yBem2RULUZ2oG+o+w3b1wbDe495twhSaIdA9Q7hrdZzcr
-         pvOrrgxIptagJmEPE/SphZtHSHItoY4tOJ9hNu9MtonI+ByHJVdFL9ZNWuGundEOVUzM
-         I/5LxziwOemsI15myN5GG2Kndsn3p4Cxf/MyLMrbxN1I1nnCCjW8DYgJdtOVp5V/jfZJ
-         eeeqi/zb0RWT1eQ6MJ3ndLe98+QgdT0o+2nEZG8zzBeO1/ORNQAEqDh1uEmUD/f8Jhb0
-         kSSw==
-X-Gm-Message-State: ACrzQf3CAn78L5Wnv3kheQuVkOmA3RTWuDIUKrc5RH1ByDIfjtCWSXrA
-        MG5ovTz6ZXxBVY8qnGD4Au7nu8VJA6HTvHgqgDhCMA==
-X-Google-Smtp-Source: AMsMyM65SlztnP9Ct0bgLPz+q5rSv2J153dMKpZM+l3V8ZvJOVKapOFZ1C8Mg40ZeRniUljX/R7Wv4sbyZqgHbnLfOE=
-X-Received: by 2002:a2e:9d4a:0:b0:277:86b:e23d with SMTP id
- y10-20020a2e9d4a000000b00277086be23dmr18720277ljj.193.1667839816173; Mon, 07
- Nov 2022 08:50:16 -0800 (PST)
+        with ESMTP id S232626AbiKGQwQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 11:52:16 -0500
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DB222B0A
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 08:52:13 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 018035C0178;
+        Mon,  7 Nov 2022 11:52:13 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 07 Nov 2022 11:52:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1667839932; x=1667926332; bh=k64nfsYMGf824CA8APuypxYKux6C
+        rag3AwfOp7+0wlI=; b=JrN8O7GT4/2EKMeIYNzRM7C86hAfaigieemyQsLysUrg
+        XB6kkfNUTLiKNwrLIq+bnrdND4Eab0OCZY6zFf7Zfb27QprzZ2txT0Vn4uA3Jr58
+        /I15wN4bnNFbLuWoN91kSyHJQ5ddnjlJN9LrV+z4tKxv4wKacVIkNps7h772XlFD
+        MyRvomSMvzXxGiRX4iJOWy131IJdOYM0uCuQ8iBaNM02BAnT35O/1Xa4YCj36d9z
+        JGzvfw7bw7FBHzPQfWtc8RTGtqf7IaLMdWIQ8xOi96EAjZJJuLcKa11w7e8X7pcN
+        EJhhibF1rAT6eU3aZjVX1T8gS37i5oJnDttNvBvisw==
+X-ME-Sender: <xms:uzdpY_pebjdVmnYw07Cql9rBQx83NpwdWk14xK-WRDHPcRYKTm-IKw>
+    <xme:uzdpY5oowWUZYOM6jsW1C1gb8Xum65pkEDo2BClkuD6wlI7OCMoLqRBG8WjWkUOKS
+    o711vojtOWYwmU>
+X-ME-Received: <xmr:uzdpY8P9EM849MrNGIuVkgPNjwdLnydwEnaRyTjvxhxJnFCcJ6gf47jJokaX>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrvdekgdelvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
+    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:vDdpYy6q4LxUnzJ4O7Vvi6zwPWOJoV0raDKWqRuqUcuRM6x7Jlmy1Q>
+    <xmx:vDdpY-6NOUdyMpXMlBzpSnZTLI4fjF0XnX0qu9yGVz43qmqfMzb2gg>
+    <xmx:vDdpY6jeU8U-DU1wYaSj8_Z4KhG2CI_dqcjAipCAaeaj1JeRDue5dw>
+    <xmx:vDdpY1YNjnCgFR9PjMVdj5BWeaiwjPiaP_eKg8_0XR-kfBTe3XG82Q>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Nov 2022 11:52:11 -0500 (EST)
+Date:   Mon, 7 Nov 2022 18:52:08 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, bigeasy@linutronix.de,
+        imagedong@tencent.com, kuniyu@amazon.com, petrm@nvidia.com
+Subject: Re: [patch net-next 2/2] net: devlink: move netdev notifier block to
+ dest namespace during reload
+Message-ID: <Y2k3uIMn2R42AH6q@shredder>
+References: <20221107145213.913178-1-jiri@resnulli.us>
+ <20221107145213.913178-3-jiri@resnulli.us>
 MIME-Version: 1.0
-References: <20221104163339.227432-1-marex@denx.de> <87o7tjszyg.fsf@kernel.org>
- <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de> <877d06g98z.fsf@kernel.org> <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de>
-In-Reply-To: <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de>
-Reply-To: martin.fuzzey@flowbird.group
-From:   "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
-Date:   Mon, 7 Nov 2022 17:50:05 +0100
-Message-ID: <CANh8QzxiJYAttQx=Jgufwq=bxe7s9X-6o1gpd=nBbxsw3VX+Jg@mail.gmail.com>
-Subject: Re: [PATCH v5] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via
- control port
-To:     Marek Vasut <marex@denx.de>
-Cc:     Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org,
-        Angus Ainslie <angus@akkea.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221107145213.913178-3-jiri@resnulli.us>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Nov 2022 at 15:44, Marek Vasut <marex@denx.de> wrote:
-> I'm afraid this RSI driver is so poorly maintained and has so many bugs,
-> that, there is little that can make it worse. The dealing I had with RSI
-> has been ... long ... and very depressing. I tried to get documentation
-> or anything which would help us fix the problems we have with this RSI
-> driver ourselves, but RSI refused it all and suggested we instead use
-> their downstream driver (I won't go into the quality of that). It seems
-> RSI has little interest in maintaining the upstream driver, pity.
->
+On Mon, Nov 07, 2022 at 03:52:13PM +0100, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> The notifier block tracking netdev changes in devlink is registered
+> during devlink_alloc() per-net, it is then unregistered
+> in devlink_free(). When devlink moves from net namespace to another one,
+> the notifier block needs to move along.
+> 
+> Fix this by adding forgotten call to move the block.
+> 
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Fixes: 02a68a47eade ("net: devlink: track netdev with devlink_port assigned")
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-Yes I've had similar problems with RSI.
+Does not trigger with my reproducer. Will test the fix tonight in
+regression and report tomorrow morning.
 
-It seems things have gone downhill a lot since RSI was taken over by
-Silabs and the people who wrote the driver initially left.
-The last mainline patches from anyone at Redpine / Silabs seem to date
-back to 2019.
+> ---
+>  net/core/devlink.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 40fcdded57e6..ea0b319385fc 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -4502,8 +4502,11 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+>  	if (err)
+>  		return err;
+>  
+> -	if (dest_net && !net_eq(dest_net, curr_net))
+> +	if (dest_net && !net_eq(dest_net, curr_net)) {
+> +		move_netdevice_notifier_net(curr_net, dest_net,
+> +					    &devlink->netdevice_nb);
+>  		write_pnet(&devlink->_net, dest_net);
+> +	}
 
-But https://github.com/SiliconLabs/RS911X-nLink-OSD/blob/master/ReleaseNotes_OSD.pdf
- it still says in the latest (March 2022) version
-"The contents of this driver will be submitted to kernel community
-continuously" which does not seem to be the case.
+I suggest adding this:
 
-> I've been tempted to flag this driver as BROKEN for a while, to prevent
-> others from suffering with it. Until I send such a patch, you can expect
-> real fixes coming from my end at least.
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 83fd10aeddd5..3b5aedc93335 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -9843,8 +9843,8 @@ void devlink_free(struct devlink *devlink)
+ 
+        xa_destroy(&devlink->snapshot_ids);
+ 
+-       unregister_netdevice_notifier_net(devlink_net(devlink),
+-                                         &devlink->netdevice_nb);
++       WARN_ON(unregister_netdevice_notifier_net(devlink_net(devlink),
++                                                 &devlink->netdevice_nb));
+ 
+        xa_erase(&devlinks, devlink->index);
 
-We still use it too but haven't run into the issue this patch
-addresses as we are still on wpa supplicant 2.9
-If we run into any more problems I'll try to fix and upstream but, due
-to all the above, I have already recommended internally that we move
-to other hardware for future devices.
+This tells about the failure right away. Instead, we saw random memory
+corruptions in later tests.
 
-Martin
+>  
+>  	err = devlink->ops->reload_up(devlink, action, limit, actions_performed, extack);
+>  	devlink_reload_failed_set(devlink, !!err);
+> -- 
+> 2.37.3
+> 
