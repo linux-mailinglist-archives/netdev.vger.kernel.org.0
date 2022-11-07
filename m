@@ -2,224 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91CD761ECF7
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 09:32:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C1E61ED0A
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 09:40:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231337AbiKGIcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 03:32:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
+        id S231313AbiKGIkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 03:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbiKGIcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 03:32:04 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A3514002;
-        Mon,  7 Nov 2022 00:32:03 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id c2so10395370plz.11;
-        Mon, 07 Nov 2022 00:32:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=BQ9Z4bc9iFOixXTMmuVqqXWRg72dHOOtqIyMVDHCuI0=;
-        b=ciEc6wWN290+pHsj0unsWuRhg2OSaL7h+mJiRzgvuBUK9PYthe7IpI7JWLpI42pPBH
-         lMGM3xA8cfXilotWph7PUs1DGe6NlIGg0BQW5ZfDlR4ocMJWWBWeJ1m8GrA1EoEtcC2y
-         8xxXS1eIP3LVK/spN1Lah/euoh1qaRXTNG9AkIQC6jNOIlDEb5DJx10j+w0oPs6rnP5C
-         LvsIXeoQwPm7mvS25W7bxfGh3H540jPma7cgF9+tvjilWnzKcrcA8+mPAxn/WgIgGuaB
-         wxnTZZbnIjLuCTGsIkhlwyKQaMJnQmZO7JK1mNVMfsvqvdtSuJj5ASdquK6oEKO2Y/tY
-         wN7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BQ9Z4bc9iFOixXTMmuVqqXWRg72dHOOtqIyMVDHCuI0=;
-        b=Ay0YUG0D/Nh9eJqgljqHHTRtiV/t3G0nLIC95JovN3KQ3t9WzUOuyTpKFmLBKyrkht
-         dwYxY/9BoqGQNOgbqaGzvxiAeVNuJOb3EJaAdEdGAQTmHQvTYqL6sU2hYuljOZInAPK4
-         VpYkpxI0DnXINmCBSOPc9kdDCdaR/ZQFW4uBfnVOJdFaXCk4rE1DLkNvkcgeJIrS6cL1
-         T/1Sh1qdL1ZdzAYZpnqPwq6zcVkRlrs2SQ0+Mralsb/NUAd1x1Cs3sVQct4SZGKaLHG7
-         jaMw+bi/N7SHGInHnMrMJmG6DTsgy1uepalJsz5vnvCs/WlQK+7y5WlhqqHQ8mQ/+Keh
-         7PiA==
-X-Gm-Message-State: ANoB5pnUSY5ExvLcKu+tu/faR0/bR/wO8bQF6AFk3Jy3Irfczl9tisoj
-        4ZZvEXEi8qgVCWgu6NyNbf6vpl+sphY=
-X-Google-Smtp-Source: AA0mqf4x9hlvHwl8La/F5SlFkVpAuwZ0Unj8UMbGtbPLhwI9sH41tZmJG1hbtJueoWmH8owdt5R8Bg==
-X-Received: by 2002:a17:902:f687:b0:188:6cce:671b with SMTP id l7-20020a170902f68700b001886cce671bmr14394231plg.71.1667809922707;
-        Mon, 07 Nov 2022 00:32:02 -0800 (PST)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id p1-20020a170902a40100b00177f4ef7970sm4424631plq.11.2022.11.07.00.32.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 00:32:02 -0800 (PST)
-From:   Chuang Wang <nashuiliang@gmail.com>
-Cc:     Chuang Wang <nashuiliang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231226AbiKGIj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 03:39:58 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5F515709;
+        Mon,  7 Nov 2022 00:39:57 -0800 (PST)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id AE13B240012;
+        Mon,  7 Nov 2022 08:39:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1667810395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kt3YaVgos6aTLVWYjMs61pa3ceG8lp2j8XYt+Ucplyw=;
+        b=AscLybvqBkKKgJLxu4it0nKtw+XOslDBXsHBsvlHVxB0Quj8CJoOpqRBmXiqfOd1/kasH9
+        I+cRuyTQ77O+3UrGUe3ZGeH7rU1c/DtCrPXXS+URrPf5lzaNMrG7+Bc9qi70AWFk/HuaSt
+        jolcAbhp1rSvg2qX53A0bk241bSR4UCNLi0r3AMKmZCI5JP75FU80j+GTBU53Iy1XyffQi
+        Uv2CTDUq7j4BuVRIrD5Rb5nvrcN87Urg4Q7WbnybzhsxcFFSPae5Z7j42qmFbMKsj+HI3J
+        vXojYdsYBdNtD5o2z/B8c6rgd+JXFd3YWUtUB46TeWGWJbN4757yjat0WVARgg==
+Date:   Mon, 7 Nov 2022 09:39:50 +0100
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: tun: rebuild error handling in tun_get_user
-Date:   Mon,  7 Nov 2022 16:31:44 +0800
-Message-Id: <20221107083145.685824-1-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: Re: [PATCH net-next v8 3/5] net: dsa: add out-of-band tagging
+ protocol
+Message-ID: <20221107093950.74de3fa1@pc-8.home>
+In-Reply-To: <20221104200530.3bbe18c6@kernel.org>
+References: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
+        <20221104174151.439008-4-maxime.chevallier@bootlin.com>
+        <20221104200530.3bbe18c6@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The error handling in tun_get_user is very scattered.
-This patch unifies error handling, reduces duplication of code, and
-makes the logic clearer.
+Hello Jakub,
 
-Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
----
- drivers/net/tun.c | 68 ++++++++++++++++++++++-------------------------
- 1 file changed, 32 insertions(+), 36 deletions(-)
+On Fri, 4 Nov 2022 20:05:30 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 4bf2b268df4a..6a214c2251b9 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1742,11 +1742,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	int good_linear;
- 	int copylen;
- 	bool zerocopy = false;
--	int err;
-+	int err = 0;
- 	u32 rxhash = 0;
- 	int skb_xdp = 1;
- 	bool frags = tun_napi_frags_enabled(tfile);
--	enum skb_drop_reason drop_reason;
-+	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 
- 	if (!(tun->flags & IFF_NO_PI)) {
- 		if (len < sizeof(pi))
-@@ -1808,11 +1808,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		 */
- 		skb = tun_build_skb(tun, tfile, from, &gso, len, &skb_xdp);
- 		if (IS_ERR(skb)) {
--			dev_core_stats_rx_dropped_inc(tun->dev);
--			return PTR_ERR(skb);
-+			err = PTR_ERR(skb);
-+			goto drop;
- 		}
- 		if (!skb)
--			return total_len;
-+			goto out;
- 	} else {
- 		if (!zerocopy) {
- 			copylen = len;
-@@ -1836,11 +1836,8 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		}
- 
- 		if (IS_ERR(skb)) {
--			if (PTR_ERR(skb) != -EAGAIN)
--				dev_core_stats_rx_dropped_inc(tun->dev);
--			if (frags)
--				mutex_unlock(&tfile->napi_mutex);
--			return PTR_ERR(skb);
-+			err = PTR_ERR(skb);
-+			goto drop;
- 		}
- 
- 		if (zerocopy)
-@@ -1851,27 +1848,14 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		if (err) {
- 			err = -EFAULT;
- 			drop_reason = SKB_DROP_REASON_SKB_UCOPY_FAULT;
--drop:
--			dev_core_stats_rx_dropped_inc(tun->dev);
--			kfree_skb_reason(skb, drop_reason);
--			if (frags) {
--				tfile->napi.skb = NULL;
--				mutex_unlock(&tfile->napi_mutex);
--			}
--
--			return err;
-+			goto drop;
- 		}
- 	}
- 
- 	if (virtio_net_hdr_to_skb(skb, &gso, tun_is_little_endian(tun))) {
- 		atomic_long_inc(&tun->rx_frame_errors);
--		kfree_skb(skb);
--		if (frags) {
--			tfile->napi.skb = NULL;
--			mutex_unlock(&tfile->napi_mutex);
--		}
--
--		return -EINVAL;
-+		err = -EINVAL;
-+		goto drop;
- 	}
- 
- 	switch (tun->flags & TUN_TYPE_MASK) {
-@@ -1887,9 +1871,9 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 				pi.proto = htons(ETH_P_IPV6);
- 				break;
- 			default:
--				dev_core_stats_rx_dropped_inc(tun->dev);
--				kfree_skb(skb);
--				return -EINVAL;
-+				err = -EINVAL;
-+				drop_reason = SKB_DROP_REASON_INVALID_PROTO;
-+				goto drop;
- 			}
- 		}
- 
-@@ -1931,11 +1915,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 			if (ret != XDP_PASS) {
- 				rcu_read_unlock();
- 				local_bh_enable();
--				if (frags) {
--					tfile->napi.skb = NULL;
--					mutex_unlock(&tfile->napi_mutex);
--				}
--				return total_len;
-+				goto unlock_unlock;
- 			}
- 		}
- 		rcu_read_unlock();
-@@ -1952,8 +1932,8 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 
- 	rcu_read_lock();
- 	if (unlikely(!(tun->dev->flags & IFF_UP))) {
--		err = -EIO;
- 		rcu_read_unlock();
-+		err = -EIO;
- 		drop_reason = SKB_DROP_REASON_DEV_READY;
- 		goto drop;
- 	}
-@@ -2007,7 +1987,23 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	if (rxhash)
- 		tun_flow_update(tun, rxhash, tfile);
- 
--	return total_len;
-+	goto out;
-+
-+drop:
-+	if (err != -EAGAIN)
-+		dev_core_stats_rx_dropped_inc(tun->dev);
-+
-+	if (!IS_ERR_OR_NULL(skb))
-+		kfree_skb_reason(skb, drop_reason);
-+
-+unlock_unlock:
-+	if (frags) {
-+		tfile->napi.skb = NULL;
-+		mutex_unlock(&tfile->napi_mutex);
-+	}
-+
-+out:
-+	return err ?: total_len;
- }
- 
- static ssize_t tun_chr_write_iter(struct kiocb *iocb, struct iov_iter *from)
--- 
-2.37.2
+> On Fri,  4 Nov 2022 18:41:49 +0100 Maxime Chevallier wrote:
+> > This tagging protocol is designed for the situation where the link
+> > between the MAC and the Switch is designed such that the Destination
+> > Port, which is usually embedded in some part of the Ethernet
+> > Header, is sent out-of-band, and isn't present at all in the
+> > Ethernet frame.
+> > 
+> > This can happen when the MAC and Switch are tightly integrated on an
+> > SoC, as is the case with the Qualcomm IPQ4019 for example, where
+> > the DSA tag is inserted directly into the DMA descriptors. In that
+> > case, the MAC driver is responsible for sending the tag to the
+> > switch using the out-of-band medium. To do so, the MAC driver needs
+> > to have the information of the destination port for that skb.
+> > 
+> > Add a new tagging protocol based on SKB extensions to convey the
+> > information about the destination port to the MAC driver  
+> 
+> This is what METADATA_HW_PORT_MUX is for, you shouldn't have 
+> to allocate a piece of memory for every single packet.
 
+Does this work with DSA ? The information conveyed in the extension is
+the DSA port identifier. I'm not familiar at all with
+METADATA_HW_PORT_MUX, should we extend that mechanism to convey the
+DSA port id ?
+
+I also agree that allocating data isn't the best way to go, but from
+the history of this series, we've tried 3 approaches so far :
+
+ - Adding a new field to struct sk_buff, which isn't a good idea
+ - Using the skb headroom, but then we can't know for sure is the skb
+   contains a DSA tag or not
+ - Using skb extensions, that comes with the cost of this memory
+   allocation. Is this approach also incorrect then ?
+
+> Also the series doesn't build.
+
+Can you elaborate more ? I can't reproduce the build failure on my
+side, and I didn't get any reports from the kbuild bot, are you using a
+specific config file ?
+
+Thanks,
+
+Maxime
