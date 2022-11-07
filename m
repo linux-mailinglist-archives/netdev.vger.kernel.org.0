@@ -2,227 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C3F61EE47
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 10:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9898961EE56
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 10:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbiKGJKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 04:10:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        id S231620AbiKGJLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 04:11:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiKGJJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 04:09:58 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13C763EF;
-        Mon,  7 Nov 2022 01:09:57 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id r61-20020a17090a43c300b00212f4e9cccdso13910920pjg.5;
-        Mon, 07 Nov 2022 01:09:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7s5/qb1nSXLZnJZGYNn4Wzlw1M+hVX8xrWCLqS93kyE=;
-        b=jsZFj6rnuGvjrA0j9safRVQ5ub46rEH1AZfLSqW2ttOPIj5JHT/WdKQlIhtr2nVEJS
-         nsSd+7WepQB+ugVUZrR8cMRMWVAadLJGsKUD7ZMEmHnnorqSXESEhIo5Vs1mo64JT9Gn
-         EXN+KW+LZieQD50nvey2BtAtDAGfVSkRXtCnxgZ09na2YxBeKwn60+lx/DKjy9/h0e9u
-         a/LlbxjMOUCjBcaaO1oYdcLOnb3uXZaoHIg0gLPfqklgoYL60KLY++/34/uecscDXpHH
-         iyuhqr6ey99c7HW4fQ6LCJg1q6bKDyceQMGcopTLm/2geH7+8Dph0PbIimVSvA2YKfA9
-         X0LA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7s5/qb1nSXLZnJZGYNn4Wzlw1M+hVX8xrWCLqS93kyE=;
-        b=SVgEIR85I/gbehpP8P8yWjImXXfdvTr6AZFqc45oYCKCj8qqgIYyrRJXdfPYMWGGKS
-         itWfRDHYFosKuJuO1jyfnJOjrJRUwym9J+wC3wRXHp3C8hHYVIjsP47L2lss7dKzgvY3
-         Kl5zXPDCWeZSGxQNKhB/oMq3UUduVgeiulE23lgIRZy0ulntz/lpXjLlXqL2xeuuHZLS
-         0cLVZUz9cbt8+35IKWfGzrlgJAn3AMFXSUEbQeFN3laPbgrKCzaCpakxB5Wud3uyB1Fd
-         Obfc9b02yXPY2iZX64xNu83ixMvjyASXogU7kFZDNSMflmPfjkXUUZfTIUGnpJWNrwp7
-         AUDg==
-X-Gm-Message-State: ACrzQf0URqpgnXQI36W1B6eEg9n24m5muyPT6nRjWsbqI4ouBLkx1lPp
-        EoMWB1/MUf9qk2vOrteDxrE=
-X-Google-Smtp-Source: AMsMyM4gl/gScKEXAGRR2lnQ8YwqcbIK1OxMz9XJeChJTovFnpwVuWj5tN1PpbxaSJtL26M8yoNddQ==
-X-Received: by 2002:a17:90a:a781:b0:214:2921:41ca with SMTP id f1-20020a17090aa78100b00214292141camr29126567pjq.118.1667812197190;
-        Mon, 07 Nov 2022 01:09:57 -0800 (PST)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id o5-20020a170902d4c500b001886863c6absm4493809plg.97.2022.11.07.01.09.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 01:09:56 -0800 (PST)
-From:   Chuang Wang <nashuiliang@gmail.com>
-Cc:     Chuang Wang <nashuiliang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] net: tun: rebuild error handling in tun_get_user
-Date:   Mon,  7 Nov 2022 17:09:40 +0800
-Message-Id: <20221107090940.686229-1-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231603AbiKGJLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 04:11:03 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3595F165A0;
+        Mon,  7 Nov 2022 01:11:01 -0800 (PST)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N5QST36J8zmVhW;
+        Mon,  7 Nov 2022 17:10:49 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 7 Nov 2022 17:10:59 +0800
+Received: from [10.67.111.205] (10.67.111.205) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 7 Nov 2022 17:10:58 +0800
+Subject: Re: [PATCH bpf RESEND 3/4] bpf: Add kernel function call support in
+ 32-bit ARM
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <haoluo@google.com>, <jolsa@kernel.org>,
+        <illusionist.neo@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <mykolal@fb.com>, <shuah@kernel.org>,
+        <benjamin.tissoires@redhat.com>, <memxor@gmail.com>,
+        <delyank@fb.com>, <asavkov@redhat.com>, <bpf@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>
+References: <20221103092118.248600-1-yangjihong1@huawei.com>
+ <20221103092118.248600-4-yangjihong1@huawei.com>
+ <Y2OnedQdQaIQEPDQ@shell.armlinux.org.uk>
+From:   Yang Jihong <yangjihong1@huawei.com>
+Message-ID: <6e078f09-2f84-d3e7-2c46-7686a7ad3e17@huawei.com>
+Date:   Mon, 7 Nov 2022 17:10:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <Y2OnedQdQaIQEPDQ@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.205]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The error handling in tun_get_user is very scattered.
-This patch unifies error handling, reduces duplication of code, and
-makes the logic clearer.
+Hello,
 
-Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
----
-v0 -> v1:
-- rename tags
+On 2022/11/3 19:35, Russell King (Oracle) wrote:
+> On Thu, Nov 03, 2022 at 05:21:17PM +0800, Yang Jihong wrote:
+>> This patch adds kernel function call support to the 32-bit ARM bpf jit.
+>>
+>> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+>> ---
+>>   arch/arm/net/bpf_jit_32.c | 130 ++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 130 insertions(+)
+>>
+>> diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+>> index 6a1c9fca5260..51428c82bec6 100644
+>> --- a/arch/arm/net/bpf_jit_32.c
+>> +++ b/arch/arm/net/bpf_jit_32.c
+>> @@ -1337,6 +1337,118 @@ static void build_epilogue(struct jit_ctx *ctx)
+>>   #endif
+>>   }
+>>   
+>> +/*
+>> + * Input parameters of function in 32-bit ARM architecture:
+>> + * The first four word-sized parameters passed to a function will be
+>> + * transferred in registers R0-R3. Sub-word sized arguments, for example,
+>> + * char, will still use a whole register.
+>> + * Arguments larger than a word will be passed in multiple registers.
+>> + * If more arguments are passed, the fifth and subsequent words will be passed
+>> + * on the stack.
+>> + *
+>> + * The first for args of a function will be considered for
+>> + * putting into the 32bit register R1, R2, R3 and R4.
+>> + *
+>> + * Two 32bit registers are used to pass a 64bit arg.
+>> + *
+>> + * For example,
+>> + * void foo(u32 a, u32 b, u32 c, u32 d, u32 e):
+>> + *      u32 a: R0
+>> + *      u32 b: R1
+>> + *      u32 c: R2
+>> + *      u32 d: R3
+>> + *      u32 e: stack
+>> + *
+>> + * void foo(u64 a, u32 b, u32 c, u32 d):
+>> + *      u64 a: R0 (lo32) R1 (hi32)
+>> + *      u32 b: R2
+>> + *      u32 c: R3
+>> + *      u32 d: stack
+>> + *
+>> + * void foo(u32 a, u64 b, u32 c, u32 d):
+>> + *       u32 a: R0
+>> + *       u64 b: R2 (lo32) R3 (hi32)
+>> + *       u32 c: stack
+>> + *       u32 d: stack
+> 
+> This code supports both EABI and OABI, but the above is EABI-only.
+> Either we need to decide not to support OABI, or we need to add code
+> for both. That can probably be done by making:
+> 
+Yes, the OABI situation was not considered here before,
+Because I don't have OABI ARM machine, I can't actually verify it,
+only EABI is supported.
+In the next version, will check whether CONFIG_AEABI is enabled.
+>> +	for (i = 0; i < fm->nr_args; i++) {
+>> +		if (fm->arg_size[i] > sizeof(u32)) {
+>> +			if (arg_regs_idx + 1 < nr_arg_regs) {
+>> +				/*
+>> +				 * AAPCS states:
+>> +				 * A double-word sized type is passed in two
+>> +				 * consecutive registers (e.g., r0 and r1, or
+>> +				 * r2 and r3). The content of the registers is
+>> +				 * as if the value had been loaded from memory
+>> +				 * representation with a single LDM instruction.
+>> +				 */
+>> +				if (arg_regs_idx & 1)
+>> +					arg_regs_idx++;
+> 
+> ... this conditional on IS_ENABLED(CONFIG_AEABI).
+> 
+>> +				emit(ARM_LDRD_I(arg_regs[arg_regs_idx], ARM_FP,
+>> +						EBPF_SCRATCH_TO_ARM_FP(
+>> +							bpf2a32[BPF_REG_1 + i][1])), ctx);
+> 
+> You probably want to re-use the internals of arm_bpf_get_reg64() to load
+> the register.
+OK, will re-use arm_bpf_get_reg64 in next version.
+> 
+>> +
+>> +				arg_regs_idx += 2;
+>> +			} else {
+>> +				stack_off = ALIGN(stack_off, STACK_ALIGNMENT);
+>> +
+>> +				emit(ARM_LDRD_I(tmp[1], ARM_FP,
+>> +						EBPF_SCRATCH_TO_ARM_FP(
+>> +							bpf2a32[BPF_REG_1 + i][1])), ctx);
+> 
+> Same here.
+OK, will re-use arm_bpf_get_reg64 in next version.
+> 
+>> +				emit(ARM_STRD_I(tmp[1], ARM_SP, stack_off), ctx);
+> 
+> and the internals of arm_bpf_put_reg64() here. Not all Arm CPUs that
+> this code runs on supports ldrd and strd.
+> 
+Yes, the ARM CPUs that do not support LDRD and STRD have not been 
+considered, will fix in next version.
 
- drivers/net/tun.c | 68 ++++++++++++++++++++++-------------------------
- 1 file changed, 32 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 4bf2b268df4a..5ceec73baf98 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1742,11 +1742,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	int good_linear;
- 	int copylen;
- 	bool zerocopy = false;
--	int err;
-+	int err = 0;
- 	u32 rxhash = 0;
- 	int skb_xdp = 1;
- 	bool frags = tun_napi_frags_enabled(tfile);
--	enum skb_drop_reason drop_reason;
-+	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 
- 	if (!(tun->flags & IFF_NO_PI)) {
- 		if (len < sizeof(pi))
-@@ -1808,11 +1808,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		 */
- 		skb = tun_build_skb(tun, tfile, from, &gso, len, &skb_xdp);
- 		if (IS_ERR(skb)) {
--			dev_core_stats_rx_dropped_inc(tun->dev);
--			return PTR_ERR(skb);
-+			err = PTR_ERR(skb);
-+			goto drop;
- 		}
- 		if (!skb)
--			return total_len;
-+			goto out;
- 	} else {
- 		if (!zerocopy) {
- 			copylen = len;
-@@ -1836,11 +1836,8 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		}
- 
- 		if (IS_ERR(skb)) {
--			if (PTR_ERR(skb) != -EAGAIN)
--				dev_core_stats_rx_dropped_inc(tun->dev);
--			if (frags)
--				mutex_unlock(&tfile->napi_mutex);
--			return PTR_ERR(skb);
-+			err = PTR_ERR(skb);
-+			goto drop;
- 		}
- 
- 		if (zerocopy)
-@@ -1851,27 +1848,14 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		if (err) {
- 			err = -EFAULT;
- 			drop_reason = SKB_DROP_REASON_SKB_UCOPY_FAULT;
--drop:
--			dev_core_stats_rx_dropped_inc(tun->dev);
--			kfree_skb_reason(skb, drop_reason);
--			if (frags) {
--				tfile->napi.skb = NULL;
--				mutex_unlock(&tfile->napi_mutex);
--			}
--
--			return err;
-+			goto drop;
- 		}
- 	}
- 
- 	if (virtio_net_hdr_to_skb(skb, &gso, tun_is_little_endian(tun))) {
- 		atomic_long_inc(&tun->rx_frame_errors);
--		kfree_skb(skb);
--		if (frags) {
--			tfile->napi.skb = NULL;
--			mutex_unlock(&tfile->napi_mutex);
--		}
--
--		return -EINVAL;
-+		err = -EINVAL;
-+		goto drop;
- 	}
- 
- 	switch (tun->flags & TUN_TYPE_MASK) {
-@@ -1887,9 +1871,9 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 				pi.proto = htons(ETH_P_IPV6);
- 				break;
- 			default:
--				dev_core_stats_rx_dropped_inc(tun->dev);
--				kfree_skb(skb);
--				return -EINVAL;
-+				err = -EINVAL;
-+				drop_reason = SKB_DROP_REASON_INVALID_PROTO;
-+				goto drop;
- 			}
- 		}
- 
-@@ -1931,11 +1915,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 			if (ret != XDP_PASS) {
- 				rcu_read_unlock();
- 				local_bh_enable();
--				if (frags) {
--					tfile->napi.skb = NULL;
--					mutex_unlock(&tfile->napi_mutex);
--				}
--				return total_len;
-+				goto unlock_frags;
- 			}
- 		}
- 		rcu_read_unlock();
-@@ -1952,8 +1932,8 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 
- 	rcu_read_lock();
- 	if (unlikely(!(tun->dev->flags & IFF_UP))) {
--		err = -EIO;
- 		rcu_read_unlock();
-+		err = -EIO;
- 		drop_reason = SKB_DROP_REASON_DEV_READY;
- 		goto drop;
- 	}
-@@ -2007,7 +1987,23 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	if (rxhash)
- 		tun_flow_update(tun, rxhash, tfile);
- 
--	return total_len;
-+	goto out;
-+
-+drop:
-+	if (err != -EAGAIN)
-+		dev_core_stats_rx_dropped_inc(tun->dev);
-+
-+	if (!IS_ERR_OR_NULL(skb))
-+		kfree_skb_reason(skb, drop_reason);
-+
-+unlock_frags:
-+	if (frags) {
-+		tfile->napi.skb = NULL;
-+		mutex_unlock(&tfile->napi_mutex);
-+	}
-+
-+out:
-+	return err ?: total_len;
- }
- 
- static ssize_t tun_chr_write_iter(struct kiocb *iocb, struct iov_iter *from)
--- 
-2.37.2
-
+Thanks,
+Yang
