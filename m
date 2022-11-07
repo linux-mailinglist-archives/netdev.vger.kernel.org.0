@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CA761E7D8
+	by mail.lfdr.de (Postfix) with ESMTP id A3C3061E7D9
 	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 01:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiKGAQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 19:16:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
+        id S230243AbiKGAQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 19:16:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbiKGAQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 19:16:51 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF396338
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 16:16:50 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id e15so7154293qvo.4
-        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 16:16:50 -0800 (PST)
+        with ESMTP id S229756AbiKGAQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 19:16:53 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C39634D
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 16:16:52 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id j6so7132755qvn.12
+        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 16:16:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=ARyHtJEnkviKQ/DcxnOAH02UabL1XbI/h1e+tXdCylI=;
-        b=fgoxz2Ga81TOmSZMxxF5KKXHc/+Z1nWZ1gVi+60n4HvMwTKBgLAzT9/j5b2NLLHe3R
-         nbhS0e47PAi7EaNnJr0HsPFUcwYKeY2B69vv9sfK3NTqbQgknOoC1vWLTK0IifqJ++nX
-         PayAgr+brhIAg1cw90jULKxNs1TX8dkFyy6Pg=
+        bh=bevCrzZXqcPKAC/Hy4f6+ang0XXXFn6gZ93R2HmoZ2M=;
+        b=gRyBhQf+ziqR62sOHCY4haIzWxMPle2khbN2KNzDcyr8PcUUdrs13+MjKR6CEQcj/f
+         gUxeyr82O8vpgfX6czlBovrxIm9JQs6sfoNSivxkZi4VGizkQrGyB/AimZdeW7PlDd/9
+         88FAvktwQPljj/RqfVcU0jHw+vQUUgsD+uNWY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ARyHtJEnkviKQ/DcxnOAH02UabL1XbI/h1e+tXdCylI=;
-        b=Pqqn1Dob89N/Q9ZxxT/x4V/a8hcVzg8fRXvzzIDpKwJwqEVd2eZfVbOzVYaqRS26sb
-         VygEgAgBtIc6nX/FHldmCgmfdvR18UZlGmS7iCUUzdDJXLYQpEM23wihM6p3Lx/kJdR4
-         ZyauT1c/W4f+BtyV/SipmcEj7CHH7/cW+gXAoU+C0F8tCmMpum3H7oYa1RRVi2QA+orE
-         IMmts83j4aaj0cxL9jczuf8CIDGvNJnzbpQedKvVw1nwrv2dQT0B/kfa/Lyn8GyjEp8i
-         BHQQVF2ega4T6pBqId8j8cpGJWr+6o7dy8TmVocMgDylH5Df0DwVupSBoYq/PtQIW4cf
-         TKyA==
-X-Gm-Message-State: ACrzQf2QfNPoek9HzHwojR4vrz+Y9BU5t1Xmb+pawarHAxDMp5UUD8/m
-        1h6cWCDWD0qehaw1DfT3AWFy8g==
-X-Google-Smtp-Source: AMsMyM4fyHLHemmTqZkFVGGzFnSwsf+JqRf9JlkmjzuR/L/V8IGzT2ZVfDk+cmRvVy4Sm47wCagTFg==
-X-Received: by 2002:ad4:5dee:0:b0:4b4:b8a:78db with SMTP id jn14-20020ad45dee000000b004b40b8a78dbmr42705140qvb.12.1667780209334;
-        Sun, 06 Nov 2022 16:16:49 -0800 (PST)
+        bh=bevCrzZXqcPKAC/Hy4f6+ang0XXXFn6gZ93R2HmoZ2M=;
+        b=1Gnv/Yo3QFu63JCr6p+2HRnb1szoem0tMZJjkjBYmbV/rI1h/KVWegWTPazRyQWolL
+         iCpplUsyYARZoHVbg3rYzp756TCgo4wYIfpwOr0WyIiFdYd0gag1+GPpg4cLfeowOBHQ
+         xn88VIWC6Y9Xu8ofDsLcNrY1RXBQ0mZp+TbMfhz3XYjKE2oMseBtjhFmznYLAp4hcF7r
+         d3B4/3SeogcWL0znf7eoLY7anJgusBsxdzIQCmf/6c8XNkfmkU66jI31dHlwvgYslJbz
+         mS5hS414Lhp9MuNj9jLpQi20sD13hhiuxJZ0+FNOjWBYIYqLQF/YMMJJ3Hu4W6Bydqd3
+         ESzA==
+X-Gm-Message-State: ACrzQf10MEeEtqoYB4deT09JsNPOMmqoCWs/NY/tYN9nLU/wH2HAgc9P
+        fsBLpoIG/2ee4e5Jg251VnIRqtMoqwNvEw==
+X-Google-Smtp-Source: AMsMyM7MJdhUUjtw7ziref2f1kL/UqzUTe9y3yZlBNpwP4G+lzvkgzjE7iTjDPtgz2NGXCVnqRhsEw==
+X-Received: by 2002:a05:6214:1c44:b0:4bb:5fab:3af with SMTP id if4-20020a0562141c4400b004bb5fab03afmr42472717qvb.23.1667780211192;
+        Sun, 06 Nov 2022 16:16:51 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k2-20020ac80742000000b0035badb499c7sm4904079qth.21.2022.11.06.16.16.47
+        by smtp.gmail.com with ESMTPSA id k2-20020ac80742000000b0035badb499c7sm4904079qth.21.2022.11.06.16.16.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Nov 2022 16:16:48 -0800 (PST)
+        Sun, 06 Nov 2022 16:16:50 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com, pavan.chebbi@broadcom.com
-Subject: [PATCH net-next 2/3] bnxt_en: update RSS config using difference algorithm
-Date:   Sun,  6 Nov 2022 19:16:31 -0500
-Message-Id: <1667780192-3700-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 3/3] bnxt_en: Add a non-real time mode to access NIC clock
+Date:   Sun,  6 Nov 2022 19:16:32 -0500
+Message-Id: <1667780192-3700-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
 References: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f8189905ecd65681"
+        boundary="00000000000012ff0105ecd65741"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,200 +66,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f8189905ecd65681
+--00000000000012ff0105ecd65741
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-Hardware is unable to realize all legal firmware interface state values
-for hash_type.  For example, if 4-tuple TCP_IPV4 hash is enabled,
-4-tuple UDP_IPV4 hash must also be enabled.  By providing the bits the
-user intended to change instead of the possible illegal intermediate
-states, the firmware is able to make better compromises when deciding
-which bits to ignore.
+When using a PHC that is shared between multiple hosts,
+in order to achieve consistent timestamps across all hosts,
+we need to isolate the PHC from any host making frequency
+adjustments.
 
-With this new mechansim, we can now report the actual configured hash
-back to the user.  Add bnxt_hwrm_update_rss_hash_cfg() to report the
-actual hash after user configuration.
+This patch adds a non-real time mode for this purpose.
+The implementation is based on a free running NIC hardware timer
+which is used as the timestamper time-base. Each host implements
+individual adjustments to a local timecounter based on the NIC free
+running timer.
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 35 +++++++++++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  2 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 47 +++++++++++++++++++
- 4 files changed, 85 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  5 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 45 ++++++++++++++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  7 ++-
+ 3 files changed, 42 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 15edb6cb3656..d18e55b16375 100644
+index d18e55b16375..d9ad325f7840 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -5294,7 +5294,15 @@ __bnxt_hwrm_vnic_set_rss(struct bnxt *bp, struct hwrm_vnic_rss_cfg_input *req,
- 	else
- 		bnxt_fill_hw_rss_tbl(bp, vnic);
- 
--	req->hash_type = cpu_to_le32(bp->rss_hash_cfg);
-+	if (bp->rss_hash_delta) {
-+		req->hash_type = cpu_to_le32(bp->rss_hash_delta);
-+		if (bp->rss_hash_cfg & bp->rss_hash_delta)
-+			req->flags |= VNIC_RSS_CFG_REQ_FLAGS_HASH_TYPE_INCLUDE;
-+		else
-+			req->flags |= VNIC_RSS_CFG_REQ_FLAGS_HASH_TYPE_EXCLUDE;
-+	} else {
-+		req->hash_type = cpu_to_le32(bp->rss_hash_cfg);
+@@ -6985,8 +6985,11 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+ 		if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
+ 			bp->fw_cap |= BNXT_FW_CAP_DCBX_AGENT;
+ 	}
+-	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
++	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
+ 		bp->flags |= BNXT_FLAG_MULTI_HOST;
++		if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++			bp->fw_cap &= ~BNXT_FW_CAP_PTP_RTC;
 +	}
- 	req->hash_mode_flags = VNIC_RSS_CFG_REQ_HASH_MODE_FLAGS_DEFAULT;
- 	req->ring_grp_tbl_addr = cpu_to_le64(vnic->rss_table_dma_addr);
- 	req->hash_key_tbl_addr = cpu_to_le64(vnic->rss_hash_key_dma_addr);
-@@ -5355,6 +5363,25 @@ static int bnxt_hwrm_vnic_set_rss_p5(struct bnxt *bp, u16 vnic_id, bool set_rss)
+ 	if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
+ 		bp->fw_cap |= BNXT_FW_CAP_RING_MONITOR;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 2132ce63193c..460cb20599f6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -14,6 +14,7 @@
+ #include <linux/net_tstamp.h>
+ #include <linux/timekeeping.h>
+ #include <linux/ptp_classify.h>
++#include <linux/clocksource.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+ #include "bnxt_hwrm.h"
+@@ -210,18 +211,37 @@ static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
+ 						ptp_info);
+ 	struct hwrm_port_mac_cfg_input *req;
+ 	struct bnxt *bp = ptp->bp;
+-	int rc;
++	int rc = 0;
+ 
+-	rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+-	if (rc)
+-		return rc;
++	if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
++		int neg_adj = 0;
++		u32 diff;
++		u64 adj;
+ 
+-	req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+-	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+-	rc = hwrm_req_send(ptp->bp, req);
+-	if (rc)
+-		netdev_err(ptp->bp->dev,
+-			   "ptp adjfreq failed. rc = %d\n", rc);
++		if (ppb < 0) {
++			neg_adj = 1;
++			ppb = -ppb;
++		}
++		adj = ptp->cmult;
++		adj *= ppb;
++		diff = div_u64(adj, 1000000000ULL);
++
++		spin_lock_bh(&ptp->ptp_lock);
++		timecounter_read(&ptp->tc);
++		ptp->cc.mult = neg_adj ? ptp->cmult - diff : ptp->cmult + diff;
++		spin_unlock_bh(&ptp->ptp_lock);
++	} else {
++		rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
++		if (rc)
++			return rc;
++
++		req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
++		req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
++		rc = hwrm_req_send(ptp->bp, req);
++		if (rc)
++			netdev_err(ptp->bp->dev,
++				   "ptp adjfreq failed. rc = %d\n", rc);
++	}
  	return rc;
  }
  
-+static void bnxt_hwrm_update_rss_hash_cfg(struct bnxt *bp)
-+{
-+	struct bnxt_vnic_info *vnic = &bp->vnic_info[0];
-+	struct hwrm_vnic_rss_qcfg_output *resp;
-+	struct hwrm_vnic_rss_qcfg_input *req;
-+
-+	if (hwrm_req_init(bp, req, HWRM_VNIC_RSS_QCFG))
-+		return;
-+
-+	/* all contexts configured to same hash_type, zero always exists */
-+	req->rss_ctx_idx = cpu_to_le16(vnic->fw_rss_cos_lb_ctx[0]);
-+	resp = hwrm_req_hold(bp, req);
-+	if (!hwrm_req_send(bp, req)) {
-+		bp->rss_hash_cfg = le32_to_cpu(resp->hash_type) ?: bp->rss_hash_cfg;
-+		bp->rss_hash_delta = 0;
-+	}
-+	hwrm_req_drop(bp, req);
-+}
-+
- static int bnxt_hwrm_vnic_set_hds(struct bnxt *bp, u16 vnic_id)
- {
- 	struct bnxt_vnic_info *vnic = &bp->vnic_info[vnic_id];
-@@ -5612,6 +5639,8 @@ static int bnxt_hwrm_vnic_qcaps(struct bnxt *bp)
- 		    (BNXT_CHIP_P5_THOR(bp) &&
- 		     !(bp->fw_cap & BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED)))
- 			bp->fw_cap |= BNXT_FW_CAP_VLAN_RX_STRIP;
-+		if (flags & VNIC_QCAPS_RESP_FLAGS_RSS_HASH_TYPE_DELTA_CAP)
-+			bp->fw_cap |= BNXT_FW_CAP_RSS_HASH_TYPE_DELTA;
- 		bp->max_tpa_v2 = le16_to_cpu(resp->max_aggs_supported);
- 		if (bp->max_tpa_v2) {
- 			if (BNXT_CHIP_P5_THOR(bp))
-@@ -8806,6 +8835,8 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
- 	rc = bnxt_setup_vnic(bp, 0);
- 	if (rc)
- 		goto err_out;
-+	if (bp->fw_cap & BNXT_FW_CAP_RSS_HASH_TYPE_DELTA)
-+		bnxt_hwrm_update_rss_hash_cfg(bp);
+@@ -846,8 +866,9 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
+ 		memset(&ptp->cc, 0, sizeof(ptp->cc));
+ 		ptp->cc.read = bnxt_cc_read;
+ 		ptp->cc.mask = CYCLECOUNTER_MASK(48);
+-		ptp->cc.shift = 0;
+-		ptp->cc.mult = 1;
++		ptp->cc.shift = BNXT_CYCLES_SHIFT;
++		ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
++		ptp->cmult = ptp->cc.mult;
+ 		ptp->next_overflow_check = jiffies + BNXT_PHC_OVERFLOW_PERIOD;
+ 	}
+ 	if (init_tc)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+index 4ce0a14c1e23..34162e07a119 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+@@ -17,6 +17,8 @@
+ #define BNXT_PTP_GRC_WIN_BASE	0x6000
  
- 	if (bp->flags & BNXT_FLAG_RFS) {
- 		rc = bnxt_alloc_rfs_vnics(bp);
-@@ -12241,6 +12272,8 @@ static void bnxt_set_dflt_rss_hash_type(struct bnxt *bp)
- 			   VNIC_RSS_CFG_REQ_HASH_TYPE_TCP_IPV4 |
- 			   VNIC_RSS_CFG_REQ_HASH_TYPE_IPV6 |
- 			   VNIC_RSS_CFG_REQ_HASH_TYPE_TCP_IPV6;
-+	if (bp->fw_cap & BNXT_FW_CAP_RSS_HASH_TYPE_DELTA)
-+		bp->rss_hash_delta = bp->rss_hash_cfg;
- 	if (BNXT_CHIP_P4_PLUS(bp) && bp->hwrm_spec_code >= 0x10501) {
- 		bp->flags |= BNXT_FLAG_UDP_RSS_CAP;
- 		bp->rss_hash_cfg |= VNIC_RSS_CFG_REQ_HASH_TYPE_UDP_IPV4 |
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 91a1ba0a914d..7611bed4a196 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1900,6 +1900,7 @@ struct bnxt {
- 	u16			*rss_indir_tbl;
- 	u16			rss_indir_tbl_entries;
- 	u32			rss_hash_cfg;
-+	u32			rss_hash_delta;
+ #define BNXT_MAX_PHC_DRIFT	31000000
++#define BNXT_CYCLES_SHIFT	23
++#define BNXT_DEVCLK_FREQ	1000000
+ #define BNXT_LO_TIMER_MASK	0x0000ffffffffUL
+ #define BNXT_HI_TIMER_MASK	0xffff00000000UL
  
- 	u16			max_mtu;
- 	u8			max_tc;
-@@ -1965,6 +1966,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_CFA_RFS_RING_TBL_IDX_V2	0x00010000
- 	#define BNXT_FW_CAP_PCIE_STATS_SUPPORTED	0x00020000
- 	#define BNXT_FW_CAP_EXT_STATS_SUPPORTED		0x00040000
-+	#define BNXT_FW_CAP_RSS_HASH_TYPE_DELTA		0x00080000
- 	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		0x00100000
- 	#define BNXT_FW_CAP_HOT_RESET			0x00200000
- 	#define BNXT_FW_CAP_PTP_RTC			0x00400000
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index cc89e5eabcb9..a841b0a47cfd 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1234,6 +1234,8 @@ static int bnxt_srxfh(struct bnxt *bp, struct ethtool_rxnfc *cmd)
- 	if (bp->rss_hash_cfg == rss_hash_cfg)
- 		return 0;
+@@ -88,8 +90,9 @@ struct bnxt_ptp_cfg {
+ 	u64			old_time;
+ 	unsigned long		next_period;
+ 	unsigned long		next_overflow_check;
+-	/* 48-bit PHC overflows in 78 hours.  Check overflow every 19 hours. */
+-	#define BNXT_PHC_OVERFLOW_PERIOD	(19 * 3600 * HZ)
++	u32			cmult;
++	/* a 23b shift cyclecounter will overflow in ~36 mins.  Check overflow every 18 mins. */
++	#define BNXT_PHC_OVERFLOW_PERIOD	(18 * 60 * HZ)
  
-+	if (bp->fw_cap & BNXT_FW_CAP_RSS_HASH_TYPE_DELTA)
-+		bp->rss_hash_delta = bp->rss_hash_cfg ^ rss_hash_cfg;
- 	bp->rss_hash_cfg = rss_hash_cfg;
- 	if (netif_running(bp->dev)) {
- 		bnxt_close_nic(bp, false, false);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
-index 184dd8d11cd3..2686a714a59f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
-@@ -6768,6 +6768,53 @@ struct hwrm_vnic_rss_cfg_cmd_err {
- 	u8	unused_0[7];
- };
- 
-+/* hwrm_vnic_rss_qcfg_input (size:192b/24B) */
-+struct hwrm_vnic_rss_qcfg_input {
-+	__le16	req_type;
-+	__le16	cmpl_ring;
-+	__le16	seq_id;
-+	__le16	target_id;
-+	__le64	resp_addr;
-+	__le16	rss_ctx_idx;
-+	__le16	vnic_id;
-+	u8	unused_0[4];
-+};
-+
-+/* hwrm_vnic_rss_qcfg_output (size:512b/64B) */
-+struct hwrm_vnic_rss_qcfg_output {
-+	__le16	error_code;
-+	__le16	req_type;
-+	__le16	seq_id;
-+	__le16	resp_len;
-+	__le32	hash_type;
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_IPV4                0x1UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_TCP_IPV4            0x2UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_UDP_IPV4            0x4UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_IPV6                0x8UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_TCP_IPV6            0x10UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_UDP_IPV6            0x20UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_IPV6_FLOW_LABEL     0x40UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_AH_SPI_IPV4         0x80UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_ESP_SPI_IPV4        0x100UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_AH_SPI_IPV6         0x200UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_TYPE_ESP_SPI_IPV6        0x400UL
-+	u8	unused_0[4];
-+	__le32	hash_key[10];
-+	u8	hash_mode_flags;
-+	#define VNIC_RSS_QCFG_RESP_HASH_MODE_FLAGS_DEFAULT         0x1UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_MODE_FLAGS_INNERMOST_4     0x2UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_MODE_FLAGS_INNERMOST_2     0x4UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_MODE_FLAGS_OUTERMOST_4     0x8UL
-+	#define VNIC_RSS_QCFG_RESP_HASH_MODE_FLAGS_OUTERMOST_2     0x10UL
-+	u8	ring_select_mode;
-+	#define VNIC_RSS_QCFG_RESP_RING_SELECT_MODE_TOEPLITZ          0x0UL
-+	#define VNIC_RSS_QCFG_RESP_RING_SELECT_MODE_XOR               0x1UL
-+	#define VNIC_RSS_QCFG_RESP_RING_SELECT_MODE_TOEPLITZ_CHECKSUM 0x2UL
-+	#define VNIC_RSS_QCFG_RESP_RING_SELECT_MODE_LAST             VNIC_RSS_QCFG_RESP_RING_SELECT_MODE_TOEPLITZ_CHECKSUM
-+	u8	unused_1[5];
-+	u8	valid;
-+};
-+
- /* hwrm_vnic_plcmodes_cfg_input (size:320b/40B) */
- struct hwrm_vnic_plcmodes_cfg_input {
- 	__le16	req_type;
+ 	u16			tx_seqid;
+ 	u16			tx_hdr_off;
 -- 
 2.18.1
 
 
---000000000000f8189905ecd65681
+--00000000000012ff0105ecd65741
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -330,13 +280,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPevFAhztnArS4kX4JoleKdmOD7CYTjS
-0JtAARMIp5+0MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
-NzAwMTY0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPg4Ctg3X8M3kFEP7w13dlOTgUCPy/tK
+qjNIf4WFNUOUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
+NzAwMTY1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBMOUBlMfoe7OV5IXQIAO9ftF6dlKXERIH95L4sk60OIbjo6cdM
-OQjbRaQ397Pi246L2oU3fSC4+//dtokzSUz06R3q497kNpXBU4KsGYhHcKDuiSnNbRZL+wwA1iyx
-gR/aQR87UnPrXq8BpoC4mBz0M5emh3090683O8/TK+UHxfk70zBXEcQrPrIpFAGFxBBg85cieU4W
-TUoQJl04w5JBuKUX6mPZjgMSEP7D1KFlim2lgpBRXVlc/5CM38KbtGf3s6HmZ86aPI7B0rOdTMkO
-bFBvghmw8AKHKtYdoQvGBXTu9e1rT0/gBgejACxSHiVmqMtg8VimFA7FGwcOcL4h
---000000000000f8189905ecd65681--
+ATANBgkqhkiG9w0BAQEFAASCAQADlMaK6bPkV09bbMJ4aLAMBFlp1MkZvr55yr5sq3X6IlyrcFlG
+z19QCvb4h6jvHHCZH7CZLMKYDpeEZkVlb6lLOncg+ffsmp2gotEPDTXbTufaYz/LpZhnwbaGzEmC
+wXd5FughxErOTjjik2eCACJCv6YSdbF8YkyZwmhK2KC+5E4W47xP5CA1V+SUj06o8R5B45I5JPPv
+VeE78h4PZ3RtHZfuBbOZ7dpjjDI37xAypZRVU5CNETAdkF5aOcEt7znm4/7wJWtAx1gHvepwESrh
+yIDEFy6AzWUrOx4EdfW60jWlvZeEd5IC8b7CGL0w2RSDuS/mbW0BJcp/RZgrCw+K
+--00000000000012ff0105ecd65741--
