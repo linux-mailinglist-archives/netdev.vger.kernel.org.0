@@ -2,77 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C25620349
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 00:07:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9407F6203CB
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 00:32:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbiKGXHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 18:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        id S232308AbiKGXcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 18:32:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiKGXHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 18:07:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5057426111
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 15:06:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667862370;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ql3/+AzyhVuxEaK0XBBzJjHyQy15pEZbdDGEtiC6+IA=;
-        b=C4ohJ9JWxYbVrYt67x/MInFVnr3eIbjXThHuBMN/62KXenkSM/mi138EPjpNTZDGcA/I2T
-        LnuL4CDu2s8H0EGZCoBd9T7WInFdYJOi5SoBkECDw4CIwR4v8x6K5lL4Q1IzLqAi/5YRqZ
-        07y56Wp0U0sctVcGibUgQVT2KJFw26w=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-661-4wG6yy8fNcaPs86IlIneWA-1; Mon, 07 Nov 2022 18:06:09 -0500
-X-MC-Unique: 4wG6yy8fNcaPs86IlIneWA-1
-Received: by mail-qv1-f70.google.com with SMTP id d8-20020a0cfe88000000b004bb65193fdcso8579048qvs.12
-        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 15:06:09 -0800 (PST)
+        with ESMTP id S232110AbiKGXcf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 18:32:35 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D011741C;
+        Mon,  7 Nov 2022 15:32:34 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id k2so34333895ejr.2;
+        Mon, 07 Nov 2022 15:32:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=AiLgtkiudUKJTTaGdp3zbpBeZPoePBEReextvb186MI=;
+        b=F+912x1YVqzNVZ+r84T1IgOx22zFb0Z/IwAZyy2OHa10ek3R514Rs1677cR+EL1q/j
+         wxE8uaHgW2Gvd9YiIKC+dGk06TxagVz2h9sl4lcEY5fvbb0/3uclQxHoerZzRrHdmawJ
+         MgcZxqpr6suK1wdHyXEPCbmC+cUFPWE/HQSYZGE47XHq8TGetzN+6taEgUL/3mGcx1HM
+         G8Kb8loOisf/avTiK/Fq0InBmKXa/o3ivcd2GD6jjJI3RIU8UzDbxnW5J/P+BMsXNrKe
+         qNqamSeiF5MYKL9siv68G90teksoa5S2qHssaQPBMPJ8334Q+Oxldq0XWAlczy/GBe4I
+         bhNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Ql3/+AzyhVuxEaK0XBBzJjHyQy15pEZbdDGEtiC6+IA=;
-        b=NFv/wV6YoXq2yZWMNRXWHy9tgCbrMVNf/r29bNrv9qj2mb3MZtXVYFiBHM6tq7qiCk
-         2OI8mLPbT/4yAVCJNiEMU9qVR8xjmtIFBWvAhSuH+PLH+3a57MTknRgQ0/e8S75/51Rm
-         xHheT2nMDwYctMsIFKTmZ02amZ6HKEAYDhUgf99bYZsEKU0lRI8cn2ly8EswPE2by+9g
-         v+1Jc1lv7NM/bhPVAGun+SY4ZFxrWVQ979bAWox7vxbGrwTk8B4LTFIudbFBLtWE9zBA
-         hn8Jk0X3ALRbf6dzYrin6OpOeH00ecKcyXTezXr10IWOqqfY3N90Dal4qBI12b4onlT/
-         mUJQ==
-X-Gm-Message-State: ACrzQf0Xhir7JU05rWhAD11s16HpZQMhjJYEY1XsZpRwc3/0B59Zuauf
-        iI3B2Ja1I4CiEJiaKark+304LXe2QuzwW1lTh3tfPxWJsZqB78/tkx9aApKDOKwE3ndCd3t9yEU
-        MPpJusC6T3BDiviax
-X-Received: by 2002:ae9:e111:0:b0:6fa:1ea0:69e1 with SMTP id g17-20020ae9e111000000b006fa1ea069e1mr34568762qkm.370.1667862368961;
-        Mon, 07 Nov 2022 15:06:08 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM7mmkvNGzkIVQsl0WH5rThaFl+Pp3Ew/JlRdT6tjQRoUw9VLkIT++tsBdx42M1W6auzIeyiWg==
-X-Received: by 2002:ae9:e111:0:b0:6fa:1ea0:69e1 with SMTP id g17-20020ae9e111000000b006fa1ea069e1mr34568749qkm.370.1667862368734;
-        Mon, 07 Nov 2022 15:06:08 -0800 (PST)
-Received: from redhat.com ([87.249.138.11])
-        by smtp.gmail.com with ESMTPSA id k11-20020a05620a0b8b00b006fab68c7e87sm1387980qkh.70.2022.11.07.15.06.05
+        bh=AiLgtkiudUKJTTaGdp3zbpBeZPoePBEReextvb186MI=;
+        b=ywxHRBXbhY6WnvdTlEuv/H5m2mhNx3d8dBjuqkNRzVcJwR8/LbO33jMYqQGluEgdIU
+         5MD+DkhowM2plIrxJWVmdqAicdF3wA4ncVEQpXkDfKw0dLZWcEO1JBNJ7gf8t0KqEjtb
+         PKJUd3EwoiUUNBSSwHwb6M1NYwh+5x4S2e1ML7argMfr/Lvoss840LJYsN3qs904ZUUC
+         64f8qQDHx+9s6iZWVVNgVdf9wTuJc7l5FHKsuFYQDg3FKW5I0Cy6ldvVCWHcbo08hBis
+         sc+/eLkx7gb9RE8FAPqwQgU4YZ2y8RiE9dIfECX/nVxRAsmXcTJTGN1soQLpKkDQH7/Q
+         wLvw==
+X-Gm-Message-State: ANoB5plRFq8s/lpWm8V3FdxYd+OlQk44bO9VlDufgNxDxv2HvUObLToJ
+        SVXucrLNBE/IRlenu18BOfw=
+X-Google-Smtp-Source: AA0mqf75QT137g7/iddXAYo402OLTzYbFPikl7JfQ39bSP0WrlaHdQL7Tt0Qql8fqtDDCA22f1f+Ug==
+X-Received: by 2002:a17:907:971e:b0:78d:e7ed:7585 with SMTP id jg30-20020a170907971e00b0078de7ed7585mr1937992ejc.258.1667863952532;
+        Mon, 07 Nov 2022 15:32:32 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id o19-20020a170906769300b00722e50dab2csm3970132ejm.109.2022.11.07.15.32.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 15:06:08 -0800 (PST)
-Date:   Mon, 7 Nov 2022 18:06:02 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eric Auger <eric.auger@redhat.com>
-Cc:     eric.auger.pro@gmail.com, jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, peterx@redhat.com
-Subject: Re: [RFC] vhost: Clear the pending messages on
- vhost_init_device_iotlb()
-Message-ID: <20221107180022-mutt-send-email-mst@kernel.org>
-References: <20221107203431.368306-1-eric.auger@redhat.com>
- <20221107153924-mutt-send-email-mst@kernel.org>
- <b8487793-d7b8-0557-a4c2-b62754e14830@redhat.com>
+        Mon, 07 Nov 2022 15:32:31 -0800 (PST)
+Date:   Tue, 8 Nov 2022 01:32:29 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 11/14] net: ethernet: mtk_eth_soc: fix VLAN rx hardware
+ acceleration
+Message-ID: <20221107233229.qzwuex4nwm44xbe4@skbuf>
+References: <20221107185452.90711-1-nbd@nbd.name>
+ <20221107185452.90711-11-nbd@nbd.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b8487793-d7b8-0557-a4c2-b62754e14830@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20221107185452.90711-11-nbd@nbd.name>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,54 +81,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 10:10:06PM +0100, Eric Auger wrote:
-> Hi Michael,
-> On 11/7/22 21:42, Michael S. Tsirkin wrote:
-> > On Mon, Nov 07, 2022 at 09:34:31PM +0100, Eric Auger wrote:
-> >> When the vhost iotlb is used along with a guest virtual iommu
-> >> and the guest gets rebooted, some MISS messages may have been
-> >> recorded just before the reboot and spuriously executed by
-> >> the virtual iommu after the reboot. Despite the device iotlb gets
-> >> re-initialized, the messages are not cleared. Fix that by calling
-> >> vhost_clear_msg() at the end of vhost_init_device_iotlb().
-> >>
-> >> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> >> ---
-> >>  drivers/vhost/vhost.c | 1 +
-> >>  1 file changed, 1 insertion(+)
-> >>
-> >> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> >> index 40097826cff0..422a1fdee0ca 100644
-> >> --- a/drivers/vhost/vhost.c
-> >> +++ b/drivers/vhost/vhost.c
-> >> @@ -1751,6 +1751,7 @@ int vhost_init_device_iotlb(struct vhost_dev *d, bool enabled)
-> >>  	}
-> >>  
-> >>  	vhost_iotlb_free(oiotlb);
-> >> +	vhost_clear_msg(d);
-> >>  
-> >>  	return 0;
-> >>  }
-> > Hmm.  Can't messages meanwhile get processes and affect the
-> > new iotlb?
-> Isn't the msg processing stopped at the moment this function is called
-> (VHOST_SET_FEATURES)?
+On Mon, Nov 07, 2022 at 07:54:49PM +0100, Felix Fietkau wrote:
+> - enable VLAN untagging for PDMA rx
+> - make it possible to disable the feature via ethtool
+> - pass VLAN tag to the DSA driver
+> - untag special tag on PDMA only if no non-DSA devices are in use
+> - disable special tag untagging on 7986 for now, since it's not working yet
+
+What is the downside of not enabling VLAN RX offloading, is it a
+performance or a functional need to have it?
+
 > 
-> Thanks
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 36 +++++++++++++--------
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 ++
+>  2 files changed, 25 insertions(+), 14 deletions(-)
 > 
-> Eric
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index ab31dda2cd66..3b8995a483aa 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -2015,16 +2015,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>  						htons(RX_DMA_VPID(trxd.rxd4)),
+>  						RX_DMA_VID(trxd.rxd4));
+>  			} else if (trxd.rxd2 & RX_DMA_VTAG) {
+> -				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+> +				__vlan_hwaccel_put_tag(skb, htons(RX_DMA_VPID(trxd.rxd3)),
 
-It's pretty late here I'm not sure.  You tell me what prevents it.
+Why make this change? The network stack doesn't like it when you feed it
+non-standard VLAN protocols, as you've noticed.
 
-BTW vhost_init_device_iotlb gets enabled parameter but ignores
-it, we really should drop that.
+>  						       RX_DMA_VID(trxd.rxd3));
+>  			}
+> -
+> -			/* If the device is attached to a dsa switch, the special
+> -			 * tag inserted in VLAN field by hw switch can * be offloaded
+> -			 * by RX HW VLAN offload. Clear vlan info.
 
-Also, it looks like if features are set with VIRTIO_F_ACCESS_PLATFORM
-and then cleared, iotlb is not properly cleared - bug?
+What is the format of this special tag, what does it contain? The same
+thing as what mtk_tag_rcv() parses?
 
+> -			 */
+> -			if (netdev_uses_dsa(netdev))
+> -				__vlan_hwaccel_clear_tag(skb);
 
-> >
-> >
-> >> -- 
-> >> 2.37.3
+If the DSA switch information is present in the VLAN hwaccel, and the
+VLAN hwaccel is cleared, and that up until this change,
+NETIF_F_HW_VLAN_CTAG_RX was not configurable, it means that every
+mtk_soc_data with MTK_HW_FEATURES would be broken as a DSA master?
 
+>  		}
+>  
+>  		skb_record_rx_queue(skb, 0);
+> @@ -2847,15 +2840,17 @@ static netdev_features_t mtk_fix_features(struct net_device *dev,
+>  
+>  static int mtk_set_features(struct net_device *dev, netdev_features_t features)
+>  {
+> -	int err = 0;
+> -
+> -	if (!((dev->features ^ features) & NETIF_F_LRO))
+> -		return 0;
+> +	struct mtk_mac *mac = netdev_priv(dev);
+> +	struct mtk_eth *eth = mac->hw;
+> +	netdev_features_t diff = dev->features ^ features;
+>  
+> -	if (!(features & NETIF_F_LRO))
+> +	if ((diff & NETIF_F_LRO) && !(features & NETIF_F_LRO))
+>  		mtk_hwlro_netdev_disable(dev);
+>  
+> -	return err;
+> +	/* Set RX VLAN offloading */
+> +	mtk_w32(eth, !!(features & NETIF_F_HW_VLAN_CTAG_RX), MTK_CDMP_EG_CTRL);
+
+Nit: do this only if (diff & NETIF_F_HW_VLAN_CTAG_RX).
+
+> +
+> +	return 0;
+>  }
+>  
+>  /* wait for DMA to finish whatever it is doing before we start using it again */
+> @@ -3176,6 +3171,15 @@ static int mtk_open(struct net_device *dev)
+>  	else
+>  		refcount_inc(&eth->dma_refcnt);
+>  
+> +	/* Hardware special tag parsing needs to be disabled if at least
+> +	 * one MAC does not use DSA.
+> +	 */
+
+Don't understand why, sorry.
+
+> +	if (!netdev_uses_dsa(dev)) {
+> +		u32 val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
+> +		val &= ~MTK_CDMP_STAG_EN;
+> +		mtk_w32(eth, val, MTK_CDMP_IG_CTRL);
+> +	}
+> +
+>  	phylink_start(mac->phylink);
+>  	netif_tx_start_all_queues(dev);
+>  
+> @@ -3469,6 +3473,10 @@ static int mtk_hw_init(struct mtk_eth *eth)
+>  	 */
+>  	val = mtk_r32(eth, MTK_CDMQ_IG_CTRL);
+>  	mtk_w32(eth, val | MTK_CDMQ_STAG_EN, MTK_CDMQ_IG_CTRL);
+> +	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+> +		val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
+> +		mtk_w32(eth, val | MTK_CDMP_STAG_EN, MTK_CDMP_IG_CTRL);
+> +	}
+>  
+>  	/* Enable RX VLan Offloading */
+>  	mtk_w32(eth, 1, MTK_CDMP_EG_CTRL);
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> index e09b2483c70c..26b2323185ef 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> @@ -93,6 +93,9 @@
+>  #define MTK_CDMQ_IG_CTRL	0x1400
+>  #define MTK_CDMQ_STAG_EN	BIT(0)
+>  
+> +/* CDMQ Exgress Control Register */
+> +#define MTK_CDMQ_EG_CTRL	0x1404
+> +
+>  /* CDMP Ingress Control Register */
+>  #define MTK_CDMP_IG_CTRL	0x400
+>  #define MTK_CDMP_STAG_EN	BIT(0)
+> -- 
+> 2.38.1
+> 
