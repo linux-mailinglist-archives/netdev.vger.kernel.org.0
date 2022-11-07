@@ -2,119 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0053620147
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:36:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 259F3620150
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233483AbiKGVgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 16:36:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58072 "EHLO
+        id S233513AbiKGVh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 16:37:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233319AbiKGVgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:36:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069E5DA2;
-        Mon,  7 Nov 2022 13:36:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC264B816AA;
-        Mon,  7 Nov 2022 21:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FE5C4347C;
-        Mon,  7 Nov 2022 21:36:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667856987;
-        bh=fhSLuMFsDIXZTyGC5V/74ol9l/TQbCSvyukyKs6zDLc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XYph1WMMA0b9TxY1XmamRAgMiZDX4dLtn7hlfCKqpr3XgUBYDHlxOJu5tzbZiEf9Y
-         U+96SdOLqUCJFqv6A8z6qROTM33UhGOUo5p92cR7qCtqNhXHVpbCfbU4yRdGT0YhjD
-         gw40/B8OC7NooL9jk2Ku/1sFERozCmCtQxctalXbpNNPrNNhGp1IBLIgUKgUtTL7Qi
-         wS5ZBKhi6TeGSf1dMV8MXL2vbUoeoMVrHPVK4dpW7GqsZ/yXXi82+xbG0bKXqmxpDA
-         wjamJsKLQItFyM9z/jaJZ3PwvS2UE4bZdleN3Dg2S25L1raAXnC4xokiShLpqgBmw6
-         gy93X/gjYHK6w==
-Received: by mail-lj1-f174.google.com with SMTP id d3so18332255ljl.1;
-        Mon, 07 Nov 2022 13:36:27 -0800 (PST)
-X-Gm-Message-State: ACrzQf2troSyCfQhGD+fkLs26g7Aj66qLilSWWPTxrFZorZoJj86n0S5
-        GCzG1TOMd/8EqFaoa4WsZSzp9KHVBMxr2tuudQ==
-X-Google-Smtp-Source: AMsMyM4tx5YQl80AevtfnGWbnhBrN3sG0NTkgJ6voYrQpSySVeZNzfrLe4SOOGqRrTLPdBUeWEHVGVZ4kM920ag340Y=
-X-Received: by 2002:a05:651c:114a:b0:25d:5ae6:42a4 with SMTP id
- h10-20020a05651c114a00b0025d5ae642a4mr18168309ljo.255.1667856985359; Mon, 07
- Nov 2022 13:36:25 -0800 (PST)
+        with ESMTP id S233537AbiKGVhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:37:54 -0500
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3579E15715
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 13:37:53 -0800 (PST)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-13ae8117023so14196848fac.9
+        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 13:37:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=HejFlgHKmBGzk/mBIA87qRdy5PTiC31t5RYdgGHwS3o=;
+        b=URdwkQQSLaYC2sgfRKTqDreHSK8nJLdGMGWE0eDM2e9LRCZqOQTSmI3XUalNFetIMN
+         Blb67oK8zArpvcRPOgjEfbDXNdwWOsufnevc8c63x9kf8tKjYs9+IPL5/1s1sFlmKPLy
+         l/kmuaT3yD3qmP2wNlYQaR5lEF3ATv1uPqC6deWIpSzyitSlp6d5ZtRl9FRWMghVBvLZ
+         06rUqpoBTBbfu9fqypvJ/EEU2gbF9aV2IS0dHU1szUFmzcicldoCJB8vJst3pl1N+gyh
+         tHTbanceg1gWZp6BJIiNqcQlehXm9/baD2yxqmeUcaCfFTTRWqq0ghHOkqC5xo7D2Tkl
+         KJQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HejFlgHKmBGzk/mBIA87qRdy5PTiC31t5RYdgGHwS3o=;
+        b=iHuomNm2dyn65aYU8Os4lI5HMyU3otCfNv5yMeKYrCL5hDm067p4AAVIY2Cb7APNjC
+         RQmo+xB95+JPuJQ8A7YYFzrstcDVCct9tS1H6XeGKRgZnYsveFiqQHDFzO/fgu7bo0pu
+         91lR6Qg408nv8/1wtfgsVJlbVkbTAHSkv9RVOQuLLrZfN1R39T7CwBs5fyvLym1k2o4Z
+         WcVKqPGqDWzC3qkzaW5A20XfMohV+RwQdQwxW4WPq+Id+JK9wtc3GdUH0L+95QIw0Vrp
+         78OXB4o+e3riKMcHnADy5MANBZlEfg9MdC3fcn2iiXnKZlUc4xHSFvlnfWmOC+wAuSHL
+         5Ofg==
+X-Gm-Message-State: ACrzQf3Ki6MNOVMLcryGc9/uSs6WcaE3z0Ld6zUoOAD22JPWsdyIni+2
+        JlfTfslQ5XrluKhfsTB05KPgj/ie5kqTjS786CXCmQ==
+X-Google-Smtp-Source: AMsMyM48Ih0bnW2g8idkWTbJkUt3h7FZUwC1tdVNW6cLBRe9greBUQjyL5Oe+czHcLkK/F8jVcpFTbHM3Z/X62aTzgM=
+X-Received: by 2002:a05:6870:b6a3:b0:13b:f4f1:7dec with SMTP id
+ cy35-20020a056870b6a300b0013bf4f17decmr31266166oab.282.1667857072240; Mon, 07
+ Nov 2022 13:37:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20221103210650.2325784-1-sean.anderson@seco.com>
- <20221103210650.2325784-9-sean.anderson@seco.com> <20221107201010.GA1525628-robh@kernel.org>
- <20221107202223.ihdk4ubbqpro5w5y@skbuf> <7caf2d6a-3be9-4261-9e92-db55fe161f7e@seco.com>
-In-Reply-To: <7caf2d6a-3be9-4261-9e92-db55fe161f7e@seco.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 7 Nov 2022 15:36:16 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKw=1iP6KUj=c6stgCMo7V6hGO9iB+MgixA5tiackeNnA@mail.gmail.com>
-Message-ID: <CAL_JsqKw=1iP6KUj=c6stgCMo7V6hGO9iB+MgixA5tiackeNnA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 08/11] of: property: Add device link support
- for PCS
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Saravana Kannan <saravanak@google.com>,
-        devicetree@vger.kernel.org
+References: <0000000000000bab2c05e95a81a3@google.com> <000000000000946f3005eca8cafe@google.com>
+ <CACT4Y+bX40TE_rx0SFnixoQVd_vHuGih9mtJA4TB7-dDOeguew@mail.gmail.com> <CABBYNZKyjFE_oVFDMj-U9uSax79bMimUCi1JyGBmyR_ufCNAUw@mail.gmail.com>
+In-Reply-To: <CABBYNZKyjFE_oVFDMj-U9uSax79bMimUCi1JyGBmyR_ufCNAUw@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 7 Nov 2022 13:37:40 -0800
+Message-ID: <CACT4Y+a0ma3NRFFLTEHMOH_6Y6DqNet5sz6m6HQwVe8sTv2EQA@mail.gmail.com>
+Subject: Re: [syzbot] BUG: corrupted list in hci_conn_add_sysfs
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     syzbot <syzbot+b30ccad4684cce846cef@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com,
+        gregkh@linuxfoundation.org, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.von.dentz@intel.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        rafael@kernel.org, syzkaller-bugs@googlegroups.com,
+        yin31149@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 7, 2022 at 2:50 PM Sean Anderson <sean.anderson@seco.com> wrote:
+On Sun, 6 Nov 2022 at 22:39, Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
 >
-> On 11/7/22 15:22, Vladimir Oltean wrote:
-> > On Mon, Nov 07, 2022 at 02:10:10PM -0600, Rob Herring wrote:
-> >> On Thu, Nov 03, 2022 at 05:06:47PM -0400, Sean Anderson wrote:
-> >> > This adds device link support for PCS devices. Both the recommended
-> >> > pcs-handle and the deprecated pcsphy-handle properties are supported.
-> >> > This should provide better probe ordering.
-> >> >
-> >> > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> >> > ---
-> >> >
-> >> > (no changes since v1)
-> >> >
-> >> >  drivers/of/property.c | 4 ++++
-> >> >  1 file changed, 4 insertions(+)
-> >>
-> >> Seems like no dependency on the rest of the series, so I can take this
-> >> patch?
+> Hi,
+>
+> On Sun, Nov 6, 2022 at 3:25 PM Dmitry Vyukov <dvyukov@google.com> wrote:
 > >
-> > Is fw_devlink well-behaved these days, so as to not break (forever defer)
-> > the probing of the device having the pcs-handle, if no driver probed on
-> > the referenced PCS? Because the latter is what will happen if no one
-> > picks up Sean's patches to probe PCS devices in the usual device model
-> > way, I think.
+> > On Fri, 4 Nov 2022 at 10:56, syzbot
+> > <syzbot+b30ccad4684cce846cef@syzkaller.appspotmail.com> wrote:
+> > >
+> > > syzbot suspects this issue was fixed by commit:
+> > >
+> > > commit 448a496f760664d3e2e79466aa1787e6abc922b5
+> > > Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+> > > Date:   Mon Sep 19 17:56:59 2022 +0000
+> > >
+> > >     Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
+> > >
+> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1052f8fe880000
+> > > start commit:   dc164f4fb00a Merge tag 'for-linus-6.0-rc7' of git://git.ke..
+> > > git tree:       upstream
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=122d7bd4fc8e0ecb
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=b30ccad4684cce846cef
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1110db8c880000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13e58aef080000
+> > >
+> > > If the result looks correct, please mark the issue as fixed by replying with:
+> > >
+> > > #syz fix: Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
+> > >
+> > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> >
+> >
+> > Looks reasonable based on subsystem and the patch:
+> >
+> > #syz fix: Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
 >
-> Last time [1], Saravana suggested to move this to the end of the series to
-> avoid such problems. FWIW, I just tried booting a LS1046A with the
-> following patches applied
+> Looks like I did add a different link when fixing it:
 >
-> 01/11 (compatibles) 05/11 (device) 08/11 (link) 09/11 (consumer)
-> =================== ============== ============ ================
-> Y                   N              Y            N
-> Y                   Y              Y            Y
-> Y                   Y              Y            N
-> N                   Y              Y            N
-> N                   N              Y            N
+> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=448a496f760664d3e2e79466aa1787e6abc922b5
 >
-> and all interfaces probed each time. So maybe it is safe to pick
-> this patch.
+> Or perhaps they are duplicated?
+>
+> https://syzkaller.appspot.com/bug?id=da3246e2d33afdb92d66bc166a0934c5b146404a
+> https://syzkaller.appspot.com/bug?extid=b30ccad4684cce846cef
 
-Maybe? Just take it with the rest of the series.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Yes, most likely differently looking crashes, but the same root cause.
+It happens.
