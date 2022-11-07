@@ -2,95 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5329961E7DB
+	by mail.lfdr.de (Postfix) with ESMTP id 0640E61E7DA
 	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 01:17:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbiKGAQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Nov 2022 19:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        id S230231AbiKGAQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Nov 2022 19:16:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiKGAQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 19:16:48 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4576312
-        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 16:16:47 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id x21so6408778qkj.0
-        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 16:16:47 -0800 (PST)
+        with ESMTP id S229756AbiKGAQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Nov 2022 19:16:50 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7656312
+        for <netdev@vger.kernel.org>; Sun,  6 Nov 2022 16:16:49 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id l15so6156505qtv.4
+        for <netdev@vger.kernel.org>; Sun, 06 Nov 2022 16:16:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZL1sPTqEIFsumnaZ1VYSAomNdea/vscveNPIoMYMb2w=;
-        b=gQz13nWRmEEFJtfx4RLH1CFLw0JOY3y4KJsAvl0kj/Bp0m3QbgrgKtzf2xEDlIqvM3
-         1/t5WNu+3kXH24nYhF7df/+cW2mJkfKC8ygctIBM9e3QXehZjfhBxiEVh5lBR53yUQwu
-         NHOnwj0cP+7+Tnu7NsvDnkQKdu/zj9DAyQ1X0=
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=VntKCbdjZiKAfVtxA1cO9Em2DH7VASH/XkiZ7ooDlck=;
+        b=S6ME/6CosPBheu/VlA8aOFxIxlPQwq7siKNTsr/BY8Carhz7G8+9qYXSAPYUyKq7Tb
+         OCVKN2nUChVcfKymCfgkTY78XeUxssU5ZBQ+eJ75dOc+qVP+JvZYBKc5upU6ystjtXxF
+         FOB+eQb98stpSRwkM9f26Dm3YJ0OY8VnjZPic=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZL1sPTqEIFsumnaZ1VYSAomNdea/vscveNPIoMYMb2w=;
-        b=wrX+zMYQFhAzTa0SBnMvFETCL82o+OsUX3aRHbBcx/LDuspU7qMm+zA9WxHo1PWQYt
-         dK6Tpiva242mCcEpsSBGFSDCKj3wBar0Eb4SXQiuvsGx0tyo4Q086KI2Dr+mDds2tb0Z
-         IY/3rXhF6ruCZWlnF5hhtCJ+91V9ce7Jvh2FKpX6lEUv5E348BWUmnRAEGDDpHxEBVQ1
-         WXOlQzYJPDtcTv3mH0loGbBErbpuvjBcH1uJC/klnxya739sz/v1ufUEzejAURphAVKW
-         2xysTtOxJFj76AZ5SmfnEre66QTET0UC6tHmpvgEfFMHdIjGwElAPgNMyOYJJgJjr6ia
-         jWGA==
-X-Gm-Message-State: ACrzQf16Cprs/r1beppo3A4k6PtbsfW/kyKm5NE6FAVdj/hCqXlCNL0P
-        59hySpdElqxZo81Te4mjB3/9BA==
-X-Google-Smtp-Source: AMsMyM63MmagAds9PoJwJhI9rVm4YMlmK441pCF7yqldEt5UUcNSeUaPp/e1yi9ZB5xl/1og9dUaBA==
-X-Received: by 2002:a05:620a:1204:b0:6fa:3cf8:dabf with SMTP id u4-20020a05620a120400b006fa3cf8dabfmr25215586qkj.377.1667780206068;
-        Sun, 06 Nov 2022 16:16:46 -0800 (PST)
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VntKCbdjZiKAfVtxA1cO9Em2DH7VASH/XkiZ7ooDlck=;
+        b=VVEwsSJZeIt7feAd+irmb3kk0ulKw+WtrTXssHSmwS2/0ae0+zYOzYblnlbslDZwPw
+         e8g++2U3mKQRUs+RWoE2ibWkteU56GBRHQh708AUCa1q+cNecaLgbHTpeY0XLQMs3GwU
+         W3UyTn3KmBnpIncEGgR1aeCr0Iz42+Ukp4h7GKyH1rUeQUNhuL2CgXdlJOkqOjUBVkco
+         iE0GYQr8joYu0Z76/yPKQtqzwPVMZ5itl+sy9bnpvp/cdwjGaSn2RsqJ0+Z1y1LheKUJ
+         hGNeAkO9+lzUhZth8+NwKG76VuHpM2TrDjqERMWLPFmMr7fO49vXpXxPW3FKchQhrjZJ
+         sG0A==
+X-Gm-Message-State: ANoB5pkeIHHpjg+9UzxudW3G6eTBvoP0hz9HPstipoDe5dYGh43ZQobq
+        aVNBS+tYvYUIVZ6u+x4rLxYKIQ==
+X-Google-Smtp-Source: AA0mqf5IS3RkQYQ/mxG7nn71IhdLBH+fkovGJrjAcdUqriCY7ItJptZGg/FIeBaap89kx7vCXyQtNw==
+X-Received: by 2002:ac8:4d59:0:b0:3a5:8a23:ceb2 with SMTP id x25-20020ac84d59000000b003a58a23ceb2mr2374081qtv.116.1667780207761;
+        Sun, 06 Nov 2022 16:16:47 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k2-20020ac80742000000b0035badb499c7sm4904079qth.21.2022.11.06.16.16.44
+        by smtp.gmail.com with ESMTPSA id k2-20020ac80742000000b0035badb499c7sm4904079qth.21.2022.11.06.16.16.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Nov 2022 16:16:45 -0800 (PST)
+        Sun, 06 Nov 2022 16:16:47 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com, pavan.chebbi@broadcom.com
-Subject: [PATCH net-next 0/3] bnxt_en: Updates
-Date:   Sun,  6 Nov 2022 19:16:29 -0500
-Message-Id: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 1/3] bnxt_en: refactor VNIC RSS update functions
+Date:   Sun,  6 Nov 2022 19:16:30 -0500
+Message-Id: <1667780192-3700-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
+References: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c619ab05ecd65672"
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="000000000000de8e8505ecd65694"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_TVD_MIME_NO_HEADERS autolearn=no autolearn_force=no
-        version=3.4.6
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_TVD_MIME_NO_HEADERS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c619ab05ecd65672
+--000000000000de8e8505ecd65694
 
-This small patchset adds an improvement to the configuration of ethtool
-RSS tuple hash and a PTP improvement when running in a multi-host
-environment.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Edwin Peer (2):
-  bnxt_en: refactor VNIC RSS update functions
-  bnxt_en: update RSS config using difference algorithm
+Extract common code into a new function. This will avoid duplication
+in the next patch, which changes the update algorithm for both the P5
+and legacy code paths.
 
-Pavan Chebbi (1):
-  bnxt_en: Add a non-real time mode to access NIC clock
+No functional changes.
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 72 ++++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  2 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 47 ++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 45 ++++++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  7 +-
- 6 files changed, 142 insertions(+), 33 deletions(-)
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 34 +++++++++++------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 03272aa48511..15edb6cb3656 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -5250,7 +5250,7 @@ int bnxt_get_nr_rss_ctxs(struct bnxt *bp, int rx_rings)
+ 	return 1;
+ }
+ 
+-static void __bnxt_fill_hw_rss_tbl(struct bnxt *bp, struct bnxt_vnic_info *vnic)
++static void bnxt_fill_hw_rss_tbl(struct bnxt *bp, struct bnxt_vnic_info *vnic)
+ {
+ 	bool no_rss = !(vnic->flags & BNXT_VNIC_RSS_FLAG);
+ 	u16 i, j;
+@@ -5263,8 +5263,8 @@ static void __bnxt_fill_hw_rss_tbl(struct bnxt *bp, struct bnxt_vnic_info *vnic)
+ 	}
+ }
+ 
+-static void __bnxt_fill_hw_rss_tbl_p5(struct bnxt *bp,
+-				      struct bnxt_vnic_info *vnic)
++static void bnxt_fill_hw_rss_tbl_p5(struct bnxt *bp,
++				    struct bnxt_vnic_info *vnic)
+ {
+ 	__le16 *ring_tbl = vnic->rss_table;
+ 	struct bnxt_rx_ring_info *rxr;
+@@ -5285,12 +5285,19 @@ static void __bnxt_fill_hw_rss_tbl_p5(struct bnxt *bp,
+ 	}
+ }
+ 
+-static void bnxt_fill_hw_rss_tbl(struct bnxt *bp, struct bnxt_vnic_info *vnic)
++static void
++__bnxt_hwrm_vnic_set_rss(struct bnxt *bp, struct hwrm_vnic_rss_cfg_input *req,
++			 struct bnxt_vnic_info *vnic)
+ {
+ 	if (bp->flags & BNXT_FLAG_CHIP_P5)
+-		__bnxt_fill_hw_rss_tbl_p5(bp, vnic);
++		bnxt_fill_hw_rss_tbl_p5(bp, vnic);
+ 	else
+-		__bnxt_fill_hw_rss_tbl(bp, vnic);
++		bnxt_fill_hw_rss_tbl(bp, vnic);
++
++	req->hash_type = cpu_to_le32(bp->rss_hash_cfg);
++	req->hash_mode_flags = VNIC_RSS_CFG_REQ_HASH_MODE_FLAGS_DEFAULT;
++	req->ring_grp_tbl_addr = cpu_to_le64(vnic->rss_table_dma_addr);
++	req->hash_key_tbl_addr = cpu_to_le64(vnic->rss_hash_key_dma_addr);
+ }
+ 
+ static int bnxt_hwrm_vnic_set_rss(struct bnxt *bp, u16 vnic_id, bool set_rss)
+@@ -5307,14 +5314,8 @@ static int bnxt_hwrm_vnic_set_rss(struct bnxt *bp, u16 vnic_id, bool set_rss)
+ 	if (rc)
+ 		return rc;
+ 
+-	if (set_rss) {
+-		bnxt_fill_hw_rss_tbl(bp, vnic);
+-		req->hash_type = cpu_to_le32(bp->rss_hash_cfg);
+-		req->hash_mode_flags = VNIC_RSS_CFG_REQ_HASH_MODE_FLAGS_DEFAULT;
+-		req->ring_grp_tbl_addr = cpu_to_le64(vnic->rss_table_dma_addr);
+-		req->hash_key_tbl_addr =
+-			cpu_to_le64(vnic->rss_hash_key_dma_addr);
+-	}
++	if (set_rss)
++		__bnxt_hwrm_vnic_set_rss(bp, req, vnic);
+ 	req->rss_ctx_idx = cpu_to_le16(vnic->fw_rss_cos_lb_ctx[0]);
+ 	return hwrm_req_send(bp, req);
+ }
+@@ -5335,10 +5336,7 @@ static int bnxt_hwrm_vnic_set_rss_p5(struct bnxt *bp, u16 vnic_id, bool set_rss)
+ 	if (!set_rss)
+ 		return hwrm_req_send(bp, req);
+ 
+-	bnxt_fill_hw_rss_tbl(bp, vnic);
+-	req->hash_type = cpu_to_le32(bp->rss_hash_cfg);
+-	req->hash_mode_flags = VNIC_RSS_CFG_REQ_HASH_MODE_FLAGS_DEFAULT;
+-	req->hash_key_tbl_addr = cpu_to_le64(vnic->rss_hash_key_dma_addr);
++	__bnxt_hwrm_vnic_set_rss(bp, req, vnic);
+ 	ring_tbl_map = vnic->rss_table_dma_addr;
+ 	nr_ctxs = bnxt_get_nr_rss_ctxs(bp, bp->rx_nr_rings);
+ 
 -- 
 2.18.1
 
 
---000000000000c619ab05ecd65672
+--000000000000de8e8505ecd65694
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -161,13 +233,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPFWMzNCwcoyrxrMABjIecODWEAV1ebH
-U5AIIBr4hLXCMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
-NzAwMTY0NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIA1eQXkH1lZaTmq4jXuR30Qi2viC2Q82
+wOcJbVQMWpDXMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEw
+NzAwMTY0OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAMgnLrwqGKA2TLchedHsp3K81V61fGC6wCcOKpAJiA/R4DFnez
-iB2zVhnTosHzV5yy7Jf10PT9MMGtCI5f7CPAUoUpEzMWjxLwlrSZFaskNePshYB81+fzbEFDF/+g
-1pHQO8VXyjwzHEkcRMjzMRwnyrytXaJbx7SBI7X2GsykAPGNMSttjOmlUtaz838jBx+s5BBK2+ZZ
-1Dq1XNVhooAFVFlyuMycHMUvXyvFGn/FeIWN3GzACogXVrcdYdTPK1trbEJtIEZp+KRS0+XarT3W
-dAPhBx+R4adv47/3EdJ1jlhQCcOyLJsHy5PIEjLLnmRZf0YBLJPhyJtmqJ8yDruh
---000000000000c619ab05ecd65672--
+ATANBgkqhkiG9w0BAQEFAASCAQAsD3Vl82Z+wg+A4lYgU/UtB0oD4eS/Y5I1SbuIJgWeYg4h1riV
+a12/qAYcfbfh7r+RRq0rBg2qSwHKtkQhNq9+1LRBtPZ50oU3ecdCVbhtk19VZ+8GNgEjeEo5R57L
+1wubwsrxSmtFtgduO7/x5oI26ZTfTJq32+0MYZYCefsuO4wo1L1ypYSrM452G7utJGZ0ETmJPMBv
+DNhg6eqX1r+ZJ6mlxRvqlZzdok00LaJ4U+kqqnqlwFhg8z/2VlnVFerWDhSubML0V5VAiTPSCMUo
+M9c1vKUOvkIjosVhdoKd01NOGEuaqQBaIBGsTZsjs4MgTb4yAET9HzChyUOEXM7m
+--000000000000de8e8505ecd65694--
