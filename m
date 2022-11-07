@@ -2,54 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EC7161FFE8
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 21:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17DEE62002B
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232328AbiKGU5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 15:57:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        id S233238AbiKGVEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 16:04:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232850AbiKGU5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 15:57:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED682B622
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 12:56:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667854567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=p+9lgL7H2RIGtfkSoGTjpiKZE0I9zaPI5GTcWtttsjQ=;
-        b=F48/G5PzftlLgn2qXwxQF06kFU8UMfaGneeWnl3NsEUgvlE7YtQFhdn/cc8nXflxk5mYEP
-        81Nf2+5OeEJTOrmhTPupm58CELFeJeeVXi4c6WqbYANzYXZk+371qvpcn4Nn//MDBs1qG5
-        hX4o3hkqs+kwbsHM8x/W34ocQRkNP08=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-186-iEq1w5kIOlK6GvW4vDu2-w-1; Mon, 07 Nov 2022 15:56:04 -0500
-X-MC-Unique: iEq1w5kIOlK6GvW4vDu2-w-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9A2D93833287;
-        Mon,  7 Nov 2022 20:56:03 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.151])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2E64F140EBF5;
-        Mon,  7 Nov 2022 20:56:02 +0000 (UTC)
-Date:   Mon, 7 Nov 2022 15:56:01 -0500
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     axboe@kernel.dk
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
-Message-ID: <Y2lw4Qc1uI+Ep+2C@fedora>
+        with ESMTP id S233262AbiKGVEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:04:02 -0500
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4EAAE4D;
+        Mon,  7 Nov 2022 13:04:02 -0800 (PST)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-13be3ef361dso14081856fac.12;
+        Mon, 07 Nov 2022 13:04:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=L+c0H1nBQxf6B5rWZoqrhhXaMFx8nOWvIRgKOUuZgCQ=;
+        b=Os1C9OmFZxXyot1D4JI0JKO95+L4uHiINpcwIffGpv9ZWax0REKUGqyFnEc+1xPU6y
+         mQV8Xut+z9WngU3+gQyc7n8dOxilPc4quVQxJJke3mjakM9TkZFm5PXhY7mydW2scq74
+         WBCabHcpycZbwUvm9oCo35T2/i/sDdPAzAWYzOx4KWyd95SLumsRx97t1lZeOiVp/4qP
+         tJHmwVs3KTtmzgbdvSlgrKx7hOTBHkVe8dAHx8B4fEjwpaMeH6WXsdmG3V4NrzVcv83J
+         qofszBS+MV3PB/YSjjo8w+wRtpO8TIe5ZhcGOtzqk2XWjHLWJOIhm7LxTuDFcDV09rxc
+         +9Ew==
+X-Gm-Message-State: ACrzQf3ZNmpaRjf6sXoArGjFAgwpn/qZT3AnLjCFAndSHoWpkjWis8DM
+        Hgs4/AWBmGCiszuNsDbT+GdL0oMw8w==
+X-Google-Smtp-Source: AMsMyM7iV1H7kfmpYIoK0N/dnb0NSM4HcqlprZMaw+9WO09jmwomfbql9idJSNQqwHzQ/kIe67ecqw==
+X-Received: by 2002:a05:6870:2427:b0:13b:1f89:ab27 with SMTP id n39-20020a056870242700b0013b1f89ab27mr31504849oap.20.1667855041453;
+        Mon, 07 Nov 2022 13:04:01 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a7-20020a9d5c87000000b0066c495a651dsm3345441oti.38.2022.11.07.13.04.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Nov 2022 13:04:00 -0800 (PST)
+Received: (nullmailer pid 1625023 invoked by uid 1000);
+        Mon, 07 Nov 2022 21:04:02 -0000
+Date:   Mon, 7 Nov 2022 15:04:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     devicetree@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] dt-bindings: net: tsnep: Fix typo on generic
+ nvmem property
+Message-ID: <166785504045.1624928.9983956469114639512.robh@kernel.org>
+References: <20221104162147.1288230-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="XyBYP9056XoM9x6e"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221030220203.31210-1-axboe@kernel.dk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+In-Reply-To: <20221104162147.1288230-1-miquel.raynal@bootlin.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,42 +69,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---XyBYP9056XoM9x6e
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Fri, 04 Nov 2022 17:21:47 +0100, Miquel Raynal wrote:
+> While working on the nvmem description I figured out this file had the
+> "nvmem-cell-names" property name misspelled. Fix the typo, as
+> "nvmem-cells-names" has never existed.
+> 
+> Fixes: 603094b2cdb7 ("dt-bindings: net: Add tsnep Ethernet controller")
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>  Documentation/devicetree/bindings/net/engleder,tsnep.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Hi Jens,
-NICs and storage controllers have interrupt mitigation/coalescing
-mechanisms that are similar.
-
-NVMe has an Aggregation Time (timeout) and an Aggregation Threshold
-(counter) value. When a completion occurs, the device waits until the
-timeout or until the completion counter value is reached.
-
-If I've read the code correctly, min_wait is computed at the beginning
-of epoll_wait(2). NVMe's Aggregation Time is computed from the first
-completion.
-
-It makes me wonder which approach is more useful for applications. With
-the Aggregation Time approach applications can control how much extra
-latency is added. What do you think about that approach?
-
-Stefan
-
---XyBYP9056XoM9x6e
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmNpcOEACgkQnKSrs4Gr
-c8gDagf/YbI6zJoHxLPIL1cGSlayG7NOYya+8Vp+4dfv13V7/ZD6T/RQLJ0xhPhL
-OZZ7TJ0zdOQL7a0J3RxUElcs06gIh7IHupL0YvX9ng0mVNl8DwkfsuLWdxj5Z2x/
-gLD1YjCPHHAEwzHOcma7QR1I36SfxJhXSiyCUNhB3VF4jl9EZV2LIrA1fEUD4MBY
-PNqILWWv81tm93jAFe1JrT/Ak20psPMXRIBfIkWkZfeH4totmbcUEoZLgV8HS4kF
-kEodTyZGwS6kUt7512BC/CDXaiMi3XinLwjqJ42vq+jIHWxEfjwcEMa7KJpL6dg5
-ULilMUkNtaXoeqzicuOv2m+qm3TqxQ==
-=lz3z
------END PGP SIGNATURE-----
-
---XyBYP9056XoM9x6e--
-
+Acked-by: Rob Herring <robh@kernel.org>
