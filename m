@@ -2,128 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8632A61F04A
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 11:22:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA20661F0BE
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 11:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbiKGKWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 05:22:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        id S231705AbiKGKd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 05:33:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231603AbiKGKVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 05:21:50 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4594918E34
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 02:21:27 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id r76so11581724oie.13
-        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 02:21:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=AOmtRIzmF5dcnWrT0j3skK83MYTC+QvduwZ6ndeN2Ks=;
-        b=L9okY7Icb0Gf5ctoFsS3m7Ms6FyffuhIG/wumllqb99pGSDM0eKoVdXRomu4k2Vvje
-         vaAAA5b5CG4T9vL3DYzTbt6i7ilTYVRiZHeAf51qWroCKMi/06UV8twkwYbbvcb58b0c
-         O8aiXYIeKLPGKFxD8AeTNjdm9XiiwAwYXXYnxXnBzQtt4ZaPQYbu2mn3d4/wBF5dq0sI
-         fYgKey8dWac3TMQ3pm+aZLL8XgADS0c8wc9DQhJYDoGLimjkDspSigMMA/pe1/be4Mmf
-         FTMTprRtatoAeN10/4e16TIuQYPcJ6zZ7AsqjnUqg8Bde3BWUPkO4V20s/KjpolOjYbD
-         1dVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AOmtRIzmF5dcnWrT0j3skK83MYTC+QvduwZ6ndeN2Ks=;
-        b=OV/+rIw9TcYmiRHCKJ2WS9Xkyh2QXVGvZ14bBfva684gE7ykTEGjGeq+YQhZXqMwkG
-         aBi/dCL7Jc4xxE4+YOIcGKsqSM/7NDpR2oeGf1Eu93PKXirikxOuWfiwybf6vFLOCMHl
-         BBbu8Pa3OL2x0+KijULid9Ee9RmEoFXrTNgngMjNlDTAoJeKNUygzQh977LwXXVJl0/N
-         HSYBY9avn2+tvxJxtnXbePO8TcJ4u6LCQQwfTmXQtRShf0pf2UxH0e8W9t3uQbEfj6Je
-         ihHUV+iszhtI++aeC0U9/5U0pe8UVe5LtGW0nUJmHCktvMVCA1BMfqzghEWAqP4WP1Kl
-         MgtA==
-X-Gm-Message-State: ACrzQf12+hOIp10Um43pGNIu84EM7n+XGl74ZJJjVqWdxLasgY0RS1EM
-        0Rr+NysIsNx/2rQdEOWptkWLbUjLKwlZdfX99HmmuiFCsm8=
-X-Google-Smtp-Source: AMsMyM4Z92xjGZXgCyg2wym9Bu3/u65n6EL2ZpWI9kWf7s8xWZden0QG/zdZVfFd3uCVmOfceIs+YigxV7lXSF4Af+Y=
-X-Received: by 2002:a17:90b:2393:b0:213:ecb2:2e04 with SMTP id
- mr19-20020a17090b239300b00213ecb22e04mr38944517pjb.100.1667816475223; Mon, 07
- Nov 2022 02:21:15 -0800 (PST)
+        with ESMTP id S231807AbiKGKdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 05:33:50 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD3B6EA6;
+        Mon,  7 Nov 2022 02:33:49 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DDB7A1FB;
+        Mon,  7 Nov 2022 02:33:54 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.69.132])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 96A1D3F534;
+        Mon,  7 Nov 2022 02:33:46 -0800 (PST)
+Date:   Mon, 7 Nov 2022 10:33:25 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Baisong Zhong <zhongbaisong@huawei.com>, elver@google.com,
+        Catalin Marinas <catalin.marinas@arm.com>, edumazet@google.com,
+        keescook@chromium.org, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH -next,v2] bpf, test_run: fix alignment problem in
+ bpf_prog_test_run_skb()
+Message-ID: <Y2je9dJxUjEchB9k@FVFF77S0Q05N>
+References: <20221102081620.1465154-1-zhongbaisong@huawei.com>
+ <CAG_fn=UDAjNd2xFrRxSVyLTZOAGapjSq2Zu5Xht12JNq-A7S=A@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6a06:925:b0:587:19e0:c567 with HTTP; Mon, 7 Nov 2022
- 02:21:14 -0800 (PST)
-Reply-To: contact@ammico.it
-From:   =?UTF-8?Q?Mrs=2E_Monika_Everenov=C3=A1?= <977638ib@gmail.com>
-Date:   Mon, 7 Nov 2022 11:21:14 +0100
-Message-ID: <CAHAXD+Z_SoFK+TjW_6apBCCLtc_awXEjaqOdf77jdLRxxup3TA@mail.gmail.com>
-Subject: Re:
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.8 required=5.0 tests=ADVANCE_FEE_2_NEW_MONEY,
-        BAYES_40,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_FROM,FROM_STARTS_WITH_NUMS,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:244 listed in]
-        [list.dnswl.org]
-        * -0.0 BAYES_40 BODY: Bayes spam probability is 20 to 40%
-        *      [score: 0.2195]
-        *  0.7 FROM_STARTS_WITH_NUMS From: starts with several numbers
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [977638ib[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  3.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-        *  2.0 ADVANCE_FEE_2_NEW_MONEY Advance Fee fraud and lots of money
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG_fn=UDAjNd2xFrRxSVyLTZOAGapjSq2Zu5Xht12JNq-A7S=A@mail.gmail.com>
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hei ja miten voit?
-Nimeni on rouva Evereen, l=C3=A4het=C3=A4n t=C3=A4m=C3=A4n viestin suurella=
- toivolla
-v=C3=A4lit=C3=B6n vastaus, koska minun on teht=C3=A4v=C3=A4 uusi syd=C3=A4n=
-leikkaus
-t=C3=A4ll=C3=A4 hetkell=C3=A4 huonokuntoinen ja v=C3=A4h=C3=A4iset mahdolli=
-suudet selviyty=C3=A4.
-Mutta ennen kuin min=C3=A4
-Tee toinen vaarallinen operaatio, annan sen sinulle
-Minulla on 6 550 000 dollaria yhdysvaltalaisella pankkitilill=C3=A4
-sijoittamista, hallinnointia ja k=C3=A4ytt=C3=B6=C3=A4 varten
-voittoa hyv=C3=A4ntekev=C3=A4isyysprojektin toteuttamiseen. Tarkoitan saira=
-iden auttamista
-ja k=C3=B6yh=C3=A4t ovat viimeinen haluni maan p=C3=A4=C3=A4ll=C3=A4, sill=
-=C3=A4 minulla ei ole niit=C3=A4
-kenelt=C3=A4 perii rahaa.
-Vastaa minulle nopeasti
-terveisi=C3=A4
-Rouva Monika Evereen
-Florida, Amerikan Yhdysvallat
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-Hi and how are you?
-My name is Mrs. Evereen, I am sending this message with great hope for
-an immediate response, as I have to undergo heart reoperation in my
-current poor health with little chance of survival. But before I
-undertake the second dangerous operation, I will give you the
-$6,550,000 I have in my US bank account to invest well, manage and use
-the profits to run a charity project for me. I count helping the sick
-and the poor as my last wish on earth, because I have no one to
-inherit money from.
-Please give me a quick reply
-regards
-Mrs. Monika Evereen
-Florida, United States of America
+On Fri, Nov 04, 2022 at 06:06:05PM +0100, Alexander Potapenko wrote:
+> On Wed, Nov 2, 2022 at 9:16 AM Baisong Zhong <zhongbaisong@huawei.com> wrote:
+> >
+> > we got a syzkaller problem because of aarch64 alignment fault
+> > if KFENCE enabled.
+> >
+> > When the size from user bpf program is an odd number, like
+> > 399, 407, etc, it will cause the struct skb_shared_info's
+> > unaligned access. As seen below:
+> >
+> > BUG: KFENCE: use-after-free read in __skb_clone+0x23c/0x2a0 net/core/skbuff.c:1032
+> 
+> It's interesting that KFENCE is reporting a UAF without a deallocation
+> stack here.
+> 
+> Looks like an unaligned access to 0xffff6254fffac077 causes the ARM
+> CPU to throw a fault handled by __do_kernel_fault()
+
+Importantly, an unaligned *atomic*, which is a bug regardless of KFENCE.
+
+> This isn't technically a page fault, but anyway the access address
+> gets passed to kfence_handle_page_fault(), which defaults to a
+> use-after-free, because the address belongs to the object page, not
+> the redzone page.
+> 
+> Catalin, Mark, what is the right way to only handle traps caused by
+> reading/writing to a page for which `set_memory_valid(addr, 1, 0)` was
+> called?
+
+That should appear as a translation fault, so we could add an
+is_el1_translation_fault() helper for that. I can't immediately recall how
+misaligned atomics are presented, but I presume as something other than a
+translation fault.
+
+If the below works for you, I can go spin that as a real patch.
+
+Mark.
+
+---->8----
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index 5b391490e045b..1de4b6afa8515 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -239,6 +239,11 @@ static bool is_el1_data_abort(unsigned long esr)
+        return ESR_ELx_EC(esr) == ESR_ELx_EC_DABT_CUR;
+ }
+ 
++static bool is_el1_translation_fault(unsigned long esr)
++{
++       return (esr & ESR_ELx_FSC_TYPE) == ESR_ELx_FSC_FAULT;
++}
++
+ static inline bool is_el1_permission_fault(unsigned long addr, unsigned long esr,
+                                           struct pt_regs *regs)
+ {
+@@ -385,7 +390,8 @@ static void __do_kernel_fault(unsigned long addr, unsigned long esr,
+        } else if (addr < PAGE_SIZE) {
+                msg = "NULL pointer dereference";
+        } else {
+-               if (kfence_handle_page_fault(addr, esr & ESR_ELx_WNR, regs))
++               if (is_el1_translation_fault(esr) &&
++                   kfence_handle_page_fault(addr, esr & ESR_ELx_WNR, regs))
+                        return;
+ 
+                msg = "paging request";
