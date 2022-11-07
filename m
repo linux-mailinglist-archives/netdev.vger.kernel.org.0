@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2702061F645
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 15:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6402261F647
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 15:39:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232290AbiKGOix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 09:38:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
+        id S232402AbiKGOjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 09:39:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232363AbiKGOir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 09:38:47 -0500
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80087.outbound.protection.outlook.com [40.107.8.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0633A469;
-        Mon,  7 Nov 2022 06:38:46 -0800 (PST)
+        with ESMTP id S232152AbiKGOi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 09:38:57 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80047.outbound.protection.outlook.com [40.107.8.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F281A20F;
+        Mon,  7 Nov 2022 06:38:56 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YN9wmr8f8Yq08deXaQAMcSO2gu6D8tvM0EKgeJPEm434onptuONQxdoXkClLIY2JnGFeRw/M/2rQMVmejkU2g5WhQyUJxC5Tr8yHq/8Lur6GneoXkomk329x79H/ZaVJeKjGgIcW1pkR7jNOAqJvzZpFlNkiBa8ks5Nlsc1VCwPEk2pFuoFBH3emPyq0XjO77ShxyAphTnsGzpTNnZqF5SrLEek9sY2GkVUZWhFe5pssdjXgUO8eH30AD+v45lztMak+VYE84Sx1AukbqKjrkovG9oDJeQyIG5YUva+eFUSchBiLsju/OfuDap72UDnGqM2JMPp244RHEdRq+5n1Fw==
+ b=Wo4l1ejjuQezHt56F3VhHA3zIywqka9GxjobiEIZxEoaG2YH2qlJavhl+d3Y3FYzmA1GWH8ADcPkURZ5FJyO+KtbChWzqaXPIHq5U5oBVlXN1tWDsY6gB5YwwLUGhV4r1PT1ZNTG6seZWIrdE46SAxvROiEiFX1HdciZ8BnQCpqWUvSDiKqmJ72i2etmtgfzlZn79avlcCvPgxEQHst/rCQwuqUe/dF/xldJwJmnVvzcOCXN5IPd3uW89R+EhyjMBGbcBQGdFwPK+hpq7N6N+5kEJff2KKaEe7888qY87+PnjAZBbZBKf6KUyaPLcShkH0krMLGNKhcMBVz1cf6bUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+DMi05oM+ZJ69choAeJAxEp8II5Afox17XDpjRIM1ts=;
- b=ICjrVMtNrzioFpIjuDBhCN+O+G6Wh0TpP55cxF3mgfkElleiRI/kg1j4749Gk7F9cr07+Ywtup++BqhETKaEJyKLTM81P5Z+jJQPEo5KDQewhgNZBzfBFcRHOrTqEiVPT5v99EOlyvV81fv5DPajKbl7HyKOT2HZbe5udylqOmJC4iKuWPsLIc/cYOsa8wS8DCts5SZWloeQ0BWz5rGLOSgA+cjRUfy6q8x2scp8GI4y/RS0pmYGCVU6n54EtFDL9YYwiy4hTcxmyy6gLL4lOqdAjp3twOTU0VnFgMWbbqw5kU+zL6g7HVli52wHENNItrsRvVt5ygtFEuITdV3Aig==
+ bh=hBQbjC/nrO2786LNIfK7WsUT+HcBlkTgsK7ptHxzTbc=;
+ b=H5KB0v2S17ARbfC3jC+Ccrw3HigDbrhM6dlJQKnWMSu5vKSL/T57Dmca7KUXX9her9GgOpLGIUEBMe5VavM4vlxeSzDwfspF4ImAR+vVKv+lcTow7/NoZMDe8V9nmjTei7KO5yUc99ZqnAwWBkKSEh3UWZM/eYXFvcCseWUsuhH/Md4rSdICgU1WXnq6thB7minoKaDxQ+VrOR7AHrj1ohPBCbeEjHXKZgRcUi3d/wYF/3rYQODsqjZPrVpnzAFeI//eSg/dwdAbBaNI5KMJLkoppI5nRjrFRIBPfM0Q61KEoyPn/S87bDQ0Svz6PLlvuBaQttP5O7TaNCbsNRv0iQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+DMi05oM+ZJ69choAeJAxEp8II5Afox17XDpjRIM1ts=;
- b=PHkTXBT31IPSB2zXyIbmF8+AjRPF/XkN2QQcRJDlFfK8nrBw5tzqRMbPa5BwLVSoU8BPQjYuIjKogg8dxf4gZ2yyZM3Qo8l0E5DzE7En8KpJZz1ryrifjJ+v9tAggy0BeqGkPMn7RpVdbVDm8nGzqgU4UtCycSd7Qi1zirEgdP0=
+ bh=hBQbjC/nrO2786LNIfK7WsUT+HcBlkTgsK7ptHxzTbc=;
+ b=beROjZ4MMTsgOfWuW5TEv0tN/g8dw3cpo3sfLKmqn8ahWsO8XQ6cG4RL33wmAxNjvG0rpS8plc4sMb0eGE9JvVhjei2a3sh+kYnZ2WjP2x2/ltWsMub+Cg/L0TVQS4pdmp/lMIOn7jHdsiYzh2/ZH1sPd1TaZ4c3jRC/VCVAMPo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
  by AS8PR04MB8385.eurprd04.prod.outlook.com (2603:10a6:20b:3f3::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Mon, 7 Nov
- 2022 14:38:44 +0000
+ 2022 14:38:54 +0000
 Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
  ([fe80::b1ab:dd4f:9237:d9f8]) by PAXPR04MB9185.eurprd04.prod.outlook.com
  ([fe80::b1ab:dd4f:9237:d9f8%3]) with mapi id 15.20.5791.026; Mon, 7 Nov 2022
- 14:38:44 +0000
+ 14:38:54 +0000
 From:   Shenwei Wang <shenwei.wang@nxp.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -50,62 +50,64 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         imx@lists.linux.dev, Shenwei Wang <shenwei.wang@nxp.com>
-Subject: [PATCH 0/2] optimization and statistics
-Date:   Mon,  7 Nov 2022 08:38:23 -0600
-Message-Id: <20221107143825.3368602-1-shenwei.wang@nxp.com>
+Subject: [PATCH 1/2] net: fec: simplify the code logic of quirks
+Date:   Mon,  7 Nov 2022 08:38:24 -0600
+Message-Id: <20221107143825.3368602-2-shenwei.wang@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221107143825.3368602-1-shenwei.wang@nxp.com>
+References: <20221107143825.3368602-1-shenwei.wang@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR03CA0239.namprd03.prod.outlook.com
- (2603:10b6:a03:39f::34) To PAXPR04MB9185.eurprd04.prod.outlook.com
+X-ClientProxiedBy: BY5PR20CA0014.namprd20.prod.outlook.com
+ (2603:10b6:a03:1f4::27) To PAXPR04MB9185.eurprd04.prod.outlook.com
  (2603:10a6:102:231::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAXPR04MB9185:EE_|AS8PR04MB8385:EE_
-X-MS-Office365-Filtering-Correlation-Id: 501a3226-2591-4b0f-af41-08dac0cdc5a9
+X-MS-Office365-Filtering-Correlation-Id: 7f4b321c-a4e7-4842-67e1-08dac0cdcb46
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TSC4SCX6sxROVKohOwbiYa3HSvvj9hGS07lDL4u5EykjheK6SATItosIbzGb+IdRCfF9N6hfwCqm+2+TTZtWgXmOqgX/jE2Y7bOjFCI9dDb3VeBdqsRf+APaVqxpKs2d6DVQpIx9rfnTD/Oc/7q+s5NPl0k/4dAP8mOV9hM+QE8i7diMlUBl/KLO5SVZCG8lstMRn0kepCS8Zt4D9RWAHWEfM/zZLsnaGtB9vY3+MxW2M4IocSB1/5C5B6BjfHP1NM+wQAvkm5EwKJUkBseKgoMo0/naxYUGmn6QIS8tXpZ/UUvBK9v0kIfDnKgL6S70QcRRAOm7zWCzM6GsXHiOOAIzsE8LCLGgta/ibpGrpInLgv1gA2VHxD1zXj+Qs1Y2+1wzqVXAt/Tlrb7FwVmR+aF3S52e8sTKR1WCUxNopJv8y/W2Oed+TXf6/XT/gfOPxl+z73QLM8yFvthN71oNummH/HP8Ns9tos9nUtVie8Rbplo+Ewz6jbpO1rTUp6cfSTj5Zd1g72AEzfjxHHR7lyTxw4cDKD+QNmnQ8S+6hjbRPxIUC9FMKfI6Ut69UBoPK1cldvq5YEY8xAuOOJFe/Wtonpu1nE9DvTsFYe8PcX/3Q9c51VUUmJzdT5CF44QeScuZ8gt2wRk5TtqJlLmoX68uOs/6GPnujZ6eLoRCEhxyiGcGGxPQ9Q+hP34VbpVpNHcM9+lP3xEBMS/K035J/5cW0w+U6edsVbFrWmujFda+C6lhE/ufZk9N2Dmy62l3mypFma8mJsSCVXfhfcpTu7vfC2uutWF4GOdLk7cS59Y=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(136003)(376002)(366004)(396003)(39860400002)(451199015)(2906002)(66556008)(66476007)(8676002)(4326008)(66946007)(83380400001)(55236004)(52116002)(6666004)(6506007)(966005)(478600001)(86362001)(6486002)(2616005)(1076003)(186003)(316002)(6512007)(26005)(110136005)(36756003)(54906003)(5660300002)(8936002)(7416002)(38350700002)(38100700002)(4744005)(41300700001)(44832011);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Td3pLXuvoaojBFW9I58iTohWCnprRVSaGqPcOtAgwuH3IyD6sf2X2s6X6QV6NMXw7gvqARFMPzFkYUAh8bN6MBy1OpGzt+hagdQcBMMZGNoGj/p7Jgm4CF7Q232hLGkQkbm60nt0t51XTdJXZ/nzAcUTfkbU1JLWbu9AVWLvv3qyQBiCKQGd9o/JNCXu4YQA6VFabj7a3y4lyt6nav0iL7iNnf1hr6fIBVlbsBztbjmWOloVXdCWwdSHQJVvGHxsAaPAoKjM90qnwcmlwR4531c2T48Z71xHNkF76+/5stDjzMMqOrUfHs6C58g7zpniod8Dz4fAODsw8W5+VbOviWrGQ+Oja0MHV9sWFUJ4+p2k0OOZNOSFOrFnpWB6vnqkiPUl6APYx4kOzS/OiBG7hDpdfAY18P+qt9cIil8R9P4e0G5y/pVcasNSkkJdbvRn3YbKgffBBUNWiSkPkMpMz5SO5kSWI+6J2PAcdKN8havdN8RS7j+tz7cJ9K5DS2v26dvUWF7RKnRz52AdohyLxSqgraoXng4ELMusSD/mSO52fy3gLXG0XuPSxWwaxaztaVKeZIS4EaEUC4dXdpxWqCM/MmOCpWOK5pCYEi+DH1AGSO2jl7UtiWEpRmCQyT8o88IuRZEpRLGy7Sm9DHlRlijNYPvwC2WK22C38lUarjRpca/pyi7pU2VKfaNPFuH9MxN50J/sZh3mfdzfP0cMxevgmgcbvEgrdmantL08oSp5gccq1uYnNmJ8yXEBIABR
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(136003)(376002)(366004)(396003)(39860400002)(451199015)(2906002)(66556008)(66476007)(8676002)(4326008)(66946007)(83380400001)(55236004)(52116002)(6666004)(6506007)(478600001)(86362001)(6486002)(2616005)(1076003)(186003)(316002)(6512007)(26005)(110136005)(36756003)(54906003)(5660300002)(8936002)(7416002)(38350700002)(38100700002)(41300700001)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CoLR29I8VFz/jSwGSXtK0LAIzKq4imHdZN9tDX3UTzUOL/Nh8YqOh0YOrzPP?=
- =?us-ascii?Q?XxkY7uz0TZGtVxNWzStckCJtmcXfp6BwXnE5lHaNusE/Cd72FmSFzgArAsSx?=
- =?us-ascii?Q?eGknSh17g6hrRXEAZzQjSxxWQ63zTih7vlmnajQnmHDQVyRG+px9nOo17qIp?=
- =?us-ascii?Q?4P7xhq8+dBKZggO+0hb0KtHD7pL5/Y8uk+JzZGajbaYfbi95vzEdKbCX6q0k?=
- =?us-ascii?Q?VUDpCzkIfo3yQpzdSFoxO9uVai59we1xyCJD5KlN8oDpeKBmxO0w3ZNenzS3?=
- =?us-ascii?Q?c9y8AWhuQLyrDJx9rIsWE2heQZFYUdSSK1clIRg+PkFsgGbEj8oanXdCABnS?=
- =?us-ascii?Q?XA1St0Qx/OHp+gfdkYrPzSbY8Doiw7kaaGMkWR2obj4vnHapm3YSPxmXBVqS?=
- =?us-ascii?Q?T/JUdeDvL2oFYjtxuYk6paxKfYbrv4+XEAlgnOfiMRDZClAXV3aLDeWCJTmM?=
- =?us-ascii?Q?/pl6i8SFoxsXACPT/+pFj7dvVExluSe6FaTkJtLo9BT53fswvChY1bjSxBqH?=
- =?us-ascii?Q?XdP3Bu/WFbDFALvyRwhNrgH/fYsxIp5CLJfZ48V0SzW4Xi4+ndA/sk9W0nTx?=
- =?us-ascii?Q?UvLzHgU4oqLwh1xBmpPm830AJiSpS+9V9JtOZDs2Rksp8LIo6ztabYGlJrPl?=
- =?us-ascii?Q?Mp30pB2XymWG+peBvs7r/6eKxQ5a2LX6tYu+a1vlUOdtrdmf8DRcqunNyvnx?=
- =?us-ascii?Q?QxjryRajfSSi4VpoAfn6LiY6bEJKFE475tYdSMa4MkMatqUoPN2QiHbyEEKo?=
- =?us-ascii?Q?+kAq5f7clnZfQeljc3q9jRE79NThQIivi0qR6bD7Kkx0oDsn3jk/NbSzM3sp?=
- =?us-ascii?Q?xjBZ6GOKt2cwu1TgGWQBRltQ6sgo1Q23ZHEGTPIu0pIFPjRbxOH0U6tUa6o6?=
- =?us-ascii?Q?VO4N0azApc/0OaQhcQnVcvr37ql8qfvAG0hBH6hdPqTbfS+S7IGWD8feZqTg?=
- =?us-ascii?Q?tGVo+mw5PuSrPRlPQZN3gG7zmu6VkFy4GiW2BvDS+qrJFduKuLfKpILbOjyQ?=
- =?us-ascii?Q?mR0AOY7IW/bJ9gmZga/g2PctYSMSc/8P/Cku39Rh0d6qaiWIhTj2MeCxwh0u?=
- =?us-ascii?Q?rjAlrz+V+j3Vqs2+GYG+yAjx4vzmUaF8dQNmbsYmclOUTVd5dH3F8O2ke83y?=
- =?us-ascii?Q?GDQahmeRnZu5yE1Et63wLjGqBYCZ8m5sdUuNAs/AEWB5f1p22sJE8l5R/R3R?=
- =?us-ascii?Q?5aXvBQ9xHXQpNXqirYDcH3qc166v6y1UJa1BnZXnaKXCUUWybP/U12vV6VzM?=
- =?us-ascii?Q?nV+fJyw9zrpPTTph23b4zX1W1wQIs58yVyeUPIeDC6UAUmxrmf+xkFERNwOp?=
- =?us-ascii?Q?fqa4R1lgCaCNaPiQuOee2ixoZHpWZe7NLpAvqgITWlWwH0E3WiLpvuPuh3sN?=
- =?us-ascii?Q?IcHmjic9cIKfoMVJOuyqeQpYHBBwmMEHs2jgM/9jAD83R4wVdFcDbtuQqZbA?=
- =?us-ascii?Q?5Mh7OcZW7eW3YUWSFwQUq2sIz597TlvHhuxjmPBwplwjWbsZwAneE8juhkhb?=
- =?us-ascii?Q?ub7l8Le/0rZ05lN95ZaNSOHv4iAIBnp81UViWlTNwc0xrUv3Jq37yBpmeFl8?=
- =?us-ascii?Q?gKDWWSqTbVTvhLj4EzMbc3V0Q+yQTBT47OPIYdo8?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pNg1QDecl2Gy+fCdZNePapvRnVB7kJPW6QrCpVBcfjhmB7oSPkBNfPjWnVdS?=
+ =?us-ascii?Q?kBFX5T48CbP1P3D35+UjBRKE87YoH2NeuTCnU5A8x/1PXL/zPRm+M9AO+76B?=
+ =?us-ascii?Q?lZqPzbR1scz7GhFmKy9BpJPGI27eSC9QGkfZysVmfeTPSvf4TFcVWhvXEXkg?=
+ =?us-ascii?Q?b5T19Dw8vqhTWuJLkTaNsHheyhYIRYyhoQvyJbeSSXCAWqvfTdqbkzbToUR8?=
+ =?us-ascii?Q?SH6LUzIN7EBwIxq4Hp+6S+l0slmdsC9+x2ApvY1+WI4scxVzH0zHb3eNO6hF?=
+ =?us-ascii?Q?cXFTe4ccKfBd7KIJR6w6YPpKuCjMBG2/yczp1QJdal9A5AmwnhAiWGDFaDA3?=
+ =?us-ascii?Q?rkRIMUW+WqfG9aHRPKmQcDXR/LscV+q5mkulPN7RAegXrMVCFOXY+GiMXhzU?=
+ =?us-ascii?Q?cVa4ah3JXL+RrR9BGxpJ4xX9JO2N4NxDGa6D0mMWvKA1URPXzNgEKm3V5p12?=
+ =?us-ascii?Q?wyJVfSI/Ne2qJkciMYQ9bv0EggA0kSQdAP0mMhs7gYNUArb9wF6O0RgAP2M6?=
+ =?us-ascii?Q?euZB0mfAQ2/zS0Ketl65SHz4puh4H+38w2O3BIKisYUYhyp+hd05wddxMPEV?=
+ =?us-ascii?Q?4X0D0wn3asuNln1NQuVtWkJpSuaT6G/Ehjzc9G5dFWaSxyamaVKtefgFXHeg?=
+ =?us-ascii?Q?Qk3Hsohy13aO/WrJefUNwSfOwD4gVZ/3XZE9cR+nqP1UUy3i8UeJyXrdBcns?=
+ =?us-ascii?Q?tVpyu1orZZvDqQIc0urvory+80WKSWcNj15BVW5JuE+OY0HpXDUiAEaNTVz6?=
+ =?us-ascii?Q?i+yBQXVjcWGpG2KzIhx6I9XHZgzUELLMNX6dYKCo7GkWfdv6cnbEXQ/cLqzF?=
+ =?us-ascii?Q?Ii2jd3v0UE6NexRDvh8lMMP65WZNaDPfcjFcAEzr03kUOD6ycZGlpODBbma2?=
+ =?us-ascii?Q?4lPhj27NMbq4uoiXrJ4JcCjvQUzhTf8FjXZYbPeZFgtuwtYAvcOnF/vGW/vL?=
+ =?us-ascii?Q?vpFEhPIerKmklxT7Prl1luE+m6Eswvu99BLaDG29eLuwAOznjMP886PBFtMJ?=
+ =?us-ascii?Q?wsTwQ1l9I8bmLmE4ShGjBKOmcF98EM43ip6MlygzlW8oy2Y6UUqFlkpnihQr?=
+ =?us-ascii?Q?ZYnNAuN2xyOwb/dQCQMu65yfSS9+bwZhpOConoWfQkbqPeYp7QCupkMq9vjq?=
+ =?us-ascii?Q?5ElyvHQ0RAp8vSfB5Hyk43wzdLC/n2JbdqrJ7R4dmsxWJT8LMUTcCIU9OeMx?=
+ =?us-ascii?Q?Cisl7tI6Tk0Q5zu3c2mdEONUF2Menjacp3eFVd9I88shWrkF5+vzmq+iiT7Z?=
+ =?us-ascii?Q?P9qKEIuyw/mJVVFEJLhid+GhA9dy9JUOXymoELFirsNAMdEOLi4TY16FBSSu?=
+ =?us-ascii?Q?WnvOAXbjdu2WZZj2Q2gX16xXp1j4/PG/3aFJaVfWSUm8FjYQofLUARxVRW07?=
+ =?us-ascii?Q?VKtU3errLBIpvl/c4+d2VJwvpbU/dzeAQDMycnVhmlyK8OzjQkREcaMgZ04E?=
+ =?us-ascii?Q?FMnF/P7GQNKnaDtjeY/hKce1XsyPwGrDK25rbZiGmy+UFGxU2c6luYVcQJDs?=
+ =?us-ascii?Q?Zg6Hq9HXlL1ehm76aZ2tTUsLa9HAm34rVmvjafqlXFFVQn/BMGgqEZ2UOn0S?=
+ =?us-ascii?Q?mUVaer9jUT4Xvj2s81pSVLMxRaZL0DNrFlVUAr9L?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 501a3226-2591-4b0f-af41-08dac0cdc5a9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f4b321c-a4e7-4842-67e1-08dac0cdcb46
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2022 14:38:44.5125
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2022 14:38:53.9907
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vrojEz9ccSewb6H/Y5MRQRYzj3MxihNh5XQLC+UowWnvvZRFXp4t4MUz6ZQ0o64VYggztYz1xH4WRzAO4++y7A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: BmOk99sx+wqNPago2QOo66BcR6fkyi/yz2pGPpIU9NjCzAbA0zbCZ1SRe8xteo7wskES4aKGLxFcrMXbWVTC/Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8385
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -117,21 +119,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the patch to add XDP statistics is based on the previous optimization
-patch, I've put the two patches together. The link to the optimization
-is the following:
+Simplify the code logic of handling the quirk of FEC_QUIRK_HAS_RACC.
+If a SoC has the RACC quirk, the driver will enable the 16bit shift
+by default in the probe function for a better performance.
 
-https://lore.kernel.org/imx/20221104024754.2756412-1-shenwei.wang@nxp.com/
+This patch handles the logic in one place to make the logic simple
+and clean. The patch optimizes the fec_enet_xdp_get_tx_queue function
+according to Paolo Abeni's comments, and it also exludes the SoCs that
+require to do frame swap from XDP support.
 
+Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 49 ++++++++++++++---------
+ 1 file changed, 30 insertions(+), 19 deletions(-)
 
-Shenwei Wang (2):
-  net: fec: simplify the code logic of quirks
-  net: fec: add xdp and page pool statistics
-
- drivers/net/ethernet/freescale/fec.h      |  12 +++
- drivers/net/ethernet/freescale/fec_main.c | 119 ++++++++++++++++++----
- 2 files changed, 109 insertions(+), 22 deletions(-)
-
---
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 6b062a0663f4..3fb870340c22 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1581,8 +1581,20 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 	bool	need_swap = fep->quirks & FEC_QUIRK_SWAP_FRAME;
+ 	struct bpf_prog *xdp_prog = READ_ONCE(fep->xdp_prog);
+ 	u32 ret, xdp_result = FEC_ENET_XDP_PASS;
++	u32 data_start = FEC_ENET_XDP_HEADROOM;
+ 	struct xdp_buff xdp;
+ 	struct page *page;
++	u32 sub_len = 4;
++
++#if !defined(CONFIG_M5272)
++	/*If it has the FEC_QUIRK_HAS_RACC quirk property, the bit of
++	 * FEC_RACC_SHIFT16 is set by default in the probe function.
++	 */
++	if (fep->quirks & FEC_QUIRK_HAS_RACC) {
++		data_start += 2;
++		sub_len += 2;
++	}
++#endif
+ 
+ #ifdef CONFIG_M532x
+ 	flush_cache_all();
+@@ -1645,9 +1657,9 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 
+ 		if (xdp_prog) {
+ 			xdp_buff_clear_frags_flag(&xdp);
++			/* subtract 16bit shift and FCS */
+ 			xdp_prepare_buff(&xdp, page_address(page),
+-					 FEC_ENET_XDP_HEADROOM, pkt_len, false);
+-
++					 data_start, pkt_len - sub_len, false);
+ 			ret = fec_enet_run_xdp(fep, xdp_prog, &xdp, rxq, index);
+ 			xdp_result |= ret;
+ 			if (ret != FEC_ENET_XDP_PASS)
+@@ -1659,18 +1671,15 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 		 * bridging applications.
+ 		 */
+ 		skb = build_skb(page_address(page), PAGE_SIZE);
+-		skb_reserve(skb, FEC_ENET_XDP_HEADROOM);
+-		skb_put(skb, pkt_len - 4);
++		skb_reserve(skb, data_start);
++		skb_put(skb, pkt_len - sub_len);
+ 		skb_mark_for_recycle(skb);
+-		data = skb->data;
+ 
+-		if (need_swap)
++		if (unlikely(need_swap)) {
++			data = page_address(page) + FEC_ENET_XDP_HEADROOM;
+ 			swap_buffer(data, pkt_len);
+-
+-#if !defined(CONFIG_M5272)
+-		if (fep->quirks & FEC_QUIRK_HAS_RACC)
+-			data = skb_pull_inline(skb, 2);
+-#endif
++		}
++		data = skb->data;
+ 
+ 		/* Extract the enhanced buffer descriptor */
+ 		ebdp = NULL;
+@@ -3562,6 +3571,13 @@ static int fec_enet_bpf(struct net_device *dev, struct netdev_bpf *bpf)
+ 
+ 	switch (bpf->command) {
+ 	case XDP_SETUP_PROG:
++		/* No need to support the SoCs that require to
++		 * do the frame swap because the performance wouldn't be
++		 * better than the skb mode.
++		 */
++		if (fep->quirks & FEC_QUIRK_SWAP_FRAME)
++			return -EOPNOTSUPP;
++
+ 		if (is_run) {
+ 			napi_disable(&fep->napi);
+ 			netif_tx_disable(dev);
+@@ -3589,17 +3605,12 @@ static int fec_enet_bpf(struct net_device *dev, struct netdev_bpf *bpf)
+ }
+ 
+ static int
+-fec_enet_xdp_get_tx_queue(struct fec_enet_private *fep, int cpu)
++fec_enet_xdp_get_tx_queue(struct fec_enet_private *fep, int index)
+ {
+-	int index = cpu;
+-
+ 	if (unlikely(index < 0))
+-		index = 0;
+-
+-	while (index >= fep->num_tx_queues)
+-		index -= fep->num_tx_queues;
++		return 0;
+ 
+-	return index;
++	return (index % fep->num_tx_queues);
+ }
+ 
+ static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
+-- 
 2.34.1
 
