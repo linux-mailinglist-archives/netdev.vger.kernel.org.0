@@ -2,159 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B6661F1E3
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 12:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE63761F209
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 12:40:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231844AbiKGLcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 06:32:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
+        id S231959AbiKGLk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 06:40:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231831AbiKGLcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 06:32:11 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACC018E12;
-        Mon,  7 Nov 2022 03:32:09 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id 64so10201796pgc.5;
-        Mon, 07 Nov 2022 03:32:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mwsOXXbcfC9fPjVivpon0nxUnv1iu8M1E4VwDE036so=;
-        b=HwjEbCai0XhnP/RUIQarlE9bfsmBkDgCqDCOF5dUFqyYssiqdFn8MvDkPr1Q0XQ1Pj
-         CeEer3BdC00JYtah1OgHhWFD7FEeXIdTHqCNq/l5B5WtDmLbwvFTSEJh5WOMZqIfZ254
-         hIr1csj6KbkARIBEnmh7fNWIBxQZ9uXtlo/ONmYvdv8MlS2SzlyCP6fzFQ++AxnZHbJ1
-         Bw9hbjjKguoWE1dJIKht/T48yspuYjguQp12lk1TYz6b/UxuPuHk0h6y52HksR4TMHg9
-         ROwX96Tc2xwh7oVG7i/4rwPqek693EFnOuBPV9qtSRchs+6Ahsp/sda91TD8n5p40iv4
-         w/QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mwsOXXbcfC9fPjVivpon0nxUnv1iu8M1E4VwDE036so=;
-        b=TybRRweZYnBo3EHQ+fTSnSMp/Ljv/3EO92z7H8YLgEejrSlEsQjlC0CJMj+mwykb1X
-         1P9TVpxW/T7Rj7Hmwdi2L9moBVXwt0NB2aA5zWN8OwoNdmbhux2CazAm4aF+jB6lnGbP
-         E2hOEIgOMd/NcuC9jA+fUMecMa3LEBhOfEP8GaZZAW8D1d8lP/XsE/PSzOI67KbJhnHz
-         r1Pz4bmDjU/GMjgCzGVgjwoBByhnzF1U6j7sWxc6K1d4BoInqzPcCW6n9dm4kXCjxxU2
-         Vg7QVnhPsct2Z0VHBIuPY1sPJ1GibzWXC6ItgA9t7yC/csqiXmhn4oaYokbFsjkOJ0h5
-         GWmA==
-X-Gm-Message-State: ACrzQf3qukUHU7ZXhw0flxC42rDZdewHhU1Y8CtTnVSj0nbnNwwc2UyK
-        KNIAlBG3yp5pm5xIGDeuG/u8DMRUAHTcEHLUxj0=
-X-Google-Smtp-Source: AMsMyM7zwf8phIoE3ww8OFA5vj88vgpNeKkyhY1W/vxSrjcVmEPM/kkmNqbqDSDVIIKqQtBpzLIFVgqddNs2chqqWS0=
-X-Received: by 2002:a63:f801:0:b0:46f:fe3f:ea87 with SMTP id
- n1-20020a63f801000000b0046ffe3fea87mr26347950pgh.10.1667820728974; Mon, 07
- Nov 2022 03:32:08 -0800 (PST)
+        with ESMTP id S231924AbiKGLkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 06:40:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67731A06D
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 03:40:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D1DF60FB8
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 11:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 970AEC43142;
+        Mon,  7 Nov 2022 11:40:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667821215;
+        bh=UGd0/5ofkUEWKicAaJuerDQasCfxy0KQUwKde0cJR1s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ePv80Yg90xwbnNkh4xUAAgQlvtAylnRoWYJy3U0Q2iSjjys6cKZhlPtPdwC8eAxuN
+         rOEGFbXy/lVrCKStqPHEaHptRH4xWG+E3ALbyhc8Z23+4nqdGlLdvVi3iExavpoCPg
+         RuonGFDQT02U+rgyAcWm2+Z6C3fJnzOppJkadYB5j/6BQLzzImnUTGrIJk0jAVzBGo
+         jnUzbd6K4Y2I9UGxDQVjyrosVdoMXCzO2bvGz2Qrod1pN+5Gw1c7qr6/Bnz5GO8ppA
+         tFwP43oYPDg5omkgoloPaSv8fJdOagBA+s0DD3wt/VdW0nkUcav/H2GJOccCdJjljB
+         nri5gLi2kYBNQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7FC55C4166D;
+        Mon,  7 Nov 2022 11:40:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20221105194943.826847-1-robimarko@gmail.com> <20221107112756.GB2220@thinkpad>
-In-Reply-To: <20221107112756.GB2220@thinkpad>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Mon, 7 Nov 2022 12:31:57 +0100
-Message-ID: <CAOX2RU6mVCRNobsPDrzpmHqf=KY57GaG4VCruNBfLa8sucydiA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] bus: mhi: core: add SBL state callback
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        elder@linaro.org, hemantk@codeaurora.org, quic_jhugo@quicinc.com,
-        quic_qianyu@quicinc.com, bbhatt@codeaurora.org,
-        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, ansuelsmth@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] gve: Fix error return code in gve_prefill_rx_pages()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166782121552.20740.18043401751385826661.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Nov 2022 11:40:15 +0000
+References: <20221104061736.1621866-1-yangyingliang@huawei.com>
+In-Reply-To: <20221104061736.1621866-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, jeroendb@google.com, csully@google.com,
+        shailend@google.com, davem@davemloft.net
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Nov 2022 at 12:28, Manivannan Sadhasivam <mani@kernel.org> wrote:
->
-> On Sat, Nov 05, 2022 at 08:49:42PM +0100, Robert Marko wrote:
-> > Add support for SBL state callback in MHI core.
-> >
-> > It is required for ath11k MHI devices in order to be able to set QRTR
-> > instance ID in the SBL state so that QRTR instance ID-s dont conflict i=
-n
-> > case of multiple PCI/MHI cards or AHB + PCI/MHI card.
-> > Setting QRTR instance ID is only possible in SBL state and there is
-> > currently no way to ensure that we are in that state, so provide a
-> > callback that the controller can trigger off.
-> >
->
-> Where can I find the corresponding ath11k patch that makes use of this
-> callback?
+Hello:
 
-Hi Mani,
-ath11k patch was sent as part of the same series to everybody included
-in this patch as well
-under the name of "[PATCH 2/2] wifi: ath11k: use unique QRTR instance ID".
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-If you did not receive it due to some kind of error, its available at
-the linux-wireless patchwork[1]
-or ath11k mailing list[2].
+On Fri, 4 Nov 2022 14:17:36 +0800 you wrote:
+> If alloc_page() fails in gve_prefill_rx_pages(), it should return
+> an error code in the error path.
+> 
+> Fixes: 82fd151d38d9 ("gve: Reduce alloc and copy costs in the GQ rx path")
+> Cc: Jeroen de Borst <jeroendb@google.com>
+> Cc: Catherine Sullivan <csully@google.com>
+> Cc: Shailend Chand <shailend@google.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> 
+> [...]
 
-[1] https://patchwork.kernel.org/project/linux-wireless/patch/2022110519494=
-3.826847-2-robimarko@gmail.com/
-[2] http://lists.infradead.org/pipermail/ath11k/2022-November/003678.html
+Here is the summary with links:
+  - [net-next] gve: Fix error return code in gve_prefill_rx_pages()
+    https://git.kernel.org/netdev/net-next/c/64c426dfbbd2
 
-Regards,
-Robert
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->
-> Thanks,
-> Mani
->
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > ---
-> >  drivers/bus/mhi/host/main.c | 1 +
-> >  include/linux/mhi.h         | 2 ++
-> >  2 files changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/bus/mhi/host/main.c b/drivers/bus/mhi/host/main.c
-> > index df0fbfee7b78..8b03dd1f0cb8 100644
-> > --- a/drivers/bus/mhi/host/main.c
-> > +++ b/drivers/bus/mhi/host/main.c
-> > @@ -900,6 +900,7 @@ int mhi_process_ctrl_ev_ring(struct mhi_controller =
-*mhi_cntrl,
-> >                       switch (event) {
-> >                       case MHI_EE_SBL:
-> >                               st =3D DEV_ST_TRANSITION_SBL;
-> > +                             mhi_cntrl->status_cb(mhi_cntrl, MHI_CB_EE=
-_SBL_MODE);
-> >                               break;
-> >                       case MHI_EE_WFW:
-> >                       case MHI_EE_AMSS:
-> > diff --git a/include/linux/mhi.h b/include/linux/mhi.h
-> > index a5441ad33c74..beffe102dd19 100644
-> > --- a/include/linux/mhi.h
-> > +++ b/include/linux/mhi.h
-> > @@ -34,6 +34,7 @@ struct mhi_buf_info;
-> >   * @MHI_CB_SYS_ERROR: MHI device entered error state (may recover)
-> >   * @MHI_CB_FATAL_ERROR: MHI device entered fatal error state
-> >   * @MHI_CB_BW_REQ: Received a bandwidth switch request from device
-> > + * @MHI_CB_EE_SBL_MODE: MHI device entered SBL mode
-> >   */
-> >  enum mhi_callback {
-> >       MHI_CB_IDLE,
-> > @@ -45,6 +46,7 @@ enum mhi_callback {
-> >       MHI_CB_SYS_ERROR,
-> >       MHI_CB_FATAL_ERROR,
-> >       MHI_CB_BW_REQ,
-> > +     MHI_CB_EE_SBL_MODE,
-> >  };
-> >
-> >  /**
-> > --
-> > 2.38.1
-> >
->
-> --
-> =E0=AE=AE=E0=AE=A3=E0=AE=BF=E0=AE=B5=E0=AE=A3=E0=AF=8D=E0=AE=A3=E0=AE=A9=
-=E0=AF=8D =E0=AE=9A=E0=AE=A4=E0=AE=BE=E0=AE=9A=E0=AE=BF=E0=AE=B5=E0=AE=AE=
-=E0=AF=8D
+
