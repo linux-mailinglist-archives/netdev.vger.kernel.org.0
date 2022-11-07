@@ -2,93 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E16361F724
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 16:06:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D2461F801
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 16:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbiKGPGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 10:06:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        id S232888AbiKGPy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 10:54:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232708AbiKGPGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 10:06:31 -0500
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13211DF2F
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 07:06:30 -0800 (PST)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4N5ZLn0r7rz4f3kpT
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 23:06:25 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP4 (Coremail) with SMTP id gCh0CgDH69jzHmljdhqMAA--.23492S4;
-        Mon, 07 Nov 2022 23:06:28 +0800 (CST)
-From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     Matt Johnston <matt@codeconstruct.com.au>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org
-Subject: [PATCH net] mctp: Fix an error handling path in mctp_init()
-Date:   Mon,  7 Nov 2022 15:27:56 +0000
-Message-Id: <20221107152756.180628-1-weiyongjun@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S232531AbiKGPy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 10:54:27 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB9439B
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 07:54:25 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id 13so31371834ejn.3
+        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 07:54:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=l15uLbigy3XyVSiJISvT9ewrLFn++wtOYsfXKwIjE3I=;
+        b=0VmMdclgGuhWooaQEpieYHLzIBbAfA+CKkmHIdnJ/LHLQF1SXvJ/2c2iMTIP4Vjbbe
+         VLY0Ka5q7V0s6HjN1XdaMYLVsuMEelwoKqOoKJVAlCBZGFsVhahhHE1hldS5+IjDpHEa
+         KtTCdRT+kySxjFUmVrwhUQQFLh1VKbuQeoJ/k/pnivsuPeI3/t5TiaCjkEY+C2Dy6E7z
+         u8Th1xMI4TG6q/tQ7/y7eXj+Sg+j9jGui5uog2wEcxqinnfa5CBOOKfs+RyZld8EHiPm
+         Qs0/1eMwodJT4IatKXOH5uO8aISiFasWpiIGp9RfDumh5pnH41pPF4gQsBPzllUePR6e
+         kFxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=l15uLbigy3XyVSiJISvT9ewrLFn++wtOYsfXKwIjE3I=;
+        b=7bMLE3EGtQ1dEV+qkSEDAEJWnScpd5fcJkaWkzPWV+tea8hoYmqWM2skXwQ8t7/XLX
+         9KA2yfc//Cm8wuITJCNiOIhQZzhg3EPF2FmUhEpB7U0b6ZZruM61pCvhiw2GaPhiRcWK
+         8sNVqZWK5z1xicHnh8g19dMcMmOzRFD0BeP+8wK5My4tPy4iyHCFlJwzZSSHSs2oDTGj
+         NR6vfWoXbT3h9IGD+X6UHl6K+V/90WhxUHwI+UkjBtlufeYMX2z8VkjBN3Mclw1M3zOh
+         DFMkabAfO2+TZzGSgw45k/jhNGGpwsVZcha3QUzlImBQtlHVc58ogsyAH5Z6r2PR0Z3Z
+         l3Xw==
+X-Gm-Message-State: ACrzQf16gEmCud6Ij1Q414sGPEEu+jyTGRcE3fxvZL0m2C7dxEOJMaCe
+        oJOJo7y3vlINdgfwa/fzcwUrLA==
+X-Google-Smtp-Source: AMsMyM75Wgut97W29X34qHGEWPyK3wxd9me4duOPmzD3b1dXW2xJIX2PZYsmfGQs6c0K2UrXSz8NnA==
+X-Received: by 2002:a17:906:5e51:b0:7ae:32ca:78c9 with SMTP id b17-20020a1709065e5100b007ae32ca78c9mr17482105eju.166.1667836463738;
+        Mon, 07 Nov 2022 07:54:23 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id w23-20020aa7dcd7000000b00443d657d8a4sm4355875edu.61.2022.11.07.07.54.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Nov 2022 07:54:22 -0800 (PST)
+Date:   Mon, 7 Nov 2022 16:54:21 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, kuba@kernel.org,
+        moshe@nvidia.com, aeedm@nvidia.com
+Subject: Re: [patch iproute2-next 1/3] devlink: query ifname for devlink port
+ instead of map lookup
+Message-ID: <Y2kqLYEle5oDxfts@nanopsycho>
+References: <20221104102327.770260-1-jiri@resnulli.us>
+ <20221104102327.770260-2-jiri@resnulli.us>
+ <6903f920-dd02-9df0-628a-23d581c4aac6@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgDH69jzHmljdhqMAA--.23492S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw4kGw18uFyUuw1rtFy8uFg_yoW3Wwc_ta
-        sxG34kurs8C3W8G3y7u3WYkw1rGw4vkr1xXrWayFZ09F1fWw4DA397Zr95ur4rW392kasx
-        Cr93JF9rAwnFgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUboAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
-        Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x02
-        67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxV
-        AFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
-        j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
-        kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkE
-        bVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67
-        AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI
-        42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr
-        1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBI
-        daVFxhVjvjDU0xZFpf9x07UGYL9UUUUU=
-X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6903f920-dd02-9df0-628a-23d581c4aac6@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+Mon, Nov 07, 2022 at 04:16:42PM CET, dsahern@gmail.com wrote:
+>On 11/4/22 4:23 AM, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> ifname map is created once during init. However, ifnames can easily
+>> change during the devlink process runtime (e. g. devlink mon).
+>
+>why not update the cache on name changes? Doing a query on print has
 
-If mctp_neigh_init() return error, the routes resources should
-be released in the error handling path. Otherwise some resources
-leak.
+We would have to listen on RTNetlink for the changes, as devlink does
+not send such events on netdev ifname change.
 
-Fixes: 4d8b9319282a ("mctp: Add neighbour implementation")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index b6b5e496fa40..fc9e728b6333 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -665,12 +665,14 @@ static __init int mctp_init(void)
- 
- 	rc = mctp_neigh_init();
- 	if (rc)
--		goto err_unreg_proto;
-+		goto err_unreg_routes;
- 
- 	mctp_device_init();
- 
- 	return 0;
- 
-+err_unreg_routes:
-+	mctp_routes_exit();
- err_unreg_proto:
- 	proto_unregister(&mctp_proto);
- err_unreg_sock:
--- 
-2.34.1
+>extra overhead. And, if you insist a per-print query is needed, why
+>leave ifname_map_list? what value does it serve if you query each time?
 
+Correct.
+
+>
+>
+>> Therefore, query ifname during each devlink port print.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> ---
+>>  devlink/devlink.c | 46 +++++++++++++++++++++++++++++++---------------
+>>  1 file changed, 31 insertions(+), 15 deletions(-)
+>> 
+>> diff --git a/devlink/devlink.c b/devlink/devlink.c
+>> index 8aefa101b2f8..680936f891cf 100644
+>> --- a/devlink/devlink.c
+>> +++ b/devlink/devlink.c
+>> @@ -864,21 +864,38 @@ static int ifname_map_lookup(struct dl *dl, const char *ifname,
+>>  	return -ENOENT;
+>>  }
+>>  
+>> -static int ifname_map_rev_lookup(struct dl *dl, const char *bus_name,
+>> -				 const char *dev_name, uint32_t port_index,
+>> -				 char **p_ifname)
+>> +static int port_ifname_get_cb(const struct nlmsghdr *nlh, void *data)
+>>  {
+>> -	struct ifname_map *ifname_map;
+>> +	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
+>> +	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
+>> +	char **p_ifname = data;
+>> +	const char *ifname;
+>>  
+>> -	list_for_each_entry(ifname_map, &dl->ifname_map_list, list) {
+>> -		if (strcmp(bus_name, ifname_map->bus_name) == 0 &&
+>> -		    strcmp(dev_name, ifname_map->dev_name) == 0 &&
+>> -		    port_index == ifname_map->port_index) {
+>> -			*p_ifname = ifname_map->ifname;
+>> -			return 0;
+>> -		}
+>> -	}
+>> -	return -ENOENT;
+>> +	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
+>> +	if (!tb[DEVLINK_ATTR_PORT_NETDEV_NAME])
+>> +		return MNL_CB_ERROR;
+>> +
+>> +	ifname = mnl_attr_get_str(tb[DEVLINK_ATTR_PORT_NETDEV_NAME]);
+>> +	*p_ifname = strdup(ifname);
+>> +	if (!*p_ifname)
+>> +		return MNL_CB_ERROR;
+>> +
+>> +	return MNL_CB_OK;
+>> +}
+>> +
+>> +static int port_ifname_get(struct dl *dl, const char *bus_name,
+>> +			   const char *dev_name, uint32_t port_index,
+>> +			   char **p_ifname)
+>> +{
+>> +	struct nlmsghdr *nlh;
+>> +
+>> +	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_PORT_GET,
+>> +			       NLM_F_REQUEST | NLM_F_ACK);
+>> +	mnl_attr_put_strz(nlh, DEVLINK_ATTR_BUS_NAME, bus_name);
+>> +	mnl_attr_put_strz(nlh, DEVLINK_ATTR_DEV_NAME, dev_name);
+>> +	mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_INDEX, port_index);
+>> +	return mnlu_gen_socket_sndrcv(&dl->nlg, nlh, port_ifname_get_cb,
+>> +				      p_ifname);
+>>  }
+>>  
+>>  static int strtobool(const char *str, bool *p_val)
+>> @@ -2577,8 +2594,7 @@ static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
+>>  	char *ifname = NULL;
+>>  
+>>  	if (dl->no_nice_names || !try_nice ||
+>> -	    ifname_map_rev_lookup(dl, bus_name, dev_name,
+>> -				  port_index, &ifname) != 0)
+>> +	    port_ifname_get(dl, bus_name, dev_name, port_index, &ifname) != 0)
+>>  		sprintf(buf, "%s/%s/%d", bus_name, dev_name, port_index);
+>>  	else
+>>  		sprintf(buf, "%s", ifname);
+>
