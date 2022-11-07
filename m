@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29AE861ED31
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 09:44:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C14A961ED62
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 09:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231431AbiKGIn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 03:43:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
+        id S231213AbiKGIth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 03:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiKGIny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 03:43:54 -0500
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468262AFB;
-        Mon,  7 Nov 2022 00:43:52 -0800 (PST)
+        with ESMTP id S230239AbiKGItf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 03:49:35 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136B513DC3;
+        Mon,  7 Nov 2022 00:49:33 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B7ADCE000A;
-        Mon,  7 Nov 2022 08:43:48 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id CC81EC0005;
+        Mon,  7 Nov 2022 08:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1667810630;
+        t=1667810972;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+diWClweYU6nEI2akBP8wXXCuDU5VOiWiAyIXHE2MIw=;
-        b=AdtxRfl/Z/tTiZzRHQ7+VXqfYnTmskbQCfoguH8dvA0tRhb3YmSHoQ6oW+33wj896ZGbRE
-        5L9CxrIvXXS8oQ9amLdYWVToo3Tz6/3vd9+OK+6LKTsxmdTPnRpGhGDtrLVu7ZXDpNC8Xi
-        T16VotLwqXKF7njeXilImNWDirkUSoGs+pQEwg4Pc64qQ2fAavrTWt6Sfi1yYF9opnNirL
-        m3FvFmJe8GbI/0Wo76yxawOPAR7IRlf16SCCrgAL4odhS1HYe+b5H4t+Oqt2GGE4zV9bWp
-        0dYycICFkXvaw5Kgm0CibZWzuuwdm5sbAWnqpEjWyFKkskbkH2gh4UxduZp2WQ==
-Date:   Mon, 7 Nov 2022 09:43:48 +0100
+        bh=4po5/sAdAejmMVX7B1mMke6jv9XUIrfpCadagSEo9Zs=;
+        b=V0MD+mRH5ooq2ROVyY/Cm5lHpnFneKLdMNtopTwfgBbT0LjjtH8nP+d6LfhglZDH6hmKbA
+        pYfgCunm075LKqR0mXJFgUjlcu2+4iGhUgd0PfZ2HbMRDyJ2tHeWlBbO4gmyaY7tRcRqgD
+        dawDYT9bnN8opXFR+H99KpNiM4cIUqbhcw7Uy5M2lHfNl2QRpL5uzy+MNYpXpZdVIuHGz+
+        4ZsrIVLUydqCkx+5tAiqvS+TCxKx3Tkm5iBAtRVplOBC+92uvAzHLsh6oBanOg474XkLD4
+        ovts6k/4L8O16Yu3wC8Xy9VlnL1mxjCrD/5CL0QDxD7thTwkAAhj3gn4tEFQfw==
+Date:   Mon, 7 Nov 2022 09:49:29 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <aahringo@redhat.com>
 Cc:     Alexander Aring <alex.aring@gmail.com>,
@@ -45,12 +45,13 @@ Cc:     Alexander Aring <alex.aring@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH wpan-next 2/3] ieee802154: Handle coordinators discovery
-Message-ID: <20221107094348.72223dc8@xps-13>
-In-Reply-To: <CAK-6q+hh4Ny7zV-MbdjrGQq-Dtb783A8m3G5GMcXSdhSwicuiw@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 3/3] ieee802154: Trace the registration of new
+ PANs
+Message-ID: <20221107094929.2a9891b8@xps-13>
+In-Reply-To: <CAK-6q+jDFGr2xhAKLLitZXA2Q2dWgeZjgBXHubHvOvzX-xeB-w@mail.gmail.com>
 References: <20221102151915.1007815-1-miquel.raynal@bootlin.com>
-        <20221102151915.1007815-3-miquel.raynal@bootlin.com>
-        <CAK-6q+hh4Ny7zV-MbdjrGQq-Dtb783A8m3G5GMcXSdhSwicuiw@mail.gmail.com>
+        <20221102151915.1007815-4-miquel.raynal@bootlin.com>
+        <CAK-6q+jDFGr2xhAKLLitZXA2Q2dWgeZjgBXHubHvOvzX-xeB-w@mail.gmail.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -67,29 +68,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Alexander,
 
-> > +static bool
-> > +cfg802154_is_same_coordinator(struct ieee802154_coord_desc *a,
-> > +                             struct ieee802154_coord_desc *b)
-> > +{
-> > +       if (a->addr->pan_id !=3D b->addr->pan_id)
-> > +               return false;
-> > +
-> > +       if (a->addr->mode !=3D b->addr->mode)
-> > +               return false;
-> > +
-> > +       if (a->addr->mode =3D=3D IEEE802154_ADDR_SHORT &&
-> > +           a->addr->short_addr =3D=3D b->addr->short_addr)
-> > +               return true;
-> > +       else if (a->addr->mode =3D=3D IEEE802154_ADDR_LONG &&
-> > +                a->addr->extended_addr =3D=3D b->addr->extended_addr)
-> > +               return true;
-> > +
-> > +       return false; =20
->=20
-> semantic is a little bit different, can we use "ieee802154_addr_equal()" =
-here?
+aahringo@redhat.com wrote on Sun, 6 Nov 2022 20:36:21 -0500:
 
-No problem, I will.
+> Hi,
+>=20
+> On Wed, Nov 2, 2022 at 11:20 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > From: David Girault <david.girault@qorvo.com>
+> >
+> > Add an internal trace when new PANs get discovered. =20
+>=20
+> I guess this will not be the API for the user that there is a PAN
+> discovered? Is it only for debugging purposes? There will be an
+> nl802154 event for this? As we discussed previously with additional
+> commands for start, discovered, etc.?
+>=20
+> I am sorry, maybe I can read that somewhere on your previous patch
+> series, just want to be sure.
+
+Yeah no problem, so yes, as you eventually saw in patch 1/3, the
+internal tracing is just here for in-kernel debugging purposes, it's in
+no way related to the user interface. It's a 2015 feature, we're just
+adding support for tracing the new commands.
+
+Let's discuss the nl user interface in the other thread.
 
 Thanks,
 Miqu=C3=A8l
