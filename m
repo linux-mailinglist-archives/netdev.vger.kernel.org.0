@@ -2,190 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFD9762010D
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:25:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB5D6200EC
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 22:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233186AbiKGVZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 16:25:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
+        id S232215AbiKGVVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 16:21:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233357AbiKGVYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:24:43 -0500
-Received: from smtp.smtpout.orange.fr (smtp-24.smtpout.orange.fr [80.12.242.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6BA2F663
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 13:24:12 -0800 (PST)
-Received: from [192.168.1.18] ([86.243.100.34])
-        by smtp.orange.fr with ESMTPA
-        id s9bCo3csCUoLVs9bCoTgdm; Mon, 07 Nov 2022 22:24:10 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 07 Nov 2022 22:24:10 +0100
-X-ME-IP: 86.243.100.34
-Message-ID: <6a0adc0d-da54-9c9b-3596-3422353e285d@wanadoo.fr>
-Date:   Mon, 7 Nov 2022 22:24:05 +0100
+        with ESMTP id S232538AbiKGVU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 16:20:56 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3CC30566;
+        Mon,  7 Nov 2022 13:19:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667855990; x=1699391990;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FRTdg9xjwz8cG4SA9/Vt6ox5KYC/KKvPCdzA/NClggs=;
+  b=I+SxKhir3yvUEVsYlla84Dfbp+ZFBSzsmyVJQXVSG6LlXRrJcklq/0E2
+   3reG4eHbEEzNn+RlWlf5ytf7jqOrVFN4LciX2VCMN8BaZrW+1CiTGQGk8
+   qeV0ephekzJGe4U6JmdVwihm01ISTlPR6RlmVt6f+iWcFz5eMXWJn+zw7
+   XlO/toXKEh0pgNXWk6ffJfVvJaxWOOp5OeIn9uEZF4AszbLOFlQLVx0Y3
+   DocqdZ05iJudeWG6bCcEcIoAaQudtfpXjjN4AXCf1DlQCU6jQDBr2/j64
+   nFVq6Ft4spj1zcJIxJbR90JsfvnuOovVEqGfiVmx6zZy43rH0mziq/mgM
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,145,1665471600"; 
+   d="scan'208";a="182345186"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Nov 2022 14:19:48 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 7 Nov 2022 14:19:30 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Mon, 7 Nov 2022 14:19:30 -0700
+Date:   Mon, 7 Nov 2022 22:24:15 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next v2 2/4] net: lan966x: Split function
+ lan966x_fdma_rx_get_frame
+Message-ID: <20221107212415.pwkdyyrdlbndb7ob@soft-dev3-1>
+References: <20221106211154.3225784-1-horatiu.vultur@microchip.com>
+ <20221106211154.3225784-3-horatiu.vultur@microchip.com>
+ <20221107160656.556195-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [RFC PATCH v3 01/11] virtio/vsock: rework packet allocation logic
-Content-Language: fr, en-CA
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-References: <f60d7e94-795d-06fd-0321-6972533700c5@sberdevices.ru>
- <f896b8fd-50d2-2512-3966-3775245e9b96@sberdevices.ru>
- <3c6de80a-8fc1-0c63-6d2d-3eee294fe0a7@wanadoo.fr>
- <278ee0cc-83ae-5c26-7718-d0472841e049@sberdevices.ru>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <278ee0cc-83ae-5c26-7718-d0472841e049@sberdevices.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20221107160656.556195-1-alexandr.lobakin@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 07/11/2022 à 06:23, Arseniy Krasnov a écrit :
-> On 06.11.2022 22:50, Christophe JAILLET wrote:
->> Le 06/11/2022 à 20:36, Arseniy Krasnov a écrit :
->>> To support zerocopy receive, packet's buffer allocation is changed: for
->>> buffers which could be mapped to user's vma we can't use 'kmalloc()'(as
->>> kernel restricts to map slab pages to user's vma) and raw buddy
->>> allocator now called. But, for tx packets(such packets won't be mapped
->>> to user), previous 'kmalloc()' way is used, but with special flag in
->>> packet's structure which allows to distinguish between 'kmalloc()' and
->>> raw pages buffers.
->>>
->>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->>> ---
->>>    drivers/vhost/vsock.c                   |  1 +
->>>    include/linux/virtio_vsock.h            |  1 +
->>>    net/vmw_vsock/virtio_transport.c        |  8 ++++++--
->>>    net/vmw_vsock/virtio_transport_common.c | 10 +++++++++-
->>>    4 files changed, 17 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->>> index 5703775af129..65475d128a1d 100644
->>> --- a/drivers/vhost/vsock.c
->>> +++ b/drivers/vhost/vsock.c
->>> @@ -399,6 +399,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
->>>            return NULL;
->>>        }
->>>    +    pkt->slab_buf = true;
->>>        pkt->buf_len = pkt->len;
->>>          nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
->>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->>> index 35d7eedb5e8e..d02cb7aa922f 100644
->>> --- a/include/linux/virtio_vsock.h
->>> +++ b/include/linux/virtio_vsock.h
->>> @@ -50,6 +50,7 @@ struct virtio_vsock_pkt {
->>>        u32 off;
->>>        bool reply;
->>>        bool tap_delivered;
->>> +    bool slab_buf;
->>>    };
->>>      struct virtio_vsock_pkt_info {
->>> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->>> index ad64f403536a..19909c1e9ba3 100644
->>> --- a/net/vmw_vsock/virtio_transport.c
->>> +++ b/net/vmw_vsock/virtio_transport.c
->>> @@ -255,16 +255,20 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
->>>        vq = vsock->vqs[VSOCK_VQ_RX];
->>>          do {
->>> +        struct page *buf_page;
->>> +
->>>            pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
->>>            if (!pkt)
->>>                break;
->>>    -        pkt->buf = kmalloc(buf_len, GFP_KERNEL);
->>> -        if (!pkt->buf) {
->>> +        buf_page = alloc_page(GFP_KERNEL);
->>> +
->>> +        if (!buf_page) {
->>>                virtio_transport_free_pkt(pkt);
->>>                break;
->>>            }
->>>    +        pkt->buf = page_to_virt(buf_page);
->>>            pkt->buf_len = buf_len;
->>>            pkt->len = buf_len;
->>>    diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->>> index a9980e9b9304..37e8dbfe2f5d 100644
->>> --- a/net/vmw_vsock/virtio_transport_common.c
->>> +++ b/net/vmw_vsock/virtio_transport_common.c
->>> @@ -69,6 +69,7 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
->>>            if (!pkt->buf)
->>>                goto out_pkt;
->>>    +        pkt->slab_buf = true;
->>>            pkt->buf_len = len;
->>>              err = memcpy_from_msg(pkt->buf, info->msg, len);
->>> @@ -1339,7 +1340,14 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
->>>      void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
->>>    {
->>> -    kvfree(pkt->buf);
->>> +    if (pkt->buf_len) {
->>> +        if (pkt->slab_buf)
->>> +            kvfree(pkt->buf);
->>
->> Hi,
->>
->> kfree()? (according to virtio_transport_alloc_pkt() in -next) or something else need to be changed.
->>
-> Hello Cristophe,
-> 
-> I think, 'kvfree()' is still needed here, because buffer for packet could be allocated by 'kvmalloc()'
-> in drivers/vhost/vsock.c. Correct me if i'm wrong.
+The 11/07/2022 17:06, Alexander Lobakin wrote:
 
-Agreed.
+Hi Olek,
 
 > 
->>> +        else
->>> +            free_pages((unsigned long)pkt->buf,
->>> +                   get_order(pkt->buf_len));
->>
->> In virtio_vsock_rx_fill(), only alloc_page() is used.
->>
->> Should this be alloc_pages(.., get_order(buf_len)) or free_page() (without an 's') here?
-> This function frees packets which were allocated in vhost path also. In vhost, for zerocopy
-> packets alloc_pageS() is used.
+> From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Date: Sun, 6 Nov 2022 22:11:52 +0100
+> 
+> > The function lan966x_fdma_rx_get_frame was unmapping the frame from
+> > device and check also if the frame was received on a valid port. And
+> > only after that it tried to generate the skb.
+> > Move this check in a different function, in preparation for xdp
+> > support. Such that xdp to be added here and the
+> > lan966x_fdma_rx_get_frame to be used only when giving the skb to upper
+> > layers.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  .../ethernet/microchip/lan966x/lan966x_fdma.c | 85 +++++++++++++------
+> >  .../ethernet/microchip/lan966x/lan966x_main.h |  9 ++
+> >  2 files changed, 69 insertions(+), 25 deletions(-)
+> 
+> [...]
+> 
+> > -static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx)
+> > +static int lan966x_fdma_rx_check_frame(struct lan966x_rx *rx, u64 *src_port)
+> >  {
+> >       struct lan966x *lan966x = rx->lan966x;
+> > -     u64 src_port, timestamp;
+> >       struct lan966x_db *db;
+> > -     struct sk_buff *skb;
+> >       struct page *page;
+> >
+> > -     /* Get the received frame and unmap it */
+> >       db = &rx->dcbs[rx->dcb_index].db[rx->db_index];
+> >       page = rx->page[rx->dcb_index][rx->db_index];
+> > +     if (unlikely(!page))
+> > +             return FDMA_ERROR;
+> >
+> >       dma_sync_single_for_cpu(lan966x->dev, (dma_addr_t)db->dataptr,
+> >                               FDMA_DCB_STATUS_BLOCKL(db->status),
+> >                               DMA_FROM_DEVICE);
+> >
+> > +     dma_unmap_single_attrs(lan966x->dev, (dma_addr_t)db->dataptr,
+> > +                            PAGE_SIZE << rx->page_order, DMA_FROM_DEVICE,
+> > +                            DMA_ATTR_SKIP_CPU_SYNC);
+> > +
+> > +     lan966x_ifh_get_src_port(page_address(page), src_port);
+> > +     if (WARN_ON(*src_port >= lan966x->num_phys_ports))
+> > +             return FDMA_ERROR;
+> > +
+> > +     return FDMA_PASS;
+> 
+> How about making this function return s64, which would be "src_port
+> or negative error", and dropping the second argument @src_port (the
+> example of calling it below)?
 
-Ok. Seen in patch 5/11.
+That was also my first thought.
+But the thing is, I am also adding FDMA_DROP in the next patch of this
+series(3/4). And I am planning to add also FDMA_TX and FDMA_REDIRECT in
+a next patch series.
+Should they(FDMA_DROP, FDMA_TX, FDMA_REDIRECT) also be some negative
+numbers? And then have something like you proposed belowed:
+---
+src_port = lan966x_fdma_rx_check_frame(rx);
+if (unlikely(src_port < 0)) {
 
-But wouldn't it be cleaner and future-proof to also have alloc_pageS() 
-in virtio_vsock_rx_fill(), even if get_order(buf->len) is kwown to be 0?
-
-What, if for some reason a PAGE_SIZE was < 4kb for a given arch, or 
-VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE increased?
-
-CJ
+        switch(src_port) {
+        case FDMA_ERROR:
+             ...
+             goto allocate_new
+        case FDMA_DROP:
+             ...
+             continue;
+        case FDMA_TX:
+        case FDMA_REDIRECT:
+        }
+}
+---
 
 > 
-> Thank You, Arseniy
->>
->> Just my 2c,
->>
->> CJ
->>
->>> +    }
->>> +
->>>        kfree(pkt);
->>>    }
->>>    EXPORT_SYMBOL_GPL(virtio_transport_free_pkt);
->>
+> > +}
+> > +
+> > +static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx,
+> > +                                              u64 src_port)
+> > +{
 > 
+> [...]
+> 
+> > -             skb = lan966x_fdma_rx_get_frame(rx);
+> > +             counter++;
+> >
+> > -             rx->page[rx->dcb_index][rx->db_index] = NULL;
+> > -             rx->dcb_index++;
+> > -             rx->dcb_index &= FDMA_DCB_MAX - 1;
+> > +             switch (lan966x_fdma_rx_check_frame(rx, &src_port)) {
+> > +             case FDMA_PASS:
+> > +                     break;
+> > +             case FDMA_ERROR:
+> > +                     lan966x_fdma_rx_free_page(rx);
+> > +                     lan966x_fdma_rx_advance_dcb(rx);
+> > +                     goto allocate_new;
+> > +             }
+> 
+> So, here you could do (if you want to keep the current flow)::
+> 
+>                 src_port = lan966x_fdma_rx_check_frame(rx);
+>                 switch (src_port) {
+>                 case 0 .. S64_MAX: // for example
+>                         break;
+>                 case FDMA_ERROR:   // must be < 0
+>                         lan_966x_fdma_rx_free_page(rx);
+>                         ...
+>                 }
+> 
+> But given that the error path is very unlikely and cold, I would
+> prefer if-else over switch case:
+> 
+>                 src_port = lan966x_fdma_rx_check_frame(rx);
+>                 if (unlikely(src_port < 0)) {
+>                         lan_966x_fdma_rx_free_page(rx);
+>                         ...
+>                         goto allocate_new;
+>                 }
+> 
+> >
+> > +             skb = lan966x_fdma_rx_get_frame(rx, src_port);
+> > +             lan966x_fdma_rx_advance_dcb(rx);
+> >               if (!skb)
+> > -                     break;
+> > +                     goto allocate_new;
+> >
+> >               napi_gro_receive(&lan966x->napi, skb);
+> > -             counter++;
+> >       }
+> >
+> > +allocate_new:
+> >       /* Allocate new pages and map them */
+> >       while (dcb_reload != rx->dcb_index) {
+> >               db = &rx->dcbs[dcb_reload].db[rx->db_index];
+> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> > index 4ec33999e4df6..464fb5e4a8ff6 100644
+> > --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> > @@ -100,6 +100,15 @@ enum macaccess_entry_type {
+> >       ENTRYTYPE_MACV6,
+> >  };
+> >
+> > +/* FDMA return action codes for checking if the frame is valid
+> > + * FDMA_PASS, frame is valid and can be used
+> > + * FDMA_ERROR, something went wrong, stop getting more frames
+> > + */
+> > +enum lan966x_fdma_action {
+> > +     FDMA_PASS = 0,
+> > +     FDMA_ERROR,
+> > +};
+> > +
+> >  struct lan966x_port;
+> >
+> >  struct lan966x_db {
+> > --
+> > 2.38.0
+> 
+> Thanks,
+> Olek
 
+-- 
+/Horatiu
