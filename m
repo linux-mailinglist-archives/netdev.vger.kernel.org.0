@@ -2,146 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C39A261F8ED
-	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 17:19:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0C761F9A5
+	for <lists+netdev@lfdr.de>; Mon,  7 Nov 2022 17:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbiKGQTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 11:19:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
+        id S232690AbiKGQ2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 11:28:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232159AbiKGQTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 11:19:01 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CE02099F;
-        Mon,  7 Nov 2022 08:18:13 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id u24so18331385edd.13;
-        Mon, 07 Nov 2022 08:18:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Obh3So++S0fpgr60eFX+LcdWNZ85UuWk3LNhFvn6Ric=;
-        b=aZyvP3vyQq7FjjM5qE8gq/ZSNDgYJL2so29zcraAB6Ttr5+wRHNTa5vMzZ8YA87Fkf
-         9EsURtvv5ouHYlPh7pyDmlctj4BkWdBfRphCBSRCdxjW3US3UVgmReBCvwP2PVS/SPiv
-         jjymQsN468vq67SyHQ+l/mXnTl449TEZHCjDk6Bm6ugHkUCYFQW1Qc182+95TSIU26tl
-         23pQ18Lt57o40AfHgMY60KAZjazYLUmWSrk8Mnms6NGMngBBilTBnaoIImrWPpHFIjVo
-         JhKcXM0Zf7alD4oAKrSB1f5pKeUb+PfDJqekBkzY/tatx497SKjYQjmtK751D1CfKvAK
-         LFBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Obh3So++S0fpgr60eFX+LcdWNZ85UuWk3LNhFvn6Ric=;
-        b=ILLM3a22Tbch3P8ATS3p9keqlpfkUeFV0lDpOE4WRHTkc4T8dntFBZRZAKeFQnlpfV
-         NY6yu3rIuc+nt6CwKaVRzQ1D8JaMk7qKFoRqrgNSxAnh3AnoRHptO2mnOCCfWMDfkzTb
-         A0rduob1amUgZuDSv+MfNF/ENp42e9REMj7K+Ybj8Cfb2NqUW9QZXDpeoA9Hv5paWQOU
-         wYOgG7zmtDW39kig6irgcjUDO5at6QN9/GFQB11QFBw56jtO3PIse7KOjrtzSWcJjYWD
-         K1y0+8orR74orskeZgHMYO40jGUoDXtGpzQHMwh1UahKe99uzpYu8eedx0GTQ79g21B4
-         H7RQ==
-X-Gm-Message-State: ACrzQf3BvLcsj3WloT5O6ZKN3cZ8WY7bEKog3Shp2Op4c0LNwKxlDir9
-        ILH6+wzLM171W3PtpUSA07DobIO/XkitH+f/ZCI=
-X-Google-Smtp-Source: AMsMyM7nfUtm1fP+3JtrVzafVqmqKFeuCBrpVsLmHiKVUSAJcyhqTY7pkLP6krC6L/RH3xW0HIHHVTSZXjyMXloDn5w=
-X-Received: by 2002:aa7:cad5:0:b0:454:88dc:2c22 with SMTP id
- l21-20020aa7cad5000000b0045488dc2c22mr51406050edt.352.1667837891699; Mon, 07
- Nov 2022 08:18:11 -0800 (PST)
+        with ESMTP id S232548AbiKGQ2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 11:28:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5D025C40;
+        Mon,  7 Nov 2022 08:25:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E3A4611B8;
+        Mon,  7 Nov 2022 16:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DA9C433D6;
+        Mon,  7 Nov 2022 16:25:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667838324;
+        bh=Yt3AxXZOdVhI/DEePqTeqIYQautqOR/ncxIz0D777Dk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Mx92VzePzXibww4J+q2sTiCIOCBCv/BxW56Mvrf5ilDxcGl8KY+JdgV3dtB/Rg9kU
+         2Av9B43f9hphEE4UYUAXAipIzMWD2f1a3Eq8uak2E0Xq4U+S3dhwVUvbFQiurbFUVq
+         E9N/51PzU6/g09nKIu7ACMjMZNBQ0rYvztAL5e60JaVsZodJdNGcUrAVwEb/FIFBed
+         VJQPEU2K+nZv2T/fLLhcLYnZN7vfngYtCv0QdG9fyCYukmVKpz7DnDCqZ472Xt9uSf
+         Bh6bZayNenUgtzPkIRbARDGaQFJgsFDXND6AoNsSInu/Cmh+CDF7sCvDda0fP0whFK
+         iVYL+RXENjK2g==
+Date:   Mon, 7 Nov 2022 08:25:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: Re: [PATCH net-next v8 3/5] net: dsa: add out-of-band tagging
+ protocol
+Message-ID: <20221107082522.2e95bebc@kernel.org>
+In-Reply-To: <20221107093950.74de3fa1@pc-8.home>
+References: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
+        <20221104174151.439008-4-maxime.chevallier@bootlin.com>
+        <20221104200530.3bbe18c6@kernel.org>
+        <20221107093950.74de3fa1@pc-8.home>
 MIME-Version: 1.0
-References: <CAGRyCJGWQagceLhnECBcpPfG5jMPZrjbsHrio1BvgpZJhk0pbA@mail.gmail.com>
- <20221107115856.GE2220@thinkpad>
-In-Reply-To: <20221107115856.GE2220@thinkpad>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Mon, 7 Nov 2022 17:18:00 +0100
-Message-ID: <CAGRyCJF+EodvRNK6T7KrBP_WKyETPYmz537M6hF6ZDD0RQVvkA@mail.gmail.com>
-Subject: Re: MHI DTR client implementation
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        loic.poulain@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mani,
+On Mon, 7 Nov 2022 09:39:50 +0100 Maxime Chevallier wrote:
+> > Also the series doesn't build. =20
+>=20
+> Can you elaborate more ? I can't reproduce the build failure on my
+> side, and I didn't get any reports from the kbuild bot, are you using a
+> specific config file ?
 
-Il giorno lun 7 nov 2022 alle ore 12:59 Manivannan Sadhasivam
-<mani@kernel.org> ha scritto:
->
-> + Loic
->
-> On Tue, Sep 20, 2022 at 04:23:25PM +0200, Daniele Palmas wrote:
-> > Hello all,
-> >
-> > I'm looking for some guidance related to  a possible MHI client for
-> > serial ports signals management implementation.
-> >
-> > Testing the AT channels with Telit modems I noted that unsolicited
-> > indications do not show: the root cause for this is DTR not set for
-> > those ports through MHI channels 18/19, something that with current
-> > upstream code can't be done due to the missing DTR client driver.
-> >
-> > I currently have an hack, based on the very first mhi stack submission
-> > (see https://lore.kernel.org/lkml/1524795811-21399-2-git-send-email-sdi=
-as@codeaurora.org/#Z31drivers:bus:mhi:core:mhi_dtr.c),
-> > solving my issue, but I would like to understand which would be the
-> > correct way, so maybe I can contribute some code.
-> >
-> > Should the MHI DTR client be part of the WWAN subsystem?
->
-> Yes, since WWAN is going to be the consumer of this channel, it makes sen=
-se to
-> host the client driver there.
->
-> > If yes, does it make sense to have an associated port exposed as a char
-> > device?
->
-> If the goal is to control the DTR settings from userspace, then you can u=
-se
-> the "AT" chardev node and handle the DTR settings in this client driver.
-> Because at the end of the day, user is going to read/write from AT port o=
-nly.
-> Adding one more ctrl port and have it configured before using AT port is =
-going
-> to be a pain.
->
+../net/core/skbuff.c:4495:49: error: invalid application of =E2=80=98sizeof=
+=E2=80=99 to incomplete type =E2=80=98struct dsa_oob_tag_info=E2=80=99
+ 4495 |         [SKB_EXT_DSA_OOB] =3D SKB_EXT_CHUNKSIZEOF(struct dsa_oob_ta=
+g_info),
+      |                                                 ^~~~~~
+../include/uapi/linux/const.h:32:44: note: in definition of macro =E2=80=98=
+__ALIGN_KERNEL_MASK=E2=80=99
+   32 | #define __ALIGN_KERNEL_MASK(x, mask)    (((x) + (mask)) & ~(mask))
+      |                                            ^
+../include/linux/align.h:8:33: note: in expansion of macro =E2=80=98__ALIGN=
+_KERNEL=E2=80=99
+    8 | #define ALIGN(x, a)             __ALIGN_KERNEL((x), (a))
+      |                                 ^~~~~~~~~~~~~~
+../net/core/skbuff.c:4476:34: note: in expansion of macro =E2=80=98ALIGN=E2=
+=80=99
+ 4476 | #define SKB_EXT_CHUNKSIZEOF(x)  (ALIGN((sizeof(x)), SKB_EXT_ALIGN_V=
+ALUE) / SKB_EXT_ALIGN_VALUE)
+      |                                  ^~~~~
+../net/core/skbuff.c:4495:29: note: in expansion of macro =E2=80=98SKB_EXT_=
+CHUNKSIZEOF=E2=80=99
+ 4495 |         [SKB_EXT_DSA_OOB] =3D SKB_EXT_CHUNKSIZEOF(struct dsa_oob_ta=
+g_info),
+      |                             ^~~~~~~~~~~~~~~~~~~
+../net/core/skbuff.c:4495:49: error: invalid application of =E2=80=98sizeof=
+=E2=80=99 to incomplete type =E2=80=98struct dsa_oob_tag_info=E2=80=99
+ 4495 |         [SKB_EXT_DSA_OOB] =3D SKB_EXT_CHUNKSIZEOF(struct dsa_oob_ta=
+g_info),
+      |                                                 ^~~~~~
+../include/uapi/linux/const.h:32:50: note: in definition of macro =E2=80=98=
+__ALIGN_KERNEL_MASK=E2=80=99
+   32 | #define __ALIGN_KERNEL_MASK(x, mask)    (((x) + (mask)) & ~(mask))
+      |                                                  ^~~~
+../include/linux/align.h:8:33: note: in expansion of macro =E2=80=98__ALIGN=
+_KERNEL=E2=80=99
+    8 | #define ALIGN(x, a)             __ALIGN_KERNEL((x), (a))
+      |                                 ^~~~~~~~~~~~~~
+../net/core/skbuff.c:4476:34: note: in expansion of macro =E2=80=98ALIGN=E2=
+=80=99
+ 4476 | #define SKB_EXT_CHUNKSIZEOF(x)  (ALIGN((sizeof(x)), SKB_EXT_ALIGN_V=
+ALUE) / SKB_EXT_ALIGN_VALUE)
+      |                                  ^~~~~
+../net/core/skbuff.c:4495:29: note: in expansion of macro =E2=80=98SKB_EXT_=
+CHUNKSIZEOF=E2=80=99
+ 4495 |         [SKB_EXT_DSA_OOB] =3D SKB_EXT_CHUNKSIZEOF(struct dsa_oob_ta=
+g_info),
+      |                             ^~~~~~~~~~~~~~~~~~~
+../net/core/skbuff.c:4495:49: error: invalid application of =E2=80=98sizeof=
+=E2=80=99 to incomplete type =E2=80=98struct dsa_oob_tag_info=E2=80=99
+ 4495 |         [SKB_EXT_DSA_OOB] =3D SKB_EXT_CHUNKSIZEOF(struct dsa_oob_ta=
+g_info),
+      |                                                 ^~~~~~
+../include/uapi/linux/const.h:32:61: note: in definition of macro =E2=80=98=
+__ALIGN_KERNEL_MASK=E2=80=99
+   32 | #define __ALIGN_KERNEL_MASK(x, mask)    (((x) + (mask)) & ~(mask))
+      |                                                             ^~~~
+../include/linux/align.h:8:33: note: in expansion of macro =E2=80=98__ALIGN=
+_KERNEL=E2=80=99
+    8 | #define ALIGN(x, a)             __ALIGN_KERNEL((x), (a))
+      |                                 ^~~~~~~~~~~~~~
+../net/core/skbuff.c:4476:34: note: in expansion of macro =E2=80=98ALIGN=E2=
+=80=99
+ 4476 | #define SKB_EXT_CHUNKSIZEOF(x)  (ALIGN((sizeof(x)), SKB_EXT_ALIGN_V=
+ALUE) / SKB_EXT_ALIGN_VALUE)
+      |                                  ^~~~~
+../net/core/skbuff.c:4495:29: note: in expansion of macro =E2=80=98SKB_EXT_=
+CHUNKSIZEOF=E2=80=99
+ 4495 |         [SKB_EXT_DSA_OOB] =3D SKB_EXT_CHUNKSIZEOF(struct dsa_oob_ta=
+g_info),
+      |                             ^~~~~~~~~~~~~~~~~~~
 
-ok.
 
-Meanwhile, I've found the following
-https://git.codelinaro.org/clo/le/platform/mhi-host/-/commit/17a10f4c879c9f=
-504a0d279f03e924553bcf2420
-and https://git.codelinaro.org/clo/le/platform/mhi-host/-/commit/8a87038021=
-d4f39e435e035124acade1eb168749
-that is very similar to the approach I was thinking about.
+Also this:
 
-I guess this could be probably the best starting point for mainline integra=
-tion.
-
-Thanks,
-Daniele
-
-> Thanks,
-> Mani
->
-> > I guess the answer is no, since it should be used just by the AT ports
-> > created by mhi_wwan_ctrl, but I'm not sure if that's possible.
-> >
-> > Or should the DTR management be somehow part of the MHI stack and
-> > mhi_wwan_ctrl interacts with that through exported functions?
-> >
-> > Thanks a lot in advance,
-> > Daniele
-> >
->
-> --
-> =E0=AE=AE=E0=AE=A3=E0=AE=BF=E0=AE=B5=E0=AE=A3=E0=AF=8D=E0=AE=A3=E0=AE=A9=
-=E0=AF=8D =E0=AE=9A=E0=AE=A4=E0=AE=BE=E0=AE=9A=E0=AE=BF=E0=AE=B5=E0=AE=AE=
-=E0=AF=8D
+drivers/net/ethernet/qualcomm/ipqess/ipqess.c:1172:22: warning: cast to sma=
+ller integer type 'u32' (aka 'unsigned int') from 'void *' [-Wvoid-pointer-=
+to-int-cast]
+        netdev->base_addr =3D (u32)ess->hw_addr;
+                            ^~~~~~~~~~~~~~~~~
