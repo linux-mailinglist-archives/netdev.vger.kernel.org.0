@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20CEA620B0E
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:24:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F59620B0D
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:24:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233772AbiKHIYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 03:24:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
+        id S233771AbiKHIYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 03:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233758AbiKHIXx (ORCPT
+        with ESMTP id S233751AbiKHIXx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 03:23:53 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62B327B11
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A839E27B12
         for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 00:23:52 -0800 (PST)
 Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E155684FAC;
-        Tue,  8 Nov 2022 09:23:49 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id 3FEE384FB5;
+        Tue,  8 Nov 2022 09:23:50 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
         s=phobos-20191101; t=1667895830;
-        bh=xzSyd5yI9MJDufr4RuTyWI2LqmKTCp4NW9Jyp55qKvc=;
+        bh=DBYzCogn/9wiUq7uYmdB4Lu0Fygut93Crnr7cr8sh/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uUjulGKvxGpg6mtRVCqZBZBJyf2WQ8TEc4wcdR3tbq7lP1h4jQowK8A7cZ4Vr/Gl0
-         yhnAubOB+9KxonivmeSdCDFY5kHjAPUltYxGG9JhR7FvcZTv+ysaG7Vma3NvcPDJQ4
-         hdwCZUZwLmdHweydvp4/51vvLYMnl1I/uXqfs5A3NkBhI5I4A07EtnG5a7hELTBvvv
-         mvny38r0kZOaOth3xU6/xhAasSVOrvZgODGvtdTrVdvy2muub6WnNoKXxGyoea97mo
-         SAYaC+Bg78V0tWQus+70m45ds0Hso6NI0EfCxPNKJZcp3VeEb5rVLVd9gG3dW1LOoG
-         Xt3qtlGW/Eh3A==
+        b=qSSqAs18dMI5jvpo5UdsoCXuh1WOw+K5heyOX9VFGwXFTEYKYLLcB7j41eBwr4RXz
+         LBlveKMeoQR1MD/6/nHic1ZETCjMxNusAkWa6CIH5/uesPsvi3Jr1Pe7h8fOu7g7Kh
+         VkD5TMbazuTUMFOxH/yzO9gF3MYmepl9fLofHIB0+NqTWZ2dtEMPYRs4JaWl7ruvnL
+         gcC/SdpzGfaA6Y1SRnBSSG1tf2rTgZXFL6XOqIQwa3MH3Qz/1CTltUDTGdKBFKcPHR
+         TeyT3gRzaGryGidInhNGwT26jZEGAXA0cc3N1vzrElyokMhuNSM11drYTVjejlVSsH
+         wYa2RCFgy8WNg==
 From:   Lukasz Majewski <lukma@denx.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
@@ -40,9 +40,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH 6/9] net: dsa: marvell: Provide per device information about max frame size
-Date:   Tue,  8 Nov 2022 09:23:27 +0100
-Message-Id: <20221108082330.2086671-7-lukma@denx.de>
+Subject: [PATCH 7/9] net: dsa: mv88e6071: Define max frame size (2048 bytes)
+Date:   Tue,  8 Nov 2022 09:23:28 +0100
+Message-Id: <20221108082330.2086671-8-lukma@denx.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221108082330.2086671-1-lukma@denx.de>
 References: <20221108082330.2086671-1-lukma@denx.de>
@@ -59,62 +59,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Different Marvell DSA switches support different size of max frame
-bytes to be sent.
-
-For example mv88e6185 supports max 1632B, which is now in-driver
-standard value. On the other hand - mv88e6071 supports 2048 bytes.
-
-As this value is internal and may be different for each switch IC
-new entry in struct mv88e6xxx_info has been added to store it.
-
-When the 'max_frame_size' is not defined (and hence zeroed by
-the kvzalloc()) the default of 1632 bytes is used.
+Accroding to the documentation - the mv88e6071 can support
+frame size up to 2048 bytes.
 
 Signed-off-by: Lukasz Majewski <lukma@denx.de>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 12 ++++++++++--
- drivers/net/dsa/mv88e6xxx/chip.h |  1 +
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 09877a464665..d90835b4c606 100644
+index d90835b4c606..e0224fc92ddf 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3542,11 +3542,19 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
-+	int max_frame_size;
- 
- 	if (chip->info->ops->port_set_jumbo_size)
- 		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
--	else if (chip->info->ops->set_max_frame_size)
--		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-+	else if (chip->info->ops->set_max_frame_size) {
-+		if (chip->info->max_frame_size)
-+			max_frame_size = chip->info->max_frame_size;
-+		else
-+			max_frame_size = 1632;
-+
-+		return max_frame_size - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-+	}
-+
- 	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
- }
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 2fcab41e03b7..6ec4010fd634 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -132,6 +132,7 @@ struct mv88e6xxx_info {
- 	unsigned int num_ports;
- 	unsigned int num_internal_phys;
- 	unsigned int num_gpio;
-+	unsigned int max_frame_size;
- 	unsigned int max_vid;
- 	unsigned int max_sid;
- 	unsigned int port_base_addr;
+@@ -5563,6 +5563,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.num_ports = 7,
+ 		.num_internal_phys = 5,
+ 		.max_vid = 4095,
++		.max_frame_size = 2048,
+ 		.port_base_addr = 0x08,
+ 		.phy_base_addr = 0x00,
+ 		.global1_addr = 0x0f,
 -- 
 2.37.2
 
