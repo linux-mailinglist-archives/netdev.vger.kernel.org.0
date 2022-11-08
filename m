@@ -2,138 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A93B620D5C
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:34:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95BCB620D6B
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:35:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233753AbiKHKer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 05:34:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
+        id S233911AbiKHKfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 05:35:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiKHKep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:34:45 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8850E201A5
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:34:44 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id C564D84C17;
-        Tue,  8 Nov 2022 11:34:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1667903682;
-        bh=AepQr7Z/zwtiNgoc7cBfGY6ILOvZWC5YxRR4gb0j2mk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jpYOmSqpVNKy9WkO46WjhdyuFpvO7pE9x7USQkMHOLn2ZtLqLWRBPgCXCIj3KEduD
-         KjGQNkpFOQwpeWEj1ahNtUegyy7Z0cXdMosS2NMKmG3kbd+Ev8i1Q3tgP794cE78Mp
-         GlM249EzozU4fqK+yafrOiT60h7DTXlPGRIA5JBnOQTSYB//O+tm4Md5zxjWnw3i8/
-         n6DtaO4bwS8+d5vlilD7PVjV0rcZjh/5ku42Kr6qhOo+EcT0HgTjhfudpdPwgyURWT
-         SgVSnnqtvCzNVQm2q0T8gac/dlY9srZf+P/Vz/RhX5FM9rg+coxY+fL9c1EjBm8g3e
-         3pb73RVCr4bSw==
-Date:   Tue, 8 Nov 2022 11:34:35 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: Re: [PATCH 1/9] net: dsa: allow switch drivers to override default
- slave PHY addresses
-Message-ID: <20221108113435.66b15fb2@wsk>
-In-Reply-To: <20221108091258.iaea3dhkjcuandvb@skbuf>
-References: <20221108082330.2086671-1-lukma@denx.de>
-        <20221108082330.2086671-1-lukma@denx.de>
-        <20221108082330.2086671-2-lukma@denx.de>
-        <20221108082330.2086671-2-lukma@denx.de>
-        <20221108091258.iaea3dhkjcuandvb@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S233921AbiKHKfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:35:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C9018E08
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:34:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667903683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bKRP4+cw0VhFwZrp8HtA3cgViFo5lHlh1+6syG/i+wQ=;
+        b=fimNQknFaTAUDv6871+ju9r+sWpLVjQOZ1iP2ULFUh30KF7B5anuxoHDfSwiv4zvFCoEtU
+        AL/+c+ONgCBro5tf5cGOeu34agvlNRcy9qsRjnkZTj6MD6R1Dk37OBcLspWGRF6YUag3Nf
+        2HZbPuKPMFURVqhalPeaTt64X2aNm0E=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-455-6HsaHA6mOJama93TWBLLjg-1; Tue, 08 Nov 2022 05:34:42 -0500
+X-MC-Unique: 6HsaHA6mOJama93TWBLLjg-1
+Received: by mail-wr1-f69.google.com with SMTP id v12-20020adfa1cc000000b00236eaee7197so3803011wrv.0
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 02:34:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bKRP4+cw0VhFwZrp8HtA3cgViFo5lHlh1+6syG/i+wQ=;
+        b=Rn6RKe72c7ZxTIAJFtG3yJC1RNbK4JQCW2nD+SY4I6XpjUqOrseS4hwpqxRF5LjDrN
+         rBeTyJb5hlTfzmp6Acrq9eTa33zlgPPqEyu5OOq1X9zxKMbFatHBrwLPbAhXaXB6s+/g
+         WGxewX+fGjybm0TIMBg0eEc83/7JEsnYJJPGAmJ98t9sUSP9B2Qi18WeZcb5vZ67JazE
+         JvKLdCdE2WiV8n2kAjMRKyAu6smIqQUWg4FOBg6w3usGHHIHWElmD9D6eMVDiOoPmKf0
+         jL341sK6NmlsY8O8imvkt8kyq2c8/8BiT+U/O3CUS5vcOD0amGvBl6pynedkeqcG+9gV
+         +noA==
+X-Gm-Message-State: ACrzQf3fAXL7ejeur8+BkRTNKgnqQ5R22Cb6gIQxuknsoTpgAGRRyxYf
+        rlHosqS1Ea4UadK5TdK++VNZ1bZzUPw4o7wtwhGTRrPL09N32NGrWHRn9dGNGnLyDTk+TXiMHKC
+        kFeGO+rTldZFU5hMI
+X-Received: by 2002:a05:600c:ad0:b0:3cf:692a:7f66 with SMTP id c16-20020a05600c0ad000b003cf692a7f66mr35280923wmr.200.1667903680917;
+        Tue, 08 Nov 2022 02:34:40 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM6ASsVMnXRj7BGCE+XsYeiyRdqfGCW4D/w7QesCAh5x6w9k97okW5QkPTlkLZADWxPYvplZtA==
+X-Received: by 2002:a05:600c:ad0:b0:3cf:692a:7f66 with SMTP id c16-20020a05600c0ad000b003cf692a7f66mr35280908wmr.200.1667903680649;
+        Tue, 08 Nov 2022 02:34:40 -0800 (PST)
+Received: from step1.redhat.com (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
+        by smtp.gmail.com with ESMTPSA id m11-20020a5d4a0b000000b0022ca921dc67sm9632802wrq.88.2022.11.08.02.34.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 02:34:40 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH 1/2] vringh: fix range used in iotlb_translate()
+Date:   Tue,  8 Nov 2022 11:34:36 +0100
+Message-Id: <20221108103437.105327-2-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221108103437.105327-1-sgarzare@redhat.com>
+References: <20221108103437.105327-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/2xWxpLyrfqqx65kU1YNajj1";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/2xWxpLyrfqqx65kU1YNajj1
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+vhost_iotlb_itree_first() requires `start` and `last` parameters
+to search for a mapping that overlaps the range.
 
-Hi Vladimir,
+In iotlb_translate() we cyclically call vhost_iotlb_itree_first(),
+incrementing `addr` by the amount already translated, so rightly
+we move the `start` parameter passed to vhost_iotlb_itree_first(),
+but we should hold the `last` parameter constant.
 
-> Hi Lukasz,
->=20
-> On Tue, Nov 08, 2022 at 09:23:22AM +0100, Lukasz Majewski wrote:
-> > From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> >=20
-> > Avoid having to define a PHY for every physical port when PHY
-> > addresses are fixed, but port index !=3D PHY address.
-> >=20
-> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> > Signed-off-by: Lukasz Majewski <lukma@denx.de>
-> > [Adjustments for newest kernel upstreaming] =20
->=20
-> (I got reminded by the message)
-> How are things going with the imx28 MTIP L2 switch? Upstreaming went
-> silent on that.
+Let's fix it by saving the `last` parameter value before incrementing
+`addr` in the loop.
 
-Yes, this task has been postponed as:
+Fixes: 9ad9c49cfe97 ("vringh: IOTLB support")
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vhost/vringh.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-- Customer decided to use Linux 4.19 CIP for which I've forward ported
-  the original NXP patches [1][2]
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 11f59dd06a74..828c29306565 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -1102,7 +1102,7 @@ static int iotlb_translate(const struct vringh *vrh,
+ 	struct vhost_iotlb_map *map;
+ 	struct vhost_iotlb *iotlb = vrh->iotlb;
+ 	int ret = 0;
+-	u64 s = 0;
++	u64 s = 0, last = addr + len - 1;
+ 
+ 	spin_lock(vrh->iotlb_lock);
+ 
+@@ -1114,8 +1114,7 @@ static int iotlb_translate(const struct vringh *vrh,
+ 			break;
+ 		}
+ 
+-		map = vhost_iotlb_itree_first(iotlb, addr,
+-					      addr + len - 1);
++		map = vhost_iotlb_itree_first(iotlb, addr, last);
+ 		if (!map || map->start > addr) {
+ 			ret = -EINVAL;
+ 			break;
+-- 
+2.38.1
 
-- Considering the above - I would need to change the structure of the
-  switch driver (which up till now is based on old - i.e. 2.6.3x - FEC
-  driver) and modify the current FEC to add acceleration in similar way
-  to TI's driver.
-
-  This is IMHO quite time consuming task ...
-
-  (The attempt to add it as DSA [2] was a bit less intrusive, but is
-  conceptually wrong).
-
-Links:
-[1] - https://github.com/lmajewski/linux-imx28-l2switch/tree/master
-
-[2] -
-https://github.com/lmajewski/linux-imx28-l2switch/tree/imx28-v5.12-L2-upstr=
-eam-RFC_v1
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/2xWxpLyrfqqx65kU1YNajj1
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNqMLsACgkQAR8vZIA0
-zr0zUggAuk6CTSUvyACYyah/Rn7sscqLuPGggq1/NL1QpVagyYkcrar5sN3LF4Jp
-Ujg4ItYJPjIExBwu9R3jhphRReBNC/4DjFoed0DLUmRZQn7H7AVEkn/r+fFKRIwV
-L+s4hNE/Zw/ed4yWIQolAv4WGSqCJExbVYcRXVWAJifJjfWG3vDWHIXw0WISVMG/
-94BCUtRQzG5W63ak5xT2kke6dD6tbntVupduByVvznPG+UpZcgLs95n+rPezkYrj
-CSkOxnXHGDtVj/f/nRzqV+3qK3cPVAMI2yREWYKN4YW+1DjAo+DjPwSFV89S5dMX
-RR8fKcIiWinFDh02d0ssBAjBjAaGYg==
-=Hu/0
------END PGP SIGNATURE-----
-
---Sig_/2xWxpLyrfqqx65kU1YNajj1--
