@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D23946214FF
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6536214F6
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:07:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235081AbiKHOHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 09:07:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
+        id S235091AbiKHOHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 09:07:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235104AbiKHOHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:07:10 -0500
+        with ESMTP id S235076AbiKHOHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:07:03 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBA469DE3
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:06:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0809686AD
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:06:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667916366;
+        s=mimecast20190719; t=1667916372;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=mhVuivBI13XN7hFJRIVsKLRsld9h+iIMpKP8ks7YdsA=;
-        b=dPHY97fOjqxv+lnN7zZmLfpW9uXWKCqaRdcavGEcEphqjvmrp0boMVT8P4HaoBM8+TI7mr
-        AZgcOPxdNttjzSZTsefhi/1eMZDe+V5UQcXUEEGsFEHQP2wuk895aYKBmC7kEhE/r6VBwk
-        Nxol8nxWvhT7ZWN13V7/jrHt/DHGbWg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sl3yRy218aHzyQly56lFG09Q5E7qWzHqb5L/W0IjWek=;
+        b=X0POqJU/TI5Rz4ak6BWbpvvWjRNlydZwzxLx4xVsklY6uDuvXUqu0yxyRH7Y7Jc6kpIBWJ
+        RNsYkr1o+85wb/RFxr1S8XtzVFk/k6k7jxPrFxstzNejXiNcTBbkoILQFJLtJCcIQILdQi
+        jokwQAaRxiNixzj27O1bZgWWxNG4Dfc=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-126-BCty_SS9Ni-viqQB2PNmyw-1; Tue, 08 Nov 2022 09:06:05 -0500
-X-MC-Unique: BCty_SS9Ni-viqQB2PNmyw-1
-Received: by mail-ed1-f69.google.com with SMTP id z15-20020a05640240cf00b00461b253c220so10544995edb.3
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 06:06:05 -0800 (PST)
+ us-mta-562-cwpmC9nUO5iN-68k74lP9A-1; Tue, 08 Nov 2022 09:06:08 -0500
+X-MC-Unique: cwpmC9nUO5iN-68k74lP9A-1
+Received: by mail-ej1-f72.google.com with SMTP id nc4-20020a1709071c0400b0078a5ceb571bso8397015ejc.4
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 06:06:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mhVuivBI13XN7hFJRIVsKLRsld9h+iIMpKP8ks7YdsA=;
-        b=Pp7evIvh3IWeY6YfCV3lEQ/6FekeWaofAuB7jvjXfzF4mqPyI7s+UReZ1CRa3TGHgI
-         AEjeNJlcatjp8lUjByiZnBO378jyjltX3crYWy9994CdCBA/BdLmBhoJukEUqxc1YxkV
-         X/X7SzrDTeiCLFluIsjwzKdPL/gWhXRucTkQLBU615exeY5Aq6vTfLzYSio3JHDwQeF/
-         rSzlwa04M4m+EA+qQMi7kK/VpqFMER/cJiOeut22nSURO0Puq35UR1hgbM/LpC22wwAR
-         XIVkvxp2OkHToMyaTxbIRNCDtdtlx+h6lwu9SaVuQHJe1bwuK/a5eK+Jj8Zi2/d9NOzZ
-         uJ4A==
-X-Gm-Message-State: ACrzQf2GANMAO42cRlbUU8SonRyJw/8laVde9pktQEN03Iz1wJCzU1s8
-        FTpRF6q2rfaWH9rCYyG3icQ6Db3bHvz8uIA/nMzSUWMKE9WELrnm7+WXtEtwHGeqNAuw/4oFZ3a
-        Xz383yQ7oDL1FrkEu
-X-Received: by 2002:a17:907:7fa5:b0:791:9a5f:101a with SMTP id qk37-20020a1709077fa500b007919a5f101amr53393799ejc.453.1667916364093;
-        Tue, 08 Nov 2022 06:06:04 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM7djvw8VkYFn6W6euariW0OoAZIMaedqHxBcgsFjLFzV0ydAI5gULLr0JxSI5H6L4acct260w==
-X-Received: by 2002:a17:907:7fa5:b0:791:9a5f:101a with SMTP id qk37-20020a1709077fa500b007919a5f101amr53393746ejc.453.1667916363488;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Sl3yRy218aHzyQly56lFG09Q5E7qWzHqb5L/W0IjWek=;
+        b=J+OqmsjKzn4d/Z7BpoOOjtihzQOw5TneXxZygeLwgSgE1GWUBEmUWCjnWHycO6GrHF
+         dDHsaG58Znqjjb/d00gGnhZKbHcVKMALkIQj44N5t7hT64EiY/66BV5P7t2L9HNt/La+
+         qQ72+5jQCedaP0lbb+xhTnVz9m6PNK5k29gkauQyq6jAU8RYqgodK1/506ZxOlkH4pp7
+         6dEFBEFKCEgKqyxNxmLhsVuMHkRS7x+FFRws7xFKs72NF4j3wCeacxE7yOBBTHQuYkFM
+         FHT2KYOcMEX1Zpk8PdJimLMtJS6GHBF6XTnMLc8RPjOcm/vofS7lbjEpuI6bVQOgPBuA
+         SUXQ==
+X-Gm-Message-State: ACrzQf1fBn8B4C7EV4XzTle9Je9UlhfLFewbW7JWkmYJ1v/ux2+yvDOh
+        0MeHwojvmpsz/mm+c8+4BgebCkq9tjJW8zN96DLHBFagAzYdjKbjDVwaG1+62ThWqd+x4wbLLrS
+        lMyFjwV92sMOZMKNr
+X-Received: by 2002:a05:6402:22f1:b0:462:f6eb:6c6b with SMTP id dn17-20020a05640222f100b00462f6eb6c6bmr55960114edb.365.1667916365697;
+        Tue, 08 Nov 2022 06:06:05 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM5NJ2carxvOY0HrxOeFub8azKnPISPzrmR2iGDEEi5HaGLkHXFnfsllxFWTzbboNTOG2giGoA==
+X-Received: by 2002:a05:6402:22f1:b0:462:f6eb:6c6b with SMTP id dn17-20020a05640222f100b00462f6eb6c6bmr55959945edb.365.1667916363837;
         Tue, 08 Nov 2022 06:06:03 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id w23-20020aa7dcd7000000b00443d657d8a4sm5531703edu.61.2022.11.08.06.06.03
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id a16-20020a170906369000b0078d9c2c8250sm4679728ejc.84.2022.11.08.06.06.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 08 Nov 2022 06:06:03 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B375678152B; Tue,  8 Nov 2022 15:06:02 +0100 (CET)
+        id E65E278152D; Tue,  8 Nov 2022 15:06:02 +0100 (CET)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
 Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v3 0/3] A couple of small refactorings of BPF program call sites
-Date:   Tue,  8 Nov 2022 15:05:58 +0100
-Message-Id: <20221108140601.149971-1-toke@redhat.com>
+        Song Liu <song@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 1/3] dev: Move received_rps counter next to RPS members in softnet data
+Date:   Tue,  8 Nov 2022 15:05:59 +0100
+Message-Id: <20221108140601.149971-2-toke@redhat.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221108140601.149971-1-toke@redhat.com>
+References: <20221108140601.149971-1-toke@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -82,50 +85,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav suggested[0] that these small refactorings could be split out from the
-XDP queueing RFC series and merged separately. The first change is a small
-repacking of struct softnet_data, the others change the BPF call sites to
-support full 64-bit values as arguments to bpf_redirect_map() and as the return
-value of a BPF program, relying on the fact that BPF registers are always 64-bit
-wide to maintain backwards compatibility.
+Move the received_rps counter value next to the other RPS-related members
+in softnet_data. This closes two four-byte holes in the structure, making
+room for another pointer in the first two cache lines without bumping the
+xmit struct to its own line.
 
-Please see the individual patches for details.
+Acked-by: Song Liu <song@kernel.org>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-v3:
-- In patch 3, don't change types of return values that are copied to
-  userspace (which should fix selftest errors on big-endian archs like s390)
-- Rebase on bpf-next
-- Collect Song's ACKs
-
-v2:
-- Rebase on bpf-next (CI failure seems to be unrelated to this series)
-- Collect Stanislav's Reviewed-by
-
-[0] https://lore.kernel.org/r/CAKH8qBtdnku7StcQ-SamadvAF==DRuLLZO94yOR1WJ9Bg=uX1w@mail.gmail.com
-
-Kumar Kartikeya Dwivedi (1):
-  bpf: Use 64-bit return value for bpf_prog_run
-
-Toke Høiland-Jørgensen (2):
-  dev: Move received_rps counter next to RPS members in softnet data
-  bpf: Expand map key argument of bpf_redirect_map to u64
-
- include/linux/bpf-cgroup.h | 12 +++++------
- include/linux/bpf.h        | 24 +++++++++++-----------
- include/linux/filter.h     | 42 +++++++++++++++++++-------------------
- include/linux/netdevice.h  |  2 +-
- include/uapi/linux/bpf.h   |  2 +-
- kernel/bpf/cgroup.c        | 12 +++++------
- kernel/bpf/core.c          | 14 ++++++-------
- kernel/bpf/cpumap.c        |  4 ++--
- kernel/bpf/devmap.c        |  4 ++--
- kernel/bpf/offload.c       |  4 ++--
- kernel/bpf/verifier.c      |  2 +-
- net/core/filter.c          |  4 ++--
- net/packet/af_packet.c     |  7 +++++--
- net/xdp/xskmap.c           |  4 ++--
- 14 files changed, 70 insertions(+), 67 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 4b5052db978f..31c53d409743 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3114,7 +3114,6 @@ struct softnet_data {
+ 	/* stats */
+ 	unsigned int		processed;
+ 	unsigned int		time_squeeze;
+-	unsigned int		received_rps;
+ #ifdef CONFIG_RPS
+ 	struct softnet_data	*rps_ipi_list;
+ #endif
+@@ -3147,6 +3146,7 @@ struct softnet_data {
+ 	unsigned int		cpu;
+ 	unsigned int		input_queue_tail;
+ #endif
++	unsigned int		received_rps;
+ 	unsigned int		dropped;
+ 	struct sk_buff_head	input_pkt_queue;
+ 	struct napi_struct	backlog;
 -- 
 2.38.1
 
