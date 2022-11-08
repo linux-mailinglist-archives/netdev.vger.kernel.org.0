@@ -2,210 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 872BA6204CC
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 01:43:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDADC6204DF
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 01:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232060AbiKHAn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 19:43:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        id S232539AbiKHAql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 19:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbiKHAn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 19:43:27 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBF5C4A
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 16:43:22 -0800 (PST)
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20221108004318epoutp0473d6e7641745e65652cbf9db86fa06e8~ldUpNJPa31074010740epoutp04s
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 00:43:18 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20221108004318epoutp0473d6e7641745e65652cbf9db86fa06e8~ldUpNJPa31074010740epoutp04s
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1667868199;
-        bh=uqVBtm0tHK3cdhqzQW+N+QwjWT+cXYAyTVCzFI4k560=;
-        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-        b=bCsVU9TUqtJ3Ac+AN/jorh01smBs5SDGylcLwFdCu3F482T+KmybGYHKvdmgY+Id4
-         jT9lxoR/JMRiEMUx9gjyTAnsXLN6iEkAYFtTDsuQjCfclRzWoRlj1AVZ9yCXhmHkrp
-         P9r92RYrAKNQpKZdt8Gci5BfbbRq3SZFZk8y3Xs0=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20221108004318epcas2p3c84407a2b3ccfd3e437321a4c79b2b88~ldUo2xS0b2929929299epcas2p3L;
-        Tue,  8 Nov 2022 00:43:18 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.68]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4N5q8Q15H3z4x9Pr; Tue,  8 Nov
-        2022 00:43:18 +0000 (GMT)
-X-AuditID: b6c32a45-3f1ff7000001f07d-e1-6369a625b8d5
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        24.2E.61565.526A9636; Tue,  8 Nov 2022 09:43:17 +0900 (KST)
-Mime-Version: 1.0
-Subject: Re: [PATCH net-next v3] nfc: Allow to create multiple virtual nci
- devices
-Reply-To: bongsu.jeon@samsung.com
-Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
-From:   Bongsu Jeon <bongsu.jeon@samsung.com>
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        Bongsu Jeon <bongsu.jeon@samsung.com>
-CC:     "leon@kernel.org" <leon@kernel.org>,
-        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <CACT4Y+aVXi5hWNMrYavfhmhr3+FVyJoq8KhzrLp1gJFiSCxpxg@mail.gmail.com>
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20221108004316epcms2p63ff537496ef759cb0c734068bd58855c@epcms2p6>
-Date:   Tue, 08 Nov 2022 09:43:16 +0900
-X-CMS-MailID: 20221108004316epcms2p63ff537496ef759cb0c734068bd58855c
+        with ESMTP id S232083AbiKHAqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 19:46:39 -0500
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3C62E3;
+        Mon,  7 Nov 2022 16:46:37 -0800 (PST)
+Message-ID: <5a1413c6-6a42-de02-810f-232a83628424@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667868396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UDYFiUcfEaDUGFLdmrC859M8X8kO4TlbKBdLHnZHsxA=;
+        b=VtJKbevt5Lux7H2pXGuCOsgEDM+naOijDZLhqy5GoKgauiX0MvEXcx9dFTyHVozeHLeKQ6
+        T6od4VwzvzpE4xF5CzWXZuVbK+vbfeYRrHq6IIPN4W2lVuYuZQX3YXJEnxn6XjQkLgZ3Y3
+        rNQWJVYM5lftB7oyY3CddaglcJrXZIA=
+Date:   Mon, 7 Nov 2022 16:46:27 -0800
+MIME-Version: 1.0
+Subject: Re: [PATCH bpf v3] bpf: Fix memory leaks in __check_func_call
+Content-Language: en-US
+To:     Wang Yufen <wangyufen@huawei.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        andrii@kernel.org, yhs@fb.com, joe@wand.net.nz
+References: <1667468524-4926-1-git-send-email-wangyufen@huawei.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <1667468524-4926-1-git-send-email-wangyufen@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkk+LIzCtJLcpLzFFi42LZdljTQld1WWaywal+KYstzZPYLSY8bGO3
-        2Pt6K7vFlF9LmS2OLRCzOPKmm9mBzWPBplKPPRNPsnlsWtXJ5nHn2h42j74tqxg9Pm+SC2CL
-        yrbJSE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMATpCSaEs
-        MacUKBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgXqBXnJhbXJqXrpeXWmJlaGBgZApUmJCd
-        sbhTpeCBWsX0x1PZGhg75boYOTkkBEwkmtv2M3UxcnEICexglPhyvYG9i5GDg1dAUOLvDmGQ
-        GmGBEIk938+ygdhCAooS/zvOsUHEdSVe/D0KZrMJaEusPdrIBGKLCPhLrDyxhhVkJrPAPUaJ
-        dR8vsUMs45WY0f6UBcKWlti+fCsjyC5OgUCJZxNtIMIaEj+W9TJD2KISN1e/ZYex3x+bzwhh
-        i0i03jsLVSMo8eDnbqi4lMSnh2dYIex8iZe7Otgg7BKJx2cWQdWbS+x5swsszivgK3Fl71yw
-        m1kEVCUWLD7GBnKOhICLxLpGM5Aws4C8xPa3c5hBwswCmhLrd+lDVChLHLnFAlHBJ9Fx+C/c
-        fzvmPWGCsFUlepu/MMH8Onl2C9SRHhK3l/1nncCoOAsRzLOQ7JqFsGsBI/MqRrHUguLc9NRi
-        owJDeMQm5+duYgSnRS3XHYyT337QO8TIxMF4iFGCg1lJhFekJjNZiDclsbIqtSg/vqg0J7X4
-        EKMp0JMTmaVEk/OBiTmvJN7QxNLAxMzM0NzI1MBcSZy3a4ZWspBAemJJanZqakFqEUwfEwen
-        VAOT8rx1H7YdiS4v89AQ/7k+0uPTxmknT8kpPC7qCF3IeerAdcN/HoaVH2q0pzRtqmRKLO20
-        fbMske97t+oSNavP1z8szHf7ffXeX+bn539/uCVnJ1med0djwU9L/Tq2re8VqqP1Hk59vtqY
-        TfASg1JB+FsFk2/n8zPnVf0+95w5UtKHY/7dHfO/W6Y/l/v88PFmprf63y7qfBK4zf7YdqHk
-        1veMD9PvH5x/sF5l+W+R4E1P90+Ln3fsVvKXQzPkl8gt09y3K+T0i+/ht8qX/T00M97nqNzD
-        5kNaITH3Wh6mBM97wLRnl8Dy5eV1qd474uM92uOnOG3v2+AlutjC7MPZEp+Dwa8ruXeeOaCk
-        VKivcU+JpTgj0VCLuag4EQCIYShIFAQAAA==
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20221104170430epcas2p1d854f31557e623e8fd9d16f6c162d90d
-References: <CACT4Y+aVXi5hWNMrYavfhmhr3+FVyJoq8KhzrLp1gJFiSCxpxg@mail.gmail.com>
-        <20221104170422.979558-1-dvyukov@google.com>
-        <20221107024604epcms2p174f8813f4e18607b93813021f5b048b0@epcms2p1>
-        <CGME20221104170430epcas2p1d854f31557e623e8fd9d16f6c162d90d@epcms2p6>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 8, 2022 at 3:38 AM Dmitry Vyukov<dvyukov@google.com> wrote:
-> On Sun, 6 Nov 2022 at 18:46, Bongsu Jeon <bongsu.jeon@samsung.com> wrote:
-> >
-> > On Sat, Nov 5, 2022 at 2:04 AM Dmitry Vyukov<dvyukov@google.com> wrote:
-> > > The current virtual nci driver is great for testing and fuzzing.
-> > > But it allows to create at most one "global" device which does not allow
-> > > to run parallel tests and harms fuzzing isolation and reproducibility.
-> > > Restructure the driver to allow creation of multiple independent devices.
-> > > This should be backwards compatible for existing tests.
-> >
-> > I totally agree with you for parallel tests and good design.
-> > Thanks for good idea.
-> > But please check the abnormal situation.
-> > for example virtual device app is closed(virtual_ncidev_close) first and then
-> > virtual nci driver from nci app tries to call virtual_nci_send or virtual_nci_close.
-> > (there would be problem in virtual_nci_send because of already destroyed mutex)
-> > Before this patch, this driver used virtual_ncidev_mode state and nci_mutex that isn't destroyed.
+On 11/3/22 2:42 AM, Wang Yufen wrote:
+> kmemleak reports this issue:
 > 
-> I assumed nci core must stop calling into a driver at some point
-> during the driver destruction. And I assumed that point is return from
-> nci_unregister_device(). Basically when nci_unregister_device()
-> returns, no new calls into the driver must be made. Calling into a
-> driver after nci_unregister_device() looks like a bug in nci core.
+> unreferenced object 0xffff88817139d000 (size 2048):
+>    comm "test_progs", pid 33246, jiffies 4307381979 (age 45851.820s)
+>    hex dump (first 32 bytes):
+>      01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>    backtrace:
+>      [<0000000045f075f0>] kmalloc_trace+0x27/0xa0
+>      [<0000000098b7c90a>] __check_func_call+0x316/0x1230
+>      [<00000000b4c3c403>] check_helper_call+0x172e/0x4700
+>      [<00000000aa3875b7>] do_check+0x21d8/0x45e0
+>      [<000000001147357b>] do_check_common+0x767/0xaf0
+>      [<00000000b5a595b4>] bpf_check+0x43e3/0x5bc0
+>      [<0000000011e391b1>] bpf_prog_load+0xf26/0x1940
+>      [<0000000007f765c0>] __sys_bpf+0xd2c/0x3650
+>      [<00000000839815d6>] __x64_sys_bpf+0x75/0xc0
+>      [<00000000946ee250>] do_syscall_64+0x3b/0x90
+>      [<0000000000506b7f>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 > 
-> If this is not true, how do real drivers handle this? They don't use
-> global vars. So they should either have the same use-after-free bugs
-> you described, or they handle shutdown differently. We just need to do
-> the same thing that real drivers do.
+> The root case here is: In function prepare_func_exit(), the callee is
+> not released in the abnormal scenario after "state->curframe--;". To
+> fix, move "state->curframe--;" to the very bottom of the function,
+> right when we free callee and reset frame[] pointer to NULL, as Andrii
+> suggested.
 > 
-> As far as I see they are doing the same what I did in this patch:
-> https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/fdp/i2c.c#L343
-> https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/nfcmrvl/usb.c#L354
+> In addition, function __check_func_call() has a similar problem. In
+> the abnormal scenario before "state->curframe++;", the callee is alse
+> not released.
 > 
-> They call nci_unregister_device() and then free all resources:
-> https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/nfcmrvl/main.c#L186
+> Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+> Fixes: fd978bf7fd31 ("bpf: Add reference tracking to verifier")
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> ---
+>   kernel/bpf/verifier.c | 13 +++++++++----
+>   1 file changed, 9 insertions(+), 4 deletions(-)
 > 
-> What am I missing here?
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 7f0a9f6..eff7a5a 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -6736,11 +6736,11 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+>   	/* Transfer references to the callee */
+>   	err = copy_reference_state(callee, caller);
+>   	if (err)
+> -		return err;
+> +		goto err_out;
+>   
+>   	err = set_callee_state_cb(env, caller, callee, *insn_idx);
+>   	if (err)
+> -		return err;
+> +		goto err_out;
+>   
+>   	clear_caller_saved_regs(env, caller->regs);
+>   
+> @@ -6757,6 +6757,11 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+>   		print_verifier_state(env, callee, true);
+>   	}
+>   	return 0;
+> +
+> +err_out:
+> +	kfree(callee);
 
-I'm not sure but I think they are little different.
-nfcmrvl uses usb_driver's disconnect callback function and fdp's i2c uses i2c_driver's remove callback function for unregister_device.
-But virtual_ncidev just uses file operation(close function) not related to driver.
-so Nci simulation App can call close function at any time.
-If Scheduler interrupts the nci core code right after calling virtual_nci_send and then 
-other process or thread calls virtual_nci_dev's close function,
-we need to handle this problem in virtual nci driver.
+Is it sure that free_func_state() is not needed ?
 
-> > > Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-> > > Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
-> > > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > > Cc: netdev@vger.kernel.org
-> > >
-> > > ---
-> > > Changes in v3:
-> > >  - free vdev in virtual_ncidev_close()
-> > >
-> > > Changes in v2:
-> > >  - check return value of skb_clone()
-> > >  - rebase onto currnet net-next
-> > > ---
-> > >  drivers/nfc/virtual_ncidev.c | 147 +++++++++++++++++------------------
-> > >  1 file changed, 71 insertions(+), 76 deletions(-)
-> > >
-> > > diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
-> > > index 85c06dbb2c449..bb76c7c7cc822 100644
-> > > --- a/drivers/nfc/virtual_ncidev.c
-> > > +++ b/drivers/nfc/virtual_ncidev.c
-> > > @@ -13,12 +13,6 @@
-> > >
-> > >  static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
-> > >  {
-> > > -     mutex_lock(&nci_mutex);
-> > > -     if (state != virtual_ncidev_enabled) {
-> > > -             mutex_unlock(&nci_mutex);
-> > > +     struct virtual_nci_dev *vdev = nci_get_drvdata(ndev);
-> > > +
-> > > +     mutex_lock(&vdev->mtx);
-> >
-> >   I think this vdev and vdev->mtx are already destroyed so that it would be problem.
-> >
-> > > +     if (vdev->send_buff) {
-> > > +             mutex_unlock(&vdev->mtx);
-> > >               kfree_skb(skb);
-> > > -             return 0;
-> > > +             return -1;
-> > >       }
-> > >
-> > >
-> > >  static int virtual_ncidev_close(struct inode *inode, struct file *file)
-> > >  {
-> > > -     mutex_lock(&nci_mutex);
-> > > -
-> > > -     if (state == virtual_ncidev_enabled) {
-> > > -             state = virtual_ncidev_disabling;
-> > > -             mutex_unlock(&nci_mutex);
-> > > +     struct virtual_nci_dev *vdev = file->private_data;
-> > >
-> > > -             nci_unregister_device(ndev);
-> > > -             nci_free_device(ndev);
-> > > -
-> > > -             mutex_lock(&nci_mutex);
-> > > -     }
-> > > -
-> > > -     state = virtual_ncidev_disabled;
-> > > -     mutex_unlock(&nci_mutex);
-> > > +     nci_unregister_device(vdev->ndev);
-> > > +     nci_free_device(vdev->ndev);
-> > > +     mutex_destroy(&vdev->mtx);
-> > > +     kfree(vdev);
-> > >
-> > >       return 0;
-> > >  }
+> +	state->frame[state->curframe + 1] = NULL;
+> +	return err;
+>   }
+>   
+>   int map_set_for_each_callback_args(struct bpf_verifier_env *env,
+> @@ -6970,8 +6975,7 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
+>   		return -EINVAL;
+>   	}
+>   
+> -	state->curframe--;
+> -	caller = state->frame[state->curframe];
+> +	caller = state->frame[state->curframe - 1];
+>   	if (callee->in_callback_fn) {
+>   		/* enforce R0 return value range [0, 1]. */
+>   		struct tnum range = callee->callback_ret_range;
+> @@ -7001,6 +7005,7 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
+>   			return err;
+>   	}
+>   
+> +	state->curframe--;
+
+nit. state->curframe is always pointing to callee upto this point?  Instead of 
+doing another +1 dance in the latter 'state->frame[state->curframe + 1] = 
+NULL;', how about do it later like:
+
+	/* clear everything in the callee */
+         free_func_state(callee);
+	state->frame[state->curframe--] = NULL;
+
+
+It shouldn't affect the earlier print_verifier_state() which explicitly takes 
+callee and caller as its arg, right?
+
+>   	*insn_idx = callee->callsite + 1;
+>   	if (env->log.level & BPF_LOG_LEVEL) {
+>   		verbose(env, "returning from callee:\n");
+
