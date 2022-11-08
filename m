@@ -2,83 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C28C7620E90
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 220A4620EA8
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234074AbiKHLUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 06:20:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59428 "EHLO
+        id S234083AbiKHLVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 06:21:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234077AbiKHLUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:20:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5615A48761
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 03:20:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC4A66150F
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 11:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 45A1BC433D7;
-        Tue,  8 Nov 2022 11:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667906415;
-        bh=Zpmmf/k2fBkw9GPjuMZ/sEyxoZjhsNgDC1Vazwso2+k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qdUqu/nbeKt7T+6dbI7cbjCaMEu+iyHSl0wQAQak/qQGF0kFT0EqtOdIIWHQ9E69n
-         EKYFyIBhlGhOJO6yR0vzut05j+o/3isoCxYdVjy1XrIIYWecqPVTWp9Az40MdUNbOR
-         4YHP69IoJAd9pvtpKrfDcHXW3tCiytCnoIxboBno974Ky/BE7L+d2wxc2kq78Bn37s
-         aetNvIA8bHWZHyFmrz0flC/wwRow8ef/e/T9CZGpTYNDnU99uX6kK8n00eEJ8v5333
-         EuTwyFBCxT51v4DF6r+gNAn0ZIEAkeEx95SsOZQUtbIcd8rLmq7BGhUoTq1i5p/6UN
-         Nn5CpiUDiT3Lg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2D3E2E270D0;
-        Tue,  8 Nov 2022 11:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233710AbiKHLVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:21:23 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C05348765;
+        Tue,  8 Nov 2022 03:21:22 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id v1so20421282wrt.11;
+        Tue, 08 Nov 2022 03:21:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z/tAWvUh3bACKS66CbafmxHuHB+RwFUoKIkb6Nnl3VI=;
+        b=pJi/X/S2VR9zzv8wA8jSY+PtBhfglW7IRRwJR5dZaE8dhCg+E4/SMK/SIXwwnkwlJV
+         NvC08LsgRkdn84L9K8hhw5Osm1me8mksiOBLQixxTIpP2+3ntwTANHVaRFrHHrHsW5XJ
+         4aAsA2fy8CjPnjASxqJ6cbEwhCy7VkASKF6TwhnXorb77CJE4E0rl7Jr0/7f299RmhCP
+         phi6INOI2Kp84LAt7SlTIwFaD5JQXpVOwqYsoBcnDgcmNAd0H+hg1R9TYBdRX2WLjz5g
+         XUyB7Ks4DeCucJjTfOSw2Z3oPGpNOHk0ZV6sPMv5mWLJBDldcdxZvEYdRV4fDmFWsPMq
+         CzJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Z/tAWvUh3bACKS66CbafmxHuHB+RwFUoKIkb6Nnl3VI=;
+        b=jIb1gu5nFEqje/23IFfxSKqcMCkRRjnWItSCQxXLJfSWJbUNoZwxT0hn3OHLIAJAA2
+         PPPBiaEBpmFDDjmZQwvRDa7smVLs5iUQEx97vVgzxzv3xRjCqb6uGCyEQpKtV/zNi8N5
+         MHkuN/PoUlOD2cry5CPWknn5I0mvU8vTogBYfV18nQWnZVnKK72W1zamaS7g3nh6bTkk
+         0lUFrBbtiaULDx7iSLMc4UnrskThs5GC8942qZXNeZ05GuVPtbOx6zhzKTyD6CefdXUn
+         koHkIWzuFdPcQcR2THdVqsDaneHu8SNU7ZUfr5lChRVT3B4QUy3/YQoPZcHqdInl+PhN
+         I5jg==
+X-Gm-Message-State: ACrzQf18BXjPthjEs+iMcyOhu7MU45R+KHLZMsDP8c9DOXBYkOofoDlP
+        Dd+r5JPN3AfDXusg4EvfxFU=
+X-Google-Smtp-Source: AMsMyM6H4m0SLm49k12JXPGxC7mjK+zWDsHKH/gL1FUohdfrq/1c3t7vw/LTGv8X3ZMrteA4FB2jOQ==
+X-Received: by 2002:adf:eb04:0:b0:236:dd5e:e3a2 with SMTP id s4-20020adfeb04000000b00236dd5ee3a2mr27649822wrn.94.1667906480767;
+        Tue, 08 Nov 2022 03:21:20 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id j13-20020a05600c190d00b003b47e8a5d22sm15884416wmq.23.2022.11.08.03.21.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 03:21:20 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hns3: Fix spelling mistake "fliter" -> "filter"
+Date:   Tue,  8 Nov 2022 11:21:19 +0000
+Message-Id: <20221108112119.116182-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] ethtool: Fail number of channels change when it
- conflicts with rxnfc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166790641518.22212.6408101489854653988.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Nov 2022 11:20:15 +0000
-References: <20221106123127.522985-1-gal@nvidia.com>
-In-Reply-To: <20221106123127.522985-1-gal@nvidia.com>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        jacob.e.keller@intel.com, tariqt@nvidia.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+There is a spelling mistake in struct member vlan_fliter_cap. Fix it.
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 4 ++--
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-On Sun, 6 Nov 2022 14:31:27 +0200 you wrote:
-> Similar to what we do with the hash indirection table [1], when network
-> flow classification rules are forwarding traffic to channels greater
-> than the requested number of channels, fail the operation.
-> Without this, traffic could be directed to channels which no longer
-> exist (dropped) after changing number of channels.
-> 
-> [1] commit d4ab4286276f ("ethtool: correctly ensure {GS}CHANNELS doesn't conflict with GS{RXFH}")
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v2] ethtool: Fail number of channels change when it conflicts with rxnfc
-    https://git.kernel.org/netdev/net-next/c/47f3ecf4763d
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 987271da6e9b..991452f17235 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -1341,7 +1341,7 @@ static void hclge_parse_cfg(struct hclge_cfg *cfg, struct hclge_desc *desc)
+ 					    HCLGE_CFG_SPEED_ABILITY_EXT_S);
+ 	cfg->speed_ability |= speed_ability_ext << SPEED_ABILITY_EXT_SHIFT;
+ 
+-	cfg->vlan_fliter_cap = hnae3_get_field(__le32_to_cpu(req->param[1]),
++	cfg->vlan_filter_cap = hnae3_get_field(__le32_to_cpu(req->param[1]),
+ 					       HCLGE_CFG_VLAN_FLTR_CAP_M,
+ 					       HCLGE_CFG_VLAN_FLTR_CAP_S);
+ 
+@@ -1607,7 +1607,7 @@ static int hclge_configure(struct hclge_dev *hdev)
+ 		hdev->wanted_umv_size = hdev->ae_dev->dev_specs.umv_size;
+ 	hdev->tx_spare_buf_size = cfg.tx_spare_buf_size;
+ 	hdev->gro_en = true;
+-	if (cfg.vlan_fliter_cap == HCLGE_VLAN_FLTR_CAN_MDF)
++	if (cfg.vlan_filter_cap == HCLGE_VLAN_FLTR_CAN_MDF)
+ 		set_bit(HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B, ae_dev->caps);
+ 
+ 	if (hnae3_ae_dev_fd_supported(hdev->ae_dev)) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 495b639b0dc2..d84e0891f664 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -336,7 +336,7 @@ struct hclge_tc_info {
+ 
+ struct hclge_cfg {
+ 	u8 tc_num;
+-	u8 vlan_fliter_cap;
++	u8 vlan_filter_cap;
+ 	u16 tqp_desc_num;
+ 	u16 rx_buf_len;
+ 	u16 vf_rss_size_max;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.38.1
 
