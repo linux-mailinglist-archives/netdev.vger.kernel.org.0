@@ -2,113 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB76620CB6
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 10:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13F74620CC4
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233691AbiKHJyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 04:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34682 "EHLO
+        id S233729AbiKHKAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 05:00:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233679AbiKHJyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 04:54:38 -0500
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036913BC
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 01:54:36 -0800 (PST)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4N63NQ6V9tz4f3mHv
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 17:54:30 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP4 (Coremail) with SMTP id gCh0CgCXu9hYJ2pj5Ua3AA--.60002S4;
-        Tue, 08 Nov 2022 17:54:33 +0800 (CST)
-From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     Matt Johnston <matt@codeconstruct.com.au>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org
-Subject: [PATCH net v2] mctp: Fix an error handling path in mctp_init()
-Date:   Tue,  8 Nov 2022 09:55:17 +0000
-Message-Id: <20221108095517.620115-1-weiyongjun@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S233671AbiKHKAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:00:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A2F2A94C;
+        Tue,  8 Nov 2022 02:00:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A98F614E6;
+        Tue,  8 Nov 2022 10:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 690ECC433D7;
+        Tue,  8 Nov 2022 10:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667901615;
+        bh=WdDOo8U/DzkUPI7ETAKH9dAAWOmv1Yt9yMQjVaB2hKQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ScWd4GHK5xQQHeHmqZPX9xcyvvj/QHWJwKfh98ICb5POEhhYcI3rL/bo1j7zV+Qvd
+         EYI1o0FAT5OgZ7twGyC79mlgfhskXvwpO2NeWb5SqpZrcDzeE3QPKClfL5OhWjPgUH
+         jyhkOVMukoey+64U6fYnsFBa8wM4FPGM1slG86C+5/rELi9SrDE56QbpzqLbd+5Lii
+         zrHS2J1VAdjnFtejepZL6wRHGI4HnPBphdZ1ViuAc7SijfJrjzAR1BwkcNgnaNpHYa
+         2OeXR9IVml9R15HUugbmFQOMedjniq2yO2kFuS4o2ke5Qa2vEXoFZacMjDpw5T5qe2
+         Hq6EJvoqg+qXA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4C035C4166D;
+        Tue,  8 Nov 2022 10:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgCXu9hYJ2pj5Ua3AA--.60002S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kw17JryUtry8Cr47tF13urg_yoW8GFykp3
-        s8tr15tr48trsrKrWkAFWDXas8Wr1DGa1UCrWrurWSv34DuryUKF10kFy2gFWUurZYka9I
-        vr4Fvr1ayF1qyF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUgKb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
-        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-        Cjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCj
-        c4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4
-        CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1x
-        MIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJV
-        Cq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBI
-        daVFxhVjvjDU0xZFpf9x07UWE__UUUUU=
-X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next v5] ethtool: linkstate: add a statistic for PHY down
+ events
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166790161530.10635.9762046985462618583.git-patchwork-notify@kernel.org>
+Date:   Tue, 08 Nov 2022 10:00:15 +0000
+References: <20221104190125.684910-1-kuba@kernel.org>
+In-Reply-To: <20221104190125.684910-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, f.fainelli@gmail.com, michael.chan@broadcom.com,
+        andrew@lunn.ch, corbet@lwn.net, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, huangguangbin2@huawei.com,
+        chenhao288@hisilicon.com, moshet@nvidia.com,
+        linux@rempel-privat.de, linux-doc@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+Hello:
 
-If mctp_neigh_init() return error, the routes resources should
-be released in the error handling path. Otherwise some resources
-leak.
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Fixes: 4d8b9319282a ("mctp: Add neighbour implementation")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Acked-by: Matt Johnston <matt@codeconstruct.com.au>
----
-v1 -> v2: fix build warning, added acked-by
+On Fri,  4 Nov 2022 12:01:25 -0700 you wrote:
+> The previous attempt to augment carrier_down (see Link)
+> was not met with much enthusiasm so let's do the simple
+> thing of exposing what some devices already maintain.
+> Add a common ethtool statistic for link going down.
+> Currently users have to maintain per-driver mapping
+> to extract the right stat from the vendor-specific ethtool -S
+> stats. carrier_down does not fit the bill because it counts
+> a lot of software related false positives.
+> 
+> [...]
 
- net/mctp/af_mctp.c | 4 +++-
- net/mctp/route.c   | 2 +-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+Here is the summary with links:
+  - [net-next,v5] ethtool: linkstate: add a statistic for PHY down events
+    https://git.kernel.org/netdev/net-next/c/9a0f830f8026
 
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index b6b5e496fa40..fc9e728b6333 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -665,12 +665,14 @@ static __init int mctp_init(void)
- 
- 	rc = mctp_neigh_init();
- 	if (rc)
--		goto err_unreg_proto;
-+		goto err_unreg_routes;
- 
- 	mctp_device_init();
- 
- 	return 0;
- 
-+err_unreg_routes:
-+	mctp_routes_exit();
- err_unreg_proto:
- 	proto_unregister(&mctp_proto);
- err_unreg_sock:
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 2155f15a074c..f9a80b82dc51 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -1400,7 +1400,7 @@ int __init mctp_routes_init(void)
- 	return register_pernet_subsys(&mctp_net_ops);
- }
- 
--void __exit mctp_routes_exit(void)
-+void mctp_routes_exit(void)
- {
- 	unregister_pernet_subsys(&mctp_net_ops);
- 	rtnl_unregister(PF_MCTP, RTM_DELROUTE);
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
