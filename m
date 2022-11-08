@@ -2,95 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A7962162F
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:23:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A7A621645
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234410AbiKHOXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 09:23:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        id S234115AbiKHO0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 09:26:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234504AbiKHOXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:23:24 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F127F58BC9
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:22:47 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id n12so38938867eja.11
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 06:22:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=I/2XrmdghbmaaNa8DlOtVmiZ6wnxuyN0Gwxqhrv9NWE=;
-        b=Lob1t9kBBiWI2SJB+VBPSsmDx3w9cLYoa/XYK5DPyPLjn2NW1BilVWMW4gVJOLeLpB
-         3NwRl39PRdmdpR/aimOMTtw1u8xfCs3WMXLc5F+aPdHEgJHNgcKZN/S4LLdTNReEt5P6
-         hJ+z0NUcQ/UfvZ1YWSEGQv0qG4TfLF57zEDfViihTEH1JbqXcvMpvrSeiiBC+uq4PcFA
-         Zk9WwtvmRC8X3RKcXYDqJNxVcuic2vLmjSR2RXyH5fWvJp++Mhm/WaSKSxn0JB7QzA1j
-         UkTQ1F5C3hC1Q7GW6rxT7s8dWug1PbB4v1X87r849cazqyMaNg62KWhIfEaB1Cos4WRj
-         UpQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I/2XrmdghbmaaNa8DlOtVmiZ6wnxuyN0Gwxqhrv9NWE=;
-        b=X522G/xENTiZYa+2ptWTT9QxRJJ2NBDB0QDB4NsoB2hOCG8HaRdMOhMU3jRakT0mpL
-         aBWDby3CZyKsdB+IXA1w7BrZ6TBiWLWkO6L5U98YtmPeqMfP/BZNH6VrHYGXBcw0JWY0
-         wM9D3vJAgNyzsluJKnFUR4uwwBa0WswuQSVn30nq0/T3XLVnlsd7xT0ucpDi2M6ljUIO
-         rrQH4bTTbb+vkwCDLNEurA56+adQbXyrvWqbUyW9KyIyccA74KuGJ37v70Kvh1DWrdwd
-         1QjTwBtZ5Wm/THIjL/5QejFNH34tOgZHg2I7CscQJgdY0+Sg5TovlVRzqcAqHZz5aH9p
-         lpPg==
-X-Gm-Message-State: ACrzQf3Rty7zjSKEABI93wlTqNdqAlH4Rj0/rgnk05wv07pE/GYoFFQZ
-        2t9WbUe8WXFYnWUSzBNHU/I=
-X-Google-Smtp-Source: AMsMyM7eqIWfGlREyktBYHU4Mu59xyQRNn8ghLb+HacV99Jy45Vk5chEOOqFML2mz3qh98tz5Gu/7g==
-X-Received: by 2002:a17:906:9bed:b0:7a6:a68b:9697 with SMTP id de45-20020a1709069bed00b007a6a68b9697mr52009042ejc.218.1667917367256;
-        Tue, 08 Nov 2022 06:22:47 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id c26-20020aa7c99a000000b00462bd673453sm5622772edt.39.2022.11.08.06.22.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 06:22:46 -0800 (PST)
-Date:   Tue, 8 Nov 2022 16:22:44 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233640AbiKHO0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:26:07 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE235C765;
+        Tue,  8 Nov 2022 06:24:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667917489; x=1699453489;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SkQVJcDZAagONBPRjE0wTg4gud81SvHRy4ZcfIKi2yU=;
+  b=aL7vUTeiKCNNx6y7kvHYTX0D+aQguOVfM93x0zgY+6mSrnSWlC0ILq/P
+   b+gzZOkfDs052qhhg/bFLEF4BblJoy+z0qgOer+yEyeHZmoe2bSR7BNYl
+   YcMCVMjr4UIujtnO2qo5jrqy6jcU0bBqEeZwOyjSLZHMhf9P8NUkObwdG
+   hPQR6XPHsxKxvQet4AEd9Lh2rXTLFlbKWEPyGxHv9wgg/Rzq3PHp4/pvj
+   3PY/LZrFrSeEYqcrpx0+47KVsP3LgnC/FGWNvNN2fHLq5/t4iEuvrXrAh
+   39RPe/10rZUn8QZrDEAAEwH+edp1z5HjFKupe/mhK1hN5uynhoMtd6mJp
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="298219735"
+X-IronPort-AV: E=Sophos;i="5.96,148,1665471600"; 
+   d="scan'208";a="298219735"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 06:24:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="630884179"
+X-IronPort-AV: E=Sophos;i="5.96,148,1665471600"; 
+   d="scan'208";a="630884179"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007.jf.intel.com with ESMTP; 08 Nov 2022 06:24:43 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1osPWq-009ANu-2m;
+        Tue, 08 Nov 2022 16:24:40 +0200
+Date:   Tue, 8 Nov 2022 16:24:40 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee@kernel.org>
+Cc:     Gene Chen <gene_chen@richtek.com>,
+        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        bridge@lists.linux-foundation.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        "Hans J . Schultz" <netdev@kapio-technology.com>, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 03/15] bridge: switchdev: Reflect MAB bridge
- port flag to device drivers
-Message-ID: <20221108142244.r5polveqve3ckr7j@skbuf>
-References: <cover.1667902754.git.petrm@nvidia.com>
- <2db3f3f1eff65e42c92a8e3a5626d64f46e68edc.1667902754.git.petrm@nvidia.com>
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
+Message-ID: <Y2pmqBXYq3WQa97u@smile.fi.intel.com>
+References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
+ <Y1gZ/zBtc2KgXlbw@smile.fi.intel.com>
+ <Y1+NHVS5ZJLFTBke@google.com>
+ <Y1/qisszTjUL9ngU@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2db3f3f1eff65e42c92a8e3a5626d64f46e68edc.1667902754.git.petrm@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Y1/qisszTjUL9ngU@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 08, 2022 at 11:47:09AM +0100, Petr Machata wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Mon, Oct 31, 2022 at 05:32:26PM +0200, Andy Shevchenko wrote:
+> On Mon, Oct 31, 2022 at 08:53:49AM +0000, Lee Jones wrote:
+> > On Tue, 25 Oct 2022, Andy Shevchenko wrote:
+> > 
+> > > On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
+> > > > There are several users of LED framework that reimplement the
+> > > > functionality of led_init_default_state_get(). In order to
+> > > > deduplicate them move the declaration to the global header
+> > > > (patch 2) and convert users (patche 3-11).
+> > > 
+> > > Dear LED maintainers, is there any news on this series? It's hanging around
+> > > for almost 2 months now...
+> > 
+> > My offer still stands if help is required.
 > 
-> Reflect the 'BR_PORT_MAB' flag to device drivers so that:
+> From my point of view the LED subsystem is quite laggish lately (as shown by
+> this patch series, for instance), which means that _in practice_ the help is
+> needed, but I haven't got if we have any administrative agreement on that.
 > 
-> * Drivers that support MAB could act upon the flag being toggled.
-> * Drivers that do not support MAB will prevent MAB from being enabled.
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> Reviewed-by: Petr Machata <petrm@nvidia.com>
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> ---
+> Pavel?
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+So, Pavel seems quite unresponsive lately... Shall we just move on and take
+maintainership?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
