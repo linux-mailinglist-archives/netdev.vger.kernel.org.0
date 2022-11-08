@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 459F0620F6A
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:48:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D97A620F80
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:50:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233766AbiKHLsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 06:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S233641AbiKHLuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 06:50:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233689AbiKHLsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:48:10 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A77918341
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 03:48:09 -0800 (PST)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N65vJ3x7Xz15MPk;
-        Tue,  8 Nov 2022 19:47:56 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 8 Nov 2022 19:48:07 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 8 Nov
- 2022 19:48:07 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <peppe.cavallaro@st.com>, <alexandre.torgue@foss.st.com>,
-        <joabreu@synopsys.com>, <davem@davemloft.net>,
-        <jiaxun.yang@flygoat.com>, <zhangqing@loongson.cn>,
-        <liupeibao@loongson.cn>, <andrew@lunn.ch>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-Subject: [PATCH net v2 3/3] stmmac: dwmac-loongson: fix missing of_node_put() while module exiting
-Date:   Tue, 8 Nov 2022 19:46:47 +0800
-Message-ID: <20221108114647.4144952-4-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221108114647.4144952-1-yangyingliang@huawei.com>
-References: <20221108114647.4144952-1-yangyingliang@huawei.com>
+        with ESMTP id S233472AbiKHLuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:50:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DEA11811
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 03:50:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1B8E61518
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 11:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4CFA7C433D7;
+        Tue,  8 Nov 2022 11:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667908215;
+        bh=NK/YYNIJdEDXsT8gEjp0URhjdXkM2lhCZCUWpqxLoHo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MTjZgDc4/cfgx5PJfAv8htQ/8FIxlwXwk4kUCNv5BYdhLXMAwacEBju/Hl8svkpau
+         UhRMdTr44h/peVjQGG9FtDfA0G7NtIb+CmweSgdNhjioA5OoJs+T2nAzXFxrIV6Gk4
+         qRCoQSmwD8PIzkNgdDrQsnkYWckkU/Kjtj8vWaGrYCgXz4fyn+WaINwkBQeQCax9am
+         Mx4rmA4tXJd9/aypj6Stq8TWnixAecoc70z+i/GnjB3GxU2jo5A1gH63J77gV8bSNt
+         NxPvGqYUENgZAnWCqObQHoJkaufGGzpz5S8WYaOLuZZ297UZDMCE00SJG7vKCTX1Za
+         4BEiw6Pe/Gs5g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 30704E270D0;
+        Tue,  8 Nov 2022 11:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] bnxt_en: Updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166790821519.5959.10098542093861526805.git-patchwork-notify@kernel.org>
+Date:   Tue, 08 Nov 2022 11:50:15 +0000
+References: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1667780192-3700-1-git-send-email-michael.chan@broadcom.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, gospo@broadcom.com,
+        pavan.chebbi@broadcom.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,69 +56,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The node returned by of_get_child_by_name() with refcount decremented,
-of_node_put() needs be called when finish using it. So add it in the
-error path in loongson_dwmac_probe() and in loongson_dwmac_remove().
+Hello:
 
-Fixes: 2ae34111fe4e ("stmmac: dwmac-loongson: fix invalid mdio_node")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- .../ethernet/stmicro/stmmac/dwmac-loongson.c  | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-index 2d480bc49c51..a25c187d3185 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-@@ -75,20 +75,24 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
- 		plat->mdio_bus_data = devm_kzalloc(&pdev->dev,
- 						   sizeof(*plat->mdio_bus_data),
- 						   GFP_KERNEL);
--		if (!plat->mdio_bus_data)
--			return -ENOMEM;
-+		if (!plat->mdio_bus_data) {
-+			ret = -ENOMEM;
-+			goto err_put_node;
-+		}
- 		plat->mdio_bus_data->needs_reset = true;
- 	}
- 
- 	plat->dma_cfg = devm_kzalloc(&pdev->dev, sizeof(*plat->dma_cfg), GFP_KERNEL);
--	if (!plat->dma_cfg)
--		return -ENOMEM;
-+	if (!plat->dma_cfg) {
-+		ret = -ENOMEM;
-+		goto err_put_node;
-+	}
- 
- 	/* Enable pci device */
- 	ret = pci_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n", __func__);
--		return ret;
-+		goto err_put_node;
- 	}
- 
- 	/* Get the base address of device */
-@@ -152,13 +156,18 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
- 	pci_disable_msi(pdev);
- err_disable_device:
- 	pci_disable_device(pdev);
-+err_put_node:
-+	of_node_put(plat->mdio_node);
- 	return ret;
- }
- 
- static void loongson_dwmac_remove(struct pci_dev *pdev)
- {
-+	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
- 	int i;
- 
-+	of_node_put(priv->plat->mdio_node);
- 	stmmac_dvr_remove(&pdev->dev);
- 
- 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
+On Sun,  6 Nov 2022 19:16:29 -0500 you wrote:
+> This small patchset adds an improvement to the configuration of ethtool
+> RSS tuple hash and a PTP improvement when running in a multi-host
+> environment.
+> 
+> Edwin Peer (2):
+>   bnxt_en: refactor VNIC RSS update functions
+>   bnxt_en: update RSS config using difference algorithm
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/3] bnxt_en: refactor VNIC RSS update functions
+    https://git.kernel.org/netdev/net-next/c/41d2dd42bfa1
+  - [net-next,2/3] bnxt_en: update RSS config using difference algorithm
+    https://git.kernel.org/netdev/net-next/c/98a4322b70e8
+  - [net-next,3/3] bnxt_en: Add a non-real time mode to access NIC clock
+    https://git.kernel.org/netdev/net-next/c/85036aee1938
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
