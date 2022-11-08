@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF7FE621233
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 14:22:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D30621234
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 14:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbiKHNWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 08:22:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        id S234410AbiKHNWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 08:22:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234390AbiKHNWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 08:22:15 -0500
+        with ESMTP id S234402AbiKHNWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 08:22:17 -0500
 Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C184D5FA
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 05:22:14 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id a11-20020a05600c2d4b00b003cf6f5fd9f1so9064555wmg.2
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 05:22:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367824FF8C
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 05:22:17 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id p13-20020a05600c468d00b003cf8859ed1bso9063636wmo.1
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 05:22:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8EUbX66d2EfCMxsMDh9GSVe9CNcdeFa9ycSaApeQBA8=;
-        b=4Si597DNA/U8uJeDZvGw2QlrEQ7FAoyTK0XQXpyxsL2npi6p6Kkd2qId68BwmkmdE2
-         6OK+wDSsvyBaj9PNTyOe3QYW0tAtU/6svMWJGbdv+icuXpli6k0VnA+s5AZnPsCsD7P6
-         APzyo9suBneXoP7Q66GjlSef+eTpRlvduYCRRwPk8RJIdoBGwvm3AQ4AaLyKvgOESzdR
-         3dipHnH1JwATmN2EXlb3XVX/0ViLYo/EhO0tYKs1H+u2621fD86u+kWi8Snh18ZJZVai
-         FSxiaxilmWTgqEBccZJR4QAXCiwcCE4A2Rm8egsBj8szZdC7c6q2Rm18yJjGLjedwOr7
-         Wl8A==
+        bh=+vZgKNjNUIHUVeYYEfpYmZwp75ayqVVVIE8sy93soOs=;
+        b=U0KSS4QG7lCHfd8ZdJ6ncM1sdCq19RaOarstgauYyiE4DAj05kU4sXtex7hUxfbqxy
+         Lk4EY2snw2BX/eQu2mQvA822Z1OItUChoHocCyJEc+mfaS+3TxHHYGACUr0WpUxrXyV8
+         A0UxNicLCLc+zy8c9V8OE/xdiU9vC5KYLsAnwsDjAuJx5SU9gpbcHFDgGZwycYA44LBy
+         L8FFl0SQRrdYgzhjzv79MB+fCBpGF50EvyGURQ9RBc/E1pXTTia0guZ7ytG+eZJ8mEo3
+         jydsS1mn+D/h9MAdm0+C2DCMIg79v3y4+bC0lEUkjj/vkFytfZsV1ZhCRmpHiFz529lJ
+         vDYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8EUbX66d2EfCMxsMDh9GSVe9CNcdeFa9ycSaApeQBA8=;
-        b=TLKsLR0AFmA8F++3dluC+LU2TwzBxifL2RkkHN7q1GM+tNuUQFYI4D7hEzScBq4v/w
-         y9fvgzsR3RhynMQWwgGCuXZWYvFkhu0Tc6HihFaAaK3VIJQtylBADhyqoxiaq5RMrbQA
-         H3V6FZDHE6Jqwcu30PcefQeRkIOqMnAU6359AjUrG9nNcC8zltqbtUOk0zhzLyjfGUgf
-         fHmbLbINPwdhJlWk/wF7Ct94eB5u5p8iR05qwAO5wVsp6bimLkYQbFzPz6pIJCalT5Ta
-         2jmeAJWX4OCLbdQVoFxKJ/Ur29Lu7OOt+CE2pjd3eP+CoZJxUhS+pIsZZsGlZTyo2b53
-         nlKw==
-X-Gm-Message-State: ACrzQf2vMWuMgtgG3A0Bx84uMdPnaWb+kdO25yLVgNFpB8/+VPr1aTuh
-        lCi+KPgLF5GNmFWieXewugDqzQApFAPNHMLM
-X-Google-Smtp-Source: AMsMyM76iAaBtyNl8IdIKg3Wg00al/j3A5JAQxRyv2nST/4dlCvvCIQn8xmpLGdxXBYscYzhFU3KrQ==
-X-Received: by 2002:a05:600c:18a3:b0:3cf:8df1:ce6e with SMTP id x35-20020a05600c18a300b003cf8df1ce6emr19704026wmp.5.1667913733246;
-        Tue, 08 Nov 2022 05:22:13 -0800 (PST)
+        bh=+vZgKNjNUIHUVeYYEfpYmZwp75ayqVVVIE8sy93soOs=;
+        b=OSFxrfC2v5QNyitjooyvznuRf9welwBbezZ8tYVKFrHj+y2p/PA9v5RguR0fhcEhAk
+         sjgPxP0qpbdRMAWvbc6MMiVvOwJWOOonVBWns4kF4EdVorPuO1KNgVNjye0ndGA3AuMM
+         zi1DqA7ZzHHbxuVkJ/vLFomrvHQUB5W2/hHYadtafBvJlPYDBkPmIu1FCcWB1O9c7INH
+         Ox6jJx+oNfWu7nLOJscbKbE5Y39TpE4ATUh/SZwFjV3AM+lgWOg1bv5fG04uOW/NChTE
+         tmBiw3CmYEjKHH+BNwglcTbDm0LulgJCsAlGSuOyWURKRZUkBUU+mF2LEswI3cc5FDQa
+         f4Kg==
+X-Gm-Message-State: ACrzQf1hu9VO3t5235aJvvt6S6OeiUwrJm1r140Y8hrGSXdqNqgVfcxv
+        eOdgSkNMxe442CcxpXkFRhrdAlpi7TZb96J0
+X-Google-Smtp-Source: AMsMyM47g1qyIgfDk9hp3zI2ybNN9NYhzxIe1BjaOTZraXNrWF1M8lfi+++ERmdmiAd14nCwfhsqPw==
+X-Received: by 2002:a05:600c:4891:b0:3cf:9cd9:a857 with SMTP id j17-20020a05600c489100b003cf9cd9a857mr14041073wmp.44.1667913735745;
+        Tue, 08 Nov 2022 05:22:15 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id l21-20020a05600c4f1500b003b4fdbb6319sm15671763wmq.21.2022.11.08.05.22.12
+        by smtp.gmail.com with ESMTPSA id j27-20020a05600c1c1b00b003a8434530bbsm15872497wms.13.2022.11.08.05.22.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 05:22:12 -0800 (PST)
+        Tue, 08 Nov 2022 05:22:15 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, idosch@idosch.org, bigeasy@linutronix.de,
         imagedong@tencent.com, kuniyu@amazon.com, petrm@nvidia.com
-Subject: [patch net-next v2 1/3] net: introduce a helper to move notifier block to different namespace
-Date:   Tue,  8 Nov 2022 14:22:06 +0100
-Message-Id: <20221108132208.938676-2-jiri@resnulli.us>
+Subject: [patch net-next v2 2/3] net: devlink: move netdev notifier block to dest namespace during reload
+Date:   Tue,  8 Nov 2022 14:22:07 +0100
+Message-Id: <20221108132208.938676-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221108132208.938676-1-jiri@resnulli.us>
 References: <20221108132208.938676-1-jiri@resnulli.us>
@@ -73,78 +73,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Currently, net_dev() netdev notifier variant follows the netdev with
-per-net notifier from namespace to namespace. This is implemented
-by move_netdevice_notifiers_dev_net() helper.
+The notifier block tracking netdev changes in devlink is registered
+during devlink_alloc() per-net, it is then unregistered
+in devlink_free(). When devlink moves from net namespace to another one,
+the notifier block needs to move along.
 
-For devlink it is needed to re-register per-net notifier during
-devlink reload. Introduce a new helper called
-move_netdevice_notifier_net() and share the unregister/register code
-with existing move_netdevice_notifiers_dev_net() helper.
+Fix this by adding forgotten call to move the block.
 
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Fixes: 02a68a47eade ("net: devlink: track netdev with devlink_port assigned")
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
-v1->v2:
-- made __move_netdevice_notifier_net() static
-- remove unnecessary move_netdevice_notifier_net() export
----
- include/linux/netdevice.h |  2 ++
- net/core/dev.c            | 22 ++++++++++++++++++----
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ net/core/devlink.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index d45713a06568..6be93b59cfea 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2828,6 +2828,8 @@ int unregister_netdevice_notifier(struct notifier_block *nb);
- int register_netdevice_notifier_net(struct net *net, struct notifier_block *nb);
- int unregister_netdevice_notifier_net(struct net *net,
- 				      struct notifier_block *nb);
-+void move_netdevice_notifier_net(struct net *src_net, struct net *dst_net,
-+				 struct notifier_block *nb);
- int register_netdevice_notifier_dev_net(struct net_device *dev,
- 					struct notifier_block *nb,
- 					struct netdev_net_notifier *nn);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 3bacee3bee78..0078a2734a4c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1876,6 +1876,22 @@ int unregister_netdevice_notifier_net(struct net *net,
- }
- EXPORT_SYMBOL(unregister_netdevice_notifier_net);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 40fcdded57e6..ea0b319385fc 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4502,8 +4502,11 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+ 	if (err)
+ 		return err;
  
-+static void __move_netdevice_notifier_net(struct net *src_net,
-+					  struct net *dst_net,
-+					  struct notifier_block *nb)
-+{
-+	__unregister_netdevice_notifier_net(src_net, nb);
-+	__register_netdevice_notifier_net(dst_net, nb, true);
-+}
-+
-+void move_netdevice_notifier_net(struct net *src_net, struct net *dst_net,
-+				 struct notifier_block *nb)
-+{
-+	rtnl_lock();
-+	__move_netdevice_notifier_net(src_net, dst_net, nb);
-+	rtnl_unlock();
-+}
-+
- int register_netdevice_notifier_dev_net(struct net_device *dev,
- 					struct notifier_block *nb,
- 					struct netdev_net_notifier *nn)
-@@ -1912,10 +1928,8 @@ static void move_netdevice_notifiers_dev_net(struct net_device *dev,
- {
- 	struct netdev_net_notifier *nn;
+-	if (dest_net && !net_eq(dest_net, curr_net))
++	if (dest_net && !net_eq(dest_net, curr_net)) {
++		move_netdevice_notifier_net(curr_net, dest_net,
++					    &devlink->netdevice_nb);
+ 		write_pnet(&devlink->_net, dest_net);
++	}
  
--	list_for_each_entry(nn, &dev->net_notifier_list, list) {
--		__unregister_netdevice_notifier_net(dev_net(dev), nn->nb);
--		__register_netdevice_notifier_net(net, nn->nb, true);
--	}
-+	list_for_each_entry(nn, &dev->net_notifier_list, list)
-+		__move_netdevice_notifier_net(dev_net(dev), net, nn->nb);
- }
- 
- /**
+ 	err = devlink->ops->reload_up(devlink, action, limit, actions_performed, extack);
+ 	devlink_reload_failed_set(devlink, !!err);
 -- 
 2.37.3
 
