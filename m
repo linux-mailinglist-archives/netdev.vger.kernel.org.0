@@ -2,56 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0916621EE4
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 23:14:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0276F621EE7
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 23:14:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiKHWN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 17:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        id S229603AbiKHWOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 17:14:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiKHWNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 17:13:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650DE5F848
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 14:12:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667945570;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rTfsZi+KYTrZtx+N9I965ksNgbYriLjCYNEJ3KsNWRY=;
-        b=FNRvkVI0ZiJSFz0M2PjS2jrAE65RukFcUOQ4gJ5rddQ44gcFkH+PP4qgbCS3tOgY+FBhaU
-        LnF9w67omCDPF6QfqMAQGPxNJXdXnv5M9GC0+QXDCj3ptHa7wfL+MiNtC/AD9gQQ/xAWsS
-        mOY8tRrVE4ppVIuVAJglnaRp3lFjBwE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-410-E-6eDtbdODeIr0DolpaL9w-1; Tue, 08 Nov 2022 17:12:47 -0500
-X-MC-Unique: E-6eDtbdODeIr0DolpaL9w-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE4078339CC;
-        Tue,  8 Nov 2022 22:12:46 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5495C2166B29;
-        Tue,  8 Nov 2022 22:12:46 +0000 (UTC)
-Subject: [PATCH 00/26] rxrpc: Increasing SACK size and moving away from
- softirq, part 1
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 08 Nov 2022 22:12:45 +0000
-Message-ID: <166794556529.2388986.8931702518119311596.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        with ESMTP id S229447AbiKHWOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 17:14:14 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CBD20988
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 14:14:12 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-37342ba89dbso146625677b3.1
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 14:14:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gwp7L+qQKXaqA7geIZEuwP4QfHGnl4DLTQFp6ghNvT8=;
+        b=aLjQa8qfPqpvZwoTS5O6mxtwWHfK4/McRlefvIGwFcCVxaC45Wy+SJAOivIcoPknB7
+         hrhoGLezDmVYA1dJ8KwFOJDTgW/tbNO9xW+kWEpd938+BVGRg8ouIl4EiBR4P4f2NyAt
+         hLd6oYkaRLItw4mfDNG6F6qr5g7oqIXegTbE+XIXb3iaB5c+zpyMWbWwr2lJSoZ38Cdv
+         FLFhECl1iZLWkHj0FBX8sA4Gk3eSP5mrnKBOa/55Jcw4hR50PfWvN+9qQx4pDYUef9W3
+         j7cHNCycwHPHu3d5BT97S/w2+tn8OdSjQ5XaEXibNvUU8lkb0fUsk90jpAV7fgoZnAqp
+         r3Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gwp7L+qQKXaqA7geIZEuwP4QfHGnl4DLTQFp6ghNvT8=;
+        b=0DlgRxbcb2bYguzsRa37+TdiBjbIWQzbhTRgGLM6NYGGKFyOmjZ9NnTWm760RmioUN
+         D1CA5zEx50MC5y43dKLx33WZD7/V3T2i7Iko7e+Q4XI2jfTo11rhFOLcRUmnN5JY874t
+         1DA/rqFL3270yLKr8gLUUxLKcX8wYGlThLmDg2eZ7Zs5icKlwV701H4inNBvnZ7/CvJh
+         2d4fX6GUvzYWPwgSI3CwjpfWn3iGQf3je+ctQ8LJJqQszf39JbxRpmGBq2Cmdlzlro1R
+         fJ7y0f0V0oQitXfOHS8rj6jNAkFM1gn9m1DwMORh5abR1nb1HbaxMar1K0yL75wKUtTN
+         lvNA==
+X-Gm-Message-State: ACrzQf3GGjVnFx062vOJQG/nBAim3tH/qi9THWUnB/YXhy+Jk05oxEW/
+        u1N2LRzoQJqbarYws6m4qB9T03NRjHo=
+X-Google-Smtp-Source: AMsMyM5lZrMM39odaW022CEg0155nBEULeUYazvbQYuwJW9HmNWQ0vzydbEGgsojtBDT2wIOh4OyXjENvNw=
+X-Received: from soheil4.nyc.corp.google.com ([2620:0:1003:32a:131c:366c:edb3:a050])
+ (user=soheil job=sendgmr) by 2002:a25:1d43:0:b0:6ca:1935:f928 with SMTP id
+ d64-20020a251d43000000b006ca1935f928mr53408703ybd.589.1667945651744; Tue, 08
+ Nov 2022 14:14:11 -0800 (PST)
+Date:   Tue, 8 Nov 2022 17:14:10 -0500
+In-Reply-To: <20221030220203.31210-7-axboe@kernel.dk>
+Mime-Version: 1.0
+References: <20221030220203.31210-1-axboe@kernel.dk> <20221030220203.31210-7-axboe@kernel.dk>
+Message-ID: <Y2rUsi5yrhDZYpf/@google.com>
+Subject: Re: [PATCH 6/6] eventpoll: add support for min-wait
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+To:     Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Willem de Bruijn <willemb@google.com>,
+        Shakeel Butt <shakeelb@google.com>
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,218 +67,337 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Oct 30, 2022 at 04:02:03PM -0600, Jens Axboe wrote:
+> Rather than just have a timeout value for waiting on events, add
+> EPOLL_CTL_MIN_WAIT to allow setting a minimum time that epoll_wait()
+> should always wait for events to arrive.
+> 
+> For medium workload efficiencies, some production workloads inject
+> artificial timers or sleeps before calling epoll_wait() to get
+> better batching and higher efficiencies. While this does help, it's
+> not as efficient as it could be. By adding support for epoll_wait()
+> for this directly, we can avoids extra context switches and scheduler
+> and timer overhead.
+> 
+> As an example, running an AB test on an identical workload at about
+> ~370K reqs/second, without this change and with the sleep hack
+> mentioned above (using 200 usec as the timeout), we're doing 310K-340K
+> non-voluntary context switches per second. Idle CPU on the host is 27-34%.
+> With the the sleep hack removed and epoll set to the same 200 usec
+> value, we're handling the exact same load but at 292K-315k non-voluntary
+> context switches and idle CPU of 33-41%, a substantial win.
+> 
+> Basic test case:
+> 
+> struct d {
+>         int p1, p2;
+> };
+> 
+> static void *fn(void *data)
+> {
+>         struct d *d = data;
+>         char b = 0x89;
+> 
+> 	/* Generate 2 events 20 msec apart */
+>         usleep(10000);
+>         write(d->p1, &b, sizeof(b));
+>         usleep(10000);
+>         write(d->p2, &b, sizeof(b));
+> 
+>         return NULL;
+> }
+> 
+> int main(int argc, char *argv[])
+> {
+>         struct epoll_event ev, events[2];
+>         pthread_t thread;
+>         int p1[2], p2[2];
+>         struct d d;
+>         int efd, ret;
+> 
+>         efd = epoll_create1(0);
+>         if (efd < 0) {
+>                 perror("epoll_create");
+>                 return 1;
+>         }
+> 
+>         if (pipe(p1) < 0) {
+>                 perror("pipe");
+>                 return 1;
+>         }
+>         if (pipe(p2) < 0) {
+>                 perror("pipe");
+>                 return 1;
+>         }
+> 
+>         ev.events = EPOLLIN;
+>         ev.data.fd = p1[0];
+>         if (epoll_ctl(efd, EPOLL_CTL_ADD, p1[0], &ev) < 0) {
+>                 perror("epoll add");
+>                 return 1;
+>         }
+>         ev.events = EPOLLIN;
+>         ev.data.fd = p2[0];
+>         if (epoll_ctl(efd, EPOLL_CTL_ADD, p2[0], &ev) < 0) {
+>                 perror("epoll add");
+>                 return 1;
+>         }
+> 
+> 	/* always wait 200 msec for events */
+>         ev.data.u64 = 200000;
+>         if (epoll_ctl(efd, EPOLL_CTL_MIN_WAIT, -1, &ev) < 0) {
+>                 perror("epoll add set timeout");
+>                 return 1;
+>         }
+> 
+>         d.p1 = p1[1];
+>         d.p2 = p2[1];
+>         pthread_create(&thread, NULL, fn, &d);
+> 
+> 	/* expect to get 2 events here rather than just 1 */
+>         ret = epoll_wait(efd, events, 2, -1);
+>         printf("epoll_wait=%d\n", ret);
+> 
+>         return 0;
+> }
 
-AF_RXRPC has some issues that need addressing:
+It might be worth adding a note in the commit message stating that
+EPOLL_CTL_MIN_WAIT is a no-op when timeout is 0. This is a desired
+behavior but it's not easy to see in the flow.
 
- (1) The SACK table has a maximum capacity of 255, but for modern networks
-     that isn't sufficient.  This is hard to increase in the upstream code
-     because of the way the application thread is coupled to the softirq
-     and retransmission side through a ring buffer.  Adjustments to the rx
-     protocol allows a capacity of up to 8192, and having a ring
-     sufficiently large to accommodate that would use an excessive amount
-     of memory as this is per-call.
+> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> ---
+>  fs/eventpoll.c                 | 97 +++++++++++++++++++++++++++++-----
+>  include/linux/eventpoll.h      |  2 +-
+>  include/uapi/linux/eventpoll.h |  1 +
+>  3 files changed, 85 insertions(+), 15 deletions(-)
+> 
+> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+> index 962d897bbfc6..9e00f8780ec5 100644
+> --- a/fs/eventpoll.c
+> +++ b/fs/eventpoll.c
+> @@ -117,6 +117,9 @@ struct eppoll_entry {
+>  	/* The "base" pointer is set to the container "struct epitem" */
+>  	struct epitem *base;
+>  
+> +	/* min wait time if (min_wait_ts) & 1 != 0 */
+> +	ktime_t min_wait_ts;
+> +
+>  	/*
+>  	 * Wait queue item that will be linked to the target file wait
+>  	 * queue head.
+> @@ -217,6 +220,9 @@ struct eventpoll {
+>  	u64 gen;
+>  	struct hlist_head refs;
+>  
+> +	/* min wait for epoll_wait() */
+> +	unsigned int min_wait_ts;
+> +
+>  #ifdef CONFIG_NET_RX_BUSY_POLL
+>  	/* used to track busy poll napi_id */
+>  	unsigned int napi_id;
+> @@ -1747,6 +1753,32 @@ static struct timespec64 *ep_timeout_to_timespec(struct timespec64 *to, long ms)
+>  	return to;
+>  }
+>  
+> +struct epoll_wq {
+> +	wait_queue_entry_t wait;
+> +	struct hrtimer timer;
+> +	ktime_t timeout_ts;
+> +	ktime_t min_wait_ts;
+> +	struct eventpoll *ep;
+> +	bool timed_out;
+> +	int maxevents;
+> +	int wakeups;
+> +};
+> +
+> +static bool ep_should_min_wait(struct epoll_wq *ewq)
+> +{
+> +	if (ewq->min_wait_ts & 1) {
+> +		/* just an approximation */
+> +		if (++ewq->wakeups >= ewq->maxevents)
+> +			goto stop_wait;
 
- (2) Processing ACKs in softirq mode causes the ACKs get conflated, with
-     only the most recent being considered.  Whilst this has the upside
-     that the retransmission algorithm only needs to deal with the most
-     recent ACK, it causes DATA transmission for a call to be very bursty
-     because DATA packets cannot be transmitted in softirq mode.  Rather
-     transmission must be delegated to either the application thread or a
-     workqueue, so there tend to be sudden bursts of traffic for any
-     particular call due to scheduling delays.
+Is there a way to short cut the wait if the process is being terminated?
 
- (3) All crypto in a single call is done in series; however, each DATA
-     packet is individually encrypted so encryption and decryption of large
-     calls could be parallelised if spare CPU resources are available.
+We issues in production systems in the past where too many threads were
+in epoll_wait and the process got terminated.  It'd be nice if these
+threads could exit the syscall as fast as possible.
 
-This is the first of a number of sets of patches that try and address them.
-The overall aims of these changes include:
+> +		if (ktime_before(ktime_get_ns(), ewq->min_wait_ts))
+> +			return true;
+> +	}
+> +
+> +stop_wait:
+> +	ewq->min_wait_ts &= ~(u64) 1;
+> +	return false;
+> +}
+> +
+>  /*
+>   * autoremove_wake_function, but remove even on failure to wake up, because we
+>   * know that default_wake_function/ttwu will only fail if the thread is already
+> @@ -1756,27 +1788,37 @@ static struct timespec64 *ep_timeout_to_timespec(struct timespec64 *to, long ms)
+>  static int ep_autoremove_wake_function(struct wait_queue_entry *wq_entry,
+>  				       unsigned int mode, int sync, void *key)
+>  {
+> -	int ret = default_wake_function(wq_entry, mode, sync, key);
+> +	struct epoll_wq *ewq = container_of(wq_entry, struct epoll_wq, wait);
+> +	int ret;
+> +
+> +	/*
+> +	 * If min wait time hasn't been satisfied yet, keep waiting
+> +	 */
+> +	if (ep_should_min_wait(ewq))
+> +		return 0;
+>  
+> +	ret = default_wake_function(wq_entry, mode, sync, key);
+>  	list_del_init(&wq_entry->entry);
+>  	return ret;
+>  }
+>  
+> -struct epoll_wq {
+> -	wait_queue_entry_t wait;
+> -	struct hrtimer timer;
+> -	ktime_t timeout_ts;
+> -	bool timed_out;
+> -};
+> -
+>  static enum hrtimer_restart ep_timer(struct hrtimer *timer)
+>  {
+>  	struct epoll_wq *ewq = container_of(timer, struct epoll_wq, timer);
+>  	struct task_struct *task = ewq->wait.private;
+> +	const bool is_min_wait = ewq->min_wait_ts & 1;
+> +
+> +	if (!is_min_wait || ep_events_available(ewq->ep)) {
+> +		if (!is_min_wait)
+> +			ewq->timed_out = true;
+> +		ewq->min_wait_ts &= ~(u64) 1;
+> +		wake_up_process(task);
+> +		return HRTIMER_NORESTART;
+> +	}
+>  
+> -	ewq->timed_out = true;
+> -	wake_up_process(task);
+> -	return HRTIMER_NORESTART;
+> +	ewq->min_wait_ts &= ~(u64) 1;
+> +	hrtimer_set_expires_range_ns(&ewq->timer, ewq->timeout_ts, 0);
+> +	return HRTIMER_RESTART;
+>  }
+>  
+>  static void ep_schedule(struct eventpoll *ep, struct epoll_wq *ewq, ktime_t *to,
+> @@ -1831,12 +1873,16 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
+>  
+>  	lockdep_assert_irqs_enabled();
+>  
+> +	ewq.min_wait_ts = 0;
+> +	ewq.ep = ep;
+> +	ewq.maxevents = maxevents;
+>  	ewq.timed_out = false;
+> +	ewq.wakeups = 0;
+>  
+>  	if (timeout && (timeout->tv_sec | timeout->tv_nsec)) {
+>  		slack = select_estimate_accuracy(timeout);
+> +		ewq.timeout_ts = timespec64_to_ktime(*timeout);
+>  		to = &ewq.timeout_ts;
+> -		*to = timespec64_to_ktime(*timeout);
+>  	} else if (timeout) {
+>  		/*
+>  		 * Avoid the unnecessary trip to the wait queue loop, if the
+> @@ -1845,6 +1891,18 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
+>  		ewq.timed_out = true;
+>  	}
+>  
+> +	/*
+> +	 * If min_wait is set for this epoll instance, note the min_wait
+> +	 * time. Ensure the lowest bit is set in ewq.min_wait_ts, that's
+> +	 * the state bit for whether or not min_wait is enabled.
+> +	 */
+> +	if (ep->min_wait_ts) {
 
- (1) To get rid of the TxRx ring and instead pass the packets round in
-     queues (eg. sk_buff_head).  On the Tx side, each ACK packet comes with
-     a SACK table that can be parsed as-is, so there's no particular need
-     to maintain our own; we just have to refer to the ACK.
+Can we limit this block to "ewq.timed_out && ep->min_wait_ts"?
+AFAICT, the code we run here is completely wasted if timeout is 0.
 
-     On the Rx side, we do need to maintain a SACK table with one bit per
-     entry - but only if packets go missing - and we don't want to have to
-     perform a complex transformation to get the information into an ACK
-     packet.
+> +		ewq.min_wait_ts = ktime_add_us(ktime_get_ns(),
+> +						ep->min_wait_ts);
+> +		ewq.min_wait_ts |= (u64) 1;
+> +		to = &ewq.min_wait_ts;
+> +	}
+> +
+>  	/*
+>  	 * This call is racy: We may or may not see events that are being added
+>  	 * to the ready list under the lock (e.g., in IRQ callbacks). For cases
+> @@ -1913,7 +1971,7 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
+>  		 * important.
+>  		 */
+>  		eavail = ep_events_available(ep);
+> -		if (!eavail) {
+> +		if (!eavail || ewq.min_wait_ts & 1) {
+>  			__add_wait_queue_exclusive(&ep->wq, &ewq.wait);
+>  			write_unlock_irq(&ep->lock);
+>  			ep_schedule(ep, &ewq, to, slack);
+> @@ -2125,6 +2183,17 @@ int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
+>  	 */
+>  	ep = f.file->private_data;
+>  
+> +	/*
+> +	 * Handle EPOLL_CTL_MIN_WAIT upfront as we don't need to care about
+> +	 * the fd being passed in.
+> +	 */
+> +	if (op == EPOLL_CTL_MIN_WAIT) {
+> +		/* return old value */
+> +		error = ep->min_wait_ts;
+> +		ep->min_wait_ts = epds->data;
+> +		goto error_fput;
+> +	}
+> +
+>  	/* Get the "struct file *" for the target file */
+>  	tf = fdget(fd);
+>  	if (!tf.file)
+> @@ -2257,7 +2326,7 @@ SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
+>  {
+>  	struct epoll_event epds;
+>  
+> -	if (ep_op_has_event(op) &&
+> +	if ((ep_op_has_event(op) || op == EPOLL_CTL_MIN_WAIT) &&
+>  	    copy_from_user(&epds, event, sizeof(struct epoll_event)))
+>  		return -EFAULT;
+>  
+> diff --git a/include/linux/eventpoll.h b/include/linux/eventpoll.h
+> index 3337745d81bd..cbef635cb7e4 100644
+> --- a/include/linux/eventpoll.h
+> +++ b/include/linux/eventpoll.h
+> @@ -59,7 +59,7 @@ int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
+>  /* Tells if the epoll_ctl(2) operation needs an event copy from userspace */
+>  static inline int ep_op_has_event(int op)
+>  {
+> -	return op != EPOLL_CTL_DEL;
+> +	return op != EPOLL_CTL_DEL && op != EPOLL_CTL_MIN_WAIT;
+>  }
+>  
+>  #else
+> diff --git a/include/uapi/linux/eventpoll.h b/include/uapi/linux/eventpoll.h
+> index 8a3432d0f0dc..81ecb1ca36e0 100644
+> --- a/include/uapi/linux/eventpoll.h
+> +++ b/include/uapi/linux/eventpoll.h
+> @@ -26,6 +26,7 @@
+>  #define EPOLL_CTL_ADD 1
+>  #define EPOLL_CTL_DEL 2
+>  #define EPOLL_CTL_MOD 3
+> +#define EPOLL_CTL_MIN_WAIT	4
 
- (2) To try and move almost all processing of received packets out of the
-     softirq handler and into a high-priority kernel I/O thread.  Only the
-     transferral of packets would be left there.  I would still use the
-     encap_rcv hook to receive packets as there's a noticeable performance
-     drop from letting the UDP socket put the packets into its own queue
-     and then getting them out of there.
+Have you considered introducing another epoll_pwait sycall variant?
 
- (3) To make the I/O thread also do all the transmission.  The app thread
-     would be responsible for packaging the data into packets and then
-     buffering them for the I/O thread to transmit.  This would make it
-     easier for the app thread to run ahead of the I/O thread, and would
-     mean the I/O thread is less likely to have to wait around for a new
-     packet to come available for transmission.
+That has a major benefit that min wait can be different per poller,
+on the different epollfd.  The usage would also be more readable:
 
- (4) To logically partition the socket/UAPI/KAPI side of things from the
-     I/O side of things.  The local endpoint, connection, peer and call
-     objects would belong to the I/O side.  The socket side would not then
-     touch the private internals of calls and suchlike and would not change
-     their states.  It would only look at the send queue, receive queue and
-     a way to pass a message to cause an abort.
+"epoll for X amount of time but don't return sooner than Y."
 
- (5) To remove as much locking, synchronisation, barriering and atomic ops
-     as possible from the I/O side.  Exclusion would be achieved by
-     limiting modification of state to the I/O thread only.  Locks would
-     still need to be used in communication with the UDP socket and the
-     AF_RXRPC socket API.
+This would be similar to the approach that willemb@google.com used
+when introducing epoll_pwait2.
 
- (6) To provide crypto offload kernel threads that, when there's slack in
-     the system, can see packets that need crypting and provide
-     parallelisation in dealing with them.
-
- (7) To remove the use of system timers.  Since each timer would then send
-     a poke to the I/O thread, which would then deal with it when it had
-     the opportunity, there seems no point in using system timers if,
-     instead, a list of timeouts can be sensibly consulted.  An I/O thread
-     only then needs to schedule with a timeout when it is idle.
-
- (8) To use zero-copy sendmsg to send packets.  This would make use of the
-     I/O thread being the sole transmitter on the socket to manage the
-     dead-reckoning sequencing of the completion notifications.  There is a
-     problem with zero-copy, though: the UDP socket doesn't handle running
-     out of option memory very gracefully.
-
-With regard to this first patchset, the changes made include:
-
- (1) Some fixes, including a fallback for proc_create_net_single_write(),
-     setting ack.bufferSize to 0 in ACK packets and a fix for rxrpc
-     congestion management, which shouldn't be saving the cwnd value
-     between calls.
-
- (2) Improvements in rxrpc tracepoints, including splitting the timer
-     tracepoint into a set-timer and a timer-expired trace.
-
- (3) Addition of a new proc file to display some stats.
-
- (4) Some code cleanups, including removing some unused bits and
-     unnecessary header inclusions.
-
- (5) A change to the recently added UDP encap_err_rcv hook so that it has
-     the same signature as {ip,ipv6}_icmp_error(), and then just have rxrpc
-     point its UDP socket's hook directly at those.
-
- (6) Definition of a new struct, rxrpc_txbuf, that is used to hold
-     transmissible packets of DATA and ACK type in a single 2KiB block
-     rather than using an sk_buff.  This allows the buffer to be on a
-     number of queues simultaneously more easily, and also guarantees that
-     the entire block is in a single unit for zerocopy purposes and that
-     the data payload is aligned for in-place crypto purposes.
-
- (7) ACK txbufs are allocated at proposal and queued for later transmission
-     rather than being stored in a single place in the rxrpc_call struct,
-     which means only a single ACK can be pending transmission at a time.
-     The queue is then drained at various points.  This allows the ACK
-     generation code to be simplified.
-
- (8) The Rx ring buffer is removed.  When a jumbo packet is received (which
-     comprises a number of ordinary DATA packets glued together), it used
-     to be pointed to by the ring multiple times, with an annotation in a
-     side ring indicating which subpacket was in that slot - but this is no
-     longer possible.  Instead, the packet is cloned once for each
-     subpacket, barring the last, and the range of data is set in the skb
-     private area.  This makes it easier for the subpackets in a jumbo
-     packet to be decrypted in parallel.
-
- (9) The Tx ring buffer is removed.  The side annotation ring that held the
-     SACK information is also removed.  Instead, in the event of packet
-     loss, the SACK data attached an ACK packet is parsed.
-
-(10) Allocate an skcipher request when needed in the rxkad security class
-     rather than caching one in the rxrpc_call struct.  This deals with a
-     race between externally-driven call disconnection getting rid of the
-     skcipher request and sendmsg/recvmsg trying to use it because they
-     haven't seen the completion yet.  This is also needed to support
-     parallelisation as the skcipher request cannot be used by two or more
-     threads simultaneously.
-
-(11) Call udp_sendmsg() and udpv6_sendmsg() directly rather than going
-     through kernel_sendmsg() so that we can provide our own iterator
-     (zerocopy explicitly doesn't work with a KVEC iterator).  This also
-     lets us avoid the overhead of the security hook.
-
----
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/rxrpc-next-20221108
-
-And can be found on this branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
-
-David
----
-David Howells (26):
-      net, proc: Provide PROC_FS=n fallback for proc_create_net_single_write()
-      rxrpc: Trace setting of the request-ack flag
-      rxrpc: Split call timer-expiration from call timer-set tracepoint
-      rxrpc: Track highest acked serial
-      rxrpc: Add stats procfile and DATA packet stats
-      rxrpc: Record statistics about ACK types
-      rxrpc: Record stats for why the REQUEST-ACK flag is being set
-      rxrpc: Fix ack.bufferSize to be 0 when generating an ack
-      net: Change the udp encap_err_rcv to allow use of {ip,ipv6}_icmp_error()
-      rxrpc: Use the core ICMP/ICMP6 parsers
-      rxrpc: Call udp_sendmsg() directly
-      rxrpc: Remove unnecessary header inclusions
-      rxrpc: Remove the flags from the rxrpc_skb tracepoint
-      rxrpc: Remove call->tx_phase
-      rxrpc: Define rxrpc_txbuf struct to carry data to be transmitted
-      rxrpc: Allocate ACK records at proposal and queue for transmission
-      rxrpc: Clean up ACK handling
-      rxrpc: Split the rxrpc_recvmsg tracepoint
-      rxrpc: Clone received jumbo subpackets and queue separately
-      rxrpc: Get rid of the Rx ring
-      rxrpc: Don't use a ring buffer for call Tx queue
-      rxrpc: Remove call->lock
-      rxrpc: Save last ACK's SACK table rather than marking txbufs
-      rxrpc: Remove the rxtx ring
-      rxrpc: Fix congestion management
-      rxrpc: Allocate an skcipher each time needed rather than reusing
-
-
- include/linux/proc_fs.h      |   2 +
- include/linux/udp.h          |   3 +-
- include/net/udp_tunnel.h     |   4 +-
- include/trace/events/rxrpc.h | 361 ++++++++++++----
- net/core/skbuff.c            |   1 +
- net/ipv4/ip_sockglue.c       |   1 +
- net/ipv4/udp.c               |   3 +-
- net/ipv6/datagram.c          |   1 +
- net/ipv6/udp.c               |   4 +-
- net/rxrpc/Makefile           |   1 +
- net/rxrpc/af_rxrpc.c         |   5 +-
- net/rxrpc/ar-internal.h      | 224 ++++++----
- net/rxrpc/call_accept.c      |   8 +-
- net/rxrpc/call_event.c       | 427 +++++++++----------
- net/rxrpc/call_object.c      |  63 ++-
- net/rxrpc/conn_client.c      |   3 +-
- net/rxrpc/conn_object.c      |   4 +-
- net/rxrpc/input.c            | 770 +++++++++++++++++------------------
- net/rxrpc/insecure.c         |  16 +-
- net/rxrpc/local_object.c     |  20 +
- net/rxrpc/misc.c             |  23 +-
- net/rxrpc/net_ns.c           |   2 +
- net/rxrpc/output.c           | 390 ++++++++++--------
- net/rxrpc/peer_event.c       | 282 ++-----------
- net/rxrpc/peer_object.c      |   7 +-
- net/rxrpc/proc.c             | 110 ++++-
- net/rxrpc/protocol.h         |   9 +-
- net/rxrpc/recvmsg.c          | 268 ++++--------
- net/rxrpc/rxkad.c            | 245 ++++-------
- net/rxrpc/sendmsg.c          | 218 +++++-----
- net/rxrpc/skbuff.c           |  20 +-
- net/rxrpc/sysctl.c           |  11 +-
- net/rxrpc/txbuf.c            | 135 ++++++
- 33 files changed, 1844 insertions(+), 1797 deletions(-)
- create mode 100644 net/rxrpc/txbuf.c
-
-
+>  
+>  /* Epoll event masks */
+>  #define EPOLLIN		(__force __poll_t)0x00000001
+> -- 
+> 2.35.1
+> 
