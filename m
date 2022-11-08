@@ -2,89 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FCD8621E32
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 22:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23BBE621E40
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 22:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiKHVER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 16:04:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
+        id S229841AbiKHVLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 16:11:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiKHVEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 16:04:16 -0500
-Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A52320BD8
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 13:04:14 -0800 (PST)
-Received: from violet.fr.zoreil.com ([127.0.0.1])
-        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 2A8L3aB3680699;
-        Tue, 8 Nov 2022 22:03:36 +0100
-DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 2A8L3aB3680699
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
-        s=v20220413; t=1667941417;
-        bh=UHITPECF7qMl8PYIdIJWCD7l8l/q2a5WJN+lwJTtqDM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bXC7v8aa+T0zAVkVYSlU0z5Z8eWo8UFKlLm2k1DzoQHX6ZvJte/AXW5h0myU/VjAQ
-         971UN1HSgCRad8hE5eMjqRP/jiaVgEKUzHQgbK3XZW7bfwfEkYKx7zBN4QCUIx6Djd
-         2CmQgeX8svtFg6ku78vxs4BTP6mWjP8El51Y03Z4=
-Received: (from romieu@localhost)
-        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 2A8L3apU680698;
-        Tue, 8 Nov 2022 22:03:36 +0100
-Date:   Tue, 8 Nov 2022 22:03:36 +0100
-From:   Francois Romieu <romieu@fr.zoreil.com>
-To:     Albert Zhou <albert.zhou.50@gmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        nic_swsd@realtek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: Re: [PATCH net-next RFC 0/5] Update r8152 to version two
-Message-ID: <Y2rEKOXDqLvL++hR@electric-eye.fr.zoreil.com>
-References: <20221108153342.18979-1-albert.zhou.50@gmail.com>
+        with ESMTP id S229975AbiKHVLA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 16:11:00 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8163C6FE
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 13:10:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Il38uwNFzWQDtPqTiFsb+ZKwsOIqHOsTTcguwEVs1uc=; b=cngXAmXgkcmaxNe8Gi95R7KDG4
+        Re5oWRAjgxyuVwmKOYmWpw5jeAeLLmf1GrPmip3HV5T9W3Gf5qtLz6VUCXvSsfruDr+cW0pFRIIEi
+        v3uSMA51ioR/4n7RtivbwjUDyOYfoEkuSIW70pPpMDwsP6uolhNoAV6GvKrMlAqaKt2E=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1osVs1-001rKX-PG; Tue, 08 Nov 2022 22:10:57 +0100
+Date:   Tue, 8 Nov 2022 22:10:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next 4/5] net: ngbe: Initialize phy information
+Message-ID: <Y2rF4bucPjOsYvra@lunn.ch>
+References: <20221108111907.48599-1-mengyuanlou@net-swift.com>
+ <20221108111907.48599-5-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221108153342.18979-1-albert.zhou.50@gmail.com>
-X-Organisation: Land of Sunshine Inc.
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221108111907.48599-5-mengyuanlou@net-swift.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Albert Zhou <albert.zhou.50@gmail.com> :
-> This patch integrates the version-two r8152 drivers from Realtek into
-> the kernel. I am new to kernel development, so apologies if I make
-> newbie mistakes.
+> +/**
+> + *  ngbe_phy_read_reg_mdi - Reads a val from an external PHY register
+> + *  @hw: pointer to hardware structure
+> + *  @reg_addr: 32 bit address of PHY register to read
+> + **/
+> +static u16 ngbe_phy_read_reg_mdi(struct ngbe_hw *hw, u32 reg_addr)
+> +{
+> +	u32 command = 0, device_type = 0;
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	u32 phy_addr = 0;
+> +	u16 phy_data = 0;
+> +	u32 val = 0;
+> +	int ret = 0;
+> +
+> +	/* setup and write the address cycle command */
+> +	command = NGBE_MSCA_RA(reg_addr) |
+> +		  NGBE_MSCA_PA(phy_addr) |
+> +		  NGBE_MSCA_DA(device_type);
+> +	wr32(wxhw, NGBE_MSCA, command);
+> +
+> +	command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
+> +		  NGBE_MSCC_BUSY |
+> +		  NGBE_MDIO_CLK(6);
+> +	wr32(wxhw, NGBE_MSCC, command);
+> +
+> +	/* wait to complete */
+> +	ret = read_poll_timeout(rd32, val, val & NGBE_MSCC_BUSY, 1000,
+> +				20000, false, wxhw, NGBE_MSCC);
+> +	if (ret)
+> +		wx_dbg(wxhw, "PHY address command did not complete.\n");
+> +
+> +	/* read data from MSCC */
+> +	phy_data = (u16)rd32(wxhw, NGBE_MSCC);
+> +
+> +	return phy_data;
+> +}
+> +
+> +/**
+> + *  ngbe_phy_write_reg_mdi - Writes a val to external PHY register
+> + *  @hw: pointer to hardware structure
+> + *  @reg_addr: 32 bit PHY register to write
+> + *  @phy_data: Data to write to the PHY register
+> + **/
+> +static void ngbe_phy_write_reg_mdi(struct ngbe_hw *hw, u32 reg_addr, u16 phy_data)
+> +{
+> +	u32 command = 0, device_type = 0;
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	u32 phy_addr = 0;
+> +	int ret = 0;
+> +	u16 val = 0;
+> +
+> +	/* setup and write the address cycle command */
+> +	command = NGBE_MSCA_RA(reg_addr) |
+> +		  NGBE_MSCA_PA(phy_addr) |
+> +		  NGBE_MSCA_DA(device_type);
+> +	wr32(wxhw, NGBE_MSCA, command);
+> +
+> +	command = phy_data |
+> +		  NGBE_MSCC_CMD(NGBE_MSCA_CMD_WRITE) |
+> +		  NGBE_MSCC_BUSY |
+> +		  NGBE_MDIO_CLK(6);
+> +	wr32(wxhw, NGBE_MSCC, command);
+> +
+> +	/* wait to complete */
+> +	ret = read_poll_timeout(rd32, val, val & NGBE_MSCC_BUSY, 1000,
+> +				20000, false, wxhw, NGBE_MSCC);
+> +	if (ret)
+> +		wx_dbg(wxhw, "PHY address command did not complete.\n");
+> +}
 
-While it makes sense to minimize differences betwenn Realtek's in-house
-driver and kernel r8152 driver, it does not mean that the out-of-tree
-driver is suitable for a straight kernel inclusion.
+This appears to be an MDIO bus? Although you seem to be limited to
+just 1 of the 32 addresses? Anyway, please create a standard Linux
+MDIO bus driver. The Linux PHY drivers will then drive the PHYs for
+you. You can throw most of this file away.
 
-If you want things to move forward in a not too painful way, you should
-split the more than 650 ko patch into smaller, more focused patches
-(huge patches also makes bisection mildly effective btw).
-
-In its current form, the submission is imho a bit abrasive to review.
-
-[...]
-> Albert Zhou (5):
->   net: move back netif_set_gso_max helpers
->   r8152: update to version two
-
-This code misuses mutex in {read, write}_mii_word.
-
-It includes code and data that should be moved to firmware files.
-
->   r8152: remove backwards compatibility
-
-Backwards compatibility code should had been avoided in the first
-place.
-
-[...]
->   r8152: remove redundant code
-
-Same thing.
-
--- 
-Ueimor
+	Andrew
