@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19AF1620D90
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:47:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47E9B620D93
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbiKHKrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 05:47:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        id S233968AbiKHKsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 05:48:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233203AbiKHKrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:47:52 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on20620.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::620])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86F34093F
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:47:50 -0800 (PST)
+        with ESMTP id S233203AbiKHKr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:47:57 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2082.outbound.protection.outlook.com [40.107.93.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C67D429A7
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:47:56 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DX+n7OV3wTE507GXYNbFsn83P1tGBTjhcb0lhTbH07Ld2koRX15YK0Qt733gTAT1hvyMXaUzopd1S8y3xoKKjEwEoxdszrura1QRBxW15CjNQTB1GCzfuOwPCgGtuE8a7H72Ss1Wva5anWj1B2Qn7gJcZpFes2E+nQxPoO8iTSETe9p2slPE0pFLegCZ8Hz0vs/HsB9zIXcBJ//7u0PH/+9cGM06PuKVzOyJ0iDYlLfjOOVVsZI6U6ADwxuSiUNjPVq4VQAPlHjMay7UuSgPAZ9M3k7NPaM5Kpmzu4/PkLi3P/qqaEGJPycs0mIuQako+RI5M66SQaLuSpn6iqIyMw==
+ b=J0eIlIXOpyvfTgVikNDnjkpmUAzU2hDklBastGj0V0mOyK9cNQn3lv3bkD8wub6g0cCzbrNzBDZpzvkvIRb5duYm0srT+sClXcLA5Pre8j8pFELZwRcuSrW2RWcdD7YRW1BgaA2zPqOBTdM+iVhFftcBeQXF1TpLowKW+OwEB4xVNRTC8cVlHrYo5m6sA98+7V9Xv1RRkFKzw4q2eLq1xeR9YJnrexvta516NNhzKXgTIhYmg/5jTPJwQiN2Fcb1norcaimAvFsIsNXfF4g9kG3FSfebngceMzbUWxUYLOqe3kBZmyldOHfnPNlEkGQ/3FAvJKOqVb8yA1yvYEFFOw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JjSm/Gn6HoNmncxU1UAmoG6ogZjOGBFzR1j6mE7SU+s=;
- b=hc8kVZtyj5fFRirsBC/dnG6WcT9NDaMTHIA5QurgAg0wa3NW6fOhV0dUtezp2NcHhrKo1BURRz4McBNelMdbUt8evCixmFtDfhn+CcejuIt0bq+ffvjppGly1NbEZjeEH4jt6kQMekVVTQnbyJOOalh7+OpYQrOFIIxgFcK9ZlGJ45QRy0cWo30s5pR79d6tfVUkcJpHN8qSygrPe6lstYGOZPj/je8ctIcB3a+fK5pZkKjyvoUiI7ZoW+moSwuQOKP9PlNySmmI5dXSvb7CBtSyUJ86VLbxaGYw5+DeZtvAfcBIgMgA0FDpJmwIWPcZvbDDQV3N+0IYxkHxqO5kSA==
+ bh=J5CjmYMVarafJWwlmM7fhyDRkbO5NPlFuYuaDKhHG/o=;
+ b=GPBzSgue+p6jtmwoOt5VXINcWYv8tOnTT117ZIktl4Al57mpE0QrkvDfE1Jv8ay62p2Gm0BpSHLFSnS2iV5p5Cvc3SjYLhifjHYSyRjM8kh1DrAxfBqRgDR0KPtoRjf6SerH+Nz/rOkTBSKCxckkUUABFAdB+BwZGnKed6Zn0LSI+pM2etTep9FJvzDQPEXNjiZhIiCUjpMC9FyZrR0WOEoCfAS+tR92h0sHt/wBcAJ5PFP2UvN6JAUsjF7HGznBtVYS3pF2HrjiXaBrpIO1FD2Ckd0XXbeVukuhNcSgMAmOfZwsaDmFukYrMwGLfXYe87+tFc43fbSAEEnkpw/ZJA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JjSm/Gn6HoNmncxU1UAmoG6ogZjOGBFzR1j6mE7SU+s=;
- b=Dda8c19MjKTkm9ujhty8iPi+WZLoGyEr4YyNIeIiGMuR/2blnNavSeoedeBN6ruBiDTHDyTXruKY1if+YIPlbBz6weofFOE7Y1x3G7VNFMsCcm9V+aB22D5yTYYewyvlMKtAMCs7ffCYw7y+gt5jwA0MPxNcLWZBSJaVlH38nC9zgdOXtJ778CLrnjX3IyDGWzop7mDAVBSPKWcgZ5031hEsT/xtE91N8pkfHs2NODTzW4PLlAQcdtaf079rsUDytLeoMy8dAieIqh5z9VjNWNB+OMIjnBNBQg0BI/gaOyvuWD1VpzvFB5QDcHrRWEDTr8hAuZuUXOZ8XA0e75gwmQ==
-Received: from DM6PR06CA0094.namprd06.prod.outlook.com (2603:10b6:5:336::27)
- by SN7PR12MB7021.namprd12.prod.outlook.com (2603:10b6:806:262::16) with
+ bh=J5CjmYMVarafJWwlmM7fhyDRkbO5NPlFuYuaDKhHG/o=;
+ b=BaylwctLnhmFA6OXUK36TuvLJJ7gvnOk/7CW2W5dMfC9FrolPXtrfnGXxMoPthn7JoyKIqngTyu8QYEPovbwaV7j+h4Vd+I+fION03I8HdrF0UcfkLBMT7P+r01l2RlUgiNO96ZhuoGLssTElGiADcym41YLZSls9hdZqHNo/h4I3GnXrIdqZUegCtT21QK6yaHfLI6v6gIBGNetsmuibHO6KfuXlYv8wpEfMYeXbshoCD6cGrgNcB8ivPucxvF+3+BaWFr/K1YT1d100A5QTys3ZOvo0SheM4CKgaOc4kITjj9X9+gHqwQwm5ioZ3G8sEBm2Xfh68UkQDaKEudAAA==
+Received: from BN9PR03CA0161.namprd03.prod.outlook.com (2603:10b6:408:f4::16)
+ by IA1PR12MB6113.namprd12.prod.outlook.com (2603:10b6:208:3eb::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27; Tue, 8 Nov
- 2022 10:47:48 +0000
-Received: from DM6NAM11FT092.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:336:cafe::c2) by DM6PR06CA0094.outlook.office365.com
- (2603:10b6:5:336::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27 via Frontend
- Transport; Tue, 8 Nov 2022 10:47:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ 2022 10:47:54 +0000
+Received: from BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f4:cafe::df) by BN9PR03CA0161.outlook.office365.com
+ (2603:10b6:408:f4::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26 via Frontend
+ Transport; Tue, 8 Nov 2022 10:47:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT092.mail.protection.outlook.com (10.13.173.44) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT096.mail.protection.outlook.com (10.13.177.195) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5791.20 via Frontend Transport; Tue, 8 Nov 2022 10:47:47 +0000
+ 15.20.5791.20 via Frontend Transport; Tue, 8 Nov 2022 10:47:54 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 8 Nov 2022
- 02:47:37 -0800
+ 02:47:41 -0800
 Received: from yaviefel.vdiclient.nvidia.com (10.126.230.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Tue, 8 Nov 2022 02:47:34 -0800
+ 15.2.986.29; Tue, 8 Nov 2022 02:47:37 -0800
 From:   Petr Machata <petrm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -71,10 +71,12 @@ CC:     Nikolay Aleksandrov <razor@blackwall.org>,
         Ido Schimmel <idosch@nvidia.com>,
         "Hans J . Schultz" <netdev@kapio-technology.com>,
         <mlxsw@nvidia.com>
-Subject: [PATCH net-next 00/15] mlxsw: Add 802.1X and MAB offload support
-Date:   Tue, 8 Nov 2022 11:47:06 +0100
-Message-ID: <cover.1667902754.git.petrm@nvidia.com>
+Subject: [PATCH net-next 01/15] bridge: switchdev: Let device drivers determine FDB offload indication
+Date:   Tue, 8 Nov 2022 11:47:07 +0100
+Message-ID: <b266dcf6d647684a10984d12f98549f93fd378ab.1667902754.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <cover.1667902754.git.petrm@nvidia.com>
+References: <cover.1667902754.git.petrm@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -83,90 +85,65 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT092:EE_|SN7PR12MB7021:EE_
-X-MS-Office365-Filtering-Correlation-Id: b7cd1379-0c74-4244-50b1-08dac176ad01
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT096:EE_|IA1PR12MB6113:EE_
+X-MS-Office365-Filtering-Correlation-Id: e758bc46-5b3c-4b25-11db-08dac176b0f8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8roZdfs2nqwlCTYaj64HWCeVjy0fK1GmfQi/R2az7KLhoSW7G+f868E7UJXAHtrA75wXhXHcwRaLCFbUcVlJCkNaBl5vAyBACFV4AMmoGyzghHHofe98aJXqoIVnBpCGgzQJeLtnDTfXvQ0+CeLp3KMTfcJGo6NA8SZnN+ixaUG6w2uOoVYIQIFhBiqKoXtnEZrGpcxt85b01Ku4sIYifXog9IQzsnMcPVsBOembnWubLY20VtH0U6ZoI/HTIdaUIVSbofuUASl6daXIK2FsjROwMsDhrCyI2rErjZWtByyghpFvJphtlph7QUb4XA72znaElZEjRmwWIP5RyVEh5lhthnVdFG9PC9De7BoYHZm6R85ASfZGABR3HEa4CFsrjw8FPNqiPLLOG/kgLc1fIyU0XT7BcbAhvyfm5oQRBvwNonTRV8fGAhwz029NUN7RGwBV3cR7mvmIW1rXii78OdylPBn2mR60M/4dC6UdLmTEHxXYPFtSljjLH79FLgz6P8FdWWnMhEc9MJxMhGLrwS70ubO3DA+s/btJgQmdGndlpilt8KA5OiCTogtr7zjtYAIgXK0bCL5IrUK4g/qyYUvryX/x/G/fCcmF2QN1+Qs5BjdE+yNtNpSZzkqYKObzDiGj5KIgo5Zi3m3TqKIV6tQeZurOj/G0aobbr1S6mSwUmRh6xwI2V+OIasCOBoW9XizjnLQcPchm9bjkkheDn/kc6UJbd7t8KxxxTarIbf8cHc8GJT7YbtOWF7n4A/EABVNg/ZoBTuB1w7A7ZBGkZtP9GLMHJov0HWxhcW3BqHwVf/NcBfN5TSIGW875kXK9ynon6R9lJk8Zv29x1r5B8wbRO2E6wyDaBNTd89TF4J+I1/0h2RqZYKc3jeb9ceF2uSwbBmsq8q40/XUYulYpRw==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(39860400002)(346002)(136003)(451199015)(40470700004)(36840700001)(46966006)(82310400005)(86362001)(83380400001)(36860700001)(82740400003)(356005)(478600001)(7636003)(336012)(8936002)(966005)(5660300002)(40480700001)(41300700001)(4326008)(8676002)(186003)(316002)(54906003)(110136005)(70586007)(2616005)(70206006)(426003)(26005)(40460700003)(47076005)(6666004)(107886003)(16526019)(2906002)(7696005)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 59tC0fKO8uQ9qsPpFEcwQ93mGizW7Uip8XXnfkWpDJVvPKI16p+h3qObWASnCg1q/4myiKJ7+5DqhGhsY7oRs76jdBpf5E6CQSrYgyey8x98Td+7TLDeq3HPUONYXLztMO8HCJISaPBiZmkiDN8/RaJGVX7fyRzIHMIEfDaHANsZV51wPrJJu/14EMMPlpAu7GGCbTX9PVbrKfVF/8l5rMK8C+KOrpaEHioI5W4JUtOG620gVA/WJGoZvs3xOKpjpV1sVIC0OzPCw9+Ep45RPXI+U7611k5LGmX+pfHS/l3kJH5Ogy9120QAmXvgZ+qWe8f8Nncy/ZEIQUSqsIjbhn9E8ApDDCc1mQBGVtpJC7FYql3w3lhotm2HtZrQTXUK7pc6rNdikNDMFh/GIQLB4Hj8tOPZ3O4e9ySG7Y2TrcTnc1R1WUthXUaqSXH/IMq8Dzfq0+QN2fokPrdOx1lNcETK/FYZWm5I2SmFtsNbq2fnf9NBelxNuKBYPudbTrxFqeB8FspjEipR0C/1feGQY/80SgFvDCGXjE6vTX3FX+nPh+l2WDoy/ziNw/zjS8inlU/Fx0ziJOWxU6CZhNPAQC7b8G6xDhkPSXAtH3BW8/EThk8LvPLGnbs7fPxFAxqBbGwCZbVVQ03fDebr6aIj9kmh2EA/igjaHevh3yEZYXkWHUnzx2NAHcPoXlHfdwIe8RF94nhqUD1zXibI3+7O8MXLAPZUCz+IAzt5Esqj45wQmqCnkId+H0P6fPOHFEHL7x0KGlc685qE60glcQ7DfQ==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(376002)(39860400002)(136003)(451199015)(36840700001)(40470700004)(46966006)(86362001)(36756003)(7636003)(356005)(36860700001)(82740400003)(5660300002)(2906002)(7696005)(336012)(426003)(47076005)(83380400001)(26005)(186003)(16526019)(2616005)(70206006)(70586007)(316002)(82310400005)(40480700001)(40460700003)(4326008)(8676002)(41300700001)(8936002)(54906003)(478600001)(110136005)(107886003)(6666004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 10:47:47.7630
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 10:47:54.3664
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7cd1379-0c74-4244-50b1-08dac176ad01
+X-MS-Exchange-CrossTenant-Network-Message-Id: e758bc46-5b3c-4b25-11db-08dac176b0f8
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT092.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7021
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6113
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ido Schimmel <idosch@nvidia.com> writes:
+From: Ido Schimmel <idosch@nvidia.com>
 
-This patchset adds 802.1X [1] and MAB [2] offload support in mlxsw.
+Currently, FDB entries that are notified to the bridge via
+'SWITCHDEV_FDB_ADD_TO_BRIDGE' are always marked as offloaded. With MAB
+enabled, this will no longer be universally true. Device drivers will
+report locked FDB entries to the bridge to let it know that the
+corresponding hosts required authorization, but it does not mean that
+these entries are necessarily programmed in the underlying hardware.
 
-Patches #1-#3 add the required switchdev interfaces.
+Solve this by determining the offload indication based of the
+'offloaded' bit in the FDB notification.
 
-Patches #4-#5 add the required packet traps for 802.1X.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ net/bridge/br.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patches #6-#10 are small preparations in mlxsw.
-
-Patch #11 adds locked bridge port support in mlxsw.
-
-Patches #12-#15 add mlxsw selftests. The patchset was also tested with
-the generic forwarding selftest ('bridge_locked_port.sh').
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=a21d9a670d81103db7f788de1a4a4a6e4b891a0b
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=a35ec8e38cdd1766f29924ca391a01de20163931
-
-Hans J. Schultz (1):
-  bridge: switchdev: Allow device drivers to install locked FDB entries
-
-Ido Schimmel (14):
-  bridge: switchdev: Let device drivers determine FDB offload indication
-  bridge: switchdev: Reflect MAB bridge port flag to device drivers
-  devlink: Add packet traps for 802.1X operation
-  mlxsw: spectrum_trap: Register 802.1X packet traps with devlink
-  mlxsw: reg: Add Switch Port FDB Security Register
-  mlxsw: spectrum: Add an API to configure security checks
-  mlxsw: spectrum_switchdev: Prepare for locked FDB notifications
-  mlxsw: spectrum_switchdev: Add support for locked FDB notifications
-  mlxsw: spectrum_switchdev: Use extack in bridge port flag validation
-  mlxsw: spectrum_switchdev: Add locked bridge port support
-  selftests: devlink_lib: Split out helper
-  selftests: mlxsw: Add a test for EAPOL trap
-  selftests: mlxsw: Add a test for locked port trap
-  selftests: mlxsw: Add a test for invalid locked bridge port
-    configurations
-
- .../networking/devlink/devlink-trap.rst       |  13 +++
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  35 ++++++
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  22 ++++
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |   5 +-
- .../mellanox/mlxsw/spectrum_switchdev.c       |  64 +++++++++--
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  25 +++++
- drivers/net/ethernet/mellanox/mlxsw/trap.h    |   2 +
- include/net/devlink.h                         |   9 ++
- include/net/switchdev.h                       |   1 +
- net/bridge/br.c                               |   5 +-
- net/bridge/br_fdb.c                           |  22 +++-
- net/bridge/br_private.h                       |   2 +-
- net/bridge/br_switchdev.c                     |   6 +-
- net/core/devlink.c                            |   3 +
- .../drivers/net/mlxsw/devlink_trap_control.sh |  22 ++++
- .../net/mlxsw/devlink_trap_l2_drops.sh        | 105 ++++++++++++++++++
- .../selftests/drivers/net/mlxsw/rtnetlink.sh  |  31 ++++++
- .../selftests/net/forwarding/devlink_lib.sh   |  19 ++--
- 18 files changed, 366 insertions(+), 25 deletions(-)
-
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index 96e91d69a9a8..145999b8c355 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -172,7 +172,7 @@ static int br_switchdev_event(struct notifier_block *unused,
+ 			break;
+ 		}
+ 		br_fdb_offloaded_set(br, p, fdb_info->addr,
+-				     fdb_info->vid, true);
++				     fdb_info->vid, fdb_info->offloaded);
+ 		break;
+ 	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
+ 		fdb_info = ptr;
 -- 
 2.35.3
 
