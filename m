@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CABA962110A
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E21D621124
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:43:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234236AbiKHMk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 07:40:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
+        id S233903AbiKHMnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 07:43:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234052AbiKHMkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C1151C28
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 04:40:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8C87B81AB7
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 12:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 76DFBC433D7;
-        Tue,  8 Nov 2022 12:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667911215;
-        bh=iktiCSkZHbrqB3HWxE9FHVPAwdqsL8+VKH+8ULt7qTg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cCV/2aPBwjZ7zZP6HniDVz+BfQtU/Rx39iwn14xUZbsbvnfqxYtPpe5Fs+Tc6KtoG
-         7v7iMwLalrUCy+ze02GgF8uK2HGsW0yn7xElj9/n5mZwvMZXMVOWzUvpgPsFQYXYq6
-         1FO5Ko7P4TF5yhQbLRA8qMPSd4lY5WSnbKvTUZH4WsJl4d5itNkTCD7800tktnyKxa
-         1aSGCPdiOwets3LBn9A59yAh/bANfOGjk94WWmZ0hw6GsRVEGabKO3OwhB5pfphitB
-         IimFDfb8HhJMGkePtC71HpaZLAmH6Kmx3uxARsDBtMeVbdmm85mvS0X1DIszYjL83O
-         sBFmyMQC+AW7w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5CAB3C4166D;
-        Tue,  8 Nov 2022 12:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233631AbiKHMnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:43:24 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E82116F
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 04:43:23 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso17819089pjc.0
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 04:43:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sKudeoCrlAMCuwJypx7cVkyAuKvZkGTI/3BZq0KKlGU=;
+        b=AQEN8jWMCvPNphq+37wlWqpDZKY0YaL8piwvj0NylExM5FDhKzFB9557mvT+0fDL+W
+         O91GG1ma3kdi0tEbwn5p/bo0DBnqdetvSshFixZzkD8oGr6883xUQLGYlzs8f5qhlq54
+         7H+opqM7wDaF3CdWZqGvQ05OF3aDwzN3lyZnpBhnljCDSbZ/UkJgBjH+QNEzlZO3KB1c
+         sU8npKkcNtitHYYXHu/4TVBig0sHU2IKQEqDy28xNIvoQUOYtcb6PGzYA02V9iPCMpxF
+         beEs+8Ay7gIeH4K2tkFnxBNu8HgMfBzRFkyeQmAsRAUTzIsMbe7R+uVzWDqh4ilX16J4
+         LIjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sKudeoCrlAMCuwJypx7cVkyAuKvZkGTI/3BZq0KKlGU=;
+        b=dV3WJ76Of8B0e7tjjL2JNJpw47qJAnqvNOnsYPMl0fOT+QMs+uKngE8fTuzjKwSHaZ
+         Dpdeq/7EQSRqR+bZGMCedPbW39seZqKy5jt7a+9S+MWMRUBvxZoRzLYA8QmoMcVx62rH
+         SXjEXjb6rH9b7n6Q3fupopzs5rrfgzgb//3/wxBp+W216ietTZRenu4iqCRm3ORTij0p
+         h/lG6S0ANIJDbVZ6uOrTbbQQwc8VT0tgmIjkK9NukEJIi+vFVkm9vlKLBma7gEgUZl7X
+         0/+x3d9bELN/Ogxt1E1up+XINKVBQ5XVzFcHxZLxKJYcNMHPgTlAQJ7NVv9YiWLA5/rI
+         JJzA==
+X-Gm-Message-State: ACrzQf1wl6DtCPyMPHh4IBv3m/bhRULVzCS56PXI1l2A8JmAv5lHxO+9
+        +xJQyV0vDxKRCKLlcXb7wEWEXxAxe3Q=
+X-Google-Smtp-Source: AMsMyM51DmXtI63gs5fkpXZf7UkDOWJwIjvziavB1u+CA1MDkc1lTVsnlnfN5ZydVqlN+QAvzGGRSg==
+X-Received: by 2002:a17:902:ec86:b0:187:2430:d377 with SMTP id x6-20020a170902ec8600b001872430d377mr44859400plg.33.1667911403254;
+        Tue, 08 Nov 2022 04:43:23 -0800 (PST)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id sj3-20020a17090b2d8300b0020ae09e9724sm5969738pjb.53.2022.11.08.04.43.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 04:43:22 -0800 (PST)
+Date:   Tue, 8 Nov 2022 20:43:18 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCHv3 iproute2-next] rtnetlink: add new function
+ rtnl_echo_talk()
+Message-ID: <Y2pO5jXPgxJLIN9S@Laptop-X1>
+References: <20220929081016.479323-1-liuhangbin@gmail.com>
+ <Y2oWDRIIR6gjkM4a@shredder>
+ <Y2ocsXykgqIHCcrF@Laptop-X1>
+ <Y2oj9gNmsy0LhvjA@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: mtk-star-emac: disable napi when connect
- and start PHY failed in mtk_star_enable()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166791121537.583.13082535543863984299.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Nov 2022 12:40:15 +0000
-References: <20221107012159.211387-1-shaozhengchao@huawei.com>
-In-Reply-To: <20221107012159.211387-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        bgolaszewski@baylibre.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y2oj9gNmsy0LhvjA@shredder>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon, 7 Nov 2022 09:21:59 +0800 you wrote:
-> When failed to connect to and start PHY in mtk_star_enable() for opening
-> device, napi isn't disabled. When open mtk star device next time, it will
-> reports a invalid opcode issue. Fix it. Only be compiled, not be tested.
+On Tue, Nov 08, 2022 at 11:40:06AM +0200, Ido Schimmel wrote:
+> > I can fix this either in iproute2 or in the selftests.
+> > I'd perfer ask David's opinion.
 > 
-> Fixes: 8c7bd5a454ff ("net: ethernet: mtk-star-emac: new driver")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Sure, but note that:
 > 
-> [...]
+> 1. Other than the 4 selftests that we know about and can easily patch,
+> there might be a lot of other applications that invoke iproute2 and
+> expect this return code. It is used by iproute2 since at least 2004.
+> 
+> 2. There is already precedence for restoring the original code. See
+> commit d58ba4ba2a53 ("ip: return correct exit code on route failure").
 
-Here is the summary with links:
-  - [net] net: ethernet: mtk-star-emac: disable napi when connect and start PHY failed in mtk_star_enable()
-    https://git.kernel.org/netdev/net/c/b0c09c7f08c2
+OK, I will post a iproute fix first. If David or others has comments.
+Please just NACK the new patch.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks
+Hangbin
