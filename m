@@ -2,180 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C089F620EFC
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:25:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD87620EC7
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233674AbiKHLZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 06:25:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        id S233660AbiKHLXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 06:23:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233517AbiKHLZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:25:00 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2653207A;
-        Tue,  8 Nov 2022 03:24:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667906700; x=1699442700;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bZWtWPh8AjDaSa0OzVSrWb7bd/MpGa9wkljck/k+riw=;
-  b=YOobgmPx3OSwZmIIbOP8gI+zi33HhP62I+Y1qguvqL7FfV0WQdRDhxsL
-   y0kY4PpmkScML6YRfd2XI/PFSBzfREHm9Etpjt5lz+67iYQc6vcurTaEq
-   PNSuM+18uJGkwQ1ziv1oMCjyHrgN6GSIEQ15jr34skLW79RMFwvGbOvbq
-   X6A7nrhdm1PFK1od619gkz5pW10PLaZ1oLCuMasgHVIyyuH2nmUmqQ4Ik
-   4UyX1FWHkTqHv1wRhseLfX83kEdZlGeGu5V+1VAWGPLVfIXR7fmnmPmCl
-   hT2XbkUZPfq78bhEos81/j9DO0VRBFuAHYMEn7ytwqLUZj5OYJgT3PpX7
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="294040903"
-X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
-   d="scan'208";a="294040903"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 03:24:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="965555581"
-X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
-   d="scan'208";a="965555581"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Nov 2022 03:24:56 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2A8BOsMT010189;
-        Tue, 8 Nov 2022 11:24:54 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        linux@armlinux.org.uk
-Subject: Re: [PATCH net-next v2 2/4] net: lan966x: Split function lan966x_fdma_rx_get_frame
-Date:   Tue,  8 Nov 2022 12:21:46 +0100
-Message-Id: <20221108112146.605140-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221107212415.pwkdyyrdlbndb7ob@soft-dev3-1>
-References: <20221106211154.3225784-1-horatiu.vultur@microchip.com> <20221106211154.3225784-3-horatiu.vultur@microchip.com> <20221107160656.556195-1-alexandr.lobakin@intel.com> <20221107212415.pwkdyyrdlbndb7ob@soft-dev3-1>
+        with ESMTP id S234114AbiKHLXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:23:10 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240834877B;
+        Tue,  8 Nov 2022 03:23:09 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id v27so21976096eda.1;
+        Tue, 08 Nov 2022 03:23:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2+psZjXySrgWO95sAydADMN8XzzN9c04wfmCKnTPkHo=;
+        b=NwtOy3YR6NL0Rp3dNnPZkVN3BHTomN749KfBM4MICWmtT5C4qlqS3f54WfPuC5iYEE
+         XykaZFNJLBQ/R9TlH9wDjLQLDO0nF1R0R/erBlS1CKQ6LWO1T6iHsUwRq0ijG7P97qQS
+         uQBC1C0Q/34yIMDv/7LFQXxVkszyrs+raYEf1P0umX9OShXuVx5BJI15nBX9m7AAuJhn
+         Qtlp+sCq8yNBhFtmHqqbcCf7uHjFCbkVEabMotC8piMJbJdqRrPif4P4LvOE9UjTCB4W
+         j2KbchsI/m5BD78tJidjwo5UhgEZmsEQwaotHFVsmQpLz/oTOmXNkxCUrEWLlPSvaWWx
+         Z+rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2+psZjXySrgWO95sAydADMN8XzzN9c04wfmCKnTPkHo=;
+        b=Gw2e8op6F9nELu0h0UD0dLHF8PzcQMfYOs705v7hqGohnlIbajStuMOIL+b2pEt+J6
+         RPgVzjnY6qh71g0rbYnAeHGkGMdo0vzHNGczyDiN6EepzX4ByRBBslcWmmRWiojQPjR6
+         5Q5bQfmJB1sXOgmOJAv3mLge8drnNnUMAiFaUR1YW77YcNfrArWS/3BTjn0XBOgJ3Brx
+         zo4NcFxPYNr4PadM6gP1MEaCSzqdegJIstQpkRvU4aqHn5yrLb9izuXzCdf4m1Bkn4bU
+         Xllu4/bc42+kFj8NN+ouGicxa3+rX9m+KiNQWEzsJ4OpwByG3R9pxy+5h3C20JXdLjJb
+         Zzqg==
+X-Gm-Message-State: ACrzQf21+8SSKweakdicKSUgciO+k0GQ3mFCGgb6nGdg9nA5lzP3U98r
+        UTR2ziUD566shPELxxcJrwk=
+X-Google-Smtp-Source: AMsMyM7gHlj9h4Gh9dmKct0Va3BWJOL5SuW55xdomHkNTfeuCgKGa+Sntm9RafdyNAuICSXtFsLivA==
+X-Received: by 2002:a05:6402:4444:b0:458:f355:ce04 with SMTP id o4-20020a056402444400b00458f355ce04mr56213467edb.422.1667906587567;
+        Tue, 08 Nov 2022 03:23:07 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id t18-20020a1709063e5200b007a62215eb4esm4608547eji.16.2022.11.08.03.23.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 03:23:07 -0800 (PST)
+Date:   Tue, 8 Nov 2022 13:23:05 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/14] net: vlan: remove invalid VLAN protocol warning
+Message-ID: <20221108112305.bkdxezogmymhmaei@skbuf>
+References: <20221108090039.imamht5iyh2bbbnl@skbuf>
+ <0948d841-b0eb-8281-455a-92f44586e0c0@nbd.name>
+ <20221108094018.6cspe3mkh3hakxpd@skbuf>
+ <a9109da1-ba49-d8f4-1315-278e5c890b99@nbd.name>
+ <20221108100851.tl5aqhmbc5altdwv@skbuf>
+ <5dbfa404-ec02-ac41-8c9b-55f8dfb7800a@nbd.name>
+ <20221108103330.xt6wi3x3ugp7bbih@skbuf>
+ <1be4d21b-c0a4-e136-ed68-c96470135f14@nbd.name>
+ <20221108105237.v4coebbj7kzee7y6@skbuf>
+ <75932a98-0f9b-0cda-c1dc-29322bc0141b@nbd.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <75932a98-0f9b-0cda-c1dc-29322bc0141b@nbd.name>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-Date: Mon, 7 Nov 2022 22:24:15 +0100
-
-> The 11/07/2022 17:06, Alexander Lobakin wrote:
-> 
-> Hi Olek,
-
-Hey,
-
-> 
+On Tue, Nov 08, 2022 at 11:56:52AM +0100, Felix Fietkau wrote:
+> On 08.11.22 11:52, Vladimir Oltean wrote:
+> > On Tue, Nov 08, 2022 at 11:42:09AM +0100, Felix Fietkau wrote:
+> > > Okay, I will stick with METADATA_HW_PORT_MUX for now. If we use it in the
+> > > flow dissector to avoid the tagger specific fixup, we might as well use it
+> > > in DSA to skip the tag proto receive call. What do you think?
 > > 
-> > From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > Date: Sun, 6 Nov 2022 22:11:52 +0100
-> > 
-> > > The function lan966x_fdma_rx_get_frame was unmapping the frame from
-> > > device and check also if the frame was received on a valid port. And
-> > > only after that it tried to generate the skb.
-> > > Move this check in a different function, in preparation for xdp
-> > > support. Such that xdp to be added here and the
-> > > lan966x_fdma_rx_get_frame to be used only when giving the skb to upper
-> > > layers.
-
-[...]
-
-> > > +     lan966x_ifh_get_src_port(page_address(page), src_port);
-> > > +     if (WARN_ON(*src_port >= lan966x->num_phys_ports))
-> > > +             return FDMA_ERROR;
-> > > +
-> > > +     return FDMA_PASS;
-> > 
-> > How about making this function return s64, which would be "src_port
-> > or negative error", and dropping the second argument @src_port (the
-> > example of calling it below)?
+> > I suppose that dsa_switch_rcv() could test for the presence of a metadata_dst
+> > and treat that generically if present, without unnecessarily calling down into
+> > the tagging protocol ->rcv() call. The assumption being that the metadata_dst
+> > is always formatted (by the DSA master) in a vendor-agnostic way.
 > 
-> That was also my first thought.
-> But the thing is, I am also adding FDMA_DROP in the next patch of this
-> series(3/4). And I am planning to add also FDMA_TX and FDMA_REDIRECT in
-> a next patch series.
+> Right. The assumption is that if we use METADATA_HW_PORT_MUX, the field
+> md_dst->u.port_info.port_id will contain the index of the DSA port.
 
-Yeah, I was reviewing the patches one by one and found out you're
-adding more return values later :S
-
-> Should they(FDMA_DROP, FDMA_TX, FDMA_REDIRECT) also be some negative
-> numbers? And then have something like you proposed belowed:
-> ---
-> src_port = lan966x_fdma_rx_check_frame(rx);
-> if (unlikely(src_port < 0)) {
-> 
->         switch(src_port) {
->         case FDMA_ERROR:
->              ...
->              goto allocate_new
->         case FDMA_DROP:
->              ...
->              continue;
->         case FDMA_TX:
->         case FDMA_REDIRECT:
->         }
-
-It's okay to make them negative, but I wouldn't place them under
-`unlikely`. It could be something like:
-
-	src_port = lan966x_fdma_rx_check_frame(rx);
-	if (unlikely(src_port == FDMA_ERROR))
-		goto allocate_new;
-
-	switch (src_port) {
-	case 0 ... S64_MAX:
-		// do PASS;
-		break;
-	case FDMA_TX:
-		// do TX;
-		break;
-	case FDMA_REDIRECT:
-	// and so on
-	}
-
-where
-
-enum {
-	FDMA_ERROR = -1, // only this one is "unlikely"
-	FDMA_TX = -2,
-	...
-};
-
-It's all just personal taste, so up to you :) Making
-rx_check_frame() writing src_port to a pointer is fine as well.
-
-> }
-> ---
-> 
-> > 
-> > > +}
-> > > +
-> > > +static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx,
-> > > +                                              u64 src_port)
-> > > +{
-
-[...]
-
-> > > --
-> > > 2.38.0
-> > 
-> > Thanks,
-> > Olek
-> 
-> -- 
-> /Horatiu
-
-Thanks,
-Olek
+Yes. Please coordinate with Maxime, see if it's possible to do something
+similar (generic) on TX, depending on whether the DSA master reports it
+can interpret metadata_dst as offloaded DSA tags. You didn't copy too
+many folks to this patch set, so others might have missed it.
