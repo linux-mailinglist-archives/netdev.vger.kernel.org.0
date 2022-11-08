@@ -2,52 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D257D620840
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 05:29:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 940FE62086C
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 05:51:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232075AbiKHE3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 23:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S232847AbiKHEvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 23:51:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231659AbiKHE3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 23:29:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354E01A839
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 20:29:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C598B818B8
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 04:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F95CC433C1;
-        Tue,  8 Nov 2022 04:29:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667881779;
-        bh=isIrJBxi1WI0d1jUi19cA8eiPeKy3z90tsGFGFx48mE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fct6cDqd7PynAHlSgy/LthgwVsmHDwP1J//+XWxrzF2ysktHJheAVHJgpNGbW4whe
-         EpcYxZ9ChKPT3j+SX7LmZZB5IHZ2mt9+T5Gp2/77FE/jk3d0chVjrykFnI/6GKcce/
-         gq9VOFpmgL55Rp/Apgj+4adoyZouFKOiba64sX9UFlh1tyUFKWUGmg5bbBc0SiBFZO
-         8Jt6AuYlrE10hdoqRS2MZEySYMT8QUNGIzPjn7He6kB9yVLFFfKj14+WkCAq1YkIbz
-         1+yzDbrWy4jibHMoniu5DnqduBXULrS3djCFLd9JF3/CXX2613Ifsx25ddMYIew2Cq
-         QH/lnqMbe4SDg==
-Date:   Mon, 7 Nov 2022 20:29:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, idosch@idosch.org, bigeasy@linutronix.de,
-        imagedong@tencent.com, kuniyu@amazon.com, petrm@nvidia.com
-Subject: Re: [patch net-next 1/2] net: introduce a helper to move notifier
- block to different namespace
-Message-ID: <20221107202937.6ec5474c@kernel.org>
-In-Reply-To: <20221107145213.913178-2-jiri@resnulli.us>
-References: <20221107145213.913178-1-jiri@resnulli.us>
-        <20221107145213.913178-2-jiri@resnulli.us>
+        with ESMTP id S232911AbiKHEvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 23:51:22 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688C915733;
+        Mon,  7 Nov 2022 20:51:07 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N5wf60s3Nz15MSf;
+        Tue,  8 Nov 2022 12:50:54 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 8 Nov 2022 12:51:04 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <yhs@fb.com>, <joe@wand.net.nz>
+Subject: [PATCH bpf v4] bpf: Fix memory leaks in __check_func_call
+Date:   Tue, 8 Nov 2022 13:11:31 +0800
+Message-ID: <1667884291-15666-1-git-send-email-wangyufen@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,23 +44,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Nov 2022 15:52:12 +0100 Jiri Pirko wrote:
-> +void __move_netdevice_notifier_net(struct net *src_net, struct net *dst_net,
-> +				   struct notifier_block *nb)
-> +{
-> +	__unregister_netdevice_notifier_net(src_net, nb);
-> +	__register_netdevice_notifier_net(dst_net, nb, true);
-> +}
+kmemleak reports this issue:
 
-'static' missing
+unreferenced object 0xffff88817139d000 (size 2048):
+  comm "test_progs", pid 33246, jiffies 4307381979 (age 45851.820s)
+  hex dump (first 32 bytes):
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<0000000045f075f0>] kmalloc_trace+0x27/0xa0
+    [<0000000098b7c90a>] __check_func_call+0x316/0x1230
+    [<00000000b4c3c403>] check_helper_call+0x172e/0x4700
+    [<00000000aa3875b7>] do_check+0x21d8/0x45e0
+    [<000000001147357b>] do_check_common+0x767/0xaf0
+    [<00000000b5a595b4>] bpf_check+0x43e3/0x5bc0
+    [<0000000011e391b1>] bpf_prog_load+0xf26/0x1940
+    [<0000000007f765c0>] __sys_bpf+0xd2c/0x3650
+    [<00000000839815d6>] __x64_sys_bpf+0x75/0xc0
+    [<00000000946ee250>] do_syscall_64+0x3b/0x90
+    [<0000000000506b7f>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-> +void move_netdevice_notifier_net(struct net *src_net, struct net *dst_net,
-> +				 struct notifier_block *nb)
-> +{
-> +	rtnl_lock();
-> +	__move_netdevice_notifier_net(src_net, dst_net, nb);
-> +	rtnl_unlock();
-> +}
-> +EXPORT_SYMBOL(move_netdevice_notifier_net);
+The root case here is: In function prepare_func_exit(), the callee is
+not released in the abnormal scenario after "state->curframe--;". To
+fix, move "state->curframe--;" to the very bottom of the function,
+right when we free callee and reset frame[] pointer to NULL, as Andrii
+suggested.
 
-Do we need to export this?  Maybe let's wait for a module user?
+In addition, function __check_func_call() has a similar problem. In
+the abnormal scenario before "state->curframe++;", the callee also
+should be released by free_func_state().
+
+Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+Fixes: fd978bf7fd31 ("bpf: Add reference tracking to verifier")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+---
+ kernel/bpf/verifier.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 7f0a9f6..34d8848 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -6736,11 +6736,11 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+ 	/* Transfer references to the callee */
+ 	err = copy_reference_state(callee, caller);
+ 	if (err)
+-		return err;
++		goto err_out;
+ 
+ 	err = set_callee_state_cb(env, caller, callee, *insn_idx);
+ 	if (err)
+-		return err;
++		goto err_out;
+ 
+ 	clear_caller_saved_regs(env, caller->regs);
+ 
+@@ -6757,6 +6757,11 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+ 		print_verifier_state(env, callee, true);
+ 	}
+ 	return 0;
++
++err_out:
++	free_func_state(callee);
++	state->frame[state->curframe + 1] = NULL;
++	return err;
+ }
+ 
+ int map_set_for_each_callback_args(struct bpf_verifier_env *env,
+@@ -6970,8 +6975,7 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
+ 		return -EINVAL;
+ 	}
+ 
+-	state->curframe--;
+-	caller = state->frame[state->curframe];
++	caller = state->frame[state->curframe - 1];
+ 	if (callee->in_callback_fn) {
+ 		/* enforce R0 return value range [0, 1]. */
+ 		struct tnum range = callee->callback_ret_range;
+@@ -7010,7 +7014,7 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
+ 	}
+ 	/* clear everything in the callee */
+ 	free_func_state(callee);
+-	state->frame[state->curframe + 1] = NULL;
++	state->frame[state->curframe--] = NULL;
+ 	return 0;
+ }
+ 
+-- 
+1.8.3.1
+
