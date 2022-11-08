@@ -2,63 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 579396205DC
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 02:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A209620614
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 02:30:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbiKHB2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 20:28:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
+        id S233587AbiKHB37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 20:29:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233282AbiKHB17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 20:27:59 -0500
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6BE2AE12
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 17:27:58 -0800 (PST)
+        with ESMTP id S233482AbiKHB3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 20:29:20 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2119.outbound.protection.outlook.com [40.107.93.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA22D88
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 17:28:22 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b33X5CaYN5oZi+6Z57oHRPc0dqmA82c6xQQQE9iTEhu+FTH3Afz8lUsEzZXP9Z+E9FUULsDwzHXToGrEUPPpCLqUsYp4ObSv0Uckw2aNa40hFD8DZf9hV1Rsjl2CxWPPLPVLKKXnwUUHBB7Q5S5UBQuzL4zkQ3b9XYcREx9dnL0FCjmg3VMZI95NqHU8RyVJR6UYTkT+h2MGgQwEroxE5eTm8fbnKU+jyflx+5mNuOUBmpIxYgXBmV1SwI8GCTQK3iSY3u948AjMjKCfHmCAIiUVcmGQLAZV5QMXBFUxiym3KRm0DbHLhA/G8xmphQpuSoly0uuHQ8AtAGXvfcmQ+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tfsnp3O/W6QRwxS2GKdSApQEI8YyJrXh6XuOs1ajFzs=;
+ b=lu0z1dQ/vpMra0hMKwoCvoBZOCD2FJAaYxivX5zwADi5/mFE3E0GmDeQ1lsedi5T7B2R2UFmLAp5nwF/mosN1245VA91jCNlvoyFcshgujNudDsuatwXK1jmB3G5cnXTqcbxcMj0vUQSvugGDhCSMY2hLjr9LgwzBZYle8AcgJHYlpfom/HxT8DFfAYZ2ooMl5bpYB/JNLwPz8m8PG6gFR3hMGc7TtkeNmDz5GeNccdZq59EUIh4CI+zO9zQlJH3p9lbfQBmmg2bfj9uI76zBKVCXNJLWUniUsumTRhhGS52GRyzQldz/l4+jEI0klhrbS/heM7IhnIX8I4p2sk2Ag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1667870879; x=1699406879;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GazV92J1deVF25jLSu2dalfpPNLwqBVniFoomcOamow=;
-  b=f9AmOQAbVdd7DtNSIsA+7SL71PFYeGh57KfkDsJHeGKD748dLvSQiqZk
-   qnBwrBp6URsz8MGFQqAPJMrPXj46FDw6qv/UN4CFhPLFJdV0lAWDKwbNR
-   cy7Jiof3GaDudIRtuD3xjMVkriJb1LEru6bElee3kw8y3HDxgjQ3bCO4e
-   E=;
-X-IronPort-AV: E=Sophos;i="5.96,145,1665446400"; 
-   d="scan'208";a="264414337"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-9fe6ad2f.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 01:27:57 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-m6i4x-9fe6ad2f.us-east-1.amazon.com (Postfix) with ESMTPS id 82AE386B40;
-        Tue,  8 Nov 2022 01:27:55 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Tue, 8 Nov 2022 01:27:54 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.178) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
- Tue, 8 Nov 2022 01:27:51 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <joannelkoong@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>, <martin.lau@kernel.org>,
-        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>
-Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
-Date:   Mon, 7 Nov 2022 17:27:43 -0800
-Message-ID: <20221108012743.33905-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAJnrk1Y_yE+-UQUkrkG-NmwKVM0NAQJwV4HcLtRQf+CNq4Tf_g@mail.gmail.com>
-References: <CAJnrk1Y_yE+-UQUkrkG-NmwKVM0NAQJwV4HcLtRQf+CNq4Tf_g@mail.gmail.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tfsnp3O/W6QRwxS2GKdSApQEI8YyJrXh6XuOs1ajFzs=;
+ b=JgsdwUv58X0wjuesFoXDcm1PqNdzPQ23SSLGzCifCverPpIfdcQFvfCJ3rgLaStdyBxBg87ZQjCrQygOP4Rqu5pkqISGTtWNm0GDO7f6dV/gCBYQqMtWRlrZCIEocxEMpsC1Jibzh2PEBfb7JtW8nNXLYAXoTfF0bFDWbGZ7vtE=
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
+ by BY3PR13MB5009.namprd13.prod.outlook.com (2603:10b6:a03:363::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Tue, 8 Nov
+ 2022 01:28:20 +0000
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::3442:65a7:de0a:4d35]) by DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::3442:65a7:de0a:4d35%9]) with mapi id 15.20.5791.025; Tue, 8 Nov 2022
+ 01:28:20 +0000
+From:   Yinjun Zhang <yinjun.zhang@corigine.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Chengtian Liu <chengtian.liu@corigine.com>,
+        HuanHuan Wang <huanhuan.wang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        oss-drivers <oss-drivers@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: RE: [PATCH net-next v3 3/3] nfp: implement xfrm callbacks and expose
+ ipsec offload feature to upper layer
+Thread-Topic: [PATCH net-next v3 3/3] nfp: implement xfrm callbacks and expose
+ ipsec offload feature to upper layer
+Thread-Index: AQHY7eGMPasXy6hiXkqW0Y9zNHZbuK4zBIsAgAA10pCAADY4gIAA1XVg
+Date:   Tue, 8 Nov 2022 01:28:20 +0000
+Message-ID: <DM6PR13MB3705D1657D48FD6C31753E04FC3F9@DM6PR13MB3705.namprd13.prod.outlook.com>
+References: <20221101110248.423966-1-simon.horman@corigine.com>
+ <20221101110248.423966-4-simon.horman@corigine.com> <Y2iiNMxr3IeDgIaA@unreal>
+ <DM6PR13MB3705DADE119F1895CA27EF9DFC3C9@DM6PR13MB3705.namprd13.prod.outlook.com>
+ <Y2j81dBpMXrNqPER@unreal>
+In-Reply-To: <Y2j81dBpMXrNqPER@unreal>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR13MB3705:EE_|BY3PR13MB5009:EE_
+x-ms-office365-filtering-correlation-id: 9e7e1ddb-8ac7-4cd3-9ee9-08dac1288560
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 62jE7H4KcOmJWRJZg+oFLSXQ0zSciAK5toeKl4hknzhjB+anz4X5A9oJDQ20ZRQOdF2QFnK1RE1U72SANgUH7/DlfX8ns1Vgd6XPpLKoL9C8Hgq/zgYzgr8lQsX8lQL2nlML6V5/MnMqBtHFDgcfnHxzkO7sQz5N+ES5tu5+67JsnHr6WU/DQNf3vn4A+xPJYvTiPHbcgRSwnbd42jVDdwjLdzDI34vjFyr9z5MVHT0HgrAFYn32+G484TM1R8xfM7je2OddXwfwx7EITgWNHBA4uHPOyn/GSAOuQb0sd3M93AG0iemeidDnlLUHH9G/4/g+lPsIfd6yk2FRqHVFQgrSIWlvdABYnrtjnPtg0x1bMbBsrAltamkfhPKR2A2EBa2nKsN2Rs9TQ6wOVo0aCOjGIbHT9u4yAIYEI3TdJAjau4M2cFl5+znsdDa0ewP6En6PEca16a5GnWxAx8DSkIXSDcTZzf0Gn9yLnltNW/gGSbkndBtfdOFXVCOc+6zAdNl3RCR+QWsdvChXM5xAl2vFqqzbzDmmRJ9Cu51h8TqqG5BJHmACXjI7Y79H/lrAk58DCb5ly4GYCj4jxfkzPPks1Vdt9g6pK2AnHhoNs0fsMsgqxS4ipzraimOAk6iCv0FOObi/J+iLKVsxqxh04pci5BiYtqi7P80Sg/qIbH+6geStQRPmzQl40Glbw+Xx1JDr2GqRFaVUJPQb7BG9/VvfbulmjWCUK3eQ8kokkuTFTokfOaoqTa4OZpOLlxL0n/TfGILqdP7zs6Vwp2vCO/QDWv8Ki5f2I8MgLomPmdUl8hSxHfIlWtAjY0xQ6Vdq
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(366004)(376002)(396003)(39830400003)(451199015)(5660300002)(8936002)(52536014)(41300700001)(4744005)(38100700002)(76116006)(8676002)(64756008)(4326008)(66446008)(66556008)(66946007)(66476007)(2906002)(316002)(33656002)(54906003)(6916009)(86362001)(38070700005)(55016003)(7696005)(478600001)(71200400001)(107886003)(44832011)(122000001)(6506007)(26005)(9686003)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WUwlRhN/Dt5mgjv9J0N7fJiFJ2M+e1TtLMO3k/wFp94+RF1oVcMtf1QGoiS3?=
+ =?us-ascii?Q?s86RC6mPJYYKwS0kGBk+iD031lNolvaWZT3bI21qMRTVHBOKT1Fp1BAzBK1X?=
+ =?us-ascii?Q?lIkaq2hTUFSHuiOo/RZbuHoM3u4muSMCTCvfgWqz9niQX1Q6RW+NeVN74Q3w?=
+ =?us-ascii?Q?nXUNNTVTMoFC79BQJaOpBS+BV830840PugfnzkovmITAR+h+D1O0f7gEe18G?=
+ =?us-ascii?Q?LX1Zf10SCk+s4AJqklQG8QzLNkMjxtc3Ow1V10XOLC/fUG7J8HvVGi7m/e9D?=
+ =?us-ascii?Q?01ctD/aZdncRWft2TFm7q9+ktnviOmhAXrP0W7siubv0j3/2lW56QrTOUNqX?=
+ =?us-ascii?Q?S8tqSZD+Fc+Pws55QsY/dvb9IebxUZ4vWcS3O1OnC+Otv7yfb/9FZFARLtqb?=
+ =?us-ascii?Q?SxA1zgt4KAtke1cJ1X7zUwgVsZ0HEyd9lUNBziSEb7iKVwkYKHVreCr7qTK0?=
+ =?us-ascii?Q?bbahPDDDiMqxPLNucVC/ByoqmCi5BRJ3P8pnz7jM6pdOOFFDp5x4P3IgEqhh?=
+ =?us-ascii?Q?HR5DYQHRTSm3VCnD6eM6dMMbmIbWxn1Y+1JrdVe1Ns8sfx/X09YTu5gDCAPb?=
+ =?us-ascii?Q?RJEdA5jV4Xamj+cP71JnsU7+XrU+pDenG5hBqjn4BYcOG/eRl0BFfiairpej?=
+ =?us-ascii?Q?YbW8RWBYFa/TV6uEba+RKo45hKuTXN4hMItbjFAoE9uAjdPR9j33qjlVHIRf?=
+ =?us-ascii?Q?l+R/6e3N8RsZh2LmbvIA9rhfCF0v9teTRDBnZIEyZCBtV1VkSwnaWLjMG8K3?=
+ =?us-ascii?Q?GVTbVUV0kd6YbHOO42pNmut56rr98fOAetVy84VbVtY9gRx2jgHCSK+6P4MT?=
+ =?us-ascii?Q?+IMzCffr2JkCGntaqvSXdkU8Pkn/+3MRKFKLq8J7sk6E7LHwcMX0BnOc3GyW?=
+ =?us-ascii?Q?3ONR3oeZEXSJ8VV/8bhZlNCcSvoDCSyOXJWW/15Ojc9j6n91AIsXb/3WQKcf?=
+ =?us-ascii?Q?BYgvBCKFK11nZ4LtoBRElz3J1xG4RuSCaiyCpfG19BFOcdWrqoHzBgxix/7X?=
+ =?us-ascii?Q?7ZRRjZ7goz3MNxYoywDDtCupgeKnJFHTAbMQ+O5BMniXgSfNoaV/i+zHQean?=
+ =?us-ascii?Q?BpxR6gK+MQDk/1umTHbHCVXnczfnRquo1qiCXsUqFJy/tx7jC6TYalpixBmf?=
+ =?us-ascii?Q?UJKsgng6icQNX3crFxMi4u35YsZFiH+G23kUintNSAHi/IcBkus0N4Phmxmx?=
+ =?us-ascii?Q?Ul3MEHL23ccCSo4DJiZEXU+OJn/mBqxIJ8Wm5dGnW0mfzGp7ji0O7FjRh2tc?=
+ =?us-ascii?Q?JPi2kOb/GQMHylFabv01fHeNNCKcYCtCA/BvRKPaxAojuoWB+Yxbkol6BmJR?=
+ =?us-ascii?Q?S1530+8UNtvna9XhF9W3JymD4nOZ3alHDw7bnbEThjNdBTrlYAvnr7DVcHy0?=
+ =?us-ascii?Q?0lTnjgYh/HvxAuQ9ynqgaGD4mE5DeTWTmdeDX7UAvfupkZH7OTWgY2HyJPlZ?=
+ =?us-ascii?Q?xUO+fgC6BeZP9lAcieNGqgD/plSOYjkspR5okH/d5mfckk3p1Y523x+JRCGQ?=
+ =?us-ascii?Q?jgiwX/LqpMAh+W8yy72D/D2p814OcEc5Ja87lDjpopbxv4f9Uvu+6VS3hAvO?=
+ =?us-ascii?Q?dBupVCmO8yBzRaM9ySu35guGlK+YTh273heTpTgX?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.178]
-X-ClientProxiedBy: EX13D24UWB002.ant.amazon.com (10.43.161.159) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e7e1ddb-8ac7-4cd3-9ee9-08dac1288560
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2022 01:28:20.6588
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P1eWxcSNraEkCO1bvBriozGFsg0+Q59566zcCqocSUFGpdoXUnr3GH0IRNPNRJK4uY5hBZneAsMrHrAc49i+WpK1KFx9tVdKMRngNqydcEc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR13MB5009
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,325 +128,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Mon, 7 Nov 2022 14:20:46 -0800
-> On Fri, Oct 28, 2022 at 5:13 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Mon, 7 Nov 2022 14:40:53 +0200, Leon Romanovsky wrote:
+> On Mon, Nov 07, 2022 at 09:46:46AM +0000, Yinjun Zhang wrote:
+> > On Mon, 7 Nov 2022 08:14:12 +0200, Leon Romanovsky wrote:
+> > <...>
+> > > > +
+> > > > +	/* General */
+> > > > +	switch (x->props.mode) {
+> > > > +	case XFRM_MODE_TUNNEL:
+> > > > +		cfg->ctrl_word.mode =3D NFP_IPSEC_PROTMODE_TUNNEL;
+> > > > +		break;
+> > > > +	case XFRM_MODE_TRANSPORT:
+> > > > +		cfg->ctrl_word.mode =3D NFP_IPSEC_PROTMODE_TRANSPORT;
+> > > > +		break;
+> > >
+> > > Why is it important for IPsec crypto? The HW logic must be the same f=
+or
+> > > all modes. There are no differences between transport and tunnel.
 > >
-> > Hi,
-> >
-> > I want to discuss bhash2 and WARN_ON() being fired every day this month
-> > on my syzkaller instance without repro.
-> >
-> >   WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> >   ...
-> >   inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
-> >   inet_listen (net/ipv4/af_inet.c:228)
-> >   __sys_listen (net/socket.c:1810)
-> >   __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
-> >   do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> >   entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> >
-> [...]
-> >
-> > Please see the source addresses of s2/s3 below after connect() fails.
-> > The s2 case is another variant of the first syzbot report, which has
-> > been already _fixed_.  And the s3 case is a repro for the issue that
-> > Mat and I saw.
-> 
-> Since the s2 address mismatch case is addressed by your patch
-> https://lore.kernel.org/netdev/20221103172419.20977-1-kuniyu@amazon.com/,
-> I will focus my comments here on the s3 case.
-> 
-> >
-> >   # sysctl -w net.ipv4.tcp_syn_retries=1
-> >   net.ipv4.tcp_syn_retries = 1
-> >   # python3
-> >   >>> from socket import *
-> >   >>>
-> >   >>> s1 = socket()
-> >   >>> s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >   >>> s1.bind(('0.0.0.0', 10000))
-> >   >>> s1.connect(('127.0.0.1', 10000))
-> >   >>>
-> >   >>> s2 = socket()
-> >   >>> s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >   >>> s2.bind(('0.0.0.0', 10000))
-> >   >>> s2
-> >   <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >   >>>
-> >   >>> s2.connect(('127.0.0.1', 10000))
-> >   Traceback (most recent call last):
-> >     File "<stdin>", line 1, in <module>
-> >   OSError: [Errno 99] Cannot assign requested address
-> >   >>>
-> >   >>> s2
-> >   <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 10000)>
-> >                                                                                                    ^^^ ???
-> >   >>> s3 = socket()
-> >   >>> s3.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >   >>> s3.bind(('0.0.0.0', 10000))
-> >   >>> s3
-> >   <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >   >>>
-> >   >>> s3.connect(('0.0.0.1', 1))
-> >   Traceback (most recent call last):
-> >     File "<stdin>", line 1, in <module>
-> >   TimeoutError: [Errno 110] Connection timed out
-> >   >>>
-> >   >>> s3
-> >   <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >
-> > We can fire the WARN_ON() by s3.listen().
-> >
-> >   >>> s3.listen()
-> >   [ 1096.845905] ------------[ cut here ]------------
-> >   [ 1096.846290] WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
-> 
-> I'm on the head of net-next/master (commit
-> bf46390f39c686d62afeae9845860e63886d63b) and trying to repro this
-> locally, but the warning isn't showing up for me after following the
-> steps above. Not sure why.
+> > As I mentioned above, it's differentiated in HW to support more feature=
+s.
+>=20
+> You are adding crypto offload, so please don't try to sneak "more" featur=
+es.
+>=20
 
-Hmm... it reproduced on top of the commit.  I'm testing on QEMU and login
-to serial console which outputs syslog in the same stream, so you may want
-to check /var/log/messages or something.
-
----8<---
-# sysctl -w net.ipv4.tcp_syn_retries=1
-# python3
->>> from socket import *
->>> 
->>> s = socket()
->>> s.bind(('0', 10000))
->>> s.connect(('0.0.0.1', 1))
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-TimeoutError: [Errno 110] Connection timed out
->>> s
-<socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
->>> s.listen(32)
-[   96.598308] ------------[ cut here ]------------
-[   96.598598] WARNING: CPU: 0 PID: 214 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
-...
-
->>> s = socket()
->>> s.bind(('0', 10001))
->>> s.connect(('localhost', 1))
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-ConnectionRefusedError: [Errno 111] Connection refused
->>> s.listen(32)
-[  139.157193] ------------[ cut here ]------------
-[  139.157528] WARNING: CPU: 0 PID: 214 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
----8<---
-
-
-> 
-> >
-> > In the s3 case, connect() resets sk->sk_rcv_saddr to INADDR_ANY without
-> > updating the bhash2 bucket; OTOH sk has the correct non-NULL bhash bucket.
-> 
-> To summarize, the path you are talking about is tcp_v4_connect() in
-> kernel/linux/net/ipv4/tcp_ipv4.c where the sk originally has saddr
-> INADDR_ANY, the sk gets assigned a new address, that new address gets
-> updated in the bhash2 table, and then when inet_hash_connect() is
-> called, it fails which brings us to the "goto failure". In the failure
-> goto, we call "tcp_set_state(sk, TCP_CLOSE)" but in the case where
-> "SOCK_BINDPORT_LOCK" is held, "inet_put_port(sk)" is *not* called,
-> which means the sk will still be in the bhash2 table with the new
-> address.
-
-Correct.
-
-More precisely, 3 functions after inet_hash_connect() can cause the same
-issue.
-
-- ip_route_newports
-- tcp_fastopen_defer_connect
-- tcp_connect
-
-
-> 
-> > So, when we call listen() for s3, inet_csk_get_port() does not call
-> > inet_bind_hash() and the WARN_ON() for bhash2 fires.
-> >
-> >   if (!inet_csk(sk)->icsk_bind_hash)
-> >         inet_bind_hash(sk, tb, tb2, port);
-> >   WARN_ON(inet_csk(sk)->icsk_bind_hash != tb);
-> >   WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
-> >
-> [...]
-> >
-> > In the s3 case, connect() falls into a different path.  We reach the
-> > sock_error label in __inet_stream_connect() and call sk_prot->disconnect(),
-> > which resets sk->sk_rcv_saddr.
-> 
-> This is the case where in __inet_stream_connect(), the call to
-> "sk->sk_prot->connect()" succeeds but then the connection is closed by
-> RST/timeout/ICMP error, so then the "goto sock_error" is triggered,
-> correct?
-
-Yes.
-
-
-> 
-> >
-> > Then, there could be two subsequent issues.
-> >
-> >   * listen() leaks a newly allocated bhash2 bucket
-> >
-> >   * In inet_put_port(), inet_bhashfn_portaddr() computes a wrong hash for
-> >     inet_csk(sk)->icsk_bind2_hash, resulting in list corruption.
-> >
-> > We can fix these easily but it still leaves inconsistent sockets in bhash2,
-> > so we need to fix the root cause.
-> >
-> > As a side note, this issue only happens when we bind() only port before
-> > connect().  If we do not bind() port, tcp_set_state(sk, TCP_CLOSE) calls
-> > inet_put_port() and unhashes the sk from bhash2.
-> >
-> >
-> > At first, I applied the patch below so that both sk2 and sk3 trigger
-> > WARN_ON().  Then, I tried two approaches:
-> >
-> >   * Fix up the bhash2 entry when calling sk_rcv_saddr
-> >
-> >   * Change the bhash2 entry only when connect() succeeds
-> >
-> > The former does not work when we run out of memory.  When we change saddr
-> > from INADDR_ANY, inet_bhash2_update_saddr() could free (INADDR_ANY, port)
-> > bhash2 bucket.  Then, we possibly could not allocate it again when
-> > restoring saddr in the failure path.
-> >
-> > The latter does not work when a sk is in non-blocking mode.  In this case,
-> > a user might not call the second connect() to fix up the bhash2 bucket.
-> >
-> >   >>> s4 = socket()
-> >   >>> s4.bind(('0.0.0.0', 10000))
-> >   >>> s4.setblocking(False)
-> >   >>> s4
-> >   <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >
-> >   >>> s4.connect(('0.0.0.1', 1))
-> >   Traceback (most recent call last):
-> >     File "<stdin>", line 1, in <module>
-> >   BlockingIOError: [Errno 115] Operation now in progress
-> >   >>> s4
-> >   <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('10.0.2.15', 10000)>
-> >
-> > Also, the former approach does not work for the non-blocking case.  Let's
-> > say the second connect() fails.  What if we fail to allocate an INADDR_ANY
-> > bhash2 bucket?  We have to change saddr to INADDR_ANY but cannot.... but
-> > the connect() actually failed....??
-> >
-> >   >>> s4.connect(('0.0.0.1', 1))
-> >   Traceback (most recent call last):
-> >     File "<stdin>", line 1, in <module>
-> >   ConnectionRefusedError: [Errno 111] Connection refused
-> >   >>> s4
-> >   <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> >
-> >
-> > Now, I'm thinking bhash2 bucket needs a refcnt not to be freed while
-> > refcnt is greater than 1.  And we need to change the conflict logic
-> > so that the kernel ignores empty bhash2 bucket.  Such changes could
-> > be big for the net tree, but the next LTS will likely be v6.1 which
-> > has bhash2.
-> >
-> > What do you think is the best way to fix the issue?
-> 
-> To summarize your analysis, there is an issue right now where for
-> sockets that are binded on address INADDR_ANY,  we need to handle the
-> error case where if a connection fails and SOCK_BINDPORT_LOCK is held,
-> the new address it was assigned needs to be taken out of bhash2 and
-> the original address (INADDR_ANY) needs to be re-added to bhash2.
-> There are two of these error cases we need to handle,  as you
-> mentioned above - 1) in dccp/tcp_v4_connect() where the connect call
-> fails and 2) in __inet_stream_connect() where the connect call
-> succeeds but the connection is closed by a RST/timeout/ICMP error.
-> 
-> I think the simplest solution is to modify inet_bhash2_update_saddr()
-> so that we don't free the inet_bind2_bucket() for INADDR_ANY/port (if
-> it is empty after we update the saddr to the new addr) *until* the
-> connect succeeds. When the connect succeeds, then we can check whether
-> the inet_bind2_bucket for INADDR_ANY is empty, and if it is, then do
-> the freeing for it.
-> 
-> What are your thoughts on this?
-
-I was thinking the same, but this scenario will break it ?
-
-  connect() <-- unblocking socket
-    return -EINPROGRESS
-
-  receive SYN+ACK, send back ACK, and set state to TCP_ESTABLISEHD
-
-  free the old INADDR_ANY bucket
-
-  get RST and set state to TCP_CLOSE
-
-  connect()
-    goto sock_error and ->disconect() fail to restore the bucket
-
-
-> 
-> Thank you.
-> 
-> >
-> > Thank you.
-> >
-> >
-> > ---8<---
-> > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > index 713b7b8dad7e..40640c26680e 100644
-> > --- a/net/dccp/ipv4.c
-> > +++ b/net/dccp/ipv4.c
-> > @@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >          * This unhashes the socket and releases the local port, if necessary.
-> >          */
-> >         dccp_set_state(sk, DCCP_CLOSED);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >         ip_rt_put(rt);
-> >         sk->sk_route_caps = 0;
-> >         inet->inet_dport = 0;
-> > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > index e57b43006074..626166cb6d7e 100644
-> > --- a/net/dccp/ipv6.c
-> > +++ b/net/dccp/ipv6.c
-> > @@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >
-> >  late_failure:
-> >         dccp_set_state(sk, DCCP_CLOSED);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >         __sk_dst_reset(sk);
-> >  failure:
-> >         inet->inet_dport = 0;
-> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > index 7a250ef9d1b7..834245da1e95 100644
-> > --- a/net/ipv4/tcp_ipv4.c
-> > +++ b/net/ipv4/tcp_ipv4.c
-> > @@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >          * if necessary.
-> >          */
-> >         tcp_set_state(sk, TCP_CLOSE);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >         ip_rt_put(rt);
-> >         sk->sk_route_caps = 0;
-> >         inet->inet_dport = 0;
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index 2a3f9296df1e..81b396e5cf79 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >
-> >  late_failure:
-> >         tcp_set_state(sk, TCP_CLOSE);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >  failure:
-> >         inet->inet_dport = 0;
-> >         sk->sk_route_caps = 0;
-> > ---8<---
+No sneaking, just have to conform to the design of HW, so that things are n=
+ot
+messed up.
