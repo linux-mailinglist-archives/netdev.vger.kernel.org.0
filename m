@@ -2,86 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B73B86207D9
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 04:55:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E3D6207E6
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 04:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbiKHDzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 22:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
+        id S233253AbiKHD6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 22:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232270AbiKHDza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 22:55:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8893813FB1
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 19:55:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2256D6140B
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 03:55:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00169C433D6;
-        Tue,  8 Nov 2022 03:55:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667879728;
-        bh=jfSoGwo546XyLcE1uccBGS6De2TD0dAjfZXKPspZBdw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aGhgILqCEVDt6EWAqsWWrysxlK7H3uEVANEME1KqxgLcyUWVKiSULyjZEfKMDrru6
-         nUqYggNQAFBr9K4aqvyBpj2ZwL9hUtJsIxx2c1xsLgORGt/XJSYbI7Tyc2cnxR3woq
-         N9IDKbzXcrFUnNnxyC3YD00hIXyPi9Y01dcJekwb6Fj170uYm1dmxnP0jCf7c7yqbC
-         9G6cZMjSu/2e0jpdqsw3AuUhSJOUsjvhbFWzJEm9DPyLQUpJ/0r2kaGYIZAP1kHvjV
-         5MhhTVlY4lQnetAICBBGWGrKVYTaaxBlBTHhWaXCAFqYvsNVA6PD3wz+H1Q7hUhTVY
-         lRPbM88bxF7ag==
-Date:   Mon, 7 Nov 2022 19:55:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net-next 5/6] igb: Do not free q_vector unless new one
- was allocated
-Message-ID: <20221107195526.5ef1262e@kernel.org>
-In-Reply-To: <c051fa25-6047-0efb-7049-be08f566d1fb@intel.com>
-References: <20221104205414.2354973-1-anthony.l.nguyen@intel.com>
-        <20221104205414.2354973-6-anthony.l.nguyen@intel.com>
-        <Y2itqqGQm6uZ/2Wf@unreal>
-        <DM5PR11MB1324FDF4D4399A6A99727B5EC13C9@DM5PR11MB1324.namprd11.prod.outlook.com>
-        <Y2lEK4CMdCyEMBLf@unreal>
-        <c051fa25-6047-0efb-7049-be08f566d1fb@intel.com>
+        with ESMTP id S232884AbiKHD6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 22:58:15 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDDA31F8D;
+        Mon,  7 Nov 2022 19:58:09 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id 4so13118125pli.0;
+        Mon, 07 Nov 2022 19:58:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=3w2NZSwyPPI/Z7ZkFiZmUgxVMdr3WnPezn9G8jIb89k=;
+        b=X7mu302r89riVzCOc5c+QGr3J3ji059SuTRG+TJx6kuVWDrRW3lv3gkTC1uHEyPpyH
+         PHxhlYGHktePLoMIyLJ4LsQEJdnsyZDw5+QbG9MG77UD8wLMi2yQ322T6jcOjm3wIYD9
+         xxcoPXaBe8lj6/jl2fcEWFiv9HEiTyd7lGLqNHXxSMEeUnqYk5i/EhLMyBrFa4imTFNX
+         ZvJrth5PYo27TsjmYXAwfdifsW92nn597nk4qKi03oboTpck1Nk3+L8uaWOeMgktd4fi
+         cbrPEjgkiST2oGWIRnuFroFS3PGiAA7VwzeuuVKgYCPeXgEuZ45LjmoLlT21LFc2tlRi
+         G2oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3w2NZSwyPPI/Z7ZkFiZmUgxVMdr3WnPezn9G8jIb89k=;
+        b=uXzaVUi58lkypRXSbgtmwvzMhrpt3de4i1Vq9k+rVdSP15gUzTDZG6z+XZRXSXBVsv
+         hpFReGTi4HJeVeMjGkisP4xX0zszL3aE7onNK2iodEreVNZuBtNtalaofoLai/hR/RKR
+         bzyHenMczemuhQCiKG2SHL5s4DVQDqxKKIxcGnh/7mt3x/mqAhQIArGpjMtEcpXyR+nY
+         hZXS+Cl9Bm7D94AfJ8jdTTDpGoYQKRitKR4FuY2nwI/U9D9VdCzm4vBU8Jpj28AzAynL
+         k6B6Bs0uik0Op2GX2n0O7rJZDEuI+dxXo+bAPmMbtsdMQs/re6ec7fYEucO2Q8IpSP83
+         ccPw==
+X-Gm-Message-State: ACrzQf2Qkpc+YtkVJflO2VVzbO4VsgaBbnSeifYMSW6uDie95PqTsIgE
+        yqCS1gz/JczhSDg6ziY+NKkx32C2AiosrQ==
+X-Google-Smtp-Source: AMsMyM4x7rvP60abguWcxTGRbCowt/rtTIIGdTlcjrCW4mEjjh+hL3fix3lxJQ0LBbPEc6Fz2rv+sw==
+X-Received: by 2002:a17:90b:1a84:b0:213:e8b5:2d16 with SMTP id ng4-20020a17090b1a8400b00213e8b52d16mr45255481pjb.9.1667879888388;
+        Mon, 07 Nov 2022 19:58:08 -0800 (PST)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id s5-20020a170903200500b00172cb8b97a8sm5785105pla.5.2022.11.07.19.58.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Nov 2022 19:58:08 -0800 (PST)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Guangbin Huang <huangguangbin2@huawei.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>, linux-kernel@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH net-next v1] ethtool: ethtool_get_drvinfo: populate drvinfo fields even if callback exits
+Date:   Tue,  8 Nov 2022 12:57:54 +0900
+Message-Id: <20221108035754.2143-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.37.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Nov 2022 10:35:14 -0800 Jacob Keller wrote:
-> > I understand the issue what you are trying to solve, I just don't
-> > understand your RCU code. I would expect calls to rcu_dereference()
-> > in order to get q_vector and rcu_assign_pointer() to clear
-> > adapter->q_vector[v_idx], but igb has none.
-> 
-> the uses of kfree_rcu were introduced by 5536d2102a2d ("igb: Combine 
-> q_vector and ring allocation into a single function")
-> 
-> The commit doesn't mention switching from kfree to kfree_rcu and I 
-> suspect that the igb driver is not actually really using RCU semantics 
-> properly.
-> 
-> The closest explanation is that the get_stats64 function might be 
-> accessing the ring and thus needs the RCU grace period.. but I think 
-> you're right in that we're missing the necessary RCU access macros.
+If ethtool_ops::get_drvinfo() callback isn't set,
+ethtool_get_drvinfo() will fill the ethtool_drvinfo::name and
+ethtool_drvinfo::bus_info fields.
 
-Alright, expecting a follow up for this.
+However, if the driver provides the callback function, those two
+fields are not touched. This means that the driver has to fill these
+itself.
+
+Allow the driver to leave those two fields empty and populate them in
+such case. This way, the driver can rely on the default values for the
+name and the bus_info. If the driver provides values, do nothing.
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ net/ethtool/ioctl.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 57e7238a4136..546f931c3b6c 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -713,15 +713,22 @@ static int
+ ethtool_get_drvinfo(struct net_device *dev, struct ethtool_devlink_compat *rsp)
+ {
+ 	const struct ethtool_ops *ops = dev->ethtool_ops;
++	struct device *parent = dev->dev.parent;
+ 
+ 	rsp->info.cmd = ETHTOOL_GDRVINFO;
+ 	strscpy(rsp->info.version, UTS_RELEASE, sizeof(rsp->info.version));
+ 	if (ops->get_drvinfo) {
+ 		ops->get_drvinfo(dev, &rsp->info);
+-	} else if (dev->dev.parent && dev->dev.parent->driver) {
+-		strscpy(rsp->info.bus_info, dev_name(dev->dev.parent),
++		if (!rsp->info.bus_info[0] && parent)
++			strscpy(rsp->info.bus_info, dev_name(parent),
++				sizeof(rsp->info.bus_info));
++		if (!rsp->info.driver[0] && parent && parent->driver)
++			strscpy(rsp->info.driver, parent->driver->name,
++				sizeof(rsp->info.driver));
++	} else if (parent && parent->driver) {
++		strscpy(rsp->info.bus_info, dev_name(parent),
+ 			sizeof(rsp->info.bus_info));
+-		strscpy(rsp->info.driver, dev->dev.parent->driver->name,
++		strscpy(rsp->info.driver, parent->driver->name,
+ 			sizeof(rsp->info.driver));
+ 	} else if (dev->rtnl_link_ops) {
+ 		strscpy(rsp->info.driver, dev->rtnl_link_ops->kind,
+-- 
+2.37.4
+
