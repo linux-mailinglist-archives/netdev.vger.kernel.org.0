@@ -2,141 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A4D620D37
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DB5620D30
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:25:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233916AbiKHKZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 05:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        id S233888AbiKHKZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 05:25:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiKHKZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:25:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E651B1EC
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:24:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667903065;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V0f6miHyfdXlJNB+m5URvLSjup5N3IeFlLnjD/c/Qow=;
-        b=CjaDmi4y38HkQGWPIVIl9Q4tITaVICvfuKjBgoXm2JCrULlWnMzrI3U9DcFPx9xXkMZOJI
-        6xeFPEJDYCyMNG05514nSikcDtYEyL54c4LT9a/oEXQaHoU22iVvw1xqQ49bYWj2qfQNMh
-        kAMM+OYoWJX02qUzOKn3XnDtFlb3mWs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-496-Vpg8VQdrOQWKcJP8EYOG1w-1; Tue, 08 Nov 2022 05:24:24 -0500
-X-MC-Unique: Vpg8VQdrOQWKcJP8EYOG1w-1
-Received: by mail-wm1-f71.google.com with SMTP id p14-20020a05600c204e00b003cf4cce4da5so3695643wmg.0
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 02:24:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V0f6miHyfdXlJNB+m5URvLSjup5N3IeFlLnjD/c/Qow=;
-        b=TlnrRYJMEtf6Y8fenSREDADy69cAwdikOsGSZhdg7M+K8wPdgahPv4I5guNke8jXsk
-         MkuJsqRtb3g58n19SanslzLppcG/Y1hv8iwoLhIimKz4woMqXAkOBaR9MBbZ9u/7LoC5
-         QSQ4u8J3uHIA2YeqWTUzXFmWKrl9gefSJZYD9ZVsDk6y6Zkfbz9TfHsTjSF562+7sIgL
-         7Mm/QE/vjeMGBtY+60CW0hW7dgHaL2ykzGtqiKI71RqXvy1P4BWxiqmrft9hJpXRZrpk
-         DMu/Ll+oK9g1Hpvvbk1TfQOtwXzyZ+dNAiSNHbCVNZ3pTRhPdlgkvX+UnzFIMdR4dsNX
-         gdHg==
-X-Gm-Message-State: ACrzQf0JeXEWeIVCwBHK+JvUBG9iwCymCs9v73smXr06cmswaGzEAaIj
-        9BJgKi4FGBl9ZhybBE2NqNX7vYNsf4wOdcr5s7lG3dboSith2LcP47eUXDS/r37O5i3aY1mgZhl
-        P5jZymS9IQ7sGbsVU
-X-Received: by 2002:a05:600c:2242:b0:3cf:4ccc:7418 with SMTP id a2-20020a05600c224200b003cf4ccc7418mr45909507wmm.191.1667903063322;
-        Tue, 08 Nov 2022 02:24:23 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM63jNoqd/VARfO8cpeBbtfv5zYnABJ0tzkSvzQF3g0iN4WYdzewkQNJ5FZQKIEXIt6HCSt8Lw==
-X-Received: by 2002:a05:600c:2242:b0:3cf:4ccc:7418 with SMTP id a2-20020a05600c224200b003cf4ccc7418mr45909493wmm.191.1667903063122;
-        Tue, 08 Nov 2022 02:24:23 -0800 (PST)
-Received: from sgarzare-redhat (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
-        by smtp.gmail.com with ESMTPSA id f10-20020a05600c154a00b003a2f2bb72d5sm19230518wmg.45.2022.11.08.02.24.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 02:24:22 -0800 (PST)
-Date:   Tue, 8 Nov 2022 11:24:19 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Yuan Can <yuancan@huawei.com>
-Cc:     stefanha@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        davem@davemloft.net, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] vhost/vsock: Fix error handling in vhost_vsock_init()
-Message-ID: <20221108102419.tq4veo3h4xj3jr46@sgarzare-redhat>
-References: <20221108101705.45981-1-yuancan@huawei.com>
+        with ESMTP id S232641AbiKHKZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:25:00 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8FB1B1FC;
+        Tue,  8 Nov 2022 02:24:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
+        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=2JjPFhp59qtLP/Cp/TS7I43kY8BphcdVe01unYamrKs=; b=mLx8VPk292EGLbdbeCGKQ7e10l
+        096nIOzgzfz4aHdsXB1JX7ZXZVM2SffVBKZFc+5WG/RuWFqyvFwHixx1uX9zynu09gKtLt/ASZgpw
+        Oq++kiJkBCBuVqAOYSCmRQSx3luRIl8KM4izR5Iqrr5v4BNCXWe27SJweYefIkzkUoJM=;
+Received: from p200300daa72ee1006d973cebf3767a25.dip0.t-ipconnect.de ([2003:da:a72e:e100:6d97:3ceb:f376:7a25] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1osLml-000UT6-JD; Tue, 08 Nov 2022 11:24:51 +0100
+Message-ID: <5dbfa404-ec02-ac41-8c9b-55f8dfb7800a@nbd.name>
+Date:   Tue, 8 Nov 2022 11:24:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20221108101705.45981-1-yuancan@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.3.2
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+References: <20221107185452.90711-1-nbd@nbd.name>
+ <20221107185452.90711-8-nbd@nbd.name> <20221107215745.ascdvnxqrbw4meuv@skbuf>
+ <3b275dda-39ac-282d-8a46-d3a95fdfc766@nbd.name>
+ <20221108090039.imamht5iyh2bbbnl@skbuf>
+ <0948d841-b0eb-8281-455a-92f44586e0c0@nbd.name>
+ <20221108094018.6cspe3mkh3hakxpd@skbuf>
+ <a9109da1-ba49-d8f4-1315-278e5c890b99@nbd.name>
+ <20221108100851.tl5aqhmbc5altdwv@skbuf>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH 08/14] net: vlan: remove invalid VLAN protocol warning
+In-Reply-To: <20221108100851.tl5aqhmbc5altdwv@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 08, 2022 at 10:17:05AM +0000, Yuan Can wrote:
->A problem about modprobe vhost_vsock failed is triggered with the
->following log given:
->
->modprobe: ERROR: could not insert 'vhost_vsock': Device or resource busy
->
->The reason is that vhost_vsock_init() returns misc_register() directly
->without checking its return value, if misc_register() failed, it returns
->without calling vsock_core_unregister() on vhost_transport, resulting the
->vhost_vsock can never be installed later.
->A simple call graph is shown as below:
->
-> vhost_vsock_init()
->   vsock_core_register() # register vhost_transport
->   misc_register()
->     device_create_with_groups()
->       device_create_groups_vargs()
->         dev = kzalloc(...) # OOM happened
->   # return without unregister vhost_transport
->
->Fix by calling vsock_core_unregister() when misc_register() returns error.
->
->Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
->Signed-off-by: Yuan Can <yuancan@huawei.com>
->---
->Changes in v2:
->- change to the correct Fixes: tag
+On 08.11.22 11:08, Vladimir Oltean wrote:
+> On Tue, Nov 08, 2022 at 10:46:54AM +0100, Felix Fietkau wrote:
+>> I think it depends on the hardware. If you can rely on the hardware always
+>> reporting the port out-of-band, a generic "oob" tagger would be fine.
+>> In my case, it depends on whether a second non-DSA ethernet MAC is active on
+>> the same device, so I do need to continue using the "mtk" tag driver.
+> 
+> It's not only about the time dimension (always OOB, vs sometimes OOB),
+> but also about what is conveyed through the OOB tag. I can see 2 vendors
+> agreeing today on a common "oob" tagger only to diverge in the future
+> when they'll need to convey more information than just port id. What do
+> you do with the tagging protocol string names then. Gotta make them
+> unique from the get go, can't export "oob" to user space IMO.
+> 
+>> The flow dissector part is already solved: I simply used the existing
+>> .flow_dissect() tag op.
+> 
+> Yes, well this seems like a generic enough case (DSA offload tag present
+> => don't shift network header because it's where it should be) to treat
+> it in the generic flow dissector and not have to invoke any tagger-specific
+> fixup method.
+In that case I think we shouldn't use METADATA_HW_PORT_MUX, since it is 
+already used for other purposes. I will add a new metadata type 
+METADATA_DSA instead.
 
-I forgot to mention that anyway the patch was okay for me :-) and so:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
-Thanks,
-Stefano
-
->
-> drivers/vhost/vsock.c | 9 ++++++++-
-> 1 file changed, 8 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->index 5703775af129..10a7d23731fe 100644
->--- a/drivers/vhost/vsock.c
->+++ b/drivers/vhost/vsock.c
->@@ -959,7 +959,14 @@ static int __init vhost_vsock_init(void)
-> 				  VSOCK_TRANSPORT_F_H2G);
-> 	if (ret < 0)
-> 		return ret;
->-	return misc_register(&vhost_vsock_misc);
->+
->+	ret = misc_register(&vhost_vsock_misc);
->+	if (ret) {
->+		vsock_core_unregister(&vhost_transport.transport);
->+		return ret;
->+	}
->+
->+	return 0;
-> };
->
-> static void __exit vhost_vsock_exit(void)
->-- 
->2.17.1
->
-
+- Felix
