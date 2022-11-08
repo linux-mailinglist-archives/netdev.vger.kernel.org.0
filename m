@@ -2,105 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 700F6621E0F
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 21:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 605D2621E22
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 21:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbiKHUw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 15:52:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
+        id S229825AbiKHU45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 15:56:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiKHUwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 15:52:55 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2C25B857
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 12:52:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/gZAFgYJ/RuaxasHl+mWHX/XSVOzCrqlCtFdV86igpk=; b=yPBzMrfpHql//jRFnrG48dei5r
-        zxOo2+9GOPhWxpzh5f90F6KFt580k994Qrwoqh0coD1T/RuOKR0QhaDvnFFk6ylhtitchXE5/wtGr
-        13Q/2AyNLOkYXzh+p4Ft2vZgZoihcDJAkOoYf+bE3RQEONkV9Ct6kZixOoy8U7HCkHyE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1osVaV-001rDx-2g; Tue, 08 Nov 2022 21:52:51 +0100
-Date:   Tue, 8 Nov 2022 21:52:51 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mengyuan Lou <mengyuanlou@net-swift.com>
-Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
-Subject: Re: [PATCH net-next 1/5] net: txgbe: Identify PHY and SFP module
-Message-ID: <Y2rBo3KI2LmjS55y@lunn.ch>
-References: <20221108111907.48599-1-mengyuanlou@net-swift.com>
- <20221108111907.48599-2-mengyuanlou@net-swift.com>
+        with ESMTP id S229975AbiKHU4w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 15:56:52 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B86E5D6B4
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 12:56:52 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id d20so14176279plr.10
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 12:56:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0onMt+air2lNK6el66wGss5pMPyUXTVLi3zz0gmD1tU=;
+        b=Bkzc2mkmAhE0IfooRK3Sqm+LJEDbscvB/8Mtcavis1yMpw3YbvTuzd92c69U6SDhz2
+         0MXN/D7PjXKOaohVDWk/7fK9jeU08WfIQmlPOI/ud26TW1vpPFga1JJzVlCPvMYvhOgt
+         MCBYFHAwDkAlYxK7K3LzL4j2BlVZdQ49bT+GWcXBxmB6NnWkKBiy1H6Z4X+uoiI4MTpZ
+         YrdywVH2mQ90EIROULO3rnpsZomcMQQDis7SVMhTv+UmvTJzAn4nFOivziiLKPEX1iMZ
+         B1GWw8h1SDgPWA0A6IFvzoRnF6OJpu9hzjTPRSr4gkXKcmdrCPSI4FuBql/IMc3IhCtB
+         EBZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0onMt+air2lNK6el66wGss5pMPyUXTVLi3zz0gmD1tU=;
+        b=emISmqtVX21dCJ+lvuuywPZwXnK/oYLwg6UFExa1Sy6ku14Yiy2jF8+MQqIRtkkSwY
+         T1sgQopW38joCHNnYVwyQqy1Lq8smVDoeHJx7fA8g/A1Ih78VIiDWCE3E/dOaJSuZmc0
+         uWYpkdE5iMB5Oyu8ZBkNRQOuot7mC3wWzHNyA7+rt3aIjxDDB+fp+VJ8XxHucFm1AQFy
+         1T4hc0x+WoTraES9bLW0mEu1j7pxXzXlpN6jnjEwKpUrur3Pn5H0v1xjr5SIJ5tKal7M
+         M7q0hcFO4KGap9Z8ToY1y0X2Zi1Z47SzireiEuSCXtxJ8qBFjnp/ITQDugTCAH+wOZtk
+         w7VA==
+X-Gm-Message-State: ACrzQf2USnwcCtCNBNIIrFxv3gI4tnKfrR4rFu+mIQOjUgVZru/L6dz+
+        5EEX6FUYGQ+cBiqt6evkpoxCRQ1FWtkV/XMCyuY4lg==
+X-Google-Smtp-Source: AMsMyM4gITR694JEoUnHOm2v2lMU0mdPEvB4EDyjuKZCqRozgFfRmPYW4lW2mOdcVea8X79bo6W2zY2H2Bz1Z24VxCA=
+X-Received: by 2002:a17:902:f786:b0:180:6f9e:23b with SMTP id
+ q6-20020a170902f78600b001806f9e023bmr58978856pln.37.1667941011429; Tue, 08
+ Nov 2022 12:56:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221108111907.48599-2-mengyuanlou@net-swift.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221103210650.2325784-1-sean.anderson@seco.com>
+ <20221103210650.2325784-9-sean.anderson@seco.com> <20221107201010.GA1525628-robh@kernel.org>
+ <20221107202223.ihdk4ubbqpro5w5y@skbuf> <7caf2d6a-3be9-4261-9e92-db55fe161f7e@seco.com>
+ <CAL_JsqKw=1iP6KUj=c6stgCMo7V6hGO9iB+MgixA5tiackeNnA@mail.gmail.com>
+In-Reply-To: <CAL_JsqKw=1iP6KUj=c6stgCMo7V6hGO9iB+MgixA5tiackeNnA@mail.gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 8 Nov 2022 12:56:15 -0800
+Message-ID: <CAGETcx-=Z4wo8JaYJN=SjxirbgRoRvobN8zxm+BSHjwouHzeJg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 08/11] of: property: Add device link support
+ for PCS
+To:     Rob Herring <robh@kernel.org>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/**
-> + *  txgbe_identify_sfp_module - Identifies SFP modules
-> + *  @hw: pointer to hardware structure
-> + *
-> + *  Searches for and identifies the SFP module and assigns appropriate PHY type.
-> + **/
-> +static int txgbe_identify_sfp_module(struct txgbe_hw *hw)
-> +{
-> +	u8 oui_bytes[3] = {0, 0, 0};
-> +	u8 comp_codes_10g = 0;
-> +	u8 comp_codes_1g = 0;
-> +	int status = -EFAULT;
-> +	u32 vendor_oui = 0;
-> +	u8 identifier = 0;
-> +	u8 cable_tech = 0;
-> +	u8 cable_spec = 0;
-> +
-> +	/* LAN ID is needed for I2C access */
-> +	txgbe_init_i2c(hw);
-> +
-> +	status = txgbe_read_i2c_eeprom(hw, TXGBE_SFF_IDENTIFIER, &identifier);
-> +	if (status != 0)
-> +		goto err_read_i2c_eeprom;
-> +
-> +	if (identifier != TXGBE_SFF_IDENTIFIER_SFP) {
-> +		hw->phy.type = txgbe_phy_sfp_unsupported;
-> +		status = -ENODEV;
-> +	} else {
-> +		status = txgbe_read_i2c_eeprom(hw, TXGBE_SFF_1GBE_COMP_CODES,
-> +					       &comp_codes_1g);
-> +		if (status != 0)
-> +			goto err_read_i2c_eeprom;
-> +
-> +		status = txgbe_read_i2c_eeprom(hw, TXGBE_SFF_10GBE_COMP_CODES,
-> +					       &comp_codes_10g);
-> +		if (status != 0)
-> +			goto err_read_i2c_eeprom;
-> +
-> +		status = txgbe_read_i2c_eeprom(hw, TXGBE_SFF_CABLE_TECHNOLOGY,
-> +					       &cable_tech);
-> +		if (status != 0)
-> +			goto err_read_i2c_eeprom;
-> +
-> +		 /* ID Module
-> +		  * =========
-> +		  * 1   SFP_DA_CORE
-> +		  * 2   SFP_SR/LR_CORE
-> +		  * 3   SFP_act_lmt_DA_CORE
-> +		  * 4   SFP_1g_cu_CORE
-> +		  * 5   SFP_1g_sx_CORE
-> +		  * 6   SFP_1g_lx_CORE
-> +		  */
+On Mon, Nov 7, 2022 at 1:36 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, Nov 7, 2022 at 2:50 PM Sean Anderson <sean.anderson@seco.com> wrote:
+> >
+> > On 11/7/22 15:22, Vladimir Oltean wrote:
+> > > On Mon, Nov 07, 2022 at 02:10:10PM -0600, Rob Herring wrote:
+> > >> On Thu, Nov 03, 2022 at 05:06:47PM -0400, Sean Anderson wrote:
+> > >> > This adds device link support for PCS devices. Both the recommended
+> > >> > pcs-handle and the deprecated pcsphy-handle properties are supported.
+> > >> > This should provide better probe ordering.
+> > >> >
+> > >> > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> > >> > ---
+> > >> >
+> > >> > (no changes since v1)
+> > >> >
+> > >> >  drivers/of/property.c | 4 ++++
+> > >> >  1 file changed, 4 insertions(+)
+> > >>
+> > >> Seems like no dependency on the rest of the series, so I can take this
+> > >> patch?
+> > >
+> > > Is fw_devlink well-behaved these days, so as to not break (forever defer)
+> > > the probing of the device having the pcs-handle, if no driver probed on
+> > > the referenced PCS? Because the latter is what will happen if no one
+> > > picks up Sean's patches to probe PCS devices in the usual device model
+> > > way, I think.
+> >
+> > Last time [1], Saravana suggested to move this to the end of the series to
+> > avoid such problems. FWIW, I just tried booting a LS1046A with the
+> > following patches applied
+> >
+> > 01/11 (compatibles) 05/11 (device) 08/11 (link) 09/11 (consumer)
+> > =================== ============== ============ ================
+> > Y                   N              Y            N
+> > Y                   Y              Y            Y
+> > Y                   Y              Y            N
+> > N                   Y              Y            N
+> > N                   N              Y            N
+> >
+> > and all interfaces probed each time. So maybe it is safe to pick
+> > this patch.
+>
+> Maybe? Just take it with the rest of the series.
+>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-So it looks like you have Linux driving the SFP, not firmware. In that
-case, please throw all this code away. Implement a standard Linux I2C
-bus master driver, and make use of driver/net/phy/sfp*.[ch].
+Let's have Vladimir ack this. I'm not sure if it's fully safe yet. I
+haven't done the necessary fixes for phy-handle yet, but I don't know
+how pcs-handle and pcsphy-handle are used or if none of their uses
+will hit the chicken and egg problem that some uses of phy-handle hit.
 
-    Andrew
+-Saravana
