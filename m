@@ -2,295 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA7B621012
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BB966210F6
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:39:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234082AbiKHMPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 07:15:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        id S233903AbiKHMjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 07:39:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234000AbiKHMO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:14:59 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B743AE8
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 04:14:54 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id h9so20719543wrt.0
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 04:14:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TZuTIOZ8Gv4dVWB/8F4/5+uC+7kwLd9y8EfwkapJcZk=;
-        b=C7CIbG+BW7UItXkJzrcTZyjyAKUyP1JSUcmC7veiAojYLbJyTfHGQBfHOMsCQErO3I
-         fdrNVHN5wl2gJJUF1AckmGVf4ztPulxY57IDcIrAQvf3+WPjO4tMZzeOjWAefdYy4YJ3
-         3eqVnMpBnaNxxCadIMY56eIypeQLPP7V0t2X9LhAcMBC7gY73g92d5s9N8nXkd89VTo1
-         Ewcy44yttg0Qf6ueNx/as2uxInFigyLqhzoVeplFPt2B3PDa3ms6OfzH7p4W3mNADmyo
-         gW+vFwrmAjDruGM96vLO5YZ0d9eaEgHgtP04wkTCraaK1lWeOz7u+OZPo8+uN+cjmUCE
-         Qi4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TZuTIOZ8Gv4dVWB/8F4/5+uC+7kwLd9y8EfwkapJcZk=;
-        b=IzHdWcqIphiMad5fQq6wEtrAzb0iJWiDtrHXcStPGMZoz7Lk1PBJ6Nae+uCr+x8nbf
-         +sVvgsttVhzdXWuChdN6N5NP3VFYMb0FwpBTgCNgjSc0rG+XEMYKjaBmjunzJVS17NOC
-         fjMOmN5n49v4CujGedxS4tCSJ/j1SfFFjaQD7zIbYzZRuCy67swpfaUKrwckirImhrRU
-         aKUGfpHaKBYqUxdMvjFjpiKUS83A+Z9Oi0eHfYKPuj3zF3LO8op/Cn9fK/h1kCFZuyud
-         8yP0hqsI0IhrgKrAUUbo94k6GRuw0eGisxk7vC50GAGUVG5gXMgHWSZkkiQjKNKCJFxb
-         14YQ==
-X-Gm-Message-State: ACrzQf2jSWprsmbQLHBGNBMWWoZyIsjxUVQlj5E+YaMkmKUlktRjPoxT
-        KrOHq0nqdwvI9wBo6OFh/3b9aKjyS+asjrrFduxm9w==
-X-Google-Smtp-Source: AMsMyM4vzo0Xg7iLJ3jIF2mCz34gL5mhxplRFcSNZyDszD3FHzPmBmqNaIlIDOa31OFMPOE+i4f5Dxw0XMVSInsPz4A=
-X-Received: by 2002:adf:d1c2:0:b0:236:9033:8ead with SMTP id
- b2-20020adfd1c2000000b0023690338eadmr36354480wrd.653.1667909693288; Tue, 08
- Nov 2022 04:14:53 -0800 (PST)
+        with ESMTP id S233613AbiKHMjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:39:22 -0500
+X-Greylist: delayed 1013 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Nov 2022 04:39:21 PST
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0671BDF0D;
+        Tue,  8 Nov 2022 04:39:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
+        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=fgQwEkH8uRLIyzAJvAaLR6EdvjROWR71Np+0VG6O3UU=; b=nitwdRgJEnOLhDL6edIbrobgDb
+        JT1qJTkHeOn2LIW+8O7bbLc0R4C827LiB7LNjnFFaqhkG25Ag252h700DcaYB87k4zAUV0UUeZhxV
+        87CpusS+NrxvVOQNIOjRMe0QYVpHoWEgHjm1dbbAod4TT1UiIZ+YY/8pY9kyQkl0+5Nk=;
+Received: from p200300daa72ee1006d973cebf3767a25.dip0.t-ipconnect.de ([2003:da:a72e:e100:6d97:3ceb:f376:7a25] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1osNcQ-000VU5-Uc; Tue, 08 Nov 2022 13:22:19 +0100
+Message-ID: <6b38ec27-65a3-c973-c5e1-a25bbe4f6104@nbd.name>
+Date:   Tue, 8 Nov 2022 13:22:17 +0100
 MIME-Version: 1.0
-References: <20221108105352.89801-1-haozhe.chang@mediatek.com>
-In-Reply-To: <20221108105352.89801-1-haozhe.chang@mediatek.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 8 Nov 2022 13:14:16 +0100
-Message-ID: <CAMZdPi96dZV0J_6U-mH5eCquWycSQLPvoz6JX1BHWn0eQJyeDA@mail.gmail.com>
-Subject: Re: [PATCH v2] wwan: core: Support slicing in port TX flow of WWAN subsystem
-To:     haozhe.chang@mediatek.com
-Cc:     Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
-        Liu Haijun <haijun.liu@mediatek.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.3.2
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK T7XX 5G WWAN MODEM DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, lambert.wang@mediatek.com,
-        xiayu.zhang@mediatek.com, hua.yang@mediatek.com,
-        srv_heupstream@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
+ <20221104174151.439008-4-maxime.chevallier@bootlin.com>
+ <20221104200530.3bbe18c6@kernel.org> <20221107093950.74de3fa1@pc-8.home>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH net-next v8 3/5] net: dsa: add out-of-band tagging
+ protocol
+In-Reply-To: <20221107093950.74de3fa1@pc-8.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Haozhe,
+On 07.11.22 09:39, Maxime Chevallier wrote:
+>> On Fri,  4 Nov 2022 18:41:49 +0100 Maxime Chevallier wrote:
+>> > This tagging protocol is designed for the situation where the link
+>> > between the MAC and the Switch is designed such that the Destination
+>> > Port, which is usually embedded in some part of the Ethernet
+>> > Header, is sent out-of-band, and isn't present at all in the
+>> > Ethernet frame.
+>> > 
+>> > This can happen when the MAC and Switch are tightly integrated on an
+>> > SoC, as is the case with the Qualcomm IPQ4019 for example, where
+>> > the DSA tag is inserted directly into the DMA descriptors. In that
+>> > case, the MAC driver is responsible for sending the tag to the
+>> > switch using the out-of-band medium. To do so, the MAC driver needs
+>> > to have the information of the destination port for that skb.
+>> > 
+>> > Add a new tagging protocol based on SKB extensions to convey the
+>> > information about the destination port to the MAC driver  
+>> 
+>> This is what METADATA_HW_PORT_MUX is for, you shouldn't have 
+>> to allocate a piece of memory for every single packet.
+> 
+> Does this work with DSA ? The information conveyed in the extension is
+> the DSA port identifier. I'm not familiar at all with
+> METADATA_HW_PORT_MUX, should we extend that mechanism to convey the
+> DSA port id ?
+> 
+> I also agree that allocating data isn't the best way to go, but from
+> the history of this series, we've tried 3 approaches so far :
+> 
+>   - Adding a new field to struct sk_buff, which isn't a good idea
+>   - Using the skb headroom, but then we can't know for sure is the skb
+>     contains a DSA tag or not
+>   - Using skb extensions, that comes with the cost of this memory
+>     allocation. Is this approach also incorrect then ?
+FYI, I'm currently working on hardware DSA untagging on the mediatek
+mtk_eth_soc driver. On this hardware, I definitely need to keep the
+custom DSA tag driver, as hardware untagging is not always available.
+For the receive side, I came up with this patch (still untested) for
+using METADATA_HW_PORT_MUX.
+It has the advantage of being able to skip the tag protocol rcv ops
+call for offload-enabled packets.
 
-On Tue, 8 Nov 2022 at 11:54, <haozhe.chang@mediatek.com> wrote:
->
-> From: haozhe chang <haozhe.chang@mediatek.com>
->
-> wwan_port_fops_write inputs the SKB parameter to the TX callback of
-> the WWAN device driver. However, the WWAN device (e.g., t7xx) may
-> have an MTU less than the size of SKB, causing the TX buffer to be
-> sliced and copied once more in the WWAN device driver.
->
-> This patch implements the slicing in the WWAN subsystem and gives
-> the WWAN devices driver the option to slice(by chunk) or not. By
-> doing so, the additional memory copy is reduced.
->
-> Meanwhile, this patch gives WWAN devices driver the option to reserve
-> headroom in SKB for the device-specific metadata.
->
-> Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
->
-> ---
-> Changes in v2
->   -send fragments to device driver by skb frag_list.
-> ---
->  drivers/net/wwan/t7xx/t7xx_port_wwan.c | 42 ++++++++++-------
->  drivers/net/wwan/wwan_core.c           | 65 ++++++++++++++++++++------
->  include/linux/wwan.h                   |  5 +-
->  3 files changed, 80 insertions(+), 32 deletions(-)
->
-> diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-> index 33931bfd78fd..74fa58575d5a 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-> +++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-> @@ -54,13 +54,13 @@ static void t7xx_port_ctrl_stop(struct wwan_port *port)
-[...]
->  static const struct wwan_port_ops wwan_ops = {
->         .start = t7xx_port_ctrl_start,
->         .stop = t7xx_port_ctrl_stop,
->         .tx = t7xx_port_ctrl_tx,
-> +       .needed_headroom = t7xx_port_tx_headroom,
-> +       .tx_chunk_len = t7xx_port_tx_chunk_len,
+Maybe for the transmit side we could have some kind of netdev feature
+or capability that indicates offload support and allows skipping the
+tag xmit function as well.
+In that case, ipqess could simply use a no-op tag driver.
 
-Can you replace 'chunk' with 'frag' everywhere?
+What do you think?
 
->  };
->
->  static int t7xx_port_wwan_init(struct t7xx_port *port)
-> diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-> index 62e9f7d6c9fe..ed78471f9e38 100644
-> --- a/drivers/net/wwan/wwan_core.c
-> +++ b/drivers/net/wwan/wwan_core.c
-> @@ -20,7 +20,7 @@
->  #include <uapi/linux/wwan.h>
->
->  /* Maximum number of minors in use */
-> -#define WWAN_MAX_MINORS                (1 << MINORBITS)
-> +#define WWAN_MAX_MINORS                BIT(MINORBITS)
->
->  static DEFINE_MUTEX(wwan_register_lock); /* WWAN device create|remove lock */
->  static DEFINE_IDA(minors); /* minors for WWAN port chardevs */
-> @@ -67,6 +67,8 @@ struct wwan_device {
->   * @rxq: Buffer inbound queue
->   * @waitqueue: The waitqueue for port fops (read/write/poll)
->   * @data_lock: Port specific data access serialization
-> + * @headroom_len: SKB reserved headroom size
-> + * @chunk_len: Chunk len to split packet
->   * @at_data: AT port specific data
->   */
->  struct wwan_port {
-> @@ -79,6 +81,8 @@ struct wwan_port {
->         struct sk_buff_head rxq;
->         wait_queue_head_t waitqueue;
->         struct mutex data_lock; /* Port specific data access serialization */
-> +       size_t headroom_len;
-> +       size_t chunk_len;
->         union {
->                 struct {
->                         struct ktermios termios;
-> @@ -550,8 +554,13 @@ static int wwan_port_op_start(struct wwan_port *port)
->         }
->
->         /* If port is already started, don't start again */
-> -       if (!port->start_count)
-> +       if (!port->start_count) {
->                 ret = port->ops->start(port);
-> +               if (port->ops->tx_chunk_len)
-> +                       port->chunk_len = port->ops->tx_chunk_len(port);
+---
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -972,11 +972,13 @@ bool __skb_flow_dissect(const struct net *net,
+  		if (unlikely(skb->dev && netdev_uses_dsa(skb->dev) &&
+  			     skb->protocol == htons(ETH_P_XDSA))) {
+  			const struct dsa_device_ops *ops;
++			struct metadata_dst *md_dst = skb_metadata_dst(skb);
+  			int offset = 0;
+  
+  			ops = skb->dev->dsa_ptr->tag_ops;
+  			/* Only DSA header taggers break flow dissection */
+-			if (ops->needed_headroom) {
++			if (ops->needed_headroom &&
++			    (!md_dst || md_dst->type != METADATA_HW_PORT_MUX)) {
+  				if (ops->flow_dissect)
+  					ops->flow_dissect(skb, &proto, &offset);
+  				else
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -11,6 +11,7 @@
+  #include <linux/netdevice.h>
+  #include <linux/sysfs.h>
+  #include <linux/ptp_classify.h>
++#include <net/dst_metadata.h>
+  
+  #include "dsa_priv.h"
+  
+@@ -216,6 +217,7 @@ static bool dsa_skb_defer_rx_timestamp(struct dsa_slave_priv *p,
+  static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+  			  struct packet_type *pt, struct net_device *unused)
+  {
++	struct metadata_dst *md_dst = skb_metadata_dst(skb);
+  	struct dsa_port *cpu_dp = dev->dsa_ptr;
+  	struct sk_buff *nskb = NULL;
+  	struct dsa_slave_priv *p;
+@@ -229,7 +231,21 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+  	if (!skb)
+  		return 0;
+  
+-	nskb = cpu_dp->rcv(skb, dev);
++	if (md_dst && md_dst->type == METADATA_HW_PORT_MUX) {
++		unsigned int port = md_dst->u.port_info.port_id;
++
++		dsa_default_offload_fwd_mark(skb);
++		skb_dst_set(skb, NULL);
++		if (!skb_has_extensions(skb))
++			skb->slow_gro = 0;
++
++		skb->dev = dsa_master_find_slave(dev, 0, port);
++		if (skb->dev)
++			nskb = skb;
++	} else {
++		nskb = cpu_dp->rcv(skb, dev);
++	}
++
+  	if (!nskb) {
+  		kfree_skb(skb);
+  		return 0;
 
-So, maybe frag len and headroom should be parameters of
-wwan_create_port() instead of port ops, as we really need this info
-only once.
-
-> +               if (port->ops->needed_headroom)
-> +                       port->headroom_len = port->ops->needed_headroom(port);
-> +       }
->
->         if (!ret)
->                 port->start_count++;
-> @@ -698,30 +707,56 @@ static ssize_t wwan_port_fops_read(struct file *filp, char __user *buf,
->  static ssize_t wwan_port_fops_write(struct file *filp, const char __user *buf,
->                                     size_t count, loff_t *offp)
->  {
-> +       size_t len, chunk_len, offset, allowed_chunk_len;
-> +       struct sk_buff *skb, *head = NULL, *tail = NULL;
->         struct wwan_port *port = filp->private_data;
-> -       struct sk_buff *skb;
->         int ret;
->
->         ret = wwan_wait_tx(port, !!(filp->f_flags & O_NONBLOCK));
->         if (ret)
->                 return ret;
->
-> -       skb = alloc_skb(count, GFP_KERNEL);
-> -       if (!skb)
-> -               return -ENOMEM;
-> +       allowed_chunk_len = port->chunk_len ? port->chunk_len : count;
-
-I would suggest making port->chunk_len (frag_len) always valid, by
-setting it to -1 (MAX size_t) when creating a port without frag_len
-requirement.
-
-> +       for (offset = 0; offset < count; offset += chunk_len) {
-> +               chunk_len = min(count - offset, allowed_chunk_len);
-> +               len = chunk_len + port->headroom_len;
-> +               skb = alloc_skb(len, GFP_KERNEL);
-
-That works but would prefer a simpler solution like:
-do {
-    len = min(port->frag_len, remain);
-    skb = alloc_skb(len + port->needed_headroom; GFP_KERNEL);
-    [...]
-    copy_from_user(skb_put(skb, len), buf + count - remain)
-} while ((remain -= len));
-
-> +               if (!skb) {
-> +                       ret = -ENOMEM;
-> +                       goto freeskb;
-> +               }
-> +               skb_reserve(skb, port->headroom_len);
-> +
-> +               if (!head) {
-> +                       head = skb;
-> +               } else if (!tail) {
-> +                       skb_shinfo(head)->frag_list = skb;
-> +                       tail = skb;
-> +               } else {
-> +                       tail->next = skb;
-> +                       tail = skb;
-> +               }
->
-> -       if (copy_from_user(skb_put(skb, count), buf, count)) {
-> -               kfree_skb(skb);
-> -               return -EFAULT;
-> -       }
-> +               if (copy_from_user(skb_put(skb, chunk_len), buf + offset, chunk_len)) {
-> +                       ret = -EFAULT;
-> +                       goto freeskb;
-> +               }
->
-> -       ret = wwan_port_op_tx(port, skb, !!(filp->f_flags & O_NONBLOCK));
-> -       if (ret) {
-> -               kfree_skb(skb);
-> -               return ret;
-> +               if (skb != head) {
-> +                       head->data_len += skb->len;
-> +                       head->len += skb->len;
-> +                       head->truesize += skb->truesize;
-> +               }
->         }
->
-> -       return count;
-> +       if (head) {
-
-How head can be null here?
-
-> +               ret = wwan_port_op_tx(port, head, !!(filp->f_flags & O_NONBLOCK));
-> +               if (!ret)
-> +                       return count;
-> +       }
-> +freeskb:
-> +       kfree_skb(head);
-> +       return ret;
->  }
->
->  static __poll_t wwan_port_fops_poll(struct file *filp, poll_table *wait)
-> diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-> index 5ce2acf444fb..bdeeef59bbfd 100644
-> --- a/include/linux/wwan.h
-> +++ b/include/linux/wwan.h
-> @@ -46,6 +46,8 @@ struct wwan_port;
->   * @tx: Non-blocking routine that sends WWAN port protocol data to the device.
->   * @tx_blocking: Optional blocking routine that sends WWAN port protocol data
->   *               to the device.
-> + * @needed_headroom: Optional routine that sets reserve headroom of skb.
-> + * @tx_chunk_len: Optional routine that sets chunk len to split.
->   * @tx_poll: Optional routine that sets additional TX poll flags.
->   *
->   * The wwan_port_ops structure contains a list of low-level operations
-> @@ -58,6 +60,8 @@ struct wwan_port_ops {
->
->         /* Optional operations */
->         int (*tx_blocking)(struct wwan_port *port, struct sk_buff *skb);
-> +       size_t (*needed_headroom)(struct wwan_port *port);
-> +       size_t (*tx_chunk_len)(struct wwan_port *port);
-
-As said above, maybe move that as variables, or parameter of wwan_create_port.
-
-Regards,
-Loic
