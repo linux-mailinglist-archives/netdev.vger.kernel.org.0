@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9A2620AE0
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:06:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4EAE620AE7
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiKHIGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 03:06:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
+        id S233764AbiKHIG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 03:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233739AbiKHIGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 03:06:49 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7EF1CB0D;
-        Tue,  8 Nov 2022 00:06:46 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2A886LvG017100;
-        Tue, 8 Nov 2022 02:06:21 -0600
+        with ESMTP id S233499AbiKHIGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 03:06:50 -0500
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380A71DF0E;
+        Tue,  8 Nov 2022 00:06:49 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2A886QHN088111;
+        Tue, 8 Nov 2022 02:06:26 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1667894781;
-        bh=w1oNIc6IEGYq3AdV8wahzwwDJtycNEPU37NXBbFCj7I=;
+        s=ti-com-17Q1; t=1667894786;
+        bh=k79QrKMzw8vOLjRUHHb3Q9iyIHV7a762b3HCdbhRf9M=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=AGxb9yjXHRUcbTliYDN17GXPNPaOTmrwULRrYqFd5coiyYhAApzXVhii4N+F1443R
-         QP0NAnBD99M4bYlWt4Kkz93ms13Op3+L8DeMEJhUjIMrdUat1B69r1pCQwEu5Bu/0P
-         dT4uWqQbH5n58WMs3m64g+yzGyKSQ4AvnYwiFB9w=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2A886Lls008221
+        b=g5CdU1jRXbCFhXjQ7mBp9CNX1GGmI/Sebxl73G4wE4RnBX20TRGVufQEPYUIh8XTx
+         e/X+DHUlQp5+gEt+UGN3erMFzepDh+fKBN0Gvj5yBcmvWJhSJrmiH8bK26ahEGppqC
+         ylHV3x0lBWaAoRr/d5SXs7l03cAOb3M4aFUio6AQ=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2A886QKs037261
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Nov 2022 02:06:21 -0600
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 8 Nov 2022 02:06:26 -0600
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 8 Nov
- 2022 02:06:21 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 02:06:25 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Tue, 8 Nov 2022 02:06:21 -0600
+ Frontend Transport; Tue, 8 Nov 2022 02:06:25 -0600
 Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2A8866mE033956;
-        Tue, 8 Nov 2022 02:06:16 -0600
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2A8866mF033956;
+        Tue, 8 Nov 2022 02:06:21 -0600
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -49,9 +49,9 @@ CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
         <s-vadapalli@ti.com>
-Subject: [PATCH v4 2/3] net: ethernet: ti: am65-cpsw: Enable QSGMII mode for J721e CPSW9G
-Date:   Tue, 8 Nov 2022 13:36:05 +0530
-Message-ID: <20221108080606.124596-3-s-vadapalli@ti.com>
+Subject: [PATCH v4 3/3] net: ethernet: ti: am65-cpsw: Add support for SERDES configuration
+Date:   Tue, 8 Nov 2022 13:36:06 +0530
+Message-ID: <20221108080606.124596-4-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221108080606.124596-1-s-vadapalli@ti.com>
 References: <20221108080606.124596-1-s-vadapalli@ti.com>
@@ -68,38 +68,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CPSW9G in J721e supports additional modes like QSGMII.
-Add new compatible for J721e in am65-cpsw driver.
+Use PHY framework APIs to initialize the SERDES PHY connected to CPSW MAC.
+
+Define the functions am65_cpsw_disable_phy(), am65_cpsw_enable_phy(),
+am65_cpsw_disable_serdes_phy() and am65_cpsw_enable_serdes_phy().
+
+Power on and initialize the SerDes PHY in am65_cpsw_nuss_init_slave_ports()
+by invoking am65_cpsw_enable_serdes_phy().
+
+Power off the SerDes PHY in am65_cpsw_nuss_remove() by invoking
+am65_cpsw_disable_serdes_phy().
 
 Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 65 ++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
 diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 482f2a4e1fe1..4d4e1c8bd715 100644
+index 4d4e1c8bd715..1234681c035a 100644
 --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
 +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -2632,11 +2632,19 @@ static const struct am65_cpsw_pdata j7200_cpswxg_pdata = {
- 	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII),
+@@ -1395,6 +1395,65 @@ static const struct net_device_ops am65_cpsw_nuss_netdev_ops = {
+ 	.ndo_setup_tc           = am65_cpsw_qos_ndo_setup_tc,
  };
  
-+static const struct am65_cpsw_pdata j721e_cpswxg_pdata = {
-+	.quirks = 0,
-+	.ale_dev_id = "am64-cpswxg",
-+	.fdqring_mode = K3_RINGACC_RING_MODE_MESSAGE,
-+	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII),
-+};
++static void am65_cpsw_disable_phy(struct phy *phy)
++{
++	phy_power_off(phy);
++	phy_exit(phy);
++}
 +
- static const struct of_device_id am65_cpsw_nuss_of_mtable[] = {
- 	{ .compatible = "ti,am654-cpsw-nuss", .data = &am65x_sr1_0},
- 	{ .compatible = "ti,j721e-cpsw-nuss", .data = &j721e_pdata},
- 	{ .compatible = "ti,am642-cpsw-nuss", .data = &am64x_cpswxg_pdata},
- 	{ .compatible = "ti,j7200-cpswxg-nuss", .data = &j7200_cpswxg_pdata},
-+	{ .compatible = "ti,j721e-cpswxg-nuss", .data = &j721e_cpswxg_pdata},
- 	{ /* sentinel */ },
- };
- MODULE_DEVICE_TABLE(of, am65_cpsw_nuss_of_mtable);
++static int am65_cpsw_enable_phy(struct phy *phy)
++{
++	int ret;
++
++	ret = phy_init(phy);
++	if (ret < 0)
++		return ret;
++
++	ret = phy_power_on(phy);
++	if (ret < 0) {
++		phy_exit(phy);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void am65_cpsw_disable_serdes_phy(struct am65_cpsw_common *common)
++{
++	struct device_node *node, *port_np;
++	struct device *dev = common->dev;
++	const char *name = "serdes-phy";
++	struct phy *phy;
++
++	node = of_get_child_by_name(dev->of_node, "ethernet-ports");
++
++	for_each_child_of_node(node, port_np) {
++		phy = devm_of_phy_get(dev, port_np, name);
++		am65_cpsw_disable_phy(phy);
++	}
++}
++
++static int am65_cpsw_init_serdes_phy(struct device *dev, struct device_node *port_np)
++{
++	const char *name = "serdes-phy";
++	struct phy *phy;
++	int ret;
++
++	phy = devm_of_phy_get(dev, port_np, name);
++	if (PTR_ERR(phy) == -ENODEV)
++		return 0;
++
++	ret =  am65_cpsw_enable_phy(phy);
++	if (ret < 0)
++		goto err_phy;
++
++	return 0;
++
++err_phy:
++	devm_phy_put(dev, phy);
++	return ret;
++}
++
+ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned int mode,
+ 				      const struct phylink_link_state *state)
+ {
+@@ -1872,6 +1931,11 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 			goto of_node_put;
+ 		}
+ 
++		/* Initialize the phy for the port */
++		ret = am65_cpsw_init_serdes_phy(dev, port_np);
++		if (ret)
++			return ret;
++
+ 		port->slave.mac_only =
+ 				of_property_read_bool(port_np, "ti,mac-only");
+ 
+@@ -2822,6 +2886,7 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	am65_cpsw_unregister_devlink(common);
++	am65_cpsw_disable_serdes_phy(common);
+ 	am65_cpsw_unregister_notifiers(common);
+ 
+ 	/* must unregister ndevs here because DD release_driver routine calls
 -- 
 2.25.1
 
