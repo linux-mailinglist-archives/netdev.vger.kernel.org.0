@@ -2,128 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B4B621E94
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 22:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77497621EBB
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 22:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiKHVd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 16:33:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
+        id S229930AbiKHVy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 16:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiKHVdY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 16:33:24 -0500
-Received: from na01-obe.outbound.protection.outlook.com (mail-westcentralusazon11020019.outbound.protection.outlook.com [40.93.198.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7307FC2D;
-        Tue,  8 Nov 2022 13:33:23 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=my2BNiYSJ1wTGzoiN2GGwAh/Xv/8m5nj4i+HPSzqVTOus6ipKTB1qY2FGm51a+np/YL14tDI8UDfGIXMAQn1uVotDFTkrbrNnc68K6B/IJoPo1s8Wp53ABF+HWdj359x7M98XX/ymozOjkVooTmGHlyo07RQhyciETlvoDSXGaV9+dFWp2o4/UgCuNJPlcHlguHl29cUiiYuLbOi7DqsQpoCDKsjR4f9jWv82tvWQh+bGRwKTqXwc6no4WB+SVhCQzzGs80vJJyz3BjtMzvmNS9I4eMRLXjDOHnrqy+ooaeo3QQm23C5CRqh/rrGfn6ZfodJvom/mst7jcaBl1E2kQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3U1IiE5DEiOmUDui/qdvSLR3wWwv8efR4X2GwMHIkS8=;
- b=bytkvdRfEh8PgYuJ3EhNefYzJEr7FJR2Vul/gxlWkvNG98Z0MUKwgytSEL/t2p0iU8gyCcYrgEkQUEqOorGTTW68apquM3rG00uCTo8m2igmr05xbVNiQ4JdPSXzY+E9ZrW1QuiqMFhU8IugJNpzxgCOJQiH5LxzOF6wWMvzi5QDJXTHJLMdN8s2mY8DtHEpDTx/d+QwdnX6bffj/Gx2o5lUMc5LlIwnZpJzfCsH6H9ZchPlnK7Zs8VLgANZFX+WuMw+/eRj8t6mYog/PRl/p0vOa2JOKD/DBAdAnxJD/W6B8fGMXaVZ6fF7ZJQlNF79h9o4jSVzLbIjJAos6mWlnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3U1IiE5DEiOmUDui/qdvSLR3wWwv8efR4X2GwMHIkS8=;
- b=G5iJIPkKOdLsh5qamUX+WFuOlZvFC/lv4ms7qSEjVVCa1o0IJvZnkMnc2SoVStUBZEBWpvfbiaqpFonBzMHPUBJ/Vd6dfrBXBZ4IXOEMjFjcWq+bhVNsDzAXe2OEABdVtrap5q76k/khX+Lt5qhgkd+QHayM5/h4mSPGNh1HVnM=
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
- by PH7PR21MB3332.namprd21.prod.outlook.com (2603:10b6:510:1d9::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.2; Tue, 8 Nov
- 2022 21:33:21 +0000
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::34f6:64de:960b:ff72]) by PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::34f6:64de:960b:ff72%4]) with mapi id 15.20.5834.002; Tue, 8 Nov 2022
- 21:33:21 +0000
-From:   Long Li <longli@microsoft.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v10 01/12] net: mana: Add support for auxiliary device
-Thread-Topic: [Patch v10 01/12] net: mana: Add support for auxiliary device
-Thread-Index: AQHY77jYyCZ4V2zftE2vySTJPn7Kra41bkGAgAAkh2A=
-Date:   Tue, 8 Nov 2022 21:33:21 +0000
-Message-ID: <PH7PR21MB3263700CCC9EC16FF7EA937BCE3F9@PH7PR21MB3263.namprd21.prod.outlook.com>
-References: <1667502990-2559-1-git-send-email-longli@linuxonhyperv.com>
- <1667502990-2559-2-git-send-email-longli@linuxonhyperv.com>
- <Y2qrd/BbrZUokitA@unreal>
-In-Reply-To: <Y2qrd/BbrZUokitA@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=e68d55fe-9f7c-4b7b-8ebc-7e806bc250ba;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-08T21:28:59Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH7PR21MB3263:EE_|PH7PR21MB3332:EE_
-x-ms-office365-filtering-correlation-id: 0266c204-582c-4d8c-ecc6-08dac1d0dbdf
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: j96ox6SQOkRZsBU1zI1YbpF55+2xZ7VDHcWCvGLfN/JrHLeIlKumKivqUgDoRp1RVH7O5BaeC4yXboCFSMOWdii0Zjnd7QV2fubU/uT/rYyQuez8Hx5zeVnEh2MtxGgJa7YvAqliA2L5L/HI+JBsc6Ql8Et37ilj7J6vWr25OshiTOreSS2W4HIM0UTtSz0btALzl5TBMjVxlHbXv4df8ARZf1wr5PbocO2pj8inJR9fEPNrJT7PPWiS47iCdGAyzI92SXNVB1Y2C5vFwoYnTRACrgHUbYU7u9MPS8/Q32JaiSy75wsdHC1CIzKK7rS3O/uuKAVYQlcuQOIOqgA44r2EET5TkDru3AqufBnKXe3SHNW0zyyjtPHA8YwGIwLvJljB2RDb9h7kvFKs12/5PLa1EGz8e4zHLlhHx2WRnUz7fil0jkOqrOdcCYh85fNEq5YJ1IeyBydSJAtRnckA2NJQect3976RyQgKQDZ8ADbd0AqtkXwzjGkl2dYDjlUM4qJVYj0HUqaJt/BQ+bDxT2OQu048YjswrYF7Cx3MBguUlTgotuZJGVJKsaK8Vdr/5wUqIyFgv4JZxA5vAsbQqQfd4Lc62LXDU6MhJnnt5taJnDaGaUAbeXE7RHXRcputDjgEz6W1NQMGU9U4GeoZbfjNObbbJf5rOswf85H/UVv6yN21a3vOmvEYHJZyUWLTehZqBpsDWzxintYfkhHM5zo0KVZjfDsA3cm7XOaC1wB7PbKO02LZQerCn26+mXUn+M6VeRfzDgAU3K4aArBBMNv/nMqbg+rNKVg5CwM0Rolt+DNSeIiI6Esorc8Vho3/
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(451199015)(2906002)(55016003)(64756008)(82960400001)(41300700001)(9686003)(26005)(38100700002)(8936002)(7416002)(4744005)(82950400001)(33656002)(186003)(7696005)(5660300002)(6506007)(6916009)(122000001)(54906003)(4326008)(8676002)(316002)(38070700005)(52536014)(66556008)(66476007)(76116006)(66946007)(478600001)(83380400001)(66446008)(10290500003)(71200400001)(86362001)(8990500004);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?vb9yOJTzy5FUMqr5VZ+a+AYuKIcDYhvfVOD03YOyGZZFE//rk3+/bEr4PZkp?=
- =?us-ascii?Q?kZdmM1CGi/yxVNlwelW3/mzVLj/9cFfnKJel2VvV8A+rXclvBzxp5zr8huWO?=
- =?us-ascii?Q?tXq/Jm3j419+zkPxANX+r3a2+59l53Frtmegf4WPMFCbXvO7u/d9tKs7ZnTq?=
- =?us-ascii?Q?7Wnj+WqpHryqgs9TbMHtWYHhxYs03B62yfbsafD735AJ9Y+IWfl1UsrRDaHn?=
- =?us-ascii?Q?VRaZl5GVr0n6ihQKrtJZymkZA/BqD3ab1989N8zN9SKyfdIdDtXlgGi5EI3H?=
- =?us-ascii?Q?HdbGKcO/b3CQdGQHeK2dGZFpz0kdPme5sqLt0cpRguFspJKqECD+32IImlNW?=
- =?us-ascii?Q?ThR5XGDgr7UT6CL1WYEPLaixt7kjbzV8/YPuJVshcCwZtYfIi0sZ2+8wUnpH?=
- =?us-ascii?Q?UbW/J/u/XPVbV3sb8ge6VouGza0AN8YF1t8GY6CgrGw86ZqQQFrNcGXkvH+4?=
- =?us-ascii?Q?GH2M73JlDcUjDuCeWdM+0E2MMemY/NAhM5NtYCCZJS3iBHnHAHc7wwN5keTP?=
- =?us-ascii?Q?ygA0oIChxNSd0+AyYDMZw+eM8vC4NEWLz3eg2nLixQd6LloaRQxheYnCi507?=
- =?us-ascii?Q?BI4GSw+Ym4Xp49eXvwQR3qKLUWAxvO0fv39zBrOgkFiOFfux6hnLbAeXvqJe?=
- =?us-ascii?Q?MrE6gB5wI5q9pLSUFXlMnbtr3n7yXP2AZ9LL87VVQsrazPMCyDjZlt12Or7y?=
- =?us-ascii?Q?+2VeAUDdRzDBQgCvtmXJJvWiKVFXfwJSttM0h+3Y2+iUnWhMIocdLFwR1Kq0?=
- =?us-ascii?Q?lMJdrsKLm+AOzv06dl4Mg6jVzTe7VOLv3VViXJtLgG5i8JVwZX3hTWjHKiyO?=
- =?us-ascii?Q?Iss3H3GfjzNUFEa29MbqlDxPdKTynrBdZE1Tcb1Yau1QxG/DyUrpikUmiZ+f?=
- =?us-ascii?Q?3lrtYqUzYKVIFoaoaXL6e0htNALNZfDxIzyrTQnFt23S3uPmoUr64UoJgCDr?=
- =?us-ascii?Q?ckO7ufQHFo3pzoQil7rJRYbt4BmTGJLbpR6iRK7OT+3FR52CaT+9W9vIq754?=
- =?us-ascii?Q?El8aRR72HodGW1Se/fPBlR7Vnyo/X5GacRx8HMRtxtqSGNrzkl9auH7kWeaU?=
- =?us-ascii?Q?voFuIQaObDUSsUMMcCHVb9VvhgSimC4myobPcthLAll+DHOvCKpomy+oBIFQ?=
- =?us-ascii?Q?Xh8WOuiDx+sJfcVZpH7RQEch9ssnxTX5Cj4ySdGA2tMS8xHMCdfHl9A5RgOj?=
- =?us-ascii?Q?jMyu5TLZbx+hyjHRYh60p93DXqPdmzB1/vzojA/uemEyNcjbnD4s4Ak1izgZ?=
- =?us-ascii?Q?Pk5vfEDUp8VPZ0PHSxABrg3Vwq8SaeJUv93WLZ6QFYSL7iOYwuCHSRUEmIFW?=
- =?us-ascii?Q?cYvQ5JMLR1yelHfLmSZEifgob6qPoaPww/Dc9xeJ57oPc7iw/pVJGv1JStPh?=
- =?us-ascii?Q?6qz9sH1KOMAMwb0lOOso4rXwrg/0oToOPlBOmozgxUqgdKCqqc+qygzym+RU?=
- =?us-ascii?Q?zJ6lIFN3f2/Fur8QWbQMVeV2toE/BzASeHYVUw3H3erXsPR9o2SKNzDnRSkz?=
- =?us-ascii?Q?drtsyYTWQeCyBWd/0ssOh7UUlK5nmphXWZXzedjdcki1HellC6O4bphDnoK7?=
- =?us-ascii?Q?IaXolaJ2jppBXhNEkf9PlMtepObUuKuuupfnHP8M?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229880AbiKHVy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 16:54:58 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE46F63164
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 13:54:53 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id h206so12556027iof.10
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 13:54:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wJw7dUyTQ/kSM/LgDsfH6662JpZHpPR4MTrASZnPAAY=;
+        b=rsRuvSwiM1PvHvUlS3h5AXXAOSatkIGwx3us0QmTTtQ3N/EH7E13CSkXNmYBDLAFfj
+         ZaBmBKrA5SUN5nK7VjI0JYn9V8ndX3Lvwaus5dCZZWA0XJNgdvnjB8PfSjQ+kV8GFCvJ
+         QLX+0x14k8IhuUScnrmsbEZK3VqXNTtHEHCvgzowA2sKn8YRR8OIsaXAy2VK/ny+XRD7
+         7cWu6tHy+qGNuU/DWTkM7CVBfAbQCZLdJx4YTikj37Mg2o64sbSSWHT/DLkXWsQXp4Zc
+         zQrQQAciCZrzcisqNob4AKp6jzyRo17sPHp/fb4wdrhgGdmiyOfDkLXCE51REjGZqgLt
+         B+gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wJw7dUyTQ/kSM/LgDsfH6662JpZHpPR4MTrASZnPAAY=;
+        b=MDHP7jhVK7u1mowltROZpNTRwJ+UmW3d4zqwkg2E5jmg/8R9Fmuz3W+IyOxXVQi0LG
+         U8kwFMMlJmq1iD3P4IXzyVbL6wUQWIIDP8J3rBIDmVzQ5v7939bIjQp1pZQpY5B6v8jd
+         2Gk/0PJxsFnUGYxfK2/PWuutoONVLDfG1xPBuBGuYgb9SOk5AHKAtGoCQJ1QsttdTYOg
+         2msg2QkwM7/H3x17KfBzpLgQlYtaEJLFgSPUu1BORH6VSdrd3l2+9TQtz5BKMEu7/Pt0
+         1pRooB8h0leC0XATSYBX5djQLz30Q9l0+zabQh6SeDDzlndOzw5qhdMGUdPJBQECXJwD
+         cL8Q==
+X-Gm-Message-State: ACrzQf3bbC4G9jCMv/BcubZYHbAcw46WNcbdn3EvLxoXmK4NOEyfYpuo
+        yxuj7iONh6m27L3VbsvBddIROUTmu4xi1n87VttRAw==
+X-Google-Smtp-Source: AMsMyM5inAjGP5aW3gKcGUsL0qc+y7ufgG48iVUvb8COUL0n92UFv/6koC7l7Z+yLxnh06eEteGE/ffB6OTS4SGtGRk=
+X-Received: by 2002:a05:6638:3043:b0:341:d8a4:73e8 with SMTP id
+ u3-20020a056638304300b00341d8a473e8mr34008716jak.239.1667944492914; Tue, 08
+ Nov 2022 13:54:52 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0266c204-582c-4d8c-ecc6-08dac1d0dbdf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2022 21:33:21.2277
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WNkq8tasqA7uv/gdmlbPPSSpYyh/mGS8rFD9L6ddKkaFukMpMtmK9lXTC4hIqPMmwQCsEo0DOZLPWnHpTZqIeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3332
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+In-Reply-To: <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 8 Nov 2022 13:54:41 -0800
+Message-ID: <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+Subject: Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp metadata into skb context
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -131,29 +78,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> > int mana_probe(struct gdma_dev *gd, bool resuming)
-> >  				break;
-> >  		}
-> >  	}
-> > +
-> > +	err =3D add_adev(gd);
-> >  out:
-> >  	if (err)
-> >  		mana_remove(gd, false);
-> > @@ -2189,6 +2267,10 @@ void mana_remove(struct gdma_dev *gd, bool
-> suspending)
-> >  	int err;
-> >  	int i;
+On Mon, Nov 7, 2022 at 2:02 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 11/3/22 8:25 PM, Stanislav Fomichev wrote:
+> > > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 59c9fd55699d..dba857f212d7 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -4217,9 +4217,13 @@ static inline bool skb_metadata_differs(const struct sk_buff *skb_a,
+> >              true : __skb_metadata_differs(skb_a, skb_b, len_a);
+> >   }
 > >
-> > +	/* adev currently doesn't support suspending, always remove it */
-> > +	if (gd->adev)
->=20
-> This condition is always true, isn't it?
+> > +void skb_metadata_import_from_xdp(struct sk_buff *skb, size_t len);
+> > +
+> >   static inline void skb_metadata_set(struct sk_buff *skb, u8 meta_len)
+> >   {
+> >       skb_shinfo(skb)->meta_len = meta_len;
+> > +     if (meta_len)
+> > +             skb_metadata_import_from_xdp(skb, meta_len);
+> >   }
+> >
+> [ ... ]
+>
+> > +struct xdp_to_skb_metadata {
+> > +     u32 magic; /* xdp_metadata_magic */
+> > +     u64 rx_timestamp;
+> > +} __randomize_layout;
+> > +
+> > +struct bpf_patch;
+> > +
+>
+> [ ... ]
+>
+> > +void skb_metadata_import_from_xdp(struct sk_buff *skb, size_t len)
+> > +{
+> > +     struct xdp_to_skb_metadata *meta = (void *)(skb_mac_header(skb) - len);
+> > +
+> > +     /* Optional SKB info, currently missing:
+> > +      * - HW checksum info           (skb->ip_summed)
+> > +      * - HW RX hash                 (skb_set_hash)
+> > +      * - RX ring dev queue index    (skb_record_rx_queue)
+> > +      */
+> > +
+> > +     if (len != sizeof(struct xdp_to_skb_metadata))
+> > +             return;
+> > +
+> > +     if (meta->magic != xdp_metadata_magic)
+> > +             return;
+> > +
+> > +     if (meta->rx_timestamp) {
+> > +             *skb_hwtstamps(skb) = (struct skb_shared_hwtstamps){
+> > +                     .hwtstamp = ns_to_ktime(meta->rx_timestamp),
+> > +             };
+> > +     }
+> > +}
+>
+> Considering the metadata will affect the gro, should the meta be cleared after
+> importing to the skb?
 
-I think the check is necessary. mana_probe() will call mana_remove() if it =
-fails to
-add this adev to gd. If this is the case, we can't call remove_adev().
+Yeah, good suggestion, will clear it here.
 
-Thanks,
-Long
+> [ ... ]
+>
+> > +/* Since we're not actually doing a call but instead rewriting
+> > + * in place, we can only afford to use R0-R5 scratch registers.
+> > + *
+> > + * We reserve R1 for bpf_xdp_metadata_export_to_skb and let individual
+> > + * metadata kfuncs use only R0,R4-R5.
+> > + *
+> > + * The above also means we _cannot_ easily call any other helper/kfunc
+> > + * because there is no place for us to preserve our R1 argument;
+> > + * existing R6-R9 belong to the callee.
+> > + */
+> > +void xdp_metadata_export_to_skb(const struct bpf_prog *prog, struct bpf_patch *patch)
+> > +{
+> > +     u32 func_id;
+> > +
+> > +     /*
+> > +      * The code below generates the following:
+> > +      *
+> > +      * void bpf_xdp_metadata_export_to_skb(struct xdp_md *ctx)
+> > +      * {
+> > +      *      struct xdp_to_skb_metadata *meta;
+> > +      *      int ret;
+> > +      *
+> > +      *      ret = bpf_xdp_adjust_meta(ctx, -sizeof(*meta));
+> > +      *      if (!ret)
+> > +      *              return;
+> > +      *
+> > +      *      meta = ctx->data_meta;
+> > +      *      meta->magic = xdp_metadata_magic;
+> > +      *      meta->rx_timestamp = bpf_xdp_metadata_rx_timestamp(ctx);
+> > +      * }
+> > +      *
+> > +      */
+> > +
+> > +     bpf_patch_append(patch,
+> > +             /* r2 = ((struct xdp_buff *)r1)->data_meta; */
+> > +             BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1,
+> > +                         offsetof(struct xdp_buff, data_meta)),
+> > +             /* r3 = ((struct xdp_buff *)r1)->data; */
+> > +             BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_1,
+> > +                         offsetof(struct xdp_buff, data)),
+> > +             /* if (data_meta != data) return;
+> > +              *
+> > +              *      data_meta > data: xdp_data_meta_unsupported()
+> > +              *      data_meta < data: already used, no need to touch
+> > +              */
+> > +             BPF_JMP_REG(BPF_JNE, BPF_REG_2, BPF_REG_3, S16_MAX),
+> > +
+> > +             /* r2 -= sizeof(struct xdp_to_skb_metadata); */
+> > +             BPF_ALU64_IMM(BPF_SUB, BPF_REG_2,
+> > +                           sizeof(struct xdp_to_skb_metadata)),
+> > +             /* r3 = ((struct xdp_buff *)r1)->data_hard_start; */
+> > +             BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_1,
+> > +                         offsetof(struct xdp_buff, data_hard_start)),
+> > +             /* r3 += sizeof(struct xdp_frame) */
+> > +             BPF_ALU64_IMM(BPF_ADD, BPF_REG_3,
+> > +                           sizeof(struct xdp_frame)),
+> > +             /* if (data-sizeof(struct xdp_to_skb_metadata) < data_hard_start+sizeof(struct xdp_frame)) return; */
+> > +             BPF_JMP_REG(BPF_JLT, BPF_REG_2, BPF_REG_3, S16_MAX),
+> > +
+> > +             /* ((struct xdp_buff *)r1)->data_meta = r2; */
+> > +             BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2,
+> > +                         offsetof(struct xdp_buff, data_meta)),
+> > +
+> > +             /* *((struct xdp_to_skb_metadata *)r2)->magic = xdp_metadata_magic; */
+> > +             BPF_ST_MEM(BPF_W, BPF_REG_2,
+> > +                        offsetof(struct xdp_to_skb_metadata, magic),
+> > +                        xdp_metadata_magic),
+> > +     );
+> > +
+> > +     /*      r0 = bpf_xdp_metadata_rx_timestamp(ctx); */
+> > +     func_id = xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP);
+> > +     prog->aux->xdp_kfunc_ndo->ndo_unroll_kfunc(prog, func_id, patch);
+> > +
+> > +     bpf_patch_append(patch,
+> > +             /* r2 = ((struct xdp_buff *)r1)->data_meta; */
+> > +             BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1,
+> > +                         offsetof(struct xdp_buff, data_meta)),
+> > +             /* *((struct xdp_to_skb_metadata *)r2)->rx_timestamp = r0; */
+> > +             BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_0,
+> > +                         offsetof(struct xdp_to_skb_metadata, rx_timestamp)),
+>
+> Can the xdp prog still change the metadata through xdp->data_meta? tbh, I am not
+> sure it is solid enough by asking the xdp prog not to use the same random number
+> in its own metadata + not to change the metadata through xdp->data_meta after
+> calling bpf_xdp_metadata_export_to_skb().
+
+What do you think the usecase here might be? Or are you suggesting we
+reject further access to data_meta after
+bpf_xdp_metadata_export_to_skb somehow?
+
+If we want to let the programs override some of this
+bpf_xdp_metadata_export_to_skb() metadata, it feels like we can add
+more kfuncs instead of exposing the layout?
+
+bpf_xdp_metadata_export_to_skb(ctx);
+bpf_xdp_metadata_export_skb_hash(ctx, 1234);
+...
+
+> Does xdp_to_skb_metadata have a use case for XDP_PASS (like patch 7) or the
+> xdp_to_skb_metadata can be limited to XDP_REDIRECT only?
+
+XDP_PASS cases where we convert xdp_buff into skb in the drivers right
+now usually have C code to manually pull out the metadata (out of hw
+desc) and put it into skb.
+
+So, currently, if we're calling bpf_xdp_metadata_export_to_skb() for
+XDP_PASS, we're doing a double amount of work:
+skb_metadata_import_from_xdp first, then custom driver code second.
+
+In theory, maybe we should completely skip drivers custom parsing when
+there is a prog with BPF_F_XDP_HAS_METADATA?
+Then both xdp->skb paths (XDP_PASS+XDP_REDIRECT) will be bpf-driven
+and won't require any mental work (plus, the drivers won't have to
+care either in the future).
+
+WDYT?
+
+> > +     );
+> > +
+> > +     bpf_patch_resolve_jmp(patch);
+> > +}
+> > +
+> >   static int __init xdp_metadata_init(void)
+> >   {
+> > +     xdp_metadata_magic = get_random_u32() | 1;
+> >       return register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &xdp_metadata_kfunc_set);
+> >   }
+> >   late_initcall(xdp_metadata_init);
