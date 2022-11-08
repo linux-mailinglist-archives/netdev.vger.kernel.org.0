@@ -2,206 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B540B6206B7
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 03:27:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDC36206BC
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 03:29:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbiKHC1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 21:27:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53480 "EHLO
+        id S233319AbiKHC3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 21:29:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiKHC1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 21:27:32 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9150C183A1;
-        Mon,  7 Nov 2022 18:27:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Cs3x9tc+ZgMBqe3I18ShxSkvk/KNHstoAyiOxOiMD/A=; b=IyKri1AWH2/qZZca8gTYBCxvn4
-        rroDdxIZk2HZSCtF665/NYyXTCUDgT1k5NulxF8NZVZrt9AbnG/Q35/62FGOlSSl+e891+JqZvXQa
-        dD0z/z2YJgvlG+SQTdHcq0PJgxlCLYALl3rualxXad6VNd75YqK8IokwYmP36kXQfSuY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1osEJM-001m0U-Dl; Tue, 08 Nov 2022 03:26:00 +0100
-Date:   Tue, 8 Nov 2022 03:26:00 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Shenwei Wang <shenwei.wang@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229534AbiKHC3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 21:29:01 -0500
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72ED8DED1;
+        Mon,  7 Nov 2022 18:29:00 -0800 (PST)
+Message-ID: <efa7cacb-b737-666e-a212-133c2d6c3ded@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1667874539;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=S1EfmxtmKoktQc7Es/70hBVj158wVXgBw1F8lAf4s7w=;
+        b=lz7f5oQXnIAykB6o2ncm7fLe2lUZTVzTx7L1/fVsVbSTOgauTQeSADW7b/fUMSkACI+9iB
+        MYnbkK/7r59brXI9EWXBOBOnorU2PXX1nucGl0lB+IRtNhRtTeaG8T/kYkv0hZoJVKm9Bt
+        u/J3AOU1ZZD97RIoIOF7KUF765gy838=
+Date:   Mon, 7 Nov 2022 18:28:51 -0800
+MIME-Version: 1.0
+Subject: Re: [PATCH 2/4] bpf: Remove size check for sk in
+ bpf_skb_is_valid_access for 32-bit architecture
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Yang Jihong <yangjihong1@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        imx@lists.linux.dev
-Subject: Re: [PATCH 2/2] net: fec: add xdp and page pool statistics
-Message-ID: <Y2m+OHPaS6aV6GYx@lunn.ch>
-References: <20221107143825.3368602-1-shenwei.wang@nxp.com>
- <20221107143825.3368602-3-shenwei.wang@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221107143825.3368602-3-shenwei.wang@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        Artem Savkov <asavkov@redhat.com>, colin.i.king@gmail.com,
+        bpf <bpf@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+References: <20221103083254.237646-1-yangjihong1@huawei.com>
+ <20221103083254.237646-3-yangjihong1@huawei.com>
+ <CAEf4BzY+qP1wwVddjg7_rypcUAW8iPRzSa=1O6aFG5dSLX+1Gg@mail.gmail.com>
+ <CAADnVQJW3CisB3L2nNOC0aGkPPBTHnyM-ZCXoZJc-KtNNEj+QQ@mail.gmail.com>
+ <CAEf4Bzb+qJ-jzMkvWkBV0nXYj51P8DSbEHagT7h5ujCjCrRu8Q@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <CAEf4Bzb+qJ-jzMkvWkBV0nXYj51P8DSbEHagT7h5ujCjCrRu8Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +enum {
-> +	RX_XDP_REDIRECT = 0,
-> +	RX_XDP_PASS,
-> +	RX_XDP_DROP,
-> +	RX_XDP_TX,
-> +	RX_XDP_TX_ERRORS,
-> +	TX_XDP_XMIT,
-> +	TX_XDP_XMIT_ERRORS,
-> +	XDP_STATS_TOTAL,
-> +};
-> +
->  struct fec_enet_priv_tx_q {
->  	struct bufdesc_prop bd;
->  	unsigned char *tx_bounce[TX_RING_SIZE];
-> @@ -546,6 +557,7 @@ struct fec_enet_priv_rx_q {
->  	/* page_pool */
->  	struct page_pool *page_pool;
->  	struct xdp_rxq_info xdp_rxq;
-> +	u32 stats[XDP_STATS_TOTAL];
->  
->  	/* rx queue number, in the range 0-7 */
->  	u8 id;
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 3fb870340c22..89fef370bc10 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -1523,10 +1523,12 @@ fec_enet_run_xdp(struct fec_enet_private *fep, struct bpf_prog *prog,
->  
->  	switch (act) {
->  	case XDP_PASS:
-> +		rxq->stats[RX_XDP_PASS]++;
->  		ret = FEC_ENET_XDP_PASS;
->  		break;
->  
->  	case XDP_REDIRECT:
-> +		rxq->stats[RX_XDP_REDIRECT]++;
->  		err = xdp_do_redirect(fep->netdev, xdp, prog);
->  		if (!err) {
->  			ret = FEC_ENET_XDP_REDIR;
-> @@ -1549,6 +1551,7 @@ fec_enet_run_xdp(struct fec_enet_private *fep, struct bpf_prog *prog,
->  		fallthrough;    /* handle aborts by dropping packet */
->  
->  	case XDP_DROP:
-> +		rxq->stats[RX_XDP_DROP]++;
->  		ret = FEC_ENET_XDP_CONSUMED;
->  		page = virt_to_head_page(xdp->data);
->  		page_pool_put_page(rxq->page_pool, page, sync, true);
-> @@ -2657,37 +2660,91 @@ static const struct fec_stat {
->  	{ "IEEE_rx_octets_ok", IEEE_R_OCTETS_OK },
->  };
->  
-> -#define FEC_STATS_SIZE		(ARRAY_SIZE(fec_stats) * sizeof(u64))
-> +static struct fec_xdp_stat {
-> +	char name[ETH_GSTRING_LEN];
-> +	u64 count;
-> +} fec_xdp_stats[XDP_STATS_TOTAL] = {
-> +	{ "rx_xdp_redirect", 0 },           /* RX_XDP_REDIRECT = 0, */
-> +	{ "rx_xdp_pass", 0 },               /* RX_XDP_PASS, */
-> +	{ "rx_xdp_drop", 0 },               /* RX_XDP_DROP, */
-> +	{ "rx_xdp_tx", 0 },                 /* RX_XDP_TX, */
-> +	{ "rx_xdp_tx_errors", 0 },          /* RX_XDP_TX_ERRORS, */
-> +	{ "tx_xdp_xmit", 0 },               /* TX_XDP_XMIT, */
-> +	{ "tx_xdp_xmit_errors", 0 },        /* TX_XDP_XMIT_ERRORS, */
-> +};
+On 11/7/22 5:07 PM, Andrii Nakryiko wrote:
+> On Fri, Nov 4, 2022 at 4:32 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>>
+>> On Fri, Nov 4, 2022 at 2:56 PM Andrii Nakryiko
+>> <andrii.nakryiko@gmail.com> wrote:
+>>>
+>>> On Thu, Nov 3, 2022 at 1:36 AM Yang Jihong <yangjihong1@huawei.com> wrote:
+>>>>
+>>>> The error code -EACCES is returned when bpf prog is tested in 32-bit environment,
+>>>> This is because bpf_object__relocate modifies the instruction to change memory
+>>>> size to 4 bytes, as shown in the following messages:
+>>>>
+>>>> libbpf: prog 'kfunc_call_test1': relo #2: matching candidate #0 <byte_off> [18342] struct __sk_buff.sk (0:30:0 @ offset 168)
+>>>> libbpf: prog 'kfunc_call_test1': relo #2: patched insn #1 (LDX/ST/STX) off 168 -> 168
+>>>> libbpf: prog 'kfunc_call_test1': relo #2: patched insn #1 (LDX/ST/STX) mem_sz 8 -> 4
+>>>>
+>>>> As a result, the bpf_skb_is_valid_access check fails. For 32-bit architecture,
+>>>> unnecessary checks need to be deleted.
+>>>>
+>>>> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+>>>> ---
+>>>>   net/core/filter.c | 2 --
+>>>>   1 file changed, 2 deletions(-)
+>>>>
+>>>> diff --git a/net/core/filter.c b/net/core/filter.c
+>>>> index bb0136e7a8e4..eab7ce89740c 100644
+>>>> --- a/net/core/filter.c
+>>>> +++ b/net/core/filter.c
+>>>> @@ -8269,8 +8269,6 @@ static bool bpf_skb_is_valid_access(int off, int size, enum bpf_access_type type
+>>>>                          return false;
+>>>>                  break;
+>>>>          case offsetof(struct __sk_buff, sk):
+>>>> -               if (type == BPF_WRITE || size != sizeof(__u64))
+>>>> -                       return false;
+>>>
+>>> this probably should be specific to host architecture bitness? I'd
+>>> imagine that size = 4 should be invalid on 64-bit arches (reading half
+>>> of the pointer is bad)
+>>
+>> Not quite.
+>> In __sk_buff the field 'sk' is defined as:
+>> __bpf_md_ptr(struct bpf_sock *, sk);
+>> so it's always 64-bit load when bpf prog reads it.
+>> In this case CO_RE shouldn't have been applied to uapi struct __sk_buff.
+> 
+> Ok, hold on. __bpf_md_ptr just creates a 8-byte sized and aligned
+> union. It doesn't change the pointer itself in any way:
+> 
+> union {
+>      struct bpf_sock* sk;
+>      __u64 :64;
+> };
+> 
+> 
+> It's a 64-bit pointer only because any pointer in the BPF target is
+> 64-bit. But on 32-bit architectures such struct bpf_sock *sk pointer
+> will *actually* be 4-byte pointer (and __u64 :64 will just make
+> compiler add 4 bytes of padding after it, effectively), and BPF
+> verifier will actually generate LDX instruction of BPF_W size (4 byte
+> load):
+> 
+>          case offsetof(struct __sk_buff, sk):
+>                  *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, sk),
+>                                        si->dst_reg, si->src_reg,
+>                                        offsetof(struct sk_buff, sk));
+>                  break;
+> 
+> 
+> BPF_FIELD_SIZEOF(struct sk_buff, sk) is 4 for 32-bit kernels.
+> 
+> So while you are correct that it will be 8-byte load from the BPF
+> side, allowing 4-byte load for such pointers should also be correct.
+> It's our choice, there is no fundamental limitation why this shouldn't
+> be the case.
+> 
+> Note also that we do this transformation when fentry/fexit/raw_tp_btf
+> programs traverse pointers in kernel structures. There pretending like
+> pointer to an 8-byte value is actually invalid. So libbpf adjusts such
+> loads to 4-byte loads for CO-RE-relocatable types, which makes it all
+> work transparently on 32-bit architectures. Context accesses deviate
+> from that, as they came earlier and we didn't have CO-RE at that time.
+> 
+> So what you are saying is that __sk_buff shouldn't be
+> CO-RE-relocatable, and yes, that would be good. But I think that's
+> orthogonal in this case.
 
-Why do you mix the string and the count?
+This issue should be from
+commit c1ff181ffabc ("selftests/bpf: Extend kfunc selftests") which replaced the 
+uapi's bpf.h with vmlinux.h.  One option to unblock this for now is to separate 
+those tests that read __sk_buff->sk to its own prog.c and use the uapi's bpf.h 
+instead of vmlinux.h.
 
-> +
-> +#define FEC_STATS_SIZE	((ARRAY_SIZE(fec_stats) + \
-> +			ARRAY_SIZE(fec_xdp_stats)) * sizeof(u64))
->  
->  static void fec_enet_update_ethtool_stats(struct net_device *dev)
->  {
->  	struct fec_enet_private *fep = netdev_priv(dev);
-> -	int i;
-> +	struct fec_xdp_stat xdp_stats[7];
-
-You are allocating 7 x name[ETH_GSTRING_LEN], here, which you are not
-going to use. All you really need is u64 xdp_stats[XDP_STATS_TOTAL]
-
-> +	int off = ARRAY_SIZE(fec_stats);
-> +	struct fec_enet_priv_rx_q *rxq;
-> +	int i, j;
->  
->  	for (i = 0; i < ARRAY_SIZE(fec_stats); i++)
->  		fep->ethtool_stats[i] = readl(fep->hwp + fec_stats[i].offset);
-> +
-> +	for (i = fep->num_rx_queues - 1; i >= 0; i--) {
-> +		rxq = fep->rx_queue[i];
-> +		for (j = 0; j < XDP_STATS_TOTAL; j++)
-> +			xdp_stats[j].count += rxq->stats[j];
-> +	}
-> +
-> +	for (i = 0; i < XDP_STATS_TOTAL; i++)
-> +		fep->ethtool_stats[i + off] = xdp_stats[i].count;
-
-It would be more logical to use j here.
-
-It is also pretty messy. For fec_enet_get_strings() and
-fec_enet_get_sset_count() you deal with the three sets of stats
-individually. But here you combine normal stats and xdp stats in
-one. It will probably come out cleaner if you keep it all separate.
-
->  static void fec_enet_get_ethtool_stats(struct net_device *dev,
->  				       struct ethtool_stats *stats, u64 *data)
->  {
->  	struct fec_enet_private *fep = netdev_priv(dev);
-> +	u64 *dst = data + FEC_STATS_SIZE / 8;
-
-Why 8? sizeof(u64) would be a bit clearer. Or just use
-ARRAY_SIZE(fec_stats) which is what you are actually wanting.
-
->  
->  	if (netif_running(dev))
->  		fec_enet_update_ethtool_stats(dev);
->  
->  	memcpy(data, fep->ethtool_stats, FEC_STATS_SIZE);
-> +
-> +	fec_enet_page_pool_stats(fep, dst);
->  }
->  
->  static void fec_enet_get_strings(struct net_device *netdev,
->  	u32 stringset, u8 *data)
->  {
-> +	int off = ARRAY_SIZE(fec_stats);
->  	int i;
->  	switch (stringset) {
->  	case ETH_SS_STATS:
->  		for (i = 0; i < ARRAY_SIZE(fec_stats); i++)
->  			memcpy(data + i * ETH_GSTRING_LEN,
->  				fec_stats[i].name, ETH_GSTRING_LEN);
-> +		for (i = 0; i < ARRAY_SIZE(fec_xdp_stats); i++)
-> +			memcpy(data + (i + off) * ETH_GSTRING_LEN,
-> +			       fec_xdp_stats[i].name, ETH_GSTRING_LEN);
-> +		off = (i + off) * ETH_GSTRING_LEN;
-> +		page_pool_ethtool_stats_get_strings(data + off);
-
-Probably simpler is:
-
-		for (i = 0; i < ARRAY_SIZE(fec_stats); i++) {
-			memcpy(data, fec_stats[i].name, ETH_GSTRING_LEN);
-			data += ETH_GSTRING_LEN;
-		}
-		for (i = 0; i < ARRAY_SIZE(fec_xdp_stats); i++) {
-			memcpy(data, fec_xdp_stats[i].name, ETH_GSTRING_LEN);
-			data += ETH_GSTRING_LEN;
-		}
-		page_pool_ethtool_stats_get_strings(data);
-		
-	Andrew
+It would be nice if the bpf-tc program can take 'struct sk_buff *skb' instead of 
+'struct __sk_buff *skb' but it will be a separate topic.
