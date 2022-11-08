@@ -2,211 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7093062094F
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 07:06:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AEF2620948
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 07:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiKHGGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 01:06:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        id S233153AbiKHGBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 01:01:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233205AbiKHGGI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 01:06:08 -0500
-X-Greylist: delayed 618 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Nov 2022 22:06:06 PST
-Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989583F06A
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 22:06:06 -0800 (PST)
-Received: from gw.atmark-techno.com (localhost [127.0.0.1])
-        by gw.atmark-techno.com (Postfix) with ESMTP id B71BA6014F
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 14:56:06 +0900 (JST)
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id 65CC66014B
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 14:56:04 +0900 (JST)
-Received: by mail-pl1-f198.google.com with SMTP id k15-20020a170902c40f00b001887cd71fe6so4157433plk.5
-        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 21:56:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=757yoDhLQoswhPSAxDBASMvHCABau1Li9dh0moZLC3E=;
-        b=MWRL/jI5uSYLJO1XseEei3i3GCzqzWnAMBu35cQXauvUygNUDAsP+WVt3cYDjSfGZZ
-         cen9hjuG2e/v+MRGqFIeVtSjsvR9/Y3RS/WClGzrIlqkVCM+7aO0qjNskHqFHXl7hOgi
-         sBMo1CY3uD73eqLhBr7QMDnUwYF7goM88jms95yODFlZYwQr4uKSPs4Onf/Fs6gF2EiC
-         JROFeLkGPhMdZkURPQOeS2AIwc59LOW6Gez4nH+LMwm+LhJRTFFb6ZNs6cAq1Gj2VdD9
-         eSwAoJM9ylQMRENR0V1Tj9l7vWtmD5wrmQKZoog1L+CR+7WD2cUAbfqYl7U9JLWi+cHM
-         jbCA==
-X-Gm-Message-State: ACrzQf3Xp4ZVRit4+eSVHU7oddbLLZG99yJ6aK08RZbOzqNvPwavseRo
-        R6adFeC7FLZbmywlJKurnjhO+yreN4Mgz+QCaRYcf9QgVHXXDVUao6G8RIWYMEq3gqe9Yk0xRPc
-        Ut08J6vBdsbvM7oldIuW1
-X-Received: by 2002:a17:90a:974b:b0:213:9bec:ae4e with SMTP id i11-20020a17090a974b00b002139becae4emr54696311pjw.200.1667886963450;
-        Mon, 07 Nov 2022 21:56:03 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM6Ej7xAYS13CrilvxqHh45cmxbHS136/9OIxkPX14RdA4xZx9ZMGzAQKiHNN+jhcNtN8vFgmg==
-X-Received: by 2002:a17:90a:974b:b0:213:9bec:ae4e with SMTP id i11-20020a17090a974b00b002139becae4emr54696286pjw.200.1667886963226;
-        Mon, 07 Nov 2022 21:56:03 -0800 (PST)
-Received: from pc-zest.atmarktech (178.101.200.35.bc.googleusercontent.com. [35.200.101.178])
-        by smtp.gmail.com with ESMTPSA id f14-20020a170902ce8e00b00180033438a0sm5978640plg.106.2022.11.07.21.56.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 07 Nov 2022 21:56:02 -0800 (PST)
-Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
-        (envelope-from <martinet@pc-zest>)
-        id 1osHab-0098L1-2q;
-        Tue, 08 Nov 2022 14:56:01 +0900
-From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com,
-        Dominique Martinet <dominique.martinet@atmark-techno.com>
-Subject: [RFC PATCH 2/2] bluetooth/hci_h4: add serdev support
-Date:   Tue,  8 Nov 2022 14:55:31 +0900
-Message-Id: <20221108055531.2176793-3-dominique.martinet@atmark-techno.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221108055531.2176793-1-dominique.martinet@atmark-techno.com>
-References: <20221108055531.2176793-1-dominique.martinet@atmark-techno.com>
+        with ESMTP id S229521AbiKHGBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 01:01:50 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893D2CE0D;
+        Mon,  7 Nov 2022 22:01:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=V+aVuxTdXdd9m/xR2Q0RVS8UnyYU09ZK74bwG6KqNE8=; b=BmR7J+Z/XxI14992OWg4fOM59J
+        ulfRuZpB6RSzOTI7ciB7kpIFromcGNTXVQR0ukGPiDKBuRegPAWxbZxZyum5IewmO5YljJkkSeCTO
+        li0wYOO9LFOicFc+ql6NfoCyfxDYyKZB3queWRUBhj8L0CsHRILAcmvwsGq+fY5hGLJE=;
+Received: from p200300daa72ee1006d973cebf3767a25.dip0.t-ipconnect.de ([2003:da:a72e:e100:6d97:3ceb:f376:7a25] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1osHfu-000RzP-Cj; Tue, 08 Nov 2022 07:01:30 +0100
+Message-ID: <f714f3e2-44b0-e0f9-0b99-2878ec12cb56@nbd.name>
+Date:   Tue, 8 Nov 2022 07:01:29 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.3.2
+Subject: Re: [PATCH 05/14] net: dsa: tag_mtk: assign per-port queues
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20221107185452.90711-1-nbd@nbd.name>
+ <20221107185452.90711-5-nbd@nbd.name> <20221107212209.4pmoctkze4m2ggbv@skbuf>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <20221107212209.4pmoctkze4m2ggbv@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-adding serdev support to hci_h4 allows users to define h4 bluetooth
-controllers in dts files
+On 07.11.22 22:22, Vladimir Oltean wrote:
+> On Mon, Nov 07, 2022 at 07:54:43PM +0100, Felix Fietkau wrote:
+>> Keeps traffic sent to the switch within link speed limits
+>> 
+>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>> ---
+>>  net/dsa/tag_mtk.c | 3 +++
+>>  1 file changed, 3 insertions(+)
+>> 
+>> diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+>> index 415d8ece242a..445d6113227f 100644
+>> --- a/net/dsa/tag_mtk.c
+>> +++ b/net/dsa/tag_mtk.c
+>> @@ -25,6 +25,9 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+>>  	u8 xmit_tpid;
+>>  	u8 *mtk_tag;
+>>  
+>> +	/* Reserve the first three queues for packets not passed through DSA */
+>> +	skb_set_queue_mapping(skb, 3 + dp->index);
+>> +
+> 
+> Should DSA have to care about this detail, or could you rework your
+> mtk_select_queue() procedure to adjust the queue mapping as needed?
+I'm setting the queue here so that I don't have to add the extra 
+overhead of parsing the payload in the ethernet driver.
+For passing the queue, I used a similar approach as tag_brcm.c and
+drivers/net/ethernet/broadcom/bcmsysport.c
 
-This allows users of bluetooth modules with an uart h4 interface to use
-dt bindings instead of manually running btattach
-
-Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
----
- drivers/bluetooth/Kconfig  |  1 +
- drivers/bluetooth/hci_h4.c | 65 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
-
-diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
-index e30707405455..69edc76a8611 100644
---- a/drivers/bluetooth/Kconfig
-+++ b/drivers/bluetooth/Kconfig
-@@ -113,6 +113,7 @@ config BT_HCIUART_SERDEV
- config BT_HCIUART_H4
- 	bool "UART (H4) protocol support"
- 	depends on BT_HCIUART
-+	depends on BT_HCIUART_SERDEV
- 	help
- 	  UART (H4) is serial protocol for communication between Bluetooth
- 	  device and host. This protocol is required for most Bluetooth devices
-diff --git a/drivers/bluetooth/hci_h4.c b/drivers/bluetooth/hci_h4.c
-index 1d0cdf023243..b214c8a4d450 100644
---- a/drivers/bluetooth/hci_h4.c
-+++ b/drivers/bluetooth/hci_h4.c
-@@ -18,6 +18,8 @@
- #include <linux/ptrace.h>
- #include <linux/poll.h>
- 
-+#include <linux/of.h>
-+#include <linux/serdev.h>
- #include <linux/slab.h>
- #include <linux/tty.h>
- #include <linux/errno.h>
-@@ -32,6 +34,10 @@
- 
- #include "hci_uart.h"
- 
-+struct h4_device {
-+	struct hci_uart hu;
-+};
-+
- struct h4_struct {
- 	struct sk_buff *rx_skb;
- 	struct sk_buff_head txq;
-@@ -130,6 +136,63 @@ static struct sk_buff *h4_dequeue(struct hci_uart *hu)
- 	return skb_dequeue(&h4->txq);
- }
- 
-+static const struct hci_uart_proto h4p;
-+
-+static int h4_probe(struct serdev_device *serdev)
-+{
-+	struct h4_device *h4dev;
-+	struct hci_uart *hu;
-+	int ret;
-+	u32 speed;
-+
-+	h4dev = devm_kzalloc(&serdev->dev, sizeof(*h4dev), GFP_KERNEL);
-+	if (!h4dev)
-+		return -ENOMEM;
-+
-+	hu = &h4dev->hu;
-+
-+	hu->serdev = serdev;
-+	ret = device_property_read_u32(&serdev->dev, "max-speed", &speed);
-+	if (!ret) {
-+		/* h4 does not have any baudrate handling:
-+		 * user oper speed from the start
-+		 */
-+		hu->init_speed = speed;
-+		hu->oper_speed = speed;
-+	}
-+
-+	serdev_device_set_drvdata(serdev, h4dev);
-+	dev_info(&serdev->dev, "h4 device registered.\n");
-+
-+	return hci_uart_register_device(hu, &h4p);
-+}
-+
-+static void h4_remove(struct serdev_device *serdev)
-+{
-+	struct h4_device *h4dev = serdev_device_get_drvdata(serdev);
-+
-+	dev_info(&serdev->dev, "h4 device unregistered.\n");
-+
-+	hci_uart_unregister_device(&h4dev->hu);
-+}
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id h4_bluetooth_of_match[] = {
-+	{ .compatible = "nxp,aw-xm458-bt" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, h4_bluetooth_of_match);
-+#endif
-+
-+static struct serdev_device_driver h4_serdev_driver = {
-+	.probe = h4_probe,
-+	.remove = h4_remove,
-+	.driver = {
-+		.name = "hci_uart_h4",
-+		.of_match_table = of_match_ptr(h4_bluetooth_of_match),
-+	},
-+};
-+
- static const struct hci_uart_proto h4p = {
- 	.id		= HCI_UART_H4,
- 	.name		= "H4",
-@@ -143,11 +206,13 @@ static const struct hci_uart_proto h4p = {
- 
- int __init h4_init(void)
- {
-+	serdev_device_driver_register(&h4_serdev_driver);
- 	return hci_uart_register_proto(&h4p);
- }
- 
- int __exit h4_deinit(void)
- {
-+	serdev_device_driver_unregister(&h4_serdev_driver);
- 	return hci_uart_unregister_proto(&h4p);
- }
- 
--- 
-2.35.1
-
-
+- Felix
