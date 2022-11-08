@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E52621B98
+	by mail.lfdr.de (Postfix) with ESMTP id 27E85621B97
 	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 19:12:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234416AbiKHSMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 13:12:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
+        id S234573AbiKHSMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 13:12:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234356AbiKHSMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 13:12:01 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673A357B56
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 10:12:00 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id y16so22219683wrt.12
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 10:12:00 -0800 (PST)
+        with ESMTP id S234617AbiKHSME (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 13:12:04 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC4A5986B
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 10:12:01 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id t1so9334413wmi.4
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 10:12:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1m1DidO2rzjDMZlrvrKtja69hwcXTFXw0zP1Dxjbaww=;
-        b=P1bMXtA9ILahSmDOLipS/vaBF54BtW3he0nIKaV3F1tou04OZJoD1ZlskG63rQ/p/e
-         f5QqCc36wvzp5Wcs+dnGtQ6GV5bmbADV9jb8khubwXHU2YVQd5Xcobtw+ab0rr8bGP5y
-         RF4IoulpEZo6LZt+n9U1NK4OT8LfR+BAZUQjGkcqp0ymrEYTmsCP8bKANJgFFfqIB3ex
-         sSAz9wt9TtxnZks6JtFG/IdC4ncWgjTEWd3/ls8cvd2uTo5/OQV1ffhJatQ/Ru8OXOYE
-         +ZZhB+4M24NZbsexDA2VUToTZAIAw3V3FXgmj8s3ryRuBh8z9DtioUDF+y+VYamqhFEF
-         jMpA==
+        bh=A8Nn7FR+ibB53QJL8o9ZqwbAccpQC4pR0InqfudyfLs=;
+        b=PBjnfDVmggCWMS+XYXPxAz5Am3hcRfWSxmYSECtzCK6iTX7uOwU6CzJYJDkLTML2+m
+         Nv/WVSYdtAY0PKfDxZLJ/LXynJJafnY/stksKFozK4dbIM+iPhPoFwgJwG13aNwBBX3W
+         wvsQ8fGLerysGOXIwc/Gzk2EiWgff6bEd6KWuBAHk0I2l27IkzR/5tsYnbstN66ETAjb
+         HNZXvWvsbMoXfL1z+9BsFcMmvI7AERuBSoeDKZX7b/eGcXSfGiNxEF3UBU2T8Q/suGBr
+         R6TPk5+ryEBj+RhpPICftHvxHnFt9ZzHi2D8pS2z3MQcI3Q5PlC3GjvHIARZZweq5lOx
+         c+GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1m1DidO2rzjDMZlrvrKtja69hwcXTFXw0zP1Dxjbaww=;
-        b=t5LNe+SZ6kqn/fm7IQefnM/Sh3BhI8mHvzBLyWZlAcQ+hZACQJU0WK64VBw2g3VSWg
-         /R7qmBZm77Pw08VgwJzVLWRGS8Cgvu5vYHlIsdEGtbPpBWNl4UwYx/lpt0yE4i5cBYKS
-         WZlsCXU78HlHURJQlb+RVyHmOxRrTMeM2OPqz8C/cfcF0aRYK2O+AjxRv+Vld4R57QdA
-         xKnOvLRgXjHzCoKiWjBaon5ZzEwcIDZ0I+Hr26BfJtrzLzKMlH3sVFvEWD5kWQ6wO1KJ
-         sLArBBs0ImjdL3r3MVXc5jXVha7vyoFNwZJodBDhTle5cg3MloYsMvr3v1ZaI8HZcOaO
-         qhyQ==
-X-Gm-Message-State: ACrzQf3VQLr+iPUMtLQI+mLLRFIpKHqlCADZomweJv3UKhiUv3v/qXpY
-        ClYJMsdzOcAlLNZj8/LHylvORQ==
-X-Google-Smtp-Source: AMsMyM4zwNIKjWHFWuuVksh8ihwA/QeBVm6znp/91kqCcZh6c1XMvSaZUB3EAGZQ+xveSVcckOCYDQ==
-X-Received: by 2002:adf:f943:0:b0:232:ce6b:40d4 with SMTP id q3-20020adff943000000b00232ce6b40d4mr37395557wrr.453.1667931118943;
-        Tue, 08 Nov 2022 10:11:58 -0800 (PST)
+        bh=A8Nn7FR+ibB53QJL8o9ZqwbAccpQC4pR0InqfudyfLs=;
+        b=pK21Df+61TFvrv0gNXvlJCRjojuMcG0DkRYNrZmjKybf+2osShdSRLoBYMnd2miYes
+         rPqSfjG5+1ZSpByQynWwNxWvYIFXDSREXtEQjG3fOFMASMjf9LhH0U0ceHpcmygPowts
+         j2GZvrtQDViyGzWoAAdn1Ae3fjKBoexL6iEbx3231RBNUPfiSTMyFLaCGfWdqjhtSWJb
+         ZMzQN3ZIWbo/Dakax7fOFemTvS86hUJeGL+ENPvZ6rKuRvifNRUFJtcV9C3JMXCZSpL7
+         xbwsGp0uFMKzGB+iLJqipDC/NhnCjFRNyL8AHl7y6zfj9TMMkTYMQ+pSOTNGVpHxwrXj
+         cUBQ==
+X-Gm-Message-State: ANoB5pmNLcwpnD5WjvLLrFyScV4RHj/5aYm0JpNTElvLrPXkYL36x89v
+        lHJ3xERdOleGWuPrh7ZoYPrBig==
+X-Google-Smtp-Source: AA0mqf5OYJs6Mea9M4/w5JBh0YgnFEs93kqHNrZKS3FhEDXrM473nHj+/uL++VfmlJWAiAn+kgB4jg==
+X-Received: by 2002:a05:600c:2d44:b0:3cf:aae0:8367 with SMTP id a4-20020a05600c2d4400b003cfaae08367mr8518017wmg.132.1667931119895;
+        Tue, 08 Nov 2022 10:11:59 -0800 (PST)
 Received: from nicolas-Precision-3551.home ([2001:861:5180:dcc0:7d10:e9e8:fd9a:2f72])
-        by smtp.gmail.com with ESMTPSA id q12-20020a5d61cc000000b002238ea5750csm13037109wrv.72.2022.11.08.10.11.58
+        by smtp.gmail.com with ESMTPSA id q12-20020a5d61cc000000b002238ea5750csm13037109wrv.72.2022.11.08.10.11.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 10:11:58 -0800 (PST)
+        Tue, 08 Nov 2022 10:11:59 -0800 (PST)
 From:   Nicolas Frayer <nfrayer@baylibre.com>
 To:     nm@ti.com, ssantosh@kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, peter.ujfalusi@gmail.com,
@@ -57,91 +57,46 @@ To:     nm@ti.com, ssantosh@kernel.org, linux-kernel@vger.kernel.org,
         kuba@kernel.org, pabeni@redhat.com, linux-omap@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     khilman@baylibre.com, glaroque@baylibre.com, nfrayer@baylibre.com
-Subject: [PATCH v4 2/4] soc: ti: Add module build support
-Date:   Tue,  8 Nov 2022 19:11:42 +0100
-Message-Id: <20221108181144.433087-3-nfrayer@baylibre.com>
+Subject: [PATCH v4 3/4] dmaengine: ti: k3-udma: Deferring probe when soc_device_match() returns NULL
+Date:   Tue,  8 Nov 2022 19:11:43 +0100
+Message-Id: <20221108181144.433087-4-nfrayer@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221108181144.433087-1-nfrayer@baylibre.com>
 References: <20221108181144.433087-1-nfrayer@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added module build support for the TI K3 SoC info driver.
+When the k3 socinfo driver is built as a module, there is a possibility
+that it will probe after the k3 udma driver and the later returns -ENODEV.
+By deferring the k3 udma probe we allow the k3 socinfo to probe and
+register the soc_device_attribute structure needed by the k3 udma driver.
 
 Signed-off-by: Nicolas Frayer <nfrayer@baylibre.com>
 ---
- arch/arm64/Kconfig.platforms |  1 -
- drivers/soc/ti/Kconfig       |  3 ++-
- drivers/soc/ti/k3-socinfo.c  | 11 +++++++++++
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ drivers/dma/ti/k3-udma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 76580b932e44..4f2f92eb499f 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -130,7 +130,6 @@ config ARCH_K3
- 	select TI_SCI_PROTOCOL
- 	select TI_SCI_INTR_IRQCHIP
- 	select TI_SCI_INTA_IRQCHIP
--	select TI_K3_SOCINFO
- 	help
- 	  This enables support for Texas Instruments' K3 multicore SoC
- 	  architecture.
-diff --git a/drivers/soc/ti/Kconfig b/drivers/soc/ti/Kconfig
-index 7e2fb1c16af1..1a730c057cce 100644
---- a/drivers/soc/ti/Kconfig
-+++ b/drivers/soc/ti/Kconfig
-@@ -74,7 +74,8 @@ config TI_K3_RINGACC
- 	  If unsure, say N.
+diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
+index 7b5081989b3d..a6bb5077900b 100644
+--- a/drivers/dma/ti/k3-udma.c
++++ b/drivers/dma/ti/k3-udma.c
+@@ -5285,7 +5285,7 @@ static int udma_probe(struct platform_device *pdev)
+ 	soc = soc_device_match(k3_soc_devices);
+ 	if (!soc) {
+ 		dev_err(dev, "No compatible SoC found\n");
+-		return -ENODEV;
++		return -EPROBE_DEFER;
+ 	}
+ 	ud->soc_data = soc->data;
  
- config TI_K3_SOCINFO
--	bool
-+	tristate "TI K3 SoC info driver"
-+	default y
- 	depends on ARCH_K3 || COMPILE_TEST
- 	select SOC_BUS
- 	select MFD_SYSCON
-diff --git a/drivers/soc/ti/k3-socinfo.c b/drivers/soc/ti/k3-socinfo.c
-index 19f3e74f5376..98348f998e0f 100644
---- a/drivers/soc/ti/k3-socinfo.c
-+++ b/drivers/soc/ti/k3-socinfo.c
-@@ -13,6 +13,7 @@
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/sys_soc.h>
-+#include <linux/module.h>
- 
- #define CTRLMMR_WKUP_JTAGID_REG		0
- /*
-@@ -141,6 +142,7 @@ static const struct of_device_id k3_chipinfo_of_match[] = {
- 	{ .compatible = "ti,am654-chipid", },
- 	{ /* sentinel */ },
- };
-+MODULE_DEVICE_TABLE(of, k3_chipinfo_of_match);
- 
- static struct platform_driver k3_chipinfo_driver = {
- 	.driver = {
-@@ -156,3 +158,12 @@ static int __init k3_chipinfo_init(void)
- 	return platform_driver_register(&k3_chipinfo_driver);
- }
- subsys_initcall(k3_chipinfo_init);
-+
-+static void __exit k3_chipinfo_exit(void)
-+{
-+	platform_driver_unregister(&k3_chipinfo_driver);
-+}
-+module_exit(k3_chipinfo_exit);
-+
-+MODULE_DESCRIPTION("TI K3 SoC info driver");
-+MODULE_LICENSE("GPL");
 -- 
 2.25.1
 
