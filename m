@@ -2,117 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B649E621B4E
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 18:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09115621B5A
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 19:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234561AbiKHR6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 12:58:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53336 "EHLO
+        id S234151AbiKHSBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 13:01:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234387AbiKHR6l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 12:58:41 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70E41FF80;
-        Tue,  8 Nov 2022 09:58:39 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id bs21so22224053wrb.4;
-        Tue, 08 Nov 2022 09:58:39 -0800 (PST)
+        with ESMTP id S233627AbiKHSBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 13:01:21 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363611FCE5
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 10:01:20 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id f8so9570509qkg.3
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 10:01:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TxXsdnnL/UQNns1x2IBQo7m3t5OBViQXtLwqC2rEvOw=;
-        b=NxU888jiud/7ecZiCvco7myv3EfLdXpQ9tPwc93NbqMk5MDDIqEqutoKEPdIS0h8SN
-         78/kByCUTbZplqFD1n499+ddQZbIAQEQ6v4z1Lc+cPwZqBQPyMnDX5w3vzuN85S4VAmN
-         uBEooUC8wb65TOp0reOEyJDNe9xPvkVfE5Qd5D3nU1TEIGyy8edrmAinFywc8eoDO7AG
-         bzDI/hEcLNaEl9EugjZ5xSOuqyrd2WGPzbd8z9AOmxeQLDWDoWeVC5UKjrM7itNDgTdy
-         w6UZd2lhIJ+68mgCHOkt5EJBQVj2nus3dUPPja88lSWgQbcfjwIyzGRByJ08BNp2DNUU
-         +6rg==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=wDrq2KVoUCxkhxO6WpTTyZbqFCb6qloqTFLoADCq7ok=;
+        b=hZMmHshSNADKZamj2Bl4ylyYFEWjU0kz6N9zuO1+U0zleujiKgoM4TX0bM6OZUqaEm
+         pQSgJbEgzt5ZYsl9FcgDapOpJe7HScO3RHf6B2R6hICdI7zpCNaNDqKbCJ1CyH76TRk/
+         4ztAez3Nio3lp9AX6bo+xtsZX8SZPPP8P0oz//bM1WfdQ94tgxZEwVJ67QdA7mXnV7bO
+         c1Q2v3yUADNOyalJSL1ZKqXE42AQR0n8A85gW1qgi04Jj+YO5F2o10JDLw4qtwm90P7c
+         PM1A596+wCzDo28uMju9vCNyIFX8PlcHqsgzzC5WiP0KduUyOVhANmWdN1JF5yEVyg3Y
+         StDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TxXsdnnL/UQNns1x2IBQo7m3t5OBViQXtLwqC2rEvOw=;
-        b=3fk8TKAgGs/ApHTnyl/BtpK6WJhzd9utrRgxUGlITvDDJFsWgelu+RLkNYCHk4hVvR
-         jBMAOdR3T2y7vdvUX5uQXXRonDNhf90I3FrBZFhR4k2JzsrEFeqCpiVKrJrWx4x3tkHQ
-         xYbdIlyyRzXzFZLEBjgLZzG4+e3NGqYA/XjBDrRPAG4vGbXeLUfsYw7vYOwnTH55KG/8
-         zb0VNvLgDgrDWK2o009O7SwRPwGdYw/kTVwUB+bPv7csdRwuvJ8t9laLlceh93/ZWv57
-         RtzylQA+V4RwDMtHtxF6M6TpHN2x35tayjO4ZgxvheQXN7KqZomXW6t/etRsCp8cv8f8
-         9R0A==
-X-Gm-Message-State: ACrzQf1YWnvhhzvkfU3g5ymMKxTHet+vNDopKabfTRQrmOiAnuARkXPo
-        MOmG1ZHCBBIEJNuflzCQR7xex/IN4D0=
-X-Google-Smtp-Source: AMsMyM7Y9ycxjh29Wcsn/2Zha12t1j7LsVM+JYAuJhSO0rAgP9BOAUO1qG8eGat4P3yF7OJx02NCbw==
-X-Received: by 2002:adf:dbc5:0:b0:22c:c605:3b81 with SMTP id e5-20020adfdbc5000000b0022cc6053b81mr36178453wrj.218.1667930318419;
-        Tue, 08 Nov 2022 09:58:38 -0800 (PST)
-Received: from [192.168.0.105] ([77.126.19.155])
-        by smtp.gmail.com with ESMTPSA id k4-20020a5d6e84000000b00236722ebe66sm11054650wrz.75.2022.11.08.09.58.35
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wDrq2KVoUCxkhxO6WpTTyZbqFCb6qloqTFLoADCq7ok=;
+        b=rNuiSz+5hyzumHBLcCHsJvxIu8+L0c9ij6ARsFoDr0JXHx2MR/sprZyqv+CZhsH88E
+         NYXX9y2thxSYweTnbCLF1MUTo1j7hSsfRAS0mo9gkih++0LfYq+iD7GjGn3Br8O6vadn
+         oxmt/No+srxFFCLlUnBdMo77azbtEmnVRMUAVB2rZDbgkKGA5PYYcKd6bHz0kt61HSsh
+         NOhmEkXymxpPviGayZJo7n2Zu8dsKMROxdn/HhdKhW5yGlUVkY+Abn+DbpzXcPcIfEcD
+         OrGP+SpqAQsWjodra3rbA0PwDkShekFgjlIdt5kmyHC/HF5AcJzYGY27ZlWfNrzqvd+d
+         r8Ag==
+X-Gm-Message-State: ACrzQf0UwAQ48x5MKUjAickevlmXqmo0/nQd51GGumHY3ATAgS1td2Zg
+        NrT8MJpavtiKzxci6G0S6XALug==
+X-Google-Smtp-Source: AMsMyM6V3a1bvL7jFhwBqAbRZpo9uWNWSNj6kJ3C29vh48hZBL/Ba/02cilmAWsAe5UKEFttiCKbXg==
+X-Received: by 2002:a37:e30d:0:b0:6fa:6241:c858 with SMTP id y13-20020a37e30d000000b006fa6241c858mr24147792qki.553.1667930479206;
+        Tue, 08 Nov 2022 10:01:19 -0800 (PST)
+Received: from [127.0.0.1] ([190.167.198.156])
+        by smtp.gmail.com with ESMTPSA id o16-20020a05620a2a1000b006cbe3be300esm10284211qkp.12.2022.11.08.10.01.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Nov 2022 09:58:37 -0800 (PST)
-Message-ID: <febe8f20-626a-02d6-c8ed-f0dcf6cd607f@gmail.com>
-Date:   Tue, 8 Nov 2022 19:58:33 +0200
+        Tue, 08 Nov 2022 10:01:18 -0800 (PST)
+Date:   Tue, 08 Nov 2022 14:01:17 -0400
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
+CC:     Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        Ido Schimmel <idosch@nvidia.com>,
+        "Hans J . Schultz" <netdev@kapio-technology.com>, mlxsw@nvidia.com
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_net-next_01/15=5D_bridge=3A_switchdev=3A_Le?= =?US-ASCII?Q?t_device_drivers_determine_FDB_offload_indication?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <b266dcf6d647684a10984d12f98549f93fd378ab.1667902754.git.petrm@nvidia.com>
+References: <cover.1667902754.git.petrm@nvidia.com> <b266dcf6d647684a10984d12f98549f93fd378ab.1667902754.git.petrm@nvidia.com>
+Message-ID: <31C46FC0-3ABB-4FD1-B44B-D467C81C6340@blackwall.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH v2] net/mlx5e: Use kvfree() in mlx5e_accel_fs_tcp_create()
-Content-Language: en-US
-To:     YueHaibing <yuehaibing@huawei.com>, borisp@nvidia.com,
-        saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        lkayal@nvidia.com, tariqt@nvidia.com, markzhang@nvidia.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20221108140614.12968-1-yuehaibing@huawei.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20221108140614.12968-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,RCVD_IN_SORBS_HTTP,
+        RCVD_IN_SORBS_SOCKS,SPF_HELO_NONE,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8 November 2022 06:47:07 GMT-04:00, Petr Machata <petrm@nvidia=2Ecom> wr=
+ote:
+>From: Ido Schimmel <idosch@nvidia=2Ecom>
+>
+>Currently, FDB entries that are notified to the bridge via
+>'SWITCHDEV_FDB_ADD_TO_BRIDGE' are always marked as offloaded=2E With MAB
+>enabled, this will no longer be universally true=2E Device drivers will
+>report locked FDB entries to the bridge to let it know that the
+>corresponding hosts required authorization, but it does not mean that
+>these entries are necessarily programmed in the underlying hardware=2E
+>
+>Solve this by determining the offload indication based of the
+>'offloaded' bit in the FDB notification=2E
+>
+>Signed-off-by: Ido Schimmel <idosch@nvidia=2Ecom>
+>Reviewed-by: Petr Machata <petrm@nvidia=2Ecom>
+>Signed-off-by: Petr Machata <petrm@nvidia=2Ecom>
+>---
+> net/bridge/br=2Ec | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
 
+Acked-by: Nikolay Aleksandrov <razor@blackwall=2Eorg>
 
-On 11/8/2022 4:06 PM, YueHaibing wrote:
-> 'accel_tcp' is allocted by kvzalloc(), which should freed by kvfree().
-> 
-> Fixes: f52f2faee581 ("net/mlx5e: Introduce flow steering API")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
-> v2: fix the same issue in mlx5e_accel_fs_tcp_destroy() and a commit log typo
-> ---
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-> index 285d32d2fd08..d7c020f72401 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-> @@ -365,7 +365,7 @@ void mlx5e_accel_fs_tcp_destroy(struct mlx5e_flow_steering *fs)
->   	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++)
->   		accel_fs_tcp_destroy_table(fs, i);
->   
-> -	kfree(accel_tcp);
-> +	kvfree(accel_tcp);
->   	mlx5e_fs_set_accel_tcp(fs, NULL);
->   }
->   
-> @@ -397,7 +397,7 @@ int mlx5e_accel_fs_tcp_create(struct mlx5e_flow_steering *fs)
->   err_destroy_tables:
->   	while (--i >= 0)
->   		accel_fs_tcp_destroy_table(fs, i);
-> -	kfree(accel_tcp);
-> +	kvfree(accel_tcp);
->   	mlx5e_fs_set_accel_tcp(fs, NULL);
->   	return err;
->   }
+>diff --git a/net/bridge/br=2Ec b/net/bridge/br=2Ec
+>index 96e91d69a9a8=2E=2E145999b8c355 100644
+>--- a/net/bridge/br=2Ec
+>+++ b/net/bridge/br=2Ec
+>@@ -172,7 +172,7 @@ static int br_switchdev_event(struct notifier_block *=
+unused,
+> 			break;
+> 		}
+> 		br_fdb_offloaded_set(br, p, fdb_info->addr,
+>-				     fdb_info->vid, true);
+>+				     fdb_info->vid, fdb_info->offloaded);
+> 		break;
+> 	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
+> 		fdb_info =3D ptr;
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-
-Thanks for your patch.
