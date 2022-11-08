@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72759620B0C
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:24:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27223620B0A
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:23:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232654AbiKHIX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 03:23:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        id S233544AbiKHIXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 03:23:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233274AbiKHIXv (ORCPT
+        with ESMTP id S233472AbiKHIXv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 03:23:51 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D29427B1C
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A1827B20
         for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 00:23:50 -0800 (PST)
 Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id C045A84F34;
-        Tue,  8 Nov 2022 09:23:48 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id 2A52084F84;
+        Tue,  8 Nov 2022 09:23:49 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
         s=phobos-20191101; t=1667895829;
-        bh=+9d0loleSBLQE3udcwHEbOBMYujfJ70ZJ0Qtzvonwjk=;
+        bh=RLS+pi+x+DGj/QyOO6rDYnVOgDX2w+lzfFHtKBegPAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h0NUSEStZEFtCdG7zqwmp7rE4jSis1rGaN/VEMk5bwBoRjcgfAtH7XoAisYrwgDcp
-         0o6lt8fA/N77KvVQFalUHbh9gALISLyI2t9j7h+nYuXitCGJxMsIAxBaqBT1UdEIAL
-         BnX4BkrZ5G+HeSqEbLMeDhHATUjPQS3fHrRK2ANOWp7/0pBur5nfSLdYsRQPbENGmm
-         9T29UM3+ORzhTrTmeaG/SozNdNtL0zRrQX6Bm02h2Ew0KL19iUtBaAfvLnzhNOipQn
-         CHsXhGfrAgzPliS8n+HiUbWaN2gpjOI5iiUHgRcKOqTccH8kcGdvaHErvE6jgIoq2B
-         Z8k9R7LK7c3IQ==
+        b=QYw57EY07IrBYVdPRxYbN4vyoZ49/GDUaLae9vnfr5HHLBSt1TxDllqlf4flejfuS
+         1O6nBEm0hmzdfQQ7egwAwTGXnttTCt2MPZARVz6+S6iEAATSAN0On40kT1Sl93T9+E
+         rLXhy3WdE4nHaxxuPCPb7iBK/cRveuttCyYfkjNdw4KJ7Y/5CD/fo2GqvzoWUGq2bE
+         Ia1imfPSfc+lbbq7kvjXwdervIAM0eK9q7iiUNyoBIik6IFn6rX5L0pnTgedsgawXV
+         rB/HHiufUlIZw2wGkbLj9aNWFGuad9VYCAUYfVXxp/86/LNhTOnac66Yh71/yHnJiw
+         cm463C4ley/4g==
 From:   Lukasz Majewski <lukma@denx.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
@@ -39,10 +39,11 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH 3/9] net: dsa: mv88e6xxx: implement get_phy_address
-Date:   Tue,  8 Nov 2022 09:23:24 +0100
-Message-Id: <20221108082330.2086671-4-lukma@denx.de>
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Lukasz Majewski <lukma@denx.de>
+Subject: [PATCH 4/9] net: dsa: mv88e6xxx: add support for MV88E6020 switch
+Date:   Tue,  8 Nov 2022 09:23:25 +0100
+Message-Id: <20221108082330.2086671-5-lukma@denx.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221108082330.2086671-1-lukma@denx.de>
 References: <20221108082330.2086671-1-lukma@denx.de>
@@ -61,44 +62,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-Avoid the need to specify a PHY for each physical port in the device tree
-when phy_base_addr is not 0 (6250 and 6341 families).
-
-This change should be backwards-compatible with existing device trees,
-as it only adds sensible defaults where explicit definitions were
-required before.
+A 6250 family switch with 5 internal PHYs and no PTP support.
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Lukasz Majewski <lukma@denx.de>
+[Adjustments for newest kernel upstreaming]
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/dsa/mv88e6xxx/chip.c | 20 ++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h |  1 +
+ drivers/net/dsa/mv88e6xxx/port.h |  1 +
+ 3 files changed, 22 insertions(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 2479be3a1e35..d51fd1966be9 100644
+index d51fd1966be9..cfb6df516e27 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -6362,6 +6362,13 @@ static enum dsa_tag_protocol mv88e6xxx_get_tag_protocol(struct dsa_switch *ds,
- 	return chip->tag_protocol;
- }
+@@ -5527,6 +5527,26 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
+ };
  
-+static int mv88e6xxx_get_phy_address(struct dsa_switch *ds, int port)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
+ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
++	[MV88E6020] = {
++		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6020,
++		.family = MV88E6XXX_FAMILY_6250,
++		.name = "Marvell 88E6020",
++		.num_databases = 64,
++		.num_ports = 7,
++		.num_internal_phys = 5,
++		.max_vid = 4095,
++		.port_base_addr = 0x8,
++		.phy_base_addr = 0x0,
++		.global1_addr = 0xf,
++		.global2_addr = 0x7,
++		.age_time_coeff = 15000,
++		.g1_irqs = 9,
++		.g2_irqs = 5,
++		.atu_move_port_mask = 0xf,
++		.dual_chip = true,
++		.ops = &mv88e6250_ops,
++	},
 +
-+	return chip->phy_base_addr + port;
-+}
-+
- static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds,
- 					 enum dsa_tag_protocol proto)
- {
-@@ -6887,6 +6894,7 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.phylink_mac_link_up	= mv88e6xxx_mac_link_up,
- 	.get_strings		= mv88e6xxx_get_strings,
- 	.get_ethtool_stats	= mv88e6xxx_get_ethtool_stats,
-+	.get_phy_address        = mv88e6xxx_get_phy_address,
- 	.get_sset_count		= mv88e6xxx_get_sset_count,
- 	.port_enable		= mv88e6xxx_port_enable,
- 	.port_disable		= mv88e6xxx_port_disable,
+ 	[MV88E6085] = {
+ 		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6085,
+ 		.family = MV88E6XXX_FAMILY_6097,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index b03f279a673d..c7cbbecd7fe1 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -54,6 +54,7 @@ enum mv88e6xxx_frame_mode {
+ 
+ /* List of supported models */
+ enum mv88e6xxx_model {
++	MV88E6020,
+ 	MV88E6085,
+ 	MV88E6095,
+ 	MV88E6097,
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index cb04243f37c1..60a36a8bc131 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -111,6 +111,7 @@
+ /* Offset 0x03: Switch Identifier Register */
+ #define MV88E6XXX_PORT_SWITCH_ID		0x03
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_MASK	0xfff0
++#define MV88E6XXX_PORT_SWITCH_ID_PROD_6020	0x0200
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6085	0x04a0
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6095	0x0950
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6097	0x0990
 -- 
 2.37.2
 
