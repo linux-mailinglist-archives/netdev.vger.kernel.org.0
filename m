@@ -2,75 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA9B6214A4
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D23946214FF
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234972AbiKHODj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 09:03:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
+        id S235081AbiKHOHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 09:07:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234981AbiKHODh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:03:37 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE067664
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:03:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=t5xhlebnR9LBNcAaa8tDHu1DPQcNgfH1fddZ3T6DTJU=; b=Vv+8vbVmQ0hxA8kL0jzW/pAMrj
-        KE/hh5UdJjLvzkk318G/J22mwSC8IE/tknfACd+w+pXk4LeiZJmoODH3HhDF27T9PxuQ7maH6cQjG
-        xmhO24lb8Ckvo9166YccLdUFXc9R2hJG34WIcI/YAQPU1mAgL+Jg3ZuHH5YmDhVYiwvA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1osPC6-001pE8-5I; Tue, 08 Nov 2022 15:03:14 +0100
-Date:   Tue, 8 Nov 2022 15:03:14 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S235104AbiKHOHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:07:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBA469DE3
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:06:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667916366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mhVuivBI13XN7hFJRIVsKLRsld9h+iIMpKP8ks7YdsA=;
+        b=dPHY97fOjqxv+lnN7zZmLfpW9uXWKCqaRdcavGEcEphqjvmrp0boMVT8P4HaoBM8+TI7mr
+        AZgcOPxdNttjzSZTsefhi/1eMZDe+V5UQcXUEEGsFEHQP2wuk895aYKBmC7kEhE/r6VBwk
+        Nxol8nxWvhT7ZWN13V7/jrHt/DHGbWg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-126-BCty_SS9Ni-viqQB2PNmyw-1; Tue, 08 Nov 2022 09:06:05 -0500
+X-MC-Unique: BCty_SS9Ni-viqQB2PNmyw-1
+Received: by mail-ed1-f69.google.com with SMTP id z15-20020a05640240cf00b00461b253c220so10544995edb.3
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 06:06:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mhVuivBI13XN7hFJRIVsKLRsld9h+iIMpKP8ks7YdsA=;
+        b=Pp7evIvh3IWeY6YfCV3lEQ/6FekeWaofAuB7jvjXfzF4mqPyI7s+UReZ1CRa3TGHgI
+         AEjeNJlcatjp8lUjByiZnBO378jyjltX3crYWy9994CdCBA/BdLmBhoJukEUqxc1YxkV
+         X/X7SzrDTeiCLFluIsjwzKdPL/gWhXRucTkQLBU615exeY5Aq6vTfLzYSio3JHDwQeF/
+         rSzlwa04M4m+EA+qQMi7kK/VpqFMER/cJiOeut22nSURO0Puq35UR1hgbM/LpC22wwAR
+         XIVkvxp2OkHToMyaTxbIRNCDtdtlx+h6lwu9SaVuQHJe1bwuK/a5eK+Jj8Zi2/d9NOzZ
+         uJ4A==
+X-Gm-Message-State: ACrzQf2GANMAO42cRlbUU8SonRyJw/8laVde9pktQEN03Iz1wJCzU1s8
+        FTpRF6q2rfaWH9rCYyG3icQ6Db3bHvz8uIA/nMzSUWMKE9WELrnm7+WXtEtwHGeqNAuw/4oFZ3a
+        Xz383yQ7oDL1FrkEu
+X-Received: by 2002:a17:907:7fa5:b0:791:9a5f:101a with SMTP id qk37-20020a1709077fa500b007919a5f101amr53393799ejc.453.1667916364093;
+        Tue, 08 Nov 2022 06:06:04 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM7djvw8VkYFn6W6euariW0OoAZIMaedqHxBcgsFjLFzV0ydAI5gULLr0JxSI5H6L4acct260w==
+X-Received: by 2002:a17:907:7fa5:b0:791:9a5f:101a with SMTP id qk37-20020a1709077fa500b007919a5f101amr53393746ejc.453.1667916363488;
+        Tue, 08 Nov 2022 06:06:03 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id w23-20020aa7dcd7000000b00443d657d8a4sm5531703edu.61.2022.11.08.06.06.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 06:06:03 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B375678152B; Tue,  8 Nov 2022 15:06:02 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 9/9] net: dsa: mv88e6071: Set .set_max_frame_size callback
-Message-ID: <Y2phohBqYR5juqBn@lunn.ch>
-References: <20221108082330.2086671-1-lukma@denx.de>
- <20221108082330.2086671-10-lukma@denx.de>
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 0/3] A couple of small refactorings of BPF program call sites
+Date:   Tue,  8 Nov 2022 15:05:58 +0100
+Message-Id: <20221108140601.149971-1-toke@redhat.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221108082330.2086671-10-lukma@denx.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 08, 2022 at 09:23:30AM +0100, Lukasz Majewski wrote:
-> The .set_max_frame_size is now set to the
-> mv88e6185_g1_set_max_frame_size() function.
-> 
-> The global switch control register (0x4 offset) used
-> as well as the bit (10) are the same.
-> 
-> The only difference is the misleading suffix (1632)
-> as the mv88e6071/mv88e6020 supports 2048 bytes
-> as a maximal size of the frame.
+Stanislav suggested[0] that these small refactorings could be split out from the
+XDP queueing RFC series and merged separately. The first change is a small
+repacking of struct softnet_data, the others change the BPF call sites to
+support full 64-bit values as arguments to bpf_redirect_map() and as the return
+value of a BPF program, relying on the fact that BPF registers are always 64-bit
+wide to maintain backwards compatibility.
 
-Are you really sure that different members of the 6250 family have
-different maximum frame sizes?
+Please see the individual patches for details.
 
-Marvells GPL DSDT SDK has:
+v3:
+- In patch 3, don't change types of return values that are copied to
+  userspace (which should fix selftest errors on big-endian archs like s390)
+- Rebase on bpf-next
+- Collect Song's ACKs
 
-#define G1_DEV_88ESPANNAK_FAMILY  (DEV_88E3020 | DEV_88E6020 | DEV_88E6070 | DEV_88E6071 | DEV_88E6220  | DEV_88E6250 )
+v2:
+- Rebase on bpf-next (CI failure seems to be unrelated to this series)
+- Collect Stanislav's Reviewed-by
 
-The differences within a family tend to be the number of ports, if PTP
-is provided, if AVB is provided etc.
+[0] https://lore.kernel.org/r/CAKH8qBtdnku7StcQ-SamadvAF==DRuLLZO94yOR1WJ9Bg=uX1w@mail.gmail.com
 
-   Andrew
+Kumar Kartikeya Dwivedi (1):
+  bpf: Use 64-bit return value for bpf_prog_run
+
+Toke Høiland-Jørgensen (2):
+  dev: Move received_rps counter next to RPS members in softnet data
+  bpf: Expand map key argument of bpf_redirect_map to u64
+
+ include/linux/bpf-cgroup.h | 12 +++++------
+ include/linux/bpf.h        | 24 +++++++++++-----------
+ include/linux/filter.h     | 42 +++++++++++++++++++-------------------
+ include/linux/netdevice.h  |  2 +-
+ include/uapi/linux/bpf.h   |  2 +-
+ kernel/bpf/cgroup.c        | 12 +++++------
+ kernel/bpf/core.c          | 14 ++++++-------
+ kernel/bpf/cpumap.c        |  4 ++--
+ kernel/bpf/devmap.c        |  4 ++--
+ kernel/bpf/offload.c       |  4 ++--
+ kernel/bpf/verifier.c      |  2 +-
+ net/core/filter.c          |  4 ++--
+ net/packet/af_packet.c     |  7 +++++--
+ net/xdp/xskmap.c           |  4 ++--
+ 14 files changed, 70 insertions(+), 67 deletions(-)
+
+-- 
+2.38.1
+
