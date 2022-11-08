@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A5C620B11
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:24:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20CEA620B0E
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 09:24:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233764AbiKHIYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 03:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
+        id S233772AbiKHIYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 03:24:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233768AbiKHIXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 03:23:55 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F2E27B1C
+        with ESMTP id S233758AbiKHIXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 03:23:53 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62B327B11
         for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 00:23:52 -0800 (PST)
 Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 8300184F8B;
+        by phobos.denx.de (Postfix) with ESMTPSA id E155684FAC;
         Tue,  8 Nov 2022 09:23:49 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1667895829;
-        bh=RfmabqkZO6fgaCGQFzgiP1gJlOe3btIFnwokS/xokkY=;
+        s=phobos-20191101; t=1667895830;
+        bh=xzSyd5yI9MJDufr4RuTyWI2LqmKTCp4NW9Jyp55qKvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxMItxiduto+YvYS6eSRbw3jg/eUEErngylUADp+NPeJGC2Rc/JtOVHbRHTGNju/p
-         cuFJ+lhNQB22DDaZYZsRyjEwYtvG3Yri3e3d8oTOE65YmCWJtigDqtWQkfeey8riBZ
-         LuqBfSPaVUw6cHGG5pCdsnPHq0Xc+MVHFGWRq8mc2guIUQlWWNDI3NiR+R7StCq0pp
-         gqKbVuW5cbr/KW9kNrj+MXYxAyjs1cNBBGBiIzKFp/d7LVu1kG8scnMwkrMHhkfoSP
-         L8s08VbeYFeMT4WuMShNwY5ZCwhUqGWs5UUjVwzH57HMouED+Z7GTRRl6iuXkOm6JT
-         AtrqkiNnBmCFw==
+        b=uUjulGKvxGpg6mtRVCqZBZBJyf2WQ8TEc4wcdR3tbq7lP1h4jQowK8A7cZ4Vr/Gl0
+         yhnAubOB+9KxonivmeSdCDFY5kHjAPUltYxGG9JhR7FvcZTv+ysaG7Vma3NvcPDJQ4
+         hdwCZUZwLmdHweydvp4/51vvLYMnl1I/uXqfs5A3NkBhI5I4A07EtnG5a7hELTBvvv
+         mvny38r0kZOaOth3xU6/xhAasSVOrvZgODGvtdTrVdvy2muub6WnNoKXxGyoea97mo
+         SAYaC+Bg78V0tWQus+70m45ds0Hso6NI0EfCxPNKJZcp3VeEb5rVLVd9gG3dW1LOoG
+         Xt3qtlGW/Eh3A==
 From:   Lukasz Majewski <lukma@denx.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
@@ -40,9 +40,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH 5/9] net: dsa: mv88e6xxx: Add support for MV88E6071 switch
-Date:   Tue,  8 Nov 2022 09:23:26 +0100
-Message-Id: <20221108082330.2086671-6-lukma@denx.de>
+Subject: [PATCH 6/9] net: dsa: marvell: Provide per device information about max frame size
+Date:   Tue,  8 Nov 2022 09:23:27 +0100
+Message-Id: <20221108082330.2086671-7-lukma@denx.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221108082330.2086671-1-lukma@denx.de>
 References: <20221108082330.2086671-1-lukma@denx.de>
@@ -59,71 +59,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch provides support for MV88E6071 Marvell switch.
+Different Marvell DSA switches support different size of max frame
+bytes to be sent.
+
+For example mv88e6185 supports max 1632B, which is now in-driver
+standard value. On the other hand - mv88e6071 supports 2048 bytes.
+
+As this value is internal and may be different for each switch IC
+new entry in struct mv88e6xxx_info has been added to store it.
+
+When the 'max_frame_size' is not defined (and hence zeroed by
+the kvzalloc()) the default of 1632 bytes is used.
 
 Signed-off-by: Lukasz Majewski <lukma@denx.de>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 21 +++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.c | 12 ++++++++++--
  drivers/net/dsa/mv88e6xxx/chip.h |  1 +
- drivers/net/dsa/mv88e6xxx/port.h |  1 +
- 3 files changed, 23 insertions(+)
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index cfb6df516e27..09877a464665 100644
+index 09877a464665..d90835b4c606 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5547,6 +5547,27 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.ops = &mv88e6250_ops,
- 	},
+@@ -3542,11 +3542,19 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
++	int max_frame_size;
  
-+	[MV88E6071] = {
-+		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6071,
-+		.family = MV88E6XXX_FAMILY_6250,
-+		.name = "Marvell 88E6071",
-+		.num_databases = 64,
-+		.num_ports = 7,
-+		.num_internal_phys = 5,
-+		.max_vid = 4095,
-+		.port_base_addr = 0x08,
-+		.phy_base_addr = 0x00,
-+		.global1_addr = 0x0f,
-+		.global2_addr = 0x07,
-+		.age_time_coeff = 15000,
-+		.g1_irqs = 9,
-+		.g2_irqs = 5,
-+		.atu_move_port_mask = 0xf,
-+		.dual_chip = true,
-+		.ptp_support = true,
-+		.ops = &mv88e6250_ops,
-+	},
+ 	if (chip->info->ops->port_set_jumbo_size)
+ 		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+-	else if (chip->info->ops->set_max_frame_size)
+-		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
++	else if (chip->info->ops->set_max_frame_size) {
++		if (chip->info->max_frame_size)
++			max_frame_size = chip->info->max_frame_size;
++		else
++			max_frame_size = 1632;
 +
- 	[MV88E6085] = {
- 		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6085,
- 		.family = MV88E6XXX_FAMILY_6097,
++		return max_frame_size - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
++	}
++
+ 	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+ }
+ 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index c7cbbecd7fe1..2fcab41e03b7 100644
+index 2fcab41e03b7..6ec4010fd634 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -55,6 +55,7 @@ enum mv88e6xxx_frame_mode {
- /* List of supported models */
- enum mv88e6xxx_model {
- 	MV88E6020,
-+	MV88E6071,
- 	MV88E6085,
- 	MV88E6095,
- 	MV88E6097,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 60a36a8bc131..04e814a45597 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -112,6 +112,7 @@
- #define MV88E6XXX_PORT_SWITCH_ID		0x03
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_MASK	0xfff0
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6020	0x0200
-+#define MV88E6XXX_PORT_SWITCH_ID_PROD_6071	0x0710
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6085	0x04a0
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6095	0x0950
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6097	0x0990
+@@ -132,6 +132,7 @@ struct mv88e6xxx_info {
+ 	unsigned int num_ports;
+ 	unsigned int num_internal_phys;
+ 	unsigned int num_gpio;
++	unsigned int max_frame_size;
+ 	unsigned int max_vid;
+ 	unsigned int max_sid;
+ 	unsigned int port_base_addr;
 -- 
 2.37.2
 
