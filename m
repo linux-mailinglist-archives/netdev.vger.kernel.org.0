@@ -2,111 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 496FE620A99
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 08:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0969B620A73
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 08:41:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233650AbiKHHpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 02:45:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
+        id S233740AbiKHHlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 02:41:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233593AbiKHHos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 02:44:48 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F75D32057;
-        Mon,  7 Nov 2022 23:44:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667893454; x=1699429454;
-  h=from:to:cc:subject:date:message-id;
-  bh=T7jYiJ8YBdJidKEszRodAoGwDG2x93waptWQVrXdBTY=;
-  b=L6BOsDxMrVcqfYzJrASN1FLimz7EjXQx6Dj52MMyP9Eh5CFyaO2G0Boh
-   z3MVbhHKDk58TbGb4MUAlRtxUt9vjhqrlAT08GaWmmgLsRHlYhnNR83k9
-   HN9WvkBeK1yVHqH2UbhbrS4cPfJr/eJshO9q1Lx9DbtKRVGeR46kFy2r4
-   DJJpoQPhQtNvu5SxjiSoc3j6Lcy9Q6fjKDRb7EPMIVFHjzLN1gV8EigHl
-   mAbx/ImTKRWxFZPE6UwUR8vUPfZpiMXpnKenHT0/JBqLsWUuZ0+j9xV3G
-   YSe95Jgr5x9rPvaX2aHEF3KUlUwZFIM7LIj78s445VjPWAQkm8KYPin94
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="311786135"
-X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
-   d="scan'208";a="311786135"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 23:44:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="811147737"
-X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
-   d="scan'208";a="811147737"
-Received: from aminuddin-ilbpg12.png.intel.com ([10.88.229.89])
-  by orsmga005.jf.intel.com with ESMTP; 07 Nov 2022 23:44:09 -0800
-From:   Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S233584AbiKHHkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 02:40:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A783BDF1C;
+        Mon,  7 Nov 2022 23:40:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E103B818B2;
+        Tue,  8 Nov 2022 07:40:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3720C433D6;
+        Tue,  8 Nov 2022 07:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667893228;
+        bh=Hz521y2nG4i/prC8mk5q9LErTf2Or5Iuh/J+I3KecKI=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=llGnFzzLNf2z2NtfspBGFXEax81GNb8LWcA5cnpX6UiJafiELVyk90/ZFIhIIbJs2
+         E37aVMlT5qrzDM7F+Ik1gQVsbHUVwFrdz3sj4OsmWNXsoyPmcGtFcUwX+PUnRAAR+k
+         0egdjOzyeHUXYq0O51QaW7tUDF2q3HFTOQ9Aao0OReoZocIziEy9wGSOiGTIAnT5P5
+         7XIKVcgPuqbBwWIBbjq2HNVvL+OlTrXbL4FqI9l/9TwTHYiIo9wMF5QAboxTAztJgn
+         o3DoyYpkACzTjRo7Ot/170SBHwPat9qKiP6hSR5q7DZq2CoofHV5q8pn+lc+TxBES2
+         5iKAv8KeIuSxw==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: wifi: iwlegacy: remove redundant variable len
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20221104135036.225628-1-colin.i.king@gmail.com>
+References: <20221104135036.225628-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, tee.min.tan@intel.com,
-        muhammad.husaini.zulkifli@intel.com,
-        aminuddin.jamaluddin@intel.com, hong.aun.looi@intel.com
-Subject: [PATCH net-next v2] net: phy: marvell: add sleep time after enabling the loopback bit
-Date:   Tue,  8 Nov 2022 15:40:05 +0800
-Message-Id: <20221108074005.28229-1-aminuddin.jamaluddin@intel.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166789322416.4985.2717898272723414818.kvalo@kernel.org>
+Date:   Tue,  8 Nov 2022 07:40:25 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sleep time is added to ensure the phy to be ready after loopback
-bit was set. This to prevent the phy loopback test from failing.
+Colin Ian King <colin.i.king@gmail.com> wrote:
 
----
-V1: https://patchwork.kernel.org/project/netdevbpf/patch/20220825082238.11056-1-aminuddin.jamaluddin@intel.com/
----
+> Variable len is being assigned and modified but it is never
+> used. The variable is redundant and can be removed.
+> 
+> Cleans up clang scan build warning:
+> warning: variable 'len' set but not used [-Wunused-but-set-variable]
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
 
-Fixes: 020a45aff119 ("net: phy: marvell: add Marvell specific PHY loopback")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Signed-off-by: Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
----
- drivers/net/phy/marvell.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+Patch applied to wireless-next.git, thanks.
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index a3e810705ce2..860610ba4d00 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -2015,14 +2015,16 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
- 		if (err < 0)
- 			return err;
- 
--		/* FIXME: Based on trial and error test, it seem 1G need to have
--		 * delay between soft reset and loopback enablement.
--		 */
--		if (phydev->speed == SPEED_1000)
--			msleep(1000);
-+		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-+				 BMCR_LOOPBACK);
- 
--		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
--				  BMCR_LOOPBACK);
-+		if (!err) {
-+			/* It takes some time for PHY device to switch
-+			 * into/out-of loopback mode.
-+			 */
-+			msleep(1000);
-+		}
-+		return err;
- 	} else {
- 		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
- 		if (err < 0)
+9db485ce098f wifi: iwlegacy: remove redundant variable len
+
 -- 
-2.17.1
+https://patchwork.kernel.org/project/linux-wireless/patch/20221104135036.225628-1-colin.i.king@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
