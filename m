@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D81662166F
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:27:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E65621681
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234139AbiKHO1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 09:27:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
+        id S234118AbiKHO2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 09:28:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234468AbiKHO0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:26:53 -0500
+        with ESMTP id S234583AbiKHO1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:27:00 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CC413E17
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:25:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A662D58BFB
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:25:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ArmMfOIutKKcl5jKiRSJz49aXQQeoZr7AC8RYPMfBz8=; b=1z4+gEJp4m1jppYyKUvGAF+TjK
-        hRnA4kJPbDtsHug6JoEYLzbzd5poK7uplTPmiwnCMVoEovpL4BfTanCKRlBRi9HXZNsYiDRj1u+Gj
-        mEDxBtbb1/Ps6yUSWf98bTWyt6Gn0tlS9YYkCBwwlUusoKnKxz5+ofSkCdjxsFEpkGykCQPgiFz+C
-        2hc3t3M/KeSFeEfBnKawhzNj9DbQxIVPkHgfh9W8kJo1dF7D1GhvbVtJcDVjPs6ASW/OI9dwH9lPL
-        Ix96NRotgCW02QZQJLVSwV4h/zWgY/cBUNsHBM3LerzAvrcry1XdgjF6zuKW0Mz3+887YKix7Siq0
-        +cUlJeDw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35170)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=RohdZqlGL/IUK60KAgwodfuD2z+zCWgOkBeOIb87npo=; b=0Cyc9gn1yTTjKeL1Cw/D1dkUEP
+        8gL8QT2bIHeEkEiLRQo/DbXLibwWrO8VscL95OlrjbVZ485449fKB4R4+dSZHDS18BKJ5pQhX+HED
+        sXCBpxODKhi0z3sRLuMuYjZg87CIkS6twawzb87xxP/hSK94vfz4B5XXt1o1Bf7ycwt/PQKdFYybF
+        xmrgtak0NSLmzp0hc9MPo/mQGRUjd56o6G6bMx6nqcqBnlwrBSjdwq6eJxWEn7/rdcdWVDiwhm9QG
+        X/AF3KWfJPN9Ru8KF1djBQY9yiILrUBOKcLi8rqFwTTGUg8LK2fhvV28OayCNN3kJTlyhhw6Fy0/6
+        x21Sjy1Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:45028 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1osPXf-0003K1-Jx; Tue, 08 Nov 2022 14:25:31 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1osPXb-0004on-VA; Tue, 08 Nov 2022 14:25:27 +0000
-Date:   Tue, 8 Nov 2022 14:25:27 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1osPY4-0003KK-J0; Tue, 08 Nov 2022 14:25:56 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1osPY4-002SMk-03; Tue, 08 Nov 2022 14:25:56 +0000
+In-Reply-To: <Y2pm13+SDg6N/IVx@shell.armlinux.org.uk>
+References: <Y2pm13+SDg6N/IVx@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To:     Jose Abreu <Jose.Abreu@synopsys.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
@@ -43,12 +44,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 0/2] Clean up pcs-xpcs accessors
-Message-ID: <Y2pm13+SDg6N/IVx@shell.armlinux.org.uk>
+Subject: [PATCH net-next 1/2] net: mdio: add mdiodev_c45_(read|write)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1osPY4-002SMk-03@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Tue, 08 Nov 2022 14:25:56 +0000
 X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SORTED_RECIPS,SPF_HELO_NONE,
         SPF_NONE autolearn=no autolearn_force=no version=3.4.6
@@ -58,16 +61,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ include/linux/mdio.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-This series cleans up the pcs-xpcs code to use mdiodev accessors for
-read/write just like xpcs_modify_changed() does. In order to do this,
-we need to introduce the mdiodev clause 45 accessors.
-
- drivers/net/pcs/pcs-xpcs.c | 10 ++--------
- include/linux/mdio.h       | 13 +++++++++++++
- 2 files changed, 15 insertions(+), 8 deletions(-)
-
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index 00177567cfef..f7fbbf3069e7 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -488,6 +488,19 @@ static inline int mdiobus_c45_write(struct mii_bus *bus, int prtad, int devad,
+ 	return mdiobus_write(bus, prtad, mdiobus_c45_addr(devad, regnum), val);
+ }
+ 
++static inline int mdiodev_c45_read(struct mdio_device *mdiodev, int devad,
++				   u16 regnum)
++{
++	return mdiobus_c45_read(mdiodev->bus, mdiodev->addr, devad, regnum);
++}
++
++static inline int mdiodev_c45_write(struct mdio_device *mdiodev, u32 devad,
++				    u16 regnum, u16 val)
++{
++	return mdiobus_c45_write(mdiodev->bus, mdiodev->addr, devad, regnum,
++				 val);
++}
++
+ int mdiobus_register_device(struct mdio_device *mdiodev);
+ int mdiobus_unregister_device(struct mdio_device *mdiodev);
+ bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
