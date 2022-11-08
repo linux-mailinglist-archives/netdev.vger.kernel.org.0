@@ -2,228 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DE06208FD
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 06:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EBF162095A
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 07:11:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233092AbiKHFn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 00:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        id S233358AbiKHGLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 01:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233235AbiKHFny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 00:43:54 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86F520348
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 21:43:53 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1osHOf-000573-59; Tue, 08 Nov 2022 06:43:41 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1osHOc-002zmt-8K; Tue, 08 Nov 2022 06:43:39 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1osHOb-00HTlo-V0; Tue, 08 Nov 2022 06:43:37 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233220AbiKHGLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 01:11:08 -0500
+Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D773FBB5
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 22:11:06 -0800 (PST)
+Received: from gw.atmark-techno.com (localhost [127.0.0.1])
+        by gw.atmark-techno.com (Postfix) with ESMTP id C2242600E7
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 14:55:46 +0900 (JST)
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+        by gw.atmark-techno.com (Postfix) with ESMTPS id 68748600E7
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 14:55:45 +0900 (JST)
+Received: by mail-pl1-f198.google.com with SMTP id k9-20020a170902c40900b0018734e872a9so10688887plk.21
+        for <netdev@vger.kernel.org>; Mon, 07 Nov 2022 21:55:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=scjidRPc4iGIvCmBatKCX2F1Tnu8QI+jfRrfWYL73ZU=;
+        b=kYwjpLRo7uvsWoXvaiYgnSZWY5oQFnIEBJy2fzA0R7kYbQi4Mf6IwoCelFBbgGpKt4
+         ynHKhABULbe+m7wS1bd2v5e5unmit8vISurgQoOI5j2xecd0jgP8fg+nmUROEWY4u1sU
+         22fIo2vBEUFEfFx2xdiieww6kngJikIqh5KY33ZbuvfrL7dbROYKRau365IuXs703sUo
+         t4h1E8MaTeq51v4aLRcjsKYfMtsuCUGR7LeQnhOLVGTZYLblO45wIx1Li7nwcPo/18kz
+         xGpCRjJSOWCKy2xhn1lW7/IUBwh2308xTOqn8jdNz5IgJ1kYyyUpBJaH3rvQ2AEiJnVP
+         tMvQ==
+X-Gm-Message-State: ACrzQf2gmGiqhX6/SVEerJs6Qp4gzLMzVPy3H9ImUmrS96NAUY62Pvt2
+        ca7rCwdmZioe4bat33NFAO772Pie/nPljf8AHvP3ZpMjvGhhmBBXfwwWR0lvVVQJTS74QtWJ3za
+        +iPb1g29CuJ5gkkyAMf8V
+X-Received: by 2002:a17:902:e493:b0:186:9de4:a7cd with SMTP id i19-20020a170902e49300b001869de4a7cdmr54287988ple.66.1667886944495;
+        Mon, 07 Nov 2022 21:55:44 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM55peqthT9o/HMP9yprkCEHGzsFlZtK9QZTvy+tMTjniQD8mY+dN503GnNnk/R9botVWPvRlA==
+X-Received: by 2002:a17:902:e493:b0:186:9de4:a7cd with SMTP id i19-20020a170902e49300b001869de4a7cdmr54287964ple.66.1667886944191;
+        Mon, 07 Nov 2022 21:55:44 -0800 (PST)
+Received: from pc-zest.atmarktech (178.101.200.35.bc.googleusercontent.com. [35.200.101.178])
+        by smtp.gmail.com with ESMTPSA id m12-20020a17090ab78c00b002132f3e71c6sm5185182pjr.52.2022.11.07.21.55.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Nov 2022 21:55:43 -0800 (PST)
+Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
+        (envelope-from <martinet@pc-zest>)
+        id 1osHaI-0098Ix-2j;
+        Tue, 08 Nov 2022 14:55:42 +0900
+From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v3 3/3] net: dsa: microchip: ksz8: add MTU configuration support
-Date:   Tue,  8 Nov 2022 06:43:36 +0100
-Message-Id: <20221108054336.4165931-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221108054336.4165931-1-o.rempel@pengutronix.de>
-References: <20221108054336.4165931-1-o.rempel@pengutronix.de>
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com,
+        Dominique Martinet <dominique.martinet@atmark-techno.com>
+Subject: [RFC PATCH 0/2] Add serdev support for hci h4
+Date:   Tue,  8 Nov 2022 14:55:29 +0900
+Message-Id: <20221108055531.2176793-1-dominique.martinet@atmark-techno.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make MTU configurable on KSZ87xx and KSZ88xx series of switches.
+Hello,
 
-Before this patch, pre-configured behavior was different on different
-switch series, due to opposite meaning of the same bit:
-- KSZ87xx: Reg 4, Bit 1 - if 1, max frame size is 1532; if 0 - 1514
-- KSZ88xx: Reg 4, Bit 1 - if 1, max frame size is 1514; if 0 - 1532
 
-Since the code was telling "... SW_LEGAL_PACKET_DISABLE, true)", I
-assume, the idea was to set max frame size to 1532.
+A couple of questions with this patch (hence status as RFC), first for
+the dt bindings part:
+ - I have no idea what to do with the compatible name.
+I am not affiliated with nxp (except as a customer), so I'm not entierly
+comfortable just adding a new property in the nxp, namespace.
+The h4 protocol is very generic and I'd think a name such as
+'hci-h4,generic' make more sense as other boards would be able to
+benefit from it without extra modifications... But that doesn't seem to
+be how things are done with dt bindings, so can I just add an arbitrary
+name?
+ - I've set Marcel (who maintains the hci_h4 driver) as maintainer of
+he dt-bindings unilaterally without asking him for lack of a better
+idea: Marcel, are you ok with that? My first idea was making it myself
+but I don't really feel competent for this.
 
-With this patch, by setting MTU size 1500, both switch series will be
-configured to the 1532 frame limit.
+Second for the driver itself:
+ - I've just monkeyed the simplest serdev support I could come up with
+and it appears to work (I'm trying to replace the following command:
+btattach -B /dev/ttymxc0 -S 3000000 -P h4); perhaps there are other
+settings you'd want?
+I've also tried suspend and with no handler it appears to work with
+an idle controller, but I'd assume we might want some pm handling at
+some point if possible... Right now this is no worse than btattach,
+but unlike btattach it's not easy to restart (unbind/bind the driver?)
+so that might come up sooner or later; will be happy to look then.
 
-This patch was tested on KSZ8873.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz8.h        |  1 +
- drivers/net/dsa/microchip/ksz8795.c     | 57 ++++++++++++++++++++++++-
- drivers/net/dsa/microchip/ksz8795_reg.h |  3 ++
- drivers/net/dsa/microchip/ksz_common.c  |  7 +++
- drivers/net/dsa/microchip/ksz_common.h  |  4 ++
- 5 files changed, 70 insertions(+), 2 deletions(-)
+I confirmed this works with the following dts fragment over
+imx8mp.dtsi, on a board with the AW-XM458 NXP wireless+BT module.
 
-diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
-index 8582b4b67d98..ea05abfbd51d 100644
---- a/drivers/net/dsa/microchip/ksz8.h
-+++ b/drivers/net/dsa/microchip/ksz8.h
-@@ -57,5 +57,6 @@ int ksz8_reset_switch(struct ksz_device *dev);
- int ksz8_switch_detect(struct ksz_device *dev);
- int ksz8_switch_init(struct ksz_device *dev);
- void ksz8_switch_exit(struct ksz_device *dev);
-+int ksz8_change_mtu(struct ksz_device *dev, int port, int mtu);
- 
- #endif
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index bd3b133e7085..ac03625d427e 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -76,6 +76,61 @@ int ksz8_reset_switch(struct ksz_device *dev)
- 	return 0;
- }
- 
-+static int ksz8863_change_mtu(struct ksz_device *dev, int port, int max_frame)
-+{
-+	u8 ctrl2 = 0;
-+
-+	if (max_frame <= KSZ8_LEGAL_PACKET_SIZE)
-+		ctrl2 |= KSZ8863_LEGAL_PACKET_ENABLE;
-+	else if (max_frame > KSZ8863_NORMAL_PACKET_SIZE)
-+		ctrl2 |= KSZ8863_HUGE_PACKET_ENABLE;
-+
-+	return ksz_rmw8(dev, REG_SW_CTRL_2, KSZ8863_LEGAL_PACKET_ENABLE
-+			| KSZ8863_HUGE_PACKET_ENABLE, ctrl2);
-+}
-+
-+static int ksz8795_change_mtu(struct ksz_device *dev, int port, int max_frame)
-+{
-+	u8 ctrl1 = 0, ctrl2 = 0;
-+	int ret;
-+
-+	if (max_frame > KSZ8_LEGAL_PACKET_SIZE)
-+		ctrl2 |= SW_LEGAL_PACKET_DISABLE;
-+	else if (max_frame > KSZ8863_NORMAL_PACKET_SIZE)
-+		ctrl1 |= SW_HUGE_PACKET;
-+
-+	ret = ksz_rmw8(dev, REG_SW_CTRL_1, SW_HUGE_PACKET, ctrl1);
-+	if (ret)
-+		return ret;
-+
-+	return ksz_rmw8(dev, REG_SW_CTRL_2, SW_LEGAL_PACKET_DISABLE, ctrl2);
-+}
-+
-+int ksz8_change_mtu(struct ksz_device *dev, int port, int mtu)
-+{
-+	u16 frame_size, max_frame = 0;
-+	int i;
-+
-+	frame_size = mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
-+
-+	/* Cache the per-port MTU setting */
-+	dev->ports[port].max_frame = frame_size;
-+
-+	for (i = 0; i < dev->info->port_cnt; i++)
-+		max_frame = max(max_frame, dev->ports[i].max_frame);
-+
-+	switch (dev->chip_id) {
-+	case KSZ8795_CHIP_ID:
-+	case KSZ8794_CHIP_ID:
-+	case KSZ8765_CHIP_ID:
-+		return ksz8795_change_mtu(dev, port, max_frame);
-+	case KSZ8830_CHIP_ID:
-+		return ksz8863_change_mtu(dev, port, max_frame);
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
- static void ksz8795_set_prio_queue(struct ksz_device *dev, int port, int queue)
- {
- 	u8 hi, lo;
-@@ -1233,8 +1288,6 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
- 	masks = dev->info->masks;
- 	regs = dev->info->regs;
- 
--	/* Switch marks the maximum frame with extra byte as oversize. */
--	ksz_cfg(dev, REG_SW_CTRL_2, SW_LEGAL_PACKET_DISABLE, true);
- 	ksz_cfg(dev, regs[S_TAIL_TAG_CTRL], masks[SW_TAIL_TAG_ENABLE], true);
- 
- 	p = &dev->ports[dev->cpu_port];
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index 77487d611824..7a57c6088f80 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -48,6 +48,9 @@
- #define NO_EXC_COLLISION_DROP		BIT(3)
- #define SW_LEGAL_PACKET_DISABLE		BIT(1)
- 
-+#define KSZ8863_HUGE_PACKET_ENABLE	BIT(2)
-+#define KSZ8863_LEGAL_PACKET_ENABLE	BIT(1)
-+
- #define REG_SW_CTRL_3			0x05
-  #define WEIGHTED_FAIR_QUEUE_ENABLE	BIT(3)
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 486ad03d0acf..188c66145df7 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -172,6 +172,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.reset = ksz8_reset_switch,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
-+	.change_mtu = ksz8_change_mtu,
- };
- 
- static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
-@@ -2473,6 +2474,12 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
- 	struct ksz_device *dev = ds->priv;
- 
- 	switch (dev->chip_id) {
-+	case KSZ8795_CHIP_ID:
-+	case KSZ8794_CHIP_ID:
-+	case KSZ8765_CHIP_ID:
-+		return KSZ8795_HUGE_PACKET_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
-+	case KSZ8830_CHIP_ID:
-+		return KSZ8863_HUGE_PACKET_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
- 	case KSZ8563_CHIP_ID:
- 	case KSZ9477_CHIP_ID:
- 	case KSZ9567_CHIP_ID:
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 85ce6ec573ba..4a43a2cf7017 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -589,6 +589,10 @@ static inline int is_lan937x(struct ksz_device *dev)
- 
- #define PORT_SRC_PHY_INT		1
- 
-+#define KSZ8795_HUGE_PACKET_SIZE	2000
-+#define KSZ8863_HUGE_PACKET_SIZE	1916
-+#define KSZ8863_NORMAL_PACKET_SIZE	1536
-+#define KSZ8_LEGAL_PACKET_SIZE		1518
- #define KSZ9477_MAX_FRAME_SIZE		9000
- 
- /* Regmap tables generation */
+--8<------
+&uart1 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_uart1>;
+        assigned-clocks = <&clk IMX8MP_CLK_UART1>;
+        assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_80M>;
+        status = "okay";
+        fsl,dte-mode = <1>;
+        fsl,uart-has-rtscts;
+
+        bluetooth {
+                compatible = "nxp,aw-xm458-bt";
+                max-speed = <3000000>;
+        };
+};
+
+&iomuxc {
+        pinctrl_uart1: uart1grp {
+                fsl,pins = <
+                        MX8MP_IOMUXC_UART1_RXD__UART1_DTE_TX    0x140
+                        MX8MP_IOMUXC_UART1_TXD__UART1_DTE_RX    0x140
+                        MX8MP_IOMUXC_UART3_RXD__UART1_DTE_RTS   0x140
+                        MX8MP_IOMUXC_UART3_TXD__UART1_DTE_CTS   0x140
+                >;
+        };
+}
+--8<------
+
+
+Dominique Martinet (2):
+  dt-bindings: net: h4-bluetooth: add new bindings for hci_h4
+  bluetooth/hci_h4: add serdev support
+
+ .../devicetree/bindings/net/h4-bluetooth.yaml | 49 ++++++++++++++
+ drivers/bluetooth/Kconfig                     |  1 +
+ drivers/bluetooth/hci_h4.c                    | 64 +++++++++++++++++++
+ 3 files changed, 114 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/h4-bluetooth.yaml
+
 -- 
-2.30.2
+2.35.1
+
 
