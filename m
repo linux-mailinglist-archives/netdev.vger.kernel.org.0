@@ -2,102 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4AAF6211FA
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 14:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32DCE6211FD
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 14:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234062AbiKHNIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 08:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S234248AbiKHNIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 08:08:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233603AbiKHNID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 08:08:03 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74D1BD3
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 05:08:01 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id 13so38515042ejn.3
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 05:08:01 -0800 (PST)
+        with ESMTP id S234109AbiKHNIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 08:08:38 -0500
+Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9CE13F73
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 05:08:37 -0800 (PST)
+Received: by mail-vk1-xa35.google.com with SMTP id b81so8839001vkf.1
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 05:08:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YgGAxT2dN/rtYfkynXxG3S3gwoXR7pGRQb0UFL/LREs=;
-        b=iSPMTgL2KOxWP0nJNepfg2jez8l5YLPh81QvTy5e0HyWyBKvYlci4gwat5DsjZW+Gp
-         rA1to0EZuP2zaDPJoEVmx0NdOlFupS6Gv+uv+CiJF7d+4HmItoBoh1+MUH8RH53FTR0y
-         Wcw1V/n/ygOt5Z87FrWFxAcBy6qOekDVBhjfZgjcG7CA57fSKNV8tShfRZHHUIAO1ft2
-         Fxn2m6B/dhKoPpviZmCCOzXbb/kobpbAS+lgo6uYqx4MgZiUQf4bIEeALeTXMKXfzKdB
-         GQRO0nPzPZN1nLiSd9P5OeC/4UY0/6wp7n8S2SJEkS1gHabZ0Ar4xtWWJ+2JczO8cRbv
-         GBMg==
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SzBlYeGeT15Xra75w9IZDBjQ7Da3XKSmRdlnDJDYrko=;
+        b=DKkWfxExwMlEUJXNP6lKfjyb4CMccx2Kai3Q0h/Roaelr7alr5uAkTo62gd3//EKF1
+         u/2zEzeJv5VIaaqataB1zclP63Oh4T0RIF6WHq90ryfBcWCt1l8PJITeTlJL2J8NT8CL
+         GZsliKtJInFjIPLbI2HgYXJKmMxUJl9MSNLCqqkMdTfKUlpW+2/va5HtK0XoYg2cdKya
+         O91VZ9jBHFIfRUXEckXlx+Up/+BxrWBKd6T4C6nR6gjuZsTjiElF4faWZM4wvhutMuo2
+         a3hY41PvxkuFETI78LBZNVuV1ml1LhejvXQ8zAgJAPc07//imjJmrdrDqwbr4f2shXEG
+         9H6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YgGAxT2dN/rtYfkynXxG3S3gwoXR7pGRQb0UFL/LREs=;
-        b=WsGf03C5wpMB1WLyS7cSoqxo815fNu9nz1IX0Tiso9rzrJoQzeQ14WMTeuVmP43HLW
-         xbCkZJckolsZSgx6EUBiVQLmYg9gb1ELARRcQ2Shxfgxj50r3ZD+yHsycL/v17B2WKRG
-         tthLPJNL5/R04/KV8buKnC+weZo2UvTpT7MpzTurm5ic6LJ5JXgbMMuSwMk1qILzAjR7
-         C0Sqs0qi4D+QW7C7BLqFxzbcWKLWvKWvUwuJPtiKQwBCLt+8iyCqF9eybrUnggH4qgC+
-         iaYPahU+k0WkupWYgj+9aO8PFnXx2ZHfFXWIQaubnwvRq0CFxHsjO1qPrcjxw3vhyVOL
-         SAEQ==
-X-Gm-Message-State: ACrzQf0Sz+UehytPYe/uLYz4MLe3hb+s72G1y97JqFXmrUJJWpyisRU7
-        NQ/Q+KgcRrGFMAe1JJq/juBjjw==
-X-Google-Smtp-Source: AMsMyM6NG9hx12ILE9szF89mNHRHCrVN9QOuSJs0JldXK1hP1H2EjzW5WYJtfbIeQO0JxbGd/niM5Q==
-X-Received: by 2002:a17:907:728f:b0:7ad:dcbb:3e7f with SMTP id dt15-20020a170907728f00b007addcbb3e7fmr40568241ejc.535.1667912880327;
-        Tue, 08 Nov 2022 05:08:00 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id u17-20020a1709061db100b007789e7b47besm4619959ejh.25.2022.11.08.05.07.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 05:07:59 -0800 (PST)
-Date:   Tue, 8 Nov 2022 14:07:58 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, bigeasy@linutronix.de,
-        imagedong@tencent.com, kuniyu@amazon.com, petrm@nvidia.com
-Subject: Re: [patch net-next 2/2] net: devlink: move netdev notifier block to
- dest namespace during reload
-Message-ID: <Y2pUrs44U4LkZsHs@nanopsycho>
-References: <20221107145213.913178-1-jiri@resnulli.us>
- <20221107145213.913178-3-jiri@resnulli.us>
- <Y2oPRR+P2ecMLPMl@shredder>
- <Y2pSxnZjdrsSjW2j@nanopsycho>
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SzBlYeGeT15Xra75w9IZDBjQ7Da3XKSmRdlnDJDYrko=;
+        b=mw/W/USxIVGYVesqqFZEa/3ZHx8dEZT72xUBYsmBecfexoAR/c+GaztwtBbsr1dKD/
+         rU6BRNmQAUyMDdat6OuAFhX82WAdYj2toTtPE/n2aXT4/+/TjloHz0KOvPt7CFuFUrCq
+         XK3qFKtKOWLsCbJv2RHyAmA4VLHv+G5JZ9uqhR4mVFO9hl7rBC7CdzPtiFk7UhvyPmus
+         YWO9v7Zu+ksEW3YwxYARA4Akez4nmJqGo3jO7FozX9iDJtMsW73fZy6ImsmQW4gCSprZ
+         49cxK4UuVkARCBL6tLYxH7WhInMyFf6mjYC7C6C6813fx1bfxWu9uVJJ6AWlbd5Z0l8z
+         iIvg==
+X-Gm-Message-State: ACrzQf15Zx2J11/tBoXd5TLJncjLi54ynLbFQPKqXOmKFSw0UFx+ywFg
+        R4GrsMVnqZYHfeqs2zZmIZfvwBcrpl/zv3IkWEHoGRzFNqjN2A==
+X-Google-Smtp-Source: AMsMyM5tdOYLdG/oxKOBN/WLHl4YriGuBMSS/iGMoC30zQYR1SEKqy220Ddxri5UKqj7OmrjP6qodRR0EpWYfh+a+NU=
+X-Received: by 2002:ad4:5be4:0:b0:4bb:e947:c664 with SMTP id
+ k4-20020ad45be4000000b004bbe947c664mr44158322qvc.122.1667912906076; Tue, 08
+ Nov 2022 05:08:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y2pSxnZjdrsSjW2j@nanopsycho>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:ad4:5cc5:0:0:0:0:0 with HTTP; Tue, 8 Nov 2022 05:08:25 -0800 (PST)
+Reply-To: mr.abraham022@gmail.com
+From:   "Mr.Abraham" <davidkekeli1001@gmail.com>
+Date:   Tue, 8 Nov 2022 13:08:25 +0000
+Message-ID: <CA+f86Q=8f8EXvBeCBtU7zSEiurpSyEpYw5gxR0u4R6X5kQTDOQ@mail.gmail.com>
+Subject: Greeting
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:a35 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4980]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [mr.abraham022[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [davidkekeli1001[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [davidkekeli1001[at]gmail.com]
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Nov 08, 2022 at 01:59:50PM CET, jiri@resnulli.us wrote:
->Tue, Nov 08, 2022 at 09:11:49AM CET, idosch@idosch.org wrote:
->>On Mon, Nov 07, 2022 at 03:52:13PM +0100, Jiri Pirko wrote:
->>> From: Jiri Pirko <jiri@nvidia.com>
->>> 
->>> The notifier block tracking netdev changes in devlink is registered
->>> during devlink_alloc() per-net, it is then unregistered
->>> in devlink_free(). When devlink moves from net namespace to another one,
->>> the notifier block needs to move along.
->>> 
->>> Fix this by adding forgotten call to move the block.
->>> 
->>> Reported-by: Ido Schimmel <idosch@idosch.org>
->>> Fixes: 02a68a47eade ("net: devlink: track netdev with devlink_port assigned")
->>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->>
->>Reviewed-by: Ido Schimmel <idosch@nvidia.com>
->>Tested-by: Ido Schimmel <idosch@nvidia.com>
->
->Sending v2 with cosmetical changes. Please put your tags there again.
-
-Actually, this patch stays untouched. So I'll add it.
-
->Thanks!
->
->>
->>Thanks!
+My Greeting, Did you receive the letter i sent to you. Please answer me.
+Regard, Mr.Abraham
