@@ -2,209 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9407F6203CB
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 00:32:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 872BA6204CC
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 01:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232308AbiKGXcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 18:32:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
+        id S232060AbiKHAn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 19:43:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbiKGXcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 18:32:35 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D011741C;
-        Mon,  7 Nov 2022 15:32:34 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id k2so34333895ejr.2;
-        Mon, 07 Nov 2022 15:32:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AiLgtkiudUKJTTaGdp3zbpBeZPoePBEReextvb186MI=;
-        b=F+912x1YVqzNVZ+r84T1IgOx22zFb0Z/IwAZyy2OHa10ek3R514Rs1677cR+EL1q/j
-         wxE8uaHgW2Gvd9YiIKC+dGk06TxagVz2h9sl4lcEY5fvbb0/3uclQxHoerZzRrHdmawJ
-         MgcZxqpr6suK1wdHyXEPCbmC+cUFPWE/HQSYZGE47XHq8TGetzN+6taEgUL/3mGcx1HM
-         G8Kb8loOisf/avTiK/Fq0InBmKXa/o3ivcd2GD6jjJI3RIU8UzDbxnW5J/P+BMsXNrKe
-         qNqamSeiF5MYKL9siv68G90teksoa5S2qHssaQPBMPJ8334Q+Oxldq0XWAlczy/GBe4I
-         bhNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AiLgtkiudUKJTTaGdp3zbpBeZPoePBEReextvb186MI=;
-        b=ywxHRBXbhY6WnvdTlEuv/H5m2mhNx3d8dBjuqkNRzVcJwR8/LbO33jMYqQGluEgdIU
-         5MD+DkhowM2plIrxJWVmdqAicdF3wA4ncVEQpXkDfKw0dLZWcEO1JBNJ7gf8t0KqEjtb
-         PKJUd3EwoiUUNBSSwHwb6M1NYwh+5x4S2e1ML7argMfr/Lvoss840LJYsN3qs904ZUUC
-         64f8qQDHx+9s6iZWVVNgVdf9wTuJc7l5FHKsuFYQDg3FKW5I0Cy6ldvVCWHcbo08hBis
-         sc+/eLkx7gb9RE8FAPqwQgU4YZ2y8RiE9dIfECX/nVxRAsmXcTJTGN1soQLpKkDQH7/Q
-         wLvw==
-X-Gm-Message-State: ANoB5plRFq8s/lpWm8V3FdxYd+OlQk44bO9VlDufgNxDxv2HvUObLToJ
-        SVXucrLNBE/IRlenu18BOfw=
-X-Google-Smtp-Source: AA0mqf75QT137g7/iddXAYo402OLTzYbFPikl7JfQ39bSP0WrlaHdQL7Tt0Qql8fqtDDCA22f1f+Ug==
-X-Received: by 2002:a17:907:971e:b0:78d:e7ed:7585 with SMTP id jg30-20020a170907971e00b0078de7ed7585mr1937992ejc.258.1667863952532;
-        Mon, 07 Nov 2022 15:32:32 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id o19-20020a170906769300b00722e50dab2csm3970132ejm.109.2022.11.07.15.32.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 15:32:31 -0800 (PST)
-Date:   Tue, 8 Nov 2022 01:32:29 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 11/14] net: ethernet: mtk_eth_soc: fix VLAN rx hardware
- acceleration
-Message-ID: <20221107233229.qzwuex4nwm44xbe4@skbuf>
-References: <20221107185452.90711-1-nbd@nbd.name>
- <20221107185452.90711-11-nbd@nbd.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221107185452.90711-11-nbd@nbd.name>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231172AbiKHAn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 19:43:27 -0500
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBF5C4A
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 16:43:22 -0800 (PST)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20221108004318epoutp0473d6e7641745e65652cbf9db86fa06e8~ldUpNJPa31074010740epoutp04s
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 00:43:18 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20221108004318epoutp0473d6e7641745e65652cbf9db86fa06e8~ldUpNJPa31074010740epoutp04s
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1667868199;
+        bh=uqVBtm0tHK3cdhqzQW+N+QwjWT+cXYAyTVCzFI4k560=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=bCsVU9TUqtJ3Ac+AN/jorh01smBs5SDGylcLwFdCu3F482T+KmybGYHKvdmgY+Id4
+         jT9lxoR/JMRiEMUx9gjyTAnsXLN6iEkAYFtTDsuQjCfclRzWoRlj1AVZ9yCXhmHkrp
+         P9r92RYrAKNQpKZdt8Gci5BfbbRq3SZFZk8y3Xs0=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20221108004318epcas2p3c84407a2b3ccfd3e437321a4c79b2b88~ldUo2xS0b2929929299epcas2p3L;
+        Tue,  8 Nov 2022 00:43:18 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.68]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4N5q8Q15H3z4x9Pr; Tue,  8 Nov
+        2022 00:43:18 +0000 (GMT)
+X-AuditID: b6c32a45-3f1ff7000001f07d-e1-6369a625b8d5
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        24.2E.61565.526A9636; Tue,  8 Nov 2022 09:43:17 +0900 (KST)
+Mime-Version: 1.0
+Subject: Re: [PATCH net-next v3] nfc: Allow to create multiple virtual nci
+ devices
+Reply-To: bongsu.jeon@samsung.com
+Sender: Bongsu Jeon <bongsu.jeon@samsung.com>
+From:   Bongsu Jeon <bongsu.jeon@samsung.com>
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+CC:     "leon@kernel.org" <leon@kernel.org>,
+        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <CACT4Y+aVXi5hWNMrYavfhmhr3+FVyJoq8KhzrLp1gJFiSCxpxg@mail.gmail.com>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20221108004316epcms2p63ff537496ef759cb0c734068bd58855c@epcms2p6>
+Date:   Tue, 08 Nov 2022 09:43:16 +0900
+X-CMS-MailID: 20221108004316epcms2p63ff537496ef759cb0c734068bd58855c
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkk+LIzCtJLcpLzFFi42LZdljTQld1WWaywal+KYstzZPYLSY8bGO3
+        2Pt6K7vFlF9LmS2OLRCzOPKmm9mBzWPBplKPPRNPsnlsWtXJ5nHn2h42j74tqxg9Pm+SC2CL
+        yrbJSE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMATpCSaEs
+        MacUKBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgXqBXnJhbXJqXrpeXWmJlaGBgZApUmJCd
+        sbhTpeCBWsX0x1PZGhg75boYOTkkBEwkmtv2M3UxcnEICexglPhyvYG9i5GDg1dAUOLvDmGQ
+        GmGBEIk938+ygdhCAooS/zvOsUHEdSVe/D0KZrMJaEusPdrIBGKLCPhLrDyxhhVkJrPAPUaJ
+        dR8vsUMs45WY0f6UBcKWlti+fCsjyC5OgUCJZxNtIMIaEj+W9TJD2KISN1e/ZYex3x+bzwhh
+        i0i03jsLVSMo8eDnbqi4lMSnh2dYIex8iZe7Otgg7BKJx2cWQdWbS+x5swsszivgK3Fl71yw
+        m1kEVCUWLD7GBnKOhICLxLpGM5Aws4C8xPa3c5hBwswCmhLrd+lDVChLHLnFAlHBJ9Fx+C/c
+        fzvmPWGCsFUlepu/MMH8Onl2C9SRHhK3l/1nncCoOAsRzLOQ7JqFsGsBI/MqRrHUguLc9NRi
+        owJDeMQm5+duYgSnRS3XHYyT337QO8TIxMF4iFGCg1lJhFekJjNZiDclsbIqtSg/vqg0J7X4
+        EKMp0JMTmaVEk/OBiTmvJN7QxNLAxMzM0NzI1MBcSZy3a4ZWspBAemJJanZqakFqEUwfEwen
+        VAOT8rx1H7YdiS4v89AQ/7k+0uPTxmknT8kpPC7qCF3IeerAdcN/HoaVH2q0pzRtqmRKLO20
+        fbMske97t+oSNavP1z8szHf7ffXeX+bn539/uCVnJ1med0djwU9L/Tq2re8VqqP1Hk59vtqY
+        TfASg1JB+FsFk2/n8zPnVf0+95w5UtKHY/7dHfO/W6Y/l/v88PFmprf63y7qfBK4zf7YdqHk
+        1veMD9PvH5x/sF5l+W+R4E1P90+Ln3fsVvKXQzPkl8gt09y3K+T0i+/ht8qX/T00M97nqNzD
+        5kNaITH3Wh6mBM97wLRnl8Dy5eV1qd474uM92uOnOG3v2+AlutjC7MPZEp+Dwa8ruXeeOaCk
+        VKivcU+JpTgj0VCLuag4EQCIYShIFAQAAA==
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20221104170430epcas2p1d854f31557e623e8fd9d16f6c162d90d
+References: <CACT4Y+aVXi5hWNMrYavfhmhr3+FVyJoq8KhzrLp1gJFiSCxpxg@mail.gmail.com>
+        <20221104170422.979558-1-dvyukov@google.com>
+        <20221107024604epcms2p174f8813f4e18607b93813021f5b048b0@epcms2p1>
+        <CGME20221104170430epcas2p1d854f31557e623e8fd9d16f6c162d90d@epcms2p6>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 07:54:49PM +0100, Felix Fietkau wrote:
-> - enable VLAN untagging for PDMA rx
-> - make it possible to disable the feature via ethtool
-> - pass VLAN tag to the DSA driver
-> - untag special tag on PDMA only if no non-DSA devices are in use
-> - disable special tag untagging on 7986 for now, since it's not working yet
-
-What is the downside of not enabling VLAN RX offloading, is it a
-performance or a functional need to have it?
-
+On Tue, Nov 8, 2022 at 3:38 AM Dmitry Vyukov<dvyukov@google.com> wrote:
+> On Sun, 6 Nov 2022 at 18:46, Bongsu Jeon <bongsu.jeon@samsung.com> wrote:
+> >
+> > On Sat, Nov 5, 2022 at 2:04 AM Dmitry Vyukov<dvyukov@google.com> wrote:
+> > > The current virtual nci driver is great for testing and fuzzing.
+> > > But it allows to create at most one "global" device which does not allow
+> > > to run parallel tests and harms fuzzing isolation and reproducibility.
+> > > Restructure the driver to allow creation of multiple independent devices.
+> > > This should be backwards compatible for existing tests.
+> >
+> > I totally agree with you for parallel tests and good design.
+> > Thanks for good idea.
+> > But please check the abnormal situation.
+> > for example virtual device app is closed(virtual_ncidev_close) first and then
+> > virtual nci driver from nci app tries to call virtual_nci_send or virtual_nci_close.
+> > (there would be problem in virtual_nci_send because of already destroyed mutex)
+> > Before this patch, this driver used virtual_ncidev_mode state and nci_mutex that isn't destroyed.
 > 
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 36 +++++++++++++--------
->  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 ++
->  2 files changed, 25 insertions(+), 14 deletions(-)
+> I assumed nci core must stop calling into a driver at some point
+> during the driver destruction. And I assumed that point is return from
+> nci_unregister_device(). Basically when nci_unregister_device()
+> returns, no new calls into the driver must be made. Calling into a
+> driver after nci_unregister_device() looks like a bug in nci core.
 > 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index ab31dda2cd66..3b8995a483aa 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -2015,16 +2015,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
->  						htons(RX_DMA_VPID(trxd.rxd4)),
->  						RX_DMA_VID(trxd.rxd4));
->  			} else if (trxd.rxd2 & RX_DMA_VTAG) {
-> -				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-> +				__vlan_hwaccel_put_tag(skb, htons(RX_DMA_VPID(trxd.rxd3)),
-
-Why make this change? The network stack doesn't like it when you feed it
-non-standard VLAN protocols, as you've noticed.
-
->  						       RX_DMA_VID(trxd.rxd3));
->  			}
-> -
-> -			/* If the device is attached to a dsa switch, the special
-> -			 * tag inserted in VLAN field by hw switch can * be offloaded
-> -			 * by RX HW VLAN offload. Clear vlan info.
-
-What is the format of this special tag, what does it contain? The same
-thing as what mtk_tag_rcv() parses?
-
-> -			 */
-> -			if (netdev_uses_dsa(netdev))
-> -				__vlan_hwaccel_clear_tag(skb);
-
-If the DSA switch information is present in the VLAN hwaccel, and the
-VLAN hwaccel is cleared, and that up until this change,
-NETIF_F_HW_VLAN_CTAG_RX was not configurable, it means that every
-mtk_soc_data with MTK_HW_FEATURES would be broken as a DSA master?
-
->  		}
->  
->  		skb_record_rx_queue(skb, 0);
-> @@ -2847,15 +2840,17 @@ static netdev_features_t mtk_fix_features(struct net_device *dev,
->  
->  static int mtk_set_features(struct net_device *dev, netdev_features_t features)
->  {
-> -	int err = 0;
-> -
-> -	if (!((dev->features ^ features) & NETIF_F_LRO))
-> -		return 0;
-> +	struct mtk_mac *mac = netdev_priv(dev);
-> +	struct mtk_eth *eth = mac->hw;
-> +	netdev_features_t diff = dev->features ^ features;
->  
-> -	if (!(features & NETIF_F_LRO))
-> +	if ((diff & NETIF_F_LRO) && !(features & NETIF_F_LRO))
->  		mtk_hwlro_netdev_disable(dev);
->  
-> -	return err;
-> +	/* Set RX VLAN offloading */
-> +	mtk_w32(eth, !!(features & NETIF_F_HW_VLAN_CTAG_RX), MTK_CDMP_EG_CTRL);
-
-Nit: do this only if (diff & NETIF_F_HW_VLAN_CTAG_RX).
-
-> +
-> +	return 0;
->  }
->  
->  /* wait for DMA to finish whatever it is doing before we start using it again */
-> @@ -3176,6 +3171,15 @@ static int mtk_open(struct net_device *dev)
->  	else
->  		refcount_inc(&eth->dma_refcnt);
->  
-> +	/* Hardware special tag parsing needs to be disabled if at least
-> +	 * one MAC does not use DSA.
-> +	 */
-
-Don't understand why, sorry.
-
-> +	if (!netdev_uses_dsa(dev)) {
-> +		u32 val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
-> +		val &= ~MTK_CDMP_STAG_EN;
-> +		mtk_w32(eth, val, MTK_CDMP_IG_CTRL);
-> +	}
-> +
->  	phylink_start(mac->phylink);
->  	netif_tx_start_all_queues(dev);
->  
-> @@ -3469,6 +3473,10 @@ static int mtk_hw_init(struct mtk_eth *eth)
->  	 */
->  	val = mtk_r32(eth, MTK_CDMQ_IG_CTRL);
->  	mtk_w32(eth, val | MTK_CDMQ_STAG_EN, MTK_CDMQ_IG_CTRL);
-> +	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
-> +		val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
-> +		mtk_w32(eth, val | MTK_CDMP_STAG_EN, MTK_CDMP_IG_CTRL);
-> +	}
->  
->  	/* Enable RX VLan Offloading */
->  	mtk_w32(eth, 1, MTK_CDMP_EG_CTRL);
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> index e09b2483c70c..26b2323185ef 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> @@ -93,6 +93,9 @@
->  #define MTK_CDMQ_IG_CTRL	0x1400
->  #define MTK_CDMQ_STAG_EN	BIT(0)
->  
-> +/* CDMQ Exgress Control Register */
-> +#define MTK_CDMQ_EG_CTRL	0x1404
-> +
->  /* CDMP Ingress Control Register */
->  #define MTK_CDMP_IG_CTRL	0x400
->  #define MTK_CDMP_STAG_EN	BIT(0)
-> -- 
-> 2.38.1
+> If this is not true, how do real drivers handle this? They don't use
+> global vars. So they should either have the same use-after-free bugs
+> you described, or they handle shutdown differently. We just need to do
+> the same thing that real drivers do.
 > 
+> As far as I see they are doing the same what I did in this patch:
+> https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/fdp/i2c.c#L343
+> https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/nfcmrvl/usb.c#L354
+> 
+> They call nci_unregister_device() and then free all resources:
+> https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/nfc/nfcmrvl/main.c#L186
+> 
+> What am I missing here?
+
+I'm not sure but I think they are little different.
+nfcmrvl uses usb_driver's disconnect callback function and fdp's i2c uses i2c_driver's remove callback function for unregister_device.
+But virtual_ncidev just uses file operation(close function) not related to driver.
+so Nci simulation App can call close function at any time.
+If Scheduler interrupts the nci core code right after calling virtual_nci_send and then 
+other process or thread calls virtual_nci_dev's close function,
+we need to handle this problem in virtual nci driver.
+
+> > > Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+> > > Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
+> > > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > > Cc: netdev@vger.kernel.org
+> > >
+> > > ---
+> > > Changes in v3:
+> > >  - free vdev in virtual_ncidev_close()
+> > >
+> > > Changes in v2:
+> > >  - check return value of skb_clone()
+> > >  - rebase onto currnet net-next
+> > > ---
+> > >  drivers/nfc/virtual_ncidev.c | 147 +++++++++++++++++------------------
+> > >  1 file changed, 71 insertions(+), 76 deletions(-)
+> > >
+> > > diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
+> > > index 85c06dbb2c449..bb76c7c7cc822 100644
+> > > --- a/drivers/nfc/virtual_ncidev.c
+> > > +++ b/drivers/nfc/virtual_ncidev.c
+> > > @@ -13,12 +13,6 @@
+> > >
+> > >  static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+> > >  {
+> > > -     mutex_lock(&nci_mutex);
+> > > -     if (state != virtual_ncidev_enabled) {
+> > > -             mutex_unlock(&nci_mutex);
+> > > +     struct virtual_nci_dev *vdev = nci_get_drvdata(ndev);
+> > > +
+> > > +     mutex_lock(&vdev->mtx);
+> >
+> >   I think this vdev and vdev->mtx are already destroyed so that it would be problem.
+> >
+> > > +     if (vdev->send_buff) {
+> > > +             mutex_unlock(&vdev->mtx);
+> > >               kfree_skb(skb);
+> > > -             return 0;
+> > > +             return -1;
+> > >       }
+> > >
+> > >
+> > >  static int virtual_ncidev_close(struct inode *inode, struct file *file)
+> > >  {
+> > > -     mutex_lock(&nci_mutex);
+> > > -
+> > > -     if (state == virtual_ncidev_enabled) {
+> > > -             state = virtual_ncidev_disabling;
+> > > -             mutex_unlock(&nci_mutex);
+> > > +     struct virtual_nci_dev *vdev = file->private_data;
+> > >
+> > > -             nci_unregister_device(ndev);
+> > > -             nci_free_device(ndev);
+> > > -
+> > > -             mutex_lock(&nci_mutex);
+> > > -     }
+> > > -
+> > > -     state = virtual_ncidev_disabled;
+> > > -     mutex_unlock(&nci_mutex);
+> > > +     nci_unregister_device(vdev->ndev);
+> > > +     nci_free_device(vdev->ndev);
+> > > +     mutex_destroy(&vdev->mtx);
+> > > +     kfree(vdev);
+> > >
+> > >       return 0;
+> > >  }
