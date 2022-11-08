@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 307A4621A50
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 18:21:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA53621A53
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 18:22:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234363AbiKHRVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 12:21:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
+        id S234255AbiKHRWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 12:22:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234164AbiKHRVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 12:21:39 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70053.outbound.protection.outlook.com [40.107.7.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA05A1AD83;
-        Tue,  8 Nov 2022 09:21:34 -0800 (PST)
+        with ESMTP id S234396AbiKHRVp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 12:21:45 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60080.outbound.protection.outlook.com [40.107.6.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02D913D23;
+        Tue,  8 Nov 2022 09:21:42 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YlCoH1QLFWXrWSAKgYU/1Zaykn0kmlrUY9RIbaU2AmDwyzbeEafFaYcoubNicHCUm1WLhprHRnS3HG1cTHi8AyexJcWK9nvL+0/i85lYWjvSBVuebvHgvLY20pKkzYCT6DHwQpPw+bOAC/mTax5dmX8V/hap3ep5baj4FkqD0Rp+ywcbmyqpbvPyWr+G3L0GEiC1sjqiXzqquroLOJ7oSwsWE/EprtJeL3KAk2g5MEh05PzMJ+jxuN7OLIgEYjERfiedu6R5yqNq+em5Zr7ibtOQw1o+5NSfNal3TDk9PpdncouePxLIssl1iI6NQnEtrNF+NU0hqcWJN6FIz8I0Kw==
+ b=Jv+kQOGf9CXGk1XA1hHiWhkoKJ1jUPknQKQJ2lgHS07GMocf3U1K8RLrX9+VpXIcvNNOmNC/gpCzHw+M7kgyrmqTEqldp5m6MAK6OOlmNg1ClCN7OjFRSgeZRtMB7eXg6YoxrVbtNm66CjGUCd2nB2Bqy5GhLd3M+f0Fn1i6gL7LwHYD3XZtVq24Gym25v0FsjJ2Sx0r+VTDix86x4e0AdQ7VQI/29m3kafrhd0RGHWhVvYN7brJr4dyYmGZ9yTBTUVcid7/kP9U2CNPlyO0hhOhEnyMKFcqdMYBlmqhX4jCzYxkA/gMgh+RW5d8v7ctoPHq2AUrE8Md9NEbL58rYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hBQbjC/nrO2786LNIfK7WsUT+HcBlkTgsK7ptHxzTbc=;
- b=OX9gpJ9Oq3zTb3Ck+Cse1T6VBXMfXVDg/gjdgr3vqq4bY24fr3wZF5P1hsQWWKR48Z680MYs6B30si8XfVzCiUwUm2Zq8P8H5nXzcQNRsEggxfRmQK14vImCObqrCjShDXvBrMh4dg8uiBj2/1oqLHSHAozkE5CH8AC7A5XW/jU1SQUsJzWAMUib6OMp2HyY6FRkasM+0wViMucmOdTGHIklj+toRJ9B9WGRDZvIL4d5s+hvYkFiNDtmTeG9jAUrj9yWLD9hIL8Kabg/p4IY2q8CADrubGMvF8+0Oy73b5cRG0jCaDxM6CgHBSMD+l9rQHA0fjMKxszavGpNybZpbw==
+ bh=9//TgYILKel0y17twoDMCX3QDNE0lNU0+i0mk0SG5c0=;
+ b=KwkBYaPKsPm4Gb6LEO+0luWpknvpM4fbOPSPDnzh7Zn8oMpj8nDSkECo8WKhhRVYeunGV9lEcZ+kgfdI6bCTaK7WCGNv88bGyTCAhKHw5epzFBJtGagqokUWZFUtFZ71e9Pb6FJ/HJeQXZIdo+f3UOybiSGHR7e7latNUnzpIpt52Hd3+hBryLlK12l9pfPuis3fEgAH4aLBYlRXKx8lpXd8rrpVeqEXB6HYoVj7vfeRnp/yREtNyonuPoq7FirLpmOgTWgAeP8XoA2zQbI6i7jlroV4ZdxVTBmUHYaanoVAJOSdkAAbyUxdHar2rQO+QuaPx1mTjHL5APR5G9y9cw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hBQbjC/nrO2786LNIfK7WsUT+HcBlkTgsK7ptHxzTbc=;
- b=DJlz4OBSEYee4PfwkaCas8bWTthZqAHfJANupBFsGYbum98/wCE+nQVOd8W8lYCouvwa9kEH+yRpvIi7Qa5XnAq2VMuYd4rrqbygUPhE+uxAI0klttImb8s67gvmlpu9/4ooGwSdRgLCfWRF0RF4xHHHSbCh0m4viHRLxg2bvRo=
+ bh=9//TgYILKel0y17twoDMCX3QDNE0lNU0+i0mk0SG5c0=;
+ b=DCSFz0TuM/WvnRuE5+w+GRpY9/CT9LYL0IDdc2tHvaYXgmNjtcE7LraS2lgG/jaXdiXODiCQqv2s6hRXO3XiSCG40jjdEPm+H3m0U5AsqNAMTS4TftSZr+6qSo4JijP9C1GLIxmbCZ4s2Xy+yZNssMzQsPGBw5YS99uS2eD4sO4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by DBAPR04MB7334.eurprd04.prod.outlook.com (2603:10a6:10:1aa::14) with
+ by AM7PR04MB7045.eurprd04.prod.outlook.com (2603:10a6:20b:11e::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Tue, 8 Nov
- 2022 17:21:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.25; Tue, 8 Nov
+ 2022 17:21:40 +0000
 Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
  ([fe80::b1ab:dd4f:9237:d9f8]) by PAXPR04MB9185.eurprd04.prod.outlook.com
  ([fe80::b1ab:dd4f:9237:d9f8%3]) with mapi id 15.20.5791.027; Tue, 8 Nov 2022
- 17:21:32 +0000
+ 17:21:39 +0000
 From:   Shenwei Wang <shenwei.wang@nxp.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -50,65 +50,65 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         imx@lists.linux.dev, Shenwei Wang <shenwei.wang@nxp.com>
-Subject: [PATCH v2 1/2] net: fec: simplify the code logic of quirks
-Date:   Tue,  8 Nov 2022 11:21:04 -0600
-Message-Id: <20221108172105.3760656-2-shenwei.wang@nxp.com>
+Subject: [PATCH v2 2/2] net: fec: add xdp and page pool statistics
+Date:   Tue,  8 Nov 2022 11:21:05 -0600
+Message-Id: <20221108172105.3760656-3-shenwei.wang@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221108172105.3760656-1-shenwei.wang@nxp.com>
 References: <20221108172105.3760656-1-shenwei.wang@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR03CA0113.namprd03.prod.outlook.com
- (2603:10b6:a03:333::28) To PAXPR04MB9185.eurprd04.prod.outlook.com
+X-ClientProxiedBy: SJ0PR03CA0092.namprd03.prod.outlook.com
+ (2603:10b6:a03:333::7) To PAXPR04MB9185.eurprd04.prod.outlook.com
  (2603:10a6:102:231::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9185:EE_|DBAPR04MB7334:EE_
-X-MS-Office365-Filtering-Correlation-Id: 15645daf-b847-4614-c976-08dac1adae23
+X-MS-TrafficTypeDiagnostic: PAXPR04MB9185:EE_|AM7PR04MB7045:EE_
+X-MS-Office365-Filtering-Correlation-Id: c3a1e725-23d9-45d8-9498-08dac1adb28d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /SJLxU270lKy87tY5da6IDfjhOn+jNDoa+n2AAlKr/HVoeBOmwVgR5ya7i4ZK1Z0swy/pL+ByQ8Uek5uUEU2NmJq0eftVkmzaSEqX4J+FqpNCDdRIW77MrSDUH1VK9Ux9F63jR8e60x5IvT1H+39u6s7X/9/WDuKwNhAsD9X42a6Qj/8rakO4A6BngPzhYICAw7fQrP0rNfw7S4Ava8jHJ7l78y+1vpcNLEFzdiA7HVzvHXCNMiHGAE4zRieEglpGNfuRcoALP1kZ6tIP/nowcMZhbGmAJb5Ow6QtVbNDQ9jEev+lIhyxUDv6GNPOZfaNaDqmlL5ScQZogmTiRSG6iu/Xmf4iuwbwCLNmD6kvShxov/40aE6ZbaBQVdDa82b3moR8AH90RRVg+g6yOou42uaZLL2E0WGo5GgPMTgrixSQpjYTSaQd5dJRYm/skEC3FBXT1MSLV8BxKtUmuXtnD52Uwmk7aFF5mjlPYs4be8umM6jWedYf7uTZvQBu6yn+ItnHARlV/5EVjthi6FK4Q/4XPPMVcBCsBPsWrLDm91QOFKRZIK2G2zC3Cm4HEfLmGmFc1iYKFDarsHkXM+buyMYEqbeerCl/oiYQzxwhAYrOhSxfN33N213FfT40OxTkWijjLItRC3CSoYbWSfluBRJwfbVlxthbPJfc5VYh+oXIjlGcI3VyDpH8WlvMNJItmLxtPXFNTIuoQyCSEHkB2I3Cxjt6Gmk1m/6ZI1gu6dZTbL9HT65bpIALjf4LZQ2
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(39860400002)(396003)(366004)(136003)(451199015)(36756003)(478600001)(38350700002)(38100700002)(83380400001)(86362001)(2906002)(6512007)(26005)(44832011)(1076003)(6506007)(52116002)(55236004)(6666004)(6486002)(7416002)(5660300002)(8936002)(54906003)(110136005)(186003)(2616005)(316002)(66946007)(4326008)(66556008)(66476007)(8676002)(41300700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: hYNjwqt2iYZw5svH80rWGdXX66i6cpNKYYx5Bk9mR4tt8s5hp5b+IzvFBzAR7CDw05RmR03HdAFAMkhkohzqT9koyMiHPkaEymPtM+5laQDVdOUvEacU7qfvMZcVbQQqL7m0XV96OYDlf42Vib6fWHBY79mFNAeMgDZCzRsxxlaNgswyWJuKFD5mVuQv/AvnxRgBmbBi/deww1KA64VIOKHFInE/YAfN+8xszlilkKx2QtFSFkz3pgN4Eazju4SANHMPboHd2zdzi/cHQhkmkkmqgKrGt0/+/i1Y4Zkey1X29bc3Y59k9mChUcuZYA5UOTbnSwwqM15ZiR7GZuZpHBnjXvn6Ss1378AWxcMiK2lmeLBqqvjewzkNvD0OWxBtEVJXs3MMsc5QEXdK4e58aA2499PIV2MZW9k+UGGDPrjjHqcgx/dKpFzPUYUhW6Acbvv/dXEwa9x8KpIpbqJ6UvsMN74ytph4awRrvmOK6F/FWcdntEpqiZGBrl5jDvktn/GKUMsSrnxg9qZuXajzKETaPCrrCg/MCWplVta28IGxgRW+ykq9VRqG+JtI6/lM3O2lgc6V0J1Ki4WQ2fn5yA0eHD9pd2Lh4c7eOCe2btp8txRJYzhDbEKzDsK8/wRjKB1FxOUEuXPenSaIfbjcUzSbQFl/1r4gOXITZahtDTURDqanENno5p2yjj2M75OOhQdrIi8VyzJ75K4XP5ucGVpFzzrJ6u6o37bDqB/BLcQ7goqmriFlEU8Pnv7jkjmK
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(451199015)(478600001)(6486002)(38350700002)(38100700002)(44832011)(54906003)(5660300002)(2616005)(186003)(110136005)(6666004)(1076003)(2906002)(7416002)(55236004)(52116002)(83380400001)(26005)(6506007)(41300700001)(4326008)(8676002)(66946007)(36756003)(86362001)(66556008)(8936002)(6512007)(316002)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BvPvwvkbVC/x751UjYlbGGDysDpXRS5qGcYnTA9wu9HEcvOid+UqW3Zz6zLH?=
- =?us-ascii?Q?BmZSMhOz8QL21Yl4st/nIyyXPR6DDnxzT3lDiHxKrYlFpTVcIEyXkSEkwKPA?=
- =?us-ascii?Q?bOMEjYVanpVcIH3izFW7jUtbgkFfLMr8YPb8rVNy6aJGXxqenE0xnGap2Bdd?=
- =?us-ascii?Q?R9FVt6SZ5u7+ZlXZ5zyQRRpKGiCduzp3DQK9XX0+7GdzGvvSlJ4QKA+DWt8f?=
- =?us-ascii?Q?WX0VqvaOjgrcISOsje0rcSDwDL9t09B+BeB1OXG6Is8W+thl8m0RVRNGeSx1?=
- =?us-ascii?Q?8pjtULEa1aHFHFYyLLEWh+loWUBulFhmtW6sl+i4CyhSCgbfgtItHjPiIpSj?=
- =?us-ascii?Q?Al671n08mr5E6TE/AfFPmlSr8Qr1CYSHdqWlfUOfkUx56SsbQuRqanZ3csOd?=
- =?us-ascii?Q?tnBwYJilCxmLyHVcreygAxg6hXcuXa154g9FuTj5bPiKIC1+pzt2LhE6+F3Y?=
- =?us-ascii?Q?iAxg8NqYcaItZrordDFaU6/wmoIi7z2AA2rFNReQ4sWn73AH4ce8KEDXr1Um?=
- =?us-ascii?Q?tzCHt0T/WXI0e8c7lslrpD95lZEoAHu9naScLlxkhJUdvC/16uwcPGp0j1nY?=
- =?us-ascii?Q?0UY7Xmk12otBDwRPe1gYAn9Ci24Bzr7ZMzXqvdLcePbhzJzKhZZI6nP4eB17?=
- =?us-ascii?Q?CjbNXFyZFw2zEzfh5FtkzPs+m1IwhpPn5hUVlPGiWavwDJ2fgxbm/wWgkZUl?=
- =?us-ascii?Q?FoX0I/WCXSe664A7YVsWyZXNaxs3o1FFYqeKb/o3Djw90Hj/zeaRtbBdLziz?=
- =?us-ascii?Q?gL+gIiRJkepfzMCJ4gZNhOO/SI5nXxf60Vh28DbeeyAPbqknc6A5/Ou03BnE?=
- =?us-ascii?Q?dgeS4cdRdHhUZkVtIDTBK63269a6eDYdKSGuRmZ9IAdjtYOhXNlqI/geJY1c?=
- =?us-ascii?Q?OzXhXg29c7EtqYM7d2r3lNxp5n/ynzdUQbbzniTLanydDovXEg74T/3qShl0?=
- =?us-ascii?Q?E2vVFLVtxZpvh1RDjo/A02WHeYv5K15cStneNlVvWz1JhLR0bSCn7bx7QdWe?=
- =?us-ascii?Q?b4+bJ1A5csQvJEEj/XST8XYBlRz/M2FuPkKFom54OlG+tIJRB2QIHZisTbYP?=
- =?us-ascii?Q?+x386/tZg7zHGDvLdquc6eoahVZJBNymqbt3Q/T/5CvZEx3KG+3SOzDWVblY?=
- =?us-ascii?Q?+Od9w3dFWZ/hNEGqLyjn8bJWeazRHu55KWUNCJ9hAOcJqs05iR1fugUQT2ML?=
- =?us-ascii?Q?NgK9Jr92WW+t2PKHW/uEKL7GUEJNVY8aor/rt5FImYN5HLwwCgm2bXC0EN3O?=
- =?us-ascii?Q?dq0nYtgH5+nX79s8KNh3lqnb5h/vKqwjAKHXOC2DFRnylKslqjmmioeDDxcA?=
- =?us-ascii?Q?WGhXz20H0YJHvJMcTjZmpInlxLJLyCq4rx97ZdCKOQnfKRfJvXhXbLafMFwk?=
- =?us-ascii?Q?n3cSRliqbjvHoRv8whq5xUBuZkD+XzhO8fCwhOPkrSaKjVRKs4caJX4IAygI?=
- =?us-ascii?Q?Tk/vG/dH7BASeU9Wa2J/T/8/hg+bv7zvQgyuKHGJ4KyQzEfK5mEPMYhQGwEX?=
- =?us-ascii?Q?GIHl67/qqKQMfnAj/nZfymiTL9TbhanawPj0ec1aL/DXgY+Wb8okpU/1FiEU?=
- =?us-ascii?Q?4UzBk8rjLJjPDgKVkmW+YYNiEcgX1JWGn4T/bOOB?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GC0+LZDQ8NPtCP9HsOtwCr+duvTCOI9SZU+k0QxOtSQ9L1tuamsi993BJs4i?=
+ =?us-ascii?Q?3oWeAbNCnd+oR7sY5uEjrsx4Pr2UuhsFNLLca7pLB69ztz+6k4mm8Q6Hr2NL?=
+ =?us-ascii?Q?LKEsg5X+EIfEYX5nbOVa6WuNNJwWVpbqgvGKUQyBT5VYZCLNE4GcIHO7Frvj?=
+ =?us-ascii?Q?VLMUHSsZ0NjcGzp/7J1O9QUGxu9G4xaFqUip2IlwNAACWSsVn0W7FQ8dskLp?=
+ =?us-ascii?Q?zb4piamxifo+hdW2QuQDeGSQMniIRRhBqUnf5VEnLLx0hdADV8XCoXaTv0FQ?=
+ =?us-ascii?Q?L7Eh1XlR0Ess3QdHw+10wphF309AC/9vqvcW/oDtIjtHpQNdJ7lacZ8rDnNw?=
+ =?us-ascii?Q?ajhsbdEFz6qg6l7eYusO398BWB0mi/Ye29NrePn/ZV9sWC7IsMHWgqPbyJ+u?=
+ =?us-ascii?Q?GXEN+8SaGIigkXyglnxyfdgUs41Nb6Yncqh/A9mhtlLJV4I4ifi0S67xqTeh?=
+ =?us-ascii?Q?jeI4KdxDHqq4cB2bj6nWHKyjCi8wg85yL8hIL+uzKlq6lmqbgNpvPxr97cOq?=
+ =?us-ascii?Q?wx1Mqsq+IJPBNgRYRhTtEBFd4R0gJEO4r6IQljOmfepcd7LtHaTdd2fM/J0d?=
+ =?us-ascii?Q?IzMnAxDH6tx1p6VmJVf4SwvLFF37o09s+5gCzUpDgNrT+L+JwDgTFDqhRBPn?=
+ =?us-ascii?Q?vFzN62P3LgLRhvobJ92iWc5MYChvA+3RB5BT5KktSAkcC71xbSHmU25Y5doD?=
+ =?us-ascii?Q?Gr/1O/S3TaS+c2PBR1pQ4sBJzagpk8U2Q/CnDTK/1SCNjiTogxq5WR+bMunn?=
+ =?us-ascii?Q?OascdPgKIFxvbZ2q6h0BqRP5Z28WeKSUGwS1RhsHjFHDE0T1qpGVpOzRvAsH?=
+ =?us-ascii?Q?xm3xG3ux7/aO7XWbdR24rcP15EgyJ0it8hC6qRiUxrTWeiqtXTmvIMuOIIg0?=
+ =?us-ascii?Q?tI5d5cAiDHYvR7WpqMLdgY3lW17FCEhLZwtwrJ4bFiQWESXYNMIV9KT5+2rz?=
+ =?us-ascii?Q?oA9ijumuxhAnIfeXj2mZq/kFTo9QlQkuP5y2UtJDMbvaM5TWHO2Z7xFh5O2P?=
+ =?us-ascii?Q?JlCsJtTYb8Hd24AFDeZN2sLorwPU5r4U0AKlPQ48sdEchQegornl/eWUqYWH?=
+ =?us-ascii?Q?8DhKPQUQzAFCyLdm6qoQPSrXJhpgH5Is/CCazNX+pPMK5o4UJ3PAPsrGnHkD?=
+ =?us-ascii?Q?kWGefN7+Z1sjQbMNQTbV+3lZy3d38tbjYXNaV6QlqQX3lGpEqfqBLcv+1Ekc?=
+ =?us-ascii?Q?X2+lT3FEK8RupOCLyyouuCdtRCj7IJYYzFilgy1/n4+TLXbbWIcHdNIX5f8G?=
+ =?us-ascii?Q?OzFh+kUgrY7vlGo7iQQiZ6rHK7wDcqrKJSLeXyTqqOEoh8hQszFszTbdIX/4?=
+ =?us-ascii?Q?DU3ORPqdiLdom5VPJNNOw6uSBwsBWyfQWY3kO5eT3bbLgBm6zHs+8E69q3y9?=
+ =?us-ascii?Q?8kRd/zSB0yd9MBQqcop3GtsKnFIEVYUVPRG83iWsq7BMPWbzUF5uQDxCnLb3?=
+ =?us-ascii?Q?31cHzzhBclxMbj/lRap1ORKWULPAC1Vovml08CzDTqWqeGC3WKKRnD+CAC9/?=
+ =?us-ascii?Q?RbXGUneVNy6loj+d99a9MGAIgTAR4vBpCudUxyY9tuTV2+XDWJB3vNEETnLL?=
+ =?us-ascii?Q?sEotMXi7JFjXI/SQOKPF69WkHct/2OfYaRmUI5n7?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15645daf-b847-4614-c976-08dac1adae23
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3a1e725-23d9-45d8-9498-08dac1adb28d
 X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 17:21:32.3621
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 17:21:39.8440
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PnF/xrYC3PVpahW0Mn88+SaDQHgkLwE0DsY+7fOpgJ+0s91Rh2cyrkzF5t8WJm2jf4HvIqeKcLc0CyenNW1YHw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7334
+X-MS-Exchange-CrossTenant-UserPrincipalName: X0SJgYRiNGVWrIlR+j2Flr6Vk4TL95tJZO4SVFB12/RxENqxk85h1tOYzA46ZZHs7SeElvyR+IxPmIKAPx/L7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7045
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -119,117 +119,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the code logic of handling the quirk of FEC_QUIRK_HAS_RACC.
-If a SoC has the RACC quirk, the driver will enable the 16bit shift
-by default in the probe function for a better performance.
-
-This patch handles the logic in one place to make the logic simple
-and clean. The patch optimizes the fec_enet_xdp_get_tx_queue function
-according to Paolo Abeni's comments, and it also exludes the SoCs that
-require to do frame swap from XDP support.
+Added xdp and page pool statistics.
+In order to make the implementation simple and compatible, the patch
+uses the 32bit integer to record the XDP statistics.
 
 Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 49 ++++++++++++++---------
- 1 file changed, 30 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/freescale/fec.h      | 14 ++++
+ drivers/net/ethernet/freescale/fec_main.c | 85 +++++++++++++++++++++--
+ 2 files changed, 94 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 61e847b18343..5ba1e0d71c68 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -526,6 +526,19 @@ struct fec_enet_priv_txrx_info {
+ 	struct  sk_buff *skb;
+ };
+ 
++enum {
++	RX_XDP_REDIRECT = 0,
++	RX_XDP_PASS,
++	RX_XDP_DROP,
++	RX_XDP_TX,
++	RX_XDP_TX_ERRORS,
++	TX_XDP_XMIT,
++	TX_XDP_XMIT_ERRORS,
++
++	/* The following must be the last one */
++	XDP_STATS_TOTAL,
++};
++
+ struct fec_enet_priv_tx_q {
+ 	struct bufdesc_prop bd;
+ 	unsigned char *tx_bounce[TX_RING_SIZE];
+@@ -546,6 +559,7 @@ struct fec_enet_priv_rx_q {
+ 	/* page_pool */
+ 	struct page_pool *page_pool;
+ 	struct xdp_rxq_info xdp_rxq;
++	u32 stats[XDP_STATS_TOTAL];
+ 
+ 	/* rx queue number, in the range 0-7 */
+ 	u8 id;
 diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 6b062a0663f4..3fb870340c22 100644
+index 3fb870340c22..d18e50871c42 100644
 --- a/drivers/net/ethernet/freescale/fec_main.c
 +++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1581,8 +1581,20 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
- 	bool	need_swap = fep->quirks & FEC_QUIRK_SWAP_FRAME;
- 	struct bpf_prog *xdp_prog = READ_ONCE(fep->xdp_prog);
- 	u32 ret, xdp_result = FEC_ENET_XDP_PASS;
-+	u32 data_start = FEC_ENET_XDP_HEADROOM;
- 	struct xdp_buff xdp;
- 	struct page *page;
-+	u32 sub_len = 4;
+@@ -1523,10 +1523,12 @@ fec_enet_run_xdp(struct fec_enet_private *fep, struct bpf_prog *prog,
+ 
+ 	switch (act) {
+ 	case XDP_PASS:
++		rxq->stats[RX_XDP_PASS]++;
+ 		ret = FEC_ENET_XDP_PASS;
+ 		break;
+ 
+ 	case XDP_REDIRECT:
++		rxq->stats[RX_XDP_REDIRECT]++;
+ 		err = xdp_do_redirect(fep->netdev, xdp, prog);
+ 		if (!err) {
+ 			ret = FEC_ENET_XDP_REDIR;
+@@ -1549,6 +1551,7 @@ fec_enet_run_xdp(struct fec_enet_private *fep, struct bpf_prog *prog,
+ 		fallthrough;    /* handle aborts by dropping packet */
+ 
+ 	case XDP_DROP:
++		rxq->stats[RX_XDP_DROP]++;
+ 		ret = FEC_ENET_XDP_CONSUMED;
+ 		page = virt_to_head_page(xdp->data);
+ 		page_pool_put_page(rxq->page_pool, page, sync, true);
+@@ -2659,6 +2662,16 @@ static const struct fec_stat {
+ 
+ #define FEC_STATS_SIZE		(ARRAY_SIZE(fec_stats) * sizeof(u64))
+ 
++static const char *fec_xdp_stat_strs[XDP_STATS_TOTAL] = {
++	"rx_xdp_redirect",           /* RX_XDP_REDIRECT = 0, */
++	"rx_xdp_pass",               /* RX_XDP_PASS, */
++	"rx_xdp_drop",               /* RX_XDP_DROP, */
++	"rx_xdp_tx",                 /* RX_XDP_TX, */
++	"rx_xdp_tx_errors",          /* RX_XDP_TX_ERRORS, */
++	"tx_xdp_xmit",               /* TX_XDP_XMIT, */
++	"tx_xdp_xmit_errors",        /* TX_XDP_XMIT_ERRORS, */
++};
 +
-+#if !defined(CONFIG_M5272)
-+	/*If it has the FEC_QUIRK_HAS_RACC quirk property, the bit of
-+	 * FEC_RACC_SHIFT16 is set by default in the probe function.
-+	 */
-+	if (fep->quirks & FEC_QUIRK_HAS_RACC) {
-+		data_start += 2;
-+		sub_len += 2;
-+	}
-+#endif
- 
- #ifdef CONFIG_M532x
- 	flush_cache_all();
-@@ -1645,9 +1657,9 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
- 
- 		if (xdp_prog) {
- 			xdp_buff_clear_frags_flag(&xdp);
-+			/* subtract 16bit shift and FCS */
- 			xdp_prepare_buff(&xdp, page_address(page),
--					 FEC_ENET_XDP_HEADROOM, pkt_len, false);
--
-+					 data_start, pkt_len - sub_len, false);
- 			ret = fec_enet_run_xdp(fep, xdp_prog, &xdp, rxq, index);
- 			xdp_result |= ret;
- 			if (ret != FEC_ENET_XDP_PASS)
-@@ -1659,18 +1671,15 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
- 		 * bridging applications.
- 		 */
- 		skb = build_skb(page_address(page), PAGE_SIZE);
--		skb_reserve(skb, FEC_ENET_XDP_HEADROOM);
--		skb_put(skb, pkt_len - 4);
-+		skb_reserve(skb, data_start);
-+		skb_put(skb, pkt_len - sub_len);
- 		skb_mark_for_recycle(skb);
--		data = skb->data;
- 
--		if (need_swap)
-+		if (unlikely(need_swap)) {
-+			data = page_address(page) + FEC_ENET_XDP_HEADROOM;
- 			swap_buffer(data, pkt_len);
--
--#if !defined(CONFIG_M5272)
--		if (fep->quirks & FEC_QUIRK_HAS_RACC)
--			data = skb_pull_inline(skb, 2);
--#endif
-+		}
-+		data = skb->data;
- 
- 		/* Extract the enhanced buffer descriptor */
- 		ebdp = NULL;
-@@ -3562,6 +3571,13 @@ static int fec_enet_bpf(struct net_device *dev, struct netdev_bpf *bpf)
- 
- 	switch (bpf->command) {
- 	case XDP_SETUP_PROG:
-+		/* No need to support the SoCs that require to
-+		 * do the frame swap because the performance wouldn't be
-+		 * better than the skb mode.
-+		 */
-+		if (fep->quirks & FEC_QUIRK_SWAP_FRAME)
-+			return -EOPNOTSUPP;
-+
- 		if (is_run) {
- 			napi_disable(&fep->napi);
- 			netif_tx_disable(dev);
-@@ -3589,17 +3605,12 @@ static int fec_enet_bpf(struct net_device *dev, struct netdev_bpf *bpf)
- }
- 
- static int
--fec_enet_xdp_get_tx_queue(struct fec_enet_private *fep, int cpu)
-+fec_enet_xdp_get_tx_queue(struct fec_enet_private *fep, int index)
+ static void fec_enet_update_ethtool_stats(struct net_device *dev)
  {
--	int index = cpu;
--
- 	if (unlikely(index < 0))
--		index = 0;
--
--	while (index >= fep->num_tx_queues)
--		index -= fep->num_tx_queues;
-+		return 0;
- 
--	return index;
-+	return (index % fep->num_tx_queues);
+ 	struct fec_enet_private *fep = netdev_priv(dev);
+@@ -2668,6 +2681,40 @@ static void fec_enet_update_ethtool_stats(struct net_device *dev)
+ 		fep->ethtool_stats[i] = readl(fep->hwp + fec_stats[i].offset);
  }
  
- static int fec_enet_txq_xmit_frame(struct fec_enet_private *fep,
++static void fec_enet_get_xdp_stats(struct fec_enet_private *fep, u64 *data)
++{
++	u64 xdp_stats[XDP_STATS_TOTAL] = { 0 };
++	struct fec_enet_priv_rx_q *rxq;
++	int i, j;
++
++	for (i = fep->num_rx_queues - 1; i >= 0; i--) {
++		rxq = fep->rx_queue[i];
++
++		for (j = 0; j < XDP_STATS_TOTAL; j++)
++			xdp_stats[j] += rxq->stats[j];
++	}
++
++	memcpy(data, xdp_stats, sizeof(xdp_stats));
++}
++
++static void fec_enet_page_pool_stats(struct fec_enet_private *fep, u64 *data)
++{
++	struct page_pool_stats stats = {};
++	struct fec_enet_priv_rx_q *rxq;
++	int i;
++
++	for (i = fep->num_rx_queues - 1; i >= 0; i--) {
++		rxq = fep->rx_queue[i];
++
++		if (!rxq->page_pool)
++			continue;
++
++		page_pool_get_stats(rxq->page_pool, &stats);
++	}
++
++	page_pool_ethtool_stats_get(data, &stats);
++}
++
+ static void fec_enet_get_ethtool_stats(struct net_device *dev,
+ 				       struct ethtool_stats *stats, u64 *data)
+ {
+@@ -2677,6 +2724,12 @@ static void fec_enet_get_ethtool_stats(struct net_device *dev,
+ 		fec_enet_update_ethtool_stats(dev);
+ 
+ 	memcpy(data, fep->ethtool_stats, FEC_STATS_SIZE);
++	data += FEC_STATS_SIZE / sizeof(u64);
++
++	fec_enet_get_xdp_stats(fep, data);
++	data += XDP_STATS_TOTAL;
++
++	fec_enet_page_pool_stats(fep, data);
+ }
+ 
+ static void fec_enet_get_strings(struct net_device *netdev,
+@@ -2685,9 +2738,16 @@ static void fec_enet_get_strings(struct net_device *netdev,
+ 	int i;
+ 	switch (stringset) {
+ 	case ETH_SS_STATS:
+-		for (i = 0; i < ARRAY_SIZE(fec_stats); i++)
+-			memcpy(data + i * ETH_GSTRING_LEN,
+-				fec_stats[i].name, ETH_GSTRING_LEN);
++		for (i = 0; i < ARRAY_SIZE(fec_stats); i++) {
++			memcpy(data, fec_stats[i].name, ETH_GSTRING_LEN);
++			data += ETH_GSTRING_LEN;
++		}
++		for (i = 0; i < ARRAY_SIZE(fec_xdp_stat_strs); i++) {
++			memcpy(data, fec_xdp_stat_strs[i], ETH_GSTRING_LEN);
++			data += ETH_GSTRING_LEN;
++		}
++		page_pool_ethtool_stats_get_strings(data);
++
+ 		break;
+ 	case ETH_SS_TEST:
+ 		net_selftest_get_strings(data);
+@@ -2697,9 +2757,14 @@ static void fec_enet_get_strings(struct net_device *netdev,
+ 
+ static int fec_enet_get_sset_count(struct net_device *dev, int sset)
+ {
++	int count;
++
+ 	switch (sset) {
+ 	case ETH_SS_STATS:
+-		return ARRAY_SIZE(fec_stats);
++		count = ARRAY_SIZE(fec_stats) + XDP_STATS_TOTAL;
++		count += page_pool_ethtool_stats_get_count();
++		return count;
++
+ 	case ETH_SS_TEST:
+ 		return net_selftest_get_count();
+ 	default:
+@@ -2710,7 +2775,8 @@ static int fec_enet_get_sset_count(struct net_device *dev, int sset)
+ static void fec_enet_clear_ethtool_stats(struct net_device *dev)
+ {
+ 	struct fec_enet_private *fep = netdev_priv(dev);
+-	int i;
++	struct fec_enet_priv_rx_q *rxq;
++	int i, j;
+ 
+ 	/* Disable MIB statistics counters */
+ 	writel(FEC_MIB_CTRLSTAT_DISABLE, fep->hwp + FEC_MIB_CTRLSTAT);
+@@ -2718,6 +2784,12 @@ static void fec_enet_clear_ethtool_stats(struct net_device *dev)
+ 	for (i = 0; i < ARRAY_SIZE(fec_stats); i++)
+ 		writel(0, fep->hwp + fec_stats[i].offset);
+ 
++	for (i = fep->num_rx_queues - 1; i >= 0; i--) {
++		rxq = fep->rx_queue[i];
++		for (j = 0; j < XDP_STATS_TOTAL; j++)
++			rxq->stats[j] = 0;
++	}
++
+ 	/* Don't disable MIB statistics counters */
+ 	writel(0, fep->hwp + FEC_MIB_CTRLSTAT);
+ }
+@@ -3084,6 +3156,9 @@ static void fec_enet_free_buffers(struct net_device *ndev)
+ 		for (i = 0; i < rxq->bd.ring_size; i++)
+ 			page_pool_release_page(rxq->page_pool, rxq->rx_skb_info[i].page);
+ 
++		for (i = 0; i < XDP_STATS_TOTAL; i++)
++			rxq->stats[i] = 0;
++
+ 		if (xdp_rxq_info_is_reg(&rxq->xdp_rxq))
+ 			xdp_rxq_info_unreg(&rxq->xdp_rxq);
+ 		page_pool_destroy(rxq->page_pool);
 -- 
 2.34.1
 
