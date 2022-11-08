@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2C2620DC4
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 812B0620DC8
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233597AbiKHKvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 05:51:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39604 "EHLO
+        id S232929AbiKHKws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 05:52:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbiKHKvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:51:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0140450B7
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:50:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667904645;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZLhp0guOTEOZgQzoqp/YSJVaOU4l+Lh/PemcPYg2zcc=;
-        b=h2JsyLzOZwouJLR2RdN04/9GprgQNgecwtRaD5yCSfAlkxxmRcpUOEUFuIs/VRCaaaV0q7
-        BxbfMdCb1wYXNZ4jeLeIc+pJmHvdj/AwpTBQWwH7ZaWZinxj0vFkHe8cjyVGK5tVaGofMR
-        T6n1pmG/Ps+2G9SSFooaje5NlHtQpxU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-649-uuMlk6t7PyOtkal1nHFm3g-1; Tue, 08 Nov 2022 05:50:44 -0500
-X-MC-Unique: uuMlk6t7PyOtkal1nHFm3g-1
-Received: by mail-wr1-f71.google.com with SMTP id h18-20020adfa4d2000000b00236584fc8c7so3797604wrb.7
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 02:50:44 -0800 (PST)
+        with ESMTP id S233970AbiKHKwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:52:43 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC48011A03;
+        Tue,  8 Nov 2022 02:52:41 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id n12so37446044eja.11;
+        Tue, 08 Nov 2022 02:52:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GXhEhO2kkG9w3BXRPl6KAt7HKRZJS9R4ZERT274x0RU=;
+        b=ipu4bdS+WZU6Gcjx6kIGv+zU4FZTiasQsj89aiazUPILBchJZ73UvbMEHTtN/9hjej
+         VuwbnnUFA6yeLNcDXkSl4BPWvCUtHSATAFLX/sYoadFuceEVCFUAQy8PU9EQK9GmOZoN
+         /3dA3gfBLNysavXBVUjzuxZd7UGOkWSXOVslaRKQieMZwle+plHlCnCL/ZJiVQCfmrVq
+         RHat9olXKcoevWgF5BwaA2YjHq7aZ6lawJ8Y3sWnRmbQehL0hlCXu7+E4r5xSKa5f+aH
+         1c5+CNoaanVJKGQG8DhC/6U9mQy8wUCOupJ5oLtM0pc7uAvl9P4HmuunSv/Aa7NAJ2Iu
+         R64Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZLhp0guOTEOZgQzoqp/YSJVaOU4l+Lh/PemcPYg2zcc=;
-        b=vtr3WhMJ2dqYdaIx9RO7J5qf5AK6zwwMEijsFkBfYCXkVmu2U+4/VNoAVmMPFTPtAe
-         HBwBNsTZTLBlsGtpTpHf/kTCTs1Wn8QEn4oUyAyUTiMygmWsqg3TXTvi3pniRAaQOmrb
-         8gWkxxv0MrKkkB1mxT+TV4Dp1NVKXYqBJRa0xKyXqJ9kx/CjbIoWCNq/DgJSh/X21jWY
-         D4sadXGP99j4dn72vJALemcYecqPyHEqy1Ctbe7ar+2odnbsxGJZb2+H+NrGlv573VA4
-         WQ4cCepE5kP0GL5L1IGb546t0ksW2Hkbs+U21vJ9+7pDlLbqjAVubCf4aE22ArF2wm72
-         I6Lw==
-X-Gm-Message-State: ACrzQf0phEWO8H1tUX01ctWwgg8LUmv9O6+Dm99OpE5Q1NZYd3SNctvQ
-        r6P7YbHLMM8JFXQX87G2TsJLGKlG/g7GaDknwRUezOjMFqQORWu53Fnc7WqbHPhwuwyjc0dfAUL
-        k3TiH9AwBLaaNPhcf
-X-Received: by 2002:a05:6000:719:b0:236:73ff:9ca3 with SMTP id bs25-20020a056000071900b0023673ff9ca3mr34539168wrb.603.1667904643407;
-        Tue, 08 Nov 2022 02:50:43 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM70MxF9iqyGZsxSlE/NZBELF+csBNKpj71R4JCxTghs5SdCEFeJo2t5xgwDkAKnrNw1JZY82A==
-X-Received: by 2002:a05:6000:719:b0:236:73ff:9ca3 with SMTP id bs25-20020a056000071900b0023673ff9ca3mr34539161wrb.603.1667904643154;
-        Tue, 08 Nov 2022 02:50:43 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-112-250.dyn.eolo.it. [146.241.112.250])
-        by smtp.gmail.com with ESMTPSA id l27-20020a05600c1d1b00b003b95ed78275sm11686424wms.20.2022.11.08.02.50.42
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GXhEhO2kkG9w3BXRPl6KAt7HKRZJS9R4ZERT274x0RU=;
+        b=UzygLGcn2/1y5NcGLbCr/8mimL5QbAQKeWhyz8cb+hc3n0V/6yaA6W19ysOg1YMWlB
+         Hq4KOERmxBWobxB8DsXQKjYazb4w4Pz7Yxir8X2ng4Pe44elKG+Sy0AOHr8Oixeqm8Dv
+         CMEwFnfisNU1n1GkRH6GgyfOz4YTwVYVBE8cbBIdiU8aodwk+GFgu9Z+IYIl4GpmxdmU
+         M8rrvurIkupRXp10rybLDKSrlKHtK1l3Wc2pTDHvdschmvjbQZp8sPWa949J6owYQrEv
+         FFPef0X5DI/hZt7LFXuJtFr6junNkhkGFuUBWcbYOs3/2RYd+AVCAnwpyTbE/PCekqoB
+         AZ/g==
+X-Gm-Message-State: ANoB5plwCeHhuUk62Z6XmcfzkN5SqiuGz4EyhBobLxK26XYL0hDwSTxd
+        Ommfi0N+NWPeovRBbNhTBQtPY7pU5BGBsA==
+X-Google-Smtp-Source: AA0mqf7Vtpt6iHNR88AIm2qalPaSmnOAQb0LlHwjcJErq1kSVNfjcOWGCccLnL83urWvGibuFaOioA==
+X-Received: by 2002:a17:906:4ecc:b0:7ae:4f8e:1d7 with SMTP id i12-20020a1709064ecc00b007ae4f8e01d7mr14642472ejv.339.1667904760221;
+        Tue, 08 Nov 2022 02:52:40 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id q9-20020a170906360900b00795bb7d64d8sm4543312ejb.217.2022.11.08.02.52.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 02:50:42 -0800 (PST)
-Message-ID: <1098295a9515a9290083fade1facbfa6f09ca3a4.camel@redhat.com>
-Subject: Re: [PATCH net 1/3] stmmac: dwmac-loongson: fix missing
- pci_disable_msi() while module exiting
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, jiaxun.yang@flygoat.com,
-        zhangqing@loongson.cn, liupeibao@loongson.cn, andrew@lunn.ch,
-        kuba@kernel.org
-Date:   Tue, 08 Nov 2022 11:50:41 +0100
-In-Reply-To: <20221105121840.3654266-2-yangyingliang@huawei.com>
-References: <20221105121840.3654266-1-yangyingliang@huawei.com>
-         <20221105121840.3654266-2-yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 08 Nov 2022 02:52:39 -0800 (PST)
+Date:   Tue, 8 Nov 2022 12:52:37 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/14] net: vlan: remove invalid VLAN protocol warning
+Message-ID: <20221108105237.v4coebbj7kzee7y6@skbuf>
+References: <20221107215745.ascdvnxqrbw4meuv@skbuf>
+ <3b275dda-39ac-282d-8a46-d3a95fdfc766@nbd.name>
+ <20221108090039.imamht5iyh2bbbnl@skbuf>
+ <0948d841-b0eb-8281-455a-92f44586e0c0@nbd.name>
+ <20221108094018.6cspe3mkh3hakxpd@skbuf>
+ <a9109da1-ba49-d8f4-1315-278e5c890b99@nbd.name>
+ <20221108100851.tl5aqhmbc5altdwv@skbuf>
+ <5dbfa404-ec02-ac41-8c9b-55f8dfb7800a@nbd.name>
+ <20221108103330.xt6wi3x3ugp7bbih@skbuf>
+ <1be4d21b-c0a4-e136-ed68-c96470135f14@nbd.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1be4d21b-c0a4-e136-ed68-c96470135f14@nbd.name>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,46 +81,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Nov 08, 2022 at 11:42:09AM +0100, Felix Fietkau wrote:
+> Okay, I will stick with METADATA_HW_PORT_MUX for now. If we use it in the
+> flow dissector to avoid the tagger specific fixup, we might as well use it
+> in DSA to skip the tag proto receive call. What do you think?
 
-On Sat, 2022-11-05 at 20:18 +0800, Yang Yingliang wrote:
-> pci_enable_msi() has been called in loongson_dwmac_probe(),
-> so pci_disable_msi() needs be called in remove path and error
-> path of probe().
-> 
-> Fixes: 30bba69d7db4 ("stmmac: pci: Add dwmac support for Loongson")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-> index 79fa7870563b..dd292e71687b 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
-> @@ -139,7 +139,15 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
->  		ret = -ENODEV;
->  	}
->  
-> -	return stmmac_dvr_probe(&pdev->dev, plat, &res);
-> +	ret = stmmac_dvr_probe(&pdev->dev, plat, &res);
-> +	if (ret)
-> +		goto err_disable_msi;
-> +
-> +	return ret;
-> +
-> +err_disable_msi:
-> +	pci_disable_msi(pdev);
-> +	return ret;
->  }
-
-It looks like this patch is missing a couple of error paths, still
-after pci_enable_msi(), which need 'goto err_disable_msi', too:
-
-https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c#L127
-https://elixir.bootlin.com/linux/v6.1-rc4/source/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c#L139
-
-Cheers,
-
-Paolo
-
+I suppose that dsa_switch_rcv() could test for the presence of a metadata_dst
+and treat that generically if present, without unnecessarily calling down into
+the tagging protocol ->rcv() call. The assumption being that the metadata_dst
+is always formatted (by the DSA master) in a vendor-agnostic way.
