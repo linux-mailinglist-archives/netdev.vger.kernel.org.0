@@ -2,180 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF61620599
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 02:07:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E08262059C
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 02:08:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233179AbiKHBHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 20:07:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41394 "EHLO
+        id S233202AbiKHBI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 20:08:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232083AbiKHBHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 20:07:53 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF573248CA;
-        Mon,  7 Nov 2022 17:07:52 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id f27so34741850eje.1;
-        Mon, 07 Nov 2022 17:07:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tz4DXUwB8MapeXYHJsCdHftchNNLXz8UNlurMY6/9pU=;
-        b=k1lwV6cTVWO0lVK0eV6W8mfgRjranpkmcFc04FvVS2YggyrwV1MLiGfprsJYgRgyYR
-         m/17SeVYABfYWCB/CRjVrQ/VgMV0+OSEjS2X0oi1VQXqBZFe5KadyqKYoUlYXMgxBZxf
-         NUTWWUJoX3JOjufPoplM5bCc20m+WGl+JJz35IQJ6W+F+k+DVoRDZ8HEUX53FuCKZUyH
-         4vvDbZvnb2DT4xJVkOgPr54qLjsmHZdPO6FUNIeV+LZLnR3VodZNbovX5qEwaH+c0VWU
-         y6MqIHvzAeDNFtDtfA+uBTmwmgm7fhzEPusQNXR7J7xdOwAcqU2El5g69n5/xUyWLBkV
-         Mn0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Tz4DXUwB8MapeXYHJsCdHftchNNLXz8UNlurMY6/9pU=;
-        b=Nz/mM1PIexFTmfZXv8zszoO+CvoAVb8kitQjVA1x1fyuMI2g022q+KUBmL/DirlTRK
-         nLcQy6jkxri6+C/Qa8I4PraFIdMzNRTMhakyvHM3izj8Es8pICDASVw2QiMqJ488/fP2
-         lpMnmaqjH2ksfuLlY49YvwogU/rAXaKf6rlMjHbZT1Vv5vn4MjwYueZozeDu2MK/Gmho
-         /sDjZt7kej1TMHAtTLkbO368QnTduFAosf0PnsRydTQHpkByjQm1tUinkhBzpZI2EMQR
-         hmTN8GApHh6pQ6YRam933T4kzSl5aHyS+Zb/Vl/c/N0GMcVq8LIWdY73Ix3mvFDNMY0i
-         QQTQ==
-X-Gm-Message-State: ACrzQf26vAs34mil03GYy0wOko9yXEf0Dg3iU/Jw4FUW2BnMGbA6VFdO
-        QffXEM9D8B0F25XX3QsJJCLddoDpU4ugYszNNGM=
-X-Google-Smtp-Source: AMsMyM7F/wfMIAI3Pzk6zlUhjURIiB8mQML2zO0akN3+D3xP5rRkJy5XRZoc47qAoqbfK9eQtPt/3eIZHRUKm7zf6tc=
-X-Received: by 2002:a17:906:99c5:b0:73d:70c5:1a4f with SMTP id
- s5-20020a17090699c500b0073d70c51a4fmr50095400ejn.302.1667869671316; Mon, 07
- Nov 2022 17:07:51 -0800 (PST)
+        with ESMTP id S232083AbiKHBI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 20:08:26 -0500
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC90638A;
+        Mon,  7 Nov 2022 17:08:25 -0800 (PST)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A80V31G008193;
+        Mon, 7 Nov 2022 17:08:09 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=7W+gwr2dcQrulshbGi2+OY9QzIrrtCXswWLTZLlv6aU=;
+ b=OG3SxCmCCT/uJ3Wdilykl6PHTzePGhBNfgkMyNHvrQ5iJ11OgOM2TFmINJ/cghFH0lt1
+ oWLmRqArb5IvYHDuOWrtHXezMI0qpXl9wCsvFYZ+n/emVKoV+ik5QiiipGtzxFablrpZ
+ M88+s+S+XoDyyhcFoAsrhrch8GO+qVT+S9VeyIWrtyuuBwWRnMu1iSZVesi0EPVTgRh2
+ i3oqruHvbxqh1yeYrTYVMMUJRRvPJVXFyB7YQeCfmVANNMIM9AY8Q3Lmg9amAM+Ew6Gt
+ GlMbGgcl/8LhIBFKwk7ZDJWExX4dKfM860IcX5DmEkH5aXSYshHc3XCbcys9kWEkUQSa 3w== 
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2175.outbound.protection.outlook.com [104.47.73.175])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3kqcmqr8pt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Nov 2022 17:08:09 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JUEzUIussHAbRp+x+rf5PF2MFHXDQgy39aejgOiLkiaJANFQEFweVqGQkVS5C3sRgaZ1EqP+frvw/UO946gdUPdfabUgLZ81j6D5g3x4wxBJ33lE6EhK0fYMIsVg5FINdPYAtSr1KrHgwADf4fWHfMfd5vusOggC8x863Mqq8UqLrma9aX2s8megzx+WWCRyVXOjOdh1jTQX7yfhI7NKTHw+vzZ0O32VqKyvz/BqDm0udHihqnlIKIp9izsu1phC4gBfk5C724N8Jm1g+wMp/ivcYPDYbivaWbysG810YwTt5EpmBi7wTKUZ3ZzVkxbculr6hwCTi1k0XIo08AS0cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7W+gwr2dcQrulshbGi2+OY9QzIrrtCXswWLTZLlv6aU=;
+ b=SFYdNSSSJtqx33LMU6anwa16CrTIJN39J58GkW9yWGxoPuyq7YGhz/varVmBFCIUNqUbSmGIleIsT8TgOu+MdLepn/K/CZairV/rXWusmWel0oo61jsiAySbpnGSF6AFNYcrPERjWAXx0mz+I2Fz17xnYl61rMxkrGpOxNbuY+YTilN+1I7k1qr8FoqGbOonozC8DUDEnXMP+cN8TUXLrEWZbmCiv/tiGRW0o9XcGP/WiCICutOLpASZNg0UWn7tx1jtDrSZBK6A1WMcYdi9ICs9cVD7qzp2/DVTQf9hjoPk5WhTnhy+tYzqAyy6SbJhz5qTeKw4wFywB/nKOJtT9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SJ0PR15MB5178.namprd15.prod.outlook.com (2603:10b6:a03:426::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.25; Tue, 8 Nov
+ 2022 01:08:07 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::1f2:1491:9990:c8e3]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::1f2:1491:9990:c8e3%4]) with mapi id 15.20.5791.026; Tue, 8 Nov 2022
+ 01:08:07 +0000
+Message-ID: <97333915-9a71-1c6d-aae5-5813e1828f84@meta.com>
+Date:   Mon, 7 Nov 2022 17:08:05 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.1
+Subject: Re: [PATCH bpf 1/2] net/ipv4: fix linux/in.h header dependencies
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        kuba@kernel.org, kernel-team@fb.com, gustavoars@kernel.org
+References: <20221102182517.2675301-1-andrii@kernel.org>
+ <166747981590.20434.6205202822354530507.git-patchwork-notify@kernel.org>
+ <1db13bff-a384-d3c8-33a8-ad0133a1c70e@meta.com>
+ <CAEf4BzbuaTk1KdYJ5w_8wQLo01i_+js-jvYbTZ_zeWwGm9Zu=A@mail.gmail.com>
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <CAEf4BzbuaTk1KdYJ5w_8wQLo01i_+js-jvYbTZ_zeWwGm9Zu=A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-ClientProxiedBy: SJ0P220CA0005.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:a03:41b::12) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|SJ0PR15MB5178:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7340fda5-869c-4cac-4d9c-08dac125b240
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Q31vOSf27oDGhv/za1acOX9wCKkh2HZQuWQwvglAnPYY7qUJlwh82KpMJ8OQBfOPd34HtIliBl+ICVmdbEsUpLMTBqd/aFzbDJwlbxNkGRqYAH/cKzAyWp3tSdhoJs5oEYDKVpowFnTHHVWsz9k5sCqhY0fzJTJ0BhmQqm60vEHIP5IeAhXtdLsn8OkzfnQuVNYzCXafhoPdb8GNdKw9Ck0DObqIpfa3DlTfUN8esDzNf1MR6ke/ZYHHGvl+zR2yOvn692e6dA+/F5L4/NQWXKnBiBRSYgsKMK/rnQsWdJObIp7nNi9own/nFMhOn8H6Ag4q2Pcif/N7LvH/pjwFG6FVlV4dcyriyDlywIzmBHUU2WS4d8+Y8CvyDsLJRwKHm6Ju2U7LoqDhfVe8maaMfUPZ8WWAUSfBOMV7inPqdM9mK8Vlp+BxORn+GlmZOgxWcD/pMg04pHGoNSsKRH7OXFLv57qxLTy1pXr94V9j5A6Gd3DmVYLNcAXb+88AsDkcgFGoEC5HUZIq4prpiPJlTMJepzkRsalZ7wekAFhyzTP+GVrWr/G52wocxVQmEcKLx/T9IhFzvoDUMV1Ia2ggKpgg0i1sxE+A/mJSyMQz2/KVqOTWYTH414ucH/BMdDj81ogzWsnNtk6WPkcYrQYDz5/KvrLHCz8qpkieEbnHlEwcx55m2UyGPwIo8hlVIRI6EaphB+dULXaW4ILWrjuWmvbUl2L2TLmyesEUuLzzYSOHJrBFxPM2gS0Htx+cy6I9KdChel0qzLLwMmhnEzpkDyB2ATA012r1P/PbWoVUCpUrEiH1AWZ8cAiFPA/lcqqD6o9OrJUfGz9JJ6bnmMP8Q6fv7eYeA8bLaxf0tVJWHwOPBFLwjsUGhRq6cLfdV0ZZ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(451199015)(2906002)(66946007)(66476007)(66556008)(8676002)(4326008)(6506007)(53546011)(478600001)(31696002)(86362001)(6486002)(186003)(2616005)(6916009)(36756003)(6512007)(5660300002)(38100700002)(31686004)(316002)(8936002)(41300700001)(966005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eFY5dG1vSThwV2pTemJXdDBvQnpKbnF1NGxHcHJlaUlrcE9leWdUTzVEOG53?=
+ =?utf-8?B?LzVRenhqclNWZnJtQmozRFp0TE04SFlUQXdXM0FkOUNseUlPTW9mRGsvb2Zi?=
+ =?utf-8?B?V2s2TGFCYVZqbC85enpXbzdxWVRwVnhFNHZLNHRYbnRLK3JyNEJWQll2M3Fx?=
+ =?utf-8?B?dldCZnVCcTVPMDkwNzUwd3BHRGNRKzBlallRZlB0aGZPa2dIVFpWTjdSQlA5?=
+ =?utf-8?B?NjdPOFdRQXVXQUZLclJuWFM3L1RiYmMwRFFwVHZIaEFWVmxXSEx5eW5rMmxt?=
+ =?utf-8?B?ZlE3WDBpTjZyMmVuL211R05UL3JMeS8wY096VEZXSkxzVlFSckoyMmtOMCtD?=
+ =?utf-8?B?a2o3Y080WCswaU8rN0RVZnYrVGJ4eTZiWStuLzkwTXNjL2ErNjNHMEh1MFdP?=
+ =?utf-8?B?VUMvb2hzVXBwMWpDT0hwdmo5TUJOZlJTNzQwbUxzS2prT0hQam1IRW1nNk1F?=
+ =?utf-8?B?K3ZZUkpqWTZiOHBMZnhMVERMdmpnWENLc1RGM1dnU2RlNDhtOGh3c3Q4R0Np?=
+ =?utf-8?B?UUovdXFKcTNpemJYcVhhY1JvTFd5UDdDa285My80QjYrd2RtUm1oL2dBUm9M?=
+ =?utf-8?B?clNUVTZZcW1YUGxldmNUV1VlQXJUN1gveEV4UXRBSGowWG1IZkVOeEFNb1Ji?=
+ =?utf-8?B?K2VPUnVtcVlPc0xLKyttYTA1SytOc0Vtd3NFR0czdjlHSkg3L2xwQWsxck1y?=
+ =?utf-8?B?QTRLZnJsaVAxY2dJK0R1cnZ4UEQ2b01wY1p6SkV3SXNQbjZVTEg4Mmg1YVRv?=
+ =?utf-8?B?ckl5SS9jeGVQNUs3bTAwaE9SSi9RY3VOejhva0MyZTlTdGZ4VTZjRUpLdXl0?=
+ =?utf-8?B?cjlFSnFPa2I4TmVoZ1VNU3pwbTdHS0l4WXdDU2lON1FyVnlDT1Z1T25UN05H?=
+ =?utf-8?B?b3p3SkJSQWphU3BWaE55SENZYWo0YU1sTXkwV2dCRzN0MWE1MUlvTHFmUlNP?=
+ =?utf-8?B?RUhNL2lzOTJLQ3BZQTlGRlQrdldmaXdkc3dzdmV3ODI1VXd4dER6MUc3YlM5?=
+ =?utf-8?B?SGp0a3k5R2xBTTQzbFlva01RUFlxNGpweW1ITkVFNU9nalo1dUkrZ0RuSFpD?=
+ =?utf-8?B?bkZkcVd1RW8xYjdlZExVVkZVcFpWdTNNcE41STJXVm1qdXNLbVgxWkQ4azdZ?=
+ =?utf-8?B?TGdydnBtUDF5VEVqcWRtd3NVTDlEV1ptWmJtZzhuQUhmdTZyWUxuRitKdUhQ?=
+ =?utf-8?B?c05MZFVaZEZUY3pZeGlKVFNUanlHK3lpUE1jbmdBVi9iWFNUUFVwcGRoV1lS?=
+ =?utf-8?B?T0ExUmloSVpDVVRzYUQrK3V4WUNNa3Z0VXNzK1JPVTZ4U3J4S0ZEL1NRNHhs?=
+ =?utf-8?B?RVhZMFY0TjVxellCTGhtNEhGc3dUc05kK0htYnJGcExxZXZpaE54N29UTm1X?=
+ =?utf-8?B?UmZRMDVkTTgzL0dmbC9OVHZDNzk1N0IrWFI4SGtBNC9TLytrVHBDSTZlZ0lN?=
+ =?utf-8?B?b045amwzVlRGYUlabnRhd1BGd1ZGR1dVSTFVa1NUMlFBSS9WRXhhKzNjS00v?=
+ =?utf-8?B?Y0hNOUlpWk5JcUdUZWVRR3hXeXlOQlkzOTNlWUMrV3Y3YVYyazRFT2owaUs0?=
+ =?utf-8?B?OCtBNEJsVDRQY0hYQU5jTDB2R1N6R2NZNjY1eFFxcGpDbE0xWkxnbEY0Qzdp?=
+ =?utf-8?B?dEg4alZjOXlGZVR1b1BwRHh2ak9IQjRJMXAxeFYrREpvMEhuZE9ZQVpYTkpI?=
+ =?utf-8?B?VFVYRlN1YXpqcTNNWmxUSmFsL0Fvb2pmUnFxZEU1OGpEUHZCdkUyR1ZHOEJp?=
+ =?utf-8?B?eWZFRytQcWJjaEVxUS9nSFpLMGdhckwzb1dCZmtiOWlwSDRSbjhkeC9jclp2?=
+ =?utf-8?B?SThweStacjUwckJ6Vkh2WWluU3ZNL3VKMGRjRWt5ZmJwSDUvNDJ1SlZkaFJK?=
+ =?utf-8?B?ODhmUFRnRis3VmJRYlI2ZjlFSU1KMnVHdHF3ZEN1V3BWb1lwRURnY3Z0K1lm?=
+ =?utf-8?B?U1NvVUhjaDc3cGFTbWtzUFFiMkRGUGxxMytGZDRqYmN0eGJ6RGZKVS92SVlL?=
+ =?utf-8?B?TVhkR2p1TmJaK0FSRW9HMGhaNGZZVEJOaHg1bUhTOWhCOU44bDA4a1EwNUE5?=
+ =?utf-8?B?OHRxYVh5ZVZwcnRhbmd2T3o0TWFWUmxqaFpiVlNieFJ0bG5aZVZyamJKcCt0?=
+ =?utf-8?B?ZTAyU0FTaHZGR3BoaXorSTZreStSTG4xMUxYaE5ZeVJHMlUwVWJETFR1R3Iv?=
+ =?utf-8?B?M0E9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7340fda5-869c-4cac-4d9c-08dac125b240
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 01:08:07.6261
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: a+o2WgHgGpN+kEmkrUQ9oj5oPtSiufV7J9euUFus+b/dwE/K0QLaD/ICFbVGSRni
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB5178
+X-Proofpoint-GUID: UC0P92qYmmzyMW6N50DqRFSe7ouJIUO4
+X-Proofpoint-ORIG-GUID: UC0P92qYmmzyMW6N50DqRFSe7ouJIUO4
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20221103083254.237646-1-yangjihong1@huawei.com>
- <20221103083254.237646-3-yangjihong1@huawei.com> <CAEf4BzY+qP1wwVddjg7_rypcUAW8iPRzSa=1O6aFG5dSLX+1Gg@mail.gmail.com>
- <CAADnVQJW3CisB3L2nNOC0aGkPPBTHnyM-ZCXoZJc-KtNNEj+QQ@mail.gmail.com>
-In-Reply-To: <CAADnVQJW3CisB3L2nNOC0aGkPPBTHnyM-ZCXoZJc-KtNNEj+QQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Nov 2022 17:07:39 -0800
-Message-ID: <CAEf4Bzb+qJ-jzMkvWkBV0nXYj51P8DSbEHagT7h5ujCjCrRu8Q@mail.gmail.com>
-Subject: Re: [PATCH 2/4] bpf: Remove size check for sk in bpf_skb_is_valid_access
- for 32-bit architecture
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yang Jihong <yangjihong1@huawei.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        Artem Savkov <asavkov@redhat.com>, colin.i.king@gmail.com,
-        bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-07_11,2022-11-07_02,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 4, 2022 at 4:32 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Nov 4, 2022 at 2:56 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, Nov 3, 2022 at 1:36 AM Yang Jihong <yangjihong1@huawei.com> wrote:
-> > >
-> > > The error code -EACCES is returned when bpf prog is tested in 32-bit environment,
-> > > This is because bpf_object__relocate modifies the instruction to change memory
-> > > size to 4 bytes, as shown in the following messages:
-> > >
-> > > libbpf: prog 'kfunc_call_test1': relo #2: matching candidate #0 <byte_off> [18342] struct __sk_buff.sk (0:30:0 @ offset 168)
-> > > libbpf: prog 'kfunc_call_test1': relo #2: patched insn #1 (LDX/ST/STX) off 168 -> 168
-> > > libbpf: prog 'kfunc_call_test1': relo #2: patched insn #1 (LDX/ST/STX) mem_sz 8 -> 4
-> > >
-> > > As a result, the bpf_skb_is_valid_access check fails. For 32-bit architecture,
-> > > unnecessary checks need to be deleted.
-> > >
-> > > Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-> > > ---
-> > >  net/core/filter.c | 2 --
-> > >  1 file changed, 2 deletions(-)
-> > >
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index bb0136e7a8e4..eab7ce89740c 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -8269,8 +8269,6 @@ static bool bpf_skb_is_valid_access(int off, int size, enum bpf_access_type type
-> > >                         return false;
-> > >                 break;
-> > >         case offsetof(struct __sk_buff, sk):
-> > > -               if (type == BPF_WRITE || size != sizeof(__u64))
-> > > -                       return false;
-> >
-> > this probably should be specific to host architecture bitness? I'd
-> > imagine that size = 4 should be invalid on 64-bit arches (reading half
-> > of the pointer is bad)
->
-> Not quite.
-> In __sk_buff the field 'sk' is defined as:
-> __bpf_md_ptr(struct bpf_sock *, sk);
-> so it's always 64-bit load when bpf prog reads it.
-> In this case CO_RE shouldn't have been applied to uapi struct __sk_buff.
-
-Ok, hold on. __bpf_md_ptr just creates a 8-byte sized and aligned
-union. It doesn't change the pointer itself in any way:
-
-union {
-    struct bpf_sock* sk;
-    __u64 :64;
-};
 
 
-It's a 64-bit pointer only because any pointer in the BPF target is
-64-bit. But on 32-bit architectures such struct bpf_sock *sk pointer
-will *actually* be 4-byte pointer (and __u64 :64 will just make
-compiler add 4 bytes of padding after it, effectively), and BPF
-verifier will actually generate LDX instruction of BPF_W size (4 byte
-load):
+On 11/7/22 4:56 PM, Andrii Nakryiko wrote:
+> On Thu, Nov 3, 2022 at 9:18 AM Yonghong Song <yhs@meta.com> wrote:
+>>
+>>
+>>
+>> On 11/3/22 5:50 AM, patchwork-bot+netdevbpf@kernel.org wrote:
+>>> Hello:
+>>>
+>>> This series was applied to bpf/bpf.git (master)
+>>> by Daniel Borkmann <daniel@iogearbox.net>:
+>>>
+>>> On Wed, 2 Nov 2022 11:25:16 -0700 you wrote:
+>>>> __DECLARE_FLEX_ARRAY is defined in include/uapi/linux/stddef.h but
+>>>> doesn't seem to be explicitly included from include/uapi/linux/in.h,
+>>>> which breaks BPF selftests builds (once we sync linux/stddef.h into
+>>>> tools/include directory in the next patch). Fix this by explicitly
+>>>> including linux/stddef.h.
+>>>>
+>>>> Given this affects BPF CI and bpf tree, targeting this for bpf tree.
+>>>>
+>>>> [...]
+>>>
+>>> Here is the summary with links:
+>>>     - [bpf,1/2] net/ipv4: fix linux/in.h header dependencies
+>>>       https://git.kernel.org/bpf/bpf/c/aec1dc972d27
+>>>     - [bpf,2/2] tools headers uapi: pull in stddef.h to fix BPF selftests build in CI
+>>>       https://git.kernel.org/bpf/bpf/c/a778f5d46b62
+>>
+>> Can we put this patch set into bpf-next as well? Apparently we have the
+>> same issue in bpf-next.
+>>
+> 
+> Unfortunately we can't because they are already in bpf, and if we have
+> them in bpf-next, they will cause merge conflicts. So I currently
+> cherry-pick those two patches locally when compiling selftests. This
+> should hopefully will be fixed soon and bpf and bpf-next will
+> converge.
 
-        case offsetof(struct __sk_buff, sk):
-                *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, sk),
-                                      si->dst_reg, si->src_reg,
-                                      offsetof(struct sk_buff, sk));
-                break;
+Thanks. This should be fine. I guess most people will do the same
+thing (cherry-pick locally).
 
-
-BPF_FIELD_SIZEOF(struct sk_buff, sk) is 4 for 32-bit kernels.
-
-So while you are correct that it will be 8-byte load from the BPF
-side, allowing 4-byte load for such pointers should also be correct.
-It's our choice, there is no fundamental limitation why this shouldn't
-be the case.
-
-Note also that we do this transformation when fentry/fexit/raw_tp_btf
-programs traverse pointers in kernel structures. There pretending like
-pointer to an 8-byte value is actually invalid. So libbpf adjusts such
-loads to 4-byte loads for CO-RE-relocatable types, which makes it all
-work transparently on 32-bit architectures. Context accesses deviate
-from that, as they came earlier and we didn't have CO-RE at that time.
-
-So what you are saying is that __sk_buff shouldn't be
-CO-RE-relocatable, and yes, that would be good. But I think that's
-orthogonal in this case.
+> 
+>>>
+>>> You are awesome, thank you!
