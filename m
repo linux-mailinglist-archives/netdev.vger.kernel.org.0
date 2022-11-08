@@ -2,72 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 972EA620C71
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 10:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76994620C79
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 10:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbiKHJkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 04:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        id S233813AbiKHJke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 04:40:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233712AbiKHJkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 04:40:13 -0500
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5112C67F
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 01:40:12 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id DDFCB320092D;
-        Tue,  8 Nov 2022 04:40:10 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 08 Nov 2022 04:40:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1667900410; x=1667986810; bh=uMjjANNaLOOv9SWMIXjvBglaHGnM
-        qGIGwHfKQwUNn7A=; b=v95cUEyNuABQM9lHjkP2lBqL/p4MQOA9vm+NdpTjNMp0
-        z7HkSijdFsJTOJF3gXW0h3ZhBZOEO6HfzIr51BBLOPbQeyIrJYY2lIzjUg3DVE0i
-        LoLI1Kd0LMuMFVXia7enio+c3AipMP60fShcp+8mtswLvZTbwhN4oLGJFnvKU5Sb
-        Gfl6jFq7rXnb1ebbIYrStrfzasxpzzlbJHP4sxuRThZp4+O7n7kEhFrV+U6xh45Z
-        ukWG6ygvTrbWUEA7zHamWDcw9UGQNz6u3bU/0GpFOPQZssMxAF5FEo7u7oZ1TL45
-        4KZE7CeRN856JGowxzk60gH7fJHPZhhVvHPM/cbeVQ==
-X-ME-Sender: <xms:-iNqY1x5NRYMx3aIdAqEU9sUR2uyobb7DsPeRw-epRnm8kBmcauRCg>
-    <xme:-iNqY1Rwk3Ag92Plah2COKD4YbZafvKiHzPkzQAhGhdHIjOz2scvbL93C_ZtJQqif
-    lxQ__7zwnGevnc>
-X-ME-Received: <xmr:-iNqY_WjgsLWK3DPt2BmrQ5WjQZiG3mmNeSp1BWNJURO1WRufIHhQVenjVLbzCIrC48A4xqo2CbJceK3ulvysbXPaeI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrfedtgddtjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:-iNqY3hZrRHrecb_irN_4kUnIgYf7GNRL8z6SxmMlISU7CFgiDgYHA>
-    <xmx:-iNqY3CsFAwpVk63ZZk4qDAmNFan2WLXiYeeAqDZchXFIHmp74-1Sg>
-    <xmx:-iNqYwKo4E8mHaF1gCh5jNLio6blBE23MkP8Ni_XGj1NVGX9CXHoxQ>
-    <xmx:-iNqY6PXvp7yaSjnLJ0aVvUxW4rtdy25c7AJkxBHYuyTHXWnHTsohw>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 8 Nov 2022 04:40:09 -0500 (EST)
-Date:   Tue, 8 Nov 2022 11:40:06 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCHv3 iproute2-next] rtnetlink: add new function
- rtnl_echo_talk()
-Message-ID: <Y2oj9gNmsy0LhvjA@shredder>
-References: <20220929081016.479323-1-liuhangbin@gmail.com>
- <Y2oWDRIIR6gjkM4a@shredder>
- <Y2ocsXykgqIHCcrF@Laptop-X1>
+        with ESMTP id S233767AbiKHJk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 04:40:28 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C82727900;
+        Tue,  8 Nov 2022 01:40:22 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id r14so21569341edc.7;
+        Tue, 08 Nov 2022 01:40:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6R2u+4ncSx8KluFMuPj2ehi9rZ//rxoPRpAs8tI9poY=;
+        b=Fnn44XdkufgkSSnM4GLF7F4kNg8m/N+jGANKbUq2WAeEQ7iLvra2UN1+f0e8nLnC6e
+         gYz1xNnUUJaZtY0nTH2M5LgFsJwj/6bh2xhRT3qYbkwZHRv3CJ76Cao3yhUDDDR4QuyK
+         1Gbq4L4pmDznRj/9KTV4z52/0+s3RV1iBnGudg8WXAJAtz6a/7JOxUaWsYg9prNphWih
+         cR1gP8aQF6xu0jTpTHjhRSB+goaCNvk4K1A/HHpzyKCTuyR1RxypYFw9t8XQYZpuiaeY
+         nzXeWiRGQU8DnwhmzKN9D5blcKfqEQ8NctWarfkSXleA17D6rW76gj1flLM9A9rUdEzs
+         hu+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6R2u+4ncSx8KluFMuPj2ehi9rZ//rxoPRpAs8tI9poY=;
+        b=G+f8FQ0zrRAJps2ZJVBw8QnpJL7iKlGWIvP9yPRFuVRL/fJa3wLTDqkojj+nZfHXTn
+         O5+8h6/JOkDiF8YX7yCLKN5ls4JCz/C/Z27Omlm3lGb5GSPw9KRR7TbLYI8T2UJh4CJC
+         gyHrp1drj93sMbvXddUMYFgHWhkzg9egdzJGJ+fCNGL99VGd2pIFrHOtcAzKgWS0h250
+         AjxmTsTW8KU7vENena/IWFzp3cdSeu3G4+MWuoVyO6CphapzY2NvZhmEMDrjIsUInjdf
+         FT0S0CmVLQPbmzToS7Atqz4yNp+aPyG6dvhCqBKgMU/emC7XXDu7f74jdykH55T4NrUe
+         4/hw==
+X-Gm-Message-State: ANoB5plmOYsFxCrBIpxCduNiecOdLNwo6sXMOmCKiKNQ1KA4mYbFlDzO
+        cHgGpYracCL5mK+5fK7ttc4CZCZdkaxF+w==
+X-Google-Smtp-Source: AA0mqf7femjNdGyEnapokREP6cqG8YFp2Vsz0oKrp/hKd997QAkd5iA8xAGiLc/EhnFHTq4mjynVzw==
+X-Received: by 2002:a05:6402:27d2:b0:462:8e41:569c with SMTP id c18-20020a05640227d200b004628e41569cmr13648250ede.191.1667900420657;
+        Tue, 08 Nov 2022 01:40:20 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id hg11-20020a1709072ccb00b007a8de84ce36sm4392806ejc.206.2022.11.08.01.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 01:40:20 -0800 (PST)
+Date:   Tue, 8 Nov 2022 11:40:18 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/14] net: vlan: remove invalid VLAN protocol warning
+Message-ID: <20221108094018.6cspe3mkh3hakxpd@skbuf>
+References: <20221107185452.90711-1-nbd@nbd.name>
+ <20221107185452.90711-8-nbd@nbd.name>
+ <20221107215745.ascdvnxqrbw4meuv@skbuf>
+ <3b275dda-39ac-282d-8a46-d3a95fdfc766@nbd.name>
+ <20221108090039.imamht5iyh2bbbnl@skbuf>
+ <0948d841-b0eb-8281-455a-92f44586e0c0@nbd.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y2ocsXykgqIHCcrF@Laptop-X1>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+In-Reply-To: <0948d841-b0eb-8281-455a-92f44586e0c0@nbd.name>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,54 +77,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 08, 2022 at 05:09:05PM +0800, Hangbin Liu wrote:
-> On Tue, Nov 08, 2022 at 10:40:45AM +0200, Ido Schimmel wrote:
-> > > +	return rtnl_talk(&rth, &req.n, NULL);
-> > >  }
-> > 
-> > Hangbin,
-> > 
-> > This change breaks the nexthop selftest:
-> > tools/testing/selftests/net/fib_nexthops.sh
-> > 
-> > Which is specifically checking for "2" as the error code. Example:
-> 
-> Hi Ido,
-> 
-> Thanks for the report.
-> 
-> > 
-> > # attempt to create nh without a device or gw - fails
-> > run_cmd "$IP nexthop add id 1"
-> > log_test $? 2 "Nexthop with no device or gateway"
-> > 
-> > I think it's better to restore the original error code than "fixing" all
-> > the tests / applications that rely on it.
-> 
-> I can fix this either in iproute2 or in the selftests.
-> I'd perfer ask David's opinion.
+On Tue, Nov 08, 2022 at 10:20:44AM +0100, Felix Fietkau wrote:
+> I need to look into how METADATA_HW_PORT_MUX works, but I think it could
+> work.
 
-Sure, but note that:
-
-1. Other than the 4 selftests that we know about and can easily patch,
-there might be a lot of other applications that invoke iproute2 and
-expect this return code. It is used by iproute2 since at least 2004.
-
-2. There is already precedence for restoring the original code. See
-commit d58ba4ba2a53 ("ip: return correct exit code on route failure").
-
-> 
-> > 
-> > The return code of other subcommands was also changed by this patch, but
-> > so far all the failures I have seen are related to "nexthop" subcommand.
-> 
-> I grep "log_test \$? 2" in selftest/net folder and found the following tests
-> would use it
-> 
-> fib_tests.sh
-> test_vxlan_vnifiltering.sh
-> fcnal-test.sh
-> fib_nexthops.sh
-> 
-> Thanks
-> Hangbin
+Could you please coordinate with Maxime to come up with something
+common? Currently he proposes a generic "oob" tagger, while you propose
+that we stay with the "mtk"/"qca" taggers, but they are taught to look
+after offloaded metadata rather than in the packet. IMO your proposal
+sounds better; the name of the tagging protocol is already exposed to
+user space via /sys/class/net/<dsa-master>/dsa/tagging and therefore ABI.
+It's just that we need a way to figure out how to make the flow
+dissector and other layers not adjust for DSA header length if the DSA
+tag is offloaded and not present in the packet.
