@@ -2,145 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CCB620C54
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 10:35:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E268620C60
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 10:36:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbiKHJfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 04:35:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        id S233767AbiKHJgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 04:36:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233678AbiKHJfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 04:35:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2095FF5A5
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 01:34:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667900052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Las2jwQInbTqaGESYtOqR8ORil6cZe276BySoHxkoJo=;
-        b=SZ0+UOQzgZQKavQuzfdzEY9e30H/NnMOjH+MDM3G3IV6omCSsSzaDl0zwtp1Td6VWju32n
-        feJag0VlXnsmzwr09DSBJRfOqokGxbyAmsPR64XJv9+OQWVG4sPQeX7fLVY5YVHM04mwF/
-        Q2FEkszpZv6UI34UGfef+iX+17/mRz4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-262-oGIgfGyMPzKn2NKcQnToiA-1; Tue, 08 Nov 2022 04:34:03 -0500
-X-MC-Unique: oGIgfGyMPzKn2NKcQnToiA-1
-Received: by mail-wm1-f71.google.com with SMTP id u9-20020a05600c00c900b003cfb12839d6so893995wmm.5
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 01:34:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Las2jwQInbTqaGESYtOqR8ORil6cZe276BySoHxkoJo=;
-        b=IeAFI4zj49Rj6qOI8rBH0aFNlDNvmiGe0o0vhDebETYC9pkHTWyAJa2h6YuOdnzaLb
-         UeYYruMhqvfzY7nOMTHmVcXqx3KAL2/SPOwBttYh7bmG28IXgXZzLwddSUZ65PP+Y5Cw
-         SmlbGQg5zU5bxqiSmmG/cDUK4lnfU9f81F0963+xsHUVaOsCmakP/Wt9YpJ/gOAQ2BQB
-         qy5eHKW9rhSbauwyCC0H4YAgRTlLnzShzoI9msG+k5Zu5SS58gNcqyUkqU4JV6DTVpea
-         Ynvu+UWicUjkkc5lq9nEFqGxOPYfdqWK0zYgStqrAB+fTIjvv9Gf5yrRyEMA2goXBtXE
-         7vog==
-X-Gm-Message-State: ACrzQf32UuMwtV47TyFqCJiBsZZsCbW4Qnhiwdb0WqzuA+RM4ptp4/hh
-        6hgvIttVLyH8bHMWPoKaPFb+3BiaiWCGCbDJRyLbQDYHTuhohOsGyHLH2iD+6Vw8djArX+TMsyy
-        GtovFb+vxV94KvgKg
-X-Received: by 2002:a05:6000:114e:b0:236:f365:b769 with SMTP id d14-20020a056000114e00b00236f365b769mr20584810wrx.266.1667900042449;
-        Tue, 08 Nov 2022 01:34:02 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM7PUbxzyZyAh4lu3TeI5npdnQRCKbagPaMHNYMKPGGmR4cOee7DVWQzcDxDyrBEiBASAFOWdQ==
-X-Received: by 2002:a05:6000:114e:b0:236:f365:b769 with SMTP id d14-20020a056000114e00b00236f365b769mr20584800wrx.266.1667900042228;
-        Tue, 08 Nov 2022 01:34:02 -0800 (PST)
-Received: from sgarzare-redhat (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
-        by smtp.gmail.com with ESMTPSA id p20-20020a05600c359400b003a6a3595edasm11355392wmq.27.2022.11.08.01.34.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 01:34:01 -0800 (PST)
-Date:   Tue, 8 Nov 2022 10:33:58 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Yuan Can <yuancan@huawei.com>
-Cc:     stefanha@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        davem@davemloft.net, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: Fix error handling in vhost_vsock_init()
-Message-ID: <20221108093358.4knnc6tlts7sm7a6@sgarzare-redhat>
-References: <20221108091357.115738-1-yuancan@huawei.com>
+        with ESMTP id S232939AbiKHJgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 04:36:10 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4880020F57;
+        Tue,  8 Nov 2022 01:36:08 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N62tz1W2HzpWFG;
+        Tue,  8 Nov 2022 17:32:27 +0800 (CST)
+Received: from localhost.localdomain (10.175.103.91) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 8 Nov 2022 17:36:06 +0800
+From:   Wei Li <liwei391@huawei.com>
+To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <huawei.libin@huawei.com>
+Subject: [PATCH v1 0/3] rtlwifi: Correct inconsistent header guard
+Date:   Tue, 8 Nov 2022 17:34:44 +0800
+Message-ID: <20221108093447.3588889-1-liwei391@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20221108091357.115738-1-yuancan@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 08, 2022 at 09:13:57AM +0000, Yuan Can wrote:
->A problem about modprobe vhost_vsock failed is triggered with the
->following log given:
->
->modprobe: ERROR: could not insert 'vhost_vsock': Device or resource busy
->
->The reason is that vhost_vsock_init() returns misc_register() directly
->without checking its return value, if misc_register() failed, it returns
->without calling vsock_core_unregister() on vhost_transport, resulting the
->vhost_vsock can never be installed later.
->A simple call graph is shown as below:
->
-> vhost_vsock_init()
->   vsock_core_register() # register vhost_transport
->   misc_register()
->     device_create_with_groups()
->       device_create_groups_vargs()
->         dev = kzalloc(...) # OOM happened
->   # return without unregister vhost_transport
->
->Fix by calling vsock_core_unregister() when misc_register() returns error.
+This patch set fixes some inconsistent header guards in module
+rtl8188ee/rtl8723ae/rtl8192de, that may be copied but missing update.
 
-Thanks for this fix!
+Wei Li (3):
+  rtlwifi: rtl8188ee: Correct the header guard of rtl8188ee/*.h
+  rtlwifi: rtl8723ae: Correct the header guard of
+    rtl8723ae/{fw,led,phy}.h
+  rtlwifi: rtl8192de: Correct the header guard of rtl8192de/{dm,led}.h
 
->
->Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h     | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h     | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h     | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h     | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h  | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h     | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h     | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h    | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h    | 4 ++--
+ 16 files changed, 32 insertions(+), 32 deletions(-)
 
-Is this the right tag?
-
-It seems to me that since the introduction of vhost-vsock we have the 
-same problem (to be solved differently, because with the introduction of 
-multi-transport we refactored the initialization functions).
-
-So should we use 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")?
-
-Thanks,
-Stefano
-
->Signed-off-by: Yuan Can <yuancan@huawei.com>
->---
-> drivers/vhost/vsock.c | 9 ++++++++-
-> 1 file changed, 8 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->index 5703775af129..10a7d23731fe 100644
->--- a/drivers/vhost/vsock.c
->+++ b/drivers/vhost/vsock.c
->@@ -959,7 +959,14 @@ static int __init vhost_vsock_init(void)
-> 				  VSOCK_TRANSPORT_F_H2G);
-> 	if (ret < 0)
-> 		return ret;
->-	return misc_register(&vhost_vsock_misc);
->+
->+	ret = misc_register(&vhost_vsock_misc);
->+	if (ret) {
->+		vsock_core_unregister(&vhost_transport.transport);
->+		return ret;
->+	}
->+
->+	return 0;
-> };
->
-> static void __exit vhost_vsock_exit(void)
->-- 
->2.17.1
->
+-- 
+2.25.1
 
