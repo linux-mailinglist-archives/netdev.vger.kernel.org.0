@@ -2,136 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 605D2621E22
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 21:56:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11B89621E25
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 21:58:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiKHU45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 15:56:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
+        id S229942AbiKHU6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 15:58:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbiKHU4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 15:56:52 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B86E5D6B4
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 12:56:52 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id d20so14176279plr.10
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 12:56:52 -0800 (PST)
+        with ESMTP id S229712AbiKHU6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 15:58:12 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F025EFB0
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 12:58:10 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id h12so22898743ljg.9
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 12:58:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0onMt+air2lNK6el66wGss5pMPyUXTVLi3zz0gmD1tU=;
-        b=Bkzc2mkmAhE0IfooRK3Sqm+LJEDbscvB/8Mtcavis1yMpw3YbvTuzd92c69U6SDhz2
-         0MXN/D7PjXKOaohVDWk/7fK9jeU08WfIQmlPOI/ud26TW1vpPFga1JJzVlCPvMYvhOgt
-         MCBYFHAwDkAlYxK7K3LzL4j2BlVZdQ49bT+GWcXBxmB6NnWkKBiy1H6Z4X+uoiI4MTpZ
-         YrdywVH2mQ90EIROULO3rnpsZomcMQQDis7SVMhTv+UmvTJzAn4nFOivziiLKPEX1iMZ
-         B1GWw8h1SDgPWA0A6IFvzoRnF6OJpu9hzjTPRSr4gkXKcmdrCPSI4FuBql/IMc3IhCtB
-         EBZQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YiA2Wd0IR7dQTTPfcMVQBLNUibTd8t/7NXvnUyybPgs=;
+        b=lcxjZZUR35gq/5AK49tt3cK2v9exG4A+54xtJZWblLRAduphqSBZA8v3/Yv5A2GzNK
+         GDStbrqL78d2zySqbtgHLSw7RJ67rIqHzdhuybvFZ40X30Lt067zVh/y8okJDbgmgryA
+         XuBMWiK1kVuZf1Xlpa1fVO5qNNsOahUa/tGQ5u7ibUbiDwbnP0Ab6C3NesGEdjrbwLO9
+         lzl+PmZncFQe5HvnG+icbFJA+lhnUuAFjhVwZHXyCrplGCz2PfVOdaX0ivf53xOutvV2
+         MFhBiJTaPhKW/1UvzeBGauJQzjDcXzcyhshzZG8P8chHN+8J4Q+ONTM4G7ziXznXACJP
+         3ycw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0onMt+air2lNK6el66wGss5pMPyUXTVLi3zz0gmD1tU=;
-        b=emISmqtVX21dCJ+lvuuywPZwXnK/oYLwg6UFExa1Sy6ku14Yiy2jF8+MQqIRtkkSwY
-         T1sgQopW38joCHNnYVwyQqy1Lq8smVDoeHJx7fA8g/A1Ih78VIiDWCE3E/dOaJSuZmc0
-         uWYpkdE5iMB5Oyu8ZBkNRQOuot7mC3wWzHNyA7+rt3aIjxDDB+fp+VJ8XxHucFm1AQFy
-         1T4hc0x+WoTraES9bLW0mEu1j7pxXzXlpN6jnjEwKpUrur3Pn5H0v1xjr5SIJ5tKal7M
-         M7q0hcFO4KGap9Z8ToY1y0X2Zi1Z47SzireiEuSCXtxJ8qBFjnp/ITQDugTCAH+wOZtk
-         w7VA==
-X-Gm-Message-State: ACrzQf2USnwcCtCNBNIIrFxv3gI4tnKfrR4rFu+mIQOjUgVZru/L6dz+
-        5EEX6FUYGQ+cBiqt6evkpoxCRQ1FWtkV/XMCyuY4lg==
-X-Google-Smtp-Source: AMsMyM4gITR694JEoUnHOm2v2lMU0mdPEvB4EDyjuKZCqRozgFfRmPYW4lW2mOdcVea8X79bo6W2zY2H2Bz1Z24VxCA=
-X-Received: by 2002:a17:902:f786:b0:180:6f9e:23b with SMTP id
- q6-20020a170902f78600b001806f9e023bmr58978856pln.37.1667941011429; Tue, 08
- Nov 2022 12:56:51 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YiA2Wd0IR7dQTTPfcMVQBLNUibTd8t/7NXvnUyybPgs=;
+        b=ZMUCDZia6J3GbULElzCIiGnaeIt1P6vkXGsdh1rl5Rb5ubwAAs+enheQ5PY0svSFiX
+         ooI6pkxbt8WZn7IXcy7/yG2lYz/LEMpsdNh3oukYbSSWppJie11S8yiS+ZaAKJ6PXZdr
+         BOAGm8qZu9SA9YBChQ1rf+k/Ijz0b3KtY47tJJXxgbypA3FFSCSp7EfUPCJvLhEjqSoH
+         N1m/KCUOQ2zlJXsCIlFWoMU4ptSf4mgo/QUhbZ2rxKapu/S/l6Am07pGp1Dqcnvz+cUX
+         12OI0M2vDDGKC0m9NeSYx/nRfRJiSwxpCxideOkDs4ekH+oFqUXkMl3GBXscBRa/djvE
+         pzKw==
+X-Gm-Message-State: ACrzQf3AWbJh/xiDObbN6Ut/KcNFmRLu839uFZ5ExyvmCvnCJTEfdz/0
+        OupIzQtSGhAq9lowWmHM7aNsGw==
+X-Google-Smtp-Source: AMsMyM79uvUhq83VGW7jdee8v+oVdQ4MCBl3TmsdatEAkaCoQD9jY8DL6magc/wqASnZRN1HgL9RIA==
+X-Received: by 2002:a2e:b88a:0:b0:277:7364:cbcf with SMTP id r10-20020a2eb88a000000b002777364cbcfmr12360651ljp.50.1667941089163;
+        Tue, 08 Nov 2022 12:58:09 -0800 (PST)
+Received: from [192.168.0.20] (088156142199.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.199])
+        by smtp.gmail.com with ESMTPSA id f27-20020a19381b000000b00498fbec3f8asm1919840lfa.129.2022.11.08.12.58.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Nov 2022 12:58:08 -0800 (PST)
+Message-ID: <a8fe49f4-09f2-2507-e652-cbbb13ed8006@linaro.org>
+Date:   Tue, 8 Nov 2022 21:58:07 +0100
 MIME-Version: 1.0
-References: <20221103210650.2325784-1-sean.anderson@seco.com>
- <20221103210650.2325784-9-sean.anderson@seco.com> <20221107201010.GA1525628-robh@kernel.org>
- <20221107202223.ihdk4ubbqpro5w5y@skbuf> <7caf2d6a-3be9-4261-9e92-db55fe161f7e@seco.com>
- <CAL_JsqKw=1iP6KUj=c6stgCMo7V6hGO9iB+MgixA5tiackeNnA@mail.gmail.com>
-In-Reply-To: <CAL_JsqKw=1iP6KUj=c6stgCMo7V6hGO9iB+MgixA5tiackeNnA@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 8 Nov 2022 12:56:15 -0800
-Message-ID: <CAGETcx-=Z4wo8JaYJN=SjxirbgRoRvobN8zxm+BSHjwouHzeJg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 08/11] of: property: Add device link support
- for PCS
-To:     Rob Herring <robh@kernel.org>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC PATCH 2/2] bluetooth/hci_h4: add serdev support
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Dominique Martinet <dominique.martinet@atmark-techno.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com
+References: <20221108055531.2176793-1-dominique.martinet@atmark-techno.com>
+ <20221108055531.2176793-3-dominique.martinet@atmark-techno.com>
+ <Y2q+TkZJOfXFYlBO@lunn.ch>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Y2q+TkZJOfXFYlBO@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 7, 2022 at 1:36 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Mon, Nov 7, 2022 at 2:50 PM Sean Anderson <sean.anderson@seco.com> wrote:
-> >
-> > On 11/7/22 15:22, Vladimir Oltean wrote:
-> > > On Mon, Nov 07, 2022 at 02:10:10PM -0600, Rob Herring wrote:
-> > >> On Thu, Nov 03, 2022 at 05:06:47PM -0400, Sean Anderson wrote:
-> > >> > This adds device link support for PCS devices. Both the recommended
-> > >> > pcs-handle and the deprecated pcsphy-handle properties are supported.
-> > >> > This should provide better probe ordering.
-> > >> >
-> > >> > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> > >> > ---
-> > >> >
-> > >> > (no changes since v1)
-> > >> >
-> > >> >  drivers/of/property.c | 4 ++++
-> > >> >  1 file changed, 4 insertions(+)
-> > >>
-> > >> Seems like no dependency on the rest of the series, so I can take this
-> > >> patch?
-> > >
-> > > Is fw_devlink well-behaved these days, so as to not break (forever defer)
-> > > the probing of the device having the pcs-handle, if no driver probed on
-> > > the referenced PCS? Because the latter is what will happen if no one
-> > > picks up Sean's patches to probe PCS devices in the usual device model
-> > > way, I think.
-> >
-> > Last time [1], Saravana suggested to move this to the end of the series to
-> > avoid such problems. FWIW, I just tried booting a LS1046A with the
-> > following patches applied
-> >
-> > 01/11 (compatibles) 05/11 (device) 08/11 (link) 09/11 (consumer)
-> > =================== ============== ============ ================
-> > Y                   N              Y            N
-> > Y                   Y              Y            Y
-> > Y                   Y              Y            N
-> > N                   Y              Y            N
-> > N                   N              Y            N
-> >
-> > and all interfaces probed each time. So maybe it is safe to pick
-> > this patch.
->
-> Maybe? Just take it with the rest of the series.
->
-> Acked-by: Rob Herring <robh@kernel.org>
+On 08/11/2022 21:38, Andrew Lunn wrote:
+>> +static int h4_probe(struct serdev_device *serdev)
+>> +{
+>> +	struct h4_device *h4dev;
+>> +	struct hci_uart *hu;
+>> +	int ret;
+>> +	u32 speed;
+>> +
+>> +	h4dev = devm_kzalloc(&serdev->dev, sizeof(*h4dev), GFP_KERNEL);
+>> +	if (!h4dev)
+>> +		return -ENOMEM;
+>> +
+>> +	hu = &h4dev->hu;
+>> +
+>> +	hu->serdev = serdev;
+>> +	ret = device_property_read_u32(&serdev->dev, "max-speed", &speed);
+>> +	if (!ret) {
+>> +		/* h4 does not have any baudrate handling:
+>> +		 * user oper speed from the start
+>> +		 */
+>> +		hu->init_speed = speed;
+>> +		hu->oper_speed = speed;
+>> +	}
+>> +
+>> +	serdev_device_set_drvdata(serdev, h4dev);
+>> +	dev_info(&serdev->dev, "h4 device registered.\n");
+> 
+> It is considered bad practice to spam the logs like this. dev_dbg().
+> 
+>> +
+>> +	return hci_uart_register_device(hu, &h4p);
+>> +}
+>> +
+>> +static void h4_remove(struct serdev_device *serdev)
+>> +{
+>> +	struct h4_device *h4dev = serdev_device_get_drvdata(serdev);
+>> +
+>> +	dev_info(&serdev->dev, "h4 device unregistered.\n");
+> 
+> dev_dbg().
 
-Let's have Vladimir ack this. I'm not sure if it's fully safe yet. I
-haven't done the necessary fixes for phy-handle yet, but I don't know
-how pcs-handle and pcsphy-handle are used or if none of their uses
-will hit the chicken and egg problem that some uses of phy-handle hit.
+I would say none of them (the same in probe). Any prints in probe/remove
+paths are considered redundant, as core already gives that information.
 
--Saravana
+Best regards,
+Krzysztof
+
