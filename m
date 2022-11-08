@@ -2,122 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CECBF620D09
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572C2620BC6
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 10:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233883AbiKHKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 05:19:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
+        id S232929AbiKHJJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 04:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiKHKTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:19:14 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B0314D2B
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:19:14 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1osLhI-0006Lm-KU
-        for netdev@vger.kernel.org; Tue, 08 Nov 2022 11:19:12 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 1B346115C94
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 13:32:35 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 170AE115C74;
-        Mon,  7 Nov 2022 13:32:30 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 555be2db;
-        Mon, 7 Nov 2022 13:32:20 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Biju Das <biju.das.jz@bp.renesas.com>, stable@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 6/6] can: rcar_canfd: Add missing ECC error checks for channels 2-7
-Date:   Mon,  7 Nov 2022 14:32:17 +0100
-Message-Id: <20221107133217.59861-7-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221107133217.59861-1-mkl@pengutronix.de>
-References: <20221107133217.59861-1-mkl@pengutronix.de>
+        with ESMTP id S229558AbiKHJJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 04:09:14 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D042617AB6
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 01:09:13 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id h193so12839297pgc.10
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 01:09:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6BdolG571xejYqOL4ulA7/eFGO/ckfowxkb67ea9SlM=;
+        b=ewRvUjtoI2wnHV6UiS6g6drC39BnvYw2ntb9e/5RDzRGqmTMTbKO1LPJ7qz4xim2Jc
+         6LL69iME5AXWkipM5lQD0V7b4i9Uk6IxbZ+QBLn1hRXZkyTFxsXmOBLOV+kqxSOQCv4+
+         isg9beAEnCcwUAyjzbyskhkXvYyF/o7VuFmNoBfTw8eO/joi/9H2SP4kMJgZnbKAPtsN
+         vJQQftDUIxFbEu6KibmgmqIg8X9VSgZkmEPFnuWNR4WHBFRHqcAsqqEyVQqCIpPD6Tmj
+         UpCueKGefnWdy6koew4siNIiTr0ntHBHy3zjEZm2BdA2icGC7i0e8yXI608odER8yYeS
+         33WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6BdolG571xejYqOL4ulA7/eFGO/ckfowxkb67ea9SlM=;
+        b=53o0a3KvT7k44qq5fpNunINgGPxCAhsaG9YxZTLsH2P/SBcjzlov+++e26YFfcohC3
+         9Cpx/gXgcFytVSPyj6w/tcKHFY2d0fM19OmdmP1P2JtsB6+NwM1Azw5CV3q76L6BIzKO
+         CJ8PW5lZuWisZynMSp5rrsdTtE9EgyHPjdcwvOykUHWHzlMAyCB2FBVSlN+csYO+uAED
+         dpf6ex4bchyqRyD/ahmLYtGE/WEDM5Z7HX2U8BzdSTGXpyxPmaglhVuzIjcFl1FYmrbA
+         49due0IKvE0vMyPHFCtj2qrAadH3a+sFQV7gkJxzp5vaU1xPfnHVVW/sibL3J7h+pXTk
+         O0og==
+X-Gm-Message-State: ANoB5pnpZ/oY7IXMu84u3wKVHPb/1K5lgu6txTicaP56kq4qRruZFgtN
+        R9KV1BFontj22ziPv2jzv36H3XUmvoQ=
+X-Google-Smtp-Source: AA0mqf4HRUxgs8Jg/KX5xMtJg9vGIuc3yib8FWU1cHVRxLQwlDyeoMGlXNkDvwJCWL0iSiF8R3FB/g==
+X-Received: by 2002:a65:4908:0:b0:470:6287:8886 with SMTP id p8-20020a654908000000b0047062878886mr12394949pgs.199.1667898553321;
+        Tue, 08 Nov 2022 01:09:13 -0800 (PST)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y2-20020a17090a6c8200b0020087d7e778sm7501892pjj.37.2022.11.08.01.09.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 01:09:12 -0800 (PST)
+Date:   Tue, 8 Nov 2022 17:09:05 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCHv3 iproute2-next] rtnetlink: add new function
+ rtnl_echo_talk()
+Message-ID: <Y2ocsXykgqIHCcrF@Laptop-X1>
+References: <20220929081016.479323-1-liuhangbin@gmail.com>
+ <Y2oWDRIIR6gjkM4a@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y2oWDRIIR6gjkM4a@shredder>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+On Tue, Nov 08, 2022 at 10:40:45AM +0200, Ido Schimmel wrote:
+> > +	return rtnl_talk(&rth, &req.n, NULL);
+> >  }
+> 
+> Hangbin,
+> 
+> This change breaks the nexthop selftest:
+> tools/testing/selftests/net/fib_nexthops.sh
+> 
+> Which is specifically checking for "2" as the error code. Example:
 
-When introducing support for R-Car V3U, which has 8 instead of 2
-channels, the ECC error bitmask was extended to take into account the
-extra channels, but rcar_canfd_global_error() was not updated to act
-upon the extra bits.
+Hi Ido,
 
-Replace the RCANFD_GERFL_EEF[01] macros by a new macro that takes the
-channel number, fixing R-Car V3U while simplifying the code.
+Thanks for the report.
 
-Fixes: 45721c406dcf50d4 ("can: rcar_canfd: Add support for r8a779a0 SoC")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/all/4edb2ea46cc64d0532a08a924179827481e14b4f.1666951503.git.geert+renesas@glider.be
-Cc: stable@vger.kernel.org
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/rcar/rcar_canfd.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+> 
+> # attempt to create nh without a device or gw - fails
+> run_cmd "$IP nexthop add id 1"
+> log_test $? 2 "Nexthop with no device or gateway"
+> 
+> I think it's better to restore the original error code than "fixing" all
+> the tests / applications that rely on it.
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index d530e986f7fa..b306cf554634 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -81,8 +81,7 @@ enum rcanfd_chip_id {
- 
- /* RSCFDnCFDGERFL / RSCFDnGERFL */
- #define RCANFD_GERFL_EEF0_7		GENMASK(23, 16)
--#define RCANFD_GERFL_EEF1		BIT(17)
--#define RCANFD_GERFL_EEF0		BIT(16)
-+#define RCANFD_GERFL_EEF(ch)		BIT(16 + (ch))
- #define RCANFD_GERFL_CMPOF		BIT(3)	/* CAN FD only */
- #define RCANFD_GERFL_THLES		BIT(2)
- #define RCANFD_GERFL_MES		BIT(1)
-@@ -90,7 +89,7 @@ enum rcanfd_chip_id {
- 
- #define RCANFD_GERFL_ERR(gpriv, x) \
- 	((x) & (reg_v3u(gpriv, RCANFD_GERFL_EEF0_7, \
--			RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1) | \
-+			RCANFD_GERFL_EEF(0) | RCANFD_GERFL_EEF(1)) | \
- 		RCANFD_GERFL_MES | \
- 		((gpriv)->fdmode ? RCANFD_GERFL_CMPOF : 0)))
- 
-@@ -936,12 +935,8 @@ static void rcar_canfd_global_error(struct net_device *ndev)
- 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
- 
- 	gerfl = rcar_canfd_read(priv->base, RCANFD_GERFL);
--	if ((gerfl & RCANFD_GERFL_EEF0) && (ch == 0)) {
--		netdev_dbg(ndev, "Ch0: ECC Error flag\n");
--		stats->tx_dropped++;
--	}
--	if ((gerfl & RCANFD_GERFL_EEF1) && (ch == 1)) {
--		netdev_dbg(ndev, "Ch1: ECC Error flag\n");
-+	if (gerfl & RCANFD_GERFL_EEF(ch)) {
-+		netdev_dbg(ndev, "Ch%u: ECC Error flag\n", ch);
- 		stats->tx_dropped++;
- 	}
- 	if (gerfl & RCANFD_GERFL_MES) {
--- 
-2.35.1
+I can fix this either in iproute2 or in the selftests.
+I'd perfer ask David's opinion.
 
+> 
+> The return code of other subcommands was also changed by this patch, but
+> so far all the failures I have seen are related to "nexthop" subcommand.
 
+I grep "log_test \$? 2" in selftest/net folder and found the following tests
+would use it
+
+fib_tests.sh
+test_vxlan_vnifiltering.sh
+fcnal-test.sh
+fib_nexthops.sh
+
+Thanks
+Hangbin
