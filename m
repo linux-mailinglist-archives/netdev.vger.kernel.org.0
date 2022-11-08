@@ -2,119 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7D3620FC4
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:04:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60415620FDF
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:08:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233718AbiKHMEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 07:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
+        id S234033AbiKHMIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 07:08:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233603AbiKHMEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:04:52 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353AC62E1
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 04:04:50 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id a14-20020a921a0e000000b003016bfa7e50so7572750ila.16
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 04:04:49 -0800 (PST)
+        with ESMTP id S233653AbiKHMIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:08:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DED2FFF8
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 04:07:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667909231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IMfMqd/NRcR1JqekXckZSgySkw+5cuSOOLne9X/Ks6Y=;
+        b=CSqx/yLAuHBK+fLzn5wIZ1GdF0FCoept9XVaUbRPfrh8s7E4EO6et9kUQEA9bPd5gwtMB/
+        w6urv7xyjheblgYdeUuArxj3zug05kt5EzRP/JlIuJiZSSbN7QaZL53JawcKHPtfjugtKU
+        EBNWyA/Hsh8pCXxdOHSKRj6ttkLDEjE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-349-NM29XzZ6OQ2__evN7jE6yA-1; Tue, 08 Nov 2022 07:07:10 -0500
+X-MC-Unique: NM29XzZ6OQ2__evN7jE6yA-1
+Received: by mail-wm1-f70.google.com with SMTP id r187-20020a1c44c4000000b003c41e9ae97dso9787538wma.6
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 04:07:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JUtAod7ik8axbS2mcSWOVXWN5+ZnGt4lhHuscBLj+Ys=;
-        b=tkE5Ox6sZZ6Noh4jgm44Cr4TAO9kSB8K8sU1YCVhigqiAVZTtr2EZvE4OqYXddlLC4
-         +LESqm7XVYxHPsiVhOU2/oJL7lF7I3XQjf+4cHCyVuPq0QcTyBmkOcNplEr2K0icCu1y
-         eumPOdjAt9yxt41jdH5IR2+xHbRW1FBiwGOS8QRutHY0kJX6AccraJMnW2aukYBkEST2
-         tz7UkBBwS/Iz6XTn2eADn+nNp4Hl7CNLSnTpbBVgWKrKCZ8a8P83lP2sjANZHEQ2RQlI
-         r9CR5ake3tpT+1hkEKNy3Vp2BVZ+T5rnmVjyZ54mA/AUxKdl6nlBNlOcoPhybIqfA/Wg
-         CluA==
-X-Gm-Message-State: ACrzQf2B7+cN1l1xtghZcAwlME3Dq352x+LB9r9MEYqVXPM6kCuhqUeq
-        bc+1XKn7S95DY6xCxzvRZ9YZoOzqhb1w29bBEoTIQ/sZ+ea1
-X-Google-Smtp-Source: AMsMyM6qJgVyHEubAq6DsnqPMu41Jr73H8iqWfCsDz5e1dPS2QiwvTlP2xA8yKaIzN50tKM3b54RdeflyLzjmpG+02I0Hz0SsmID
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IMfMqd/NRcR1JqekXckZSgySkw+5cuSOOLne9X/Ks6Y=;
+        b=DRbfrecy2S04pqDV5nTkOpehTp303+nNV1unHFlfYm0c4vUUMg8Na6t7CuZBhTvl5C
+         UHo6wSLZeLIh4G4WG5tE0rNToK6/qsovD6Y7hkV/4Jhhb1awlCQnTL6Zgv6SsTYa92xH
+         Y3L1CqMEBenUikCnHxJnJLWEXmtAqhAHm6VkXPydN8yHr/jmE0hPjEjSnDLQTQHQWRPT
+         YWejvcW6y/lV9SlVclpWHYG1nwRQMZ7ed0a0ikwNjOGnYwLXe2KEqKb1uaqho8qmf6bq
+         VBrJaYjFi+5Ps/cTDK9Ow354GGc99et1RxB4fJicvDNtut5fLsbmr2xHIjhJhxtS080t
+         572w==
+X-Gm-Message-State: ACrzQf0pSwrxCyXSJdhWOsdQX2fyPT0io+o3nWPj1c7X1g3nLd1s52YP
+        /oX6jOJqyhFY+/a6N5bziXBDju58PIcsiVhVYAul1ve8m5KO7stBPzzKUI+ri72mOKm6hI5v5TE
+        MmIlb/MKXFnkq99Ti
+X-Received: by 2002:adf:f58e:0:b0:236:a8b2:373 with SMTP id f14-20020adff58e000000b00236a8b20373mr35753922wro.575.1667909229342;
+        Tue, 08 Nov 2022 04:07:09 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM671SN4rKjOS4m0IXm1rydtBeGKPVnCuxp/5nq9PqKtGUO9t65vl23IJqhbdg2+p5gCuDL/pw==
+X-Received: by 2002:adf:f58e:0:b0:236:a8b2:373 with SMTP id f14-20020adff58e000000b00236a8b20373mr35753898wro.575.1667909229147;
+        Tue, 08 Nov 2022 04:07:09 -0800 (PST)
+Received: from vschneid.remote.csb ([154.57.232.159])
+        by smtp.gmail.com with ESMTPSA id m11-20020a5d4a0b000000b0022ca921dc67sm9877375wrq.88.2022.11.08.04.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 04:07:08 -0800 (PST)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: Re: [PATCH v6 0/3] sched, net: NUMA-aware CPU spreading interface
+In-Reply-To: <ca6a5aee-19c8-e0a9-60af-00e2e5abaed0@gmail.com>
+References: <20221028164959.1367250-1-vschneid@redhat.com>
+ <20221102195616.6f55c894@kernel.org>
+ <ca6a5aee-19c8-e0a9-60af-00e2e5abaed0@gmail.com>
+Date:   Tue, 08 Nov 2022 12:07:07 +0000
+Message-ID: <xhsmhleolmyz8.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2cd3:b0:6d8:5b3e:c456 with SMTP id
- j19-20020a0566022cd300b006d85b3ec456mr11732782iow.152.1667909089385; Tue, 08
- Nov 2022 04:04:49 -0800 (PST)
-Date:   Tue, 08 Nov 2022 04:04:49 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ca64fe05ecf458e3@google.com>
-Subject: [syzbot] net-next test error: WARNING in devl_port_unregister
-From:   syzbot <syzbot+85e47e1a08b3e159b159@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jiri@nvidia.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 08/11/22 13:25, Tariq Toukan wrote:
+> On 11/3/2022 4:56 AM, Jakub Kicinski wrote:
+>> On Fri, 28 Oct 2022 17:49:56 +0100 Valentin Schneider wrote:
+>>> Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
+>>> from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
+>>> it).
+>>>
+>>> The proposed interface involved an array of CPUs and a temporary cpumask, and
+>>> being my difficult self what I'm proposing here is an interface that doesn't
+>>> require any temporary storage other than some stack variables (at the cost of
+>>> one wild macro).
+>>>
+>>> [1]: https://lore.kernel.org/all/20220728191203.4055-1-tariqt@nvidia.com/
+>>
+>> Not sure who's expected to take these, no preference here so:
+>>
+>> Acked-by: Jakub Kicinski <kuba@kernel.org>
+>>
+>> Thanks for ironing it out!
+>
+> Thanks Jakub.
+>
+> Valentin, what do you think?
+> Shouldn't it go through the sched branch?
 
-syzbot found the following issue on:
+So yeah the topology bits should go through tip/sched/core, and given it's
+the only user of the new interface, the mlx5e one should probably be
+bundled with them.
 
-HEAD commit:    91c596cc8d32 Merge branch 'net-txgbe-fix-two-bugs-in-txgbe..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10cf5b96880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=155594ab86a8ef7a
-dashboard link: https://syzkaller.appspot.com/bug?extid=85e47e1a08b3e159b159
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/811c994625c9/disk-91c596cc.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/bf46bee439d4/vmlinux-91c596cc.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/c005328dcdaa/bzImage-91c596cc.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+85e47e1a08b3e159b159@syzkaller.appspotmail.com
-
-netdevsim netdevsim0 netdevsim3 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 56 at net/core/devlink.c:9998 devl_port_unregister+0x2f6/0x390 net/core/devlink.c:9998
-Modules linked in:
-CPU: 1 PID: 56 Comm: kworker/u4:4 Not tainted 6.1.0-rc3-syzkaller-00810-g91c596cc8d32 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-Workqueue: netns cleanup_net
-RIP: 0010:devl_port_unregister+0x2f6/0x390 net/core/devlink.c:9998
-Code: e8 0f 39 0b fa 85 ed 0f 85 7a fd ff ff e8 32 3c 0b fa 0f 0b e9 6e fd ff ff e8 26 3c 0b fa 0f 0b e9 53 ff ff ff e8 1a 3c 0b fa <0f> 0b e9 94 fd ff ff e8 7e ae 57 fa e9 78 ff ff ff e8 44 ae 57 fa
-RSP: 0018:ffffc90001577a08 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff8880736c0810 RCX: 0000000000000000
-RDX: ffff8880183c8000 RSI: ffffffff87717606 RDI: 0000000000000005
-RBP: 0000000000000002 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000002 R11: 0000000000000000 R12: ffff8880736c0810
-R13: ffff8880736c0808 R14: ffff88806f2c7800 R15: ffff8880736c0800
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055bd232a4068 CR3: 000000001f12c000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __nsim_dev_port_del+0x1bb/0x240 drivers/net/netdevsim/dev.c:1433
- nsim_dev_port_del_all drivers/net/netdevsim/dev.c:1443 [inline]
- nsim_dev_reload_destroy+0x171/0x510 drivers/net/netdevsim/dev.c:1660
- nsim_dev_reload_down+0x6b/0xd0 drivers/net/netdevsim/dev.c:968
- devlink_reload+0x1c2/0x6b0 net/core/devlink.c:4501
- devlink_pernet_pre_exit+0x104/0x1c0 net/core/devlink.c:12609
- ops_pre_exit_list net/core/net_namespace.c:159 [inline]
- cleanup_net+0x451/0xb10 net/core/net_namespace.c:594
- process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
