@@ -2,171 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E80B620789
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 04:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B73B86207D9
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 04:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233410AbiKHDd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 22:33:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
+        id S232381AbiKHDzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 22:55:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233099AbiKHDdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 22:33:11 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1CF31ED9;
-        Mon,  7 Nov 2022 19:32:45 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N5tvj038Kz15MSl;
-        Tue,  8 Nov 2022 11:32:33 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 8 Nov 2022 11:32:43 +0800
-Message-ID: <472c66c1-edb7-6f23-e3a6-3d796802a8fd@huawei.com>
-Date:   Tue, 8 Nov 2022 11:32:42 +0800
+        with ESMTP id S232270AbiKHDza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 22:55:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8893813FB1
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 19:55:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2256D6140B
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 03:55:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00169C433D6;
+        Tue,  8 Nov 2022 03:55:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667879728;
+        bh=jfSoGwo546XyLcE1uccBGS6De2TD0dAjfZXKPspZBdw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aGhgILqCEVDt6EWAqsWWrysxlK7H3uEVANEME1KqxgLcyUWVKiSULyjZEfKMDrru6
+         nUqYggNQAFBr9K4aqvyBpj2ZwL9hUtJsIxx2c1xsLgORGt/XJSYbI7Tyc2cnxR3woq
+         N9IDKbzXcrFUnNnxyC3YD00hIXyPi9Y01dcJekwb6Fj170uYm1dmxnP0jCf7c7yqbC
+         9G6cZMjSu/2e0jpdqsw3AuUhSJOUsjvhbFWzJEm9DPyLQUpJ/0r2kaGYIZAP1kHvjV
+         5MhhTVlY4lQnetAICBBGWGrKVYTaaxBlBTHhWaXCAFqYvsNVA6PD3wz+H1Q7hUhTVY
+         lRPbM88bxF7ag==
+Date:   Mon, 7 Nov 2022 19:55:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "G, GurucharanX" <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net-next 5/6] igb: Do not free q_vector unless new one
+ was allocated
+Message-ID: <20221107195526.5ef1262e@kernel.org>
+In-Reply-To: <c051fa25-6047-0efb-7049-be08f566d1fb@intel.com>
+References: <20221104205414.2354973-1-anthony.l.nguyen@intel.com>
+        <20221104205414.2354973-6-anthony.l.nguyen@intel.com>
+        <Y2itqqGQm6uZ/2Wf@unreal>
+        <DM5PR11MB1324FDF4D4399A6A99727B5EC13C9@DM5PR11MB1324.namprd11.prod.outlook.com>
+        <Y2lEK4CMdCyEMBLf@unreal>
+        <c051fa25-6047-0efb-7049-be08f566d1fb@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH bpf v3] bpf: Fix memory leaks in __check_func_call
-To:     Martin KaFai Lau <martin.lau@linux.dev>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <andrii@kernel.org>, <yhs@fb.com>,
-        <joe@wand.net.nz>
-References: <1667468524-4926-1-git-send-email-wangyufen@huawei.com>
- <5a1413c6-6a42-de02-810f-232a83628424@linux.dev>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <5a1413c6-6a42-de02-810f-232a83628424@linux.dev>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 7 Nov 2022 10:35:14 -0800 Jacob Keller wrote:
+> > I understand the issue what you are trying to solve, I just don't
+> > understand your RCU code. I would expect calls to rcu_dereference()
+> > in order to get q_vector and rcu_assign_pointer() to clear
+> > adapter->q_vector[v_idx], but igb has none.
+> 
+> the uses of kfree_rcu were introduced by 5536d2102a2d ("igb: Combine 
+> q_vector and ring allocation into a single function")
+> 
+> The commit doesn't mention switching from kfree to kfree_rcu and I 
+> suspect that the igb driver is not actually really using RCU semantics 
+> properly.
+> 
+> The closest explanation is that the get_stats64 function might be 
+> accessing the ring and thus needs the RCU grace period.. but I think 
+> you're right in that we're missing the necessary RCU access macros.
 
-在 2022/11/8 8:46, Martin KaFai Lau 写道:
-> On 11/3/22 2:42 AM, Wang Yufen wrote:
->> kmemleak reports this issue:
->>
->> unreferenced object 0xffff88817139d000 (size 2048):
->>    comm "test_progs", pid 33246, jiffies 4307381979 (age 45851.820s)
->>    hex dump (first 32 bytes):
->>      01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
->>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
->>    backtrace:
->>      [<0000000045f075f0>] kmalloc_trace+0x27/0xa0
->>      [<0000000098b7c90a>] __check_func_call+0x316/0x1230
->>      [<00000000b4c3c403>] check_helper_call+0x172e/0x4700
->>      [<00000000aa3875b7>] do_check+0x21d8/0x45e0
->>      [<000000001147357b>] do_check_common+0x767/0xaf0
->>      [<00000000b5a595b4>] bpf_check+0x43e3/0x5bc0
->>      [<0000000011e391b1>] bpf_prog_load+0xf26/0x1940
->>      [<0000000007f765c0>] __sys_bpf+0xd2c/0x3650
->>      [<00000000839815d6>] __x64_sys_bpf+0x75/0xc0
->>      [<00000000946ee250>] do_syscall_64+0x3b/0x90
->>      [<0000000000506b7f>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>
->> The root case here is: In function prepare_func_exit(), the callee is
->> not released in the abnormal scenario after "state->curframe--;". To
->> fix, move "state->curframe--;" to the very bottom of the function,
->> right when we free callee and reset frame[] pointer to NULL, as Andrii
->> suggested.
->>
->> In addition, function __check_func_call() has a similar problem. In
->> the abnormal scenario before "state->curframe++;", the callee is alse
->> not released.
->>
->> Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
->> Fixes: fd978bf7fd31 ("bpf: Add reference tracking to verifier")
->> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->> ---
->>   kernel/bpf/verifier.c | 13 +++++++++----
->>   1 file changed, 9 insertions(+), 4 deletions(-)
->>
->> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->> index 7f0a9f6..eff7a5a 100644
->> --- a/kernel/bpf/verifier.c
->> +++ b/kernel/bpf/verifier.c
->> @@ -6736,11 +6736,11 @@ static int __check_func_call(struct 
->> bpf_verifier_env *env, struct bpf_insn *insn
->>       /* Transfer references to the callee */
->>       err = copy_reference_state(callee, caller);
->>       if (err)
->> -        return err;
->> +        goto err_out;
->>         err = set_callee_state_cb(env, caller, callee, *insn_idx);
->>       if (err)
->> -        return err;
->> +        goto err_out;
->>         clear_caller_saved_regs(env, caller->regs);
->>   @@ -6757,6 +6757,11 @@ static int __check_func_call(struct 
->> bpf_verifier_env *env, struct bpf_insn *insn
->>           print_verifier_state(env, callee, true);
->>       }
->>       return 0;
->> +
->> +err_out:
->> +    kfree(callee);
->
-> Is it sure that free_func_state() is not needed ?
-
-No, free_func_state() is needed. Sorry, I didn't notice that memory is 
-alloced for callee->refs in
-
-copy_reference_state()-> copy_array() -> kmalloc_track_caller().  will 
-change in v4
-
-Thanks.
-
-Wang
-
->
->> +    state->frame[state->curframe + 1] = NULL;
->> +    return err;
->>   }
->>     int map_set_for_each_callback_args(struct bpf_verifier_env *env,
->> @@ -6970,8 +6975,7 @@ static int prepare_func_exit(struct 
->> bpf_verifier_env *env, int *insn_idx)
->>           return -EINVAL;
->>       }
->>   -    state->curframe--;
->> -    caller = state->frame[state->curframe];
->> +    caller = state->frame[state->curframe - 1];
->>       if (callee->in_callback_fn) {
->>           /* enforce R0 return value range [0, 1]. */
->>           struct tnum range = callee->callback_ret_range;
->> @@ -7001,6 +7005,7 @@ static int prepare_func_exit(struct 
->> bpf_verifier_env *env, int *insn_idx)
->>               return err;
->>       }
->>   +    state->curframe--;
->
-> nit. state->curframe is always pointing to callee upto this point?  
-> Instead of doing another +1 dance in the latter 
-> 'state->frame[state->curframe + 1] = NULL;', how about do it later like:
->
->     /* clear everything in the callee */
->         free_func_state(callee);
->     state->frame[state->curframe--] = NULL;
->
->
-> It shouldn't affect the earlier print_verifier_state() which 
-> explicitly takes callee and caller as its arg, right?
-
-Yes, state->curframe not affect print_verifier_state(),  doing 
-"state->curframe--"  at the end of the function is better, also will 
-change in v4.  Thanks!
-
->
->>       *insn_idx = callee->callsite + 1;
->>       if (env->log.level & BPF_LOG_LEVEL) {
->>           verbose(env, "returning from callee:\n");
->
+Alright, expecting a follow up for this.
