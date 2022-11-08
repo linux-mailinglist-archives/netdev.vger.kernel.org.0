@@ -2,104 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6780620D69
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:35:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A93B620D5C
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 11:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233912AbiKHKfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 05:35:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        id S233753AbiKHKer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 05:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233918AbiKHKfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:35:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656361BE91
+        with ESMTP id S233652AbiKHKep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 05:34:45 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8850E201A5
         for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 02:34:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667903683;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=8hI+VXGlNsYpteEY2VwbFWoOIdKQL0RxnupFV92rerk=;
-        b=epzOvsoxtaYpFwwpn9GS7ofak1cBb/+kkumudaR0g44M062gX7Xf5orvIvfyc4iXlZ1YhN
-        /H5nrE2AGFefvB7nqHNTW92VscrGKwrlcB+NDN/yMncYIoEn0DZM96Zs9LCzY9hFXgyMKM
-        zEXAiJIkEHO7JioslfF1KGPTSbAKKnc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-124-E4W_zQ6rNqK592q3nlukZA-1; Tue, 08 Nov 2022 05:34:40 -0500
-X-MC-Unique: E4W_zQ6rNqK592q3nlukZA-1
-Received: by mail-wm1-f69.google.com with SMTP id l1-20020a7bc341000000b003bfe1273d6cso3697485wmj.4
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 02:34:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8hI+VXGlNsYpteEY2VwbFWoOIdKQL0RxnupFV92rerk=;
-        b=6+uo9WxJKOgaA3z0b3EiGFLVktUsDWxC0bAnh9F4sEZCWgvylXzn+BSN/p0q9smBKZ
-         6SUvW+14VWFL1fSUbURHFsbpJh7I+zUammUnq8das59fmhbccLirOjYPyoYeItv6GJW0
-         RSkEjaUoVtR3cPWzr9z4CIoprCUaKk9WX3VUPtqFBs06J5dQ/rhsDBO7j1Izn8JsSI78
-         Q9jNNmdI94+6bCMDVyylp51zcL6ryyyJTDnGZ0PMLDKtYtCV6pj6EhE5O2znjV5DXcHe
-         sjN4ysBGpx8/BVsaht4TXjnRL48Hx3ibtTHxAJhk90OzYhMQZLew7fbvPxJrntuKdkOI
-         ZufQ==
-X-Gm-Message-State: ACrzQf1tKNIqtD9kUXkWo+iZCtqERr/HN/B/a+MgM7e/Lz52Kn1vdGxa
-        3NBALMezSVqwhEH6sWVKRQ/pAGzQo/S02fQUS+J/zmqC34Q9y+ElK2OuEy0W0enNHp6KC/Ijw4g
-        Vuj73/pVNPrtJeet9
-X-Received: by 2002:a7b:c3d8:0:b0:3cf:9b7b:b96c with SMTP id t24-20020a7bc3d8000000b003cf9b7bb96cmr14185207wmj.113.1667903679370;
-        Tue, 08 Nov 2022 02:34:39 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM6RD9d9dmQiyq7sLWytIU3odBHdl1zaUxi78OJvddMLj7UOQAvMCdSY9vUfUFobQvSSZ7B9AA==
-X-Received: by 2002:a7b:c3d8:0:b0:3cf:9b7b:b96c with SMTP id t24-20020a7bc3d8000000b003cf9b7bb96cmr14185199wmj.113.1667903679190;
-        Tue, 08 Nov 2022 02:34:39 -0800 (PST)
-Received: from step1.redhat.com (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
-        by smtp.gmail.com with ESMTPSA id m11-20020a5d4a0b000000b0022ca921dc67sm9632802wrq.88.2022.11.08.02.34.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 02:34:38 -0800 (PST)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH 0/2] vhost: fix ranges when call vhost_iotlb_itree_first()
-Date:   Tue,  8 Nov 2022 11:34:35 +0100
-Message-Id: <20221108103437.105327-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.38.1
-Content-Type: text/plain; charset="utf-8"
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id C564D84C17;
+        Tue,  8 Nov 2022 11:34:41 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1667903682;
+        bh=AepQr7Z/zwtiNgoc7cBfGY6ILOvZWC5YxRR4gb0j2mk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jpYOmSqpVNKy9WkO46WjhdyuFpvO7pE9x7USQkMHOLn2ZtLqLWRBPgCXCIj3KEduD
+         KjGQNkpFOQwpeWEj1ahNtUegyy7Z0cXdMosS2NMKmG3kbd+Ev8i1Q3tgP794cE78Mp
+         GlM249EzozU4fqK+yafrOiT60h7DTXlPGRIA5JBnOQTSYB//O+tm4Md5zxjWnw3i8/
+         n6DtaO4bwS8+d5vlilD7PVjV0rcZjh/5ku42Kr6qhOo+EcT0HgTjhfudpdPwgyURWT
+         SgVSnnqtvCzNVQm2q0T8gac/dlY9srZf+P/Vz/RhX5FM9rg+coxY+fL9c1EjBm8g3e
+         3pb73RVCr4bSw==
+Date:   Tue, 8 Nov 2022 11:34:35 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: [PATCH 1/9] net: dsa: allow switch drivers to override default
+ slave PHY addresses
+Message-ID: <20221108113435.66b15fb2@wsk>
+In-Reply-To: <20221108091258.iaea3dhkjcuandvb@skbuf>
+References: <20221108082330.2086671-1-lukma@denx.de>
+        <20221108082330.2086671-1-lukma@denx.de>
+        <20221108082330.2086671-2-lukma@denx.de>
+        <20221108082330.2086671-2-lukma@denx.de>
+        <20221108091258.iaea3dhkjcuandvb@skbuf>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/2xWxpLyrfqqx65kU1YNajj1";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While I was working on vringh to support VA in vringh_*_iotlb()
-I saw that the range we use in iotlb_translate() when we call
-vhost_iotlb_itree_first() was not correct IIUC.
-So I looked at all the calls and found that in vhost.c as well.
+--Sig_/2xWxpLyrfqqx65kU1YNajj1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I didn't observe a failure and I don't have a reproducer because
-I noticed the problem by looking at the code.
+Hi Vladimir,
 
-Maybe we didn't have a problem, because a shorter range was being
-returned anyway and the loop stopped taking into account the total
-amount of bytes translated, but I think it's better to fix.
+> Hi Lukasz,
+>=20
+> On Tue, Nov 08, 2022 at 09:23:22AM +0100, Lukasz Majewski wrote:
+> > From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> >=20
+> > Avoid having to define a PHY for every physical port when PHY
+> > addresses are fixed, but port index !=3D PHY address.
+> >=20
+> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> > Signed-off-by: Lukasz Majewski <lukma@denx.de>
+> > [Adjustments for newest kernel upstreaming] =20
+>=20
+> (I got reminded by the message)
+> How are things going with the imx28 MTIP L2 switch? Upstreaming went
+> silent on that.
 
-Thanks,
-Stefano
+Yes, this task has been postponed as:
 
-Stefano Garzarella (2):
-  vringh: fix range used in iotlb_translate()
-  vhost: fix range used in translate_desc()
+- Customer decided to use Linux 4.19 CIP for which I've forward ported
+  the original NXP patches [1][2]
 
- drivers/vhost/vhost.c  | 4 ++--
- drivers/vhost/vringh.c | 5 ++---
- 2 files changed, 4 insertions(+), 5 deletions(-)
+- Considering the above - I would need to change the structure of the
+  switch driver (which up till now is based on old - i.e. 2.6.3x - FEC
+  driver) and modify the current FEC to add acceleration in similar way
+  to TI's driver.
 
--- 
-2.38.1
+  This is IMHO quite time consuming task ...
 
+  (The attempt to add it as DSA [2] was a bit less intrusive, but is
+  conceptually wrong).
+
+Links:
+[1] - https://github.com/lmajewski/linux-imx28-l2switch/tree/master
+
+[2] -
+https://github.com/lmajewski/linux-imx28-l2switch/tree/imx28-v5.12-L2-upstr=
+eam-RFC_v1
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/2xWxpLyrfqqx65kU1YNajj1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNqMLsACgkQAR8vZIA0
+zr0zUggAuk6CTSUvyACYyah/Rn7sscqLuPGggq1/NL1QpVagyYkcrar5sN3LF4Jp
+Ujg4ItYJPjIExBwu9R3jhphRReBNC/4DjFoed0DLUmRZQn7H7AVEkn/r+fFKRIwV
+L+s4hNE/Zw/ed4yWIQolAv4WGSqCJExbVYcRXVWAJifJjfWG3vDWHIXw0WISVMG/
+94BCUtRQzG5W63ak5xT2kke6dD6tbntVupduByVvznPG+UpZcgLs95n+rPezkYrj
+CSkOxnXHGDtVj/f/nRzqV+3qK3cPVAMI2yREWYKN4YW+1DjAo+DjPwSFV89S5dMX
+RR8fKcIiWinFDh02d0ssBAjBjAaGYg==
+=Hu/0
+-----END PGP SIGNATURE-----
+
+--Sig_/2xWxpLyrfqqx65kU1YNajj1--
