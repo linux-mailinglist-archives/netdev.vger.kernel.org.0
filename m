@@ -2,42 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DC2662052A
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 01:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0D962057A
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 02:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiKHAwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 19:52:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33148 "EHLO
+        id S232926AbiKHBAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 20:00:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232854AbiKHAwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 19:52:53 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1131F9C0
-        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 16:52:52 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N5qLy342ZzHvdZ;
-        Tue,  8 Nov 2022 08:52:26 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 8 Nov
- 2022 08:52:49 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <jeffrey.t.kirsher@intel.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net] ethernet: s2io: disable napi when start nic failed in s2io_card_up()
-Date:   Tue, 8 Nov 2022 08:59:52 +0800
-Message-ID: <20221108005952.73685-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S232420AbiKHBAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 20:00:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22921274B;
+        Mon,  7 Nov 2022 17:00:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63CF861371;
+        Tue,  8 Nov 2022 01:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B8436C433C1;
+        Tue,  8 Nov 2022 01:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1667869214;
+        bh=NzdoA8JKXpRi4Mo04FhYp2vHFN/SjWC7Jl63ukiOSFE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eqwvlOorw0s5VhYAm3mIwUpt2ahClzt6c1GXVFoI42dMqUaNTQNuymVJVx6A8KA7I
+         VN3zrVkGLioQHykbxUthBbslBfYNmuCQ3DUrJKRozGF+5q+XEX3p2tbdmdMumiGdd8
+         xPoj/vnpvgHj/XTipbxCkxGsuv3odXsI6di+uDgG4wp2RWreOb+TgJLUnIgIppVnxS
+         oyXTqmzGlvL2WvKncLnlfGduMLJ0LtI1H96gvQ3bzqH5+30Lf7HbB+Zhx9wEthMVV6
+         JQbLM0BHyUzDak/Y9O9xiVH5cEu8qEDpDARlaTrwV/T+3Y8erkZjRAwzhXvzQduj9I
+         5rLXhWUzBNPWA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9BBE8E270D0;
+        Tue,  8 Nov 2022 01:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] selftests/bpf: Fix u32 variable compared with less than
+ zero
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166786921463.3686.15198701863007119520.git-patchwork-notify@kernel.org>
+Date:   Tue, 08 Nov 2022 01:00:14 +0000
+References: <20221105183656.86077-1-tegongkang@gmail.com>
+In-Reply-To: <20221105183656.86077-1-tegongkang@gmail.com>
+To:     Kang Minchul <tegongkang@gmail.com>
+Cc:     bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        rdunlap@infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,77 +59,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When failed to start nic or add interrupt service routine in
-s2io_card_up() for opening device, napi isn't disabled. When open
-s2io device next time, it will reports a invalid opcode issue. Fix
-it. Only be compiled, not be tested.
+Hello:
 
-Fixes: 86387e1ac4fc ("s2io/vxge: Move the Exar drivers")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- drivers/net/ethernet/neterion/s2io.c | 29 +++++++++++++++++++---------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+This patch was applied to bpf/bpf-next.git (master)
+by Martin KaFai Lau <martin.lau@kernel.org>:
 
-diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
-index dcf8212119f9..1d3c4474b7cb 100644
---- a/drivers/net/ethernet/neterion/s2io.c
-+++ b/drivers/net/ethernet/neterion/s2io.c
-@@ -7128,9 +7128,8 @@ static int s2io_card_up(struct s2io_nic *sp)
- 		if (ret) {
- 			DBG_PRINT(ERR_DBG, "%s: Out of memory in Open\n",
- 				  dev->name);
--			s2io_reset(sp);
--			free_rx_buffers(sp);
--			return -ENOMEM;
-+			ret = -ENOMEM;
-+			goto err_fill_buff;
- 		}
- 		DBG_PRINT(INFO_DBG, "Buf in ring:%d is %d:\n", i,
- 			  ring->rx_bufs_left);
-@@ -7168,18 +7167,16 @@ static int s2io_card_up(struct s2io_nic *sp)
- 	/* Enable Rx Traffic and interrupts on the NIC */
- 	if (start_nic(sp)) {
- 		DBG_PRINT(ERR_DBG, "%s: Starting NIC failed\n", dev->name);
--		s2io_reset(sp);
--		free_rx_buffers(sp);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto err_out;
- 	}
- 
- 	/* Add interrupt service routine */
- 	if (s2io_add_isr(sp) != 0) {
- 		if (sp->config.intr_type == MSI_X)
- 			s2io_rem_isr(sp);
--		s2io_reset(sp);
--		free_rx_buffers(sp);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto err_out;
- 	}
- 
- 	timer_setup(&sp->alarm_timer, s2io_alarm_handle, 0);
-@@ -7199,6 +7196,20 @@ static int s2io_card_up(struct s2io_nic *sp)
- 	}
- 
- 	return 0;
-+
-+err_out:
-+	if (config->napi) {
-+		if (config->intr_type == MSI_X) {
-+			for (i = 0; i < sp->config.rx_ring_num; i++)
-+				napi_disable(&sp->mac_control.rings[i].napi);
-+		} else {
-+			napi_disable(&sp->napi);
-+		}
-+	}
-+err_fill_buff:
-+	s2io_reset(sp);
-+	free_rx_buffers(sp);
-+	return ret;
- }
- 
- /**
+On Sun,  6 Nov 2022 03:36:56 +0900 you wrote:
+> Variable ret is compared with less than zero even though it was set as u32.
+> So u32 to int conversion is needed.
+> 
+> Signed-off-by: Kang Minchul <tegongkang@gmail.com>
+> ---
+>  tools/testing/selftests/bpf/xskxceiver.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [v3] selftests/bpf: Fix u32 variable compared with less than zero
+    https://git.kernel.org/bpf/bpf-next/c/e8f50c4f0c14
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
