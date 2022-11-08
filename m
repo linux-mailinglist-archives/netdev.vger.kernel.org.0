@@ -2,96 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32DCE6211FD
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 14:08:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E9A62121A
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 14:16:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbiKHNIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 08:08:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        id S234380AbiKHNQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 08:16:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234109AbiKHNIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 08:08:38 -0500
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9CE13F73
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 05:08:37 -0800 (PST)
-Received: by mail-vk1-xa35.google.com with SMTP id b81so8839001vkf.1
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 05:08:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SzBlYeGeT15Xra75w9IZDBjQ7Da3XKSmRdlnDJDYrko=;
-        b=DKkWfxExwMlEUJXNP6lKfjyb4CMccx2Kai3Q0h/Roaelr7alr5uAkTo62gd3//EKF1
-         u/2zEzeJv5VIaaqataB1zclP63Oh4T0RIF6WHq90ryfBcWCt1l8PJITeTlJL2J8NT8CL
-         GZsliKtJInFjIPLbI2HgYXJKmMxUJl9MSNLCqqkMdTfKUlpW+2/va5HtK0XoYg2cdKya
-         O91VZ9jBHFIfRUXEckXlx+Up/+BxrWBKd6T4C6nR6gjuZsTjiElF4faWZM4wvhutMuo2
-         a3hY41PvxkuFETI78LBZNVuV1ml1LhejvXQ8zAgJAPc07//imjJmrdrDqwbr4f2shXEG
-         9H6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SzBlYeGeT15Xra75w9IZDBjQ7Da3XKSmRdlnDJDYrko=;
-        b=mw/W/USxIVGYVesqqFZEa/3ZHx8dEZT72xUBYsmBecfexoAR/c+GaztwtBbsr1dKD/
-         rU6BRNmQAUyMDdat6OuAFhX82WAdYj2toTtPE/n2aXT4/+/TjloHz0KOvPt7CFuFUrCq
-         XK3qFKtKOWLsCbJv2RHyAmA4VLHv+G5JZ9uqhR4mVFO9hl7rBC7CdzPtiFk7UhvyPmus
-         YWO9v7Zu+ksEW3YwxYARA4Akez4nmJqGo3jO7FozX9iDJtMsW73fZy6ImsmQW4gCSprZ
-         49cxK4UuVkARCBL6tLYxH7WhInMyFf6mjYC7C6C6813fx1bfxWu9uVJJ6AWlbd5Z0l8z
-         iIvg==
-X-Gm-Message-State: ACrzQf15Zx2J11/tBoXd5TLJncjLi54ynLbFQPKqXOmKFSw0UFx+ywFg
-        R4GrsMVnqZYHfeqs2zZmIZfvwBcrpl/zv3IkWEHoGRzFNqjN2A==
-X-Google-Smtp-Source: AMsMyM5tdOYLdG/oxKOBN/WLHl4YriGuBMSS/iGMoC30zQYR1SEKqy220Ddxri5UKqj7OmrjP6qodRR0EpWYfh+a+NU=
-X-Received: by 2002:ad4:5be4:0:b0:4bb:e947:c664 with SMTP id
- k4-20020ad45be4000000b004bbe947c664mr44158322qvc.122.1667912906076; Tue, 08
- Nov 2022 05:08:26 -0800 (PST)
+        with ESMTP id S234324AbiKHNQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 08:16:01 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B60E218A;
+        Tue,  8 Nov 2022 05:15:59 -0800 (PST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N67rd2JQBz15MRb;
+        Tue,  8 Nov 2022 21:15:45 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 8 Nov 2022 21:15:55 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 8 Nov 2022 21:15:54 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <haoluo@google.com>, <jolsa@kernel.org>, <mykolal@fb.com>,
+        <shuah@kernel.org>, <tariqt@nvidia.com>, <maximmi@nvidia.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH bpf] selftests/bpf: Fix xdp_synproxy compilation failure in 32-bit arch
+Date:   Tue, 8 Nov 2022 21:12:42 +0800
+Message-ID: <20221108131242.17362-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-Received: by 2002:ad4:5cc5:0:0:0:0:0 with HTTP; Tue, 8 Nov 2022 05:08:25 -0800 (PST)
-Reply-To: mr.abraham022@gmail.com
-From:   "Mr.Abraham" <davidkekeli1001@gmail.com>
-Date:   Tue, 8 Nov 2022 13:08:25 +0000
-Message-ID: <CA+f86Q=8f8EXvBeCBtU7zSEiurpSyEpYw5gxR0u4R6X5kQTDOQ@mail.gmail.com>
-Subject: Greeting
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:a35 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4980]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [mr.abraham022[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [davidkekeli1001[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [davidkekeli1001[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Greeting, Did you receive the letter i sent to you. Please answer me.
-Regard, Mr.Abraham
+xdp_synproxy fails to be compiled in the 32-bit arch, log is as follows:
+
+  xdp_synproxy.c: In function 'parse_options':
+  xdp_synproxy.c:175:36: error: left shift count >= width of type [-Werror=shift-count-overflow]
+    175 |                 *tcpipopts = (mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
+        |                                    ^~
+  xdp_synproxy.c: In function 'syncookie_open_bpf_maps':
+  xdp_synproxy.c:289:28: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
+    289 |                 .map_ids = (__u64)map_ids,
+        |                            ^
+
+Fix it.
+
+Fixes: fb5cd0ce70d4 ("selftests/bpf: Add selftests for raw syncookie helpers")
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+---
+ tools/testing/selftests/bpf/xdp_synproxy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/xdp_synproxy.c b/tools/testing/selftests/bpf/xdp_synproxy.c
+index ff35320d2be9..45fef01a87a8 100644
+--- a/tools/testing/selftests/bpf/xdp_synproxy.c
++++ b/tools/testing/selftests/bpf/xdp_synproxy.c
+@@ -172,7 +172,7 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
+ 	if (tcpipopts_mask == 0xf) {
+ 		if (mss4 == 0 || mss6 == 0 || wscale == 0 || ttl == 0)
+ 			usage(argv[0]);
+-		*tcpipopts = (mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
++		*tcpipopts = ((unsigned long long)mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
+ 	} else if (tcpipopts_mask != 0) {
+ 		usage(argv[0]);
+ 	}
+@@ -286,7 +286,7 @@ static int syncookie_open_bpf_maps(__u32 prog_id, int *values_map_fd, int *ports
+ 
+ 	prog_info = (struct bpf_prog_info) {
+ 		.nr_map_ids = 8,
+-		.map_ids = (__u64)map_ids,
++		.map_ids = (__u64)(unsigned long)map_ids,
+ 	};
+ 	info_len = sizeof(prog_info);
+ 
+-- 
+2.30.GIT
+
