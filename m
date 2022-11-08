@@ -2,119 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E594621176
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:53:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4BCE621184
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 13:54:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233962AbiKHMxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 07:53:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
+        id S234287AbiKHMyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 07:54:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233829AbiKHMxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:53:11 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AB563A7;
-        Tue,  8 Nov 2022 04:53:11 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id v28so13707573pfi.12;
-        Tue, 08 Nov 2022 04:53:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=mNtuOEXDefEJXOGS36uoL5ZWOWYNWQBLQOQ1lh+QjkM=;
-        b=jZv8R9YfnkF1S82Q0owrujyqmGBwB0NmQzOz+VxZdLY9mXaCSJ2214E/QOUcufWa3a
-         fsqmr0nvYjFUf6cUykcGxU9NaXPJjMcWc13aBgH5Bg2ZFW4/bTmEnEdWrTWGgBu/YteR
-         ui/qliXaZAKl4SlWM/S9GOoZ1DU12WdMLCMrWshhYfHy2isUgyblc9K6ItKkUSRX/EYG
-         nQ5eUX46Ff9A8K45uI9ltjVUTrEU6jDwi3SKTt7crsXUxlL3Z5BOAARz7eAswEQoMvYl
-         8jg1DHdSjbrjqM40wwLob+jvzHZwMqNH9YnHJOqxcjiXwsMVG+q8W1+QjiVeoE8moqYp
-         Ooqg==
+        with ESMTP id S234119AbiKHMyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 07:54:17 -0500
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6C413F74;
+        Tue,  8 Nov 2022 04:54:16 -0800 (PST)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-13be3ef361dso16076200fac.12;
+        Tue, 08 Nov 2022 04:54:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mNtuOEXDefEJXOGS36uoL5ZWOWYNWQBLQOQ1lh+QjkM=;
-        b=55YT6MK9HErREe2EIYigzQlMCnsM1m5IHSeO5/p1ygWxFfRcpUVz0sf/G7VoJkdMx+
-         qKb9+x+2zeUFZKJ1Kq87zGBEU6b3a3tOncljSQLnmZiFpJE4NoAcES5ZTnSCTeeEkbDV
-         W3fDXTM+S6GM8g7bgOKdAdJwMUxtxWhHQOywsdGSJRjghOU3cVhJ4a0SyqkANWa7eFWD
-         Ajzj+Zm7rD8I6u807dWstO9rHap4pfJegJyfMjJ4aadO3MyNzEvETUtjiQ0Nuif3M7CJ
-         TBvsJNWkxytCpF5Erp0fe+IFOdL03nt3CvYDcLRq899sN/4eXtqXvTADuKgPx4mYyKwY
-         K6tA==
-X-Gm-Message-State: ACrzQf2eg3e8RmVfLIv7u0hEgXvRglV+fjx4aOL/jU0w0beGYlUlmSew
-        nsARGDEOkk3maTqDyzIq5r8=
-X-Google-Smtp-Source: AMsMyM42RmFxcbXDc61L1wAkixEu/D629iYcC1T4PwgihkXvFVkP1Q9O1ThSdcTTYacO2yFJ3Bb/Ww==
-X-Received: by 2002:a05:6a00:2285:b0:56d:5d42:3aa8 with SMTP id f5-20020a056a00228500b0056d5d423aa8mr48146805pfe.79.1667911990653;
-        Tue, 08 Nov 2022 04:53:10 -0800 (PST)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id c1-20020a170902b68100b00186a2444a43sm6807845pls.27.2022.11.08.04.53.08
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=SzZDsYsSktFleiAhrmFxUDwbBhqTEmdM7+gPTdb1QWs=;
+        b=4W0DILLlQHSy+g3VC4lIhwDAPLY6Ny0z7R45gFPWhc0447/Ni1m+hJuDXO0WCzsOuJ
+         XeHT5t9rVqnHf7NjgqR82UP+odQOfWPZsFCF07/UMGVTr+yU1cskgss/2IRHBSc0SbJ7
+         r0nQiNmBS9wsQSOsk/UgCEEvNU5Xu7lAWcsZ7cdjsAsI5ty9R/9JCGK4xqCHiwD3f8E2
+         kZekScapkoBksiNS2aeHY0HWSaEsjB7NzFjHChGPRrbZPhclgUAuZhEQWqd46OtsJXSY
+         lPsdVforgZ83H6fOi/pEtwwHD53ORQRk/FwEdZS2j9olvE0ztHlhlyvT9IF/zsgz+PmC
+         U6kQ==
+X-Gm-Message-State: ACrzQf3LkjhRkc/6EkIoZE1ROzujlvS4uxk54GVZY+nQrPeerZGGnBun
+        /mCMsvPFCrSeif+fDwhebw==
+X-Google-Smtp-Source: AMsMyM580nTfyC5o5WPw6g957OJSRAI/W4Dqx0KuxfxRlUmNItCo2MLFXkiY+y+UQWVEF+C9mIlzcA==
+X-Received: by 2002:a05:6870:e390:b0:13b:d088:bfc with SMTP id x16-20020a056870e39000b0013bd0880bfcmr32193427oad.199.1667912056078;
+        Tue, 08 Nov 2022 04:54:16 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y23-20020a9d6357000000b00660d9afc216sm4035194otk.17.2022.11.08.04.54.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Nov 2022 04:53:10 -0800 (PST)
-From:   Chuang Wang <nashuiliang@gmail.com>
-Cc:     Chuang Wang <nashuiliang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] net: macvlan: Use built-in RCU list checking
-Date:   Tue,  8 Nov 2022 20:52:54 +0800
-Message-Id: <20221108125254.688234-1-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 08 Nov 2022 04:54:15 -0800 (PST)
+Received: (nullmailer pid 3254923 invoked by uid 1000);
+        Tue, 08 Nov 2022 12:54:14 -0000
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+From:   Rob Herring <robh@kernel.org>
+To:     Dominique Martinet <dominique.martinet@atmark-techno.com>
+Cc:     mizo@atmark-techno.com,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-bluetooth@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+In-Reply-To: <20221108055531.2176793-2-dominique.martinet@atmark-techno.com>
+References: <20221108055531.2176793-1-dominique.martinet@atmark-techno.com>
+ <20221108055531.2176793-2-dominique.martinet@atmark-techno.com>
+Message-Id: <166791192640.3252604.4671719183528311477.robh@kernel.org>
+Subject: Re: [RFC PATCH 1/2] dt-bindings: net: h4-bluetooth: add new bindings
+ for hci_h4
+Date:   Tue, 08 Nov 2022 06:54:14 -0600
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hlist_for_each_entry_rcu() has built-in RCU and lock checking.
 
-Pass cond argument to hlist_for_each_entry_rcu() to silence false
-lockdep warning when CONFIG_PROVE_RCU_LIST is enabled.
+On Tue, 08 Nov 2022 14:55:30 +0900, Dominique Martinet wrote:
+> Add devicetree binding to support defining a bluetooth device using the h4
+> uart protocol
+> 
+> This was tested with a NXP wireless+BT AW-XM458 module, but might
+> benefit others as the H4 protocol seems often used.
+> 
+> Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
+> ---
+>  .../devicetree/bindings/net/h4-bluetooth.yaml | 49 +++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/h4-bluetooth.yaml
+> 
 
-Execute as follow:
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
- ip link add link eth0 type macvlan mode source macaddr add <MAC-ADDR>
+yamllint warnings/errors:
 
-The rtnl_lock is held when macvlan_hash_lookup_source() or
-macvlan_fill_info_macaddr() are called in the non-RCU read side section.
-So, pass lockdep_rtnl_is_held() to silence false lockdep warning.
+dtschema/dtc warnings/errors:
+fsl,dte-mode: boolean property with value b'\x00\x00\x00\x01'
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/h4-bluetooth.example.dtb: uart1: fsl,dte-mode: b'\x00\x00\x00\x01' is not of type 'object', 'array', 'boolean', 'null'
+	From schema: /usr/local/lib/python3.10/dist-packages/dtschema/schemas/dt-core.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/h4-bluetooth.example.dtb: uart1: 'anyOf' conditional failed, one must be fixed:
+	'clocks' is a required property
+	'#clock-cells' is a required property
+	From schema: /usr/local/lib/python3.10/dist-packages/dtschema/schemas/clock/clock.yaml
 
-Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
----
-v0 -> v1:
-- fix typo
+doc reference errors (make refcheckdocs):
 
- drivers/net/macvlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+See https://patchwork.ozlabs.org/patch/
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index c58fea63be7d..deb7929004a7 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -141,7 +141,7 @@ static struct macvlan_source_entry *macvlan_hash_lookup_source(
- 	u32 idx = macvlan_eth_hash(addr);
- 	struct hlist_head *h = &vlan->port->vlan_source_hash[idx];
- 
--	hlist_for_each_entry_rcu(entry, h, hlist) {
-+	hlist_for_each_entry_rcu(entry, h, hlist, lockdep_rtnl_is_held()) {
- 		if (ether_addr_equal_64bits(entry->addr, addr) &&
- 		    entry->vlan == vlan)
- 			return entry;
-@@ -1645,7 +1645,7 @@ static int macvlan_fill_info_macaddr(struct sk_buff *skb,
- 	struct hlist_head *h = &vlan->port->vlan_source_hash[i];
- 	struct macvlan_source_entry *entry;
- 
--	hlist_for_each_entry_rcu(entry, h, hlist) {
-+	hlist_for_each_entry_rcu(entry, h, hlist, lockdep_rtnl_is_held()) {
- 		if (entry->vlan != vlan)
- 			continue;
- 		if (nla_put(skb, IFLA_MACVLAN_MACADDR, ETH_ALEN, entry->addr))
--- 
-2.37.2
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
