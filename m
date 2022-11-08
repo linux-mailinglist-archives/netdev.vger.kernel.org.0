@@ -2,122 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2565620F04
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:26:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2DC6620F17
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:29:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234099AbiKHLZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 06:25:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        id S233908AbiKHL3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 06:29:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234151AbiKHLZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:25:33 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D255F4D5DB;
-        Tue,  8 Nov 2022 03:25:31 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id y16so20412786wrt.12;
-        Tue, 08 Nov 2022 03:25:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JnjUyk4orA11aKk4ZfXfB066xwU2JxSgzP0UrUCR36I=;
-        b=eXFFGndn5T1sviflNGr++RU3ahBMhVuCp04eodh3oW8pHaz61C1zaOZMPxvpsbkWyU
-         g4QLHTcy9H7z+h+8Qnib96W57U1hPW6zPNjNHKJ74w47BSqhX9QA1tGf1qAZxGw3F+jf
-         Xx1UvW5wbQuCF786qvuShtDw5KOP9Vv4BRXbI3XvSg39zEAy6vcvB8GjnfDAuDG5QJsX
-         Yp60KJVmES0k434SLd8h9rlR3tcOZS6xpqOdwH+Yq28LMOuSLOq4Dg3juy0cKVTkTYlP
-         wQB8nrYJlsN3/Ts5L+nf5DW4H4KGJh8QqfNxihTnV9gxtFxjQ2zR4lSwqdzrk2CqHVp2
-         qsqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JnjUyk4orA11aKk4ZfXfB066xwU2JxSgzP0UrUCR36I=;
-        b=ku2ikuo3Z0Z6q5S2UwVnFHhw+VkvwmF6Hm5u42P+XL7f6TE4ORhJ7e8I7cD0Ddgnn2
-         3GOIQ9aRQYbFws6qlZYttm9tJsBe7jKNk4dN9bVEO6nIDWjdTvgaCDQc5OZb1OpkT2sK
-         rtPc5XFx1Azp8vwc4SumIVxstdfYftiOYlKJ2K9cXZSwck+flUM/yJ9a5xWL00c5a1zE
-         IB7VxG8gAPdN5g4jWjU6d8RpXwZ5y3iataeLMS5Ab+fAwPPKw60gaj0d1byB3pWfvk9E
-         GB9KXIV3WB3u5DxfYdLw6IuRbySdxfHDzZq4GnzeKQST+60gUVdFM1ineQ38I7762f5E
-         DHpA==
-X-Gm-Message-State: ACrzQf1fouh14zNt+EKTZJ58eUcsClkUmAzTzm/nr6Cbi3R2zu8WpDcw
-        IXiya8NRwtT+jkXQ4QoxFhs=
-X-Google-Smtp-Source: AMsMyM6FFhVpSk/IvvwtgsSDSXsKetnEtWhkjwpHVK4lNJsHKej3dDnQbotGOn0svhPuoAWzePHHjg==
-X-Received: by 2002:a05:6000:2c1:b0:236:d474:f053 with SMTP id o1-20020a05600002c100b00236d474f053mr28449679wry.517.1667906730344;
-        Tue, 08 Nov 2022 03:25:30 -0800 (PST)
-Received: from [10.158.37.55] ([193.47.165.251])
-        by smtp.gmail.com with ESMTPSA id bn23-20020a056000061700b002305cfb9f3dsm10077457wrb.89.2022.11.08.03.25.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Nov 2022 03:25:29 -0800 (PST)
-Message-ID: <ca6a5aee-19c8-e0a9-60af-00e2e5abaed0@gmail.com>
-Date:   Tue, 8 Nov 2022 13:25:26 +0200
+        with ESMTP id S233897AbiKHL3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:29:08 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04916614B;
+        Tue,  8 Nov 2022 03:29:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667906947; x=1699442947;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=iFgt+xRSCifhlEtMvApfJxKTh8oobLSPoJahFBguwSk=;
+  b=D8PDaxeWyhi0gkXSEidgAyyZH55/ihD52NC0idr6X771PiTCZCW8pbDW
+   /hG0Y/m0qk6xX/WEx9PIMVxrYAIiE9sh4jKk4JzhZt8dV/6J4Ll2QE4Ye
+   8SBOi2zAHYuQSEi0OYaSUeH4Rc6cJlrqNF3keLaaqjWqP/Glp0qp7viO3
+   N2J43wJo4TxV8yWV0/9RRCgWkVMZhHaEOpawbglUDd2OHw9y5bj8LIEgB
+   fTwTw5TB1gooDRfe9RlVQvS2A4nUtRyr1uxbkvZQUibAkNH3RUZxaWGC2
+   gVpRsH8qL7TcdBpXDZEthWQDpiZTPhy4A/HdySXZ91w7rqWwCiLQtOH1q
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="311826544"
+X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
+   d="scan'208";a="311826544"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 03:29:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="638759350"
+X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
+   d="scan'208";a="638759350"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga007.fm.intel.com with ESMTP; 08 Nov 2022 03:29:03 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2A8BT2xd013292;
+        Tue, 8 Nov 2022 11:29:02 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        linux@armlinux.org.uk
+Subject: Re: [PATCH net-next v2 3/4] net: lan966x: Add basic XDP support
+Date:   Tue,  8 Nov 2022 12:26:01 +0100
+Message-Id: <20221108112601.605326-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221107212618.73aqn3cdqojs6zbo@soft-dev3-1>
+References: <20221106211154.3225784-1-horatiu.vultur@microchip.com> <20221106211154.3225784-4-horatiu.vultur@microchip.com> <20221107161357.556549-1-alexandr.lobakin@intel.com> <20221107212618.73aqn3cdqojs6zbo@soft-dev3-1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH v6 0/3] sched, net: NUMA-aware CPU spreading interface
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-References: <20221028164959.1367250-1-vschneid@redhat.com>
- <20221102195616.6f55c894@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20221102195616.6f55c894@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Mon, 7 Nov 2022 22:26:18 +0100
 
-
-On 11/3/2022 4:56 AM, Jakub Kicinski wrote:
-> On Fri, 28 Oct 2022 17:49:56 +0100 Valentin Schneider wrote:
->> Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
->> from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
->> it).
->>
->> The proposed interface involved an array of CPUs and a temporary cpumask, and
->> being my difficult self what I'm proposing here is an interface that doesn't
->> require any temporary storage other than some stack variables (at the cost of
->> one wild macro).
->>
->> [1]: https://lore.kernel.org/all/20220728191203.4055-1-tariqt@nvidia.com/
+> The 11/07/2022 17:13, Alexander Lobakin wrote:
 > 
-> Not sure who's expected to take these, no preference here so:
+> Hi Olek,
 > 
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> > 
+> > From: Alexander Lobakin <alexander.lobakin@intel.com>
+> > 
+> > From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > Date: Sun, 6 Nov 2022 22:11:53 +0100
+> > 
+> > > Introduce basic XDP support to lan966x driver. Currently the driver
+> > > supports only the actions XDP_PASS, XDP_DROP and XDP_ABORTED.
+> > >
+> > > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > > ---
+> > >  .../net/ethernet/microchip/lan966x/Makefile   |  3 +-
+> > >  .../ethernet/microchip/lan966x/lan966x_fdma.c | 11 ++-
+> > >  .../ethernet/microchip/lan966x/lan966x_main.c |  5 ++
+> > >  .../ethernet/microchip/lan966x/lan966x_main.h | 13 +++
+> > >  .../ethernet/microchip/lan966x/lan966x_xdp.c  | 81 +++++++++++++++++++
+> > >  5 files changed, 111 insertions(+), 2 deletions(-)
+> > >  create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+> > 
+> > [...]
+> > 
+> > > +bool lan966x_xdp_port_present(struct lan966x_port *port)
+> > > +{
+> > > +     return !!port->xdp_prog;
+> > > +}
+> > 
+> > Why uninline such a simple check? I realize you want to keep all XDP
+> > stuff inside in the separate file, but doesn't this one looks too
+> > much?
 > 
-> Thanks for ironing it out!
+> I was kind of hoping that the compiler will inline it for me.
+> But I can add it in the header file to inline it.
 
-Thanks Jakub.
+That is very unlikely for the compilers to uninline an extern
+function. LTO is able to do that, but even then it's not
+guaranteed. So I'd keep it in a header file as an inline.
 
-Valentin, what do you think?
-Shouldn't it go through the sched branch?
+> 
+> > 
+> > > +
+> > > +int lan966x_xdp_port_init(struct lan966x_port *port)
+> > > +{
+> > > +     struct lan966x *lan966x = port->lan966x;
+> > > +
+> > > +     return xdp_rxq_info_reg(&port->xdp_rxq, port->dev, 0,
+> > > +                             lan966x->napi.napi_id);
+> > > +}
+> > > +
+> > > +void lan966x_xdp_port_deinit(struct lan966x_port *port)
+> > > +{
+> > > +     if (xdp_rxq_info_is_reg(&port->xdp_rxq))
+> > > +             xdp_rxq_info_unreg(&port->xdp_rxq);
+> > > +}
+> > > --
+> > > 2.38.0
+> > 
+> > Thanks,
+> > Olek
+> 
+> -- 
+> /Horatiu
+
+Thanks,
+Olek
