@@ -2,115 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D2A6206E2
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 03:45:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F7A6206E0
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 03:45:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233035AbiKHCpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Nov 2022 21:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        id S232939AbiKHCo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Nov 2022 21:44:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232748AbiKHCpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 21:45:04 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2C22E9EB;
-        Mon,  7 Nov 2022 18:45:02 -0800 (PST)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N5srf2Yq8z15MNw;
-        Tue,  8 Nov 2022 10:44:50 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 8 Nov 2022 10:45:00 +0800
-Received: from [10.67.111.205] (10.67.111.205) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 8 Nov 2022 10:44:59 +0800
-Subject: Re: [PATCH bpf v2 3/5] libbpf: Skip adjust mem size for load pointer
- in 32-bit arch in CO_RE
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>,
-        <illusionist.neo@gmail.com>, <linux@armlinux.org.uk>,
+        with ESMTP id S232748AbiKHCo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Nov 2022 21:44:57 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281CB2E69D
+        for <netdev@vger.kernel.org>; Mon,  7 Nov 2022 18:44:56 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N5srZ4HjzzRp5K;
+        Tue,  8 Nov 2022 10:44:46 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 8 Nov
+ 2022 10:44:53 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mykolal@fb.com>, <shuah@kernel.org>,
-        <benjamin.tissoires@redhat.com>, <memxor@gmail.com>,
-        <asavkov@redhat.com>, <delyank@fb.com>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-References: <20221107092032.178235-1-yangjihong1@huawei.com>
- <20221107092032.178235-4-yangjihong1@huawei.com>
- <CAEf4BzZd+hzeRhLD6DaDVx67fySd+KaTP6eOJid-u9mqnQwigg@mail.gmail.com>
-From:   Yang Jihong <yangjihong1@huawei.com>
-Message-ID: <8911eeb0-d9a9-4592-34b5-e6e0a9efe692@huawei.com>
-Date:   Tue, 8 Nov 2022 10:44:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        <pabeni@redhat.com>
+CC:     <jeffrey.t.kirsher@intel.com>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH net] net: mv643xx_eth: disable napi when init rxq or txq failed in mv643xx_eth_open()
+Date:   Tue, 8 Nov 2022 10:51:56 +0800
+Message-ID: <20221108025156.327279-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZd+hzeRhLD6DaDVx67fySd+KaTP6eOJid-u9mqnQwigg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.205]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600003.china.huawei.com (7.193.23.202)
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
 X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+When failed to init rxq or txq in mv643xx_eth_open() for opening device,
+napi isn't disabled. When open mv643xx_eth device next time, it will
+report a invalid opcode issue. Fix it. Only be compiled, not be tested.
 
-On 2022/11/8 9:22, Andrii Nakryiko wrote:
-> On Mon, Nov 7, 2022 at 1:23 AM Yang Jihong <yangjihong1@huawei.com> wrote:
->>
->> bpf_core_patch_insn modifies load's mem size from 8 bytes to 4 bytes.
->> As a result, the bpf check fails, we need to skip adjust mem size to fit
->> the verifier.
->>
->> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
->> ---
->>   tools/lib/bpf/libbpf.c | 34 +++++++++++++++++++++++++++++-----
->>   1 file changed, 29 insertions(+), 5 deletions(-)
->>
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index 184ce1684dcd..e1c21b631a0b 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -5634,6 +5634,28 @@ static int bpf_core_resolve_relo(struct bpf_program *prog,
->>                                         targ_res);
->>   }
->>
->> +static bool
->> +bpf_core_patch_insn_skip(const struct btf *local_btf, const struct bpf_insn *insn,
->> +                        const struct bpf_core_relo_res *res)
->> +{
->> +       __u8 class;
->> +       const struct btf_type *orig_t;
->> +
->> +       class = BPF_CLASS(insn->code);
->> +       orig_t = btf_type_by_id(local_btf, res->orig_type_id);
->> +
->> +       /*
->> +        * verifier has to see a load of a pointer as a 8-byte load,
->> +        * CO_RE should not screws up access, bpf_core_patch_insn modifies
->> +        * load's mem size from 8 bytes to 4 bytes in 32-bit arch,
->> +        * so we skip adjust mem size.
->> +        */
-> 
-> Nope, this is only for BPF UAPI context types like __sk_buff (right
-> now). fentry/fexit/raw_tp_btf programs traversing kernel types and
-> following pointers actually need this to work correctly. Don't do
-> this.
-Distinguishing BPF UAPI context from kernel type requires some work. 
-According to current situation, the solution of patch2 is relatively simple.
+Fixes: 527a626601de ("skge/sky2/mv643xx/pxa168: Move the Marvell Ethernet drivers")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Yang
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index 707993b445d1..8941f69d93e9 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -2481,6 +2481,7 @@ static int mv643xx_eth_open(struct net_device *dev)
+ 	for (i = 0; i < mp->rxq_count; i++)
+ 		rxq_deinit(mp->rxq + i);
+ out:
++	napi_disable(&mp->napi);
+ 	free_irq(dev->irq, dev);
+ 
+ 	return err;
+-- 
+2.17.1
+
