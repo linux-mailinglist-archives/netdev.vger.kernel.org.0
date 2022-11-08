@@ -2,105 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8460620EF4
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:24:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2565620F04
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 12:26:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233870AbiKHLYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 06:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
+        id S234099AbiKHLZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 06:25:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233907AbiKHLYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:24:15 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172AC31FAE
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 03:24:14 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id z9so7305927ilu.10
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 03:24:14 -0800 (PST)
+        with ESMTP id S234151AbiKHLZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 06:25:33 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D255F4D5DB;
+        Tue,  8 Nov 2022 03:25:31 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id y16so20412786wrt.12;
+        Tue, 08 Nov 2022 03:25:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5B7dfi7xVJ3OslQ0ALi00lhJojz9IHhiYsVHA/RHqOE=;
-        b=LXzLwEfFEIjs9nRQ/0D9sK0UdFF/hcYD1/7lPcxtKxGf+ipiOyxIUkG9FxWjTQwnxI
-         D0k1pcJ4r9HbGweGR8VttiL8E2qc4lcsz3jC3X1z+Myzw30J2a8GCz5AS/bkRvOOAlHD
-         E+tAU65cwh01zP65Dht/AwghXmg8POvqM5wMW+NclASoJJ1M+p89BgFOSDch5BgQ0Avc
-         9JiZIkvYkz5qbwJiVyZnhn8aEs4dsNPEV6aJ60VBa1B1c4nkJvkSo/q1xUjbvGvnQsI2
-         YCKRfjADZRvavXIhrgWVqvohpAMKlTCL5cT3Ex4YqBvyGRv/IX591YGJ8Vqkx1vqKbDZ
-         WAQg==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=JnjUyk4orA11aKk4ZfXfB066xwU2JxSgzP0UrUCR36I=;
+        b=eXFFGndn5T1sviflNGr++RU3ahBMhVuCp04eodh3oW8pHaz61C1zaOZMPxvpsbkWyU
+         g4QLHTcy9H7z+h+8Qnib96W57U1hPW6zPNjNHKJ74w47BSqhX9QA1tGf1qAZxGw3F+jf
+         Xx1UvW5wbQuCF786qvuShtDw5KOP9Vv4BRXbI3XvSg39zEAy6vcvB8GjnfDAuDG5QJsX
+         Yp60KJVmES0k434SLd8h9rlR3tcOZS6xpqOdwH+Yq28LMOuSLOq4Dg3juy0cKVTkTYlP
+         wQB8nrYJlsN3/Ts5L+nf5DW4H4KGJh8QqfNxihTnV9gxtFxjQ2zR4lSwqdzrk2CqHVp2
+         qsqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5B7dfi7xVJ3OslQ0ALi00lhJojz9IHhiYsVHA/RHqOE=;
-        b=Sq7HTVfu3E2vCcsqFt+DxLE6jH1AWwfMfzleVXOT34uotdx4ugPO3VfU87wuuQ0Duc
-         9rPGDLKZemAdE7j+68Af41JLxFhUFItEgHwpDJ9SHouPyBX9kzBoDs2Jl0q9o+y1IHUT
-         Km16MLFn4blbqDfIRExBLuaTfE/wyFYh/3v8gYuB/rj+XJmzarHWKvFbdNWnZlf2PUkB
-         blZR4IFiXHsFABBVfZTGF7WxFlO0OFVTBMvpu2ZeoIEvbu+QlU7fgXvLE+WsMABzFb9g
-         zR9mYWM7uSZ6whagbdZZ2sExyJtshrLumKmwf8aLlqOmEULShE/f3Ip7YoPfYtYh0m/h
-         rnkA==
-X-Gm-Message-State: ACrzQf2i/bBirUVbkDcRi68CtMsjbyoEhM8qP0wF5XQdal/kDC2ewxRn
-        c+F6U9oYc4/escbNCOpmcmN/91YMd1IHZfSIlNU=
-X-Google-Smtp-Source: AMsMyM7l9664LpWj9QcPDmFBWC92J2k8lgTtaMBq0d8Kn2LaY6/WvjL6jmQ58ep7k3CUc1mU0tvXdcs9IQAedNtHTSY=
-X-Received: by 2002:a92:bf0e:0:b0:300:cc8e:fe07 with SMTP id
- z14-20020a92bf0e000000b00300cc8efe07mr18642833ilh.184.1667906653482; Tue, 08
- Nov 2022 03:24:13 -0800 (PST)
+        bh=JnjUyk4orA11aKk4ZfXfB066xwU2JxSgzP0UrUCR36I=;
+        b=ku2ikuo3Z0Z6q5S2UwVnFHhw+VkvwmF6Hm5u42P+XL7f6TE4ORhJ7e8I7cD0Ddgnn2
+         3GOIQ9aRQYbFws6qlZYttm9tJsBe7jKNk4dN9bVEO6nIDWjdTvgaCDQc5OZb1OpkT2sK
+         rtPc5XFx1Azp8vwc4SumIVxstdfYftiOYlKJ2K9cXZSwck+flUM/yJ9a5xWL00c5a1zE
+         IB7VxG8gAPdN5g4jWjU6d8RpXwZ5y3iataeLMS5Ab+fAwPPKw60gaj0d1byB3pWfvk9E
+         GB9KXIV3WB3u5DxfYdLw6IuRbySdxfHDzZq4GnzeKQST+60gUVdFM1ineQ38I7762f5E
+         DHpA==
+X-Gm-Message-State: ACrzQf1fouh14zNt+EKTZJ58eUcsClkUmAzTzm/nr6Cbi3R2zu8WpDcw
+        IXiya8NRwtT+jkXQ4QoxFhs=
+X-Google-Smtp-Source: AMsMyM6FFhVpSk/IvvwtgsSDSXsKetnEtWhkjwpHVK4lNJsHKej3dDnQbotGOn0svhPuoAWzePHHjg==
+X-Received: by 2002:a05:6000:2c1:b0:236:d474:f053 with SMTP id o1-20020a05600002c100b00236d474f053mr28449679wry.517.1667906730344;
+        Tue, 08 Nov 2022 03:25:30 -0800 (PST)
+Received: from [10.158.37.55] ([193.47.165.251])
+        by smtp.gmail.com with ESMTPSA id bn23-20020a056000061700b002305cfb9f3dsm10077457wrb.89.2022.11.08.03.25.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Nov 2022 03:25:29 -0800 (PST)
+Message-ID: <ca6a5aee-19c8-e0a9-60af-00e2e5abaed0@gmail.com>
+Date:   Tue, 8 Nov 2022 13:25:26 +0200
 MIME-Version: 1.0
-Received: by 2002:a05:6638:1921:0:0:0:0 with HTTP; Tue, 8 Nov 2022 03:24:13
- -0800 (PST)
-Reply-To: mrinvest1010@gmail.com
-From:   "K. A. Mr. Kairi" <ctocik10@gmail.com>
-Date:   Tue, 8 Nov 2022 03:24:13 -0800
-Message-ID: <CAEbPynvxfjzGLRVVaaVB9fasgmGPWiH+Ceaj9c3oE5eqT5_+0Q@mail.gmail.com>
-Subject: Re: My Response..
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: [PATCH v6 0/3] sched, net: NUMA-aware CPU spreading interface
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+References: <20221028164959.1367250-1-vschneid@redhat.com>
+ <20221102195616.6f55c894@kernel.org>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20221102195616.6f55c894@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:12d listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [mrinvest1010[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ctocik10[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ctocik10[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear
 
-How are you, I have a serious client, whom will be interested to
-invest in your country, I got your Details through the Investment
-Network and world Global Business directory.
 
-Let me know if you are interested for more details.....
+On 11/3/2022 4:56 AM, Jakub Kicinski wrote:
+> On Fri, 28 Oct 2022 17:49:56 +0100 Valentin Schneider wrote:
+>> Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
+>> from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
+>> it).
+>>
+>> The proposed interface involved an array of CPUs and a temporary cpumask, and
+>> being my difficult self what I'm proposing here is an interface that doesn't
+>> require any temporary storage other than some stack variables (at the cost of
+>> one wild macro).
+>>
+>> [1]: https://lore.kernel.org/all/20220728191203.4055-1-tariqt@nvidia.com/
+> 
+> Not sure who's expected to take these, no preference here so:
+> 
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> Thanks for ironing it out!
 
-Sincerely,
-Mr. Kairi Andrew
+Thanks Jakub.
+
+Valentin, what do you think?
+Shouldn't it go through the sched branch?
