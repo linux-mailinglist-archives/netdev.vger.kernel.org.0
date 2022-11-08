@@ -2,120 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D034621484
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:02:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA9B6214A4
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 15:03:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234938AbiKHOCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 09:02:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
+        id S234972AbiKHODj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 09:03:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234963AbiKHOBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:01:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C564E66C8E
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:00:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667916057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CRc6Q92Am3gX3kuAaNMjQgOFTnjBAQmsAw/cb2BaoNM=;
-        b=PMAODJ4vks8a/KiLrIet6CscRz/gjNsiLyxL/hNajIPx0V70ilfktqvtHh6Z+qHMs7JNKL
-        TKn0dtenE/XG2Vr6KCHYoSjbMVPboW0XYCy6zkVwzkSciBamoREQlop+cCHyJLt6DwuRy5
-        DWdLDKtuz6M6jUtrJEejpWze+TWLZas=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-FRVtsv-OPXWPTNkXvXuYkw-1; Tue, 08 Nov 2022 09:00:54 -0500
-X-MC-Unique: FRVtsv-OPXWPTNkXvXuYkw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9563D100EDC3;
-        Tue,  8 Nov 2022 14:00:53 +0000 (UTC)
-Received: from localhost (unknown [10.39.195.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C41E340C94AD;
-        Tue,  8 Nov 2022 14:00:52 +0000 (UTC)
-Date:   Tue, 8 Nov 2022 09:00:49 -0500
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCHSET v3 0/5] Add support for epoll min_wait
-Message-ID: <Y2phEZKYuSmPL5B5@fedora>
-References: <Y2lw4Qc1uI+Ep+2C@fedora>
- <4281b354-d67d-2883-d966-a7816ed4f811@kernel.dk>
+        with ESMTP id S234981AbiKHODh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 09:03:37 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE067664
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 06:03:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=t5xhlebnR9LBNcAaa8tDHu1DPQcNgfH1fddZ3T6DTJU=; b=Vv+8vbVmQ0hxA8kL0jzW/pAMrj
+        KE/hh5UdJjLvzkk318G/J22mwSC8IE/tknfACd+w+pXk4LeiZJmoODH3HhDF27T9PxuQ7maH6cQjG
+        xmhO24lb8Ckvo9166YccLdUFXc9R2hJG34WIcI/YAQPU1mAgL+Jg3ZuHH5YmDhVYiwvA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1osPC6-001pE8-5I; Tue, 08 Nov 2022 15:03:14 +0100
+Date:   Tue, 8 Nov 2022 15:03:14 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 9/9] net: dsa: mv88e6071: Set .set_max_frame_size callback
+Message-ID: <Y2phohBqYR5juqBn@lunn.ch>
+References: <20221108082330.2086671-1-lukma@denx.de>
+ <20221108082330.2086671-10-lukma@denx.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="hTnBuHsELfudnVi0"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4281b354-d67d-2883-d966-a7816ed4f811@kernel.dk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221108082330.2086671-10-lukma@denx.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 08, 2022 at 09:23:30AM +0100, Lukasz Majewski wrote:
+> The .set_max_frame_size is now set to the
+> mv88e6185_g1_set_max_frame_size() function.
+> 
+> The global switch control register (0x4 offset) used
+> as well as the bit (10) are the same.
+> 
+> The only difference is the misleading suffix (1632)
+> as the mv88e6071/mv88e6020 supports 2048 bytes
+> as a maximal size of the frame.
 
---hTnBuHsELfudnVi0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Are you really sure that different members of the 6250 family have
+different maximum frame sizes?
 
-On Mon, Nov 07, 2022 at 02:38:52PM -0700, Jens Axboe wrote:
-> On 11/7/22 1:56 PM, Stefan Hajnoczi wrote:
-> > Hi Jens,
-> > NICs and storage controllers have interrupt mitigation/coalescing
-> > mechanisms that are similar.
->=20
-> Yep
->=20
-> > NVMe has an Aggregation Time (timeout) and an Aggregation Threshold
-> > (counter) value. When a completion occurs, the device waits until the
-> > timeout or until the completion counter value is reached.
-> >=20
-> > If I've read the code correctly, min_wait is computed at the beginning
-> > of epoll_wait(2). NVMe's Aggregation Time is computed from the first
-> > completion.
-> >=20
-> > It makes me wonder which approach is more useful for applications. With
-> > the Aggregation Time approach applications can control how much extra
-> > latency is added. What do you think about that approach?
->=20
-> We only tested the current approach, which is time noted from entry, not
-> from when the first event arrives. I suspect the nvme approach is better
-> suited to the hw side, the epoll timeout helps ensure that we batch
-> within xx usec rather than xx usec + whatever the delay until the first
-> one arrives. Which is why it's handled that way currently. That gives
-> you a fixed batch latency.
+Marvells GPL DSDT SDK has:
 
-min_wait is fine when the goal is just maximizing throughput without any
-latency targets.
+#define G1_DEV_88ESPANNAK_FAMILY  (DEV_88E3020 | DEV_88E6020 | DEV_88E6070 | DEV_88E6071 | DEV_88E6220  | DEV_88E6250 )
 
-The min_wait approach makes it hard to set a useful upper bound on
-latency because unlucky requests that complete early experience much
-more latency than requests that complete later.
+The differences within a family tend to be the number of ports, if PTP
+is provided, if AVB is provided etc.
 
-Stefan
-
---hTnBuHsELfudnVi0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmNqYREACgkQnKSrs4Gr
-c8j6IAgAm0QuhdsF3vs+1ncuRN5NYEZR5+zZERrQFEnMQhQmAHn/muP+4tm7MlIT
-LTqG5r89ymGz+LSyEUPJ8T9NnoLBoyyrTtrz9TpCk9SICPO7jPgiPTMf69quEO6j
-h0pRVntr50Q9neNYG5J+zErj9TYz6cO1qAwm3903cmGti1I8IM4fjKCN+cPQmqoJ
-rkfmh4PKOYxfNLVmKjSrdlF47ouFpRV3mpIZYJbejmg0CzSPwZ1is2slHVptRhsX
-6HhnxvExdDKsjFORf6boC/Z/YodUbAzdMo+9B6uZH9BEz52EXFK+Inn4Kan0yvT2
-vbeMPMmnzuCjpKMv5E2VMClg0EtBZg==
-=Bq7R
------END PGP SIGNATURE-----
-
---hTnBuHsELfudnVi0--
-
+   Andrew
