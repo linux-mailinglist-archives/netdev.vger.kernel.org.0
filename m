@@ -2,436 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22318621DB1
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 21:32:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50A06621DC1
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 21:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbiKHUcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 15:32:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44698 "EHLO
+        id S229923AbiKHUhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 15:37:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbiKHUcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 15:32:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB58524BD5;
-        Tue,  8 Nov 2022 12:31:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88077B81C5A;
-        Tue,  8 Nov 2022 20:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9753C433D6;
-        Tue,  8 Nov 2022 20:31:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667939516;
-        bh=LLZlNY0zjaDsGTlmgnqAmB99ge87p7NhvFd8eFe+iVY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EkmpAW5ivrXt29fA8d/yaeQs5x2dX1nrzrBwBeYwFDXjNqV32p2N85iutXjLAJKz8
-         yujQC6t9DySsbuO912EolhFHECYsMEeXGX+C6rb2UXVHa/BVB/2OPJsb0d0i1e97A6
-         CvLiEMH5ZlizCC2BUaaRbYecN8GGGArlpD1zy23kL6iUphYk6fF6/DIZmEZG8Z1WEf
-         s0mULcVIzCHmwTuQIyPiB4Zjgqx1BUlBnkxiYVmtWZ/RvltWF98wWGaRXddcJRA+VW
-         QEwJn7kSOuYEbcG4C8pTUP9bbqYvZhpIUr3tBp5fV+LLtJsbKq1Hra3hyCbBhKVscR
-         amtkWniJyOzCg==
-Date:   Tue, 8 Nov 2022 14:31:36 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com, Rasesh Mody <rmody@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH v3 6/7] bna: Avoid clashing function prototypes
-Message-ID: <f813f239cd75c341e26909f59f153cb9b72b1267.1667934775.git.gustavoars@kernel.org>
-References: <cover.1667934775.git.gustavoars@kernel.org>
+        with ESMTP id S229584AbiKHUhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 15:37:48 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFE76710B;
+        Tue,  8 Nov 2022 12:37:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667939867; x=1699475867;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=G04WwAeQWk0pwDOcNnDFTPJEMbVRinCyv847NR9rxkw=;
+  b=TEJg8yuS+Yia6Y6LJmbK1/t+fbQzU+QbIKDc1IrJ0qKsObmAvTu3R7M/
+   3MFjLyXIPzlr7QcCwyq4VAtJ6nzZfoePkAg0EKPZOzh+n+dfIhMfYtn65
+   nK0TaoNbB3AfHJYPi/ONuPynh6ixC5awF0Yua1Rw2l6EWEn0NAjc8uKk1
+   x+cpZbzM7gSYMT8ANjWzl7EOZbvR57nrNR9fWC+6ZQfApv5A4t4cZdGne
+   4kR3rOVSs6azVXgCxwvstLmZz/HVor+YiIIQq/yCQ4hU2mQzOoPWwwwh7
+   LhDeHW8oCPuW86BGsV+EDUxVvd00VyP8TxFFroi966CZ4ZtmXi4SoJsVJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="312594911"
+X-IronPort-AV: E=Sophos;i="5.96,148,1665471600"; 
+   d="scan'208";a="312594911"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 12:34:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="587506857"
+X-IronPort-AV: E=Sophos;i="5.96,148,1665471600"; 
+   d="scan'208";a="587506857"
+Received: from lkp-server01.sh.intel.com (HELO e783503266e8) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 08 Nov 2022 12:34:00 -0800
+Received: from kbuild by e783503266e8 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1osVIG-0000bM-0G;
+        Tue, 08 Nov 2022 20:34:00 +0000
+Date:   Wed, 09 Nov 2022 04:33:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     ntfs3@lists.linux.dev, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ b6fc3fddade7a194bd141a49f2689e50f796ef46
+Message-ID: <636abd0d.1OXnfmzy1rhQe3n4%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1667934775.git.gustavoars@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When built with Control Flow Integrity, function prototypes between
-caller and function declaration must match. These mismatches are visible
-at compile time with the new -Wcast-function-type-strict in Clang[1].
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: b6fc3fddade7a194bd141a49f2689e50f796ef46  Add linux-next specific files for 20221108
 
-Fix a total of 227 warnings like these:
+Error/Warning reports:
 
-drivers/net/ethernet/brocade/bna/bna_enet.c:519:3: warning: cast from 'void (*)(struct bna_ethport *, enum bna_ethport_event)' to 'bfa_fsm_t' (aka 'void (*)(void *, int)') converts to incompatible function type [-Wcast-function-type-strict]
-                bfa_fsm_set_state(ethport, bna_ethport_sm_down);
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+https://lore.kernel.org/linux-mm/202210111318.mbUfyhps-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210261404.b6UlzG7H-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202210270637.Q5Y7FiKJ-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202211041320.coq8EELJ-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202211082141.3XSHPtO1-lkp@intel.com
 
-The bna state machine code heavily overloads its state machine functions,
-so these have been separated into their own sets of structs, enums,
-typedefs, and helper functions. There are almost zero binary code changes,
-all seem to be related to header file line numbers changing, or the
-addition of the new stats helper.
+Error/Warning: (recently discovered and may have been fixed)
 
-Important to mention is that while I was manually implementing this changes
-I was staring at this[2] patch from Kees Cook. Thanks, Kees. :)
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:4878: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:5044:24: warning: implicit conversion from 'enum <anonymous>' to 'enum dc_status' [-Wenum-conversion]
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c:1087:1: warning: stack frame size (1184) exceeds limit (1024) in 'dr_rule_create_rule_nic' [-Wframe-larger-than]
 
-[1] https://reviews.llvm.org/D134831
-[2] https://lore.kernel.org/linux-hardening/20220929230334.2109344-1-keescook@chromium.org/
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
-Changes in v3:
- - Add RB tag from Kees.
- - Update changelog text.
+Unverified Error/Warning (likely false positive, please contact us if interested):
 
-Changes in v2:
- - None. This patch is new in the series.
- - Link: https://lore.kernel.org/linux-hardening/2812afc0de278b97413a142d39d939a08ac74025.1666894751.git.gustavoars@kernel.org/
+drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c:245:23: sparse: sparse: Using plain integer as NULL pointer
+lib/test_objpool.c:1007:16: sparse: sparse: symbol 'g_ot_async' was not declared. Should it be static?
+lib/test_objpool.c:108:6: sparse: sparse: symbol 'ot_vfree' was not declared. Should it be static?
+lib/test_objpool.c:516:3: sparse: sparse: symbol 'g_ot_sync_ops' was not declared. Should it be static?
+lib/test_objpool.c:76:3: sparse: sparse: symbol 'g_ot_data' was not declared. Should it be static?
+lib/test_objpool.c:824:3: sparse: sparse: symbol 'g_ot_async_ops' was not declared. Should it be static?
+lib/test_objpool.c:82:6: sparse: sparse: symbol 'ot_kzalloc' was not declared. Should it be static?
+lib/test_objpool.c:91:6: sparse: sparse: symbol 'ot_kfree' was not declared. Should it be static?
+lib/test_objpool.c:989:16: sparse: sparse: symbol 'g_ot_sync' was not declared. Should it be static?
+lib/test_objpool.c:998:16: sparse: sparse: symbol 'g_ot_miss' was not declared. Should it be static?
+lib/test_objpool.c:99:6: sparse: sparse: symbol 'ot_vmalloc' was not declared. Should it be static?
+lib/zstd/compress/huf_compress.c:460 HUF_getIndex() warn: the 'RANK_POSITION_LOG_BUCKETS_BEGIN' macro might need parens
+lib/zstd/decompress/zstd_decompress_block.c:1009 ZSTD_execSequence() warn: inconsistent indenting
+lib/zstd/decompress/zstd_decompress_block.c:894 ZSTD_execSequenceEnd() warn: inconsistent indenting
+lib/zstd/decompress/zstd_decompress_block.c:942 ZSTD_execSequenceEndSplitLitBuffer() warn: inconsistent indenting
+lib/zstd/decompress/zstd_decompress_internal.h:206 ZSTD_DCtx_get_bmi2() warn: inconsistent indenting
+s390x-linux-ld: drivers/clk/clk-fixed-mmio.c:26: undefined reference to `of_iomap'
+s390x-linux-ld: drivers/clk/clk-fixed-mmio.c:33: undefined reference to `iounmap'
 
- drivers/net/ethernet/brocade/bna/bfa_cs.h    | 60 +++++++++++++-------
- drivers/net/ethernet/brocade/bna/bfa_ioc.c   | 10 ++--
- drivers/net/ethernet/brocade/bna/bfa_ioc.h   |  8 ++-
- drivers/net/ethernet/brocade/bna/bfa_msgq.h  |  8 ++-
- drivers/net/ethernet/brocade/bna/bna_enet.c  |  6 +-
- drivers/net/ethernet/brocade/bna/bna_tx_rx.c |  6 +-
- drivers/net/ethernet/brocade/bna/bna_types.h | 27 +++++++--
- 7 files changed, 82 insertions(+), 43 deletions(-)
+Error/Warning ids grouped by kconfigs:
 
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_cs.h b/drivers/net/ethernet/brocade/bna/bfa_cs.h
-index 8f0ac7b99973..858c92129451 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_cs.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_cs.h
-@@ -18,15 +18,43 @@
- 
- /* BFA state machine interfaces */
- 
--typedef void (*bfa_sm_t)(void *sm, int event);
--
- /* For converting from state machine function to state encoding. */
--struct bfa_sm_table {
--	bfa_sm_t	sm;	/*!< state machine function	*/
--	int		state;	/*!< state machine encoding	*/
--	char		*name;	/*!< state name for display	*/
--};
--#define BFA_SM(_sm)		((bfa_sm_t)(_sm))
-+#define BFA_SM_TABLE(n, s, e, t)				\
-+struct s;							\
-+enum e;								\
-+typedef void (*t)(struct s *, enum e);				\
-+								\
-+struct n ## _sm_table_s {					\
-+	t		sm;	/* state machine function */	\
-+	int		state;	/* state machine encoding */	\
-+	char		*name;	/* state name for display */	\
-+};								\
-+								\
-+static inline int						\
-+n ## _sm_to_state(struct n ## _sm_table_s *smt, t sm)		\
-+{								\
-+	int	i = 0;						\
-+								\
-+	while (smt[i].sm && smt[i].sm != sm)			\
-+		i++;						\
-+	return smt[i].state;					\
-+}
-+
-+BFA_SM_TABLE(iocpf,	bfa_iocpf,	iocpf_event,	bfa_fsm_iocpf_t)
-+BFA_SM_TABLE(ioc,	bfa_ioc,	ioc_event,	bfa_fsm_ioc_t)
-+BFA_SM_TABLE(cmdq,	bfa_msgq_cmdq,	cmdq_event,	bfa_fsm_msgq_cmdq_t)
-+BFA_SM_TABLE(rspq,	bfa_msgq_rspq,	rspq_event,	bfa_fsm_msgq_rspq_t)
-+
-+BFA_SM_TABLE(ioceth,	bna_ioceth,	bna_ioceth_event, bna_fsm_ioceth_t)
-+BFA_SM_TABLE(enet,	bna_enet,	bna_enet_event, bna_fsm_enet_t)
-+BFA_SM_TABLE(ethport,	bna_ethport,	bna_ethport_event, bna_fsm_ethport_t)
-+BFA_SM_TABLE(tx,	bna_tx,		bna_tx_event,	bna_fsm_tx_t)
-+BFA_SM_TABLE(rxf,	bna_rxf,	bna_rxf_event, bna_fsm_rxf_t)
-+BFA_SM_TABLE(rx,	bna_rx,		bna_rx_event,	bna_fsm_rx_t)
-+
-+#undef BFA_SM_TABLE
-+
-+#define BFA_SM(_sm)	(_sm)
- 
- /* State machine with entry actions. */
- typedef void (*bfa_fsm_t)(void *fsm, int event);
-@@ -41,24 +69,12 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
- 	static void oc ## _sm_ ## st ## _entry(otype * fsm)
- 
- #define bfa_fsm_set_state(_fsm, _state) do {				\
--	(_fsm)->fsm = (bfa_fsm_t)(_state);				\
-+	(_fsm)->fsm = (_state);						\
- 	_state ## _entry(_fsm);						\
- } while (0)
- 
- #define bfa_fsm_send_event(_fsm, _event)	((_fsm)->fsm((_fsm), (_event)))
--#define bfa_fsm_cmp_state(_fsm, _state)					\
--	((_fsm)->fsm == (bfa_fsm_t)(_state))
--
--static inline int
--bfa_sm_to_state(const struct bfa_sm_table *smt, bfa_sm_t sm)
--{
--	int	i = 0;
--
--	while (smt[i].sm && smt[i].sm != sm)
--		i++;
--	return smt[i].state;
--}
--
-+#define bfa_fsm_cmp_state(_fsm, _state)		((_fsm)->fsm == (_state))
- /* Generic wait counter. */
- 
- typedef void (*bfa_wc_resume_t) (void *cbarg);
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.c b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-index cd933817a0b8..b07522ac3e74 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-@@ -114,7 +114,7 @@ bfa_fsm_state_decl(bfa_ioc, disabling, struct bfa_ioc, enum ioc_event);
- bfa_fsm_state_decl(bfa_ioc, disabled, struct bfa_ioc, enum ioc_event);
- bfa_fsm_state_decl(bfa_ioc, hwfail, struct bfa_ioc, enum ioc_event);
- 
--static struct bfa_sm_table ioc_sm_table[] = {
-+static struct ioc_sm_table_s ioc_sm_table[] = {
- 	{BFA_SM(bfa_ioc_sm_uninit), BFA_IOC_UNINIT},
- 	{BFA_SM(bfa_ioc_sm_reset), BFA_IOC_RESET},
- 	{BFA_SM(bfa_ioc_sm_enabling), BFA_IOC_ENABLING},
-@@ -183,7 +183,7 @@ bfa_fsm_state_decl(bfa_iocpf, disabling_sync, struct bfa_iocpf,
- 						enum iocpf_event);
- bfa_fsm_state_decl(bfa_iocpf, disabled, struct bfa_iocpf, enum iocpf_event);
- 
--static struct bfa_sm_table iocpf_sm_table[] = {
-+static struct iocpf_sm_table_s iocpf_sm_table[] = {
- 	{BFA_SM(bfa_iocpf_sm_reset), BFA_IOCPF_RESET},
- 	{BFA_SM(bfa_iocpf_sm_fwcheck), BFA_IOCPF_FWMISMATCH},
- 	{BFA_SM(bfa_iocpf_sm_mismatch), BFA_IOCPF_FWMISMATCH},
-@@ -2860,12 +2860,12 @@ static enum bfa_ioc_state
- bfa_ioc_get_state(struct bfa_ioc *ioc)
- {
- 	enum bfa_iocpf_state iocpf_st;
--	enum bfa_ioc_state ioc_st = bfa_sm_to_state(ioc_sm_table, ioc->fsm);
-+	enum bfa_ioc_state ioc_st = ioc_sm_to_state(ioc_sm_table, ioc->fsm);
- 
- 	if (ioc_st == BFA_IOC_ENABLING ||
- 		ioc_st == BFA_IOC_FAIL || ioc_st == BFA_IOC_INITFAIL) {
- 
--		iocpf_st = bfa_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
-+		iocpf_st = iocpf_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
- 
- 		switch (iocpf_st) {
- 		case BFA_IOCPF_SEMWAIT:
-@@ -2983,7 +2983,7 @@ bfa_nw_iocpf_timeout(struct bfa_ioc *ioc)
- {
- 	enum bfa_iocpf_state iocpf_st;
- 
--	iocpf_st = bfa_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
-+	iocpf_st = iocpf_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
- 
- 	if (iocpf_st == BFA_IOCPF_HWINIT)
- 		bfa_ioc_poll_fwinit(ioc);
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.h b/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-index edd0ed5b5332..f30d06ec4ffe 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-@@ -147,16 +147,20 @@ struct bfa_ioc_notify {
- 	(__notify)->cbarg = (__cbarg);				\
- } while (0)
- 
-+enum iocpf_event;
-+
- struct bfa_iocpf {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bfa_iocpf *s, enum iocpf_event e);
- 	struct bfa_ioc		*ioc;
- 	bool			fw_mismatch_notified;
- 	bool			auto_recover;
- 	u32			poll_time;
- };
- 
-+enum ioc_event;
-+
- struct bfa_ioc {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bfa_ioc *s, enum ioc_event e);
- 	struct bfa		*bfa;
- 	struct bfa_pcidev	pcidev;
- 	struct timer_list	ioc_timer;
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_msgq.h b/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-index 75343b535798..170a4b4bed96 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-@@ -55,8 +55,10 @@ enum bfa_msgq_cmdq_flags {
- 	BFA_MSGQ_CMDQ_F_DB_UPDATE	= 1,
- };
- 
-+enum cmdq_event;
-+
- struct bfa_msgq_cmdq {
--	bfa_fsm_t			fsm;
-+	void (*fsm)(struct bfa_msgq_cmdq *s, enum cmdq_event e);
- 	enum bfa_msgq_cmdq_flags flags;
- 
- 	u16			producer_index;
-@@ -81,8 +83,10 @@ enum bfa_msgq_rspq_flags {
- 
- typedef void (*bfa_msgq_mcfunc_t)(void *cbarg, struct bfi_msgq_mhdr *mhdr);
- 
-+enum rspq_event;
-+
- struct bfa_msgq_rspq {
--	bfa_fsm_t			fsm;
-+	void (*fsm)(struct bfa_msgq_rspq *s, enum rspq_event e);
- 	enum bfa_msgq_rspq_flags flags;
- 
- 	u16			producer_index;
-diff --git a/drivers/net/ethernet/brocade/bna/bna_enet.c b/drivers/net/ethernet/brocade/bna/bna_enet.c
-index a2c983f56b00..883de0ac8de4 100644
---- a/drivers/net/ethernet/brocade/bna/bna_enet.c
-+++ b/drivers/net/ethernet/brocade/bna/bna_enet.c
-@@ -1257,7 +1257,7 @@ bna_enet_mtu_get(struct bna_enet *enet)
- void
- bna_enet_enable(struct bna_enet *enet)
- {
--	if (enet->fsm != (bfa_sm_t)bna_enet_sm_stopped)
-+	if (enet->fsm != bna_enet_sm_stopped)
- 		return;
- 
- 	enet->flags |= BNA_ENET_F_ENABLED;
-@@ -1751,12 +1751,12 @@ bna_ioceth_uninit(struct bna_ioceth *ioceth)
- void
- bna_ioceth_enable(struct bna_ioceth *ioceth)
- {
--	if (ioceth->fsm == (bfa_fsm_t)bna_ioceth_sm_ready) {
-+	if (ioceth->fsm == bna_ioceth_sm_ready) {
- 		bnad_cb_ioceth_ready(ioceth->bna->bnad);
- 		return;
- 	}
- 
--	if (ioceth->fsm == (bfa_fsm_t)bna_ioceth_sm_stopped)
-+	if (ioceth->fsm == bna_ioceth_sm_stopped)
- 		bfa_fsm_send_event(ioceth, IOCETH_E_ENABLE);
- }
- 
-diff --git a/drivers/net/ethernet/brocade/bna/bna_tx_rx.c b/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-index 2623a0da4682..c05dc7a1c4a1 100644
---- a/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-+++ b/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-@@ -1956,7 +1956,7 @@ static void
- bna_rx_stop(struct bna_rx *rx)
- {
- 	rx->rx_flags &= ~BNA_RX_F_ENET_STARTED;
--	if (rx->fsm == (bfa_fsm_t) bna_rx_sm_stopped)
-+	if (rx->fsm == bna_rx_sm_stopped)
- 		bna_rx_mod_cb_rx_stopped(&rx->bna->rx_mod, rx);
- 	else {
- 		rx->stop_cbfn = bna_rx_mod_cb_rx_stopped;
-@@ -2535,7 +2535,7 @@ bna_rx_destroy(struct bna_rx *rx)
- void
- bna_rx_enable(struct bna_rx *rx)
- {
--	if (rx->fsm != (bfa_sm_t)bna_rx_sm_stopped)
-+	if (rx->fsm != bna_rx_sm_stopped)
- 		return;
- 
- 	rx->rx_flags |= BNA_RX_F_ENABLED;
-@@ -3523,7 +3523,7 @@ bna_tx_destroy(struct bna_tx *tx)
- void
- bna_tx_enable(struct bna_tx *tx)
- {
--	if (tx->fsm != (bfa_sm_t)bna_tx_sm_stopped)
-+	if (tx->fsm != bna_tx_sm_stopped)
- 		return;
- 
- 	tx->flags |= BNA_TX_F_ENABLED;
-diff --git a/drivers/net/ethernet/brocade/bna/bna_types.h b/drivers/net/ethernet/brocade/bna/bna_types.h
-index 666b6922e24d..a5ebd7110e07 100644
---- a/drivers/net/ethernet/brocade/bna/bna_types.h
-+++ b/drivers/net/ethernet/brocade/bna/bna_types.h
-@@ -312,8 +312,10 @@ struct bna_attr {
- 
- /* IOCEth */
- 
-+enum bna_ioceth_event;
-+
- struct bna_ioceth {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_ioceth *s, enum bna_ioceth_event e);
- 	struct bfa_ioc ioc;
- 
- 	struct bna_attr attr;
-@@ -334,8 +336,10 @@ struct bna_pause_config {
- 	enum bna_status rx_pause;
- };
- 
-+enum bna_enet_event;
-+
- struct bna_enet {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_enet *s, enum bna_enet_event e);
- 	enum bna_enet_flags flags;
- 
- 	enum bna_enet_type type;
-@@ -360,8 +364,10 @@ struct bna_enet {
- 
- /* Ethport */
- 
-+enum bna_ethport_event;
-+
- struct bna_ethport {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_ethport *s, enum bna_ethport_event e);
- 	enum bna_ethport_flags flags;
- 
- 	enum bna_link_status link_status;
-@@ -454,13 +460,16 @@ struct bna_txq {
- };
- 
- /* Tx object */
-+
-+enum bna_tx_event;
-+
- struct bna_tx {
- 	/* This should be the first one */
- 	struct list_head			qe;
- 	int			rid;
- 	int			hw_id;
- 
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_tx *s, enum bna_tx_event e);
- 	enum bna_tx_flags flags;
- 
- 	enum bna_tx_type type;
-@@ -698,8 +707,11 @@ struct bna_rxp {
- };
- 
- /* RxF structure (hardware Rx Function) */
-+
-+enum bna_rxf_event;
-+
- struct bna_rxf {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_rxf *s, enum bna_rxf_event e);
- 
- 	struct bfa_msgq_cmd_entry msgq_cmd;
- 	union {
-@@ -769,13 +781,16 @@ struct bna_rxf {
- };
- 
- /* Rx object */
-+
-+enum bna_rx_event;
-+
- struct bna_rx {
- 	/* This should be the first one */
- 	struct list_head			qe;
- 	int			rid;
- 	int			hw_id;
- 
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_rx *s, enum bna_rx_event e);
- 
- 	enum bna_rx_type type;
- 
+gcc_recent_errors
+|-- alpha-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- arc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- arm-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- arm-randconfig-r032-20221108
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- arm64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- i386-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- i386-randconfig-m021-20221107
+|   |-- lib-zstd-compress-huf_compress.c-HUF_getIndex()-warn:the-RANK_POSITION_LOG_BUCKETS_BEGIN-macro-might-need-parens
+|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequence()-warn:inconsistent-indenting
+|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEnd()-warn:inconsistent-indenting
+|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEndSplitLitBuffer()-warn:inconsistent-indenting
+|   `-- lib-zstd-decompress-zstd_decompress_internal.h-ZSTD_DCtx_get_bmi2()-warn:inconsistent-indenting
+|-- loongarch-randconfig-r033-20221107
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- m68k-randconfig-s033-20221108
+|   |-- fs-ntfs3-index.c:sparse:sparse:restricted-__le32-degrades-to-integer
+|   |-- fs-ntfs3-namei.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-restricted-__le16-const-usertype-s1-got-unsigned-short
+|   `-- fs-ntfs3-namei.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-restricted-__le16-const-usertype-s2-got-unsigned-short
+|-- microblaze-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- microblaze-randconfig-c042-20221108
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- mips-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- parisc-randconfig-c032-20221108
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- powerpc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- s390-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link_dp.c:warning:implicit-conversion-from-enum-anonymous-to-enum-dc_status
+|-- sparc-allyesconfig
+clang_recent_errors
+|-- powerpc-randconfig-c003-20221107
+|   `-- drivers-net-ethernet-mellanox-mlx5-core-steering-dr_rule.c:warning:stack-frame-size-()-exceeds-limit-()-in-dr_rule_create_rule_nic
+|-- s390-randconfig-r006-20221108
+|   |-- s39-linux-ld:drivers-clk-clk-fixed-mmio.c:undefined-reference-to-iounmap
+|   `-- s39-linux-ld:drivers-clk-clk-fixed-mmio.c:undefined-reference-to-of_iomap
+`-- x86_64-randconfig-a016
+    `-- vmlinux.o:warning:objtool:handle_bug:call-to-kmsan_unpoison_entry_regs()-leaves-.noinstr.text-section
+
+elapsed time: 724m
+
+configs tested: 79
+configs skipped: 3
+
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                            allnoconfig
+x86_64                          rhel-8.3-func
+x86_64                    rhel-8.3-kselftests
+arm                                 defconfig
+x86_64                           rhel-8.3-kvm
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+powerpc                           allnoconfig
+mips                             allyesconfig
+arm                              allyesconfig
+x86_64                              defconfig
+powerpc                          allmodconfig
+arm64                            allyesconfig
+x86_64                               rhel-8.3
+sh                               allmodconfig
+x86_64                           allyesconfig
+x86_64                        randconfig-a013
+m68k                             allyesconfig
+x86_64                        randconfig-a011
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+x86_64                        randconfig-a015
+arc                  randconfig-r043-20221108
+s390                 randconfig-r044-20221108
+riscv                randconfig-r042-20221108
+i386                                defconfig
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a014
+x86_64                        randconfig-a006
+i386                          randconfig-a012
+arc                                 defconfig
+i386                          randconfig-a016
+s390                             allmodconfig
+alpha                               defconfig
+i386                          randconfig-a001
+s390                                defconfig
+i386                             allyesconfig
+i386                          randconfig-a003
+arc                    vdk_hs38_smp_defconfig
+sh                           sh2007_defconfig
+i386                          randconfig-a005
+sparc                            alldefconfig
+arm                      footbridge_defconfig
+arm                           tegra_defconfig
+s390                             allyesconfig
+arm                            xcep_defconfig
+sh                        sh7757lcr_defconfig
+sh                ecovec24-romimage_defconfig
+arm                         axm55xx_defconfig
+m68k                        m5272c3_defconfig
+mips                            ar7_defconfig
+i386                          randconfig-c001
+powerpc                        warp_defconfig
+arm                            zeus_defconfig
+sh                           se7722_defconfig
+sh                          lboxre2_defconfig
+parisc                generic-64bit_defconfig
+arm                        realview_defconfig
+m68k                           virt_defconfig
+powerpc                      ep88xc_defconfig
+
+clang tested configs:
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64                        randconfig-a001
+i386                          randconfig-a013
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a015
+i386                          randconfig-a011
+i386                          randconfig-a002
+i386                          randconfig-a004
+powerpc                    gamecube_defconfig
+i386                          randconfig-a006
+mips                     cu1000-neo_defconfig
+x86_64                          rhel-8.3-rust
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
