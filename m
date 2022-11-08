@@ -2,97 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1FE621B63
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 19:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60060621B62
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 19:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234570AbiKHSCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 13:02:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
+        id S234483AbiKHSCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 13:02:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234424AbiKHSCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 13:02:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF204298A
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 10:02:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77836B81BF8
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 18:02:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02641C433D6;
-        Tue,  8 Nov 2022 18:02:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667930529;
-        bh=glijBrP2SV5TU1bnOwOpFtgeJqILxw0gJ7tiBabxhU0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d/OnnPkQ1VLMBUoeGRnJcbp/di7QiUpXivG2AnOxQRxa8ZXO8LDqUNcsxVy7AIl0H
-         jj0Hf7x6iNuSlU95aXHfDAGwjmwJbjpKBAIXXEsdD4Up3mLRIlb5cZYPpcAR4TBmXW
-         gUsRj33yw2qnqfjNVIGffSgBOzj1HIYizkFHD316O4oZiSJkg429eAIGaTl04L5JkQ
-         cOyw9mEexJh3aEqXzWYrV+2VpXSLNKTQUO5m7CFQ6AUZ++WLhBHPhL8526gL+df9dM
-         nzS2Oo13VLwxvtx1sjy5T8O5HSWpqW7w698QXLJrz/ctJzkErfRtHaAwlXNxENh4/j
-         ZKiOqXPiLsNXA==
-Date:   Tue, 8 Nov 2022 10:02:04 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S234473AbiKHSCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 13:02:10 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE62E5654A
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 10:02:08 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id s4so9102426qtx.6
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 10:02:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=P0Vrqb0dV10ZcDKDMyGy8PmlBFfLVXxuYtbQVL//Jq0=;
+        b=5m4zQpr7pvvBisJk52ZcXiS7iceaQyBjJq4K1ZygUmcjudl74qEXu+WlE0WagbOVgh
+         le1LtiT0xTvcc1YUvxmUcvxYS4K4ocQLV01A+WtNUoqfHQE+Zno+h2XCQDT4ybc8AVl7
+         qtbvjGo2ZzO52aS+yaNu2vEKXTX+RWN7FYxC/kXa4FjNXfrlL+/F22Lixve/lqMiohRf
+         Ok5ZL8E7gpozkChiriUTC1adI38mXus30k3ykmyEM35hjnYoc6adziJdWS7S2ziqA9VM
+         WzS2te2ucIkO1aOcMzhT3MHC09x6XoPlrdBK0wPoFHpMqAUDAKK44ySyGuskRg+Nosjs
+         rETw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=P0Vrqb0dV10ZcDKDMyGy8PmlBFfLVXxuYtbQVL//Jq0=;
+        b=2bIiYIhTN9NSlEoFCav8mNplTgdHvfm0Vd2MTJrZ4uHUNvdP17QgAV10NsGquDYl1T
+         YGOq+lexYFiBlJacI/FCMIy5uwzfprx3ZZJO8UiZEEBo+RWfxkyzecYNgdDFB1j4kVkk
+         QZJVHRs8bfc8p37T1Z7ZKwuVsjXNtSC3YcM7pJ8IKQjfdiSWAsbZwC0rOmW5vwVU/TbJ
+         nn9pAIWvLc++nFRmRbjDvvzGuP+D3WBQN0Ewpjx0CZE+ZrwM9C/U61eGL9sJZcpgZDxB
+         fHU/izoduT84uJ/QvR9vI/omPEhbDgwqPH6/8feacNfHvh3to76ore2dAhsdrAOYsTd4
+         tg0w==
+X-Gm-Message-State: ACrzQf0A5lw/XnviXeFm5UcHEfEZkUtKevA1pGGoUpn4giswungXqVEq
+        2BDbdNUFa6mdOgDjdm8nLXTtTA==
+X-Google-Smtp-Source: AMsMyM5GaFAFqupNFpt/qtHCvRjyH0aRY/7ewIKqozGJ7dGEOXK2YfENy5jfOxf22H4ykdUEhaylMw==
+X-Received: by 2002:a05:622a:250e:b0:3a5:279d:efc2 with SMTP id cm14-20020a05622a250e00b003a5279defc2mr37428703qtb.551.1667930527530;
+        Tue, 08 Nov 2022 10:02:07 -0800 (PST)
+Received: from [127.0.0.1] ([190.167.198.156])
+        by smtp.gmail.com with ESMTPSA id l19-20020a05620a28d300b006ec771d8f89sm10120601qkp.112.2022.11.08.10.02.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Nov 2022 10:02:07 -0800 (PST)
+Date:   Tue, 08 Nov 2022 14:02:05 -0400
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     Petr Machata <petrm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>
-Subject: Re: [V2 net 05/11] net/mlx5: Fix possible deadlock on
- mlx5e_tx_timeout_work
-Message-ID: <Y2qZnAv0PBTb2kQ4@x130.lan>
-References: <20221105071028.578594-1-saeed@kernel.org>
- <20221105071028.578594-6-saeed@kernel.org>
- <20221107202413.7de06ad1@kernel.org>
- <9515a39b692eeaadbdc0dcf8903ad2ab9b3ca64e.camel@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
+CC:     Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        Ido Schimmel <idosch@nvidia.com>,
+        "Hans J . Schultz" <netdev@kapio-technology.com>, mlxsw@nvidia.com
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_net-next_03/15=5D_bridge=3A_switchdev=3A_?= =?US-ASCII?Q?Reflect_MAB_bridge_port_flag_to_device_drivers?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <2db3f3f1eff65e42c92a8e3a5626d64f46e68edc.1667902754.git.petrm@nvidia.com>
+References: <cover.1667902754.git.petrm@nvidia.com> <2db3f3f1eff65e42c92a8e3a5626d64f46e68edc.1667902754.git.petrm@nvidia.com>
+Message-ID: <E8F3691A-66B2-49F6-93AB-3C175CC559F1@blackwall.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <9515a39b692eeaadbdc0dcf8903ad2ab9b3ca64e.camel@redhat.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,RCVD_IN_SORBS_HTTP,
+        RCVD_IN_SORBS_SOCKS,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08 Nov 11:19, Paolo Abeni wrote:
->On Mon, 2022-11-07 at 20:24 -0800, Jakub Kicinski wrote:
->> On Sat,  5 Nov 2022 00:10:22 -0700 Saeed Mahameed wrote:
->> > +	/* Once deactivated, new tx_timeout_work won't be initiated. */
->> > +	if (current_work() != &priv->tx_timeout_work)
->> > +		cancel_work_sync(&priv->tx_timeout_work);
->>
->> The work takes rtnl_lock, are there no callers of
->> mlx5e_switch_priv_channels() that are under rtnl_lock()?
->>
->> This patch is definitely going onto my "expecting Fixes"
->> bingo card :S
+On 8 November 2022 06:47:09 GMT-04:00, Petr Machata <petrm@nvidia=2Ecom> wr=
+ote:
+>From: Ido Schimmel <idosch@nvidia=2Ecom>
 >
->I think Jakub is right and even mlx5e_close_locked() will deadlock on
->cancel_work_sync() if the work is scheduled but it has not yet acquired
->the rtnl lock.
-
-Yes you are absolutely correct, you can see the deadlock just by looking at
-the patch diff and applying common sense that mlx5e_switch_priv_channels()
-is being called under rtnl.
-
+>Reflect the 'BR_PORT_MAB' flag to device drivers so that:
 >
->IIRC lockdep is not able to catch this kind of situation, so you can
->only observe the deadlock when reaching the critical scenario.
+>* Drivers that support MAB could act upon the flag being toggled=2E
+>* Drivers that do not support MAB will prevent MAB from being enabled=2E
 >
->I'm wild guessing than a possible solution would be restrict the
->state_lock scope in mlx5e_tx_timeout_work() around the state check,
->without additional cancel_work operations.
+>Signed-off-by: Ido Schimmel <idosch@nvidia=2Ecom>
+>Reviewed-by: Petr Machata <petrm@nvidia=2Ecom>
+>Signed-off-by: Petr Machata <petrm@nvidia=2Ecom>
+>---
+>
+>Notes:
+>    v1:
+>    * New patch=2E
+>
+> net/bridge/br_switchdev=2Ec | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 >
 
-Thanks, i will drop the patch for now and send v3 without it.
+Acked-by: Nikolay Aleksandrov <razor@blackwall=2Eorg>
 
->Thanks,
->
->Paolo
->
+>diff --git a/net/bridge/br_switchdev=2Ec b/net/bridge/br_switchdev=2Ec
+>index 8a0abe35137d=2E=2E7eb6fd5bb917 100644
+>--- a/net/bridge/br_switchdev=2Ec
+>+++ b/net/bridge/br_switchdev=2Ec
+>@@ -71,7 +71,7 @@ bool nbp_switchdev_allowed_egress(const struct net_brid=
+ge_port *p,
+> }
+>=20
+> /* Flags that can be offloaded to hardware */
+>-#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
+>+#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_PORT_MAB |=
+ \
+> 				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED | \
+> 				  BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULTICAST_TO_UNICAST)
+>=20
+
