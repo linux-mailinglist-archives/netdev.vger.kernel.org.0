@@ -2,86 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FE15620A6B
-	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 08:40:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 496FE620A99
+	for <lists+netdev@lfdr.de>; Tue,  8 Nov 2022 08:45:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233655AbiKHHkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 02:40:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        id S233650AbiKHHpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 02:45:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233650AbiKHHkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 02:40:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75DDFAD6;
-        Mon,  7 Nov 2022 23:39:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A4316134B;
-        Tue,  8 Nov 2022 07:39:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8171FC433C1;
-        Tue,  8 Nov 2022 07:39:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667893164;
-        bh=bTfnB6EcwsGLzj9IXfp53wlX77b240UHcHwLQ+HQpZU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Y/DFi/DD/MSlII3DS9DdtUs52h1KXDBl3hug/F1aJrgh6RR+ouBCB5KD8u8QHXBKV
-         YSbOdDNj3IFCiHQHbcYLg+Ce/TTl/KaVNcQQjDWcxAVvPiJm7DLRveI6LbwYyXykdc
-         mu308Xxsms2jv+BFJnuLHLZIf7j9nuJDRC5vZ/9pcj6JirIeegKYxsskRIKI4ux/Cy
-         7a2Zqeqi2xyj00KwPCP5MJAgFmwrbR6z/9UDf2x2o1pkRD9jIjturKidQCQ0rcL0Mo
-         SZrTOkEZTGkvdr2MoqzZqYuw4nRde0bAX1e6htCqUAAKDLrcVR32Nm6xV5W+tw03GS
-         iojyJSrF104lA==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 02/30] wifi: Use kstrtobool() instead of strtobool()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <1ff34549af5ad6f7c80d5b9e11872b5499065fc1.1667336095.git.christophe.jaillet@wanadoo.fr>
-References: <1ff34549af5ad6f7c80d5b9e11872b5499065fc1.1667336095.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233593AbiKHHos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 02:44:48 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F75D32057;
+        Mon,  7 Nov 2022 23:44:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667893454; x=1699429454;
+  h=from:to:cc:subject:date:message-id;
+  bh=T7jYiJ8YBdJidKEszRodAoGwDG2x93waptWQVrXdBTY=;
+  b=L6BOsDxMrVcqfYzJrASN1FLimz7EjXQx6Dj52MMyP9Eh5CFyaO2G0Boh
+   z3MVbhHKDk58TbGb4MUAlRtxUt9vjhqrlAT08GaWmmgLsRHlYhnNR83k9
+   HN9WvkBeK1yVHqH2UbhbrS4cPfJr/eJshO9q1Lx9DbtKRVGeR46kFy2r4
+   DJJpoQPhQtNvu5SxjiSoc3j6Lcy9Q6fjKDRb7EPMIVFHjzLN1gV8EigHl
+   mAbx/ImTKRWxFZPE6UwUR8vUPfZpiMXpnKenHT0/JBqLsWUuZ0+j9xV3G
+   YSe95Jgr5x9rPvaX2aHEF3KUlUwZFIM7LIj78s445VjPWAQkm8KYPin94
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="311786135"
+X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
+   d="scan'208";a="311786135"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 23:44:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="811147737"
+X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
+   d="scan'208";a="811147737"
+Received: from aminuddin-ilbpg12.png.intel.com ([10.88.229.89])
+  by orsmga005.jf.intel.com with ESMTP; 07 Nov 2022 23:44:09 -0800
+From:   Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166789315924.4985.15656557899615153469.kvalo@kernel.org>
-Date:   Tue,  8 Nov 2022 07:39:21 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, tee.min.tan@intel.com,
+        muhammad.husaini.zulkifli@intel.com,
+        aminuddin.jamaluddin@intel.com, hong.aun.looi@intel.com
+Subject: [PATCH net-next v2] net: phy: marvell: add sleep time after enabling the loopback bit
+Date:   Tue,  8 Nov 2022 15:40:05 +0800
+Message-Id: <20221108074005.28229-1-aminuddin.jamaluddin@intel.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+Sleep time is added to ensure the phy to be ready after loopback
+bit was set. This to prevent the phy loopback test from failing.
 
-> strtobool() is the same as kstrtobool().
-> However, the latter is more used within the kernel.
-> 
-> In order to remove strtobool() and slightly simplify kstrtox.h, switch to
-> the other function name.
-> 
-> While at it, include the corresponding header file (<linux/kstrtox.h>)
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+V1: https://patchwork.kernel.org/project/netdevbpf/patch/20220825082238.11056-1-aminuddin.jamaluddin@intel.com/
+---
 
-Patch applied to wireless-next.git, thanks.
+Fixes: 020a45aff119 ("net: phy: marvell: add Marvell specific PHY loopback")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+Signed-off-by: Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
+---
+ drivers/net/phy/marvell.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-417f173532cc wifi: Use kstrtobool() instead of strtobool()
-
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index a3e810705ce2..860610ba4d00 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -2015,14 +2015,16 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
+ 		if (err < 0)
+ 			return err;
+ 
+-		/* FIXME: Based on trial and error test, it seem 1G need to have
+-		 * delay between soft reset and loopback enablement.
+-		 */
+-		if (phydev->speed == SPEED_1000)
+-			msleep(1000);
++		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
++				 BMCR_LOOPBACK);
+ 
+-		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+-				  BMCR_LOOPBACK);
++		if (!err) {
++			/* It takes some time for PHY device to switch
++			 * into/out-of loopback mode.
++			 */
++			msleep(1000);
++		}
++		return err;
+ 	} else {
+ 		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
+ 		if (err < 0)
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/1ff34549af5ad6f7c80d5b9e11872b5499065fc1.1667336095.git.christophe.jaillet@wanadoo.fr/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
 
