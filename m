@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90558622AC5
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:42:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6119B622AC9
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:42:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiKILlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 06:41:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
+        id S230226AbiKILmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 06:42:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbiKILlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:41:39 -0500
+        with ESMTP id S230318AbiKILlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:41:46 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8247D2E9F8;
-        Wed,  9 Nov 2022 03:41:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3ED32AE3F;
+        Wed,  9 Nov 2022 03:41:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667994095; x=1699530095;
+  t=1667994099; x=1699530099;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zg1ZOB9VAKT8wYILwCnjHS5DdA5dyjtXwq8br0fWHdo=;
-  b=rKT7aekojRocC4YtKUAryk08JT75RnMpgcIjVNipp9BHPNMR7s9TZlhx
-   VUUpDRgwy1sivVintA2oROsRjnlEZG4U/S1SRuefLuv8C+qfl8DygyLPc
-   axbuQVfEY1SDL+SIOQVV7mFCpJ+eP/7Ziy7zq3bjmX79drY+fnyjawWkX
-   +ERyNs4viYcMiw6eShyMJU4Hm0uZNZTudzTtc/CLDVhP+blsNLHlQhg6b
-   CwGZk12cWY/B7nWy+VpAs+bORQoUywjrlDadP6gytKajIXRZeuzWp2Ied
-   J49dCGuYqcLmfP5bqG8q3gGbGbr/k6gilmYa9LsKe6NE6aJnGhJbIasyC
-   w==;
+  bh=wBCOxA7WJXdt7G0lShoOFr9b7beloTsvHAdHql0j8SE=;
+  b=rPKyaZda+yGuACnW15opnLDSR8Win9bVlLbS1kPSfUikH0RzKqkevVaY
+   I1ZE3KmrIWMZAjJGw4sYwiI3viNKpxNOwSyL8+NIqJU4rxMjeNSZbUmIX
+   ZPFSQG7BksuR4Hsn/Ul3ysfbeigBpMTS6rCmp/CZz+OA4u9MM7SNQMOwb
+   Jyu2l3Us1FMx0oBgtSk6mcMIq+57evWe6XS0UWlt4LE1YYuCsiMLKJlRd
+   UaE8q+w5SMnyYRBwYnHAA9xDnbZnb6WefY1iUoYm38A0cYhmOCZ2bsMIm
+   i1/h373aGLFJPNzYRGXTs/Z0tppTNnZ16k6TOaInv4rbjyUO4ORwWVq1b
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="186099239"
+   d="scan'208";a="186099253"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Nov 2022 04:41:34 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Nov 2022 04:41:39 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 9 Nov 2022 04:41:33 -0700
+ 15.1.2507.12; Wed, 9 Nov 2022 04:41:36 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 9 Nov 2022 04:41:29 -0700
+ 15.1.2507.12 via Frontend Transport; Wed, 9 Nov 2022 04:41:33 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -55,9 +55,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         "Daniel Machon" <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v6 3/8] net: microchip: sparx5: Find VCAP lookup from chain id
-Date:   Wed, 9 Nov 2022 12:41:11 +0100
-Message-ID: <20221109114116.3612477-4-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v6 4/8] net: microchip: sparx5: Adding TC goto action and action checking
+Date:   Wed, 9 Nov 2022 12:41:12 +0100
+Message-ID: <20221109114116.3612477-5-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221109114116.3612477-1-steen.hegelund@microchip.com>
 References: <20221109114116.3612477-1-steen.hegelund@microchip.com>
@@ -73,56 +73,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a helper function that finds the lookup index in a VCAP instance from
-the chain id.
+Add support for a goto action and ensure that a HW offloaded TC flower
+filter has a valid goto action and that pass and trap actions are not both
+used in the same filter.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- drivers/net/ethernet/microchip/vcap/vcap_api.c  | 17 +++++++++++++++++
- .../ethernet/microchip/vcap/vcap_api_client.h   |  2 ++
- 2 files changed, 19 insertions(+)
+ .../microchip/sparx5/sparx5_tc_flower.c       | 70 ++++++++++++++++---
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 36 ++++++++++
+ .../ethernet/microchip/vcap/vcap_api_client.h |  2 +
+ 3 files changed, 100 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index ace2582d8552..d5b62e43d83f 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -644,6 +644,23 @@ static int vcap_write_rule(struct vcap_rule_internal *ri)
- 	return 0;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+index 13bc6bff4c1e..6cd29d3c9250 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+@@ -464,6 +464,60 @@ static int sparx5_tc_use_dissectors(struct flow_cls_offload *fco,
+ 	return err;
  }
  
-+/* Convert a chain id to a VCAP lookup index */
-+int vcap_chain_id_to_lookup(struct vcap_admin *admin, int cur_cid)
++static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
++					 struct flow_cls_offload *fco,
++					 struct vcap_admin *admin)
 +{
-+	int lookup_first = admin->vinst * admin->lookups_per_instance;
-+	int lookup_last = lookup_first + admin->lookups_per_instance;
-+	int cid_next = admin->first_cid + VCAP_CID_LOOKUP_SIZE;
-+	int cid = admin->first_cid;
-+	int lookup;
++	struct flow_rule *rule = flow_cls_offload_flow_rule(fco);
++	struct flow_action_entry *actent, *last_actent = NULL;
++	struct flow_action *act = &rule->action;
++	u64 action_mask = 0;
++	int idx;
 +
-+	for (lookup = lookup_first; lookup < lookup_last; ++lookup,
-+	     cid += VCAP_CID_LOOKUP_SIZE, cid_next += VCAP_CID_LOOKUP_SIZE)
-+		if (cur_cid >= cid && cur_cid < cid_next)
-+			return lookup;
++	if (!flow_action_has_entries(act)) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack, "No actions");
++		return -EINVAL;
++	}
++
++	if (!flow_action_basic_hw_stats_check(act, fco->common.extack))
++		return -EOPNOTSUPP;
++
++	flow_action_for_each(idx, actent, act) {
++		if (action_mask & BIT(actent->id)) {
++			NL_SET_ERR_MSG_MOD(fco->common.extack,
++					   "More actions of the same type");
++			return -EINVAL;
++		}
++		action_mask |= BIT(actent->id);
++		last_actent = actent; /* Save last action for later check */
++	}
++
++	/* Check that last action is a goto */
++	if (last_actent->id != FLOW_ACTION_GOTO) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Last action must be 'goto'");
++		return -EINVAL;
++	}
++
++	/* Check if the goto chain is in the next lookup */
++	if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
++				 last_actent->chain_index)) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Invalid goto chain");
++		return -EINVAL;
++	}
++
++	/* Catch unsupported combinations of actions */
++	if (action_mask & BIT(FLOW_ACTION_TRAP) &&
++	    action_mask & BIT(FLOW_ACTION_ACCEPT)) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Cannot combine pass and trap action");
++		return -EOPNOTSUPP;
++	}
++
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(vcap_chain_id_to_lookup);
 +
- /* Lookup a vcap instance using chain id */
- struct vcap_admin *vcap_find_admin(struct vcap_control *vctrl, int cid)
+ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 				    struct flow_cls_offload *fco,
+ 				    struct vcap_admin *admin)
+@@ -475,16 +529,12 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 	struct vcap_rule *vrule;
+ 	int err, idx;
+ 
+-	frule = flow_cls_offload_flow_rule(fco);
+-	if (!flow_action_has_entries(&frule->action)) {
+-		NL_SET_ERR_MSG_MOD(fco->common.extack, "No actions");
+-		return -EINVAL;
+-	}
++	vctrl = port->sparx5->vcap_ctrl;
+ 
+-	if (!flow_action_basic_hw_stats_check(&frule->action, fco->common.extack))
+-		return -EOPNOTSUPP;
++	err = sparx5_tc_flower_action_check(vctrl, fco, admin);
++	if (err)
++		return err;
+ 
+-	vctrl = port->sparx5->vcap_ctrl;
+ 	vrule = vcap_alloc_rule(vctrl, ndev, fco->common.chain_index, VCAP_USER_TC,
+ 				fco->common.prio, 0);
+ 	if (IS_ERR(vrule))
+@@ -492,6 +542,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 
+ 	vrule->cookie = fco->cookie;
+ 	sparx5_tc_use_dissectors(fco, admin, vrule);
++	frule = flow_cls_offload_flow_rule(fco);
+ 	flow_action_for_each(idx, act, &frule->action) {
+ 		switch (act->id) {
+ 		case FLOW_ACTION_TRAP:
+@@ -521,6 +572,9 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 			if (err)
+ 				goto out;
+ 			break;
++		case FLOW_ACTION_GOTO:
++			/* Links between VCAPs will be added later */
++			break;
+ 		default:
+ 			NL_SET_ERR_MSG_MOD(fco->common.extack,
+ 					   "Unsupported TC action");
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index d5b62e43d83f..0dd9637933b2 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -677,6 +677,42 @@ struct vcap_admin *vcap_find_admin(struct vcap_control *vctrl, int cid)
+ }
+ EXPORT_SYMBOL_GPL(vcap_find_admin);
+ 
++/* Is the next chain id in the following lookup, possible in another VCAP */
++bool vcap_is_next_lookup(struct vcap_control *vctrl, int cur_cid, int next_cid)
++{
++	struct vcap_admin *admin, *next_admin;
++	int lookup, next_lookup;
++
++	/* The offset must be at least one lookup */
++	if (next_cid < cur_cid + VCAP_CID_LOOKUP_SIZE)
++		return false;
++
++	if (vcap_api_check(vctrl))
++		return false;
++
++	admin = vcap_find_admin(vctrl, cur_cid);
++	if (!admin)
++		return false;
++
++	/* If no VCAP contains the next chain, the next chain must be beyond
++	 * the last chain in the current VCAP
++	 */
++	next_admin = vcap_find_admin(vctrl, next_cid);
++	if (!next_admin)
++		return next_cid > admin->last_cid;
++
++	lookup = vcap_chain_id_to_lookup(admin, cur_cid);
++	next_lookup = vcap_chain_id_to_lookup(next_admin, next_cid);
++
++	/* Next lookup must be the following lookup */
++	if (admin == next_admin || admin->vtype == next_admin->vtype)
++		return next_lookup == lookup + 1;
++
++	/* Must be the first lookup in the next VCAP instance */
++	return next_lookup == 0;
++}
++EXPORT_SYMBOL_GPL(vcap_is_next_lookup);
++
+ /* Check if there is room for a new rule */
+ static int vcap_rule_space(struct vcap_admin *admin, int size)
  {
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-index 577395402a9a..7d9a227ef834 100644
+index 7d9a227ef834..5cecb12edec2 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-@@ -184,6 +184,8 @@ int vcap_rule_add_action_u32(struct vcap_rule *rule,
- 			     enum vcap_action_field action, u32 value);
+@@ -193,6 +193,8 @@ const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
+ 					      enum vcap_key_field key);
+ /* Find a rule id with a provided cookie */
+ int vcap_lookup_rule_by_cookie(struct vcap_control *vctrl, u64 cookie);
++/* Is the next chain id in the following lookup, possible in another VCAP */
++bool vcap_is_next_lookup(struct vcap_control *vctrl, int cur_cid, int next_cid);
  
- /* VCAP lookup operations */
-+/* Convert a chain id to a VCAP lookup index */
-+int vcap_chain_id_to_lookup(struct vcap_admin *admin, int cur_cid);
- /* Lookup a vcap instance using chain id */
- struct vcap_admin *vcap_find_admin(struct vcap_control *vctrl, int cid);
- /* Find information on a key field in a rule */
+ /* Copy to host byte order */
+ void vcap_netbytes_copy(u8 *dst, u8 *src, int count);
 -- 
 2.38.1
 
