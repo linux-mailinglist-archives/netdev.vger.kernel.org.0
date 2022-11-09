@@ -2,44 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB45622C5F
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 14:30:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 946CF622D0D
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 15:00:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbiKIN36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 08:29:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        id S230129AbiKIOAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 09:00:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiKIN36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 08:29:58 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69601D641
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 05:29:56 -0800 (PST)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N6m314JdMzJnVS;
-        Wed,  9 Nov 2022 21:26:53 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 9 Nov 2022 21:29:55 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 9 Nov
- 2022 21:29:54 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <isdn@linux-pingi.de>, <davem@davemloft.net>
-Subject: [PATCH net] mISDN: fix possible memory leak in mISDN_dsp_element_register()
-Date:   Wed, 9 Nov 2022 21:28:32 +0800
-Message-ID: <20221109132832.3270119-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230143AbiKIOAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 09:00:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D339655A;
+        Wed,  9 Nov 2022 06:00:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7297561ADE;
+        Wed,  9 Nov 2022 14:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C40A3C433D7;
+        Wed,  9 Nov 2022 14:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668002415;
+        bh=erS5kY4vTEVms0VEBKv5IC3Caijsud/hgU5fAzX+jso=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lHTMZA9lKYvl5BKzkSeYjaEsxAPjntFP+f91FXlzu193PQyHUlzbDuMRQi7MwEgIl
+         OjwkIJOSZ7M9bNPW0nGlj3CFbUrWgjn3b7hgJiiWF6qoTKEeDQzRxgcZMz29i0RfWj
+         pAxG3leaakvt6kWyTHLY5DBS08YvY3Sv16fBaUCFN14m5MK6EGeMwuN5JcgDG7nqlt
+         oNMxYnUUUFyUnhRbJW2UAFPg7OSa9QXzqOE81ZddCIMPkGu9LL4frQm+KTRAIL92aH
+         VaWUUZ26OG11sv8cbrO14PyXKMTNOE3imaJAY7/d8hPBdN7mm5BMeGuMC24NtnXv/v
+         4XLKxQMrD1hLg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA6A4C395F7;
+        Wed,  9 Nov 2022 14:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3] net/core: Allow live renaming when an interface
+ is up
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166800241569.22395.12507776446911406225.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Nov 2022 14:00:15 +0000
+References: <20221107174242.1947286-1-andy.ren@getcruise.com>
+In-Reply-To: <20221107174242.1947286-1-andy.ren@getcruise.com>
+To:     Andy Ren <andy.ren@getcruise.com>
+Cc:     netdev@vger.kernel.org, richardbgobert@gmail.com,
+        davem@davemloft.net, wsa+renesas@sang-engineering.com,
+        edumazet@google.com, petrm@nvidia.com, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, andrew@lunn.ch,
+        dsahern@gmail.com, sthemmin@microsoft.com, idosch@idosch.org,
+        sridhar.samudrala@intel.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, roman.gushchin@linux.dev
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,42 +61,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Afer commit 1fa5ae857bb1 ("driver core: get rid of struct device's
-bus_id string array"), the name of device is allocated dynamically,
-use put_device() to give up the reference, so that the name can be
-freed in kobject_cleanup() when the refcount is 0.
+Hello:
 
-The 'entry' is going to be freed in mISDN_dsp_dev_release(), so the
-kfree() is removed. list_del() is called in mISDN_dsp_dev_release(),
-so it need be intialized.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Fixes: 1fa5ae857bb1 ("driver core: get rid of struct device's bus_id string array")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/isdn/mISDN/dsp_pipeline.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On Mon,  7 Nov 2022 09:42:42 -0800 you wrote:
+> Allow a network interface to be renamed when the interface
+> is up.
+> 
+> As described in the netconsole documentation [1], when netconsole is
+> used as a built-in, it will bring up the specified interface as soon as
+> possible. As a result, user space will not be able to rename the
+> interface since the kernel disallows renaming of interfaces that are
+> administratively up unless the 'IFF_LIVE_RENAME_OK' private flag was set
+> by the kernel.
+> 
+> [...]
 
-diff --git a/drivers/isdn/mISDN/dsp_pipeline.c b/drivers/isdn/mISDN/dsp_pipeline.c
-index c3b2c99b5cd5..cfbcd9e973c2 100644
---- a/drivers/isdn/mISDN/dsp_pipeline.c
-+++ b/drivers/isdn/mISDN/dsp_pipeline.c
-@@ -77,6 +77,7 @@ int mISDN_dsp_element_register(struct mISDN_dsp_element *elem)
- 	if (!entry)
- 		return -ENOMEM;
- 
-+	INIT_LIST_HEAD(&entry->list);
- 	entry->elem = elem;
- 
- 	entry->dev.class = elements_class;
-@@ -107,7 +108,7 @@ int mISDN_dsp_element_register(struct mISDN_dsp_element *elem)
- 	device_unregister(&entry->dev);
- 	return ret;
- err1:
--	kfree(entry);
-+	put_device(&entry->dev);
- 	return ret;
- }
- EXPORT_SYMBOL(mISDN_dsp_element_register);
+Here is the summary with links:
+  - [net-next,v3] net/core: Allow live renaming when an interface is up
+    https://git.kernel.org/netdev/net-next/c/bd039b5ea2a9
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
