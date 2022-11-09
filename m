@@ -2,146 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAFC66236CA
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:48:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 237316236D4
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:55:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbiKIWsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 17:48:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
+        id S231523AbiKIWzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 17:55:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiKIWsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:48:41 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4A427DCA
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 14:48:20 -0800 (PST)
+        with ESMTP id S231283AbiKIWzO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:55:14 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150053.outbound.protection.outlook.com [40.107.15.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69171D335;
+        Wed,  9 Nov 2022 14:55:13 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dyQ1mMM1+uQgo8SJpxa2JoR9V2o0hR5YQmdfjPXbjbzeJMg9mPqPxpkefjd7FQbUCIV5JT+q2PoXyPkZlg/9c0yP0o4izmRMnJtJyXl+pRn8rpA/m+s+glUHlAugnA3lPCMbYipL2w3lAaCR0XLD5D4TWqlvgTiBAHRDRNA8WhHV42vZWD7bcCKBRAzs5lKDyx/mbVgK8532RapceYy6OVvt9pnAJIkx8eJ38yQc2tRHZ3h+bTLpHdUfzhnGeGw3/F77RTfB6GNuceMF4pSgTtEN7sI/X9gbliRNprx7NAt9Me+t+ipup4zUg5hbgdDJFiHhOBGPVUYDayidTtZUlw==
+ b=UDrlRaOz5NmDZ+x1G9O6CNdfzBINumifHNJ7dqjsSKeLo5PSMDOsGj15aoat6pKstXCDZxlqtkO5btxEH9wNX9UTS3ggZ+PUHUhKv4s+Heqz3qk9iIpYNC5b3GI3JIqy6D1OkLrz36mV1LgPLbwcpWERwxQGEiqIT2OFQt43VA+I/7W7o2f7D7enRNYzekbwin5fnsA6o27byA8Q1VOr1UmuYx5ZkSwc9m8EeZQEL9o6YFV9f3tn+QZjvLMHHsMIJrWhfw1gJxBy9aZS/dMwxOVQi7gYWkieAB+Wyry24RxcqGiw3bJexEQICMwxupKM/Rxb9aJJ6q9VuRAZgAQmiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eFugRgnHV14ITZ/bRjiCAdWrvxblE8kROFDtD3SQkYs=;
- b=jRAkpy3GAt2g56lWSuPQDFimIqE8lSr7NlLBGmJjmnHm5CJit29WS0lq1w+dRbEa+e9uhDM8E3yCbF8jx9IWvHdmevTJ0QKylKVreCMqcCVcjUuEl6NmrJL3jwUr57jpOoH1o7JHbc1iB8qEUycF5DUa9GuGd73ktr1eItfr9wQO96j7T9oR7W/C8IFbORdzPb6iaRJjwoXX8tAnF00MuoELlEyV4Qcxsyzw6g0kDr98zMOIvGPOHHEhxJEQsSefzJuGwijUSTI6rBol87mWfXSOpSELjBXVa5x+6CgWSwEKZBKOjQ7jlPeEqCaNWZsZ53zavWhZIUF4JPdqt0FNWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=6EwhJs81x5WwtMtZqUgHRG8U9C82OTOl+h5OZ065Gng=;
+ b=DYgofbm4l3pZW31j5U8xNR3P4FR/yrymhKnJYyMQGEZkBGTdVuTE37oo1lwpHNdsOHMlxy1GbK9rzkBjJAaZCqCNrSYHYrtq10k8IJwcev4a/RSvDLMksPEqw8PuYkZXSslKzLyXFCNyVXQngI449sVzhipKykBagZuieEpkHg/cmbC3lYmK5MWk65J1pnKLLx1xbqqpZapkrQl6UnVR7xJC46vHpu7NlShe45s3AMXlvEmyngtR6lNlK8kOTT6te5VHTVA7/65ZolMqQabBN4hOjfaSegfzhd5N0j2l3635J7/hvdwvdZ/f6zRPb8P0l92ZVk0eRUahgHoUINqkZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eFugRgnHV14ITZ/bRjiCAdWrvxblE8kROFDtD3SQkYs=;
- b=TfKYE06jilsi+H5Mlgr9/i4gEZ+3SPb5eLY7UcQ7sHN2Zg5Zht3smWi26THsP9dBf6S7mr5Y4zpfaRWCCIqd0L2+9AxMlKfLkv/6560VTaDdj7Qzn2goXFWnFREHpCt/SPI9ww0gMVsv7UqLCq5A3yWSui6155lOnZ2bDt2YSfyWv2YglWt2H7e0HHDcWr292nOSSSK/nnEftfgaEYaQ+ZbclDbIOCPTRYN++9dKA/hXL/ny3EWAnpTN/IQzUxk0RDqzJ1QDA8a0LMSpPX9dCmYQU5FGr3MIA37OPB+KvHSyAsp/2ksnXV7K575wqcSRKAX4AvrZEaDpNeEnARgeXw==
-Received: from DM6PR11CA0057.namprd11.prod.outlook.com (2603:10b6:5:14c::34)
- by CY8PR12MB7684.namprd12.prod.outlook.com (2603:10b6:930:87::16) with
+ bh=6EwhJs81x5WwtMtZqUgHRG8U9C82OTOl+h5OZ065Gng=;
+ b=HD4Jao/c48I296XLBvJlCUbpQ0V3q3pJCyGCLn/tAZdSq6v092LlOEOfoUxbuadR2cQW88SHrsQRa4R4FyBeFVEFU7hOPnzfnDUM+xmA48noaJHEQCJtVSFf966rhgZaUmDUI+qo+q9gdrXdmTr/0N82TalLTNyjfN7W9cXBpUg=
+Received: from AM9PR04MB8506.eurprd04.prod.outlook.com (2603:10a6:20b:431::16)
+ by PAXPR04MB9518.eurprd04.prod.outlook.com (2603:10a6:102:22d::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27; Wed, 9 Nov
- 2022 22:48:19 +0000
-Received: from DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:14c:cafe::e7) by DM6PR11CA0057.outlook.office365.com
- (2603:10b6:5:14c::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27 via Frontend
- Transport; Wed, 9 Nov 2022 22:48:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DM6NAM11FT062.mail.protection.outlook.com (10.13.173.40) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5813.12 via Frontend Transport; Wed, 9 Nov 2022 22:48:18 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 9 Nov 2022
- 14:48:08 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Wed, 9 Nov 2022 14:48:08 -0800
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.36 via Frontend
- Transport; Wed, 9 Nov 2022 14:48:06 -0800
-From:   David Thompson <davthompson@nvidia.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <cai.huoqing@linux.dev>, <brgl@bgdev.pl>,
-        <limings@nvidia.com>, <chenhao288@hisilicon.com>,
-        <huangguangbin2@huawei.com>,
-        David Thompson <davthompson@nvidia.com>,
-        "Asmaa Mnebhi" <asmaa@nvidia.com>
-Subject: [PATCH net-next v2 4/4] mlxbf_gige: add "set_link_ksettings" ethtool callback
-Date:   Wed, 9 Nov 2022 17:47:52 -0500
-Message-ID: <20221109224752.17664-5-davthompson@nvidia.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20221109224752.17664-1-davthompson@nvidia.com>
-References: <20221109224752.17664-1-davthompson@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.24; Wed, 9 Nov
+ 2022 22:55:11 +0000
+Received: from AM9PR04MB8506.eurprd04.prod.outlook.com
+ ([fe80::5ff6:2440:a56:6b45]) by AM9PR04MB8506.eurprd04.prod.outlook.com
+ ([fe80::5ff6:2440:a56:6b45%5]) with mapi id 15.20.5791.027; Wed, 9 Nov 2022
+ 22:55:11 +0000
+From:   Jan Petrous <jan.petrous@nxp.com>
+To:     Chester Lin <clin@suse.com>, Andrew Lunn <andrew@lunn.ch>
+CC:     =?iso-8859-1?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-S32 <S32@nxp.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Matthias Brugger <mbrugger@suse.com>
+Subject: RE: [EXT] Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC
+ dwmac glue driver
+Thread-Topic: [EXT] Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC
+ dwmac glue driver
+Thread-Index: AQHY7tOAA/zZjStEYkyi6JcYkhk32q4r3zqAgAHj5ACAAON+gIAIlgXQ
+Date:   Wed, 9 Nov 2022 22:55:11 +0000
+Message-ID: <AM9PR04MB85066636DE2D99C8F2A9F4CDE23E9@AM9PR04MB8506.eurprd04.prod.outlook.com>
+References: <20221031101052.14956-1-clin@suse.com>
+ <20221031101052.14956-3-clin@suse.com>
+ <20221102155515.GA3959603-robh@kernel.org>
+ <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de> <Y2Q7KtYkvpRz76tn@lunn.ch>
+ <Y2T5/w8CvZH5ZlE2@linux-8mug>
+In-Reply-To: <Y2T5/w8CvZH5ZlE2@linux-8mug>
+Accept-Language: cs-CZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM9PR04MB8506:EE_|PAXPR04MB9518:EE_
+x-ms-office365-filtering-correlation-id: c53369fe-0881-4637-008e-08dac2a574fe
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KOjCUU5NR5HBBlY1EaeTEDwI6RZSfzRixLhuO2dwZO4G/aLI10at0ekXKBXaDr6KeTsLKIrSJpYKvHVJUHc3NKE3eqZlbGSsc+JrIKVh30lHmJiHRA5QqTyMIYbh55ZSIDaHKawL5hvb3odvhhvCdt6xq/zYSPhwMLL+u72OH21zFwqOxTCJP5dNJuQc7A2QkFkCohVssqFrbwIRsLW7K6bfx9xShQWHXZzBNLfHFk/MRjPPPtHY4/IlbIsK8wAALU1AzzU5xSr7vSn1OtIlWEZXO0PGBisO3PByQwrl62e2OGq5xVwG0wEsjNUWG7t2SPhgyx2CeSnfawB87FIinWHXWAGGtOfrSS3VcrxwH+opdmtKVzgq4KrJiTDC0EMM0eWEjINRP0eHTauFmhJU8UmdAWlM+AoT3JlSDBxkiMwOnFQkFD3K3urIryaQ/IBkOhd97XQkqASomR8EYREPUtpE6/A1AesAxlwF0Xzpycy9sDLBk1JCy9Hk/q4NYPJe9URWA87p7z3SgtLACTFIvSOoyhIs+IvFFnA80RVi4bzZ6Qx5zudtvCi+KKszeFYT49TpTRhhRNSI3KwFJD8X1D2faMJwV2G7TmWyGG43z3zyeUKf0G+BNFgxEuJRRzoI8EQ+aXzyCBvyONCZ7K9dYEN28pd1VjxwvxASIoOdw2bBFoyHJbNDuD6VTbYsAVYZRXGWE3pb9uI5zmLwisR+/KbBvTflY0iLIPFbkzDDjbx3aK34pc1N1RvzKn4hMatD6IidNITmlrWCew3/ebNgrg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8506.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(396003)(376002)(346002)(136003)(451199015)(71200400001)(76116006)(478600001)(316002)(7696005)(8936002)(2906002)(41300700001)(54906003)(86362001)(186003)(26005)(33656002)(6506007)(38100700002)(110136005)(9686003)(38070700005)(8676002)(83380400001)(55016003)(4326008)(7416002)(5660300002)(66446008)(66556008)(64756008)(44832011)(66946007)(122000001)(52536014)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?sBP9qXOIvcoJSinozj/YUUN2oNOd+M+ckuY6/62WPivh3/65bP6JfO5dme?=
+ =?iso-8859-1?Q?Z/f2FBeCzUEiJ0rvvhAA8Eh0S5h5gM5cFiGF22aPPIYCh18wvg2naFk7G5?=
+ =?iso-8859-1?Q?Zr+kA476xxkNbiYeg/eWJOznjwgMPQXt4vdurwBDMo77PB2D/Jy46kac7h?=
+ =?iso-8859-1?Q?In0Cr4Rn6Dz44B+7vY3O6ZIfjf0e9ljcZMEPuRkBypBoqH5J2MRYTOgtOG?=
+ =?iso-8859-1?Q?ff/gbSSh+yqR2k/T2PnS5Cl7Pci8VWk06IOHXJMttoxqfoIUz6M+7S0Z3Z?=
+ =?iso-8859-1?Q?g79BTOArpNUIGAyrS6Iy9sVmIyTWC9UVQ+C3cKn4UYmAmM47MFcDcTSJnp?=
+ =?iso-8859-1?Q?0UN1vdXQUyVz0w0tb93DL0GRAo47M7v06PtaFxwWmnpERR4qe6d3PyCvBz?=
+ =?iso-8859-1?Q?j6KS3zyWm3poVBabMgO3oowxzv/I3GJuS/A7gFNLngt/mAjdDcLK15v8wF?=
+ =?iso-8859-1?Q?cE9ZvMcDWddTkKVIgWVZCA+5XD7vyuQ6EiD9EFY4meZolMlqfodTsxQGzq?=
+ =?iso-8859-1?Q?q1KY8axEzHFLidZb/1kWG3twzzHDFChF8UvtUs0+VXlBAbFqkImHUE9wdz?=
+ =?iso-8859-1?Q?9q45ddhwFSz0FcgNcQmz1WL+UvJToBNEZiZRzdKdT8KNNhmqAClw8J87vt?=
+ =?iso-8859-1?Q?5CrGeXKiLumyVVqaDfbSbpL0rhLZyr8zzZXfz3TRi5MZyKL1B20/1TG4Oq?=
+ =?iso-8859-1?Q?2rTJ0Xf7SUUWMMRTRGuMLvC0SAXSUGXVz8OCjdrOXgAkNfdW7uac85fkVj?=
+ =?iso-8859-1?Q?FO6HvkmptC9QrkoNS3VaTuJUgoamxbKtJ2cQLejBJWbl8rdUARARSiV1vn?=
+ =?iso-8859-1?Q?UNerDkZ/3KtfwLPPYEzRFcFHoKGHIh5/eL67+TNjr0qdtYGMgDHEOdywKY?=
+ =?iso-8859-1?Q?IEqz6DbGGhetkxyWgwEcx+nENMiIxF4xJny6oewROePXC5wVlIGNciz8JY?=
+ =?iso-8859-1?Q?R93F0k6qpUCQUEYehXaNwjr3PZV43zQ2qVK0I2+myd0xuJV0xMWNXmYrdU?=
+ =?iso-8859-1?Q?8Hj1qfnj/kelILlfVw6AHHierjI2PVXW3l6PCaq7zeGX6J+MYNeB0Owf07?=
+ =?iso-8859-1?Q?BrbCHqRp/med9zFcNXRZmK2AG4RrMuLpNGuAmg0+pEiBlQgUD4d09QXwNK?=
+ =?iso-8859-1?Q?949YJGqHNMc+DRKUb96EOV5LIZCjwdxbOHnHPJ43bgR30EhFBCfSsMCaSq?=
+ =?iso-8859-1?Q?H0d8BPjx9HNKciNLUr7gVQbwdQJoT/Cqpc83a+IQcR7E8tUX8d5/+6Vpkj?=
+ =?iso-8859-1?Q?t4rcOxrQNIQgqPFmfiy+NV3u0NkCF9+g6qCLVg2p8eM8lMwryZD5vfe3Ca?=
+ =?iso-8859-1?Q?lzFWF3LNzIKTrMvIFKr3ETkUc6BmBjfQ8EAxhfYonga7mqZ4/oeqdXfq04?=
+ =?iso-8859-1?Q?Gsr7uVSuU43rb9sfkcGVh3ZL/R1G92n/ObLn/k8BtQkkotDmulvgivH+is?=
+ =?iso-8859-1?Q?c+yZDorUC6BFzJ9sSfbmEp3uJlW3iUO/N91oN4rFyypyd7WgayXiundoso?=
+ =?iso-8859-1?Q?IkrhHDIs7apPZO+2C0vln3xtgAFIEx5fTqbQ2aRRm6zgQtffgMkuQBMkZy?=
+ =?iso-8859-1?Q?tGrqZ5nh93mtIaM3GMrSSq3frqoYxQPppjZCJXJNN3dTBWf2qP7hEztNpC?=
+ =?iso-8859-1?Q?OrrRWW7l5D5My2os0osAjcwY+QOscGg7Ub?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT062:EE_|CY8PR12MB7684:EE_
-X-MS-Office365-Filtering-Correlation-Id: 85a8ff16-aa9d-44dc-f5e1-08dac2a47eff
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 41d7xFeb/27LJCs5ddNpci3Usa6wkE1ZiPhn0Kx5Q6HRSKiPJ4PzP1YIkfNZwqWwofqaACRZ0NwhuoH1qtqA0Sy0o72X+YgLYX+jbqCvZ4skEPA/v+nvSyOXoipPIjmgQ6T2i19FTsIYr87IL1DoZx4PUxeaZt8EFEVBXyRos38GuIKHkYDJUQjajH38N7m3sELdiUjAQV48V/F+jvj3vbrW1vQZv1gttSTXQ9AfzlSF04LfQc4dVCxOe8r7zND8rDDTnIFJwRPKXalfsGlG8VRlSxGzHIkLoUiX2xBS3t3CkMGSD2gYBlG1ogsPq5pzA8NxC0UGut18ezV/o3LajK5UKlWEYPqLcmQUx2LN8IylAgy7ozOHCAnwF+XWm6njCMrrGPcIvxrsJX7ZgQbQ5ZoMcnp3+zbh5Q7dtbu0E9imVKB07KjAFwrFzxBOx3myJNagAkFfWMv/nErtSSkCTOQg5MVdjNuJxpPfD21aFFcdtGa7opcTPEwLEf7TIzY05Mt310um8G49DME7WX/b6PobM7tOLCO23rgEoLlwGYXlBT6YZ8PxdMmJgt1v/dExNNa5/s5dx2Azg6OHjTGbJwyZVRCs93fU3F1o9xUMXcojwyA5B78xwi4ctdSqgkY6c4/eVzIxCZFF3KCbezIuILHhs3/53o87VepXCbSV9SiXQTbo/nYBCbCMdbmZOt+XqncHd6Q0hUNq2Jxm5g8U+rPYZC7aBK3s52/fxxc57DUmK+K2s8n+DmprAOtDkhL26lIMDac6vyv1sYAUJRw0eA==
-X-Forefront-Antispam-Report: CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(136003)(376002)(39860400002)(451199015)(46966006)(40470700004)(36840700001)(478600001)(82740400003)(82310400005)(356005)(7636003)(316002)(26005)(6666004)(110136005)(54906003)(36860700001)(107886003)(70206006)(47076005)(70586007)(40480700001)(426003)(8676002)(7696005)(83380400001)(4326008)(36756003)(8936002)(5660300002)(336012)(41300700001)(2616005)(1076003)(86362001)(2906002)(186003)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2022 22:48:18.5913
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8506.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c53369fe-0881-4637-008e-08dac2a574fe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2022 22:55:11.4073
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85a8ff16-aa9d-44dc-f5e1-08dac2a47eff
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7684
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: m/jsQr8jTxHaVgJA3nCa4kPGu37uUmDgkoDClNCy0vZKTOhDuKmqC6KKtvLBbMY/vKMTCYP5lRoLodM66tR97w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9518
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends the "ethtool_ops" data structure to
-include the "set_link_ksettings" callback. This change
-enables configuration of the various interface speeds
-that the BlueField-3 supports (10Mbps, 100Mbps, and 1Gbps).
+Hi Chester,
+=20
+> Hi Andrew and Andreas,
+>=20
+> On Thu, Nov 03, 2022 at 11:05:30PM +0100, Andrew Lunn wrote:
+> > > > > +      - description: Main GMAC clock
+> > > > > +      - description: Peripheral registers clock
+> > > > > +      - description: Transmit SGMII clock
+> > > > > +      - description: Transmit RGMII clock
+> > > > > +      - description: Transmit RMII clock
+> > > > > +      - description: Transmit MII clock
+> > > > > +      - description: Receive SGMII clock
+> > > > > +      - description: Receive RGMII clock
+> > > > > +      - description: Receive RMII clock
+> > > > > +      - description: Receive MII clock
+> > > > > +      - description:
+> > > > > +          PTP reference clock. This clock is used for programmin=
+g the
+> > > > > +          Timestamp Addend Register. If not passed then the syst=
+em
+> > > > > +          clock will be used.
+> >
+> > > Not clear to me has been whether the PHY mode can be switched at
+> runtime
+> > > (like DPAA2 on Layerscape allows for SFPs) or whether this is fixed b=
+y
+> board
+> > > design.
+> >
+> > Does the hardware support 1000BaseX? Often the hardware implementing
+> > SGMII can also do 1000BaseX, since SGMII is an extended/hacked up
+> > 1000BaseX.
+> >
+> > If you have an SFP connected to the SERDES, a fibre module will want
+> > 1000BaseX and a copper module will want SGMII. phylink will tell you
+> > what phy-mode you need to use depending on what module is in the
+> > socket. This however might be a mute point, since both of these are
+> > probably using the SGMII clocks.
+> >
+> > Of the other MII modes listed, it is very unlikely a runtime swap will
+> > occur.
+> >
+> >       Andrew
+>=20
+> Here I just focus on GMAC since there are other LAN interfaces that S32
+> family
+> uses [e.g. PFE]. According to the public GMACSUBSYS ref manual rev2[1]
+> provided
+> on NXP website, theoretically GMAC can run SGMII in 1000Mbps and
+> 2500Mbps so I
+> assume that supporting 1000BASE-X could be achievable. I'm not sure if an=
+y
+> S32
+> board variant might have SFP ports but RJ-45 [1000BASE-T] should be the
+> major
+> type used on S32G-EVB and S32G-RDB2.
+>=20
+> @NXP, please feel free to correct me if anything wrong.
+>=20
 
-Signed-off-by: David Thompson <davthompson@nvidia.com>
-Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c | 1 +
- drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c    | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+NXP eval boards (EVB or RDB) have also 2.5G PHYs, so together with SerDes
+driver we support 100M/1G/2.5G on such copper PHYs.=20
 
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
-index 41ebef25a930..253d7ad9b809 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
-@@ -135,4 +135,5 @@ const struct ethtool_ops mlxbf_gige_ethtool_ops = {
- 	.nway_reset		= phy_ethtool_nway_reset,
- 	.get_pauseparam		= mlxbf_gige_get_pauseparam,
- 	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
-+	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-index 80060a54ba95..a9fa662e0665 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-@@ -224,7 +224,7 @@ static int mlxbf_gige_stop(struct net_device *netdev)
- }
- 
- static int mlxbf_gige_eth_ioctl(struct net_device *netdev,
--			       struct ifreq *ifr, int cmd)
-+				struct ifreq *ifr, int cmd)
- {
- 	if (!(netif_running(netdev)))
- 		return -EINVAL;
--- 
-2.30.1
+/Jan
+
+--
+NXP Czechia, AP Ethernet
 
