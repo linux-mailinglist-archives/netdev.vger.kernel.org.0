@@ -2,152 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 284646234D2
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 21:45:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E26616234BD
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 21:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiKIUpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 15:45:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
+        id S231445AbiKIUlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 15:41:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbiKIUp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 15:45:28 -0500
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF6F14D14
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 12:45:27 -0800 (PST)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-3704852322fso173347407b3.8
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 12:45:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1WoLfUvABMA5gQmhvjTHVmxZYF7fwxBFUqJdE3n/PyI=;
-        b=AOa2y5YfD4bm6+3azyeWOsxVP1M3UNk20oh029yoOZanCarxK/3gs8ZcnmtH2J6MXo
-         fAzX9ixXn6oh70BLctM/+DZIv4c4Yi1kPXrxevYRPGXjoKAEm8FUqq/kuJWfV94XpnRg
-         E3+Cme0ZX2a4C1IJWlNr8bbqXfta/+l7w3vn2uI7DWQxCSFWPql6gYuSmUyjNY7txYt/
-         Mb4PDPqZ+kSJyR7PlaRwCrwSmOFAMt64ehKc3XTNOnCLnjbaT9O0eBfMmi2mwLDHLLqg
-         Y1B/Jqeq7p5XCUI9qHhus9P1rY196EObDRK4cd2EDftjy663mTMJ1EsO1+2qAYOxc9zK
-         UsuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1WoLfUvABMA5gQmhvjTHVmxZYF7fwxBFUqJdE3n/PyI=;
-        b=ioeRQbwkKlZ4IMJxuwqykeS/TAUNdW5xRbsvLI0MTF/XZgqX6ruexpgUpBncbnVFDK
-         ejKcBZfllzZUJxxwaH8wK03w6+iYNxxaOybWTdwPVZu1ZObf3Nu+evAkTAlVbTzsYGjw
-         muj55JR9hixClcSw7PimSt3TgiBkL9G9NtVvRTc8CWodGyMPKg2xud4n0ccZzOX2HWNo
-         /WHhdNacBuFbl5jg5xv483sNQK13sjs1UGYKULTxNQgPdWfbXiBkxyKiNKVtmfGZ2fgx
-         pc8VYpgBVGyEAtiSVGpICvODMUhBwcfOjfc8s4umJoGxDV10LyxsSPHZRweHC41CxEbr
-         UpaA==
-X-Gm-Message-State: ACrzQf0U8TvvSbx73PHdSQIGBqbmn4QP5v97nGHQk7cG2zUT3X/0thXL
-        n89ryqzOReY6LqTMZ5iiKUtg2dMJsn0zVnYNnxeJzQ==
-X-Google-Smtp-Source: AMsMyM7NqVIZdvtDphFAgi3+HFVWcZjrb+V1Sc7ieOtnPChV7+X1diQjm9188Qde+bOzknT7UmypEZBPHApY2GdydeI=
-X-Received: by 2002:a81:5a86:0:b0:36f:cece:6efd with SMTP id
- o128-20020a815a86000000b0036fcece6efdmr57220635ywb.489.1668026726738; Wed, 09
- Nov 2022 12:45:26 -0800 (PST)
+        with ESMTP id S229561AbiKIUln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 15:41:43 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23B217050;
+        Wed,  9 Nov 2022 12:41:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668026500; x=1699562500;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+O/GefFOW6jxFk/nJ/+JlQXGvg7uqtqqmPjyGOaK5B0=;
+  b=XN4IiU0Unq0aMJymV9WnlRzbXaohPuFMBv9HTaM0jC0e5RAZrXoHsWFX
+   zPE8rJ/0vcyrVRLl3UadDmWsfHmQQ3fYq0gjGvLDaMUIx4SehOJfUihRb
+   YRgu9M/VCzs2YdFqC1Tl9GtQL+IVQGLdGpvdVK66BKo9WtjCAx8/2Hg+a
+   D80rc6wVIgYHR6IiWbzT71AnEQhJpoccc1zvzs7e5RMfd9GGf2lrdQSMV
+   LBA+TD64pz7pYW+uiv3IbTtfA41B6K6DMZM85c2eQRhI/1S8QssnKTrre
+   b32FgqGuc0W/7yqiMwPTdGDFItMFQooahrcqw988jsf2UH/CXa0FMGs64
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,151,1665471600"; 
+   d="scan'208";a="122642737"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Nov 2022 13:41:39 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 9 Nov 2022 13:41:39 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 9 Nov 2022 13:41:36 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <hawk@kernel.org>, <john.fastabend@gmail.co>,
+        <linux@armlinux.org.uk>, <alexandr.lobakin@intel.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3 0/4] net: lan966x: Add xdp support
+Date:   Wed, 9 Nov 2022 21:46:09 +0100
+Message-ID: <20221109204613.3669905-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-References: <20221109014018.312181-1-liuhangbin@gmail.com> <49594248-1fd7-23e2-1f17-9af896cd25b0@gmail.com>
- <17540.1668026368@famine>
-In-Reply-To: <17540.1668026368@famine>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 9 Nov 2022 12:45:15 -0800
-Message-ID: <CANn89i+eZwb3+JO6oKavj5yTi74vaUY-=Pu4CaUbcq==ue9NCw@mail.gmail.com>
-Subject: Re: [PATCHv3 net] bonding: fix ICMPv6 header handling when receiving
- IPv6 messages
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>, Liang Li <liali@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 9, 2022 at 12:39 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->
-> Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> >
-> >
-> >On 11/8/22 17:40, Hangbin Liu wrote:
-> >> Currently, we get icmp6hdr via function icmp6_hdr(), which needs the skb
-> >> transport header to be set first. But there is no rule to ask driver set
-> >> transport header before netif_receive_skb() and bond_handle_frame(). So
-> >> we will not able to get correct icmp6hdr on some drivers.
-> >>
-> >> Fix this by checking the skb length manually and getting icmp6 header based
-> >> on the IPv6 header offset.
-> >>
-> >> Reported-by: Liang Li <liali@redhat.com>
-> >> Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
-> >> Acked-by: Jonathan Toppins <jtoppins@redhat.com>
-> >> Reviewed-by: David Ahern <dsahern@kernel.org>
-> >> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> >> ---
-> >> v3: fix _hdr parameter warning reported by kernel test robot
-> >> v2: use skb_header_pointer() to get icmp6hdr as Jay suggested.
-> >> ---
-> >>   drivers/net/bonding/bond_main.c | 9 +++++++--
-> >>   1 file changed, 7 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> >> index e84c49bf4d0c..2c6356232668 100644
-> >> --- a/drivers/net/bonding/bond_main.c
-> >> +++ b/drivers/net/bonding/bond_main.c
-> >> @@ -3231,12 +3231,17 @@ static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
-> >>                     struct slave *slave)
-> >>   {
-> >>      struct slave *curr_active_slave, *curr_arp_slave;
-> >> -    struct icmp6hdr *hdr = icmp6_hdr(skb);
-> >>      struct in6_addr *saddr, *daddr;
-> >> +    const struct icmp6hdr *hdr;
-> >> +    struct icmp6hdr _hdr;
-> >>      if (skb->pkt_type == PACKET_OTHERHOST ||
-> >>          skb->pkt_type == PACKET_LOOPBACK ||
-> >> -        hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT)
-> >> +        ipv6_hdr(skb)->nexthdr != NEXTHDR_ICMP)
-> >
-> >
-> >What makes sure IPv6 header is in skb->head (linear part of the skb) ?
->
->         Ah, missed that; skb_header_pointer() will take care of that
-> (copying if necessary, not that it pulls the header), but it has to be
-> called first.
->
->         This isn't a problem new to this patch, the original code
-> doesn't pull or copy the header, either.
+Add support for xdp in lan966x driver. Currently only XDP_PASS and
+XDP_DROP are supported.
 
-Quite frankly I would simply use
+The first 2 patches are just moving things around just to simplify
+the code for when the xdp is added.
+Patch 3 actually adds the xdp. Currently the only supported actions
+are XDP_PASS and XDP_DROP. In the future this will be extended with
+XDP_TX and XDP_REDIRECT.
+Patch 4 changes to use page pool API, because the handling of the
+pages is similar with what already lan966x driver is doing. In this
+way is possible to remove some of the code.
 
-if (pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct icmp6hdr))
- instead of  skb_header_pointer()
-because chances are high we will need the whole thing in skb->head later.
+All these changes give a small improvement on the RX side:
+Before:
+iperf3 -c 10.96.10.1 -R
+[  5]   0.00-10.01  sec   514 MBytes   430 Mbits/sec    0         sender
+[  5]   0.00-10.00  sec   509 MBytes   427 Mbits/sec              receiver
 
->
->         The equivalent function for ARP, bond_arp_rcv(), more or less
-> inlines skb_header_pointer(), so it doesn't have this issue.
->
->         -J
->
-> >
-> >> +            goto out;
-> >> +
-> >> +    hdr = skb_header_pointer(skb, sizeof(struct ipv6hdr), sizeof(_hdr), &_hdr);
-> >> +    if (!hdr || hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT)
-> >>              goto out;
-> >>      saddr = &ipv6_hdr(skb)->saddr;
->
-> ---
->         -Jay Vosburgh, jay.vosburgh@canonical.com
+After:
+iperf3 -c 10.96.10.1 -R
+[  5]   0.00-10.02  sec   540 MBytes   452 Mbits/sec    0         sender
+[  5]   0.00-10.01  sec   537 MBytes   450 Mbits/sec              receiver
+
+---
+v2->v3:
+- inline lan966x_xdp_port_present
+- update max_len of page_pool_params not to be the page size anymore but
+  actually be rx->max_mtu.
+
+v1->v2:
+- rebase on net-next, once the fixes for FDMA and MTU were accepted
+- drop patch 2, which changes the MTU as is not needed anymore
+- allow to run xdp programs on frames bigger than 4KB
+
+Horatiu Vultur (4):
+  net: lan966x: Add define IFH_LEN_BYTES
+  net: lan966x: Split function lan966x_fdma_rx_get_frame
+  net: lan966x: Add basic XDP support
+  net: lan96x: Use page_pool API
+
+ .../net/ethernet/microchip/lan966x/Kconfig    |   1 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   3 +-
+ .../ethernet/microchip/lan966x/lan966x_fdma.c | 181 +++++++++++-------
+ .../ethernet/microchip/lan966x/lan966x_ifh.h  |   1 +
+ .../ethernet/microchip/lan966x/lan966x_main.c |   7 +-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  33 ++++
+ .../ethernet/microchip/lan966x/lan966x_xdp.c  |  76 ++++++++
+ 7 files changed, 236 insertions(+), 66 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+
+-- 
+2.38.0
+
