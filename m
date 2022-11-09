@@ -2,127 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9566224A0
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 08:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4F86224C9
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 08:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbiKIHaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 02:30:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38706 "EHLO
+        id S229705AbiKIHmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 02:42:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiKIHaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 02:30:12 -0500
-Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F1018B2D
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 23:30:10 -0800 (PST)
-Received: from gw.atmark-techno.com (localhost [127.0.0.1])
-        by gw.atmark-techno.com (Postfix) with ESMTP id 01F276013A
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 16:30:09 +0900 (JST)
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id EBA876013F
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 16:30:06 +0900 (JST)
-Received: by mail-pf1-f200.google.com with SMTP id x8-20020aa79568000000b0056dd717e051so8524903pfq.11
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 23:30:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AkV6CPfdFGVjPpghLvJtNFPDkktXoQm93iA3ev5ef2A=;
-        b=bjNBaQcdB3QAuxOAbIl8OpaHdKQsLYUFQxCGf9cGwbJuyoBtiWNOmMu+apwySkHi/8
-         DLVg7FvbA3mfT1XNfGyE7RzHUmONEMaEpggz4w5Bh7XFJwQrQcOq66iNtQLXqP5I1Ni0
-         r2bF7Kn23gm7qWasUtzdIbyVGi9jbnBhUgakqvu+OtZfpPhcUW8oH0IIAdNMtiuYhdNZ
-         GkAKMWJExhqd+sj6cjSpM4mdPmgRP59wW7Ba9xhlNeWpZn9uXigOtjMWrFRfRP/M3PpQ
-         0tkRJt48InZryV60rCVu1phSDQlzL32bpkOQQE8pX4Lz8dUQ0gBofMQNjNRKdB5ZHQtA
-         /N0Q==
-X-Gm-Message-State: ANoB5pltealFDQUJm8OXBsCYunxWrL9fCq07voLqEwkiSlyOoZBfOuY7
-        kLzsoDlw3NgT5nnd1U+1x1ZC3R6BGS5BewjsbrkleyQoc2Uzpg9kbIUpkzMAqJnFV3QgWedOrQL
-        LEZcgjdkK8tLpNxHXBc9M
-X-Received: by 2002:a17:902:cf03:b0:179:b7fe:dc90 with SMTP id i3-20020a170902cf0300b00179b7fedc90mr8963567plg.112.1667979004658;
-        Tue, 08 Nov 2022 23:30:04 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6FLsf7+45mbMx7ILZrcvfGJp5vcQmaIT620Rjw295aA7uZKazLCzKceVCNRsLqHiFhZv0ihw==
-X-Received: by 2002:a17:902:cf03:b0:179:b7fe:dc90 with SMTP id i3-20020a170902cf0300b00179b7fedc90mr8963543plg.112.1667979004304;
-        Tue, 08 Nov 2022 23:30:04 -0800 (PST)
-Received: from pc-zest.atmarktech (35.112.198.104.bc.googleusercontent.com. [104.198.112.35])
-        by smtp.gmail.com with ESMTPSA id i4-20020a056a00004400b0056164b52bd8sm7607836pfk.32.2022.11.08.23.30.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Nov 2022 23:30:03 -0800 (PST)
-Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
-        (envelope-from <martinet@pc-zest>)
-        id 1osfX8-00EHb8-1s;
-        Wed, 09 Nov 2022 16:30:02 +0900
-Date:   Wed, 9 Nov 2022 16:29:52 +0900
-From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: h4-bluetooth: add new bindings
- for hci_h4
-Message-ID: <Y2tW8EMmhTpCwitM@atmark-techno.com>
-References: <CAL_JsqKCb2ZA+CLTVnGBMjp6zu0yw-rSFjWRg2S3hA7S6h-XEA@mail.gmail.com>
- <6a4f7104-8b6f-7dcd-a7ac-f866956e31d6@linaro.org>
- <Y2rsQowbtvOdmQO9@atmark-techno.com>
+        with ESMTP id S229448AbiKIHmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 02:42:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0C01A04A;
+        Tue,  8 Nov 2022 23:42:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC536616E4;
+        Wed,  9 Nov 2022 07:42:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDBB5C433B5;
+        Wed,  9 Nov 2022 07:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1667979731;
+        bh=1HMVBU8FNkTDsc3uJV2sC86erzOihnDIe2G3LUvxAbs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=00Ndco2Lv3D4vZksG1Qs3mTUfeuaRxZCOXXYWnnszLap3axnKdd+E/caHX/lIQCS8
+         ZGoYBeC1zrJvFG5/7oQ/IKmpCMNR24+EqMLdDJvJ2jB5HyA0qsf2ze/5iDjNTQwqRY
+         EYqIIsPZvbtdCOoIKj3vtyjOIj0/pmQO8iDR9qhc=
+Date:   Wed, 9 Nov 2022 08:42:08 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Albert Zhou <albert.zhou.50@gmail.com>
+Cc:     linux-usb@vger.kernel.org, nic_swsd@realtek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next RFC 2/5] r8152: update to version two
+Message-ID: <Y2tZ0KIaQSVtrREg@kroah.com>
+References: <20221108153342.18979-1-albert.zhou.50@gmail.com>
+ <20221108153342.18979-3-albert.zhou.50@gmail.com>
+ <Y2qRyqiVuJ0LwySh@kroah.com>
+ <370e2420-e875-3543-0128-57f7bce6be40@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y2rsQowbtvOdmQO9@atmark-techno.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <370e2420-e875-3543-0128-57f7bce6be40@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,LOTS_OF_MONEY,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dominique Martinet wrote on Wed, Nov 09, 2022 at 08:54:42AM +0900:
-> This is a pretty terrible design, as the Bluetooth side cannot actually
-> know when the device is ready as the initialization takes place, but
-> that means there really aren't any property to give here
+On Wed, Nov 09, 2022 at 03:50:59PM +1100, Albert Zhou wrote:
+> On 9/11/22 04:28, Greg KH wrote:
+> > >   // SPDX-License-Identifier: GPL-2.0-only
+> > >   /*
+> > > - *  Copyright (c) 2014 Realtek Semiconductor Corp. All rights reserved.
+> > > + *  Copyright (c) 2021 Realtek Semiconductor Corp. All rights reserved.
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or
+> > > + * modify it under the terms of the GNU General Public License
+> > > + * version 2 as published by the Free Software Foundation.
+> > To start with, this is not correct.  Don't add back license boiler-plate
+> > code.
 > 
-> (I haven't reproduced during normal boot, but in particular if I run
-> bluetoothd before loading the wifi driver, I need to unbind/bind the
-> serial device from the hci_uart_h4 driver to recover bluetooth...
-> With that in mind it might actually be best to try to coordinate this
-> from userspace with btattach after all, and I'd be happy with that if I
-> didn't have to fight our init system so much, but as things stand having
-> it autoloaded by the kernel is more convenient for us... Which is
-> admitedly a weak reason for you all, feel free to tell me this isn't
-> viable)
+> Hi Greg,
+> 
+> My apologies, I was unaware of this. This can be easily removed.
+> 
+> > 
+> > And you just changed the copyright notice incorrectly, that is not ok.
+> > 
+> 
+> When I replaced the version-one code with the version-two code, I assumed
+> the authors' copyright would be correct. What is the correct copyright
+> notice?
 
-This actually hasn't taken long to bite us: while the driver does work,
-we get error messages early on before the firmware is loaded.
-(In hindsight, I probably should have waited a few days before sending
-this...)
+The correct way would be to list all years that the copyright was
+asserted for the file.  Your patch removed the copyright notice for an
+older year, which isn't ok.
 
+But the larger issue here is that just wholesale replacing the in-tree
+driver with an out-of-tree one isn't going to work.  As others have
+pointed out, you need to break the changes up into
+one-patch-per-logical-change and drag the driver forward that way.
 
-My current workaround is to return EPROBE_DEFER until we can find a
-netdev with a known name in the init namespace, but that isn't really
-something I'd consider upstreamable for obvious reasons (interfaces can
-be renamed or moved to different namespaces so this is inherently racy
-and it's just out of place in BT code)
+The easiest way for you to do this is to clean up the out-of-tree driver
+on its own, removing all the backwards compatibility stuff, and then try
+to figure out what features are different and add them to the in-kernel
+driver, one by one.
 
-That makes these two patches on their own rather useless as well, so
-unless one of you have an idea that's less ugly I'd guess just dropping
-this is the way to go, as much as I dislike the idea of adding more
-non-upstream code than we already have :(
+It's not an easy task, but as you have the hardware to test with, should
+be doable.
 
-Thank you both for your time, the replies have been very helpful and
-I'll remember for next time I try to submit something!
+good luck!
 
-And if you have a suggestion, I'll be happy to do some legwork to clean
-this mess, so feel free to ask :)
+> > > + *
+> > > + *  This product is covered by one or more of the following patents:
+> > > + *  US6,570,884, US6,115,776, and US6,327,625.
+> > Oh wow.  That's playing with fire...
+> 
+> Do you believe this prohibits the code from being in the kernel?
 
+No I do not.  It's just not something that is normally advertised in the
+kernel for obvious reasons :)
 
-Thanks,
--- 
-Dominique
+thanks,
 
-
+greg k-h
