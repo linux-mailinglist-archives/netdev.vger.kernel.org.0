@@ -2,101 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 493F4623768
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 00:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B02DC623776
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 00:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiKIXZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 18:25:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
+        id S231892AbiKIXaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 18:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiKIXZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 18:25:24 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADA32D1C8;
-        Wed,  9 Nov 2022 15:25:22 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4N71KR4F7Rz4xYD;
-        Thu, 10 Nov 2022 10:25:14 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1668036317;
-        bh=ERJC9eRMspSvsDqwdNvHOLiIP1XOJz4EMAXQzGjCFDQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Dq29p6qEMuw95b6qrvea0y0KOVhyJaTY6uvGt8aRxNfEDnl+1bRW/0IjXW/J3JVbV
-         cLKuwXkBvVxEMspmiVOZpw1A/VfsAslL3lPG6Fsu/PH1x+ZF0ISaTwVJFasbkwzy4i
-         GiZLcnGSORWqMznK+cPy002+sOnFmGtHDBz7Sce4S1pCsDtBMUIyRYdDCGF17qlmjo
-         FEvl0CntzCd8biNgfELg3nHHZB8ab19LqIBxthdnIaERN0Ekqz71l4g6MIK7CiT9mM
-         ZZ9JQMrJ5T1tjaj4IHO1xKzq9JY7oFmVWmmZxN/9mnCkG2G1p5dTNoce5a94psJAIx
-         EpTwjRYGbm9LQ==
-Date:   Thu, 10 Nov 2022 10:25:09 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20221110102509.1f7d63cc@canb.auug.org.au>
+        with ESMTP id S231843AbiKIXaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 18:30:14 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A307E03F;
+        Wed,  9 Nov 2022 15:30:13 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id w14so28113865wru.8;
+        Wed, 09 Nov 2022 15:30:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Yd53OIp69atYo/xq3UTNLVEYNs18PHuXNa5tnT/NW9k=;
+        b=HjI7n8jwrI1i9d0mghiBrQ8cNkDGiVdP5rlGYlbuCL5hzabhIzTU1GaXCbCIDdmzCJ
+         taRsFNF8weRKi3lPSbm9yOyzDEYAkCvrP0TJFkvGGsDZ9P85EoKXVlejtNkMfAgrOher
+         IK46/G4gNPm55e/0WPialtNWy/+jt+S16UBlNeYPst1vMbB0J9L7XyU/HqZtAxYGCgQC
+         Wa/iRrKfzGaMrH22mZ9+AYnX4aZjADE55HttXdH/m7uZ7zLYM9qldTqu+rJ8KKDsHdB2
+         RiNZUD+Byzl5eRjjk51ene6p5Q3a38n2zNkauNZmx9cGVKpIzV/y0Dg4PBbEtBend8s1
+         wzyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Yd53OIp69atYo/xq3UTNLVEYNs18PHuXNa5tnT/NW9k=;
+        b=J4Ud9XWLdisU4L7BHmSVEwS1ZDkDqViCxVXPHNYA58Q+407L7eUM1X0dvkCoH9+c9/
+         McFtmGo4bsR9cfPcs4SofJTUCaAzx566OsQH7a7wdmVMM+Ii3romMjEaXEn42CDW4iXn
+         RRQEO7i3iLtHwQow0PAzQUm9dIwkCUBB7e5vnG/xw9D6acPqhr/SVq1BzAk5AO8gtLQb
+         QHOq7oLc6uns05jR/4iAGl08jIz8+zLPxiVEO+J3zEfJTIeh0KAyQqtCmTtJf9iEYqxm
+         FZJ45pfgGcYqFapjrnUUCdCvyQYAEbGT7HLUTKlXrvy9jUdEs/yoZWsCMfvcqWldD3ej
+         ll3w==
+X-Gm-Message-State: ACrzQf1LbS6p0Zw9/0kgEZrgCWjMBTL7DXysl6y88XDPeBf7ErBPgm2b
+        ldtLNQGZ+Zek6JyVni7DSEU=
+X-Google-Smtp-Source: AMsMyM7IHFxlRJdSaiea1qynaJTdSS1ofJAQcfFdlfMvly3FeETbIZYli4VVuBjOfWQXY3W6Av+NqA==
+X-Received: by 2002:a05:6000:118d:b0:236:f075:dccd with SMTP id g13-20020a056000118d00b00236f075dccdmr27367367wrx.37.1668036611828;
+        Wed, 09 Nov 2022 15:30:11 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id m23-20020a05600c3b1700b003cf47556f21sm3351289wms.2.2022.11.09.15.30.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 15:30:11 -0800 (PST)
+Date:   Thu, 10 Nov 2022 01:30:08 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        =?utf-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 net-next 4/6] dt-bindings: net: add generic
+ ethernet-switch
+Message-ID: <20221109233008.bsu2zl4bixsz44mi@skbuf>
+References: <20221104045204.746124-1-colin.foster@in-advantage.com>
+ <20221104045204.746124-1-colin.foster@in-advantage.com>
+ <20221104045204.746124-5-colin.foster@in-advantage.com>
+ <20221104045204.746124-5-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/URFtFf22l.+X3Y1NFfBS6RV";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221104045204.746124-5-colin.foster@in-advantage.com>
+ <20221104045204.746124-5-colin.foster@in-advantage.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/URFtFf22l.+X3Y1NFfBS6RV
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Nov 03, 2022 at 09:52:02PM -0700, Colin Foster wrote:
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-switch.yaml b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+> new file mode 100644
+> index 000000000000..fbaac536673d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/ethernet-switch.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Ethernet Switch Device Tree Bindings
 
-Hi all,
+I vaguely remember Krzysztof saying during other reviews that "Device
+Tree Bindings" in the title is superfluous. Suggest: "Generic Ethernet
+Switch".
 
-Today's linux-next merge of the net-next tree got a conflict in:
+> +
+> +maintainers:
+> +  - Andrew Lunn <andrew@lunn.ch>
+> +  - Florian Fainelli <f.fainelli@gmail.com>
+> +  - Vivien Didelot <vivien.didelot@gmail.com>
+> +
+> +description:
+> +  This binding represents Ethernet Switches which have a dedicated CPU
+> +  port. That port is usually connected to an Ethernet Controller of the
+> +  SoC. Such setups are typical for embedded devices.
 
-  drivers/net/can/pch_can.c
+This description was taken from the DSA switch schema and not adapted
+for the generic Ethernet switch schema.
 
-between commit:
+Suggest instead:
 
-  ae64438be192 ("can: dev: fix skb drop check")
+  Ethernet switches are multi-port Ethernet controllers. Each port has
+  its own number and is represented as its own Ethernet controller.
+  The minimum required functionality is to pass packets to software.
+  They may or may not be able to forward packets autonomously between
+  ports.
 
-from the net tree and commit:
+(this should also clarify if it's okay to reference ethernet-switch.yaml
+from drivers which don't speak switchdev, which I believe it is).
 
-  1dd1b521be85 ("can: remove obsolete PCH CAN driver")
+(my suggestion is open to further comments for improvement)
 
-from the net-next tree.
+> +
+> +select: false
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^(ethernet-)?switch(@.*)?$"
+> +
+> +patternProperties:
+> +  "^(ethernet-)?ports$":
+> +    type: object
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^(ethernet-)?port@[0-9]+$":
+> +        type: object
+> +        description: Ethernet switch ports
+> +
+> +        $ref: /schemas/net/dsa/dsa-port.yaml#
 
-I fixed it up (I just removed the file) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
+I wonder if you actually meant dsa-port.yaml and not ethernet-controller.yaml?
 
---=20
-Cheers,
-Stephen Rothwell
+> +
+> +oneOf:
+> +  - required:
+> +      - ports
+> +  - required:
+> +      - ethernet-ports
+> +
+> +additionalProperties: true
+> +
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 3106a9f0567a..3b6c3989c419 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14326,6 +14326,7 @@ M:	Florian Fainelli <f.fainelli@gmail.com>
+>  M:	Vladimir Oltean <olteanv@gmail.com>
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/net/dsa/
+> +F:	Documentation/devicetree/bindings/net/ethernet-switch.yaml
+>  F:	drivers/net/dsa/
+>  F:	include/linux/dsa/
+>  F:	include/linux/platform_data/dsa.h
+> -- 
+> 2.25.1
+> 
 
---Sig_/URFtFf22l.+X3Y1NFfBS6RV
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmNsNtUACgkQAVBC80lX
-0GxFswf/djufZrRbLl+gPNoti1zVqCMOm95cWuWOTr6tAnsoYYCAdEKRdc9EK8hn
-DvKNQghwe4DhpoRc3UvloA+ad0Iw5UATxMghWgXzVpJKD6KID+XDZwzy32ZqrCRk
-xf/JCQgHEwVKuihfW1ryM6hpcMSz8s1OgBBxJyEzsiiJI33CJC0ylKi1177ws47o
-2ErVgqkWS0zukPReWCUQbGv+ke0LafnR2uyPp+blqATaaqeSo/BlrvrFqvxKSHiG
-nbIdZWmUjsnAmzwmM5+k/uJDHb4lVpuYO4sQWKS+k6Bsm80MPl07XdpJK4VS4ANI
-qe6khrMbsB3aZACwMi9t0r51cdS4qA==
-=rE2s
------END PGP SIGNATURE-----
-
---Sig_/URFtFf22l.+X3Y1NFfBS6RV--
