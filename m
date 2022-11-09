@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63083622BEC
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 13:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB731622BF0
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 13:55:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiKIMyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 07:54:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
+        id S229813AbiKIMzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 07:55:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiKIMyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 07:54:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92970175A9
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 04:54:45 -0800 (PST)
+        with ESMTP id S229762AbiKIMzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 07:55:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAA62C10B
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 04:55:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A18F61A87
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 12:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF80DC433D6;
-        Wed,  9 Nov 2022 12:54:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D868B61A8D
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 12:55:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE4AAC433D6;
+        Wed,  9 Nov 2022 12:54:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667998484;
-        bh=LrhI8FVbYFio06JOlqmlD6Or5Dag8XI4A4p1sDJtON0=;
+        s=k20201202; t=1667998500;
+        bh=X0AJr1Q2/Xzf5JhPqmWRY+YsW8ttDfD/as8ln/s94gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pED8+JwsVe5lYVyvds/YddpwimNIIO2rg6G9IzHpHOaxPMEQGJPthRzpdsWcdMSFx
-         ftbeKDCsDbagSYYJsKNL5qDm+dUQCQ5r69gkmjLVpTzqMCQfi9GU15rMRE3h/pwlwD
-         hy5TZeZRqf9Kq0wQKpfk8wQ08y046YNwmbn3H4frr84Uin+XRQ4C7sJy/8ySDDqywV
-         XjM2au7OesjsZlbEaPueABAp+B8HgMefyCB8VDLttoCt9q4AlZ3UeEt/0F7GQRQfM8
-         fGIeM4Yv2zByxKoK84NpIC8V8jCv84wM8MFiNWdutto9qekrcqRM3uVpJtuxehv2rQ
-         DFntGz7tOAHWA==
+        b=bMvLkxMXj+FjP/eeFMfkBKijXl/c15qW9tPl5g1ep3Agbk82QfTdtqNSdN09HbtzF
+         fHxdlq2qmxk2uPaYQAAQQnCq0qF3sq8zUP+XGfS+WyhDlFJ3Ij7Z3mFyTd83YUcwho
+         dvuM8JbUz/2huFBNmEzqYgYny15zX5zbJcs1eL+WjWhx3RC8x26gUmKVPMTpkVjn+N
+         Q77jI+B6eqfdxWTwkCELEiu1FjtNpJ5CV8rWS5nZUge7MexNpumh0/oqF5fm1G44+C
+         1V0NhOFlDIFwnB03HYglz9EO6+FFfga9GgSuWojRwiZ+aSrae5qTU/akiMO8mam+63
+         SLFAJgzKJVcrw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -39,9 +39,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Raed Salem <raeds@nvidia.com>
-Subject: [PATCH xfrm-next v7 1/8] xfrm: add new packet offload flag
-Date:   Wed,  9 Nov 2022 14:54:29 +0200
-Message-Id: <2e07ab72ceebd127663e151d533ad40e2d7f12f9.1667997522.git.leonro@nvidia.com>
+Subject: [PATCH xfrm-next v7 2/8] xfrm: allow state packet offload mode
+Date:   Wed,  9 Nov 2022 14:54:30 +0200
+Message-Id: <a1b9e21150a09f607553521e01f5bf172e67acaa.1667997522.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1667997522.git.leonro@nvidia.com>
 References: <cover.1667997522.git.leonro@nvidia.com>
@@ -58,100 +58,176 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-In the next patches, the xfrm core code will be extended to support
-new type of offload - packet offload. In that mode, both policy and state
-should be specially configured in order to perform whole offloaded data
-path.
+Allow users to configure xfrm states with packet offload mode.
+The packet mode must be requested both for policy and state, and
+such requires us to do not implement fallback.
 
-Full offload takes care of encryption, decryption, encapsulation and
-other operations with headers.
-
-As this mode is new for XFRM policy flow, we can "start fresh" with flag
-bits and release first and second bit for future use.
+We explicitly return an error if requested packet mode can't
+be configured.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/net/xfrm.h        | 7 +++++++
- include/uapi/linux/xfrm.h | 6 ++++++
- net/xfrm/xfrm_device.c    | 3 +++
- net/xfrm/xfrm_user.c      | 2 ++
- 4 files changed, 18 insertions(+)
+ .../inline_crypto/ch_ipsec/chcr_ipsec.c       |  4 ++++
+ .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    |  5 ++++
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c    |  5 ++++
+ .../mellanox/mlx5/core/en_accel/ipsec.c       |  4 ++++
+ drivers/net/netdevsim/ipsec.c                 |  5 ++++
+ net/xfrm/xfrm_device.c                        | 24 +++++++++++++++----
+ 6 files changed, 42 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index dbc81f5eb553..304001b76fc5 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -131,12 +131,19 @@ enum {
- 	XFRM_DEV_OFFLOAD_OUT,
- };
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
+index 585590520076..ca21794281d6 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
+@@ -283,6 +283,10 @@ static int ch_ipsec_xfrm_add_state(struct xfrm_state *x)
+ 		pr_debug("Cannot offload xfrm states with geniv other than seqiv\n");
+ 		return -EINVAL;
+ 	}
++	if (x->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
++		pr_debug("Unsupported xfrm offload\n");
++		return -EINVAL;
++	}
  
-+enum {
-+	XFRM_DEV_OFFLOAD_UNSPECIFIED,
-+	XFRM_DEV_OFFLOAD_CRYPTO,
-+	XFRM_DEV_OFFLOAD_PACKET,
-+};
+ 	sa_entry = kzalloc(sizeof(*sa_entry), GFP_KERNEL);
+ 	if (!sa_entry) {
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index 774de63dd93a..53a969e34883 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -585,6 +585,11 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs)
+ 		return -EINVAL;
+ 	}
+ 
++	if (xs->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
++		netdev_err(dev, "Unsupported ipsec offload type\n");
++		return -EINVAL;
++	}
 +
- struct xfrm_dev_offload {
- 	struct net_device	*dev;
- 	netdevice_tracker	dev_tracker;
- 	struct net_device	*real_dev;
- 	unsigned long		offload_handle;
- 	u8			dir : 2;
-+	u8			type : 2;
- };
+ 	if (xs->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+ 		struct rx_sa rsa;
  
- struct xfrm_mode {
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index 4f84ea7ee14c..23543c33fee8 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -519,6 +519,12 @@ struct xfrm_user_offload {
-  */
- #define XFRM_OFFLOAD_IPV6	1
- #define XFRM_OFFLOAD_INBOUND	2
-+/* Two bits above are relevant for state path only, while
-+ * offload is used for both policy and state flows.
-+ *
-+ * In policy offload mode, they are free and can be safely reused.
-+ */
-+#define XFRM_OFFLOAD_PACKET	4
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ipsec.c b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
+index 9984ebc62d78..c1cf540d162a 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
+@@ -280,6 +280,11 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs)
+ 		return -EINVAL;
+ 	}
  
- struct xfrm_userpolicy_default {
- #define XFRM_USERPOLICY_UNSPEC	0
++	if (xs->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
++		netdev_err(dev, "Unsupported ipsec offload type\n");
++		return -EINVAL;
++	}
++
+ 	if (xs->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+ 		struct rx_sa rsa;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 60499715db67..074f3a89f60b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -253,6 +253,10 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
+ 		netdev_info(netdev, "Cannot offload xfrm states with geniv other than seqiv\n");
+ 		return -EINVAL;
+ 	}
++	if (x->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
++		netdev_info(netdev, "Unsupported xfrm offload type\n");
++		return -EINVAL;
++	}
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/netdevsim/ipsec.c b/drivers/net/netdevsim/ipsec.c
+index 386336a38f34..b93baf5c8bee 100644
+--- a/drivers/net/netdevsim/ipsec.c
++++ b/drivers/net/netdevsim/ipsec.c
+@@ -149,6 +149,11 @@ static int nsim_ipsec_add_sa(struct xfrm_state *xs)
+ 		return -EINVAL;
+ 	}
+ 
++	if (xs->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
++		netdev_err(dev, "Unsupported ipsec offload type\n");
++		return -EINVAL;
++	}
++
+ 	/* find the first unused index */
+ 	ret = nsim_ipsec_find_empty_idx(ipsec);
+ 	if (ret < 0) {
 diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 5f5aafd418af..7c4e0f14df27 100644
+index 7c4e0f14df27..dc4fb58dd7eb 100644
 --- a/net/xfrm/xfrm_device.c
 +++ b/net/xfrm/xfrm_device.c
-@@ -278,12 +278,15 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+@@ -216,6 +216,7 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+ 	struct xfrm_dev_offload *xso = &x->xso;
+ 	xfrm_address_t *saddr;
+ 	xfrm_address_t *daddr;
++	bool is_packet_offload;
+ 
+ 	if (!x->type_offload) {
+ 		NL_SET_ERR_MSG(extack, "Type doesn't support offload");
+@@ -228,11 +229,13 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (xuo->flags & ~(XFRM_OFFLOAD_IPV6 | XFRM_OFFLOAD_INBOUND)) {
++	if (xuo->flags &
++	    ~(XFRM_OFFLOAD_IPV6 | XFRM_OFFLOAD_INBOUND | XFRM_OFFLOAD_PACKET)) {
+ 		NL_SET_ERR_MSG(extack, "Unrecognized flags in offload request");
+ 		return -EINVAL;
+ 	}
+ 
++	is_packet_offload = xuo->flags & XFRM_OFFLOAD_PACKET;
+ 	dev = dev_get_by_index(net, xuo->ifindex);
+ 	if (!dev) {
+ 		if (!(xuo->flags & XFRM_OFFLOAD_INBOUND)) {
+@@ -247,7 +250,7 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+ 					x->props.family,
+ 					xfrm_smark_get(0, x));
+ 		if (IS_ERR(dst))
+-			return 0;
++			return (is_packet_offload) ? -EINVAL : 0;
+ 
+ 		dev = dst->dev;
+ 
+@@ -258,7 +261,7 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+ 	if (!dev->xfrmdev_ops || !dev->xfrmdev_ops->xdo_dev_state_add) {
+ 		xso->dev = NULL;
+ 		dev_put(dev);
+-		return 0;
++		return (is_packet_offload) ? -EINVAL : 0;
+ 	}
+ 
+ 	if (x->props.flags & XFRM_STATE_ESN &&
+@@ -278,7 +281,10 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
  	else
  		xso->dir = XFRM_DEV_OFFLOAD_OUT;
  
-+	xso->type = XFRM_DEV_OFFLOAD_CRYPTO;
-+
+-	xso->type = XFRM_DEV_OFFLOAD_CRYPTO;
++	if (is_packet_offload)
++		xso->type = XFRM_DEV_OFFLOAD_PACKET;
++	else
++		xso->type = XFRM_DEV_OFFLOAD_CRYPTO;
+ 
  	err = dev->xfrmdev_ops->xdo_dev_state_add(x);
  	if (err) {
- 		xso->dev = NULL;
- 		xso->dir = 0;
- 		xso->real_dev = NULL;
+@@ -288,7 +294,15 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
  		netdev_put(dev, &xso->dev_tracker);
-+		xso->type = XFRM_DEV_OFFLOAD_UNSPECIFIED;
+ 		xso->type = XFRM_DEV_OFFLOAD_UNSPECIFIED;
  
- 		if (err != -EOPNOTSUPP) {
+-		if (err != -EOPNOTSUPP) {
++		/* User explicitly requested packet offload mode and configured
++		 * policy in addition to the XFRM state. So be civil to users,
++		 * and return an error instead of taking fallback path.
++		 *
++		 * This WARN_ON() can be seen as a documentation for driver
++		 * authors to do not return -EOPNOTSUPP in packet offload mode.
++		 */
++		WARN_ON(err == -EOPNOTSUPP && is_packet_offload);
++		if (err != -EOPNOTSUPP || is_packet_offload) {
  			NL_SET_ERR_MSG(extack, "Device failed to offload this state");
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index e73f9efc54c1..573b60873b60 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -943,6 +943,8 @@ static int copy_user_offload(struct xfrm_dev_offload *xso, struct sk_buff *skb)
- 	xuo->ifindex = xso->dev->ifindex;
- 	if (xso->dir == XFRM_DEV_OFFLOAD_IN)
- 		xuo->flags = XFRM_OFFLOAD_INBOUND;
-+	if (xso->type == XFRM_DEV_OFFLOAD_PACKET)
-+		xuo->flags |= XFRM_OFFLOAD_PACKET;
- 
- 	return 0;
- }
+ 			return err;
+ 		}
 -- 
 2.38.1
 
