@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A5CB622178
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 02:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6847662217A
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 02:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiKIBzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 20:55:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
+        id S229550AbiKIB5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 20:57:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiKIBzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 20:55:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8E81F9E2;
-        Tue,  8 Nov 2022 17:55:35 -0800 (PST)
+        with ESMTP id S229492AbiKIB5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 20:57:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2A266C8A;
+        Tue,  8 Nov 2022 17:57:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C31AB81CE7;
-        Wed,  9 Nov 2022 01:55:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81443C433C1;
-        Wed,  9 Nov 2022 01:55:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66E17617E1;
+        Wed,  9 Nov 2022 01:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E03C433C1;
+        Wed,  9 Nov 2022 01:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667958933;
-        bh=veYpa7FaRsry6Y/dznGkIf1wj51JZYkzA2/VjZdjWk8=;
+        s=k20201202; t=1667959031;
+        bh=+2JcQE94a/8EsId71nlhSR30hOQ8ew5MIRE2qTo94Pk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U3ePUuXm8KJ0wbYI4jMIvw7AKFALf/YxRLPRbj3/XewK8+eKoK0G61vG4YQda288w
-         bw7e4xPPaf4hhfZRYDknAAvOnVFShrtgYcTOqJmsR9wwzoXX5jv7hfY5ZQEM0FwfFY
-         nzmqBMIOt5iqudcAZBNbwPmH84AGw1s47iZm0KLZSyuUnb/0qves4RXtka+VSIU9lc
-         RvzvHV2eLISdu827ghwWsJqjdO0VWSECVJyc8W3EeLwO9nMzPdgoKrjxLARUWBpJut
-         wgUuPmfjigVp2mRy63r+kbLbandUi27wD9VE94xNerWAtYwJP2mAOlx3IA3fZGb1TJ
-         7a4CvAM3DJNow==
-Date:   Tue, 8 Nov 2022 17:55:31 -0800
+        b=n0dYlR5X4Ni3R/bOL9VbVN2xz+JUurgkUUvmim5MuThoeIowUqr5+0fG92+0upSnR
+         fgpUcy2dpWQO2q7mhzQzXog909iQajLKodlEBjPScMxcgCJIGys6baCqHEZicCC8kv
+         4CIctZbXwGs5rKjmP5ZOdsgBvyF+0qJQfcDEJGNaCvpR0TLbdC4kDC9AV6RnRkBahC
+         psHBYBpBIGVzy3CTlvhpdXqKsuJXfeLpmQ7copkK7VVpZ711l9sr47bLjGSJeibI0U
+         IW6vB4njT3ssgx3wEqovz1bGZd41UGMDhOEx33uyjqJB241sHNP8hAaayBYSyQBOsh
+         c0BbmIehNLbTw==
+Date:   Tue, 8 Nov 2022 17:57:10 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
-        Gan Yi Fang <yi.fang.gan@intel.com>
-Subject: Re: [PATCH net 1/1] net: phy: dp83867: Fix SGMII FIFO depth for non
- OF devices
-Message-ID: <20221108175531.1a7c16a6@kernel.org>
-In-Reply-To: <20221108101218.612499-1-michael.wei.hong.sit@intel.com>
-References: <20221108101218.612499-1-michael.wei.hong.sit@intel.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        imx@lists.linux.dev
+Subject: Re: [PATCH v2 0/2] net: fec: optimization and statistics
+Message-ID: <20221108175710.095a96e8@kernel.org>
+In-Reply-To: <20221108172105.3760656-1-shenwei.wang@nxp.com>
+References: <20221108172105.3760656-1-shenwei.wang@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,14 +59,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Nov 2022 18:12:18 +0800 Michael Sit Wei Hong wrote:
-> Current driver code will read device tree node information,
-> and set default values if there is no info provided.
+On Tue,  8 Nov 2022 11:21:03 -0600 Shenwei Wang wrote:
+> As the patch to add XDP statistics is based on the previous optimization
+> patch, I've put the two patches together. The link to the optimization
+> is the following:
 > 
-> This is not done in non-OF devices leading to SGMII fifo depths being
-> set to the smallest size.
-> 
-> This patch sets the value to the default value of the PHY as stated in the
-> PHY datasheet.
+> https://lore.kernel.org/imx/20221104024754.2756412-1-shenwei.wang@nxp.com/
 
-We need a Fixes tag, which commit should have contained this code?
+This set doesn't apply to net-next, is it on top of some
+not-yet-applied patches ?
