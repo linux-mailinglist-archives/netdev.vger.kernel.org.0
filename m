@@ -2,112 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F4B62373E
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 00:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60DEE623740
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 00:09:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbiKIXIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 18:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58128 "EHLO
+        id S231488AbiKIXJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 18:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiKIXIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 18:08:05 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21F1647D;
-        Wed,  9 Nov 2022 15:08:04 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id fn7-20020a05600c688700b003b4fb113b86so98010wmb.0;
-        Wed, 09 Nov 2022 15:08:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LwVitJc+OKf+8w4wSRaaZOyHv8YAZ//3DtpKET00R7I=;
-        b=hBckYn0WxZvQCSKJBFl3QcweKiTVzJiGEsjEaBhtXNElu3i8fx7xHVayMhZ/82qZWz
-         Vw1DDRQpFx7OXW7pGWHrN6na6/ByAgBzax4W9/viPKIiJTtedoVNn0iLUB4jBLeIUU9l
-         Ad1AHLLzd1eTEdb2Vq7bCkUK+1s61+bY1VZFLx/28sWvBPZcZBUa/5kIPRnmhyH8KsrE
-         mmX0w3c1XIL2xypjVCrGVdZAMhiaSkjAx+4U6/03FzWoW63P5OsspCyPxf4YR7nZaZR7
-         QG4NZR52xZe6IeJELNJ2cKzhvyJ5X/YqvryHyqAveQO6o8sUHcvV+yUSJ+bYRotzLoGo
-         ETTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LwVitJc+OKf+8w4wSRaaZOyHv8YAZ//3DtpKET00R7I=;
-        b=Z5P0liubnN9mEcParV88Gk3OYvn4EtGB5mdlu48WiT2LRODmAEYX7HYW2slKxIx/Rf
-         CbOkEch+Iy10M8VsUSeMI3vflZ0g5/LKQ11bbGkQH4N3SM8wPPydiX3S98KU6ODA7Nba
-         naPzmp/QmWatD2k1f94BkmVJ/C31A/IdiwueDse+cvf3hCm4PA1LdJ0lmYZg0rslBZ7R
-         yce0x9r4josomYG/TpCE0jL+jKRX7kpz4sFr52d1imnkj6AbIqkJ51saGv0QmMfiSDxf
-         YY16hbu9r9WR3enURUriRmN5rlyT5rz2A9AAv9u6yMOpZJlopQ6TxKdmsWSDZEyy4KmH
-         WIiw==
-X-Gm-Message-State: ACrzQf20NuRnytmycNv42D617G3w0HEGKW59Fk38AnLSfJhNbnK7BAFS
-        PUFehU59JXzsgnYCRcBDLTA=
-X-Google-Smtp-Source: AMsMyM4AJxypXUVf/EsY503k79RpGyRHyzcplzZwHSA1aIE3JjDY7Zwoj701g6KVLOuJRL8C9m3FXg==
-X-Received: by 2002:a05:600c:4b27:b0:3cf:8ec7:b8f with SMTP id i39-20020a05600c4b2700b003cf8ec70b8fmr23266575wmp.69.1668035283125;
-        Wed, 09 Nov 2022 15:08:03 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id fc18-20020a05600c525200b003b49bd61b19sm3288752wmb.15.2022.11.09.15.08.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 15:08:02 -0800 (PST)
-Date:   Thu, 10 Nov 2022 01:07:59 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?utf-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 net-next 2/6] dt-bindings: net: dsa: qca8k: utilize
- shared dsa.yaml
-Message-ID: <20221109230759.gw7prntz7i5lxwiq@skbuf>
-References: <20221104045204.746124-1-colin.foster@in-advantage.com>
- <20221104045204.746124-1-colin.foster@in-advantage.com>
- <20221104045204.746124-3-colin.foster@in-advantage.com>
- <20221104045204.746124-3-colin.foster@in-advantage.com>
+        with ESMTP id S229556AbiKIXJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 18:09:54 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16247647D
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 15:09:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668035394; x=1699571394;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=hk/NnKkjPwdYpI3XOzeF9oRH7zj2AVvWhqJReQqQSzY=;
+  b=fil8m1HkQogeD8aCOdE+UMa5ipe5zn2uhO6wDu0ox7ILkpiQW+4WSKfK
+   DlXqBVN7s4Be+ECIRsu/LCy+zDFRUQkhuvyj5Q0hSyJ6dzttPxlMaVvCK
+   DPQjp54/+fZWbudVGqK0+jfuh4H9gbiZ2yFYw5rFl+hWfJiflu5Y3b7Ak
+   Ex+S1WKDh/jkRomADGvvVCygm3A5qfCPQ0QEH4UhmmRzneF6iliOwvakT
+   zP7ZZkq1jp8KEBHKqjPCvl40lFDWEKF74x/+GBlOZXCQqA0v8ckqBUo3i
+   9o0p6VLE5THaYffQubhywv6zN/TFor1fzmeI0AVUpQ7RnLoUN0inJCdzg
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="309860517"
+X-IronPort-AV: E=Sophos;i="5.96,152,1665471600"; 
+   d="scan'208";a="309860517"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 15:09:53 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="636930540"
+X-IronPort-AV: E=Sophos;i="5.96,152,1665471600"; 
+   d="scan'208";a="636930540"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 15:09:53 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH net-next 0/9] ptp: convert remaining users of .adjfreq
+Date:   Wed,  9 Nov 2022 15:09:36 -0800
+Message-Id: <20221109230945.545440-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.38.0.83.gd420dda05763
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221104045204.746124-3-colin.foster@in-advantage.com>
- <20221104045204.746124-3-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 03, 2022 at 09:52:00PM -0700, Colin Foster wrote:
-> The dsa.yaml binding contains duplicated bindings for address and size
-> cells, as well as the reference to dsa-port.yaml. Instead of duplicating
-> this information, remove the reference to dsa-port.yaml and include the
-> full reference to dsa.yaml.
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
-> 
-> v1 -> v2
->   * Add #address-cells and #size-cells to the switch layer. They aren't
->     part of dsa.yaml.
+A handful of drivers remain which still use the .adjfreq interface instead
+of the newer .adjfine interface. The new interface is preferred as it has a
+more precise adjustment using scaled parts per million.
 
-I'm afraid this is not the correct resolution to the warnings you saw.
-There is no reason to have #address-cells = <1> under the "switch" node,
-since none of that node's children have a unit address (see: "ports", "mdio").
-The schema example is wrong, please fix that.
+A handful of the remaining drivers are implemented with a common pattern
+that can be refactored to use the adjust_by_scaled_ppm and
+diff_by_scaled_ppm helper functions. These include the ptp_phc, ptp_ixp64x,
+tg3, hclge, stmac, cpts and bnxt drivers. These are each refactored in a
+separate change.
+
+The remaining drivers, bnx2x, liquidio, cxgb4, fec, and qede implement
+.adjfreq in a way different from the normal pattern expected by
+adjust_by_scaled_ppm. Fixing these drivers to properly use .adjfine requires
+specific knowledge of the hardware implementation. Instead I simply refactor
+them to use .adjfine and convert scaled_ppm into ppb using the
+scaled_ppm_to_ppb function.
+
+Finally, the .adjfreq implementation interface is removed entirely. This
+simplifies the interface and ensures that new drivers must implement the new
+interface as they no longer have an alternative.
+
+This still leaves parts per billion used as part of the max_adj interface,
+and the core PTP stack still converts scaled_ppm to ppb to check this. I
+plan to investigate fixing this in the future.
+
+Jacob Keller (9):
+  ptp_phc: convert .adjfreq to .adjfine
+  ptp_ixp46x: convert .adjfreq to .adjfine
+  ptp: tg3: convert .adjfreq to .adjfine
+  ptp: hclge: convert .adjfreq to .adjfine
+  ptp: stmac: convert .adjfreq to .adjfine
+  ptp: cpts: convert .adjfreq to .adjfine
+  ptp: bnxt: convert .adjfreq to .adjfine
+  ptp: convert remaining drivers to adjfine interface
+  ptp: remove the .adjfreq interface function
+
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  |  9 ++++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 22 +++++-------------
+ drivers/net/ethernet/broadcom/tg3.c           | 22 ++++++------------
+ .../net/ethernet/cavium/liquidio/lio_main.c   | 11 +++++----
+ .../net/ethernet/chelsio/cxgb4/cxgb4_ptp.c    | 13 +++++++----
+ drivers/net/ethernet/freescale/fec_ptp.c      | 13 +++++++----
+ .../hisilicon/hns3/hns3pf/hclge_ptp.c         | 22 ++++--------------
+ drivers/net/ethernet/qlogic/qede/qede_ptp.c   | 13 +++++++----
+ drivers/net/ethernet/sfc/ptp.c                |  7 +++---
+ drivers/net/ethernet/sfc/siena/ptp.c          |  7 +++---
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 23 ++++++-------------
+ drivers/net/ethernet/ti/am65-cpts.c           |  5 ++--
+ drivers/net/ethernet/ti/cpts.c                | 20 ++++------------
+ drivers/net/ethernet/xscale/ptp_ixp46x.c      | 19 ++++-----------
+ drivers/ptp/ptp_clock.c                       |  5 +---
+ drivers/ptp/ptp_dte.c                         |  5 ++--
+ drivers/ptp/ptp_pch.c                         | 19 ++++-----------
+ include/linux/ptp_clock_kernel.h              |  7 ------
+ 18 files changed, 88 insertions(+), 154 deletions(-)
+
+
+base-commit: 154ba79c9f160e652a2c9c46435b928b3bfae11f
+-- 
+2.38.0.83.gd420dda05763
+
