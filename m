@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8652062281E
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 11:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 142F862286D
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 11:26:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbiKIKLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 05:11:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
+        id S230455AbiKIK0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 05:26:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiKIKLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 05:11:38 -0500
+        with ESMTP id S230077AbiKIK0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 05:26:13 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D91CC6E
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 02:10:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFC912606
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 02:25:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667988644;
+        s=mimecast20190719; t=1667989509;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5MPz3Ec+EPgg7rG8vMEpdX68m++2s8DqWYBcdW2qsvI=;
-        b=C1Eo/z9K0XzWDaxc+N2ZUnny0vBIxOYELgbh6/qYFOnLDLMRo22mvJfbf407k8f1NbuxZA
-        95UXa2IWafvCjJdGwxs1vZeLkTcaDjhFV0qv0R5e/u9ZQ6inbKsZcTFBxTrd7wCQVsuWAh
-        jF6Z3SDexZ6bgJ8pNEDtNUqaXH8pD7M=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=auSM+70YRosWZy5ukGqkwDOs/DSEICJ2nlPZ92XyH9s=;
+        b=BnDZAUeON/xQMq3k5byEAzPn9XtTL22O3KhWgUy+Y/TDje5gPefHqy3UMFjPh0n8Cjfadb
+        ppmV3fxw1wl0A3Hhque/tEA9iLwY4ESFz2jRUMMoRaovycGYeWNxESo9h3BkfIT3xIFi4r
+        dfxVGNVcbSHpduqVo+Ymxg7rbmy8T7c=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-516-7A_q0LtsPCyxSplA98tS_Q-1; Wed, 09 Nov 2022 05:10:43 -0500
-X-MC-Unique: 7A_q0LtsPCyxSplA98tS_Q-1
-Received: by mail-qv1-f70.google.com with SMTP id z18-20020a0cfed2000000b004bc28af6f7dso11360133qvs.4
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 02:10:43 -0800 (PST)
+ us-mta-642-sfsCbliINXqoCGf6yCPvBg-1; Wed, 09 Nov 2022 05:25:08 -0500
+X-MC-Unique: sfsCbliINXqoCGf6yCPvBg-1
+Received: by mail-qk1-f198.google.com with SMTP id v7-20020a05620a0f0700b006faffce43b2so5100072qkl.9
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 02:25:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5MPz3Ec+EPgg7rG8vMEpdX68m++2s8DqWYBcdW2qsvI=;
-        b=ODCPawKAnHUjqHiaGYuwUhuCAXj4DxF1NuF4wyY8MqSsnM/Oax0L+9IgGxctECIWTk
-         oxP85H8oIIaNusdgTANCHM8ZhKcBIhBNbVKO/zoM8Tw/+Fx4TkcPO10rYkE4DIuTsuCc
-         9SsPDklneX4v+tt0Ca2IRABNDz9nAgCMiJdMsn/2EPKEpX5rB2+scv8/unNY0PlkhmaA
-         bJkMuW6REGmRGX+nGFMLA4y7OjJ3jZNpUdM+9QxB1DWysV2wTvENcz4P4kfq/UgQiyqu
-         tqfObNC5yuK9sfF9AFNEioJyf/AyfLMwvQcqdXnnFIGsogxUmuKZiccp/tuuhBICkqU6
-         cFhA==
-X-Gm-Message-State: ACrzQf1TkLuFn47XQIFGieSSRDkLXNAuEKePp2l/9VReUhsnVJS1W7sN
-        fb1si2lHmnv++QXQGE2uqN+z5GJihUL8zB/4nKOlckhgmK1hnZosy8QABE51dY5L0acLLarz4ND
-        wOVuyznoD2IewfXtL
-X-Received: by 2002:ac8:5058:0:b0:3a5:3cb0:959 with SMTP id h24-20020ac85058000000b003a53cb00959mr32919860qtm.123.1667988642846;
-        Wed, 09 Nov 2022 02:10:42 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM7zaE5m+054WqSltDiseEsHQRGbV23se1lE6TQwdYPc3zaWSm4fkB44f0GuQqZbDqR+b7Kc9w==
-X-Received: by 2002:ac8:5058:0:b0:3a5:3cb0:959 with SMTP id h24-20020ac85058000000b003a53cb00959mr32919847qtm.123.1667988642628;
-        Wed, 09 Nov 2022 02:10:42 -0800 (PST)
-Received: from redhat.com ([185.195.59.52])
-        by smtp.gmail.com with ESMTPSA id r4-20020ae9d604000000b006fa2b1c3c1esm10651656qkk.58.2022.11.09.02.10.39
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=auSM+70YRosWZy5ukGqkwDOs/DSEICJ2nlPZ92XyH9s=;
+        b=PfchMwWaas1Q8mVchyGdSyhZNI/3ufETNppwBJM8gS2BjPDD/+ROuXrmM7FjQMdozb
+         axhzPhnnkDPkBr+sZseZh1c8UY36w5OmrY3nGwsgkjyPGpPOxnevhlnycou5bTDvmpKL
+         QUt32Bv2Pcbb6wDwoEC8gQKLM68h+bkI96mUI5efpCGjLbbfEt7uL2enZ37ydljd69wV
+         JsrXHUSRN+Duv6qnRDvRDk+ObJjlYETsUdWgYiAkezEtAYPEvC/13xNdCbA8LRk4Fmbq
+         1+Jbp0p44fGDq/QLAbQ/trSB0/bY8JiitIUaS/k7w58xpphKkIYcBtrvX9t2p1DKw0FV
+         t8iQ==
+X-Gm-Message-State: ACrzQf0g1RI1k6ePJQFGFQF0xOb9di6cMcnNHnVrK8gd0ert6Q7fi7DP
+        QElbjI07ZfqcHAgR+dUWznSPfih9j8SeCBnJMTZydu7bY/3XT+RIexK9GeU659JYrFvzi8nPB+c
+        33QS0J7NZWmK49sPH
+X-Received: by 2002:a05:620a:e11:b0:6fa:7435:a409 with SMTP id y17-20020a05620a0e1100b006fa7435a409mr23294690qkm.51.1667989508200;
+        Wed, 09 Nov 2022 02:25:08 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM7kIiD5hF1VgY+01R04+NKJB6TMPdY1YIPB/qSgWreKxEVuImtPVMcdEaGEZOnk3bJsKCVWaA==
+X-Received: by 2002:a05:620a:e11:b0:6fa:7435:a409 with SMTP id y17-20020a05620a0e1100b006fa7435a409mr23294682qkm.51.1667989507953;
+        Wed, 09 Nov 2022 02:25:07 -0800 (PST)
+Received: from step1.redhat.com (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
+        by smtp.gmail.com with ESMTPSA id bj10-20020a05620a190a00b006fa313bf185sm10827522qkb.8.2022.11.09.02.25.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 02:10:42 -0800 (PST)
-Date:   Wed, 9 Nov 2022 05:10:37 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] vhost: fix range used in translate_desc()
-Message-ID: <20221109051030-mutt-send-email-mst@kernel.org>
-References: <20221108103437.105327-1-sgarzare@redhat.com>
- <20221108103437.105327-3-sgarzare@redhat.com>
- <CACGkMEuRnqxESo=V2COnfUjP5jGLTXzNRt3=Tp2x-9jsS-RNGQ@mail.gmail.com>
- <20221109081823.tg5roitl26opqe6k@sgarzare-redhat>
+        Wed, 09 Nov 2022 02:25:07 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v2 0/2] vhost: fix ranges when call vhost_iotlb_itree_first()
+Date:   Wed,  9 Nov 2022 11:25:01 +0100
+Message-Id: <20221109102503.18816-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.38.1
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109081823.tg5roitl26opqe6k@sgarzare-redhat>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -81,43 +76,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 09:18:23AM +0100, Stefano Garzarella wrote:
-> On Wed, Nov 09, 2022 at 11:28:41AM +0800, Jason Wang wrote:
-> > On Tue, Nov 8, 2022 at 6:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> > > 
-> > > vhost_iotlb_itree_first() requires `start` and `last` parameters
-> > > to search for a mapping that overlaps the range.
-> > > 
-> > > In translate_desc() we cyclically call vhost_iotlb_itree_first(),
-> > > incrementing `addr` by the amount already translated, so rightly
-> > > we move the `start` parameter passed to vhost_iotlb_itree_first(),
-> > > but we should hold the `last` parameter constant.
-> > > 
-> > > Let's fix it by saving the `last` parameter value before incrementing
-> > > `addr` in the loop.
-> > > 
-> > > Fixes: 0bbe30668d89 ("vhost: factor out IOTLB")
-> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > ---
-> > > 
-> > > I'm not sure about the fixes tag. On the one I used this patch should
-> > > apply cleanly, but looking at the latest stable (4.9), maybe we should
-> > > use
-> > > 
-> > > Fixes: a9709d6874d5 ("vhost: convert pre sorted vhost memory array to interval tree")
-> > 
-> > I think this should be the right commit to fix.
-> 
-> Yeah, @Michael should I send a v2 with that tag?
+v2:
+- Patch 2: Replaced Fixes tag with the right one [Jason]
 
-Pls do.
+v1: https://lore.kernel.org/virtualization/20221108103437.105327-1-sgarzare@redhat.com/
 
-> > 
-> > Other than this
-> > 
-> > Acked-by: Jason Wang <jasowang@redhat.com>
-> > 
-> 
-> Thanks for the review,
-> Stefano
+While I was working on vringh to support VA in vringh_*_iotlb()
+I saw that the range we use in iotlb_translate() when we call
+vhost_iotlb_itree_first() was not correct IIUC.
+So I looked at all the calls and found that in vhost.c as well.
+
+I didn't observe a failure and I don't have a reproducer because
+I noticed the problem by looking at the code.
+
+Maybe we didn't have a problem, because a shorter range was being
+returned anyway and the loop stopped taking into account the total
+amount of bytes translated, but I think it's better to fix.
+
+Thanks,
+Stefano
+
+Stefano Garzarella (2):
+  vringh: fix range used in iotlb_translate()
+  vhost: fix range used in translate_desc()
+
+ drivers/vhost/vhost.c  | 4 ++--
+ drivers/vhost/vringh.c | 5 ++---
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+-- 
+2.38.1
 
