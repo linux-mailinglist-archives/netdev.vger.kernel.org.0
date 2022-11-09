@@ -2,114 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3A9623641
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64389623643
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232045AbiKIWAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 17:00:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
+        id S230146AbiKIWBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 17:01:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiKIWAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:00:06 -0500
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FCBE15824;
-        Wed,  9 Nov 2022 14:00:05 -0800 (PST)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-13bef14ea06so323653fac.3;
-        Wed, 09 Nov 2022 14:00:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MBKBlPlYHH+d23qoAhQOq2lKx+b+s6DjJqW2E+tnx78=;
-        b=vF1Ae9NzXfI6JISwGKGv8JwLRALwEyCqkoDFVQAGy+3LcBSoCBU+7VXyx5S8QyPtwR
-         1srm2pvBJ1DEBcM62BB5SfO27jYfmn/biwp0CNuPPo0OmobUJOX2oQZWbLGeFsHTGEDa
-         wBpKXEFQU6B5PKyZFz2Jcs40T0oRcGw+VlLkasZZT7Mcxy3TyQPeQgO7mPQ+KN7HO1qg
-         I1VY56c064WJLyVPhp114NImk9KkZb8oZzKRUFtZqycjCov3z64WWQ2JF0vc8ut4z/L4
-         rC5i4aB7OHpr39YsRcZmPk/q6tW4q/T5EFtY0xAhV4uG459nZIrCl+6emUO3KIlL3PDp
-         TRtg==
-X-Gm-Message-State: ACrzQf0y7tgNg9mFaaIP1cwh8qDSQnoQBkj+VVq0ctazDHhYRwrXUfax
-        fElWXxQx4W8TgNnoqodLeQ==
-X-Google-Smtp-Source: AMsMyM6RtkRPsY/21k9tRFMpIeKt38HsQlzu9nAZrPUmyHUaj27aNg7tYDMULJ1nSDY2kux7Z8WMjg==
-X-Received: by 2002:a05:6870:a2ce:b0:131:a8bc:54db with SMTP id w14-20020a056870a2ce00b00131a8bc54dbmr38331247oak.187.1668031204238;
-        Wed, 09 Nov 2022 14:00:04 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id er33-20020a056870c8a100b00131c3d4d38fsm6666398oab.39.2022.11.09.14.00.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 14:00:03 -0800 (PST)
-Received: (nullmailer pid 2946725 invoked by uid 1000);
-        Wed, 09 Nov 2022 22:00:05 -0000
-Date:   Wed, 9 Nov 2022 16:00:05 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Dominique Martinet <dominique.martinet@atmark-techno.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        with ESMTP id S229657AbiKIWBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:01:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7179D186E6
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 14:01:51 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 96C111FFFB;
+        Wed,  9 Nov 2022 22:01:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1668031309;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YVdE+KBakYEPhRW2LJiVjMpFVZTHFUKTKX9sYfaoTkU=;
+        b=JkfsXOcnwaKq+Suz5qbNpK5XFLquQZtk/+LGFnqyJA1903P+6KQD/mhU7Q9w7S2fB4xuh+
+        dgbkQuLJyY+78MmhtG+2wT072U2X7WlQahQTxbIYySdlbpS+wuwZ75H5M/RWFr7ZsB2H2p
+        s6Mvw//Bc2YRU0nvMF/eJh1TE0Y/80o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1668031309;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YVdE+KBakYEPhRW2LJiVjMpFVZTHFUKTKX9sYfaoTkU=;
+        b=wvGUwXmuRVyBoP5u747T4wvSLBV3s2YCt/MqIPjHXDGdwQcYMsmH+ptyuZlq4e6mQo91bB
+        s3s8ll7NLLdHqcAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3EBB5139F1;
+        Wed,  9 Nov 2022 22:01:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wYiIDU0jbGNeFgAAMHmgww
+        (envelope-from <pvorel@suse.cz>); Wed, 09 Nov 2022 22:01:49 +0000
+Date:   Wed, 9 Nov 2022 23:01:47 +0100
+From:   Petr Vorel <pvorel@suse.cz>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: h4-bluetooth: add new bindings
- for hci_h4
-Message-ID: <20221109220005.GA2930253-robh@kernel.org>
-References: <CAL_JsqKCb2ZA+CLTVnGBMjp6zu0yw-rSFjWRg2S3hA7S6h-XEA@mail.gmail.com>
- <6a4f7104-8b6f-7dcd-a7ac-f866956e31d6@linaro.org>
- <Y2rsQowbtvOdmQO9@atmark-techno.com>
- <Y2tW8EMmhTpCwitM@atmark-techno.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Vasiliy Kulikov <segoon@openwall.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Sami Kerola <kerolasa@iki.fi>
+Subject: Re: ping (iputils) review (call for help)
+Message-ID: <Y2wjS/xkCtRrKXhs@pevik>
+Reply-To: Petr Vorel <pvorel@suse.cz>
+References: <Y2OmQDjtHmQCHE7x@pevik>
+ <d47c3f41-2977-3ffb-5c99-953088727a4b@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y2tW8EMmhTpCwitM@atmark-techno.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <d47c3f41-2977-3ffb-5c99-953088727a4b@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 04:29:52PM +0900, Dominique Martinet wrote:
-> Dominique Martinet wrote on Wed, Nov 09, 2022 at 08:54:42AM +0900:
-> > This is a pretty terrible design, as the Bluetooth side cannot actually
-> > know when the device is ready as the initialization takes place, but
-> > that means there really aren't any property to give here
-> > 
-> > (I haven't reproduced during normal boot, but in particular if I run
-> > bluetoothd before loading the wifi driver, I need to unbind/bind the
-> > serial device from the hci_uart_h4 driver to recover bluetooth...
-> > With that in mind it might actually be best to try to coordinate this
-> > from userspace with btattach after all, and I'd be happy with that if I
-> > didn't have to fight our init system so much, but as things stand having
-> > it autoloaded by the kernel is more convenient for us... Which is
-> > admitedly a weak reason for you all, feel free to tell me this isn't
-> > viable)
+Hi David,
 
-Punting the issue to userspace is not a great solution...
+first, thanks a lot for having a look!
+
+> On 11/3/22 5:30 AM, Petr Vorel wrote:
+> > Hi,
+
+> > I'm sorry to bother you about userspace. I'm preparing new iputils release and
+> > I'm not sure about these two patches.  As there has been many regressions,
+> > review from experts is more than welcome.
+
+> > If you have time to review them, it does not matter if you post your
+> > comments/RBT in github or here (as long as you keep Cc me so that I don't
+> > overlook it).
+
+> > BTW I wonder if it make sense to list Hideaki YOSHIFUJI as NETWORKING
+> > IPv4/IPv6 maintainer. If I'm not mistaken, it has been a decade since he was active.
+
+> > * ping: Call connect() before sending/receiving
+> > https://github.com/iputils/iputils/pull/391
+> > => I did not even knew it's possible to connect to ping socket, but looks like
+> > it works on both raw socket and on ICMP datagram socket.
+
+> no strong opinion on this one. A command line option to use connect
+> might be better than always doing the connect.
+I was thinking about it, as it'd be safer in case of some regression.
+If there is no other opinion I'll probably go this way, although I generally
+prefer not adding more command line options.
+
+> > * ping: revert "ping: do not bind to device when destination IP is on device
+> > https://github.com/iputils/iputils/pull/396
+> > => the problem has been fixed in mainline and stable/LTS kernels therefore I
+> > suppose we can revert cc44f4c as done in this PR. It's just a question if we
+> > should care about people who run new iputils on older (unfixed) kernels.
 
 
-> This actually hasn't taken long to bite us: while the driver does work,
-> we get error messages early on before the firmware is loaded.
-> (In hindsight, I probably should have waited a few days before sending
-> this...)
-> 
-> 
-> My current workaround is to return EPROBE_DEFER until we can find a
-> netdev with a known name in the init namespace, but that isn't really
-> something I'd consider upstreamable for obvious reasons (interfaces can
-> be renamed or moved to different namespaces so this is inherently racy
-> and it's just out of place in BT code)
+> I agree with this change. If a user opts for device binding, the command
+> should not try to guess if it is really needed.
 
-Can't you just try to access the BT h/w in some way and defer when that 
-fails?
+I guess Sami Kerola (the patch author) preferred ping functionality on wrongly
+used ping's -I option. I've seen it the same even it causes kselftest
+regressions and wait a bit longer. But ok, anybody who would care should
+update kernel. I'll include this in upcoming iputils release.
 
-Or perhaps use fw_devlink to create a dependency on the wifi node. I'm 
-not sure offhand how exactly you do that with a custom property.
-
-Rob
+Kind regards,
+Petr
