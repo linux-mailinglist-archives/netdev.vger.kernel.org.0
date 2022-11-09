@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD22622ACA
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:42:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D305622ACD
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:42:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230431AbiKILmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 06:42:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
+        id S231167AbiKILmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 06:42:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbiKILls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:41:48 -0500
+        with ESMTP id S231157AbiKILl6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:41:58 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D64C2EF2D;
-        Wed,  9 Nov 2022 03:41:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B482FFDD;
+        Wed,  9 Nov 2022 03:41:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667994106; x=1699530106;
+  t=1667994114; x=1699530114;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+W6heY0OWTfT6RRvl+2wVYvfqiqmJULsVcGpkSGMnWY=;
-  b=B/WO5LTiKUE/w7Qtl8b4L8T98f18q0JL1ID/HjyPJkz80e6V1ZefUayz
-   2m6p92FPGPH2yScQDghTYyBcD9tk3iHT+kmAEgV51ujbZevUXTjAayc/R
-   1LuAiTtvxt/VjCmltDouzP3gwmBdhr367YUMEc00Z1HbhhXWc9ZVPfNCa
-   A8H94z7um7IY95E5H2YQuaAzMchxFeHltLqMKgZ93r4AR2nDNDTdQ2uMK
-   V8q7iXjgFyj4ct4NeDE5uh0SbM9wHiXXOebBQsNIgFkwn5RAb85Dca0Kc
-   m3TdlYL91URo6XcV0jevs3m5k8Bk6ooId3lZG4TST1W7H6iyRxCiC8gra
-   g==;
+  bh=gN0st+fPq5DurcxIm8GwhqYWjyNUlnKYB2P9hMuYDoI=;
+  b=ihTJwuNwXKr3ItW2c49+6NI7itNgI5Z9/TpL3MJkAHVTMsosP+W3DyVF
+   eDYIPwdvmiGINKnTi4iQf0LgDlt98Mxbp2gJNdXkTAySa3PAEFNwZKcS4
+   lGRgIDNJPU0KaUzw1cnVRJFIex7qXv5FIBrhh7dCTIYIP50QFS+vhy87N
+   5dMt0OTYaaNn1UZjgIyUpJQsnMdp2sQeotTeQbLfDcsmEidv+/+ucG2EF
+   WM5kN3QU719sbBXWxvLKHttClszflzPV7AhlUYjyK8/M9YLFxN4/0Dgv5
+   9VP1n4fLH5B2qSyuJSqNacUXlvOKDjm7fTdREGqV5qRiW9CDLQ8lYeRKg
+   w==;
 X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="182651248"
+   d="scan'208";a="122545104"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Nov 2022 04:41:45 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Nov 2022 04:41:53 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 9 Nov 2022 04:41:43 -0700
+ 15.1.2507.12; Wed, 9 Nov 2022 04:41:47 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 9 Nov 2022 04:41:40 -0700
+ 15.1.2507.12 via Frontend Transport; Wed, 9 Nov 2022 04:41:43 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -55,9 +55,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         "Daniel Machon" <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v6 6/8] net: microchip: sparx5: Let VCAP API validate added key- and actionfields
-Date:   Wed, 9 Nov 2022 12:41:14 +0100
-Message-ID: <20221109114116.3612477-7-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v6 7/8] net: microchip: sparx5: Add tc matchall filter and enable VCAP lookups
+Date:   Wed, 9 Nov 2022 12:41:15 +0100
+Message-ID: <20221109114116.3612477-8-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221109114116.3612477-1-steen.hegelund@microchip.com>
 References: <20221109114116.3612477-1-steen.hegelund@microchip.com>
@@ -73,159 +73,450 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for validating keyfields and actionfields when they are added
-to a VCAP rule.
-We need to ensure that the field is not already present and that the field
-is in the key- or actionset, if the client has added a key- or actionset to
-the rule at this point.
+Use a tc matchall rule with a goto action to the VCAP specific chain to
+enable the VCAP lookups.
+If the matchall rule is removed the VCAP lookups will be disabled
+again using its cookie as lookup to find the VCAP instance.
+
+To enable the Sparx5 IS2 VCAP on eth0 you would use this command:
+
+    tc filter add dev eth0 ingress prio 5 handle 5 matchall \
+        skip_sw action goto chain 8000000
+
+as the first lookup in IS2 has chain id 8000000
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../net/ethernet/microchip/vcap/vcap_api.c    | 103 +++++++++++++++++-
- 1 file changed, 101 insertions(+), 2 deletions(-)
+ .../net/ethernet/microchip/sparx5/Makefile    |   2 +-
+ .../net/ethernet/microchip/sparx5/sparx5_tc.c |   9 +-
+ .../net/ethernet/microchip/sparx5/sparx5_tc.h |   5 +
+ .../microchip/sparx5/sparx5_tc_matchall.c     |  97 ++++++++++++++
+ .../microchip/sparx5/sparx5_vcap_impl.c       |  29 ++++-
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 120 +++++++++++++++++-
+ .../net/ethernet/microchip/vcap/vcap_api.h    |   6 +
+ .../ethernet/microchip/vcap/vcap_api_client.h |   4 +
+ 8 files changed, 263 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_tc_matchall.c
 
+diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
+index 38adf917bc09..cff07b8841bd 100644
+--- a/drivers/net/ethernet/microchip/sparx5/Makefile
++++ b/drivers/net/ethernet/microchip/sparx5/Makefile
+@@ -9,7 +9,7 @@ sparx5-switch-y  := sparx5_main.o sparx5_packet.o \
+  sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \
+  sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o sparx5_fdma.o \
+  sparx5_ptp.o sparx5_pgid.o sparx5_tc.o sparx5_qos.o \
+- sparx5_vcap_impl.o sparx5_vcap_ag_api.o sparx5_tc_flower.o
++ sparx5_vcap_impl.o sparx5_vcap_ag_api.o sparx5_tc_flower.o sparx5_tc_matchall.o
+ 
+ sparx5-switch-$(CONFIG_SPARX5_DCB) += sparx5_dcb.o
+ 
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
+index 9432251b8322..edd4c53dcce2 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
+@@ -19,9 +19,14 @@ static int sparx5_tc_block_cb(enum tc_setup_type type,
+ {
+ 	struct net_device *ndev = cb_priv;
+ 
+-	if (type == TC_SETUP_CLSFLOWER)
++	switch (type) {
++	case TC_SETUP_CLSMATCHALL:
++		return sparx5_tc_matchall(ndev, type_data, ingress);
++	case TC_SETUP_CLSFLOWER:
+ 		return sparx5_tc_flower(ndev, type_data, ingress);
+-	return -EOPNOTSUPP;
++	default:
++		return -EOPNOTSUPP;
++	}
+ }
+ 
+ static int sparx5_tc_block_cb_ingress(enum tc_setup_type type,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
+index 2b07a93fc9b7..adab88e6b21f 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
+@@ -8,6 +8,7 @@
+ #define __SPARX5_TC_H__
+ 
+ #include <net/flow_offload.h>
++#include <net/pkt_cls.h>
+ #include <linux/netdevice.h>
+ 
+ /* Controls how PORT_MASK is applied */
+@@ -23,6 +24,10 @@ enum SPX5_PORT_MASK_MODE {
+ int sparx5_port_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ 			 void *type_data);
+ 
++int sparx5_tc_matchall(struct net_device *ndev,
++		       struct tc_cls_matchall_offload *tmo,
++		       bool ingress);
++
+ int sparx5_tc_flower(struct net_device *ndev, struct flow_cls_offload *fco,
+ 		     bool ingress);
+ 
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_matchall.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_matchall.c
+new file mode 100644
+index 000000000000..30dd61e5d150
+--- /dev/null
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_matchall.c
+@@ -0,0 +1,97 @@
++// SPDX-License-Identifier: GPL-2.0+
++/* Microchip VCAP API
++ *
++ * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
++ */
++
++#include "sparx5_tc.h"
++#include "vcap_api.h"
++#include "vcap_api_client.h"
++#include "sparx5_main_regs.h"
++#include "sparx5_main.h"
++#include "sparx5_vcap_impl.h"
++
++static int sparx5_tc_matchall_replace(struct net_device *ndev,
++				      struct tc_cls_matchall_offload *tmo,
++				      bool ingress)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct flow_action_entry *action;
++	struct sparx5 *sparx5;
++	int err;
++
++	if (!flow_offload_has_one_action(&tmo->rule->action)) {
++		NL_SET_ERR_MSG_MOD(tmo->common.extack,
++				   "Only one action per filter is supported");
++		return -EOPNOTSUPP;
++	}
++	action = &tmo->rule->action.entries[0];
++
++	sparx5 = port->sparx5;
++	switch (action->id) {
++	case FLOW_ACTION_GOTO:
++		err = vcap_enable_lookups(sparx5->vcap_ctrl, ndev,
++					  action->chain_index, tmo->cookie,
++					  true);
++		if (err == -EFAULT) {
++			NL_SET_ERR_MSG_MOD(tmo->common.extack,
++					   "Unsupported goto chain");
++			return -EOPNOTSUPP;
++		}
++		if (err == -EADDRINUSE) {
++			NL_SET_ERR_MSG_MOD(tmo->common.extack,
++					   "VCAP already enabled");
++			return -EOPNOTSUPP;
++		}
++		if (err) {
++			NL_SET_ERR_MSG_MOD(tmo->common.extack,
++					   "Could not enable VCAP lookups");
++			return err;
++		}
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(tmo->common.extack, "Unsupported action");
++		return -EOPNOTSUPP;
++	}
++	return 0;
++}
++
++static int sparx5_tc_matchall_destroy(struct net_device *ndev,
++				      struct tc_cls_matchall_offload *tmo,
++				      bool ingress)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5 *sparx5;
++	int err;
++
++	sparx5 = port->sparx5;
++	if (!tmo->rule && tmo->cookie) {
++		err = vcap_enable_lookups(sparx5->vcap_ctrl, ndev, 0,
++					  tmo->cookie, false);
++		if (err)
++			return err;
++		return 0;
++	}
++	NL_SET_ERR_MSG_MOD(tmo->common.extack, "Unsupported action");
++	return -EOPNOTSUPP;
++}
++
++int sparx5_tc_matchall(struct net_device *ndev,
++		       struct tc_cls_matchall_offload *tmo,
++		       bool ingress)
++{
++	if (!tc_cls_can_offload_and_chain0(ndev, &tmo->common)) {
++		NL_SET_ERR_MSG_MOD(tmo->common.extack,
++				   "Only chain zero is supported");
++		return -EOPNOTSUPP;
++	}
++
++	switch (tmo->command) {
++	case TC_CLSMATCHALL_REPLACE:
++		return sparx5_tc_matchall_replace(ndev, tmo, ingress);
++	case TC_CLSMATCHALL_DESTROY:
++		return sparx5_tc_matchall_destroy(ndev, tmo, ingress);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+index 642c27299e22..10bc56cd0045 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+@@ -489,6 +489,28 @@ static int sparx5_port_info(struct net_device *ndev, enum vcap_type vtype,
+ 	return 0;
+ }
+ 
++/* Enable all lookups in the VCAP instance */
++static int sparx5_vcap_enable(struct net_device *ndev,
++			      struct vcap_admin *admin,
++			      bool enable)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5 *sparx5;
++	int portno;
++
++	sparx5 = port->sparx5;
++	portno = port->portno;
++
++	/* For now we only consider IS2 */
++	if (enable)
++		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf), sparx5,
++			ANA_ACL_VCAP_S2_CFG(portno));
++	else
++		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0), sparx5,
++			ANA_ACL_VCAP_S2_CFG(portno));
++	return 0;
++}
++
+ /* API callback operations: only IS2 is supported for now */
+ static struct vcap_operations sparx5_vcap_ops = {
+ 	.validate_keyset = sparx5_vcap_validate_keyset,
+@@ -500,6 +522,7 @@ static struct vcap_operations sparx5_vcap_ops = {
+ 	.update = sparx5_vcap_update,
+ 	.move = sparx5_vcap_move,
+ 	.port_info = sparx5_port_info,
++	.enable = sparx5_vcap_enable,
+ };
+ 
+ /* Enable lookups per port and set the keyset generation: only IS2 for now */
+@@ -509,11 +532,6 @@ static void sparx5_vcap_port_key_selection(struct sparx5 *sparx5,
+ 	int portno, lookup;
+ 	u32 keysel;
+ 
+-	/* enable all 4 lookups on all ports */
+-	for (portno = 0; portno < SPX5_PORTS; ++portno)
+-		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf), sparx5,
+-			ANA_ACL_VCAP_S2_CFG(portno));
+-
+ 	/* all traffic types generate the MAC_ETYPE keyset for now in all
+ 	 * lookups on all ports
+ 	 */
+@@ -566,6 +584,7 @@ sparx5_vcap_admin_alloc(struct sparx5 *sparx5, struct vcap_control *ctrl,
+ 		return ERR_PTR(-ENOMEM);
+ 	INIT_LIST_HEAD(&admin->list);
+ 	INIT_LIST_HEAD(&admin->rules);
++	INIT_LIST_HEAD(&admin->enabled);
+ 	admin->vtype = cfg->vtype;
+ 	admin->vinst = cfg->vinst;
+ 	admin->lookups = cfg->lookups;
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index 37122ba1e201..73ec7744c21f 100644
+index 73ec7744c21f..b6ab6bae28c0 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -790,6 +790,13 @@ const char *vcap_keyfield_name(struct vcap_control *vctrl,
- }
- EXPORT_SYMBOL_GPL(vcap_keyfield_name);
+@@ -44,6 +44,13 @@ struct vcap_stream_iter {
+ 	const struct vcap_typegroup *tg; /* current typegroup */
+ };
  
-+/* map action field id to a string with the action name */
-+static const char *vcap_actionfield_name(struct vcap_control *vctrl,
-+					 enum vcap_action_field action)
-+{
-+	return vctrl->stats->actionfield_names[action];
-+}
++/* Stores the filter cookie that enabled the port */
++struct vcap_enabled_port {
++	struct list_head list; /* for insertion in enabled ports list */
++	struct net_device *ndev;  /* the enabled port */
++	unsigned long cookie; /* filter that enabled the port */
++};
 +
- /* Return the keyfield that matches a key in a keyset */
- static const struct vcap_field *
- vcap_find_keyset_keyfield(struct vcap_control *vctrl,
-@@ -1162,14 +1169,60 @@ static void vcap_copy_from_client_keyfield(struct vcap_rule *rule,
- 	memcpy(&field->data, data, sizeof(field->data));
- }
- 
-+/* Check if the keyfield is already in the rule */
-+static bool vcap_keyfield_unique(struct vcap_rule *rule,
-+				 enum vcap_key_field key)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+	const struct vcap_client_keyfield *ckf;
-+
-+	list_for_each_entry(ckf, &ri->data.keyfields, ctrl.list)
-+		if (ckf->ctrl.key == key)
-+			return false;
-+	return true;
-+}
-+
-+/* Check if the keyfield is in the keyset */
-+static bool vcap_keyfield_match_keyset(struct vcap_rule *rule,
-+				       enum vcap_key_field key)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+	enum vcap_keyfield_set keyset = rule->keyset;
-+	enum vcap_type vt = ri->admin->vtype;
-+	const struct vcap_field *fields;
-+
-+	/* the field is accepted if the rule has no keyset yet */
-+	if (keyset == VCAP_KFS_NO_VALUE)
-+		return true;
-+	fields = vcap_keyfields(ri->vctrl, vt, keyset);
-+	if (!fields)
-+		return false;
-+	/* if there is a width there is a way */
-+	return fields[key].width > 0;
-+}
-+
- static int vcap_rule_add_key(struct vcap_rule *rule,
- 			     enum vcap_key_field key,
- 			     enum vcap_field_type ftype,
- 			     struct vcap_client_keyfield_data *data)
+ static void vcap_iter_set(struct vcap_stream_iter *itr, int sw_width,
+ 			  const struct vcap_typegroup *tg, u32 offset)
  {
-+	struct vcap_rule_internal *ri = to_intrule(rule);
- 	struct vcap_client_keyfield *field;
- 
--	/* More validation will be added here later */
-+	if (!vcap_keyfield_unique(rule, key)) {
-+		pr_warn("%s:%d: keyfield %s is already in the rule\n",
-+			__func__, __LINE__,
-+			vcap_keyfield_name(ri->vctrl, key));
-+		return -EINVAL;
-+	}
-+
-+	if (!vcap_keyfield_match_keyset(rule, key)) {
-+		pr_err("%s:%d: keyfield %s does not belong in the rule keyset\n",
-+		       __func__, __LINE__,
-+		       vcap_keyfield_name(ri->vctrl, key));
-+		return -EINVAL;
-+	}
-+
- 	field = kzalloc(sizeof(*field), GFP_KERNEL);
- 	if (!field)
- 		return -ENOMEM;
-@@ -1262,14 +1315,60 @@ static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
- 	memcpy(&field->data, data, sizeof(field->data));
- }
- 
-+/* Check if the actionfield is already in the rule */
-+static bool vcap_actionfield_unique(struct vcap_rule *rule,
-+				    enum vcap_action_field act)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+	const struct vcap_client_actionfield *caf;
-+
-+	list_for_each_entry(caf, &ri->data.actionfields, ctrl.list)
-+		if (caf->ctrl.action == act)
-+			return false;
-+	return true;
-+}
-+
-+/* Check if the actionfield is in the actionset */
-+static bool vcap_actionfield_match_actionset(struct vcap_rule *rule,
-+					     enum vcap_action_field action)
-+{
-+	enum vcap_actionfield_set actionset = rule->actionset;
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+	enum vcap_type vt = ri->admin->vtype;
-+	const struct vcap_field *fields;
-+
-+	/* the field is accepted if the rule has no actionset yet */
-+	if (actionset == VCAP_AFS_NO_VALUE)
-+		return true;
-+	fields = vcap_actionfields(ri->vctrl, vt, actionset);
-+	if (!fields)
-+		return false;
-+	/* if there is a width there is a way */
-+	return fields[action].width > 0;
-+}
-+
- static int vcap_rule_add_action(struct vcap_rule *rule,
- 				enum vcap_action_field action,
- 				enum vcap_field_type ftype,
- 				struct vcap_client_actionfield_data *data)
+@@ -516,7 +523,7 @@ static int vcap_api_check(struct vcap_control *ctrl)
+ 	    !ctrl->ops->add_default_fields || !ctrl->ops->cache_erase ||
+ 	    !ctrl->ops->cache_write || !ctrl->ops->cache_read ||
+ 	    !ctrl->ops->init || !ctrl->ops->update || !ctrl->ops->move ||
+-	    !ctrl->ops->port_info) {
++	    !ctrl->ops->port_info || !ctrl->ops->enable) {
+ 		pr_err("%s:%d: client operations are missing\n",
+ 		       __func__, __LINE__);
+ 		return -ENOENT;
+@@ -1128,6 +1135,7 @@ EXPORT_SYMBOL_GPL(vcap_del_rule);
+ /* Delete all rules in the VCAP instance */
+ int vcap_del_rules(struct vcap_control *vctrl, struct vcap_admin *admin)
  {
-+	struct vcap_rule_internal *ri = to_intrule(rule);
- 	struct vcap_client_actionfield *field;
++	struct vcap_enabled_port *eport, *next_eport;
+ 	struct vcap_rule_internal *ri, *next_ri;
+ 	int ret = vcap_api_check(vctrl);
  
--	/* More validation will be added here later */
-+	if (!vcap_actionfield_unique(rule, action)) {
-+		pr_warn("%s:%d: actionfield %s is already in the rule\n",
-+			__func__, __LINE__,
-+			vcap_actionfield_name(ri->vctrl, action));
-+		return -EINVAL;
+@@ -1139,6 +1147,13 @@ int vcap_del_rules(struct vcap_control *vctrl, struct vcap_admin *admin)
+ 		kfree(ri);
+ 	}
+ 	admin->last_used_addr = admin->last_valid_addr;
++
++	/* Remove list of enabled ports */
++	list_for_each_entry_safe(eport, next_eport, &admin->enabled, list) {
++		list_del(&eport->list);
++		kfree(eport);
 +	}
 +
-+	if (!vcap_actionfield_match_actionset(rule, action)) {
-+		pr_err("%s:%d: actionfield %s does not belong in the rule actionset\n",
-+		       __func__, __LINE__,
-+		       vcap_actionfield_name(ri->vctrl, action));
-+		return -EINVAL;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(vcap_del_rules);
+@@ -1459,6 +1474,109 @@ void vcap_set_tc_exterr(struct flow_cls_offload *fco, struct vcap_rule *vrule)
+ }
+ EXPORT_SYMBOL_GPL(vcap_set_tc_exterr);
+ 
++/* Check if this port is already enabled for this VCAP instance */
++static bool vcap_is_enabled(struct vcap_admin *admin, struct net_device *ndev,
++			    unsigned long cookie)
++{
++	struct vcap_enabled_port *eport;
++
++	list_for_each_entry(eport, &admin->enabled, list)
++		if (eport->cookie == cookie || eport->ndev == ndev)
++			return true;
++
++	return false;
++}
++
++/* Enable this port for this VCAP instance */
++static int vcap_enable(struct vcap_admin *admin, struct net_device *ndev,
++		       unsigned long cookie)
++{
++	struct vcap_enabled_port *eport;
++
++	eport = kzalloc(sizeof(*eport), GFP_KERNEL);
++	if (!eport)
++		return -ENOMEM;
++
++	eport->ndev = ndev;
++	eport->cookie = cookie;
++	list_add_tail(&eport->list, &admin->enabled);
++
++	return 0;
++}
++
++/* Disable this port for this VCAP instance */
++static int vcap_disable(struct vcap_admin *admin, struct net_device *ndev,
++			unsigned long cookie)
++{
++	struct vcap_enabled_port *eport;
++
++	list_for_each_entry(eport, &admin->enabled, list) {
++		if (eport->cookie == cookie && eport->ndev == ndev) {
++			list_del(&eport->list);
++			kfree(eport);
++			return 0;
++		}
 +	}
 +
- 	field = kzalloc(sizeof(*field), GFP_KERNEL);
- 	if (!field)
- 		return -ENOMEM;
++	return -ENOENT;
++}
++
++/* Find the VCAP instance that enabled the port using a specific filter */
++static struct vcap_admin *vcap_find_admin_by_cookie(struct vcap_control *vctrl,
++						    unsigned long cookie)
++{
++	struct vcap_enabled_port *eport;
++	struct vcap_admin *admin;
++
++	list_for_each_entry(admin, &vctrl->list, list)
++		list_for_each_entry(eport, &admin->enabled, list)
++			if (eport->cookie == cookie)
++				return admin;
++
++	return NULL;
++}
++
++/* Enable/Disable the VCAP instance lookups. Chain id 0 means disable */
++int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
++			int chain_id, unsigned long cookie, bool enable)
++{
++	struct vcap_admin *admin;
++	int err;
++
++	err = vcap_api_check(vctrl);
++	if (err)
++		return err;
++
++	if (!ndev)
++		return -ENODEV;
++
++	if (chain_id)
++		admin = vcap_find_admin(vctrl, chain_id);
++	else
++		admin = vcap_find_admin_by_cookie(vctrl, cookie);
++	if (!admin)
++		return -ENOENT;
++
++	/* first instance and first chain */
++	if (admin->vinst || chain_id > admin->first_cid)
++		return -EFAULT;
++
++	err = vctrl->ops->enable(ndev, admin, enable);
++	if (err)
++		return err;
++
++	if (chain_id) {
++		if (vcap_is_enabled(admin, ndev, cookie))
++			return -EADDRINUSE;
++		vcap_enable(admin, ndev, cookie);
++	} else {
++		vcap_disable(admin, ndev, cookie);
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(vcap_enable_lookups);
++
+ #ifdef CONFIG_VCAP_KUNIT_TEST
+ #include "vcap_api_kunit.c"
+ #endif
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.h b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+index eb2eae75c7e8..bfb8ad535074 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.h
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+@@ -166,6 +166,7 @@ enum vcap_rule_error {
+ struct vcap_admin {
+ 	struct list_head list; /* for insertion in vcap_control */
+ 	struct list_head rules; /* list of rules */
++	struct list_head enabled; /* list of enabled ports */
+ 	enum vcap_type vtype;  /* type of vcap */
+ 	int vinst; /* instance number within the same type */
+ 	int first_cid; /* first chain id in this vcap */
+@@ -255,6 +256,11 @@ struct vcap_operations {
+ 		 int (*pf)(void *out, int arg, const char *fmt, ...),
+ 		 void *out,
+ 		 int arg);
++	/* enable/disable the lookups in a vcap instance */
++	int (*enable)
++		(struct net_device *ndev,
++		 struct vcap_admin *admin,
++		 bool enable);
+ };
+ 
+ /* VCAP API Client control interface */
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
+index 077e49c4f3be..0ea5ec96adc8 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
+@@ -143,6 +143,10 @@ enum vcap_bit {
+ 	VCAP_BIT_1
+ };
+ 
++/* Enable/Disable the VCAP instance lookups. Chain id 0 means disable */
++int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
++			int chain_id, unsigned long cookie, bool enable);
++
+ /* VCAP rule operations */
+ /* Allocate a rule and fill in the basic information */
+ struct vcap_rule *vcap_alloc_rule(struct vcap_control *vctrl,
 -- 
 2.38.1
 
