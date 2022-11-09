@@ -2,165 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B1862348D
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 21:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3ABF6234B7
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 21:39:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbiKIU31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 15:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
+        id S229745AbiKIUjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 15:39:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiKIU30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 15:29:26 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2106.outbound.protection.outlook.com [40.107.94.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6684E630C
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 12:29:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IyKrsA1JsbfSfw97kMF6GdL5igjbM8oppXj3lcY5nuOWW01RLMqt9jOWJiR53ByQjkMyG0jp46RD6UHB9fJ0ZwsRkO2ZaygyLQ8bqp0uRHR32kzGQaFV2RykN+lr6ohXsoVR6YEWQZvsB3gNASAiPgsNQ3KH+yfFzFafSRQzD51XIA2pigaQ80P0Gm8cKM3l3LMWHEhxIuUoE7oMNwdVUeh7M1lVuXABF4CMRDEfchk+zFGOMGzVB4/9iIE6Sx2/p95RlI35f4Mg4cEZd1C/nTW7HN5P/FpIsTNgcJm1ZJYCivNPTqyQQr+ap/04axP7KeNpEyzV5EFVFYo12/79Vw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eWA24i4EKFkHNyRI7kE3m2xSP+4YggiW2X/O0QmcEoI=;
- b=X9mEVQ0GprPwtdHoaFFVmmLpHl24a5sNxrwfs3WNqFEw0O2OdOEdKpU81TdaUWay7+VnSZrscftZBSpbEVw6Y/xY20bCWPkTvC7HWdcUXCOt7O8CmC1JrNJF9KDuaw2owDWha8Ky8oBTkoSzu+L8IjGxxw4rB6CTELJItr2wl0iEzEAgL+gIEqH9+9+lAXpMum6F7uI5TFoPkDpV8PT3l2UBxktUIK5lfKJdMSheCXO1rm96gJBhgvpJC2ECRFnynyap/iE8pW7VxGKRbttFjv98qtwJUJNINUC5NsyspiPtiHp4RZps9Wqxb2m506vOfPIQiHH2D+n/6loqWKi7YQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eWA24i4EKFkHNyRI7kE3m2xSP+4YggiW2X/O0QmcEoI=;
- b=fG3Bl9LBMO5dVL5wTA1HPGmfG+klNrbTcezRaNwn1dcqhZAJaSSorB6QQLUG8Hguttd1hfLIDJaXxXS9dMhG+aK7Hy00zJWOkvc37w5tn9584eTXxO2Sn91a8wddZlWXOtFF0VRkRVv8gf9Ze+bMi/EsDSJixzhH1yHu7sav4qs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA0PR13MB4061.namprd13.prod.outlook.com (2603:10b6:806:99::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27; Wed, 9 Nov
- 2022 20:29:22 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::483b:9e84:fadc:da30]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::483b:9e84:fadc:da30%8]) with mapi id 15.20.5791.027; Wed, 9 Nov 2022
- 20:29:22 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
+        with ESMTP id S229561AbiKIUjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 15:39:36 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA1E13E14
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 12:39:34 -0800 (PST)
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6FD07423E1
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 20:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1668026372;
+        bh=Ff195CcAAagNX0m92EaNVCYbn7Hgh7WUt9/mtQ9NuM0=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=VuWwrVJkd1cjujTAa03mMsth7Skkq+EtFSzgnccnQ5F4sV+fWctuLxqk2Gd5nsVBW
+         itcUFDGsc/F/Q1+rpeHh55osQkZM4hrGPmMhRCUoD+zeJ58S+L3MusjmndvfPldNvD
+         peW4328eeG3VwIh4A6FJb3fkdQO8ZpIzhhduwb8ZG2rjwj9Om916XGkn7FH1rFCyVa
+         0+mUxK/mt1wOJ8TiPrPPP7d31BUv0XK10DqYmEFg33zHZj5gLvTjO/VugD+B3LDfqt
+         9e/fEcp6XSLaCWfKqF4ooRLNjcLPaHfIRbDZDV0Hrof+Xpe1IPVQUhkjVbswsMT5Ae
+         niKPC75kXiQSw==
+Received: by mail-pg1-f197.google.com with SMTP id s16-20020a632c10000000b0047084b16f23so4036521pgs.7
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 12:39:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ff195CcAAagNX0m92EaNVCYbn7Hgh7WUt9/mtQ9NuM0=;
+        b=H/TOBiDN3B91fiS0Vrs5wLIs/g/8ElS6q6tYIYs5xXTIauBQQ+M9lgsEoankx+Lv1w
+         e/ioZRT5kPCxRoWFBTQKuwPkMj1BdASs6ECaoH6DcJRJ3KXx7zM3STPjUs+54RfptOZU
+         ihs/GWZy883YdCCjHPlkPK3N1OHrlDG8cgBcUKUVkB4kdgbrppXwaPa09ZpcsGhRbC1A
+         VDuv2C7oB4GUnMHxA0OBxfTD6bvNxUym7nb+dDuqTeWP2pbYP18zAqARBg2gQ3iGWlxp
+         72eTDo0DfBBmNPwNMxz4Zp2ohOEOOvXxd461/2CZfNddzxOhPJSZiaD554Mwsk7ZJtm7
+         9t6A==
+X-Gm-Message-State: ACrzQf0SUk9k5qMSpTfwPNiyBTqNVPO9WADv9XqDBNiIGFqBZKveYih7
+        Le8RD4bTwlKEIrgLHJzQ2SAqACq1JYfg1bsWvhWbUSuAffUoWzY+gP3U8bP0D58TJpu4/GfKw4c
+        zDvHxEl/CMgJSrk3Puu7pJifY/+zCh/TsBQ==
+X-Received: by 2002:a17:902:d409:b0:186:af8d:4029 with SMTP id b9-20020a170902d40900b00186af8d4029mr61234574ple.78.1668026371105;
+        Wed, 09 Nov 2022 12:39:31 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM4JXAWra/tVZcXAw3AmKxWcBRN2xk/R4h2tcde8pq4PUjEldJ6J/h9WvoNX4EQ5ceVLiSpR3w==
+X-Received: by 2002:a17:902:d409:b0:186:af8d:4029 with SMTP id b9-20020a170902d40900b00186af8d4029mr61234563ple.78.1668026370825;
+        Wed, 09 Nov 2022 12:39:30 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id n9-20020a17090a394900b0021282014066sm1645118pjf.9.2022.11.09.12.39.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Nov 2022 12:39:29 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 0CEAD5FEAC; Wed,  9 Nov 2022 12:39:29 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 06CDA9F890;
+        Wed,  9 Nov 2022 12:39:29 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        edumazet@google.com, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Jaco Coetzee <jaco.coetzee@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net] nfp: change eeprom length to max length enumerators
-Date:   Wed,  9 Nov 2022 15:27:57 -0500
-Message-Id: <20221109202757.147024-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0202.namprd13.prod.outlook.com
- (2603:10b6:208:2be::27) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>, Liang Li <liali@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCHv3 net] bonding: fix ICMPv6 header handling when receiving IPv6 messages
+In-reply-to: <49594248-1fd7-23e2-1f17-9af896cd25b0@gmail.com>
+References: <20221109014018.312181-1-liuhangbin@gmail.com> <49594248-1fd7-23e2-1f17-9af896cd25b0@gmail.com>
+Comments: In-reply-to Eric Dumazet <eric.dumazet@gmail.com>
+   message dated "Wed, 09 Nov 2022 12:17:10 -0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA0PR13MB4061:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cea9bb7-cc01-4a8b-3c96-08dac29115bc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +hEMuB3eZNBsyFzl4DP9reeVW/EAJp8Rs3qzi0YLHEsWMswg0/nITlL6Tvp+ZAQnX7F7msIP9F8BBgl/6z9Q+WWFuSxZUvXmCYzy6PQ1uEiJBEorSu7qJDOnqd4FYE0RlpWvH6o6Qd2dROWAn08bMBz5W3PGeWkx15osas2yqCg9GchHSefmwDFz026SEKMGMgZqjVtngRjxipCkVzpW3P42r1MxEXdO/atdU2RopbvfPvVupMAtTSls+lFVVA2Je5tgnKEYH55at6QN5QKVhORrHfYhUJZNfIUyERaN0V7y1RKdWY1bpbYw6PNNcjNssR+Ll3sGvNe0kO9M2Y72yW/FcLzCrD3yFfNcUfx67MdxvgOYK7JuuP4EZOlUPxMJDX/l/0WLzBVMoMHf21c/3dacP82L9sKrOMGplGOoLaNqYQQQS4g3vrxeWgIWbBck6xUB8fzRUn65YeegBNjQmAT8ZuFM6rBbgcFjPCKs7L1m05d29locR1/jNU9LBWpKGO0py4R1ebxwZf9QK8/0kmHCjn+rwY4ijCUa3f3nB2ea0F2vqEx0BAV6txCzfSafoydMPz9ZlAzvEW1R05giJ6sUl53qIycdvVq8syJnzycEjARKULRJBnJbE6SWi4ckB67ppVS1nH18O1/ve2L2NpC77rowDTgMBWX/2gnTpHVGXsB2I/WecVyl3vE14tIscdHTyLPEvRhq5JfQoItLBdjNTlMT1DCQ9FC0s5vavo7zxrlpkeGBWGxZ9J5RWCdIR8OiisAz7PqVp3EtX3dP8f2Uu4QzOVGHlKs74LYanaO/Zc0FOaJjaN8jSyN8ZG8S
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(366004)(396003)(39840400004)(136003)(451199015)(38350700002)(38100700002)(8936002)(41300700001)(66556008)(6486002)(6666004)(26005)(6512007)(2616005)(107886003)(86362001)(478600001)(52116002)(6506007)(8676002)(4326008)(66946007)(110136005)(54906003)(186003)(1076003)(36756003)(316002)(83380400001)(5660300002)(44832011)(2906002)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ghXk1I+y2JwlItPujKBCjY/GdRPBc60QXM3XXmyoArTwsro2BQAhLFQjuoXc?=
- =?us-ascii?Q?Px33/Z1PSGTbayOHLT2/0pQrtbmCoJjbn0pdAhvLmyfHi6Zdj7CWFwN8bCFW?=
- =?us-ascii?Q?Fcjg52zwea1HHTg7n5Trp71rVgJx9MKQbOrEiEsprZN68WSFjvRMHRG2dGlZ?=
- =?us-ascii?Q?HW0J1zpPwDnyJ4HUytJVAQ8yn78MulV4i6ifa/Di94ZE4lwsn79UAFPbUO1s?=
- =?us-ascii?Q?gITVWcE1oJNp/4LiN/1L5Hw4waeCdMrGUDpFD2+KidYQVXyV1ckFwwPYbzS0?=
- =?us-ascii?Q?h/UvgmUdkC0JxHM+mlYs8nm4DykUidi6qotuBcoebL6ohOpU2jJZCgQTBMNE?=
- =?us-ascii?Q?brGquVRppED08bzprQyuhlmdHxrWoqSQhYHO83K7wKR8kJIYz8+9l2VJ3sUZ?=
- =?us-ascii?Q?WoCh5g8jRxOjbbSpaXPDUAFryMI3Ya4F06E8+I8eUl91tdxtMokRR7P2gORP?=
- =?us-ascii?Q?A6CEYF1bEDj+KEuwj6eCywHuoiUweZ8R01ZCg626eKaHfwuJK2uJU9f7BxVB?=
- =?us-ascii?Q?8ULsWntmP8UVG/tp/YMmN+viGagcRGzh+6DnWA+Q1S0+XgIiZcEouQaAMEsT?=
- =?us-ascii?Q?ecxFP1dtFHgVhUtYU/BLFgnMyNpVEr0T6uMSMPQF+eYbgJD/OFx93md1gJkH?=
- =?us-ascii?Q?jYnhj9nrtl2dkMTvAF8D71VbYnupPwC9rptub8Xjpi4dJI+fQgL0Z4OmQmpH?=
- =?us-ascii?Q?JE1PTH4YPMG3Oa+kqNzU5oT4lAwKoB91uYZmrqiEwLA0xnSLM28FtJictVMk?=
- =?us-ascii?Q?xqZEbaTmBfXggiwcCk30W6D6vaTQZZlag80eycSJ68AVyvo11L84YbLgVrdH?=
- =?us-ascii?Q?1oAOvcV6iR8GCgqHNjMwih9FKjiZA2APRoIvvUIvXlSHfoMAv92zWom6aLqn?=
- =?us-ascii?Q?2ZksMxMkblwGkOiXMXyKAqZK5OjQXbIZWz3MxwLtq636hWetfRlewVkgssCp?=
- =?us-ascii?Q?exPriGh9JvP0bz5QAjiN7ze/CmGUBPTs/PI6k9KvG+QpqWn+2tq5jYyUGoaD?=
- =?us-ascii?Q?UaKUI340ZhnoV6BVJck2lsah15abG6iFcNuB1rb17LZpkHLSjDOWiG9iarcT?=
- =?us-ascii?Q?1gvv3q4muZsyz31gjuJiBPxaWQ7evfONyxPAMxLS/iDOhrn6dJGdNtvrgjIu?=
- =?us-ascii?Q?1TWMUi/vN5oFv/AEAR6h92qGSuCJsjpKge1KzPFKm9op90E/fr07zvsdWf+Z?=
- =?us-ascii?Q?HC/DVY8wgG2lBEvCcA5iWQdUGZs5lSVLX+YnRqkFbgesxOVQNEzKF+TGtOnc?=
- =?us-ascii?Q?aeOkAJe257BnI8YGNtFX0nfyjJhJVfgoT6S64tv98Yt2p/kq0wnxPxMj55pa?=
- =?us-ascii?Q?BIDHF41pxJ/+MFcbn24LgSqBg8BE1GJrmv0yVxNuwp9Ul53tkqbDH6dQj22h?=
- =?us-ascii?Q?KRjiuPn0BF+RQX0rQ9YrZxEaSlv6Rb/rrEB40fANE5uQgbbXNcXVIFQvRxiw?=
- =?us-ascii?Q?T4RhoOvCi4HYxXp4H+3TEKGGDFPk3aB8+MoXXUWAwMyJpOWtoLjiDP/SSOSD?=
- =?us-ascii?Q?NFbA3/+GxiHSxyEXMTqJNdSX6xo/tKeDfhuXyduxXdXcYa+3lM8VER3UsRNi?=
- =?us-ascii?Q?lF4vVscBLk7wxlO5XlWGkshcR+iU2xpJE7R8e5qsPC6kV+2tZbBIYnPcM+/H?=
- =?us-ascii?Q?qQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cea9bb7-cc01-4a8b-3c96-08dac29115bc
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2022 20:29:21.9081
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AFEQDPTTfISvRJqcloI9llJpFflQxQ2UY1jubI6I7rYuXxeTjkpvgeSCkghGqm4pd77ck/zfmjqU7Av3vFEk7/TfW6QN9JT1S7JNKCEyPZs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR13MB4061
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <17539.1668026368.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 09 Nov 2022 12:39:28 -0800
+Message-ID: <17540.1668026368@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jaco Coetzee <jaco.coetzee@corigine.com>
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
 
-Extend the size of QSFP EEPROM for types SSF8436 and SFF8636
-from 256 to 640 bytes in order to expose all the EEPROM pages by
-ethtool.
+>
+>
+>On 11/8/22 17:40, Hangbin Liu wrote:
+>> Currently, we get icmp6hdr via function icmp6_hdr(), which needs the sk=
+b
+>> transport header to be set first. But there is no rule to ask driver se=
+t
+>> transport header before netif_receive_skb() and bond_handle_frame(). So
+>> we will not able to get correct icmp6hdr on some drivers.
+>>
+>> Fix this by checking the skb length manually and getting icmp6 header b=
+ased
+>> on the IPv6 header offset.
+>>
+>> Reported-by: Liang Li <liali@redhat.com>
+>> Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
+>> Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+>> Reviewed-by: David Ahern <dsahern@kernel.org>
+>> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>> ---
+>> v3: fix _hdr parameter warning reported by kernel test robot
+>> v2: use skb_header_pointer() to get icmp6hdr as Jay suggested.
+>> ---
+>>   drivers/net/bonding/bond_main.c | 9 +++++++--
+>>   1 file changed, 7 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond=
+_main.c
+>> index e84c49bf4d0c..2c6356232668 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -3231,12 +3231,17 @@ static int bond_na_rcv(const struct sk_buff *sk=
+b, struct bonding *bond,
+>>   		       struct slave *slave)
+>>   {
+>>   	struct slave *curr_active_slave, *curr_arp_slave;
+>> -	struct icmp6hdr *hdr =3D icmp6_hdr(skb);
+>>   	struct in6_addr *saddr, *daddr;
+>> +	const struct icmp6hdr *hdr;
+>> +	struct icmp6hdr _hdr;
+>>     	if (skb->pkt_type =3D=3D PACKET_OTHERHOST ||
+>>   	    skb->pkt_type =3D=3D PACKET_LOOPBACK ||
+>> -	    hdr->icmp6_type !=3D NDISC_NEIGHBOUR_ADVERTISEMENT)
+>> +	    ipv6_hdr(skb)->nexthdr !=3D NEXTHDR_ICMP)
+>
+>
+>What makes sure IPv6 header is in skb->head (linear part of the skb) ?
 
-For SFF-8636 and SFF-8436 specifications, the driver exposes
-256 bytes of EEPROM data for ethtool's get_module_eeprom()
-callback, resulting in "netlink error: Invalid argument" when
-an EEPROM read with an offset larger than 256 bytes is attempted.
+	Ah, missed that; skb_header_pointer() will take care of that
+(copying if necessary, not that it pulls the header), but it has to be
+called first.
 
-Changing the length enumerators to the _MAX_LEN
-variants exposes all 640 bytes of the EEPROM allowing upper
-pages 1, 2 and 3 to be read.
+	This isn't a problem new to this patch, the original code
+doesn't pull or copy the header, either.
 
-Fixes: 96d971e307cc ("ethtool: Add fallback to get_module_eeprom from netlink command")
-Signed-off-by: Jaco Coetzee <jaco.coetzee@corigine.com>
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
+	The equivalent function for ARP, bond_arp_rcv(), more or less
+inlines skb_header_pointer(), so it doesn't have this issue.
+
+	-J
+
+>
+>> +		goto out;
+>> +
+>> +	hdr =3D skb_header_pointer(skb, sizeof(struct ipv6hdr), sizeof(_hdr),=
+ &_hdr);
+>> +	if (!hdr || hdr->icmp6_type !=3D NDISC_NEIGHBOUR_ADVERTISEMENT)
+>>   		goto out;
+>>     	saddr =3D &ipv6_hdr(skb)->saddr;
+
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 22a5d2419084..1775997f9c69 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -1477,15 +1477,15 @@ nfp_port_get_module_info(struct net_device *netdev,
- 
- 		if (data < 0x3) {
- 			modinfo->type = ETH_MODULE_SFF_8436;
--			modinfo->eeprom_len = ETH_MODULE_SFF_8436_LEN;
-+			modinfo->eeprom_len = ETH_MODULE_SFF_8436_MAX_LEN;
- 		} else {
- 			modinfo->type = ETH_MODULE_SFF_8636;
--			modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
-+			modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
- 		}
- 		break;
- 	case NFP_INTERFACE_QSFP28:
- 		modinfo->type = ETH_MODULE_SFF_8636;
--		modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
-+		modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
- 		break;
- 	default:
- 		netdev_err(netdev, "Unsupported module 0x%x detected\n",
--- 
-2.30.2
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
