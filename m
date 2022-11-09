@@ -2,51 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4845622294
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 04:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A360622298
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 04:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229528AbiKID2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 22:28:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        id S230197AbiKIDaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 22:30:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiKID2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 22:28:38 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5074322BD6;
-        Tue,  8 Nov 2022 19:28:37 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N6VmT0xhhzRp5v;
-        Wed,  9 Nov 2022 11:28:25 +0800 (CST)
-Received: from [10.174.179.211] (10.174.179.211) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 9 Nov 2022 11:28:33 +0800
-Message-ID: <3c99ca30-dd89-03e9-481c-95310b562702@huawei.com>
-Date:   Wed, 9 Nov 2022 11:28:32 +0800
+        with ESMTP id S229982AbiKID34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 22:29:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B3B23BD6
+        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 19:28:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667964535;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vD224Hogxka5wNQa91Zymh6Ygmv+WpD4Z+GDd/Nec64=;
+        b=V3juxFVuGEJHf/bS3/DHOMDIyh1qnJYhQ28drjtFqQKq07137+nMovEBFR79A9OvKyGZTg
+        F6pOxv5sJnesbPpOQ8OnK7cMzEvHsUCaw9M1SRQ6QCmOPOlmO+X7lI7p/NXsQxSUNsOt4J
+        S9BBKpoJSUFKKGsLTDJsSIgn35fVNjk=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-664-JaTyjI9CM3iWi9np2jLmog-1; Tue, 08 Nov 2022 22:28:54 -0500
+X-MC-Unique: JaTyjI9CM3iWi9np2jLmog-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-13ca47a9815so8017619fac.17
+        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 19:28:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vD224Hogxka5wNQa91Zymh6Ygmv+WpD4Z+GDd/Nec64=;
+        b=v+SRANrabRDDDjkvow0PPn6UEVyNMXRbIUfJerxdX4vnApaSG4wNkOdrch/s5xfG4W
+         bnzvOYFu1ViKt3Gx9Jbep3acjlXZ5ky7r9RPGOG/0c4EfGm/Qtx600l4uW+NfHwnrZE6
+         1Yv+sQetEp10cC0FipcTXgIGX5FKX3+WocKOy/aPXUAYIrJ7tQrvZgRrbwMdEPwUy3PL
+         oQvrR5FCX0cffO+B8e7Fi5d7DcrlPSB2wBfRHwhIdguZNjBVBCdSJhhQIQHp+fCfQ4AO
+         2fMWn1KjNIty3NOC44+dKcIhjVDP5ntnwZs55IdF5ZTn4Ew7Yv3+kByHuMB/8CWarary
+         xK6w==
+X-Gm-Message-State: ACrzQf3Ci+jtRpzMEQf/tCp8F8rJp/Q4TD6AOGiD5I9ftxK2JvvSA5r7
+        6ghgf9GP2D+hwzWBzzwQCf2n8wqu7/+5HtSExTfuk8NeaXtiAyLhGGBHOS4Ed7BM+E0dYw4spHj
+        TaNVlA+SoAL36BcVhUFOJiMM4wt5abR6b
+X-Received: by 2002:a4a:2ccf:0:b0:49e:b502:3a2b with SMTP id o198-20020a4a2ccf000000b0049eb5023a2bmr9793072ooo.57.1667964533309;
+        Tue, 08 Nov 2022 19:28:53 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM7F+ESUW02GevhFXeHeZiWN+C8qmGvnQrxAgchRgTHWuxrTWr/5I2RPYR7pW6CVQHNQHYEXuWSbcbl1kJXQxyk=
+X-Received: by 2002:a4a:2ccf:0:b0:49e:b502:3a2b with SMTP id
+ o198-20020a4a2ccf000000b0049eb5023a2bmr9793067ooo.57.1667964533083; Tue, 08
+ Nov 2022 19:28:53 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH v1 0/3] rtlwifi: Correct inconsistent header guard
-To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "huawei.libin@huawei.com" <huawei.libin@huawei.com>
-References: <20221108093447.3588889-1-liwei391@huawei.com>
- <cc8f8393ab5e45f895fda98e6b42d1d3@realtek.com>
-From:   "liwei (GF)" <liwei391@huawei.com>
-In-Reply-To: <cc8f8393ab5e45f895fda98e6b42d1d3@realtek.com>
+References: <20221108103437.105327-1-sgarzare@redhat.com> <20221108103437.105327-3-sgarzare@redhat.com>
+In-Reply-To: <20221108103437.105327-3-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 9 Nov 2022 11:28:41 +0800
+Message-ID: <CACGkMEuRnqxESo=V2COnfUjP5jGLTXzNRt3=Tp2x-9jsS-RNGQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] vhost: fix range used in translate_desc()
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.211]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,53 +74,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 8, 2022 at 6:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>
+> vhost_iotlb_itree_first() requires `start` and `last` parameters
+> to search for a mapping that overlaps the range.
+>
+> In translate_desc() we cyclically call vhost_iotlb_itree_first(),
+> incrementing `addr` by the amount already translated, so rightly
+> we move the `start` parameter passed to vhost_iotlb_itree_first(),
+> but we should hold the `last` parameter constant.
+>
+> Let's fix it by saving the `last` parameter value before incrementing
+> `addr` in the loop.
+>
+> Fixes: 0bbe30668d89 ("vhost: factor out IOTLB")
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>
+> I'm not sure about the fixes tag. On the one I used this patch should
+> apply cleanly, but looking at the latest stable (4.9), maybe we should
+> use
+>
+> Fixes: a9709d6874d5 ("vhost: convert pre sorted vhost memory array to interval tree")
 
+I think this should be the right commit to fix.
 
-On 2022/11/9 8:32, Ping-Ke Shih wrote:
-> 
-> 
->> -----Original Message-----
->> From: Wei Li <liwei391@huawei.com>
->> Sent: Tuesday, November 8, 2022 5:35 PM
->> To: Ping-Ke Shih <pkshih@realtek.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>;
->> Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
->> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; huawei.libin@huawei.com
->> Subject: [PATCH v1 0/3] rtlwifi: Correct inconsistent header guard
-> 
-> Subject prefix should be "wifi: rtlwifi: ..."
->>
->> This patch set fixes some inconsistent header guards in module
->> rtl8188ee/rtl8723ae/rtl8192de, that may be copied but missing update.
->>
->> Wei Li (3):
->>   rtlwifi: rtl8188ee: Correct the header guard of rtl8188ee/*.h
->>   rtlwifi: rtl8723ae: Correct the header guard of
->>     rtl8723ae/{fw,led,phy}.h
->>   rtlwifi: rtl8192de: Correct the header guard of rtl8192de/{dm,led}.h
->>
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h     | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h     | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h     | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h     | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h  | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h     | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h     | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h    | 4 ++--
->>  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h    | 4 ++--
->>  16 files changed, 32 insertions(+), 32 deletions(-)
-> 
-> The changes aren't too much and commit contents/messages are very similar,
-> so I would like to squash 3 patches into single one.
+Other than this
 
-OK, I will combine this series in one patch, and fix the prefix in v2,
-thanks for your suggestion.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Thanks,
-Wei
+Thanks
+
+>
+> Suggestions?
+> ---
+>  drivers/vhost/vhost.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 40097826cff0..3c2359570df9 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -2053,7 +2053,7 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
+>         struct vhost_dev *dev = vq->dev;
+>         struct vhost_iotlb *umem = dev->iotlb ? dev->iotlb : dev->umem;
+>         struct iovec *_iov;
+> -       u64 s = 0;
+> +       u64 s = 0, last = addr + len - 1;
+>         int ret = 0;
+>
+>         while ((u64)len > s) {
+> @@ -2063,7 +2063,7 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
+>                         break;
+>                 }
+>
+> -               map = vhost_iotlb_itree_first(umem, addr, addr + len - 1);
+> +               map = vhost_iotlb_itree_first(umem, addr, last);
+>                 if (map == NULL || map->start > addr) {
+>                         if (umem != dev->iotlb) {
+>                                 ret = -EFAULT;
+> --
+> 2.38.1
+>
+
