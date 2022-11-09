@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0624A623037
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 17:34:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55E21623035
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 17:34:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbiKIQe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 11:34:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
+        id S230359AbiKIQey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 11:34:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230410AbiKIQew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 11:34:52 -0500
+        with ESMTP id S229527AbiKIQev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 11:34:51 -0500
 Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384821A05E;
-        Wed,  9 Nov 2022 08:34:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E31E1A3A1;
+        Wed,  9 Nov 2022 08:34:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=CNx2EvBgaSK9aSDl5n7dtYqaf36QTyssctQ2Sm28n8U=; b=VOzMv9ZbI1H3uX1yYfBGtAh3xN
-        xAtjtcjwrDAzIMopqcbRnIq5FDn4TYwmuVdg9rfGaGWC16JkG2SU8uPgSqz+sCZST6PEzBX2dFwNO
-        BUnvv4DBPKDN99s5U3EYjgYcCTFIy8eSa2Vjmy4XC8XIU+dObGIyvYT67QXfYcESuROk=;
+        bh=/rqSZTPHTzjvgQiKEtydX5Kmlo97LMyPbAHh98dxziY=; b=sDXwynUwMTWL9k/+n3l1jXgPBt
+        kJl0TjusG4QI7dFTev5pZph46nVAFRao/yDinHhxbDKqxAV3P1zkQrLUMUOXJ80REQKwz23zJkE6z
+        ScpyI1fcBBkNfae2UKZnzqVCNpjzv4xXBTERh8mfMfyNGDnGOfWHhTEW9QDCm9NjKE3w=;
 Received: from p200300daa72ee100054f3c61b16ef6e7.dip0.t-ipconnect.de ([2003:da:a72e:e100:54f:3c61:b16e:f6e7] helo=localhost.localdomain)
         by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
         (Exim 4.94.2)
         (envelope-from <nbd@nbd.name>)
-        id 1oso26-000l4N-Fp; Wed, 09 Nov 2022 17:34:34 +0100
+        id 1oso27-000l4N-BL; Wed, 09 Nov 2022 17:34:35 +0100
 From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 05/12] net: dsa: tag_mtk: assign per-port queues
-Date:   Wed,  9 Nov 2022 17:34:19 +0100
-Message-Id: <20221109163426.76164-6-nbd@nbd.name>
+Subject: [PATCH net-next v2 06/12] net: ethernet: mediatek: ppe: assign per-port queues for offloaded traffic
+Date:   Wed,  9 Nov 2022 17:34:20 +0100
+Message-Id: <20221109163426.76164-7-nbd@nbd.name>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221109163426.76164-1-nbd@nbd.name>
 References: <20221109163426.76164-1-nbd@nbd.name>
@@ -63,22 +61,100 @@ Keeps traffic sent to the switch within link speed limits
 
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- net/dsa/tag_mtk.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_ppe.c        | 18 ++++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_ppe.h        |  4 ++++
+ .../net/ethernet/mediatek/mtk_ppe_offload.c    | 12 +++++++++---
+ 3 files changed, 31 insertions(+), 3 deletions(-)
 
-diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-index 415d8ece242a..5953356b829d 100644
---- a/net/dsa/tag_mtk.c
-+++ b/net/dsa/tag_mtk.c
-@@ -25,6 +25,8 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
- 	u8 xmit_tpid;
- 	u8 *mtk_tag;
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 3ee2bf53f9e5..96ad0a9b79b4 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -399,6 +399,24 @@ int mtk_foe_entry_set_wdma(struct mtk_eth *eth, struct mtk_foe_entry *entry,
+ 	return 0;
+ }
  
-+	skb_set_queue_mapping(skb, dp->index);
++int mtk_foe_entry_set_queue(struct mtk_eth *eth, struct mtk_foe_entry *entry,
++			    unsigned int queue)
++{
++	u32 *ib2 = mtk_foe_entry_ib2(eth, entry);
 +
- 	/* Build the special tag after the MAC Source Address. If VLAN header
- 	 * is present, it's required that VLAN header and special tag is
- 	 * being combined. Only in this way we can allow the switch can parse
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
++		*ib2 &= ~MTK_FOE_IB2_QID_V2;
++		*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID_V2, queue);
++		*ib2 |= MTK_FOE_IB2_PSE_QOS_V2;
++	} else {
++		*ib2 &= ~MTK_FOE_IB2_QID;
++		*ib2 |= FIELD_PREP(MTK_FOE_IB2_QID, queue);
++		*ib2 |= MTK_FOE_IB2_PSE_QOS;
++	}
++
++	return 0;
++}
++
+ static bool
+ mtk_flow_entry_match(struct mtk_eth *eth, struct mtk_flow_entry *entry,
+ 		     struct mtk_foe_entry *data)
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
+index 0b7a67a958e4..be635864bb96 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+@@ -68,7 +68,9 @@ enum {
+ #define MTK_FOE_IB2_DSCP		GENMASK(31, 24)
+ 
+ /* CONFIG_MEDIATEK_NETSYS_V2 */
++#define MTK_FOE_IB2_QID_V2			GENMASK(6, 0)
+ #define MTK_FOE_IB2_PORT_MG_V2		BIT(7)
++#define MTK_FOE_IB2_PSE_QOS_V2		BIT(8)
+ #define MTK_FOE_IB2_DEST_PORT_V2	GENMASK(12, 9)
+ #define MTK_FOE_IB2_MULTICAST_V2	BIT(13)
+ #define MTK_FOE_IB2_WDMA_WINFO_V2	BIT(19)
+@@ -350,6 +352,8 @@ int mtk_foe_entry_set_pppoe(struct mtk_eth *eth, struct mtk_foe_entry *entry,
+ 			    int sid);
+ int mtk_foe_entry_set_wdma(struct mtk_eth *eth, struct mtk_foe_entry *entry,
+ 			   int wdma_idx, int txq, int bss, int wcid);
++int mtk_foe_entry_set_queue(struct mtk_eth *eth, struct mtk_foe_entry *entry,
++			    unsigned int queue);
+ int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
+ void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
+ int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 28bbd1df3e30..81afd5ee3fbf 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -188,7 +188,7 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
+ 			   int *wed_index)
+ {
+ 	struct mtk_wdma_info info = {};
+-	int pse_port, dsa_port;
++	int pse_port, dsa_port, queue;
+ 
+ 	if (mtk_flow_get_wdma_info(dev, dest_mac, &info) == 0) {
+ 		mtk_foe_entry_set_wdma(eth, foe, info.wdma_idx, info.queue,
+@@ -212,8 +212,6 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
+ 	}
+ 
+ 	dsa_port = mtk_flow_get_dsa_port(&dev);
+-	if (dsa_port >= 0)
+-		mtk_foe_entry_set_dsa(eth, foe, dsa_port);
+ 
+ 	if (dev == eth->netdev[0])
+ 		pse_port = 1;
+@@ -222,6 +220,14 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
+ 	else
+ 		return -EOPNOTSUPP;
+ 
++	if (dsa_port >= 0) {
++		mtk_foe_entry_set_dsa(eth, foe, dsa_port);
++		queue = 3 + dsa_port;
++	} else {
++		queue = pse_port - 1;
++	}
++	mtk_foe_entry_set_queue(eth, foe, queue);
++
+ out:
+ 	mtk_foe_entry_set_pse_port(eth, foe, pse_port);
+ 
 -- 
 2.38.1
 
