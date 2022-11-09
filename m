@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47C536232B0
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 19:41:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EAAB6232AF
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 19:41:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231316AbiKISlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 13:41:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        id S231329AbiKISlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 13:41:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbiKISlL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 13:41:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7873F140FA
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 10:41:04 -0800 (PST)
+        with ESMTP id S231316AbiKISlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 13:41:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8522228E
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 10:41:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D3ABB81F90
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6524861C7B
         for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 18:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7F7EC433C1;
-        Wed,  9 Nov 2022 18:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B354FC433D6;
+        Wed,  9 Nov 2022 18:41:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668019261;
-        bh=83BfM97XeSp7PlZhIS1DlOpBuQPOd9q42MJNZsOQUHw=;
+        s=k20201202; t=1668019262;
+        bh=VOjncjq39lUr9Yr6F6UVe6jgB2rgGXwJGD2Jzubmdjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RPvwm5RXfyXW/orpPUqTLDLLYWzn9kScX9kYZbgu061hH6DOry54KJ2ihR8fdzRim
-         692N7cJSsXh7akMU4rXGI0b4eU9+kf/GwP/aq0YEOJxgyDoCjeWfmR5iYWDUpT2OSo
-         jnvweQfYKMHhNovkwA67Uu7930tgmAEU/f/Q8WRaKChlhwlbU5yeyP9t2tcS0jLOTP
-         wKe8e5WBGRTHvqtjouh7gAcgYJBUc9BBKrPOHCCC5maPKchTDpo3vqgZJ0+yD0lKQq
-         YjpFrxX4cqudht15ZvhPFu/0eI4JtkLif1jh5FjrOZmL6gl+KZ/hxoEu/irfLyGoEl
-         6EPznp4R5rufg==
+        b=uow5DtoD8GnvvKidTP96xdsUrb7VtlMWP4hQbUNbK5PYLqoIHmEQV18bmL++KWI7Z
+         DMRlf52gi/WX9TG7qzQjR/PxhYbLyGbqz84LjYJgFVW2I4YImmGMQQfM08ilyeDUa4
+         9DL7UIWBAzuZ6GFeHP4pI1JeEnY6uP58Yc8sp0jZ7t4dbYRFVo1+RLVYHBw3nBpump
+         +jfzi7ih3x7VjL3Byp+j0b10lw8YU1ipPDAwupTANPWwVraImCkOmVlcPQzAjuMd1F
+         lpP99GxYtsPS1A9SF4iPyyJHyFGnfWKVaEB/LEy4XRvsbRRQNuQ9tihGjr8NjAZoyi
+         7BqZvTgwwOm8g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [V3 net 05/10] net/mlx5e: Add missing sanity checks for max TX WQE size
-Date:   Wed,  9 Nov 2022 10:40:45 -0800
-Message-Id: <20221109184050.108379-6-saeed@kernel.org>
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>
+Subject: [V3 net 06/10] net/mlx5e: Fix usage of DMA sync API
+Date:   Wed,  9 Nov 2022 10:40:46 -0800
+Message-Id: <20221109184050.108379-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221109184050.108379-1-saeed@kernel.org>
 References: <20221109184050.108379-1-saeed@kernel.org>
@@ -58,112 +59,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-The commit cited below started using the firmware capability for the
-maximum TX WQE size. This commit adds an important check to verify that
-the driver doesn't attempt to exceed this capability, and also restores
-another check mistakenly removed in the cited commit (a WQE must not
-exceed the page size).
+DMA sync functions should use the same direction that was used by DMA
+mapping. Use DMA_BIDIRECTIONAL for XDP_TX from regular RQ, which reuses
+the same mapping that was used for RX, and DMA_TO_DEVICE for XDP_TX from
+XSK RQ and XDP_REDIRECT, which establish a new mapping in this
+direction. On the RX side, use the same direction that was used when
+setting up the mapping (DMA_BIDIRECTIONAL for XDP, DMA_FROM_DEVICE
+otherwise).
 
-Fixes: c27bd1718c06 ("net/mlx5e: Read max WQEBBs on the SQ from firmware")
+Also don't skip sync for device when establishing a DMA_FROM_DEVICE
+mapping for RX, as some architectures (ARM) may require invalidating
+caches before the device can use the mapping. It doesn't break the
+bugfix made in
+commit 0b7cfa4082fb ("net/mlx5e: Fix page DMA map/unmap attributes"),
+since the bug happened on unmap.
+
+Fixes: 0b7cfa4082fb ("net/mlx5e: Fix page DMA map/unmap attributes")
+Fixes: b5503b994ed5 ("net/mlx5e: XDP TX forwarding support")
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h | 24 ++++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  7 ++++++
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  5 ++++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  4 +--
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 27 ++++++++++---------
+ 2 files changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index cb164b62f543..853f312cd757 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -11,6 +11,27 @@
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index 4685c652c97e..20507ef2f956 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -117,7 +117,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+ 	xdpi.page.rq = rq;
  
- #define INL_HDR_START_SZ (sizeof(((struct mlx5_wqe_eth_seg *)NULL)->inline_hdr.start))
+ 	dma_addr = page_pool_get_dma_addr(page) + (xdpf->data - (void *)xdpf);
+-	dma_sync_single_for_device(sq->pdev, dma_addr, xdptxd.len, DMA_TO_DEVICE);
++	dma_sync_single_for_device(sq->pdev, dma_addr, xdptxd.len, DMA_BIDIRECTIONAL);
  
-+/* IPSEC inline data includes:
-+ * 1. ESP trailer: up to 255 bytes of padding, 1 byte for pad length, 1 byte for
-+ *    next header.
-+ * 2. ESP authentication data: 16 bytes for ICV.
-+ */
-+#define MLX5E_MAX_TX_IPSEC_DS DIV_ROUND_UP(sizeof(struct mlx5_wqe_inline_seg) + \
-+					   255 + 1 + 1 + 16, MLX5_SEND_WQE_DS)
-+
-+/* 366 should be big enough to cover all L2, L3 and L4 headers with possible
-+ * encapsulations.
-+ */
-+#define MLX5E_MAX_TX_INLINE_DS DIV_ROUND_UP(366 - INL_HDR_START_SZ + VLAN_HLEN, \
-+					    MLX5_SEND_WQE_DS)
-+
-+/* Sync the calculation with mlx5e_sq_calc_wqe_attr. */
-+#define MLX5E_MAX_TX_WQEBBS DIV_ROUND_UP(MLX5E_TX_WQE_EMPTY_DS_COUNT + \
-+					 MLX5E_MAX_TX_INLINE_DS + \
-+					 MLX5E_MAX_TX_IPSEC_DS + \
-+					 MAX_SKB_FRAGS + 1, \
-+					 MLX5_SEND_WQEBB_NUM_DS)
-+
- #define MLX5E_RX_ERR_CQE(cqe) (get_cqe_opcode(cqe) != MLX5_CQE_RESP_SEND)
- 
- static inline
-@@ -424,6 +445,8 @@ mlx5e_set_eseg_swp(struct sk_buff *skb, struct mlx5_wqe_eth_seg *eseg,
- 
- static inline u16 mlx5e_stop_room_for_wqe(struct mlx5_core_dev *mdev, u16 wqe_size)
- {
-+	WARN_ON_ONCE(PAGE_SIZE / MLX5_SEND_WQE_BB < mlx5e_get_max_sq_wqebbs(mdev));
-+
- 	/* A WQE must not cross the page boundary, hence two conditions:
- 	 * 1. Its size must not exceed the page size.
- 	 * 2. If the WQE size is X, and the space remaining in a page is less
-@@ -436,7 +459,6 @@ static inline u16 mlx5e_stop_room_for_wqe(struct mlx5_core_dev *mdev, u16 wqe_si
- 		  "wqe_size %u is greater than max SQ WQEBBs %u",
- 		  wqe_size, mlx5e_get_max_sq_wqebbs(mdev));
- 
--
- 	return MLX5E_STOP_ROOM(wqe_size);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 364f04309149..e3a4f01bcceb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5694,6 +5694,13 @@ int mlx5e_attach_netdev(struct mlx5e_priv *priv)
- 		mlx5e_fs_set_state_destroy(priv->fs,
- 					   !test_bit(MLX5E_STATE_DESTROYING, &priv->state));
- 
-+	/* Validate the max_wqe_size_sq capability. */
-+	if (WARN_ON_ONCE(mlx5e_get_max_sq_wqebbs(priv->mdev) < MLX5E_MAX_TX_WQEBBS)) {
-+		mlx5_core_warn(priv->mdev, "MLX5E: Max SQ WQEBBs firmware capability: %u, needed %lu\n",
-+			       mlx5e_get_max_sq_wqebbs(priv->mdev), MLX5E_MAX_TX_WQEBBS);
-+		return -EIO;
-+	}
-+
- 	/* max number of channels may have changed */
- 	max_nch = mlx5e_calc_max_nch(priv->mdev, priv->netdev, profile);
- 	if (priv->channels.params.num_channels > max_nch) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index 6adca01fbdc9..f7897ddb29c5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -305,6 +305,8 @@ static void mlx5e_sq_calc_wqe_attr(struct sk_buff *skb, const struct mlx5e_tx_at
- 	u16 ds_cnt_inl = 0;
- 	u16 ds_cnt_ids = 0;
- 
-+	/* Sync the calculation with MLX5E_MAX_TX_WQEBBS. */
-+
- 	if (attr->insz)
- 		ds_cnt_ids = DIV_ROUND_UP(sizeof(struct mlx5_wqe_inline_seg) + attr->insz,
- 					  MLX5_SEND_WQE_DS);
-@@ -317,6 +319,9 @@ static void mlx5e_sq_calc_wqe_attr(struct sk_buff *skb, const struct mlx5e_tx_at
- 			inl += VLAN_HLEN;
- 
- 		ds_cnt_inl = DIV_ROUND_UP(inl, MLX5_SEND_WQE_DS);
-+		if (WARN_ON_ONCE(ds_cnt_inl > MLX5E_MAX_TX_INLINE_DS))
-+			netdev_warn(skb->dev, "ds_cnt_inl = %u > max %u\n", ds_cnt_inl,
-+				    (u16)MLX5E_MAX_TX_INLINE_DS);
- 		ds_cnt += ds_cnt_inl;
+ 	if (unlikely(xdp_frame_has_frags(xdpf))) {
+ 		sinfo = xdp_get_shared_info_from_frame(xdpf);
+@@ -131,7 +131,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+ 				skb_frag_off(frag);
+ 			len = skb_frag_size(frag);
+ 			dma_sync_single_for_device(sq->pdev, addr, len,
+-						   DMA_TO_DEVICE);
++						   DMA_BIDIRECTIONAL);
+ 		}
  	}
  
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 58084650151f..a61a43fc8d5c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -266,7 +266,7 @@ static inline bool mlx5e_rx_cache_get(struct mlx5e_rq *rq, union mlx5e_alloc_uni
+ 
+ 	addr = page_pool_get_dma_addr(au->page);
+ 	/* Non-XSK always uses PAGE_SIZE. */
+-	dma_sync_single_for_device(rq->pdev, addr, PAGE_SIZE, DMA_FROM_DEVICE);
++	dma_sync_single_for_device(rq->pdev, addr, PAGE_SIZE, rq->buff.map_dir);
+ 	return true;
+ }
+ 
+@@ -282,8 +282,7 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq, union mlx5e_alloc_u
+ 		return -ENOMEM;
+ 
+ 	/* Non-XSK always uses PAGE_SIZE. */
+-	addr = dma_map_page_attrs(rq->pdev, au->page, 0, PAGE_SIZE,
+-				  rq->buff.map_dir, DMA_ATTR_SKIP_CPU_SYNC);
++	addr = dma_map_page(rq->pdev, au->page, 0, PAGE_SIZE, rq->buff.map_dir);
+ 	if (unlikely(dma_mapping_error(rq->pdev, addr))) {
+ 		page_pool_recycle_direct(rq->page_pool, au->page);
+ 		au->page = NULL;
+@@ -427,14 +426,15 @@ mlx5e_add_skb_frag(struct mlx5e_rq *rq, struct sk_buff *skb,
+ {
+ 	dma_addr_t addr = page_pool_get_dma_addr(au->page);
+ 
+-	dma_sync_single_for_cpu(rq->pdev, addr + frag_offset, len, DMA_FROM_DEVICE);
++	dma_sync_single_for_cpu(rq->pdev, addr + frag_offset, len,
++				rq->buff.map_dir);
+ 	page_ref_inc(au->page);
+ 	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+ 			au->page, frag_offset, len, truesize);
+ }
+ 
+ static inline void
+-mlx5e_copy_skb_header(struct device *pdev, struct sk_buff *skb,
++mlx5e_copy_skb_header(struct mlx5e_rq *rq, struct sk_buff *skb,
+ 		      struct page *page, dma_addr_t addr,
+ 		      int offset_from, int dma_offset, u32 headlen)
+ {
+@@ -442,7 +442,8 @@ mlx5e_copy_skb_header(struct device *pdev, struct sk_buff *skb,
+ 	/* Aligning len to sizeof(long) optimizes memcpy performance */
+ 	unsigned int len = ALIGN(headlen, sizeof(long));
+ 
+-	dma_sync_single_for_cpu(pdev, addr + dma_offset, len, DMA_FROM_DEVICE);
++	dma_sync_single_for_cpu(rq->pdev, addr + dma_offset, len,
++				rq->buff.map_dir);
+ 	skb_copy_to_linear_data(skb, from, len);
+ }
+ 
+@@ -1538,7 +1539,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+ 
+ 	addr = page_pool_get_dma_addr(au->page);
+ 	dma_sync_single_range_for_cpu(rq->pdev, addr, wi->offset,
+-				      frag_size, DMA_FROM_DEVICE);
++				      frag_size, rq->buff.map_dir);
+ 	net_prefetch(data);
+ 
+ 	prog = rcu_dereference(rq->xdp_prog);
+@@ -1587,7 +1588,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+ 
+ 	addr = page_pool_get_dma_addr(au->page);
+ 	dma_sync_single_range_for_cpu(rq->pdev, addr, wi->offset,
+-				      rq->buff.frame0_sz, DMA_FROM_DEVICE);
++				      rq->buff.frame0_sz, rq->buff.map_dir);
+ 	net_prefetchw(va); /* xdp_frame data area */
+ 	net_prefetch(va + rx_headroom);
+ 
+@@ -1608,7 +1609,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+ 
+ 		addr = page_pool_get_dma_addr(au->page);
+ 		dma_sync_single_for_cpu(rq->pdev, addr + wi->offset,
+-					frag_consumed_bytes, DMA_FROM_DEVICE);
++					frag_consumed_bytes, rq->buff.map_dir);
+ 
+ 		if (!xdp_buff_has_frags(&xdp)) {
+ 			/* Init on the first fragment to avoid cold cache access
+@@ -1905,7 +1906,7 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
+ 	mlx5e_fill_skb_data(skb, rq, au, byte_cnt, frag_offset);
+ 	/* copy header */
+ 	addr = page_pool_get_dma_addr(head_au->page);
+-	mlx5e_copy_skb_header(rq->pdev, skb, head_au->page, addr,
++	mlx5e_copy_skb_header(rq, skb, head_au->page, addr,
+ 			      head_offset, head_offset, headlen);
+ 	/* skb linear part was allocated with headlen and aligned to long */
+ 	skb->tail += headlen;
+@@ -1939,7 +1940,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 
+ 	addr = page_pool_get_dma_addr(au->page);
+ 	dma_sync_single_range_for_cpu(rq->pdev, addr, head_offset,
+-				      frag_size, DMA_FROM_DEVICE);
++				      frag_size, rq->buff.map_dir);
+ 	net_prefetch(data);
+ 
+ 	prog = rcu_dereference(rq->xdp_prog);
+@@ -1987,7 +1988,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 
+ 	if (likely(frag_size <= BIT(MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE))) {
+ 		/* build SKB around header */
+-		dma_sync_single_range_for_cpu(rq->pdev, head->addr, 0, frag_size, DMA_FROM_DEVICE);
++		dma_sync_single_range_for_cpu(rq->pdev, head->addr, 0, frag_size, rq->buff.map_dir);
+ 		prefetchw(hdr);
+ 		prefetch(data);
+ 		skb = mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_size, 0);
+@@ -2009,7 +2010,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 		}
+ 
+ 		prefetchw(skb->data);
+-		mlx5e_copy_skb_header(rq->pdev, skb, head->page, head->addr,
++		mlx5e_copy_skb_header(rq, skb, head->page, head->addr,
+ 				      head_offset + rx_headroom,
+ 				      rx_headroom, head_size);
+ 		/* skb linear part was allocated with headlen and aligned to long */
 -- 
 2.38.1
 
