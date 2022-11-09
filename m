@@ -2,87 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE39A622E99
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 16:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E74622EA6
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 16:04:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbiKIPBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 10:01:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
+        id S231716AbiKIPEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 10:04:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231667AbiKIPBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 10:01:00 -0500
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEDB5FF1
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 07:00:58 -0800 (PST)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4N6p7R0hkRz4f3kpT
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 23:00:51 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP4 (Coremail) with SMTP id gCh0CgC329ilwGtjRn37AA--.9537S4;
-        Wed, 09 Nov 2022 23:00:54 +0800 (CST)
-From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org
-Subject: [PATCH net] net: bgmac: Drop free_netdev() from bgmac_enet_remove()
-Date:   Wed,  9 Nov 2022 15:01:36 +0000
-Message-Id: <20221109150136.2991171-1-weiyongjun@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S231771AbiKIPEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 10:04:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8071BC8B
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 07:03:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668006228;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zqiSLvJxdke/yqrf6iYu6+yVJoRzkJ0McEbSIHch4qc=;
+        b=Y2li8mvM8SpG9SmHv5qZtUcOKjSsD0oPPPBcZ93JY/K6szB/8R5pl5dAjslI+nfQ6BI6+q
+        /IIIeCKlLFkTeqNtT/En2cGawd9YElIO1LhNvsW1ghSIiWLDtFkOe3WIbw6GcC0uDbHtHD
+        ST+aLWVW4NLbUCjzlGfDRccA1S8OJXU=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-614-M9XV-9WON7CtozL5TdDx7Q-1; Wed, 09 Nov 2022 10:03:46 -0500
+X-MC-Unique: M9XV-9WON7CtozL5TdDx7Q-1
+Received: by mail-qv1-f72.google.com with SMTP id d8-20020a0cfe88000000b004bb65193fdcso11840177qvs.12
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 07:03:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zqiSLvJxdke/yqrf6iYu6+yVJoRzkJ0McEbSIHch4qc=;
+        b=tA9BpFkvCqFsWXzrTK2rXC+IzjExrGKRL8srYcxO0ZcQ8xLhswASLuolvdGsWfeROL
+         kRgcs8DSiY5VZ+YIyYlwzLI2jay14xmtVYpGMpUW/nQmDQ+7zwpnLh1dUmepMDXZRWh6
+         JE4QcDLWpwOdaPqMtJlmHm07J/FKEPDBIEcIf0yMCgTzhWn2vFx4V6KQgssuwxe74EQY
+         OvAs4vSDGxym8HPiFPqvp6C65nVQCltY1elS50TDOcmPZEGtpDavQjecSbgmgEkJRk5e
+         3g2kbTN6nywwtVhqtI3HXdEcT8hHnBtvTZU8DAzKPeo4umLbzPL5hVIn0uHBnTdzLM3c
+         cdXw==
+X-Gm-Message-State: ACrzQf0ly1sM5453RxSp1uIQWoZcSrfpCX3X3uK4L9ONUNNJs4z+Z1g3
+        8mLhrcQoUpynGFmTXR4CgZar93kFmZVzbDVp9XLxhi5p99erS+glB8E9x2T3e+QM4q/++w61vgq
+        /56JFfobbE5QqV4bz
+X-Received: by 2002:a05:620a:1476:b0:6fa:4c67:83ec with SMTP id j22-20020a05620a147600b006fa4c6783ecmr31728047qkl.23.1668006225835;
+        Wed, 09 Nov 2022 07:03:45 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM5W/7Ofyy9aq2b4znPe4up0GqSbcYRBkArYCCUVmHJGVm6seQcJp68VlQkJ57qQhD7SVx9FuQ==
+X-Received: by 2002:a05:620a:1476:b0:6fa:4c67:83ec with SMTP id j22-20020a05620a147600b006fa4c6783ecmr31728001qkl.23.1668006225495;
+        Wed, 09 Nov 2022 07:03:45 -0800 (PST)
+Received: from localhost ([66.187.232.66])
+        by smtp.gmail.com with ESMTPSA id az8-20020a05620a170800b006bb87c4833asm11102303qkb.109.2022.11.09.07.03.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 07:03:44 -0800 (PST)
+Date:   Wed, 9 Nov 2022 16:03:40 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, Bo.Jiao@mediatek.com,
+        sujuan.chen@mediatek.com, ryder.Lee@mediatek.com,
+        evelyn.tsai@mediatek.com, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, daniel@makrotopia.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        angelogioacchino.delregno@collabora.com, kvalo@kernel.org
+Subject: Re: [PATCH v4 net-next 0/8] introduce WED RX support to MT7986 SoC
+Message-ID: <Y2vBTBUw47sshA+E@localhost.localdomain>
+References: <cover.1667687249.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgC329ilwGtjRn37AA--.9537S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw4kWw1xKrWfCr1UCw45ZFb_yoWfCFgEkr
-        15ur4rJw45Jryjk34q9r4fAryvkas0vwnY9FyagrW3A3s2qr18Grs7ury5JrZrW3y5CF98
-        Arn3KayIv3409jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUboxYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
-        Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x02
-        67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
-        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-        x7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Y
-        z7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zV
-        AF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
-        IxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3Jw
-        CI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnI
-        WIevJa73UjIFyTuYvjxUOyCJDUUUU
-X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gRH5EQBfd9X8l7db"
+Content-Disposition: inline
+In-Reply-To: <cover.1667687249.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
 
-netdev is allocated in bgmac_alloc() with devm_alloc_etherdev() and will
-be auto released in ->remove and ->probe failure path. Using free_netdev()
-in bgmac_enet_remove() leads to double free.
+--gRH5EQBfd9X8l7db
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> Similar to TX counterpart available on MT7622 and MT7986, introduce
+> RX Wireless Ethernet Dispatch available on MT7986 SoC in order to
+> offload traffic received by wlan nic to the wired interfaces (lan/wan).
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
-index 5fb3af5670ec..3038386a5afd 100644
---- a/drivers/net/ethernet/broadcom/bgmac.c
-+++ b/drivers/net/ethernet/broadcom/bgmac.c
-@@ -1568,7 +1568,6 @@ void bgmac_enet_remove(struct bgmac *bgmac)
- 	phy_disconnect(bgmac->net_dev->phydev);
- 	netif_napi_del(&bgmac->napi);
- 	bgmac_dma_free(bgmac);
--	free_netdev(bgmac->net_dev);
- }
- EXPORT_SYMBOL_GPL(bgmac_enet_remove);
- 
--- 
-2.34.1
+Hi all,
+
+I noticed today the series state is 'Awaiting Upstream'. I am wondering if
+this series is expected to go through a different tree, e.g. wireless one
+(adding Kalle in cc). In this particular case the series changes only
+the mtk ethernet driver and mt76 is built since we modify a common include =
+(but
+there are no changes in mt76). My personal opinion is this series is suited=
+ to
+go through net-next tree but I would be fine even if it goes through Kalle's
+one. Any opinions?
+
+Regards,
+Lorenzo
+
+>=20
+> Changes since v3:
+> - remove reset property in ethsys dts node
+> - rely on readx_poll_timeout in wo mcu code
+> - fix typos
+> - move wo-ccif binding in soc folder
+> - use reserved-memory for wo-dlm
+> - improve wo-ccif binding
+>=20
+> Changes since v2:
+> - rely on of_reserved_mem APIs in mcu code
+> - add some dts fixes
+> - rename {tx,rx}_wdma in {rx,tx}_wdma
+> - update entry in maintainers file
+>=20
+> Changes since v1:
+> - fix sparse warnings
+> - rely on memory-region property in mt7622-wed.yaml
+> - some more binding fixes
+>=20
+> Lorenzo Bianconi (7):
+>   arm64: dts: mediatek: mt7986: add support for RX Wireless Ethernet
+>     Dispatch
+>   dt-bindings: net: mediatek: add WED RX binding for MT7986 eth driver
+>   net: ethernet: mtk_wed: introduce wed wo support
+>   net: ethernet: mtk_wed: rename tx_wdma array in rx_wdma
+>   net: ethernet: mtk_wed: add configure wed wo support
+>   net: ethernet: mtk_wed: add rx mib counters
+>   MAINTAINERS: update MEDIATEK ETHERNET entry
+>=20
+> Sujuan Chen (1):
+>   net: ethernet: mtk_wed: introduce wed mcu support
+>=20
+>  .../arm/mediatek/mediatek,mt7622-wed.yaml     |  52 ++
+>  .../soc/mediatek/mediatek,mt7986-wo-ccif.yaml |  51 ++
+>  MAINTAINERS                                   |   1 +
+>  arch/arm64/boot/dts/mediatek/mt7986a.dtsi     |  65 ++
+>  drivers/net/ethernet/mediatek/Makefile        |   2 +-
+>  drivers/net/ethernet/mediatek/mtk_wed.c       | 619 ++++++++++++++++--
+>  drivers/net/ethernet/mediatek/mtk_wed.h       |  21 +
+>  .../net/ethernet/mediatek/mtk_wed_debugfs.c   |  87 +++
+>  drivers/net/ethernet/mediatek/mtk_wed_mcu.c   | 387 +++++++++++
+>  drivers/net/ethernet/mediatek/mtk_wed_regs.h  | 129 +++-
+>  drivers/net/ethernet/mediatek/mtk_wed_wo.c    | 508 ++++++++++++++
+>  drivers/net/ethernet/mediatek/mtk_wed_wo.h    | 282 ++++++++
+>  include/linux/soc/mediatek/mtk_wed.h          | 106 ++-
+>  13 files changed, 2256 insertions(+), 54 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediat=
+ek,mt7986-wo-ccif.yaml
+>  create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+>  create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_wo.c
+>  create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_wo.h
+>=20
+> --=20
+> 2.38.1
+>=20
+
+--gRH5EQBfd9X8l7db
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY2vBSQAKCRA6cBh0uS2t
+rPcgAP9PAG0essRbeHBLaiZaGlJXLeM6J4qukctGB9+r/1Ix1QEA8bLkD/GDnBc4
+J4EU5i4C57QJ7m+WDzf/nKWJReThFg0=
+=jPqc
+-----END PGP SIGNATURE-----
+
+--gRH5EQBfd9X8l7db--
 
