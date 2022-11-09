@@ -2,73 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A05622E23
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 15:42:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E57622E4F
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 15:48:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbiKIOmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 09:42:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
+        id S231565AbiKIOsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 09:48:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiKIOl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 09:41:56 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F08A30A
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 06:41:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FTcfHuyYoh551JGIrA5f2XuAs3eq8/LlB4a/Ckk2dEE=; b=UsmMY/bK7gHm8vFKoNqQFBkLR7
-        o/LjHPoHqpuhunFWBrqWS7aI+X2cCVs9CoBQwL99VLzwadvTuGnn7TNvzasW4ZxlckbNTzLeFCszy
-        1rUD48NV3w5K1OCE6kzkD+o+GGo2hk38qgW69vP5B4I3BDwEnmg7Hjre2gp8mPF6ULVA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1osmH0-001vFU-73; Wed, 09 Nov 2022 15:41:50 +0100
-Date:   Wed, 9 Nov 2022 15:41:50 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Angelo Dureghello <angelo.dureghello@timesys.com>
-Cc:     vivien.didelot@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: enable set_policy
-Message-ID: <Y2u8LijNoA1BuXLw@lunn.ch>
-References: <20221109113521.240054-1-angelo.dureghello@timesys.com>
+        with ESMTP id S231667AbiKIOsq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 09:48:46 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0814186C6
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 06:48:44 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id a67so27567943edf.12
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 06:48:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=7USN0G8Nj6bFP0DAG8wpDATUtQ4+Fo+i57WTNeIkt9o=;
+        b=NRt78M2Sb88BheBzAT20bUfEl8jig4axjLGE9cA4Lt1JAoMq4Kp2dRwmyJftLj+Aiz
+         JHHlO0YI2UjwVjPsI8Nep5TgZzvmeP1uvD0R9Zch0I38Q1dCIN54ZaXZRi5Bwm4n326w
+         owPJoFtjtzvynKQh3U1yx3zMtALznwO78lMrgqzHwN9SeFU4BE9+Yp4Y0wQWfHWdgwGJ
+         GUT9qMXOqexjc2b21CP5h0SDiefsKQuvsslSMYP9yRh1dWyR1gWDkShbMekAFnP4cKV+
+         /OcTddzVbBhYvuGTeG6Q+sgMfEeRmBl0hHWHJ1WrbEtP9RUyvtc5MsB8UmpPIZ+Uo4k5
+         0LNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7USN0G8Nj6bFP0DAG8wpDATUtQ4+Fo+i57WTNeIkt9o=;
+        b=bSWLztojXq1shXijaHQxhQYbxlXs0K8pPVcaWaoDlqaXxVlwRB1KiWcvwxX+GBjPkJ
+         AEgKARtTIk2a2H/nIAL0Bc+Vb5glEr97L7Tg5gJzFeKCGzOEynZDYPocAJiyoYdwsC/n
+         7vTFP/Z6ezKbMIwCv4hW4rhxUzVyl3nfl55QZDy2mXcgVlRwabQSvnF6V951wP0cE8B4
+         X+fvhkNX/oIvGRA3aC2NvD9WEQ6kKtyUHYsfijlNAjiCojMUfmWAaO+XPtWEsSHtge4G
+         VT63BLglHg0yBDJJbYeELKGHez3IceL5Wdk2ngbqFDDyVifRxc1zjFtPc/AZyXDlXPtG
+         odag==
+X-Gm-Message-State: ACrzQf07kPkx7jhKrd4mmOuzWoRacyQ8UAQBk2nEjVJyhR9OzEh12f/P
+        PE3HdqvOE5xy5srYYX4BLcceZKY9HCuBav12GZ7z9A==
+X-Google-Smtp-Source: AMsMyM7561mKq4Buhe3zDStvs0P4R0k11DgxiwW71lUIvN+scEkFvD5qN931ug979+El3bYeMCLFhuO0FxQfFbUIUN8=
+X-Received: by 2002:aa7:d6d1:0:b0:463:ba50:e574 with SMTP id
+ x17-20020aa7d6d1000000b00463ba50e574mr42357603edr.158.1668005323470; Wed, 09
+ Nov 2022 06:48:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109113521.240054-1-angelo.dureghello@timesys.com>
+References: <20221109043845.16617-1-balamanikandan.gunasundar@microchip.com> <CAPDyKFo+FUAZ=1Vu4+503ch5_Wrw47BanTjdB=7J8XhRwczyqg@mail.gmail.com>
+In-Reply-To: <CAPDyKFo+FUAZ=1Vu4+503ch5_Wrw47BanTjdB=7J8XhRwczyqg@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 9 Nov 2022 15:48:32 +0100
+Message-ID: <CACRpkdYeJ0NuJr_RF10oMAEuhYTBfaLfHoZ=b3A2f4BqXkvzOQ@mail.gmail.com>
+Subject: Re: [PATCH] mmc: atmel-mci: Convert to gpio descriptors
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Balamanikandan Gunasundar 
+        <balamanikandan.gunasundar@microchip.com>,
+        ludovic.desroches@microchip.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, 3chas3@gmail.com,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 12:35:21PM +0100, Angelo Dureghello wrote:
-> Enabling set_policy capability for mv88e6321.
-> 
-> Signed-off-by: Angelo Dureghello <angelo.dureghello@timesys.com>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 2479be3a1e35..78648c80dbc3 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -5075,6 +5075,7 @@ static const struct mv88e6xxx_ops mv88e6321_ops = {
->  	.port_sync_link = mv88e6xxx_port_sync_link,
->  	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
->  	.port_tag_remap = mv88e6095_port_tag_remap,
-> +	.port_set_policy = mv88e6352_port_set_policy,
->  	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
->  	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
->  	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+On Wed, Nov 9, 2022 at 1:39 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> On Wed, 9 Nov 2022 at 05:39, Balamanikandan Gunasundar
+(...)
+> > --- a/drivers/mmc/host/atmel-mci.c
+> > +++ b/drivers/mmc/host/atmel-mci.c
+> > @@ -19,7 +19,8 @@
+> >  #include <linux/module.h>
+> >  #include <linux/of.h>
+> >  #include <linux/of_device.h>
+> > -#include <linux/of_gpio.h>
+> > +#include <linux/irq.h>
+> > +#include <linux/gpio/consumer.h>
 
-The mv88e6321 is part of the MV88E6XXX_FAMILY_6320. If this is valid
-for the mv88e6321, it should also be valid for mv88e6320. Please add
-it there as well.
+This is nice, but higher up the driver also #include <linux/gpio.h>
+so delete that line too, <linux/gpio/consumer.h> should be enough.
 
-   Thanks
-	Andrew
+> > -                       of_get_named_gpio(cnp, "cd-gpios", 0);
+> > +                       devm_gpiod_get_from_of_node(&pdev->dev, cnp,
+> > +                                                   "cd-gpios",
+> > +                                                   0, GPIOD_IN, "cd-gpios");
+(...)
+> >                 pdata->slot[slot_id].wp_pin =
+> > -                       of_get_named_gpio(cnp, "wp-gpios", 0);
+> > +                       devm_gpiod_get_from_of_node(&pdev->dev, cnp,
+> > +                                                   "wp-gpios",
+> > +                                                   0, GPIOD_IN, "wp-gpios");
+
+Hm. Dmitry is trying to get rid of of_get_named_gpio() I think.
+
+But I suppose we can migrate to fwnode later.
+
+This is at least better than before so go with this for now.
+
+Yours,
+Linus Walleij
