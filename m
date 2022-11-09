@@ -2,304 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67528622309
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 05:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8F562230E
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 05:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbiKIEUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 23:20:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
+        id S229508AbiKIEW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 23:22:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiKIETd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 23:19:33 -0500
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAFA10B77;
-        Tue,  8 Nov 2022 20:19:20 -0800 (PST)
-Message-ID: <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1667967558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ouYOFF6aFUVHomGahLwuODRnf5pOyTvr4vgnuiqDJD0=;
-        b=AY35qZK/X4oWooNNnwuekvQDtqa8AcUwtE/S/0ekk/r+Dx2IsSnICVl/zQ1u2d27Zyjy59
-        f8BTR7VPu+AHoFlfpu5J79J2sq4QVIsTYBhzfjnvSjlaJuVFnDCofTd8hJR81N09X65e8v
-        gf4rYLAVK08x6oT6O3FSvjzLvw5uIYM=
-Date:   Tue, 8 Nov 2022 20:19:13 -0800
+        with ESMTP id S229452AbiKIEW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 23:22:28 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BBF13DDB;
+        Tue,  8 Nov 2022 20:22:28 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2A94M91x064361;
+        Tue, 8 Nov 2022 22:22:09 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1667967729;
+        bh=RwAET4xnYfql+iPYftgqIgFKkb1Ikt+J8M4nWlkf1+M=;
+        h=From:To:CC:Subject:Date;
+        b=xC/KnrdwktIISQgkfqp2KbT51cb01rVB32Q+XKJdiKZGcASND+9GgEcl6K4uC4dde
+         WE3hFz6j+4R1T+s3jnWT7Ae/4mvX4BvpTpFa9UIdfGbF+I1S1vvU8i4Qe5zNIrxyp9
+         /+Rb/bzOQusO17ujacYC4fnVqAB+uw3wxrNFW2n8=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2A94M9Pq008289
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Nov 2022 22:22:09 -0600
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 8 Nov
+ 2022 22:22:09 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 8 Nov 2022 22:22:09 -0600
+Received: from uda0492258.dhcp.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2A94M4R7111905;
+        Tue, 8 Nov 2022 22:22:04 -0600
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
+        <vladimir.oltean@nxp.com>, <vigneshr@ti.com>, <nsekhar@ti.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH net-next v5 0/3] Add support for QSGMII mode for J721e CPSW9G to am65-cpsw driver
+Date:   Wed, 9 Nov 2022 09:52:00 +0530
+Message-ID: <20221109042203.375042-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Subject: Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp metadata into skb
- context
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20221104032532.1615099-1-sdf@google.com>
- <20221104032532.1615099-7-sdf@google.com>
- <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
- <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
- <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
-In-Reply-To: <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/8/22 7:07 PM, Martin KaFai Lau wrote:
-> On 11/8/22 1:54 PM, Stanislav Fomichev wrote:
->> On Mon, Nov 7, 2022 at 2:02 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->>>
->>> On 11/3/22 8:25 PM, Stanislav Fomichev wrote:
->>>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
->>>> index 59c9fd55699d..dba857f212d7 100644
->>>> --- a/include/linux/skbuff.h
->>>> +++ b/include/linux/skbuff.h
->>>> @@ -4217,9 +4217,13 @@ static inline bool skb_metadata_differs(const struct 
->>>> sk_buff *skb_a,
->>>>               true : __skb_metadata_differs(skb_a, skb_b, len_a);
->>>>    }
->>>>
->>>> +void skb_metadata_import_from_xdp(struct sk_buff *skb, size_t len);
->>>> +
->>>>    static inline void skb_metadata_set(struct sk_buff *skb, u8 meta_len)
->>>>    {
->>>>        skb_shinfo(skb)->meta_len = meta_len;
->>>> +     if (meta_len)
->>>> +             skb_metadata_import_from_xdp(skb, meta_len);
->>>>    }
->>>>
->>> [ ... ]
->>>
->>>> +struct xdp_to_skb_metadata {
->>>> +     u32 magic; /* xdp_metadata_magic */
->>>> +     u64 rx_timestamp;
->>>> +} __randomize_layout;
->>>> +
->>>> +struct bpf_patch;
->>>> +
->>>
->>> [ ... ]
->>>
->>>> +void skb_metadata_import_from_xdp(struct sk_buff *skb, size_t len)
->>>> +{
->>>> +     struct xdp_to_skb_metadata *meta = (void *)(skb_mac_header(skb) - len);
->>>> +
->>>> +     /* Optional SKB info, currently missing:
->>>> +      * - HW checksum info           (skb->ip_summed)
->>>> +      * - HW RX hash                 (skb_set_hash)
->>>> +      * - RX ring dev queue index    (skb_record_rx_queue)
->>>> +      */
->>>> +
->>>> +     if (len != sizeof(struct xdp_to_skb_metadata))
->>>> +             return;
->>>> +
->>>> +     if (meta->magic != xdp_metadata_magic)
->>>> +             return;
->>>> +
->>>> +     if (meta->rx_timestamp) {
->>>> +             *skb_hwtstamps(skb) = (struct skb_shared_hwtstamps){
->>>> +                     .hwtstamp = ns_to_ktime(meta->rx_timestamp),
->>>> +             };
->>>> +     }
->>>> +}
->>>
->>> Considering the metadata will affect the gro, should the meta be cleared after
->>> importing to the skb?
->>
->> Yeah, good suggestion, will clear it here.
->>
->>> [ ... ]
->>>
->>>> +/* Since we're not actually doing a call but instead rewriting
->>>> + * in place, we can only afford to use R0-R5 scratch registers.
->>>> + *
->>>> + * We reserve R1 for bpf_xdp_metadata_export_to_skb and let individual
->>>> + * metadata kfuncs use only R0,R4-R5.
->>>> + *
->>>> + * The above also means we _cannot_ easily call any other helper/kfunc
->>>> + * because there is no place for us to preserve our R1 argument;
->>>> + * existing R6-R9 belong to the callee.
->>>> + */
->>>> +void xdp_metadata_export_to_skb(const struct bpf_prog *prog, struct 
->>>> bpf_patch *patch)
->>>> +{
->>>> +     u32 func_id;
->>>> +
->>>> +     /*
->>>> +      * The code below generates the following:
->>>> +      *
->>>> +      * void bpf_xdp_metadata_export_to_skb(struct xdp_md *ctx)
->>>> +      * {
->>>> +      *      struct xdp_to_skb_metadata *meta;
->>>> +      *      int ret;
->>>> +      *
->>>> +      *      ret = bpf_xdp_adjust_meta(ctx, -sizeof(*meta));
->>>> +      *      if (!ret)
->>>> +      *              return;
->>>> +      *
->>>> +      *      meta = ctx->data_meta;
->>>> +      *      meta->magic = xdp_metadata_magic;
->>>> +      *      meta->rx_timestamp = bpf_xdp_metadata_rx_timestamp(ctx);
->>>> +      * }
->>>> +      *
->>>> +      */
->>>> +
->>>> +     bpf_patch_append(patch,
->>>> +             /* r2 = ((struct xdp_buff *)r1)->data_meta; */
->>>> +             BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1,
->>>> +                         offsetof(struct xdp_buff, data_meta)),
->>>> +             /* r3 = ((struct xdp_buff *)r1)->data; */
->>>> +             BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_1,
->>>> +                         offsetof(struct xdp_buff, data)),
->>>> +             /* if (data_meta != data) return;
->>>> +              *
->>>> +              *      data_meta > data: xdp_data_meta_unsupported()
->>>> +              *      data_meta < data: already used, no need to touch
->>>> +              */
->>>> +             BPF_JMP_REG(BPF_JNE, BPF_REG_2, BPF_REG_3, S16_MAX),
->>>> +
->>>> +             /* r2 -= sizeof(struct xdp_to_skb_metadata); */
->>>> +             BPF_ALU64_IMM(BPF_SUB, BPF_REG_2,
->>>> +                           sizeof(struct xdp_to_skb_metadata)),
->>>> +             /* r3 = ((struct xdp_buff *)r1)->data_hard_start; */
->>>> +             BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_1,
->>>> +                         offsetof(struct xdp_buff, data_hard_start)),
->>>> +             /* r3 += sizeof(struct xdp_frame) */
->>>> +             BPF_ALU64_IMM(BPF_ADD, BPF_REG_3,
->>>> +                           sizeof(struct xdp_frame)),
->>>> +             /* if (data-sizeof(struct xdp_to_skb_metadata) < 
->>>> data_hard_start+sizeof(struct xdp_frame)) return; */
->>>> +             BPF_JMP_REG(BPF_JLT, BPF_REG_2, BPF_REG_3, S16_MAX),
->>>> +
->>>> +             /* ((struct xdp_buff *)r1)->data_meta = r2; */
->>>> +             BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2,
->>>> +                         offsetof(struct xdp_buff, data_meta)),
->>>> +
->>>> +             /* *((struct xdp_to_skb_metadata *)r2)->magic = 
->>>> xdp_metadata_magic; */
->>>> +             BPF_ST_MEM(BPF_W, BPF_REG_2,
->>>> +                        offsetof(struct xdp_to_skb_metadata, magic),
->>>> +                        xdp_metadata_magic),
->>>> +     );
->>>> +
->>>> +     /*      r0 = bpf_xdp_metadata_rx_timestamp(ctx); */
->>>> +     func_id = xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP);
->>>> +     prog->aux->xdp_kfunc_ndo->ndo_unroll_kfunc(prog, func_id, patch);
->>>> +
->>>> +     bpf_patch_append(patch,
->>>> +             /* r2 = ((struct xdp_buff *)r1)->data_meta; */
->>>> +             BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1,
->>>> +                         offsetof(struct xdp_buff, data_meta)),
->>>> +             /* *((struct xdp_to_skb_metadata *)r2)->rx_timestamp = r0; */
->>>> +             BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_0,
->>>> +                         offsetof(struct xdp_to_skb_metadata, rx_timestamp)),
->>>
->>> Can the xdp prog still change the metadata through xdp->data_meta? tbh, I am not
->>> sure it is solid enough by asking the xdp prog not to use the same random number
->>> in its own metadata + not to change the metadata through xdp->data_meta after
->>> calling bpf_xdp_metadata_export_to_skb().
->>
->> What do you think the usecase here might be? Or are you suggesting we
->> reject further access to data_meta after
->> bpf_xdp_metadata_export_to_skb somehow?
->>
->> If we want to let the programs override some of this
->> bpf_xdp_metadata_export_to_skb() metadata, it feels like we can add
->> more kfuncs instead of exposing the layout?
->>
->> bpf_xdp_metadata_export_to_skb(ctx);
->> bpf_xdp_metadata_export_skb_hash(ctx, 1234);
+Add compatible to am65-cpsw driver for J721e CPSW9G, which contains 8
+external ports and 1 internal host port.
 
-After re-reading patch 6, have another question.  The 'void 
-bpf_xdp_metadata_export_to_skb();' function signature.  Should it at least 
-return ok/err? or even return a 'struct xdp_to_skb_metadata *' pointer and the 
-xdp prog can directly read (or even write) it?  A related question, why 'struct 
-xdp_to_skb_metadata' needs __randomize_layout?
+Add support to power on and power off the SERDES PHY which is used by the
+CPSW MAC.
 
+=========
+Changelog
+=========
+v4 -> v5:
+1. Update subject of all patches in the series to "PATCH net-next".
+2. Rebase series on net-next tree.
 
-> 
-> 
-> I can't think of a use case now for the xdp prog to use the xdp_to_skb_metadata 
-> while the xdp prog can directly call the kfunc (eg 
-> bpf_xdp_metadata_rx_timestamp) to get individual hint.  I was asking if patch 7 
-> is an actual use case because it does test the tstamp in XDP_PASS or it is 
-> mostly for selftest purpose?  Yeah, may be the xdp prog will be able to change 
-> the xdp_to_skb_metadata eventually but that is for later.
-> 
-> My concern is the xdp prog is allowed to change xdp_to_skb_metadata or 
-> by-coincident writing metadata that matches the random and the sizeof(struct 
-> xdp_to_skb_metadata).
-> 
-> Also, the added opacity of xdp_to_skb_metadata (__randomize_layout + random int) 
-> is trying very hard to hide it from xdp prog.  Instead, would it be cleaner to 
-> have a flag in xdp->flags (to be set by bpf_xdp_metadata_export_to_skb?) to 
-> guard this, like one of Jesper's patch.  The xdp_convert_ctx_access() and 
-> bpf_xdp_adjust_meta() can check this bit to ensure the xdp_to_skb_metadata 
-> cannot be read and no metadata can be added/deleted after that.  btw, is it 
-> possible to keep both xdp_to_skb_metadata and the xdp_prog's metadata?  After 
-> skb_metadata_import_from_xdp popping the xdp_to_skb_metadata, the remaining 
-> xdp_prog's metatdata can still be used by the bpf-tc.
-> 
->> ...
->>
->>> Does xdp_to_skb_metadata have a use case for XDP_PASS (like patch 7) or the
->>> xdp_to_skb_metadata can be limited to XDP_REDIRECT only?
->>
->> XDP_PASS cases where we convert xdp_buff into skb in the drivers right
->> now usually have C code to manually pull out the metadata (out of hw
->> desc) and put it into skb.
->>
->> So, currently, if we're calling bpf_xdp_metadata_export_to_skb() for
->> XDP_PASS, we're doing a double amount of work:
->> skb_metadata_import_from_xdp first, then custom driver code second.
->>
->> In theory, maybe we should completely skip drivers custom parsing when
->> there is a prog with BPF_F_XDP_HAS_METADATA?
->> Then both xdp->skb paths (XDP_PASS+XDP_REDIRECT) will be bpf-driven
->> and won't require any mental work (plus, the drivers won't have to
->> care either in the future).
->>  > WDYT?
-> 
-> 
-> Yeah, not sure if it can solely depend on BPF_F_XDP_HAS_METADATA but it makes 
-> sense to only use the hints (if ever written) from xdp prog especially if it 
-> will eventually support xdp prog changing some of the hints in the future.  For 
-> now, I think either way is fine since they are the same and the xdp prog is sort 
-> of doing extra unnecessary work anyway by calling 
-> bpf_xdp_metadata_export_to_skb() with XDP_PASS and knowing nothing can be 
-> changed now.
-> 
-> 
->>
->>>> +     );
->>>> +
->>>> +     bpf_patch_resolve_jmp(patch);
->>>> +}
->>>> +
->>>>    static int __init xdp_metadata_init(void)
->>>>    {
->>>> +     xdp_metadata_magic = get_random_u32() | 1;
->>>>        return register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, 
->>>> &xdp_metadata_kfunc_set);
->>>>    }
->>>>    late_initcall(xdp_metadata_init);
-> 
+v3 -> v4:
+1. Fix subject of patch-1/3, updating it to:
+   "dt-bindings: net: ti: k3-am654-cpsw-nuss: Add J721e CPSW9G support"
+   and collect Reviewed-by tag.
+2. Rebase series on linux-next tree tagged: next-20221107.
+
+v2 -> v3:
+1. Run 'make DT_CHECKER_FLAGS=-m dt_binding_check' and fix errors and
+   warnings corresponding to the patch for:
+   Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+   with the latest dt-schema and yamllint.
+
+v1 -> v2:
+1. Drop all patches corresponding to SGMII mode. This is done since I do
+   not have a method to test SGMII in the standard mode which uses an
+   SGMII PHY. The previous series used SGMII in a fixed-link mode,
+   bypassing the SGMII PHY. I will post the SGMII patches in a future
+   series after testing them.
+2. Drop all patches corresponding to fixed-link in the am65-cpsw driver.
+   This is done since PHYLINK takes care of fixed-link automatically and
+   there is no need to deal with fixed-link in a custom fashion.
+3. Fix indentation errors in k3-am65-cpsw-nuss.yaml.
+4. Remove the stale code which tries to power on and power off the CPSW
+   MAC's phy, since the CPSW MAC's phy driver does not support it.
+5. Rename the function "am65_cpsw_init_phy()" to
+   "am65_cpsw_init_serdes_phy()", to indicate that the phy corresponds to
+   the SERDES.
+6. Invoke "am65_cpsw_disable_serdes_phy()" as a part of the cleanup that
+   is associated with the "am65_cpsw_nuss_remove()" function.
+
+v4:
+https://lore.kernel.org/r/20221108080606.124596-1-s-vadapalli@ti.com/
+v3:
+https://lore.kernel.org/r/20221026090957.180592-1-s-vadapalli@ti.com/
+v2:
+https://lore.kernel.org/r/20221018085810.151327-1-s-vadapalli@ti.com/
+v1:
+https://lore.kernel.org/r/20220914095053.189851-1-s-vadapalli@ti.com/
+
+Siddharth Vadapalli (3):
+  dt-bindings: net: ti: k3-am654-cpsw-nuss: Add J721e CPSW9G support
+  net: ethernet: ti: am65-cpsw: Enable QSGMII mode for J721e CPSW9G
+  net: ethernet: ti: am65-cpsw: Add support for SERDES configuration
+
+ .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 33 ++++++++-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      | 73 +++++++++++++++++++
+ 2 files changed, 102 insertions(+), 4 deletions(-)
+
+-- 
+2.25.1
 
