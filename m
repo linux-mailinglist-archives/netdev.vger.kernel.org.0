@@ -2,116 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A47A26235C4
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 22:25:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 160606235D5
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 22:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbiKIVZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 16:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
+        id S231758AbiKIVay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 16:30:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiKIVZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 16:25:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75498EE37
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 13:25:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 021B161CEF
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 21:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07B08C433D6;
-        Wed,  9 Nov 2022 21:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668029145;
-        bh=8vdrfnSzRQ8APsihZmxhcBpGsE+zJy5HR5LARCCZF0k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nLY266wNu2t6MrPpXe8hUawKnvUuUCelJq0v4TfXcTPHDo8WUZquGYawfvbyl6eu1
-         lsNehQxHKFYradqQO16249P7x/Dqv3L53/yOxpA5CaxYJSn+pFZekAIqaXGqTNWmpa
-         LInLDZn9JXnZSnNlbdZUNH/uQ5Q9qjHcT6NHpTrLe57/Gmu7GG1Xvsi6xsgcECt3IN
-         uIn5e9pA2gIBLtTED+PpAaW4zCzKpyVgDXg1lzvNSdoiQvHMQDWHvLnlhztrQU+cI8
-         tFpd359xZSV1VFhvoTYnNKiTexR4Zklszo7jpC9iADOH5wv9tgP3NSue+wSX8fP0Yu
-         Q8Tu4Fa/J3G+w==
-Date:   Wed, 9 Nov 2022 13:25:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
-Cc:     <netdev@vger.kernel.org>, <alexandr.lobakin@intel.com>,
-        <jacob.e.keller@intel.com>, <jesse.brandeburg@intel.com>,
-        <przemyslaw.kitszel@intel.com>, <anthony.l.nguyen@intel.com>,
-        <ecree.xilinx@gmail.com>, <jiri@resnulli.us>
-Subject: Re: [PATCH net-next v10 10/10] ice: add documentation for
- devlink-rate implementation
-Message-ID: <20221109132544.62703381@kernel.org>
-In-Reply-To: <de1cb0ab-163c-02e8-86b0-fc865796a40a@intel.com>
-References: <20221107181327.379007-1-michal.wilczynski@intel.com>
-        <20221107181327.379007-11-michal.wilczynski@intel.com>
-        <20221108143936.4e59f6e8@kernel.org>
-        <de1cb0ab-163c-02e8-86b0-fc865796a40a@intel.com>
+        with ESMTP id S229447AbiKIVax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 16:30:53 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226497659;
+        Wed,  9 Nov 2022 13:30:52 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id p13-20020a05600c468d00b003cf8859ed1bso2226978wmo.1;
+        Wed, 09 Nov 2022 13:30:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=InpZuUPAqdLNRZfUvkFqKxqkR/PtlXfF3L7vmxZzkAM=;
+        b=o2OxATjDf+ddXmI+ZuHWylIuDNXI/Q3lJI1hgIb5Hw1zNvqU8sPS3yrHEj7/xH1kJr
+         KnAIyHlE9RRxhLvGurvT8fOf4SLmodCrLFbhfUUoVN1LmNfsbqy3x+GKEurhn51cYcTO
+         4ygzySO3nm6rCI1FHC7Hyw6CQ/+RdEOOt9XS0vOjpWrvTcouSr129TH53UlUc/S229CZ
+         /v6Tp0nQvfIjfHNGt3yvUtp0bwAd4qnNwfYYB/7c5itgkPlxoaUIK+UTTw3paZq88+Y9
+         sKFxzKzj76BXyW5DUAhZi1FgFSjghhu384isFZpqFoL1GJNQ5sHjDSrZty5WFYJyulRg
+         QeGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=InpZuUPAqdLNRZfUvkFqKxqkR/PtlXfF3L7vmxZzkAM=;
+        b=YdmoCSfwE9vZa0UnyO1C65/rsiRRNdGW5IIDoIvwAaDzw+Be/XHkAeLMtNbtn6zlQo
+         5nS3Gz/sinKE1itiFDgrIoA3Od8clv9x+yRg0ct6bcJnivPAu77w1EnbuEY6LnR/SUZu
+         A9oVj32iQ0I3RCHfizrff0h/kl2FY5lwlI6j/plVpqPJ5ASW/9cO6krSm9WfDn4oAEC6
+         8W1EUumx5xB16JVdloMn4z3gh4hyosk3jaFZ3M1U3qlNYZQmB2jI4UEDWLEGiDSXPAb2
+         /55J0vtY+RRfUvCLGYqIyimWeE8vQlRMrEgk+ga8JjDlUylN+FZR6t8cROBmp91ufbYx
+         kgBw==
+X-Gm-Message-State: ACrzQf3T1sGfG5LitNRi4aLX/kTMblfCGSZaFPr/ArayVPlOcUMlnnPK
+        H1DeH74XTeGOOZwq6CP8lGw=
+X-Google-Smtp-Source: AMsMyM7Xg0MQAqTploaku9/TLb3oH1G1wJzYoLJf+jJZ3pmA1+Corva73B/qa9wvKlcZ7YytJnh4qg==
+X-Received: by 2002:a05:600c:491c:b0:3cf:7336:8704 with SMTP id f28-20020a05600c491c00b003cf73368704mr34363578wmp.101.1668029450528;
+        Wed, 09 Nov 2022 13:30:50 -0800 (PST)
+Received: from 168.52.45.77 (201.ip-51-68-45.eu. [51.68.45.201])
+        by smtp.gmail.com with ESMTPSA id e8-20020a5d5948000000b0023657e1b97esm14304813wri.11.2022.11.09.13.30.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Nov 2022 13:30:49 -0800 (PST)
+Message-ID: <ac1d556f-fe51-1644-0e49-f7b8cf628969@gmail.com>
+Date:   Wed, 9 Nov 2022 22:30:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: nano 6.4
+Subject: Re: [PATCH 3/3] Bluetooth: btusb: Add a parameter to let users
+ disable the fake CSR force-suspend hack
+Content-Language: en-US
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, luiz.von.dentz@intel.com,
+        quic_zijuhu@quicinc.com, hdegoede@redhat.com,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, Jack <ostroffjh@users.sourceforge.net>,
+        Paul Menzel <pmenzel@molgen.mpg.de>
+References: <20221029202454.25651-1-swyterzone@gmail.com>
+ <20221029202454.25651-3-swyterzone@gmail.com>
+ <CABBYNZKnw+b+KE2=M=gGV+rR_KBJLvrxRrtEc8x12W6PY=LKMw@mail.gmail.com>
+From:   Swyter <swyterzone@gmail.com>
+In-Reply-To: <CABBYNZKnw+b+KE2=M=gGV+rR_KBJLvrxRrtEc8x12W6PY=LKMw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_HELO_IP_MISMATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Nov 2022 19:54:52 +0100 Wilczynski, Michal wrote:
-> On 11/8/2022 11:39 PM, Jakub Kicinski wrote:
-> > On Mon,  7 Nov 2022 19:13:26 +0100 Michal Wilczynski wrote:  
-> >> Add documentation to a newly added devlink-rate feature. Provide some
-> >> examples on how to use the features, which netlink attributes are
-> >> supported and descriptions of the attributes.
-> >> +Devlink Rate
-> >> +==========
-> >> +
-> >> +The ``ice`` driver implements devlink-rate API. It allows for offload of
-> >> +the Hierarchical QoS to the hardware. It enables user to group Virtual
-> >> +Functions in a tree structure and assign supported parameters: tx_share,
-> >> +tx_max, tx_priority and tx_weight to each node in a tree. So effectively
-> >> +user gains an ability to control how much bandwidth is allocated for each
-> >> +VF group. This is later enforced by the HW.
-> >> +
-> >> +It is assumed that this feature is mutually exclusive with DCB and ADQ, or
-> >> +any driver feature that would trigger changes in QoS, for example creation
-> >> +of the new traffic class.  
-> > Meaning? Will the devlink API no longer reflect reality once one of
-> > the VFs enables DCB for example?  
+On 09/11/2022 21:49, Luiz Augusto von Dentz wrote:
+> Hi Ismael,
 > 
-> By DCB I mean the DCB that's implemented in the FW, and I'm not aware
-> of any flow that would enable the VF to tweak FW DCB on/off. Additionally
-> there is a commit in this patch series that should prevent any devlink-rate
-> changes if the FW DCB is enabled, and should prevent enabling FW DCB
-> enablement if any changes were made with the devlink-rate.
-
-Nice, but in case DCB or TC/ADQ gets enabled devlink rate will just
-show a stale hierarchy?
-
-We need to document clearly that the driver is supposed to prevent
-multiple APIs being used, and how we decide which API takes precedence.
-
-> I don't think there is a way to detect that the SW DCB is enabled though.
-> In that case the software would try to enforce it's own settings in the SW
-> stack and the HW would try to enforce devlink-rate settings.
->
-> >> +        consumed by the tree Node. Rate Limit is an absolute number
-> >> +        specifying a maximum amount of bytes a Node may consume during
-> >> +        the course of one second. Rate limit guarantees that a link will
-> >> +        not oversaturate the receiver on the remote end and also enforces
-> >> +        an SLA between the subscriber and network provider.
-> >> +    * - ``tx_share``  
-> > Wouldn't it be more common to call this tx_min, like in the old VF API
-> > and the cgroup APIs?  
+> On Sat, Oct 29, 2022 at 1:25 PM Ismael Ferreras Morezuelas
+> <swyterzone@gmail.com> wrote:
+>>
+>> A few users have reported that their cloned Chinese dongle doesn't
+>> work well with the hack Hans de Goede added, that tries this
+>> off-on mechanism as a way to unfreeze them.
+>>
+>> It's still more than worthwhile to have it, as in the vast majority
+>> of cases it either completely brings dongles to life or just resets
+>> them harmlessly as it already happens during normal USB operation.
+>>
+>> This is nothing new and the controllers are expected to behave
+>> correctly. But yeah, go figure. :)
+>>
+>> For that unhappy minority we can easily handle this edge case by letting
+>> users disable it via our «btusb.disable_fake_csr_forcesuspend_hack=1» kernel option.
 > 
-> I agree on this one, I'm not really sure why this attribute is called
-> tx_share. In it's iproute documentation tx_share is described as:
-> "specifies minimal tx rate value shared among all rate objects. If rate
-> object is a part of some rate group, then this value shared with rate
-> objects of this rate group.".
-> So tx_min is more intuitive, but I suspect that the original author
-> wanted to emphasize that this BW is shared among all the children
-> nodes.
+> Don't really like the idea of adding module parameter for device
+> specific problem.
 
-Ah :/ I missed you're not adding this one :S
+It's not for a single device, it's for a whole class of unnamed devices
+that are currently screwed even after all this.
+
+
+>> -               ret = pm_runtime_suspend(&data->udev->dev);
+>> -               if (ret >= 0)
+>> -                       msleep(200);
+>> -               else
+>> -                       bt_dev_warn(hdev, "CSR: Couldn't suspend the device for our Barrot 8041a02 receive-issue workaround");
+>> +                       ret = pm_runtime_suspend(&data->udev->dev);
+>> +                       if (ret >= 0)
+>> +                               msleep(200);
+>> +                       else
+>> +                               bt_dev_warn(hdev, "CSR: Couldn't suspend the device for our Barrot 8041a02 receive-issue workaround");
+> 
+> Is this specific to Barrot 8041a02? Why don't we add a quirk then?
+> 
+
+We don't know how specific it is, we suspect the getting stuck thing happens with Barrot controllers,
+but in this world of lasered-out counterfeit chip IDs you can never be sure. Unless someone decaps them.
+
+Hans added that name because it's the closest thing we have, but this applies to a lot of chips.
+So much that now we do the hack by default, for very good reasons.
+
+So please reconsider, this closes the gap.
+
+With this last patch we go from ~+90% to almost ~100%, as the rest of generic quirks we added
+don't really hurt; even if a particular dongle only needs a few of the zoo of quirks we set,
+it's alright if we vaccinate them against all of these, except some are "allergic"
+against this particular "vaccine". Let people skip this one. :-)
+
+You know how normal BT controllers are utterly and inconsistently broken, now imagine you have a whole host
+of vendors reusing a VID/PID/version/subversion, masking as a CSR for bizarre reasons to avoid paying
+any USB-IF fees, or whatever. That's what we are fighting against here.
