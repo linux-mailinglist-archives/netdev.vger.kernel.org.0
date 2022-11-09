@@ -2,68 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF9EB6236A9
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:39:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A32E6236AE
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:41:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231901AbiKIWjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 17:39:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44390 "EHLO
+        id S231879AbiKIWlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 17:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiKIWjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:39:20 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03CCD13D;
-        Wed,  9 Nov 2022 14:39:19 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id r12so28357648lfp.1;
-        Wed, 09 Nov 2022 14:39:19 -0800 (PST)
+        with ESMTP id S229835AbiKIWlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:41:16 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857D0D13D;
+        Wed,  9 Nov 2022 14:41:15 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id p16so73569wmc.3;
+        Wed, 09 Nov 2022 14:41:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PvI/yUyITk/smf53vr38dj475/4tnk0u2sD458x+0bk=;
-        b=U9CKhYkGzkPuA8fgmaTsHOtMCEYBcK3ZBV/j2sk1XUPtk3kvtalIepxmf/63m19aFg
-         ucOZlFwpOoi0BU6HeUFYmRQ0HV5W3VYlzMdk6UrVCwa4rAdRiI+U37ss07D9WyIDDdlM
-         3uryCU9NAHUH1MlEMW4hO2yaNBy0ZoQRIeKVW/m3z6O6pHiMAOfwTL5iDYMGnW0VHyED
-         GOwdrSL6Xlauaok+1M/QFu0JR8sIiwr3P9JmAhGI/ySBd+ptbK2g8E7YtIw4VaLoRins
-         Zwq4XI3ZBtlkRkwL6dloRhjR00l1OrzqSBGa8bdfr/13rRIbTr4bxhzuz69hetXjV7sb
-         0Wow==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=72SRA5lrKUs0W8xkTsquem3V1Ku1VH8DVJEO2i+3wLM=;
+        b=ibl7hcVB2q3N30mwPYiDyU2n2efcA2mhjwKrEycsn2/uMV/RxGxZgN0FaG/Z+5ON/s
+         7d6Vl01KgwNOhgBbfOcX83aLRUItOmOcU225DWB2BsI8I31zEEYbtzFvsCq5/IAIEPZb
+         8nLhQvLIh+XpFiyuynQpceqBKuIGkcgca38Id1BucEBQvqSNvpIcHmZJQT/IxXaBE1FI
+         vYjjYKYLJlJfsJqKyUxlbHRswqSQUcDJkMnQvUXAahhDWVsmCBmNHUA5Wh3q8/D9CJr3
+         jUW7Imnz0cdeUQuIzxmcp+qMjz5p3LUdmqGZjMkvBbLDa5e+XBhPtXLMIimTFGHjshTk
+         n49g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PvI/yUyITk/smf53vr38dj475/4tnk0u2sD458x+0bk=;
-        b=e36Zhh9lI+SzuAyCEPZkOEFyUf2b1n5DnJuhx8Sk0RQpg7OocOxkuBxWeiO7oRkx80
-         xXKa5TAd14+2XD0w+jgiJ3RpM0UeHgapiO9uIcD9XZPsUNBKDPaUvK7BqKgfIExgzzu3
-         e3jcQEAtS43W/L83uxdIIIoZ/+yMRHcy8Yt3YUWI9bFO4xF4zoaMwRc7wE+FDyHWD03y
-         Bo2csUSxIUOoDERiioUdtKeltygc8s6b1eemAcLBcUWz7FshcHKg9GVn/aOF/6gqosav
-         JFEl0p0WsVOjJRZ3OBj1BjzMq9jRe7aJ4aUAbB6ZyN4ErdBmj9seXmqlPApSrVj1k6+G
-         mtaw==
-X-Gm-Message-State: ACrzQf0Skgn3YyGFq0Y9WMiga+xlctzHmt/bzsOK1DXICiORhFTTYJU3
-        5tHf+mnAdZQMtk1ToyUL/B4b22eICEnfzq7P+EQ=
-X-Google-Smtp-Source: AMsMyM5CigGd261vGZLuw3ULv9z8hB2jfeLYPV/I7RGWEIbz3eZDiiSzT5WUc1pN6UJ3OvaWAT4UGSqL2GbMeEFBBn8=
-X-Received: by 2002:a05:6512:2242:b0:4a2:3890:5156 with SMTP id
- i2-20020a056512224200b004a238905156mr855357lfu.106.1668033557940; Wed, 09 Nov
- 2022 14:39:17 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=72SRA5lrKUs0W8xkTsquem3V1Ku1VH8DVJEO2i+3wLM=;
+        b=Diaa5c8CsTEUTGOOEUyODoFqv/eCgDH9i3Sg1w/+v+GyhqKEfnvYPFt/os/0pzVkiQ
+         j7B4ynnLZFSNOlH4kWECbjRoIgN/BfK2AirjOMqMEYEu3RcQD2nPhKsXk/+Gk5GIQ/ot
+         yV20q9o3Y5MLJxES5MoTZl7DNLY+nIvIib3CijCcHILL6JyxCtGoqRbaC2u5yuDnuqoq
+         O3+HOa5tLYdlgak8wd9vbxPJys0ESbbrmJEdyomzyNLu2HmkijCpbZxG4H46g+VY9quR
+         yFM+/2o2HyOlL3RvlpkAOfdyfIER2AyLdljNNKyyc5tEEULxYYPopN2y2Gc66D5IkFE3
+         Zp1Q==
+X-Gm-Message-State: ACrzQf06uImP81dVDBUhZHEJg0nVj2lhsu2tGJPqVXYWyidEleNTeJxK
+        3FgSFGlaTqu+DMUl+fPzwCDBMR4wwQBRpA==
+X-Google-Smtp-Source: AMsMyM5R51wkRbWukTP527Ud/KNaaX7vPG9ioje5356mfGLpTU0MufKXFd6OipCgf3slypg5cLb5gg==
+X-Received: by 2002:a7b:cb8d:0:b0:3cf:4969:9bc7 with SMTP id m13-20020a7bcb8d000000b003cf49699bc7mr53086243wmi.71.1668033673843;
+        Wed, 09 Nov 2022 14:41:13 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id h8-20020a05600c2ca800b003b4a699ce8esm3166923wmc.6.2022.11.09.14.41.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 14:41:13 -0800 (PST)
+Date:   Thu, 10 Nov 2022 00:41:10 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH net-next v2 00/11] net: pcs: Add support for devices
+ probed in the "usual" manner
+Message-ID: <20221109224110.erfaftzja4fybdbc@skbuf>
+References: <20221103210650.2325784-1-sean.anderson@seco.com>
 MIME-Version: 1.0
-References: <20221029202454.25651-1-swyterzone@gmail.com> <20221029202454.25651-3-swyterzone@gmail.com>
- <CABBYNZKnw+b+KE2=M=gGV+rR_KBJLvrxRrtEc8x12W6PY=LKMw@mail.gmail.com> <ac1d556f-fe51-1644-0e49-f7b8cf628969@gmail.com>
-In-Reply-To: <ac1d556f-fe51-1644-0e49-f7b8cf628969@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 9 Nov 2022 14:39:06 -0800
-Message-ID: <CABBYNZJytVc8=A0_33EFRS_pMG6aUKnfFPsGii_2uKu7_zENtQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] Bluetooth: btusb: Add a parameter to let users
- disable the fake CSR force-suspend hack
-To:     Swyter <swyterzone@gmail.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, luiz.von.dentz@intel.com,
-        quic_zijuhu@quicinc.com, hdegoede@redhat.com,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, Jack <ostroffjh@users.sourceforge.net>,
-        Paul Menzel <pmenzel@molgen.mpg.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221103210650.2325784-1-sean.anderson@seco.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -74,85 +94,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Swyter,
+On Thu, Nov 03, 2022 at 05:06:39PM -0400, Sean Anderson wrote:
+> Several (later) patches in this series cannot be applied until a stable
+> release has occured containing the dts updates.
 
-On Wed, Nov 9, 2022 at 1:30 PM Swyter <swyterzone@gmail.com> wrote:
->
-> On 09/11/2022 21:49, Luiz Augusto von Dentz wrote:
-> > Hi Ismael,
-> >
-> > On Sat, Oct 29, 2022 at 1:25 PM Ismael Ferreras Morezuelas
-> > <swyterzone@gmail.com> wrote:
-> >>
-> >> A few users have reported that their cloned Chinese dongle doesn't
-> >> work well with the hack Hans de Goede added, that tries this
-> >> off-on mechanism as a way to unfreeze them.
-> >>
-> >> It's still more than worthwhile to have it, as in the vast majority
-> >> of cases it either completely brings dongles to life or just resets
-> >> them harmlessly as it already happens during normal USB operation.
-> >>
-> >> This is nothing new and the controllers are expected to behave
-> >> correctly. But yeah, go figure. :)
-> >>
-> >> For that unhappy minority we can easily handle this edge case by letti=
-ng
-> >> users disable it via our =C2=ABbtusb.disable_fake_csr_forcesuspend_hac=
-k=3D1=C2=BB kernel option.
-> >
-> > Don't really like the idea of adding module parameter for device
-> > specific problem.
->
-> It's not for a single device, it's for a whole class of unnamed devices
-> that are currently screwed even after all this.
->
->
-> >> -               ret =3D pm_runtime_suspend(&data->udev->dev);
-> >> -               if (ret >=3D 0)
-> >> -                       msleep(200);
-> >> -               else
-> >> -                       bt_dev_warn(hdev, "CSR: Couldn't suspend the d=
-evice for our Barrot 8041a02 receive-issue workaround");
-> >> +                       ret =3D pm_runtime_suspend(&data->udev->dev);
-> >> +                       if (ret >=3D 0)
-> >> +                               msleep(200);
-> >> +                       else
-> >> +                               bt_dev_warn(hdev, "CSR: Couldn't suspe=
-nd the device for our Barrot 8041a02 receive-issue workaround");
-> >
-> > Is this specific to Barrot 8041a02? Why don't we add a quirk then?
-> >
->
-> We don't know how specific it is, we suspect the getting stuck thing happ=
-ens with Barrot controllers,
-> but in this world of lasered-out counterfeit chip IDs you can never be su=
-re. Unless someone decaps them.
->
-> Hans added that name because it's the closest thing we have, but this app=
-lies to a lot of chips.
-> So much that now we do the hack by default, for very good reasons.
->
-> So please reconsider, this closes the gap.
->
-> With this last patch we go from ~+90% to almost ~100%, as the rest of gen=
-eric quirks we added
-> don't really hurt; even if a particular dongle only needs a few of the zo=
-o of quirks we set,
-> it's alright if we vaccinate them against all of these, except some are "=
-allergic"
-> against this particular "vaccine". Let people skip this one. :-)
->
-> You know how normal BT controllers are utterly and inconsistently broken,=
- now imagine you have a whole host
-> of vendors reusing a VID/PID/version/subversion, masking as a CSR for biz=
-arre reasons to avoid paying
-> any USB-IF fees, or whatever. That's what we are fighting against here.
-
-I see, but for suspend in particular, can't we actually handle it
-somehow? I mean if we can detect the controller is getting stuck and
-print some information and flip the quirk? Otherwise Im afraid this
-parameter will end up always being set by distros to avoid suspend
-problems.
-
---=20
-Luiz Augusto von Dentz
+New kernels must remain compatible with old device trees.
