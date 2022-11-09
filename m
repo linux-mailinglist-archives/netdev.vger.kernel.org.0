@@ -2,318 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09973622BD4
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 13:46:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16187622BE5
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 13:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiKIMqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 07:46:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S229602AbiKIMs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 07:48:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiKIMqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 07:46:14 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5912CDF5;
-        Wed,  9 Nov 2022 04:46:12 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N6l4Y18F1zJnDr;
-        Wed,  9 Nov 2022 20:43:09 +0800 (CST)
-Received: from localhost.localdomain (10.175.103.91) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 9 Nov 2022 20:46:10 +0800
-From:   Wei Li <liwei391@huawei.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <huawei.libin@huawei.com>
-Subject: [PATCH v2] wifi: rtlwifi: Correct header guards of rtl8188ee/rtl8723ae/rtl8192de
-Date:   Wed, 9 Nov 2022 20:44:45 +0800
-Message-ID: <20221109124445.3246937-1-liwei391@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229584AbiKIMs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 07:48:56 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA7211C2E
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 04:48:54 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id 21so27100460edv.3
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 04:48:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=oBGnP/tbHKsQAgy1tdyLh+W/jv119g4lzClzpaLwwp4=;
+        b=5z3hMdBRZl0gDup3OoyOamN/yL1V7r8XklvgYfILYK7MrWJoOOmIHjxWAbPkDnIMUS
+         kuJC16/JPCFPTdI18tjvQtWWH6IC1esdMiGPHYvORji1PWCvBcUejtxa2aOddHlxO5lj
+         kZU/K7NAsZswVB+8UVV8P3dwsLZ0nsokrWfQSj8fvFosOwpPau3azZt25TWwvku9mDiw
+         yjF2rv8R31av3wdPabtLrV8Q4wU8d4mKROiFrmDQgrFMAQDFlMgWQNnuMFaVhWT5FrH3
+         QGT+gs3RaJYZt7zBhVoQQK5vYpcwt3X8u7EtKrVNH7U+CyE9ZIq9wC29EmRjj7vO3xkK
+         hk5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oBGnP/tbHKsQAgy1tdyLh+W/jv119g4lzClzpaLwwp4=;
+        b=nBP/kkGeYcte7pv0uy0grAes3+/DNgy1QTQJQkq7S2qzcklmYt9LSH7y4OU9yEpKOl
+         GBqA7DMjD5PZE3xycVrUDVhb+5CyPB5ZjPFO9VCACA0iVOGzOUVdlwjNBsdHeKZz1xGT
+         m9GAy6yBuNcSXzRn9U1LwN2UYD9eY+cQXSm+OtxOh0I1mW+3A+ytT1kwc4xAsqMGV8ds
+         brPdfM6CACguQDFJu5IUlc++opnd3TOaRTjNo/azEWOJsPo7UD9QLrW2AguTUAwUUtmS
+         suW4l7qZmRrqXccCSuX6aPfoluulITJOXvWE64pD1JCoLnpp5M69B+G4V1Aoy8VS5jMd
+         9TxA==
+X-Gm-Message-State: ACrzQf2GFjt0h0XDGdrW7p+iEH9okz1KguKVtmyHW+xZw/WdBmGJ4lhm
+        diruLRbx3lAUyOx350ryRI88JheGDmqZGO/O
+X-Google-Smtp-Source: AMsMyM5V90VIwsEkW2FbLIaS7c1a9irhuRLa7swp/5jKmQnxVrm8y3KnGhkRS56dEXskxB+PA/XRzw==
+X-Received: by 2002:a05:6402:254f:b0:45d:3044:d679 with SMTP id l15-20020a056402254f00b0045d3044d679mr61250277edb.137.1667998132771;
+        Wed, 09 Nov 2022 04:48:52 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id j7-20020aa7de87000000b004617e880f52sm6838774edv.29.2022.11.09.04.48.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 04:48:52 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [patch iproute2] devlink: load ifname map on demand from ifname_map_rev_lookup() as well
+Date:   Wed,  9 Nov 2022 13:48:51 +0100
+Message-Id: <20221109124851.975716-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The header guards of rtl8188ee/rtl8723ae/rtl8192de are promiscuous
-currently. Rename them to be consistent with their module names.
+From: Jiri Pirko <jiri@nvidia.com>
 
-Fixes: f0eb856e0b6c ("rtlwifi: rtl8188ee: Add new driver")
-Fixes: c592e631bcec ("rtlwifi: rtl8723ae: Add new driver")
-Fixes: 4f01358e5b8a ("rtlwifi: rtl8192de: Merge dynamic management routines")
-Signed-off-by: Wei Li <liwei391@huawei.com>
+Commit 5cddbb274eab ("devlink: load port-ifname map on demand") changed
+the ifname map to be loaded on demand from ifname_map_lookup(). However,
+it didn't put this on-demand loading into ifname_map_rev_lookup() which
+causes ifname_map_rev_lookup() to return -ENOENT all the time.
+
+Fix this by triggering on-demand ifname map load
+from ifname_map_rev_lookup() as well.
+
+Fixes: 5cddbb274eab ("devlink: load port-ifname map on demand")
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h     | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h     | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h     | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h     | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h  | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h     | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h     | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h    | 4 ++--
- drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h    | 4 ++--
- 16 files changed, 32 insertions(+), 32 deletions(-)
+ devlink/devlink.c | 35 +++++++++++++++++++++++++++--------
+ 1 file changed, 27 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-index edcca42c7464..2f88a6faf535 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 8aefa101b2f8..150b4e63ead1 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -838,6 +838,23 @@ static int ifname_map_load(struct dl *dl)
+ 	return 0;
+ }
  
--#ifndef __RTL92C_DEF_H__
--#define __RTL92C_DEF_H__
-+#ifndef __RTL88EE_DEF_H__
-+#define __RTL88EE_DEF_H__
++static int ifname_map_check_load(struct dl *dl)
++{
++	int err;
++
++	if (dl->map_loaded)
++		return 0;
++
++	err = ifname_map_load(dl);
++	if (err) {
++		pr_err("Failed to create index map\n");
++		return err;
++	}
++	dl->map_loaded = true;
++	return 0;
++}
++
++
+ static int ifname_map_lookup(struct dl *dl, const char *ifname,
+ 			     char **p_bus_name, char **p_dev_name,
+ 			     uint32_t *p_port_index)
+@@ -845,14 +862,10 @@ static int ifname_map_lookup(struct dl *dl, const char *ifname,
+ 	struct ifname_map *ifname_map;
+ 	int err;
  
- #define HAL_PRIME_CHNL_OFFSET_DONT_CARE			0
- #define HAL_PRIME_CHNL_OFFSET_LOWER			1
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-index eb8090caeec2..1573d277a920 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
+-	if (!dl->map_loaded) {
+-		err = ifname_map_load(dl);
+-		if (err) {
+-			pr_err("Failed to create index map\n");
+-			return err;
+-		}
+-		dl->map_loaded = true;
+-	}
++	err = ifname_map_check_load(dl);
++	if (err)
++		return err;
++
+ 	list_for_each_entry(ifname_map, &dl->ifname_map_list, list) {
+ 		if (strcmp(ifname, ifname_map->ifname) == 0) {
+ 			*p_bus_name = ifname_map->bus_name;
+@@ -870,6 +883,12 @@ static int ifname_map_rev_lookup(struct dl *dl, const char *bus_name,
+ {
+ 	struct ifname_map *ifname_map;
  
--#ifndef	__RTL88E_DM_H__
--#define __RTL88E_DM_H__
-+#ifndef	__RTL88EE_DM_H__
-+#define __RTL88EE_DM_H__
- 
- #define	MAIN_ANT					0
- #define	AUX_ANT						1
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-index 79f095e47d71..863ddcd98202 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92C__FW__H__
--#define __RTL92C__FW__H__
-+#ifndef __RTL88EE__FW__H__
-+#define __RTL88EE__FW__H__
- 
- #define FW_8192C_SIZE				0x8000
- #define FW_8192C_START_ADDRESS			0x1000
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-index fd09b0712d17..3140b6938ffd 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92CE_HW_H__
--#define __RTL92CE_HW_H__
-+#ifndef __RTL88EE_HW_H__
-+#define __RTL88EE_HW_H__
- 
- void rtl88ee_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
- void rtl88ee_read_eeprom_info(struct ieee80211_hw *hw);
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-index 67d3dc389ba0..da8a1af3606d 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92CE_LED_H__
--#define __RTL92CE_LED_H__
-+#ifndef __RTL88EE_LED_H__
-+#define __RTL88EE_LED_H__
- 
- void rtl88ee_init_sw_leds(struct ieee80211_hw *hw);
- void rtl88ee_sw_led_on(struct ieee80211_hw *hw, struct rtl_led *pled);
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-index 8157ef419eeb..1fa9fd0d472a 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92C_PHY_H__
--#define __RTL92C_PHY_H__
-+#ifndef __RTL88EE_PHY_H__
-+#define __RTL88EE_PHY_H__
- 
- /* MAX_TX_COUNT must always set to 4, otherwise read efuse
-  * table secquence will be wrong.
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-index 42e222c1795f..e1d6df65c5c4 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL8723E_PWRSEQ_H__
--#define __RTL8723E_PWRSEQ_H__
-+#ifndef __RTL88EE_PWRSEQ_H__
-+#define __RTL88EE_PWRSEQ_H__
- 
- #include "../pwrseqcmd.h"
- /* Check document WM-20110607-Paul-RTL8188EE_Power_Architecture-R02.vsd
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-index 0fc8db8916fa..6392f2e24ac1 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92C_REG_H__
--#define __RTL92C_REG_H__
-+#ifndef __RTL88EE_REG_H__
-+#define __RTL88EE_REG_H__
- 
- #define TXPKT_BUF_SELECT				0x69
- #define RXPKT_BUF_SELECT				0xA5
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-index 05e27b40b2a9..76cb4cd2b5a2 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92C_RF_H__
--#define __RTL92C_RF_H__
-+#ifndef __RTL88EE_RF_H__
-+#define __RTL88EE_RF_H__
- 
- #define RF6052_MAX_TX_PWR		0x3F
- 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-index df6065602401..dd4eee147b4c 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92CE_TABLE__H_
--#define __RTL92CE_TABLE__H_
-+#ifndef __RTL88EE_TABLE__H_
-+#define __RTL88EE_TABLE__H_
- 
- #include <linux/types.h>
- #define  RTL8188EEPHY_REG_1TARRAYLEN	382
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-index e17f70b4d199..025087026068 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2013  Realtek Corporation.*/
- 
--#ifndef __RTL92CE_TRX_H__
--#define __RTL92CE_TRX_H__
-+#ifndef __RTL88EE_TRX_H__
-+#define __RTL88EE_TRX_H__
- 
- #define TX_DESC_SIZE					64
- #define TX_DESC_AGGR_SUBFRAME_SIZE		32
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-index 939cc45bfebd..9cd9070a0281 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2012  Realtek Corporation.*/
- 
--#ifndef	__RTL92C_DM_H__
--#define __RTL92C_DM_H__
-+#ifndef	__RTL92D_DM_H__
-+#define __RTL92D_DM_H__
- 
- #define HAL_DM_DIG_DISABLE			BIT(0)
- #define HAL_DM_HIPWR_DISABLE			BIT(1)
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-index 7599c7e5ecc3..71239a24f2c7 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2012  Realtek Corporation.*/
- 
--#ifndef __RTL92CE_LED_H__
--#define __RTL92CE_LED_H__
-+#ifndef __RTL92DE_LED_H__
-+#define __RTL92DE_LED_H__
- 
- void rtl92de_init_sw_leds(struct ieee80211_hw *hw);
- void rtl92de_sw_led_on(struct ieee80211_hw *hw, struct rtl_led *pled);
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-index 3f9ed9b4428e..3ab4a7389012 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2012  Realtek Corporation.*/
- 
--#ifndef __RTL92C__FW__H__
--#define __RTL92C__FW__H__
-+#ifndef __RTL8723E__FW__H__
-+#define __RTL8723E__FW__H__
- 
- #define FW_8192C_SIZE					0x3000
- #define FW_8192C_START_ADDRESS			0x1000
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-index 9f85845d23cd..372f02409dda 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2012  Realtek Corporation.*/
- 
--#ifndef __RTL92CE_LED_H__
--#define __RTL92CE_LED_H__
-+#ifndef __RTL8723E_LED_H__
-+#define __RTL8723E_LED_H__
- 
- void rtl8723e_init_sw_leds(struct ieee80211_hw *hw);
- void rtl8723e_sw_led_on(struct ieee80211_hw *hw, struct rtl_led *pled);
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-index 98bfe02f66d5..40c89095fd57 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-@@ -1,8 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright(c) 2009-2012  Realtek Corporation.*/
- 
--#ifndef __RTL92C_PHY_H__
--#define __RTL92C_PHY_H__
-+#ifndef __RTL8723E_PHY_H__
-+#define __RTL8723E_PHY_H__
- 
- #define MAX_PRECMD_CNT				16
- #define MAX_RFDEPENDCMD_CNT			16
++	int err;
++
++	err = ifname_map_check_load(dl);
++	if (err)
++		return err;
++
+ 	list_for_each_entry(ifname_map, &dl->ifname_map_list, list) {
+ 		if (strcmp(bus_name, ifname_map->bus_name) == 0 &&
+ 		    strcmp(dev_name, ifname_map->dev_name) == 0 &&
 -- 
-2.25.1
+2.37.3
 
