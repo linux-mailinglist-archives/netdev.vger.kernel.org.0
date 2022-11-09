@@ -2,140 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D73DC622A43
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:20:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC70C622A57
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:22:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230396AbiKILUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 06:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
+        id S230382AbiKILWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 06:22:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbiKILUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:20:42 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799D427B08
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 03:20:41 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id h12so25239093ljg.9
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 03:20:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=88yTM1uJKEU4nUryrFzcHBneq7U0QfCFix/2TI4Onpk=;
-        b=DfkZOEZylfFUnSWpURoh/sz7HSBi78Kh0RQ7SssObIac18QqVqnmtclaK6tpj9/Czv
-         JBWGdhgT+SmtmlSSh92nInbwROaBgh3JSgt7eTSJ3jxcKHn5yrKoqvmWar3FimbjYLwQ
-         F/tFC4zzeXf4IKywa7ksSp2XWOHlyVcSU6Ytd7CWzdcfGWDzlr5X6oBCnZZFcdo4yKcm
-         SH617uPem+06DdgPb0Vl7tv7YF/FY7A4OkmnNPUblYpuSijCVUdOrMUgYwohWfqAQciM
-         P4fgTN0iJypSm6BI6nmFPhOQjUf37bzOiz5SxHWS9NozP+K7ucNmD4TX4Id5KQU5N7eT
-         ysOw==
+        with ESMTP id S229723AbiKILWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:22:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B0F615A
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 03:21:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667992909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iu6WVQzYd6QVJ2aRddjHWcCe6Wgq/3xvvgm9HbBXmlM=;
+        b=CctTTTg0gGpY7IUqcAK4AjE7WK4trvNEfoRKvL2c11xtcQy2NVIBMDC2chAAel/uSieP6T
+        gJDSW8eYQQOAtOWW7zIQN/QDIxbH/uTm21UKdYXarWbGj47xeRe1juI8CCDfbhYlS8Gs4d
+        LwYuNau1QzsHk7zPONR7fQU49fUjqXs=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-231-NJORbLIqNU-fRUXr93i66w-1; Wed, 09 Nov 2022 06:21:45 -0500
+X-MC-Unique: NJORbLIqNU-fRUXr93i66w-1
+Received: by mail-ed1-f70.google.com with SMTP id h9-20020a05640250c900b00461d8ee12e2so12644499edb.23
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 03:21:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=88yTM1uJKEU4nUryrFzcHBneq7U0QfCFix/2TI4Onpk=;
-        b=PQMAoHb2IGMhnF+DD8f3gTFlQA+d6QLcWLlDzu1tmpiHY5KbnB7QF/U90WL+fjSdN/
-         hDgrWtGDjMxn8v8m0C5Pg2KD0iohmS/1hV3Jh8hpl0YMd65sNpuwRUQCHzqs8MqbV88r
-         JscRve6Vyzp1+Kz7Ty/gVrnbnJPmdiT8BvDfARZbeXL7DrQOUmMdCUIiiGDfcbtX45wv
-         b15OtPNh2ticazwKv7BRS5/PyHWvpqV9T0INO6Py1VXPLr2N+mtVI5NFD7ppzKcFD3Mc
-         NQqOvgGnwpHwF52SWvdZANTXB76GQF1LN7iKVlq8eK61K8+LgVrxchXmgy5PwMbIOeDI
-         JGVQ==
-X-Gm-Message-State: ACrzQf0jbiYm6ppj3ZKFlxuoYlg2gv2P6VQzZ/BJ2dLL9NPzYXaq0PrI
-        bHldKfTaX/kSdSgSRhL0NYdM9g==
-X-Google-Smtp-Source: AMsMyM7gOlyu5kF/XFyAzve3EYtqXVo+h9qSupfEhKOd0KIj7d1NxKjvrTEy/mIcW1/4AID0bhfUSA==
-X-Received: by 2002:a2e:6e13:0:b0:26d:f70e:3415 with SMTP id j19-20020a2e6e13000000b0026df70e3415mr7962169ljc.216.1667992839869;
-        Wed, 09 Nov 2022 03:20:39 -0800 (PST)
-Received: from [192.168.0.20] (088156142199.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.199])
-        by smtp.gmail.com with ESMTPSA id bd22-20020a05651c169600b0027703e09b71sm2066440ljb.64.2022.11.09.03.20.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Nov 2022 03:20:39 -0800 (PST)
-Message-ID: <a9901cbd-8af3-04aa-12f5-df7c563f873a@linaro.org>
-Date:   Wed, 9 Nov 2022 12:20:38 +0100
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iu6WVQzYd6QVJ2aRddjHWcCe6Wgq/3xvvgm9HbBXmlM=;
+        b=ZUxlCLuH6fyHNki+EI9A2MHTzt08u/Iky3ER1M3/x6HMXTGmD+z5xwcPH6+jVEBrlr
+         CaQqV+dEZ+cQVkQQ8zCeLMKo1jnGQWiZMXnBbsrICk1ihWmsmlW4X9hveoHRsaaPFkRJ
+         W8xa5J9+zxpqVJuUo76Kr1X9O44fZ1UUEvYUxj+M9korI7nVRTV8Rz6ednkEFR/KTchI
+         fLjfiepvinQ5cgxY4UN+eR+IJqtfm0WVJZpzE4KUtzyyu16zQfW5pRZsB6IahdKxp7U/
+         TE11ooQIqTgSbUoc/Qh7F7yoo7SGGpogo1wQbENYtmEdMhVI6vNxNOoW/IqD2QctlE5X
+         hBXg==
+X-Gm-Message-State: ANoB5plMWg8BSFXEhFLnJ8o3gwZq1gLyCR5BLq2h8p3/87XYg6ZSsQPu
+        F4dbnTtgzEuqHrFVlcYi9qP5o8E2btxIO835jlLvrj2aX49O/IAKCgBTO0f7veOki+7ZjkHrCwk
+        CuRj9iN1Eln/F2/0R
+X-Received: by 2002:a17:907:778a:b0:7ae:743c:61c1 with SMTP id ky10-20020a170907778a00b007ae743c61c1mr10018334ejc.511.1667992904093;
+        Wed, 09 Nov 2022 03:21:44 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6TQe48yQLkJdpv+TaqjpnyJXWIfV1jTzYt4LWLlnCMU7wmlEFns3k5hY9omtckGMfN0SMwrQ==
+X-Received: by 2002:a17:907:778a:b0:7ae:743c:61c1 with SMTP id ky10-20020a170907778a00b007ae743c61c1mr10018283ejc.511.1667992903225;
+        Wed, 09 Nov 2022 03:21:43 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id qp18-20020a170907207200b007838e332d78sm5687061ejb.128.2022.11.09.03.21.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 03:21:42 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4C42678250B; Wed,  9 Nov 2022 12:21:42 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [xdp-hints] [RFC bpf-next v2 04/14] veth: Support rx timestamp
+ metadata for xdp
+In-Reply-To: <20221104032532.1615099-5-sdf@google.com>
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-5-sdf@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 09 Nov 2022 12:21:42 +0100
+Message-ID: <87iljoz83d.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 5/6] can: m_can: Add ECC functionality for message RAM
-Content-Language: en-US
-To:     Vivek Yadav <vivek.2311@samsung.com>, rcsekar@samsung.com,
-        krzysztof.kozlowski+dt@linaro.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, pankaj.dubey@samsung.com,
-        ravi.patel@samsung.com, alim.akhtar@samsung.com,
-        linux-fsd@tesla.com, robh+dt@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        aswani.reddy@samsung.com, sriranjani.p@samsung.com
-References: <20221109100928.109478-1-vivek.2311@samsung.com>
- <CGME20221109100302epcas5p276282a3a320649661939dcb893765fbf@epcas5p2.samsung.com>
- <20221109100928.109478-6-vivek.2311@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221109100928.109478-6-vivek.2311@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/11/2022 11:09, Vivek Yadav wrote:
-> Whenever MCAN Buffers and FIFOs are stored on message ram, there are
-> inherent risks of corruption known as single-bit errors.
-> 
-> Enable error correction code (ECC) data integrity check for Message RAM
-> to create valid ECC checksums.
-> 
-> ECC uses a respective number of bits, which are added to each word as a
-> parity and that will raise the error signal on the corruption in the
-> Interrupt Register(IR).
-> 
-> This indicates either bit error detected and Corrected(BEC) or No bit
-> error detected when reading from Message RAM.
-> 
-> Signed-off-by: Chandrasekar R <rcsekar@samsung.com>
-> Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
+Stanislav Fomichev <sdf@google.com> writes:
 
-(...)
-
+> xskxceiver conveniently setups up veth pairs so it seems logical
+> to use veth as an example for some of the metadata handling.
+>
+> We timestamp skb right when we "receive" it, store its
+> pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
+> reach it from the BPF program.
+>
+> This largely follows the idea of "store some queue context in
+> the xdp_buff/xdp_frame so the metadata can be reached out
+> from the BPF program".
+>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> Cc: Maryam Tahhan <mtahhan@redhat.com>
+> Cc: xdp-hints@xdp-project.net
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  drivers/net/veth.c | 31 +++++++++++++++++++++++++++++++
+>  1 file changed, 31 insertions(+)
+>
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 917ba57453c1..0e629ceb087b 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -25,6 +25,7 @@
+>  #include <linux/filter.h>
+>  #include <linux/ptr_ring.h>
+>  #include <linux/bpf_trace.h>
+> +#include <linux/bpf_patch.h>
+>  #include <linux/net_tstamp.h>
 >  
-> +static int m_can_plat_init(struct m_can_classdev *cdev)
+>  #define DRV_NAME	"veth"
+> @@ -118,6 +119,7 @@ static struct {
+>  
+>  struct veth_xdp_buff {
+>  	struct xdp_buff xdp;
+> +	struct sk_buff *skb;
+>  };
+>  
+>  static int veth_get_link_ksettings(struct net_device *dev,
+> @@ -602,6 +604,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
+>  
+>  		xdp_convert_frame_to_buff(frame, xdp);
+>  		xdp->rxq = &rq->xdp_rxq;
+> +		vxbuf.skb = NULL;
+>  
+>  		act = bpf_prog_run_xdp(xdp_prog, xdp);
+>  
+> @@ -826,6 +829,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+>  
+>  	orig_data = xdp->data;
+>  	orig_data_end = xdp->data_end;
+> +	vxbuf.skb = skb;
+>  
+>  	act = bpf_prog_run_xdp(xdp_prog, xdp);
+>  
+> @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+>  			struct sk_buff *skb = ptr;
+>  
+>  			stats->xdp_bytes += skb->len;
+> +			__net_timestamp(skb);
+>  			skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+>  			if (skb) {
+>  				if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
+> @@ -1665,6 +1670,31 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+>  	}
+>  }
+>  
+> +static void veth_unroll_kfunc(const struct bpf_prog *prog, u32 func_id,
+> +			      struct bpf_patch *patch)
 > +{
-> +	struct  m_can_ecc_regmap *ecc_cfg = &cdev->ecc_cfg_sys;
-> +	struct device_node *np = cdev->dev->of_node;
-> +	int ret = 0;
-> +
-> +	if (cdev->mram_cfg_flag != ECC_ENABLE) {
-> +		/* Initialize mcan message ram */
-> +		ret = m_can_init_ram(cdev);
-> +
-> +		if (ret)
-> +			return ret;
-> +
-> +		cdev->mram_cfg_flag = ECC_ENABLE;
-> +	}
-> +
-> +	if (ecc_cfg->ecc_cfg_flag != ECC_ENABLE) {
-> +		/* configure error code check for mram */
-> +		if (!ecc_cfg->syscon) {
-> +			ecc_cfg->syscon =
-> +			syscon_regmap_lookup_by_phandle_args(np,
-> +							     "tesla,mram-ecc-cfg"
-> +							     , 1,
+> +	if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
+> +		/* return true; */
+> +		bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
+> +	} else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
+> +		bpf_patch_append(patch,
+> +			/* r5 = ((struct veth_xdp_buff *)r1)->skb; */
+> +			BPF_LDX_MEM(BPF_DW, BPF_REG_5, BPF_REG_1,
+> +				    offsetof(struct veth_xdp_buff, skb)),
+> +			/* if (r5 == NULL) { */
+> +			BPF_JMP_IMM(BPF_JNE, BPF_REG_5, 0, 2),
+> +			/*	return 0; */
+> +			BPF_MOV64_IMM(BPF_REG_0, 0),
+> +			BPF_JMP_A(1),
+> +			/* } else { */
+> +			/*	return ((struct sk_buff *)r5)->tstamp; */
+> +			BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_5,
+> +				    offsetof(struct sk_buff, tstamp)),
+> +			/* } */
 
-, goes to previous line
+I don't think it's realistic to expect driver developers to write this
+level of BPF instructions for everything. With the 'patch' thing it
+should be feasible to write some helpers that driver developers can use,
+right? E.g., this one could be:
 
-> +							     &ecc_cfg->reg);
-> +		}
-> +
-> +		if (IS_ERR(ecc_cfg->syscon)) {
-> +			dev_err(cdev->dev, "couldn't get the syscon reg!\n");
+bpf_read_context_member_u64(size_t ctx_offset, size_t member_offset)
 
-Didn't you just break all platforms using ECC?
+called as:
 
-Best regards,
-Krzysztof
+bpf_read_context_member_u64(offsetof(struct veth_xdp_buff, skb), offsetof(struct sk_buff, tstamp));
+
+or with some macro trickery we could even hide the offsetof so you just
+pass in types and member names?
+
+-Toke
 
