@@ -2,161 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4606226C4
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 10:22:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F976226BE
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 10:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiKIJW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 04:22:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S229690AbiKIJVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 04:21:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbiKIJWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 04:22:25 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4BC1839D
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 01:22:23 -0800 (PST)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20221109092222epoutp01905cb6765f1ed5b86011f1dda6cb74ff~l4DHs6C5E2244622446epoutp014
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 09:22:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20221109092222epoutp01905cb6765f1ed5b86011f1dda6cb74ff~l4DHs6C5E2244622446epoutp014
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1667985742;
-        bh=0Fp8gjhjNu8/y7GV683SkiOwYjglOgKKa34wixxzrp4=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=tmTqsJ63mb5mNRjq11zCjWVcvBYQkF/G7/9YhvvBuaiNhiMATlPMirqV11LdNNRgQ
-         /jtYOhHa+wcGeuO7uLjEUa+KoP5FyzgIBRHkWsaGpvmGDlTIGP+PJEp/Hxzy1pQXGq
-         tCrsOCraIcLpMJ8nTLxDPXOclGavTiG9W48zSOrU=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20221109092220epcas5p1dfab955ed2cc60897f646c98fe8ae8ee~l4DGqwDaB2787227872epcas5p19;
-        Wed,  9 Nov 2022 09:22:20 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.175]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4N6fcp31qlz4x9Q3; Wed,  9 Nov
-        2022 09:22:18 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B5.0C.01710.8417B636; Wed,  9 Nov 2022 18:22:16 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20221109091623epcas5p1023143581849a8799650b86f40e65787~l395gfqF00292802928epcas5p1s;
-        Wed,  9 Nov 2022 09:16:23 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20221109091623epsmtrp1c8e3337edbf2c8a713017eab6ac631a3~l395fMr7S1307013070epsmtrp1H;
-        Wed,  9 Nov 2022 09:16:23 +0000 (GMT)
-X-AuditID: b6c32a49-c9ffa700000006ae-54-636b714802b1
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        25.71.18644.7EF6B636; Wed,  9 Nov 2022 18:16:23 +0900 (KST)
-Received: from FDSFTE314 (unknown [107.122.81.85]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20221109091620epsmtip236bd598509b7313213f3c437c7abb9cc~l392jyR2q2012520125epsmtip2A;
-        Wed,  9 Nov 2022 09:16:19 +0000 (GMT)
-From:   "Vivek Yadav" <vivek.2311@samsung.com>
-To:     "'Marc Kleine-Budde'" <mkl@pengutronix.de>
-Cc:     <rcsekar@samsung.com>, <wg@grandegger.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <pankaj.dubey@samsung.com>, <ravi.patel@samsung.com>,
-        <alim.akhtar@samsung.com>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "'Sriranjani P'" <sriranjani.p@samsung.com>
-In-Reply-To: <20221025074459.z7utljgnexqnohir@pengutronix.de>
-Subject: RE: [PATCH 5/7] arm64: dts: fsd: Add MCAN device node
-Date:   Wed, 9 Nov 2022 14:46:18 +0530
-Message-ID: <006a01d8f41b$efae1fd0$cf0a5f70$@samsung.com>
+        with ESMTP id S229575AbiKIJVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 04:21:12 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8492C11
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 01:21:11 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id n12so44925988eja.11
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 01:21:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7g0AbY5/adDRQsHrmygyhM6FzTVG4xjy6DBIzTAO0mk=;
+        b=di4Uj0oh7+iqBZqbaRrqFsIeaBk5lzHnPlWP+70SlXufN7d7RjOJrIzWoluXMpU7ob
+         PRLFUxAtPWw3qG8bDgGxHlGh+BzNRm+YAZOTaMxGLjjFivHe3gX0ienVyqFBtfEaBB0i
+         qLTCxSSx22l7uzAhr3q12mbKTHX18eVdYS2yRx+JsL4XFzNS0m8azxRmG0gpn1+wnevN
+         0AW2RlLuAYmhmMnFUP7Dzg+CmaxknJd2sfymxW7NTi6qMQ4G7eTlRVCgWijlHru+iw4f
+         F5cWmR2u3KnxtOL/m9O6NRwRVY0pr0wD25OUw/pDR3cm6AYQuNFMgX7ZyZSUGa6ZPAaM
+         AbmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7g0AbY5/adDRQsHrmygyhM6FzTVG4xjy6DBIzTAO0mk=;
+        b=Y0SvyxwopG1vi48b94WhTxMy5qMmYZAmNu2sYqdWQHGfQyHmO44ecHihkKCVIEdzBs
+         CKq1V2+1PMsbjnSfi/61lecInNjky2TEFSIycLPHo5p36ehZn3E75jNRHfE/tCEz01R4
+         gamWm5DwUb32EJwzMJPeiKTlxeU/0Km7iuQxj2WwjH7xgg2KYhkSfakmkUqF0gVY3q0Q
+         uaK5KsVTkpFw3SghLZeieuutNw//p4PTO44ty9mTYpiSHp8Yozu2J3J7qtznWPOVzX2Q
+         FhDqKLLMzd5UA9hIZEzo9RfxdYqynx+yW9yjaY02oFFn2tLjdPm6NzTCZGLEUxGlKWav
+         vx6Q==
+X-Gm-Message-State: ACrzQf3wZPKaBG2rVDb6TRB8Yl1CdhaIYDK+v3LlxItOXGoIJ96p871g
+        W7Q2ywBRxMyL2LQKupNcmaI=
+X-Google-Smtp-Source: AMsMyM5TLpQs092Eg9MW7B1tNG6W1ZYXz2ZXsCfVfkLGtxbgEXnKGft2jEf8L/GxoE++O6PG+IA5PA==
+X-Received: by 2002:a17:906:9f15:b0:78c:fb5e:8592 with SMTP id fy21-20020a1709069f1500b0078cfb5e8592mr1096742ejc.711.1667985670076;
+        Wed, 09 Nov 2022 01:21:10 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id v2-20020a170906292200b00779cde476e4sm5625287ejd.62.2022.11.09.01.21.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 01:21:09 -0800 (PST)
+Date:   Wed, 9 Nov 2022 11:21:07 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        "Hans J . Schultz" <netdev@kapio-technology.com>, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 11/15] mlxsw: spectrum_switchdev: Add locked
+ bridge port support
+Message-ID: <20221109092107.dzgogolaox7upnit@skbuf>
+References: <cover.1667902754.git.petrm@nvidia.com>
+ <f433543efdb610ef5a6aba9ac52b4783ff137a13.1667902754.git.petrm@nvidia.com>
+ <20221108145929.qmu2gvd5vvgvasyy@skbuf>
+ <Y2tkNa7nnAdeD5Nc@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJD6JMFT7t8BSDsfE8Wj4Sh/mZZ1gIfGw/mAff9b8ECH8qDTK0ur0Lw
-Content-Language: en-in
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrNJsWRmVeSWpSXmKPExsWy7bCmlq5HYXayweOdUhYP5m1js5hzvoXF
-        4umxR+wWF7b1sVqs+j6V2eLyrjlsFusXTWGxOLZAzOLb6TeMFou2fmG3ePhhD7vFrAs7WC1u
-        v1nHarH03k5WBz6PLStvMnks2FTq8fHSbUaPTas62Tz6/xp4vN93lc2jb8sqRo/Pm+QCOKKy
-        bTJSE1NSixRS85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOArlZSKEvM
-        KQUKBSQWFyvp29kU5ZeWpCpk5BeX2CqlFqTkFJgU6BUn5haX5qXr5aWWWBkaGBiZAhUmZGds
-        3nOGrWACd8X3M03MDYzdnF2MnBwSAiYSVw/uYu5i5OIQEtjNKPFkyXtWCOcTo8Tb7Z0sEM5n
-        RombL/+zwLTs3r+aDSKxi1Gib08vE4TznFFi+Y/XTCBVbAI6Es2T/zKC2CICehK/JywCK2IW
-        eMwk0Xv1MBtIglPAVqL1XhNYg7CAncTNvsOsIDaLgIpEw/b/zCA2r4ClxJmT71ggbEGJkzOf
-        gNnMAvIS29/OYYY4SUHi59NlrBDL3CTatu9ngqgRlzj6swfsOwmBOxwSC54+ZodocJG4vrAR
-        6h9hiVfHt0DFpSRe9rdB2ckSO/51skLYGRILJu5hhLDtJQ5cmQPUywG0QFNi/S59iLCsxNRT
-        66D28kn0/n7CBBHnldgxD8ZWkXjxeQIrSCvIqt5zwhMYlWYh+WwWks9mIflgFsKyBYwsqxgl
-        UwuKc9NTi00LDPNSy+Exnpyfu4kRnKq1PHcw3n3wQe8QIxMH4yFGCQ5mJRFebo3sZCHelMTK
-        qtSi/Pii0pzU4kOMpsDgnsgsJZqcD8wWeSXxhiaWBiZmZmYmlsZmhkrivItnaCULCaQnlqRm
-        p6YWpBbB9DFxcEo1MAkHyz2338IpN7vwcqb8jYf/l8UfFfn33EqGIXYLz8nAKb0xfOapRnIh
-        WpUzfZ4tuqH7zu3x0cUTC7jFu9kkBYOu7HWec6pvWbBrpUHH8oYry/wSVulOivjT6LuJ0XvR
-        yt1Fv5LXnNvd4dgj0JElw3qceduqxtnFwlYnpWY4Hdlgl9t71tr9xlyBkK6WGdrPsgx2if8R
-        O3Ci+sH9nZF33x69x+158uy7gmvsz4WTnxk+vdHDovx1ThT7hWCd3GY5vU4JjjWXawOanikL
-        9Z2b7Ku7SMAkt53PzTZvR55HQNdrx+NBLxzkBBed7kxWdvkUv3yGSfojkaWqsowx7l6LFJkf
-        Nf/bp/9l58ZAZg8zJZbijERDLeai4kQAuadMq14EAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMIsWRmVeSWpSXmKPExsWy7bCSvO7z/OxkgzU32S0ezNvGZjHnfAuL
-        xdNjj9gtLmzrY7VY9X0qs8XlXXPYLNYvmsJicWyBmMW3028YLRZt/cJu8fDDHnaLWRd2sFrc
-        frOO1WLpvZ2sDnweW1beZPJYsKnU4+Ol24wem1Z1snn0/zXweL/vKptH35ZVjB6fN8kFcERx
-        2aSk5mSWpRbp2yVwZWzec4atYAJ3xfczTcwNjN2cXYycHBICJhK7969mA7GFBHYwShzsNISI
-        S0lMOfOSBcIWllj57zl7FyMXUM1TRomX/74ygyTYBHQkmif/ZQSxRQT0JH5PWMQEUsQs8JFJ
-        4s/nRqiOd4wS69bsABvFKWAr0XqviQnEFhawk7jZd5gVxGYRUJFo2P4fbCqvgKXEmZPvWCBs
-        QYmTM5+A2cwC2hJPbz6FsuUltr+dwwxxnoLEz6fLWCGucJNo276fCaJGXOLozx7mCYzCs5CM
-        moVk1Cwko2YhaVnAyLKKUTK1oDg3PbfYsMAoL7Vcrzgxt7g0L10vOT93EyM4XrW0djDuWfVB
-        7xAjEwfjIUYJDmYlEV5ujexkId6UxMqq1KL8+KLSnNTiQ4zSHCxK4rwXuk7GCwmkJ5akZqem
-        FqQWwWSZODilGpiU2Xe8fB6m6B1+L//hmTUtNxZFxDnlhU6o2mZs9UDuzfFjTz9ubXyul1if
-        3n59vrH4+1NsKdcdnjtv1Tbd0znF3Cq3Vn35tGclbubKB3OsJadrM5t0dW85dMD6ptcHm1wV
-        PcV/Ln16TY+OWcx6YnzmX8G02RGBvA1pU+/9aExvk0voUfoqmvJYd/2FHLm+inRBG36BX0kX
-        e3iVH60tWTOz8fkevraXJbkLJ8Z+OrZVZ+nxlG/8hW0JzrxrZ6cYTNKZMaHwaOGChZ6lUXwX
-        XOdvcT98+NW3wIm7Zs2S/2e9W+OwdnOOjprOw++JSyRMGCbff1HHFc40vfnuEb7MBmO2jPdP
-        Mxfma+twSN1WWa3EUpyRaKjFXFScCABaV9DaRgMAAA==
-X-CMS-MailID: 20221109091623epcas5p1023143581849a8799650b86f40e65787
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20221021102635epcas5p33623e6b6ed02d3fb663da9ec253585ad
-References: <20221021095833.62406-1-vivek.2311@samsung.com>
-        <CGME20221021102635epcas5p33623e6b6ed02d3fb663da9ec253585ad@epcas5p3.samsung.com>
-        <20221021095833.62406-6-vivek.2311@samsung.com>
-        <20221025074459.z7utljgnexqnohir@pengutronix.de>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y2tkNa7nnAdeD5Nc@shredder>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 09, 2022 at 10:26:29AM +0200, Ido Schimmel wrote:
+> On Tue, Nov 08, 2022 at 04:59:29PM +0200, Vladimir Oltean wrote:
+> > Can't really figure out from the patch, sorry. Port security works with
+> > LAG offload?
+> 
+> Yes. It's just that port security needs to be enabled on each of the
+> member ports. FDB entries that point to a LAG are programmed with a
+> lag_id. When a packet is received from a LAG the hardware will compare
+> source_lag_id == lag_id instead of rx_local_port == tx_local_port.
 
-
-> -----Original Message-----
-> From: Marc Kleine-Budde <mkl@pengutronix.de>
-> Sent: 25 October 2022 13:15
-> To: Vivek Yadav <vivek.2311@samsung.com>
-> Cc: rcsekar@samsung.com; wg@grandegger.com; davem@davemloft.net;
-> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> pankaj.dubey@samsung.com; ravi.patel@samsung.com;
-> alim.akhtar@samsung.com; linux-can@vger.kernel.org;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Sriranjani P
-> <sriranjani.p@samsung.com>
-> Subject: Re: [PATCH 5/7] arm64: dts: fsd: Add MCAN device node
-> 
-> On 21.10.2022 15:28:31, Vivek Yadav wrote:
-> > Add MCAN device node and enable the same for FSD platform.
-> > This also adds the required pin configuration for the same.
-> >
-> > Signed-off-by: Sriranjani P <sriranjani.p@samsung.com>
-> > Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
-> 
-> Please add the DT people on Cc.
-Okay, I will add them in the next patch series.
-> 
-> Marc
-> 
-Thanks for the review.
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   |
-> https://protect2.fireeye.com/v1/url?k=6c1d2429-0d96311f-6c1caf66-
-> 000babff9b5d-435a1e79c4c5ee61&q=1&e=74fb5a49-eb28-4786-8c1d-
-> 9aa91f25ec04&u=https%3A%2F%2Fwww.pengutronix.de%2F  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
+Okay, understood, the concepts are clear.
