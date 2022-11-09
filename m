@@ -2,85 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78962622812
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 11:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8652062281E
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 11:11:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiKIKJl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Nov 2022 05:09:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
+        id S230132AbiKIKLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 05:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiKIKJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 05:09:40 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B4BBC93
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 02:09:39 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-81-ABe0gktTOTGcVfsSB0umYg-1; Wed, 09 Nov 2022 10:09:36 +0000
-X-MC-Unique: ABe0gktTOTGcVfsSB0umYg-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 9 Nov
- 2022 10:09:33 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.042; Wed, 9 Nov 2022 10:09:33 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Stefan Hajnoczi' <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCHSET v3 0/5] Add support for epoll min_wait
-Thread-Topic: [PATCHSET v3 0/5] Add support for epoll min_wait
-Thread-Index: AQHY85bpT+hcAn2hREu69xxFvk5GCa42XVDw
-Date:   Wed, 9 Nov 2022 10:09:33 +0000
-Message-ID: <d7fe932b7ad044e2bfc93c6b12131c2a@AcuMS.aculab.com>
-References: <Y2lw4Qc1uI+Ep+2C@fedora>
- <4281b354-d67d-2883-d966-a7816ed4f811@kernel.dk> <Y2phEZKYuSmPL5B5@fedora>
- <93fa2da5-c81a-d7f8-115c-511ed14dcdbb@kernel.dk> <Y2p/YcUFhFDUnLGq@fedora>
- <75c8f5fe-6d5f-32a9-1417-818246126789@kernel.dk> <Y2qQuiZvuML14wX0@fedora>
-In-Reply-To: <Y2qQuiZvuML14wX0@fedora>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229763AbiKIKLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 05:11:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D91CC6E
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 02:10:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667988644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5MPz3Ec+EPgg7rG8vMEpdX68m++2s8DqWYBcdW2qsvI=;
+        b=C1Eo/z9K0XzWDaxc+N2ZUnny0vBIxOYELgbh6/qYFOnLDLMRo22mvJfbf407k8f1NbuxZA
+        95UXa2IWafvCjJdGwxs1vZeLkTcaDjhFV0qv0R5e/u9ZQ6inbKsZcTFBxTrd7wCQVsuWAh
+        jF6Z3SDexZ6bgJ8pNEDtNUqaXH8pD7M=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-516-7A_q0LtsPCyxSplA98tS_Q-1; Wed, 09 Nov 2022 05:10:43 -0500
+X-MC-Unique: 7A_q0LtsPCyxSplA98tS_Q-1
+Received: by mail-qv1-f70.google.com with SMTP id z18-20020a0cfed2000000b004bc28af6f7dso11360133qvs.4
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 02:10:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5MPz3Ec+EPgg7rG8vMEpdX68m++2s8DqWYBcdW2qsvI=;
+        b=ODCPawKAnHUjqHiaGYuwUhuCAXj4DxF1NuF4wyY8MqSsnM/Oax0L+9IgGxctECIWTk
+         oxP85H8oIIaNusdgTANCHM8ZhKcBIhBNbVKO/zoM8Tw/+Fx4TkcPO10rYkE4DIuTsuCc
+         9SsPDklneX4v+tt0Ca2IRABNDz9nAgCMiJdMsn/2EPKEpX5rB2+scv8/unNY0PlkhmaA
+         bJkMuW6REGmRGX+nGFMLA4y7OjJ3jZNpUdM+9QxB1DWysV2wTvENcz4P4kfq/UgQiyqu
+         tqfObNC5yuK9sfF9AFNEioJyf/AyfLMwvQcqdXnnFIGsogxUmuKZiccp/tuuhBICkqU6
+         cFhA==
+X-Gm-Message-State: ACrzQf1TkLuFn47XQIFGieSSRDkLXNAuEKePp2l/9VReUhsnVJS1W7sN
+        fb1si2lHmnv++QXQGE2uqN+z5GJihUL8zB/4nKOlckhgmK1hnZosy8QABE51dY5L0acLLarz4ND
+        wOVuyznoD2IewfXtL
+X-Received: by 2002:ac8:5058:0:b0:3a5:3cb0:959 with SMTP id h24-20020ac85058000000b003a53cb00959mr32919860qtm.123.1667988642846;
+        Wed, 09 Nov 2022 02:10:42 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM7zaE5m+054WqSltDiseEsHQRGbV23se1lE6TQwdYPc3zaWSm4fkB44f0GuQqZbDqR+b7Kc9w==
+X-Received: by 2002:ac8:5058:0:b0:3a5:3cb0:959 with SMTP id h24-20020ac85058000000b003a53cb00959mr32919847qtm.123.1667988642628;
+        Wed, 09 Nov 2022 02:10:42 -0800 (PST)
+Received: from redhat.com ([185.195.59.52])
+        by smtp.gmail.com with ESMTPSA id r4-20020ae9d604000000b006fa2b1c3c1esm10651656qkk.58.2022.11.09.02.10.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 02:10:42 -0800 (PST)
+Date:   Wed, 9 Nov 2022 05:10:37 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 2/2] vhost: fix range used in translate_desc()
+Message-ID: <20221109051030-mutt-send-email-mst@kernel.org>
+References: <20221108103437.105327-1-sgarzare@redhat.com>
+ <20221108103437.105327-3-sgarzare@redhat.com>
+ <CACGkMEuRnqxESo=V2COnfUjP5jGLTXzNRt3=Tp2x-9jsS-RNGQ@mail.gmail.com>
+ <20221109081823.tg5roitl26opqe6k@sgarzare-redhat>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221109081823.tg5roitl26opqe6k@sgarzare-redhat>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Hajnoczi
-> Sent: 08 November 2022 17:24
-...
-> The way the current patches add min_wait into epoll_ctl() seems hacky to
-> me. struct epoll_event was meant for file descriptor event entries. It
-> won't necessarily be large enough for future extensions (luckily
-> min_wait only needs a uint64_t value). It's turning epoll_ctl() into an
-> ioctl()/setsockopt()-style interface, which is bad for anything that
-> needs to understand syscalls, like seccomp. A properly typed
-> epoll_wait3() seems cleaner to me.
+On Wed, Nov 09, 2022 at 09:18:23AM +0100, Stefano Garzarella wrote:
+> On Wed, Nov 09, 2022 at 11:28:41AM +0800, Jason Wang wrote:
+> > On Tue, Nov 8, 2022 at 6:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> > > 
+> > > vhost_iotlb_itree_first() requires `start` and `last` parameters
+> > > to search for a mapping that overlaps the range.
+> > > 
+> > > In translate_desc() we cyclically call vhost_iotlb_itree_first(),
+> > > incrementing `addr` by the amount already translated, so rightly
+> > > we move the `start` parameter passed to vhost_iotlb_itree_first(),
+> > > but we should hold the `last` parameter constant.
+> > > 
+> > > Let's fix it by saving the `last` parameter value before incrementing
+> > > `addr` in the loop.
+> > > 
+> > > Fixes: 0bbe30668d89 ("vhost: factor out IOTLB")
+> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > ---
+> > > 
+> > > I'm not sure about the fixes tag. On the one I used this patch should
+> > > apply cleanly, but looking at the latest stable (4.9), maybe we should
+> > > use
+> > > 
+> > > Fixes: a9709d6874d5 ("vhost: convert pre sorted vhost memory array to interval tree")
+> > 
+> > I think this should be the right commit to fix.
+> 
+> Yeah, @Michael should I send a v2 with that tag?
 
-Is there any reason you can't use an ioctl() on an epoll fd?
-That would be cleaner that hacking at epoll_ctl().
+Pls do.
 
-It would also be easier to modify to allow (strange) things like:
-- return if no events for 10ms.
-- return 200us after the first event.
-- return after 10 events.
-- return at most 100 events.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+> > 
+> > Other than this
+> > 
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+> > 
+> 
+> Thanks for the review,
+> Stefano
 
