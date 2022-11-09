@@ -2,71 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E706362228D
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 04:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4845622294
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 04:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiKIDZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 22:25:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        id S229528AbiKID2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 22:28:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbiKIDZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 22:25:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7596419294
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 19:24:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667964277;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=F1qirjMG3kZUXL8rp78PkVsEriIi9ata3YC3IMmDFgo=;
-        b=Rigx1i/2Ku9x3DLO5JOv66QoRAjFAwSu3neFsFQP7BdHMOqVhaPvr6OhOmOTdFtYqXCjG8
-        Vsx7rRBBKheMAVSShyfO8qKpYM+iMbfvvDYGK5gdiS2bkkwCIIkqQAVVBv3FFIia1vSjV7
-        xhwEL7dH2PAnBcJMIYO1JbuKUThpkLw=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-9-8jcVadeqNCu4MPmrXliNEA-1; Tue, 08 Nov 2022 22:24:36 -0500
-X-MC-Unique: 8jcVadeqNCu4MPmrXliNEA-1
-Received: by mail-ot1-f71.google.com with SMTP id o3-20020a9d6d03000000b0066c577eefc4so7881027otp.22
-        for <netdev@vger.kernel.org>; Tue, 08 Nov 2022 19:24:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=F1qirjMG3kZUXL8rp78PkVsEriIi9ata3YC3IMmDFgo=;
-        b=RfxCPwwbe0qa4jv+ecx7yNrAi/8SSB7Iq2kkfEK+WIfOhoOPr47BkH3Zg1FVHbU4MD
-         b8H35MEwAkf4vhTSA40JloM26bgpzLO7lVm4YiaQ4QKHL2A0vy0cJiuOCjOgN0ysQsGe
-         PRvj7tnHbTIN0HtGnb0VGkrFz9CkeKdOSnWVFeviErb8PVvzBehm+nCXWTP595oVamLs
-         udhq+aBCPEDjRwTft3clSac+EBCJKUVp8Poe27Ip5/mHwtyH9kbllxkAUR3qfgRtYpdi
-         udJ+hywfTnfwyvVz+GBUyxOw6AWuOSL0ZmXsUNUSu2VX/CpnaDf2eUnvyaqE6kSMAaai
-         pOgg==
-X-Gm-Message-State: ACrzQf2ZxUUiJdh+FL6vK5FvQBbm+pmaPx/rQ4+uxaENrco539nHn8Ee
-        6Bs4yrA3PrsRg3IkUxPbrbTTCgvLZMFWfXi7qJzhJBuEFuwEoJLZ/0HQZSCSp9hXnvgZLXOUNdX
-        bnRKund9ChNIjaw1fCAiIpZxvtcmpafM/
-X-Received: by 2002:a4a:2ccf:0:b0:49e:b502:3a2b with SMTP id o198-20020a4a2ccf000000b0049eb5023a2bmr9788967ooo.57.1667964275438;
-        Tue, 08 Nov 2022 19:24:35 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM4TS8SZHDk+F11XcIXyOjWg7x3CStUwgN7DXqTHrvfbCTUgELD600O6A1TkWZj32gJcP6VoqsHMRgJlXrNy6A0=
-X-Received: by 2002:a4a:2ccf:0:b0:49e:b502:3a2b with SMTP id
- o198-20020a4a2ccf000000b0049eb5023a2bmr9788965ooo.57.1667964275202; Tue, 08
- Nov 2022 19:24:35 -0800 (PST)
+        with ESMTP id S229499AbiKID2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 22:28:38 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5074322BD6;
+        Tue,  8 Nov 2022 19:28:37 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N6VmT0xhhzRp5v;
+        Wed,  9 Nov 2022 11:28:25 +0800 (CST)
+Received: from [10.174.179.211] (10.174.179.211) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 9 Nov 2022 11:28:33 +0800
+Message-ID: <3c99ca30-dd89-03e9-481c-95310b562702@huawei.com>
+Date:   Wed, 9 Nov 2022 11:28:32 +0800
 MIME-Version: 1.0
-References: <20221108103437.105327-1-sgarzare@redhat.com> <20221108103437.105327-2-sgarzare@redhat.com>
-In-Reply-To: <20221108103437.105327-2-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 9 Nov 2022 11:24:23 +0800
-Message-ID: <CACGkMEu+T1zX0XQbe2NR24MBC1LfV6ECv6vOm7ofrvqCJZ4avA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] vringh: fix range used in iotlb_translate()
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH v1 0/3] rtlwifi: Correct inconsistent header guard
+To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "huawei.libin@huawei.com" <huawei.libin@huawei.com>
+References: <20221108093447.3588889-1-liwei391@huawei.com>
+ <cc8f8393ab5e45f895fda98e6b42d1d3@realtek.com>
+From:   "liwei (GF)" <liwei391@huawei.com>
+In-Reply-To: <cc8f8393ab5e45f895fda98e6b42d1d3@realtek.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.211]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,52 +54,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 8, 2022 at 6:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> vhost_iotlb_itree_first() requires `start` and `last` parameters
-> to search for a mapping that overlaps the range.
->
-> In iotlb_translate() we cyclically call vhost_iotlb_itree_first(),
-> incrementing `addr` by the amount already translated, so rightly
-> we move the `start` parameter passed to vhost_iotlb_itree_first(),
-> but we should hold the `last` parameter constant.
->
-> Let's fix it by saving the `last` parameter value before incrementing
-> `addr` in the loop.
->
-> Fixes: 9ad9c49cfe97 ("vringh: IOTLB support")
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Acked-by: Jason Wang <jasowang@redhat.com>
 
-> ---
->  drivers/vhost/vringh.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index 11f59dd06a74..828c29306565 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -1102,7 +1102,7 @@ static int iotlb_translate(const struct vringh *vrh,
->         struct vhost_iotlb_map *map;
->         struct vhost_iotlb *iotlb = vrh->iotlb;
->         int ret = 0;
-> -       u64 s = 0;
-> +       u64 s = 0, last = addr + len - 1;
->
->         spin_lock(vrh->iotlb_lock);
->
-> @@ -1114,8 +1114,7 @@ static int iotlb_translate(const struct vringh *vrh,
->                         break;
->                 }
->
-> -               map = vhost_iotlb_itree_first(iotlb, addr,
-> -                                             addr + len - 1);
-> +               map = vhost_iotlb_itree_first(iotlb, addr, last);
->                 if (!map || map->start > addr) {
->                         ret = -EINVAL;
->                         break;
-> --
-> 2.38.1
->
+On 2022/11/9 8:32, Ping-Ke Shih wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Wei Li <liwei391@huawei.com>
+>> Sent: Tuesday, November 8, 2022 5:35 PM
+>> To: Ping-Ke Shih <pkshih@realtek.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>;
+>> Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
+>> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; huawei.libin@huawei.com
+>> Subject: [PATCH v1 0/3] rtlwifi: Correct inconsistent header guard
+> 
+> Subject prefix should be "wifi: rtlwifi: ..."
+>>
+>> This patch set fixes some inconsistent header guards in module
+>> rtl8188ee/rtl8723ae/rtl8192de, that may be copied but missing update.
+>>
+>> Wei Li (3):
+>>   rtlwifi: rtl8188ee: Correct the header guard of rtl8188ee/*.h
+>>   rtlwifi: rtl8723ae: Correct the header guard of
+>>     rtl8723ae/{fw,led,phy}.h
+>>   rtlwifi: rtl8192de: Correct the header guard of rtl8192de/{dm,led}.h
+>>
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h     | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h     | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h     | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h     | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h  | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h     | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h     | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h    | 4 ++--
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h    | 4 ++--
+>>  16 files changed, 32 insertions(+), 32 deletions(-)
+> 
+> The changes aren't too much and commit contents/messages are very similar,
+> so I would like to squash 3 patches into single one.
 
+OK, I will combine this series in one patch, and fix the prefix in v2,
+thanks for your suggestion.
+
+Thanks,
+Wei
