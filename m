@@ -2,117 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F036762300C
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 17:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F144762301B
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 17:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiKIQVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 11:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36610 "EHLO
+        id S231330AbiKIQZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 11:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbiKIQVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 11:21:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B84167E3;
-        Wed,  9 Nov 2022 08:21:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7734AB81F38;
-        Wed,  9 Nov 2022 16:21:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F4BC433C1;
-        Wed,  9 Nov 2022 16:21:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668010864;
-        bh=bHR3akRUdQF87PGyjO5R1BzAS7isamo5fFrvDl8bd50=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=NN03LOwuihuwO3U2kE5FyxnI0xVn36SyCyISiEs6Du9U25VZR9LvS8QGUo+jh2PiL
-         7bH35XwQ+SWJclX3Gdcp/p9DyviZONc6Den9VRg/zwNYL8kfGIewZ0Wo6Et9/eEHRV
-         AdJAZQyBKfmy9M9o+qxy1ig+vBgncNWG3h9i3OE0UuO5kubRCf1pcWdpm865cr4ZwC
-         g8bmSNlSqt2F6kqfA/gcKwlBMPBT0CC+4pLfoI0RQqgM6XD/Fl8de/0QZHnzgB8Ckr
-         kHQalu3hnYlQC41AbIWkSPukxWegudVzIrNy2eu2uU6EDbFRyFK4HY7fgba5kYHuqv
-         bM+AZpFaBDNbg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-wireless@vger.kernel.org, Angus Ainslie <angus@akkea.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v5] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via control port
-References: <20221104163339.227432-1-marex@denx.de>
-        <87o7tjszyg.fsf@kernel.org>
-        <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de>
-        <877d06g98z.fsf@kernel.org>
-        <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de>
-Date:   Wed, 09 Nov 2022 18:20:57 +0200
-In-Reply-To: <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de> (Marek Vasut's
-        message of "Mon, 7 Nov 2022 15:44:55 +0100")
-Message-ID: <871qqccd5i.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229947AbiKIQZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 11:25:18 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D21619286
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 08:25:17 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id q5so9278976ilt.13
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 08:25:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ziuvq5Y95DCcNTz94pEKFwOv2/BYS3eGvphQtS8Wfb4=;
+        b=aNd2up8md3X+4q5bsGiT/LJvy0AJ1FCHHP1+y2geuc4FoIBv2z08B/GYRNmEFkqdBy
+         aCAmSidrMXrkHwMOWyIB0oITMZNP2ZKuRA4zptVcUSxgi/EUoLGJqQn3ZYxeNvD51/99
+         uofjhzKG9TKFmWhIZ9yBkRy3NaAoFh7iDbHJBzf6IS/Wm21BFIrfYwJ/2fpBcXrfGncy
+         Eu+Z0vryXgG4hqki2NIthrx78yU8Uc5jVu2X4mksj68jttp58HvBIDDnJJTnsyKKBuQT
+         IrV33RUSXrI4SqTqlwOf754eXzEYapzryOrk7urSk2mxrmk9tvur/EnERSnzsJeZHUpC
+         Lu1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ziuvq5Y95DCcNTz94pEKFwOv2/BYS3eGvphQtS8Wfb4=;
+        b=OTszdgwG74ql0wmZVcTJTWonfvqijUzK8aGTqlZ3TtJPqQaK46VNs2LHlTMlZTcxrs
+         ukcc/OLpQIYvAztTmtMpRGgi8OOlP7AIOmNvHw4v34nyhywqAzJNc6g1xgVjUydvUldk
+         FyiXwQoiZ2gJP2iAvLiN/bOObDF01zOSAepuYfd3GVwBoL+Zt9XN/4HkK/uwPXVb24DM
+         C15a+q2NOucNudOMl24c76uICCqA4v4KvAPKS0bU3KecX/ZvwzqfwFVwXNMKd2JvDnJl
+         0R2v2cZfmmUT30soGD3vZIHjlh/8gw4bVH/y5sCCsMSDFhtGD+QMGxNIewPBrCnGpeRA
+         O3mg==
+X-Gm-Message-State: ACrzQf3GvoscX1nOsmkA8eYZQJJtXMyQkazcKTfbogW4TJ7Mr10a+Dgr
+        BwqlMHNqZPDppBpG3wARSScXjOZZN4QYgw==
+X-Google-Smtp-Source: AMsMyM4hepmVawM/YdFcVvBfTmWF923nKJN+C+LBFpdd0oXtYlZlmAlmO8O5LIHB8iHKeO6MsWQoIw==
+X-Received: by 2002:a92:c6cb:0:b0:2f6:94b2:fba5 with SMTP id v11-20020a92c6cb000000b002f694b2fba5mr2020136ilm.78.1668011116918;
+        Wed, 09 Nov 2022 08:25:16 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:a10c:23e5:6dc3:8e07? ([2601:282:800:dc80:a10c:23e5:6dc3:8e07])
+        by smtp.googlemail.com with ESMTPSA id r4-20020a02aa04000000b0036368623574sm4859910jam.169.2022.11.09.08.25.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Nov 2022 08:25:16 -0800 (PST)
+Message-ID: <d47c3f41-2977-3ffb-5c99-953088727a4b@gmail.com>
+Date:   Wed, 9 Nov 2022 09:25:15 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: ping (iputils) review (call for help)
+Content-Language: en-US
+To:     Petr Vorel <pvorel@suse.cz>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Vasiliy Kulikov <segoon@openwall.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <Y2OmQDjtHmQCHE7x@pevik>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <Y2OmQDjtHmQCHE7x@pevik>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marek Vasut <marex@denx.de> writes:
+On 11/3/22 5:30 AM, Petr Vorel wrote:
+> Hi,
+> 
+> I'm sorry to bother you about userspace. I'm preparing new iputils release and
+> I'm not sure about these two patches.  As there has been many regressions,
+> review from experts is more than welcome.
+> 
+> If you have time to review them, it does not matter if you post your
+> comments/RBT in github or here (as long as you keep Cc me so that I don't
+> overlook it).
+> 
+> BTW I wonder if it make sense to list Hideaki YOSHIFUJI as NETWORKING
+> IPv4/IPv6 maintainer. If I'm not mistaken, it has been a decade since he was active.
+> 
+> * ping: Call connect() before sending/receiving
+> https://github.com/iputils/iputils/pull/391
+> => I did not even knew it's possible to connect to ping socket, but looks like
+> it works on both raw socket and on ICMP datagram socket.
 
-> On 11/7/22 14:54, Kalle Valo wrote:
->> Marek Vasut <marex@denx.de> writes:
->>
->>>> BTW did you test this on a real device?
->>>
->>> Yes, SDIO RS9116 on next-20221104 and 5.10.153 .
->>
->> Very good, thanks.
->>
->>> What prompts this question ?
->>
->> I get too much "fixes" which have been nowhere near real hardware and
->> can break the driver instead of fixing anything, especially syzbot
->> patches have been notorious. So I have become cautious.
->
-> Ah, this is a real problem right here.
->
-> wpa-supplicant 2.9 from OE dunfell 3.1 works.
-> wpa-supplicant 2.10 from OE kirkstone 4.0 fails.
->
-> That's how I ran into this initially. My subsequent tests were with
-> debian wpa-supplicant 2.9 and 2.10 packages, since that was easier,
-> they (2.10 does, 2.9 does not) trigger the problem all the same.
->
-> I'm afraid this RSI driver is so poorly maintained and has so many
-> bugs, that, there is little that can make it worse. The dealing I had
-> with RSI has been ... long ... and very depressing. I tried to get
-> documentation or anything which would help us fix the problems we have
-> with this RSI driver ourselves, but RSI refused it all and suggested
-> we instead use their downstream driver (I won't go into the quality of
-> that). It seems RSI has little interest in maintaining the upstream
-> driver, pity.
->
-> I've been tempted to flag this driver as BROKEN for a while, to
-> prevent others from suffering with it.
+no strong opinion on this one. A command line option to use connect
+might be better than always doing the connect.
 
-That's a pity indeed. Should we at least mark the driver as orphaned in
-MAINTAINERS?
+> 
+> * ping: revert "ping: do not bind to device when destination IP is on device
+> https://github.com/iputils/iputils/pull/396
+> => the problem has been fixed in mainline and stable/LTS kernels therefore I
+> suppose we can revert cc44f4c as done in this PR. It's just a question if we
+> should care about people who run new iputils on older (unfixed) kernels.
+> 
 
-Or even better if you Marek would be willing to step up as the
-maintainer? :)
+I agree with this change. If a user opts for device binding, the command
+should not try to guess if it is really needed.
 
-> Until I send such a patch, you can expect real fixes coming from my
-> end at least.
-
-Great, thank you.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
