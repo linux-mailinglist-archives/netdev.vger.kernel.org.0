@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79992622185
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 03:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDB636221C7
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 03:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiKICAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Nov 2022 21:00:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        id S229628AbiKICNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Nov 2022 21:13:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiKICAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 21:00:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3412B18C
-        for <netdev@vger.kernel.org>; Tue,  8 Nov 2022 18:00:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9AF0B81CF1
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 02:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 776DFC43141;
-        Wed,  9 Nov 2022 02:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667959215;
-        bh=nnogosC7oZMCldk43nPmGlQoFRsEeZCTMxeRvmh39Lg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PlUuaRp1yWiOu/wJTnucfFZbedBc74BFGw1WZD1CR3QRJzbbpcsbTwLEmPDuPEmUO
-         O79ne+V/ODzYNNkMUggjWYJ9yCOEz1wJg3ptb5wxqA0vAA99MBPLb90Hm9K5GXrhuv
-         lWHIXZiOJtujSot5jrha+0iD80HA77B5ejE3PtwqJ4CtX0g+CfKdcKWMlStFLeFx/f
-         hWYNRnklY9KK7J4dRJDuvYu9UscyRYGUTotxqwRedSxSayOLVg8drdFhmzvp+bBaNZ
-         AyKgNMkCX5kUwG/JJac6Pgv+L+FjPHZxZkhPzX8W80gEQ4cbreWUjA/y/BoPvzPp+h
-         HDAIjTfm4lJvA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 427FFE270CE;
-        Wed,  9 Nov 2022 02:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229452AbiKICNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Nov 2022 21:13:17 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB99F5D697;
+        Tue,  8 Nov 2022 18:13:16 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N6T5W0YNVz15MTX;
+        Wed,  9 Nov 2022 10:13:03 +0800 (CST)
+Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 9 Nov 2022 10:13:14 +0800
+Received: from [10.174.177.133] (10.174.177.133) by
+ dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 9 Nov 2022 10:13:14 +0800
+Subject: Re: [PATCH] Bluetooth: hci_conn: Fix potential memleak in
+ iso_listen_bis()
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+CC:     <luiz.von.dentz@intel.com>, <pabeni@redhat.com>,
+        <liwei391@huawei.com>, <linux-bluetooth@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20221108112308.3910185-1-bobo.shaobowang@huawei.com>
+ <CABBYNZJxkkrmuq+2LS3PAbhBCdE5oAkMuw_yggsXW=X0j8CCTw@mail.gmail.com>
+From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
+Message-ID: <5096457b-c62b-08c3-d27b-c34ff9409e5a@huawei.com>
+Date:   Wed, 9 Nov 2022 10:13:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
+In-Reply-To: <CABBYNZJxkkrmuq+2LS3PAbhBCdE5oAkMuw_yggsXW=X0j8CCTw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: nixge: disable napi when enable interrupts failed in
- nixge_open()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166795921526.12027.11201556109412673354.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Nov 2022 02:00:15 +0000
-References: <20221107101443.120205-1-shaozhengchao@huawei.com>
-In-Reply-To: <20221107101443.120205-1-shaozhengchao@huawei.com>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, khalasa@piap.pl,
-        leon@kernel.org, arnd@arndb.de, wsa+renesas@sang-engineering.com,
-        christophe.jaillet@wanadoo.fr, mdf@kernel.org, petrm@nvidia.com,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.174.177.133]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500015.china.huawei.com (7.185.36.181)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+在 2022/11/9 7:41, Luiz Augusto von Dentz 写道:
+> Hi Wang,
+>
+> On Tue, Nov 8, 2022 at 3:24 AM Wang ShaoBo <bobo.shaobowang@huawei.com> wrote:
+>> When hci_pa_create_sync() failed, hdev should be freed as there
+>> was no place to handle its recycling after.
+> The patch itself seems fine but the description is misleading since we
+> are not freeing the hdev instead we are jus releasing the reference we
+> got.
+>
+>> Fixes: f764a6c2c1e4 ("Bluetooth: ISO: Add broadcast support")
+>> Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
+>> ---
+>>   net/bluetooth/iso.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/net/bluetooth/iso.c b/net/bluetooth/iso.c
+>> index f825857db6d0..4e3867110dc1 100644
+>> --- a/net/bluetooth/iso.c
+>> +++ b/net/bluetooth/iso.c
+>> @@ -880,6 +880,9 @@ static int iso_listen_bis(struct sock *sk)
+>>
+>>          hci_dev_unlock(hdev);
+>>
+>> +       if (err)
+>> +               hci_dev_put(hdev);
+> Not sure why you are not always calling hci_dev_put?
 
-On Mon, 7 Nov 2022 18:14:43 +0800 you wrote:
-> When failed to enable interrupts in nixge_open() for opening device,
-> napi isn't disabled. When open nixge device next time, it will reports
-> a invalid opcode issue. Fix it. Only be compiled, not be tested.
-> 
-> Fixes: 492caffa8a1a ("net: ethernet: nixge: Add support for National Instruments XGE netdev")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> 
-> [...]
+emm, I would have thought that the reference would be released after 
+calling hci_cmd_sync_queue(), but in fact actually not.
 
-Here is the summary with links:
-  - [net] net: nixge: disable napi when enable interrupts failed in nixge_open()
-    https://git.kernel.org/netdev/net/c/b06334919c7a
+-- Wang ShaoBo
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>
+>>          return err;
+>>   }
+>>
+>> --
+>> 2.25.1
+>>
+>
