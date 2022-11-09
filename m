@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9876C623213
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 19:09:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AECF623214
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 19:09:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiKISJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 13:09:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
+        id S229842AbiKISJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 13:09:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiKISJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 13:09:19 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3393E22BE7
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 10:09:18 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id u24so28262489edd.13
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 10:09:18 -0800 (PST)
+        with ESMTP id S229872AbiKISJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 13:09:26 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722081C41A
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 10:09:25 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id bj12so48918612ejb.13
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 10:09:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=go/qFrlfKxYDOzPYzeTA8A83ngXuKYoA+aPGsw5k65Q=;
-        b=GPNoj6vglHqBfQ8dyclvRgqIe95JEljGXKjkxuBLLcyfpSjdCsIVsPAaqOXkLIxfu6
-         FjuUlNdM3GefXJ4lqlk+nWqSFIn2tI+sHblqMllWBp8C3uz+b/gGsRFciWUmXvhgS0Ex
-         BCXuUSpbxMRlMywwjsZ6moIGcZiizUHURmyBqKb3zwtnHchLVWACFvd5kHVrOiX8vUlx
-         eAc5Q6xO55oHB+GDX71F3GbpLydmcrSyWf2WwOAS09oj12nAkYyYv67yclH4EnQSY25N
-         NBbvFgBA1CQ/Yk1PCojUqNgAN49L15SvV0tDujy+u70yD197yZQB1gttobSGfeoXjGCR
-         UJEw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4zL1hfmtgQMnqgdfJLzIDEINdeloTLiy6lXdpMwhNEI=;
+        b=CFitsk7sgicEAAsX7oCrEpTfMyvgR7yWIGpS7KEL2GHgrCd5ynsA63AiZRij9JOZGi
+         Jg1JT/dkpk5twfBvle2r+RPaB3+qgSiZWx2qDrkiGmvtpCp+tIe988HdoGaG12gZf8Bn
+         FGn47tZYyTCMW22O9rlIqK4ykgOLtTthLBoTCZMSFQQcZ+ka3X5xrMhRChC9spqAbvxG
+         RVuJsxy3pc3jFz4TDWytDjk0q6aooz57PvLVld+5sbzytxnkQoyQO37/VOGcZtOaZgFC
+         rO90cX8wtDZW/hUOd4t93kuwTAdjfi87UK9B71Ej8nd+JckNXzcfvhCMgrjszbIAuXjd
+         7sNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=go/qFrlfKxYDOzPYzeTA8A83ngXuKYoA+aPGsw5k65Q=;
-        b=l28h89olZjOY5qRwMSHuzUX3UqfI0Z5ab72S6qDHxINFGz8WeeZleONEnTJ5RzDd8+
-         zivltsBuWqrkUzBtokXcQFkU1V9yDTNQtqc8xayHJb47jlyS+qKPtR00KmN9kLEdlMQD
-         RNYrjsCG+58iZ7uGL/iUdj7eaJG+MGZFjg+8ArDHCRQu5DAb5Rs0GTCM5Ux8XEw9sIJo
-         3QdAVIuEIe/TrHaVOcVqRC0QX3G4PK6vnw0mhyd0SmRL1+605xaKdfuZthW0LiKED+EX
-         tKJiG/Ki45Aym72QXTDzH7J1pgsiPZ9rFqRXDf+Vwn62qN0trRqrxINmQFZoJ7XEuSHG
-         A5lg==
-X-Gm-Message-State: ACrzQf0i8Iizxa07XQydBFCIN3MbmVBXYumEton8E7zQ1j9XBYJx3gsL
-        q3ahZ1Ddtq0egHFkNUwQcSo=
-X-Google-Smtp-Source: AMsMyM6lOadEOaIW8XLmFjuS2VwH55c7WvbUmJUn6eEMUlfx1aJCymJfXPKpbCRyJOyOUg7ZOhfgBA==
-X-Received: by 2002:aa7:de0a:0:b0:462:d2a0:93a with SMTP id h10-20020aa7de0a000000b00462d2a0093amr58659273edv.275.1668017356508;
-        Wed, 09 Nov 2022 10:09:16 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4zL1hfmtgQMnqgdfJLzIDEINdeloTLiy6lXdpMwhNEI=;
+        b=GmUwYkUbCayQzC8eh5gtDPu5m/eJoaw4mKkZLJMogooCTf3iBnvRc454q7tBmZBhnE
+         iC2Ad6ABWhDLZ+5RX9LHm1/K792xGGP2k/M08riqOgOkMgS/l89F8XaARQo06RGR8QHZ
+         cfHGdNxvoozfd8bIVrxP2Pj8C1S9bPNa0k5v94ICdbIowv/lNQTNKrnGDxusNkcJtFko
+         F4LeHAXCLtYAY3mRAeu84ODxjPZ0Y7bkz3EzPwEhwfjP62Gret5gfG04aMZFne6okATy
+         BAAG1vYhrEWd5upGT0Qlcvdzp2tC9xDsCwarVU0L+S+pN/Kx39Dld/Fn5JTGyW9cavcU
+         caxw==
+X-Gm-Message-State: ACrzQf06IfkLUD5eF4VTnj3jWzsNHOHO4eKCOPqUk8WLFdYvCRBqYkUS
+        +CANizEUcbQ1V2N2JH7nPL0=
+X-Google-Smtp-Source: AMsMyM5vQrZ9hvPS7BBdrk37P2PJkYVCXal73xlmSe7R3+TGzpYHg9Oip/l8JoSUTqvz1eIPtxUbpg==
+X-Received: by 2002:a17:907:2c71:b0:79e:8603:72c6 with SMTP id ib17-20020a1709072c7100b0079e860372c6mr58786595ejc.172.1668017363864;
+        Wed, 09 Nov 2022 10:09:23 -0800 (PST)
 Received: from ThinkStation-P340.. (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
-        by smtp.gmail.com with ESMTPSA id rh16-20020a17090720f000b0077016f4c6d4sm6116311ejb.55.2022.11.09.10.09.15
+        by smtp.gmail.com with ESMTPSA id rh16-20020a17090720f000b0077016f4c6d4sm6116311ejb.55.2022.11.09.10.09.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 10:09:15 -0800 (PST)
+        Wed, 09 Nov 2022 10:09:23 -0800 (PST)
 From:   Daniele Palmas <dnlplm@gmail.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -59,10 +60,12 @@ To:     David Miller <davem@davemloft.net>,
 Cc:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>
-Subject: [PATCH net-next 0/3] add tx packets aggregation to ethtool and rmnet
-Date:   Wed,  9 Nov 2022 19:02:46 +0100
-Message-Id: <20221109180249.4721-1-dnlplm@gmail.com>
+Subject: [PATCH net-next 1/3] ethtool: add tx aggregation parameters
+Date:   Wed,  9 Nov 2022 19:02:47 +0100
+Message-Id: <20221109180249.4721-2-dnlplm@gmail.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20221109180249.4721-1-dnlplm@gmail.com>
+References: <20221109180249.4721-1-dnlplm@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,66 +78,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello maintainers and all,
+Add the following ethtool tx aggregation parameters:
 
-this patchset implements tx qmap packets aggregation in rmnet and generic
-ethtool support for that.
+ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE
+Maximum size of an aggregated block of frames in tx.
 
-Some low-cat Thread-x based modems are not capable of properly reaching the maximum
-allowed throughput both in tx and rx during a bidirectional test if tx packets
-aggregation is not enabled.
+ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES
+Maximum number of frames that can be aggregated into a block.
 
-I verified this problem with rmnet + qmi_wwan by using a MDM9207 Cat. 4 based modem
-(50Mbps/150Mbps max throughput). What is actually happening is pictured at
-https://drive.google.com/file/d/1gSbozrtd9h0X63i6vdkNpN68d-9sg8f9/view
+ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME
+Time in usecs after the first packet arrival in an aggregated
+block for the block to be sent.
 
-Testing with iperf TCP, when rx and tx flows are tested singularly there's no issue
-in tx and minor issues in rx (not able to reach max throughput). When there are concurrent
-tx and rx flows, tx throughput has an huge drop. rx a minor one, but still present.
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+---
+ Documentation/networking/ethtool-netlink.rst |  6 ++++++
+ include/linux/ethtool.h                      | 12 ++++++++++-
+ include/uapi/linux/ethtool_netlink.h         |  3 +++
+ net/ethtool/coalesce.c                       | 22 ++++++++++++++++++--
+ 4 files changed, 40 insertions(+), 3 deletions(-)
 
-The same scenario with tx aggregation enabled is pictured at
-https://drive.google.com/file/d/1jcVIKNZD7K3lHtwKE5W02mpaloudYYih/view
-showing a regular graph.
-
-This issue does not happen with high-cat modems (e.g. SDX20), or at least it
-does not happen at the throughputs I'm able to test currently: maybe the same
-could happen when moving close to the maximum rates supported by those modems.
-Anyway, having the tx aggregation enabled should not hurt.
-
-The first attempt to solve this issue was in qmi_wwan qmap implementation,
-see the discussion at https://lore.kernel.org/netdev/20221019132503.6783-1-dnlplm@gmail.com/
-
-However, it turned out that rmnet was a better candidate for the implementation.
-
-Moreover, Greg and Jakub suggested also to use ethtool for the configuration:
-not sure if I got their advice right, but this patchset add also generic ethtool
-support for tx aggregation.
-
-The patches have been tested mainly against an MDM9207 based modem through USB
-and SDX55 through PCI (MHI).
-
-Thanks,
-Daniele
-
-Daniele Palmas (3):
-  ethtool: add tx aggregation parameters
-  net: qualcomm: rmnet: add tx packets aggregation
-  net: qualcomm: rmnet: add ethtool support for configuring tx
-    aggregation
-
- Documentation/networking/ethtool-netlink.rst  |   6 +
- .../ethernet/qualcomm/rmnet/rmnet_config.c    |   5 +
- .../ethernet/qualcomm/rmnet/rmnet_config.h    |  19 ++
- .../ethernet/qualcomm/rmnet/rmnet_handlers.c  |  25 ++-
- .../net/ethernet/qualcomm/rmnet/rmnet_map.h   |   7 +
- .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 196 ++++++++++++++++++
- .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |  44 ++++
- include/linux/ethtool.h                       |  12 +-
- include/uapi/linux/ethtool_netlink.h          |   3 +
- include/uapi/linux/if_link.h                  |   1 +
- net/ethtool/coalesce.c                        |  22 +-
- 11 files changed, 335 insertions(+), 5 deletions(-)
-
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index d578b8bcd8a4..a6f115867648 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -1001,6 +1001,9 @@ Kernel response contents:
+   ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
+   ``ETHTOOL_A_COALESCE_USE_CQE_TX``            bool    timer reset mode, Tx
+   ``ETHTOOL_A_COALESCE_USE_CQE_RX``            bool    timer reset mode, Rx
++  ``ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE``      u32     max aggr packets size, Tx
++  ``ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES``    u32     max aggr packets, Tx
++  ``ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME``    u32     time (us), aggr pkts, Tx
+   ===========================================  ======  =======================
+ 
+ Attributes are only included in reply if their value is not zero or the
+@@ -1052,6 +1055,9 @@ Request contents:
+   ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
+   ``ETHTOOL_A_COALESCE_USE_CQE_TX``            bool    timer reset mode, Tx
+   ``ETHTOOL_A_COALESCE_USE_CQE_RX``            bool    timer reset mode, Rx
++  ``ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE``      u32     max aggr packets size, Tx
++  ``ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES``    u32     max aggr packets, Tx
++  ``ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME``    u32     time (us), aggr pkts, Tx
+   ===========================================  ======  =======================
+ 
+ Request is rejected if it attributes declared as unsupported by driver (i.e.
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 99dc7bfbcd3c..3726db470247 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -203,6 +203,9 @@ __ethtool_get_link_ksettings(struct net_device *dev,
+ struct kernel_ethtool_coalesce {
+ 	u8 use_cqe_mode_tx;
+ 	u8 use_cqe_mode_rx;
++	u32 tx_max_aggr_size;
++	u32 tx_max_aggr_frames;
++	u32 tx_usecs_aggr_time;
+ };
+ 
+ /**
+@@ -246,7 +249,10 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
+ #define ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL	BIT(21)
+ #define ETHTOOL_COALESCE_USE_CQE_RX		BIT(22)
+ #define ETHTOOL_COALESCE_USE_CQE_TX		BIT(23)
+-#define ETHTOOL_COALESCE_ALL_PARAMS		GENMASK(23, 0)
++#define ETHTOOL_COALESCE_TX_MAX_AGGR_SIZE	BIT(24)
++#define ETHTOOL_COALESCE_TX_MAX_AGGR_FRAMES	BIT(25)
++#define ETHTOOL_COALESCE_TX_USECS_AGGR_TIME	BIT(26)
++#define ETHTOOL_COALESCE_ALL_PARAMS		GENMASK(26, 0)
+ 
+ #define ETHTOOL_COALESCE_USECS						\
+ 	(ETHTOOL_COALESCE_RX_USECS | ETHTOOL_COALESCE_TX_USECS)
+@@ -274,6 +280,10 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
+ 	 ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL)
+ #define ETHTOOL_COALESCE_USE_CQE					\
+ 	(ETHTOOL_COALESCE_USE_CQE_RX | ETHTOOL_COALESCE_USE_CQE_TX)
++#define ETHTOOL_COALESCE_TX_AGGR		\
++	(ETHTOOL_COALESCE_TX_MAX_AGGR_SIZE |	\
++	 ETHTOOL_COALESCE_TX_MAX_AGGR_FRAMES |	\
++	 ETHTOOL_COALESCE_TX_USECS_AGGR_TIME)
+ 
+ #define ETHTOOL_STAT_NOT_SET	(~0ULL)
+ 
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index bb57084ac524..08872c8ea0d6 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -397,6 +397,9 @@ enum {
+ 	ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL,	/* u32 */
+ 	ETHTOOL_A_COALESCE_USE_CQE_MODE_TX,		/* u8 */
+ 	ETHTOOL_A_COALESCE_USE_CQE_MODE_RX,		/* u8 */
++	ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE,		/* u32 */
++	ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES,		/* u32 */
++	ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME,		/* u32 */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_COALESCE_CNT,
+diff --git a/net/ethtool/coalesce.c b/net/ethtool/coalesce.c
+index 487bdf345541..014a7a4f73f2 100644
+--- a/net/ethtool/coalesce.c
++++ b/net/ethtool/coalesce.c
+@@ -105,7 +105,10 @@ static int coalesce_reply_size(const struct ethnl_req_info *req_base,
+ 	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_FRAMES_HIGH */
+ 	       nla_total_size(sizeof(u32)) +	/* _RATE_SAMPLE_INTERVAL */
+ 	       nla_total_size(sizeof(u8)) +	/* _USE_CQE_MODE_TX */
+-	       nla_total_size(sizeof(u8));	/* _USE_CQE_MODE_RX */
++	       nla_total_size(sizeof(u8)) +	/* _USE_CQE_MODE_RX */
++	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_AGGR_SIZE */
++	       nla_total_size(sizeof(u32)) +	/* _TX_MAX_AGGR_FRAMES */
++	       nla_total_size(sizeof(u32));	/* _TX_USECS_AGGR_TIME */
+ }
+ 
+ static bool coalesce_put_u32(struct sk_buff *skb, u16 attr_type, u32 val,
+@@ -180,7 +183,13 @@ static int coalesce_fill_reply(struct sk_buff *skb,
+ 	    coalesce_put_bool(skb, ETHTOOL_A_COALESCE_USE_CQE_MODE_TX,
+ 			      kcoal->use_cqe_mode_tx, supported) ||
+ 	    coalesce_put_bool(skb, ETHTOOL_A_COALESCE_USE_CQE_MODE_RX,
+-			      kcoal->use_cqe_mode_rx, supported))
++			      kcoal->use_cqe_mode_rx, supported) ||
++	    coalesce_put_u32(skb, ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE,
++			     kcoal->tx_max_aggr_size, supported) ||
++	    coalesce_put_u32(skb, ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES,
++			     kcoal->tx_max_aggr_frames, supported) ||
++	    coalesce_put_u32(skb, ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME,
++			     kcoal->tx_usecs_aggr_time, supported))
+ 		return -EMSGSIZE;
+ 
+ 	return 0;
+@@ -227,6 +236,9 @@ const struct nla_policy ethnl_coalesce_set_policy[] = {
+ 	[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL] = { .type = NLA_U32 },
+ 	[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]	= NLA_POLICY_MAX(NLA_U8, 1),
+ 	[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]	= NLA_POLICY_MAX(NLA_U8, 1),
++	[ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE] = { .type = NLA_U32 },
++	[ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES] = { .type = NLA_U32 },
++	[ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME] = { .type = NLA_U32 },
+ };
+ 
+ int ethnl_set_coalesce(struct sk_buff *skb, struct genl_info *info)
+@@ -321,6 +333,12 @@ int ethnl_set_coalesce(struct sk_buff *skb, struct genl_info *info)
+ 			tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX], &mod);
+ 	ethnl_update_u8(&kernel_coalesce.use_cqe_mode_rx,
+ 			tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX], &mod);
++	ethnl_update_u32(&kernel_coalesce.tx_max_aggr_size,
++			 tb[ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE], &mod);
++	ethnl_update_u32(&kernel_coalesce.tx_max_aggr_frames,
++			 tb[ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES], &mod);
++	ethnl_update_u32(&kernel_coalesce.tx_usecs_aggr_time,
++			 tb[ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME], &mod);
+ 	ret = 0;
+ 	if (!mod)
+ 		goto out_ops;
 -- 
 2.37.1
 
