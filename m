@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83297622A81
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C978622A7B
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 12:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbiKIL2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 06:28:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        id S229837AbiKIL2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 06:28:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiKIL2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:28:33 -0500
+        with ESMTP id S229690AbiKIL2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 06:28:31 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C90B111F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CBB91157;
         Wed,  9 Nov 2022 03:28:30 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 2/3] netfilter: Cleanup nft_net->module_list from nf_tables_exit_net()
-Date:   Wed,  9 Nov 2022 12:28:19 +0100
-Message-Id: <20221109112820.206807-3-pablo@netfilter.org>
+Subject: [PATCH net 3/3] selftests: netfilter: Fix and review rpath.sh
+Date:   Wed,  9 Nov 2022 12:28:20 +0100
+Message-Id: <20221109112820.206807-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221109112820.206807-1-pablo@netfilter.org>
 References: <20221109112820.206807-1-pablo@netfilter.org>
@@ -34,74 +34,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shigeru Yoshida <syoshida@redhat.com>
+From: Phil Sutter <phil@nwl.cc>
 
-syzbot reported a warning like below [1]:
+Address a few problems with the initial test script version:
 
-WARNING: CPU: 3 PID: 9 at net/netfilter/nf_tables_api.c:10096 nf_tables_exit_net+0x71c/0x840
-Modules linked in:
-CPU: 2 PID: 9 Comm: kworker/u8:0 Tainted: G        W          6.1.0-rc3-00072-g8e5423e991e8 #47
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.fc36 04/01/2014
-Workqueue: netns cleanup_net
-RIP: 0010:nf_tables_exit_net+0x71c/0x840
-...
-Call Trace:
- <TASK>
- ? __nft_release_table+0xfc0/0xfc0
- ops_exit_list+0xb5/0x180
- cleanup_net+0x506/0xb10
- ? unregister_pernet_device+0x80/0x80
- process_one_work+0xa38/0x1730
- ? pwq_dec_nr_in_flight+0x2b0/0x2b0
- ? rwlock_bug.part.0+0x90/0x90
- ? _raw_spin_lock_irq+0x46/0x50
- worker_thread+0x67e/0x10e0
- ? process_one_work+0x1730/0x1730
- kthread+0x2e5/0x3a0
- ? kthread_complete_and_exit+0x40/0x40
- ret_from_fork+0x1f/0x30
- </TASK>
+* On systems with ip6tables but no ip6tables-legacy, testing for
+  ip6tables was disabled by accident.
+* Firewall setup phase did not respect possibly unavailable tools.
+* Consistently call nft via '$nft'.
 
-In nf_tables_exit_net(), there is a case where nft_net->commit_list is
-empty but nft_net->module_list is not empty.  Such a case occurs with
-the following scenario:
-
-1. nfnetlink_rcv_batch() is called
-2. nf_tables_newset() returns -EAGAIN and NFNL_BATCH_FAILURE bit is
-   set to status
-3. nf_tables_abort() is called with NFNL_ABORT_AUTOLOAD
-   (nft_net->commit_list is released, but nft_net->module_list is not
-   because of NFNL_ABORT_AUTOLOAD flag)
-4. Jump to replay label
-5. netlink_skb_clone() fails and returns from the function (this is
-   caused by fault injection in the reproducer of syzbot)
-
-This patch fixes this issue by calling __nf_tables_abort() when
-nft_net->module_list is not empty in nf_tables_exit_net().
-
-Fixes: eb014de4fd41 ("netfilter: nf_tables: autoload modules from the abort path")
-Link: https://syzkaller.appspot.com/bug?id=802aba2422de4218ad0c01b46c9525cc9d4e4aa3 [1]
-Reported-by: syzbot+178efee9e2d7f87f5103@syzkaller.appspotmail.com
-Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: 6e31ce831c63b ("selftests: netfilter: Test reverse path filtering")
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_tables_api.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/netfilter/rpath.sh | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 76bd4d03dbda..e7152d599d73 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -10090,7 +10090,8 @@ static void __net_exit nf_tables_exit_net(struct net *net)
- 	struct nftables_pernet *nft_net = nft_pernet(net);
+diff --git a/tools/testing/selftests/netfilter/rpath.sh b/tools/testing/selftests/netfilter/rpath.sh
+index 2d8da7bd8ab7..f7311e66d219 100755
+--- a/tools/testing/selftests/netfilter/rpath.sh
++++ b/tools/testing/selftests/netfilter/rpath.sh
+@@ -15,7 +15,7 @@ fi
  
- 	mutex_lock(&nft_net->commit_mutex);
--	if (!list_empty(&nft_net->commit_list))
-+	if (!list_empty(&nft_net->commit_list) ||
-+	    !list_empty(&nft_net->module_list))
- 		__nf_tables_abort(net, NFNL_ABORT_NONE);
- 	__nft_release_tables(net);
- 	mutex_unlock(&nft_net->commit_mutex);
+ if ip6tables-legacy --version >/dev/null 2>&1; then
+ 	ip6tables='ip6tables-legacy'
+-elif ! ip6tables --version >/dev/null 2>&1; then
++elif ip6tables --version >/dev/null 2>&1; then
+ 	ip6tables='ip6tables'
+ else
+ 	ip6tables=''
+@@ -62,9 +62,11 @@ ip -net "$ns1" a a fec0:42::2/64 dev v0 nodad
+ ip -net "$ns2" a a fec0:42::1/64 dev d0 nodad
+ 
+ # firewall matches to test
+-ip netns exec "$ns2" "$iptables" -t raw -A PREROUTING -s 192.168.0.0/16 -m rpfilter
+-ip netns exec "$ns2" "$ip6tables" -t raw -A PREROUTING -s fec0::/16 -m rpfilter
+-ip netns exec "$ns2" nft -f - <<EOF
++[ -n "$iptables" ] && ip netns exec "$ns2" \
++	"$iptables" -t raw -A PREROUTING -s 192.168.0.0/16 -m rpfilter
++[ -n "$ip6tables" ] && ip netns exec "$ns2" \
++	"$ip6tables" -t raw -A PREROUTING -s fec0::/16 -m rpfilter
++[ -n "$nft" ] && ip netns exec "$ns2" $nft -f - <<EOF
+ table inet t {
+ 	chain c {
+ 		type filter hook prerouting priority raw;
+@@ -106,8 +108,8 @@ testrun() {
+ 	if [ -n "$nft" ]; then
+ 		(
+ 			echo "delete table inet t";
+-			ip netns exec "$ns2" nft -s list table inet t;
+-		) | ip netns exec "$ns2" nft -f -
++			ip netns exec "$ns2" $nft -s list table inet t;
++		) | ip netns exec "$ns2" $nft -f -
+ 	fi
+ 
+ 	# test 1: martian traffic should fail rpfilter matches
 -- 
 2.30.2
 
