@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04FCA6235DF
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 22:34:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB74623602
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 22:44:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231707AbiKIVeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 16:34:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
+        id S231718AbiKIVn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 16:43:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbiKIVeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 16:34:19 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CDA2AD5
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 13:34:16 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id 63so15012730iov.8
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 13:34:16 -0800 (PST)
+        with ESMTP id S229551AbiKIVn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 16:43:56 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCB9205ED
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 13:43:55 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id o13so120715ilc.7
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 13:43:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bCKAwu4bCVG9TGZygS9B/zBZa3cEyi6pjEuB8HyjidI=;
-        b=YuWbyjeyw8Sd4e2WnAEJGyPjCZRsTyS+9XzZinHMsh5Mv3CI6hkDiYzHkcmo24joAJ
-         nNFZmCrJbH3Accs0y4rqHajtY3tjxDtNynWoKq+j9A8ClPF88c5dlrE28DuIO0pHQ58N
-         wzzfAOM5nIw0h8mwVbFCRbB6z9QfZ8YSnmQhjQEdI6I7aQL3kzP2jTrjY622RFNRwQW1
-         JNjK0aUxNNlsu26imIDp1/tmLCpQQTXx2kW3Zgzoa56iT3gJWHcdPiO1IuH8So/HgIaJ
-         li+ZuPshQdu3Y+O8dWUyAxh33bhRt5gPXm5K8Bw8+hly3svPNg8jiFhFY2LDlsr1Enk5
-         ROsA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GdAEt6KovCYY+VvwhAcPGME29rPsv1BM1egHu99tC4E=;
+        b=M4PTdhbQF4bi7mDtdJB7anN/q4vZnWpIgn8KNPow05g+e61MUxe5+FYiqjZMOS3YPP
+         YRf0rtHeDwn2hFASRGvgX9ZsA0imP0pb38atmWGRcRG6oDn3bvKY+eqIYxp3hxkcTG7F
+         EP2hY3Uq3eK3U+utycRQnRdy1hQRHyracn0yJS8ZzBVrkmYxtZfxkRGtdq0J687JzBYi
+         YoRq7xh1G+mKJKzmp3zgZ76nRNbfgjCrLUIgwTMumK+PTwyFEG9uMMjRA/5F/yJ7SLRz
+         gkZ4dq03FemWF3zGy9KDV/SORdDb4OX4TuDNZV4jY17M9suUw3/RpL0k58OqaybfpCJS
+         uTdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bCKAwu4bCVG9TGZygS9B/zBZa3cEyi6pjEuB8HyjidI=;
-        b=4iFU0nXZsQ+JL1vj/m07bvDCKAtSmbDHsv0IcqoStzXBWM3ABaKMUGIBAUjgzVrngC
-         gOIrW61F4hBkuOYL/fjoDk4yJKClx4g+yq0i+GbpzhktSchiKHO2JVHBGIEUEVY041YX
-         GklwVSU9l3MobvT+JZaHsrV4gISDIrd+HSiMKheymR8KunPD7V60/pXQk45frpq67xMv
-         Tkkwng45PURN20ezXVJbHWxI2ng2aPZtuMtqDPibWW2UTJfbGx/14x7aMhcYKhW6Yi9V
-         K0h5fEYf2Ahg83rREV4QxirfCO9pOyf8AkH4F46vX7amir3Z+rtuD0A75xj3Gmr9fQ42
-         7fpQ==
-X-Gm-Message-State: ACrzQf0G0xSbLZa4p7mwq/BogEsskUsJn3+5bks+0DsCyMX74ApGLRwu
-        g03r6+zto1zPNwdM93x9ueX7rrWBIxOTBBAk72oP9Q==
-X-Google-Smtp-Source: AMsMyM5i7DK3klvFZuKjaIEdAy/Ka5PHJoe5YnH4EEZnYS5XskMl09c8KrWbkVUvPf+PYqL3SEh/EZ5vZUHlujBADhA=
-X-Received: by 2002:a02:9401:0:b0:375:6e82:482b with SMTP id
- a1-20020a029401000000b003756e82482bmr25457585jai.84.1668029655904; Wed, 09
- Nov 2022 13:34:15 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GdAEt6KovCYY+VvwhAcPGME29rPsv1BM1egHu99tC4E=;
+        b=IK+QaIwxJizbBRspuYE26cMgx1VGhFaDFnXJ6gGgmA5b+TS+b2XQ4IRHrIXQdaC2Er
+         23435TwhdK00BAKssxXZgaYzuuzjTvT2JK9CGIuhGpehKp53Dn7GyUIoMC9a9fm1tfS5
+         NBYbmCsy7PcfFafnkBWpc52YLP3L+bjpdIESkeWGFDCe8EFpp5yA7fLsuUj555G8G2VK
+         d6P/HYRprDhGkIN/wg3o8RuHFVH9wptI5UDegOxI30oAhXFWf5YIjjmp4cX4xN82LK42
+         pTbUR8dUUHr++ogbaNBym6jv+a1IgjQE5vZz6fZxSuDbN6A7R0s5ifZ0wIhMAjrFRIDc
+         IIog==
+X-Gm-Message-State: ACrzQf26PLlOt3FcU8F075dMRzq6v/FlEUBefaEuDcnWu8kUotfy7ikA
+        s8PPIsiCfYkqMEqDQnjwi7ADQKYxfcl/DHC961AGTA==
+X-Google-Smtp-Source: AMsMyM5HkLig+9Bvay3DzW40yHUKzD64q8jrhvw0aqghwr8eIG3ItFnLKiric0ZyjxZq0YvhqJ9Cu5PnZRfJIKTTmlY=
+X-Received: by 2002:a92:d74f:0:b0:300:ad95:35c5 with SMTP id
+ e15-20020a92d74f000000b00300ad9535c5mr31019963ilq.137.1668030235042; Wed, 09
+ Nov 2022 13:43:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-5-sdf@google.com>
- <87iljoz83d.fsf@toke.dk>
-In-Reply-To: <87iljoz83d.fsf@toke.dk>
+References: <20220715115559.139691-1-shaozhengchao@huawei.com>
+ <f0bb3cd6-6986-6ca1-aa40-7a10302c8586@linux.dev> <CAKH8qBvLGaX_+ye5Wdmj1FS+p8K8gBsKUEDRb1x8KzxQE+oDuA@mail.gmail.com>
+ <0e69cc92-fece-3673-f7f8-24f5397183b3@linux.dev> <CAKH8qBtOoQ9ig-+rANhje=NCE7NE2bSAW2dBoGujApp-KxA=aw@mail.gmail.com>
+In-Reply-To: <CAKH8qBtOoQ9ig-+rANhje=NCE7NE2bSAW2dBoGujApp-KxA=aw@mail.gmail.com>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 9 Nov 2022 13:34:05 -0800
-Message-ID: <CAKH8qBt0qDLUC7GHg_6Lys8OfOkruq92Sf6iK6R1ciW2R9JD=w@mail.gmail.com>
-Subject: Re: [xdp-hints] [RFC bpf-next v2 04/14] veth: Support rx timestamp
- metadata for xdp
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+Date:   Wed, 9 Nov 2022 13:43:44 -0800
+Message-ID: <CAKH8qBuiuzS9fmRz+Tro090pdOLTwEgEj=_6GiDx-RjYJgcdig@mail.gmail.com>
+Subject: Re: [PATCH v4,bpf-next] bpf: Don't redirect packets with invalid pkt_len
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, song@kernel.org,
         yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
+        bigeasy@linutronix.de, imagedong@tencent.com, petrm@nvidia.com,
+        arnd@arndb.de, dsahern@kernel.org, talalahmad@google.com,
+        keescook@chromium.org, haoluo@google.com, jolsa@kernel.org,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hawk@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -82,134 +77,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 9, 2022 at 3:21 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> Stanislav Fomichev <sdf@google.com> writes:
->
-> > xskxceiver conveniently setups up veth pairs so it seems logical
-> > to use veth as an example for some of the metadata handling.
-> >
-> > We timestamp skb right when we "receive" it, store its
-> > pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
-> > reach it from the BPF program.
-> >
-> > This largely follows the idea of "store some queue context in
-> > the xdp_buff/xdp_frame so the metadata can be reached out
-> > from the BPF program".
-> >
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: David Ahern <dsahern@gmail.com>
-> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> > Cc: Maryam Tahhan <mtahhan@redhat.com>
-> > Cc: xdp-hints@xdp-project.net
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  drivers/net/veth.c | 31 +++++++++++++++++++++++++++++++
-> >  1 file changed, 31 insertions(+)
-> >
-> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > index 917ba57453c1..0e629ceb087b 100644
-> > --- a/drivers/net/veth.c
-> > +++ b/drivers/net/veth.c
-> > @@ -25,6 +25,7 @@
-> >  #include <linux/filter.h>
-> >  #include <linux/ptr_ring.h>
-> >  #include <linux/bpf_trace.h>
-> > +#include <linux/bpf_patch.h>
-> >  #include <linux/net_tstamp.h>
-> >
-> >  #define DRV_NAME     "veth"
-> > @@ -118,6 +119,7 @@ static struct {
-> >
-> >  struct veth_xdp_buff {
-> >       struct xdp_buff xdp;
-> > +     struct sk_buff *skb;
-> >  };
-> >
-> >  static int veth_get_link_ksettings(struct net_device *dev,
-> > @@ -602,6 +604,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct ve=
-th_rq *rq,
-> >
-> >               xdp_convert_frame_to_buff(frame, xdp);
-> >               xdp->rxq =3D &rq->xdp_rxq;
-> > +             vxbuf.skb =3D NULL;
-> >
-> >               act =3D bpf_prog_run_xdp(xdp_prog, xdp);
-> >
-> > @@ -826,6 +829,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth=
-_rq *rq,
-> >
-> >       orig_data =3D xdp->data;
-> >       orig_data_end =3D xdp->data_end;
-> > +     vxbuf.skb =3D skb;
-> >
-> >       act =3D bpf_prog_run_xdp(xdp_prog, xdp);
-> >
-> > @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int bud=
-get,
-> >                       struct sk_buff *skb =3D ptr;
-> >
-> >                       stats->xdp_bytes +=3D skb->len;
-> > +                     __net_timestamp(skb);
-> >                       skb =3D veth_xdp_rcv_skb(rq, skb, bq, stats);
-> >                       if (skb) {
-> >                               if (skb_shared(skb) || skb_unclone(skb, G=
-FP_ATOMIC))
-> > @@ -1665,6 +1670,31 @@ static int veth_xdp(struct net_device *dev, stru=
-ct netdev_bpf *xdp)
-> >       }
-> >  }
-> >
-> > +static void veth_unroll_kfunc(const struct bpf_prog *prog, u32 func_id=
-,
-> > +                           struct bpf_patch *patch)
-> > +{
-> > +     if (func_id =3D=3D xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TI=
-MESTAMP_SUPPORTED)) {
-> > +             /* return true; */
-> > +             bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
-> > +     } else if (func_id =3D=3D xdp_metadata_kfunc_id(XDP_METADATA_KFUN=
-C_RX_TIMESTAMP)) {
-> > +             bpf_patch_append(patch,
-> > +                     /* r5 =3D ((struct veth_xdp_buff *)r1)->skb; */
-> > +                     BPF_LDX_MEM(BPF_DW, BPF_REG_5, BPF_REG_1,
-> > +                                 offsetof(struct veth_xdp_buff, skb)),
-> > +                     /* if (r5 =3D=3D NULL) { */
-> > +                     BPF_JMP_IMM(BPF_JNE, BPF_REG_5, 0, 2),
-> > +                     /*      return 0; */
-> > +                     BPF_MOV64_IMM(BPF_REG_0, 0),
-> > +                     BPF_JMP_A(1),
-> > +                     /* } else { */
-> > +                     /*      return ((struct sk_buff *)r5)->tstamp; */
-> > +                     BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_5,
-> > +                                 offsetof(struct sk_buff, tstamp)),
-> > +                     /* } */
->
-> I don't think it's realistic to expect driver developers to write this
-> level of BPF instructions for everything. With the 'patch' thing it
-> should be feasible to write some helpers that driver developers can use,
-> right? E.g., this one could be:
->
-> bpf_read_context_member_u64(size_t ctx_offset, size_t member_offset)
->
-> called as:
->
-> bpf_read_context_member_u64(offsetof(struct veth_xdp_buff, skb), offsetof=
-(struct sk_buff, tstamp));
->
-> or with some macro trickery we could even hide the offsetof so you just
-> pass in types and member names?
+"
 
-Definitely; let's start with the one you're proposing, we'll figure
-out the rest as we go; thx!
-
-> -Toke
+On Thu, Nov 3, 2022 at 3:58 PM Stanislav Fomichev <sdf@google.com> wrote:
 >
+> On Thu, Nov 3, 2022 at 3:42 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+> >
+> > On 11/3/22 2:36 PM, Stanislav Fomichev wrote:
+> > > On Thu, Nov 3, 2022 at 2:07 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+> > >>
+> > >> On 7/15/22 4:55 AM, Zhengchao Shao wrote:
+> > >>> Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+> > >>> skbs, that is, the flow->head is null.
+> > >>> The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+> > >>> run a bpf prog which redirects empty skbs.
+> > >>> So we should determine whether the length of the packet modified by bpf
+> > >>> prog or others like bpf_prog_test is valid before forwarding it directly.
+> > >>>
+> > >>> LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+> > >>> LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+> > >>>
+> > >>> Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+> > >>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> > >>> ---
+> > >>> v3: modify debug print
+> > >>> v2: need move checking to convert___skb_to_skb and add debug info
+> > >>> v1: should not check len in fast path
+> > >>>
+> > >>>    include/linux/skbuff.h | 8 ++++++++
+> > >>>    net/bpf/test_run.c     | 3 +++
+> > >>>    net/core/dev.c         | 1 +
+> > >>>    3 files changed, 12 insertions(+)
+> > >>>
+> > >>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > >>> index f6a27ab19202..82e8368ba6e6 100644
+> > >>> --- a/include/linux/skbuff.h
+> > >>> +++ b/include/linux/skbuff.h
+> > >>> @@ -2459,6 +2459,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
+> > >>>
+> > >>>    #endif /* NET_SKBUFF_DATA_USES_OFFSET */
+> > >>>
+> > >>> +static inline void skb_assert_len(struct sk_buff *skb)
+> > >>> +{
+> > >>> +#ifdef CONFIG_DEBUG_NET
+> > >>> +     if (WARN_ONCE(!skb->len, "%s\n", __func__))
+> > >>> +             DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
+> > >>> +#endif /* CONFIG_DEBUG_NET */
+> > >>> +}
+> > >>> +
+> > >>>    /*
+> > >>>     *  Add data to an sk_buff
+> > >>>     */
+> > >>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> > >>> index 2ca96acbc50a..dc9dc0bedca0 100644
+> > >>> --- a/net/bpf/test_run.c
+> > >>> +++ b/net/bpf/test_run.c
+> > >>> @@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+> > >>>    {
+> > >>>        struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+> > >>>
+> > >>> +     if (!skb->len)
+> > >>> +             return -EINVAL;
+> > >>
+> > >>   From another recent report [0], I don't think this change is fixing the report
+> > >> from syzbot.  It probably makes sense to revert this patch.
+> > >>
+> > >> afaict, This '!skb->len' test is done after
+> > >>          if (is_l2)
+> > >>                  __skb_push(skb, hh_len);
+> > >>
+> > >> Hence, skb->len is not zero in convert___skb_to_skb().  The proper place to test
+> > >> skb->len is before __skb_push() to ensure there is some network header after the
+> > >> mac or may as well ensure "data_size_in > ETH_HLEN" at the beginning.
+> > >
+> > > When is_l2==true, __skb_push will result in non-zero skb->len, so we
+> > > should be good, right?
+> > > The only issue is when we do bpf_redirect into a tunneling device and
+> > > do __skb_pull, but that's now fixed by [0].
+> > >
+> > > When is_l2==false, the existing check in convert___skb_to_skb will
+> > > make sure there is something in the l3 headers.
+> > >
+> > > So it seems like this patch is still needed. Or am I missing something?
+> >
+> > Replied in [0].  I think a small change in [0] will make this patch obsolete.
+> >
+> > My thinking is the !skb->len test in this patch does not address all cases, at
+> > least not the most common one (the sch_cls prog where is_l2 == true) and then it
+> > needs another change in __bpf_redirect_no_mac [0].  Then, instead of breaking
+> > the existing test cases,  may as well solely depend on the change in
+> > __bpf_redirect_no_mac which seems to be the only redirect function that does not
+> > have the len check now.
+>
+> Removing this check in convert___skb_to_skb and moving the new one in
+> __bpf_redirect_no_mac out of (mlen) SGTM.
+> Can follow up unless you or Zhengchao prefer to do it.
+> There were some concerns about doing this len check at runtime per
+> packet, but not sure whether it really affects anything..
+
+I've implemented a simple selftest for both mac/no-mac cases, and I
+feel like this explicit len==0 has to happen in both cases.
+That "skb->mac_header >= skb->network_header" check is not enough :-(
+I'll send the series early next week after another round of xdp metadata..
+
+> > >> The fix in [0] is applied.  If it turns out there are other cases caused by the
+> > >> skb generated by test_run that needs extra fixes in bpf_redirect_*,  it needs to
+> > >> revisit an earlier !skb->len check mentioned above and the existing test cases
+> > >> outside of test_progs would have to adjust accordingly.
+> > >>
+> > >> [0]: https://lore.kernel.org/bpf/20221027225537.353077-1-sdf@google.com/
+> > >>
+> > >>> +
+> > >>>        if (!__skb)
+> > >>>                return 0;
+> > >>>
+> > >>> diff --git a/net/core/dev.c b/net/core/dev.c
+> > >>> index d588fd0a54ce..716df64fcfa5 100644
+> > >>> --- a/net/core/dev.c
+> > >>> +++ b/net/core/dev.c
+> > >>> @@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> > >>>        bool again = false;
+> > >>>
+> > >>>        skb_reset_mac_header(skb);
+> > >>> +     skb_assert_len(skb);
+> > >>>
+> > >>>        if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
+> > >>>                __skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
+> > >>
+> >
