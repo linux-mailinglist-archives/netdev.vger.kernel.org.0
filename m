@@ -2,178 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBAFC622C50
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 14:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A997622C5C
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 14:27:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230009AbiKINYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 08:24:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52722 "EHLO
+        id S230097AbiKIN1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 08:27:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiKINYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 08:24:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283ED11165
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 05:24:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7F5961A9D
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 13:24:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9068C433D6;
-        Wed,  9 Nov 2022 13:24:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668000255;
-        bh=homsu4aZZSL2CrgTZ+4wTVXsspTBzyMgK5ZCSWRPYug=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sZs42djn475sZBlrh+zYWjpDJjvhHYDfFQwZLP/YWByxUX+MlSKEMQvC1u7ueLHg6
-         wg11s/1SVi352uOnPtYqzcioao51AGKI5dQgwYiajAbm4zNJgSaLc94Dfkyh6v6nMu
-         oFpKiidWfkINT4YVYf8SIhSWhlT+8CVQX9caUcm5vf6TYuqjNa05CxoAb+1l9gOMC5
-         z9pv/FVRn9xRf47gyhQLgCRm25YoBnCDSljI7HfUsIzmGb0AQz8wgXkIvRougSr4cE
-         kxgX9IPluBCkdPyCAatfMpuvnFqcC3sRZN+ekjs097gTyUSoVrIrjMu+dsOTryh0Wx
-         8gyiheKFCd08g==
-Date:   Wed, 9 Nov 2022 15:24:10 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Stefan Assmann <sassmann@kpanic.de>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, patryk.piotrowski@intel.com
-Subject: Re: [PATCH net-next] iavf: check that state transitions happen under
- lock
-Message-ID: <Y2up+sLH5qN34msN@unreal>
-References: <20221028134515.253022-1-sassmann@kpanic.de>
- <Y2gHqj18Tz66k4ZN@unreal>
- <5911b8f9-590b-6e05-646a-c1bc597105d8@kpanic.de>
+        with ESMTP id S229530AbiKIN1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 08:27:06 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860FC2F028
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 05:27:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xEC3hFWXfcAG9SDgAjlGS8hSuUjS8O2GqLTgfGFZWx0=; b=3RmtY77hQSCA72t/2arJPipUjX
+        6heKnrJaGiKU4jwtZoWX9sfklJPKTaN2I4PUTZcjSVUj+rgWEaWQfULsfx9KtnMCrfRZIhlJ0B9GX
+        VE5drpyxl5BRwXoaZZf8D456lp/zSr7sfFg3LGM19gkPhuvCLoM6+q2whp+LULNluzAA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1osl6J-001uyh-7e; Wed, 09 Nov 2022 14:26:43 +0100
+Date:   Wed, 9 Nov 2022 14:26:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     'Mengyuan Lou' <mengyuanlou@net-swift.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: txgbe: Identify PHY and SFP module
+Message-ID: <Y2uqk9BwVjPcEtPP@lunn.ch>
+References: <20221108111907.48599-1-mengyuanlou@net-swift.com>
+ <20221108111907.48599-2-mengyuanlou@net-swift.com>
+ <Y2rBo3KI2LmjS55y@lunn.ch>
+ <02a901d8f405$1c21a350$5464e9f0$@trustnetic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5911b8f9-590b-6e05-646a-c1bc597105d8@kpanic.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <02a901d8f405$1c21a350$5464e9f0$@trustnetic.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 12:57:42PM +0100, Stefan Assmann wrote:
-> On 06.11.22 20:14, Leon Romanovsky wrote:
-> 
-> > On Fri, Oct 28, 2022 at 03:45:15PM +0200, Stefan Assmann wrote:
-> 
-> >> Add a check to make sure crit_lock is being held during every state
-> 
-> >> transition and print a warning if that's not the case. For convenience
-> 
-> >> a wrapper is added that helps pointing out where the locking is missing.
-> 
-> >>
-> 
-> >> Make an exception for iavf_probe() as that is too early in the init
-> 
-> >> process and generates a false positive report.
-> 
-> >>
-> 
-> >> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-> 
-> >> ---
-> 
-> >>  drivers/net/ethernet/intel/iavf/iavf.h      | 23 +++++++++++++++------
-> 
-> >>  drivers/net/ethernet/intel/iavf/iavf_main.c |  2 +-
-> 
-> >>  2 files changed, 18 insertions(+), 7 deletions(-)
-> 
-> >>
-> 
-> >> diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-> 
-> >> index 3f6187c16424..28f41bbc9c86 100644
-> 
-> >> --- a/drivers/net/ethernet/intel/iavf/iavf.h
-> 
-> >> +++ b/drivers/net/ethernet/intel/iavf/iavf.h
-> 
-> >> @@ -498,19 +498,30 @@ static inline const char *iavf_state_str(enum iavf_state_t state)
-> 
-> >>  	}
-> 
-> >>  }
-> 
-> >>  
-> 
-> >> -static inline void iavf_change_state(struct iavf_adapter *adapter,
-> 
-> >> -				     enum iavf_state_t state)
-> 
-> >> +static inline void __iavf_change_state(struct iavf_adapter *adapter,
-> 
-> >> +				       enum iavf_state_t state,
-> 
-> >> +				       const char *func,
-> 
-> >> +				       int line)
-> 
-> >>  {
-> 
-> >>  	if (adapter->state != state) {
-> 
-> >>  		adapter->last_state = adapter->state;
-> 
-> >>  		adapter->state = state;
-> 
-> >>  	}
-> 
-> >> -	dev_dbg(&adapter->pdev->dev,
-> 
-> >> -		"state transition from:%s to:%s\n",
-> 
-> >> -		iavf_state_str(adapter->last_state),
-> 
-> >> -		iavf_state_str(adapter->state));
-> 
-> >> +	if (mutex_is_locked(&adapter->crit_lock))
-> 
+> > So it looks like you have Linux driving the SFP, not firmware. In that case, please throw all this
+> code away.
+> > Implement a standard Linux I2C bus master driver, and make use of driver/net/phy/sfp*.[ch].
+> > 
+> >     Andrew
 > > 
 > 
-> > Please use lockdep for that, and not reinvent it.
-> 
-> > In you case lockdep_assert_held(&adapter->crit_lock).
-> 
-> 
-> 
-> Lockdep is mostly enabled in debug kernel but I was hoping to get
-> 
-> warnings in production environments as well. As those transitions don't
-> 
-> happen too often it shouldn't hurt performance.
-> 
-> 
-> 
-> > In addition, mutex_is_locked() doesn't check that this specific function
-> 
-> > is locked. It checks that this lock is used now.
-> 
-> 
-> 
-> You are correct, this check only triggers if crit_lock is not locked at
-> 
-> all. It would be better to check the lock owner, but I couldn't find an
-> 
-> easy way to do that. Better than no check IMO but we can drop it if you
-> 
-> don't see a benefit in it.
+> I don't quite understand how to use driver/net/phy/sfp* files. In txgbe driver, I2C infos are read
+> from CAB registers, then SFP type identified.
+> Perhaps implement 'struct sfp_upstream_ops' ? And could you please guide me an example driver of
+> some docs?
 
-Yes, please drop it. AFAIK, lockdep doesn't add much overhead while enabled.
+The SFP driver is currently device tree only, but it should be easy to
+add support for a platform device and platform data. That driver needs
+to be told about a standard Linux i2c master device, and optionally a
+collection of GPIO which connect to the SFP socket.
 
-Thanks
+So you need to implement a standard Linux I2C bus master. Which
+basically means being able to send and receive an I2C message. Take a
+look at for example drivers/net/ethernet/mellanox/mlxsw/i2c.c . This
+driver however does not use it with the SFP driver, since the Mellanox
+devices have firmware controlling the SFP. But it will give you the
+idea how you can embed an I2C bus driver inside another driver.
 
-> 
-> 
-> 
-> Thanks for the comments!
-> 
-> 
-> 
->   Stefan
-> 
+For the GPIOs to the SFP socket, TX Enable, LOS, MODDEF etc, you want
+a standard Linux GPIO driver. For an example, look at
+drivers/net/dsa/vitesse-vsc73xx-core.c.
+
+https://github.com/lunn/linux/blob/v5.0.7-rap/drivers/platform/x86/zii-rap.c
+contains an example of registering a bit-bang MDIO
+controller. zii_rap_mdio_gpiod_table would become a list of SFP
+GPIOs. zii_rap_mdio_init() registers a platform devices which
+instantiaces an MDIO bus. You would register a platform device which
+instantiates an SFP device.
+
+Once you have an SFP devices you need to extend phylink with a
+platform data binding. So you can pass it your SFP device.
+
+This should all be reasonably simple code.
+
+     Andrew
