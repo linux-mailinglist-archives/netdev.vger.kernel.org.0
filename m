@@ -2,78 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F144762301B
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 17:25:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74352623024
+	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 17:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231330AbiKIQZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 11:25:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38454 "EHLO
+        id S231751AbiKIQ02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 11:26:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiKIQZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 11:25:18 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D21619286
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 08:25:17 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id q5so9278976ilt.13
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 08:25:17 -0800 (PST)
+        with ESMTP id S229865AbiKIQ00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 11:26:26 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F93A19286
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 08:26:26 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id r3so21608540yba.5
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 08:26:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ziuvq5Y95DCcNTz94pEKFwOv2/BYS3eGvphQtS8Wfb4=;
-        b=aNd2up8md3X+4q5bsGiT/LJvy0AJ1FCHHP1+y2geuc4FoIBv2z08B/GYRNmEFkqdBy
-         aCAmSidrMXrkHwMOWyIB0oITMZNP2ZKuRA4zptVcUSxgi/EUoLGJqQn3ZYxeNvD51/99
-         uofjhzKG9TKFmWhIZ9yBkRy3NaAoFh7iDbHJBzf6IS/Wm21BFIrfYwJ/2fpBcXrfGncy
-         Eu+Z0vryXgG4hqki2NIthrx78yU8Uc5jVu2X4mksj68jttp58HvBIDDnJJTnsyKKBuQT
-         IrV33RUSXrI4SqTqlwOf754eXzEYapzryOrk7urSk2mxrmk9tvur/EnERSnzsJeZHUpC
-         Lu1A==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=EXqN0wfNffpKtiXYP49RfhxCSKE/AuHwGRFJdbOJE0E=;
+        b=mFF9+AmdwF/Zhzj+cH6XPuvfdGRF69z9Rnh7oe7abk/W1j4zvN3NAncSUEeEhIWqxC
+         IFME2fDmlqTdOGQfkUWGlVIF6Oseb0bo/JOKf3DB9cUfgFbBKGMWe+m9rKGr3cjSggau
+         ePle6paXttd5ekmcHqXs0O2hwlRCHiTE3+nxwMXqAt63mYr4daxV3Lh9UmTT9xn/sflW
+         5WmmTgGCWGzMh6zjhx7ob0P0LC0iH7WVsXExC33cBrQp21bzA9CriusMsEreEF958RAA
+         Nm6bLUUyEP9X4IKZvHKjqnO3vroQNR8deKwnoGDZRmYFuC+S1sF8KUUY0Ox7CReWwdcg
+         NfHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ziuvq5Y95DCcNTz94pEKFwOv2/BYS3eGvphQtS8Wfb4=;
-        b=OTszdgwG74ql0wmZVcTJTWonfvqijUzK8aGTqlZ3TtJPqQaK46VNs2LHlTMlZTcxrs
-         ukcc/OLpQIYvAztTmtMpRGgi8OOlP7AIOmNvHw4v34nyhywqAzJNc6g1xgVjUydvUldk
-         FyiXwQoiZ2gJP2iAvLiN/bOObDF01zOSAepuYfd3GVwBoL+Zt9XN/4HkK/uwPXVb24DM
-         C15a+q2NOucNudOMl24c76uICCqA4v4KvAPKS0bU3KecX/ZvwzqfwFVwXNMKd2JvDnJl
-         0R2v2cZfmmUT30soGD3vZIHjlh/8gw4bVH/y5sCCsMSDFhtGD+QMGxNIewPBrCnGpeRA
-         O3mg==
-X-Gm-Message-State: ACrzQf3GvoscX1nOsmkA8eYZQJJtXMyQkazcKTfbogW4TJ7Mr10a+Dgr
-        BwqlMHNqZPDppBpG3wARSScXjOZZN4QYgw==
-X-Google-Smtp-Source: AMsMyM4hepmVawM/YdFcVvBfTmWF923nKJN+C+LBFpdd0oXtYlZlmAlmO8O5LIHB8iHKeO6MsWQoIw==
-X-Received: by 2002:a92:c6cb:0:b0:2f6:94b2:fba5 with SMTP id v11-20020a92c6cb000000b002f694b2fba5mr2020136ilm.78.1668011116918;
-        Wed, 09 Nov 2022 08:25:16 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:a10c:23e5:6dc3:8e07? ([2601:282:800:dc80:a10c:23e5:6dc3:8e07])
-        by smtp.googlemail.com with ESMTPSA id r4-20020a02aa04000000b0036368623574sm4859910jam.169.2022.11.09.08.25.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Nov 2022 08:25:16 -0800 (PST)
-Message-ID: <d47c3f41-2977-3ffb-5c99-953088727a4b@gmail.com>
-Date:   Wed, 9 Nov 2022 09:25:15 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EXqN0wfNffpKtiXYP49RfhxCSKE/AuHwGRFJdbOJE0E=;
+        b=HtTl0bdPQeue3uHtPInwc0RyMLzkegaeXEzReJ9L1Ucg5sLS3OufbsroCS45nwVHhJ
+         HR8A+BbN2Jk/yXrlE14I++tyL1qQWJZDkX4aAvl4jxN20i1jy497N44qbBcLgIQwB+wN
+         4Db4CYc0JlaVvOyAaj4JG8dr+Tbn1iIhP5hvjxoXUlqRHfBIMd+dwOXNl0wI5XL6UTWK
+         zGkH/o46bo5szsq/VSOSovVP3uugMfGCKSBF9CRoT6AVbc5S3HAxJTWej5p9Ci2cnQj0
+         jxpHhSNq5kYwwWMN59VsbD/6fAy8+egSTCvnAzJcg6/5ODx0+678jTETi9QB/AG/t5uJ
+         ZnEg==
+X-Gm-Message-State: ACrzQf0Ac6n9vVIIzHSrlWF/dK0uxD0XAJ/j7vv8qy/6KufCkyZL0HtU
+        jXlVUpaY/3mvqgosKLLMGWaDuZYDNUNg3scc0p4ftQ==
+X-Google-Smtp-Source: AMsMyM5RqBur/8wQfkovk8//1t+wI46ZfxpzSeRgX6tNp4IgBpHAKm/WYurznT/5ChwnN7Y05mNjS7h4Y6tMbOAkpwU=
+X-Received: by 2002:a25:d914:0:b0:6cb:13e2:a8cb with SMTP id
+ q20-20020a25d914000000b006cb13e2a8cbmr59477136ybg.231.1668011182986; Wed, 09
+ Nov 2022 08:26:22 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: ping (iputils) review (call for help)
-Content-Language: en-US
-To:     Petr Vorel <pvorel@suse.cz>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        Vasiliy Kulikov <segoon@openwall.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-References: <Y2OmQDjtHmQCHE7x@pevik>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <Y2OmQDjtHmQCHE7x@pevik>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221108132208.938676-1-jiri@resnulli.us> <20221108132208.938676-4-jiri@resnulli.us>
+ <Y2uT1AZHtL4XJ20E@shredder>
+In-Reply-To: <Y2uT1AZHtL4XJ20E@shredder>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 9 Nov 2022 08:26:10 -0800
+Message-ID: <CANn89iJgTLe0EJ61xYji6W-VzQAGtoXpZJAxgKe-nE9ESw=p7w@mail.gmail.com>
+Subject: Re: [patch net-next v2 3/3] net: devlink: add WARN_ON to check return
+ value of unregister_netdevice_notifier_net() call
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        bigeasy@linutronix.de, imagedong@tencent.com, kuniyu@amazon.com,
+        petrm@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,36 +71,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/22 5:30 AM, Petr Vorel wrote:
-> Hi,
-> 
-> I'm sorry to bother you about userspace. I'm preparing new iputils release and
-> I'm not sure about these two patches.  As there has been many regressions,
-> review from experts is more than welcome.
-> 
-> If you have time to review them, it does not matter if you post your
-> comments/RBT in github or here (as long as you keep Cc me so that I don't
-> overlook it).
-> 
-> BTW I wonder if it make sense to list Hideaki YOSHIFUJI as NETWORKING
-> IPv4/IPv6 maintainer. If I'm not mistaken, it has been a decade since he was active.
-> 
-> * ping: Call connect() before sending/receiving
-> https://github.com/iputils/iputils/pull/391
-> => I did not even knew it's possible to connect to ping socket, but looks like
-> it works on both raw socket and on ICMP datagram socket.
+On Wed, Nov 9, 2022 at 3:49 AM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Tue, Nov 08, 2022 at 02:22:08PM +0100, Jiri Pirko wrote:
+> > From: Jiri Pirko <jiri@nvidia.com>
+> >
+> > As the return value is not 0 only in case there is no such notifier
+> > block registered, add a WARN_ON() to yell about it.
+> >
+> > Suggested-by: Ido Schimmel <idosch@idosch.org>
+> > Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-no strong opinion on this one. A command line option to use connect
-might be better than always doing the connect.
-
-> 
-> * ping: revert "ping: do not bind to device when destination IP is on device
-> https://github.com/iputils/iputils/pull/396
-> => the problem has been fixed in mainline and stable/LTS kernels therefore I
-> suppose we can revert cc44f4c as done in this PR. It's just a question if we
-> should care about people who run new iputils on older (unfixed) kernels.
-> 
-
-I agree with this change. If a user opts for device binding, the command
-should not try to guess if it is really needed.
-
+Please consider WARN_ON_ONCE(), or DEBUG_NET_WARN_ON_ONCE()
