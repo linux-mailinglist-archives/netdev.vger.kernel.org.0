@@ -2,108 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6D76236E7
-	for <lists+netdev@lfdr.de>; Wed,  9 Nov 2022 23:59:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02F6F623736
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 00:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231896AbiKIW7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 17:59:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
+        id S231991AbiKIXCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 18:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiKIW7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 17:59:50 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E29F11C36;
-        Wed,  9 Nov 2022 14:59:49 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id v7so117567wmn.0;
-        Wed, 09 Nov 2022 14:59:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=swcrtWEk/pjEDFJKOi6muSLrFWlp8giizOyeDdjr3QI=;
-        b=qgV5InPtVbonJaw0kv4ZbCSPNUG0xf4Pn9GME0tsiZ0IUqaOWghUYHueI4ljO6Po1T
-         o4irPUC5EKmGrtN2mrzJF2gFRCiwSyOxJRriuGI96ZjO5Siks+qR8efhjNt9GRubLaik
-         KgyWYE447kS3+rmtz5QuDgEmy7LzOQ50dH7ns8itJ5M8mT+n1FVvbR33jD+XIU9TNOlR
-         6VD7WdQkVPWhcqH4M7OEaadnw9LR+yTrKE3XVtepyRZ82Ph4VacvfwmoWmnn0zcDYlFi
-         1plh0u6lKqfAeTB/C4spDO4eqcFBbGJWFcJNDntsA8fgeO2LE7GOoSgCfo3oKvVar0q1
-         xTYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=swcrtWEk/pjEDFJKOi6muSLrFWlp8giizOyeDdjr3QI=;
-        b=q7/mLo3GTiUcp36bsQWKGt4YEiUwUVndgft6eFUv1QSdAzDC2Ev1X8jZWWEJVY72tQ
-         ZUOwgl/r+PR4QxPnIdVXavspBdqVXiBDV1hBlY33Vzw4TWlzRRuRBzGX/2BUCK6rXFf9
-         ZWuanZxmrWrIuHjj3D/G1jsXrzH7u4Qbknhq5oEQqhll3UnDl0R/5ZqjETB/El5Vaqx7
-         PQjDuzhdM0Gm7ZmTCODYICCvjOLNaz48F3dARkE5HWb1c1GLhr8u/V1+oCb5bNuHp9sp
-         mnGS3cpxwX5riE/GJj9psRCApGXkwuhKOLAjSc9icPK8LA0OmCByPz/8n/aVl3VRtSP4
-         5Y/A==
-X-Gm-Message-State: ANoB5pksH2yFvz3egQRtCaEf3Fim/2YlGTalqTRocHIPP3BevBuh0xuK
-        l3Uv0XzWIEIbbt/y1rbEBhs=
-X-Google-Smtp-Source: AA0mqf79cVkwjf7QQCHzuNa6IK4Sqr+HRH2GA9ig8lczx/Yt8P39Cw2PM+3pWIS8kfcqXPHw8pEUMQ==
-X-Received: by 2002:a05:600c:3393:b0:3cf:b30a:e202 with SMTP id o19-20020a05600c339300b003cfb30ae202mr9650192wmp.91.1668034787609;
-        Wed, 09 Nov 2022 14:59:47 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id q10-20020adff94a000000b0022e035a4e93sm13982413wrr.87.2022.11.09.14.59.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 14:59:47 -0800 (PST)
-Date:   Thu, 10 Nov 2022 00:59:44 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        with ESMTP id S232235AbiKIXCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 18:02:15 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9786D11C36;
+        Wed,  9 Nov 2022 15:01:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nWu9npcTwPxeit8kU4IBt2JR98yh/MyteHNryZAJhYo=; b=rE6M68O8OTU7+ozIF8d5aq9hWA
+        K/KRgRk9QOWHN/M5HWRuCB3yUb4nRHex8v44vsShFPQ84E7W58zOLjwaFw7PABe99LCxZCeLhDukQ
+        dtAb46AkRc/F1RK/oo3F0Z/b48TSK92Cbk22+/4BYCYjMmvSdkFx092dB+4VLdOiEsEc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1osu3Z-001xaM-DX; Thu, 10 Nov 2022 00:00:29 +0100
+Date:   Thu, 10 Nov 2022 00:00:29 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jan Petrous <jan.petrous@nxp.com>
+Cc:     Chester Lin <clin@suse.com>,
+        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH net-next v2 00/11] net: pcs: Add support for devices
- probed in the "usual" manner
-Message-ID: <20221109225944.n5pisgdytex5s6yk@skbuf>
-References: <20221103210650.2325784-1-sean.anderson@seco.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-S32 <S32@nxp.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Matthias Brugger <mbrugger@suse.com>
+Subject: Re: [EXT] Re: [PATCH 2/5] dt-bindings: net: add schema for NXP S32CC
+ dwmac glue driver
+Message-ID: <Y2wxDc8i4cspaFnx@lunn.ch>
+References: <20221031101052.14956-1-clin@suse.com>
+ <20221031101052.14956-3-clin@suse.com>
+ <20221102155515.GA3959603-robh@kernel.org>
+ <2a7ebef4-77cc-1c26-ec6d-86db5ee5a94b@suse.de>
+ <Y2Q7KtYkvpRz76tn@lunn.ch>
+ <Y2T5/w8CvZH5ZlE2@linux-8mug>
+ <AM9PR04MB85066636DE2D99C8F2A9F4CDE23E9@AM9PR04MB8506.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221103210650.2325784-1-sean.anderson@seco.com>
+In-Reply-To: <AM9PR04MB85066636DE2D99C8F2A9F4CDE23E9@AM9PR04MB8506.eurprd04.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 03, 2022 at 05:06:39PM -0400, Sean Anderson wrote:
-> For a long time, PCSs have been tightly coupled with their MACs. For
-> this reason, the MAC creates the "phy" or mdio device, and then passes
-> it to the PCS to initialize. This has a few disadvantages:
+> > Here I just focus on GMAC since there are other LAN interfaces that S32
+> > family
+> > uses [e.g. PFE]. According to the public GMACSUBSYS ref manual rev2[1]
+> > provided
+> > on NXP website, theoretically GMAC can run SGMII in 1000Mbps and
+> > 2500Mbps so I
+> > assume that supporting 1000BASE-X could be achievable. I'm not sure if any
+> > S32
+> > board variant might have SFP ports but RJ-45 [1000BASE-T] should be the
+> > major
+> > type used on S32G-EVB and S32G-RDB2.
+> > 
+> > @NXP, please feel free to correct me if anything wrong.
+> > 
 > 
-> - Each MAC must re-implement the same steps to look up/create a PCS
-> - The PCS cannot use functions tied to device lifetime, such as devm_*.
-> - Generally, the PCS does not have easy access to its device tree node
+> NXP eval boards (EVB or RDB) have also 2.5G PHYs, so together with SerDes
+> driver we support 100M/1G/2.5G on such copper PHYs. 
 
-Is there a clear need to solve these disadvantages? There comes extra
-runtime complexity with the PCS-as-device scheme (plus the extra
-complexity needed to address the DT backwards compatibility problems
-it causes; not addressed here).
+Hi Jan
+
+Does the SERDES clock need to change when going between 1000BaseX and
+2500BaseX?
+
+If so, it sounds like Linux not having control of that clock is going
+to limit what can be supported.
+
+   Andrew
