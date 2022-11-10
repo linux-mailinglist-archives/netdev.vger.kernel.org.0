@@ -2,84 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E832B6240FC
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 12:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D42E624125
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 12:14:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230009AbiKJLKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 06:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        id S230388AbiKJLOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 06:14:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbiKJLKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 06:10:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A13C6F340
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 03:10:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D49DB82170
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 11:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C07ADC433D7;
-        Thu, 10 Nov 2022 11:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668078614;
-        bh=GzYclDh4u2Z1oMYCEvrMPng12cvgV1aE2sWx2u50mEE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n97UlQn4NzKRoch+e1+Un2pEXwNejEGP+ismJPxyEtnZzunuIxQosQqEVi5nMHLgV
-         E4GrzO9Wff6nAjwOZk/mAhgAzSQan2z6F53D+K/LqNUU/+IDD0XJhiG+M9kjFHblEA
-         sthJGfjnxKntAO18aLyhEVKkwLCvokfKH8vEpbRKVReE6hebYiiI13loFdPvyf/yK8
-         6iQXOKrVrDlsZqIFWULj3Fl2ZAIB4RAh6Edf/UyrCdWWJPlCF2IuYLhfEx0Rg4AWMQ
-         FEfElUk3ntfG0E+t/xvZC+VGfG51giRCCXWDCpjmBmtPzUnIqMsK2phjsGG+bNHV4h
-         9ITMx2fplhVvg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6BE5C395F8;
-        Thu, 10 Nov 2022 11:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230380AbiKJLOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 06:14:49 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81183701A4
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 03:14:23 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id s18so1901472ybe.10
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 03:14:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=miraclelinux-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kFOQvtXjwrgfgRl1aCOZt4izhqYAkH+VFOzsIv3BoXw=;
+        b=o10kENl357PFnkmHUOmGFFyyRmFjcTRkCpoTqndZ5TdOV1mqtgevzDAEx05ggbFHQO
+         ZoSGjMtyWY8DLfPZ5nQo6y6E1k63bUvimfkrQqy+wFgwNlSLbLBrUFHWSZhlUo9f+xyX
+         dEIqHoRrdNYOLnyHFt/JwCWtsoUalsCX06xJu7/el529Hviz/wru/MIn+ehGJ+5R25kb
+         4Q9Bg4b3+Asm/pLAEYRo6KB9ezEdhYfALDQLEkBq+mV996Wa+HWAduZTaOumvonbYTIS
+         BuxctFyf0bRnUvsm0n3aM4NKk/yD5RJ0ZTKRVlTiEB7GL/zeHK430uDVmAPT8XfSzAtc
+         YrzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kFOQvtXjwrgfgRl1aCOZt4izhqYAkH+VFOzsIv3BoXw=;
+        b=nSUeqXfXNPFy2VSYyj5qpe68w1WI5STta4XGMZgs3ETJgFT+pAGFDsy4Rh2hYoS73M
+         QmereN732FIzVGjMnkohNk2B99teLv1iKeENOvDam7I93riGcLmAjsskBNT96yLPMag0
+         aGHMGZF1apUE5nDOpT/kWdwcNB4h2yMfhQNK9G6iuhZcgAFa71YqdetojiUr2xdDRgGw
+         dkeuqCF7XvS05wj10PHBiWD1C3TxAtHlYgBWD7c32eV/CurkMLo4BPH8nsoqpFA+JBNv
+         fqnJSZlpNC+xjYhdTUmATK6GUGrdlBytDWqLv1LcixMMISV9IOXbOOKPeOy53387nLDR
+         Ho1w==
+X-Gm-Message-State: ACrzQf1p4LiJc/AZuyhgOLXe6ywNJAcDZdmm39Bo+C9F9tNls42vMek8
+        +Mdsr73Ttnc+cp3G0iA0rb7JzYKOXwPY2F0ysAw6Ww==
+X-Google-Smtp-Source: AMsMyM75FJ0LxqM2JtZzGnrtHib/WcbczZLsStoEx/gAO6T4XoD9r0BZ+p1uN+8Mi8SnUL5VaZGLI3gkWHVpfgY37PU=
+X-Received: by 2002:a05:6902:110d:b0:670:b10b:d16e with SMTP id
+ o13-20020a056902110d00b00670b10bd16emr64699219ybu.259.1668078862561; Thu, 10
+ Nov 2022 03:14:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] macsec: clear encryption keys in h/w drivers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166807861467.26157.1927496799417807435.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Nov 2022 11:10:14 +0000
-References: <20221108153459.811293-1-atenart@kernel.org>
-In-Reply-To: <20221108153459.811293-1-atenart@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, sd@queasysnail.net, irusskikh@marvell.com,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <Y2OmQDjtHmQCHE7x@pevik> <d47c3f41-2977-3ffb-5c99-953088727a4b@gmail.com>
+ <Y2wjS/xkCtRrKXhs@pevik>
+In-Reply-To: <Y2wjS/xkCtRrKXhs@pevik>
+From:   Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
+Date:   Thu, 10 Nov 2022 20:13:46 +0900
+Message-ID: <CAPA1RqATWqQsVjrXMOCFgbYHXvfWdbdgBhQ8Tfz4fqNs8rxVCA@mail.gmail.com>
+Subject: Re: ping (iputils) review (call for help)
+To:     Petr Vorel <pvorel@suse.cz>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Vasiliy Kulikov <segoon@openwall.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Sami Kerola <kerolasa@iki.fi>,
+        "Hideaki Yoshifuji (yoshfuji)" <hideaki.yoshifuji@miraclelinux.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This series was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+2022=E5=B9=B411=E6=9C=8810=E6=97=A5(=E6=9C=A8) 7:01 Petr Vorel <pvorel@suse=
+.cz>:
+>
+> Hi David,
+>
+> first, thanks a lot for having a look!
 
-On Tue,  8 Nov 2022 16:34:57 +0100 you wrote:
-> Hello,
-> 
-> Commit aaab73f8fba4 ("macsec: clear encryption keys from the stack after
-> setting up offload") made sure to clean encryption keys from the stack
-> after setting up offloading but some h/w drivers did a copy of the key
-> which need to be zeroed as well.
-> 
-> [...]
+> > > BTW I wonder if it make sense to list Hideaki YOSHIFUJI as NETWORKING
+> > > IPv4/IPv6 maintainer. If I'm not mistaken, it has been a decade since=
+ he was active.
+>
+> > > * ping: Call connect() before sending/receiving
+> > > https://github.com/iputils/iputils/pull/391
+> > > =3D> I did not even knew it's possible to connect to ping socket, but=
+ looks like
+> > > it works on both raw socket and on ICMP datagram socket.
+>
+> > no strong opinion on this one. A command line option to use connect
+> > might be better than always doing the connect.
+> I was thinking about it, as it'd be safer in case of some regression.
+> If there is no other opinion I'll probably go this way, although I genera=
+lly
+> prefer not adding more command line options.
 
-Here is the summary with links:
-  - [net,1/2] net: phy: mscc: macsec: clear encryption keys when freeing a flow
-    https://git.kernel.org/netdev/net/c/1b16b3fdf675
-  - [net,2/2] net: atlantic: macsec: clear encryption keys from the stack
-    https://git.kernel.org/netdev/net/c/879785def0f5
++1: Because ping utility is a basic (or fundamental) tool for
+debugging networks,
+I do prefer having an option like this to help low-level debugging.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+--yoshfuji
