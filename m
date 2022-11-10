@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A79E624893
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 18:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D5D624895
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 18:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbiKJRsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 12:48:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        id S229823AbiKJRs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 12:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiKJRse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 12:48:34 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E98C25EA6
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:48:33 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-373569200ceso22410397b3.4
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:48:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=lHOLyRwZk+Y2P6TpUgsfMgSw6FwOJhKVMz1wcjVhRHs=;
-        b=RH2W6YpTgz2/EIEAgaxfiQrTOPLPe6zdDm0Df8TBvLHiLKSudg3isb7dAXEiAqu2Vn
-         /DxOmeCKH8Gka/AySoSWdTuvyNmC7FTbMk8tsECMZTXh5++H7BkQdcw37jlva9TShyDX
-         c93ZErH8Z9LC6XGPoxCZ3fzd55jrNIELNTBLodjaPyajG38JSzBooPgVlxnO8Xkdfi6P
-         S+Kt9CAr84xnJ2NkZCIn1HOesbIV5i8r9g6GBgNEIaY/augeFPIB4V1uLITR/yri/XkZ
-         czi4GxsT6E6Ri2b0TgJ6+pdOrYnp+oBjukiB2PinFu7Yi3DvJJKTqliBGxuPMlMxIaDG
-         /bCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lHOLyRwZk+Y2P6TpUgsfMgSw6FwOJhKVMz1wcjVhRHs=;
-        b=mb5DIrnGizgY8G//QwtpA84ZVD/IoPMTIElyE+afgzlLnzqPLoC8rXdTdcxDp2kZeY
-         3pSySh7n5XKvv/c0N2warc3xq23mk0Ld18k6mn8gL0MP7LBkDEeUrvlQmc3J0JY2ADOm
-         q9ABfivPcqoT/X4v5V+Lq4eCODioT4STwfoDef+ytr/USjEPrWnoe/I+nxbyew3E2tLK
-         2FmEh3qyTKiCSyoJYSd7IXjbXbD4iFT3GLBqjEKAI416H4hfoy+FIDYgfAsQXZHEa6NV
-         SwSAQTECBH60aWexxWEPZxLLFUwlQZLj+NVtF6HTEW2Q4yGAdmCL6kaaJ9lGus6c8cE4
-         8SIw==
-X-Gm-Message-State: ANoB5plcmxyR+VwBdMG61p6+lqSTWMWsAcxeSxkzN+ycwxjglcG9PJV4
-        f8QQ4YdZqc0poEY1HFkaHMGV82vkM9ncMA==
-X-Google-Smtp-Source: AA0mqf6iqi72yGLt5Z8RThVCfJ26D0oRFJkHJca9X+5W6Hfo44Cl3NLDoZ7t5PbY/a/ICgN1y4zkP385OcywGw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:1381:b0:6d4:84c5:8549 with SMTP
- id x1-20020a056902138100b006d484c58549mr978209ybu.376.1668102512658; Thu, 10
- Nov 2022 09:48:32 -0800 (PST)
-Date:   Thu, 10 Nov 2022 17:48:29 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221110174829.3403442-1-edumazet@google.com>
-Subject: [PATCH net-next] tcp: adopt try_cmpxchg() in tcp_release_cb()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230438AbiKJRsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 12:48:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F746303D1;
+        Thu, 10 Nov 2022 09:48:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 597A9B82299;
+        Thu, 10 Nov 2022 17:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA84CC433D6;
+        Thu, 10 Nov 2022 17:48:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1668102526;
+        bh=LaCkfzvC3SDe5+BjeA2YYKfWouKye1Ldokf1V6KFsvc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vMXuhXFsxOxiFAzcVPY2ER5SCCLpFVBmjwpaJccYJ+GDNlZFyxLkVv2tY3iHAimwu
+         uLWMAub7O1Qv6bozsCz/aX1fmbhj7EQD0i0bAZuJKypW3nn3HdaslwotsRBpDsihHu
+         xCki/xwxAHG6rGU3NuPf8TJpxPSpYpIkzLNYlP5E=
+Date:   Thu, 10 Nov 2022 18:48:43 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-kernel@vger.kernel.org, isdn@linux-pingi.de, kuba@kernel.org,
+        andrii@kernel.org, axboe@kernel.dk, davem@davemloft.net,
+        netdev@vger.kernel.org, zou_wei@huawei.com
+Subject: Re: [PATCH] mISDN: hfcpci: Fix use-after-free bug in hfcpci_softirq
+Message-ID: <Y205e/GpYNUVm9Bv@kroah.com>
+References: <20221009063731.22733-1-duoming@zju.edu.cn>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221009063731.22733-1-duoming@zju.edu.cn>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-try_cmpxchg() is slighly more efficient (at least on x86),
-and smp_load_acquire(&sk->sk_tsq_flags) could avoid a KCSAN report.
+On Sun, Oct 09, 2022 at 02:37:31PM +0800, Duoming Zhou wrote:
+> The function hfcpci_softirq() is a timer handler. If it
+> is running, the timer_pending() will return 0 and the
+> del_timer_sync() in HFC_cleanup() will not be executed.
+> As a result, the use-after-free bug will happen. The
+> process is shown below:
+> 
+>     (cleanup routine)          |        (timer handler)
+> HFC_cleanup()                  | hfcpci_softirq()
+>  if (timer_pending(&hfc_tl))   |
+>    del_timer_sync()            |
+>  ...                           | ...
+>  pci_unregister_driver(hc)     |
+>   driver_unregister            |  driver_for_each_device
+>    bus_remove_driver           |   _hfcpci_softirq
+>     driver_detach              |   ...
+>      put_device(dev) //[1]FREE |
+>                                |    dev_get_drvdata(dev) //[2]USE
+> 
+> The device is deallocated is position [1] and used in
+> position [2].
+> 
+> Fix by removing the "timer_pending" check in HFC_cleanup(),
+> which makes sure that the hfcpci_softirq() have finished
+> before the resource is deallocated.
+> 
+> Fixes: 009fc857c5f6 ("mISDN: fix possible use-after-free in HFC_cleanup()")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>  drivers/isdn/hardware/mISDN/hfcpci.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
+> index af17459c1a5..e964a8dd851 100644
+> --- a/drivers/isdn/hardware/mISDN/hfcpci.c
+> +++ b/drivers/isdn/hardware/mISDN/hfcpci.c
+> @@ -2345,8 +2345,7 @@ HFC_init(void)
+>  static void __exit
+>  HFC_cleanup(void)
+>  {
+> -	if (timer_pending(&hfc_tl))
+> -		del_timer_sync(&hfc_tl);
+> +	del_timer_sync(&hfc_tl);
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_output.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+How was this tested?  Do you have this hardware?
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index c69f4d966024ce2c37dae63f7be94fe79c7dd648..d1cb1ecf8f216dc810ca08ea35ae752fd19ba706 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1077,15 +1077,15 @@ static void tcp_tasklet_func(struct tasklet_struct *t)
-  */
- void tcp_release_cb(struct sock *sk)
- {
--	unsigned long flags, nflags;
-+	unsigned long flags = smp_load_acquire(&sk->sk_tsq_flags);
-+	unsigned long nflags;
- 
- 	/* perform an atomic operation only if at least one flag is set */
- 	do {
--		flags = sk->sk_tsq_flags;
- 		if (!(flags & TCP_DEFERRED_ALL))
- 			return;
- 		nflags = flags & ~TCP_DEFERRED_ALL;
--	} while (cmpxchg(&sk->sk_tsq_flags, flags, nflags) != flags);
-+	} while (!try_cmpxchg(&sk->sk_tsq_flags, &flags, nflags));
- 
- 	if (flags & TCPF_TSQ_DEFERRED) {
- 		tcp_tsq_write(sk);
--- 
-2.38.1.431.g37b22c650d-goog
+thanks,
 
+greg k-h
