@@ -2,61 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECE3623B35
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 06:23:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE9C623B37
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 06:24:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231384AbiKJFXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 00:23:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
+        id S231916AbiKJFYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 00:24:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231916AbiKJFXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 00:23:25 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7BB2193
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 21:23:24 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id cg5so419293qtb.12
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 21:23:24 -0800 (PST)
+        with ESMTP id S229484AbiKJFYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 00:24:15 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD2911A1A
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 21:24:14 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id z17so537521qki.11
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 21:24:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1VDfIprlCipKFy9lGTTY7vXy/jQ7xzYlHqSLaLpYJNI=;
-        b=QB6Inl9BKGoFTHRZO7wisto2+PA7kQnDa1P6LHEq79Zjax5mYdY/GOw3lRul5Fg7kO
-         cKGHCVU5cVJ9qtN4PEMNONQXgUE7BdvHRStOaDXVEANAsHwLpi2vztpd5FXo1d9G79ST
-         zF22VM4brTWvWWPoZ/r2ZuzhVFNIg8dDM2ppQ=
+        bh=rMPhJdVI5n8/pq6oYB9r7wEAfEK5nzmGyckM1o0mGvo=;
+        b=Ex4r9t5FoG5jooOcKCHGWnL3sJLO3x0EybwEkGIXwB4ahi3+/3SboVTfkVdZfnoh0c
+         w1TyVb+uvJ3BUednAvHzHXPOqm8uuFlReJ868MhIuZVSgW0CkH/1vsd0FrsTh8blTlV0
+         mpR6TsHFAX49NWisvEd20AtLdOvAaBdm/WoK8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=1VDfIprlCipKFy9lGTTY7vXy/jQ7xzYlHqSLaLpYJNI=;
-        b=cB1u/zcZnMDKA/HyOW2Qzs1J5dhfIcGbNwB3OJ9RrmRls1Q7/ckaGyduW8YuFebff1
-         nz0oNg4+GIaTwllMTaosFw4h2L1HpcyhqboD2BBHJW/2IgCYUMvyRyGyHzJVdflxKsuC
-         ZiksgOpdYv2GqNY2Aqgaxqes1d5LqZC2okYrED5d3b+0BAfawFzbSDBdViF8UZs7LUwq
-         HI5QzyI2TjebVtSlQkg4VUPqrzvaM5EpAw+yOI+z0HHWNg5/FlGkd4ezhw+ToswKu3zg
-         Qufut+qLMyQcDcxtoLhyWGHpSwFjlTcI9G3fNig1DmMBRGkXoQr0jF36zYMfOUfWZhcb
-         corw==
-X-Gm-Message-State: ACrzQf2BlOotTiN8rBEfwlSkY4/DaxUytwSQTSUKtPenUw7hiH0fi7Tz
-        Is7YZ08U25UeLdmjjIGJsGOB3E511jLxrTyEkoeyMw==
-X-Google-Smtp-Source: AMsMyM4uKyhZd+JBKrtgnSnjw9RDAKOXxfQIyvn6pSmKzPzl3o50z5rQi1gyhmzP8Be8N5ohOI0aj3Moc2hm08Y4rSU=
-X-Received: by 2002:ac8:4243:0:b0:3a5:1ac5:490d with SMTP id
- r3-20020ac84243000000b003a51ac5490dmr49188403qtm.269.1668057803392; Wed, 09
- Nov 2022 21:23:23 -0800 (PST)
+        bh=rMPhJdVI5n8/pq6oYB9r7wEAfEK5nzmGyckM1o0mGvo=;
+        b=BPHvj338rncsIt9ngnSPYtQYTlcTA9CTFAjoopJrMIcyf31/aFFTxcAu66pRfL+MG1
+         jvZmytRZ4CyPVud+BRdaja3gJUTKa7AvBUR4zE6lncHhdm5lWfTbrB4aGeTbbM/1B2h/
+         EZHMj6kKIjNVMzRx6DuqriFOfF29W9LtRdBhPiX0zkiTwHtuJ1e4gQ/YdyGRfVl/wWZd
+         FsgCl12RifjIFEa5/3/+fvjTG9sOU2EZem8twZAybztOVrtvGYIZUwujML+nshf2cm/6
+         2o6b4Ta7M5mybZn1HO93Mf0AOCRRUtYJ0YTRTB2U6I64cxn8+yAZ3SJ6qhCTJjp7IQtn
+         /PKw==
+X-Gm-Message-State: ACrzQf1iiGIgC6R1xwBgnf6ZEEmHkBAA7aDwUNbWT0DCpVD+MPmsNuAN
+        zxbbDlDAiF+FnnzUmtER+IrzBdw9xi/LYSpLFshzKA==
+X-Google-Smtp-Source: AMsMyM5MqT3wvGBkCsgV6geyC4e2ip3yuIzOuz1WgUPON/wQKfw+XZJJUyAXBx48SBpnVZo42fdqPmwZvIby2KXKszE=
+X-Received: by 2002:a05:620a:2589:b0:6ab:91fd:3f7 with SMTP id
+ x9-20020a05620a258900b006ab91fd03f7mr46768452qko.104.1668057853482; Wed, 09
+ Nov 2022 21:24:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20221109230945.545440-1-jacob.e.keller@intel.com> <20221109230945.545440-4-jacob.e.keller@intel.com>
-In-Reply-To: <20221109230945.545440-4-jacob.e.keller@intel.com>
+References: <20221109230945.545440-1-jacob.e.keller@intel.com> <20221109230945.545440-8-jacob.e.keller@intel.com>
+In-Reply-To: <20221109230945.545440-8-jacob.e.keller@intel.com>
 From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Thu, 10 Nov 2022 10:53:12 +0530
-Message-ID: <CALs4sv36OqxUm0gKsX3wBRZRaVUw1YSLjKsUc-FoXLypCWE2KA@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/9] ptp: tg3: convert .adjfreq to .adjfine
+Date:   Thu, 10 Nov 2022 10:54:02 +0530
+Message-ID: <CALs4sv3NLBXTAczVUDvwWj2AHOTdEvgij=u4VsK3XDPRzCPSsA@mail.gmail.com>
+Subject: Re: [PATCH net-next 7/9] ptp: bnxt: convert .adjfreq to .adjfine
 To:     Jacob Keller <jacob.e.keller@intel.com>
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         Richard Cochran <richardcochran@gmail.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>
+        Michael Chan <michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000da9efd05ed16f86c"
+        boundary="000000000000d7528d05ed16fbfc"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -66,87 +64,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000da9efd05ed16f86c
+--000000000000d7528d05ed16fbfc
 Content-Type: text/plain; charset="UTF-8"
 
 On Thu, Nov 10, 2022 at 4:40 AM Jacob Keller <jacob.e.keller@intel.com> wrote:
 >
-> The tg3 implementation of .adjfreq is implemented in terms of a
-> straight forward "base * ppb / 1 billion" calculation.
+> When the BNXT_FW_CAP_PTP_RTC flag is not set, the bnxt driver implements
+> .adjfreq on a cyclecounter in terms of the straightforward "base * ppb / 1
+> billion" calculation. When BNXT_FW_CAP_PTP_RTC is set, the driver forwards
+> the ppb value to firmware for configuration.
 >
-> Convert this to the newer .adjfine, using the recently added
-> diff_by_scaled_ppm helper function to calculate the difference and
-> direction of the adjustment.
+> Convert the driver to the newer .adjfine interface, updating the
+> cyclecounter calculation to use adjust_by_scaled_ppm to perform the
+> calculation. Use scaled_ppm_to_ppb when forwarding the correction to
+> firmware.
 >
 > Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Cc: Siva Reddy Kallam <siva.kallam@broadcom.com>
-> Cc: Prashant Sreedharan <prashant@broadcom.com>
-> Cc: Michael Chan <mchan@broadcom.com>
+> Cc: Michael Chan <michael.chan@broadcom.com>
 > Cc: Richard Cochran <richardcochran@gmail.com>
 > ---
->  drivers/net/ethernet/broadcom/tg3.c | 22 +++++++---------------
->  1 file changed, 7 insertions(+), 15 deletions(-)
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 22 +++++--------------
+>  1 file changed, 6 insertions(+), 16 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-> index 4179a12fc881..59debdc344a5 100644
-> --- a/drivers/net/ethernet/broadcom/tg3.c
-> +++ b/drivers/net/ethernet/broadcom/tg3.c
-> @@ -6179,34 +6179,26 @@ static int tg3_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+> index 460cb20599f6..4ec8bba18cdd 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+> @@ -205,7 +205,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
 >         return 0;
 >  }
 >
-> -static int tg3_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
-> +static int tg3_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+> -static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
+> +static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
 >  {
->         struct tg3 *tp = container_of(ptp, struct tg3, ptp_info);
-> -       bool neg_adj = false;
-> -       u32 correction = 0;
+>         struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+>                                                 ptp_info);
+> @@ -214,23 +214,13 @@ static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
+>         int rc = 0;
+>
+>         if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
+> -               int neg_adj = 0;
+> -               u32 diff;
+> -               u64 adj;
 > -
-> -       if (ppb < 0) {
-> -               neg_adj = true;
-> -               ppb = -ppb;
-> -       }
-> +       u64 correction;
-> +       bool neg_adj;
->
->         /* Frequency adjustment is performed using hardware with a 24 bit
->          * accumulator and a programmable correction value. On each clk, the
->          * correction value gets added to the accumulator and when it
->          * overflows, the time counter is incremented/decremented.
-> -        *
-> -        * So conversion from ppb to correction value is
-> -        *              ppb * (1 << 24) / 1000000000
->          */
-> -       correction = div_u64((u64)ppb * (1 << 24), 1000000000ULL) &
-> -                    TG3_EAV_REF_CLK_CORRECT_MASK;
-> +       neg_adj = diff_by_scaled_ppm(1 << 24, scaled_ppm, &correction);
->
->         tg3_full_lock(tp, 0);
->
->         if (correction)
->                 tw32(TG3_EAV_REF_CLK_CORRECT_CTL,
->                      TG3_EAV_REF_CLK_CORRECT_EN |
-> -                    (neg_adj ? TG3_EAV_REF_CLK_CORRECT_NEG : 0) | correction);
-> +                    (neg_adj ? TG3_EAV_REF_CLK_CORRECT_NEG : 0) |
-> +                    ((u32)correction & TG3_EAV_REF_CLK_CORRECT_MASK));
->         else
->                 tw32(TG3_EAV_REF_CLK_CORRECT_CTL, 0);
->
-> @@ -6330,7 +6322,7 @@ static const struct ptp_clock_info tg3_ptp_caps = {
->         .n_per_out      = 1,
+> -               if (ppb < 0) {
+> -                       neg_adj = 1;
+> -                       ppb = -ppb;
+> -               }
+> -               adj = ptp->cmult;
+> -               adj *= ppb;
+> -               diff = div_u64(adj, 1000000000ULL);
+> -
+>                 spin_lock_bh(&ptp->ptp_lock);
+>                 timecounter_read(&ptp->tc);
+> -               ptp->cc.mult = neg_adj ? ptp->cmult - diff : ptp->cmult + diff;
+> +               ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
+>                 spin_unlock_bh(&ptp->ptp_lock);
+>         } else {
+> +               s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+> +
+>                 rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+>                 if (rc)
+>                         return rc;
+> @@ -240,7 +230,7 @@ static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
+>                 rc = hwrm_req_send(ptp->bp, req);
+>                 if (rc)
+>                         netdev_err(ptp->bp->dev,
+> -                                  "ptp adjfreq failed. rc = %d\n", rc);
+> +                                  "ptp adjfine failed. rc = %d\n", rc);
+>         }
+>         return rc;
+>  }
+> @@ -769,7 +759,7 @@ static const struct ptp_clock_info bnxt_ptp_caps = {
+>         .n_per_out      = 0,
 >         .n_pins         = 0,
 >         .pps            = 0,
-> -       .adjfreq        = tg3_ptp_adjfreq,
-> +       .adjfine        = tg3_ptp_adjfine,
->         .adjtime        = tg3_ptp_adjtime,
->         .gettimex64     = tg3_ptp_gettimex,
->         .settime64      = tg3_ptp_settime,
+> -       .adjfreq        = bnxt_ptp_adjfreq,
+> +       .adjfine        = bnxt_ptp_adjfine,
+>         .adjtime        = bnxt_ptp_adjtime,
+>         .do_aux_work    = bnxt_ptp_ts_aux_work,
+>         .gettimex64     = bnxt_ptp_gettimex,
 > --
 > 2.38.0.83.gd420dda05763
 >
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
---000000000000da9efd05ed16f86c
+--000000000000d7528d05ed16fbfc
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -217,13 +220,13 @@ pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
 Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIE7d4qCMvhonQrGQKTXTUOeKi9zbjbPf
-wX2b5LNzqy1UMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEx
-MDA1MjMyM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDrfgSZ7vEPh0FqoMEXy+OQQZCWhRR8v
+7IBmM2X609F9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEx
+MDA1MjQxM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAPLzb/szR2jkCD4Rx7UKL/0kho/LzktUrYM/Sv/bK2VPwpcj7D
-hWmCmMD4DVisYcO1r1u+wPHpvoXv1+Z1LKs7VkYT9o4z6qQ7M0buqy5dsc3gpr+oOIto1I+DCG0K
-vAC5OWlQUEHE2OBYMBTosfi4CKkCQX6txAPTGraTrtjToUpH8+ieee4VZFZpTTMg2T6pb8qI+sjF
-uG3yxrnSsYSpF7MgAskkM5lGMXanbwS/aXmLldEbDJnk9ZSSTgieT7Tb9XnNmGyhx1/kxZ4iWu6s
-+S+dVtNL4bzWIrPLU3yJjmkSkbgpwoXGpND18aTHME8Atha2X0b5+MvxqY9x/mpg
---000000000000da9efd05ed16f86c--
+ATANBgkqhkiG9w0BAQEFAASCAQAFS3muJVo5weL4jxKtshyk1Rnu3ks/A9aSuSbQwa6X2JS0GFl9
+qq8J6DzrrWKM2CiuwtoxFh+znSR/dd9Vrx9Bhmsobr1Cnf4I0Xg3eZNmCyCYN7XTQcKsPXTvjJxI
+x0Xx48bEjYIhz/NQ8rltyzx80CtEhFfK37wJHJlCh7OKeXTsFZoNv7Ymy0w8YCGDOvlaFHrpZmsz
+kFj5AFIgYsjgt9nfvwQBGOvPza5J+TeUL/ywOE/qW17d1nHujsVixxJ5RHMQ/28iueQDUz9PKhJr
+JIVJ2ZQ+jfjYvqr1PfB+WvpBKzTuaaq5Awv2ylF+UNp3zTiHCfT51AC+MtuFitTR
+--000000000000d7528d05ed16fbfc--
