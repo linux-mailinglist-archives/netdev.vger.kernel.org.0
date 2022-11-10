@@ -2,68 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84504624CCE
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 22:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 579A2624CD2
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 22:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231871AbiKJVUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 16:20:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
+        id S231423AbiKJVVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 16:21:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231670AbiKJVUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 16:20:34 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C7657B4B;
-        Thu, 10 Nov 2022 13:20:30 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id y203so3163192pfb.4;
-        Thu, 10 Nov 2022 13:20:30 -0800 (PST)
+        with ESMTP id S230247AbiKJVVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 16:21:18 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76ED812082;
+        Thu, 10 Nov 2022 13:21:17 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id o13so1670392ilc.7;
+        Thu, 10 Nov 2022 13:21:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EqwM4gwAeNfGSn+/i30R0momCaUlYOIuUeVEKpk6Aqw=;
-        b=lFA8i0GGzeYM4wrmg5464SiWgnCaVDIe63FDXcjVFkKLT3hUN4RSN/krm4vWh4+Ef2
-         IVv86gAn+c6kvVFUKiNleko3mRjq0Ozh6uzDTWDNfUCw1Sc4iWlereD5QrvAOwYYMpx8
-         x6BJSAWrBXpYlC0bdIr9YF+kmYSiixd54c6HGRVbZufmXQ4st20bmPrNuiu1qy7LlNZ9
-         pnx1ZL8h+ixmUANnnPysjB7lWUXdtyMlhy876AxHdFNT6lkzPALTS7ANgqNMznvtN1qx
-         WdHbI+F2Y9hLDLN7XJpZQMM8X6fRrMor9zi7LpQVRCcqYM1Q+U34Fe+JzdV8Jrl+F1lx
-         WNHw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NJTtFMk9IclrsPZ9bH5dYLYGp8zVd3QiiY7z+IF5nlY=;
+        b=SGgOEck9s8MJVqYRKp7ulJYa2RvHlAfha4mZbeGvt2QHcw/gVlrUmSbQ05Mn7IyDJ+
+         T+T57zpIL8t2dtaYHRQOydJQzz4CmCkfDlu6aaa/sPGuIoifSGEdMW/Y9I3vkU7XOujV
+         msAgn28nX9IV+ubuWCknWbELarl6gc6fph9TOeazYpom5dEtvNMx+vA/n9LqEv81TqzL
+         1996ALeQkazRsbhKLnZXQnW5ZBXyPfqMgtw9dAG0zzqATOml3mkdssi5gjFGpw9c2Y9P
+         Y3wf0yfWbYe/8tKvfHjxHdqBCXY8CrCuB8kjeBZZ/DnM/3KGkAZ9zopaxNF8pkyL+FJd
+         xVqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EqwM4gwAeNfGSn+/i30R0momCaUlYOIuUeVEKpk6Aqw=;
-        b=4j7Rgoqz7iW5VFNUZwCKFn8AWsHZ9iAvdiRoKIvEwmLNX8gk3SvyeoiSI9XDkyV2Th
-         spAWwmuAxtqSCiUo6mNw2yJwm+NS0glzrewsRzI25j4ZgNTCRl0e8f6ce0ScAbQeDkRX
-         mTNrogLzrexh8sCcrbPkzGt1SPQPGYuFT6KXrx5YmTW8B5F/UERAHUEst7D8mFFTKJsS
-         ZSbr9BdY0d0wp87QcyWTSno3lxP7mdsm9qecW1Vo7mkL8I59YpW9bSn6ECWYo7X7VmIw
-         RuHrQvD7HDnyKmKe4MV0mfwWclseS8efGqTTb8G4kQawfeNR/4AFQqJFNVv8RXHG7WjR
-         aybA==
-X-Gm-Message-State: ACrzQf0im49oLOQ4M8s6WKm+ZF6+/+amaIDxupNSCkbrUgAVoZb9iTk8
-        ffVK9yYwNEkzbMOAkOzRccJdNbZc6owhjGTVRE4=
-X-Google-Smtp-Source: AMsMyM5QV4gBZkBeX4WEs89XOexMNHYQNng5q1/u5pkwDePHJu3uFlhXxA4SzvHEvvISi9XC2WPpJ8xd46Ye2TW9Rj0=
-X-Received: by 2002:a63:1314:0:b0:46e:bb92:3de1 with SMTP id
- i20-20020a631314000000b0046ebb923de1mr3322351pgl.240.1668115229756; Thu, 10
- Nov 2022 13:20:29 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=NJTtFMk9IclrsPZ9bH5dYLYGp8zVd3QiiY7z+IF5nlY=;
+        b=zuw/eFKn7X7oS54HSz2uWnQrHMlNFJ0RJTS42VvgCpqlLrVNomnXdIiCp8mIM1WM3e
+         KkJUkaAPqvUhVss+D9xvoNbDcO7OTsJzPHWXjx62qEuq7ITtRSF1hc5o/Fav+LzMeXOw
+         YmhCBx3WhoCSVSitzEr2vo1sIsq/zMqlM9rd4TIBoOMPp/ggNg8HiximNL38QV6V/5IT
+         umDoQ23TasXZZ4V5eYaqNRNZpH8dD2DXM5txzemYk1sg/4PMGrkXr0eMRFdBDay4nJZc
+         qb0BbIGWFTX0OCdwKK88MhyihpXkOZYn9DHaY1pAup6I9flwQaOcsR37nosuqoT5Emtw
+         J/GA==
+X-Gm-Message-State: ACrzQf28pVq5wTZ394cGxGeLQs+t7cOgqurmclbU3HAUSgMVXpjZYjHK
+        swInwFZ/RlI8+K5/EAtpRXY=
+X-Google-Smtp-Source: AMsMyM5cof5VwkRpjF9dTMXmLIMUk9LM8fqk8PswJUUBw7dzIXzAyzvEcaRhpStE/mnVj0bJorUDrg==
+X-Received: by 2002:a05:6e02:20cb:b0:2ff:d44c:67e1 with SMTP id 11-20020a056e0220cb00b002ffd44c67e1mr3614105ilq.104.1668115276866;
+        Thu, 10 Nov 2022 13:21:16 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:41d2:94a2:b558:c66e? ([2601:282:800:dc80:41d2:94a2:b558:c66e])
+        by smtp.googlemail.com with ESMTPSA id s5-20020a0566022bc500b006a102cb4900sm78796iov.39.2022.11.10.13.21.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Nov 2022 13:21:16 -0800 (PST)
+Message-ID: <bb0f7a70-8504-d402-d759-bef2ebb5d649@gmail.com>
+Date:   Thu, 10 Nov 2022 14:21:14 -0700
 MIME-Version: 1.0
-References: <f847459dc0a0e2d8ffa1d290d06e0e4a226a6f39.1668075479.git.jamie.bainbridge@gmail.com>
- <Y20Bxc1gQ8nrFsvA@lunn.ch>
-In-Reply-To: <Y20Bxc1gQ8nrFsvA@lunn.ch>
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Date:   Fri, 11 Nov 2022 08:20:18 +1100
-Message-ID: <CAAvyFNg1F8ixrgy0YeL-TT5xLmk8N7dD=ZMLQ6VxsjHb_PU9bg@mail.gmail.com>
-Subject: Re: [PATCH] tcp: Add listening address to SYN flood message
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp metadata into skb
+ context
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
+        jolsa@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-7-sdf@google.com>
+ <636c4f5a3812f_13c9f4208b1@john.notmuch>
+ <CAKH8qBuv29gSDme+XUaFOMvPWcsrar+U0GjhT9y7ZcKaPrsydA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <CAKH8qBuv29gSDme+XUaFOMvPWcsrar+U0GjhT9y7ZcKaPrsydA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -72,62 +88,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Nov 2022 at 00:51, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Nov 10, 2022 at 09:21:06PM +1100, Jamie Bainbridge wrote:
-> > The SYN flood message prints the listening port number, but on a system
-> > with many processes bound to the same port on different IPs, it's
-> > impossible to tell which socket is the problem.
-> >
-> > Add the listen IP address to the SYN flood message. It might have been
-> > nicer to print the address first, but decades of monitoring tools are
-> > watching for the string "SYN flooding on port" so don't break that.
-> >
-> > Tested with each protcol's "any" address and a host address:
-> >
-> >  Possible SYN flooding on port 9001. IP 0.0.0.0.
-> >  Possible SYN flooding on port 9001. IP 127.0.0.1.
-> >  Possible SYN flooding on port 9001. IP ::.
-> >  Possible SYN flooding on port 9001. IP fc00::1.
-> >
-> > Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-> > ---
-> >  net/ipv4/tcp_input.c | 16 +++++++++++++---
-> >  1 file changed, 13 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index 0640453fce54b6daae0861d948f3db075830daf6..fb86056732266fedc8ad574bbf799dbdd7a425a3 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -6831,9 +6831,19 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
-> >               __NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPREQQFULLDROP);
-> >
-> >       if (!queue->synflood_warned && syncookies != 2 &&
-> > -         xchg(&queue->synflood_warned, 1) == 0)
-> > -             net_info_ratelimited("%s: Possible SYN flooding on port %d. %s.  Check SNMP counters.\n",
-> > -                                  proto, sk->sk_num, msg);
-> > +         xchg(&queue->synflood_warned, 1) == 0) {
-> > +#if IS_ENABLED(CONFIG_IPV6)
-> > +             if (sk->sk_family == AF_INET6) {
->
-> Can the IS_ENABLED() go inside the if? You get better build testing
-> that way.
->
->      Andrew
+On 11/9/22 11:44 PM, Stanislav Fomichev wrote:
+>>> @@ -423,14 +425,25 @@ XDP_METADATA_KFUNC_xxx
+>>>  MAX_XDP_METADATA_KFUNC,
+>>>  };
+>>>
+>>> +struct xdp_to_skb_metadata {
+>>> +     u32 magic; /* xdp_metadata_magic */
+>>> +     u64 rx_timestamp;
+>>
+>> Slightly confused. I thought/think most drivers populate the skb timestamp
+>> if they can already? So why do we need to bounce these through some xdp
+>> metadata? Won't all this cost more than the load/store directly from the
+>> descriptor into the skb? Even if drivers are not populating skb now
+>> shouldn't an ethtool knob be enough to turn this on?
+> 
+> dsahern@ pointed out that it might be useful for the program to be
+> able to override some of that metadata.
 
-Are you sure? Why would the IS_ENABLED() be inside of a condition
-which isn't compiled in? If IPv6 isn't compiled in then the condition
-would never evaluate as true, so seems pointless a pointless
-comparison to make? People not compiling in IPv6 have explicitly asked
-*not* to have their kernel filled with a bunch of "if (family ==
-AF_INET6)" haven't they?
+Examples that come to mind from previous work:
+1. changing vlans on a redirect: Rx on vlan 1 with h/w popping the vlan
+so it is provided in metadata. Then on a redirect it shifts to vlan 2
+for Tx. But this example use case assumes Tx accesses the metadata to
+ask h/w to insert the header.
 
-There are many other examples of this pattern of "IS_ENABLED()" first
-and "if (family == AF_INET6)" inside it, but I can't see any of the
-inverse which I think you're suggesting, see:
+2. popping or updating an encap header and wanting to update the checksum
 
- grep -C1 -ERHn "IS_ENABLED\(CONFIG_IPV6\)" net | grep -C1 "family == AF_INET6"
-
-Please let me know if I've misunderstood?
-
-Jamie
+3. changing the h/w provided hash to affect steering of a subsequent skb
