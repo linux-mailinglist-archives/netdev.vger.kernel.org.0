@@ -2,236 +2,420 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F198B624862
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 18:30:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7776862486E
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 18:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiKJRa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 12:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S229680AbiKJRgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 12:36:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiKJRa1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 12:30:27 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B171BF5AC;
-        Thu, 10 Nov 2022 09:30:26 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id v28so2749228pfi.12;
-        Thu, 10 Nov 2022 09:30:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Bu35ayYE/oHboUTxifvNQOjweAO5e58LGfKsLXtIQqo=;
-        b=K3SfXTHOAmn5hMqzEe6sEMxO+sa+VO0H206bXLWkyZ5RGXkVRqvb2XCa3E5jlSPGEW
-         o3dZuKXYEDE32KoJFz7m/wFkM6Ga9RMromonynjF5pNqgn7vGOs2lZjAd6osSchiCT9j
-         OFA8eOOxwzPRt5oRqLBrk+PsrdkrkXC3u+0k4qj2/JOzzfcEDBS27tcUqsb5BWiTJb6w
-         2TJjQ9Cgr4VbR5h8BmMThIZU7Jj9Rjxp2JT/bq6w5pTtv8yqAxeKpKzl/UYIt1Y8n75S
-         uypE3R7h512IW5M/Q7QQdvJNatnuLtI+NgBfyONd8XYcEkufhCXidEO7vhbAopUTl+rm
-         I/vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Bu35ayYE/oHboUTxifvNQOjweAO5e58LGfKsLXtIQqo=;
-        b=0+vHEzbFy0I+NHhx42mLw31iudHANQ26AQzCBaW3lwGGhfTEo6b6nOwMNUDumQ3f5p
-         xVaWQTBd2Xnw1me0CSjIUCEW7OB51SIJBd3YY+Q/NKkUdH0Ih1bhUwn4armVr90kuv7S
-         BGKd2kcXITL0EMtFug5MGmz6pyqke7VE4gOHoTkDBhhECKXyY75MY22zodjWtQQIhuDT
-         CGg8LHAktBpJj42Kc/vsmlkaVfPtlm9PiYnd7C2zs9t5b0LxrspBFeBhKCgpsMWpuOcd
-         GoyEys3LSyl++Xlmjpy+K5UViOi9BdPiogA8F/TSQkXyPZonhYAj0lvNcrsUHRFtmNJT
-         kZKg==
-X-Gm-Message-State: ACrzQf1V034e1hPGRN7zcg7Kn2vjbipxyt+7aSOlpUB2NGztBhKMPFxb
-        wxMLBu2y4e5FA3qNH25bl98=
-X-Google-Smtp-Source: AMsMyM4/9G/c9cci4E8Mv9IUtooeL/Obt8DmQtayYBxhgWsmcMCoEkq8s6nQMzJmEqN1UCuzizHYkQ==
-X-Received: by 2002:a65:6e4d:0:b0:46f:53cb:65b5 with SMTP id be13-20020a656e4d000000b0046f53cb65b5mr2809442pgb.507.1668101426090;
-        Thu, 10 Nov 2022 09:30:26 -0800 (PST)
-Received: from localhost ([98.97.42.169])
-        by smtp.gmail.com with ESMTPSA id b5-20020a170902e94500b00176d218889esm11494681pll.228.2022.11.10.09.30.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 09:30:25 -0800 (PST)
-Date:   Thu, 10 Nov 2022 09:30:23 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Stanislav Fomichev <sdf@google.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
+        with ESMTP id S230457AbiKJRgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 12:36:04 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D625B1B1C8
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:35:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668101757; x=1699637757;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BAv6Aj9iwJIeO2xE1Kwh5gf5t9kO4HIS2g5oLXHtY7M=;
+  b=G5mXzjy9hZ0DqMHXzcDnaT5qPKN6FlCwwOngXvYiz8HyCqP4V0IDHunh
+   5zpNYSg6uc7YgZsiRoz0kuFh8S4pzh1G4wcqFlzubbnizYk034Ruwl4tl
+   2+qDTD2Ca92eg3HPKidAGKNuFFGArANQ8Hl9yEkcE0kwVkBA9kZhRHNlE
+   z9PHpwnwtlEr4khwuX1XBJO1Oi/idby2VaQ/pphNY7MmklqUVC7OXA+pU
+   2SoXXTW3O7BwZeqCJkeoIte8AwbKcnBX3gWNo08/FOLpleyADyXI2/3nD
+   B+8X77SaXN7F+aQvInPK8CmKWyD0RAxnRMQ2+GtL60VLMIYT1erdirHKH
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="291101429"
+X-IronPort-AV: E=Sophos;i="5.96,154,1665471600"; 
+   d="scan'208";a="291101429"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 09:35:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="631737863"
+X-IronPort-AV: E=Sophos;i="5.96,154,1665471600"; 
+   d="scan'208";a="631737863"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 10 Nov 2022 09:35:49 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AAHZl4S029191;
+        Thu, 10 Nov 2022 17:35:47 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <636d352fdf18e_145693208e5@john.notmuch>
-In-Reply-To: <87v8nmyj5r.fsf@toke.dk>
-References: <20221104032532.1615099-1-sdf@google.com>
- <20221104032532.1615099-7-sdf@google.com>
- <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
- <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
- <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
- <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev>
- <87leokz8lq.fsf@toke.dk>
- <636c533231572_13c9f42087c@john.notmuch>
- <87v8nmyj5r.fsf@toke.dk>
-Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
- metadata into skb context
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets aggregation
+Date:   Thu, 10 Nov 2022 18:32:22 +0100
+Message-Id: <20221110173222.3536589-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221109180249.4721-3-dnlplm@gmail.com>
+References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-3-dnlplm@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> John Fastabend <john.fastabend@gmail.com> writes:
-> =
+From: Daniele Palmas <dnlplm@gmail.com>
+Date: Wed,  9 Nov 2022 19:02:48 +0100
 
-> > Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >> Snipping a bit of context to reply to this bit:
-> >> =
+> Bidirectional TCP throughput tests through iperf with low-cat
+> Thread-x based modems showed performance issues both in tx
+> and rx.
+> 
+> The Windows driver does not show this issue: inspecting USB
+> packets revealed that the only notable change is the driver
+> enabling tx packets aggregation.
+> 
+> Tx packets aggregation, by default disabled, requires flag
+> RMNET_FLAGS_EGRESS_AGGREGATION to be set (e.g. through ip command).
+> 
+> The maximum number of aggregated packets and the maximum aggregated
+> size are by default set to reasonably low values in order to support
+> the majority of modems.
+> 
+> This implementation is based on patches available in Code Aurora
+> repositories (msm kernel) whose main authors are
+> 
+> Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+> Sean Tranchetti <stranche@codeaurora.org>
+> 
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+> ---
+>  .../ethernet/qualcomm/rmnet/rmnet_config.c    |   5 +
+>  .../ethernet/qualcomm/rmnet/rmnet_config.h    |  19 ++
+>  .../ethernet/qualcomm/rmnet/rmnet_handlers.c  |  25 ++-
+>  .../net/ethernet/qualcomm/rmnet/rmnet_map.h   |   7 +
+>  .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 196 ++++++++++++++++++
+>  include/uapi/linux/if_link.h                  |   1 +
+>  6 files changed, 251 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+> index 27b1663c476e..39d24e07f306 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+> @@ -12,6 +12,7 @@
+>  #include "rmnet_handlers.h"
+>  #include "rmnet_vnd.h"
+>  #include "rmnet_private.h"
+> +#include "rmnet_map.h"
+>  
+>  /* Local Definitions and Declarations */
+>  
+> @@ -39,6 +40,8 @@ static int rmnet_unregister_real_device(struct net_device *real_dev)
+>  	if (port->nr_rmnet_devs)
+>  		return -EINVAL;
+>  
+> +	rmnet_map_tx_aggregate_exit(port);
+> +
+>  	netdev_rx_handler_unregister(real_dev);
+>  
+>  	kfree(port);
+> @@ -79,6 +82,8 @@ static int rmnet_register_real_device(struct net_device *real_dev,
+>  	for (entry = 0; entry < RMNET_MAX_LOGICAL_EP; entry++)
+>  		INIT_HLIST_HEAD(&port->muxed_ep[entry]);
+>  
+> +	rmnet_map_tx_aggregate_init(port);
+> +
+>  	netdev_dbg(real_dev, "registered with rmnet\n");
+>  	return 0;
+>  }
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+> index 3d3cba56c516..d341df78e411 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+> @@ -6,6 +6,7 @@
+>   */
+>  
+>  #include <linux/skbuff.h>
+> +#include <linux/time.h>
+>  #include <net/gro_cells.h>
+>  
+>  #ifndef _RMNET_CONFIG_H_
+> @@ -19,6 +20,12 @@ struct rmnet_endpoint {
+>  	struct hlist_node hlnode;
+>  };
+>  
+> +struct rmnet_egress_agg_params {
+> +	u16 agg_size;
 
-> >> >>>> Can the xdp prog still change the metadata through xdp->data_me=
-ta? tbh, I am not
-> >> >>>> sure it is solid enough by asking the xdp prog not to use the s=
-ame random number
-> >> >>>> in its own metadata + not to change the metadata through xdp->d=
-ata_meta after
-> >> >>>> calling bpf_xdp_metadata_export_to_skb().
-> >> >>>
-> >> >>> What do you think the usecase here might be? Or are you suggesti=
-ng we
-> >> >>> reject further access to data_meta after
-> >> >>> bpf_xdp_metadata_export_to_skb somehow?
-> >> >>>
-> >> >>> If we want to let the programs override some of this
-> >> >>> bpf_xdp_metadata_export_to_skb() metadata, it feels like we can =
-add
-> >> >>> more kfuncs instead of exposing the layout?
-> >> >>>
-> >> >>> bpf_xdp_metadata_export_to_skb(ctx);
-> >> >>> bpf_xdp_metadata_export_skb_hash(ctx, 1234);
-> >> =
+skbs can now be way longer than 64 Kb.
 
-> >
-> > Hi Toke,
-> >
-> > Trying not to bifurcate your thread. Can I start a new one here to
-> > elaborate on these use cases. I'm still a bit lost on any use case
-> > for this that makes sense to actually deploy on a network.
-> >
-> >> There are several use cases for needing to access the metadata after=
+> +	u16 agg_count;
+> +	u64 agg_time_nsec;
+> +};
+> +
+>  /* One instance of this structure is instantiated for each real_dev associated
+>   * with rmnet.
+>   */
 
-> >> calling bpf_xdp_metdata_export_to_skb():
-> >> =
+[...]
 
-> >> - Accessing the metadata after redirect (in a cpumap or devmap progr=
-am,
-> >>   or on a veth device)
-> >
-> > I think for devmap there are still lots of opens how/where the skb
-> > is even built.
-> =
+> @@ -518,3 +519,198 @@ int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
+>  
+>  	return 0;
+>  }
+> +
+> +long rmnet_agg_bypass_time __read_mostly = 10000L * NSEC_PER_USEC;
 
-> For veth it's pretty clear; i.e., when redirecting into containers.
+Why __read_mostly if you don't change it anywhere? Could be const.
+Why here if you use it only in one file? Could be static there.
+Why variable if it could be a definition?
 
-Ah but I think XDP on veth is a bit questionable in general. The use
-case is NFV I guess but its not how I would build out NFV. I've never
-seen it actually deployed other than in CI. Anyways not necessary to
-drop into that debate here. It exists so OK.
+> +
+> +bool rmnet_map_tx_agg_skip(struct sk_buff *skb)
+> +{
+> +	bool is_icmp = 0;
+> +
+> +	if (skb->protocol == htons(ETH_P_IP)) {
+> +		struct iphdr *ip4h = ip_hdr(skb);
 
-> =
+[...]
 
-> > For cpumap I'm a bit unsure what the use case is. For ice, mlx and
-> > such you should use the hardware RSS if performance is top of mind.
-> =
+> +static void rmnet_map_flush_tx_packet_work(struct work_struct *work)
+> +{
+> +	struct sk_buff *skb = NULL;
+> +	struct rmnet_port *port;
+> +	unsigned long flags;
+> +
+> +	port = container_of(work, struct rmnet_port, agg_wq);
+> +
+> +	spin_lock_irqsave(&port->agg_lock, flags);
 
-> Hardware RSS works fine if your hardware supports the hashing you want;=
+I don't see aggregation fields used in any hardware interrupt
+handlers, are you sure you need _irq*(), not _bh()?
 
-> many do not. As an example, Jesper wrote this application that uses
-> cpumap to divide out ISP customer traffic among different CPUs (solving=
+> +	if (likely(port->agg_state == -EINPROGRESS)) {
+> +		/* Buffer may have already been shipped out */
+> +		if (likely(port->agg_skb)) {
+> +			skb = port->agg_skb;
+> +			reset_aggr_params(port);
+> +		}
+> +		port->agg_state = 0;
+> +	}
+> +
+> +	spin_unlock_irqrestore(&port->agg_lock, flags);
+> +	if (skb)
+> +		dev_queue_xmit(skb);
+> +}
+> +
+> +enum hrtimer_restart rmnet_map_flush_tx_packet_queue(struct hrtimer *t)
+> +{
+> +	struct rmnet_port *port;
+> +
+> +	port = container_of(t, struct rmnet_port, hrtimer);
+> +
+> +	schedule_work(&port->agg_wq);
+> +
+> +	return HRTIMER_NORESTART;
+> +}
+> +
+> +void rmnet_map_tx_aggregate(struct sk_buff *skb, struct rmnet_port *port,
+> +			    struct net_device *orig_dev)
+> +{
+> +	struct timespec64 diff, last;
+> +	int size = 0;
 
-> an HTB scaling problem):
-> =
+RCT style?
 
-> https://github.com/xdp-project/xdp-cpumap-tc
+> +	struct sk_buff *agg_skb;
+> +	unsigned long flags;
+> +
+> +new_packet:
+> +	spin_lock_irqsave(&port->agg_lock, flags);
+> +	memcpy(&last, &port->agg_last, sizeof(struct timespec64));
+> +	ktime_get_real_ts64(&port->agg_last);
+> +
+> +	if (!port->agg_skb) {
+> +		/* Check to see if we should agg first. If the traffic is very
+> +		 * sparse, don't aggregate.
+> +		 */
+> +		diff = timespec64_sub(port->agg_last, last);
+> +		size = port->egress_agg_params.agg_size - skb->len;
+> +
+> +		if (size < 0) {
+> +			struct rmnet_priv *priv;
+> +
+> +			/* dropped */
 
-I'm going to argue hw should be able to do this still and we
-should fix the hw but maybe not easily doable without convincing
-hardware folks to talk to us.
+So if a packet is smaller than the aggregation threshold, you just
+drop it? Why, if you could just let it go the "standard" way, like
+ICMP does?
 
-Also not obvious tto me how linked code works without more studying, its
-ingress HTB? So you would push the rxhash and timestamp into cpumap and
-then build the skb here with the correct skb->timestamp?
+> +			dev_kfree_skb_any(skb);
+> +			spin_unlock_irqrestore(&port->agg_lock, flags);
 
-OK even if I can't exactly find the use case for cpumap if I had
-a use case I can see how passing metadata through is useful.
+You could release this lock a line above, so that
+dev_kfree_skb_any() wouldn't be called in the HWIRQ context and
+postpone skb freeing via the softnet queue.
 
-> =
+> +			priv = netdev_priv(orig_dev);
+> +			this_cpu_inc(priv->pcpu_stats->stats.tx_drops);
+> +
+> +			return;
+> +		}
+> +
+> +		if (diff.tv_sec > 0 || diff.tv_nsec > rmnet_agg_bypass_time ||
+> +		    size == 0) {
+> +			spin_unlock_irqrestore(&port->agg_lock, flags);
+> +			skb->protocol = htons(ETH_P_MAP);
+> +			dev_queue_xmit(skb);
+> +			return;
+> +		}
+> +
+> +		port->agg_skb = skb_copy_expand(skb, 0, size, GFP_ATOMIC);
 
-> > And then for specific devices on cpumap (maybe realtime or ptp
-> > things?) could we just throw it through the xdp_frame?
-> =
+You could use skb_cow_head(skb, 0) and skip allocating a new skb if
+the current one is writable, which usually is the case.
 
-> Not sure what you mean here? Throw what through the xdp_frame?
+> +		if (!port->agg_skb) {
+> +			reset_aggr_params(port);
+> +			spin_unlock_irqrestore(&port->agg_lock, flags);
+> +			skb->protocol = htons(ETH_P_MAP);
+> +			dev_queue_xmit(skb);
+> +			return;
+> +		}
+> +		port->agg_skb->protocol = htons(ETH_P_MAP);
+> +		port->agg_count = 1;
+> +		ktime_get_real_ts64(&port->agg_time);
+> +		dev_kfree_skb_any(skb);
+> +		goto schedule;
+> +	}
+> +	diff = timespec64_sub(port->agg_last, port->agg_time);
+> +	size = port->egress_agg_params.agg_size - port->agg_skb->len;
+> +
+> +	if (skb->len > size ||
+> +	    diff.tv_sec > 0 || diff.tv_nsec > port->egress_agg_params.agg_time_nsec) {
+> +		agg_skb = port->agg_skb;
+> +		reset_aggr_params(port);
+> +		spin_unlock_irqrestore(&port->agg_lock, flags);
+> +		hrtimer_cancel(&port->hrtimer);
+> +		dev_queue_xmit(agg_skb);
+> +		goto new_packet;
+> +	}
+> +
+> +	skb_put_data(port->agg_skb, skb->data, skb->len);
 
-Doesn't matter reread patches and figured it out I was slightly
-confused.
+IIUC, RMNet netdevs support %NETIF_F_SG. Which means you could just
+attach skb data as frags to the first skb in the aggregation
+session instead of copying the data all the time.
+...or even add %NETIF_F_FRAGLIST handling, that would save even more
+-- just use skb->frag_list once you run out of skb_shinfo()->frags.
 
-> =
+> +	port->agg_count++;
+> +	dev_kfree_skb_any(skb);
+> +
+> +	if (port->agg_count == port->egress_agg_params.agg_count ||
+> +	    port->agg_skb->len == port->egress_agg_params.agg_size) {
 
-> >> - Transferring the packet+metadata to AF_XDP
-> >
-> > In this case we have the metadata and AF_XDP program and XDP program
-> > simply need to agree on metadata format. No need to have some magic
-> > numbers and driver specific kfuncs.
-> =
+I think ::agg_count and ::agg_size are the thresholds, so the
+comparison should be >= I guess (especially ::agg_size which gets
+increased by a random value each time, not by 1)?
 
-> See my other reply to Martin: Yeah, for AF_XDP users that write their
-> own kernel XDP programs, they can just do whatever they want. But many
-> users just rely on the default program in libxdp, so having a standard
-> format to include with that is useful.
-> =
+> +		agg_skb = port->agg_skb;
+> +		reset_aggr_params(port);
+> +		spin_unlock_irqrestore(&port->agg_lock, flags);
+> +		hrtimer_cancel(&port->hrtimer);
+> +		dev_queue_xmit(agg_skb);
+> +		return;
+> +	}
+> +
+> +schedule:
+> +	if (!hrtimer_active(&port->hrtimer) && port->agg_state != -EINPROGRESS) {
+> +		port->agg_state = -EINPROGRESS;
+> +		hrtimer_start(&port->hrtimer,
+> +			      ns_to_ktime(port->egress_agg_params.agg_time_nsec),
+> +			      HRTIMER_MODE_REL);
+> +	}
+> +	spin_unlock_irqrestore(&port->agg_lock, flags);
+> +}
+> +
+> +void rmnet_map_update_ul_agg_config(struct rmnet_port *port, u16 size,
+> +				    u16 count, u32 time)
+> +{
+> +	unsigned long irq_flags;
+> +
+> +	spin_lock_irqsave(&port->agg_lock, irq_flags);
+> +	port->egress_agg_params.agg_size = size;
+> +	port->egress_agg_params.agg_count = count;
+> +	port->egress_agg_params.agg_time_nsec = time * NSEC_PER_USEC;
+> +	spin_unlock_irqrestore(&port->agg_lock, irq_flags);
+> +}
+> +
+> +void rmnet_map_tx_aggregate_init(struct rmnet_port *port)
+> +{
+> +	hrtimer_init(&port->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+> +	port->hrtimer.function = rmnet_map_flush_tx_packet_queue;
+> +	spin_lock_init(&port->agg_lock);
+> +	rmnet_map_update_ul_agg_config(port, 4096, 16, 800);
+> +	INIT_WORK(&port->agg_wq, rmnet_map_flush_tx_packet_work);
+> +}
+> +
+> +void rmnet_map_tx_aggregate_exit(struct rmnet_port *port)
+> +{
+> +	unsigned long flags;
+> +
+> +	hrtimer_cancel(&port->hrtimer);
+> +	cancel_work_sync(&port->agg_wq);
+> +
+> +	spin_lock_irqsave(&port->agg_lock, flags);
+> +	if (port->agg_state == -EINPROGRESS) {
+> +		if (port->agg_skb) {
+> +			kfree_skb(port->agg_skb);
+> +			reset_aggr_params(port);
+> +		}
+> +
+> +		port->agg_state = 0;
+> +	}
+> +
+> +	spin_unlock_irqrestore(&port->agg_lock, flags);
+> +}
 
+Do I get the whole logics correctly, you allocate a new big skb and
+just copy several frames into it, then send as one chunk once its
+size reaches the threshold? Plus linearize every skb to be able to
+do that... That's too much of overhead I'd say, just handle S/G and
+fraglists and make long trains of frags from them without copying
+anything? Also BQL/DQL already does some sort of aggregation via
+::xmit_more, doesn't it? Do you have any performance numbers?
 
-I don't think your AF_XDP program is any different than other AF_XDP
-programs. Your lib can create a standard format if it wants but
-kernel doesn't need to enforce it anyway.
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 5e7a1041df3a..09a30e2b29b1 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -1351,6 +1351,7 @@ enum {
+>  #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
+>  #define RMNET_FLAGS_INGRESS_MAP_CKSUMV5           (1U << 4)
+>  #define RMNET_FLAGS_EGRESS_MAP_CKSUMV5            (1U << 5)
+> +#define RMNET_FLAGS_EGRESS_AGGREGATION            (1U << 6)
 
+But you could rely on the aggregation parameters passed via Ethtool
+to decide whether to enable aggregation or not. If any of them is 0,
+it means the aggregation needs to be disabled.
+Otherwise, to enable it you need to use 2 utilities: the one that
+creates RMNet devices at first and Ethtool after, isn't it too
+complicated for no reason?
 
-> >> - Returning XDP_PASS, but accessing some of the metadata first (whet=
-her
-> >>   to read or change it)
-> >> =
-
-> >
-> > I don't get this case? XDP_PASS should go to stack normally through
-> > drivers build_skb routines. These will populate timestamp normally.
-> > My guess is simply descriptor->skb load/store is cheaper than carryin=
-g
-> > around this metadata and doing the call in BPF side. Anyways you
-> > just built an entire skb and hit the stack I don't think you will
-> > notice this noise in any benchmark.
-> =
-
-> If you modify the packet before calling XDP_PASS you may want to update=
-
-> the metadata as well (for instance the RX hash, or in the future the
-> metadata could also carry transport header offsets).
-
-OK. So when you modify the pkt fixing up the rxhash makes sense. Thanks
-for the response I can see the argument.
+>  
+>  enum {
+>  	IFLA_RMNET_UNSPEC,
+> -- 
+> 2.37.1
 
 Thanks,
-John=
+Olek
