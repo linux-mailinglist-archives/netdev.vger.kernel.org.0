@@ -2,118 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA85624634
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 16:43:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C6962465F
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 16:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231633AbiKJPmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 10:42:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
+        id S231724AbiKJPxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 10:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231618AbiKJPmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 10:42:39 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E182F3B6
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 07:42:38 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 2998E84BD8;
-        Thu, 10 Nov 2022 16:42:37 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1668094957;
-        bh=K36Zj8eDjKhPQVgMdqljbh7cgu8pBBSAaZptk1ZsqVs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MRQaR4ttchGFih9eHQZfGd57hg2hrvK0SlXuRu+Z52of3tk1l6EJUceJvjvZKIPX3
-         KM5AL8ImdKohPHJn6Jq/mPYMZWQrrxco5wfWOSIz1SoM1khZz8i0n+nmr2mp6iplIs
-         G7qX3eYlSD10KuzizwJHM7DIs21iioxhg00k023vJjJn03z1jOxcxdUNjzkk59V8A+
-         Q9tGni7howPrrxNAuicLjQRxvQ8UgFCRvDKI1ZTbxjvdBSSVkZuQOrKw9DL7in/FIH
-         EWucrqUyk2NqbxBWmJ4ltI+6ei1ac8xU+7ySkdR9zW40VyDVHVZupWIzVthPhkUGXC
-         DPLrNMWGiKc7Q==
-Date:   Thu, 10 Nov 2022 16:42:36 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S230128AbiKJPxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 10:53:32 -0500
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA382647
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 07:53:31 -0800 (PST)
+Received: by mail-pl1-f173.google.com with SMTP id 4so1751550pli.0
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 07:53:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5P86D9RK9RsOZhFQ1kVEjHnky7/FDe539RdkNGf2ehk=;
+        b=LbXEUIjmINR3rJf21+T46VcD4vG+u1IyzqOWGgxkI4R6RzNCNeu3rkWufgzYHOKeV1
+         cPBKNLMudse4MEF218T3dPSlAPuSZ/qqNf91jnTv4Hs2o5u7tJgJRKYMTM49oKErIqIb
+         QYhC1AAmPyR5b6HLj43tICzpKfetOt8KUnoetHgwEID4QUdleqI8VMnVoIaFU1vlx5Co
+         XU8vvJkrk6ELsoNsyuexx+5xT7/3UvWpTATPm5UYH2hPp0mSF5MNFDVfyrmmUctTNXS5
+         Ck7dPgs9TW1ocqLIa7jZk5iFCqu7kmPkWGCKpLgzvSaT8eIpw997M2/nVuIxF294l5GU
+         3/ow==
+X-Gm-Message-State: ACrzQf03L+WW5UTZJ6lDfn0/VlYV/s1Z4/TZK8YPU1TMSqSj5HC77LPr
+        MODxTqXsCYFA3+l+F8OtEL09woCMzGbGP11STaHONuoxRELC1Q==
+X-Google-Smtp-Source: AMsMyM6K9Hwy8c+8wE4qgBSxIWhb8e488HuCyHu3RyqJdgE22wXimHDweohnj9sjw6JKZZXN5xBEPlo9xCmTySa0xs8=
+X-Received: by 2002:a17:90a:4b07:b0:20a:c032:da66 with SMTP id
+ g7-20020a17090a4b0700b0020ac032da66mr1336603pjh.19.1668095610604; Thu, 10 Nov
+ 2022 07:53:30 -0800 (PST)
+MIME-Version: 1.0
+References: <20221108035754.2143-1-mailhol.vincent@wanadoo.fr>
+ <Y2vozcC2ahbhAvhM@unreal> <20221109122641.781b30d9@kernel.org>
+ <CAMZ6Rq+K6oD9auaNzt1kJAW0nz9Hs=ODDvOiEaiKi2_1KVNA8g@mail.gmail.com>
+ <Y2zASloeKjMMCgyw@unreal> <CAMZ6RqJ8P=WUCQQSZ=A_g0brdwDazqCDMUhU+_NN5NWajLFZng@mail.gmail.com>
+ <Y2zn0YVlMaHNEOLR@unreal>
+In-Reply-To: <Y2zn0YVlMaHNEOLR@unreal>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Fri, 11 Nov 2022 00:53:16 +0900
+Message-ID: <CAMZ6RqKq_azrLSwXWgnjgKg_z9aczt-p1wuL5c2LD324FRNC2A@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] ethtool: ethtool_get_drvinfo: populate
+ drvinfo fields even if callback exits
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 7/9] net: dsa: mv88e6071: Define max frame size (2048
- bytes)
-Message-ID: <20221110164236.5d24383d@wsk>
-In-Reply-To: <Y2pecZmradpWbtOn@lunn.ch>
-References: <20221108082330.2086671-1-lukma@denx.de>
-        <20221108082330.2086671-8-lukma@denx.de>
-        <Y2pecZmradpWbtOn@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/xn8.cyrL_Twa7bOEWzHj68a";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/xn8.cyrL_Twa7bOEWzHj68a
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu. 10 Nov. 2022 at 21:00, Leon Romanovsky <leon@kernel.org> wrote:
+> On Thu, Nov 10, 2022 at 08:43:25PM +0900, Vincent MAILHOL wrote:
+> > On Thu. 10 Nov. 2022 at 18:11, Leon Romanovsky <leon@kernel.org> wrote:
+> > > On Thu, Nov 10, 2022 at 05:34:55PM +0900, Vincent MAILHOL wrote:
+> > > > On Thu. 10 nov. 2022 at 05:26, Jakub Kicinski <kuba@kernel.org> wrote:
+> > > > > On Wed, 9 Nov 2022 19:52:13 +0200 Leon Romanovsky wrote:
+> > > > > > On Tue, Nov 08, 2022 at 12:57:54PM +0900, Vincent Mailhol wrote:
+> > > > > > > If ethtool_ops::get_drvinfo() callback isn't set,
+> > > > > > > ethtool_get_drvinfo() will fill the ethtool_drvinfo::name and
+> > > > > > > ethtool_drvinfo::bus_info fields.
+> > > > > > >
+> > > > > > > However, if the driver provides the callback function, those two
+> > > > > > > fields are not touched. This means that the driver has to fill these
+> > > > > > > itself.
+> > > > > >
+> > > > > > Can you please point to such drivers?
+> > > > >
+> > > > > What you mean by "such drivers" is not clear from the quoted context,
+> > > > > at least to me.
+> > > >
+> > > > An example:
+> > > > https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/broadcom/bnx2.c#L7041
+> > > >
+> > > > This driver wants to set fw_version but needs to also fill the driver
+> > > > name and bus_info. My patch will enable *such drivers* to only fill
+> > > > the fw_version and delegate the rest to the core.
+> > >
+> > > Sorry for being misleading, It looks like I typed only part of the sentence
+> > > which I had in my mind. I wanted to see if any driver exists which prints
+> > > drv_name and bus_info different from default.
+> > >
+> > > >
+> > > > > > One can argue that they don't need to touch these fields in a first
+> > > > > > place and ethtool_drvinfo should always overwrite them.
+> > > > >
+> > > > > Quite likely most driver prints to .driver and .bus_info can be dropped
+> > > > > with this patch in place. Then again, I'm suspecting it's a bit of a
+> > > > > chicken and an egg problem with people adding new drivers not having
+> > > > > an incentive to add the print in the core and people who want to add
+> > > > > the print in the core not having any driver that would benefit.
+> > > > > Therefore I'd lean towards accepting Vincent's patch as is even if
+> > > > > the submission can likely be more thorough and strict.
+> > > >
+> > > > If we can agree that no drivers should ever print .driver and
+> > > > .bus_info, then I am fine to send a clean-up patch to remove all this
+> > > > after this one gets accepted. However, I am not willing to invest time
+> > > > for nothing. So would one of you be ready to sign-off such a  clean-up
+> > > > patch?
+> > >
+> > > I will be happy to see such patch and will review it, but can't add sign-off
+> > > as I'm not netdev maintainer.
+> >
+> > Well, if you want to review, just have a look at:
+> >   $ git grep -W "get_drvinfo(struct"
+>
+> BTW, in some of the callbacks, if driver doesn't exists, they print "N/A",
+> while in your patch it will be empty string.
 
-Hi Andrew,
-
-> On Tue, Nov 08, 2022 at 09:23:28AM +0100, Lukasz Majewski wrote:
-> > Accroding to the documentation - the mv88e6071 can support
-> > frame size up to 2048 bytes. =20
->=20
-> Since the mv88e6020 is in the same family, it probably is the same?
-
-Yes it is 2048 B
-
-> And what about the mv88e66220?
-
-You mean mv88e6220 ?
-
-IIRC they are from the same family of ICs, so my guess :-) is that they
-also have the same value.
-
->=20
->     Andrew
-
-
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/xn8.cyrL_Twa7bOEWzHj68a
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNtG+wACgkQAR8vZIA0
-zr1M1wf/eHEeeJevIM9BYQEeSCGlxvNqM+7RR1NlLPWq0w0y3gta0k/96hyfninr
-SU6sREgtSK6NSKH89pAbhDlp7nIrL9tImQ2uwxSKfQb8lDUGeccKx0KerikcwZf5
-To3SHyGxQ+BqCTUmVWme86UMFh6tVoMIVa1i+fUf2/88sQ98ECwbTJMO7x7/WFUT
-IaIzmBTH9f/XF/YdLfQRvBDJdA89NAadJ0jbp81c8vgjQOnF3K1lpTtnph5p0vYf
-zy1hxApgyORdg0G8iPW2yTAN3Nwsce5l1iVS6C4GeNJEIEkN5xbSIeXtZIfp+uVi
-zfueuAxTTv3TBANp2ogME5A9JbYFFw==
-=bstg
------END PGP SIGNATURE-----
-
---Sig_/xn8.cyrL_Twa7bOEWzHj68a--
+Indeed and this is inconsistent. For example, no one sets
+.erom_version to "N/A". So you will have some of the fields set to
+"N/A" and some others set to an empty string. The "N/A" thing was a
+mistake to begin with. I will not change my patch.
