@@ -2,187 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D811D6245E9
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 16:31:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E165624605
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 16:35:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbiKJPbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 10:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
+        id S230455AbiKJPfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 10:35:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiKJPbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 10:31:25 -0500
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2051.outbound.protection.outlook.com [40.107.105.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF984385A;
-        Thu, 10 Nov 2022 07:29:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SXjirV4X8kaEZrNw+zyWSzFa2wy5CLi5b5syTHdmJ2ofU1hpEnJpGlfctqhqkYP7cI9C94wZxzxMb0kO3NEaBzlh/mZybru8GEX8gkSrwThW8mTO48aITkLbqOEODwM3LUMuMJczFtITaQZZbWyJ6bGfxKCB+vURwwJWElICveXHUaf4EBJIbh/Uy/An5jESGWoD0pK7x4fNBsz0IlgCTkKT3/qXR1L+OC1KmypmmcGbsg+RaMWIxS2M4ClliU9X6/rO7Tv0iVR4J2epYLESMBjtbPVtGRvWqii0POxSkHRs/bJTVMQJDAbbZnVxb68ICvLnImUJ9MS26ylqtrJ9PQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=axv9cFXaADDtKyJ8HMM2f1aAibXacG+5hCAihUk9JIQ=;
- b=kMhnNwXt2Eunumk9sKv7kOXkvpo4qKBff08MqUI6Yd4oRg8j5kQyzdQ9roeppYEcLbmm3VpY+aWnm8nMYsKqrFMFfIGgdPMDmGthvsWVTeQ4qr783pWWMyV7pbIG7madNYC4g5bJ85jyJNBfRzNonK4n81C3cVd3YLOKofMxuyXCbPEkgKAXJ/kYVR0YhuAsKgdUtSQtfStB/DU9dqMPCduNBad0YL7KlhEJ7dwDPfFkD2FlbwUNgLoZwFqiEpKW1RIVSWD/oXLnIeezx5MPOIW4VS6Kmv5zxt5sxCpfGU+dktZo6tMNZSvYsk+aF8/mQBDqxC60eTpuGsHtzw1y7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=axv9cFXaADDtKyJ8HMM2f1aAibXacG+5hCAihUk9JIQ=;
- b=fS2CRZIXfDus5qwYJJrN32k7vZ2S59gJ3o7NSb1iq2BZSs5PddqsILVktb279q5/wq2DWw2ATWkvheawt7t0d8LSiOp0CYt2R1uTS4058HEnsmWbwrMpjweS4KPX8N6e1iovx1QUEfXtDWbyAO9RVTKPjQjpJuZHBFTcyTDZb3Q=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS8PR04MB7941.eurprd04.prod.outlook.com (2603:10a6:20b:2a6::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Thu, 10 Nov
- 2022 15:29:26 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::4a73:29eb:28e3:f66d]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::4a73:29eb:28e3:f66d%7]) with mapi id 15.20.5791.027; Thu, 10 Nov 2022
- 15:29:26 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        with ESMTP id S231573AbiKJPeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 10:34:44 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E595FC2
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 07:34:36 -0800 (PST)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 352F884D70;
+        Thu, 10 Nov 2022 16:34:32 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1668094472;
+        bh=/bTqao/m9hCU8Qf/ejM9vQo3HC+5/rXylp3lG16GaWc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Xyf2iNBhVcZmezmkjPa13XtKWXpvGngH83AtfmbijZVg+k+LP7ffSQVLRx4qXou2s
+         stnrPUK0qvETpeoois5qCcipSuQ8nZ98un4+c+7LsFhWygozFS0Ab93+AjbMuBTg09
+         /9GDygTu6vRFk97r11zkMwLiUSf0nwmcwni3A0XNHrmrKPBXpl6/Y77lbUlFz8dT5X
+         9dezTwllFVohwbEjnzWxHwF4Woccdc7BF6eS9gOGeST0T62+VJuNptE5onZdXRqn04
+         aFdoFsB8IBTGzTcJlwJFV2FoISp3hfkwRRRj0nyQ9IXuyevTtiisMWQdI72OnfcZPw
+         yFmfp3bsHjtIA==
+Date:   Thu, 10 Nov 2022 16:34:25 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [PATCH net-next v2 00/11] net: pcs: Add support for devices
- probed in the "usual" manner
-Thread-Topic: [PATCH net-next v2 00/11] net: pcs: Add support for devices
- probed in the "usual" manner
-Thread-Index: AQHY78g7xxgXmFEQmk+41hVlaLM4fK43OSkAgAEQPACAAAl4gA==
-Date:   Thu, 10 Nov 2022 15:29:26 +0000
-Message-ID: <20221110152925.3gkkp5opf74oqrxb@skbuf>
-References: <20221103210650.2325784-1-sean.anderson@seco.com>
- <20221109224110.erfaftzja4fybdbc@skbuf>
- <bcb87445-d80d-fea0-82f2-a15b20baaf06@seco.com>
-In-Reply-To: <bcb87445-d80d-fea0-82f2-a15b20baaf06@seco.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AS8PR04MB7941:EE_
-x-ms-office365-filtering-correlation-id: af5f223e-16d5-4caf-1752-08dac3305a29
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: m9YDcbqHLCkDxaVzwrfUY1W8I8+hTf6gTQiHLfiNCe6HxvrG80J7kDzEYud145+xWpRttwhBLHs0sJ/wym9hlrs8VUUmLZsqoUN3f2Wi3SjwYHWW1HLso2q3pmy+xK30x9jmC6SGiP8l4XjuvZYud7OA36ctHILdSMZTjtuPcm90FdO87UwzugcsFUJYHl2Xdpz2yzZOAw2DbuIh3iYCOO7ku5bwgD+aDKk0motVqA9QTFobwvNEY6WU0r8TIru7plFuX/T4rxkrZQtbOB4vojjb+/pN3+JspoHw47unOIU7qOeL3kaI6LNPV+VKaSkXVIIEwCAOO9IHt/N7oqMCcJndYaF5JSzPsfSzlaxH90szgEWhXWtS5SHedHArL3ZxWULsV86W5BEnqSV+XORgnaStr7iHfwV4KydPcD9JjscS01Akz5EanQWIlLUgYZpPOhKBZ74VWiOO/oP0LT8GjYhiIdUQodZXvtuqbfNUX93KQFJsp7udTrUlusi6MLflTwk+ICLlGQy21fwpVF4aUYOJF10MM1oGbppJHkAjLSAmZC7h0Pb2h9xu40rWTVBkbzEi3lEc6e7NaEtI5Mps4OxGmn5VTGrpQF20qFmxxZbpXy5cbROaCInFiCy57uHSVdx04FXD1lUW72ciqvnX9g+/MHlpAL6HV1kLuk+J6Q+nnHRqhvh3t9UpAccLJ6hBJbCtdUFPUDGBxGbqooI02Uidp0NvZykfyGtHOA/d7Wp0oiRiEYmY8p6CBfl6jMpnqp6lvu52TJfZEVkeJRwLkS7v/zcFvZA8OIVcD0RJn3M=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(136003)(346002)(366004)(39860400002)(376002)(396003)(451199015)(966005)(41300700001)(1076003)(38100700002)(478600001)(6486002)(83380400001)(26005)(8936002)(44832011)(122000001)(2906002)(6506007)(53546011)(86362001)(9686003)(38070700005)(5660300002)(6512007)(186003)(7416002)(54906003)(316002)(6916009)(66556008)(8676002)(64756008)(33716001)(4326008)(71200400001)(66946007)(66446008)(66476007)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Jtp6zm59nbV0z2bxBqM094moJLXt8K3kB9GACMzmUzypi25ey3doi1a95uvp?=
- =?us-ascii?Q?oDviVDK/4VyhpLfdnEMa1CLBCVjJaFE9wg/zdE3R1ZSUtsYR8h5nFLvr6xDn?=
- =?us-ascii?Q?46d99vrmStR+LqlqbC+27/0jgfC7fmHcGyEMb1VstezycbGVdYQlEwGMV6na?=
- =?us-ascii?Q?FWGQfxWMKGr5MqUp5+Hk4v3goQQZVHU3ScfEOACni3DSAULfSsXAr6cDe42S?=
- =?us-ascii?Q?xDOISMt0dcsCisQmC/YsxSbGfztAxQ8hkd6j3hE1V0C9PCbHFHaRe7tM3pZU?=
- =?us-ascii?Q?7dCFTRAiQGF4vG9714eIwbAuh/Mt3rDOpk9IASXW3bO1NwoRENCIhOHee/yJ?=
- =?us-ascii?Q?TZukXgghSKMt5LOphV/UF1Hxy2ST2/Vd/5Xzf33onHsgM9I5U8SVLIdpABeH?=
- =?us-ascii?Q?215iDW0HPyCW5wwLWXpTj2dAcFsWeYh+dtgzOaEOajkmd4w7GtQgptZU4OGh?=
- =?us-ascii?Q?ZnWWXFM9Dv0xi9FGT24IAdalScPZwzxdpAlwp3amY+7Rsr910Ymmt7/Y2FMW?=
- =?us-ascii?Q?9EoE/rL+yd/t4xa3/duZER8ybROqQ5I7dnOnIDaV9gqNDuBynSSG668/jwQn?=
- =?us-ascii?Q?ieRtKDBprwszkhpYxfQsx03xnxN872GK1MPhrjMBe25j8VpdWFfcN7ggBPJO?=
- =?us-ascii?Q?75Gonhz5dqR1FznVhTDSKBwwAsyYv7Ny0+9ZD8SO2mHkTgEQQ1jywJZWQobw?=
- =?us-ascii?Q?HAs2W9H6qqkhpNu25G7UN9CyY0crt7WsvF2DGUOQCBQV5xJufUS1n6vN27jF?=
- =?us-ascii?Q?ve3WNhBF6nAzC4Y/TwQf2DAPRYXgzsfh9a3cOy0c+BfYQHTh6t4uiRP6Sy1p?=
- =?us-ascii?Q?znXAA5EkeR4ek2z8Wc+pB+zjMSTMqEtiB4Fqkh5ceLM2mlCqp4UVacEZAxNJ?=
- =?us-ascii?Q?UuaZMLZv58gD86nnvDw2HrRNJMhzc/HF20Ayy7vrviV20BEPsb/X4Y0qdYbL?=
- =?us-ascii?Q?u52U01RqMouqcN6h825vvMc2t6QVxSRGnCa8sF7+wqu71kjYAAR6Iaea5yZv?=
- =?us-ascii?Q?l4rEggJU7VFWEnfQETJlHMbEVLOA8tGy6J7X94f7PjN2HCYfGFl+InVkByLO?=
- =?us-ascii?Q?Xr7ffaKLXGUsgV3i2P8otQMHDabaaJRQ4XBW2L36piWlYBwRsfuZDYbkXKWd?=
- =?us-ascii?Q?x13T/a9uy7geUatnxHQWYAR7QdnIUrrgC+tIilVp314m5yPxc4oLfHxjts+B?=
- =?us-ascii?Q?UOrMDrF8l0dcHMZ2r6Qiud5BEqpV4CDfIuEFMO8qHfZMGP6Bi603ukABhprT?=
- =?us-ascii?Q?30TD8IarmwVStHV47TKgMg91FPcJgMjoHwB8iyGx9dEINsW/NLfETiwIJOqS?=
- =?us-ascii?Q?GQ0iHTzosk+rsqeQeCjg0UgjSdW6DM+6THxhmUCbaXrBmhLrsyqgMDeeOm7X?=
- =?us-ascii?Q?dcvLydQltrkd0BYN8LPOM2GsSZAM6b5GDgwLOR0+HIHi9+Xs5v1XXwFoiua6?=
- =?us-ascii?Q?BXgoIRe0uLUMZ9mXluj975covcVAVlgHYLHSxCCMpk7ohPiV1p2+n0gnwDcN?=
- =?us-ascii?Q?O190LpfJuKfkD7xExh6N7PAbEgxMarkXdPd1Xs15QEM7J1Dt2oo3h5FZ4sTs?=
- =?us-ascii?Q?nnyUc0HPHFoG0BqY2X6umFhYBXSKaycvoFXGZscMvqvMUHvdDvMUdLTrCCS4?=
- =?us-ascii?Q?ug=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E6C7EBEFDBBED643865A85816D219A49@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: [PATCH 1/9] net: dsa: allow switch drivers to override default
+ slave PHY addresses
+Message-ID: <20221110163425.7b4974d5@wsk>
+In-Reply-To: <Y2pX0qrLs/OCQOFr@lunn.ch>
+References: <20221108082330.2086671-1-lukma@denx.de>
+        <20221108082330.2086671-2-lukma@denx.de>
+        <Y2pX0qrLs/OCQOFr@lunn.ch>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af5f223e-16d5-4caf-1752-08dac3305a29
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2022 15:29:26.4522
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vv1hV5TZ2tO5B9SZLXGV7qMVz6olFqfi5vZmiLrBvGkTbgQJ81+v6JFrKTWyWfigHAqzTyNPoSZU8ql10BMd7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7941
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/RiyDIGE.SfCIMhPy=pBjacq";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 09:55:32AM -0500, Sean Anderson wrote:
-> On 11/9/22 17:41, Vladimir Oltean wrote:
-> > On Thu, Nov 03, 2022 at 05:06:39PM -0400, Sean Anderson wrote:
-> >> Several (later) patches in this series cannot be applied until a stabl=
-e
-> >> release has occured containing the dts updates.
+--Sig_/RiyDIGE.SfCIMhPy=pBjacq
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi Andrew,
+
+> On Tue, Nov 08, 2022 at 09:23:22AM +0100, Lukasz Majewski wrote:
+> > From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 > >=20
-> > New kernels must remain compatible with old device trees.
+> > Avoid having to define a PHY for every physical port when PHY
+> > addresses are fixed, but port index !=3D PHY address. =20
 >=20
-> Well, this binding is not present in older device trees, so it needs to
-> be added before these patches can be applied. It also could be possible
-> to manually bind the driver using e.g. a helper function (like what is
-> done with lynx_pcs_create_on_bus). Of course this would be tricky,
-> because we would need to unbind any generic phy driver attached, but
-> avoid unbinding an existing Lynx PCS driver.
+> Please could you expand the commit message.
 
-If you know the value of the MII_PHYSID1 and MII_PHYSID2 registers for
-these PCS devices, would it be possible to probe them in a generic way
-as MDIO devices, if they lack a compatible string?
+I've left the comment untouched from Matthias...
 
-> As I understand it, kernels must be compatible with device trees from a
-> few kernels before and after. There is not a permanent guarantee of
-> backwards compatibility (like userspace has) because otherwise we would
-> never be able to make internal changes (such as what is done in this
-> series). I have suggested deferring these patches until after an LTS
-> release as suggested by Rob last time [1].
+> What i think is going on
+> is that for the lower device, port 0 has phy address 0, port 1 phy
+> address 1. But the upper switch has port 0 phy address 16, port 1 phy
+> addr 17?
+
+To be more specific -> for mv88e6071 and mv88e6020:
+
+PHY ports have SMI addresses from 0 to 0x6 and
+Switch PORTS have addresses from 0x8 to 0xE
+
+Global 2 -> 0x7=20
+Global 1 -> 0xF
+
+Access to PHYs is ONLY possible via indirect access from Global 2 (0x7
+SMI addr) - offsets 0x18 and 0x19.
+
+but :-)
+
+there is also RO_LED/ADDR4 pin (bootstrap), which when set changes the
+SMI address of PHYs (from 0x00 - 0x04 to 0x10 to 0x14). This allows
+easy expansion of the number of ports for switch...
+
 >=20
-> --Sean
->=20
-> [1] https://lore.kernel.org/netdev/20220718194444.GA3377770-robh@kernel.o=
-rg/
+> 6141 and 6341 set phy_base_addr to 0x10.=20
 
-Internal changes limit themselves to what doesn't break compatibility
-with device trees in circulation. DT bindings are ABI. Compared to the
-lifetime of DPAA2 SoCs (and especially DPAA1), 1 LTS release is nothing,
-sorry. The kernel has to continue probing them as Lynx PCS devices even
-in lack of a compatible string.=
+It depends if the HW designer set this bootstrap pin low or high :-)
+(often this pin is not concerned until mainline/BSP driver is not
+working :-) )
+
+As it costs $ to fix this - it is easier to add "quirk" to the code.
+
+> Oddly, this is only used for
+> the interrupt. So i assume these two devices also need device tree
+> phy-handle descriptions?
+
+I only have access to 6071 and 6020 switches.
+
+>=20
+> It would be nice to fix the 6141 and the 6341 as well.
+
+As Vladimir pointed out - many Marvell switches use the "old" DTS
+description ...
+
+>=20
+> What might help with understanding is have the patch for the mv88e6xxx
+> op first, and then wire it up in the core afterwards. Reviews tend to
+> happen first to last, so either your commit message needs to explain
+> what is coming, or you do things in the order which helps the reviewer
+> the most.
+
+I must admit, that I've just used code (his patch sert) from Matthias as
+a starting point (to keep his credits).
+
+>=20
+>    Andrew
+
+
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/RiyDIGE.SfCIMhPy=pBjacq
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNtGgEACgkQAR8vZIA0
+zr2ucQgA1B+3wogEAHiV6+Ln1bHkpyNZj9Uc9DhS/KluWCByEFtWp8L7mbX0p/5Y
+S1iNEnOyYX00gIuDRVdbNDaEj6gREaTlb1QLQ5Y8BwF7PBc4WFdyou11Ca64N5dJ
+YzPuqJBnE3NKlLcGTJKpN8+5Tq+i43FQeu5l66XTgx06+N77+01XYh3DBbARc+OJ
+GgXQfk9RfsiFU+E6zuFB5TmGJD/5vsyV+sCtbbPduO5aEkrj9M+RLyDWbbDFJ4OD
+dNC5TJGGMEuCfMroX8Lde+1hvIKOsTCPQhYzSBk9huvOjx8/BYyCQmeFk8jqBGEE
+eD8CU1FTD6ms7UdPMx918rCgZtPvjA==
+=wVQ3
+-----END PGP SIGNATURE-----
+
+--Sig_/RiyDIGE.SfCIMhPy=pBjacq--
