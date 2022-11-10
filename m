@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5140623B61
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 06:39:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FF0623B6F
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 06:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231960AbiKJFjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 00:39:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
+        id S232070AbiKJFns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 00:43:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiKJFjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 00:39:52 -0500
+        with ESMTP id S229596AbiKJFnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 00:43:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E63DF28;
-        Wed,  9 Nov 2022 21:39:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD9512AB3;
+        Wed,  9 Nov 2022 21:43:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABFC761D77;
-        Thu, 10 Nov 2022 05:39:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEE1DC433D6;
-        Thu, 10 Nov 2022 05:39:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD3E361D85;
+        Thu, 10 Nov 2022 05:43:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5171C433C1;
+        Thu, 10 Nov 2022 05:43:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668058790;
-        bh=LES0Ap7+QflT+gJ3Vc/85cAxvO/j6TLOqkdoTGDc5Gg=;
+        s=k20201202; t=1668059024;
+        bh=sH/GcNpwoCJLyv9r25bcOWw2MBvzsgEXqh9lU3pFhgk=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=IZaik/d19Me5chyGFULKMa4UCiPzo6U6pIpbrDEkzmZUTt8VmPeRE80at5t3Sw2Qr
-         dhxKQhY3UmctBQjqkf+7e/igs/P45a1zH4EmOZpT+mM7DfusRsjnb6JeI8+Ebir1Me
-         7l9rr1vi2sfTgiU9nvRtU9nnAtJPE3XkF1Kghzkg5Ks09XkDPc/bMR7zneoI3mRExC
-         6Dqq4spuTSWFBKaSpQu9oBGAX4LYIegqTKRgGpw92EyxcsSsMGLAdcyJikP6OiuAaA
-         nr/Di0/WnYr49AFlbbPPUMsrPj51R/MrfJR6N7AVFCYEdKfgOhIvp0AAd0BGDmAfqP
-         K5GfiY9tA2yhw==
+        b=vGqz6Hepe6FbQKoiX03ATJRSxG5Bnq4mbvUayppAFd1b9j+vYHU/IPwU/7B1lRG1G
+         AAMEhbRcTAIi4uxkziSye02dzuybla1ERWl7t/XNq4iCKjJOwPtAgjjfP8FPFAOK1J
+         NNc0e/zC7T5Nrgk5s4KdLdDvOpm+do3tkYwBWmw99m1Ka5i+qzMYsQ4PA3EXUQ46Q3
+         LOe01nBm6bsMoBgXbqZs5ltm4+CCf67ZgKt04tE1B8gCJucYH7lw41OeyESkgYOhO+
+         6Eofod2qvdotpLdrdaMJbHbqvQNX2Vw97yuoSaGkUb44nyK/6MIoKn1a24Qr3Q2Tyn
+         UIuo3XLPJr2UQ==
 From:   Kalle Valo <kvalo@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-wireless@vger.kernel.org, Angus Ainslie <angus@akkea.ca>,
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, Rasesh Mody <rmody@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v5] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via control port
-References: <20221104163339.227432-1-marex@denx.de>
-        <87o7tjszyg.fsf@kernel.org>
-        <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de>
-        <877d06g98z.fsf@kernel.org>
-        <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de>
-        <871qqccd5i.fsf@kernel.org>
-        <1c37e3f3-0616-3d60-6572-36e9f5aa0d59@denx.de>
-Date:   Thu, 10 Nov 2022 07:39:42 +0200
-In-Reply-To: <1c37e3f3-0616-3d60-6572-36e9f5aa0d59@denx.de> (Marek Vasut's
-        message of "Wed, 9 Nov 2022 19:17:35 +0100")
-Message-ID: <87zgczs6zl.fsf@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] bna: Avoid clashing function prototypes
+References: <cover.1667934775.git.gustavoars@kernel.org>
+        <f813f239cd75c341e26909f59f153cb9b72b1267.1667934775.git.gustavoars@kernel.org>
+Date:   Thu, 10 Nov 2022 07:43:35 +0200
+In-Reply-To: <f813f239cd75c341e26909f59f153cb9b72b1267.1667934775.git.gustavoars@kernel.org>
+        (Gustavo A. R. Silva's message of "Tue, 8 Nov 2022 14:31:36 -0600")
+Message-ID: <87v8nns6t4.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -65,62 +61,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marek Vasut <marex@denx.de> writes:
+"Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
 
-> On 11/9/22 17:20, Kalle Valo wrote:
->> Marek Vasut <marex@denx.de> writes:
->>
->>> On 11/7/22 14:54, Kalle Valo wrote:
->>>> Marek Vasut <marex@denx.de> writes:
->>>>
->>>>>> BTW did you test this on a real device?
->>>>>
->>>>> Yes, SDIO RS9116 on next-20221104 and 5.10.153 .
->>>>
->>>> Very good, thanks.
->>>>
->>>>> What prompts this question ?
->>>>
->>>> I get too much "fixes" which have been nowhere near real hardware and
->>>> can break the driver instead of fixing anything, especially syzbot
->>>> patches have been notorious. So I have become cautious.
->>>
->>> Ah, this is a real problem right here.
->>>
->>> wpa-supplicant 2.9 from OE dunfell 3.1 works.
->>> wpa-supplicant 2.10 from OE kirkstone 4.0 fails.
->>>
->>> That's how I ran into this initially. My subsequent tests were with
->>> debian wpa-supplicant 2.9 and 2.10 packages, since that was easier,
->>> they (2.10 does, 2.9 does not) trigger the problem all the same.
->>>
->>> I'm afraid this RSI driver is so poorly maintained and has so many
->>> bugs, that, there is little that can make it worse. The dealing I had
->>> with RSI has been ... long ... and very depressing. I tried to get
->>> documentation or anything which would help us fix the problems we have
->>> with this RSI driver ourselves, but RSI refused it all and suggested
->>> we instead use their downstream driver (I won't go into the quality of
->>> that). It seems RSI has little interest in maintaining the upstream
->>> driver, pity.
->>>
->>> I've been tempted to flag this driver as BROKEN for a while, to
->>> prevent others from suffering with it.
->>
->> That's a pity indeed. Should we at least mark the driver as orphaned in
->> MAINTAINERS?
->>
->> Or even better if you Marek would be willing to step up as the
->> maintainer? :)
+> When built with Control Flow Integrity, function prototypes between
+> caller and function declaration must match. These mismatches are visible
+> at compile time with the new -Wcast-function-type-strict in Clang[1].
 >
-> I think best mark it orphaned, to make it clear what the state of the
-> driver really is.
+> Fix a total of 227 warnings like these:
 >
-> If RSI was willing to provide documentation, or at least releases
-> which are not 30k+/20k- single-all-in-one-commit dumps of code, or at
-> least any help, I would consider it. But not like this.
+> drivers/net/ethernet/brocade/bna/bna_enet.c:519:3: warning: cast from 'void (*)(struct bna_ethport *, enum bna_ethport_event)' to 'bfa_fsm_t' (aka 'void (*)(void *, int)') converts to incompatible function type [-Wcast-function-type-strict]
+>                 bfa_fsm_set_state(ethport, bna_ethport_sm_down);
+>                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> The bna state machine code heavily overloads its state machine functions,
+> so these have been separated into their own sets of structs, enums,
+> typedefs, and helper functions. There are almost zero binary code changes,
+> all seem to be related to header file line numbers changing, or the
+> addition of the new stats helper.
+>
+> Important to mention is that while I was manually implementing this changes
+> I was staring at this[2] patch from Kees Cook. Thanks, Kees. :)
+>
+> [1] https://reviews.llvm.org/D134831
+> [2] https://lore.kernel.org/linux-hardening/20220929230334.2109344-1-keescook@chromium.org/
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+> Changes in v3:
+>  - Add RB tag from Kees.
+>  - Update changelog text.
+>
+> Changes in v2:
+>  - None. This patch is new in the series.
+>  - Link: https://lore.kernel.org/linux-hardening/2812afc0de278b97413a142d39d939a08ac74025.1666894751.git.gustavoars@kernel.org/
+>
+>  drivers/net/ethernet/brocade/bna/bfa_cs.h    | 60 +++++++++++++-------
+>  drivers/net/ethernet/brocade/bna/bfa_ioc.c   | 10 ++--
+>  drivers/net/ethernet/brocade/bna/bfa_ioc.h   |  8 ++-
+>  drivers/net/ethernet/brocade/bna/bfa_msgq.h  |  8 ++-
+>  drivers/net/ethernet/brocade/bna/bna_enet.c  |  6 +-
+>  drivers/net/ethernet/brocade/bna/bna_tx_rx.c |  6 +-
+>  drivers/net/ethernet/brocade/bna/bna_types.h | 27 +++++++--
 
-Yeah, very understandable. So let's mark the driver orphaned then, can
-someone send a patch?
+Mixing wifi and ethernet patches in the same patch is not a good idea,
+the network maintainers might miss this patch. I recommend submitting
+patch 6 separately.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
