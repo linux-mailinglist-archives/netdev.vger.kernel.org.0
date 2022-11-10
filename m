@@ -2,94 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD963623EBB
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 10:36:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7A4623ECB
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 10:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbiKJJg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 04:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        id S229666AbiKJJj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 04:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiKJJgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 04:36:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F5366CA6
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 01:36:55 -0800 (PST)
+        with ESMTP id S229528AbiKJJj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 04:39:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A8B11A3E;
+        Thu, 10 Nov 2022 01:39:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96FB660C26
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:36:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E14C433C1;
-        Thu, 10 Nov 2022 09:36:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 105D2B82140;
+        Thu, 10 Nov 2022 09:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0754C433D6;
+        Thu, 10 Nov 2022 09:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668073014;
-        bh=RZqc4mTiOP4vHCoLOzhs8cd5CUewb+ZTdoCBF3l9m3o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oqRTx2dBtIzO5DVM2Ix3kjuQyy9CauAeJJv00fp7rVe6lFW7S6Hobd39Wm11PxzIX
-         Pk52qGyEUe0sQz8RWIQyU67EG/Iouz1fCNGuY8l21itesAc/6PNK+ib7MBTirpTVaE
-         lZHdVPLSwIjqMzVmazEDJ611U8Tlw82He7/RLfd/RrFr3j4YRAhe5KazM17pbwOHPR
-         t2cJhGdYceg3G+NhM3qI5Qa6V3F0CdWjZkQbdKxkZ3Di8BiM2Ohi5bc9t492HKVFTF
-         ZudO++ahmnlSUsvQzjRNHkhdjAey2EvszFi1gA4+beYUXyIH5k38vr4OxzZ+gWJ/Gw
-         3HONbRNkbqXVw==
-Date:   Thu, 10 Nov 2022 11:36:48 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Jonathan Lemon <bsd@meta.com>,
-        jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next v2] genetlink: fix single op policy dump when do
- is present
-Message-ID: <Y2zGMIaDv3UkmESQ@unreal>
-References: <20221109183254.554051-1-kuba@kernel.org>
+        s=k20201202; t=1668073192;
+        bh=D6RE7UOWJpA7EbAthQbU3kBtGwmEzK7dIzjwKD/PMjI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Sdeezdx5jtd/XT4rzX0jZI+656PDJg7/2pJl+HRrPk99fka5mwPJ+Ja7gpGKgjxsx
+         +OSKXKrY2Asw4qouuWeXzPRt1BLyI26uFpp6/sceQhXoFNzz0hSBpn+AUp5O62b7+5
+         D5456T2PEJAuayEz6zKmYu7hiNIVCiw/Fc5KOqS/cI+OvghjRGzxgurfE9lJIYK2R3
+         4gethJIBNI9yBkyu7pN3/lKYok3tI2bM26OhU61rLx7LYMOHrztm04CtLZ9ayzyBuO
+         116SmHF8FmQ7uAtXlT9cheuvAJXOtmQmxxeldA63OzwOCIVEgGow1x5bkSB4v6ZFjw
+         8mRPQnlevlnfQ==
+Message-ID: <32eacc9d-3866-149a-579a-41f8e405123f@kernel.org>
+Date:   Thu, 10 Nov 2022 11:39:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109183254.554051-1-kuba@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: ethernet: ti: cpsw_ale: optimize cpsw_ale_restore()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        vigneshr@ti.com, srk@ti.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221108135643.15094-1-rogerq@kernel.org>
+ <20221109191941.6af4f71d@kernel.org>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20221109191941.6af4f71d@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 10:32:54AM -0800, Jakub Kicinski wrote:
-> Jonathan reports crashes when running net-next in Meta's fleet.
-> Stats collection uses ethtool -I which does a per-op policy dump
-> to check if stats are supported. We don't initialize the dumpit
-> information if doit succeeds due to evaluation short-circuiting.
+On 10/11/2022 05:19, Jakub Kicinski wrote:
+> On Tue,  8 Nov 2022 15:56:43 +0200 Roger Quadros wrote:
+>> If an entry was FREE then we don't have to restore it.
 > 
-> The crash may look like this:
+> Motivation? Does it make the restore faster?
+
+Yes, since this would be called during system suspend/resume path.
+I will update the commit message to mention this.
+
 > 
->    BUG: kernel NULL pointer dereference, address: 0000000000000cc0
->    RIP: 0010:netlink_policy_dump_add_policy+0x174/0x2a0
->      ctrl_dumppolicy_start+0x19f/0x2f0
->      genl_start+0xe7/0x140
+>> Signed-off-by: Roger Quadros <rogerq@kernel.org>
+>> ---
+>>
+>> Patch depends on
+>> https://lore.kernel.org/netdev/20221104132310.31577-3-rogerq@kernel.org/T/
+>>
+>>  drivers/net/ethernet/ti/cpsw_ale.c | 7 +++++--
+>>  1 file changed, 5 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
+>> index 0c5e783e574c..41bcf34a22f8 100644
+>> --- a/drivers/net/ethernet/ti/cpsw_ale.c
+>> +++ b/drivers/net/ethernet/ti/cpsw_ale.c
+>> @@ -1452,12 +1452,15 @@ void cpsw_ale_dump(struct cpsw_ale *ale, u32 *data)
+>>  	}
+>>  }
+>>  
+>> +/* ALE table should be cleared (ALE_CLEAR) before cpsw_ale_restore() */
 > 
-> Or we may trigger a warning:
+> Maybe my tree is old but I see we clear only if there is a netdev that
+
+This patch depends on this series
+https://lore.kernel.org/netdev/20221104132310.31577-3-rogerq@kernel.org/T/
+
+> needs to be opened but then always call ale_restore(). Is that okay?
+
+If netdev is closed and opened ale_restore() is not called.
+ale_restore() is only called during system suspend/resume path
+since CPSW-ALE might have lost context during suspend and we want to restore
+all valid ALE entries.
+
+I have a question here. How should ageable entries be treated in this case?
+
 > 
->    WARNING: CPU: 1 PID: 785 at net/netlink/policy.c:87 netlink_policy_dump_get_policy_idx+0x79/0x80
->    RIP: 0010:netlink_policy_dump_get_policy_idx+0x79/0x80
->      ctrl_dumppolicy_put_op+0x214/0x360
+> I'd also s/should/must/ 
+
+OK, will fix.
+
 > 
-> depending on what garbage we pick up from the stack.
-> 
-> Reported-by: Jonathan Lemon <bsd@meta.com>
-> Fixes: 26588edbef60 ("genetlink: support split policies in ctrl_dumppolicy_put_op()")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: jacob.e.keller@intel.com
-> CC: leon@kernel.org
-> 
-> v2:
->  - add a helper instead of doing magic sums
->  - improve title
-> v1: https://lore.kernel.org/all/20221108204041.330172-1-kuba@kernel.org/
-> ---
->  net/netlink/genetlink.c | 30 +++++++++++++++++++++---------
->  1 file changed, 21 insertions(+), 9 deletions(-)
+>>  void cpsw_ale_restore(struct cpsw_ale *ale, u32 *data)
+>>  {
+>> -	int i;
+>> +	int i, type;
+>>  
+>>  	for (i = 0; i < ale->params.ale_entries; i++) {
+>> -		cpsw_ale_write(ale, i, data);
+>> +		type = cpsw_ale_get_entry_type(data);
+>> +		if (type != ALE_TYPE_FREE)
+>> +			cpsw_ale_write(ale, i, data);
+>>  		data += ALE_ENTRY_WORDS;
+>>  	}
+>>  }
 > 
 
-Thanks,
-Tested-by: Leon Romanovsky <leonro@nvidia.com>
+cheers,
+-roger
