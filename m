@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2588D623838
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 01:37:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39F45623839
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 01:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231362AbiKJAhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 19:37:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        id S231466AbiKJAh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 19:37:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbiKJAhy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 19:37:54 -0500
+        with ESMTP id S231254AbiKJAhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 19:37:55 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AC712611
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AB32733
         for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 16:37:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1668040674; x=1699576674;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=N8RNeCnLZLMtOgBC/bghFFIq5p4fTOreasqZWcplDBQ=;
-  b=BGWveKZYVybCR71kyfkqca++RoRCI+CJzin7hxJBMRrgsjqj0Dm07MvP
-   pelLNQgG6fQBEW4WEi/S6xfojngFe32Ibt2mOyxm/tIMl33XnaGvVrXc6
-   qKkMaO2vMZuL2SrhkvT/iBrYQSlnyQcSTurBlMCu4FBfJEM7LjYt8zDx1
-   qI2i4dYZIkH6BghaRBpDlq4eqpPpIIzOfyeF7aoCbTMfYuZ0lu9UTd/Jh
-   w2ZHVQK5Tk+/njFxLtEpPxlA+gJyu4nsN9uRueutHi7ZhRsdV5nQhu5GU
-   nupCH7S1V7QGaiNPUOQ/1xqfKWRt+GVmQgSxUhs1C+3TTSOxUyrp41iE4
+  bh=7yoj69J6jdN+rk0wBC1jjvxRbjif9QjJvU2pqlQsJTk=;
+  b=KpUCY96a/9hBfSH8IAPCRE3IeOFzTlpa+vEcNq6fYGVq/Va2za/0pDsI
+   PEmvarApz/+2LZezAeXzBPYc4mW3oPIil/sZwQvmU0Dh7GvTM9RTc38RK
+   E7zVlNhEeAZaDFX6/tofx5d2vLGDEjcC22Gu2PuQbkmDgOOzv+DZXtRTi
+   neANuemNsobkRACbOm98Hhn28yAM1XiHkje3jh2A9ncrmipNQOSspaTmv
+   SJc9vsafuZj6IbBDDz2sCauDBg+yQxx/Mflq82FFXRaSKL0CVP0T8SOSK
+   bgzNyJBq1jTJ97X+RwHC2VeQxtlkGp75UeYru0jBZrHXP1i0l1q5nJZcY
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="291560345"
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="291560346"
 X-IronPort-AV: E=Sophos;i="5.96,152,1665471600"; 
-   d="scan'208";a="291560345"
+   d="scan'208";a="291560346"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 16:37:53 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="587969650"
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="587969653"
 X-IronPort-AV: E=Sophos;i="5.96,152,1665471600"; 
-   d="scan'208";a="587969650"
+   d="scan'208";a="587969653"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga003.jf.intel.com with ESMTP; 09 Nov 2022 16:37:52 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Norbert Zulinski <norbertx.zulinski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+Cc:     Michal Jaron <michalx.jaron@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Kamil Maziarz <kamil.maziarz@intel.com>,
         Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net v2 1/2] ice: Fix spurious interrupt during removal of trusted VF
-Date:   Wed,  9 Nov 2022 16:37:43 -0800
-Message-Id: <20221110003744.201414-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net v2 2/2] iavf: Fix VF driver counting VLAN 0 filters
+Date:   Wed,  9 Nov 2022 16:37:44 -0800
+Message-Id: <20221110003744.201414-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221110003744.201414-1-anthony.l.nguyen@intel.com>
 References: <20221110003744.201414-1-anthony.l.nguyen@intel.com>
@@ -62,103 +63,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Norbert Zulinski <norbertx.zulinski@intel.com>
+From: Michal Jaron <michalx.jaron@intel.com>
 
-Previously, during removal of trusted VF when VF is down there was
-number of spurious interrupt equal to number of queues on VF.
+VF driver mistakenly counts VLAN 0 filters, when no PF driver
+counts them.
+Do not count VLAN 0 filters, when VLAN_V2 is engaged.
+Counting those filters in, will affect filters size by -1, when
+sending batched VLAN addition message.
 
-Add check if VF already has inactive queues. If VF is disabled and
-has inactive rx queues then do not disable rx queues.
-Add check in ice_vsi_stop_tx_ring if it's VF's vsi and if VF is
-disabled.
-
-Fixes: efe41860008e ("ice: Fix memory corruption in VF driver")
-Signed-off-by: Norbert Zulinski <norbertx.zulinski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Fixes: 968996c070ef ("iavf: Fix VLAN_V2 addition/rejection")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+Signed-off-by: Kamil Maziarz <kamil.maziarz@intel.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_base.c   |  2 +-
- drivers/net/ethernet/intel/ice/ice_lib.c    | 25 +++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_lib.h    |  1 +
- drivers/net/ethernet/intel/ice/ice_vf_lib.c |  5 ++++-
- 4 files changed, 31 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index 9e36f01dfa4f..e864634d66bc 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -958,7 +958,7 @@ ice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
- 	 * associated to the queue to schedule NAPI handler
- 	 */
- 	q_vector = ring->q_vector;
--	if (q_vector)
-+	if (q_vector && !(vsi->vf && ice_is_vf_disabled(vsi->vf)))
- 		ice_trigger_sw_intr(hw, q_vector);
- 
- 	status = ice_dis_vsi_txq(vsi->port_info, txq_meta->vsi_idx,
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 938ba8c215cb..7276badfa19e 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2239,6 +2239,31 @@ int ice_vsi_stop_xdp_tx_rings(struct ice_vsi *vsi)
- 	return ice_vsi_stop_tx_rings(vsi, ICE_NO_RESET, 0, vsi->xdp_rings, vsi->num_xdp_txq);
- }
- 
-+/**
-+ * ice_vsi_is_rx_queue_active
-+ * @vsi: the VSI being configured
-+ *
-+ * Return true if at least one queue is active.
-+ */
-+bool ice_vsi_is_rx_queue_active(struct ice_vsi *vsi)
-+{
-+	struct ice_pf *pf = vsi->back;
-+	struct ice_hw *hw = &pf->hw;
-+	int i;
-+
-+	ice_for_each_rxq(vsi, i) {
-+		u32 rx_reg;
-+		int pf_q;
-+
-+		pf_q = vsi->rxq_map[i];
-+		rx_reg = rd32(hw, QRX_CTRL(pf_q));
-+		if (rx_reg & QRX_CTRL_QENA_STAT_M)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- /**
-  * ice_vsi_is_vlan_pruning_ena - check if VLAN pruning is enabled or not
-  * @vsi: VSI to check whether or not VLAN pruning is enabled.
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index ec4bf0c89857..dcdf69a693e9 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -129,4 +129,5 @@ u16 ice_vsi_num_non_zero_vlans(struct ice_vsi *vsi);
- bool ice_is_feature_supported(struct ice_pf *pf, enum ice_feature f);
- void ice_clear_feature_support(struct ice_pf *pf, enum ice_feature f);
- void ice_init_feature_support(struct ice_pf *pf);
-+bool ice_vsi_is_rx_queue_active(struct ice_vsi *vsi);
- #endif /* !_ICE_LIB_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 0abeed092de1..1c51778db951 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -576,7 +576,10 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 			return -EINVAL;
- 		}
- 		ice_vsi_stop_lan_tx_rings(vsi, ICE_NO_RESET, vf->vf_id);
--		ice_vsi_stop_all_rx_rings(vsi);
-+
-+		if (ice_vsi_is_rx_queue_active(vsi))
-+			ice_vsi_stop_all_rx_rings(vsi);
-+
- 		dev_dbg(dev, "VF is already disabled, there is no need for resetting it, telling VM, all is fine %d\n",
- 			vf->vf_id);
- 		return 0;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+index 5a9e6563923e..24a701fd140e 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+@@ -2438,6 +2438,8 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 		list_for_each_entry(f, &adapter->vlan_filter_list, list) {
+ 			if (f->is_new_vlan) {
+ 				f->is_new_vlan = false;
++				if (!f->vlan.vid)
++					continue;
+ 				if (f->vlan.tpid == ETH_P_8021Q)
+ 					set_bit(f->vlan.vid,
+ 						adapter->vsi.active_cvlans);
 -- 
 2.35.1
 
