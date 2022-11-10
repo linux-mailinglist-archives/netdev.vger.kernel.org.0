@@ -2,118 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04FFF62490F
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 19:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2BAC6249C5
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 19:43:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230426AbiKJSHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 13:07:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
+        id S229973AbiKJSna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 13:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiKJSHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 13:07:33 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06353BF76
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:07:29 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id 131so3253690ybl.3
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:07:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EyAhSPI88oXlRwNpQRM5g7+QtFrLcuE/TcOa+Pp5OdY=;
-        b=sGi5Sf+djWJ/Wjcy4WDUiCuoK2f5jb4wK+NFslXDH0XJvRd8yY+IMIRvj3Sj6qIajo
-         936XJ37d/8knxE3vW97fDoIuzVcQJn1hHeJ1xvBm3ful6R1F5U/axhf4iWJFkDQxFHkF
-         x4dfzwJ5ZH+qIM56xSopKQPFR4iPU40LwfWzcXRyfNBEy4d24kIg8ABoIeAM2vnwa/iR
-         3Mv0/Qg0SabtMYzNroEzhV+PWp6yp+2Eh3YoH4qhRFGZQYHU5Q95HXWi1QRdJSUy2y0a
-         0jre7v7H5AgXx7a6uixZxU0EdITIZT9IsJboPpHuVX524+h55iCLjjvLlqOT62xTgon5
-         Si+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EyAhSPI88oXlRwNpQRM5g7+QtFrLcuE/TcOa+Pp5OdY=;
-        b=xYBFxPCB3VFVRhtClvoOUsYGszZdrXNfqqncu/PV44wg3FJoeMTHu5TFi712fqiXfi
-         08LPaFJBKGiJlUOpydchFr66fI8EimpjL7u2WucbhF8KbJbrEvqCRlRuVU1sIsisheYH
-         8igpepwMFxjIHi2sTxDoHrEV3yKM/jxni0zKCyZLbmrnK70/L6gTidiDpaR8RizRAFuK
-         bIgUbZz615GHmr2qtLFHrLpZLtc4oA/fEi2bGZeRWuTJ3mfmBtRxBrTFWKv7bhPXhYHU
-         f+ZPML6DEMC0q1msD/bsSS1SgpIOJavc+uaLdp0oM9jkmz+XPqUT0KCzXEjcYxkXsd/j
-         Q9Yg==
-X-Gm-Message-State: ANoB5pky3dY6BDT9ntOZIvOC6C9B8V1RkmBueGuuVw6D9VC9rrbZAq0Q
-        +FVfH2SJnXaXD/yl3rPio0moLbiFM0RX/jd8hWbo9A==
-X-Google-Smtp-Source: AA0mqf5V/6r259p+syK30cxNZizZjC7GivlxLK6+nAsj5PKTnWthjYFBQRjmK34GMvNFk6XDlo6Uqb3hPcJfw68ZVBw=
-X-Received: by 2002:a25:50c9:0:b0:6dd:c761:8db6 with SMTP id
- e192-20020a2550c9000000b006ddc7618db6mr1003865ybb.36.1668103647973; Thu, 10
- Nov 2022 10:07:27 -0800 (PST)
+        with ESMTP id S229562AbiKJSn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 13:43:29 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167A9CDD;
+        Thu, 10 Nov 2022 10:43:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
+        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=o+/sgG8pAMlcxfhAM+l19ggZIZSPjCNCepiJAetQLeE=; b=ivWn5cEcMRiHZMtn1GmY2t4o6Z
+        UCdZXM/WKtWcnRfmOhN2Syr0NuTg9Q6ItYeJ5kveX8+++T7FdqcpqFSZm1T3GRPd8LIB5klOxcAjT
+        ecLCqJC386Upn23peOPNBXNkMnuHnot1sTwz27n7+6KWFVW2hUPmi/YwCZQIWqX0ScA4=;
+Received: from p200300daa72ee10c199752172ce6dd7a.dip0.t-ipconnect.de ([2003:da:a72e:e10c:1997:5217:2ce6:dd7a] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1otCVt-0010BT-Aj; Thu, 10 Nov 2022 19:42:57 +0100
+Message-ID: <e010ec84-9d50-31ca-fdf2-af73dad5f718@nbd.name>
+Date:   Thu, 10 Nov 2022 19:42:56 +0100
 MIME-Version: 1.0
-References: <20221108132208.938676-1-jiri@resnulli.us> <20221108132208.938676-4-jiri@resnulli.us>
- <Y2uT1AZHtL4XJ20E@shredder> <CANn89iJgTLe0EJ61xYji6W-VzQAGtoXpZJAxgKe-nE9ESw=p7w@mail.gmail.com>
- <20221109134536.447890fb@kernel.org> <Y2yuK8kccunmEiYd@nanopsycho>
- <CANn89iLhbTB8kZwE7BhK76ZsLmm5aKv78q+1QYcbs7gDFCU6iA@mail.gmail.com> <Y209Hb95UX3Wcb6r@shredder>
-In-Reply-To: <Y209Hb95UX3Wcb6r@shredder>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Nov 2022 10:07:16 -0800
-Message-ID: <CANn89iLZmF_YN-J009EmgQXhf9b6J6mKw4eY=Ui029T6oV6m1A@mail.gmail.com>
-Subject: Re: [patch net-next v2 3/3] net: devlink: add WARN_ON to check return
- value of unregister_netdevice_notifier_net() call
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        bigeasy@linutronix.de, imagedong@tencent.com, kuniyu@amazon.com,
-        petrm@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20221109163426.76164-1-nbd@nbd.name>
+ <20221109163426.76164-1-nbd@nbd.name> <20221109163426.76164-10-nbd@nbd.name>
+ <20221109163426.76164-10-nbd@nbd.name>
+ <20221110152259.id5gg67wcy3pbart@skbuf>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH net-next v2 09/12] net: ethernet: mtk_eth_soc: fix VLAN rx
+ hardware acceleration
+In-Reply-To: <20221110152259.id5gg67wcy3pbart@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 10:04 AM Ido Schimmel <idosch@idosch.org> wrote:
->
-> On Thu, Nov 10, 2022 at 09:21:23AM -0800, Eric Dumazet wrote:
-> > On Wed, Nov 9, 2022 at 11:54 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> > >
-> > > Wed, Nov 09, 2022 at 10:45:36PM CET, kuba@kernel.org wrote:
-> > > >On Wed, 9 Nov 2022 08:26:10 -0800 Eric Dumazet wrote:
-> > > >> > On Tue, Nov 08, 2022 at 02:22:08PM +0100, Jiri Pirko wrote:
-> > > >> > > From: Jiri Pirko <jiri@nvidia.com>
-> > > >> > >
-> > > >> > > As the return value is not 0 only in case there is no such notifier
-> > > >> > > block registered, add a WARN_ON() to yell about it.
-> > > >> > >
-> > > >> > > Suggested-by: Ido Schimmel <idosch@idosch.org>
-> > > >> > > Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> > > >> >
-> > > >> > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> > > >>
-> > > >> Please consider WARN_ON_ONCE(), or DEBUG_NET_WARN_ON_ONCE()
-> > > >
-> > > >Do you have any general guidance on when to pick WARN() vs WARN_ONCE()?
-> > > >Or should we always prefer _ONCE() going forward?
-> > >
-> > > Good question. If so, it should be documented or spotted by checkpatch.
-> > >
-> > > >
-> > > >Let me take the first 2 in, to lower the syzbot volume.
-> >
-> > Well, I am not sure what you call 'lower syzbot volume'
-> >
-> > netdevsim netdevsim0 netdevsim3 (unregistering): unset [1, 0] type 2
-> > family 0 port 6081 - 0
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 1 PID: 41 at net/core/devlink.c:10001
-> > devl_port_unregister+0x2f6/0x390 net/core/devlink.c:10001
->
-> Hi Eric,
->
-> That's a different bug than the one fixed by this patchset. Should be
-> fixed by this patch:
->
-> https://patchwork.kernel.org/project/netdevbpf/patch/20221110085150.520800-1-idosch@nvidia.com/
+On 10.11.22 16:22, Vladimir Oltean wrote:
+> On Wed, Nov 09, 2022 at 05:34:23PM +0100, Felix Fietkau wrote:
+>> - enable VLAN untagging for PDMA rx
+>> - make it possible to disable the feature via ethtool
+>> - pass VLAN tag to the DSA driver
+>> - untag special tag on PDMA only if no non-DSA devices are in use
+>> - disable special tag untagging on 7986 for now, since it's not working yet
+> 
+> Each of these bullet points should be its own patch, really.
+> "Fix VLAN rx hardware acceleration" isn't doing much to describe them
+> and their motivation.
+I think some minor things could be split off, but doing one patch per 
+bullet point definitely does not make sense.
 
-OK, I will dup the new syzbot report, thanks.
+>>  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 99 ++++++++++++++++-----
+>>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  8 ++
+>>  2 files changed, 84 insertions(+), 23 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> index 92bdd69eed2e..ffaa9fe32b14 100644
+>> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> @@ -23,6 +23,7 @@
+>>  #include <linux/jhash.h>
+>>  #include <linux/bitfield.h>
+>>  #include <net/dsa.h>
+>> +#include <net/dst_metadata.h>
+>>  
+>>  #include "mtk_eth_soc.h"
+>>  #include "mtk_wed.h"
+>> @@ -2008,23 +2009,27 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>>  		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
+>>  			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
+>>  
+>> -		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
+>> -			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+>> -				if (trxd.rxd3 & RX_DMA_VTAG_V2)
+>> -					__vlan_hwaccel_put_tag(skb,
+>> -						htons(RX_DMA_VPID(trxd.rxd4)),
+>> -						RX_DMA_VID(trxd.rxd4));
+>> -			} else if (trxd.rxd2 & RX_DMA_VTAG) {
+>> -				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+>> -						       RX_DMA_VID(trxd.rxd3));
+>> -			}
+>> +		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+>> +			if (trxd.rxd3 & RX_DMA_VTAG_V2)
+>> +				__vlan_hwaccel_put_tag(skb,
+>> +					htons(RX_DMA_VPID(trxd.rxd4)),
+>> +					RX_DMA_VID(trxd.rxd4));
+>> +		} else if (trxd.rxd2 & RX_DMA_VTAG) {
+>> +			__vlan_hwaccel_put_tag(skb, htons(RX_DMA_VPID(trxd.rxd3)),
+>> +					       RX_DMA_VID(trxd.rxd3));
+>> +		}
+>> +
+>> +		/* When using VLAN untagging in combination with DSA, the
+>> +		 * hardware treats the MTK special tag as a VLAN and untags it.
+>> +		 */
+>> +		if (skb_vlan_tag_present(skb) && netdev_uses_dsa(netdev)) {
+>> +			unsigned int port = ntohs(skb->vlan_proto) & GENMASK(2, 0);
+>> +
+>> +			if (port < ARRAY_SIZE(eth->dsa_meta) &&
+>> +			    eth->dsa_meta[port])
+>> +				skb_dst_set_noref(skb, &eth->dsa_meta[port]->dst);
+> 
+> Why _noref?
+In order to avoid the cost of unnecessary refcounting. The metadata dst 
+is only held until dsa_switch_rcv processes it, after which it is 
+removed. The driver only frees it after all its netdevs have been 
+unregistered.
+
+- Felix
