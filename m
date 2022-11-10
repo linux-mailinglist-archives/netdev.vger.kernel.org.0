@@ -2,214 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 047A3623CAB
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 08:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E53E623CC0
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 08:38:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232844AbiKJHbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 02:31:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47902 "EHLO
+        id S232897AbiKJHiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 02:38:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232448AbiKJHbn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 02:31:43 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D35326D3;
-        Wed,  9 Nov 2022 23:31:42 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id m6-20020a17090a5a4600b00212f8dffec9so924070pji.0;
-        Wed, 09 Nov 2022 23:31:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LbZXKKBD741m+fy6007yuueCSdvbrC+LAzehJa3fqi0=;
-        b=FgzPsL8ax5mT2Bx8DVZYtSR68TPTIHcMPKgj5umNdVXzl9C9eOgrDvGpwbuYdcFmBZ
-         +pcvufsen3b2SgWV7d9w6YAj3qLaH0gNN1itq57ioTny+RSl+Dz/Xv2L7RtjyIMfWwHC
-         RJYZgroCvo6H7nob09QKqMwov02fM/yqnobI00nIyu+vJ/+jEE5nTqwAzGJ6Yiu+amdT
-         3lPCFfiqtcL5ZwcN+w6f4/CAy3wRYiiomgn+iZFNJKt+M8T5syYucOoeCQ+Ph56aac+6
-         i6BKSMzhwtTF96199xMWzgkcq8A5Oq3rLyFPrBLJkvp9QtuDTSaLF36lBRJqBFuRbcRe
-         rgqQ==
+        with ESMTP id S232883AbiKJHiF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 02:38:05 -0500
+Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3744C326F4
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 23:38:03 -0800 (PST)
+Received: from gw.atmark-techno.com (localhost [127.0.0.1])
+        by gw.atmark-techno.com (Postfix) with ESMTP id 9A1A660116
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 16:38:02 +0900 (JST)
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+        by gw.atmark-techno.com (Postfix) with ESMTPS id 0559B60105
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 16:38:01 +0900 (JST)
+Received: by mail-pj1-f71.google.com with SMTP id mh8-20020a17090b4ac800b0021348e084a0so2946047pjb.8
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 23:38:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LbZXKKBD741m+fy6007yuueCSdvbrC+LAzehJa3fqi0=;
-        b=zceDs8idgX+UhhJLTKpOWRyJD7Nm8DOjN0ZhCz0McWG9q4+d4zFTvJhITMEJcvV7DH
-         /8Z9fnOddFSaFKyqjEshm/94aKDey4rzJB3OUzz8GF1/4xQSMIKswcE0tENbRRuIlB8C
-         HCrl7J48hLjtAhUeI9lWUIfbLRM57tKzcAkTNj4qzjckeSVkMGF4GTOwgdl3XwyB3dRb
-         PxGiLpfBfV+0aqvCglBJvTQJe6atlmIQ9AY7ufKkYqvxfH0oqYdou8L8/sJZ7GjCBEVN
-         YO9IiokvwGVXk15xqHoh6io4zqrdFHs20npxSL2LvE6ndMy5047W3iWUmiDH066M6pOP
-         eTxA==
-X-Gm-Message-State: ACrzQf0iDcz1khAk2TBWrJQkimFPhj5Hsgtg012R1QpE3Mze8IL/4vej
-        NvI67tAAWzmzPBfdLSlGWYc=
-X-Google-Smtp-Source: AMsMyM6GNAP4EgSrMpzo2FjpKbIL1XTfylmWsdvmXcdLKjvpFx45AylRfUKfT/z+iOaYHtYLzw59mw==
-X-Received: by 2002:a17:90a:e7ce:b0:213:589b:cdaf with SMTP id kb14-20020a17090ae7ce00b00213589bcdafmr79963350pjb.186.1668065502331;
-        Wed, 09 Nov 2022 23:31:42 -0800 (PST)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id u8-20020a1709026e0800b0017bb38e4588sm10382197plk.135.2022.11.09.23.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 23:31:41 -0800 (PST)
-From:   Chuang Wang <nashuiliang@gmail.com>
-Cc:     Chuang Wang <nashuiliang@gmail.com>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hCjb7yV/CvXMOFsUMLrHBUd25VG/nQ2JHyjPko2pBBA=;
+        b=uyKWX0gfthHveQ2i9tZkb6pap3dT8D1krSoRLX9xZXbxTo5aKjvqrD9wn9aXSQFg3K
+         i8A8s6SrhKVl3lMkKhnWM0p6pg6fEUmVqy6hlFDRmSpNpZjCE+LZqWuJe7mKcRRmYTUl
+         gtxHwD0fQJi+sqd0VsTnZ/mFEuhEg1Qtrag4aTIYvKSfeUrx0VC2m2tA0338/fn+LX3d
+         nGWhWNiAqg/sCTXy0ZRQlkoEi9eVm8JXOgxAf7Qi0iArLbq+eS898h1D+gO3xbpwWYyu
+         rgVO34jNkWTG3iP2BA8mn45FmJw13AnGQF8lH+VGTM/un8dvztwkuTP6SUrVDOYwt5A2
+         pzrQ==
+X-Gm-Message-State: ACrzQf0+xI3FtI+Jb4/Ml6tKGV/l608U58YbTF/mvAdWcsBzM6pekwTs
+        GaiLsOr9/h+wh68R3Qg6wbKQrGF43GBs1tR9b6mEiE48/HSCA4wP94h1KpRTGgtJA5wE/Feo4MC
+        IZzDjKuHaK/RW+TPMn/KT
+X-Received: by 2002:aa7:83c8:0:b0:56d:8e07:4618 with SMTP id j8-20020aa783c8000000b0056d8e074618mr51964652pfn.33.1668065880059;
+        Wed, 09 Nov 2022 23:38:00 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM5Lb2t86EbMFW9ZQ3kwu22IuMxG74UdO/YAYM+jzqoI78XZoQm20kFTU/Woblan8jqfRmomqA==
+X-Received: by 2002:aa7:83c8:0:b0:56d:8e07:4618 with SMTP id j8-20020aa783c8000000b0056d8e074618mr51964632pfn.33.1668065879804;
+        Wed, 09 Nov 2022 23:37:59 -0800 (PST)
+Received: from pc-zest.atmarktech (76.125.194.35.bc.googleusercontent.com. [35.194.125.76])
+        by smtp.gmail.com with ESMTPSA id p18-20020a170902ebd200b00176b63535adsm10381193plg.260.2022.11.09.23.37.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Nov 2022 23:37:59 -0800 (PST)
+Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
+        (envelope-from <martinet@pc-zest>)
+        id 1ot28M-001gKL-0J;
+        Thu, 10 Nov 2022 16:37:58 +0900
+Date:   Thu, 10 Nov 2022 16:37:47 +0900
+From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: tun: rebuild error handling in tun_get_user
-Date:   Thu, 10 Nov 2022 15:31:25 +0800
-Message-Id: <20221110073125.692259-1-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com
+Subject: Re: [RFC PATCH 1/2] dt-bindings: net: h4-bluetooth: add new bindings
+ for hci_h4
+Message-ID: <Y2yqSxldXPdmkCpW@atmark-techno.com>
+References: <CAL_JsqKCb2ZA+CLTVnGBMjp6zu0yw-rSFjWRg2S3hA7S6h-XEA@mail.gmail.com>
+ <6a4f7104-8b6f-7dcd-a7ac-f866956e31d6@linaro.org>
+ <Y2rsQowbtvOdmQO9@atmark-techno.com>
+ <Y2tW8EMmhTpCwitM@atmark-techno.com>
+ <20221109220005.GA2930253-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221109220005.GA2930253-robh@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The error handling in tun_get_user is very scattered.
-This patch unifies error handling, reduces duplication of code, and
-makes the logic clearer.
+Rob Herring wrote on Wed, Nov 09, 2022 at 04:00:05PM -0600:
+> Punting the issue to userspace is not a great solution...
 
-Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
----
-v1 -> v2:
-- fix problems based on Jakub Kicinski's comments
+I can definitely agree with that :)
 
-v0 -> v1:
-- rename tags
+Userspace has the advantage of being easy to shove ugly things under the
+rug, whereas I still have faint hope of keeping down the divergences we
+have with upstream kernel... But that's about it.
 
- drivers/net/tun.c | 65 +++++++++++++++++++++--------------------------
- 1 file changed, 29 insertions(+), 36 deletions(-)
+If we can work out a solution here I'll be very happy.
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 4bf2b268df4a..27109d1fd187 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1746,7 +1746,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	u32 rxhash = 0;
- 	int skb_xdp = 1;
- 	bool frags = tun_napi_frags_enabled(tfile);
--	enum skb_drop_reason drop_reason;
-+	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 
- 	if (!(tun->flags & IFF_NO_PI)) {
- 		if (len < sizeof(pi))
-@@ -1807,10 +1807,9 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		 * skb was created with generic XDP routine.
- 		 */
- 		skb = tun_build_skb(tun, tfile, from, &gso, len, &skb_xdp);
--		if (IS_ERR(skb)) {
--			dev_core_stats_rx_dropped_inc(tun->dev);
--			return PTR_ERR(skb);
--		}
-+		err = PTR_ERR_OR_ZERO(skb);
-+		if (err)
-+			goto drop;
- 		if (!skb)
- 			return total_len;
- 	} else {
-@@ -1835,13 +1834,9 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 					    noblock);
- 		}
- 
--		if (IS_ERR(skb)) {
--			if (PTR_ERR(skb) != -EAGAIN)
--				dev_core_stats_rx_dropped_inc(tun->dev);
--			if (frags)
--				mutex_unlock(&tfile->napi_mutex);
--			return PTR_ERR(skb);
--		}
-+		err = PTR_ERR_OR_ZERO(skb);
-+		if (err)
-+			goto drop;
- 
- 		if (zerocopy)
- 			err = zerocopy_sg_from_iter(skb, from);
-@@ -1851,27 +1846,14 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		if (err) {
- 			err = -EFAULT;
- 			drop_reason = SKB_DROP_REASON_SKB_UCOPY_FAULT;
--drop:
--			dev_core_stats_rx_dropped_inc(tun->dev);
--			kfree_skb_reason(skb, drop_reason);
--			if (frags) {
--				tfile->napi.skb = NULL;
--				mutex_unlock(&tfile->napi_mutex);
--			}
--
--			return err;
-+			goto drop;
- 		}
- 	}
- 
- 	if (virtio_net_hdr_to_skb(skb, &gso, tun_is_little_endian(tun))) {
- 		atomic_long_inc(&tun->rx_frame_errors);
--		kfree_skb(skb);
--		if (frags) {
--			tfile->napi.skb = NULL;
--			mutex_unlock(&tfile->napi_mutex);
--		}
--
--		return -EINVAL;
-+		err = -EINVAL;
-+		goto free_skb;
- 	}
- 
- 	switch (tun->flags & TUN_TYPE_MASK) {
-@@ -1887,9 +1869,8 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 				pi.proto = htons(ETH_P_IPV6);
- 				break;
- 			default:
--				dev_core_stats_rx_dropped_inc(tun->dev);
--				kfree_skb(skb);
--				return -EINVAL;
-+				err = -EINVAL;
-+				goto drop;
- 			}
- 		}
- 
-@@ -1931,11 +1912,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 			if (ret != XDP_PASS) {
- 				rcu_read_unlock();
- 				local_bh_enable();
--				if (frags) {
--					tfile->napi.skb = NULL;
--					mutex_unlock(&tfile->napi_mutex);
--				}
--				return total_len;
-+				goto unlock_frags;
- 			}
- 		}
- 		rcu_read_unlock();
-@@ -2008,6 +1985,22 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		tun_flow_update(tun, rxhash, tfile);
- 
- 	return total_len;
-+
-+drop:
-+	if (err != -EAGAIN)
-+		dev_core_stats_rx_dropped_inc(tun->dev);
-+
-+free_skb:
-+	if (!IS_ERR_OR_NULL(skb))
-+		kfree_skb_reason(skb, drop_reason);
-+
-+unlock_frags:
-+	if (frags) {
-+		tfile->napi.skb = NULL;
-+		mutex_unlock(&tfile->napi_mutex);
-+	}
-+
-+	return err ?: total_len;
- }
- 
- static ssize_t tun_chr_write_iter(struct kiocb *iocb, struct iov_iter *from)
+
+Rob Herring wrote on Wed, Nov 09, 2022 at 04:00:05PM -0600:
+> > This actually hasn't taken long to bite us: while the driver does work,
+> > we get error messages early on before the firmware is loaded.
+> > (In hindsight, I probably should have waited a few days before sending
+> > this...)
+> > 
+> > 
+> > My current workaround is to return EPROBE_DEFER until we can find a
+> > netdev with a known name in the init namespace, but that isn't really
+> > something I'd consider upstreamable for obvious reasons (interfaces can
+> > be renamed or moved to different namespaces so this is inherently racy
+> > and it's just out of place in BT code)
+> 
+> Can't you just try to access the BT h/w in some way and defer when that 
+> fails?
+
+This is just a serial link; I've tried poking at it a bit before the
+firmware is loaded but mostly never got any reply, or while the driver
+sometimes got garbage back at some point (baudrate not matching with
+fresh boot default?)
+Either way, no reply isn't great -- just waiting a few ms for reply or
+not is not my idea of good design...
+
+> Or perhaps use fw_devlink to create a dependency on the wifi node. I'm 
+> not sure offhand how exactly you do that with a custom property.
+
+That sounds great if we can figure how to do that!
+From what I can see this doesn't look possible to express in pure
+devicetree, but I see some code initializing a fwnode manually in a
+constructor function with fwnode_init and a fwnode_operations vector
+that has .add_links, which in turn could add a link.
+... My problem at this point would be that I currently load the wireless
+driver as a module as it's vendor provided out of tree... (it's loaded
+through its pci alias, I guess it's udev checking depmod infos? not
+familiar how that part of autoloading really works...)
+
+But that makes me think that rather than defining the bluetooth serdev
+in dts early, I could try to have the wireless driver create it once
+it's ready? hmm...
+
+Let me sleep on that a bit and have another look at both fwnode
+(fw_devlink) and dynamic device creation.
+
+
+Cheers,
 -- 
-2.37.2
+Dominique
+
 
