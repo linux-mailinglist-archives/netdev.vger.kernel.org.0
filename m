@@ -2,85 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D630624D80
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA365624D83
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbiKJWKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 17:10:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        id S231727AbiKJWKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 17:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiKJWKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:10:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A040545A13
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 14:10:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 401AE61E74
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 22:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 931FCC43143;
-        Thu, 10 Nov 2022 22:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668118215;
-        bh=n88NuntTkqOsfuBHVTwPMtTJfuYj5W2+XD9umvsCa1Q=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uqSxYtXHqOuqB0OEX///g2b2xBJ67LH4TVVObzG39AxnuOu4BJNBCrZuvS/MGorvM
-         fIWOFPdP/2lZGkRLptPsKyg6aE+xlX6PrCToBTwTA376SYJSBxx98d9BvhDVpASVN/
-         EYVhA8F88Pbc2s6JK/eUFkQ74rU8RKZ2oJRIysoIQ8TcqdcjCnBpYPyrwehOz6z8Lr
-         Fm6aQzjeqGlItirA//jhA98eMfVoXsuEIrnoq/vBHGV4HKKfMJ77yaqAztTMH12rnl
-         4fU8iLlx5XQGWUKjLDdXYEgeSieN8IL/AeP9OWa62jOfBoHSczz3dSTZqf84F71DeJ
-         Sd2YHvChndMOw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7AF50E270EF;
-        Thu, 10 Nov 2022 22:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231753AbiKJWKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:10:33 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C85C59878
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 14:10:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=RfwZ6/kvQhwtexGPka8PoJUX6RAmerHajGSW8W2jSeE=; b=6Z4Y+Dc6+y0KZ6OUXAStydOCOy
+        cJNFyaevqVnln2jVrbFdL29BHeKvw1VMd5YuGzDGjmoxLSz4KwMS+t0uFT/E5jM9G2ZdmAMaicgV5
+        k4/9zMVsy/+q+WnwMMptHuz4h0nJaag+S00pYboFP3DavnrcFcOKOJ+33BB8+s/m31/I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1otFkf-0024Ut-5P; Thu, 10 Nov 2022 23:10:25 +0100
+Date:   Thu, 10 Nov 2022 23:10:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 6/9] net: dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <Y2120XvGIZvP+TxM@lunn.ch>
+References: <20221108082330.2086671-1-lukma@denx.de>
+ <20221108082330.2086671-7-lukma@denx.de>
+ <Y2pd9CFMzI5UZSiD@lunn.ch>
+ <20221110163637.69a8490e@wsk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] devlink: Fix warning when unregistering a port
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166811821550.11680.621006502765862958.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Nov 2022 22:10:15 +0000
-References: <20221110085150.520800-1-idosch@nvidia.com>
-In-Reply-To: <20221110085150.520800-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, jiri@nvidia.com,
-        mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221110163637.69a8490e@wsk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 10 Nov 2022 10:51:50 +0200 you wrote:
-> When a devlink port is unregistered, its type is expected to be unset or
-> otherwise a WARNING is generated [1]. This was supposed to be handled by
-> cited commit by clearing the type upon 'NETDEV_PRE_UNINIT'.
+On Thu, Nov 10, 2022 at 04:36:37PM +0100, Lukasz Majewski wrote:
+> Hi Andrew,
 > 
-> The assumption was that no other events can be generated for the netdev
-> after this event, but this proved to be wrong. After the event is
-> generated, netdev_wait_allrefs_any() will rebroadcast a
-> 'NETDEV_UNREGISTER' until the netdev's reference count drops to 1. This
-> causes devlink to set the port type back to Ethernet.
+> > On Tue, Nov 08, 2022 at 09:23:27AM +0100, Lukasz Majewski wrote:
+> > > Different Marvell DSA switches support different size of max frame
+> > > bytes to be sent.
+> > > 
+> > > For example mv88e6185 supports max 1632B, which is now in-driver
+> > > standard value. On the other hand - mv88e6071 supports 2048 bytes.
+> > > 
+> > > As this value is internal and may be different for each switch IC
+> > > new entry in struct mv88e6xxx_info has been added to store it.
+> > > 
+> > > When the 'max_frame_size' is not defined (and hence zeroed by
+> > > the kvzalloc()) the default of 1632 bytes is used.  
+> > 
+> > I would prefer every entry states the value.
 > 
-> [...]
+> You mean to add it explicitly (i.e. for each supported switch version)
+> to the struct mv88e6xxx_ops ?
 
-Here is the summary with links:
-  - [net-next] devlink: Fix warning when unregistering a port
-    https://git.kernel.org/netdev/net-next/c/1fb22ed67195
+To the info structure. You added it for just your devices and left it
+to 0 for the rest. Rather than special case 0, always set the value
+and remove the special case. Maybe even -EINVAL if you find a 0 there.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+   Andrew
