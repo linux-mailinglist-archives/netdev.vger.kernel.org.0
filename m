@@ -2,164 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA35623C0F
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 07:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21064623C2D
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 07:56:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232632AbiKJGof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 01:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
+        id S232432AbiKJG4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 01:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbiKJGo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 01:44:27 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB0B2BB2C
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 22:44:26 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id 11so620651iou.0
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 22:44:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=xZWmNl+s6/+ylHCRYLaklnEjUiNAAHp+iYnGFNfbckI=;
-        b=jqGCrUUeORBVFvIhuhYXguszWe3kzU+uRddjl4wfCsd5FUpX9G3AsfXU8kW3L7niLM
-         Q/H0jOz6lwyvwZ2Xfrb/c4lk8K/cyY7wIQE9HtUxguZUd8g5cveme+DgbYoThaVmKRsA
-         ozuLwBCfYf0q90R/BMt+g/lHDbdmJKLD6Y29Y8YCNUO8QcS5f1oomHaWwfBNMq6oIU0i
-         2KTzdK9StUoDhDp9XSSvh5YAc8P+C3USV3URKUlDP7bSyWPGsvHZejCmphblhUYmD5nS
-         yPJkxpq54M1yCk+k395mmx9zQLuqT6t8ShFtF2ycBKKB68Pihjgj/oQc4tHMranNROxs
-         mREQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xZWmNl+s6/+ylHCRYLaklnEjUiNAAHp+iYnGFNfbckI=;
-        b=NmWwrfdwjG/hsKw0JktxBnQlgntg/8ShGBdywD/mR2TnadbKWa9J5HkmxcXeTdsgHg
-         OVnTuGxYLPr9F0Rm1uLh6S+BD7WuFXl9nRXwJTfPT24mpg0wjLzOu6M8jzq0e/55224B
-         qlcWvo7rirPH0lXBmmJfWAYdX+B/imXVHDFg6I8jvw5OHkvh3f0PBbMneob5/wD7PGRM
-         BmZK7LBiNU8RkNrJZgbELOQ9E2glaWDnRmxyHd9VRMKnXfEilDU95NglTXEqKAfGFdcb
-         EsNBfI+lKynijF9eZS+CTK4wt4/C3aoRqArYz6wI99jwfZ9y8ZA0IN0AXrHcHRtmG11G
-         14dA==
-X-Gm-Message-State: ACrzQf2kjBo/cxFz5A1NRcERLKGBjQdJle35h4YFxeV73p3cRFC4h4OP
-        RfgPs5rfTxyX5pzUaCsB7NyMP9kQNCIWCd+ABW3AOA==
-X-Google-Smtp-Source: AMsMyM5B7R9Y20dOwR14OA9MjHTec76QNVAumQfhA5+n1UZkrhpfHgz4ZoJdt+WYkbHF88uHjHXDl8kt0ZRQm4DVbxM=
-X-Received: by 2002:a6b:580e:0:b0:6c0:db74:7be1 with SMTP id
- m14-20020a6b580e000000b006c0db747be1mr2414409iob.92.1668062665318; Wed, 09
- Nov 2022 22:44:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-5-sdf@google.com>
- <636c4514917fa_13c168208d0@john.notmuch> <CAKH8qBvS9C5Z2L2dT4Ze-dz7YBSpw52VF6iZK5phcU2k4azN5A@mail.gmail.com>
- <636c555942433_13ef3820861@john.notmuch>
-In-Reply-To: <636c555942433_13ef3820861@john.notmuch>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 9 Nov 2022 22:44:14 -0800
-Message-ID: <CAKH8qBtiNiwbupP-jvs5+nSJRJS4DfZGEPsaYFdQcPKu+8G30g@mail.gmail.com>
-Subject: Re: [RFC bpf-next v2 04/14] veth: Support rx timestamp metadata for xdp
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
+        with ESMTP id S230254AbiKJG4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 01:56:41 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C681570B;
+        Wed,  9 Nov 2022 22:56:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668063400; x=1699599400;
+  h=from:to:cc:subject:date:message-id;
+  bh=Mwsy1axZV+PTNKiw6w+BLcbXyV1HVAU1m3qtT1Ss6a8=;
+  b=Cm0+HXoqkqYmKZ1uEeSxEj4e/0WNl1V4+NOmhADuQDn0ylRfLeB8W+6v
+   oLt0WMAL6XD6yZs/+H5NYz+U778Q6BKsuI55JT9rNRmNuapPOTz+uF1r3
+   kucBfQPqur6xtjwBqhBxottYYn/SwM/wgBc9nUUHRFq8/Zrsv3jgt4reR
+   jZOWdYg7MFf5JViwLzYBIMtCeCO8SARrVbBIg4f0tswr+daEmYFXn7kj+
+   tEQN+REkhOVtexaWstbzg13F318uvmBBssU+PupCRxET/sEYLB+Xq4/Aq
+   NHYLIHy8uMj2OrJsJD8Za49jqpdL1VGPtyUVAOjynVBlorPHbWjFalSWj
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="290950751"
+X-IronPort-AV: E=Sophos;i="5.96,153,1665471600"; 
+   d="scan'208";a="290950751"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 22:56:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="588061142"
+X-IronPort-AV: E=Sophos;i="5.96,153,1665471600"; 
+   d="scan'208";a="588061142"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 09 Nov 2022 22:56:39 -0800
+Received: from noorazur1-iLBPG12.png.intel.com (noorazur1-iLBPG12.png.intel.com [10.88.229.87])
+        by linux.intel.com (Postfix) with ESMTP id 6417A580C99;
+        Wed,  9 Nov 2022 22:56:35 -0800 (PST)
+From:   Noor Azura Ahmad Tarmizi 
+        <noor.azura.ahmad.tarmizi@linux.intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Song Yoong Siang <yoong.siang.song@intel.com>,
+        Mohd Faizal Abdul Rahim <faizal.abdul.rahim@intel.com>
+Subject: [PATCH net 1/1] net: stmmac: ensure tx function is not running in stmmac_xdp_release()
+Date:   Thu, 10 Nov 2022 14:45:52 +0800
+Message-Id: <20221110064552.22504-1-noor.azura.ahmad.tarmizi@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-4.3 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 9, 2022 at 5:35 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Stanislav Fomichev wrote:
-> > On Wed, Nov 9, 2022 at 4:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > >
-> > > Stanislav Fomichev wrote:
-> > > > xskxceiver conveniently setups up veth pairs so it seems logical
-> > > > to use veth as an example for some of the metadata handling.
-> > > >
-> > > > We timestamp skb right when we "receive" it, store its
-> > > > pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
-> > > > reach it from the BPF program.
-> > > >
-> > > > This largely follows the idea of "store some queue context in
-> > > > the xdp_buff/xdp_frame so the metadata can be reached out
-> > > > from the BPF program".
-> > > >
-> > >
-> > > [...]
-> > >
-> > > >       orig_data = xdp->data;
-> > > >       orig_data_end = xdp->data_end;
-> > > > +     vxbuf.skb = skb;
-> > > >
-> > > >       act = bpf_prog_run_xdp(xdp_prog, xdp);
-> > > >
-> > > > @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
-> > > >                       struct sk_buff *skb = ptr;
-> > > >
-> > > >                       stats->xdp_bytes += skb->len;
-> > > > +                     __net_timestamp(skb);
-> > >
-> > > Just getting to reviewing in depth a bit more. But we hit veth with lots of
-> > > packets in some configurations I don't think we want to add a __net_timestamp
-> > > here when vast majority of use cases will have no need for timestamp on veth
-> > > device. I didn't do a benchmark but its not free.
-> > >
-> > > If there is a real use case for timestamping on veth we could do it through
-> > > a XDP program directly? Basically fallback for devices without hw timestamps.
-> > > Anyways I need the helper to support hardware without time stamping.
-> > >
-> > > Not sure if this was just part of the RFC to explore BPF programs or not.
-> >
-> > Initially I've done it mostly so I can have selftests on top of veth
-> > driver, but I'd still prefer to keep it to have working tests.
->
-> I can't think of a use for it though so its just extra cycles. There
-> is a helper to read the ktime.
+From: Mohd Faizal Abdul Rahim <faizal.abdul.rahim@intel.com>
 
-As I mentioned in another reply, I wanted something SW-only to test
-this whole metadata story.
-The idea was:
-- veth rx sets skb->tstamp (otherwise it's 0 at this point)
-- veth kfunc to access rx_timestamp returns skb->tstamp
-- xsk bpf program verifies that the metadata is non-zero
-- the above shows end-to-end functionality with a software driver
+When stmmac_xdp_release() is called, there is a possibility that tx
+function is still running on other queues which will lead to tx queue
+timed out and reset adapter.
 
-> > Any way I can make it configurable? Is there some ethtool "enable tx
-> > timestamping" option I can reuse?
->
-> There is a -T option for timestamping in ethtool. There are also the
-> socket controls for it. So you could spin up a socket and use it.
-> But that is a bit broken as well I think it would be better if the
-> timestamp came from the receiving physical nic?
->
-> I have some mlx nics here and a k8s cluster with lots of veth
-> devices so I could think a bit more. I'm just not sure why I would
-> want the veth to timestamp things off hand?
+This commit ensure that tx function is not running xdp before release
+flow continue to run.
 
--T is for dumping only it seems?
+Fixes: ac746c8520d9 ("net: stmmac: enhance XDP ZC driver level switching performance")
+Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+Signed-off-by: Mohd Faizal Abdul Rahim <faizal.abdul.rahim@intel.com>
+Signed-off-by: Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-I'm probably using skb->tstamp in an unconventional manner here :-/
-Do you know if enabling timestamping on the socket, as you suggest,
-will get me some non-zero skb_hwtstamps with xsk?
-I need something to show how the kfunc can return this data and how
-can this data land in xdp prog / af_xdp chunk..
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 8273e6a175c8..6b43da78cdf0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -6548,6 +6548,9 @@ void stmmac_xdp_release(struct net_device *dev)
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 chan;
+ 
++	/* Ensure tx function is not running */
++	netif_tx_disable(dev);
++
+ 	/* Disable NAPI process */
+ 	stmmac_disable_all_queues(priv);
+ 
+-- 
+2.17.1
 
-
-> >
-> > > >                       skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
-> > > >                       if (skb) {
-> > > >                               if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
->
->
