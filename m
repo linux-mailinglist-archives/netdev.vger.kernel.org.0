@@ -2,131 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5BA8623AB2
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 04:54:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27881623ABD
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 05:00:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbiKJDyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 22:54:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S231789AbiKJEAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 23:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbiKJDyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 22:54:16 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A90A2036E;
-        Wed,  9 Nov 2022 19:54:15 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id l2so356518qtq.11;
-        Wed, 09 Nov 2022 19:54:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/WcFTxcQEwKckJIle9VyJm9hPlnq4Y+jRId8BIZQWIM=;
-        b=k00h82bCwMLL8WEPd6wNvDjen151hRuIRVvYUEGwGr1ycrar9UT8wJJYnrUq/SfT9c
-         EIGWcIKmZEUIinam/RrQaooxH0obVxXJR4kc+fsugf5nz6BIn+a/SCFcUcKxqR+9Qqg4
-         TY7U40UOBU2I1bjTK4ZJuTgBmpEZn4qh1qihAeqgdbO2p4rE3d1ClaKaFX+Gj21PeN/W
-         5l87zcsxMdvytje/q874VqbcKc8wgyS4Fy/xVzNe4wwsAki1jhkpvKnIBM4l+pca3vcQ
-         slmB9kV7k6aCgwuJXRO5rpbXJYoo32LDScC7jnhQhvOCr/mvFLZWcfVIkMk42WXAEGAg
-         qBfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/WcFTxcQEwKckJIle9VyJm9hPlnq4Y+jRId8BIZQWIM=;
-        b=JjhnPKXfG4/aQxzOywX9ylP/Zxi7UGWNaNFsh2P2d/GhwCrbiobpk6yZ2iEdOzb8+/
-         mmAp0IcSVFpvbhUegOeO00oPDW9Tqng/F2TiAIcN8v5Don7jjL0NFMWQMtoBPe93hPgB
-         ukVurnQTd/gadhwaVmMZjscAiAL5Zx30WI7zVhoevy1WGv+/m09IYpam4hYQwX8znCmj
-         aO0HtzC5+yRqvjzOThoUV2P/qAEVKihQf6EbCgVHs/VTzi/b0+zto7xOoX7jAAxw0ZuW
-         MU4VAS/4+eUaZyqixJZPCQSIxLeOIBBar8b7kjRDAixvGtK8aJWyoh8kHcd95KBUTd1V
-         42Dw==
-X-Gm-Message-State: ACrzQf28H72Pjvz2dlPQbMhU7CSnhgSVFzu/xuUqDkPgbgConvqr+HQg
-        vC0F/bqOifv00MDeGdCDqSs=
-X-Google-Smtp-Source: AMsMyM56+ZzdoVNapXufA8dB3pvhOvMhLMPnmCQGrHGzttxmy6rP4AlpW6LhpHPeDlblwQZz2lTjiw==
-X-Received: by 2002:ac8:789:0:b0:3a5:8186:2aff with SMTP id l9-20020ac80789000000b003a581862affmr18685056qth.188.1668052454137;
-        Wed, 09 Nov 2022 19:54:14 -0800 (PST)
-Received: from [192.168.1.102] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id bl42-20020a05620a1aaa00b006fa8299b4d5sm12180335qkb.100.2022.11.09.19.54.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Nov 2022 19:54:13 -0800 (PST)
-Message-ID: <e1640d1f-f143-7b0e-8adc-002e115ef7f1@gmail.com>
-Date:   Wed, 9 Nov 2022 19:54:10 -0800
+        with ESMTP id S229974AbiKJEAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 23:00:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDCB2496E
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 20:00:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 114B1B8208B
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D777C433B5;
+        Thu, 10 Nov 2022 04:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668052815;
+        bh=CPOjXDDk9AgeAG/mKa+JQg1iYQRa51eJl1b+WBMMiCs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZEmkZtKerI6zl6l9qpMt2LucHS8xR+T0uYf7v0wcuGVBYTyMpKnHazhHHRVKIVxJG
+         z7ZR/uhuZHZ4gYBQCtlp0N1/stkt9U3anO7M+suUafBJAAG+5GoRvQmY1dzcg/RYd1
+         lHeuUXXcJ04qG0V+E2Da0sDCRUkwhvlYeopwBTcHFlKmF86gZl9Suc7Ve6JjPUkrQ2
+         SfimWpwMj8Y0EDjZayXDyA/r+p4QIdsr47UV8iUXizUmzSyZBYQSNm6YPptZiwr+/4
+         ppmw06UdUR0qm1ooomvp+U3S+M/q9xFLDg3/00nMqOcUaZprOhckihkYdsyFFzEyk6
+         ogmTlWSmeJe6Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7AE20E21EEC;
+        Thu, 10 Nov 2022 04:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v2] net: phy: marvell: add sleep time after
- enabling the loopback bit
-Content-Language: en-US
-To:     Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, tee.min.tan@intel.com,
-        muhammad.husaini.zulkifli@intel.com, hong.aun.looi@intel.com
-References: <20221108074005.28229-1-aminuddin.jamaluddin@intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221108074005.28229-1-aminuddin.jamaluddin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] cxgb4vf: shut down the adapter when
+ t4vf_update_port_info() failed in cxgb4vf_open()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166805281549.8987.7985515761353959392.git-patchwork-notify@kernel.org>
+Date:   Thu, 10 Nov 2022 04:00:15 +0000
+References: <20221109012100.99132-1-shaozhengchao@huawei.com>
+In-Reply-To: <20221109012100.99132-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, rajur@chelsio.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        arjun@chelsio.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On 11/7/2022 11:40 PM, Aminuddin Jamaluddin wrote:
-> Sleep time is added to ensure the phy to be ready after loopback
-> bit was set. This to prevent the phy loopback test from failing.
+On Wed, 9 Nov 2022 09:21:00 +0800 you wrote:
+> When t4vf_update_port_info() failed in cxgb4vf_open(), resources applied
+> during adapter goes up are not cleared. Fix it. Only be compiled, not be
+> tested.
 > 
-> ---
-> V1: https://patchwork.kernel.org/project/netdevbpf/patch/20220825082238.11056-1-aminuddin.jamaluddin@intel.com/
-> ---
+> Fixes: 18d79f721e0a ("cxgb4vf: Update port information in cxgb4vf_open()")
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 > 
-> Fixes: 020a45aff119 ("net: phy: marvell: add Marvell specific PHY loopback")
-> Cc: <stable@vger.kernel.org> # 5.15.x
-> Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-> Signed-off-by: Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
-> ---
->   drivers/net/phy/marvell.c | 16 +++++++++-------
->   1 file changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> index a3e810705ce2..860610ba4d00 100644
-> --- a/drivers/net/phy/marvell.c
-> +++ b/drivers/net/phy/marvell.c
-> @@ -2015,14 +2015,16 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
->   		if (err < 0)
->   			return err;
->   
-> -		/* FIXME: Based on trial and error test, it seem 1G need to have
-> -		 * delay between soft reset and loopback enablement.
-> -		 */
-> -		if (phydev->speed == SPEED_1000)
-> -			msleep(1000);
-> +		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-> +				 BMCR_LOOPBACK);
->   
-> -		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-> -				  BMCR_LOOPBACK);
-> +		if (!err) {
-> +			/* It takes some time for PHY device to switch
-> +			 * into/out-of loopback mode.
-> +			 */
-> +			msleep(1000);
+> [...]
 
-Is not there a better indication than waiting a full second to ensure 
-the PHY exited loopback?
+Here is the summary with links:
+  - [net] cxgb4vf: shut down the adapter when t4vf_update_port_info() failed in cxgb4vf_open()
+    https://git.kernel.org/netdev/net/c/c6092ea1e6d7
+
+You are awesome, thank you!
 -- 
-Florian
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
