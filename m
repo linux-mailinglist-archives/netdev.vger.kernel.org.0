@@ -2,139 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98FAA624A10
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 20:02:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04497624A1D
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 20:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiKJTCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 14:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S231153AbiKJTDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 14:03:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiKJTCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 14:02:42 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A505B31EE1
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 11:02:41 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3735edd4083so24269787b3.0
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 11:02:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=+GkBRanQJoPDlLARop/W3q/va8TContehPM8t17+Cu4=;
-        b=OwnvuwfUfm6HTNHe+CU6HfTmJ2R3ljA0rbkzDZCw3SoUD5nFg+V0Bc1OZ8WMP2NtYH
-         HwbBYlijGo6KMBoCb3MVl/VG57/drwnYhvOcPQwxEN10KgRx2yS0lKXsMat04P4QhUfb
-         rpX/1pqKckc3wicWrYiaM7bVrCv5KOO+0AYmNn9kc4HttdM8vJsDf1w1CsRDrq8FJo2A
-         mf8Pv43nD4bjS/cZIYJIXa2FGPX2Dh7HxnIPSYQjr7zLT6NyKbfn2QUBmTDd+5VQytx6
-         yGkE7+VPY1L4+ufABFH571Qdivmrctfupr+5aTmY5XaFxHyNsd+QH9c/7cJHev+tN7E6
-         2lGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+GkBRanQJoPDlLARop/W3q/va8TContehPM8t17+Cu4=;
-        b=cFG7y8ipQSHsl5S9HA/guXrzH1hKpC4lKh7x+e3bpFGGLx46XF0B/OejJFKkcfIeF/
-         pJ3NOeMKGL2xkyxTGLTogGCzwo4lU3462ctGAMgDAtHkt9lOb574FzVFSR3OGxOsieNJ
-         YeuRYn1bZm7XNxsJyKN1ew6eNxn6FUl2mYGiz48A4VltD9fSdz6HPh+J854UNTexjCT5
-         32p8Lx443XVsKFTMAd28Y4UJqY+rHwnYbtYA3gA6HrOc0QlOY2KGhURtokl+IbDVm5DT
-         OsoB5edmcgVArK8EutogLAA0t63JXxTdG0mQxb8H7dmOBt18wDnaac18W8rZK6QQf2a8
-         2rxA==
-X-Gm-Message-State: ACrzQf1JuoenUageuMgYgB6VCZdhUR7vX4W5shhHTmvg8H1650fMq9WZ
-        WHhSrKip4FZWUqwrqrS+1Bsfp3qEXLBqTQ==
-X-Google-Smtp-Source: AMsMyM5GRA9+XFDCb4aaGMfK4/HK88ibirGozwVoz4W5v9S9nT7w2yeSZNB/dMaQcFndYPzPRWi7+SqJK3yCmQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:5216:0:b0:373:6d43:2edd with SMTP id
- g22-20020a815216000000b003736d432eddmr1155114ywb.441.1668106960915; Thu, 10
- Nov 2022 11:02:40 -0800 (PST)
-Date:   Thu, 10 Nov 2022 19:02:39 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221110190239.3531280-1-edumazet@google.com>
-Subject: [PATCH net-next] tcp: tcp_wfree() refactoring
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231207AbiKJTDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 14:03:45 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DFAC12
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 11:03:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=16Tw1zPwIJX0LOjxziI4qGFph7FkOhTOdwaCIO6qXhc=; b=Ci8sKtKRR96YW4AlfISS6ZISVP
+        7J6V8MjZeQ+lW/W0SVO60006w0t1ouR6FhmFEao20UfaCgnkum0PnVBMtutqjzZG1MUc+1+U7Af6P
+        tvP6etw/8vaJ+3nut6l3P0gdza7vXTnbPRQiRK0H57q5fuTkY2LuEr+0+oGRwfxICSrM=;
+Received: from p200300daa72ee10c199752172ce6dd7a.dip0.t-ipconnect.de ([2003:da:a72e:e10c:1997:5217:2ce6:dd7a] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1otCpw-0010K3-CZ; Thu, 10 Nov 2022 20:03:40 +0100
+Message-ID: <472709c2-a58e-0af0-59f6-7ff504e38d44@nbd.name>
+Date:   Thu, 10 Nov 2022 20:03:40 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v2 00/12] Multiqueue + DSA untag support + fixes
+ for mtk_eth_soc
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20221109163426.76164-1-nbd@nbd.name>
+ <Y21H22Geh0a0pcta@shell.armlinux.org.uk>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <Y21H22Geh0a0pcta@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use try_cmpxchg() (instead of cmpxchg()) in a more readable way.
+Hi Russell,
 
-oval = smp_load_acquire(&sk->sk_tsq_flags);
-do {
-	...
-} while (!try_cmpxchg(&sk->sk_tsq_flags, &oval, nval));
+On 10.11.22 19:50, Russell King (Oracle) wrote:
+> Hi Felix,
+> 
+> Not directly related to your patch series, but as you seem to be
+> tinkering with the driver, it seems appropriate to ask. Are you
+> using hardware that uses RGMII? If not, do you know anyone who is?
+> 
+> It would be good to fix mtk_mac_config(), specifically the use
+> of state->speed therein - see the FIXME that I placed in that
+> function. Honestly, I think this code is broken, since if the
+> RGMII interface speed changes, the outer if() won't allow this
+> code path to be re-executed (since mac->interface will be the
+> same as state->interface for speed changes.)
+The only device I'm aware of which uses RGMII has the RGMII port 
+connected to a switch with no proper upstream driver support - no speed 
+changes expected there.
 
-Reduce indentation level.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_output.c | 31 ++++++++++++++-----------------
- 1 file changed, 14 insertions(+), 17 deletions(-)
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index d1cb1ecf8f216dc810ca08ea35ae752fd19ba706..894410dc9293680d6944a1ad9186f2ab504734eb 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1139,6 +1139,8 @@ void tcp_wfree(struct sk_buff *skb)
- 	struct sock *sk = skb->sk;
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	unsigned long flags, nval, oval;
-+	struct tsq_tasklet *tsq;
-+	bool empty;
- 
- 	/* Keep one reference on sk_wmem_alloc.
- 	 * Will be released by sk_free() from here or tcp_tasklet_func()
-@@ -1155,28 +1157,23 @@ void tcp_wfree(struct sk_buff *skb)
- 	if (refcount_read(&sk->sk_wmem_alloc) >= SKB_TRUESIZE(1) && this_cpu_ksoftirqd() == current)
- 		goto out;
- 
--	for (oval = READ_ONCE(sk->sk_tsq_flags);; oval = nval) {
--		struct tsq_tasklet *tsq;
--		bool empty;
--
-+	oval = smp_load_acquire(&sk->sk_tsq_flags);
-+	do {
- 		if (!(oval & TSQF_THROTTLED) || (oval & TSQF_QUEUED))
- 			goto out;
- 
- 		nval = (oval & ~TSQF_THROTTLED) | TSQF_QUEUED;
--		nval = cmpxchg(&sk->sk_tsq_flags, oval, nval);
--		if (nval != oval)
--			continue;
-+	} while (!try_cmpxchg(&sk->sk_tsq_flags, &oval, nval));
- 
--		/* queue this socket to tasklet queue */
--		local_irq_save(flags);
--		tsq = this_cpu_ptr(&tsq_tasklet);
--		empty = list_empty(&tsq->head);
--		list_add(&tp->tsq_node, &tsq->head);
--		if (empty)
--			tasklet_schedule(&tsq->tasklet);
--		local_irq_restore(flags);
--		return;
--	}
-+	/* queue this socket to tasklet queue */
-+	local_irq_save(flags);
-+	tsq = this_cpu_ptr(&tsq_tasklet);
-+	empty = list_empty(&tsq->head);
-+	list_add(&tp->tsq_node, &tsq->head);
-+	if (empty)
-+		tasklet_schedule(&tsq->tasklet);
-+	local_irq_restore(flags);
-+	return;
- out:
- 	sk_free(sk);
- }
--- 
-2.38.1.431.g37b22c650d-goog
-
+- Felix
