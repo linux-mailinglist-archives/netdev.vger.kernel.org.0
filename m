@@ -2,106 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFB16623F5B
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 11:04:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8557623F6E
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 11:07:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiKJKEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 05:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
+        id S229665AbiKJKH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 05:07:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiKJKEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 05:04:41 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD166AECA
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 02:04:39 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N7HVv4Dd4zmVqt;
-        Thu, 10 Nov 2022 18:04:23 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 10 Nov 2022 18:04:37 +0800
-Message-ID: <2476fb5b-8fc5-f661-691d-04f3b874256a@huawei.com>
-Date:   Thu, 10 Nov 2022 18:04:36 +0800
+        with ESMTP id S229505AbiKJKH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 05:07:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91376B388;
+        Thu, 10 Nov 2022 02:07:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 633E460FC6;
+        Thu, 10 Nov 2022 10:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6E8FC433D6;
+        Thu, 10 Nov 2022 10:07:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668074874;
+        bh=yKo18MLv1Kh2OixwnjVwSGYwd7sLWJ25ItPKPlgzx9I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SZtQhYDEwALzdKfsPW9YBV5e+H8QJFFrasktVwJjfy++UcpwUgIt9Uyc8w38NTEpu
+         7/oCPr44PpTLNHEzHFP6W1DekXTqQpS8dhFukUUkH+c+37IS4PWHl/9L9sowcuU23l
+         W3aI/G8asx0SS/0ZvjzgJMOHGelZhDMeH5ANcgZoXOmI4JV6I2hQEqzj9jl2w2JdN+
+         QqoFvVoi6qkeeigQGHaiHzN2S949Ax6SJ/mYnwxWsOoRVkN+r5Z9fVelg9vLteeaG7
+         T7aMd/Ba8ny/7U2Gdp4mm1b2F760qkwmz0/c4Utdl44E6UsqDMpqGEzq5jJGRWVk3L
+         GzCfbeeBBPIBA==
+Date:   Thu, 10 Nov 2022 12:07:43 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Veerasenareddy Burru <vburru@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lironh@marvell.com, aayarekar@marvell.com, sedara@marvell.com,
+        sburla@marvell.com, linux-doc@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 0/8] Add octeon_ep_vf driver
+Message-ID: <Y2zNbwDqhnOqzc1V@unreal>
+References: <20221108204209.23071-1-vburru@marvell.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net] net: liquidio: release resources when liquidio driver
- open failed
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <dchickles@marvell.com>,
-        <sburla@marvell.com>, <fmanlunas@marvell.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <richardcochran@gmail.com>,
-        <rvatsavayi@caviumnetworks.com>, <gregkh@linuxfoundation.org>,
-        <tseewald@gmail.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>
-References: <20221110013116.270258-1-shaozhengchao@huawei.com>
- <Y2zII4SL4tlwfVi/@unreal>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <Y2zII4SL4tlwfVi/@unreal>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221108204209.23071-1-vburru@marvell.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/11/10 17:45, Leon Romanovsky wrote:
-> On Thu, Nov 10, 2022 at 09:31:16AM +0800, Zhengchao Shao wrote:
->> When liquidio driver open failed, it doesn't release resources. Compile
->> tested only.
->>
->> Fixes: 5b07aee11227 ("liquidio: MSIX support for CN23XX")
->> Fixes: dbc97bfd3918 ("net: liquidio: Add missing null pointer checks")
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> ---
->>   .../net/ethernet/cavium/liquidio/lio_main.c   | 40 ++++++++++++++++---
->>   1 file changed, 34 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
->> index d312bd594935..713689cf212c 100644
->> --- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
->> +++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
->> @@ -1795,12 +1795,15 @@ static int liquidio_open(struct net_device *netdev)
->>   	ifstate_set(lio, LIO_IFSTATE_RUNNING);
->>   
->>   	if (OCTEON_CN23XX_PF(oct)) {
->> -		if (!oct->msix_on)
->> -			if (setup_tx_poll_fn(netdev))
->> -				return -1;
->> +		if (!oct->msix_on) {
->> +			ret = setup_tx_poll_fn(netdev);
->> +			if (ret)
->> +				goto err_poll;
->> +		}
->>   	} else {
->> -		if (setup_tx_poll_fn(netdev))
->> -			return -1;
->> +		ret = setup_tx_poll_fn(netdev);
->> +		if (ret)
->> +			goto err_poll;
->>   	}
+On Tue, Nov 08, 2022 at 12:41:51PM -0800, Veerasenareddy Burru wrote:
+> This driver implements networking functionality of Marvell's Octeon
+> PCI Endpoint NIC VF.
 > 
-> Instead of this hairy code, you can squeeze everything into one if:
+> This driver support following devices:
+>  * Network controller: Cavium, Inc. Device b203
+>  * Network controller: Cavium, Inc. Device b403
 > 
-> if (!OCTEON_CN23XX_PF(oct) || (OCTEON_CN23XX_PF(oct) && oct->msix_on)) {
->    ret = setup_tx_poll_fn(netdev);
->    if (ret)
->       ,,,
-> 
-> Thanks
-Hi Leon：
-	Thank you for your suggestion. I will modify it in V2.
+> Veerasenareddy Burru (8):
+>   octeon_ep_vf: Add driver framework and device initialization
+>   octeon_ep_vf: add hardware configuration APIs
+>   octeon_ep_vf: add VF-PF mailbox communication.
+>   octeon_ep_vf: add Tx/Rx ring resource setup and cleanup
+>   octeon_ep_vf: add support for ndo ops
+>   octeon_ep_vf: add Tx/Rx processing and interrupt support
+>   octeon_ep_vf: add ethtool support
+>   octeon_ep_vf: update MAINTAINERS
 
-Zhengchao Shao
+You should first sort this submission.
+https://lore.kernel.org/all/Y2i%2FbdCAgQa95du8@unreal/
