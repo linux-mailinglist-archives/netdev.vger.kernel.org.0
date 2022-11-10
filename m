@@ -2,80 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAEFD6243DC
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 15:10:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4745A624403
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 15:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbiKJOKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 09:10:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44894 "EHLO
+        id S230510AbiKJOPX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Nov 2022 09:15:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiKJOKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 09:10:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A08BC3D
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 06:09:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668089390;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4XYurhd29LYrxY7oxBugU/CFN4NBPGNybaFxAiF1pgs=;
-        b=Z2UN0DwyXSB2iq3elisnhmSIjuPk3HmHf1vKrN+t6Iu0nFBYm6e/Zsy+zNLBOKP38zX37C
-        kvYbjzisXHG7S0MeBzyYgtnRqIHfeIkcgjX/T1AiWydXNHmS2P8OyBiegiLOs4qdBjJIya
-        IPJDKBMzCY62E6qW/14k1X1RP6P4cwc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        with ESMTP id S230470AbiKJOPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 09:15:04 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5836F366
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 06:14:52 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-620-HSyVkxo6OQGIbYTiO4TBFA-1; Thu, 10 Nov 2022 09:09:47 -0500
-X-MC-Unique: HSyVkxo6OQGIbYTiO4TBFA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+ us-mta-282-tYU5zWHKOVyRvehJvvCKmQ-1; Thu, 10 Nov 2022 09:14:48 -0500
+X-MC-Unique: tYU5zWHKOVyRvehJvvCKmQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5322B833A09;
-        Thu, 10 Nov 2022 14:09:47 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A81C40C83DD;
-        Thu, 10 Nov 2022 14:09:46 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <Y20A33ya17l/MqxU@lunn.ch>
-References: <Y20A33ya17l/MqxU@lunn.ch> <166807341463.2904467.10141806642379634063.stgit@warthog.procyon.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        kernel test robot <lkp@intel.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] rxrpc: Fix missing IPV6 #ifdef
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 95FB5381A731;
+        Thu, 10 Nov 2022 14:14:47 +0000 (UTC)
+Received: from p1.redhat.com (unknown [10.39.193.54])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8C4E54A9256;
+        Thu, 10 Nov 2022 14:14:46 +0000 (UTC)
+From:   Stefan Assmann <sassmann@kpanic.de>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        patryk.piotrowski@intel.com, mateusz.palczewski@intel.com,
+        sassmann@kpanic.de
+Subject: [PATCH net] iavf: remove INITIAL_MAC_SET to allow gARP to work properly
+Date:   Thu, 10 Nov 2022 15:14:44 +0100
+Message-Id: <20221110141444.1308237-1-sassmann@kpanic.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3080952.1668089385.1@warthog.procyon.org.uk>
-Date:   Thu, 10 Nov 2022 14:09:45 +0000
-Message-ID: <3080953.1668089385@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kpanic.de
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> wrote:
+IAVF_FLAG_INITIAL_MAC_SET prevents waiting on iavf_is_mac_set_handled()
+the first time the MAC is set. This breaks gratuitous ARP because the
+MAC address has not been updated yet when the gARP packet is sent out.
 
-> > +#ifdef CONFIG_AF_RXRPC_IPV6
-> >  	return ipv6_icmp_error(sk, skb, err, port, info, payload);
-> > +#endif
-> 
-> Can this be if (IS_ENABLED(CONFIG_AF_RXRPC_IPV6) {} rather than
-> #ifdef? It gives better build testing.
+Current behaviour:
+$ echo 1 > /sys/class/net/ens4f0/device/sriov_numvfs
+iavf 0000:88:02.0: MAC address: ee:04:19:14:ec:ea
+$ ip addr add 192.168.1.1/24 dev ens4f0v0
+$ ip link set dev ens4f0v0 up
+$ echo 1 > /proc/sys/net/ipv4/conf/ens4f0v0/arp_notify
+$ ip link set ens4f0v0 addr 00:11:22:33:44:55
+07:23:41.676611 ee:04:19:14:ec:ea > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.1 tell 192.168.1.1, length 28
 
-Sure.  Does it actually make that much of a difference?  I guess the
-declaration is there even if IPV6 is disabled.
+With IAVF_FLAG_INITIAL_MAC_SET removed:
+$ echo 1 > /sys/class/net/ens4f0/device/sriov_numvfs
+iavf 0000:88:02.0: MAC address: 3e:8a:16:a2:37:6d
+$ ip addr add 192.168.1.1/24 dev ens4f0v0
+$ ip link set dev ens4f0v0 up
+$ echo 1 > /proc/sys/net/ipv4/conf/ens4f0v0/arp_notify
+$ ip link set ens4f0v0 addr 00:11:22:33:44:55
+07:28:01.836608 00:11:22:33:44:55 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.1 tell 192.168.1.1, length 28
 
-David
+Fixes: 35a2443d0910 ("iavf: Add waiting for response from PF in set mac")
+Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+---
+ drivers/net/ethernet/intel/iavf/iavf.h      | 1 -
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 8 --------
+ 2 files changed, 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 3f6187c16424..0d1bab4ac1b0 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -298,7 +298,6 @@ struct iavf_adapter {
+ #define IAVF_FLAG_QUEUES_DISABLED		BIT(17)
+ #define IAVF_FLAG_SETUP_NETDEV_FEATURES		BIT(18)
+ #define IAVF_FLAG_REINIT_MSIX_NEEDED		BIT(20)
+-#define IAVF_FLAG_INITIAL_MAC_SET		BIT(23)
+ /* duplicates for common code */
+ #define IAVF_FLAG_DCB_ENABLED			0
+ 	/* flags for admin queue service task */
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 258bdf8906dd..5fc47ca1b17c 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -1087,12 +1087,6 @@ static int iavf_set_mac(struct net_device *netdev, void *p)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* If this is an initial set MAC during VF spawn do not wait */
+-	if (adapter->flags & IAVF_FLAG_INITIAL_MAC_SET) {
+-		adapter->flags &= ~IAVF_FLAG_INITIAL_MAC_SET;
+-		return 0;
+-	}
+-
+ 	ret = wait_event_interruptible_timeout(adapter->vc_waitqueue,
+ 					       iavf_is_mac_set_handled(netdev, addr->sa_data),
+ 					       msecs_to_jiffies(2500));
+@@ -2605,8 +2599,6 @@ static void iavf_init_config_adapter(struct iavf_adapter *adapter)
+ 		ether_addr_copy(netdev->perm_addr, adapter->hw.mac.addr);
+ 	}
+ 
+-	adapter->flags |= IAVF_FLAG_INITIAL_MAC_SET;
+-
+ 	adapter->tx_desc_count = IAVF_DEFAULT_TXD;
+ 	adapter->rx_desc_count = IAVF_DEFAULT_RXD;
+ 	err = iavf_init_interrupt_scheme(adapter);
+-- 
+2.37.3
 
