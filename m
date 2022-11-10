@@ -2,125 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 586E1624DA6
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:33:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EBDC624DAB
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231521AbiKJWdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 17:33:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
+        id S231396AbiKJWeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 17:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbiKJWdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:33:12 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEA656554;
-        Thu, 10 Nov 2022 14:33:11 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id e7-20020a17090a77c700b00216928a3917so6179632pjs.4;
-        Thu, 10 Nov 2022 14:33:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8gY/OzJoPnw06nvF/ax1dzsyttFIg/d8ctj7MuL258E=;
-        b=M+4u4lcZ0g8mC7ch0OT4x5PLDybVoticZj3bC8HjO0tdR+1iL639F8CnsHSzkCO75v
-         xq+TTSX9X81HBms18pplxiyp73xjplqMJyC8NOu2cLnB+Pv1TUaLwYu92VpnUs1lta57
-         +TKvsOynQ7nkn3rHnIAm08/WyKt7pjRXcLsbA2pWt6xXpSEOX4/1uLNz7Wm6CXiKhBkP
-         Q1kBOIwCb5EEKVJsYP/jf2GoNVtIfEk3aiwiZ/RMufstZm3QXYX5POHepKlBZQ8O25yN
-         ifLSDAFG1y3pzyqP+q0ANwOqz7EBlx2rvM9koKUZAD5x934+tzva5HcE4lZvf0Q5eIQ+
-         mjgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8gY/OzJoPnw06nvF/ax1dzsyttFIg/d8ctj7MuL258E=;
-        b=NaxemziIDgA7cIDlyhp8yS/Gy3Vklm5aDHurpmGCvnWd0STmNruzw3BxsoBV1MJJxC
-         n8tFl43GraN3rqmhlBcP6tIpvGDUNVgtFGo+i8txmfzVjQB4KbTdjq60D5I2c1K0NHb7
-         u5ZoI6l8ObwT9VhHtHlw3RDbRc7iW4kBfL+EPAF7HmQ2hHCUgZ9DkVbhumVL7c0C1zcn
-         I/qzOjo6L1sWKFDPhemNcFjRtpardepaxuqHTuGWgcL3e9mjIENNf49XJuh7YbTQg3ML
-         4VRAQ9fx0kl7uIYB3loX680yncrTbq5AifwTsaieby2r1L/1zryam8rCMdtzrPpCG/+I
-         HpPQ==
-X-Gm-Message-State: ACrzQf2GFSFUT9JcySnmIYqt1v2CTHsS6k2sLBMzYGEhDPaDUhViy5G9
-        K/v2RKrp1v0RJTzx0Y7oZLY=
-X-Google-Smtp-Source: AMsMyM4uxqy0CAq22wSngxYpEuQrP/za0C3jljiPdLH6FvdkUTfDrtGBxiG84ErK0aCiPHpUkUU35g==
-X-Received: by 2002:a17:90a:8503:b0:212:9b3f:dee5 with SMTP id l3-20020a17090a850300b002129b3fdee5mr2317401pjn.62.1668119590803;
-        Thu, 10 Nov 2022 14:33:10 -0800 (PST)
-Received: from google.com ([2620:15c:9d:2:2eb5:1c59:61e8:a36d])
-        by smtp.gmail.com with ESMTPSA id l5-20020a170903120500b00186727e5f5csm164375plh.248.2022.11.10.14.33.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 14:33:09 -0800 (PST)
-Date:   Thu, 10 Nov 2022 14:33:06 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Balamanikandan Gunasundar 
-        <balamanikandan.gunasundar@microchip.com>,
-        ludovic.desroches@microchip.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, 3chas3@gmail.com,
-        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [PATCH] mmc: atmel-mci: Convert to gpio descriptors
-Message-ID: <Y218Itfc4wp3XZvt@google.com>
-References: <20221109043845.16617-1-balamanikandan.gunasundar@microchip.com>
- <CAPDyKFo+FUAZ=1Vu4+503ch5_Wrw47BanTjdB=7J8XhRwczyqg@mail.gmail.com>
- <CACRpkdYeJ0NuJr_RF10oMAEuhYTBfaLfHoZ=b3A2f4BqXkvzOQ@mail.gmail.com>
+        with ESMTP id S229559AbiKJWeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:34:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EE0B87B
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 14:34:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD8C7B823C0
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 22:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 172C5C433C1;
+        Thu, 10 Nov 2022 22:34:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668119654;
+        bh=/LBO/Ecl/HBHUQekg90BnBlHjLR8MIB4sQs4U/vL0OM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HiPN62IW1tjUAKmutyq4u/G8QBlheUwPxS/xwshRQiIDKYGd4K30PaUsX1t9vbI/m
+         zvKYb7YEwlZ1+ojPhnZJvHz4Qv8xz/RqACzdUoZOSdOjM/3OexZFFto9FY8rEif2Jd
+         mYqUnaOw2lFBhNpdlKqXLuC7SNNBIDi7q1t2D7Fa3l7YwC9ujq1HOR1LfdeyN8Qxo9
+         kJbWflFBw7f4ZWt/tdwzWBLsjlxnkV6ZaMB2qw4GiOtvZvuNRk47NY52ojNofgXukX
+         /JupD633byhH2u1568kgh4Sm7g4XLUlp9iOlEUa3RVgZuKTynSQ5LqmPmSIJr4txJp
+         4DFzV9KuGjlSg==
+Date:   Thu, 10 Nov 2022 14:34:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH net-next v2] ethtool: add netlink based get rxfh support
+Message-ID: <20221110143413.58f107c2@kernel.org>
+In-Reply-To: <eba940d8-a2da-9a7e-2802-fbac680b7df6@intel.com>
+References: <20221104234244.242527-1-sudheer.mogilappagari@intel.com>
+        <20221107182549.278e0d7a@kernel.org>
+        <IA1PR11MB626686775A30F79E8AE85905E4019@IA1PR11MB6266.namprd11.prod.outlook.com>
+        <20221109164603.1fd508ca@kernel.org>
+        <eba940d8-a2da-9a7e-2802-fbac680b7df6@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACRpkdYeJ0NuJr_RF10oMAEuhYTBfaLfHoZ=b3A2f4BqXkvzOQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Wed, Nov 09, 2022 at 03:48:32PM +0100, Linus Walleij wrote:
-> On Wed, Nov 9, 2022 at 1:39 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> > On Wed, 9 Nov 2022 at 05:39, Balamanikandan Gunasundar
-> (...)
-> > > --- a/drivers/mmc/host/atmel-mci.c
-> > > +++ b/drivers/mmc/host/atmel-mci.c
-> > > @@ -19,7 +19,8 @@
-> > >  #include <linux/module.h>
-> > >  #include <linux/of.h>
-> > >  #include <linux/of_device.h>
-> > > -#include <linux/of_gpio.h>
-> > > +#include <linux/irq.h>
-> > > +#include <linux/gpio/consumer.h>
+On Thu, 10 Nov 2022 16:08:04 -0600 Samudrala, Sridhar wrote:
+> Can we use QGRP as a prefix to indicate that these are per-queue group parameters
+> and not restricted to RSS related parameters?
 > 
-> This is nice, but higher up the driver also #include <linux/gpio.h>
-> so delete that line too, <linux/gpio/consumer.h> should be enough.
+>    QGRP_CONTEXT
+>    QGRP_RSS_HFUNC
+>    QGRP_RSS_KEY
+>    QGRP_RSS_INDIR_TABLE
 > 
-> > > -                       of_get_named_gpio(cnp, "cd-gpios", 0);
-> > > +                       devm_gpiod_get_from_of_node(&pdev->dev, cnp,
-> > > +                                                   "cd-gpios",
-> > > +                                                   0, GPIOD_IN, "cd-gpios");
-> (...)
-> > >                 pdata->slot[slot_id].wp_pin =
-> > > -                       of_get_named_gpio(cnp, "wp-gpios", 0);
-> > > +                       devm_gpiod_get_from_of_node(&pdev->dev, cnp,
-> > > +                                                   "wp-gpios",
-> > > +                                                   0, GPIOD_IN, "wp-gpios");
-> 
-> Hm. Dmitry is trying to get rid of of_get_named_gpio() I think.
-> 
-> But I suppose we can migrate to fwnode later.
+> In future, we would like to add per-queue group parameters like
+>    QGRP_INLINE_FLOW_STEERING (Round robin flow steering of TCP flows)
 
-I'd much rather we changed this right away to
-
-	devm_fwnode_gpiod_get(&pdev->dev, of_fwnode_handle(cnp),
-			      "wp", GPIOD_IN, "wp-gpios");
-
-and not added new users of devm_gpiod_get_from_of_node() which is there
-only 2 left.
-
-Thanks!
-
--- 
-Dmitry
+The RSS context thing is a pretty shallow abstraction, I don't think we
+should be extending it into "queue groups" or whatnot. We'll probably
+need some devlink objects at some point (rate configuration?) and
+locking order is devlink > rtnl, so spawning things from within ethtool
+will be a pain :S
