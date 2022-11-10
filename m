@@ -2,125 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 185C862385D
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 01:46:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E90FB623888
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiKJAqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 19:46:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42100 "EHLO
+        id S231764AbiKJBCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 20:02:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232091AbiKJAqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 19:46:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7671181C
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 16:46:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7550861D2D
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 00:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDC3C433C1;
-        Thu, 10 Nov 2022 00:46:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668041164;
-        bh=sk06nkcIyrf8CCu/3TlkkeBEOVj3VPtGK0CJ/tR47LA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BSzKzt69pbylQHaCmiNSyKAm4Dd1dG1ed886uB/SVbVftga5uZtuI0Sye0JKwVoEm
-         02EdnUuzo1+zg0ZxubvWFv5tkIX3p4NWQQbH9cwiCk0gZ2C49BCRiGNwNROuOmq57h
-         6xLDt2xUTlS1PO40flHXEh5egcUHZHQsjX4I9KdisYAGW0QZdCWhAIzTEk+ylzAWQg
-         f8n9BYPYD+cTHoSF3IjjW5gU3UHIDAUL5WOAdIKE1CF60E24dGOP1AgJXj4nw7G5vI
-         28BjyuHjkLinliJqocT/fjMSzuWzhM84+tq1JSmKz74aGiWQ6gt6xHfbOpdrnB1wNX
-         hbJnOmsYyuSGA==
-Date:   Wed, 9 Nov 2022 16:46:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH net-next v2] ethtool: add netlink based get rxfh support
-Message-ID: <20221109164603.1fd508ca@kernel.org>
-In-Reply-To: <IA1PR11MB626686775A30F79E8AE85905E4019@IA1PR11MB6266.namprd11.prod.outlook.com>
-References: <20221104234244.242527-1-sudheer.mogilappagari@intel.com>
-        <20221107182549.278e0d7a@kernel.org>
-        <IA1PR11MB626686775A30F79E8AE85905E4019@IA1PR11MB6266.namprd11.prod.outlook.com>
+        with ESMTP id S229784AbiKJBCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:02:12 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B545FF6
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 17:02:12 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id d123so199093iof.7
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 17:02:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=1CUpF8sPjSKa1qNYh255GV9ZgKn7MltcaT4JcHEFhGY=;
+        b=MNdu2pMdm9Q/07uvCc/zUIAyVQxalRVb7Hlr94A0mceH+Li1TWOT/WBQNzhUBXY6CY
+         s+KNuB9k1qAkQC6XzPqX2+NXByTm72czY3m2UbOt9yqRBmFCYC5Y1hbEMWbg+ZvttHZT
+         jIPsSRcstPdI8PT0q1NSd4oK1ACUzG93mJ+qSVvSKpX37nonJE3EY7MIExhw9FqKDc+d
+         +aXbpxtqVnpnDmQRN5W1wEMjDjJn69ttp35I1tTjcLo9G0lLmdgOhE0lXC7TJfu5HAK/
+         AnDWp5DJzP76Y0pSK0ABJX1VU4Ie2IzW1n1PZkLJlmNRow+mKg1xjpDwV03HfnOrcTBp
+         oy1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1CUpF8sPjSKa1qNYh255GV9ZgKn7MltcaT4JcHEFhGY=;
+        b=4SRRRWwkAcisV8UxbM7MdHYWBwQadvFGt6v4lOtyV/vmEW9UQ5sQpeAoB8exQLvOkj
+         yOPbE/2ERbHhDUtP0SccExfflmVZXp4KDfw69WXXV5Ct6nWx8mmlUyrhhHYsyA2A3Q4D
+         HdnR/hRXJ7Ss+WVfycY5UJ3xn+sV6OQ4hqiGO1LzEmJlzZgvR6uvMZSxHI8apOISNrcl
+         a6E1jbDdRh+SayLYcYZUTr/g7rUh1jvwJsUaDqGz8y5GC148XgPCPWafpNH1GoZ5HI+g
+         cV3V4wadtliibXm6TT9yqX/obIdhup6gS1caiaBQSTARXWGme17RBugeq/ICiCli0q8Y
+         4ooA==
+X-Gm-Message-State: ANoB5pkIfbIQk4ynpjzSQitdS+3U8zeEB4me6dmbp8Ebtn6XEaSmtS+A
+        XdhjzT6gWvdmSod5Fk1ICvY84GYZM+1gafu44abySQ==
+X-Google-Smtp-Source: AA0mqf5iU++nhS9XQpgQ+bbgvvR9S0yg/vQEYa81M7IXz1j3U6aRC34YmQ61ZR1XSRw9bTVDQWqMV96gLsvOhOr1jVw=
+X-Received: by 2002:a02:ca49:0:b0:375:c385:d846 with SMTP id
+ i9-20020a02ca49000000b00375c385d846mr1901422jal.84.1668042131419; Wed, 09 Nov
+ 2022 17:02:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-5-sdf@google.com>
+ <636c4514917fa_13c168208d0@john.notmuch>
+In-Reply-To: <636c4514917fa_13c168208d0@john.notmuch>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 9 Nov 2022 17:02:00 -0800
+Message-ID: <CAKH8qBvS9C5Z2L2dT4Ze-dz7YBSpw52VF6iZK5phcU2k4azN5A@mail.gmail.com>
+Subject: Re: [RFC bpf-next v2 04/14] veth: Support rx timestamp metadata for xdp
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
+        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Nov 2022 00:26:23 +0000 Mogilappagari, Sudheer wrote:
-> > Can we describe in more detail which commands are reimplemented?
-> > Otherwise calling the command RXFH makes little sense.
-> > We may be better of using RSS in the name in the first place.  
-> 
-> This is the ethtool command being reimplemented.
-> ethtool -x|--show-rxfh-indir DEVNAME   Show Rx flow hash indirection table and/or RSS hash key
->         [ context %d ]
-> 
-> Picked RXFH based on existing function names and ethtool_rxfh
-> structure. If it needs to change, how about RSS_CTX or just RSS ? 
+On Wed, Nov 9, 2022 at 4:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Stanislav Fomichev wrote:
+> > xskxceiver conveniently setups up veth pairs so it seems logical
+> > to use veth as an example for some of the metadata handling.
+> >
+> > We timestamp skb right when we "receive" it, store its
+> > pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
+> > reach it from the BPF program.
+> >
+> > This largely follows the idea of "store some queue context in
+> > the xdp_buff/xdp_frame so the metadata can be reached out
+> > from the BPF program".
+> >
+>
+> [...]
+>
+> >       orig_data = xdp->data;
+> >       orig_data_end = xdp->data_end;
+> > +     vxbuf.skb = skb;
+> >
+> >       act = bpf_prog_run_xdp(xdp_prog, xdp);
+> >
+> > @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+> >                       struct sk_buff *skb = ptr;
+> >
+> >                       stats->xdp_bytes += skb->len;
+> > +                     __net_timestamp(skb);
+>
+> Just getting to reviewing in depth a bit more. But we hit veth with lots of
+> packets in some configurations I don't think we want to add a __net_timestamp
+> here when vast majority of use cases will have no need for timestamp on veth
+> device. I didn't do a benchmark but its not free.
+>
+> If there is a real use case for timestamping on veth we could do it through
+> a XDP program directly? Basically fallback for devices without hw timestamps.
+> Anyways I need the helper to support hardware without time stamping.
+>
+> Not sure if this was just part of the RFC to explore BPF programs or not.
 
-I vote for just RSS.
+Initially I've done it mostly so I can have selftests on top of veth
+driver, but I'd still prefer to keep it to have working tests.
+Any way I can make it configurable? Is there some ethtool "enable tx
+timestamping" option I can reuse?
 
-> > > +  ``ETHTOOL_A_RXFH_HEADER``            nested  reply header
-> > > +  ``ETHTOOL_A_RXFH_RSS_CONTEXT``       u32     RSS context number
-> > > +  ``ETHTOOL_A_RXFH_INDIR_SIZE``        u32     RSS Indirection table size  
-> > > +  ``ETHTOOL_A_RXFH_KEY_SIZE``          u32     RSS hash key size
-> > > +  ``ETHTOOL_A_RXFH_HFUNC``             u32     RSS hash func  
-> > 
-> > This is u8 in the implementation, please make the implementation u32 as
-> > documented.  
-> 
-> This should have been u8 instead. Will make it consistent.
-
-u32 is better, data sizes in netlink are rounded up to 4 bytes anyway,
-so u8 is 1 usable byte and 3 bytes of padding. Much better to use u32.
-
-> > > +static int rxfh_prepare_data(const struct ethnl_req_info *req_base,
-> > > +			     struct ethnl_reply_data *reply_base,
-> > > +			     struct genl_info *info)
-> > > +{
-> > > +	struct rxfh_reply_data *data = RXFH_REPDATA(reply_base);
-> > > +	struct net_device *dev = reply_base->dev;
-> > > +	struct ethtool_rxfh *rxfh = &data->rxfh;
-> > > +	struct ethnl_req_info req_info = {};
-> > > +	struct nlattr **tb = info->attrs;
-> > > +	u32 indir_size = 0, hkey_size = 0;
-> > > +	const struct ethtool_ops *ops;
-> > > +	u32 total_size, indir_bytes;
-> > > +	bool mod = false;
-> > > +	u8 dev_hfunc = 0;
-> > > +	u8 *hkey = NULL;
-> > > +	u8 *rss_config;
-> > > +	int ret;
-> > > +
-> > > +	ops = dev->ethtool_ops;
-> > > +	if (!ops->get_rxfh)
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	ret = ethnl_parse_header_dev_get(&req_info,
-> > > +					 tb[ETHTOOL_A_RXFH_HEADER],
-> > > +					 genl_info_net(info), info->extack,
-> > > +					 true);  
-> > 
-> > Why are you parsing again?
-> > 
-> > You hook in ethnl_default_doit() and ethnl_default_dumpit(), which
-> > should call the parsing for you already.
-> 
-> My bad. Had used other netlink get command implementation as reference
-> and overlooked request_ops->parse_request. 
-
-Right, as you probably discovered the core ethtool code can do a lot of
-work for you if the command doesn't have special requirements and you
-can rely on the default doit / dumpit handling.
+> >                       skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+> >                       if (skb) {
+> >                               if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
