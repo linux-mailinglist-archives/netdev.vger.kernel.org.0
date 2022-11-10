@@ -2,77 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C817D624E3B
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 00:12:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7830624E4E
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 00:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbiKJXL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 18:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
+        id S231156AbiKJXPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 18:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiKJXL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 18:11:58 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D03943AE6;
-        Thu, 10 Nov 2022 15:11:57 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id k22so3399270pfd.3;
-        Thu, 10 Nov 2022 15:11:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=x80ZZc/Wf3yAutJdYCgWTYBKGl0jGfOIhCPrMmx8pRg=;
-        b=HM9lXFoVXPgK/z1zKH9CfW63R7ZV4nAM7lnrSAJx5SCzx9/rLZajmS5s/1MVtXV0ID
-         yu1LJrNAd0v25XgvdmyTRXCRYXoe1m4/ZmLcHc9CYOD9vB2iT5vdKecIW6u+30dUvdxI
-         CQystNJKuunmep0z2LQVDpmNnKg9tDY4YRSDu4J5kRqTrZtU+l2Qkryc1IHxNrGXwXOP
-         ASW7G+tDbqywzXbZrytnnf3rONIINzMgt+STkNKBibY5Og8W1DGwM6whGlsf14SBgMpj
-         WWlcy3s6T6L1pqXmDv4F9QZylgLI4wd8hynCu62T/NQ8XDzz2hQBTj97Q0AeqdlfTKYV
-         BWIA==
+        with ESMTP id S229636AbiKJXPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 18:15:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F60CE087
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:14:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668122059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YA1B4F3JHrLMlEJmAH0blzoYzQuaQ9SskbALpJV/L2Q=;
+        b=eYa9w4VLuO2TElji25HRZy+oBHP8eWqYlDS2tKBJGED0kyoVCIGPLOA2Ug3s1PvaL2ALlk
+        gQH0lTidl63e7VGbSuDy58mbBK0iAJg6362B5RP3g6GewcbIIqSor/91iyjfA7NLc2f2Ax
+        ItmGUgc80gwweLAwOyXliqWqAyvdmCs=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-295-5yVbcckWNluOjkAhTYj9IA-1; Thu, 10 Nov 2022 18:14:18 -0500
+X-MC-Unique: 5yVbcckWNluOjkAhTYj9IA-1
+Received: by mail-ed1-f69.google.com with SMTP id z9-20020a05640235c900b0046358415c4fso2438472edc.9
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:14:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=x80ZZc/Wf3yAutJdYCgWTYBKGl0jGfOIhCPrMmx8pRg=;
-        b=qsYsgrnDdzZw03qQEaGa4/pKImnLAilKoc41G8jfmOxkGM91IYvvQH6LKDUEREn2sC
-         GjdP1QDl2WHGuY0mV3OLV1wVoAT8RVdaTq4UIv4/9c25y6B3I8cKdp+65L6TsIujzsL9
-         xhJWwUWVyR6o0Rua93cGlIgPPKfKvRdcn3hiO20ubvNoXkz1nLbvike9EXjz7qkgOoB7
-         4nqiOiHTq8PNkYKuSAPcBHXjUOgy2ufREAdlZWfPavH6Jg4RNR7bSig93cSDlObJ2O0c
-         WZm/EVFrY3YEUofqi+3FlVTeIPOBG1GkkKUTh8I8asjAFC3l8dCXF7ltdAVgWRznrgec
-         eriA==
-X-Gm-Message-State: ACrzQf1aPSr/Ea+1TuLVMOgXroBOCmFuVLKDF6KL5GV0+BLEL4eruB4W
-        hFB7adP+IcLLrzIjRs9ZqlY=
-X-Google-Smtp-Source: AMsMyM66fjbsYc2MzEIl3O2RMyRXA7cGKUf/4HIqq1/3W9tXm6eeUIySQa2bxexW5/Q3PdiqMkEtNg==
-X-Received: by 2002:a05:6a00:726:b0:56c:3fbb:7eb1 with SMTP id 6-20020a056a00072600b0056c3fbb7eb1mr3981518pfm.7.1668121916462;
-        Thu, 10 Nov 2022 15:11:56 -0800 (PST)
-Received: from localhost ([98.97.42.169])
-        by smtp.gmail.com with ESMTPSA id u8-20020a654c08000000b00439f027789asm154868pgq.59.2022.11.10.15.11.55
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YA1B4F3JHrLMlEJmAH0blzoYzQuaQ9SskbALpJV/L2Q=;
+        b=5CFu7a3Vg25AmOfp9Aaz+gYYoNB8CzleH599a40T28Q/9GG/g7IgXuy24lGy2mVeXx
+         fNJu+4rEE8DY/iq8/Zi6dKF785QW+U+E4yqHDA2a38FaMmZy0ZzDvG2ZHBA5M4Vf1QBI
+         kGnJUqMKYfKIrNCuoI/SOdU7fOjMQHz+WKD850t/GpH/x2RzigbzIOoUlLhzTLr/SqpZ
+         nWG2Er+4nsxEd+BtFa27jKtDCD0vbgkT9xbjAiMtf/Q/VuV5hwQgMZnTH5m9scSAOGYN
+         VwURBDR9nVc1PiQKgzgaA6Xz9xVO+7ovf+KdbXXWdHJywzzwrrvqqNWFm2WuOuec+X7m
+         iHnA==
+X-Gm-Message-State: ACrzQf0+q2x+O58ndkMBefgKLqZ7UZpJ2gXnWTZ/n6kqdtxPwBXnaJt4
+        K4vkaQauBxqPRqeRKaWJrQf09wbEcgV5/jtqCjAPcliXTG+iGMRktC3+qI/fDLo8ktou5BQijyM
+        1JGVWP1+sSY2/Z7vW
+X-Received: by 2002:a17:906:9610:b0:781:d0c1:4434 with SMTP id s16-20020a170906961000b00781d0c14434mr4158656ejx.756.1668122056977;
+        Thu, 10 Nov 2022 15:14:16 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM5M827Mm0onMuO+GRMDe4mDoRlhE6cRZFk+sbnuX3ylS5Bplm4nsOuGHj+qfQXPy2VWaCsfgQ==
+X-Received: by 2002:a17:906:9610:b0:781:d0c1:4434 with SMTP id s16-20020a170906961000b00781d0c14434mr4158639ejx.756.1668122056644;
+        Thu, 10 Nov 2022 15:14:16 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b14-20020aa7dc0e000000b00462e1d8e914sm370531edu.68.2022.11.10.15.14.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 15:11:55 -0800 (PST)
-Date:   Thu, 10 Nov 2022 15:11:54 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@meta.com>,
-        John Fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
-        daniel@iogearbox.net, kuba@kernel.org, davem@davemloft.net,
-        ast@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, sdf@google.com
-Message-ID: <636d853a8d59_15505d20826@john.notmuch>
-In-Reply-To: <636d82206e7c_154599208b0@john.notmuch>
-References: <20221109215242.1279993-1-john.fastabend@gmail.com>
- <20221109215242.1279993-2-john.fastabend@gmail.com>
- <0697cf41-eaa0-0181-b5c0-7691cb316733@meta.com>
- <636c5f21d82c1_13fe5e208e9@john.notmuch>
- <aeb8688f-7848-84d2-9502-fad400b1dcdc@meta.com>
- <636d82206e7c_154599208b0@john.notmuch>
-Subject: Re: [1/2 bpf-next] bpf: expose net_device from xdp for metadata
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Thu, 10 Nov 2022 15:14:16 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 497E0782747; Fri, 11 Nov 2022 00:14:15 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
+ metadata into skb context
+In-Reply-To: <CAKH8qBsfzYmQ9SZXhFetf_zQPNmE_L=_H_rRxJEwZzNbqtoKJA@mail.gmail.com>
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+ <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+ <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
+ <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev> <87leokz8lq.fsf@toke.dk>
+ <5a23b856-88a3-a57a-2191-b673f4160796@linux.dev>
+ <CAKH8qBsfVOoR1MNAFx3uR9Syoc0APHABsf97kb8SGpK+T1qcew@mail.gmail.com>
+ <32f81955-8296-6b9a-834a-5184c69d3aac@linux.dev>
+ <CAKH8qBuLMZrFmmi77Qbt7DCd1w9FJwdeK5CnZTJqHYiWxwDx6w@mail.gmail.com>
+ <87y1siyjf6.fsf@toke.dk>
+ <CAKH8qBsfzYmQ9SZXhFetf_zQPNmE_L=_H_rRxJEwZzNbqtoKJA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 11 Nov 2022 00:14:15 +0100
+Message-ID: <87o7texv08.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,170 +100,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend wrote:
-> Yonghong Song wrote:
-> > 
-> > 
-> > On 11/9/22 6:17 PM, John Fastabend wrote:
-> > > Yonghong Song wrote:
-> > >>
-> > >>
-> > >> On 11/9/22 1:52 PM, John Fastabend wrote:
-> > >>> Allow xdp progs to read the net_device structure. Its useful to extract
-> > >>> info from the dev itself. Currently, our tracing tooling uses kprobes
-> > >>> to capture statistics and information about running net devices. We use
-> > >>> kprobes instead of other hooks tc/xdp because we need to collect
-> > >>> information about the interface not exposed through the xdp_md structures.
-> > >>> This has some down sides that we want to avoid by moving these into the
-> > >>> XDP hook itself. First, placing the kprobes in a generic function in
-> > >>> the kernel is after XDP so we miss redirects and such done by the
-> > >>> XDP networking program. And its needless overhead because we are
-> > >>> already paying the cost for calling the XDP program, calling yet
-> > >>> another prog is a waste. Better to do everything in one hook from
-> > >>> performance side.
-> > >>>
-> > >>> Of course we could one-off each one of these fields, but that would
-> > >>> explode the xdp_md struct and then require writing convert_ctx_access
-> > >>> writers for each field. By using BTF we avoid writing field specific
-> > >>> convertion logic, BTF just knows how to read the fields, we don't
-> > >>> have to add many fields to xdp_md, and I don't have to get every
-> > >>> field we will use in the future correct.
-> > >>>
-> > >>> For reference current examples in our code base use the ifindex,
-> > >>> ifname, qdisc stats, net_ns fields, among others. With this
-> > >>> patch we can now do the following,
-> > >>>
-> > >>>           dev = ctx->rx_dev;
-> > >>>           net = dev->nd_net.net;
-> > >>>
-> > >>> 	uid.ifindex = dev->ifindex;
-> > >>> 	memcpy(uid.ifname, dev->ifname, NAME);
-> > >>>           if (net)
-> > >>> 		uid.inum = net->ns.inum;
-> > >>>
-> > >>> to report the name, index and ns.inum which identifies an
-> > >>> interface in our system.
-> > >>
-> > >> In
-> > >> https://lore.kernel.org/bpf/ad15b398-9069-4a0e-48cb-4bb651ec3088@meta.com/
-> > >> Namhyung Kim wanted to access new perf data with a helper.
-> > >> I proposed a helper bpf_get_kern_ctx() which will get
-> > >> the kernel ctx struct from which the actual perf data
-> > >> can be retrieved. The interface looks like
-> > >> 	void *bpf_get_kern_ctx(void *)
-> > >> the input parameter needs to be a PTR_TO_CTX and
-> > >> the verifer is able to return the corresponding kernel
-> > >> ctx struct based on program type.
-> > >>
-> > >> The following is really hacked demonstration with
-> > >> some of change coming from my bpf_rcu_read_lock()
-> > >> patch set https://lore.kernel.org/bpf/20221109211944.3213817-1-yhs@fb.com/
-> > >>
-> > >> I modified your test to utilize the
-> > >> bpf_get_kern_ctx() helper in your test_xdp_md.c.
-> > >>
-> > >> With this single helper, we can cover the above perf
-> > >> data use case and your use case and maybe others
-> > >> to avoid new UAPI changes.
-> > > 
-> > > hmm I like the idea of just accessing the xdp_buff directly
-> > > instead of adding more fields. I'm less convinced of the
-> > > kfunc approach. What about a terminating field *self in the
-> > > xdp_md. Then we can use existing convert_ctx_access to make
-> > > it BPF inlined and no verifier changes needed.
-> > > 
-> > > Something like this quickly typed up and not compiled, but
-> > > I think shows what I'm thinking.
-> > > 
-> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > index 94659f6b3395..10ebd90d6677 100644
-> > > --- a/include/uapi/linux/bpf.h
-> > > +++ b/include/uapi/linux/bpf.h
-> > > @@ -6123,6 +6123,10 @@ struct xdp_md {
-> > >          __u32 rx_queue_index;  /* rxq->queue_index  */
-> > >   
-> > >          __u32 egress_ifindex;  /* txq->dev->ifindex */
-> > > +       /* Last xdp_md entry, for new types add directly to xdp_buff and use
-> > > +        * BTF access. Reading this gives BTF access to xdp_buff.
-> > > +        */
-> > > +       __bpf_md_ptr(struct xdp_buff *, self);
-> > >   };
-> > 
-> > This would be the first instance to have a kernel internal struct
-> > in a uapi struct. Not sure whether this is a good idea or not.
-> 
-> We can use probe_read from some of the socket progs already but
-> sure.
-> 
-> > 
-> > >   
-> > >   /* DEVMAP map-value layout
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index bb0136e7a8e4..547e9576a918 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -9808,6 +9808,11 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
-> > >                  *insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
-> > >                                        offsetof(struct net_device, ifindex));
-> > >                  break;
-> > > +       case offsetof(struct xdp_md, self):
-> > > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, self),
-> > > +                                     si->dst_reg, si->src_reg,
-> > > +                                     offsetof(struct xdp_buff, 0));
-> > > +               break;
-> > >          }
-> > >   
-> > >          return insn - insn_buf;
-> > > 
-> > > Actually even that single insn conversion is a bit unnessary because
-> > > should be enough to just change the type to the correct BTF_ID in the
-> > > verifier and omit any instructions. But it wwould be a bit confusing
-> > > for C side. Might be a good use for passing 'cast' info through to
-> > > the verifier as an annotation so it could just do the BTF_ID cast for
-> > > us without any insns.
-> > 
-> > We cannot change the context type to BTF_ID style which will be a
-> > uapi violation.
-> 
-> I don't think it would be uapi violation if user asks for it
-> by annotating the cast.
-> 
-> > 
-> > The helper I proposed can be rewritten by verifier as
-> > 	r0 = r1
-> > so we should not have overhead for this.
-> 
-> Agree other than reading the bpf asm where its a bit odd.
-> 
-> > It cover all program types with known uapi ctx -> kern ctx
-> > conversions. So there is no need to change existing uapi structs.
-> > Also I except that most people probably won't use this kfunc.
-> > The existing uapi fields might already serve most needs.
-> 
-> Maybe not sure missing some things we need.
-> 
-> > 
-> > Internally we have another use case to access some 'struct sock' fields
-> > but the uapi struct only has struct bpf_sock. Currently it is advised
-> > to use bpf_probe_read_kernel(...) to get the needed information.
-> > The proposed helper should help that too without uapi change.
-> 
-> Yep.
-> 
-> I'm fine doing it with bpf_get_kern_ctx() did you want me to code it
-> the rest of the way up and test it?
-> 
-> .John
+Skipping to the last bit:
 
-Related I think. We also want to get kernel variable net_namespace_list,
-this points to the network namespace lists. Based on above should
-we do something like,
+>> >> >    } else {
+>> >> >      use kfuncs
+>> >> >    }
+>> >> >
+>> >> > 5. Support the case where we keep program's metadata and kernel's
+>> >> > xdp_to_skb_metadata
+>> >> >    - skb_metadata_import_from_xdp() will "consume" it by mem-moving the
+>> >> > rest of the metadata over it and adjusting the headroom
+>> >>
+>> >> I was thinking the kernel's xdp_to_skb_metadata is always before the program's
+>> >> metadata.  xdp prog should usually work in this order also: read/write headers,
+>> >> write its own metadata, call bpf_xdp_metadata_export_to_skb(), and return
+>> >> XDP_PASS/XDP_REDIRECT.  When it is XDP_PASS, the kernel just needs to pop the
+>> >> xdp_to_skb_metadata and pass the remaining program's metadata to the bpf-tc.
+>> >>
+>> >> For the kernel and xdp prog, I don't think it matters where the
+>> >> xdp_to_skb_metadata is.  However, the xdp->data_meta (program's metadata) has to
+>> >> be before xdp->data because of the current data_meta and data comparison usage
+>> >> in the xdp prog.
+>> >>
+>> >> The order of the kernel's xdp_to_skb_metadata and the program's metadata
+>> >> probably only matters to the userspace AF_XDP.  However, I don't see how AF_XDP
+>> >> supports the program's metadata now.  afaict, it can only work now if there is
+>> >> some sort of contract between them or the AF_XDP currently does not use the
+>> >> program's metadata.  Either way, we can do the mem-moving only for AF_XDP and it
+>> >> should be a no op if there is no program's metadata?  This behavior could also
+>> >> be configurable through setsockopt?
+>> >
+>> > Agreed on all of the above. For now it seems like the safest thing to
+>> > do is to put xdp_to_skb_metadata last to allow af_xdp to properly
+>> > locate btf_id.
+>> > Let's see if Toke disagrees :-)
+>>
+>> As I replied to Martin, I'm not sure it's worth the complexity to
+>> logically split the SKB metadata from the program's own metadata (as
+>> opposed to just reusing the existing data_meta pointer)?
+>
+> I'd gladly keep my current requirement where it's either or, but not both :-)
+> We can relax it later if required?
 
-  void *bpf_get_kern_var(enum var_id);
+So the way I've been thinking about it is simply that the skb_metadata
+would live in the same place at the data_meta pointer (including
+adjusting that pointer to accommodate it), and just overriding the
+existing program metadata, if any exists. But looking at it now, I guess
+having the split makes it easier for a program to write its own custom
+metadata and still use the skb metadata. See below about the ordering.
 
-then,
+>> However, if we do, the layout that makes most sense to me is putting the
+>> skb metadata before the program metadata, like:
+>>
+>> --------------
+>> | skb_metadata
+>> --------------
+>> | data_meta
+>> --------------
+>> | data
+>> --------------
+>>
+>> Not sure if that's what you meant? :)
+>
+> I was suggesting the other way around: |custom meta|skb_metadata|data|
+> (but, as Martin points out, consuming skb_metadata in the kernel
+> becomes messier)
+>
+> af_xdp can check whether skb_metdata is present by looking at data -
+> offsetof(struct skb_metadata, btf_id).
+> progs that know how to handle custom metadata, will look at data -
+> sizeof(skb_metadata)
+>
+> Otherwise, if it's the other way around, how do we find skb_metadata
+> in a redirected frame?
+> Let's say we have |skb_metadata|custom meta|data|, how does the final
+> program find skb_metadata?
+> All the progs have to agree on the sizeof(tc/custom meta), right?
 
-  net_ns_list = bpf_get_kern_var(__btf_net_namesapce_list);
+Erm, maybe I'm missing something here, but skb_metadata is fixed size,
+right? So if the "skb_metadata is present" flag is set, we know that the
+sizeof(skb_metadata) bytes before the data_meta pointer contains the
+metadata, and if the flag is not set, we know those bytes are not valid
+metadata.
 
-would get us a ptr to the list? The other thought was to put it in the
-xdp_md but from above seems better idea to get it through helper.
+For AF_XDP, we'd need to transfer the flag as well, and it could apply
+the same logic (getting the size from the vmlinux BTF).
+
+By this logic, the BTF_ID should be the *first* entry of struct
+skb_metadata, since that will be the field AF_XDP programs can find
+right off the bat, no?
+
+-Toke
+
