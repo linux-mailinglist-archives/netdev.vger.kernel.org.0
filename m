@@ -2,104 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C242D624C5F
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 22:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB60624C8C
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 22:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbiKJVDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 16:03:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S232083AbiKJVHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 16:07:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231652AbiKJVDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 16:03:39 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F987679
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 13:03:35 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id a13so5101353edj.0
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 13:03:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:subject:from:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=r9gMkdtFnyPxEjPFLz48iTcMLciEjOZhiZGD96W3iMM=;
-        b=ATJQLi5RugV0cN3jDGazFMfONPdUrk1C9bVryqgqSVz1fZKI1O/LDhlgHyqXAJN0i4
-         xEsgcc1KvzZG38fzdEGPSLXucFtk2sWYa34xnjLxz0P7Z+hszuJvAii9+tyJiZYF7k9K
-         utfDU5RS89QcS5gCTOdJwKfZN6jvOKJoDJV2vb3zpGhfpYuTn5FR/Z5fZEYmAUvX5Sx7
-         LDFchMdBSrYlIYRfbKaL/AZiDdxyQz0hvj6ggdYTeodyqaVMxDoY+uZzICtX1iVzQjhf
-         Ezq257w+1Io+VRVbcD1hch1fCXzawffofeLb6P7x5MXFFXzqv6+ZC91ypFK6Ww+3R/GU
-         yBMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:subject:from:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=r9gMkdtFnyPxEjPFLz48iTcMLciEjOZhiZGD96W3iMM=;
-        b=GhHEhG4VKZDz3eHQdv3KQyanCk/Q6OwJKgCmO8Zx9MWkHmdseeQ9CVnc6wNHfv+HfK
-         pGfY82Iwf2x7IQUk5Rv2zAJKxNtNuVTxTkQ3fvCYmp8/MXolzFbZruLfeEVkNanF0FS7
-         QEyp38gUcbZRNR9xBtpDE6Rvbm70qGO/aOjzbA9rz0fh8NbeO/LVaE8Sqlxbinwwo7n8
-         lhHFXl8z953y7gmQX++gFeNLei2z/NubHCL0UlgDzWQLP/0laa5Nj0S2wJUUfb2I6LJp
-         hZu5xc3dxcoC9WyHyJ4ieA+N8FEbY8i9IQg1QYx4Iw/aJS1Im9ZJmEu4qe4777Skc56V
-         T+Sg==
-X-Gm-Message-State: ACrzQf2IKEs0PZV/wdRkAETvt0yvdZn3jeORgKW5c8lYfX750tl3xGDL
-        fwpE/PYH8JMJmgtEfoGR2M5Ys/FjDwo=
-X-Google-Smtp-Source: AMsMyM4aULE3QvAPA+IgTxRb5NJjEoyxfLotLo9J/MK5h+0q9aBj2uZu6xgiTwtuqBZyprGjokjyPQ==
-X-Received: by 2002:a05:6402:1544:b0:459:3c89:53d3 with SMTP id p4-20020a056402154400b004593c8953d3mr3576523edx.25.1668114213818;
-        Thu, 10 Nov 2022 13:03:33 -0800 (PST)
-Received: from [192.168.169.11] ([82.197.179.206])
-        by smtp.gmail.com with ESMTPSA id b25-20020a17090630d900b0078d38cda2b1sm103651ejb.202.2022.11.10.13.03.33
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Nov 2022 13:03:33 -0800 (PST)
-Message-ID: <8c3c6939-ec3d-012d-f686-ddcf5812c21b@gmail.com>
-Date:   Thu, 10 Nov 2022 22:03:32 +0100
+        with ESMTP id S230303AbiKJVH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 16:07:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0C857B5B;
+        Thu, 10 Nov 2022 13:07:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B41461E60;
+        Thu, 10 Nov 2022 21:07:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39865C433D6;
+        Thu, 10 Nov 2022 21:07:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668114446;
+        bh=SvL0tC1tE3nUW82Ug4o+iFeGBWUfd1ASGwxtRRbRBIY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X6yt9egAXwk6xG2LbJRgSeQmEklIyWZA5SD6g3i1mbm/msswMh+cNIlufSBE1fnEP
+         IR8NXRPq/4lBDssPB1ryholDBQqqVPgD0B8e/AesPMnTanXCPFU8xi2brMcWnulkzp
+         lw+FsY5Gmj/CisaT3DjixrbxKgA53rk3HLi+Bnb8hGVMMBA+cDeYCr332lSbl41UxO
+         uytQUD8vnYD8xdCha3JHV2fftWkXYlsO4yb7fEwxnhDgaobuF3LNZ5bWVxk1UT59/h
+         M5K2hQ0mwVjh2h7PIqFEdDT4TkfdhjKVcUC8VV4DgQeNqAltlxc+QodOyapY4K2qVL
+         Edpf9kQpRmwqA==
+Date:   Thu, 10 Nov 2022 23:07:21 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ivan Vecera <ivecera@redhat.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Piotrowski, Patryk" <patryk.piotrowski@intel.com>,
+        SlawomirX Laba <slawomirx.laba@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] iavf: Do not restart Tx queues after reset task
+ failure
+Message-ID: <Y21oCUjEHEMr9HGb@unreal>
+References: <20221108102502.2147389-1-ivecera@redhat.com>
+ <Y2vvbwkvAIOdtZaA@unreal>
+ <CO1PR11MB508996B0D00B5FE6187AF085D63E9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <20221110155147.1a2c57f6@p1.luc.cera.cz>
+ <Y20vtqd6raqg8iwy@unreal>
+ <20221110122418.32414666@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Content-Language: en-US
-To:     netdev@vger.kernel.org
-From:   Thomas Kupper <thomas.kupper@gmail.com>
-Subject: [PATCH net 1/1] amd-xgbe: fix active cable determination
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221110122418.32414666@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When determine the type of SFP, active cables were not handled.
+On Thu, Nov 10, 2022 at 12:24:18PM -0800, Jakub Kicinski wrote:
+> On Thu, 10 Nov 2022 19:07:02 +0200 Leon Romanovsky wrote:
+> > > > Yes I think you're right. A ton of people check it without the
+> > > > lock but I think thats not strictly safe. Is dev_close safe to
+> > > > call when netif_running is false? Why not just remove the check
+> > > > and always call dev_close then.
+> > > 
+> > > Check for a bit value (like netif_runnning()) is much cheaper than
+> > > unconditionally taking global lock like RTNL.  
+> > 
+> > This cheap operation is racy and performed in non-performance
+> > critical path.
+> 
+> To be clear - the rtnl_lock around the entire if is still racy 
+> in the grand scheme of things, no? What's stopping someone from
+> bringing the device right back up after you drop the lock?
 
-Add the check for active cables as an extension to the passive cable
-check.
+I want to believe what there is some sort of state machine that won't
+allow simple toggling of dev_close/dev_open. If it doesn't, rtnl_lock
+users should audit their code for possible toggling right after that
+lock is dropped.
 
-Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
----
-  drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
-  1 file changed, 3 insertions(+), 2 deletions(-)
+Anyway, this discussion reminds me our devl_lock debate where we had
+completely opposite views if rtnl_lock model is the right one.
+https://lore.kernel.org/netdev/20211101073259.33406da3@kicinski-fedora-PC1C0HJN/
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c 
-b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index 4064c3e3dd49..1ba550d5c52d 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -1158,8 +1158,9 @@ static void xgbe_phy_sfp_parse_eeprom(struct 
-xgbe_prv_data *pdata)
-      }
+Let's not start argue again, we had enough back then. :)
 
-      /* Determine the type of SFP */
--    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
--        xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
-+    if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
-+         phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
-+         xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
-          phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
-      else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
-          phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
-
---
-2.34.1
-
+Thanks
