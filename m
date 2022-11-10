@@ -2,134 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0356242A0
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 13:55:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC41624326
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 14:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiKJMzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 07:55:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
+        id S229899AbiKJNZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 08:25:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbiKJMzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 07:55:00 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899B5D2EB
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:54:58 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id c25so1091289ljr.8
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:54:58 -0800 (PST)
+        with ESMTP id S230407AbiKJNZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 08:25:24 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD925B84A
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 05:25:23 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id f27so5005912eje.1
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 05:25:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4rl7jbCW2Iyj8yUM0jRXj0eHKryCRu10YTQuW097Gr8=;
-        b=whwogG/M7Q/aGeiR8QbGlSJ9JxjAtIf9fE8Jb+btzCVlfgjoH66EEA0EQbo+Zwr8dr
-         wvauFcCp1Z29sNzHCzqa508TADHQYP4HPOnHPJ1ka6yJEZPXnxzHuU8g2gz7PXlCEuuY
-         jlWu+VSMvLTnSH3EBYmu/IQTOsCchEYKjHkJanYaUBPmtlgPHNXaSH4VyWnJUjFsUolW
-         Y8Yhfkjo2dc0xFBJNU2ICW+GaHd6r9V9Yf7+YOiI4LUFQlsrHo9WRXubMcYZU0XONo0d
-         RrCnYOqHhMylSvVnxabKVw2Ews7lgk7fXfAvxg+9ueo6FQN3kezOtc5eycpUhmyg3LMs
-         k7rg==
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=BzBtO3y0pLlftj1IxFRLo+wQpXsNkIUvTL6CpHhBYX8=;
+        b=mso+zWD5I7GvSwnV4MOuH6jr6Gr93A4b405K27WLT5QTH9ZVMSCnYWs2pcwanonazy
+         H7huf9E+XN4vDuWV7kRcazB/ZoagTH5z01ZNL4drO2z9BUY9eLGyX2xrnCQ11gVR3Anf
+         00sf80G8r440bTe0N8PJG1mTVSoqcz7x3cnDk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4rl7jbCW2Iyj8yUM0jRXj0eHKryCRu10YTQuW097Gr8=;
-        b=NIzLyMzjulyjWyia4o3wG3UWMAVFdsgxgbusMYYP7ec+MweLrVPI0ouOh7sVl3BKdJ
-         GwuMDZYmJlFiGcgSd6cnSsdzaq9G/EOPjNnwD4dG3h42S3ZHcKBCXtgAtRljwPk0nxKy
-         Tvw/81KaBNJCwxqzH1ymHKjqynAUJtsSZ/f8ZKV47QVqMlNtZaccDQzjL77bs0eo2Xug
-         52UqnoWvfvTCsEWFsNC+pcbu5AEgRJlLfjAueqEo/gWbroZZYXUGN/W2Vn3aPP+3DU8P
-         yD+5r4UfEpvOlHxxVu6Ot1y4NyW98xGR+XL7jxi4Zn4b5VgHxSuMbUuXI25LNEz/TzM1
-         F21w==
-X-Gm-Message-State: ACrzQf2JB3TExeVWai2tBehdS3dYh5D6IVIrBbw/IvydrhcYdjAWoauK
-        86jj3bTSoAU5IcixTKNxya4fXw==
-X-Google-Smtp-Source: AMsMyM7PksszzPCzsZ7TQYRjS50hCw4oU0MMSh3auqYjyGoudQLh6bxP/LVj8dD1a7HI8a+95D3bpw==
-X-Received: by 2002:a2e:9f42:0:b0:277:1295:31ca with SMTP id v2-20020a2e9f42000000b00277129531camr8664043ljk.280.1668084896752;
-        Thu, 10 Nov 2022 04:54:56 -0800 (PST)
-Received: from [192.168.0.20] (088156142199.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.199])
-        by smtp.gmail.com with ESMTPSA id o11-20020a05651205cb00b00492dfcc0e58sm2742221lfo.53.2022.11.10.04.54.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Nov 2022 04:54:56 -0800 (PST)
-Message-ID: <b43a03b2-ca53-fbdd-b4d0-03e424638468@linaro.org>
-Date:   Thu, 10 Nov 2022 13:54:54 +0100
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BzBtO3y0pLlftj1IxFRLo+wQpXsNkIUvTL6CpHhBYX8=;
+        b=0O5tKAYAzmA3MHN3aZ4NHbYq5nMaN3ERMhGXjPVtJLuKR/RVCk+y75qq9Rq1CNoREd
+         suWxsR3tLSZWSg87P21nhgSr0NdjEzrM+UohlEF34YA1CzOjSIBLDo1ZZGDxffFVT8H5
+         fpkDHMMnteETL7CLLE9kdVwC8bIuLxr8/i0teJuCxBwMocI3ugGSHbaAWOu+6Crb15oy
+         I4JQiEzuOCfBUrAps7D7JbXO613YGNDBMet0NPTMJNQ5JGLJ3vSHDHMEBpwaXmfrxx+Q
+         SAX3DzZ9wg7UN5dGFfeZsdalVazmtRoctA+zd6741MQGfDJg/0CWBl9Zn+nIdzZSfPA0
+         STJw==
+X-Gm-Message-State: ACrzQf2AU7eN90otsuxSwzyTbl/7vDHyFTzRaSe0M3TR/PlA0XXvVXkn
+        TTRDLGaWVy/zA1jgBcfzVkictQ==
+X-Google-Smtp-Source: AMsMyM6lgn9ODsQfxno8gvwuFlRFVgFfEkDYln17h/WcfapiqQWOC37ZJoZaNu+oOjQuFp8gqwF1Yw==
+X-Received: by 2002:a17:906:304b:b0:78d:88c7:c1bf with SMTP id d11-20020a170906304b00b0078d88c7c1bfmr2792181ejd.299.1668086721494;
+        Thu, 10 Nov 2022 05:25:21 -0800 (PST)
+Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
+        by smtp.gmail.com with ESMTPSA id kw6-20020a170907770600b0077909095acasm7338455ejc.143.2022.11.10.05.25.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 05:25:20 -0800 (PST)
+References: <20221018020258.197333-1-xiyou.wangcong@gmail.com>
+ <Y07sxzoS/s6ZBhEx@google.com> <87eduxfiik.fsf@cloudflare.com>
+ <Y1wqe2ybxxCtIhvL@pop-os.localdomain> <87bkprprxf.fsf@cloudflare.com>
+ <63617b2434725_2eb7208e1@john.notmuch> <87a6574yz0.fsf@cloudflare.com>
+ <63643449b978a_204d620851@john.notmuch> <87fsetqnm2.fsf@cloudflare.com>
+ <636ab4abd488f_ace8c208fc@john.notmuch>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Cong Wang <cong.wang@bytedance.com>, sdf@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [Patch bpf] sock_map: convert cancel_work_sync() to cancel_work()
+Date:   Thu, 10 Nov 2022 13:59:33 +0100
+In-reply-to: <636ab4abd488f_ace8c208fc@john.notmuch>
+Message-ID: <87a64zeybl.fsf@cloudflare.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 3/6] arm64: dts: fsd: add sysreg device node
-Content-Language: en-US
-To:     Sam Protsenko <semen.protsenko@linaro.org>,
-        Vivek Yadav <vivek.2311@samsung.com>
-Cc:     rcsekar@samsung.com, krzysztof.kozlowski+dt@linaro.org,
-        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        pankaj.dubey@samsung.com, ravi.patel@samsung.com,
-        alim.akhtar@samsung.com, linux-fsd@tesla.com, robh+dt@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        aswani.reddy@samsung.com, sriranjani.p@samsung.com
-References: <CGME20221109100254epcas5p48c574876756f899875df8ac71464ce11@epcas5p4.samsung.com>
- <20221109100928.109478-1-vivek.2311@samsung.com>
- <20221109100928.109478-4-vivek.2311@samsung.com>
- <CAPLW+4nH=QQj+eWVrxeeOmgZ9UTGeL4__uttkNsji4XsGjOv3w@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAPLW+4nH=QQj+eWVrxeeOmgZ9UTGeL4__uttkNsji4XsGjOv3w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/11/2022 12:17, Sam Protsenko wrote:
-> Hi Vivek,
-> 
-> On Wed, 9 Nov 2022 at 11:54, Vivek Yadav <vivek.2311@samsung.com> wrote:
->>
->> From: Sriranjani P <sriranjani.p@samsung.com>
->>
->> Add SYSREG controller device node, which is available in PERIC and FSYS0
->> block of FSD SoC.
->>
->> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
->> Signed-off-by: Pankaj Kumar Dubey <pankaj.dubey@samsung.com>
->> Cc: devicetree@vger.kernel.org
->> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
->> Cc: Rob Herring <robh+dt@kernel.org>
->> Signed-off-by: Sriranjani P <sriranjani.p@samsung.com>
->> ---
->>  arch/arm64/boot/dts/tesla/fsd.dtsi | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
->> index f35bc5a288c2..3d8ebbfc27f4 100644
->> --- a/arch/arm64/boot/dts/tesla/fsd.dtsi
->> +++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
->> @@ -518,6 +518,16 @@
->>                                 "dout_cmu_fsys1_shared0div4";
->>                 };
->>
->> +               sysreg_peric: system-controller@14030000 {
->> +                       compatible = "tesla,sysreg_peric", "syscon";
->> +                       reg = <0x0 0x14030000 0x0 0x1000>;
-> 
-> Probably not related to this particular patch, but does the "reg"
-> really have to have those extra 0x0s? Why it can't be just:
-> 
->     reg = <0x14030000 0x1000>;
-> 
-> That comment applies to the whole dts/dtsi. Looks like #address-cells
-> or #size-cells are bigger than they should be, or I missing something?
+On Tue, Nov 08, 2022 at 11:57 AM -08, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+>> On Thu, Nov 03, 2022 at 02:36 PM -07, John Fastabend wrote:
+>> > Jakub Sitnicki wrote:
+>> >> On Tue, Nov 01, 2022 at 01:01 PM -07, John Fastabend wrote:
+>> >> > Jakub Sitnicki wrote:
+>> >> >> On Fri, Oct 28, 2022 at 12:16 PM -07, Cong Wang wrote:
+>> >> >> > On Mon, Oct 24, 2022 at 03:33:13PM +0200, Jakub Sitnicki wrote:
+>> >> >> >> On Tue, Oct 18, 2022 at 11:13 AM -07, sdf@google.com wrote:
+>> >> >> >> > On 10/17, Cong Wang wrote:
+>> >> >> >> >> From: Cong Wang <cong.wang@bytedance.com>
+>> >> >> >> >
+>> >> >> >> >> Technically we don't need lock the sock in the psock work, but we
+>> >> >> >> >> need to prevent this work running in parallel with sock_map_close().
+>> >> >> >> >
+>> >> >> >> >> With this, we no longer need to wait for the psock->work synchronously,
+>> >> >> >> >> because when we reach here, either this work is still pending, or
+>> >> >> >> >> blocking on the lock_sock(), or it is completed. We only need to cancel
+>> >> >> >> >> the first case asynchronously, and we need to bail out the second case
+>> >> >> >> >> quickly by checking SK_PSOCK_TX_ENABLED bit.
+>> >> >> >> >
+>> >> >> >> >> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+>> >> >> >> >> Reported-by: Stanislav Fomichev <sdf@google.com>
+>> >> >> >> >> Cc: John Fastabend <john.fastabend@gmail.com>
+>> >> >> >> >> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+>> >> >> >> >> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+>> >> >> >> >
+>> >> >> >> > This seems to remove the splat for me:
+>> >> >> >> >
+>> >> >> >> > Tested-by: Stanislav Fomichev <sdf@google.com>
+>> >> >> >> >
+>> >> >> >> > The patch looks good, but I'll leave the review to Jakub/John.
+>> >> >> >> 
+>> >> >> >> I can't poke any holes in it either.
+>> >> >> >> 
+>> >> >> >> However, it is harder for me to follow than the initial idea [1].
+>> >> >> >> So I'm wondering if there was anything wrong with it?
+>> >> >> >
+>> >> >> > It caused a warning in sk_stream_kill_queues() when I actually tested
+>> >> >> > it (after posting).
+>> >> >> 
+>> >> >> We must have seen the same warnings. They seemed unrelated so I went
+>> >> >> digging. We have a fix for these [1]. They were present since 5.18-rc1.
+>> >> >> 
+>> >> >> >> This seems like a step back when comes to simplifying locking in
+>> >> >> >> sk_psock_backlog() that was done in 799aa7f98d53.
+>> >> >> >
+>> >> >> > Kinda, but it is still true that this sock lock is not for sk_socket
+>> >> >> > (merely for closing this race condition).
+>> >> >> 
+>> >> >> I really think the initial idea [2] is much nicer. I can turn it into a
+>> >> >> patch, if you are short on time.
+>> >> >> 
+>> >> >> With [1] and [2] applied, the dead lock and memory accounting warnings
+>> >> >> are gone, when running `test_sockmap`.
+>> >> >> 
+>> >> >> Thanks,
+>> >> >> Jakub
+>> >> >> 
+>> >> >> [1]
+>> >> >> https://lore.kernel.org/netdev/1667000674-13237-1-git-send-email-wangyufen@huawei.com/
+>> >> >> [2] https://lore.kernel.org/netdev/Y0xJUc%2FLRu8K%2FAf8@pop-os.localdomain/
+>> >> >
+>> >> > Cong, what do you think? I tend to agree [2] looks nicer to me.
+>> >> >
+>> >> > @Jakub,
+>> >> >
+>> >> > Also I think we could simply drop the proposed cancel_work_sync in
+>> >> > sock_map_close()?
+>> >> >
+>> >> >  }
+>> >> > @@ -1619,9 +1619,10 @@ void sock_map_close(struct sock *sk, long timeout)
+>> >> >  	saved_close = psock->saved_close;
+>> >> >  	sock_map_remove_links(sk, psock);
+>> >> >  	rcu_read_unlock();
+>> >> > -	sk_psock_stop(psock, true);
+>> >> > -	sk_psock_put(sk, psock);
+>> >> > +	sk_psock_stop(psock);
+>> >> >  	release_sock(sk);
+>> >> > +	cancel_work_sync(&psock->work);
+>> >> > +	sk_psock_put(sk, psock);
+>> >> >  	saved_close(sk, timeout);
+>> >> >  }
+>> >> >
+>> >> > The sk_psock_put is going to cancel the work before destroying the psock,
+>> >> >
+>> >> >  sk_psock_put()
+>> >> >    sk_psock_drop()
+>> >> >      queue_rcu_work(system_wq, psock->rwork)
+>> >> >
+>> >> > and then in callback we
+>> >> >
+>> >> >   sk_psock_destroy()
+>> >> >     cancel_work_synbc(psock->work)
+>> >> >
+>> >> > although it might be nice to have the work cancelled earlier rather than
+>> >> > latter maybe.
+>> >> 
+>> >> Good point.
+>> >> 
+>> >> I kinda like the property that once close() returns we know there is no
+>> >> deferred work running for the socket.
+>> >> 
+>> >> I find the APIs where a deferred cleanup happens sometimes harder to
+>> >> write tests for.
+>> >> 
+>> >> But I don't really have a strong opinion here.
+>> >
+>> > I don't either and Cong left it so I'm good with that.
+>> >
+>> > Reviewing backlog logic though I think there is another bug there, but
+>> > I haven't been able to trigger it in any of our tests.
+>> >
+>> > The sk_psock_backlog() logic is,
+>> >
+>> >  sk_psock_backlog(struct work_struct *work)
+>> >    mutex_lock()
+>> >    while (skb = ...)
+>> >    ...
+>> >    do {
+>> >      ret = sk_psock_handle_skb()
+>> >      if (ret <= 0) {
+>> >        if (ret == -EAGAIN) {
+>> >            sk_psock_skb_state()
+>> >            goto  end;
+>> >        } 
+>> >       ...
+>> >    } while (len);
+>> >    ...
+>> >   end:
+>> >    mutex_unlock()
+>> >
+>> > what I'm not seeing is if we get an EAGAIN through sk_psock_handle_skb
+>> > how do we schedule the backlog again. For egress we would set the
+>> > SOCK_NOSPACE bit and then get a write space available callback which
+>> > would do the schedule(). The ingress side could fail with EAGAIN
+>> > through the alloc_sk_msg(GFP_ATOMIC) call. This is just a kzalloc,
+>> >
+>> >    sk_psock_handle_skb()
+>> >     sk_psock_skb_ingress()
+>> >      sk_psock_skb_ingress_self()
+>> >        msg = alloc_sk_msg()
+>> >                kzalloc()          <- this can return NULL
+>> >        if (!msg)
+>> >           return -EAGAIN          <- could we stall now
+>> >
+>> >
+>> > I think we could stall here if there was nothing else to kick it. I
+>> > was thinking about this maybe,
+>> >
+>> > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+>> > index 1efdc47a999b..b96e95625027 100644
+>> > --- a/net/core/skmsg.c
+>> > +++ b/net/core/skmsg.c
+>> > @@ -624,13 +624,20 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+>> >  static void sk_psock_skb_state(struct sk_psock *psock,
+>> >                                struct sk_psock_work_state *state,
+>> >                                struct sk_buff *skb,
+>> > -                              int len, int off)
+>> > +                              int len, int off, bool ingress)
+>> >  {
+>> >         spin_lock_bh(&psock->ingress_lock);
+>> >         if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+>> >                 state->skb = skb;
+>> >                 state->len = len;
+>> >                 state->off = off;
+>> > +               /* For ingress we may not have a wakeup callback to trigger
+>> > +                * the reschedule on so need to reschedule retry. For egress
+>> > +                * we will get TCP stack callback when its a good time to
+>> > +                * retry.
+>> > +                */
+>> > +               if (ingress)
+>> > +                       schedule_work(&psock->work);
+>> >         } else {
+>> >                 sock_drop(psock->sk, skb);
+>> >         }
+>> > @@ -678,7 +685,7 @@ static void sk_psock_backlog(struct work_struct *work)
+>> >                         if (ret <= 0) {
+>> >                                 if (ret == -EAGAIN) {
+>> >                                         sk_psock_skb_state(psock, state, skb,
+>> > -                                                          len, off);
+>> > +                                                          len, off, ingress);
+>> >                                         goto end;
+>> >                                 }
+>> >                                 /* Hard errors break pipe and stop xmit. */
+>> >
+>> >
+>> > Its tempting to try and use the memory pressure callbacks but those are
+>> > built for the skb cache so I think overloading them is not so nice. The
+>> > drawback to above is its possible no memory is available even when we
+>> > get back to the backlog. We could use a delayed reschedule but its not
+>> > clear what delay makes sense here. Maybe some backoff...
+>> >
+>> > Any thoughts?
+>> 
+>> I don't have any thoughts on the fix yet, but I have a repro.
+>
+> I'm testing it with a delayed workqueue now and a backoff just so
+> we don't bang on this repeatedly when OOM condition is met. Then
+> all the other schedule_work() calls become the delayed variant
+> but I think this is OK.
+>
+> Better ideas welcome but running the above through our CI today.
 
-Yes, it looks like intention was to support some 64-bit addresses (maybe
-as convention for arm64?) but none of upstreamed are above 32 bit range.
-I don't have the manual/datasheet to judge whether any other
-(non-upstreamed) nodes need 64bit addresses.
+That sounds good to me because it's easy to comprehend.
 
-Best regards,
-Krzysztof
+If it does not work out, for some reason, we can explore allocating
+sk_msg at the time of queuing an skb onto psock->ingress_skb. We know
+when we're redirecting to ingress, and are going to need an sk_msg.
 
+Downside is that we would have to bundle up sk_msg somehow with the skb,
+so it seems quite convoluted.
+
+>> We can use fault injection [1]. For some reason it's been disabled on
+>> x86-64 since 2007 (stack walking didn't work back then?), so we need to
+>> patch the kernel slightly.
+>
+> Could add the function to ALLOW_OVERRIDE as well. But not sure we want
+> to force it to be _not_ inlined in general case.
+
+You mean ALLOW_ERROR_INJECTION?
+
+In general, I suspect it will be enough to filter the stacktrace by the
+presence of sk_psock_backlog, when smoke testing the code against memory
+allocation failures.
+
+>> Also, to better target the failure, just for this case, I've de-inlined
+>> alloc_sk_msg(). But in general testing we can just inject any alloc
+>> under sk_psock_backlog().
+>> 
+>> Incantation looks like so:
+>> 
+>> #!/usr/bin/env bash
+>> 
+>> readonly TARGET_FUNC=alloc_sk_msg
+>> readonly ADDR=($(grep -A1 ${TARGET_FUNC} /proc/kallsyms | awk '{print "0x" $1}'))
+>> 
+>> exec bash \
+>>      ../../fault-injection/failcmd.sh \
+>>      --require-start=${ADDR[0]} --require-end=${ADDR[1]} \
+>>      --stacktrace-depth=32 \
+>>      --probability=50 --times=100 \
+>>      --ignore-gfp-wait=N --task-filter=N \
+>>      -- \
+>>      ./test_sockmap
+>> 
+>> We won't get a message in dmesg (even with --verbosity=1 set) because
+>> we're allocating with __GFP_NOWARN, and fault injection interface
+>> doesn't provide a way to override that. But we can obseve the 'times'
+>> count go down after ./test_sockmap blocks (also confirmed with a printk
+>> added on -EAGAIN error path).
+>
+> We can probably do it through BPF prog with ALLOW_OVERRIDE on one of those
+> functions in that call path then we can write a selftest for it.
+
+You mean BPF_MODIFY_RETURN? Right, that would be another option.
+
+Right now, I see that alloc_sk_msg does not get inlined on my distro:
+
+$ uname -r
+6.0.5-100.fc35.x86_64
+$ grep alloc_sk_msg /proc/kallsyms
+0000000000000000 t alloc_sk_msg
+$
+
+But that seems very build-dependent, so I'm not sure if we want
+selftests relying on that.
+
+I'd just do smoke-testing of the whole sk_psock_backlog.
+
+[...]
