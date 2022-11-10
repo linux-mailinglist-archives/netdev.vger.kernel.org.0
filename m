@@ -2,55 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB5956247D9
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 18:03:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE3F66247E7
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 18:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbiKJRDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 12:03:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
+        id S230381AbiKJRHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 12:07:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiKJRDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 12:03:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E0E1209C
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:03:19 -0800 (PST)
+        with ESMTP id S229831AbiKJRHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 12:07:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2B81103;
+        Thu, 10 Nov 2022 09:07:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60B0D61CDA
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 17:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4C9C433C1;
-        Thu, 10 Nov 2022 17:03:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6174DB82262;
+        Thu, 10 Nov 2022 17:07:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35FEFC433D6;
+        Thu, 10 Nov 2022 17:07:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668099798;
-        bh=azCdCaDVcuB5G80SZ2/sIEvuUOkIls0/xTmjBlBMhjo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WDsZuvlHAE1XfdM6mTi1Cr2H0jht0bpNQKDGh8U1j8elpdTTP4xAhEMIB8gKOWNx8
-         LkuLzoEwKDGmws5vdXfOnKC0J1tuf3Kg2YFuUhH78MSBphvqRFEOvCFOrF3ZMhetd5
-         srz15zhBHDIjsIKL7DBnXIx23/+Rs1jXYOAMa+AADQeF/2+PWM26w8/oRi4h3o5nD7
-         IM5uhWqQD/pppm6l0lqazRkXUo3Dl7RozkftugMGZiKe/JwGbHl1BApDjFPDj29qbP
-         5FFmrXs3FtGqszMbxcudE82YFhJxEQnbgGzrSu0AWZ/cpg/As2RBnuvpZN4lO+6wJp
-         ShuFwrgvUU1Xw==
-Date:   Thu, 10 Nov 2022 09:03:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
-Cc:     <netdev@vger.kernel.org>, <alexandr.lobakin@intel.com>,
-        <jacob.e.keller@intel.com>, <jesse.brandeburg@intel.com>,
-        <przemyslaw.kitszel@intel.com>, <anthony.l.nguyen@intel.com>,
-        <ecree.xilinx@gmail.com>, <jiri@resnulli.us>
-Subject: Re: [PATCH net-next v10 10/10] ice: add documentation for
- devlink-rate implementation
-Message-ID: <20221110090317.3b5a587c@kernel.org>
-In-Reply-To: <717a9748-78a6-3d87-0b5a-539101333f57@intel.com>
-References: <20221107181327.379007-1-michal.wilczynski@intel.com>
-        <20221107181327.379007-11-michal.wilczynski@intel.com>
-        <20221108143936.4e59f6e8@kernel.org>
-        <de1cb0ab-163c-02e8-86b0-fc865796a40a@intel.com>
-        <20221109132544.62703381@kernel.org>
-        <717a9748-78a6-3d87-0b5a-539101333f57@intel.com>
+        s=k20201202; t=1668100027;
+        bh=rj3ISQCkCco2AbbC4p5BztsDjwUFjBW0QWdyLsCUyq8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YmORyJ0NKtlSVkovWmaabP0b9SgZQ1lh3Ym059adNM78LU2bsgoG9df90eYdUQt6y
+         k5/I4sdiGRMTPgbuueWayNeCIFe7KTk/TZ3peRxCj2E06LfextPj/54SM2gxmQXcMQ
+         vD3KG6xUxHxX0UrhgDmrbngWgKGqifl8Y2mII+FTvFHb4O0p1rEEloGAW+GMdeGmSP
+         yjzhvbl01cvkHE7xniSFg1ZkB8+Mso5xNAiMAEbufp+1hbujiFnUm9JPgQ/P8ErZnl
+         HKizbNHytdfuWh8htn10atiLOK274b5fWq2H9LamSj/xx8Mflu7htI2Rz87eg5x4Pu
+         0KsWK8sqe1oGQ==
+Date:   Thu, 10 Nov 2022 19:07:02 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Ivan Vecera <ivecera@redhat.com>
+Cc:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Piotrowski, Patryk" <patryk.piotrowski@intel.com>,
+        SlawomirX Laba <slawomirx.laba@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] iavf: Do not restart Tx queues after reset task
+ failure
+Message-ID: <Y20vtqd6raqg8iwy@unreal>
+References: <20221108102502.2147389-1-ivecera@redhat.com>
+ <Y2vvbwkvAIOdtZaA@unreal>
+ <CO1PR11MB508996B0D00B5FE6187AF085D63E9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <20221110155147.1a2c57f6@p1.luc.cera.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221110155147.1a2c57f6@p1.luc.cera.cz>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,12 +68,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Nov 2022 17:54:03 +0100 Wilczynski, Michal wrote:
-> > Nice, but in case DCB or TC/ADQ gets enabled devlink rate will just
-> > show a stale hierarchy?  
+On Thu, Nov 10, 2022 at 03:51:47PM +0100, Ivan Vecera wrote:
+> On Wed, 9 Nov 2022 20:11:55 +0000
+> "Keller, Jacob E" <jacob.e.keller@intel.com> wrote:
 > 
-> Yes there will be hierarchy exported during the VF creation, so if
-> the user enable DCB/ADQ in the meantime, it will be a stale hierarchy.
-> User won't be able to modify any nodes/parameters.
+> > > Sorry for my naive question, I see this pattern a lot (including RDMA),
+> > > so curious. Everyone checks netif_running() outside of rtnl_lock, while
+> > > dev_close() changes state bit __LINK_STATE_START. Shouldn't rtnl_lock()
+> > > placed before netif_running()?  
+> > 
+> > Yes I think you're right. A ton of people check it without the lock but I think thats not strictly safe. Is dev_close safe to call when netif_running is false? Why not just remove the check and always call dev_close then.
+> > 
+> > Thanks,
+> > Jake
+> 
+> Check for a bit value (like netif_runnning()) is much cheaper than unconditionally
+> taking global lock like RTNL.
 
-Why not tear it down if it's stale?
+This cheap operation is racy and performed in non-performance critical path.
+
+Thanks
+
+> 
+> Ivan
+> 
