@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F7C66249D1
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 19:44:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AF5F6249EE
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 19:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbiKJSoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 13:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39634 "EHLO
+        id S229669AbiKJSuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 13:50:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231367AbiKJSoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 13:44:15 -0500
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965544730D
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:44:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=r4WgWvq7LeWC54KLFtoLJVFPenyJUDyOFYsB574niLI=; b=OtEx2/ra0q4bCSHCPWJ552VOfH
-        tAxiuL3A4uiMPOV3peFwmADmLpDOMLV2sJdh7SNurcoqIQ31U//7xFM/RWjhmT3wSf+f016ZKUTeo
-        Cc2peJuT08P0H+1sOcb5MHxYHpW9aHLhnZdsiJm3BUp+91uBnYq1zJe/J5F7YByg99L8=;
-Received: from p200300daa72ee10c199752172ce6dd7a.dip0.t-ipconnect.de ([2003:da:a72e:e10c:1997:5217:2ce6:dd7a] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        with ESMTP id S229559AbiKJSuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 13:50:07 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4628A14028
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:50:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=QKdGnCKxpuTh9fhvavU8cWMge7d1DhtKAJibrny01yg=; b=KQw0ZO6ZcEBYnKesCL60YxJaNh
+        rY84E1GhkPUwTYg2l3ja9XdzsluWi9Agu3xNtH10AVRtlHloAGWlLWPJRHl6M3S6jE3Igl+st17pm
+        sUI4EKhWwOfnpVpqKQXKlATlahV4LvRnw7a4l7EEwql8YLckSc8LJvFYOGi8ORE5Op/d01GMjgvQq
+        7gOexK4sdHiPkpElv1z+MHqB4jcU+qv9teEhg+EzMRMpOQXg4caHVjOXG9h4Lxj6baarMmRZ2Ff51
+        1h5xM5m1JqDww24hjEESPFSfGyYKxKM8AHG06Kamx8/V7FUy2v3f6B+2jYfjYhyr3Dx/FNfTsFj3P
+        XcppuzMg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35208)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1otCX6-0010Bz-PZ; Thu, 10 Nov 2022 19:44:12 +0100
-Message-ID: <2abbe051-7ddb-e9d6-a477-86555c9ed377@nbd.name>
-Date:   Thu, 10 Nov 2022 19:44:12 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v2 00/12] Multiqueue + DSA untag support + fixes
- for mtk_eth_soc
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1otCcm-0005yV-Dv; Thu, 10 Nov 2022 18:50:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1otCcl-0006r4-QG; Thu, 10 Nov 2022 18:50:03 +0000
+Date:   Thu, 10 Nov 2022 18:50:03 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Felix Fietkau <nbd@nbd.name>
 Cc:     netdev@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next v2 00/12] Multiqueue + DSA untag support + fixes
+ for mtk_eth_soc
+Message-ID: <Y21H22Geh0a0pcta@shell.armlinux.org.uk>
 References: <20221109163426.76164-1-nbd@nbd.name>
- <20221110142816.nzy4sb27km7xpctd@skbuf>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <20221110142816.nzy4sb27km7xpctd@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221109163426.76164-1-nbd@nbd.name>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.11.22 15:28, Vladimir Oltean wrote:
-> On Wed, Nov 09, 2022 at 05:34:14PM +0100, Felix Fietkau wrote:
->> This series contains multiple improvements for mtk_eth_soc:
->> 
->> On devices with QDMA (MT7621 and newer), multiqueue support is implemented
->> by using the SoC's traffic shaper function, which sits on the DMA engine.
->> The driver exposes traffic shaper queues as network stack queues and configures
->> them to the link speed limit. This fixes an issue where traffic to slower ports
->> would drown out traffic to faster ports. It also fixes packet drops and jitter
->> when running hardware offloaded traffic alongside traffic from the CPU.
->> 
->> On MT7622, the DSA tag for MT753x switches can be untagged by the DMA engine,
->> which removes the need for header mangling in the DSA tag driver.
->> 
->> This is implemented by letting DSA skip the tag receive function, if the port
->> is passed via metadata dst type METADATA_HW_PORT_MUX
->> 
->> Also part of this series are a number of fixes to TSO/SG support
->> 
->> Changes in v2:
->> - drop the use of skb vlan tags to pass the port information to the tag driver,
->>   use metadata_dst instead
->> - fix a small issue in enabling untag
-> 
-> Please split the work and let's concentrate on one thing at a time
-> without extra noise, for example DSA RX tag processing offload first,
-> since that needs the most attention.
-> 
-> Also please use ./scripts/get_maintainer.pl when sending patches ;)
-I did that. That's where most of the To/Cc's came from.
+Hi Felix,
 
-- Felix
+Not directly related to your patch series, but as you seem to be
+tinkering with the driver, it seems appropriate to ask. Are you
+using hardware that uses RGMII? If not, do you know anyone who is?
+
+It would be good to fix mtk_mac_config(), specifically the use
+of state->speed therein - see the FIXME that I placed in that
+function. Honestly, I think this code is broken, since if the
+RGMII interface speed changes, the outer if() won't allow this
+code path to be re-executed (since mac->interface will be the
+same as state->interface for speed changes.)
+
+It would be nice to get rid of that, because this is the very
+last pre-March 2020 legacy ethernet driver, and it's marked as
+such for this very reason.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
