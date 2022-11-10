@@ -2,586 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 159B1624BA6
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 21:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63C79624B8A
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 21:17:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbiKJUT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 15:19:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
+        id S231719AbiKJURH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 15:17:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbiKJUTz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 15:19:55 -0500
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E041101
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 12:19:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1668111594; x=1699647594;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MkX4hYTHeLmCfLJTDVPhd5qqaKrDAYcK9Eibgi356XQ=;
-  b=WfwKfNKxg6G9B1kQjyKbOjH1d772LNzbbpkQ7Qpm6GSayfSGkWyosani
-   h1v0bA/dcjWLMfF9Kk8xofqgwlNTFh8fBwvixHgNZleqtP/JX5nV4j9pL
-   0u9r8HTU91Do+pSfuRK4U8slRaM8mWLNGHPBYz/3Gl+ybAU6+DviGhVeV
-   o=;
-X-IronPort-AV: E=Sophos;i="5.96,154,1665446400"; 
-   d="scan'208";a="278917234"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1box-1dm6-7f722725.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 20:19:48 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1box-1dm6-7f722725.us-east-1.amazon.com (Postfix) with ESMTPS id D0C298CAB3;
-        Thu, 10 Nov 2022 20:19:44 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Thu, 10 Nov 2022 20:19:36 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.223) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Thu, 10 Nov 2022 20:19:33 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <joannelkoong@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>, <martin.lau@kernel.org>,
-        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>
-Subject: Re: [RFC] bhash2 and WARN_ON() for inconsistent sk saddr.
-Date:   Thu, 10 Nov 2022 12:19:25 -0800
-Message-ID: <20221110201925.96741-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAJnrk1Z1UFmJ2_-7G6sdNHYy0jfjbJjWiCmAzqtLN9dkJ_g+vA@mail.gmail.com>
-References: <CAJnrk1Z1UFmJ2_-7G6sdNHYy0jfjbJjWiCmAzqtLN9dkJ_g+vA@mail.gmail.com>
+        with ESMTP id S230266AbiKJURF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 15:17:05 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4584FF81;
+        Thu, 10 Nov 2022 12:17:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668111423; x=1699647423;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5PLnax8XorRp3Zie4kgXRfWwQFyg+n9E8n1hQRXSQwk=;
+  b=1Iglbzheq/lHp0o/cB+aDGpNc61GJ//KOICQj4gxnGJsUGS6jCE6isy6
+   OHrDWMcfGYJosZyPibHGrrbDldJojBnVsdsElMsmOsq+VQLA68XfgVQQu
+   7I/3RG7SUP/tCW3X9YRAEU8R9vfCJ0WOD/VqY25vzrUn4/ec3fe9hNfPc
+   xnItxYDppcJPaVPl1Ge6Saf8OxsTf5Tu3rBXraS2F+W1P7rx348nz58qp
+   lmQ44BI0ljPCynkLzuNZKwFLIBkUMy0pv+cstv2f7NaWt6ItgpMjJjuCB
+   mrKfjEljAU1pYTXyISYuvYf9fhQF737da7SXppQ+0AFB6aenqDPtALmAN
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,154,1665471600"; 
+   d="scan'208";a="186424713"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Nov 2022 13:17:02 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 10 Nov 2022 13:17:01 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Thu, 10 Nov 2022 13:17:01 -0700
+Date:   Thu, 10 Nov 2022 21:21:47 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+CC:     Andrew Lunn <andrew@lunn.ch>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <linux@armlinux.org.uk>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next v3 0/4] net: lan966x: Add xdp support
+Message-ID: <20221110202147.hkhfvvb55djob43x@soft-dev3-1>
+References: <20221109204613.3669905-1-horatiu.vultur@microchip.com>
+ <20221110111747.1176760-1-alexandr.lobakin@intel.com>
+ <Y20DT2XTTIlU/wbx@lunn.ch>
+ <20221110162148.3533816-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.223]
-X-ClientProxiedBy: EX13D22UWC004.ant.amazon.com (10.43.162.198) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20221110162148.3533816-1-alexandr.lobakin@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Wed, 9 Nov 2022 19:00:00 -0800
-> On Tue, Nov 8, 2022 at 2:45 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+The 11/10/2022 17:21, Alexander Lobakin wrote:
+
+Hi,
+
+> 
+> From: Andrew Lunn <andrew@lunn.ch>
+> Date: Thu, 10 Nov 2022 14:57:35 +0100
+> 
+> > > Nice stuff! I hear time to time that XDP is for 10G+ NICs only, but
+> > > I'm not a fan of such, and this series proves once again XDP fits
+> > > any hardware ^.^
 > >
-> > From:   Joanne Koong <joannelkoong@gmail.com>
-> > Date:   Tue, 8 Nov 2022 14:02:11 -0800
-> > > On Tue, Nov 8, 2022 at 11:50 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > >
-> > > > From:   Joanne Koong <joannelkoong@gmail.com>
-> > > > Date:   Tue, 8 Nov 2022 09:40:22 -0800
-> > > > >  On Mon, Nov 7, 2022 at 5:27 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > > > >
-> > > > > > From:   Joanne Koong <joannelkoong@gmail.com>
-> > > > > > Date:   Mon, 7 Nov 2022 14:20:46 -0800
-> > > > > > > On Fri, Oct 28, 2022 at 5:13 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > > > > > >
-> > > > > > > > Hi,
-> > > > > > > >
-> > > > > > > > I want to discuss bhash2 and WARN_ON() being fired every day this month
-> > > > > > > > on my syzkaller instance without repro.
-> > > > > > > >
-> > > > > > > >   WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> > > > > > > >   ...
-> > > > > > > >   inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
-> > > > > > > >   inet_listen (net/ipv4/af_inet.c:228)
-> > > > > > > >   __sys_listen (net/socket.c:1810)
-> > > > > > > >   __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
-> > > > > > > >   do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> > > > > > > >   entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> > > > > > > >
-> > > > > > > [...]
-> > > > > > > >
-> > > > > > > > Please see the source addresses of s2/s3 below after connect() fails.
-> > > > > > > > The s2 case is another variant of the first syzbot report, which has
-> > > > > > > > been already _fixed_.  And the s3 case is a repro for the issue that
-> > > > > > > > Mat and I saw.
-> > > > > > >
-> > > > > > > Since the s2 address mismatch case is addressed by your patch
-> > > > > > > https://lore.kernel.org/netdev/20221103172419.20977-1-kuniyu@amazon.com/,
-> > > > > > > I will focus my comments here on the s3 case.
-> > > > > > >
-> > > > > > > >
-> > > > > > > >   # sysctl -w net.ipv4.tcp_syn_retries=1
-> > > > > > > >   net.ipv4.tcp_syn_retries = 1
-> > > > > > > >   # python3
-> > > > > > > >   >>> from socket import *
-> > > > > > > >   >>>
-> > > > > > > >   >>> s1 = socket()
-> > > > > > > >   >>> s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> > > > > > > >   >>> s1.bind(('0.0.0.0', 10000))
-> > > > > > > >   >>> s1.connect(('127.0.0.1', 10000))
-> > > > > > > >   >>>
-> > > > > > > >   >>> s2 = socket()
-> > > > > > > >   >>> s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> > > > > > > >   >>> s2.bind(('0.0.0.0', 10000))
-> > > > > > > >   >>> s2
-> > > > > > > >   <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> > > > > > > >   >>>
-> > > > > > > >   >>> s2.connect(('127.0.0.1', 10000))
-> > > > > > > >   Traceback (most recent call last):
-> > > > > > > >     File "<stdin>", line 1, in <module>
-> > > > > > > >   OSError: [Errno 99] Cannot assign requested address
-> > > > > > > >   >>>
-> > > > > > > >   >>> s2
-> > > > > > > >   <socket.socket fd=4, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 10000)>
-> > > > > > > >                                                                                                    ^^^ ???
-> > > > > > > >   >>> s3 = socket()
-> > > > > > > >   >>> s3.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> > > > > > > >   >>> s3.bind(('0.0.0.0', 10000))
-> > > > > > > >   >>> s3
-> > > > > > > >   <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> > > > > > > >   >>>
-> > > > > > > >   >>> s3.connect(('0.0.0.1', 1))
-> > > > > > > >   Traceback (most recent call last):
-> > > > > > > >     File "<stdin>", line 1, in <module>
-> > > > > > > >   TimeoutError: [Errno 110] Connection timed out
-> > > > > > > >   >>>
-> > > > > > > >   >>> s3
-> > > > > > > >   <socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> > > > > > > >
-> > > > > > > > We can fire the WARN_ON() by s3.listen().
-> > > > > > > >
-> > > > > > > >   >>> s3.listen()
-> > > > > > > >   [ 1096.845905] ------------[ cut here ]------------
-> > > > > > > >   [ 1096.846290] WARNING: CPU: 0 PID: 209 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
-> > > > > > >
-> > > > > > > I'm on the head of net-next/master (commit
-> > > > > > > bf46390f39c686d62afeae9845860e63886d63b) and trying to repro this
-> > > > > > > locally, but the warning isn't showing up for me after following the
-> > > > > > > steps above. Not sure why.
-> > > > > >
-> > > > > > Hmm... it reproduced on top of the commit.  I'm testing on QEMU and login
-> > > > > > to serial console which outputs syslog in the same stream, so you may want
-> > > > > > to check /var/log/messages or something.
-> > > > > >
-> > > > > > ---8<---
-> > > > > > # sysctl -w net.ipv4.tcp_syn_retries=1
-> > > > > > # python3
-> > > > > > >>> from socket import *
-> > > > > > >>>
-> > > > > > >>> s = socket()
-> > > > > > >>> s.bind(('0', 10000))
-> > > > > > >>> s.connect(('0.0.0.1', 1))
-> > > > > > Traceback (most recent call last):
-> > > > > >   File "<stdin>", line 1, in <module>
-> > > > > > TimeoutError: [Errno 110] Connection timed out
-> > > > > > >>> s
-> > > > > > <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> > > > > > >>> s.listen(32)
-> > > > > > [   96.598308] ------------[ cut here ]------------
-> > > > > > [   96.598598] WARNING: CPU: 0 PID: 214 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
-> > > > > > ...
-> > > > > >
-> > > > > > >>> s = socket()
-> > > > > > >>> s.bind(('0', 10001))
-> > > > > > >>> s.connect(('localhost', 1))
-> > > > > > Traceback (most recent call last):
-> > > > > >   File "<stdin>", line 1, in <module>
-> > > > > > ConnectionRefusedError: [Errno 111] Connection refused
-> > > > > > >>> s.listen(32)
-> > > > > > [  139.157193] ------------[ cut here ]------------
-> > > > > > [  139.157528] WARNING: CPU: 0 PID: 214 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port+0x6bb/0x9e0
-> > > > > > ---8<---
-> > > > > >
-> > > > > >
-> > > > > > >
-> > > > > > > >
-> > > > > > > > In the s3 case, connect() resets sk->sk_rcv_saddr to INADDR_ANY without
-> > > > > > > > updating the bhash2 bucket; OTOH sk has the correct non-NULL bhash bucket.
-> > > > > > >
-> > > > > > > To summarize, the path you are talking about is tcp_v4_connect() in
-> > > > > > > kernel/linux/net/ipv4/tcp_ipv4.c where the sk originally has saddr
-> > > > > > > INADDR_ANY, the sk gets assigned a new address, that new address gets
-> > > > > > > updated in the bhash2 table, and then when inet_hash_connect() is
-> > > > > > > called, it fails which brings us to the "goto failure". In the failure
-> > > > > > > goto, we call "tcp_set_state(sk, TCP_CLOSE)" but in the case where
-> > > > > > > "SOCK_BINDPORT_LOCK" is held, "inet_put_port(sk)" is *not* called,
-> > > > > > > which means the sk will still be in the bhash2 table with the new
-> > > > > > > address.
-> > > > > >
-> > > > > > Correct.
-> > > > > >
-> > > > > > More precisely, 3 functions after inet_hash_connect() can cause the same
-> > > > > > issue.
-> > > > > >
-> > > > > > - ip_route_newports
-> > > > > > - tcp_fastopen_defer_connect
-> > > > > > - tcp_connect
-> > > > > >
-> > > > > >
-> > > > > > >
-> > > > > > > > So, when we call listen() for s3, inet_csk_get_port() does not call
-> > > > > > > > inet_bind_hash() and the WARN_ON() for bhash2 fires.
-> > > > > > > >
-> > > > > > > >   if (!inet_csk(sk)->icsk_bind_hash)
-> > > > > > > >         inet_bind_hash(sk, tb, tb2, port);
-> > > > > > > >   WARN_ON(inet_csk(sk)->icsk_bind_hash != tb);
-> > > > > > > >   WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
-> > > > > > > >
-> > > > > > > [...]
-> > > > > > > >
-> > > > > > > > In the s3 case, connect() falls into a different path.  We reach the
-> > > > > > > > sock_error label in __inet_stream_connect() and call sk_prot->disconnect(),
-> > > > > > > > which resets sk->sk_rcv_saddr.
-> > > > > > >
-> > > > > > > This is the case where in __inet_stream_connect(), the call to
-> > > > > > > "sk->sk_prot->connect()" succeeds but then the connection is closed by
-> > > > > > > RST/timeout/ICMP error, so then the "goto sock_error" is triggered,
-> > > > > > > correct?
-> > > > > >
-> > > > > > Yes.
-> > > > > >
-> > > > > >
-> > > > > > >
-> > > > > > > >
-> > > > > > > > Then, there could be two subsequent issues.
-> > > > > > > >
-> > > > > > > >   * listen() leaks a newly allocated bhash2 bucket
-> > > > > > > >
-> > > > > > > >   * In inet_put_port(), inet_bhashfn_portaddr() computes a wrong hash for
-> > > > > > > >     inet_csk(sk)->icsk_bind2_hash, resulting in list corruption.
-> > > > > > > >
-> > > > > > > > We can fix these easily but it still leaves inconsistent sockets in bhash2,
-> > > > > > > > so we need to fix the root cause.
-> > > > > > > >
-> > > > > > > > As a side note, this issue only happens when we bind() only port before
-> > > > > > > > connect().  If we do not bind() port, tcp_set_state(sk, TCP_CLOSE) calls
-> > > > > > > > inet_put_port() and unhashes the sk from bhash2.
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > At first, I applied the patch below so that both sk2 and sk3 trigger
-> > > > > > > > WARN_ON().  Then, I tried two approaches:
-> > > > > > > >
-> > > > > > > >   * Fix up the bhash2 entry when calling sk_rcv_saddr
-> > > > > > > >
-> > > > > > > >   * Change the bhash2 entry only when connect() succeeds
-> > > > > > > >
-> > > > > > > > The former does not work when we run out of memory.  When we change saddr
-> > > > > > > > from INADDR_ANY, inet_bhash2_update_saddr() could free (INADDR_ANY, port)
-> > > > > > > > bhash2 bucket.  Then, we possibly could not allocate it again when
-> > > > > > > > restoring saddr in the failure path.
-> > > > > > > >
-> > > > > > > > The latter does not work when a sk is in non-blocking mode.  In this case,
-> > > > > > > > a user might not call the second connect() to fix up the bhash2 bucket.
-> > > > > > > >
-> > > > > > > >   >>> s4 = socket()
-> > > > > > > >   >>> s4.bind(('0.0.0.0', 10000))
-> > > > > > > >   >>> s4.setblocking(False)
-> > > > > > > >   >>> s4
-> > > > > > > >   <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> > > > > > > >
-> > > > > > > >   >>> s4.connect(('0.0.0.1', 1))
-> > > > > > > >   Traceback (most recent call last):
-> > > > > > > >     File "<stdin>", line 1, in <module>
-> > > > > > > >   BlockingIOError: [Errno 115] Operation now in progress
-> > > > > > > >   >>> s4
-> > > > > > > >   <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('10.0.2.15', 10000)>
-> > > > > > > >
-> > > > > > > > Also, the former approach does not work for the non-blocking case.  Let's
-> > > > > > > > say the second connect() fails.  What if we fail to allocate an INADDR_ANY
-> > > > > > > > bhash2 bucket?  We have to change saddr to INADDR_ANY but cannot.... but
-> > > > > > > > the connect() actually failed....??
-> > > > > > > >
-> > > > > > > >   >>> s4.connect(('0.0.0.1', 1))
-> > > > > > > >   Traceback (most recent call last):
-> > > > > > > >     File "<stdin>", line 1, in <module>
-> > > > > > > >   ConnectionRefusedError: [Errno 111] Connection refused
-> > > > > > > >   >>> s4
-> > > > > > > >   <socket.socket fd=3, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 10000)>
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > Now, I'm thinking bhash2 bucket needs a refcnt not to be freed while
-> > > > > > > > refcnt is greater than 1.  And we need to change the conflict logic
-> > > > > > > > so that the kernel ignores empty bhash2 bucket.  Such changes could
-> > > > > > > > be big for the net tree, but the next LTS will likely be v6.1 which
-> > > > > > > > has bhash2.
-> > > > > > > >
-> > > > > > > > What do you think is the best way to fix the issue?
-> > > > > > >
-> > > > > > > To summarize your analysis, there is an issue right now where for
-> > > > > > > sockets that are binded on address INADDR_ANY,  we need to handle the
-> > > > > > > error case where if a connection fails and SOCK_BINDPORT_LOCK is held,
-> > > > > > > the new address it was assigned needs to be taken out of bhash2 and
-> > > > > > > the original address (INADDR_ANY) needs to be re-added to bhash2.
-> > > > > > > There are two of these error cases we need to handle,  as you
-> > > > > > > mentioned above - 1) in dccp/tcp_v4_connect() where the connect call
-> > > > > > > fails and 2) in __inet_stream_connect() where the connect call
-> > > > > > > succeeds but the connection is closed by a RST/timeout/ICMP error.
-> > > > > > >
-> > > > > > > I think the simplest solution is to modify inet_bhash2_update_saddr()
-> > > > > > > so that we don't free the inet_bind2_bucket() for INADDR_ANY/port (if
-> > > > > > > it is empty after we update the saddr to the new addr) *until* the
-> > > > > > > connect succeeds. When the connect succeeds, then we can check whether
-> > > > > > > the inet_bind2_bucket for INADDR_ANY is empty, and if it is, then do
-> > > > > > > the freeing for it.
-> > > > > > >
-> > > > > > > What are your thoughts on this?
-> > > > > >
-> > > > > > I was thinking the same, but this scenario will break it ?
-> > > > > >
-> > > > > >   connect() <-- unblocking socket
-> > > > > >     return -EINPROGRESS
-> > > > > >
-> > > > > >   receive SYN+ACK, send back ACK, and set state to TCP_ESTABLISEHD
-> > > > > >
-> > > > > >   free the old INADDR_ANY bucket
-> > > > > >
-> > > > > >   get RST and set state to TCP_CLOSE
-> > > > > >
-> > > > > >   connect()
-> > > > > >     goto sock_error and ->disconect() fail to restore the bucket
-> > > > > >
-> > > >
-> > > > I meant all of the above happen at the client side, so the server-side
-> > > > code is orthogonal.
-> > > >
-> > > > But I got your point.  I've misunderstood "When the connect succeeds".
-> > > > I was thinking that we'll free bhash2 bucket in the fast path where we
-> > > > send back SYN+ACK to the server.  OTOH, you meant it to be when the
-> > > > connect() syscall returns 0, right ?
-> > > >
-> > > > Then, I think it's doable, like
-> > > >
-> > > >   1) inet_bhash2_update_saddr() increments addrany_tb2->connecting
-> > > >
-> > > >   2) when connect() succeeds,
-> > > >
-> > > >      if (dec_and_test(&addrany_tb2->connecting) && is_empty(addrany_tb2->owners))
-> > > >          free(addrany_tb2);
-> > > >
-> > > >   3) while close()ing,
-> > > >
-> > > >      tb2 = ...
-> > > >      addrany_tb2 = ...
-> > > >
-> > > >      if ((sk->sk_user_locks & SOCK_BINDPORT_LOCK) &&
-> > > >          !(sk->sk_user_locks & SOCK_BINDADDR_LOCK) &&
-> > > >          tb2 != addrany_tb2 &&
-> > > >          sock->state != SS_CONNECTED &&
-> > > >          dec_and_test(&addrany_tb2->connecting) &&
-> > > >          is_empty(addrany_tb2->owners))
-> > > >          free(addrany_tb2)
-> > > >
-> > > > More consideration would be needed for inet_shutdown() etc though.
-> > >
-> > > Sorry, my terminology was ambiguous :) By "when the connect succeeds",
-> > > I meant when the call to tcp_connect() succeeds at the end of
-> > > tcp_v4_connect().
-> > >
-> > > There are 2 cases you brought up regarding connection failures on
-> > > binded INADDR_ANY sockets that might lead to a bhash2 mismatch:
-> > >
-> > > #1) in dccp/tcp_v4_connect() where an error leads to the "goto failure"
-> > > #2) in __inet_stream_connect() where an error leads to the "goto sock_error"
-> > >
-> > > Regarding #2, I don't think this leads to a bhash2 mismatch. The "goto
-> > > sock_error" triggers disconnect() and the disconnect() call will
-> > > always remove the socket from the bhash and bhash2 tables since the
-> > > socket when it was cloned had the SOCK_BINDPORT_LOCK flag unset.
+> > The Freescale FEC recently gained XDP support. Many variants of it are
+> > Fast Ethernet only.
 > >
-> > I think client sockets are not cloned.  The clone code is to create
-> > a child socket from a listener when receiving an ACK for SYN+ACK or
-> > earlier fastopen stage.
+> > What i found most interesting about that patchset was that the use of
+> > the page_ppol API made the driver significantly faster for the general
+> > case as well as XDP.
 > 
-> Gotcha, thanks for clarifying.
+> The driver didn't have any page recycling or page splitting logics,
+> while Page Pool recycles even pages from skbs if
+> skb_mark_for_recycle() is used, which is the case here. So it
+> significantly reduced the number of new page allocations for Rx, if
+> there still are any at all.
+> Plus, Page Pool allocates pages by bulks (of 16 IIRC), not one by
+> one, that reduces CPU overhead as well.
+
+Just to make sure that everything is clear, those results that I have
+shown in the cover letter are without any XDP programs on the
+interfaces. Because I thought that is the correct comparison of the
+results before and after all these changes.
+
+Once I add an XDP program on the interface the performance drops. The
+program will look for some ether types and always return XDP_PASS.
+
+These are the results when I have such a XDP program on the interface:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.01  sec   486 MBytes   408 Mbits/sec    0 sender
+[  5]   0.00-10.00  sec   483 MBytes   405 Mbits/sec      receiver
+
 > 
-> This edge case only happens when this situation occurs:
-> A socket is bound to INADDR_ANY on a specified port -> socket makes a
-> connect() call -> we run into one of these scenarios: the error case
-> in dccp/tcp_v4/6_connect() or error case in __inet_stream_connect() or
-> call to inet_shutdown()) -> in handling that error case, we remove
-> socket from bhash2's new address/port table, and try to add it to the
-> bhash2's INADDR_ANY/port table -> there is a "not enough memory" error
-> in the case where the INADDR_ANY/port table got previously freed and
-> we try to re-allocate it with kmem_cache_alloc()
-> 
-> I think the best solution is to unbind the socket if this situation
-> happens, because
-> 
-> 1) The socket will have to be unbinded in other error cases.
-> 
-> After looking at the code some more, I believe there's an existing bug
-> when resetting the socket address back to INADDR_ANY after an error
-> occurs (while BIND_PORTLOCK is set). The socket's address *cannot*
-> simply be reset back to 0 without removing it from the bhash table,
-> without first checking whether this leads to a bind conflict. For
-> example, there could be this scenario: socket 1 binds to INADDR_ANY on
-> port 443, there is no bind conflict (for example, no other sockets are
-> binded to port 443), the connect succeeds and socket1 is now assigned
-> address 1234 on port 443, then socket2 connects to port 443 on some
-> other address, there's an error that causes socket1's connection to
-> close and socket1's address is now reset back to INADDR_ANY. However,
-> socket1's address cannot be reset back to INADDR_ANY on port 443
-> because now there is a conflict with socket2 if socket1's address is
-> INADDR_ANY.
-> 
-> Thus, we need to check whether there would be a bind conflict before
-> resetting the socket's address back to INADDR_ANY. And if there is,
-> then we'd need to unbind socket1.
-> 
-> I think this fix should be in a separate patchset from any bhash2 changes.
-
-Right, I was wondering why this bug was acceptable.
-And yes, this should be a separate series.
-
-
-> 2) If the "-ENOMEM" case is hit in the kmem_cache_alloc(), I believe
-> this only happens if the system is out of memory, in which case I
-> think the socket will most likely be ineffective anyways (eg system
-> reboots)
-
-Exactly.
-
-
-> 3) This situation is a very rare corner case. I don't think it's worth
-> providing the optimal solution for, by making the common case more
-> complex (for example, not including INADDR_ANY entries in bhash2 and
-> putting them at the front of the list in bhash, as suggested by Martin
-> in a previous reply, which seems like the best solution if we were to
-> fix this optimally)
-> 
-> 
-> I propose that we do the following:
-> in the error cases in dccp/tcp_v4/6_connect(), __inet_stream_connect()
-> and inet_shutdown() where the socket's address needs to get reset back
-> to INADDR_ANY, we remove the socket (from socket's new address + port)
-> from the bhash2 table. Then we add the socket to the bhash2 table
-> using INADDR_ANY + port; in the unlikely case where this operation
-> fails due to -ENOMEM, then we unbind the socket.
-> 
-> What are your thoughts?
-
-I think it's reasonable and a good point of compromise.
-I'll post a fix that way.
-
-Thank you!
-
-
 > >
-> > When a client socket receives a SYN+ACK,
-> >
-> >   tcp_v4_rcv
-> >     tcp_v4_do_rcv
-> >       tcp_rcv_state_process
-> >         tcp_rcv_synsent_state_process
-> >           tcp_finish_connect <-- just set TCP_ESTABLISHED
-> >
-> > there's no clone, so tcp_disconnect() will not unhash sk from bhash2
-> > if the sk is bound to INADDR_ANY.
-> >
-> > Even if #1 succeeds, #2 could fail after, thus we have to take care
-> > of #2 at the same time.
-> >
-> > So, I think the only place we can free the addrany_tb2 is just after
-> > "sock->state = SS_CONNECTED;" in __inet_stream_connect().
-> >
-> >
-> > > For #1, I think the simplest way to handle this is to not free the
-> > > inet_bind2_bucket for INADDR_ANY/port when we call
-> > > inet_bhash2_update_saddr(). Then, at the end of the
-> > > dccp/tcp_v4/6_connect() call, if it is successful, we free the
-> > > INADDR_ANY/port inet_bind2_bucket if it's empty. And if that is not
-> > > successful and there was a failure somewhere, then in the "goto
-> > > failure", we remove the socket from the new_addr bind bucket / clean
-> > > up the new_addr bind bucket and re-add the socket back to the
-> > > INADDR_ANY bind bucket.
-> > >
-> > > What are your thoughts?
-> > >
-> > > >
-> > > >
-> > > > > I don't think this scenario will break it because after a successful
-> > > > > connect call, a disconnect will remove the socket from the bhash (and
-> > > > > bhash2) table altogether since the socket will *not* have
-> > > > > SOCK_BINDPORT_LOCK set.
-> > > > >
-> > > > > This is the code path I'm looking at:
-> > > > >
-> > > > > connect call is successful and the three way handshake has completed
-> > > > > -> tcp_v4_syn_recv_sock() is called where we create the new socket
-> > > > > tcp_v4_syn_recv_sock() -> tcp_create_openreq_child() ->
-> > > > > inet_csk_clone_lock() -> sk_clone_lock()
-> > > > >
-> > > > > In sk_clone_lock(), we create a newsk where newsk->sk_userlocks will
-> > > > > *not* have the SOCK_BINDPORT_LOCK flag set (newsk->sk_userlocks =
-> > > > > sk->sk_userlocks & ~SOCK_BINDPORT_LOCK;).
-> > > > >
-> > > > > If the connection gets closed by a RST/timeout/ICMP error, then this
-> > > > > socket will go through disconnect() where in the disconnect call, it
-> > > > > will remove the socket from the bhash and bhash2 tables. For example,
-> > > > > for tcp, this code path is tcp_disconnect() -> tcp_set_state(sk,
-> > > > > TCP_CLOSE) -> inet_put_port() - this is also verified by the
-> > > > > "WARN_ON(inet->inet_num && !icsk->icsk_bind_hash);" at the end of
-> > > > > tcp_disconnect().
-> > > > >
-> > > > > What are your thoughts?
-> > > > >
-> > > > > >
-> > > > > > >
-> > > > > > > Thank you.
-> > > > > > >
-> > > > > > > >
-> > > > > > > > Thank you.
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > ---8<---
-> > > > > > > > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > > > > > > > index 713b7b8dad7e..40640c26680e 100644
-> > > > > > > > --- a/net/dccp/ipv4.c
-> > > > > > > > +++ b/net/dccp/ipv4.c
-> > > > > > > > @@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > > > > > > >          * This unhashes the socket and releases the local port, if necessary.
-> > > > > > > >          */
-> > > > > > > >         dccp_set_state(sk, DCCP_CLOSED);
-> > > > > > > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > > > > > > +               inet_reset_saddr(sk);
-> > > > > > > >         ip_rt_put(rt);
-> > > > > > > >         sk->sk_route_caps = 0;
-> > > > > > > >         inet->inet_dport = 0;
-> > > > > > > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > > > > > > > index e57b43006074..626166cb6d7e 100644
-> > > > > > > > --- a/net/dccp/ipv6.c
-> > > > > > > > +++ b/net/dccp/ipv6.c
-> > > > > > > > @@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > > > > > > >
-> > > > > > > >  late_failure:
-> > > > > > > >         dccp_set_state(sk, DCCP_CLOSED);
-> > > > > > > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > > > > > > +               inet_reset_saddr(sk);
-> > > > > > > >         __sk_dst_reset(sk);
-> > > > > > > >  failure:
-> > > > > > > >         inet->inet_dport = 0;
-> > > > > > > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > > > > > > > index 7a250ef9d1b7..834245da1e95 100644
-> > > > > > > > --- a/net/ipv4/tcp_ipv4.c
-> > > > > > > > +++ b/net/ipv4/tcp_ipv4.c
-> > > > > > > > @@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > > > > > > >          * if necessary.
-> > > > > > > >          */
-> > > > > > > >         tcp_set_state(sk, TCP_CLOSE);
-> > > > > > > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > > > > > > +               inet_reset_saddr(sk);
-> > > > > > > >         ip_rt_put(rt);
-> > > > > > > >         sk->sk_route_caps = 0;
-> > > > > > > >         inet->inet_dport = 0;
-> > > > > > > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > > > > > > > index 2a3f9296df1e..81b396e5cf79 100644
-> > > > > > > > --- a/net/ipv6/tcp_ipv6.c
-> > > > > > > > +++ b/net/ipv6/tcp_ipv6.c
-> > > > > > > > @@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > > > > > > >
-> > > > > > > >  late_failure:
-> > > > > > > >         tcp_set_state(sk, TCP_CLOSE);
-> > > > > > > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > > > > > > +               inet_reset_saddr(sk);
-> > > > > > > >  failure:
-> > > > > > > >         inet->inet_dport = 0;
-> > > > > > > >         sk->sk_route_caps = 0;
-> > > > > > > > ---8<---
+> >      Andrew
+> 
+> Thanks,
+> Olek
+
+-- 
+/Horatiu
