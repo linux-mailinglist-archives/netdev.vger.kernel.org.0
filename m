@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99AF1624DAF
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4477624DB1
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:42:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbiKJWj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 17:39:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        id S230206AbiKJWl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 17:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiKJWjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:39:55 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843D849B4B
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 14:39:52 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id v1so4225444wrt.11
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 14:39:52 -0800 (PST)
+        with ESMTP id S229499AbiKJWl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:41:57 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A2849B4B;
+        Thu, 10 Nov 2022 14:41:56 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id d20so2749727plr.10;
+        Thu, 10 Nov 2022 14:41:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=V4iLy86XnflkontGUNe+PUdzrqube7RjtOxMoOG1Mdo=;
-        b=IOouANnj75KXbngN4Gq1m41HD0T46AWNAgd5dyEeQrmLCGHGe9/vvrn4zrLNcudhmg
-         OsNrSnCuHqbfPiXi9nI8si3nl0CJihjCQb8cSaT6z5BeCcVzIyz+n9570bLIPx+u0U+A
-         804QPzn2TyeTWhOjg07oeUWztZMobgkiITCfrUU84JfY8WWbS2ERJWJpapYZzVThsyas
-         fpa63Xii8r9qUVPr5WEsC68wlaahpmOJGIOJFlmgf9imek6dlMflAOWmsbqpGJLQofhf
-         OdgiS9qwRKK2tgU2llEqgK0RuwPHRGpuGG69ZwN9W9i1GA+MZ8X8V2RL1WsIqpCawZDu
-         naFw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=e4Qs9bEMZ3gDq4us7OrdRRiLVNWHDOmZfbfm48tPnck=;
+        b=qbRnu/4LZoqDMzfN1T1kE9YREn4aOucC9lhaWV9gbrwXT7sX/dmca+ETwg9QN60uej
+         p8/Lw/7Tfa456Y3swGCmPC7MqQ9wuo3x4IukSs7pmsB4ZnVsmSs6tCcwu9jjzAnodbID
+         5z6W2WyndMTL55lQSd6SEjmbeOvJ014Xw6UZzuJqQT+N0mn2hlEUwKTU3depJF9O3/yy
+         dxi0S3JnQZrzAGrA6eUWxlA+OBuyUHzpwHeNquZ6sfczJiRhHbx2YxTizx5S/KCtX6y3
+         o6jTHlJzo9M4Vm8OAmn/VAOTw2r0tZWDzXdgIMx8zflLzC5EOviXDk7Wu/i/68YDy2Ch
+         f8Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=V4iLy86XnflkontGUNe+PUdzrqube7RjtOxMoOG1Mdo=;
-        b=C9iZB0ArfTwfB8bfk7qA2tpUKW1d7DIMdkPoPFRtkn2dQgk9l26SbRqwLAyLAU5nI0
-         iGiCqPl+Emf6oxHpbjHovQzkLXzdMn4dH4A5XDJxKp//XA/sEhfL+INJf1cQMe1H97SD
-         18j8B/Ls9HSmI0c6WWk+9Hhgi0CHuC8Vp99gxcvFoFXTttQu2Wcr97j8IUGUBBmkrBRs
-         9PsnlvBRz2d6iykprH8BWlPUOoQO0Ahkr3wiDIwCrD3ynwyy8urEyTjSpbXPi3ERu0Fo
-         LXAjxOWClTmrzGY6+kB2UNU/pRf8cgKkWnIphLwrLyetXCstI86678z6lboXD7swBbFj
-         0XjA==
-X-Gm-Message-State: ACrzQf02o3DntrkNhAW+PUHKFx/tS2+/Tubg1WFxrG6QAtEyE2L4RUrp
-        KW02IoWlu+5LE58klfr7E3T51muBtl4FMyqhnYe/wFZsFyw=
-X-Google-Smtp-Source: AMsMyM4Xf4391QDFc8qq049ThSijzyacsKtGYzy9HfjUfDMDCRjjrep1dmezJC/O7RPmv1cHhquv0pmwhJBs6Ikyg8U=
-X-Received: by 2002:a05:6000:1c2:b0:236:6e69:db3d with SMTP id
- t2-20020a05600001c200b002366e69db3dmr42018745wrx.144.1668119990556; Thu, 10
- Nov 2022 14:39:50 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e4Qs9bEMZ3gDq4us7OrdRRiLVNWHDOmZfbfm48tPnck=;
+        b=NF81mlpqs9W/awISe20nct9Wxkzr0pKkCmr8LbBq0fowwV7WCApUSGnWmck/QrCSKj
+         SyacJ+50R3VXWCu/N24PNwKE23xRAFoB/V3OX1ofxIrUJdUAsrqI2+CMCQlwDc333yxa
+         vBfQhRyC0pYF5C9Hqf5QvdgJac4U9Frv6w0S1VBCZLX2Fai2GxhTYdvhIEcx39a5/WVk
+         o4XFwI0GUkIRTp0syp8JTaFJC5aBQwV/ilmVXC1vYGgVX9Wrx8yuKzvOTntoicxOGpvM
+         4ZA11zng4PDxcpA1tbmvxHGgEIhtJqOhxOcKDAQWQOm7aUfvq2eE3jt8gMBEgSGnHU61
+         h8XA==
+X-Gm-Message-State: ACrzQf195ICPz7ZTbXFKvUQh1jKEKuEf5NMkLXw998mdBq/8r80DgEYs
+        WntnwT1T48KCcA0rm33FuZI=
+X-Google-Smtp-Source: AMsMyM4nyW6+yaR60JXHJABSjQGw+eHKUCsaYHz+iJNpbD3jbsh6paIIOlj4vz9grbTk8YBdFHZ+aw==
+X-Received: by 2002:a17:902:8211:b0:183:7f67:25d7 with SMTP id x17-20020a170902821100b001837f6725d7mr2346968pln.164.1668120115608;
+        Thu, 10 Nov 2022 14:41:55 -0800 (PST)
+Received: from google.com ([2620:15c:9d:2:2eb5:1c59:61e8:a36d])
+        by smtp.gmail.com with ESMTPSA id d17-20020a170902ced100b001868ed86a95sm188133plg.174.2022.11.10.14.41.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 14:41:54 -0800 (PST)
+Date:   Thu, 10 Nov 2022 14:41:51 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Balamanikandan Gunasundar 
+        <balamanikandan.gunasundar@microchip.com>
+Cc:     ludovic.desroches@microchip.com, ulf.hansson@linaro.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        3chas3@gmail.com, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH] mmc: atmel-mci: Convert to gpio descriptors
+Message-ID: <Y21+L01BcPQ35FYi@google.com>
+References: <20221109043845.16617-1-balamanikandan.gunasundar@microchip.com>
 MIME-Version: 1.0
-References: <20221110172800.1228118-1-jeroendb@google.com>
-In-Reply-To: <20221110172800.1228118-1-jeroendb@google.com>
-From:   Jeroen de Borst <jeroendb@google.com>
-Date:   Thu, 10 Nov 2022 14:39:39 -0800
-Message-ID: <CAErkTsT8mXJqLGKc8M2Aoz9h6+h=5Zw2L9UGb4KS2Ynp22cqBA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] Handle alternate miss-completions
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221109043845.16617-1-balamanikandan.gunasundar@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,30 +74,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I should have prefixed these with 'gve:'. Let me know if I should resend them.
+Hi Balamanikandan,
 
-Apologies,
-Jeroen
+On Wed, Nov 09, 2022 at 10:08:45AM +0530, Balamanikandan Gunasundar wrote:
+> Replace the legacy GPIO APIs with gpio descriptor consumer interface.
+> 
+> To maintain backward compatibility, we rely on the "cd-inverted"
+> property to manage the invertion flag instead of GPIO property.
+> 
+> Signed-off-by: Balamanikandan Gunasundar <balamanikandan.gunasundar@microchip.com>
+> ---
+>  drivers/mmc/host/atmel-mci.c | 79 ++++++++++++++++++------------------
+>  include/linux/atmel-mci.h    |  4 +-
+>  2 files changed, 41 insertions(+), 42 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/atmel-mci.c b/drivers/mmc/host/atmel-mci.c
+> index 67b2cd166e56..1df90966e104 100644
+> --- a/drivers/mmc/host/atmel-mci.c
+> +++ b/drivers/mmc/host/atmel-mci.c
+> @@ -19,7 +19,8 @@
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> -#include <linux/of_gpio.h>
+> +#include <linux/irq.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/scatterlist.h>
+>  #include <linux/seq_file.h>
+> @@ -389,8 +390,8 @@ struct atmel_mci_slot {
+>  #define ATMCI_CARD_NEED_INIT	1
+>  #define ATMCI_SHUTDOWN		2
+>  
+> -	int			detect_pin;
+> -	int			wp_pin;
+> +	struct gpio_desc        *detect_pin;
+> +	struct gpio_desc	*wp_pin;
+>  	bool			detect_is_active_high;
+>  
+>  	struct timer_list	detect_timer;
+> @@ -638,7 +639,11 @@ atmci_of_init(struct platform_device *pdev)
+>  			pdata->slot[slot_id].bus_width = 1;
+>  
+>  		pdata->slot[slot_id].detect_pin =
+> -			of_get_named_gpio(cnp, "cd-gpios", 0);
+> +			devm_gpiod_get_from_of_node(&pdev->dev, cnp,
+> +						    "cd-gpios",
+> +						    0, GPIOD_IN, "cd-gpios");
+
+As I mentioned in another email, please use devm_fwnode_gpiod_get()
+instead of devm_gpiod_get_from_of_node() which is going away.
+
+> +		if (IS_ERR(pdata->slot[slot_id].detect_pin))
+> +			pdata->slot[slot_id].detect_pin = NULL;
+
+I think it would be much better if we had proper error handling and did
+something like:
+
+		err = PTR_ERR_OR_ZERO(pdata->slot[slot_id].detect_pin);
+		if (err) {
+			if (err != -ENOENT)
+				return ERR_PTR(err);
+			pdata->slot[slot_id].detect_pin = NULL;
+		}
+
+This will help with proper deferral handling.
+
+>  
+>  		pdata->slot[slot_id].detect_is_active_high =
+>  			of_property_read_bool(cnp, "cd-inverted");
+
+Instead of doing gpiod_set_value_raw() below I would recommend handling
+it here via gpiod_is_active_low() and gpiod_toggle_active_low() and
+removing the flag from atmel_mci_slot structure.
 
 
-On Thu, Nov 10, 2022 at 9:28 AM Jeroen de Borst <jeroendb@google.com> wrote:
->
-> Some versions of the virtual NIC present miss-completions in
-> an alternative way. This patch-set lets the diver handle these
-> alternate completions and announce this capability to the device.
->
-> Jeroen de Borst (2):
->   Adding a new AdminQ command to verify driver
->   Handle alternate miss completions
->
->  drivers/net/ethernet/google/gve/gve.h         |  1 +
->  drivers/net/ethernet/google/gve/gve_adminq.c  | 19 +++++++
->  drivers/net/ethernet/google/gve/gve_adminq.h  | 51 ++++++++++++++++++
->  .../net/ethernet/google/gve/gve_desc_dqo.h    |  5 ++
->  drivers/net/ethernet/google/gve/gve_main.c    | 52 +++++++++++++++++++
->  drivers/net/ethernet/google/gve/gve_tx_dqo.c  | 18 ++++---
->  6 files changed, 140 insertions(+), 6 deletions(-)
->
-> --
-> 2.38.1.431.g37b22c650d-goog
->
+> @@ -647,7 +652,11 @@ atmci_of_init(struct platform_device *pdev)
+>  			of_property_read_bool(cnp, "non-removable");
+>  
+>  		pdata->slot[slot_id].wp_pin =
+> -			of_get_named_gpio(cnp, "wp-gpios", 0);
+> +			devm_gpiod_get_from_of_node(&pdev->dev, cnp,
+> +						    "wp-gpios",
+> +						    0, GPIOD_IN, "wp-gpios");
+> +		if (IS_ERR(pdata->slot[slot_id].wp_pin))
+> +			pdata->slot[slot_id].wp_pin = NULL;
+>  	}
+>  
+>  	return pdata;
+> @@ -1511,8 +1520,8 @@ static int atmci_get_ro(struct mmc_host *mmc)
+>  	int			read_only = -ENOSYS;
+>  	struct atmel_mci_slot	*slot = mmc_priv(mmc);
+>  
+> -	if (gpio_is_valid(slot->wp_pin)) {
+> -		read_only = gpio_get_value(slot->wp_pin);
+> +	if (slot->wp_pin) {
+> +		read_only = gpiod_get_value(slot->wp_pin);
+
+Consider using "cansleep" variants.
+
+Thanks.
+
+-- 
+Dmitry
