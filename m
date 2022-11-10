@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27881623ABD
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 05:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBD86623ABB
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 05:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbiKJEAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 23:00:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55658 "EHLO
+        id S232380AbiKJEAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 23:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiKJEAT (ORCPT
+        with ESMTP id S229811AbiKJEAT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 23:00:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDCB2496E
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 20:00:18 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE1CC77E;
+        Wed,  9 Nov 2022 20:00:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 114B1B8208B
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D777C433B5;
-        Thu, 10 Nov 2022 04:00:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34CF761D6D;
+        Thu, 10 Nov 2022 04:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 86087C43141;
+        Thu, 10 Nov 2022 04:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668052815;
-        bh=CPOjXDDk9AgeAG/mKa+JQg1iYQRa51eJl1b+WBMMiCs=;
+        s=k20201202; t=1668052816;
+        bh=WGSy2McO/RmZZ2NSZddm01Mbg6pV/8K6d2Vdk3cSOcc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZEmkZtKerI6zl6l9qpMt2LucHS8xR+T0uYf7v0wcuGVBYTyMpKnHazhHHRVKIVxJG
-         z7ZR/uhuZHZ4gYBQCtlp0N1/stkt9U3anO7M+suUafBJAAG+5GoRvQmY1dzcg/RYd1
-         lHeuUXXcJ04qG0V+E2Da0sDCRUkwhvlYeopwBTcHFlKmF86gZl9Suc7Ve6JjPUkrQ2
-         SfimWpwMj8Y0EDjZayXDyA/r+p4QIdsr47UV8iUXizUmzSyZBYQSNm6YPptZiwr+/4
-         ppmw06UdUR0qm1ooomvp+U3S+M/q9xFLDg3/00nMqOcUaZprOhckihkYdsyFFzEyk6
-         ogmTlWSmeJe6Q==
+        b=BCOsycgF1natrdg+h3AJdoDgHl0hfuJ2rrOvaM0U5Hqw3aSRM4vgtSZg2J5/FfTCn
+         kGdUAJf23LtX3P0nsRLJIOAKVx3wQEg/9U9nnCEnQxumqSHZpzH6V6GTT/N26ZHvQ3
+         gX1R+yYGbeT9FtXYn7jom3qqJ8G2Wny9mNK8PtiK4F/DLLzmYKm/kgmZo4wglLotBC
+         Zmb378AcTD01eAiMEnhfxcW3Pn5qKJf8nWA2MDquz0a7c4dt7smjkVRgXMfMiAURyT
+         8jHOAJq0y6MuY9sreNOB58YxNa0NljxicH77y1ArGpX466ghNpsJ/+1VszH+OzNQEm
+         toN6Z2AfYOmVw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7AE20E21EEC;
-        Thu, 10 Nov 2022 04:00:15 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 66034C395F6;
+        Thu, 10 Nov 2022 04:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] cxgb4vf: shut down the adapter when
- t4vf_update_port_info() failed in cxgb4vf_open()
+Subject: Re: [resend,
+ PATCH net-next v1 1/1] mac_pton: Don't access memory over expected length
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166805281549.8987.7985515761353959392.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Nov 2022 04:00:15 +0000
-References: <20221109012100.99132-1-shaozhengchao@huawei.com>
-In-Reply-To: <20221109012100.99132-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, rajur@chelsio.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        arjun@chelsio.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
+Message-Id: <166805281641.8987.13644069334014062927.git-patchwork-notify@kernel.org>
+Date:   Thu, 10 Nov 2022 04:00:16 +0000
+References: <20221108141108.62974-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20221108141108.62974-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,22 +59,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 9 Nov 2022 09:21:00 +0800 you wrote:
-> When t4vf_update_port_info() failed in cxgb4vf_open(), resources applied
-> during adapter goes up are not cleared. Fix it. Only be compiled, not be
-> tested.
+On Tue,  8 Nov 2022 16:11:08 +0200 you wrote:
+> The strlen() may go too far when estimating the length of
+> the given string. In some cases it may go over the boundary
+> and crash the system which is the case according to the commit
+> 13a55372b64e ("ARM: orion5x: Revert commit 4904dbda41c8.").
 > 
-> Fixes: 18d79f721e0a ("cxgb4vf: Update port information in cxgb4vf_open()")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Rectify this by switching to strnlen() for the expected
+> maximum length of the string.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] cxgb4vf: shut down the adapter when t4vf_update_port_info() failed in cxgb4vf_open()
-    https://git.kernel.org/netdev/net/c/c6092ea1e6d7
+  - [resend,net-next,v1,1/1] mac_pton: Don't access memory over expected length
+    https://git.kernel.org/netdev/net-next/c/21780f89d658
 
 You are awesome, thank you!
 -- 
