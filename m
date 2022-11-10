@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E68666249FC
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 19:52:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35D5D624A08
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 20:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbiKJSww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 13:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        id S229638AbiKJS76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 13:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiKJSwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 13:52:49 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D211DA59
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:52:43 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id l6so1472390ilq.3
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:52:42 -0800 (PST)
+        with ESMTP id S229547AbiKJS75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 13:59:57 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC4731ED6;
+        Thu, 10 Nov 2022 10:59:56 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id a5so4502469edb.11;
+        Thu, 10 Nov 2022 10:59:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MaS3U08LyNcGzLT7FX/+u25NsWbC+DcNzQ0FjjWVgB0=;
-        b=I5wpQl2tuZWPGvUBhZKA7beKI9wskjEFEbyN80pJwRF6hSd+jpfMWkVZwyMmb/kQHi
-         s2DQ9Fj0QtkqfQmvh/4Um1q8D/YgC4D5HYhnr50TZKUCcplDzg/k9MVqKJGW4XzZdnaa
-         hsSh5P6vwL58w1lygMaAwGaK08kXx97SCbXPvj7IMo+cpBgyjaD6Utj+seDrHzfBcw5S
-         Th+AJwKuZ2y8GzAgkBCSV+SIiIpY5o6Zxb1IDEMpmKc1WvW5d035/8VvOF4erj8/jVt9
-         hNP7WLjCU1S2DVajU/i9ytGGZkxTEn+PXKbHzrUc//Y61fkiRLsKFevAPBNf2mgrTd5e
-         N6MA==
+        bh=OFD6dHIKLOj9WTsvJGAdHDB+B0oqTySpMZACmzX/s0M=;
+        b=a3cRTzxlgUgLRKVcunDNzzh1EuNC3xBxlfHZBP1l/6bw7VDMhuPUnzyJSBxROzvjse
+         UuxqsPP1WmVTHQWmj3YkxXgjIy8TA863ZcB8tOMcpbNlkvqNBffRLLZxylllQ9ZffvBd
+         xFhr20EYj4r+B+qXcuDLMSWGwCqsOEMJ1jycGDW+stNr6Nb1hFuRuXTtibm/+/okNGmn
+         et1hMkhT1g3HPqkNOYrT8fUsip/3g3QFi/cCZi50/vwdfQ1G2S2z6Xrc9t+bW+Jz4WVC
+         I1iBe5RtOS8gK3esLPPzp9YmML3xf/YdkN9Ud5boB4i8fzKOKtm2cSeHIW3kDZW2OZ8h
+         RVGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=MaS3U08LyNcGzLT7FX/+u25NsWbC+DcNzQ0FjjWVgB0=;
-        b=u79aw7+51OKDmeFMQ+Okfv0ayfjVZKnG/l2xUKoXz4Ds7WGNkrX1hNAnhDs9QqSJ/p
-         2Z3ujXIM731vEKPgEY+Urt+xhHYt4yxQ7F1cxRJ06Vot7YrIRMU21Uut6H9AJSORKK1C
-         2/yx9w78Mw4tw/0dV74e57Uds9IeqFnvWsMltK7uZ0oNvXLtYXmqMBCxYK7ljpL64QYP
-         GJRwLsvVjkrnN9+JHnFg8RrjxEl818xhV2NNarxX23q5l319Tdivt8azt+xu1zvpTejP
-         9Q36FO4gqfLMrjTAyeBDuozIPh4zl9AK9zvEOUqA74l8O1GvK8j+Qjg+CJwGvZUE6N1O
-         cMag==
-X-Gm-Message-State: ACrzQf2aDZE0NrK32wIA3ibYFSfcTAs/CphKcQz5Vb2xtyUs/bCqax3g
-        mBkZmGs6dwhR/uWKQW5TUGJ781TNZieEIfE3wWs53A==
-X-Google-Smtp-Source: AMsMyM4l7V/phVfcs1QUfEuMPnt2QNGEdDusWFMhxKynKEl5lGw+WcBSLbT/S3+gTzTYM+6PDiGs/ffDdMCuFF6jD2s=
-X-Received: by 2002:a92:4b01:0:b0:300:d5f1:c1b0 with SMTP id
- m1-20020a924b01000000b00300d5f1c1b0mr3198330ilg.133.1668106362288; Thu, 10
- Nov 2022 10:52:42 -0800 (PST)
+        bh=OFD6dHIKLOj9WTsvJGAdHDB+B0oqTySpMZACmzX/s0M=;
+        b=tHdfy1H4ZzN7r4cjMTEi1+abW1N4MMN6RHlVHI8yFk5MP6UvCT90UFFH4odjAYyHNs
+         JMiwvYwic91V6OGuxa7BLn2ci+nfG8mdjMpF/VmO6qEC1CHmkySK/SI0lADy/HFsHicP
+         pDJL/thgld//MFxZjQ6hn8ATtXujMWB4dlxeQw1bNEkjOVDZBd8jLXlfFnE/LOk48F9j
+         P1hIAeYMI5egzVNr0lt/dxfw/oe+jXgcw/n8JfrK2R16GNtl+uTFBgfqgHgRjrNu+knO
+         KA70wCEoUdjM//+DxqNk/MIJ38ZoUUTNXIlJfZ8ZohDsgpZ0pF0BR5/qO3wAAs1y0z2E
+         sbKw==
+X-Gm-Message-State: ACrzQf1zWpOiSNkWo5zCnK6OAbHZW+6EC3itk2RlihjsO8GBHdhLbxbt
+        W3VWDMUnAfY8SvNh1kGQ8WNMvIkSh+lktOhGJ9k=
+X-Google-Smtp-Source: AMsMyM5DFddoK+Yjq+zjmDijnQJ+gS7zXwRABOHTq2sRTynMOzcBZfxJAmyDNVLYnnHG1DcVzLXkqaglz6kViyKHJxY=
+X-Received: by 2002:a50:e614:0:b0:461:15f0:a574 with SMTP id
+ y20-20020a50e614000000b0046115f0a574mr3088097edm.187.1668106794469; Thu, 10
+ Nov 2022 10:59:54 -0800 (PST)
 MIME-Version: 1.0
-References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-5-sdf@google.com>
- <636c4514917fa_13c168208d0@john.notmuch> <CAKH8qBvS9C5Z2L2dT4Ze-dz7YBSpw52VF6iZK5phcU2k4azN5A@mail.gmail.com>
- <636c555942433_13ef3820861@john.notmuch> <CAKH8qBtiNiwbupP-jvs5+nSJRJS4DfZGEPsaYFdQcPKu+8G30g@mail.gmail.com>
- <636d37629d5c4_145693208e6@john.notmuch>
-In-Reply-To: <636d37629d5c4_145693208e6@john.notmuch>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 10 Nov 2022 10:52:31 -0800
-Message-ID: <CAKH8qBugxJB5i=QzNEMrZ-TVAnOTpXuWbxMjECRd5HOxPSFP5Q@mail.gmail.com>
-Subject: Re: [RFC bpf-next v2 04/14] veth: Support rx timestamp metadata for xdp
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
+References: <CAJnrk1ZF_0vG0gS0cVVjZSaiKpCFCbw3=C9twQqy-n9qPjoBiQ@mail.gmail.com>
+ <20221107011451.35814-1-kuniyu@amazon.com>
+In-Reply-To: <20221107011451.35814-1-kuniyu@amazon.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 10 Nov 2022 10:59:43 -0800
+Message-ID: <CAJnrk1bNPyb=hb2f6rSeusSon_3=vgQz6+OiJOyuuAwVqjS=wQ@mail.gmail.com>
+Subject: Re: [PATCH v1 net] dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     acme@mandriva.com, davem@davemloft.net, dccp@vger.kernel.org,
+        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
+        kuni1840@gmail.com, martin.lau@kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, william.xuanziyang@huawei.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,107 +70,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 9:39 AM John Fastabend <john.fastabend@gmail.com> wrote:
+ hOn Sun, Nov 6, 2022 at 5:15 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 >
-> Stanislav Fomichev wrote:
-> > On Wed, Nov 9, 2022 at 5:35 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> From:   Joanne Koong <joannelkoong@gmail.com>
+> Date:   Sun, 6 Nov 2022 11:18:44 -0800
+> > On Thu, Nov 3, 2022 at 10:24 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 > > >
-> > > Stanislav Fomichev wrote:
-> > > > On Wed, Nov 9, 2022 at 4:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > > > >
-> > > > > Stanislav Fomichev wrote:
-> > > > > > xskxceiver conveniently setups up veth pairs so it seems logical
-> > > > > > to use veth as an example for some of the metadata handling.
-> > > > > >
-> > > > > > We timestamp skb right when we "receive" it, store its
-> > > > > > pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
-> > > > > > reach it from the BPF program.
-> > > > > >
-> > > > > > This largely follows the idea of "store some queue context in
-> > > > > > the xdp_buff/xdp_frame so the metadata can be reached out
-> > > > > > from the BPF program".
-> > > > > >
-> > > > >
-> > > > > [...]
-> > > > >
-> > > > > >       orig_data = xdp->data;
-> > > > > >       orig_data_end = xdp->data_end;
-> > > > > > +     vxbuf.skb = skb;
-> > > > > >
-> > > > > >       act = bpf_prog_run_xdp(xdp_prog, xdp);
-> > > > > >
-> > > > > > @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
-> > > > > >                       struct sk_buff *skb = ptr;
-> > > > > >
-> > > > > >                       stats->xdp_bytes += skb->len;
-> > > > > > +                     __net_timestamp(skb);
-> > > > >
-> > > > > Just getting to reviewing in depth a bit more. But we hit veth with lots of
-> > > > > packets in some configurations I don't think we want to add a __net_timestamp
-> > > > > here when vast majority of use cases will have no need for timestamp on veth
-> > > > > device. I didn't do a benchmark but its not free.
-> > > > >
-> > > > > If there is a real use case for timestamping on veth we could do it through
-> > > > > a XDP program directly? Basically fallback for devices without hw timestamps.
-> > > > > Anyways I need the helper to support hardware without time stamping.
-> > > > >
-> > > > > Not sure if this was just part of the RFC to explore BPF programs or not.
-> > > >
-> > > > Initially I've done it mostly so I can have selftests on top of veth
-> > > > driver, but I'd still prefer to keep it to have working tests.
+> > > When connect() is called on a socket bound to the wildcard address,
+> > > we change the socket's saddr to a local address.  If the socket
+> > > fails to connect() to the destination, we have to reset the saddr.
 > > >
-> > > I can't think of a use for it though so its just extra cycles. There
-> > > is a helper to read the ktime.
-> >
-> > As I mentioned in another reply, I wanted something SW-only to test
-> > this whole metadata story.
->
-> Yeah I see the value there. Also because this is in the veth_xdp_rcv
-> path we don't actually attach XDP programs to veths except for in
-> CI anyways. I assume though if someone actually does use this in
-> prod having an extra _net_timestamp there would be extra unwanted
-> cycles.
->
-> > The idea was:
-> > - veth rx sets skb->tstamp (otherwise it's 0 at this point)
-> > - veth kfunc to access rx_timestamp returns skb->tstamp
-> > - xsk bpf program verifies that the metadata is non-zero
-> > - the above shows end-to-end functionality with a software driver
->
-> Yep 100% agree very handy for testing just not sure we can add code
-> to hotpath just for testing.
->
-> >
-> > > > Any way I can make it configurable? Is there some ethtool "enable tx
-> > > > timestamping" option I can reuse?
+> > > However, when an error occurs after inet_hash6?_connect() in
+> > > (dccp|tcp)_v[46]_conect(), we forget to reset saddr and leave
+> > > the socket bound to the address.
 > > >
-> > > There is a -T option for timestamping in ethtool. There are also the
-> > > socket controls for it. So you could spin up a socket and use it.
-> > > But that is a bit broken as well I think it would be better if the
-> > > timestamp came from the receiving physical nic?
+> > > From the user's point of view, whether saddr is reset or not varies
+> > > with errno.  Let's fix this inconsistent behaviour.
 > > >
-> > > I have some mlx nics here and a k8s cluster with lots of veth
-> > > devices so I could think a bit more. I'm just not sure why I would
-> > > want the veth to timestamp things off hand?
+> > > Note that with this patch, the repro [0] will trigger the WARN_ON()
+> > > in inet_csk_get_port() again, but this patch is not buggy and rather
+> > > fixes a bug papering over the bhash2's bug [1] for which we need
+> > > another fix.
+> > >
+> > > For the record, the repro causes -EADDRNOTAVAIL in inet_hash6_connect()
+> > > by this sequence:
+> > >
+> > >   s1 = socket()
+> > >   s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+> > >   s1.bind(('127.0.0.1', 10000))
+> > >   s1.sendto(b'hello', MSG_FASTOPEN, (('127.0.0.1', 10000)))
+> > >   # or s1.connect(('127.0.0.1', 10000))
+> > >
+> > >   s2 = socket()
+> > >   s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+> > >   s2.bind(('0.0.0.0', 10000))
+> > >   s2.connect(('127.0.0.1', 10000))  # -EADDRNOTAVAIL
+> > >
+> > >   s2.listen(32)  # WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
+> > >
+> > > [0]: https://syzkaller.appspot.com/bug?extid=015d756bbd1f8b5c8f09
+> > > [1]: https://lore.kernel.org/netdev/20221029001249.86337-1-kuniyu@amazon.com/
+> > >
+> > > Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
+> > > Fixes: 7c657876b63c ("[DCCP]: Initial implementation")
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > ---
+> > >  net/dccp/ipv4.c     | 2 ++
+> > >  net/dccp/ipv6.c     | 2 ++
+> > >  net/ipv4/tcp_ipv4.c | 2 ++
+> > >  net/ipv6/tcp_ipv6.c | 2 ++
+> > >  4 files changed, 8 insertions(+)
+> > >
+> > > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+> > > index 713b7b8dad7e..40640c26680e 100644
+> > > --- a/net/dccp/ipv4.c
+> > > +++ b/net/dccp/ipv4.c
+> > > @@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > >          * This unhashes the socket and releases the local port, if necessary.
+> > >          */
+> > >         dccp_set_state(sk, DCCP_CLOSED);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >         ip_rt_put(rt);
+> > >         sk->sk_route_caps = 0;
+> > >         inet->inet_dport = 0;
+> > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> > > index e57b43006074..626166cb6d7e 100644
+> > > --- a/net/dccp/ipv6.c
+> > > +++ b/net/dccp/ipv6.c
+> > > @@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> > >
+> > >  late_failure:
+> > >         dccp_set_state(sk, DCCP_CLOSED);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >         __sk_dst_reset(sk);
+> > >  failure:
+> > >         inet->inet_dport = 0;
+> > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > > index 87d440f47a70..6a3a732b584d 100644
+> > > --- a/net/ipv4/tcp_ipv4.c
+> > > +++ b/net/ipv4/tcp_ipv4.c
+> > > @@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > >          * if necessary.
+> > >          */
+> > >         tcp_set_state(sk, TCP_CLOSE);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >         ip_rt_put(rt);
+> > >         sk->sk_route_caps = 0;
+> > >         inet->inet_dport = 0;
+> > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > > index 2a3f9296df1e..81b396e5cf79 100644
+> > > --- a/net/ipv6/tcp_ipv6.c
+> > > +++ b/net/ipv6/tcp_ipv6.c
+> > > @@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> > >
+> > >  late_failure:
+> > >         tcp_set_state(sk, TCP_CLOSE);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >  failure:
+> > >         inet->inet_dport = 0;
+> > >         sk->sk_route_caps = 0;
+> > > --
+> > > 2.30.2
+> > >
 > >
-> > -T is for dumping only it seems?
+> > inet_reset_saddr() sets both inet_saddr and inet_rcv_saddr to 0, but I
+> > think there are some edge cases where when dccp/tcp_v4/6_connect() is
+> > called, inet_saddr is 0 but inet_rcv_saddr is not, which means we'd
+> > need to reset inet_rcv_saddr to its original value. The example case
+> > I'm looking at is  __inet_bind() where if the request is to bind to a
+> > multicast address,
 > >
-> > I'm probably using skb->tstamp in an unconventional manner here :-/
-> > Do you know if enabling timestamping on the socket, as you suggest,
-> > will get me some non-zero skb_hwtstamps with xsk?
-> > I need something to show how the kfunc can return this data and how
-> > can this data land in xdp prog / af_xdp chunk..
+> >     inet->inet_rcv_saddr = inet->inet_saddr = addr->sin_addr.s_addr;
+> >     if (chk_addr_ret == RTN_MULTICAST || chk_addr_ret == RTN_BROADCAST)
+> >         inet->inet_saddr = 0;  /* Use device */
 >
-> Take a look at ./Documentation/networking/timestamping.rst the 3.1
-> section is maybe relevant. But then you end up implementing a bunch
-> of random ioctls for no reason other than testing. Maybe worth doing
-> though for this not sure.
+> Thanks for reviewing.
+>
+> We have to take care of these two error paths.
+>
+>   * (dccp|tcp)_v[46]_coonnect()
+>   * __inet_stream_connect()
+>
+> In __inet_stream_connect(), we call ->disconnect(), which already has the
+> same logic in this patch.
+>
+> In your edge case, once (dccp|tcp)_v[46]_coonnect() succeeds, both of
+> inet->inet_saddr and sk_rcv_saddr are non-zero.  If connect() fails after
+> that, in ->disconnect(), we cannot know if we should restore sk_rcv_saddr
+> only.  Also, we don't have the previous address there.
+>
+> For these reasons, we reset both addresses only if the sk was bound to
+> INADDR_ANY, which we can detect by the SOCK_BINDADDR_LOCK flag.
+>
+> As you mentinoed, we can restore sk_rcv_saddr for the edge case in
+> (dccp|tcp)_v[46]_coonnect() but cannot in __inet_stream_connect().
+>
+> If we do so, we need another flag for the case and another member to save
+> the old multicast/broadcast address. (+ where we need rehash for bhash2)
+>
+> What do you think ?
 
-Hmm, there is a call to skb_tx_timestamp in veth_xmit that I missed.
-Let me see if I can make it insert skb->tstamp by turning on one of
-the timestamping options you mentioned..
+Sorry for the late reply Kuniyuki, I didn't see your email in my inbox
+until Paolo resurfaced it.
 
+I think this error case (eg multicast address) will be very rare +
+have minimal side-effects, and isn't worth accounting for in
+__inet_stream_connect(). In (dccp|tcp)_v[46]_coonnect(), it seems
+simple to address because we already track the previous sk address in
+the "prev_sk_rcv_saddr" variable.
 
-> Using virtio driver might be actual useful and give you a test device.
-> Early XDP days I used it for testing a lot. Would require qemu to
-> setup though.
+ALso, as a side-note, I think we'll need an additional patch to fix an
+existing bug that's related to resetting saddrs, where we'll need to
+first check whether there's a bind conflict in the bhash/bhash2 table
+before we can reset its saddr back to 0
+(https://lore.kernel.org/netdev/CAJnrk1Z1UFmJ2_-7G6sdNHYy0jfjbJjWiCmAzqtLN9dkJ_g+vA@mail.gmail.com/
+has some more info). I don't think that issue blocks this patch
+though.
