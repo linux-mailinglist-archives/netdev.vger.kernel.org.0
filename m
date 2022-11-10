@@ -2,113 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19CD5623A74
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 04:30:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5BA8623AB2
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 04:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232643AbiKJDa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 22:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
+        id S232038AbiKJDyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 22:54:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232636AbiKJDaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 22:30:23 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F2A28E3D
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 19:30:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7408ECE2083
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 03:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B1D91C433D6;
-        Thu, 10 Nov 2022 03:30:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668051018;
-        bh=K+8a66hs8qAIAe/6tZ9tl3yQ2XhnG4uFdwh/r7DvqNo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WeFd2Yjzi/5eYvTaMuyEua8jd+tCzL3wCoXpYUX5fqOt94XV88kpPN23+ioUW8YVx
-         182+rWgk4qI6owhTCf1QqMxRaLzmqpTPUbIpOYd3dV2mxc1gAEPHrj8l8Y+y9AD0c5
-         kqivFBKyIPoNt2BSRQmIC6aOvBegYgd1H1VabPrJXYoweQ6B9CHBYTJ6CJozg0dohj
-         t2vUJnL8lN8CsXeOpHy2CfRjulwyGm75sFyrZKNGqyWthPWbEXt7Xvx1U14Xuc2dA7
-         utL8fhVBoczAxxZqHfiKbaDSxVpSoAMuRaOYxpPOmee4nvNW3HdWWGCFzL6WHunGtf
-         dtJnMR7SKKLCQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9933AC395FE;
-        Thu, 10 Nov 2022 03:30:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231273AbiKJDyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 22:54:16 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A90A2036E;
+        Wed,  9 Nov 2022 19:54:15 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id l2so356518qtq.11;
+        Wed, 09 Nov 2022 19:54:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/WcFTxcQEwKckJIle9VyJm9hPlnq4Y+jRId8BIZQWIM=;
+        b=k00h82bCwMLL8WEPd6wNvDjen151hRuIRVvYUEGwGr1ycrar9UT8wJJYnrUq/SfT9c
+         EIGWcIKmZEUIinam/RrQaooxH0obVxXJR4kc+fsugf5nz6BIn+a/SCFcUcKxqR+9Qqg4
+         TY7U40UOBU2I1bjTK4ZJuTgBmpEZn4qh1qihAeqgdbO2p4rE3d1ClaKaFX+Gj21PeN/W
+         5l87zcsxMdvytje/q874VqbcKc8wgyS4Fy/xVzNe4wwsAki1jhkpvKnIBM4l+pca3vcQ
+         slmB9kV7k6aCgwuJXRO5rpbXJYoo32LDScC7jnhQhvOCr/mvFLZWcfVIkMk42WXAEGAg
+         qBfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/WcFTxcQEwKckJIle9VyJm9hPlnq4Y+jRId8BIZQWIM=;
+        b=JjhnPKXfG4/aQxzOywX9ylP/Zxi7UGWNaNFsh2P2d/GhwCrbiobpk6yZ2iEdOzb8+/
+         mmAp0IcSVFpvbhUegOeO00oPDW9Tqng/F2TiAIcN8v5Don7jjL0NFMWQMtoBPe93hPgB
+         ukVurnQTd/gadhwaVmMZjscAiAL5Zx30WI7zVhoevy1WGv+/m09IYpam4hYQwX8znCmj
+         aO0HtzC5+yRqvjzOThoUV2P/qAEVKihQf6EbCgVHs/VTzi/b0+zto7xOoX7jAAxw0ZuW
+         MU4VAS/4+eUaZyqixJZPCQSIxLeOIBBar8b7kjRDAixvGtK8aJWyoh8kHcd95KBUTd1V
+         42Dw==
+X-Gm-Message-State: ACrzQf28H72Pjvz2dlPQbMhU7CSnhgSVFzu/xuUqDkPgbgConvqr+HQg
+        vC0F/bqOifv00MDeGdCDqSs=
+X-Google-Smtp-Source: AMsMyM56+ZzdoVNapXufA8dB3pvhOvMhLMPnmCQGrHGzttxmy6rP4AlpW6LhpHPeDlblwQZz2lTjiw==
+X-Received: by 2002:ac8:789:0:b0:3a5:8186:2aff with SMTP id l9-20020ac80789000000b003a581862affmr18685056qth.188.1668052454137;
+        Wed, 09 Nov 2022 19:54:14 -0800 (PST)
+Received: from [192.168.1.102] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id bl42-20020a05620a1aaa00b006fa8299b4d5sm12180335qkb.100.2022.11.09.19.54.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Nov 2022 19:54:13 -0800 (PST)
+Message-ID: <e1640d1f-f143-7b0e-8adc-002e115ef7f1@gmail.com>
+Date:   Wed, 9 Nov 2022 19:54:10 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/15] mlxsw: Add 802.1X and MAB offload support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166805101862.26797.801225756307788281.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Nov 2022 03:30:18 +0000
-References: <cover.1667902754.git.petrm@nvidia.com>
-In-Reply-To: <cover.1667902754.git.petrm@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ivecera@redhat.com, netdev@vger.kernel.org,
-        razor@blackwall.org, roopa@nvidia.com, jiri@nvidia.com,
-        bridge@lists.linux-foundation.org, idosch@nvidia.com,
-        netdev@kapio-technology.com, mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v2] net: phy: marvell: add sleep time after
+ enabling the loopback bit
+Content-Language: en-US
+To:     Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, tee.min.tan@intel.com,
+        muhammad.husaini.zulkifli@intel.com, hong.aun.looi@intel.com
+References: <20221108074005.28229-1-aminuddin.jamaluddin@intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20221108074005.28229-1-aminuddin.jamaluddin@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 8 Nov 2022 11:47:06 +0100 you wrote:
-> Ido Schimmel <idosch@nvidia.com> writes:
+On 11/7/2022 11:40 PM, Aminuddin Jamaluddin wrote:
+> Sleep time is added to ensure the phy to be ready after loopback
+> bit was set. This to prevent the phy loopback test from failing.
 > 
-> This patchset adds 802.1X [1] and MAB [2] offload support in mlxsw.
+> ---
+> V1: https://patchwork.kernel.org/project/netdevbpf/patch/20220825082238.11056-1-aminuddin.jamaluddin@intel.com/
+> ---
 > 
-> Patches #1-#3 add the required switchdev interfaces.
+> Fixes: 020a45aff119 ("net: phy: marvell: add Marvell specific PHY loopback")
+> Cc: <stable@vger.kernel.org> # 5.15.x
+> Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+> Signed-off-by: Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
+> ---
+>   drivers/net/phy/marvell.c | 16 +++++++++-------
+>   1 file changed, 9 insertions(+), 7 deletions(-)
 > 
-> Patches #4-#5 add the required packet traps for 802.1X.
-> 
-> [...]
+> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+> index a3e810705ce2..860610ba4d00 100644
+> --- a/drivers/net/phy/marvell.c
+> +++ b/drivers/net/phy/marvell.c
+> @@ -2015,14 +2015,16 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
+>   		if (err < 0)
+>   			return err;
+>   
+> -		/* FIXME: Based on trial and error test, it seem 1G need to have
+> -		 * delay between soft reset and loopback enablement.
+> -		 */
+> -		if (phydev->speed == SPEED_1000)
+> -			msleep(1000);
+> +		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+> +				 BMCR_LOOPBACK);
+>   
+> -		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+> -				  BMCR_LOOPBACK);
+> +		if (!err) {
+> +			/* It takes some time for PHY device to switch
+> +			 * into/out-of loopback mode.
+> +			 */
+> +			msleep(1000);
 
-Here is the summary with links:
-  - [net-next,01/15] bridge: switchdev: Let device drivers determine FDB offload indication
-    https://git.kernel.org/netdev/net-next/c/9baedc3c8780
-  - [net-next,02/15] bridge: switchdev: Allow device drivers to install locked FDB entries
-    https://git.kernel.org/netdev/net-next/c/27fabd02abf3
-  - [net-next,03/15] bridge: switchdev: Reflect MAB bridge port flag to device drivers
-    https://git.kernel.org/netdev/net-next/c/9c0ca02bace4
-  - [net-next,04/15] devlink: Add packet traps for 802.1X operation
-    https://git.kernel.org/netdev/net-next/c/2640a82bbc08
-  - [net-next,05/15] mlxsw: spectrum_trap: Register 802.1X packet traps with devlink
-    https://git.kernel.org/netdev/net-next/c/d85be0f5fd7c
-  - [net-next,06/15] mlxsw: reg: Add Switch Port FDB Security Register
-    https://git.kernel.org/netdev/net-next/c/0b31fb9ba2b5
-  - [net-next,07/15] mlxsw: spectrum: Add an API to configure security checks
-    https://git.kernel.org/netdev/net-next/c/dc0d1a8b7f84
-  - [net-next,08/15] mlxsw: spectrum_switchdev: Prepare for locked FDB notifications
-    https://git.kernel.org/netdev/net-next/c/b72cb660b26b
-  - [net-next,09/15] mlxsw: spectrum_switchdev: Add support for locked FDB notifications
-    https://git.kernel.org/netdev/net-next/c/5a660e43f8b9
-  - [net-next,10/15] mlxsw: spectrum_switchdev: Use extack in bridge port flag validation
-    https://git.kernel.org/netdev/net-next/c/136b8dfbd784
-  - [net-next,11/15] mlxsw: spectrum_switchdev: Add locked bridge port support
-    https://git.kernel.org/netdev/net-next/c/25ed80884ce1
-  - [net-next,12/15] selftests: devlink_lib: Split out helper
-    https://git.kernel.org/netdev/net-next/c/da23a713d1de
-  - [net-next,13/15] selftests: mlxsw: Add a test for EAPOL trap
-    https://git.kernel.org/netdev/net-next/c/25a26f0c2015
-  - [net-next,14/15] selftests: mlxsw: Add a test for locked port trap
-    https://git.kernel.org/netdev/net-next/c/fb398432db2f
-  - [net-next,15/15] selftests: mlxsw: Add a test for invalid locked bridge port configurations
-    https://git.kernel.org/netdev/net-next/c/cdbde7edf0e5
-
-You are awesome, thank you!
+Is not there a better indication than waiting a full second to ensure 
+the PHY exited loopback?
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Florian
