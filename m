@@ -2,139 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE38862429A
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 13:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C0356242A0
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 13:55:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiKJMxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 07:53:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
+        id S229918AbiKJMzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 07:55:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiKJMxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 07:53:33 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEC7A193
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:53:32 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id 21so2946539edv.3
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:53:32 -0800 (PST)
+        with ESMTP id S229883AbiKJMzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 07:55:00 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899B5D2EB
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:54:58 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id c25so1091289ljr.8
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 04:54:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=zHXAY8REVIACQRKQP4BDdNTuTebJl4riGmtVvgVjJPE=;
-        b=VVesb+TlBnWfKYzZGQegpGyhjRSSHy755ZeSQ4XoFPFRvhx1NRLa8gMMTCbjeeuAQn
-         00gNaoAkUIoQBNSoPSJ7pNCDyFEU74t5d4cOGxLrzPgCqCJpFfAtzQLtv+NENWbyuIkQ
-         ZF5fc3hYB6++JiFPgQN3f+65WYTyOf4wrGUh+4lq1S7VV1z7oERtwSKvGmuxOzVNXj2R
-         pN6PyQXyfv3PLxwJZdsY+TtOTHbMLQt/ELLZ8/M7L0Oj4CWgTj+osfGPuDoukjyyxVUq
-         Q6xDHZpMkFYBSasnJGUfhuY46c+G7fJxmfiEsxj4KBhYMEcUqu7moyJ3G/T3U0q72NYN
-         l8CA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4rl7jbCW2Iyj8yUM0jRXj0eHKryCRu10YTQuW097Gr8=;
+        b=whwogG/M7Q/aGeiR8QbGlSJ9JxjAtIf9fE8Jb+btzCVlfgjoH66EEA0EQbo+Zwr8dr
+         wvauFcCp1Z29sNzHCzqa508TADHQYP4HPOnHPJ1ka6yJEZPXnxzHuU8g2gz7PXlCEuuY
+         jlWu+VSMvLTnSH3EBYmu/IQTOsCchEYKjHkJanYaUBPmtlgPHNXaSH4VyWnJUjFsUolW
+         Y8Yhfkjo2dc0xFBJNU2ICW+GaHd6r9V9Yf7+YOiI4LUFQlsrHo9WRXubMcYZU0XONo0d
+         RrCnYOqHhMylSvVnxabKVw2Ews7lgk7fXfAvxg+9ueo6FQN3kezOtc5eycpUhmyg3LMs
+         k7rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zHXAY8REVIACQRKQP4BDdNTuTebJl4riGmtVvgVjJPE=;
-        b=MK53lGmDEyXqS5uxN8D2EqFXTqojpHK+u22IWktTBp2++b82ZUbaYyyL5PV9F2CxrM
-         29efOW4h01hwThWK17iMKOGR52UrToeUpcQVltFz6cho5pDJdIgc0lcXH9eqMhgDm8/Z
-         dSIHZnjx/YUg55DqxTOewr+POMfmS6qE0IJv36gJvb6jMyJ9WlRq3N557xxd5s+SEdiG
-         gegpYJaxq0ecH7k5pqpNDmaqJBFKX9z/FiyM+mhG6RkOLNbIxM9ch+6OQUaFsHrBu9BK
-         Zm5yIDidqpyHViGMmhrK4gkgX3zk5w43t4FhymXCZgPmQO8HPV9d5Eman9gKcci9l4L4
-         hlyg==
-X-Gm-Message-State: ACrzQf3F9amgi4MiyIg/8rgcw3gWslO2dB8blxJD77cGh9mzGKze4Rof
-        3SQ8cWKTB6WY968AV02ZBjw=
-X-Google-Smtp-Source: AMsMyM4lWWj+9hEKINOWWL+ZuUBnC3xGv7LlLGOwiC/5NWfgnxoFSTTsdwUvhYnr4TtH4sHUhQBYmQ==
-X-Received: by 2002:a05:6402:2996:b0:463:ce05:c00e with SMTP id eq22-20020a056402299600b00463ce05c00emr2130668edb.46.1668084810597;
-        Thu, 10 Nov 2022 04:53:30 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id j2-20020a17090623e200b007aa3822f4d2sm7302995ejg.17.2022.11.10.04.53.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 04:53:24 -0800 (PST)
-Date:   Thu, 10 Nov 2022 14:53:22 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     kuba@kernel.org, andrew@lunn.ch, netdev@vger.kernel.org,
-        Steffen =?utf-8?B?QsOkdHo=?= <steffen@innosonix.de>,
-        Fabio Estevam <festevam@denx.de>
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow hwstamping on the
- master port
-Message-ID: <20221110125322.c436jqyplxuzdvcl@skbuf>
-References: <20221110124345.3901389-1-festevam@gmail.com>
+        bh=4rl7jbCW2Iyj8yUM0jRXj0eHKryCRu10YTQuW097Gr8=;
+        b=NIzLyMzjulyjWyia4o3wG3UWMAVFdsgxgbusMYYP7ec+MweLrVPI0ouOh7sVl3BKdJ
+         GwuMDZYmJlFiGcgSd6cnSsdzaq9G/EOPjNnwD4dG3h42S3ZHcKBCXtgAtRljwPk0nxKy
+         Tvw/81KaBNJCwxqzH1ymHKjqynAUJtsSZ/f8ZKV47QVqMlNtZaccDQzjL77bs0eo2Xug
+         52UqnoWvfvTCsEWFsNC+pcbu5AEgRJlLfjAueqEo/gWbroZZYXUGN/W2Vn3aPP+3DU8P
+         yD+5r4UfEpvOlHxxVu6Ot1y4NyW98xGR+XL7jxi4Zn4b5VgHxSuMbUuXI25LNEz/TzM1
+         F21w==
+X-Gm-Message-State: ACrzQf2JB3TExeVWai2tBehdS3dYh5D6IVIrBbw/IvydrhcYdjAWoauK
+        86jj3bTSoAU5IcixTKNxya4fXw==
+X-Google-Smtp-Source: AMsMyM7PksszzPCzsZ7TQYRjS50hCw4oU0MMSh3auqYjyGoudQLh6bxP/LVj8dD1a7HI8a+95D3bpw==
+X-Received: by 2002:a2e:9f42:0:b0:277:1295:31ca with SMTP id v2-20020a2e9f42000000b00277129531camr8664043ljk.280.1668084896752;
+        Thu, 10 Nov 2022 04:54:56 -0800 (PST)
+Received: from [192.168.0.20] (088156142199.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.199])
+        by smtp.gmail.com with ESMTPSA id o11-20020a05651205cb00b00492dfcc0e58sm2742221lfo.53.2022.11.10.04.54.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Nov 2022 04:54:56 -0800 (PST)
+Message-ID: <b43a03b2-ca53-fbdd-b4d0-03e424638468@linaro.org>
+Date:   Thu, 10 Nov 2022 13:54:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221110124345.3901389-1-festevam@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 3/6] arm64: dts: fsd: add sysreg device node
+Content-Language: en-US
+To:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Vivek Yadav <vivek.2311@samsung.com>
+Cc:     rcsekar@samsung.com, krzysztof.kozlowski+dt@linaro.org,
+        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        pankaj.dubey@samsung.com, ravi.patel@samsung.com,
+        alim.akhtar@samsung.com, linux-fsd@tesla.com, robh+dt@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        aswani.reddy@samsung.com, sriranjani.p@samsung.com
+References: <CGME20221109100254epcas5p48c574876756f899875df8ac71464ce11@epcas5p4.samsung.com>
+ <20221109100928.109478-1-vivek.2311@samsung.com>
+ <20221109100928.109478-4-vivek.2311@samsung.com>
+ <CAPLW+4nH=QQj+eWVrxeeOmgZ9UTGeL4__uttkNsji4XsGjOv3w@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAPLW+4nH=QQj+eWVrxeeOmgZ9UTGeL4__uttkNsji4XsGjOv3w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 09:43:45AM -0300, Fabio Estevam wrote:
-> From: Steffen Bätz <steffen@innosonix.de>
+On 09/11/2022 12:17, Sam Protsenko wrote:
+> Hi Vivek,
 > 
-> Currently, it is not possible to run SIOCGHWTSTAMP or SIOCSHWTSTAMP
-> ioctls on the dsa master interface if the port_hwtstamp_set/get()
-> hooks are present, as implemented in net/dsa/master.c:
+> On Wed, 9 Nov 2022 at 11:54, Vivek Yadav <vivek.2311@samsung.com> wrote:
+>>
+>> From: Sriranjani P <sriranjani.p@samsung.com>
+>>
+>> Add SYSREG controller device node, which is available in PERIC and FSYS0
+>> block of FSD SoC.
+>>
+>> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+>> Signed-off-by: Pankaj Kumar Dubey <pankaj.dubey@samsung.com>
+>> Cc: devicetree@vger.kernel.org
+>> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+>> Cc: Rob Herring <robh+dt@kernel.org>
+>> Signed-off-by: Sriranjani P <sriranjani.p@samsung.com>
+>> ---
+>>  arch/arm64/boot/dts/tesla/fsd.dtsi | 10 ++++++++++
+>>  1 file changed, 10 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
+>> index f35bc5a288c2..3d8ebbfc27f4 100644
+>> --- a/arch/arm64/boot/dts/tesla/fsd.dtsi
+>> +++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
+>> @@ -518,6 +518,16 @@
+>>                                 "dout_cmu_fsys1_shared0div4";
+>>                 };
+>>
+>> +               sysreg_peric: system-controller@14030000 {
+>> +                       compatible = "tesla,sysreg_peric", "syscon";
+>> +                       reg = <0x0 0x14030000 0x0 0x1000>;
 > 
-> static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-> {
-> ...
-> 	case SIOCGHWTSTAMP:
-> 	case SIOCSHWTSTAMP:
-> 		/* Deny PTP operations on master if there is at least one
-> 		 * switch in the tree that is PTP capable.
-> 		 */
-> 		list_for_each_entry(dp, &dst->ports, list)
-> 			if (dp->ds->ops->port_hwtstamp_get ||
-> 			    dp->ds->ops->port_hwtstamp_set)
-> 				return -EBUSY;
-> 		break;
-> 	}
+> Probably not related to this particular patch, but does the "reg"
+> really have to have those extra 0x0s? Why it can't be just:
 > 
-> Even if the hwtstamping functionality is disabled in the mv88e6xxx driver
-> by not setting CONFIG_NET_DSA_MV88E6XXX_PTP, the functions port_hwtstamp_set()
-> port_hwtstamp_get() are still present due to their stub declarations.
+>     reg = <0x14030000 0x1000>;
 > 
-> Fix this problem, by removing the stub declarations and guarding these
-> functions wih CONFIG_NET_DSA_MV88E6XXX_PTP.
-> 
-> Without this change:
-> 
->  # hwstamp_ctl -i eth0
-> SIOCGHWTSTAMP failed: Device or resource busy
-> 
-> With the change applied, it is possible to set and get the timestamping
-> options:
-> 
->  # hwstamp_ctl -i eth0
-> current settings:
-> tx_type 0
-> rx_filter 0
-> 
->  # hwstamp_ctl -i eth0 -r 1 -t 1
-> current settings:
-> tx_type 0
-> rx_filter 0
-> new settings:
-> tx_type 1
-> rx_filter 1
-> 
-> Tested on a custom i.MX8MN board with a 88E6320 switch.
-> 
-> Signed-off-by: Steffen Bätz <steffen@innosonix.de>
-> Signed-off-by: Fabio Estevam <festevam@denx.de>
-> ---
+> That comment applies to the whole dts/dtsi. Looks like #address-cells
+> or #size-cells are bigger than they should be, or I missing something?
 
-NACK.
+Yes, it looks like intention was to support some 64-bit addresses (maybe
+as convention for arm64?) but none of upstreamed are above 32 bit range.
+I don't have the manual/datasheet to judge whether any other
+(non-upstreamed) nodes need 64bit addresses.
 
-Please extend dsa_master_ioctl() to "see through" the dp->ds->ops->port_hwtstamp_get()
-pointer, similar to what dsa_port_can_configure_learning() does. Create
-a fake struct ifreq, call port_hwtstamp_get(), see if it returned
--EOPNOTSUPP, and wrap that into a dsa_port_supports_hwtstamp() function,
-and call that instead of the current simplistic checks for the function
-pointers.
+Best regards,
+Krzysztof
+
