@@ -2,76 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A20A62432B
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 14:27:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B8F624328
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 14:26:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229447AbiKJN1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 08:27:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
+        id S230002AbiKJN0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 08:26:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiKJN1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 08:27:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08345EFBF
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 05:26:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668086771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r9ORuU0WsHleftbh/WBR7cP7Ve37V0XL+b9TNvayaUQ=;
-        b=IrR4hwd0qeVydXhaJQTYL38dqK0cZ6BC+TaaRkyBMTxsxlY7lsHRuDf2C0Gfzd6zPvT5RM
-        pmUn3buNZNo75ojQL6ki0P9rt4+rDaTrf/usPyMzJGzxSSLkZwf58TyyoXbl2RrHDAdWXS
-        LIySCbvOn4S/rUbFjTGQBDUjM6CbseM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-176-d9xiGzzGOs24WbOX7BMBEw-1; Thu, 10 Nov 2022 08:26:06 -0500
-X-MC-Unique: d9xiGzzGOs24WbOX7BMBEw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A1EB385A5A6;
-        Thu, 10 Nov 2022 13:26:05 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 41386C154AB;
-        Thu, 10 Nov 2022 13:26:04 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CAPA1RqBF7u6posD9ozzaONmhoLnQACdYF8HdwDLjwYWDohyqvw@mail.gmail.com>
-References: <CAPA1RqBF7u6posD9ozzaONmhoLnQACdYF8HdwDLjwYWDohyqvw@mail.gmail.com> <166807341463.2904467.10141806642379634063.stgit@warthog.procyon.org.uk>
-To:     Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        kernel test robot <lkp@intel.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH net-next] rxrpc: Fix missing IPV6 #ifdef
+        with ESMTP id S229488AbiKJN0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 08:26:18 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68E55B84A
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 05:26:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=5yFZm5aLOFj321Yzl0QBNzfEIj8FY/Lvlo0q55sGaL4=; b=CcUSPWv9uqyfytTFIKZpG2eee+
+        2ApsXtyJd0SNOH0eDJW/hFLTnxo4s6pfCPTCKqLZfR9IfVN8CfWBoQaPeaP/ayTl23bDtlmfXcH0b
+        YDv2ZSQl3BoQp4RNPyJvLqd1Fpgw90Jg29YgsxXUNCt4ne29jF++elfnXjU5gJgvkKUA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ot7ZK-0022C5-OM; Thu, 10 Nov 2022 14:26:10 +0100
+Date:   Thu, 10 Nov 2022 14:26:10 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Thompson <davthompson@nvidia.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, cai.huoqing@linux.dev,
+        brgl@bgdev.pl, limings@nvidia.com, chenhao288@hisilicon.com,
+        huangguangbin2@huawei.com, Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: Re: [PATCH net-next v2 4/4] mlxbf_gige: add "set_link_ksettings"
+ ethtool callback
+Message-ID: <Y2z78lwaeJKnL6DJ@lunn.ch>
+References: <20221109224752.17664-1-davthompson@nvidia.com>
+ <20221109224752.17664-5-davthompson@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3068303.1668086763.1@warthog.procyon.org.uk>
-Date:   Thu, 10 Nov 2022 13:26:03 +0000
-Message-ID: <3068304.1668086763@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221109224752.17664-5-davthompson@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com> wrote:
+On Wed, Nov 09, 2022 at 05:47:52PM -0500, David Thompson wrote:
+> This patch extends the "ethtool_ops" data structure to
+> include the "set_link_ksettings" callback. This change
+> enables configuration of the various interface speeds
+> that the BlueField-3 supports (10Mbps, 100Mbps, and 1Gbps).
+> 
+> Signed-off-by: David Thompson <davthompson@nvidia.com>
+> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c | 1 +
+>  drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c    | 2 +-
+>  2 files changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
+> index 41ebef25a930..253d7ad9b809 100644
+> --- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
+> @@ -135,4 +135,5 @@ const struct ethtool_ops mlxbf_gige_ethtool_ops = {
+>  	.nway_reset		= phy_ethtool_nway_reset,
+>  	.get_pauseparam		= mlxbf_gige_get_pauseparam,
+>  	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
+> +	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
+>  };
+> diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+> index 80060a54ba95..a9fa662e0665 100644
+> --- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+> @@ -224,7 +224,7 @@ static int mlxbf_gige_stop(struct net_device *netdev)
+>  }
+>  
+>  static int mlxbf_gige_eth_ioctl(struct net_device *netdev,
+> -			       struct ifreq *ifr, int cmd)
+> +				struct ifreq *ifr, int cmd)
+>  {
+>  	if (!(netif_running(netdev)))
+>  		return -EINVAL;
 
-> Because this introduces a missing return literally without
-> CONFIG_AF_RXRPC_IPV6, I would prefer #ifdef / #else for the whole function.
+White space changes should be in a separate patch.
 
-They're both void functions, so actually, there's nothing to return.
+With this fixed:
 
-David
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
