@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6A64624E65
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 00:23:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE98624E69
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 00:23:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbiKJXXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 18:23:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33078 "EHLO
+        id S231441AbiKJXXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 18:23:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiKJXXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 18:23:31 -0500
+        with ESMTP id S229536AbiKJXXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 18:23:32 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C845B13D1A
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:23:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB89A11A09
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:23:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668122610; x=1699658610;
+  t=1668122611; x=1699658611;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cNGnY0VU4qbhgNQGwKKP6KBBS84YJ9VSkme6zv3AmPs=;
-  b=V7ZeaR7fjB6F3kjFahVyVfJK0cQw+BZK6+AMj6Q/05KTAKr/qXQf8ir9
-   yQY7o8jyilBTiSHqpmYHuoRdXgEzyp1+AjhCO0xm6HEvd9kHSWV+Z+HR5
-   MCxud/QbsqTjKr8ekTNixu6rBAHShWMRsc0GM759EkPHxiZUO1ZkIPx3r
-   NW5xOXbluDVyS6R2+hpeeI9Y8PihjhUUpECADypfi2oblEitLiA9lK3/E
-   A2mytw5W09eKXksom5O/l6AJVTWjMUyrLLly/MVz3iupHqRZcawtV5LhE
-   Wg3jqDjG4YL3BnobbqImKqlUF611igGXQqt3BEE6zybYFyULLf2nN/XI0
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="309093987"
+  bh=dkHFHct5jmMR29HfWsBOmJdLyB9m7Wj7O5Y3w3dZj3Y=;
+  b=lx7SV8g6SPHGK+Ek7VuZI4aKMHmCKOAz+EfUWreo68SHp1VFl8Z07qo2
+   eRcnpz+1YXADFcVzI4W4fWFEdrab865fWq7h3TwrvZukU0TZyAUeyTmAs
+   ihcTpiR9SeXRXKcp9QjrNeccUN4yg8rbaiCOpbOX1UtM0/HV2j9hc93BA
+   1/GPqy8xRSeSjS9dGaKES+NWnybElJHJKYNcri5rs25ShJjtSr/TfHpe6
+   9cGQZwfe5gZ8Gry+SeYxY5fdzqpIdFqVK6NI9Z2VlBwsLIYfBx96APU9W
+   G6sDKh63TFDO52eX7LFmflp0hxOAkZTlPy7VGJI8b0PWYqF7vUNSF4VPE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="309093990"
 X-IronPort-AV: E=Sophos;i="5.96,155,1665471600"; 
-   d="scan'208";a="309093987"
+   d="scan'208";a="309093990"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 15:23:29 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="637367371"
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="637367373"
 X-IronPort-AV: E=Sophos;i="5.96,155,1665471600"; 
-   d="scan'208";a="637367371"
+   d="scan'208";a="637367373"
 Received: from jsandova-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.81.89])
   by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 15:23:29 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -43,9 +43,9 @@ Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
         matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/5] mptcp: change 'first' as a parameter
-Date:   Thu, 10 Nov 2022 15:23:19 -0800
-Message-Id: <20221110232322.125068-3-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 3/5] mptcp: get sk from msk directly
+Date:   Thu, 10 Nov 2022 15:23:20 -0800
+Message-Id: <20221110232322.125068-4-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221110232322.125068-1-mathew.j.martineau@linux.intel.com>
 References: <20221110232322.125068-1-mathew.j.martineau@linux.intel.com>
@@ -62,83 +62,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliang.tang@suse.com>
 
-The function mptcp_subflow_process_delegated() uses the input ssk first,
-while __mptcp_check_push() invokes the packet scheduler first.
-
-So this patch adds a new parameter named 'first' for the function
-__mptcp_subflow_push_pending() to deal with these two cases separately.
-
-With this change, the code that invokes the packet scheduler in the
-function __mptcp_check_push() can be removed, and replaced by invoking
-__mptcp_subflow_push_pending() directly.
+Use '(struct sock *)msk' to get 'sk' from 'msk' in a more direct way
+instead of using '&msk->sk.icsk_inet.sk'.
 
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+ net/mptcp/pm_userspace.c | 4 ++--
+ net/mptcp/protocol.c     | 4 ++--
+ net/mptcp/sockopt.c      | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
+diff --git a/net/mptcp/pm_userspace.c b/net/mptcp/pm_userspace.c
+index 9e82250cbb70..5cb65f0928f4 100644
+--- a/net/mptcp/pm_userspace.c
++++ b/net/mptcp/pm_userspace.c
+@@ -291,7 +291,7 @@ int mptcp_nl_cmd_sf_create(struct sk_buff *skb, struct genl_info *info)
+ 		goto create_err;
+ 	}
+ 
+-	sk = &msk->sk.icsk_inet.sk;
++	sk = (struct sock *)msk;
+ 	lock_sock(sk);
+ 
+ 	err = __mptcp_subflow_connect(sk, &addr_l, &addr_r);
+@@ -403,7 +403,7 @@ int mptcp_nl_cmd_sf_destroy(struct sk_buff *skb, struct genl_info *info)
+ 		goto destroy_err;
+ 	}
+ 
+-	sk = &msk->sk.icsk_inet.sk;
++	sk = (struct sock *)msk;
+ 	lock_sock(sk);
+ 	ssk = mptcp_nl_find_ssk(msk, &addr_l, &addr_r);
+ 	if (ssk) {
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 64d7070de901..5a344788f843 100644
+index 5a344788f843..3796d1bfef6b 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -1602,7 +1602,7 @@ void __mptcp_push_pending(struct sock *sk, unsigned int flags)
- 		__mptcp_check_send_data_fin(sk);
- }
- 
--static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
-+static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk, bool first)
+@@ -2454,7 +2454,7 @@ static bool mptcp_check_close_timeout(const struct sock *sk)
+ static void mptcp_check_fastclose(struct mptcp_sock *msk)
  {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	struct mptcp_sendmsg_info info = {
-@@ -1611,7 +1611,6 @@ static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
- 	struct mptcp_data_frag *dfrag;
- 	struct sock *xmit_ssk;
- 	int len, copied = 0;
--	bool first = true;
+ 	struct mptcp_subflow_context *subflow, *tmp;
+-	struct sock *sk = &msk->sk.icsk_inet.sk;
++	struct sock *sk = (struct sock *)msk;
  
- 	info.flags = 0;
- 	while ((dfrag = mptcp_send_head(sk))) {
-@@ -1621,8 +1620,7 @@ static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
- 		while (len > 0) {
- 			int ret = 0;
- 
--			/* the caller already invoked the packet scheduler,
--			 * check for a different subflow usage only after
-+			/* check for a different subflow usage only after
- 			 * spooling the first chunk of data
- 			 */
- 			xmit_ssk = first ? ssk : mptcp_subflow_get_send(msk);
-@@ -3220,16 +3218,10 @@ void __mptcp_check_push(struct sock *sk, struct sock *ssk)
- 	if (!mptcp_send_head(sk))
+ 	if (likely(!READ_ONCE(msk->rcv_fastclose)))
  		return;
+@@ -2616,7 +2616,7 @@ static void mptcp_do_fastclose(struct sock *sk)
+ static void mptcp_worker(struct work_struct *work)
+ {
+ 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
+-	struct sock *sk = &msk->sk.icsk_inet.sk;
++	struct sock *sk = (struct sock *)msk;
+ 	unsigned long fail_tout;
+ 	int state;
  
--	if (!sock_owned_by_user(sk)) {
--		struct sock *xmit_ssk = mptcp_subflow_get_send(mptcp_sk(sk));
--
--		if (xmit_ssk == ssk)
--			__mptcp_subflow_push_pending(sk, ssk);
--		else if (xmit_ssk)
--			mptcp_subflow_delegate(mptcp_subflow_ctx(xmit_ssk), MPTCP_DELEGATE_SEND);
--	} else {
-+	if (!sock_owned_by_user(sk))
-+		__mptcp_subflow_push_pending(sk, ssk, false);
-+	else
- 		__set_bit(MPTCP_PUSH_PENDING, &mptcp_sk(sk)->cb_flags);
--	}
- }
- 
- #define MPTCP_FLAGS_PROCESS_CTX_NEED (BIT(MPTCP_PUSH_PENDING) | \
-@@ -3320,7 +3312,7 @@ void mptcp_subflow_process_delegated(struct sock *ssk)
- 	if (test_bit(MPTCP_DELEGATE_SEND, &subflow->delegated_status)) {
- 		mptcp_data_lock(sk);
- 		if (!sock_owned_by_user(sk))
--			__mptcp_subflow_push_pending(sk, ssk);
-+			__mptcp_subflow_push_pending(sk, ssk, true);
- 		else
- 			__set_bit(MPTCP_PUSH_PENDING, &mptcp_sk(sk)->cb_flags);
- 		mptcp_data_unlock(sk);
+diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+index f85e9bbfe86f..f62f6483ef77 100644
+--- a/net/mptcp/sockopt.c
++++ b/net/mptcp/sockopt.c
+@@ -987,7 +987,7 @@ static int mptcp_getsockopt_tcpinfo(struct mptcp_sock *msk, char __user *optval,
+ 				    int __user *optlen)
+ {
+ 	struct mptcp_subflow_context *subflow;
+-	struct sock *sk = &msk->sk.icsk_inet.sk;
++	struct sock *sk = (struct sock *)msk;
+ 	unsigned int sfcount = 0, copied = 0;
+ 	struct mptcp_subflow_data sfd;
+ 	char __user *infoptr;
+@@ -1078,8 +1078,8 @@ static void mptcp_get_sub_addrs(const struct sock *sk, struct mptcp_subflow_addr
+ static int mptcp_getsockopt_subflow_addrs(struct mptcp_sock *msk, char __user *optval,
+ 					  int __user *optlen)
+ {
+-	struct sock *sk = &msk->sk.icsk_inet.sk;
+ 	struct mptcp_subflow_context *subflow;
++	struct sock *sk = (struct sock *)msk;
+ 	unsigned int sfcount = 0, copied = 0;
+ 	struct mptcp_subflow_data sfd;
+ 	char __user *addrptr;
 -- 
 2.38.1
 
