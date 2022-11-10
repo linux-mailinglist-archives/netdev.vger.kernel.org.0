@@ -2,159 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F3E06238C8
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:26:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 129176238CB
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:27:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232216AbiKJB0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 20:26:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
+        id S232246AbiKJB1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 20:27:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbiKJB0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:26:13 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994D2186D6;
-        Wed,  9 Nov 2022 17:26:12 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id b1-20020a17090a7ac100b00213fde52d49so355232pjl.3;
-        Wed, 09 Nov 2022 17:26:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QDNKEh/nnMeolmM2NRHpBe+qACbk9dXcfRIfhAI2nC4=;
-        b=qrxtzVcLdOjnF1pVDiyeQcnoJ2J8SBIp14Y38ivJX3x/WhZhPe2HQWipf+K/U77yA0
-         emgCx8WohDOumt2OnN02MFX7SEF4rtKb2vPX+EwXDPLkdR/NRQaELEn0eW0cDzv3HbU/
-         1+dlHps5usVtChYEW1Z0L8hsbzNHnUJMNKq+fXta1fwfx8FyV00sDC18oW+LPGhIb49N
-         WYwPErYLOOViLp8m/nJ4m9rh4t5FY1hzUmbd2Z1H0AxJroIqnIBs6W9OtHAxHGj9O3qM
-         pll6Vbthi8kV7N4853ayKZoFv8e4iQae07YtCte+89y84ylIIT71Y1IZP0gQgCXDUpCJ
-         oq8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=QDNKEh/nnMeolmM2NRHpBe+qACbk9dXcfRIfhAI2nC4=;
-        b=5R0NCqlfqzYfu6239yVabggTrInAnOAPmCuPRziaYxAOyVOZaUbHeFOXFLON/b/GQ4
-         sOK7TOke4YCX8brwWQfNQRQH53PKwHooOS7ksRHqUerKq8ngd6LzEzF1dHbqyq5Sh7N9
-         XOOkPh3z1PKriFVk/IRXs7nsuY/89oz5vBF5lNkr1JRRQ/WmWJGIaJCix4geeYA7lmyM
-         sEfbqzYOR8zPYCXMmxvyqU7PLXIwtRqQIGy1JgwRzjzYg9E1AHAuvANzqR/lWIaja+VZ
-         SZEa6XnrvmtUnXYG5nSxNM1Aw8BibCDwx0RTatpTtdnv+4Wh7FQabktpAxBL36wj59L6
-         0fUw==
-X-Gm-Message-State: ACrzQf1iLEo+aIKz3DUY7Me7xxZg4HJJGXJkStDkS/27g7vNqAlx4J7K
-        pYw4VNeNFA1x7QGg82Rn6U8=
-X-Google-Smtp-Source: AMsMyM7S9Svs1nfnHtDkykC5jm6zIG/MFVAfwMkeX9pyECGdstQcsq/gvvpf8yDb9Z+5A3MiyJoaGg==
-X-Received: by 2002:a17:902:bcc1:b0:187:31da:494a with SMTP id o1-20020a170902bcc100b0018731da494amr48297993pls.121.1668043572087;
-        Wed, 09 Nov 2022 17:26:12 -0800 (PST)
-Received: from localhost ([98.97.44.95])
-        by smtp.gmail.com with ESMTPSA id j126-20020a625584000000b0056bb21cd7basm8876013pfb.51.2022.11.09.17.26.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 17:26:11 -0800 (PST)
-Date:   Wed, 09 Nov 2022 17:26:10 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Stanislav Fomichev <sdf@google.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <636c533231572_13c9f42087c@john.notmuch>
-In-Reply-To: <87leokz8lq.fsf@toke.dk>
-References: <20221104032532.1615099-1-sdf@google.com>
- <20221104032532.1615099-7-sdf@google.com>
- <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
- <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
- <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
- <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev>
- <87leokz8lq.fsf@toke.dk>
-Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
- metadata into skb context
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231830AbiKJB1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:27:42 -0500
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6488122B13;
+        Wed,  9 Nov 2022 17:27:41 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.96,152,1665414000"; 
+   d="scan'208";a="139532487"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 10 Nov 2022 10:27:40 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 14F4041311DC;
+        Thu, 10 Nov 2022 10:27:40 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] net: ethernet: renesas: rswitch: Fix build error about ptp
+Date:   Thu, 10 Nov 2022 10:27:20 +0900
+Message-Id: <20221110012720.3552060-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Snipping a bit of context to reply to this bit:
-> =
+If CONFIG_PTP_1588_CLOCK_OPTIONAL=m and CONFIG_RENESAS_ETHER_SWITCH=y,
+the following build error happened:
 
-> >>>> Can the xdp prog still change the metadata through xdp->data_meta?=
- tbh, I am not
-> >>>> sure it is solid enough by asking the xdp prog not to use the same=
- random number
-> >>>> in its own metadata + not to change the metadata through xdp->data=
-_meta after
-> >>>> calling bpf_xdp_metadata_export_to_skb().
-> >>>
-> >>> What do you think the usecase here might be? Or are you suggesting =
-we
-> >>> reject further access to data_meta after
-> >>> bpf_xdp_metadata_export_to_skb somehow?
-> >>>
-> >>> If we want to let the programs override some of this
-> >>> bpf_xdp_metadata_export_to_skb() metadata, it feels like we can add=
+    aarch64-linux-ld: DWARF error: could not find abbrev number 60
+    drivers/net/ethernet/renesas/rswitch.o: in function `rswitch_get_ts_info':
+    rswitch.c:(.text+0x408): undefined reference to `ptp_clock_index'
+    aarch64-linux-ld: DWARF error: could not find abbrev number 1190123
+    drivers/net/ethernet/renesas/rcar_gen4_ptp.o: in function `rcar_gen4_ptp_register':
+    rcar_gen4_ptp.c:(.text+0x4dc): undefined reference to `ptp_clock_register'
+    aarch64-linux-ld: drivers/net/ethernet/renesas/rcar_gen4_ptp.o: in function `rcar_gen4_ptp_unregister':
+    rcar_gen4_ptp.c:(.text+0x584): undefined reference to `ptp_clock_unregister'
 
-> >>> more kfuncs instead of exposing the layout?
-> >>>
-> >>> bpf_xdp_metadata_export_to_skb(ctx);
-> >>> bpf_xdp_metadata_export_skb_hash(ctx, 1234);
-> =
+To fix the issue, add "depends on PTP_1588_CLOCK_OPTIONAL" into the
+Kconfig.
 
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 6c6fa1a00ad3 ("net: ethernet: renesas: rswitch: Add R-Car Gen4 gPTP support")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ drivers/net/ethernet/renesas/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hi Toke,
+diff --git a/drivers/net/ethernet/renesas/Kconfig b/drivers/net/ethernet/renesas/Kconfig
+index 7a5e26b6ea9b..3ceb57408ed0 100644
+--- a/drivers/net/ethernet/renesas/Kconfig
++++ b/drivers/net/ethernet/renesas/Kconfig
+@@ -45,6 +45,7 @@ config RAVB
+ config RENESAS_ETHER_SWITCH
+ 	tristate "Renesas Ethernet Switch support"
+ 	depends on ARCH_RENESAS || COMPILE_TEST
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select CRC32
+ 	select MII
+ 	select PHYLINK
+-- 
+2.25.1
 
-Trying not to bifurcate your thread. Can I start a new one here to
-elaborate on these use cases. I'm still a bit lost on any use case
-for this that makes sense to actually deploy on a network.
-
-> There are several use cases for needing to access the metadata after
-> calling bpf_xdp_metdata_export_to_skb():
-> =
-
-> - Accessing the metadata after redirect (in a cpumap or devmap program,=
-
->   or on a veth device)
-
-I think for devmap there are still lots of opens how/where the skb
-is even built.
-
-For cpumap I'm a bit unsure what the use case is. For ice, mlx and
-such you should use the hardware RSS if performance is top of mind.
-And then for specific devices on cpumap (maybe realtime or ptp things?)
-could we just throw it through the xdp_frame?
-
-> - Transferring the packet+metadata to AF_XDP
-
-In this case we have the metadata and AF_XDP program and XDP program
-simply need to agree on metadata format. No need to have some magic
-numbers and driver specific kfuncs.
-
-> - Returning XDP_PASS, but accessing some of the metadata first (whether=
-
->   to read or change it)
-> =
-
-
-I don't get this case? XDP_PASS should go to stack normally through
-drivers build_skb routines. These will populate timestamp normally.
-My guess is simply descriptor->skb load/store is cheaper than carrying
-around this metadata and doing the call in BPF side. Anyways you
-just built an entire skb and hit the stack I don't think you will
-notice this noise in any benchmark.=
