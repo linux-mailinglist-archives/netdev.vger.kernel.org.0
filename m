@@ -2,62 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E90FB623888
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:02:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4478623889
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbiKJBCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 20:02:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
+        id S231767AbiKJBCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 20:02:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiKJBCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:02:12 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B545FF6
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 17:02:12 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id d123so199093iof.7
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 17:02:12 -0800 (PST)
+        with ESMTP id S230507AbiKJBCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:02:19 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A15F1789A
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 17:02:17 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id m15so335381ilq.2
+        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 17:02:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1CUpF8sPjSKa1qNYh255GV9ZgKn7MltcaT4JcHEFhGY=;
-        b=MNdu2pMdm9Q/07uvCc/zUIAyVQxalRVb7Hlr94A0mceH+Li1TWOT/WBQNzhUBXY6CY
-         s+KNuB9k1qAkQC6XzPqX2+NXByTm72czY3m2UbOt9yqRBmFCYC5Y1hbEMWbg+ZvttHZT
-         jIPsSRcstPdI8PT0q1NSd4oK1ACUzG93mJ+qSVvSKpX37nonJE3EY7MIExhw9FqKDc+d
-         +aXbpxtqVnpnDmQRN5W1wEMjDjJn69ttp35I1tTjcLo9G0lLmdgOhE0lXC7TJfu5HAK/
-         AnDWp5DJzP76Y0pSK0ABJX1VU4Ie2IzW1n1PZkLJlmNRow+mKg1xjpDwV03HfnOrcTBp
-         oy1g==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0fX3zRnAN/v8RYiwsUxCLlMxh2JUg56HZRDIq/Z1bQQ=;
+        b=ToJDdw9c8CV1ltSA3v4lLeqTzI+rNd+jVZDexQ67mX6zOsxJO11lnYDE72AMSnkW2A
+         bYKGqquaJAi/0nsnCWLlPUDJ3rQrCfHpm6+mGAreWLIQvwfB9OzFrO0TE8AyABB6Giau
+         zuJymznhnDWmTEmgq9w6zEbSO7C9tZo/qMBQz3z7CbKot+Q7q3+X9p67Ei0Y59t4MjHd
+         RqIv3U8MJZOLUyEmoks1IV5PDEURyLC+ZEC8xloj90hJOFIZo8qRrT9q9drDj65sjqUb
+         tWmY8m2f4bvpoK95Qo0l3tXeTBz7IfcQTF71zwZSuyz6WlWqDpqZe1tqL7WyHkTDArnj
+         5Okw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1CUpF8sPjSKa1qNYh255GV9ZgKn7MltcaT4JcHEFhGY=;
-        b=4SRRRWwkAcisV8UxbM7MdHYWBwQadvFGt6v4lOtyV/vmEW9UQ5sQpeAoB8exQLvOkj
-         yOPbE/2ERbHhDUtP0SccExfflmVZXp4KDfw69WXXV5Ct6nWx8mmlUyrhhHYsyA2A3Q4D
-         HdnR/hRXJ7Ss+WVfycY5UJ3xn+sV6OQ4hqiGO1LzEmJlzZgvR6uvMZSxHI8apOISNrcl
-         a6E1jbDdRh+SayLYcYZUTr/g7rUh1jvwJsUaDqGz8y5GC148XgPCPWafpNH1GoZ5HI+g
-         cV3V4wadtliibXm6TT9yqX/obIdhup6gS1caiaBQSTARXWGme17RBugeq/ICiCli0q8Y
-         4ooA==
-X-Gm-Message-State: ANoB5pkIfbIQk4ynpjzSQitdS+3U8zeEB4me6dmbp8Ebtn6XEaSmtS+A
-        XdhjzT6gWvdmSod5Fk1ICvY84GYZM+1gafu44abySQ==
-X-Google-Smtp-Source: AA0mqf5iU++nhS9XQpgQ+bbgvvR9S0yg/vQEYa81M7IXz1j3U6aRC34YmQ61ZR1XSRw9bTVDQWqMV96gLsvOhOr1jVw=
-X-Received: by 2002:a02:ca49:0:b0:375:c385:d846 with SMTP id
- i9-20020a02ca49000000b00375c385d846mr1901422jal.84.1668042131419; Wed, 09 Nov
- 2022 17:02:11 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0fX3zRnAN/v8RYiwsUxCLlMxh2JUg56HZRDIq/Z1bQQ=;
+        b=U8gJrvvdm3oVrl0L6S2nthpKoUUmp9nyydweoaRYrUzaSz0gU/yrEk1s3rOEXykpfU
+         pbVGcqvCq0CNhScdCeQR5mYB2TbLkC2zZOAl0zUS0ps9LKJOCdg7LXSHXtiTFFC+wejl
+         AK7GWoqjgTdkEVuhIDaddkXF01xkeT5WjBmQrcbYyqWCGRbxY8n04+qJNetkQKbpSfkL
+         NcdJpqgEzVj4GuEKft848kkd42nDjM8xtPKwI+nXu1QZRAbeG1P3rz1ASe7np23yeasZ
+         tVMHPUNzWPY0/5Fchh+uAUYbjEzqS+c98kOJP9bwXjIQDXGL35D24CI4QYNHaKQb/LO+
+         QQTg==
+X-Gm-Message-State: ACrzQf2i8cx4JvJGQ30fleSuwUSPJrKMpFragbRZZM0CUZ2LnjH4MYNh
+        f6O+JXixGjsyPFChVCLk2brplcZ+EshBo4Gi/lAHqw==
+X-Google-Smtp-Source: AMsMyM4aJgtWjJWI1h7PvtPT/U5LvaqMI5labKt0vvFq6kVYokpJhC5PYU8RptEeprqyJzavoi5OFFAzPBLuXA1Fj4k=
+X-Received: by 2002:a05:6e02:925:b0:300:d39b:4d03 with SMTP id
+ o5-20020a056e02092500b00300d39b4d03mr2270033ilt.137.1668042136373; Wed, 09
+ Nov 2022 17:02:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-5-sdf@google.com>
- <636c4514917fa_13c168208d0@john.notmuch>
-In-Reply-To: <636c4514917fa_13c168208d0@john.notmuch>
+References: <20221104032532.1615099-1-sdf@google.com> <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev> <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+ <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev> <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev>
+ <87leokz8lq.fsf@toke.dk> <5a23b856-88a3-a57a-2191-b673f4160796@linux.dev>
+ <CAKH8qBsfVOoR1MNAFx3uR9Syoc0APHABsf97kb8SGpK+T1qcew@mail.gmail.com> <32f81955-8296-6b9a-834a-5184c69d3aac@linux.dev>
+In-Reply-To: <32f81955-8296-6b9a-834a-5184c69d3aac@linux.dev>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 9 Nov 2022 17:02:00 -0800
-Message-ID: <CAKH8qBvS9C5Z2L2dT4Ze-dz7YBSpw52VF6iZK5phcU2k4azN5A@mail.gmail.com>
-Subject: Re: [RFC bpf-next v2 04/14] veth: Support rx timestamp metadata for xdp
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
+Date:   Wed, 9 Nov 2022 17:02:05 -0800
+Message-ID: <CAKH8qBuLMZrFmmi77Qbt7DCd1w9FJwdeK5CnZTJqHYiWxwDx6w@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
+ metadata into skb context
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
@@ -65,8 +71,9 @@ Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -78,51 +85,362 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 9, 2022 at 4:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Wed, Nov 9, 2022 at 4:13 PM Martin KaFai Lau <martin.lau@linux.dev> wrot=
+e:
 >
-> Stanislav Fomichev wrote:
-> > xskxceiver conveniently setups up veth pairs so it seems logical
-> > to use veth as an example for some of the metadata handling.
+> On 11/9/22 1:33 PM, Stanislav Fomichev wrote:
+> > On Wed, Nov 9, 2022 at 10:22 AM Martin KaFai Lau <martin.lau@linux.dev>=
+ wrote:
+> >>
+> >> On 11/9/22 3:10 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >>> Snipping a bit of context to reply to this bit:
+> >>>
+> >>>>>>> Can the xdp prog still change the metadata through xdp->data_meta=
+? tbh, I am not
+> >>>>>>> sure it is solid enough by asking the xdp prog not to use the sam=
+e random number
+> >>>>>>> in its own metadata + not to change the metadata through xdp->dat=
+a_meta after
+> >>>>>>> calling bpf_xdp_metadata_export_to_skb().
+> >>>>>>
+> >>>>>> What do you think the usecase here might be? Or are you suggesting=
+ we
+> >>>>>> reject further access to data_meta after
+> >>>>>> bpf_xdp_metadata_export_to_skb somehow?
+> >>>>>>
+> >>>>>> If we want to let the programs override some of this
+> >>>>>> bpf_xdp_metadata_export_to_skb() metadata, it feels like we can ad=
+d
+> >>>>>> more kfuncs instead of exposing the layout?
+> >>>>>>
+> >>>>>> bpf_xdp_metadata_export_to_skb(ctx);
+> >>>>>> bpf_xdp_metadata_export_skb_hash(ctx, 1234);
+> >>>
+> >>> There are several use cases for needing to access the metadata after
+> >>> calling bpf_xdp_metdata_export_to_skb():
+> >>>
+> >>> - Accessing the metadata after redirect (in a cpumap or devmap progra=
+m,
+> >>>     or on a veth device)
+> >>> - Transferring the packet+metadata to AF_XDP
+> >> fwiw, the xdp prog could also be more selective and only stores one of=
+ the hints
+> >> instead of the whole 'struct xdp_to_skb_metadata'.
+> >>
+> >>> - Returning XDP_PASS, but accessing some of the metadata first (wheth=
+er
+> >>>     to read or change it)
+> >>>
+> >>> The last one could be solved by calling additional kfuncs, but that
+> >>> would be less efficient than just directly editing the struct which
+> >>> will be cache-hot after the helper returns.
+> >>
+> >> Yeah, it is more efficient to directly write if possible.  I think thi=
+s set
+> >> allows the direct reading and writing already through data_meta (as a =
+_u8 *).
+> >>
+> >>>
+> >>> And yeah, this will allow the XDP program to inject arbitrary metadat=
+a
+> >>> into the netstack; but it can already inject arbitrary *packet* data
+> >>> into the stack, so not sure if this is much of an additional risk? If=
+ it
+> >>> does lead to trivial crashes, we should probably harden the stack
+> >>> against that?
+> >>>
+> >>> As for the random number, Jesper and I discussed replacing this with =
+the
+> >>> same BTF-ID scheme that he was using in his patch series. I.e., inste=
+ad
+> >>> of just putting in a random number, we insert the BTF ID of the metad=
+ata
+> >>> struct at the end of it. This will allow us to support multiple
+> >>> different formats in the future (not just changing the layout, but
+> >>> having multiple simultaneous formats in the same kernel image), in ca=
+se
+> >>> we run out of space.
+> >>
+> >> This seems a bit hypothetical.  How much headroom does it usually have=
+ for the
+> >> xdp prog?  Potentially the hints can use all the remaining space left =
+after the
+> >> header encap and the current bpf_xdp_adjust_meta() usage?
+> >>
+> >>>
+> >>> We should probably also have a flag set on the xdp_frame so the stack
+> >>> knows that the metadata area contains relevant-to-skb data, to guard
+> >>> against an XDP program accidentally hitting the "magic number" (BTF_I=
+D)
+> >>> in unrelated stuff it puts into the metadata area.
+> >>
+> >> Yeah, I think having a flag is useful.  The flag will be set at xdp_bu=
+ff and
+> >> then transfer to the xdp_frame?
+> >>
+> >>>
+> >>>> After re-reading patch 6, have another question. The 'void
+> >>>> bpf_xdp_metadata_export_to_skb();' function signature. Should it at
+> >>>> least return ok/err? or even return a 'struct xdp_to_skb_metadata *'
+> >>>> pointer and the xdp prog can directly read (or even write) it?
+> >>>
+> >>> Hmm, I'm not sure returning a failure makes sense? Failure to read on=
+e
+> >>> or more fields just means that those fields will not be populated? We
+> >>> should probably have a flags field inside the metadata struct itself =
+to
+> >>> indicate which fields are set or not, but I'm not sure returning an
+> >>> error value adds anything? Returning a pointer to the metadata field
+> >>> might be convenient for users (it would just be an alias to the
+> >>> data_meta pointer, but the verifier could know its size, so the progr=
+am
+> >>> doesn't have to bounds check it).
+> >>
+> >> If some hints are not available, those hints should be initialized to
+> >> 0/CHECKSUM_NONE/...etc.  The xdp prog needs a direct way to tell hard =
+failure
+> >> when it cannot write the meta area because of not enough space.  Compa=
+ring
+> >> xdp->data_meta with xdp->data as a side effect is not intuitive.
+> >>
+> >> It is more than saving the bound check.  With type info of 'struct
+> >> xdp_to_skb_metadata *', the verifier can do more checks like reading i=
+n the
+> >> middle of an integer member.  The verifier could also limit write acce=
+ss only to
+> >> a few struct's members if it is needed.
+> >>
+> >> The returning 'struct xdp_to_skb_metadata *' should not be an alias to=
+ the
+> >> xdp->data_meta.  They should actually point to different locations in =
+the
+> >> headroom.  bpf_xdp_metadata_export_to_skb() sets a flag in xdp_buff.
+> >> xdp->data_meta won't be changed and keeps pointing to the last
+> >> bpf_xdp_adjust_meta() location.  The kernel will know if there is
+> >> xdp_to_skb_metadata before the xdp->data_meta when that bit is set in =
+the
+> >> xdp_{buff,frame}.  Would it work?
+> >>
+> >>>
+> >>>> A related question, why 'struct xdp_to_skb_metadata' needs
+> >>>> __randomize_layout?
+> >>>
+> >>> The __randomize_layout thing is there to force BPF programs to use CO=
+-RE
+> >>> to access the field. This is to avoid the struct layout accidentally
+> >>> ossifying because people in practice rely on a particular layout, eve=
+n
+> >>> though we tell them to use CO-RE. There are lots of examples of this
+> >>> happening in other domains (IP header options, TCP options, etc), and
+> >>> __randomize_layout seemed like a neat trick to enforce CO-RE usage :)
+> >>
+> >> I am not sure if it is necessary or helpful to only enforce __randomiz=
+e_layout
+> >> in 'struct xdp_to_skb_metadata'.  There are other CO-RE use cases (tra=
+cing and
+> >> non tracing) that already have direct access (reading and/or writing) =
+to other
+> >> kernel structures.
+> >>
+> >> It is more important for the verifier to see the xdp prog accessing it=
+ as a
+> >> 'struct xdp_to_skb_metadata *' instead of xdp->data_meta which is a __=
+u8 * so
+> >> that the verifier can enforce the rules of access.
+> >>
+> >>>
+> >>>>>>> Does xdp_to_skb_metadata have a use case for XDP_PASS (like patch=
+ 7) or the
+> >>>>>>> xdp_to_skb_metadata can be limited to XDP_REDIRECT only?
+> >>>>>>
+> >>>>>> XDP_PASS cases where we convert xdp_buff into skb in the drivers r=
+ight
+> >>>>>> now usually have C code to manually pull out the metadata (out of =
+hw
+> >>>>>> desc) and put it into skb.
+> >>>>>>
+> >>>>>> So, currently, if we're calling bpf_xdp_metadata_export_to_skb() f=
+or
+> >>>>>> XDP_PASS, we're doing a double amount of work:
+> >>>>>> skb_metadata_import_from_xdp first, then custom driver code second=
+.
+> >>>>>>
+> >>>>>> In theory, maybe we should completely skip drivers custom parsing =
+when
+> >>>>>> there is a prog with BPF_F_XDP_HAS_METADATA?
+> >>>>>> Then both xdp->skb paths (XDP_PASS+XDP_REDIRECT) will be bpf-drive=
+n
+> >>>>>> and won't require any mental work (plus, the drivers won't have to
+> >>>>>> care either in the future).
+> >>>>>>    > WDYT?
+> >>>>>
+> >>>>>
+> >>>>> Yeah, not sure if it can solely depend on BPF_F_XDP_HAS_METADATA bu=
+t it makes
+> >>>>> sense to only use the hints (if ever written) from xdp prog especia=
+lly if it
+> >>>>> will eventually support xdp prog changing some of the hints in the =
+future.  For
+> >>>>> now, I think either way is fine since they are the same and the xdp=
+ prog is sort
+> >>>>> of doing extra unnecessary work anyway by calling
+> >>>>> bpf_xdp_metadata_export_to_skb() with XDP_PASS and knowing nothing =
+can be
+> >>>>> changed now.
+> >>>
+> >>> I agree it would be best if the drivers also use the XDP metadata (if
+> >>> present) on XDP_PASS. Longer term my hope is we can make the XDP
+> >>> metadata support the only thing drivers need to implement (i.e., have
+> >>> the stack call into that code even when no XDP program is loaded), bu=
+t
+> >>> for now just for consistency (and allowing the XDP program to update =
+the
+> >>> metadata), we should probably at least consume it on XDP_PASS.
+> >>>
+> >>> -Toke
+> >>>
 > >
-> > We timestamp skb right when we "receive" it, store its
-> > pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
-> > reach it from the BPF program.
+> > Not to derail the discussion (left the last message intact on top,
+> > feel free to continue), but to summarize. The proposed changes seem to
+> > be:
 > >
-> > This largely follows the idea of "store some queue context in
-> > the xdp_buff/xdp_frame so the metadata can be reached out
-> > from the BPF program".
+> > 1. bpf_xdp_metadata_export_to_skb() should return pointer to "struct
+> > xdp_to_skb_metadata"
+> >    - This should let bpf programs change the metadata passed to the skb
 > >
+> > 2. "struct xdp_to_skb_metadata" should have its btf_id as the first
+> > __u32 member (and remove the magic)
+> >    - This is for the redirect case where the end users, including
+> > AF_XDP, can parse this metadata from btf_id
 >
-> [...]
+> I think Toke's idea is to put the btf_id at the end of xdp_to_skb_metadat=
+a.  I
+> can see why the end is needed for the userspace AF_XDP because, afaict, A=
+F_XDP
+> rx_desc currently cannot tell if there is metadata written by the xdp pro=
+g or
+> not.  However, if the 'has_skb_metadata' bit can also be passed to the AF=
+_XDP
+> rx_desc->options, the btf_id may as well be not needed now.  However, the=
+ btf_id
+> and other future new members can be added to the xdp_to_skb_metadata late=
+r if
+> there is a need.
 >
-> >       orig_data = xdp->data;
-> >       orig_data_end = xdp->data_end;
-> > +     vxbuf.skb = skb;
-> >
-> >       act = bpf_prog_run_xdp(xdp_prog, xdp);
-> >
-> > @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
-> >                       struct sk_buff *skb = ptr;
-> >
-> >                       stats->xdp_bytes += skb->len;
-> > +                     __net_timestamp(skb);
->
-> Just getting to reviewing in depth a bit more. But we hit veth with lots of
-> packets in some configurations I don't think we want to add a __net_timestamp
-> here when vast majority of use cases will have no need for timestamp on veth
-> device. I didn't do a benchmark but its not free.
->
-> If there is a real use case for timestamping on veth we could do it through
-> a XDP program directly? Basically fallback for devices without hw timestamps.
-> Anyways I need the helper to support hardware without time stamping.
->
-> Not sure if this was just part of the RFC to explore BPF programs or not.
+> For the kernel and xdp prog, a bit in the xdp->flags should be enough to =
+get to
+> the xdp_to_skb_metadata.  The xdp prog will use CO-RE to access the membe=
+rs in
+> xdp_to_skb_metadata.
 
-Initially I've done it mostly so I can have selftests on top of veth
-driver, but I'd still prefer to keep it to have working tests.
-Any way I can make it configurable? Is there some ethtool "enable tx
-timestamping" option I can reuse?
+Ack, good points on putting it at the end.
+Regarding bit in desc->options vs btf_id: since it seems that btf_id
+is useful anyway, let's start with that? We can add a bit later on if
+it turns out using metadata is problematic otherwise.
 
-> >                       skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
-> >                       if (skb) {
-> >                               if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
+> >    - This, however, is not all the metadata that the device can
+> > support, but a much narrower set that the kernel is expected to use
+> > for skb construction
+> >
+> > 3. __randomize_layout isn't really helping, CO-RE will trigger
+> > regardless; maybe only the case where it matters is probably AF_XDP,
+> > so still useful?
+> >
+> > 4. The presence of the metadata generated by
+> > bpf_xdp_metadata_export_to_skb should be indicated by a flag in
+> > xdp_{buff,frame}->flags
+> >    - Assuming exposing it via xdp_md->has_skb_metadata is ok?
+>
+> probably __bpf_md_ptr(struct xdp_to_skb_metadata *, skb_metadata) and the=
+ type
+> will be PTR_TO_BTF_ID_OR_NULL.
+
+Oh, that seems even better than returning it from
+bpf_xdp_metadata_export_to_skb.
+bpf_xdp_metadata_export_to_skb can return true/false and the rest goes
+via default verifier ctx resolution mechanism..
+(returning ptr from a kfunc seems to be a bit complicated right now)
+
+> >    - Since the programs probably need to do the following:
+> >
+> >    if (xdp_md->has_skb_metadata) {
+> >      access/change skb metadata by doing struct xdp_to_skb_metadata *p
+> > =3D data_meta;
+>
+> and directly access/change xdp->skb_metadata instead of using xdp->data_m=
+eta.
+
+Ack.
+
+> >    } else {
+> >      use kfuncs
+> >    }
+> >
+> > 5. Support the case where we keep program's metadata and kernel's
+> > xdp_to_skb_metadata
+> >    - skb_metadata_import_from_xdp() will "consume" it by mem-moving the
+> > rest of the metadata over it and adjusting the headroom
+>
+> I was thinking the kernel's xdp_to_skb_metadata is always before the prog=
+ram's
+> metadata.  xdp prog should usually work in this order also: read/write he=
+aders,
+> write its own metadata, call bpf_xdp_metadata_export_to_skb(), and return
+> XDP_PASS/XDP_REDIRECT.  When it is XDP_PASS, the kernel just needs to pop=
+ the
+> xdp_to_skb_metadata and pass the remaining program's metadata to the bpf-=
+tc.
+>
+> For the kernel and xdp prog, I don't think it matters where the
+> xdp_to_skb_metadata is.  However, the xdp->data_meta (program's metadata)=
+ has to
+> be before xdp->data because of the current data_meta and data comparison =
+usage
+> in the xdp prog.
+>
+> The order of the kernel's xdp_to_skb_metadata and the program's metadata
+> probably only matters to the userspace AF_XDP.  However, I don't see how =
+AF_XDP
+> supports the program's metadata now.  afaict, it can only work now if the=
+re is
+> some sort of contract between them or the AF_XDP currently does not use t=
+he
+> program's metadata.  Either way, we can do the mem-moving only for AF_XDP=
+ and it
+> should be a no op if there is no program's metadata?  This behavior could=
+ also
+> be configurable through setsockopt?
+
+Agreed on all of the above. For now it seems like the safest thing to
+do is to put xdp_to_skb_metadata last to allow af_xdp to properly
+locate btf_id.
+Let's see if Toke disagrees :-)
+
+
+> Thanks for the summary!
+>
+> >
+> >
+> > I think the above solves all the cases Toke points to?
+> >
+> > a) Accessing the metadata after redirect (in a cpumap or devmap
+> > program, or on a veth device)
+> >    - only a small xdp_to_skb_metadata subset will work out of the box
+> > iff the redirecttor calls bpf_xdp_metadata_export_to_skb; for the rest
+> > the progs will have to agree on the layout, right?
+> >
+> > b) Transferring the packet+metadata to AF_XDP
+> >    - here, again, the AF_XDP consumer will have to either expect
+> > xdp_to_skb_metadata with a smaller set of skb-related metadata, or
+> > will have to make sure the producer builds a custom layout using
+> > kfuncs; there is also no flag to indicate whether xdp_to_skb_metadata
+> > is there or not; the consumer will have to test btf_id at the right
+> > offset
+> >
+> > c) Returning XDP_PASS, but accessing some of the metadata first
+> > (whether to read or change it)
+> >    - can read via kfuncs, can change via
+> > bpf_xdp_metadata_export_to_skb(); m->xyz=3Dabc;
+> >
+> > Anything I'm missing?
+>
