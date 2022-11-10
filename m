@@ -2,189 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAA0624553
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 16:15:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A3A624602
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 16:34:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231186AbiKJPPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 10:15:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        id S229772AbiKJPeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 10:34:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiKJPPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 10:15:34 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2048.outbound.protection.outlook.com [40.107.20.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF0CFAE3;
-        Thu, 10 Nov 2022 07:15:33 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eqaqZvxIyCKdfSSCYkY1P/TRL7EQprRUNMdAVi11G2o9tuQINn6e7c4vmVx+KyB9Ezz+5DkWiItpWCPp/n1rsCR72a82foek0lvu0ivcwJuTOLFkQ/T6e4SLpipt6cwRWxH1GLbDS3ZQKbNGktBtjvQwMAoX/zfm8rXcfzpIUvutmjV/bNNTgsL3MRD3Td5Fke0Jd1tGyQD2A8s6pAiMNlTj6XIViSievoK4nDoOD5Z1x1JruFn1X/ewplCfLgsm8+nuAXnZ/AF0kht5UrLgVIn8JzBXGUx4S7wy6V1xChVixP3PdwoSXF67dEX2TAEoe7IRtFwsdsdugb2g8UFz/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4GtU4/+ulbCcKi1iU0euJKUvKAzjhgh/E2Ei5iJ8l+8=;
- b=jnD8Cn/a5Ep8b9oQ5d2ruigcCs2LBlTReSivJ5JFD5yrk8eZPwEhnE4GIyUzouE4R2P1Ykl4gBpwFFpRDXh1NRGn7l6O4wdF7fdSHR7ZTQKalYFTfcgqvDMHVQKLRVbItzx4FaB9H9VpOG+PkJ0HlhMOTupwU+d1cPcMMxyuCrKhtANrMdGeiNVrpUGGLWgVMzjTb6fMiYGMvAHHyZ5dIXB0Vnsk310CSDHV6cujVnd/bkfKtZlCh88T3fhCe+j3sURoGWVtnZCtgQd3pCaZFC8ODTTfGqLl2mlwJXFSq2u6v8BwF2bIA7qJ7febkQ+Oka3rPg/F524UV4LK/ZjrAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4GtU4/+ulbCcKi1iU0euJKUvKAzjhgh/E2Ei5iJ8l+8=;
- b=NtG1zdAV411/MIINwkytbFbauxEJcrI6LayVk6zhE4vpgPNtJ1SLQE8fcGLiYnx8rcM56gHWVBw2VZTQAfnBW8ZEKJAAzA0GvqIvzdpHo6vvTPvy8B7uHi+W8CD5sbgGX+XNjVohBFvXPdO7JYAAIyTzcXfZgrwgUWhOQQ4qUkdM7taeRU2kcEyKxfkH9SexYWlXWvWpPieGR4OSjm0agwMxGB74k8f3NesEveJWOd3hrdq1cxSeWbzEsUUozfnsKK6wq4BTN2uJrE++OC+MW13juh8LtUssrPY+vilHeyioJR4xmVRr/F+agcWmqbaRqnpyYKGPEISZERQuR3P3eg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by PAVPR03MB9502.eurprd03.prod.outlook.com (2603:10a6:102:305::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Thu, 10 Nov
- 2022 15:15:31 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::e9d6:22e1:489a:c23d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::e9d6:22e1:489a:c23d%4]) with mapi id 15.20.5791.022; Thu, 10 Nov 2022
- 15:15:31 +0000
-Message-ID: <3e562df4-6705-87e6-4327-94288e290425@seco.com>
-Date:   Thu, 10 Nov 2022 10:15:25 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH net-next v2 00/11] net: pcs: Add support for devices
- probed in the "usual" manner
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S231579AbiKJPe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 10:34:26 -0500
+X-Greylist: delayed 732 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Nov 2022 07:33:14 PST
+Received: from out203-205-221-192.mail.qq.com (out203-205-221-192.mail.qq.com [203.205.221.192])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACF540937
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 07:33:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1668094391;
+        bh=WKAaVON2ncuiTViXUV+2Pk+5RbBLa1ZdK2Z4ndXxZMQ=;
+        h=From:To:Cc:Subject:Date;
+        b=HYHGwVfO+Qvl7sl59cInnmhYoM9j3V/OyrSAuwvOKi/ZpKDUpG25pcy1/xjbjJHCG
+         efz07ZqTaNCCVG80yNMXtK5q6kJ5OMBfunRh4/pinSbcWpcfU8+4yb08sOsqya7/ZU
+         sVPGVn7172foVcueolS+e1CyKoJxAACgnTG0bBL0=
+Received: from localhost.localdomain ([111.199.191.46])
+        by newxmesmtplogicsvrszb9-0.qq.com (NewEsmtp) with SMTP
+        id 4542142F; Thu, 10 Nov 2022 23:17:20 +0800
+X-QQ-mid: xmsmtpt1668093440tv75ycliw
+Message-ID: <tencent_3E0335A1CE2C91CB09159057B15138441F07@qq.com>
+X-QQ-XMAILINFO: M7uElAZZZMmFzi406KAbOEUgH0eGd75eD6bJqID8rYRD5CrJERuxDIF0WfeAdX
+         9jOU7DAdGKxOFYXWDsC34QRU938KhVZumwwYUl1gwPNEzU7lruJ7tCaDoPHmM4bpNm8osR4667+Z
+         /k0xfRURYd8v6yQY7rCqx0Fu61FNzR1YbMxA8ATQXtSn7ALy6buG6UrvEl7V8NaYtZiKCIHNVPFf
+         sk3knfOzCmB08uCnMTiQ99flslita/eYY48uVapJxPaJZeZLrgBUQEASa/U0Pb7VX2oukbX6J6hZ
+         mGAY/8uQts+kb++ROdfYYmYMC/R+d9TWWotPNNq5TYy9ubk/Fau7KiWSV2GMr5RSirHzqB3dmazv
+         kMDXbINCHqP+sCAt8XIVEpWkOXnulk5jZXvbF4XVAnPnfBIommDv2PfbF67JiMFp4ZnbrZPGHq7w
+         ZzhLln+LgOzLXtEIxpI/U6Vsi3hNUhsHQk137ooL/J/nXL+lXA7P+GzxVyXGnjgDgvYMI9CM6YFb
+         M2oBbRSykvzS05N/M9my/QjRSNdruDyzJKKZWnHcj6eMTSUUVJ4T7b4cGajdIBNVUtAoSpCrgh/p
+         mdvWA5Refy5skFGFWYYiyP9TpuVj2Ss3zuAFwwWgYZ/6ZroAaB+e+GXNumKDAWC/vFPO5aicSRIt
+         wHKvzBRuLScGua9PyYVF/y7CCgoQlZv94z67ak81fcff/I7TfSN3Uc5xRDXzFUQr3sWzTW8rzDC9
+         DUoh24GIhG02CdyvrDR9uJzYZi6caPyryWZEqdnUS49vynvYbIQjrmzAL8Y6uvvXeBicyLGNxLS9
+         73NLk70kim0EAnJ/nJdjnoM+U2QQrRxvHNAthjwJf9pwJqdf/rc4j83Js9YBMFtX3/LRKEy3wyQA
+         tes0k32SwsEIW8yR4lRkjgJXXgn7ISpgw+dH/BST3xf5RXavBc9IzfuTPBvrIpVySVTGZbYawyHh
+         OVM9y4GEYi6qel8XYDVNItlR06K4wHEwgM1G2rgu6uOCJShR3TWw==
+From:   Rong Tao <rtoax@foxmail.com>
+To:     davem@davemloft.net
+Cc:     Rong Tao <rongtao@cestc.cn>, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20221103210650.2325784-1-sean.anderson@seco.com>
- <20221109225944.n5pisgdytex5s6yk@skbuf>
-From:   Sean Anderson <sean.anderson@seco.com>
-In-Reply-To: <20221109225944.n5pisgdytex5s6yk@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0420.namprd13.prod.outlook.com
- (2603:10b6:208:2c2::35) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kernel@vger.kernel.org (open list),
+        bpf@vger.kernel.org (open list:BPF [MISC])
+Subject: [PATCH] net/ipv4: Fix error: type name requires a specifier or qualifier
+Date:   Thu, 10 Nov 2022 23:17:12 +0800
+X-OQ-MSGID: <20221110151712.40621-1-rtoax@foxmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAVPR03MB9502:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1f7981df-280f-4627-8be6-08dac32e6845
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HON3kE5j5OH562gfzvgp26kARdFZL3GODRupzvNW5gYHrdHdXYeU6Zkah9w7/6YpsHC27W9Ckr9lzVz7mVVr67ZIlqpo8Zci/yheIP1E9SR4h/GCaKcSB/ER0vO0rlcbn5z9TKPFPkIWVhcqeWxLn3KF+nvD9PHifvT6mVF4XyLAti/aKfQrZ7uw3TDVS3qSDu4PEApmk4vAZdnUsvOSVgMAnQERUjMFnJ/RHDq3jw/XgTYOmkkMrWRk1CPHsPIoLF8r5D7shJwbZf4lMqqs3MRfR7Opxxl3+v3+uEBANywRWWvzdvM7pVlppS5cxSxhjU4kzFXw/vm0QSvBxoOhn+ev0m9XCoIhzZnpjTZX7+HTAdp7IfWAQiNFxBvNEBpLkJnc5eVEf5cMHR4kCnFn/4RVptHbdJR4BZ9haHIRAOogXgqF2Da/zvT++GhrlvLHENffynCdk1o1OXuo+s+fGAv0VW2D2Umgd41tAqjq3yascLo6UpYMLEQoPKCasn/4h5VzMxHYRIoyNcZsEDC9HTE6kSLYHEaolNz4hfhMpKZBSHrgdD2bx9mEGgvAYEV9vd3lLmxuFNp6oYY74INS/rWgc0XL6a3WvCI20Gcx1h168v1pKH+CA47IJKnr4t2HjZ7kuoNLW1WO85BfdFFvqjOkIAKalBtXXqan/O9ZtGpE2NY8Qqgo4afzEXoA2Mbo2g14S/jGXgrE5GtzrisCddcGHMM8DKZVlrwAV+yQrEZA7oqEB70oBqJYOq7pD/XXZU18cMeBf1N1EOGw1LragSOz8t6NRslxQMuRtHtVEhi14wbOQdDWIjEmDaDQPusHuEGZtrO82y+mQ6Rp+gv6DOdf6bSS2P9WiSIPxBGHtHo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(136003)(376002)(366004)(39850400004)(346002)(451199015)(36756003)(38350700002)(31696002)(86362001)(31686004)(7416002)(7406005)(26005)(2906002)(44832011)(53546011)(6506007)(6512007)(2616005)(52116002)(6666004)(186003)(83380400001)(66946007)(38100700002)(8676002)(54906003)(66476007)(478600001)(316002)(4326008)(8936002)(6486002)(41300700001)(966005)(5660300002)(6916009)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d1B2K1J0Z2Y2c09KTnI0K1FETkhZV2tNdE9qaTNBTVlZT0tEM1kvMjRpSGE0?=
- =?utf-8?B?SytaeDlTY3ZzbjBZR1NCdlRSQndNZVYzNzNFcXlDMjc4aGVzbU56dGlxekR0?=
- =?utf-8?B?a0JMU1BkdTdOQytoYW15WDh5aS9WdUYrMXNWVEFOK0djeTEva3BvR3RjRVRu?=
- =?utf-8?B?cURiNTBEMXVMSUhUZUM0aGRUYStMMEVVb3RpL1NFYWp2bk1YODJpbkJ3dzZX?=
- =?utf-8?B?YVd1Z0lHVDdTLzV6SVpJTlJ3cXVQd0pwQ2liYnd5R2pOVTlpUm5wSzJjOStM?=
- =?utf-8?B?QkZXcGxCVktpSm5wZ0JDK2dFY2VYTWNZZTg4VDI3MytDeWF3Z1E2Y0xiMTVr?=
- =?utf-8?B?eXRMK1BUbXN3bzkzY3FlMzJoZk4rTittZldpK254NVoxU01qWkFCSGYvK1Jw?=
- =?utf-8?B?bW1pTkVhZWdWVStGMG9XUXB0L3dKNVkwckg2TDFvNjBBVm9EUHcvTWhhZU0x?=
- =?utf-8?B?YzA3eTVMQXdUMTZvOEp4WUhaZTYrdVdjV0dSOS9KS0pRaVh6QUU1U2FDSHQy?=
- =?utf-8?B?Rnk1eitQbTl3QjN3QVVrdGIzY011ZGliQ1hCWGJSOFlrd0pSWXlTQURXb0lS?=
- =?utf-8?B?Yk4zYkxKN3VkeEtURWVOZ3Z4eDJkNGp1SzQwRDZKOGFCd215S2xFNGh1dUl3?=
- =?utf-8?B?UGJBdGExVHJEOEVhQUIyRkQ1OHBkaW03Qmh4Ty9SSHlOZk01QkxqUUM1bjhn?=
- =?utf-8?B?RzRMVzZMcG53Q1c2K2d6cU40ZkdiVU16MXhMOFhMdWduMExsWEtiZDlZREdX?=
- =?utf-8?B?SitiUjhrM2JPek81am4yS1g1MEpPYkE5a1BvSmE5QWVvdnhPeVgzd0toVkNN?=
- =?utf-8?B?aHVRRGNsRytrYTYydHZKemhva3lLSG9CTEJQQ1BBZFd4bU1pM1JIZ0VkVG1U?=
- =?utf-8?B?UUZJeXA1YlovaTBaY0FDOHREKzNORDBCWTVVOWJyak1hMjFpR09IL1FmdUd0?=
- =?utf-8?B?eVkwSGRNUzNCZFR5QTVqZ0ZLM3U1OVljR2YwRThKNGM1Z3RzYTlXcmFrYjNs?=
- =?utf-8?B?VjE1aUpUQW51WEdHQ0tpM2NmWi9SeUl3d0xJblpBR1VBNEM1R0hEai9ZU1pD?=
- =?utf-8?B?SjVNWkgyS1ZuNDdNcytaVmtkVDMzTUpTRjk4bERsNjlLd00yVTcrYUorVWVv?=
- =?utf-8?B?cmZCSGQyL245bjlBcWYzRDNaOTZ3cWhEUjdsVzNQWVE2ZkdzYm1qQlF3dlB4?=
- =?utf-8?B?NmticEJTcGNsdk01RjZIS1kxb1MwbWlSUVhMQXBKWERGTVQ1SGtQVnVITWlu?=
- =?utf-8?B?UUdhWU9ETGNuMlZ0ZjNEOU9zcWw2N3Z5dGZSVjMyd2U0WnFKT2sxMkJYc3Qr?=
- =?utf-8?B?K056S293UzRFRXg0TTlLaUNSVmZFU0RFS2s2SHpkMWFBWnBLdS9XQ2gzSndP?=
- =?utf-8?B?Q0FVbDlOVFZzdkR3WEZaeVZIVlNrUzhDaW5vV0pabEYyT3hxZ21UNW05OWFi?=
- =?utf-8?B?TXBrc2RkVWxDdDlYbmk5Q3pUcms4aFU0aHVlOTE2Vyt3U2MwY1BqbGdDMito?=
- =?utf-8?B?VkJSUzNXSVhlRnRsb1cwQW40UFZXdEFPcFFxQ3pTS2ZOMXpFRmlMbDY1WjVS?=
- =?utf-8?B?MDJ4UDZZMVJ4T2tYb0lQUEQrSlczTEpqai82cHZKT3p4TVNRVFg5ZURFcGgx?=
- =?utf-8?B?MVNqS1h4QkNFVy9FdllQYTJ2NlAycCtWamwrelpYUzNPeEMvQUh5cDc1RWZX?=
- =?utf-8?B?aE9rL1VuNmRtbk9CMi9iSWdPSjVWcmlTYVhGNW9wdktpMlBFNnl3OGxKNU5Q?=
- =?utf-8?B?QWdYalJFZ3pJYldwVVNpejdrRXROd1UzWU82NVI2NGpFVHdGdG5IdGhRSEpt?=
- =?utf-8?B?RzBiWXdoQTVCTldycldIZXkvQWwwR0Q2dnVEeE1LVHdUNEg3bFIzaUlvZkFV?=
- =?utf-8?B?RURKT2lVNFpMUlI5eTk3aWxESmRLUXE1c1BZZnRjS3Z5cnVSOU9uMFhGYm53?=
- =?utf-8?B?eEN4RlVEUmpyOVZydjZucmYzYjBBaGhnOE56cURlN3pLYkdydGdJU0tFMktt?=
- =?utf-8?B?eWl6NmVxak54eFIzRVJwUmpzckFGVmtDRS9FL3lxMEVULzlyVmF0Y3RYc2Fj?=
- =?utf-8?B?c0Nlb0dYTkdadkQwTEFySVFxZWlPMEV1UlNEU0oycGQ3ZE56SnlONFFWQVpv?=
- =?utf-8?B?SHlERHF4dGxRQTR1YTZpWnFLREdjQ1lvMUhJcFRnUU51ZGl5VFpWTTREMFRs?=
- =?utf-8?B?U2c9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f7981df-280f-4627-8be6-08dac32e6845
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2022 15:15:31.3677
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vfYv98NUY/ETO4hNghNNJDUbYj3WXUkKL6VsSDUrc70WDMZeiVYGyq38iy0EQf5CHZMmKiiqDfWsf6f9pzsPfg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR03MB9502
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RDNS_DYNAMIC,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/9/22 17:59, Vladimir Oltean wrote:
-> On Thu, Nov 03, 2022 at 05:06:39PM -0400, Sean Anderson wrote:
->> For a long time, PCSs have been tightly coupled with their MACs. For
->> this reason, the MAC creates the "phy" or mdio device, and then passes
->> it to the PCS to initialize. This has a few disadvantages:
->> 
->> - Each MAC must re-implement the same steps to look up/create a PCS
->> - The PCS cannot use functions tied to device lifetime, such as devm_*.
->> - Generally, the PCS does not have easy access to its device tree node
-> 
-> Is there a clear need to solve these disadvantages? There comes extra
-> runtime complexity with the PCS-as-device scheme.
+From: Rong Tao <rongtao@cestc.cn>
 
-IMO this is actually simpler for driver implementers and consumers. You
-can see this by looking at the diffstats for each of the patches. All of
-the consumers are -30 or so. The driver is +30, but that's around the
-length of lynx_pcs_create_on_bus (and of course the compatible strings
-and driver).
+since commit 5854a09b4957("net/ipv4: Use __DECLARE_FLEX_ARRAY() helper")
+linux/in.h use __DECLARE_FLEX_ARRAY() macro, and sync to tools/ in commit
+036b8f5b8970("tools headers uapi: Update linux/in.h copy"), this macro
+define in linux/stddef.h, which introduced in commit 3080ea5553cc("stddef:
+Introduce DECLARE_FLEX_ARRAY() helper"), thus, stddef.h should be included
+in in.h, which resolves the compilation error below:
 
-> (plus the extra
-> complexity needed to address the DT backwards compatibility problems
-> it causes; not addressed here).
+How to reproduce this compilation error:
 
-New drivers will not need to do this backwards-compatibility dance. They
-can be written like almost every other driver in the kernel. There are
-parallels here with how phy devices were implemented; first as a library
-without drivers (or devices), and gradually converting to devices.
+$ make -C tools/testing/selftests/bpf/
+In file included from progs/bpf_flow.c:8:
+linux/in.h:199:3: error: type name requires a specifier or qualifier
+                __DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
+                ^
+linux/in.h:199:32: error: type specifier missing, defaults to 'int' [-Werror,-Wimplicit-int]
+                __DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
+                                             ^
+2 errors generated.
 
-This is also motivated by Xilinx platforms where the PCS can be
-implemented on an FPGA. Hard-coding the PCS for the MAC is not
-desirable, since the device can change when the bitstream is changed.
-Additionally, the devices may need to configure e.g. resets or clocks.
+Same error occurs with cgroup_skb_sk_lookup_kern.c, connect_force_port4.c,
+connect_force_port6.c, etc. that contain the header linux/in.h.
 
-I plan to post a follow-up patch for [1] adding a Xilinx PCS/PMA driver
-at some point.
+Signed-off-by: Rong Tao <rongtao@cestc.cn>
+---
+ include/uapi/linux/in.h       | 1 +
+ tools/include/uapi/linux/in.h | 1 +
+ 2 files changed, 2 insertions(+)
 
---Sean
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index f243ce665f74..07a4cb149305 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -20,6 +20,7 @@
+ #define _UAPI_LINUX_IN_H
+ 
+ #include <linux/types.h>
++#include <linux/stddef.h>
+ #include <linux/libc-compat.h>
+ #include <linux/socket.h>
+ 
+diff --git a/tools/include/uapi/linux/in.h b/tools/include/uapi/linux/in.h
+index f243ce665f74..07a4cb149305 100644
+--- a/tools/include/uapi/linux/in.h
++++ b/tools/include/uapi/linux/in.h
+@@ -20,6 +20,7 @@
+ #define _UAPI_LINUX_IN_H
+ 
+ #include <linux/types.h>
++#include <linux/stddef.h>
+ #include <linux/libc-compat.h>
+ #include <linux/socket.h>
+ 
+-- 
+2.31.1
 
-[1] https://lore.kernel.org/netdev/20211004191527.1610759-1-sean.anderson@seco.com/
