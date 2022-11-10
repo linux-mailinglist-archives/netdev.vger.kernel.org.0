@@ -2,103 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0FFA624CF5
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 22:25:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED4A5624D08
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 22:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbiKJVZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 16:25:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
+        id S231649AbiKJVcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 16:32:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbiKJVZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 16:25:46 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FF81D6
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 13:25:44 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id z5-20020a17090a8b8500b00210a3a2364fso6551348pjn.0
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 13:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FqT8RNqA6N+wkWAA/Wp0lnh4zf1zebWRqFlwsZzhVdA=;
-        b=vzXqQ44B1d8XbbXWy2IafbNlpQPwkRunZEV7DUzzUsBFhmUa7/qjUBUigpItSsdzWA
-         sYbTJgE74PY8zjl0b7z4T6Ich3X6OO7eNlEzYmMvmmIO5ImAXw5X0OPDA3utHkkUi5qn
-         Kr0IU65/YezgeXMXFS2K4BQ7IHagEbEWohVg2C7deJsUEeh0qOt5Tt1GjvtGswTh/t04
-         sIGyLgkZeqqIR1HcEVFdg2oArXo2wEjsZp4vN9Meez53/QALMC+bW9aRtT99cFxZH2y2
-         fMIlTocEmjU+cm7Tpr5j78rU+HMAU1lfMg6GD+RkCs2kiu/YKgx/4Ulz/5VLRWO+VtLA
-         0uJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FqT8RNqA6N+wkWAA/Wp0lnh4zf1zebWRqFlwsZzhVdA=;
-        b=LgWOBIh8Um/lRh2hCKjFDc/zei7MOQ/0FOgkLswmcR0xzS4AJWoL4Cx6ie8Y5TXbTd
-         kPIN6L2Q97fPxYL9IcnxmWZoAMa4WCwywa42VWC60EjduDUnzhBP/8txy8P9rOy1tLdb
-         8kUwXJ9+2Cd79LhZw935C1avU24GISqQOTBqhNeNNZaO/iS+0p+SG2ppmm+rhYiN0NTt
-         pumd+pZ0Tois+NI30UqB7LOFW/YK7E6bMF0j/LcgbP2WfSk0ODYCEt3FkYvMfCA6aqyg
-         eSbP5GuQ1tB4pSAH+zBkXgqL9BQTw+tLd4zTt3jLbdeWyInFGaxR7sXxs0r+nv6Coc/2
-         /giw==
-X-Gm-Message-State: ACrzQf1sBPcyaLpaCnYL+GemwFIcjzjwawpSFk/MvghR/GkwhM0g+m7V
-        SzT76eKjW/oW8OZNAa1gPBlxJA==
-X-Google-Smtp-Source: AMsMyM4LDmiyXr0CKIAfsj8WCUM8AdgnnKTfq2QEBek8gEcU91ztCAV8oK4Tm2SS+zjJ1zKQujqiFQ==
-X-Received: by 2002:a17:902:b48d:b0:181:b55a:f987 with SMTP id y13-20020a170902b48d00b00181b55af987mr2129611plr.67.1668115544306;
-        Thu, 10 Nov 2022 13:25:44 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id u21-20020a634715000000b00464aa9ea6fasm91676pga.20.2022.11.10.13.25.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 13:25:43 -0800 (PST)
-Date:   Thu, 10 Nov 2022 13:25:40 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     John Ousterhout <ouster@cs.stanford.edu>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Upstream Homa?
-Message-ID: <20221110132540.44c9463c@hermes.local>
-In-Reply-To: <CAGXJAmzTGiURc7+Xcr5A09jX3O=VzrnUQMp0K09kkh9GMaDy4A@mail.gmail.com>
-References: <CAGXJAmzTGiURc7+Xcr5A09jX3O=VzrnUQMp0K09kkh9GMaDy4A@mail.gmail.com>
+        with ESMTP id S229595AbiKJVcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 16:32:41 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8281D6
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 13:32:40 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2AAKp58R002037
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 21:32:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=FsZbjoj5zZQH6qrJn7pjbNxke3nccAPgOQxZiCRS8Mc=;
+ b=BWmugPJ+cgyi/eSnYcCJLCjpiTd+k91Uuu5HhHmblo6ahww2t9MJ3lNfDMXpJK2hrsom
+ QDu1PZVzukjQwb4ecDAX6FOk54UYDmBrrPGQGlB1BegroXuWKL+3nrvL/3OOE2dHygj3
+ Z04NfnzxUq8/YTdSoWqPSsz9KuyBpZuLO1GqlNgLiYrcsnhVPobd3IV8kBnKRcBQo64h
+ YtP0IusFdl5WDikMtx2HUYn7lLQFa/AgmxB1d8/jVD3zQs3W+BR4vNOO5xk1eyhZ91tq
+ mmfS/o2aCrNuYPP8e5OEGxvTppJfoR6CNUZAuHXxXuB8WpN96e701MiLngp5+7zu7tsZ yw== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ks8pw8u61-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 21:32:39 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2AALMoa4005667
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 21:32:38 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma04wdc.us.ibm.com with ESMTP id 3kngpu6v6v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 21:32:38 +0000
+Received: from smtpav02.dal12v.mail.ibm.com ([9.208.128.128])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2AALWf6R4522702
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Nov 2022 21:32:41 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D882D5805F;
+        Thu, 10 Nov 2022 21:32:36 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1968E5805C;
+        Thu, 10 Nov 2022 21:32:36 +0000 (GMT)
+Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.160.178.220])
+        by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Thu, 10 Nov 2022 21:32:35 +0000 (GMT)
+From:   Nick Child <nnac123@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     bjking1@linux.ibm.com, haren@linux.ibm.com, ricklind@us.ibm.com,
+        mmc@linux.ibm.com, Nick Child <nnac123@linux.ibm.com>
+Subject: [PATCH net-next 0/3] ibmvnic: Introduce affinity hint support
+Date:   Thu, 10 Nov 2022 15:32:15 -0600
+Message-Id: <20221110213218.28662-1-nnac123@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: pNVtAQw30RLRDDbDD7eeHCPQ-p6_Mmee
+X-Proofpoint-GUID: pNVtAQw30RLRDDbDD7eeHCPQ-p6_Mmee
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-10_13,2022-11-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 suspectscore=0 impostorscore=0 malwarescore=0
+ mlxscore=0 mlxlogscore=698 bulkscore=0 adultscore=0 phishscore=0
+ spamscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2210170000 definitions=main-2211100144
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Nov 2022 11:42:35 -0800
-John Ousterhout <ouster@cs.stanford.edu> wrote:
+Hello,
 
-> Several people at the netdev conference asked me if I was working to
-> upstream the Homa transport protocol into the kernel. I have assumed
-> that this is premature, given that there is not yet significant usage of
-> Homa, but they encouraged me to start a discussion about upstreaming
-> with the netdev community.
-> 
-> So, I'm sending this message to ask for advice about (a) what state
-> Homa needs to reach before it would be appropriate to upstream it,
-> and, (b) if/when that time is reached, what is the right way to go about it.
-> Homa currently has about 13K lines of code, which I assume is far too
-> large for a single patch set; at the same time, it's hard to envision a
-> manageable first patch set with enough functionality to be useful by itself.
-> 
-> -John-
+This is a patchset to do 3 things to improve ibmvnic performance:
+    1. Assign affinity hints to ibmvnic queue irq's
+    2. Update affinity hints on cpu hotplug events
+    3. Introduce transmit packet steering (XPS)
 
-There are lots of experimental protocols already in Linux.
-The usual upstream problem areas are:
- - coding style
+NOTE: If irqbalance is running, you need to stop it from overriding 
+  our affinity hints. To do this you can do one of:
+   - systemctl stop irqbalance
+   - ban the ibmvnic module irqs
+      - you must have the latest irqbalance v9.2, the banmod argument was broken before this
+      - in /etc/sysconfig/irqbalance -> IRQBALANCE_ARGS="--banmod=ibmvnic"
+      - systemctl restart irqbalance
 
- - compatibility layers
-   developers don't care about code to run on older versions or other OS.
-   
- - user API
-   once you define it hard to change, need to get it right
+Nick Child (3):
+  ibmvnic: Assign IRQ affinity hints to device queues
+  ibmvnic: Add hotpluggable CPU callbacks to reassign affinity hints
+  ibmvnic: Update XPS assignments during affinity binding
 
- - tests
-   is there a way to make sure it works on all platforms
+ drivers/net/ethernet/ibm/ibmvnic.c | 239 ++++++++++++++++++++++++++++-
+ drivers/net/ethernet/ibm/ibmvnic.h |   5 +
+ include/linux/cpuhotplug.h         |   1 +
+ 3 files changed, 244 insertions(+), 1 deletion(-)
 
-Heuristics and bug fixing are fine, in fact having a wider community
-will help.
+-- 
+2.31.1
+
