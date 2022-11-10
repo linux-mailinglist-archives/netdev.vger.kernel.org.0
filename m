@@ -2,321 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E934C624727
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 17:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C33E624772
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 17:49:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232041AbiKJQh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 11:37:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S232047AbiKJQtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 11:49:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231920AbiKJQhj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 11:37:39 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3CA3FBAB
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 08:37:37 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 6F20284D17;
-        Thu, 10 Nov 2022 17:37:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1668098255;
-        bh=AXsRkUm5VWNnXJa+MCuBauMJuepoAZHQRfBQtcjHePQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JoFcCUDSAuVFkIxdxCKbla8psj25EmGTRbycNq1FELBElz92SJ67VHj6d2CXMixeB
-         m9nnE3uH5XzbloXRA21U5HinVDjWpB0CfFzIQUaui2+yjLYj+mKeHi+0T3om5LamG7
-         adldZCJeZhGoUBMUU+ccX//9yZ8NiX6jZ6K1rv28w+vNWbLZGSoer6l6mks2xgIxMS
-         daBwEZWpBnxM9IbihUJy7GWYFkwdKFfu4ULe1Ww2XpZOTejUuooWRwjhvOIswYt5kx
-         Z+o7/jObc1D8w3BoiGhzd7gN2NP6LysyMQ+NOXMws0brZqq1xfPCj7EiUoor1E100h
-         wUk9Dh7wsP7Cw==
-Date:   Thu, 10 Nov 2022 17:37:14 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232599AbiKJQsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 11:48:45 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8451DD6F;
+        Thu, 10 Nov 2022 08:47:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668098874; x=1699634874;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sLTSISWzUr5ww4UVTAKQbU1w81C51YBDl84qwQHSgtI=;
+  b=GTJ5zzZVjI+YpVEU0Mjl7tKrdV5XH/5FWRPtRwePYYKvI07NWtU5bkTh
+   7hdtcOSqrBbqlFKLR6TyRmr5/U5PTZZ3QVUCOgPQvllGneGhrr53nwVNz
+   3mepKocRHqOq2JblspEse8wy39e92rgC9SSSg1xzpZLiYjZGW3275yiJd
+   /aaa2LfuQxNjItHjlRS/2R+fa3sMrv8AyZl1w+P0qaOG/p1ARMf4QqG3e
+   rlM9lFeiJaXPDfX04WG5zQD4NQQbxMCBafYp0jZb2AJKQJe4Rd47iYl2C
+   EFwIU6w2QHIl5WUqCG0wGSBFMSIa1nY1JvJrpdzSGEeUaaESLk4Zu+By7
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="310078421"
+X-IronPort-AV: E=Sophos;i="5.96,154,1665471600"; 
+   d="scan'208";a="310078421"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 08:46:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="882418907"
+X-IronPort-AV: E=Sophos;i="5.96,154,1665471600"; 
+   d="scan'208";a="882418907"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Nov 2022 08:46:38 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AAGkbeC023491;
+        Thu, 10 Nov 2022 16:46:37 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: Re: [PATCH 3/9] net: dsa: mv88e6xxx: implement get_phy_address
-Message-ID: <20221110173714.6ea59de5@wsk>
-In-Reply-To: <20221108091220.zpxsduscpvgr3zna@skbuf>
-References: <20221108082330.2086671-1-lukma@denx.de>
-        <20221108082330.2086671-4-lukma@denx.de>
-        <20221108091220.zpxsduscpvgr3zna@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "imx@lists.linux.dev" <imx@lists.linux.dev>
+Subject: Re: [PATCH v2 RESEND 1/1] net: fec: add xdp and page pool statistics
+Date:   Thu, 10 Nov 2022 17:43:21 +0100
+Message-Id: <20221110164321.3534977-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <PAXPR04MB91853A6A1DDDBB06F33C975E89019@PAXPR04MB9185.eurprd04.prod.outlook.com>
+References: <20221109023147.242904-1-shenwei.wang@nxp.com> <4349bc93a5f2130a95305287141fde369245f921.camel@redhat.com> <PAXPR04MB91853A6A1DDDBB06F33C975E89019@PAXPR04MB9185.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/6FeOPE1LNM4fRFp8Uc_mcHx";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/6FeOPE1LNM4fRFp8Uc_mcHx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Shenwei Wang <shenwei.wang@nxp.com>
+Date: Thu, 10 Nov 2022 13:29:56 +0000
 
-Hi Vladimir,
+> > -----Original Message-----
+> > From: Paolo Abeni <pabeni@redhat.com>
+> > Sent: Thursday, November 10, 2022 5:54 AM
+> > To: Shenwei Wang <shenwei.wang@nxp.com>; David S. Miller
+> > <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub
+> > Kicinski <kuba@kernel.org>
+> > >       case ETH_SS_STATS:
+> > > -             for (i = 0; i < ARRAY_SIZE(fec_stats); i++)
+> > > -                     memcpy(data + i * ETH_GSTRING_LEN,
+> > > -                             fec_stats[i].name, ETH_GSTRING_LEN);
+> > > +             for (i = 0; i < ARRAY_SIZE(fec_stats); i++) {
+> > > +                     memcpy(data, fec_stats[i].name, ETH_GSTRING_LEN);
+> > > +                     data += ETH_GSTRING_LEN;
+> > > +             }
+> > > +             for (i = 0; i < ARRAY_SIZE(fec_xdp_stat_strs); i++) {
+> > > +                     memcpy(data, fec_xdp_stat_strs[i], ETH_GSTRING_LEN);
+> > > +                     data += ETH_GSTRING_LEN;
+> >
+> > The above triggers a warning:
+> >
+> > In function 'fortify_memcpy_chk',
+> >     inlined from 'fec_enet_get_strings'
+> > at ../drivers/net/ethernet/freescale/fec_main.c:2788:4:
+> > ../include/linux/fortify-string.h:413:25: warning: call to '__read_overflow2_field'
+> > declared with attribute warning: detected read beyond size of field (2nd
+> > parameter); maybe use struct_group()? [-Wattribute-warning]
+> >   413 |                         __read_overflow2_field(q_size_field, size);
+> >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > I think you can address it changing fec_xdp_stat_strs definition to:
+> >
+> > static const char fec_xdp_stat_strs[XDP_STATS_TOTAL][ETH_GSTRING_LEN] =
+> 
+> That does a problem. How about just change the memcpy to strncpy?
 
-> On Tue, Nov 08, 2022 at 09:23:24AM +0100, Lukasz Majewski wrote:
-> > From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> >=20
-> > Avoid the need to specify a PHY for each physical port in the
-> > device tree when phy_base_addr is not 0 (6250 and 6341 families).
-> >=20
-> > This change should be backwards-compatible with existing device
-> > trees, as it only adds sensible defaults where explicit definitions
-> > were required before.
-> >=20
-> > Signed-off-by: Matthias Schiffer
-> > <matthias.schiffer@ew.tq-group.com> =20
->=20
-> Needs your Signed-off-by tag as well.
+Don't use a static char array, it would consume more memory than the
+current code. Just replace memcpy()s with strscpy().
 
-Ok.
+Why u32 for the stats tho? It will overflow sooner or later. "To
+keep it simple and compatible" you can use u64_stats API :)
 
->=20
-> > --- =20
->=20
-> Would it be possible to do like armada-3720-turris-mox.dts does, and
-> put the phy-handle in the device tree, avoiding the need for so many
-> PHY address translation quirks?
+> 
+> Regards,
+> Shenwei
+> 
+> > { // ...
+> >
+> > Cheers,
+> >
+> > Paolo
 
-As far as I can tell - the mv88e6xxx driver
-(./drivers/net/dsa/mv88e6xxx) now uses hardcoded values for each member
-of mv88e6xxx_info struct.
-
-Those values are "port_base_addr" and "phy_base_addr". Those values
-could be read from DTS description as pasted below.
-
->=20
-> If you're going to have U-Boot support for this switch as well, the
-> phy-handle mechanism is the only thing that U-Boot supports, so device
-> trees written in this way will work for both (and can be passed by
-> U-Boot to Linux):
->=20
-> 	switch1@11 {
-> 		compatible =3D "marvell,mv88e6190";
-> 		reg =3D <0x11>;
-> 		dsa,member =3D <0 1>;
-> 		interrupt-parent =3D <&moxtet>;
-> 		interrupts =3D <MOXTET_IRQ_PERIDOT(1)>;
-> 		status =3D "disabled";
->=20
-> 		mdio {
-> 			#address-cells =3D <1>;
-> 			#size-cells =3D <0>;
->=20
-> 			switch1phy1: switch1phy1@1 {
-> 				reg =3D <0x1>;
-> 			};
->=20
-> 			switch1phy2: switch1phy2@2 {
-> 				reg =3D <0x2>;
-> 			};
->=20
-> 			switch1phy3: switch1phy3@3 {
-> 				reg =3D <0x3>;
-> 			};
->=20
-> 			switch1phy4: switch1phy4@4 {
-> 				reg =3D <0x4>;
-> 			};
->=20
-> 			switch1phy5: switch1phy5@5 {
-> 				reg =3D <0x5>;
-> 			};
->=20
-> 			switch1phy6: switch1phy6@6 {
-> 				reg =3D <0x6>;
-> 			};
->=20
-> 			switch1phy7: switch1phy7@7 {
-> 				reg =3D <0x7>;
-> 			};
->=20
-> 			switch1phy8: switch1phy8@8 {
-> 				reg =3D <0x8>;
-> 			};
-> 		};
->=20
-> 		ports {
-> 			#address-cells =3D <1>;
-> 			#size-cells =3D <0>;
->=20
-> 			port@1 {
-> 				reg =3D <0x1>;
-> 				label =3D "lan9";
-> 				phy-handle =3D <&switch1phy1>;
-> 			};
->=20
-> 			port@2 {
-> 				reg =3D <0x2>;
-> 				label =3D "lan10";
-> 				phy-handle =3D <&switch1phy2>;
-> 			};
->=20
-> 			port@3 {
-> 				reg =3D <0x3>;
-> 				label =3D "lan11";
-> 				phy-handle =3D <&switch1phy3>;
-> 			};
->=20
-> 			port@4 {
-> 				reg =3D <0x4>;
-> 				label =3D "lan12";
-> 				phy-handle =3D <&switch1phy4>;
-> 			};
->=20
-> 			port@5 {
-> 				reg =3D <0x5>;
-> 				label =3D "lan13";
-> 				phy-handle =3D <&switch1phy5>;
-> 			};
->=20
-> 			port@6 {
-> 				reg =3D <0x6>;
-> 				label =3D "lan14";
-> 				phy-handle =3D <&switch1phy6>;
-> 			};
->=20
-> 			port@7 {
-> 				reg =3D <0x7>;
-> 				label =3D "lan15";
-> 				phy-handle =3D <&switch1phy7>;
-> 			};
->=20
-> 			port@8 {
-> 				reg =3D <0x8>;
-> 				label =3D "lan16";
-> 				phy-handle =3D <&switch1phy8>;
-> 			};
->=20
-> 			switch1port9: port@9 {
-> 				reg =3D <0x9>;
-> 				label =3D "dsa";
-> 				phy-mode =3D "2500base-x";
-> 				managed =3D "in-band-status";
-> 				link =3D <&switch0port10>;
-> 			};
->=20
-> 			switch1port10: port@a {
-> 				reg =3D <0xa>;
-> 				label =3D "dsa";
-> 				phy-mode =3D "2500base-x";
-> 				managed =3D "in-band-status";
-> 				link =3D <&switch2port9>;
-> 				status =3D "disabled";
-> 			};
->=20
-> 			port-sfp@a {
-> 				reg =3D <0xa>;
-> 				label =3D "sfp";
-> 				sfp =3D <&sfp>;
-> 				phy-mode =3D "sgmii";
-> 				managed =3D "in-band-status";
-> 				status =3D "disabled";
-> 			};
-> 		};
-> 	};
-
-The u-boot mailine has basic support for mv88e6071 and mv88e6020 (and
-also some 'extension' patches which are floating around [1]).
-
-For the current code - I'm using:
-
- mdio {
-        #address-cells =3D <1>;
-        #size-cells =3D <0>;
-
-        switch@0 {
-            compatible =3D "marvell,mv88e6250";
-            reg =3D <0x00>;
-
-            interrupt-parent =3D <&gpio2>;
-            interrupts =3D <20 IRQ_TYPE_LEVEL_LOW>;
-            interrupt-controller;
-            #interrupt-cells =3D <2>;
-
-            ports {
-                #address-cells =3D <1>;
-                #size-cells =3D <0>;
-
-                port@0 {
-                    reg =3D <0>;
-                    label =3D "lan1";
-                };
-
-                port@1 {
-                    reg =3D <1>;
-                    label =3D "lan2";
-                };
-
-                port@2 {
-                    reg =3D <2>;
-                    label =3D "lan3";
-                };
-
-                port@5 {
-                    reg =3D <5>;
-                    label =3D "cpu";
-                    phy-mode =3D "rgmii-id";
-                    ethernet =3D <&fec1>;
-
-                    fixed-link {
-                           speed =3D <100>;
-                           full-duplex;
-                    };
-                };
-	};
-
-
-The only "hack" which I see from time to time is the replacement of
-'switch@0' with 'switch@8' to take into account the R0_LED/ADDRES4
-bootstrap pin value (to shift up ports addresses).
-
-
-Links:
-
-[1] - https://lists.denx.de/pipermail/u-boot/2021-March/444827.html
-
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/6FeOPE1LNM4fRFp8Uc_mcHx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNtKLoACgkQAR8vZIA0
-zr15Lgf/bI9BJhD+EiAI6EMzm+suHAILtB4jfcXPvH+9alEcgXFfQGZxKSzXVbRW
-xgFzQrKjwKPHaFmZMZ4osD0YbhBrkfTbxv8umen0fAmWshTTkaGZ77Y9fw1/cQnh
-1/bfE9swr24Qya1wxeFzIZC0kzgHD8z8i9CjR/cN/Zz9PABcCWloIsjUwvqHNQn8
-+FSobkve7kxUudLllVD/XHF5/Vhi9hlySaNfQxcDe6VDCAFrMbXcA6O6DZAPRcor
-H7hfxXatmaLZ+aB9qgmlA0m+nSHo9zhiADN6kmz08wQpxEZrkuFpKCjrabge40eQ
-ggPkYa+HPAQggkEGlZJIvaLaKpZ/zg==
-=cDxd
------END PGP SIGNATURE-----
-
---Sig_/6FeOPE1LNM4fRFp8Uc_mcHx--
+Thanks,
+Olek
