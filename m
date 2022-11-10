@@ -2,166 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F049A624E6C
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 00:24:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F543624E76
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 00:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbiKJXY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 18:24:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        id S230467AbiKJXap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 18:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiKJXYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 18:24:25 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F3014D25
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:24:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668122664; x=1699658664;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=27xxdJbMcpeNIA6hFEJJR8//tshTaI/TEzpqtfJrv3I=;
-  b=EO22dY3vn9BUCtU8zYpip1kr8VZ11uD0Mi9BDiGZ8Z+lCveZWAqzrixm
-   cFuIv/Fmfn8LYBXFVmYQmgi36Zq6cFhlp5eukhWBO8fLv6c5coxGusz4l
-   bviEDmqoOIu8414HqD0XJxgQ9xdaQFT68tGF/5S/ZaSlFgMYIs+1Jr8Wl
-   KNzFX3rTKKAJwBPgP4zNxH+OX61ICMWpb68xgz3APt1IxL8sMHAVYV7/E
-   ZeatBTYYvoHGbFHBe9qRooUmkaeJsW5hxsmbloFPTBaJaMV8rLBiWeG71
-   FPWE9b4kOi/eYag8dQAzpjIoHlx1m2SicAUczjUqRvBoTa+XK+vfmuV/X
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="291872725"
-X-IronPort-AV: E=Sophos;i="5.96,155,1665471600"; 
-   d="scan'208";a="291872725"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 15:24:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="670541923"
-X-IronPort-AV: E=Sophos;i="5.96,155,1665471600"; 
-   d="scan'208";a="670541923"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga001.jf.intel.com with ESMTP; 10 Nov 2022 15:24:23 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 10 Nov 2022 15:24:23 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 10 Nov 2022 15:24:23 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Thu, 10 Nov 2022 15:24:23 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Thu, 10 Nov 2022 15:24:22 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Yms70xMQTotE+AX7ICCPz2B9xyZ1qCDDHnthAsw9wzyhV3aEfbgVx3wycjntQ/S92RO6yn4LTNZ1PeprqNDqi38hkMyQVtSgkqDqB66DFE9qdmh2o8fDG2VsrxooQm6yz0l8yWUobS3EeI0Ahk6bU1UsvX3YNbL2HaA3UwMFgZQDivDu/J8lRSUOG9xxDH54/2mPb2AsW0NA+NJXplDNypgYw8IzLe+ptj4TlS6m4ipv6ONe3JAXoMgjSXEh89aBdCn4R/91t5ktSMggdvDSeDGtm630mpFw0qhlwt0MejF7+wlPY4HPILXDN+X0IN18BG/ICnapyV9qNu6HVEKPiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=02TYYmBk3oExyN8Wggwp5MEZZaXFmP7uQSDVHqU/oe4=;
- b=TV88k4bF4S2XMrDFWBJkXaBDg3C+iWu09NCSEfu7bRYJvLnKbpcN10JXqQ9BfnhEq/FH5QzZUTiCylWeVuE9EUp7C1d+cyAVRcjnRhjWCtJaAi8JWNUKmGKZjQDtBBjQ0DfRoEIc6TFnklRIP9cKwmc0Utmeysk+yMjgvotHA7C00CYkO4G2SoVlUbKDdQLyvuaGLfaYdTqRngXA6BaJrdB62iSBJvL0ONlOk67oGEAVfiYUb3Sg4uY/haWsN7PdmAuo0gVS2iloe61x50hjq4V9TwHUo0q7lzXUMcXrUkzxKosRRR9YXCpZOBR5orHbJqQW+pfNdzfwmHJXjbcHvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
- by SJ0PR11MB5006.namprd11.prod.outlook.com (2603:10b6:a03:2db::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.29; Thu, 10 Nov
- 2022 23:24:20 +0000
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::f09b:dc76:ce14:2d2e]) by PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::f09b:dc76:ce14:2d2e%7]) with mapi id 15.20.5813.012; Thu, 10 Nov 2022
- 23:24:20 +0000
-Message-ID: <0402fc4f-21c9-eded-bed7-fd82a069ca70@intel.com>
-Date:   Thu, 10 Nov 2022 17:24:15 -0600
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v2] ethtool: add netlink based get rxfh support
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-References: <20221104234244.242527-1-sudheer.mogilappagari@intel.com>
- <20221107182549.278e0d7a@kernel.org>
- <IA1PR11MB626686775A30F79E8AE85905E4019@IA1PR11MB6266.namprd11.prod.outlook.com>
- <20221109164603.1fd508ca@kernel.org>
- <eba940d8-a2da-9a7e-2802-fbac680b7df6@intel.com>
- <20221110143413.58f107c2@kernel.org>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-In-Reply-To: <20221110143413.58f107c2@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR03CA0005.namprd03.prod.outlook.com
- (2603:10b6:a03:39a::10) To PH0PR11MB4886.namprd11.prod.outlook.com
- (2603:10b6:510:33::22)
+        with ESMTP id S229703AbiKJXao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 18:30:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B02249B68
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:29:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668122989;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jWjU1ZjrkixCn1stDyI9mL1Ga7OCVWYkVGzuz+ZpzuI=;
+        b=hrqVwQCkZQjnnjdbBIaBooGPi690cCO+MmNeHYpV0Z35J11K2k7s1MX5DIT5OBS2WSZRSj
+        ht6ecSO7xl3bnAUuAnhIE9Ic6dk414+mTd3xQhnzDuXZaUf4SaC1xwNcHEUdVwAbll748G
+        VeBH+nFTeBEUlgldaGZzzTQyWtbcr/I=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-654-2hAiSWX9NC6YKAAdkbfiEg-1; Thu, 10 Nov 2022 18:29:48 -0500
+X-MC-Unique: 2hAiSWX9NC6YKAAdkbfiEg-1
+Received: by mail-ed1-f70.google.com with SMTP id v18-20020a056402349200b004622e273bbbso2455348edc.14
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 15:29:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jWjU1ZjrkixCn1stDyI9mL1Ga7OCVWYkVGzuz+ZpzuI=;
+        b=MaQdy/locAE0/gCEWMYupXEfyKKYWI7wXfXF+U4cKKg1Mlw+yvgaMof0WiP3piZE/H
+         gXM4tPnFqByv2JXhTvofh7GZdAcSPnQ63dOCTzXjZqiFuU+g/JeEsrcx2Z6YX81vp+9f
+         XfgthjI4nPoxUDKdT30zlf4zvtuhnjyznDndDN6R5y2RUwhKvEobiLpTCc207bbMXIaq
+         yHqsGxFi0CIdoXG3DGB5qm9rJiLmS43cSJfSu/3lJEGjj7svhWLIOEB0i92zG4jZUq1r
+         tqhNNxI1zHW1MmaTrHZRkOUU9Pi7C126kYnjNIPNXbmimuBVGiPSeYeWTL6ItTyosv6r
+         tPSA==
+X-Gm-Message-State: ACrzQf1hDaoiA1fTCrD6cS1dSjoarkPhbBeWj3DAz9nHwnzC206OVfRJ
+        pufta+e62nK+sSvVkZz8GcCPuEerJxUnixqdRPrHF6HX0KHZzX54SKVk/m+8YwTHfZqHpTEu+VY
+        LSzw9nWR9jdNObVN6
+X-Received: by 2002:a17:906:3b88:b0:78d:c7fd:f755 with SMTP id u8-20020a1709063b8800b0078dc7fdf755mr4426804ejf.702.1668122986005;
+        Thu, 10 Nov 2022 15:29:46 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM6BhWXNZxWXrSk7JS8geHKSi+qj9E3kJi5RxB0R8EdWapfeFbSK4BbwEo0nB6F2C3R3Tn4usA==
+X-Received: by 2002:a17:906:3b88:b0:78d:c7fd:f755 with SMTP id u8-20020a1709063b8800b0078dc7fdf755mr4426743ejf.702.1668122985047;
+        Thu, 10 Nov 2022 15:29:45 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id c20-20020a17090603d400b007417041fb2bsm241541eja.116.2022.11.10.15.29.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 15:29:44 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E737A78274C; Fri, 11 Nov 2022 00:29:43 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     Stanislav Fomichev <sdf@google.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
+ metadata into skb context
+In-Reply-To: <7eb3e22a-c416-e898-dff0-1146d3cc82c0@linux.dev>
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+ <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+ <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
+ <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev> <87leokz8lq.fsf@toke.dk>
+ <5a23b856-88a3-a57a-2191-b673f4160796@linux.dev> <871qqazyc9.fsf@toke.dk>
+ <7eb3e22a-c416-e898-dff0-1146d3cc82c0@linux.dev>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 11 Nov 2022 00:29:43 +0100
+Message-ID: <87mt8yxuag.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4886:EE_|SJ0PR11MB5006:EE_
-X-MS-Office365-Filtering-Correlation-Id: e2510e41-74c8-4fbd-5abd-08dac372b0d4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4niV8loHsM3TghSWOX9FeKgMaRs7ctPShk11acCE4pfqJHVeQRsWnBmaxEy3u3XUPx0z6+Y0SV+D1KoJNKg0IcsZvBhzGg9vF+TOfDABlxXdV1/psN54YmL9PD3ekOTLu8i0BK3V0SBMiFSL6rIEI/AivIK8QGQ8D/XHn/KZh08fIz64KR74DR7hEOioxE0fzce7aMchP6jSsb7eZE5Ud/6L4Tej8RoDVQhWmQZ5ZLDzZ6MFh62c0onRKpOYB0ptltIw5ZffJSLLGJf7axH0+UjiDvsjz2EYJLUMRKYYKjZOl7cmhNttiEBSWm3nSdAWqCGM4hmT+zEUiTQuRaHdVfx3iYeUH7AWfTFrazO4WcpP6SxWbF5u2cVCRbZP/7RjWoxMYrbDCHrU/XmXSxnlIkOGoKuczpuw8sbmdvpVMW4Q+jaD54y34WzKYY+rjALDfW1ujtN8lQJ1OhfGj/J5sSxgmVfTJRdhXead+72gnrg/o5kG/N0PIHT5NZPUKZ/1pRq4eIeiOML00kD0K8oJRjV3nawl6Q4h81cLksIt1XVs90AogpGf9m7O7CJ9YLdbjbIfhy3B9FGDN0QTdR8iy41b5il6EESV0+0KKk4SjvOfr4K4kV0ChNmAYtHHwVzVYhy4fqt/fjYOrOnm5OKlRFntWqiZe3riY2gbhVgY79UhzPpmD/ToAaVibxgmi34DWoZWXBg8t6WRMAJVZTNHEe4GB32300K+AKkoxBqTHgi1+VKrLg5kZKgg3JaBWrkoBm7OWwKkdOIa3BlSskCIrfpU/QmiPKwoeh2HUggf/C/g2FvGH8c9WVwl00PbAsBpztNKoBy87ZIoKMO5wdayNw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(376002)(346002)(366004)(136003)(396003)(451199015)(31686004)(316002)(38100700002)(66556008)(6916009)(8676002)(4326008)(66946007)(82960400001)(66476007)(54906003)(86362001)(31696002)(6666004)(107886003)(83380400001)(26005)(6506007)(6512007)(53546011)(8936002)(41300700001)(36756003)(5660300002)(966005)(478600001)(6486002)(2906002)(186003)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YWRVVmF2RTlvdXhscnB6RGhWN1FwNkpad3RxVXlaaTEwTnlGQUI1cDhQcDhs?=
- =?utf-8?B?S24zOGc4d0YvVXRvQjhuTEVIbGREYzFaVStiMVcrL3lhN210ZGd5M3FPRkRh?=
- =?utf-8?B?TC8xQSsyN0I4Mm5rVGd3VERtckZKVURRL0pEUE5jTlNON3JhVkNlOU1zNWND?=
- =?utf-8?B?a282a0Y1ZVp3WEpESEJva1hUY1FtejFIVFFZNGZ5UmYxdUJzUi9maDN6dHFC?=
- =?utf-8?B?UlFNeDVZeTJHMlZYL3ViTVRlR0ZRZ244a01hblZXTTliRnZDRzdBZzJSQzdG?=
- =?utf-8?B?U04yNzR2SkMyeHNrOU43OFZXclpxWDJyVDRWZFAxbjkraWg5eS9meFhwYWdO?=
- =?utf-8?B?cGN5bFRYRWdwQ2xaUU9XZitJNlEzL1lya3lHZSttRktLVG52dDIybVE5S3BP?=
- =?utf-8?B?c2hNYUVMckZESGNlTFh1UGowaC9tMmZIczNOVjFBalZsam9peUlJQWFUM21Y?=
- =?utf-8?B?aUM0NVhFSkVFVlo1aTk5bDN1WHhCajdBN3ZWVGFyb0JtdHd0Ujk2SWFIQkNI?=
- =?utf-8?B?NzBwU3hIME1rSjJJR3VjQm5NSys3akpiTzBLSjljWUxTcDNXcWd3MXplSVBj?=
- =?utf-8?B?SUZWV3JTdE5CN2c0cWlURnBSdU9XQmxpQTI0OWFjdDZIVmFMQlNIcXpRSnBX?=
- =?utf-8?B?ZTFsUXdwa0svRFl1a3d2RUFSSUJwaDhOTDZGVjFJZUZaQ2xsUUhYeFF2MEpZ?=
- =?utf-8?B?OStIQkJpempEdHZWMnprYnBNalB6RGx4M3dmcEh1RHNCejdoR2Fmdm9yQVRU?=
- =?utf-8?B?Ni82ZmJnS2MxM2g1c1dSa09sQjlSa1ZLTjdWVkVlUVpCUVY0OVdZVnJBaXQy?=
- =?utf-8?B?UzA1MzdqOExqRm1oRXdVQjZLMUpsalhqK29OMElkNXF5RnJVdi91MXgwWlN5?=
- =?utf-8?B?UXZ5MEU0UmZLS0JueUtleDdUL1lGNzA1R0xiUU1teUVERzFPY3JMWW8vZGlu?=
- =?utf-8?B?WGVJS1BZa0IrSkc3ZVp4aU9ZVmV4K2xDNEpFMWEzQ2Z1ci9taWxlQjdUdGI4?=
- =?utf-8?B?WXZwV1VHZnRVaHg1V284c3ZCRGdPK1hGU0htb05lR01KTThpV2lqTzhtWTZn?=
- =?utf-8?B?ZnplRlF1NmlJWGdrdkp3WHZJUEFPb0xqcTdsQXdzQ09xSGF1MWtacC85WVBr?=
- =?utf-8?B?WGdLN00xdkgrbWNEOFE2N0VtSDN6dGNyOERJK3dqTEZ1N29nTmc0N2Y3TmND?=
- =?utf-8?B?NmEvWWNhdkZyY241UzY5Rk4rdnkyd2xDa3RIL3c3dFJwS2huK2tkMStOTTc5?=
- =?utf-8?B?aG5xRkZJbFEyZG1iRVh1cUt5ejNmaVNBZWg5bWtJVVZpRTJJYWozMEhlK1Er?=
- =?utf-8?B?MEEwNDJ2Nk8wSFFIQlNPUVl3QnBUQnZwaE9OcElGUVV5eHd6OGhFaWVnVlVa?=
- =?utf-8?B?cnJYTC9OR1pHQ2NIUytqaXYyaWZuejQ5SjV2dFdhd0VtMzBDS2twdzc4cUR5?=
- =?utf-8?B?MUgyWlF6M210V1hjTE15V0czKzB3ZStleGk4ZWhuZi8yRkZtZCtYaThwbUY0?=
- =?utf-8?B?WnppK005aC9XQlJQSFAvVUtCT3lEQXdYT2xyRnBVSFprUUR2U1BrMEN5aGwz?=
- =?utf-8?B?ZWdya0U4MzlpNmRpdEJnZUJRSFhFZjZDVnJ3SXJBNTZzTE9RMFZzdHpaY1BL?=
- =?utf-8?B?TmJxK1Y0amlUTnNnZldtTnJHRlY0OFFLTVpqMUpoVG1NN2hiT0dLS1VZRUs1?=
- =?utf-8?B?c29ZSVJLYVZzZWxUbjIwU3RvRDZmd0RNdThMRjFxMUhQL1lxUkNQT05Fd2Yv?=
- =?utf-8?B?Q2xxQ0NKUHcvenN4V3ptbkIxNHVTTjVJSmdaVC9FNVgyVTVyOVVsVVJYbDdN?=
- =?utf-8?B?dlNpNmVPV29DRnBmUUxZMGkyLzlIZmxTdlcxQVk2bnQ4VzlhTkRQOTdLd0Fx?=
- =?utf-8?B?NE5QSGR3cW5BcEtjZlp3QnZJYWY5SFpVY3R2dzIwd1Q3NXJwbEFRcGh4djhL?=
- =?utf-8?B?TGJrbmJ0WDJOdmJLMEpiclpKMWtrRlo1Z2ZsN1F3YWxTTlhuYTF1TE1rUFhu?=
- =?utf-8?B?dDVPa3dvNCtmRGR2clBWRHA3ZkN0bCtlRi9Wc2kxMXhPdG5jTTN4WWRNS2Jj?=
- =?utf-8?B?NHlHRDd1ZGtCQSt5a3RxUWREUklkdStEeVl4Tm5INDBJTmJrNG9xKy90d21w?=
- =?utf-8?B?dVRueUdTRStLWElQa2FUVVpHNExPeU1DWWV3Q09DbENjZ0hjSWlZd3IvSE1o?=
- =?utf-8?B?VlE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2510e41-74c8-4fbd-5abd-08dac372b0d4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2022 23:24:20.0020
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KMVWLjy9qGkuQA8JHzI6R2mzlWS6yduRYuWQKildLHT0muzBds0hzZRDFVP4/QCExZ53SrgiWty3tgeeF+YbJba9F22qjCORkW3TiEXOVEA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5006
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -169,31 +99,269 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/2022 4:34 PM, Jakub Kicinski wrote:
-> On Thu, 10 Nov 2022 16:08:04 -0600 Samudrala, Sridhar wrote:
->> Can we use QGRP as a prefix to indicate that these are per-queue group parameters
->> and not restricted to RSS related parameters?
->>
->>     QGRP_CONTEXT
->>     QGRP_RSS_HFUNC
->>     QGRP_RSS_KEY
->>     QGRP_RSS_INDIR_TABLE
->>
->> In future, we would like to add per-queue group parameters like
->>     QGRP_INLINE_FLOW_STEERING (Round robin flow steering of TCP flows)
-> The RSS context thing is a pretty shallow abstraction, I don't think we
-> should be extending it into "queue groups" or whatnot. We'll probably
-> need some devlink objects at some point (rate configuration?) and
-> locking order is devlink > rtnl, so spawning things from within ethtool
-> will be a pain :S
+Martin KaFai Lau <martin.lau@linux.dev> writes:
 
-We are going this path of extending ethtool rss context interface to support
-per queue-group parameters based on this feedback.
-   https://lore.kernel.org/netdev/20220314131114.635d5acb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+> On 11/10/22 6:19 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Martin KaFai Lau <martin.lau@linux.dev> writes:
+>>=20
+>>> On 11/9/22 3:10 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> Snipping a bit of context to reply to this bit:
+>>>>
+>>>>>>>> Can the xdp prog still change the metadata through xdp->data_meta?=
+ tbh, I am not
+>>>>>>>> sure it is solid enough by asking the xdp prog not to use the same=
+ random number
+>>>>>>>> in its own metadata + not to change the metadata through xdp->data=
+_meta after
+>>>>>>>> calling bpf_xdp_metadata_export_to_skb().
+>>>>>>>
+>>>>>>> What do you think the usecase here might be? Or are you suggesting =
+we
+>>>>>>> reject further access to data_meta after
+>>>>>>> bpf_xdp_metadata_export_to_skb somehow?
+>>>>>>>
+>>>>>>> If we want to let the programs override some of this
+>>>>>>> bpf_xdp_metadata_export_to_skb() metadata, it feels like we can add
+>>>>>>> more kfuncs instead of exposing the layout?
+>>>>>>>
+>>>>>>> bpf_xdp_metadata_export_to_skb(ctx);
+>>>>>>> bpf_xdp_metadata_export_skb_hash(ctx, 1234);
+>>>>
+>>>> There are several use cases for needing to access the metadata after
+>>>> calling bpf_xdp_metdata_export_to_skb():
+>>>>
+>>>> - Accessing the metadata after redirect (in a cpumap or devmap program,
+>>>>     or on a veth device)
+>>>> - Transferring the packet+metadata to AF_XDP
+>>> fwiw, the xdp prog could also be more selective and only stores one of =
+the hints
+>>> instead of the whole 'struct xdp_to_skb_metadata'.
+>>=20
+>> Yup, absolutely! In that sense, reusing the SKB format is mostly a
+>> convenience feature. However, lots of people consume AF_XDP through the
+>> default program installed by libxdp in the XSK setup code, and including
+>> custom metadata there is awkward. So having the metadata consumed by the
+>> stack as the "default subset" would enable easy consumption by
+>> non-advanced users, while advanced users can still do custom stuff by
+>> writing their own XDP program that calls the kfuncs.
+>>=20
+>>>> - Returning XDP_PASS, but accessing some of the metadata first (whether
+>>>>     to read or change it)
+>>>>
+>>>> The last one could be solved by calling additional kfuncs, but that
+>>>> would be less efficient than just directly editing the struct which
+>>>> will be cache-hot after the helper returns.
+>>>
+>>> Yeah, it is more efficient to directly write if possible.  I think this=
+ set
+>>> allows the direct reading and writing already through data_meta (as a _=
+u8 *).
+>>=20
+>> Yup, totally fine with just keeping that capability :)
+>>=20
+>>>> And yeah, this will allow the XDP program to inject arbitrary metadata
+>>>> into the netstack; but it can already inject arbitrary *packet* data
+>>>> into the stack, so not sure if this is much of an additional risk? If =
+it
+>>>> does lead to trivial crashes, we should probably harden the stack
+>>>> against that?
+>>>>
+>>>> As for the random number, Jesper and I discussed replacing this with t=
+he
+>>>> same BTF-ID scheme that he was using in his patch series. I.e., instead
+>>>> of just putting in a random number, we insert the BTF ID of the metada=
+ta
+>>>> struct at the end of it. This will allow us to support multiple
+>>>> different formats in the future (not just changing the layout, but
+>>>> having multiple simultaneous formats in the same kernel image), in case
+>>>> we run out of space.
+>>>
+>>> This seems a bit hypothetical.  How much headroom does it usually have =
+for the
+>>> xdp prog?  Potentially the hints can use all the remaining space left a=
+fter the
+>>> header encap and the current bpf_xdp_adjust_meta() usage?
+>>=20
+>> For the metadata consumed by the stack right now it's a bit
+>> hypothetical, yeah. However, there's a bunch of metadata commonly
+>> supported by hardware that the stack currently doesn't consume and that
+>> hopefully this feature will end up making more accessible. My hope is
+>> that the stack can also learn how to use this in the future, in which
+>> case we may run out of space. So I think of that bit mostly as
+>> future-proofing...
+>
+> ic. in this case, Can the btf_id be added to 'struct xdp_to_skb_metadata'=
+ later=20
+> if it is indeed needed?  The 'struct xdp_to_skb_metadata' is not in UAPI =
+and=20
+> doing it with CO-RE is to give us flexibility to make this kind of change=
+s in=20
+> the future.
 
-Per queue-group rate can already be configured when creating queue groups via
-tc-mpqrio interface using bw_rlimit parameters.
+My worry is mostly that it'll be more painful to add it later than just
+including it from the start, mostly because of AF_XDP users. But if we
+do the randomisation thing (thus forcing AF_XDP users to deal with the
+dynamic layout as well), it should be possible to add it later, and I
+can live with that option as well...
+
+>>>> We should probably also have a flag set on the xdp_frame so the stack
+>>>> knows that the metadata area contains relevant-to-skb data, to guard
+>>>> against an XDP program accidentally hitting the "magic number" (BTF_ID)
+>>>> in unrelated stuff it puts into the metadata area.
+>>>
+>>> Yeah, I think having a flag is useful.  The flag will be set at xdp_buf=
+f and
+>>> then transfer to the xdp_frame?
+>>=20
+>> Yeah, exactly!
+>>=20
+>>>>> After re-reading patch 6, have another question. The 'void
+>>>>> bpf_xdp_metadata_export_to_skb();' function signature. Should it at
+>>>>> least return ok/err? or even return a 'struct xdp_to_skb_metadata *'
+>>>>> pointer and the xdp prog can directly read (or even write) it?
+>>>>
+>>>> Hmm, I'm not sure returning a failure makes sense? Failure to read one
+>>>> or more fields just means that those fields will not be populated? We
+>>>> should probably have a flags field inside the metadata struct itself to
+>>>> indicate which fields are set or not, but I'm not sure returning an
+>>>> error value adds anything? Returning a pointer to the metadata field
+>>>> might be convenient for users (it would just be an alias to the
+>>>> data_meta pointer, but the verifier could know its size, so the program
+>>>> doesn't have to bounds check it).
+>>>
+>>> If some hints are not available, those hints should be initialized to
+>>> 0/CHECKSUM_NONE/...etc.
+>>=20
+>> The problem with that is that then we have to spend cycles writing
+>> eight bytes of zeroes into the checksum field :)
+>
+> With a common 'struct xdp_to_skb_metadata', I am not sure how some of the=
+se zero=20
+> writes can be avoided.  If the xdp prog wants to optimize, it can call=20
+> individual kfunc to get individual hints.
+
+Erm, we just... don't write those fields? Something like:
+
+void write_skb_meta(hw, ctx) {
+  struct xdp_skb_metadata meta =3D ctx->data_meta - sizeof(struct xdp_skb_m=
+etadata);
+  meta->valid_fields =3D 0;
+
+  if (hw_has_timestamp) {
+    meta->timestamp =3D hw->timestamp;
+    meta->valid_fields |=3D FIELD_TIMESTAMP;
+  } /* otherwise meta->timestamp is just uninitialised */
+
+  if (hw_has_rxhash) {
+    meta->rxhash =3D hw->rxhash;
+    meta->valid_fields |=3D FIELD_RXHASH;
+  } /* otherwise meta->rxhash is just uninitialised */
+  ...etc...
+}
+
+>>> The xdp prog needs a direct way to tell hard failure when it cannot
+>>> write the meta area because of not enough space. Comparing
+>>> xdp->data_meta with xdp->data as a side effect is not intuitive.
+>>=20
+>> Yeah, hence a flags field so we can just see if setting each field
+>> succeeded?
+>
+> How testing a flag is different from checking 0/invalid-value of a
+> field?
+
+The flags field is smaller, so we write fewer bytes if not all fields
+are populated.
+
+> or some fields just don't have an invalid value to check for
+> like vlan_tci?
+
+Yeah, that could also be an issue.
+
+> You meant a flags field as a return value or in the 'struct xdp_to_skb_me=
+tadata' ?
+
+See above.
 
 
+>>=20
+>>> It is more than saving the bound check.  With type info of 'struct
+>>> xdp_to_skb_metadata *', the verifier can do more checks like reading in=
+ the
+>>> middle of an integer member.  The verifier could also limit write acces=
+s only to
+>>> a few struct's members if it is needed.
+>>>
+>>> The returning 'struct xdp_to_skb_metadata *' should not be an alias to =
+the
+>>> xdp->data_meta.  They should actually point to different locations in t=
+he
+>>> headroom.  bpf_xdp_metadata_export_to_skb() sets a flag in xdp_buff.
+>>> xdp->data_meta won't be changed and keeps pointing to the last
+>>> bpf_xdp_adjust_meta() location.  The kernel will know if there is
+>>> xdp_to_skb_metadata before the xdp->data_meta when that bit is set in t=
+he
+>>> xdp_{buff,frame}.  Would it work?
+>>=20
+>> Hmm, logically splitting the program metadata and the xdp_hints metadata
+>> (but having them share the same area) *could* work, I guess, I'm just
+>> not sure it's worth the extra complexity?
+>
+> It shouldn't stop the existing xdp prog writing its own metadata from usi=
+ng the=20
+> the new bpf_xdp_metadata_export_to_skb().
 
+Right, I think I see what you mean, and I agree that splitting it
+internally in the kernel does make sense (see my other reply to
+Stanislav).
+
+>>=20
+>>>>> A related question, why 'struct xdp_to_skb_metadata' needs
+>>>>> __randomize_layout?
+>>>>
+>>>> The __randomize_layout thing is there to force BPF programs to use CO-=
+RE
+>>>> to access the field. This is to avoid the struct layout accidentally
+>>>> ossifying because people in practice rely on a particular layout, even
+>>>> though we tell them to use CO-RE. There are lots of examples of this
+>>>> happening in other domains (IP header options, TCP options, etc), and
+>>>> __randomize_layout seemed like a neat trick to enforce CO-RE usage :)
+>>>
+>>> I am not sure if it is necessary or helpful to only enforce __randomize=
+_layout
+>>> in 'struct xdp_to_skb_metadata'.  There are other CO-RE use cases (trac=
+ing and
+>>> non tracing) that already have direct access (reading and/or writing) t=
+o other
+>>> kernel structures.
+>>>
+>>> It is more important for the verifier to see the xdp prog accessing it =
+as a
+>>> 'struct xdp_to_skb_metadata *' instead of xdp->data_meta which is a __u=
+8 * so
+>>> that the verifier can enforce the rules of access.
+>>=20
+>> That only works inside the kernel, though. Since the metadata field can
+>> be copied wholesale to AF_XDP, having it randomized forces userspace
+>> consumers to also write code to deal with the layout being dynamic...
+>
+> hm... I still don't see how useful it is, in particular you mentioned
+> the libxdp will install a xdp prog to write this default format
+> (xdp_to_skb_metadata) and likely libxdp will also provide some helpers
+> to parse the xdp_to_skb_metadata and the libxdp user should not need
+> to know if CO-RE is used or not. Considering it is a kernel internal
+> struct, I think it is fine to keep it and can be revisited later if
+> needed. Lets get on to other things first :)
+
+Well, if it was just kernel-internal, sure. But we're also exporting it
+to userspace (through AF_XDP). Well-behaved users will obviously do the
+right thing and use CO-RE. I'm trying to guard against users just
+blindly copy-pasting the struct definition from the kernel and doing a
+static cast, then complaining about their code breaking the first time
+we change the struct layout. Which I sadly expect that there absolutely
+will be people who do unless we actively make sure that doesn't work
+from the get-go. And since the randomisation is literally just adding
+__randomize_layout to the struct definition, I'd rather start out with
+having it, and removing it later if it turns out not to be needed... :)
+
+-Toke
 
