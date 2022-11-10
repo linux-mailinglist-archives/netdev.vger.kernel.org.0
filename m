@@ -2,105 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B90F2623934
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:52:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BC162396E
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 03:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232283AbiKJBww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Nov 2022 20:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        id S232443AbiKJCCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 21:02:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbiKJBwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:52:50 -0500
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFD0B4B3
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 17:52:49 -0800 (PST)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-1322d768ba7so791385fac.5
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 17:52:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=uRu69MzTwFZ3w07E9HqFCx4RIhKQD50chiOCE5If4MA=;
-        b=gGCHXLNcQqKz8BNjkEOuqi0NLMpyiw33DRTl6EkV0sOCneWaJNM9yfPQd95+Hoy8g9
-         5/p8uWj7gGFVzUEz9969SwVRBr0+syWLJGBLaMqmvzBwAf/rK0+VMAIgv1XthATjvF2e
-         AOVf440BqXkbz7mbvnKFV3ryTXgocDiOxuApJFsF6eHMdsWJUzWUoif3CsI2cMofnBN2
-         sRIuN95WK5suc7j+mep/SERJkIqPfCWhNZTZ+TEBkWh/DgGYDlZz7c/EBNday5WKvx1z
-         /yYeYOkKLhbql9ujc8tmnA9aO0UNKqbq8wfIQUiVruNLOwJpc57+5UslgWWX8RulAI1k
-         kjqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uRu69MzTwFZ3w07E9HqFCx4RIhKQD50chiOCE5If4MA=;
-        b=Pq3CKbU6j14a9TGT+6wEDjXODdfHhkRNtAJUapNocvBu1aEJEgDX8zj8IJfQknufeE
-         dYTFcRy63nSQGPvkdiigzpjJvuBBYdGM4A8HTEAGhK/9ysIWA+sMEoHpcPBbD74k1p2W
-         OGynVKN6GcYDYwMvIuWh41P9y8RgJ/TX3SVkGkGxHIGLwD6hUTm8IgC7++DAYWvMclL9
-         OJKzt/qhuJmW5gIGlPjtEGc0Z1ZG6Qh7UlGBgfyq5WdY0P6Y1t2bss9ClGMoZsHc3wjP
-         Gz8FmXzTdtVS3sthBvXPSLavGXItpVGGwjYfbP8Xuv4PJFpdzLAA3/RlPBvtWPBOAdVa
-         MSjQ==
-X-Gm-Message-State: ACrzQf1zqw1Ea7YqoeqK2lvWzlf/CwfsDu7v6KNcIytDS1bSC+a3MDwp
-        KtAbyvze7X6S8R+h+kHEFpS28ICocu2PrQoLJTkodg==
-X-Google-Smtp-Source: AMsMyM7cxpZBXApKJqb9gG76KUbz3rPTK7W3Dko6TYePl6PrV9ohpifXAMXeBUntVFx+R3vKv+gW6JD/CZZRtTgnFHY=
-X-Received: by 2002:a05:6870:609c:b0:131:c972:818f with SMTP id
- t28-20020a056870609c00b00131c972818fmr35978225oae.2.1668045169047; Wed, 09
- Nov 2022 17:52:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20220929033505.457172-1-liuhangbin@gmail.com> <YziJS3gQopAInPXw@pop-os.localdomain>
- <Yzillil1skRfQO+C@t14s.localdomain> <CAM0EoM=EwoXgLW=pxadYjL-OCWE8c-EUTcz57W=vkJmkJp6wZQ@mail.gmail.com>
- <Y1kEtovIpgclICO3@Laptop-X1> <CAM0EoMmFCoP=PF8cm_-ufcMP9NktRnpQ+mHmoz2VNN8i2koHbw@mail.gmail.com>
- <20221102163646.131a3910@kernel.org> <Y2odOlWlonu1juWZ@Laptop-X1>
- <20221108105544.65e728ad@kernel.org> <Y2uUsmVu6pKuHnBr@Laptop-X1>
-In-Reply-To: <Y2uUsmVu6pKuHnBr@Laptop-X1>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Wed, 9 Nov 2022 20:52:37 -0500
-Message-ID: <CAM0EoMmx6i42WR=7=9B1rz=6gcOxorgyLDGseeEH7EYRPMgnzg@mail.gmail.com>
-Subject: Re: [PATCH (repost) net-next] sched: add extack for tfilter_notify
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232558AbiKJCA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 21:00:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D592ED7A;
+        Wed,  9 Nov 2022 17:59:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9EA8B80959;
+        Thu, 10 Nov 2022 01:59:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 140B7C433D7;
+        Thu, 10 Nov 2022 01:59:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668045561;
+        bh=0+KljlocHurYx/De7VpZSIfHRyAIx3H1IOL6zcagU74=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XCxaFgXMpIKMJhI+lJAG8fmgidHpsl5/vkwVcFZ3pW6RmwGMOBxpGvktgHZLTyRdt
+         shNhUaj9oqStxaY4kW6YnmQYghJT6YZRiM4IXJtSCCD4NIOA+JpiBZEHfbrT7OnqP3
+         QMHjhQFYZ9iQVLgpJp4tPTxqT3yPDPcqtx7d6Mkq3HxHSQRAnHOuxOdfqkDaMgpuiT
+         fxbuGnB6SATgRju/u0mibiXK4OtP1udMQwTBgMZPzhBn/En+sU+QRL65PJQ6kKoONj
+         5ycgDWazfshy5M3QNo+D1WM6uwu/O9IF6mkQIx0WBKFq/d9nxpaPn7WCbUi2zO4/A6
+         m0ppQ6K0JBudg==
+Date:   Wed, 9 Nov 2022 17:59:20 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chuang Wang <nashuiliang@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] net: tun: rebuild error handling in tun_get_user
+Message-ID: <20221109175908.593df5da@kernel.org>
+In-Reply-To: <20221107090940.686229-1-nashuiliang@gmail.com>
+References: <20221107090940.686229-1-nashuiliang@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCA_XXX are local whereas NLMSGERR_ATTR_MSG global to the
-netlink message. Does this mean to replicate TCA_NTF_EXT_ACK
-for all objects when needed? (qdiscs, actions, etc).
+On Mon,  7 Nov 2022 17:09:40 +0800 Chuang Wang wrote:
+> The error handling in tun_get_user is very scattered.
+> This patch unifies error handling, reduces duplication of code, and
+> makes the logic clearer.
 
-cheers,
-jamal
+You're also making some functional changes tho, they at the very least
+need to be enumerated or preferably separate patches.
 
-On Wed, Nov 9, 2022 at 6:53 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> On Tue, Nov 08, 2022 at 10:55:44AM -0800, Jakub Kicinski wrote:
-> > My initial thought was to add an attribute type completely independent
-> > of the attribute space defined in enum nlmsgerr_attrs, add it in the
-> > TCA_* space. So for example add a TCA_NTF_WARN_MSG which will carry the
-> > string message.
-> >
-> > We can also create a nest to carry the full nlmsgerr_attrs attributes
-> > with their existing types (TCA_NTF_EXT_ACK?). Each nest gets
-> > to choose what attribute set it carries.
-> >
-> > That said, most of the ext_ack attributes refer to an input attribute by
-> > specifying the offset within the request. The notification recipient
-> > will not be able to resolve those in any meaningful way. So since only
-> > the string message will be of interest I reckon adding a full nest is
-> > an unnecessary complication?
->
-> Thanks for the explanation. I will try add the TCA_NTF_WARN_MSG to TCA
-> space.
->
-> Hangbin
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 4bf2b268df4a..5ceec73baf98 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1742,11 +1742,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>  	int good_linear;
+>  	int copylen;
+>  	bool zerocopy = false;
+> -	int err;
+> +	int err = 0;
+
+Don't zero-init the variables like this, instead...
+
+>  	u32 rxhash = 0;
+>  	int skb_xdp = 1;
+>  	bool frags = tun_napi_frags_enabled(tfile);
+> -	enum skb_drop_reason drop_reason;
+> +	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+>  
+>  	if (!(tun->flags & IFF_NO_PI)) {
+>  		if (len < sizeof(pi))
+> @@ -1808,11 +1808,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>  		 */
+>  		skb = tun_build_skb(tun, tfile, from, &gso, len, &skb_xdp);
+
+... use
+
+	err = PTR_ERR_OR_ZERO(skb);
+
+close to the jumps. It's safer to always init err before jumping.
+
+>  		if (IS_ERR(skb)) {
+> -			dev_core_stats_rx_dropped_inc(tun->dev);
+> -			return PTR_ERR(skb);
+> +			err = PTR_ERR(skb);
+> +			goto drop;
+>  		}
+>  		if (!skb)
+> -			return total_len;
+> +			goto out;
+
+>  	if (virtio_net_hdr_to_skb(skb, &gso, tun_is_little_endian(tun))) {
+>  		atomic_long_inc(&tun->rx_frame_errors);
+> -		kfree_skb(skb);
+
+now we'll increment error and drop counters, that's not right.
+
+> -		if (frags) {
+> -			tfile->napi.skb = NULL;
+> -			mutex_unlock(&tfile->napi_mutex);
+> -		}
+> -
+> -		return -EINVAL;
+> +		err = -EINVAL;
+> +		goto drop;
+>  	}
+
+> @@ -1952,8 +1932,8 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>  
+>  	rcu_read_lock();
+>  	if (unlikely(!(tun->dev->flags & IFF_UP))) {
+> -		err = -EIO;
+>  		rcu_read_unlock();
+> +		err = -EIO;
+
+this change is unnecessary, please refrain from making it
+
+>  		drop_reason = SKB_DROP_REASON_DEV_READY;
+>  		goto drop;
+>  	}
+> @@ -2007,7 +1987,23 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>  	if (rxhash)
+>  		tun_flow_update(tun, rxhash, tfile);
+>  
+> -	return total_len;
+> +	goto out;
+
+keep
+
+	return total_len;
+
+that's much easier to read, and there's no concern of err being
+uninitialized.
+
+> +
+> +drop:
+> +	if (err != -EAGAIN)
+> +		dev_core_stats_rx_dropped_inc(tun->dev);
+> +
+> +	if (!IS_ERR_OR_NULL(skb))
+> +		kfree_skb_reason(skb, drop_reason);
+> +
+> +unlock_frags:
+> +	if (frags) {
+> +		tfile->napi.skb = NULL;
+> +		mutex_unlock(&tfile->napi_mutex);
+> +	}
+> +
+> +out:
+> +	return err ?: total_len;
+>  }
+>  
+>  static ssize_t tun_chr_write_iter(struct kiocb *iocb, struct iov_iter *from)
+
