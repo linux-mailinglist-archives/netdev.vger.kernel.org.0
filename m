@@ -2,88 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 481AC623FA0
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 11:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A714623FAA
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 11:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbiKJKUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 05:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
+        id S229906AbiKJKVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 05:21:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiKJKUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 05:20:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7C864E2
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 02:20:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48BBEB82165
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 10:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BC639C433D7;
-        Thu, 10 Nov 2022 10:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668075615;
-        bh=3z6WsI7jauxwahxRdtZkIlrG1nyc9Iv/7r8JRo4FaB4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mY3A7asT89NyF1ucFKzAAzhww7Xd6lRrpiOy247+6lz2Q0D6aRtsIm6yZzW8dl/e0
-         CbKoFA6RcQ6pqQObEELJc+EjnI6WTuFREv02KYzl0nS+CPO28WLoiGWv6BRNCjA4qT
-         p7DEc50mQ+ia7x07DTIF+7UFVZGi9gPlCi2l+s80Vd9N3CVHqgmnk8cIHrUwueBR4C
-         Cr+cMa9hZmZaoBp5YoKCfO1on+V0q6rF+X58yEiwegx9ZW6KzglT2AgXEAjRSxlItD
-         i9NeuFDQQVZsV4/F/wHLZAue9XlRSv8aUnsyH0OETRnWMLcGhAUq2RXXOjh4h32hYC
-         zaD8YirAG4Mdg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A06F0C395F8;
-        Thu, 10 Nov 2022 10:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229915AbiKJKVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 05:21:51 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A35F13F20;
+        Thu, 10 Nov 2022 02:21:51 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id e129so1364578pgc.9;
+        Thu, 10 Nov 2022 02:21:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xIm/Oyzmfn3evXzwG3HkXqcHPzlLZjBFReRVxCcbrAk=;
+        b=XDhrPgcY1K4+93HyVhQPSTJ0vB/sm8roe8+cR0Hoov6m6lmmBaBQ1Cd2KwcXos6m8c
+         R7hlFZNR4mZEwWpR62nGHfj+4rH4SSDj4lSRrqxFj80256RqdHnaBmLp0zixOHADL9+y
+         hAIX/hXsGAcTybCd2Ig4k0sGOfMd0dmPcNAv8G/kZD8VjU3vJxtN2wULWzY/UOjvDdQZ
+         rhtrC/RpbCF1WGKHURiUm3u2UYygoEsiIH29Czty9U8QNeRsTBZXeXrgxKArXKNjvokH
+         +1MklRcBYNGBZwiuDHtIoJvyYZmko4vNSXqYF0QXgoVhWxtuezTrbzWFP5O51s83RQBc
+         3rZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xIm/Oyzmfn3evXzwG3HkXqcHPzlLZjBFReRVxCcbrAk=;
+        b=L68RDvxQm3IAsJFGXhRnLV6uVNwXhACB6L5g27sKTNb7GuS66ZXntHiUnNaXuragM1
+         7zjTc1x9SK8T16vERVwYoHWM5+4y49xOCsYbu/JaDWnYEzODcOjJH0Y1lVEgDob3jy7s
+         C7hEHkX+eSIID47zJmvhJxdZ3iLWIPDqUDSLjXdh4YCvH6Ek2dKCgrF/9YNzeAVOjsRF
+         5Y57hB7o7Up5OEPSSqeGeG8YK+pK+oEJDcf4Rsq3jsK2KkBEhTk1OlsskL+ZoP1MICWU
+         Io36mjDIwPTDmgDF6R0GMw1GtBFw/e6otlZFQbMHvXeb7owe6IJOXYr4C3fOz8ESC/WV
+         2Ctg==
+X-Gm-Message-State: ACrzQf1wGRg4TmmAFYdRpPX6NH+/GTaOrhF2s35Znle18Q3G7j7McZOJ
+        +mlKMEk9SlSSVVoPdhEBtww=
+X-Google-Smtp-Source: AMsMyM679F6jR6QYSI/kDqrmdS98OsEZraooCbgRxeiTKXz2BMl7xPF6j70DiRZEclSvLwuctAuMzA==
+X-Received: by 2002:aa7:9dd0:0:b0:56c:394d:c675 with SMTP id g16-20020aa79dd0000000b0056c394dc675mr2270370pfq.17.1668075710593;
+        Thu, 10 Nov 2022 02:21:50 -0800 (PST)
+Received: from localhost.localdomain ([110.147.198.134])
+        by smtp.gmail.com with ESMTPSA id y13-20020aa78f2d000000b0056ddd2b5e9bsm9741907pfr.41.2022.11.10.02.21.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 02:21:50 -0800 (PST)
+From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tcp: Add listening address to SYN flood message
+Date:   Thu, 10 Nov 2022 21:21:06 +1100
+Message-Id: <f847459dc0a0e2d8ffa1d290d06e0e4a226a6f39.1668075479.git.jamie.bainbridge@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/3] stmmac: dwmac-loongson: fixes three leaks
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166807561565.31825.9706152266121029188.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Nov 2022 10:20:15 +0000
-References: <20221108114647.4144952-1-yangyingliang@huawei.com>
-In-Reply-To: <20221108114647.4144952-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, jiaxun.yang@flygoat.com,
-        zhangqing@loongson.cn, liupeibao@loongson.cn, andrew@lunn.ch,
-        kuba@kernel.org, pabeni@redhat.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The SYN flood message prints the listening port number, but on a system
+with many processes bound to the same port on different IPs, it's
+impossible to tell which socket is the problem.
 
-This series was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Add the listen IP address to the SYN flood message. It might have been
+nicer to print the address first, but decades of monitoring tools are
+watching for the string "SYN flooding on port" so don't break that.
 
-On Tue, 8 Nov 2022 19:46:44 +0800 you wrote:
-> patch #2 fixes missing pci_disable_device() in the error path in probe()
-> patch #1 and pach #3 fix missing pci_disable_msi() and of_node_put() in
-> error and remove() path.
-> 
-> v1 -> v2:
->   Make another two error paths 'goto err_disable_msi' in path #1.
-> 
-> [...]
+Tested with each protcol's "any" address and a host address:
 
-Here is the summary with links:
-  - [net,v2,1/3] stmmac: dwmac-loongson: fix missing pci_disable_msi() while module exiting
-    https://git.kernel.org/netdev/net/c/f2d45fdf9a0e
-  - [net,v2,2/3] stmmac: dwmac-loongson: fix missing pci_disable_device() in loongson_dwmac_probe()
-    https://git.kernel.org/netdev/net/c/fe5b3ce8b437
-  - [net,v2,3/3] stmmac: dwmac-loongson: fix missing of_node_put() while module exiting
-    https://git.kernel.org/netdev/net/c/7f94d0498f9c
+ Possible SYN flooding on port 9001. IP 0.0.0.0.
+ Possible SYN flooding on port 9001. IP 127.0.0.1.
+ Possible SYN flooding on port 9001. IP ::.
+ Possible SYN flooding on port 9001. IP fc00::1.
 
-You are awesome, thank you!
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+---
+ net/ipv4/tcp_input.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 0640453fce54b6daae0861d948f3db075830daf6..fb86056732266fedc8ad574bbf799dbdd7a425a3 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6831,9 +6831,19 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
+ 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPREQQFULLDROP);
+ 
+ 	if (!queue->synflood_warned && syncookies != 2 &&
+-	    xchg(&queue->synflood_warned, 1) == 0)
+-		net_info_ratelimited("%s: Possible SYN flooding on port %d. %s.  Check SNMP counters.\n",
+-				     proto, sk->sk_num, msg);
++	    xchg(&queue->synflood_warned, 1) == 0) {
++#if IS_ENABLED(CONFIG_IPV6)
++		if (sk->sk_family == AF_INET6) {
++			net_info_ratelimited("%s: Possible SYN flooding on port %d. IP %pI6c. %s.  Check SNMP counters.\n",
++					proto, sk->sk_num,
++					&sk->sk_v6_rcv_saddr, msg);
++		} else
++#endif
++		{
++			net_info_ratelimited("%s: Possible SYN flooding on port %d. IP %pI4. %s.  Check SNMP counters.\n",
++					proto, sk->sk_num, &sk->sk_rcv_saddr, msg);
++		}
++	}
+ 
+ 	return want_cookie;
+ }
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.38.1
 
