@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE3A562406B
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 11:54:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77931624086
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 11:58:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiKJKx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 05:53:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
+        id S230361AbiKJK6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 05:58:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiKJKxz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 05:53:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A950663EB;
-        Thu, 10 Nov 2022 02:53:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E94EB61163;
-        Thu, 10 Nov 2022 10:53:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CACC9C433D6;
-        Thu, 10 Nov 2022 10:53:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668077633;
-        bh=80un1UQl9SnCr4a2NiWX+f4Tujo0o139HD42RGnQZm4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=In2Imx46CBLp/Sb1jXlXJhAmXkSfE4mOq8qJJTB3A2Vn3K8U32nEtDsNuQAT0DsD6
-         ZmAyUztomPFK6hifxNeuX6xcINVmdq5XyeEDyCUcqVVesw5D1BDbuIjG9jrY8Yx01+
-         kBiVVhzMYmxolpcvAwKW9k2YwHA4/V1aISUadymsUHWt1l6YJog9yNBQmlNpyPl0so
-         74m+zyV9+s3fvvcKIXIWvsVZ2wy0C+k/YCwNbcv4diN3foA/t+GP50kUCs8Sqrdm7c
-         QlUTn8OH1dsXv+QC26Gad0TYsn8obPV8XxbmxdQF8O58KNmA1+SU7yYNJImlGL1KMo
-         29TRFO+dtrycA==
-Date:   Thu, 10 Nov 2022 12:53:48 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        michael.chan@broadcom.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, selvin.xavier@broadcom.com
-Subject: Re: [PATCH v4 0/6] Add Auxiliary driver support
-Message-ID: <Y2zYPOUKgoArq7mM@unreal>
-References: <20221109184244.7032-1-ajit.khaparde@broadcom.com>
+        with ESMTP id S230024AbiKJK6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 05:58:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788FB6B390
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 02:57:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668077849;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TZYU2O1MuKWlTe+pb6TVyDbRzRa29zM5AqFFWo5hi4A=;
+        b=Xzg8vTQOeZ+OoT6XEb266fWx4vagBOOSwxNZjBFXjJzNj+ErNqY38mX0BtNVGyKh9P/0uo
+        sZLb6jdfhf4eRp/ZUGE4Tt/YxduLhUTnewh3/99V5sPJGGH1nfBcorVVQ+uu+wlpnkiFaQ
+        3z0x69HJjH15s/F4Z/Qqjj/+jWjaE4U=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-653--4blHhAMNNuJuoAQhTX-mQ-1; Thu, 10 Nov 2022 05:57:27 -0500
+X-MC-Unique: -4blHhAMNNuJuoAQhTX-mQ-1
+Received: by mail-qt1-f197.google.com with SMTP id cj6-20020a05622a258600b003a519d02f59so1091230qtb.5
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 02:57:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TZYU2O1MuKWlTe+pb6TVyDbRzRa29zM5AqFFWo5hi4A=;
+        b=blzfkFD3iEiClwuRyLTRhMAuWOdc90MElke+ulHlT0bYyVup7Fw4dfbR2NjYVBQN+G
+         1lz7qRP+e/qFuWNfOcvz+H8R9Bdn8TLGGLXD9sfhW06bHAZvRv0mWvQYg94IWsSXr9Eo
+         gHLCA/9F3z12peme7z20WgbHXUzxYmRSbocJIPEte1pXx/5MwUVo8LOvhseB+vEXvzic
+         K+Lqc36o3yVXn1KXJxsEHASSrXFh3q+m2DZyOfGojdg/ok4NYmGhll6Ja9oAMMy0OHYx
+         9MBy6O5brv69WqfZpj3fK9Ea6YUF+WHmmKDYHsxvi21k6urjOnZASCDYep2dDpHz3ywt
+         CZOw==
+X-Gm-Message-State: ACrzQf2z66cha3suh2Do8n2mEBd6xgcXkltPqUC3eMHxjBZyv1DbYBkN
+        LbmdysJqkQm9nLprxP7RyH0i0NZ2swfgj08NffQiHxmYBWBmijK0g0EgYaJFre5afQy5aWYJnrh
+        YXloTn4lMLtjI3dLA
+X-Received: by 2002:a0c:e34f:0:b0:4bb:5d3a:bd25 with SMTP id a15-20020a0ce34f000000b004bb5d3abd25mr59177971qvm.23.1668077846617;
+        Thu, 10 Nov 2022 02:57:26 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM4ZIGpiA+xevI7EHSgXaWJ7bAlEEcOnNtYundIZMqZL46zaa/5cbaSc7VlkNSUq8m4Hgbhvng==
+X-Received: by 2002:a0c:e34f:0:b0:4bb:5d3a:bd25 with SMTP id a15-20020a0ce34f000000b004bb5d3abd25mr59177964qvm.23.1668077846365;
+        Thu, 10 Nov 2022 02:57:26 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
+        by smtp.gmail.com with ESMTPSA id h6-20020a05620a21c600b006f9e103260dsm12402445qka.91.2022.11.10.02.57.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 02:57:25 -0800 (PST)
+Message-ID: <63f95025240ce6fa9d9c57ac26875d67dfd2bc71.camel@redhat.com>
+Subject: Re: [PATCH v1] net: macvlan: Use built-in RCU list checking
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Chuang Wang <nashuiliang@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 10 Nov 2022 11:57:22 +0100
+In-Reply-To: <20221108125254.688234-1-nashuiliang@gmail.com>
+References: <20221108125254.688234-1-nashuiliang@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109184244.7032-1-ajit.khaparde@broadcom.com>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 10:42:38AM -0800, Ajit Khaparde wrote:
-> Add auxiliary device driver for Broadcom devices.
-> The bnxt_en driver will register and initialize an aux device
-> if RDMA is enabled in the underlying device.
-> The bnxt_re driver will then probe and initialize the
-> RoCE interfaces with the infiniband stack.
+Hello,
+
+On Tue, 2022-11-08 at 20:52 +0800, Chuang Wang wrote:
+> hlist_for_each_entry_rcu() has built-in RCU and lock checking.
 > 
-> We got rid of the bnxt_en_ops which the bnxt_re driver used to
-> communicate with bnxt_en.
-> Similarly  We have tried to clean up most of the bnxt_ulp_ops.
-> In most of the cases we used the functions and entry points provided
-> by the auxiliary bus driver framework.
-> And now these are the minimal functions needed to support the functionality.
+> Pass cond argument to hlist_for_each_entry_rcu() to silence false
+> lockdep warning when CONFIG_PROVE_RCU_LIST is enabled.
 > 
-> We will try to work on getting rid of the remaining if we find any
-> other viable option in future.
+> Execute as follow:
+> 
+>  ip link add link eth0 type macvlan mode source macaddr add <MAC-ADDR>
+> 
+> The rtnl_lock is held when macvlan_hash_lookup_source() or
+> macvlan_fill_info_macaddr() are called in the non-RCU read side section.
+> So, pass lockdep_rtnl_is_held() to silence false lockdep warning.
+> 
+> Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
 
-I still see extra checks for something that was already checked in upper
-functions, for example in bnxt_re_register_netdev() you check rdev, which
-you already checked before.
+The patch LGTM, but IMHO this should target the -net tree, as it's
+addressing an issue bothering people. 
 
-However, the most important part is still existence of bnxt_ulp_ops,
-which shows completely no-go thing - SR-IOV config in RDMA code.
+Can you please re-submit, specifying the target tree into the subj and
+including a suitable Fixes tag?
 
-   302 static struct bnxt_ulp_ops bnxt_re_ulp_ops = {
-   303         .ulp_sriov_config = bnxt_re_sriov_config,
-   304         .ulp_irq_stop = bnxt_re_stop_irq,
-   305         .ulp_irq_restart = bnxt_re_start_irq
-   306 };
+Thanks!
 
-All PCI management logic and interfaces are needed to be inside eth part
-of your driver and only that part should implement SR-IOV config. Once
-user enabled SR-IOV, the PCI driver should create auxiliary devices for
-each VF. These device will have RDMA capabilities and it will trigger RDMA
-driver to bind to them.
+Paolo
 
-Thanks
+
