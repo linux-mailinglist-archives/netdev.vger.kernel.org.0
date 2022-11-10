@@ -2,381 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F43A6238C5
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:24:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3E06238C8
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 02:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbiKJBYP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Nov 2022 20:24:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        id S232216AbiKJB0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Nov 2022 20:26:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbiKJBYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:24:15 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF88C186D6;
-        Wed,  9 Nov 2022 17:24:11 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2AA1MBeW4002649, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2AA1MBeW4002649
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 10 Nov 2022 09:22:11 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Thu, 10 Nov 2022 09:22:50 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 10 Nov 2022 09:22:49 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Thu, 10 Nov 2022 09:22:49 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Wei Li <liwei391@huawei.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "huawei.libin@huawei.com" <huawei.libin@huawei.com>
-Subject: RE: [PATCH v2] wifi: rtlwifi: Correct header guards of rtl8188ee/rtl8723ae/rtl8192de
-Thread-Topic: [PATCH v2] wifi: rtlwifi: Correct header guards of
- rtl8188ee/rtl8723ae/rtl8192de
-Thread-Index: AQHY9DlHGYaJ/TWn8067GSJWx7N/Fa43XI/A
-Date:   Thu, 10 Nov 2022 01:22:49 +0000
-Message-ID: <53fc2d55a61e4ea7a4760e349e6b3f78@realtek.com>
-References: <20221109124445.3246937-1-liwei391@huawei.com>
-In-Reply-To: <20221109124445.3246937-1-liwei391@huawei.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/11/9_=3F=3F_11:44:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229802AbiKJB0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Nov 2022 20:26:13 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994D2186D6;
+        Wed,  9 Nov 2022 17:26:12 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id b1-20020a17090a7ac100b00213fde52d49so355232pjl.3;
+        Wed, 09 Nov 2022 17:26:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QDNKEh/nnMeolmM2NRHpBe+qACbk9dXcfRIfhAI2nC4=;
+        b=qrxtzVcLdOjnF1pVDiyeQcnoJ2J8SBIp14Y38ivJX3x/WhZhPe2HQWipf+K/U77yA0
+         emgCx8WohDOumt2OnN02MFX7SEF4rtKb2vPX+EwXDPLkdR/NRQaELEn0eW0cDzv3HbU/
+         1+dlHps5usVtChYEW1Z0L8hsbzNHnUJMNKq+fXta1fwfx8FyV00sDC18oW+LPGhIb49N
+         WYwPErYLOOViLp8m/nJ4m9rh4t5FY1hzUmbd2Z1H0AxJroIqnIBs6W9OtHAxHGj9O3qM
+         pll6Vbthi8kV7N4853ayKZoFv8e4iQae07YtCte+89y84ylIIT71Y1IZP0gQgCXDUpCJ
+         oq8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=QDNKEh/nnMeolmM2NRHpBe+qACbk9dXcfRIfhAI2nC4=;
+        b=5R0NCqlfqzYfu6239yVabggTrInAnOAPmCuPRziaYxAOyVOZaUbHeFOXFLON/b/GQ4
+         sOK7TOke4YCX8brwWQfNQRQH53PKwHooOS7ksRHqUerKq8ngd6LzEzF1dHbqyq5Sh7N9
+         XOOkPh3z1PKriFVk/IRXs7nsuY/89oz5vBF5lNkr1JRRQ/WmWJGIaJCix4geeYA7lmyM
+         sEfbqzYOR8zPYCXMmxvyqU7PLXIwtRqQIGy1JgwRzjzYg9E1AHAuvANzqR/lWIaja+VZ
+         SZEa6XnrvmtUnXYG5nSxNM1Aw8BibCDwx0RTatpTtdnv+4Wh7FQabktpAxBL36wj59L6
+         0fUw==
+X-Gm-Message-State: ACrzQf1iLEo+aIKz3DUY7Me7xxZg4HJJGXJkStDkS/27g7vNqAlx4J7K
+        pYw4VNeNFA1x7QGg82Rn6U8=
+X-Google-Smtp-Source: AMsMyM7S9Svs1nfnHtDkykC5jm6zIG/MFVAfwMkeX9pyECGdstQcsq/gvvpf8yDb9Z+5A3MiyJoaGg==
+X-Received: by 2002:a17:902:bcc1:b0:187:31da:494a with SMTP id o1-20020a170902bcc100b0018731da494amr48297993pls.121.1668043572087;
+        Wed, 09 Nov 2022 17:26:12 -0800 (PST)
+Received: from localhost ([98.97.44.95])
+        by smtp.gmail.com with ESMTPSA id j126-20020a625584000000b0056bb21cd7basm8876013pfb.51.2022.11.09.17.26.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 17:26:11 -0800 (PST)
+Date:   Wed, 09 Nov 2022 17:26:10 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <636c533231572_13c9f42087c@john.notmuch>
+In-Reply-To: <87leokz8lq.fsf@toke.dk>
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+ <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+ <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
+ <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev>
+ <87leokz8lq.fsf@toke.dk>
+Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
+ metadata into skb context
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Snipping a bit of context to reply to this bit:
+> =
 
-> -----Original Message-----
-> From: Wei Li <liwei391@huawei.com>
-> Sent: Wednesday, November 9, 2022 8:45 PM
-> To: Ping-Ke Shih <pkshih@realtek.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>;
-> Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; huawei.libin@huawei.com
-> Subject: [PATCH v2] wifi: rtlwifi: Correct header guards of rtl8188ee/rtl8723ae/rtl8192de
-> 
-> The header guards of rtl8188ee/rtl8723ae/rtl8192de are promiscuous
-> currently. Rename them to be consistent with their module names.
-> 
-> Fixes: f0eb856e0b6c ("rtlwifi: rtl8188ee: Add new driver")
-> Fixes: c592e631bcec ("rtlwifi: rtl8723ae: Add new driver")
-> Fixes: 4f01358e5b8a ("rtlwifi: rtl8192de: Merge dynamic management routines")
-> Signed-off-by: Wei Li <liwei391@huawei.com>
-> ---
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h     | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h     | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h     | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h     | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h  | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h     | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h     | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h    | 4 ++--
->  drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h    | 4 ++--
->  16 files changed, 32 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-> index edcca42c7464..2f88a6faf535 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/def.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C_DEF_H__
-> -#define __RTL92C_DEF_H__
-> +#ifndef __RTL88EE_DEF_H__
-> +#define __RTL88EE_DEF_H__
-> 
->  #define HAL_PRIME_CHNL_OFFSET_DONT_CARE			0
->  #define HAL_PRIME_CHNL_OFFSET_LOWER			1
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-> index eb8090caeec2..1573d277a920 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef	__RTL88E_DM_H__
-> -#define __RTL88E_DM_H__
-> +#ifndef	__RTL88EE_DM_H__
+> >>>> Can the xdp prog still change the metadata through xdp->data_meta?=
+ tbh, I am not
+> >>>> sure it is solid enough by asking the xdp prog not to use the same=
+ random number
+> >>>> in its own metadata + not to change the metadata through xdp->data=
+_meta after
+> >>>> calling bpf_xdp_metadata_export_to_skb().
+> >>>
+> >>> What do you think the usecase here might be? Or are you suggesting =
+we
+> >>> reject further access to data_meta after
+> >>> bpf_xdp_metadata_export_to_skb somehow?
+> >>>
+> >>> If we want to let the programs override some of this
+> >>> bpf_xdp_metadata_export_to_skb() metadata, it feels like we can add=
 
-Use a space instead.
+> >>> more kfuncs instead of exposing the layout?
+> >>>
+> >>> bpf_xdp_metadata_export_to_skb(ctx);
+> >>> bpf_xdp_metadata_export_skb_hash(ctx, 1234);
+> =
 
-> +#define __RTL88EE_DM_H__
-> 
->  #define	MAIN_ANT					0
->  #define	AUX_ANT						1
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-> index 79f095e47d71..863ddcd98202 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/fw.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C__FW__H__
-> -#define __RTL92C__FW__H__
-> +#ifndef __RTL88EE__FW__H__
-> +#define __RTL88EE__FW__H__
-> 
->  #define FW_8192C_SIZE				0x8000
->  #define FW_8192C_START_ADDRESS			0x1000
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-> index fd09b0712d17..3140b6938ffd 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92CE_HW_H__
-> -#define __RTL92CE_HW_H__
-> +#ifndef __RTL88EE_HW_H__
-> +#define __RTL88EE_HW_H__
-> 
->  void rtl88ee_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
->  void rtl88ee_read_eeprom_info(struct ieee80211_hw *hw);
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-> index 67d3dc389ba0..da8a1af3606d 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/led.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92CE_LED_H__
-> -#define __RTL92CE_LED_H__
-> +#ifndef __RTL88EE_LED_H__
-> +#define __RTL88EE_LED_H__
-> 
->  void rtl88ee_init_sw_leds(struct ieee80211_hw *hw);
->  void rtl88ee_sw_led_on(struct ieee80211_hw *hw, struct rtl_led *pled);
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-> index 8157ef419eeb..1fa9fd0d472a 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C_PHY_H__
-> -#define __RTL92C_PHY_H__
-> +#ifndef __RTL88EE_PHY_H__
-> +#define __RTL88EE_PHY_H__
-> 
->  /* MAX_TX_COUNT must always set to 4, otherwise read efuse
->   * table secquence will be wrong.
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-> index 42e222c1795f..e1d6df65c5c4 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/pwrseq.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL8723E_PWRSEQ_H__
-> -#define __RTL8723E_PWRSEQ_H__
-> +#ifndef __RTL88EE_PWRSEQ_H__
-> +#define __RTL88EE_PWRSEQ_H__
-> 
->  #include "../pwrseqcmd.h"
->  /* Check document WM-20110607-Paul-RTL8188EE_Power_Architecture-R02.vsd
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-> index 0fc8db8916fa..6392f2e24ac1 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/reg.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C_REG_H__
-> -#define __RTL92C_REG_H__
-> +#ifndef __RTL88EE_REG_H__
-> +#define __RTL88EE_REG_H__
-> 
->  #define TXPKT_BUF_SELECT				0x69
->  #define RXPKT_BUF_SELECT				0xA5
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-> index 05e27b40b2a9..76cb4cd2b5a2 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C_RF_H__
-> -#define __RTL92C_RF_H__
-> +#ifndef __RTL88EE_RF_H__
-> +#define __RTL88EE_RF_H__
-> 
->  #define RF6052_MAX_TX_PWR		0x3F
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-> index df6065602401..dd4eee147b4c 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92CE_TABLE__H_
-> -#define __RTL92CE_TABLE__H_
-> +#ifndef __RTL88EE_TABLE__H_
-> +#define __RTL88EE_TABLE__H_
-> 
->  #include <linux/types.h>
->  #define  RTL8188EEPHY_REG_1TARRAYLEN	382
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-> index e17f70b4d199..025087026068 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2013  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92CE_TRX_H__
-> -#define __RTL92CE_TRX_H__
-> +#ifndef __RTL88EE_TRX_H__
-> +#define __RTL88EE_TRX_H__
-> 
->  #define TX_DESC_SIZE					64
->  #define TX_DESC_AGGR_SUBFRAME_SIZE		32
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-> index 939cc45bfebd..9cd9070a0281 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2012  Realtek Corporation.*/
-> 
-> -#ifndef	__RTL92C_DM_H__
-> -#define __RTL92C_DM_H__
-> +#ifndef	__RTL92D_DM_H__
 
-use a space instead.
+Hi Toke,
 
-> +#define __RTL92D_DM_H__
-> 
->  #define HAL_DM_DIG_DISABLE			BIT(0)
->  #define HAL_DM_HIPWR_DISABLE			BIT(1)
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-> index 7599c7e5ecc3..71239a24f2c7 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/led.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2012  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92CE_LED_H__
-> -#define __RTL92CE_LED_H__
-> +#ifndef __RTL92DE_LED_H__
-> +#define __RTL92DE_LED_H__
-> 
->  void rtl92de_init_sw_leds(struct ieee80211_hw *hw);
->  void rtl92de_sw_led_on(struct ieee80211_hw *hw, struct rtl_led *pled);
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-> index 3f9ed9b4428e..3ab4a7389012 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2012  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C__FW__H__
-> -#define __RTL92C__FW__H__
-> +#ifndef __RTL8723E__FW__H__
-> +#define __RTL8723E__FW__H__
+Trying not to bifurcate your thread. Can I start a new one here to
+elaborate on these use cases. I'm still a bit lost on any use case
+for this that makes sense to actually deploy on a network.
 
-23AE
+> There are several use cases for needing to access the metadata after
+> calling bpf_xdp_metdata_export_to_skb():
+> =
 
-> 
->  #define FW_8192C_SIZE					0x3000
->  #define FW_8192C_START_ADDRESS			0x1000
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-> index 9f85845d23cd..372f02409dda 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2012  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92CE_LED_H__
-> -#define __RTL92CE_LED_H__
-> +#ifndef __RTL8723E_LED_H__
-> +#define __RTL8723E_LED_H__
+> - Accessing the metadata after redirect (in a cpumap or devmap program,=
 
-23AE
+>   or on a veth device)
 
-> 
->  void rtl8723e_init_sw_leds(struct ieee80211_hw *hw);
->  void rtl8723e_sw_led_on(struct ieee80211_hw *hw, struct rtl_led *pled);
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-> index 98bfe02f66d5..40c89095fd57 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h
-> @@ -1,8 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  /* Copyright(c) 2009-2012  Realtek Corporation.*/
-> 
-> -#ifndef __RTL92C_PHY_H__
-> -#define __RTL92C_PHY_H__
-> +#ifndef __RTL8723E_PHY_H__
-> +#define __RTL8723E_PHY_H__
+I think for devmap there are still lots of opens how/where the skb
+is even built.
 
-23AE
+For cpumap I'm a bit unsure what the use case is. For ice, mlx and
+such you should use the hardware RSS if performance is top of mind.
+And then for specific devices on cpumap (maybe realtime or ptp things?)
+could we just throw it through the xdp_frame?
 
-> 
->  #define MAX_PRECMD_CNT				16
->  #define MAX_RFDEPENDCMD_CNT			16
-> --
-> 2.25.1
-> 
-> 
-> ------Please consider the environment before printing this e-mail.
+> - Transferring the packet+metadata to AF_XDP
+
+In this case we have the metadata and AF_XDP program and XDP program
+simply need to agree on metadata format. No need to have some magic
+numbers and driver specific kfuncs.
+
+> - Returning XDP_PASS, but accessing some of the metadata first (whether=
+
+>   to read or change it)
+> =
+
+
+I don't get this case? XDP_PASS should go to stack normally through
+drivers build_skb routines. These will populate timestamp normally.
+My guess is simply descriptor->skb load/store is cheaper than carrying
+around this metadata and doing the call in BPF side. Anyways you
+just built an entire skb and hit the stack I don't think you will
+notice this noise in any benchmark.=
