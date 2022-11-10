@@ -2,173 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1204C623EB9
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 10:36:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D936C623EF3
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 10:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiKJJgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 04:36:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
+        id S229686AbiKJJq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 04:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiKJJgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 04:36:45 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FB267F60;
-        Thu, 10 Nov 2022 01:36:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668073004; x=1699609004;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bZGinb1GlB+jVorOK6luSyiTkDtoV7cUYIIAN1FmgDQ=;
-  b=e09k7bYG1C0/HJLdkFipjO67rgXaEyKiZfASTWz37A2yA7trbPyTkh7l
-   FR2BnlwcAxMFf+QRgI7VkrRZxUrPQBHyVnuJ+T3zVUVv038cDuehAT+wf
-   uzxqwdTI4lXdrFduj6bpWs2Rb3lgmgb/Gc+68DLo6933PkBm7YaKuvCzw
-   yXsA9RSy0PG/h8isyrtuY5RlZH+Kyp0JpFrbM0PHlb4lW8PGxnu4fpRh6
-   UswcRjX97cjmc0t782CR/CK4DIH22uBD3RH4WxEgbIxv/aQHwP2U65We7
-   O/Mu/PJFpdFD3tGDoat6dJpPHNG80dZh6MHkhcPsqvGB0xzGDcu2Sv5UK
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,153,1665471600"; 
-   d="scan'208";a="188462126"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Nov 2022 02:36:43 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 10 Nov 2022 02:36:43 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 10 Nov 2022 02:36:41 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <joe@perches.com>,
-        <daniel.machon@microchip.com>, <vladimir.oltean@nxp.com>,
-        <petrm@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, "kernel test robot" <lkp@intel.com>
-Subject: [PATCH net-next] net: dcb: move getapptrust to separate function
-Date:   Thu, 10 Nov 2022 10:46:23 +0100
-Message-ID: <20221110094623.3395670-1-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229517AbiKJJqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 04:46:54 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7940469DFA
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 01:46:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 896C9CE21DA
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:46:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88908C433C1;
+        Thu, 10 Nov 2022 09:46:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668073607;
+        bh=Rpc3q+QPPfNRnU+8WASadIWA8GHEexHrspY/e/lAWps=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XmkWo/yRyRWwhVbhfdPe+3boA5QHrz9iGX3V1v/PT7nbNRdVQgSpVWQdJkoaQCGmV
+         gLCRG03koq7Mn/cjWpgWIJzLE1FlHK3fVg8eLCprHLC9TGEzL9l7ABMue//fJ2zNmG
+         VPmbZ4rfPW7Yo868sQy2T28MLlVUbqyspPZH6PPVibWBXVt8NL6Lr2zmd0rmtkLZm5
+         /qlsVdjcspzZUau5En1SWB8FMvnON9o3cvZNSYaw9YvPy8K86OKhn7fyjbDVILufU5
+         e4cgkj83OjtAFGuvWvwdekF3QWhchQ1Ej7K/EjzfC3PG9ojKhdUXApQiO+cuxasycD
+         Me0Jm7XCAt6sQ==
+Date:   Thu, 10 Nov 2022 11:46:40 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yuan Can <yuancan@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mqaio@linux.alibaba.com,
+        shaozhengchao@huawei.com, christophe.jaillet@wanadoo.fr,
+        gustavoars@kernel.org, luobin9@huawei.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] net: hinic: Fix error handling in hinic_module_init()
+Message-ID: <Y2zIgJblD4I7DOn+@unreal>
+References: <20221110021642.80378-1-yuancan@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221110021642.80378-1-yuancan@huawei.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a frame size warning, reported by kernel test robot.
+On Thu, Nov 10, 2022 at 02:16:42AM +0000, Yuan Can wrote:
+> A problem about hinic create debugfs failed is triggered with the
+> following log given:
+> 
+>  [  931.419023] debugfs: Directory 'hinic' with parent '/' already present!
+> 
+> The reason is that hinic_module_init() returns pci_register_driver()
+> directly without checking its return value, if pci_register_driver()
+> failed, it returns without destroy the newly created debugfs, resulting
+> the debugfs of hinic can never be created later.
+> 
+>  hinic_module_init()
+>    hinic_dbg_register_debugfs() # create debugfs directory
+>    pci_register_driver()
+>      driver_register()
+>        bus_add_driver()
+>          priv = kzalloc(...) # OOM happened
+>    # return without destroy debugfs directory
+> 
+> Fix by removing debugfs when pci_register_driver() returns error.
+> 
+> Fixes: 253ac3a97921 ("hinic: add support to query sq info")
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
+> ---
+> Changes in v2:
+> - Change to simpler error handling style
+> 
 
->> net/dcb/dcbnl.c:1230:1: warning: the frame size of 1244 bytes is
->> larger than 1024 bytes [-Wframe-larger-than=]
-
-The getapptrust part of dcbnl_ieee_fill is moved to a separate function,
-and the selector array is now dynamically allocated, instead of stack
-allocated.
-
-Tested on microchip sparx5 driver.
-
-Fixes: 6182d5875c33 ("net: dcb: add new apptrust attribute")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
----
- net/dcb/dcbnl.c | 67 +++++++++++++++++++++++++++++++++----------------
- 1 file changed, 45 insertions(+), 22 deletions(-)
-
-diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-index cec0632f96db..3f4d88c1ec78 100644
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -1060,11 +1060,52 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
- 	return err;
- }
- 
-+static int dcbnl_getapptrust(struct net_device *netdev, struct sk_buff *skb)
-+{
-+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
-+	int nselectors, err;
-+	u8 *selectors;
-+
-+	selectors = kzalloc(IEEE_8021QAZ_APP_SEL_MAX + 1, GFP_KERNEL);
-+	if (!selectors)
-+		return -ENOMEM;
-+
-+	err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
-+
-+	if (!err) {
-+		struct nlattr *apptrust;
-+		int i;
-+
-+		err = -EMSGSIZE;
-+
-+		apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
-+		if (!apptrust)
-+			goto nla_put_failure;
-+
-+		for (i = 0; i < nselectors; i++) {
-+			enum ieee_attrs_app type =
-+				dcbnl_app_attr_type_get(selectors[i]);
-+			err = nla_put_u8(skb, type, selectors[i]);
-+			if (err) {
-+				nla_nest_cancel(skb, apptrust);
-+				goto nla_put_failure;
-+			}
-+		}
-+		nla_nest_end(skb, apptrust);
-+	}
-+
-+	err = 0;
-+
-+nla_put_failure:
-+	kfree(selectors);
-+	return err;
-+}
-+
- /* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
- static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- {
- 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
--	struct nlattr *ieee, *app, *apptrust;
-+	struct nlattr *ieee, *app;
- 	struct dcb_app_type *itr;
- 	int dcbx;
- 	int err;
-@@ -1168,27 +1209,9 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- 	nla_nest_end(skb, app);
- 
- 	if (ops->dcbnl_getapptrust) {
--		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
--		int nselectors, i;
--
--		apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
--		if (!apptrust)
--			return -EMSGSIZE;
--
--		err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
--		if (!err) {
--			for (i = 0; i < nselectors; i++) {
--				enum ieee_attrs_app type =
--					dcbnl_app_attr_type_get(selectors[i]);
--				err = nla_put_u8(skb, type, selectors[i]);
--				if (err) {
--					nla_nest_cancel(skb, apptrust);
--					return err;
--				}
--			}
--		}
--
--		nla_nest_end(skb, apptrust);
-+		err = dcbnl_getapptrust(netdev, skb);
-+		if (err)
-+			return err;
- 	}
- 
- 	/* get peer info if available */
--- 
-2.34.1
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
