@@ -2,121 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C825624B13
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 20:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EAB1624B37
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 21:09:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbiKJT4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 14:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
+        id S230146AbiKJUJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 15:09:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbiKJT43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 14:56:29 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DA9A1B4
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 11:56:28 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id d3so1570735ils.1
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 11:56:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ocUEjaXvalO2lDp0ra2nIWRh/qi3vcvKb/fRj0kfIXs=;
-        b=iO0BMOiKTGpHVZQMg6F9oQUWAqh31KTlX5fuYl3NviTrB6Kei0Xho18Y7D4Be1OVbe
-         +DgWY6VYuK3jIljAx6cdNWxzNdGRAA2TlrpRDGOrRG3W0AmtM8cbxxNshFQJbrfWOCVc
-         3qWf/AA59DPimGQwSAXaf/sF4980VjIAEN1ZOf048/Bf+NVyFru/JoEFDxM8OaqReW7v
-         bgOvGYgbgvRo4e9J2wD5VabDpZ9RbE46BQZ1D8jRtz8kpGG7pmxJ0PgdV4yIgEPbnpre
-         6sz3Fx9QAWwJ355ZoLF9zcR0Cwv1tG675ND1A9WAGG+j7ABm/tReyAUHSHzyxGH/AB7G
-         wJLQ==
+        with ESMTP id S229588AbiKJUJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 15:09:27 -0500
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D3F10B5F;
+        Thu, 10 Nov 2022 12:09:26 -0800 (PST)
+Received: by mail-oi1-f180.google.com with SMTP id t62so2948561oib.12;
+        Thu, 10 Nov 2022 12:09:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ocUEjaXvalO2lDp0ra2nIWRh/qi3vcvKb/fRj0kfIXs=;
-        b=miUgakv7Tg1hmcqJ65uCGTNlcYRHCThmYCteYWSwmNp0XHHwrMnu7BJi1Cfx/MQ8Lt
-         8Ezcg/oEP57L0yMN+XfRg0usP4s5ZF9EnuOtuEOzr1fu/js50HCsYi2zzXdEy+OZD5w8
-         9HwlO+fsueEthwFeR8bn5KjVWThAifmyIccVUYnPW5WYuoqE21kFwk4z/D5zqpNcOlOd
-         PMAY9nT2s2LpUybVEgDNWOyzYD0idivQ39Fz7THBXD6NdjHOV6tsPqiFc/SKA32HEjjU
-         2RuoTcnHpfaJJHCbV6uDzNhArImTX0Y6NzfqgdLFq7XBa0T46dSK+8KfuFpldAfgwm8p
-         9zfg==
-X-Gm-Message-State: ACrzQf2jW6Ww+3Qx4Uyt94ZGPZlPe+S3p8M9buFQQaHbnw2OgeiMVWIa
-        VRhJcZe6U77el6awItSk7nHhrQ==
-X-Google-Smtp-Source: AMsMyM5O5C3ge1Cvx+Fe0k1+5IM0IsCZT5vUxMcvAKevaj85MR58vznJVKxrpJnWUoUD+lx0MAt7DQ==
-X-Received: by 2002:a05:6e02:1a08:b0:2ff:dc4b:a4c0 with SMTP id s8-20020a056e021a0800b002ffdc4ba4c0mr3468201ild.221.1668110187502;
-        Thu, 10 Nov 2022 11:56:27 -0800 (PST)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id l2-20020a6b3e02000000b006bbddd49984sm28602ioa.9.2022.11.10.11.56.25
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=D8DAIYPywI0mxn7CCbjHVTuM6h/N+D8/hFU0/orRKO0=;
+        b=kiwTAlgjK4rLuDwxjXxBia4QYhvZrd0nXziWRR1AFJlH7zfnbhq5JjmegPuETzNE3q
+         FjnC+2Q3ZE/i50k+vnK+WCg4kdK6iJayrp4fpCveD+9UhwAXVFYWebVoTRoKV6y4JDzS
+         8n7CcUw1IAZyuYwmC7/uhwBGLL8oLx1MW+pNXQLtpU55SR5EMQOea2dygncF9ARyoTyz
+         RPlozoU49jDTJQR0vOdoNG/oG+YzGy3ffrhLHFTykFjSrDAxlDL6tmvnyJZIANrwQV7Z
+         UeHjqTkgNO1jjirwrUVDrPWeYUHElGS6tDbVLZf9jRSQL3CIq9Pn3ExaoiP/ofp21bPE
+         lgxQ==
+X-Gm-Message-State: ACrzQf3ljxFM9Msi8ohEr7wbO6fEKLLbu4cpaZ82Bm7OmR1ynhqX4nNE
+        0IVP9urfD3ZXyL10r7egUw==
+X-Google-Smtp-Source: AMsMyM5GXBLkSQdxXUGbRIIAq883HBK7Xe0JJqWb1HTOOngkCOzjFhLSV9rqe8a/Y/gY0wHmfaBTzQ==
+X-Received: by 2002:a05:6808:1396:b0:359:f059:ed05 with SMTP id c22-20020a056808139600b00359f059ed05mr1956775oiw.148.1668110965817;
+        Thu, 10 Nov 2022 12:09:25 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bu7-20020a0568300d0700b0066cf6a14d1asm253530otb.23.2022.11.10.12.09.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 11:56:26 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        Thu, 10 Nov 2022 12:09:25 -0800 (PST)
+Received: (nullmailer pid 907677 invoked by uid 1000);
+        Thu, 10 Nov 2022 20:09:26 -0000
+Date:   Thu, 10 Nov 2022 14:09:26 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
-        elder@kernel.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] dt-bindings: net: qcom,ipa: restate a requirement
-Date:   Thu, 10 Nov 2022 13:56:18 -0600
-Message-Id: <20221110195619.1276302-3-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221110195619.1276302-1-elder@linaro.org>
-References: <20221110195619.1276302-1-elder@linaro.org>
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, daniel@makrotopia.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        angelogioacchino.delregno@collabora.com
+Subject: Re: [PATCH v4 net-next 2/8] dt-bindings: net: mediatek: add WED RX
+ binding for MT7986 eth driver
+Message-ID: <20221110200926.GA885371-robh@kernel.org>
+References: <cover.1667687249.git.lorenzo@kernel.org>
+ <2192d3974d30b1d0b8f4277c42cdb02f6feffbb9.1667687249.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2192d3974d30b1d0b8f4277c42cdb02f6feffbb9.1667687249.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Either the AP or modem loads GSI firmware.  If the modem-init
-property is present, the modem loads it.  Otherwise, the AP loads
-it, and in that case the memory-region property must be defined.
+On Sat, Nov 05, 2022 at 11:36:17PM +0100, Lorenzo Bianconi wrote:
+> Document the binding for the RX Wireless Ethernet Dispatch core on the
+> MT7986 ethernet driver used to offload traffic received by WLAN NIC and
+> forwarded to LAN/WAN one.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 52 +++++++++++++++++++
+>  .../soc/mediatek/mediatek,mt7986-wo-ccif.yaml | 51 ++++++++++++++++++
 
-Currently this requirement is expressed as one or the other of the
-modem-init or the memory-region property being required.  But it's
-harmless for the memory-region to be present if the modem is loading
-firmware (it'll just be ignored).
+Are these blocks used for anything not networking related? If not, can 
+you move them to bindings/net/. Can be a follow up patch if not 
+respinning this again.
 
-Restate the requirement so that the memory-region property is
-required only if modem-init is not present.
-
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- Documentation/devicetree/bindings/net/qcom,ipa.yaml | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-index 2d253ef488188..e752b76192df0 100644
---- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-+++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-@@ -155,12 +155,15 @@ required:
-   - interconnects
-   - qcom,smem-states
- 
--# Either modem-init is present, or memory-region must be present.
--oneOf:
--  - required:
-+# If modem-init is not present, the AP loads GSI firmware, and
-+# memory-region must be specified
-+if:
-+  not:
-+    required:
-       - modem-init
--  - required:
--      - memory-region
-+then:
-+  required:
-+    - memory-region
- 
- additionalProperties: false
- 
--- 
-2.34.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
