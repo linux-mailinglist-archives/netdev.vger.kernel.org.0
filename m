@@ -2,146 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E53E623CC0
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 08:38:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE58F623CF4
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 08:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbiKJHiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 02:38:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
+        id S232770AbiKJHxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 02:53:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbiKJHiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 02:38:05 -0500
-Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3744C326F4
-        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 23:38:03 -0800 (PST)
-Received: from gw.atmark-techno.com (localhost [127.0.0.1])
-        by gw.atmark-techno.com (Postfix) with ESMTP id 9A1A660116
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 16:38:02 +0900 (JST)
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id 0559B60105
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 16:38:01 +0900 (JST)
-Received: by mail-pj1-f71.google.com with SMTP id mh8-20020a17090b4ac800b0021348e084a0so2946047pjb.8
-        for <netdev@vger.kernel.org>; Wed, 09 Nov 2022 23:38:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hCjb7yV/CvXMOFsUMLrHBUd25VG/nQ2JHyjPko2pBBA=;
-        b=uyKWX0gfthHveQ2i9tZkb6pap3dT8D1krSoRLX9xZXbxTo5aKjvqrD9wn9aXSQFg3K
-         i8A8s6SrhKVl3lMkKhnWM0p6pg6fEUmVqy6hlFDRmSpNpZjCE+LZqWuJe7mKcRRmYTUl
-         gtxHwD0fQJi+sqd0VsTnZ/mFEuhEg1Qtrag4aTIYvKSfeUrx0VC2m2tA0338/fn+LX3d
-         nGWhWNiAqg/sCTXy0ZRQlkoEi9eVm8JXOgxAf7Qi0iArLbq+eS898h1D+gO3xbpwWYyu
-         rgVO34jNkWTG3iP2BA8mn45FmJw13AnGQF8lH+VGTM/un8dvztwkuTP6SUrVDOYwt5A2
-         pzrQ==
-X-Gm-Message-State: ACrzQf0+xI3FtI+Jb4/Ml6tKGV/l608U58YbTF/mvAdWcsBzM6pekwTs
-        GaiLsOr9/h+wh68R3Qg6wbKQrGF43GBs1tR9b6mEiE48/HSCA4wP94h1KpRTGgtJA5wE/Feo4MC
-        IZzDjKuHaK/RW+TPMn/KT
-X-Received: by 2002:aa7:83c8:0:b0:56d:8e07:4618 with SMTP id j8-20020aa783c8000000b0056d8e074618mr51964652pfn.33.1668065880059;
-        Wed, 09 Nov 2022 23:38:00 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM5Lb2t86EbMFW9ZQ3kwu22IuMxG74UdO/YAYM+jzqoI78XZoQm20kFTU/Woblan8jqfRmomqA==
-X-Received: by 2002:aa7:83c8:0:b0:56d:8e07:4618 with SMTP id j8-20020aa783c8000000b0056d8e074618mr51964632pfn.33.1668065879804;
-        Wed, 09 Nov 2022 23:37:59 -0800 (PST)
-Received: from pc-zest.atmarktech (76.125.194.35.bc.googleusercontent.com. [35.194.125.76])
-        by smtp.gmail.com with ESMTPSA id p18-20020a170902ebd200b00176b63535adsm10381193plg.260.2022.11.09.23.37.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 09 Nov 2022 23:37:59 -0800 (PST)
-Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
-        (envelope-from <martinet@pc-zest>)
-        id 1ot28M-001gKL-0J;
-        Thu, 10 Nov 2022 16:37:58 +0900
-Date:   Thu, 10 Nov 2022 16:37:47 +0900
-From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>, mizo@atmark-techno.com
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: h4-bluetooth: add new bindings
- for hci_h4
-Message-ID: <Y2yqSxldXPdmkCpW@atmark-techno.com>
-References: <CAL_JsqKCb2ZA+CLTVnGBMjp6zu0yw-rSFjWRg2S3hA7S6h-XEA@mail.gmail.com>
- <6a4f7104-8b6f-7dcd-a7ac-f866956e31d6@linaro.org>
- <Y2rsQowbtvOdmQO9@atmark-techno.com>
- <Y2tW8EMmhTpCwitM@atmark-techno.com>
- <20221109220005.GA2930253-robh@kernel.org>
+        with ESMTP id S232858AbiKJHxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 02:53:38 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5693FD0D
+        for <netdev@vger.kernel.org>; Wed,  9 Nov 2022 23:53:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668066817; x=1699602817;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fYkttwNKwU/bCgG8EmqEBArJJBs2YCKQhQd9sHquWPk=;
+  b=MLsayCgwooELHsnDvaN9VrgGDaC4cZDcn9BA72mjIzikY78L9eXb53wr
+   orEke93UoxvqDbbz58mCKBHVifnjlgwCv/GJ1jIXQ2G6tRFMSqbcCKiPh
+   3W2p+F19/S8RG0Snyird32+eC6GT6oh6y9jR/GJw0umMDIRQ+tV/aip+i
+   fylbUJAAuazoxAd6iI10ixKBZmz58L/j3S/HY3RnKpuDgw+gp79dGovjz
+   jecAXnhBN9x190hKM+g+8tWq/NvezPVoGF1opPBoOZp2oWhUyD3COCrZb
+   GN5v07PrUe+rC2L3a6jw4DDJpu0a7rDwUU8KeB9v/+wvo+nS6AY47l531
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="309959497"
+X-IronPort-AV: E=Sophos;i="5.96,153,1665471600"; 
+   d="scan'208";a="309959497"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 23:53:37 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="588080557"
+X-IronPort-AV: E=Sophos;i="5.96,153,1665471600"; 
+   d="scan'208";a="588080557"
+Received: from unknown (HELO paamrpdk12-S2600BPB.aw.intel.com) ([10.228.151.145])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 23:53:36 -0800
+From:   Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+To:     tirtha@gmail.com, magnus.karlsson@intel.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        maciej.fijalkowski@intel.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH intel-next v2] i40e: allow toggling loopback mode via ndo_set_features callback
+Date:   Thu, 10 Nov 2022 13:10:38 +0530
+Message-Id: <20221110074038.94804-1-tirthendu.sarkar@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221109220005.GA2930253-robh@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rob Herring wrote on Wed, Nov 09, 2022 at 04:00:05PM -0600:
-> Punting the issue to userspace is not a great solution...
+Add support for NETIF_F_LOOPBACK. This feature can be set via:
+$ ethtool -K eth0 loopback <on|off>
 
-I can definitely agree with that :)
+This sets the MAC Tx->Rx loopback.
 
-Userspace has the advantage of being easy to shove ugly things under the
-rug, whereas I still have faint hope of keeping down the divergences we
-have with upstream kernel... But that's about it.
+Feature can be useful for local data path tests.
 
-If we can work out a solution here I'll be very happy.
+Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_common.c | 22 +++++++++++++++
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 28 ++++++++++++++++++-
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |  3 ++
+ 3 files changed, 52 insertions(+), 1 deletion(-)
 
-
-Rob Herring wrote on Wed, Nov 09, 2022 at 04:00:05PM -0600:
-> > This actually hasn't taken long to bite us: while the driver does work,
-> > we get error messages early on before the firmware is loaded.
-> > (In hindsight, I probably should have waited a few days before sending
-> > this...)
-> > 
-> > 
-> > My current workaround is to return EPROBE_DEFER until we can find a
-> > netdev with a known name in the init namespace, but that isn't really
-> > something I'd consider upstreamable for obvious reasons (interfaces can
-> > be renamed or moved to different namespaces so this is inherently racy
-> > and it's just out of place in BT code)
-> 
-> Can't you just try to access the BT h/w in some way and defer when that 
-> fails?
-
-This is just a serial link; I've tried poking at it a bit before the
-firmware is loaded but mostly never got any reply, or while the driver
-sometimes got garbage back at some point (baudrate not matching with
-fresh boot default?)
-Either way, no reply isn't great -- just waiting a few ms for reply or
-not is not my idea of good design...
-
-> Or perhaps use fw_devlink to create a dependency on the wifi node. I'm 
-> not sure offhand how exactly you do that with a custom property.
-
-That sounds great if we can figure how to do that!
-From what I can see this doesn't look possible to express in pure
-devicetree, but I see some code initializing a fwnode manually in a
-constructor function with fwnode_init and a fwnode_operations vector
-that has .add_links, which in turn could add a link.
-... My problem at this point would be that I currently load the wireless
-driver as a module as it's vendor provided out of tree... (it's loaded
-through its pci alias, I guess it's udev checking depmod infos? not
-familiar how that part of autoloading really works...)
-
-But that makes me think that rather than defining the bluetooth serdev
-in dts early, I could try to have the wireless driver create it once
-it's ready? hmm...
-
-Let me sleep on that a bit and have another look at both fwnode
-(fw_devlink) and dynamic device creation.
-
-
-Cheers,
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
+index 4f01e2a6b6bb..73d2c700dc35 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_common.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
+@@ -1830,6 +1830,28 @@ i40e_status i40e_aq_set_phy_int_mask(struct i40e_hw *hw,
+ 	return status;
+ }
+ 
++/**
++ * i40e_aq_set_mac_loopback
++ * @hw: pointer to the HW struct
++ * @ena_lpbk: Enable or Disable loopback
++ * @cmd_details: pointer to command details structure or NULL
++ *
++ * Enable/disable loopback on a given port
++ */
++i40e_status i40e_aq_set_mac_loopback(struct i40e_hw *hw, bool ena_lpbk,
++				     struct i40e_asq_cmd_details *cmd_details)
++{
++	struct i40e_aq_desc desc;
++	struct i40e_aqc_set_lb_mode *cmd =
++		(struct i40e_aqc_set_lb_mode *)&desc.params.raw;
++
++	i40e_fill_default_direct_cmd_desc(&desc, i40e_aqc_opc_set_lb_modes);
++	if (ena_lpbk)
++		cmd->lb_mode = cpu_to_le16(I40E_AQ_LB_MAC_LOCAL);
++
++	return i40e_asq_send_command(hw, &desc, NULL, 0, cmd_details);
++}
++
+ /**
+  * i40e_aq_set_phy_debug
+  * @hw: pointer to the hw struct
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 1a1fab94205d..f134ae9169d7 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -12919,6 +12919,28 @@ static void i40e_clear_rss_lut(struct i40e_vsi *vsi)
+ 	}
+ }
+ 
++/**
++ * i40e_set_loopback - turn on/off loopback mode on underlying PF
++ * @vsi: ptr to VSI
++ * @ena: flag to indicate the on/off setting
++ */
++static int i40e_set_loopback(struct i40e_vsi *vsi, bool ena)
++{
++	bool if_running = netif_running(vsi->netdev);
++	int ret;
++
++	if (if_running && !test_and_set_bit(__I40E_VSI_DOWN, vsi->state))
++		i40e_down(vsi);
++
++	ret = i40e_aq_set_mac_loopback(&vsi->back->hw, ena, NULL);
++	if (ret)
++		netdev_err(vsi->netdev, "Failed to toggle loopback state\n");
++	if (if_running)
++		i40e_up(vsi);
++
++	return ret;
++}
++
+ /**
+  * i40e_set_features - set the netdev feature flags
+  * @netdev: ptr to the netdev being adjusted
+@@ -12959,6 +12981,10 @@ static int i40e_set_features(struct net_device *netdev,
+ 	if (need_reset)
+ 		i40e_do_reset(pf, I40E_PF_RESET_FLAG, true);
+ 
++	if (features & NETIF_F_LOOPBACK)
++		if (i40e_set_loopback(vsi, !!(features & NETIF_F_LOOPBACK)))
++			return -EINVAL;
++
+ 	return 0;
+ }
+ 
+@@ -13721,7 +13747,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+ 	if (!(pf->flags & I40E_FLAG_MFP_ENABLED))
+ 		hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
+ 
+-	netdev->hw_features |= hw_features;
++	netdev->hw_features |= hw_features | NETIF_F_LOOPBACK;
+ 
+ 	netdev->features |= hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_prototype.h b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+index ebdcde6f1aeb..9a71121420c3 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_prototype.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+@@ -105,6 +105,9 @@ enum i40e_status_code i40e_aq_set_phy_config(struct i40e_hw *hw,
+ 				struct i40e_asq_cmd_details *cmd_details);
+ enum i40e_status_code i40e_set_fc(struct i40e_hw *hw, u8 *aq_failures,
+ 				  bool atomic_reset);
++i40e_status i40e_aq_set_mac_loopback(struct i40e_hw *hw,
++				     bool ena_lpbk,
++				     struct i40e_asq_cmd_details *cmd_details);
+ i40e_status i40e_aq_set_phy_int_mask(struct i40e_hw *hw, u16 mask,
+ 				     struct i40e_asq_cmd_details *cmd_details);
+ i40e_status i40e_aq_clear_pxe_mode(struct i40e_hw *hw,
 -- 
-Dominique
-
+2.34.1
 
