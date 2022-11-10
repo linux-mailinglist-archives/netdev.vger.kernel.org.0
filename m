@@ -2,102 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F266623E53
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 10:12:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 128E2623E52
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 10:11:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiKJJMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 04:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
+        id S229727AbiKJJLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 04:11:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiKJJMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 04:12:00 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E0269DF2
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 01:11:56 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id v27so2130017eda.1
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 01:11:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=timesys-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HatXbN02WnkWWa743XuxxCmNp7tmlfah7GOKGkEZ69A=;
-        b=1HiA71OitIb/yQFMYq56gx+qIDWAgUPoBBoDlpQ2JHqTQsC1bHfem9YVPHcxVQZd+0
-         xqa/i+IlMjYw+MinncP+B3FoPBy/B9D2Bl8gaEKyWZwkxIT4AUO5a/lsFJ7VqJim/gfj
-         RD/hoiudK63Pclg72Guc2Fsn1HA8CEWOvo4mocSI2Cti0xOvWAtK/p42yLfopMNIPVIr
-         MzwFkf3x+vTSuC/sSlFLGFEKCdiUdVM65HbeETMYu6I/j0fr7M2r0+5AdkWgeZJXuu79
-         ZS8eztzkBh5ZJc4b2zkISSxrEls0H3OkXQF5+hhepmT4ACkh7ifjBvwp3zTmOtNMpWGr
-         jmPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HatXbN02WnkWWa743XuxxCmNp7tmlfah7GOKGkEZ69A=;
-        b=oBO9upf8au044crjfj8PwYfdNAxEd1mhXBaQQA9IHKHoThM8GGcSt4IqUjlUJELdaF
-         cIoP5b69DwFWzhM1D2p6bwLGUOU7VETkblZpo2kn9Vej4B+/r5WRIdMyy7P/p41R2ABy
-         dwuAkl/yberKzg4/Bb/ArPg88WPABlV0dCC4Ix95zC7OGRKfTPm2dciNm87LQRbI29al
-         d4x/+Nqz8TVFDTouSsEdsRao6KGz+f6MmHWiFwHS8QrIvdmcUirOzcHe3IyU5tqFJMBV
-         lxLkRshB/S1lx7h+Oi2ZzNhi92z94d9QJccCA2B+GuHsewSpPso3H3Fk3NiizJqbsnee
-         MwWw==
-X-Gm-Message-State: ACrzQf1dicL+iALPK0DaQSyeZRiOXisBJ7GLnXVr1B5n2yhBW8yFvULQ
-        lV41hh7eS/xnwwNtESUjbbjZZA==
-X-Google-Smtp-Source: AMsMyM4fpyqW25ybtT2VTxJ+vwNxdmsQhC8inxXZ7tZyPX19djs8w8p+yJV+e568OJlxzwRe64Hr9Q==
-X-Received: by 2002:a05:6402:1cc1:b0:453:1517:94e4 with SMTP id ds1-20020a0564021cc100b00453151794e4mr62554882edb.399.1668071514849;
-        Thu, 10 Nov 2022 01:11:54 -0800 (PST)
-Received: from localhost.localdomain (host-87-8-57-39.retail.telecomitalia.it. [87.8.57.39])
-        by smtp.gmail.com with ESMTPSA id rk7-20020a170907214700b0078dce9984afsm6927100ejb.220.2022.11.10.01.11.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 01:11:54 -0800 (PST)
-From:   Angelo Dureghello <angelo.dureghello@timesys.com>
-To:     andrew@lunn.ch, vivien.didelot@gmail.com
-Cc:     netdev@vger.kernel.org,
-        Angelo Dureghello <angelo.dureghello@timesys.com>
-Subject: [PATCH v2] net: dsa: mv88e6xxx: enable set_policy
-Date:   Thu, 10 Nov 2022 10:10:27 +0100
-Message-Id: <20221110091027.998073-1-angelo.dureghello@timesys.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229698AbiKJJLr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 04:11:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BC1D2FD
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 01:11:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24FEAB820F6
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 09:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2979BC433C1;
+        Thu, 10 Nov 2022 09:11:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668071503;
+        bh=CZqszmJLLxfuHOASjxSp7Z+6shf0nMlQo2VwpH0Y6kc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Cqlp5egVVBr7CRiMdgiPMZ3gS+2v/lyLnhAEgx0IX7FQkynJoe4d7z8I3+8C1+eYz
+         411rL9BEhS85mgj3CU+fK8i/ozvTq4y4wnxgEUUHqbjkVeRE6d4sIkYZH5nIZz3btZ
+         x4gJC5yA0d2FXwRgwa9zcCcIq4KkkqvlwlrlKB0hsAxTlHtj3bV5LNMcDtezTuwcmK
+         uSE2s11gKk3JDQyjWzAhdD0gK7IUut7Bkz7iGEIt+coSlcQ4NRFq6HJtM3x87xzL1S
+         33PFA11jukgV/nmmPzE3YPuwq0m1umQIPoQhHASHbkbD4hoy5p+rlQG8SUGFL4WPOe
+         W1Z4Bp1IJhCZQ==
+Date:   Thu, 10 Nov 2022 11:11:38 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>
+Subject: Re: [PATCH net-next v1] ethtool: ethtool_get_drvinfo: populate
+ drvinfo fields even if callback exits
+Message-ID: <Y2zASloeKjMMCgyw@unreal>
+References: <20221108035754.2143-1-mailhol.vincent@wanadoo.fr>
+ <Y2vozcC2ahbhAvhM@unreal>
+ <20221109122641.781b30d9@kernel.org>
+ <CAMZ6Rq+K6oD9auaNzt1kJAW0nz9Hs=ODDvOiEaiKi2_1KVNA8g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZ6Rq+K6oD9auaNzt1kJAW0nz9Hs=ODDvOiEaiKi2_1KVNA8g@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enabling set_policy capability for mv88e6321.
+On Thu, Nov 10, 2022 at 05:34:55PM +0900, Vincent MAILHOL wrote:
+> On Thu. 10 nov. 2022 at 05:26, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Wed, 9 Nov 2022 19:52:13 +0200 Leon Romanovsky wrote:
+> > > On Tue, Nov 08, 2022 at 12:57:54PM +0900, Vincent Mailhol wrote:
+> > > > If ethtool_ops::get_drvinfo() callback isn't set,
+> > > > ethtool_get_drvinfo() will fill the ethtool_drvinfo::name and
+> > > > ethtool_drvinfo::bus_info fields.
+> > > >
+> > > > However, if the driver provides the callback function, those two
+> > > > fields are not touched. This means that the driver has to fill these
+> > > > itself.
+> > >
+> > > Can you please point to such drivers?
+> >
+> > What you mean by "such drivers" is not clear from the quoted context,
+> > at least to me.
+> 
+> An example:
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/broadcom/bnx2.c#L7041
+> 
+> This driver wants to set fw_version but needs to also fill the driver
+> name and bus_info. My patch will enable *such drivers* to only fill
+> the fw_version and delegate the rest to the core.
 
-Signed-off-by: Angelo Dureghello <angelo.dureghello@timesys.com>
+Sorry for being misleading, It looks like I typed only part of the sentence
+which I had in my mind. I wanted to see if any driver exists which prints
+drv_name and bus_info different from default.
 
----
-Changes for v2:
-- enable set_policy also for mv88e6320, since of same family.
----
- drivers/net/dsa/mv88e6xxx/chip.c | 2 ++
- 1 file changed, 2 insertions(+)
+> 
+> > > One can argue that they don't need to touch these fields in a first
+> > > place and ethtool_drvinfo should always overwrite them.
+> >
+> > Quite likely most driver prints to .driver and .bus_info can be dropped
+> > with this patch in place. Then again, I'm suspecting it's a bit of a
+> > chicken and an egg problem with people adding new drivers not having
+> > an incentive to add the print in the core and people who want to add
+> > the print in the core not having any driver that would benefit.
+> > Therefore I'd lean towards accepting Vincent's patch as is even if
+> > the submission can likely be more thorough and strict.
+> 
+> If we can agree that no drivers should ever print .driver and
+> .bus_info, then I am fine to send a clean-up patch to remove all this
+> after this one gets accepted. However, I am not willing to invest time
+> for nothing. So would one of you be ready to sign-off such a  clean-up
+> patch?
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 2479be3a1e35..3cbe02aa8018 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5031,6 +5031,7 @@ static const struct mv88e6xxx_ops mv88e6320_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
- 	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
-@@ -5075,6 +5076,7 @@ static const struct mv88e6xxx_ops mv88e6321_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
- 	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
--- 
-2.38.1
+I will be happy to see such patch and will review it, but can't add sign-off
+as I'm not netdev maintainer.
 
+Thanks
