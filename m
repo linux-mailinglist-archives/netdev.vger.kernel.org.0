@@ -2,138 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43D16624DA3
-	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:31:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 586E1624DA6
+	for <lists+netdev@lfdr.de>; Thu, 10 Nov 2022 23:33:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbiKJWbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 17:31:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41044 "EHLO
+        id S231521AbiKJWdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 17:33:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiKJWbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:31:13 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E20F56554;
-        Thu, 10 Nov 2022 14:31:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ckYAbxaJX0FE8Tra3HuW7LsP7t9ODhY0IvtR+ncmsgw=; b=ovhF5zrWCtYwRWd0map5L3rP9S
-        ULuwT6k3vz7XX9YcVnv00raZit9RjhuDzHvp8RtGfApuIYgsm968LEldgM7IbE4U4seuynQcE0rox
-        633dO+HcsRyvID8hubiuWBcJDQWu7ZQVNOlWRY/1SSBTV+f7jVZU+IVRwdOkPxQMPCUA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1otG4A-0024Zo-7g; Thu, 10 Nov 2022 23:30:34 +0100
-Date:   Thu, 10 Nov 2022 23:30:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tcp: Add listening address to SYN flood message
-Message-ID: <Y217ikkZzXKKGix4@lunn.ch>
-References: <f847459dc0a0e2d8ffa1d290d06e0e4a226a6f39.1668075479.git.jamie.bainbridge@gmail.com>
- <Y20Bxc1gQ8nrFsvA@lunn.ch>
- <CAAvyFNg1F8ixrgy0YeL-TT5xLmk8N7dD=ZMLQ6VxsjHb_PU9bg@mail.gmail.com>
+        with ESMTP id S231414AbiKJWdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 17:33:12 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEA656554;
+        Thu, 10 Nov 2022 14:33:11 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id e7-20020a17090a77c700b00216928a3917so6179632pjs.4;
+        Thu, 10 Nov 2022 14:33:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8gY/OzJoPnw06nvF/ax1dzsyttFIg/d8ctj7MuL258E=;
+        b=M+4u4lcZ0g8mC7ch0OT4x5PLDybVoticZj3bC8HjO0tdR+1iL639F8CnsHSzkCO75v
+         xq+TTSX9X81HBms18pplxiyp73xjplqMJyC8NOu2cLnB+Pv1TUaLwYu92VpnUs1lta57
+         +TKvsOynQ7nkn3rHnIAm08/WyKt7pjRXcLsbA2pWt6xXpSEOX4/1uLNz7Wm6CXiKhBkP
+         Q1kBOIwCb5EEKVJsYP/jf2GoNVtIfEk3aiwiZ/RMufstZm3QXYX5POHepKlBZQ8O25yN
+         ifLSDAFG1y3pzyqP+q0ANwOqz7EBlx2rvM9koKUZAD5x934+tzva5HcE4lZvf0Q5eIQ+
+         mjgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8gY/OzJoPnw06nvF/ax1dzsyttFIg/d8ctj7MuL258E=;
+        b=NaxemziIDgA7cIDlyhp8yS/Gy3Vklm5aDHurpmGCvnWd0STmNruzw3BxsoBV1MJJxC
+         n8tFl43GraN3rqmhlBcP6tIpvGDUNVgtFGo+i8txmfzVjQB4KbTdjq60D5I2c1K0NHb7
+         u5ZoI6l8ObwT9VhHtHlw3RDbRc7iW4kBfL+EPAF7HmQ2hHCUgZ9DkVbhumVL7c0C1zcn
+         I/qzOjo6L1sWKFDPhemNcFjRtpardepaxuqHTuGWgcL3e9mjIENNf49XJuh7YbTQg3ML
+         4VRAQ9fx0kl7uIYB3loX680yncrTbq5AifwTsaieby2r1L/1zryam8rCMdtzrPpCG/+I
+         HpPQ==
+X-Gm-Message-State: ACrzQf2GFSFUT9JcySnmIYqt1v2CTHsS6k2sLBMzYGEhDPaDUhViy5G9
+        K/v2RKrp1v0RJTzx0Y7oZLY=
+X-Google-Smtp-Source: AMsMyM4uxqy0CAq22wSngxYpEuQrP/za0C3jljiPdLH6FvdkUTfDrtGBxiG84ErK0aCiPHpUkUU35g==
+X-Received: by 2002:a17:90a:8503:b0:212:9b3f:dee5 with SMTP id l3-20020a17090a850300b002129b3fdee5mr2317401pjn.62.1668119590803;
+        Thu, 10 Nov 2022 14:33:10 -0800 (PST)
+Received: from google.com ([2620:15c:9d:2:2eb5:1c59:61e8:a36d])
+        by smtp.gmail.com with ESMTPSA id l5-20020a170903120500b00186727e5f5csm164375plh.248.2022.11.10.14.33.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 14:33:09 -0800 (PST)
+Date:   Thu, 10 Nov 2022 14:33:06 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Balamanikandan Gunasundar 
+        <balamanikandan.gunasundar@microchip.com>,
+        ludovic.desroches@microchip.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, 3chas3@gmail.com,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH] mmc: atmel-mci: Convert to gpio descriptors
+Message-ID: <Y218Itfc4wp3XZvt@google.com>
+References: <20221109043845.16617-1-balamanikandan.gunasundar@microchip.com>
+ <CAPDyKFo+FUAZ=1Vu4+503ch5_Wrw47BanTjdB=7J8XhRwczyqg@mail.gmail.com>
+ <CACRpkdYeJ0NuJr_RF10oMAEuhYTBfaLfHoZ=b3A2f4BqXkvzOQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAvyFNg1F8ixrgy0YeL-TT5xLmk8N7dD=ZMLQ6VxsjHb_PU9bg@mail.gmail.com>
+In-Reply-To: <CACRpkdYeJ0NuJr_RF10oMAEuhYTBfaLfHoZ=b3A2f4BqXkvzOQ@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 11, 2022 at 08:20:18AM +1100, Jamie Bainbridge wrote:
-> On Fri, 11 Nov 2022 at 00:51, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Thu, Nov 10, 2022 at 09:21:06PM +1100, Jamie Bainbridge wrote:
-> > > The SYN flood message prints the listening port number, but on a system
-> > > with many processes bound to the same port on different IPs, it's
-> > > impossible to tell which socket is the problem.
-> > >
-> > > Add the listen IP address to the SYN flood message. It might have been
-> > > nicer to print the address first, but decades of monitoring tools are
-> > > watching for the string "SYN flooding on port" so don't break that.
-> > >
-> > > Tested with each protcol's "any" address and a host address:
-> > >
-> > >  Possible SYN flooding on port 9001. IP 0.0.0.0.
-> > >  Possible SYN flooding on port 9001. IP 127.0.0.1.
-> > >  Possible SYN flooding on port 9001. IP ::.
-> > >  Possible SYN flooding on port 9001. IP fc00::1.
-> > >
-> > > Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-> > > ---
-> > >  net/ipv4/tcp_input.c | 16 +++++++++++++---
-> > >  1 file changed, 13 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > > index 0640453fce54b6daae0861d948f3db075830daf6..fb86056732266fedc8ad574bbf799dbdd7a425a3 100644
-> > > --- a/net/ipv4/tcp_input.c
-> > > +++ b/net/ipv4/tcp_input.c
-> > > @@ -6831,9 +6831,19 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
-> > >               __NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPREQQFULLDROP);
-> > >
-> > >       if (!queue->synflood_warned && syncookies != 2 &&
-> > > -         xchg(&queue->synflood_warned, 1) == 0)
-> > > -             net_info_ratelimited("%s: Possible SYN flooding on port %d. %s.  Check SNMP counters.\n",
-> > > -                                  proto, sk->sk_num, msg);
-> > > +         xchg(&queue->synflood_warned, 1) == 0) {
-> > > +#if IS_ENABLED(CONFIG_IPV6)
-> > > +             if (sk->sk_family == AF_INET6) {
-> >
-> > Can the IS_ENABLED() go inside the if? You get better build testing
-> > that way.
-> >
-> >      Andrew
+Hi,
+
+On Wed, Nov 09, 2022 at 03:48:32PM +0100, Linus Walleij wrote:
+> On Wed, Nov 9, 2022 at 1:39 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> > On Wed, 9 Nov 2022 at 05:39, Balamanikandan Gunasundar
+> (...)
+> > > --- a/drivers/mmc/host/atmel-mci.c
+> > > +++ b/drivers/mmc/host/atmel-mci.c
+> > > @@ -19,7 +19,8 @@
+> > >  #include <linux/module.h>
+> > >  #include <linux/of.h>
+> > >  #include <linux/of_device.h>
+> > > -#include <linux/of_gpio.h>
+> > > +#include <linux/irq.h>
+> > > +#include <linux/gpio/consumer.h>
 > 
-> Are you sure? Why would the IS_ENABLED() be inside of a condition
-> which isn't compiled in? If IPv6 isn't compiled in then the condition
-> would never evaluate as true, so seems pointless a pointless
-> comparison to make? People not compiling in IPv6 have explicitly asked
-> *not* to have their kernel filled with a bunch of "if (family ==
-> AF_INET6)" haven't they?
+> This is nice, but higher up the driver also #include <linux/gpio.h>
+> so delete that line too, <linux/gpio/consumer.h> should be enough.
 > 
-> There are many other examples of this pattern of "IS_ENABLED()" first
-> and "if (family == AF_INET6)" inside it, but I can't see any of the
-> inverse which I think you're suggesting, see:
+> > > -                       of_get_named_gpio(cnp, "cd-gpios", 0);
+> > > +                       devm_gpiod_get_from_of_node(&pdev->dev, cnp,
+> > > +                                                   "cd-gpios",
+> > > +                                                   0, GPIOD_IN, "cd-gpios");
+> (...)
+> > >                 pdata->slot[slot_id].wp_pin =
+> > > -                       of_get_named_gpio(cnp, "wp-gpios", 0);
+> > > +                       devm_gpiod_get_from_of_node(&pdev->dev, cnp,
+> > > +                                                   "wp-gpios",
+> > > +                                                   0, GPIOD_IN, "wp-gpios");
 > 
->  grep -C1 -ERHn "IS_ENABLED\(CONFIG_IPV6\)" net | grep -C1 "family == AF_INET6"
+> Hm. Dmitry is trying to get rid of of_get_named_gpio() I think.
 > 
-> Please let me know if I've misunderstood?
+> But I suppose we can migrate to fwnode later.
 
-So what i'm suggesting is
+I'd much rather we changed this right away to
 
-               if (IS_ENABLED(CONFIG_IPV6) && sk->sk_family == AF_INET6) {
-                       net_info_ratelimited("%s: Possible SYN flooding on port %d. IP %pI6c. %s.  Check SNMP counters.\n",
-                                       proto, sk->sk_num,
-                                       &sk->sk_v6_rcv_saddr, msg);
-		}
+	devm_fwnode_gpiod_get(&pdev->dev, of_fwnode_handle(cnp),
+			      "wp", GPIOD_IN, "wp-gpios");
 
-The IS_ENABLED(CONFIG_IPV6) will evaluate to 0 at compile time, and
-the optimiser will throw away the whole lot since it can never be
-true. However, before the code gets to the optimiser, it first needs
-to compile. It will check you have the correct number of parameters
-for the string format, do the types match, do the structure members
-exist, etc. Anybody doing compile testing of a change, and they have
-IPV6 turned off, has a chance off getting errors reported when they
-have actually broken IPV6, but don't know it, because they are not
-compiling it.
+and not added new users of devm_gpiod_get_from_of_node() which is there
+only 2 left.
 
-Now, IPV6 is one of those big options which i expect 0-day tests quite
-regularly. Using IF_ENABLED() like this brings more benefit from less
-used options which gets very little build testing, and so are often
-broke until somebody like Arnd runs builds with lots of random
-configs.
+Thanks!
 
-	Andrew
+-- 
+Dmitry
