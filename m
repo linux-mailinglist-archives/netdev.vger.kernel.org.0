@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F10606264A3
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 23:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C53096264A7
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 23:33:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234593AbiKKWb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 17:31:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
+        id S234337AbiKKWdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 17:33:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiKKWbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 17:31:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB1B56EC8;
-        Fri, 11 Nov 2022 14:31:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DED0B8281D;
-        Fri, 11 Nov 2022 22:31:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 036FBC433D7;
-        Fri, 11 Nov 2022 22:31:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668205878;
-        bh=RRxaeTg8Mv/o5Iwk8msvrvuRmEkkCophftg8hfGQADc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WSY7yio6XCWk01QsWkv3y29TpD9vTryvMLmoEcCdX7nR33x1GfeKBuzj6zQu2B5Rx
-         qLD8lsydoH88UswF5ajnIx/HBQej59HtSz9Aqphb0C5xsso8IoEgeKkyQ+fPDZmuQE
-         fFnaGIYZr8NG5I2z1+aKGtNQ0IrbtOwfzIohH3r8fXGWW1sfzNgK4XupJQVPaBAbW1
-         hyL0eotYbYZZ3gCS4dN/kwhzhQ4GhFNbCF4zakTpQGdty5iLjlBwLwKArciJuJEMoc
-         2sRpBlWxgz7UGDFpvlZ6dTKp06uLAE497D2UHNJ1Lo2EVlG3WBc36MRachFuvv3WTi
-         +GB5Nvb0DJJhw==
-Date:   Fri, 11 Nov 2022 14:31:17 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     zhang.songyi@zte.com.cn, saeedm@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        kliteyn@nvidia.com, shunh@nvidia.com, rongweil@nvidia.com,
-        valex@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jiang.xuexin@zte.com.cn, xue.zhihong@zte.com.cn
-Subject: Re: [PATCH linux-next] net/mlx5: remove redundant ret variable
-Message-ID: <Y27NNTSc3N222DWK@x130.lan>
-References: <202211022150403300510@zte.com.cn>
- <Y2gDaRc3t7WiWoTT@unreal>
+        with ESMTP id S233593AbiKKWdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 17:33:15 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DDF532C4
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 14:33:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=+yl5rA4VN4nRclevK05XLn57nQof4kGkLjMGHSupeTY=; b=iUuROgoQMoyKIVsZV1a2AGh6qT
+        oXPsxDEAX0Q+WrYLPMofRLogLIgDaaMtlC3ti5vNZUn7FXG66eTxHdHjkeVSQkjfOC1dznv4iBM9Q
+        IQAh0AkqdgPqLjjvDP7ipf3FmTTtwM7wQrAAkm+VBBAn8bNH24XSYxN5+gagd95eum45VtBclChpL
+        fUcPu6ICuU8+Jb4mJqs/u0Y8ecgkEBneT5Gil5gTFvZAvfqQAONtzBp+Me7gT7pf9ShYt0zjXF6r4
+        JsRSwHIZvHAXoHu2LbXnds3wcblasPbhN8rojAWVUDHSlPPaKi5gP9hzZlw5cu/88O9jkjbTu0Xh/
+        39aYWchQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35222)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1otcaC-0007Cs-Ts; Fri, 11 Nov 2022 22:33:08 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1otcaA-0007uy-Tk; Fri, 11 Nov 2022 22:33:06 +0000
+Date:   Fri, 11 Nov 2022 22:33:06 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Tim Harvey <tharvey@gateworks.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: status of rate adaptation
+Message-ID: <Y27Nopmvmwlz6KGw@shell.armlinux.org.uk>
+References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
+ <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com>
+ <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
+ <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
+ <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y2gDaRc3t7WiWoTT@unreal>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06 Nov 20:56, Leon Romanovsky wrote:
->On Wed, Nov 02, 2022 at 09:50:40PM +0800, zhang.songyi@zte.com.cn wrote:
->> From 74562e313cf9a1b96c7030f27964f826a0c2572d Mon Sep 17 00:00:00 2001
->> From: zhang songyi <zhang.songyi@zte.com.cn>
->> Date: Wed, 2 Nov 2022 20:48:08 +0800
->> Subject: [PATCH linux-next] net/mlx5: remove redundant ret variable
->
->Subject line should be "[PATCH net-next] ..." for all net patches.
->And please use git send-email utility to send the patches.
->
->Thanks
+On Fri, Nov 11, 2022 at 04:54:40PM -0500, Sean Anderson wrote:
+> I wonder if you could enable USXGMII? Seems like mvpp2 with comphy
+> should support it. I'm not sure if the aquantia driver is set up for it.
 
-Also this patch doesn't apply to net-next.
+mvpp2 doesn't support USXGMII.
 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
