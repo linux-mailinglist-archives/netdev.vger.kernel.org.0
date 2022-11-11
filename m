@@ -2,82 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDDE625CC0
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 15:17:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 706FD625CDD
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 15:22:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234452AbiKKORs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 09:17:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
+        id S234355AbiKKOWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 09:22:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234802AbiKKOR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 09:17:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0770F77E65
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 06:07:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668175630;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/1kqvx/TCJioVJv3sqoz1vDOCznyEOs7iv66tfLat94=;
-        b=KhWORnNwyzSLXbFTgx0nagQXOA9fXF6oG7v2HWluhcCDawDOqD9gO2RpYkW2pycUSd40f0
-        s9ZFPrJ/n1A6lT5xTJn8znpu/tvW2y++Fvh1BiIzBzHpjev8wp0VoWWxao2evlJoTx3jRn
-        73DQEw2Thf38GqlaEyu2gnX0mhkWsy0=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-473-YhwCchsgN9a7rwmYToByNw-1; Fri, 11 Nov 2022 09:07:06 -0500
-X-MC-Unique: YhwCchsgN9a7rwmYToByNw-1
-Received: by mail-ej1-f72.google.com with SMTP id gt15-20020a1709072d8f00b007aaac7973fbso3106080ejc.23
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 06:07:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/1kqvx/TCJioVJv3sqoz1vDOCznyEOs7iv66tfLat94=;
-        b=Na6NHKEeKceDi56R97gYU6NHGNIHLBVkl+rKDkJgSfH7sQ0sF/Kz+fuccendmsOzf+
-         uiATIJUPJUU3EPI03IjKQ8EFD7rMgy/2NzqP8faLewgOwhXaS1IgQUZRkmLAGf0AyX1e
-         a1sbzpAA4+cX+7UJSR5HYCXK3ZDToBIawwL732EANleuK9b4sh2AD6+RLSwknAleT+aB
-         7s/FrxnxMo8yLqmu6KtJSvpUGRZ+KGWwvFCH+HLF+CRuCv4RhJYIHWAuTXWl6rG1VGy2
-         1WYW5NSasWkxlVEuEK4wzPCkUFdUmaZOD+BqRj9nXzSDeMjxElv5EXX6GWOJYzqOs4Xl
-         8hFA==
-X-Gm-Message-State: ANoB5pkTKJ1VPDVhfsXPUjaj4DD79SshM4YweZiGX8ZSRgi1YcdkGKum
-        tSsmjGRugmhKbQckIWs8iw1g+K1R7Y1C2hPoA3fYPzvnCybDQq00+Gi7c8AlvzfjNVL6b61TFxt
-        /NV/4W2ka0zQuhT+thS1Us1PJ+4ykJbPa
-X-Received: by 2002:a17:906:a86:b0:78a:d0a4:176 with SMTP id y6-20020a1709060a8600b0078ad0a40176mr1934315ejf.720.1668175625556;
-        Fri, 11 Nov 2022 06:07:05 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7RpcvGYoOkq2SlOsaZnbim58u/OIo21A+1PAPSetB58Xu4eu/3o4sh4HMYEKwicBvWo0DQsr9q/Bv/THiiuac=
-X-Received: by 2002:a17:906:a86:b0:78a:d0a4:176 with SMTP id
- y6-20020a1709060a8600b0078ad0a40176mr1934284ejf.720.1668175625164; Fri, 11
- Nov 2022 06:07:05 -0800 (PST)
+        with ESMTP id S234397AbiKKOWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 09:22:32 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACC177E58
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 06:18:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gJ2L+2qzwinq/7x9iJJ+0XMuPbyl6QgevTu5fcCRI/PfiE8MpuwLTxo6gPSZikvROXrcL1eztiacp78AbGQucYBt95eU9Q6m0KXWFxmCR6IMgOjj8afhAu5yEFA5C9xmCTLt4NmK9sCD18ch5wcLHPY5o48Rou53HdHnPN2LupnQF2OW5ChviLB2kEa6SuVHx8rPnzhJe0BS2N4GG9ZKNkCAOvisZK+OR8yFGOGTkuQaHmPlZxfMoPylZl54BO1fZ0U7orKdd9SDhZZILoyYKPTAIDaxTwflVADYcbGfOJnxri/5WmzpZeFv6lz4JpnSeHGBau/KpwpK+0cikBF7/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xCDeghhatpJEU2Wr9Hp+3MTkGX6jEdLWjXE0qolLaqE=;
+ b=OHtaPpwjIyqNKgYVJ7N1euhhmYvBLxBQLBe45xldl4acwn8WXY4orUULMQis/eX26zZTks4kJdpFzsORzv4wuk+QuRDGw89yV8SNrVVKLMze+otNdPV72DQWBs+42m3gQxmWqvmD8V0lv3vJmctiR4NyREBq6gn3xvVoY21KBn9qX+Kb+n72WIi8TfK8rfvBVx2Zc9fx7VIikYSWwLShQf6vExetAgZ2Q+P6B8g9+yn5GFKeOJVWulzeWxuX389zQVsHe2mwzrJxi5DKrfhrvEw04vLfDfDS1ZPT0Od49Cmr2X1LT2RikJpLPsQJRb69nof23iutkjYAlK8NCKaeqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xCDeghhatpJEU2Wr9Hp+3MTkGX6jEdLWjXE0qolLaqE=;
+ b=cOguf9Xy6O8mOkc0HBkCHajmgZNYxRvZX+2baV2KMnP9HdPYFE4ZzB923Q8yXmYwbZGH1AN6LOhcjumkbqXE+l1JLv82rI3mb69xTJ1vkfqGfM4F/tHUvNNtUtcLp7/rs5HknVzBsHipum0HkhcIY8u8sscoEUWPxxdc38OrJj4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM6PR12MB4497.namprd12.prod.outlook.com (2603:10b6:5:2a5::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 11 Nov
+ 2022 14:18:02 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5813.013; Fri, 11 Nov 2022
+ 14:18:02 +0000
+Message-ID: <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
+Date:   Fri, 11 Nov 2022 08:18:00 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v2 net 1/1] amd-xgbe: fix active cable
+To:     Thomas Kupper <thomas@kupper.org>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Raju Rangoju <Raju.Rangoju@amd.com>
+References: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
+Content-Language: en-US
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SN7PR04CA0114.namprd04.prod.outlook.com
+ (2603:10b6:806:122::29) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-References: <f60d7e94-795d-06fd-0321-6972533700c5@sberdevices.ru> <20221111134715.qxgu7t4c7jse24hp@sgarzare-redhat>
-In-Reply-To: <20221111134715.qxgu7t4c7jse24hp@sgarzare-redhat>
-From:   Stefano Garzarella <sgarzare@redhat.com>
-Date:   Fri, 11 Nov 2022 15:06:42 +0100
-Message-ID: <CAGxU2F4-gN5gnH8B1eX23OFYLHiUh_eLWx8NH8Vaxb=j7=h8oA@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 00/11] virtio/vsock: experimental zerocopy receive
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|DM6PR12MB4497:EE_
+X-MS-Office365-Filtering-Correlation-Id: c98c75dc-f518-44d6-8f6a-08dac3ef8b23
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1xSjMzHLNFZqF2iroDf/88vG27aqfBySKW8C0+iw3FGd0pr/7tiEfxP94yO1IKeqwAPw0TNLQri8DCGorktcvULDrNGoZI4/hFSYMmeRnPMetXgB8RrCz3TMnoKeZWFblOCgJmDaNyVvpcgugnT7gownm+tkxNU7b7FF1CY/Ht4/1fjWys6jjLS8+l4ig14m2UnJnRiMNkHzVxAUkKNnPOaNYOQSD9yG63YKTHevuG7ITIQCmY6Jcf6or0fasR7zgj2LtEuWHYRfSXYGBKheha2VBH0lSZOr6NSriFmJ4EKp5L6xrcpyX/d90D5xat5DElfbD0WS4e+GP2dhVzR4DTv5GyMVRsAW3mYjBqx/YZJZ9e09Mv+xddbJs7SqvQJ42LnV2IPKy9dW8OI7brev7rHUlFObzudB9Ckbpz5+CjILW3xcms+0pbeVmhGux1V/WKWVJCXbHrkOXuSji77B04I0RNEx9J7AuOHKSBLKxZiV1+3lyznr9qtgAC3ulM69Y8e4cxfVWyL2+kUo3o/pwls7nvgaFMw9GD6oopxH2iGJk+BD49NdxZqglXYow0o9QOFmTqtqsXn+3VROMBE49U2ZPM/E2IxxJoj4JveAkFosZACXK7SImo0HzUP3cDPNq471Kxqw7S9UhWCESUd1BhEsgWIx3qK9pSfZ09CeKXhJb7vSf+bQnj3+rOf+SlNizysJ4uBAqXaxH1ElK9RRYhLDr/7yqjAnzjD0znOM3AcUfnfcOuzm3W1MXJ7vUJjj1tKZl9X28ZaipenbtJWSaGL92bW36ApaAaiKfAth+Qs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(376002)(396003)(366004)(451199015)(83380400001)(6486002)(8936002)(478600001)(41300700001)(5660300002)(2906002)(186003)(6506007)(316002)(38100700002)(4326008)(66476007)(8676002)(6512007)(36756003)(31686004)(26005)(86362001)(2616005)(66946007)(66556008)(31696002)(54906003)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q2crSUszT01ldEJjUkpVNkhXaGk5eGE4VkFtYmZEUC90cjRGOUxKZ1VCS3R3?=
+ =?utf-8?B?cFhFTkJIRWozM0xrbVZLaVU0UkNPWnJvQmx6dXl3bjRHRWh5aWt1bndqYmVy?=
+ =?utf-8?B?N3RSaHR2eU1wT3ZVQThWSWpaSEZNQlVCR2UzQTZ5bHhWSU9TOWhRb0lRWW1K?=
+ =?utf-8?B?U1p5Z2NvV09QSWxidVlVUHl5d0prM2VKeER2bnpWUEIwTDREVDE5N21jdC9K?=
+ =?utf-8?B?UWhxbEtSN1B1U3U1R0NLMEZRY1VWVzlxR1l1bEdKcktLVmQyMXdGVVlQYUd1?=
+ =?utf-8?B?SjN4L1FFQkJ4SkNpNXZLVzRNbWpZQm5EaGRaN2VRNmwwZkhWQnlqNDI1bVdn?=
+ =?utf-8?B?V2pITUxYMTVoemYzanVvV0pabDBKbE8yM05lVW43VkNhWW9iTjNNdkM4cTFh?=
+ =?utf-8?B?aWU1dVRuZ3BpNThyQzJEeXJXcC9TaHFoSlJ0a3NyR1VrUm9YazY3TWh5WSsx?=
+ =?utf-8?B?ZDRZSXQ4V3AzZTBPQ202VGdVYm1wWEZPSWNibWEyWXVYQXVubkFUdUt4L0xp?=
+ =?utf-8?B?N2VtUU5ta29OOC8yekVodjBDTjFVUnIreWt4VXBKWVNGZU4wSzlUNmhuQ0Jv?=
+ =?utf-8?B?cmJ0aWxrZHd1RVo1VjV0VUU2VVBaeC9xQ0FCb244NmlnMlVKRVZZZ0laWDdY?=
+ =?utf-8?B?bDFHRTBXQk9VN2dxZTRTZENMcnNGcmZmaDJPTDZiWG5PNDVRd1RSM05USzlV?=
+ =?utf-8?B?QUZ1M3A5MDUxdlZ4VFc5VStnRnF2SG9zbVJqOUZWcXlkK3FocjFmTzZXOWYx?=
+ =?utf-8?B?MUxBY29ZcEJLcW03a0ViaUoxbS9KYS9zdFFwaVNGejRqbksvZ0U4Tzdodnds?=
+ =?utf-8?B?V0pVTGtRamh4YlVMSXNNU1o2N0NVWHZpbE5VY1p6VVRlK08wNGtXSmN0YnBF?=
+ =?utf-8?B?em5ibkVWK1RJbDNOcFVuRHJXT0NPL3k1N25MNmtaVDloQlZoaUZtV0lLcTNI?=
+ =?utf-8?B?aVVGNXFiRHNzaDU2b0tQRUx1UnNSR1hlOWlTSjVWL2hpT0dVMCtoMGpzWUlD?=
+ =?utf-8?B?Vm5BS1NTWlVWcWpWZEFVRmRBK256NnNaWS90R01EVS92c3BaOURkaUxTaVJO?=
+ =?utf-8?B?S0RvVWhUSEUzMXloRWFlYk1tTkpXekozUHJrSjNPdWJhQ01NZXhLUC9kMnFJ?=
+ =?utf-8?B?Q0Y5eGx5d1RIYmtyWGtpUDh5UlFRbGNXWXhtTzFZZzk0UEFQRUo4TTRUSXRp?=
+ =?utf-8?B?aHIxVUdqbmhxdkRtTTh2Z0QzallNZDlNM21JN2JieVY5S2NJRXR0NGtibUxK?=
+ =?utf-8?B?dDFTSzYzM1VsU1cwVHNjSEM0RmdSTzRlVlA0ZzRrTDZyYzNzZnRXWUlVdnNG?=
+ =?utf-8?B?MXE2Vk1XeGhMbUVFc0duaGJwSGE2Q3kzN2Z2bUdJOTZsYWduNEdlWE9NczEr?=
+ =?utf-8?B?Zk0vOE14MC9sL1hYOVNvUWNmajRJN0ltN0lPWFQ2Z1NUWFdTTWdlMHc2Nm9O?=
+ =?utf-8?B?b1dxQlA4bG9MUUE2Um1wUTFOMGpSdXlRMkhYOEhEQ2t0RUhtV2IyOG93U3ZJ?=
+ =?utf-8?B?WlB3VHA3cGQwUkdSSVdPczM4SnowUWRBLzY3VVNwWFJxVTRGK242MHFDcjRH?=
+ =?utf-8?B?TDR2TkREV240VEh0eEhRVmh0d2k4T3VWRFIxN0Z2cEh5emdDVzlBM0hwbTNa?=
+ =?utf-8?B?OEpFMVZJdDJydUhRREtmdzlHYkg2RnZlekZ2eHFRY3d3SVZCMWR2dCtPRjFp?=
+ =?utf-8?B?UkczaDNBZlg0Q2NFYzk4cVdJdnJNaHZIVlMrdFBWRzJNU3U4NmI2c2lLbmlF?=
+ =?utf-8?B?biszNlFCYzdmNFBmZzM3MXRMbnpwSE5PckZlQnQ0VHkyekk1ZVoxTDhwU3RZ?=
+ =?utf-8?B?Q0Nza1I5RytNV00xNWlSdVZnampGNFNOMlkvYVFhZEZ1eWdrSEpudkZmbU44?=
+ =?utf-8?B?UHEzdk51Y1JPZDd6TGhTSm5NVCtCQ1dzSzlLSjRUaHFOU3JIMm1qVDZVYjQ0?=
+ =?utf-8?B?c1l0OUVCT2pWY0NYeXlxWjlMTzFpY0d1SWhEdWtmSTFIQytBNE1IZ1luMTl3?=
+ =?utf-8?B?SkdCNFlkb1l0SE9LeVEyRlhkN2d6N21DaGZMYmQ0ajk3UWJITCtrREFNVitC?=
+ =?utf-8?B?cC9aN0JmcVFZaWhaWWVsRVJXeldXNjhWN1JUdXA3dWVCSXRGVFhxaVFDKzd5?=
+ =?utf-8?Q?5rO8zSzrW4APY6TgD4S7B8POQ?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c98c75dc-f518-44d6-8f6a-08dac3ef8b23
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2022 14:18:02.7028
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DffbQwCuiuGkeLZw3pYs/2w/xhvFdsMWZQyrwlEytGh4oCBPiV9m4JVaBj5o3XzFIj1haZV2mK+Zwxg7Yys7oQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4497
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,374 +123,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 11, 2022 at 2:47 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> Hi Arseniy,
-> maybe we should start rebasing this series on the new support for
-> skbuff:
-> https://lore.kernel.org/lkml/20221110171723.24263-1-bobby.eshleman@bytedance.com/
->
-> CCing Bobby to see if it's easy to integrate since you're both changing
-> the packet allocation.
->
->
-> On Sun, Nov 06, 2022 at 07:33:41PM +0000, Arseniy Krasnov wrote:
-> >
-> >
-> >                              INTRODUCTION
-> >
-> >Hello,
-> >
-> >       This is experimental patchset for virtio vsock zerocopy receive.
-> >It was inspired by TCP zerocopy receive by Eric Dumazet. This API  uses
-> >same idea:call 'mmap()' on socket's descriptor,then call 'getsockopt()'
-> >to fill provided vma area with pages of virtio receive buffers.   After
-> >received data was processed by user, pages must be freed by 'madvise()'
-> >call with MADV_DONTNEED flag set(but if user will not call 'madvise()',
-> >next 'getsockopt()' will fail).
-> >
-> >                                 DETAILS
-> >
-> >       Here is how mapping with mapped pages looks exactly: first page
-> >contains information about mapped data buffers. At zero offset mapping
-> >contains special data structure:
-> >
-> >       struct virtio_vsock_usr_hdr_pref {
-> >              u32 poll_value;
-> >              u32 hdr_num;
-> >       };
-> >
-> >This structure contains two fields:
-> >'poll_value' - shows that current socket has data to read.When socket's
-> >intput queue is empty,  'poll_value' is set to 0 by kernel.  When input
-> >queue has some data, 'poll_value' is set to 1 by kernel. When socket is
-> >closed for data receive, 'poll_value' is ~0.This tells user that "there
-> >will be no more data,continue to call 'getsockopt()' until you'll  find
-> >'hdr_num' == 0".User spins on it in userspace, without calling 'poll()'
-> >system call(of course, 'poll()' is still working).
-> >'hdr_num' - shows number of mapped pages with data which starts from
-> >second page of this mappined.
-> >
-> >NOTE:
-> >   This version has two limitations:
-> >
-> >   1) One mapping per socket is supported.  It is implemented by adding
-> >      'struct page*' pointer to  'struct virtio_vsock' structure (first
-> >      page of mapping, which contains 'virtio_vsock_usr_hdr_pref').But,
-> >      I think, support for multiple pages could be implemented by using
-> >      something like hash table of such pages, or more simple, just use
-> >      first page of mapping as headers page by default. Also I think,
-> >      number of such pages may be controlled by 'setsockop()'.
-> >
-> >   2) After 'mmap()' call,it is impossible to call 'mmap()' again, even
-> >      after calling 'madvise()'/'munmap()' on the whole mapping.This is
-> >      because socket can't handle 'munmap()' calls(as there is no such
-> >      callback in 'proto_ops'),thus polling page exists until socket is
-> >      opened.
-> >
-> >After 'virtio_vsock_usr_hdr_pref' object,  first page contains array of
-> >trimmed virtio vsock packet headers (in contains only length of data on
-> >the corresponding page and 'flags' field):
-> >
-> >       struct virtio_vsock_usr_hdr {
-> >               uint32_t length;
-> >               uint32_t flags;
-> >       };
-> >
-> >Field  'length'  allows user to know  exact size of payload within each
-> >sequence of pages and field 'flags' allows  to  process SOCK_SEQPACKET
-> >flags(such as message bounds or record bounds).All other pages are data
-> >pages from virtio queue.
-> >
-> >                Page 0        Page 1      Page N
-> >
-> >       [ pref hdr0 .. hdrN ][ data ] .. [ data ]
-> >                |        |       ^           ^
-> >                |        |       |           |
-> >                |        *-------|-----------*
-> >                |                |
-> >                *----------------*
-> >
-> >       Of course, single header could represent array of pages (when
-> >packet's buffer is bigger than one page).So here is example of detailed
-> >mapping layout for some set of packages. Lets consider that we have the
-> >following sequence of packages:56 bytes, 4096 bytes and 8200 bytes. All
-> >pages: 0,1,2,3,4 and 5 will be inserted to user's vma.
-> >
-> >       Page 0: [[ pref ][ hdr0 ][ hdr 1 ][ hdr 2 ][ hdr 3 ] ... ]
-> >       Page 1: [ 56 ]
-> >       Page 2: [ 4096 ]
-> >       Page 3: [ 4096 ]
-> >       Page 4: [ 4096 ]
-> >       Page 5: [ 8 ]
-> >
-> >       Page 0 contains only array of headers:
-> >       'pref' is 'struct virtio_vsock_usr_hdr_pref'.
-> >       'hdr0' has 56 in length field.
-> >       'hdr1' has 4096 in length field.
-> >       'hdr2' has 8200 in length field.
-> >       'hdr3' has 0 in length field(this is end of data marker).
-> >
-> >       Page 1 corresponds to 'hdr0' and has only 56 bytes of data.
-> >       Page 2 corresponds to 'hdr1' and filled with data.
-> >       Page 3 corresponds to 'hdr2' and filled with data.
-> >       Page 4 corresponds to 'hdr2' and filled with data.
-> >       Page 5 corresponds to 'hdr2' and has only 8 bytes of data.
-> >
-> >        pref will be the following: poll_value = 1, hdr_num = 5
-> >
-> >       This patchset also changes packets allocation way: current uses
-> >only 'kmalloc()' to create data buffer.  Problem happens when we try to
-> >map such buffers  to user's vma - kernel  restricts to map  slab pages
-> >to user's vma(as pages of "not large" 'kmalloc()' allocations have flag
-> >PageSlab set and "not large" could be bigger than one page).So to avoid
-> >this, data buffers now allocated using 'alloc_pages()' call.
-> >
-> >                             DIFFERENCE WITH TCP
-> >
-> >       As this feature uses same approach as for TCP protocol,here are
-> >some difference between both version(from user's POV):
-> >
-> >1) For 'getsockopt()':
-> >   - This version passes only address of mapping.
-> >   - TCP passes special structure to 'getsockopt()'. In addition to the
-> >     address of mapping in contains 'length' and 'recv_skip_hint'.First
-> >     means size of data inside mapping(out param, set by kernel).Second
-> >     has bool type, if it is true, then user must dequeue rest of  data
-> >     using 'read()' syscall(e.g. it is out parameter also).
-> >2) Mapping structure:
-> >   - This version uses first page of mapping for meta data and rest of
-> >     pages for data.
-> >   - TCP version uses whole mapping for data only.
-> >3) Data layout:
-> >   - This version inserts virtio buffers to mapping, so each buffer may
-> >     be filled partially. To get size of payload in every buffer, first
-> >     mapping's page must be used(see 2).
-> >   - TCP version inserts pages of single skb.
-> >
-> >*Please, correct me if I made some mistake in TCP zerocopy description.
->
->
-> Thank you for the description. Do you think it would be possible to try
-> to do the same as TCP?
-> Especially now that we should support skbuff.
->
-> >
-> >                                TESTS
-> >
-> >       This patchset updates 'vsock_test' utility: two tests for new
-> >feature were added. First test covers invalid cases.Second checks valid
-> >transmission case.
->
-> Thank you, I really appreciate you adding new tests each time! Great
-> job!
->
-> >
-> >                            BENCHMARKING
-> >
-> >       For benchmakring I've created small test utility 'vsock_rx_perf'.
-> >It works in client/server mode.  When client connects to server, server
-> >starts sending specified amount of data to client(size is set as input
-> >argument). Client reads data and waits for next portion of it. In client
-> >mode, dequeue logic works in three modes: copy, zerocopy and zerocopy
-> >with user polling.
->
-> Cool, thanks for adding it in this series.
->
-> >
-> >1) In copy mode client uses 'read()' system call.
-> >2) In zerocopy mode client uses 'mmap()'/'getsockopt()' to dequeue data
-> >   and 'poll()' to wait data.
-> >3) In zerocopy mode + user polling client uses 'mmap()'/'getsockopt()',
-> >   but to wait data it polls shared page(e.g. busyloop).
-> >
-> >Here is usage:
-> >-c <cid>       Peer CID to connect to(if run in client mode).
-> >-m <megabytes> Number of megabytes to send.
-> >-b <bytes>     Size of RX/TX buffer(or mapping) in pages.
-> >-r <bytes>     SO_RCVLOWAT value in bytes(if run in client mode).
-> >-v <bytes>     peer credit.
-> >-s             Run as server.
-> >-z [n|y|u]     Dequeue mode.
-> >               n - copy mode. 1) above.
-> >               y - zero copy mode. 2) above.
-> >               u - zero copy mode + user poll. 3) above.
-> >
-> >Utility produces the following output:
-> >1) In server mode it prints number of sec spent for whole tx loop.
-> >2) In client mode it prints several values:
-> >   * Number of sec, spent for whole rx loop(including 'poll()').
-> >   * Number of sec, spend in dequeue system calls:
-> >     In case of '-z n' it will be time in 'read()'.
-> >     In case of '-z y|u' it will be time in 'getsockopt()' + 'madvise()'.
-> >   * Number of wake ups with POLLIN flag set(except '-z u' mode).
-> >   * Average time(ns) in single dequeue iteration(e.g. divide second
-> >     value by third).
-> >
-> >Idea of test is to compare zerocopy approach and classic copy, as it is
-> >clear, that to dequeue some "small" amount of data, copy must be better,
-> >because syscall with 'memcpy()' for 1 byte(for example) is just nothing
-> >against two system calls, where first must map at least one page, while
-> >second will unmap it.
-> >
-> >Test was performed with the following settings:
-> >1) Total size of data to send is 2G(-m argument).
-> >
-> >2) Peer's buffer size is changed to 2G(-v argument) - this is needed to
-> >   avoid stalls of sender to wait for enough credit.
-> >
-> >3) Both buffer size(-b) and SO_RCVLOWAT(-r) are used to control number
-> >   of bytes to dequeue in single loop iteration. Buffer size limits max
-> >   number of bytes to read, while SO_RCVLOWAT won't allow user to get
-> >   too small number of bytes.
-> >
-> >4) For sender, tx buffer(which is passed to 'write()') size is 16Mb. Of
-> >   course we can set it to peer's buffer size and as we are in STREAM
-> >   mode it leads to 'write()' will be called once.
-> >
-> >Deignations here and below:
-> >H2G - host to guest transmission. Server is host, client is guest.
-> >G2H - guest to host transmission. Server is guest, client is host.
-> >C   - copy mode.
-> >ZC  - zerocopy mode.
-> >ZU  - zerocopy with user poll mode. This mode is removed from test at
-> >      this moment, because I need to support SO_RCVLOWAT logic in it.
-> >
-> >So, rows corresponds to dequeue mode, while columns show number of
->
-> Maybe it would be better to label the rows, I guess the first one is C
-> and the second one ZC?
->
-> Maybe it would be better to report Gbps so if we change the amount of
-> data exchanged, we always have a way to compare.
->
-> >bytes
-> >to dequeue in each mode. Each cell contains several values in the next
-> >format:
-> >*------------*
-> >|   A / B    |
-> >|     C      |
-> >|     D      |
-> >*------------*
-> >
-> >A - number of seconds which server spent in tx loop.
-> >B - number of seconds which client spent in rx loop.
-> >C - number of seconds which client spent in rx loop, but except 'poll()'
-> >    system call(e.g. only in dequeue system calls).
-> >D - Average number of ns for each POLLIN wake up(in other words
-> >    it is average value for C).
->
-> I see only 3 values in the cells, I missed which one is C and which one
-> is D.
->
-> >
-> >G2H:
-> >
-> >            #0        #1        #2        #3        #4        #5
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >  |    |         |         |         |         |         |         |
-> >  |    |   4Kb   |   16Kb  |   64Kb  |  128Kb  |  256Kb  |  512Kb  |
-> >  |    |         |         |         |         |         |         |
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >  |    | 2.3/2.4 |2.48/2.53|2.34/2.38|2.73/2.76|2.65/2.68|3.26/3.35|
-> >  |    |  7039   |  15074  |  34975  |  89938  |  162384 |  438278 |
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >  |    |2.37/2.42|2.36/1.96|2.36/2.42|2.43/2.43|2.42/2.47|2.42/2.46|
-> >  |    |  13598  |  15821  |  29574  |  43265  |  71771  |  150927 |
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >
-> >H2G:
-> >
-> >            #0        #1        #2        #3        #4        #5
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >  |    |         |         |         |         |         |         |
-> >  |    |   4Kb   |   16Kb  |   64Kb  |  128Kb  |  256Kb  |  512Kb  |
-> >  |    |         |         |         |         |         |         |
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >  |    | 1.5/5.3 |1.55/5.00|1.60/5.00|1.65/5.00|1.65/5.00|1.74/5.00|
-> >  |    |  17145  |  24172  |  72650  |  143496 |  295960 |  674146 |
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >  |    |1.10/6.21|1.10/6.00|1.10/5.48|1.10/5.38|1.10/5.35|1.10/5.35|
-> >  |    |  41855  |  46339  |  71988  |  106000 |  153064 |  242036 |
-> >  *----*---------*---------*---------*---------*---------*---------*
-> >
-> >Here are my thoughts about these numbers(most obvious):
-> >
-> >1) Let's check C and D values. We see, that zerocopy dequeue is faster
-> >   on big buffers(in G2H it starts from 64Kb, in H2g - from 128Kb). I
-> >   think this is main result of this test(at this moment), that shows
-> >   performance difference between copy and zerocopy).
->
-> Yes, I think this is expected.
->
-> >
-> >2) In G2H mode both server and client spend almost same time in rx/tx
-> >   loops(see A / B in G2H table) - it looks good. In H2G mode, there is
-> >   significant difference between server and client. I think  there are
-> >   some side effects which produces such effect(continue to analyze).
->
-> Perhaps a different cost to notify the receiver? I think it's better to
-> talk about transmitter and receiver, instead of server and client, I
-> think it's confusing.
->
-> >
-> >3) Let's check C value. We can see, that G2H is always faster that H2G.
-> >   In both copy and zerocopy mode.
->
-> This is expected because the guest queues buffers up to 64K entirely,
-> while the host has to split packets into the guest's preallocated
-> buffers, which are 4K.
->
-> >
-> >4) Another interesting thing could be seen for example in H2G table,
-> >   row #0, col #4 (case for 256Kb). Number of seconds in zerocopy mode
-> >   is smaller than in copy mode(1.25 vs 2.42), but whole rx loop was
->
-> I see 1.65 vs 1.10, are these the same data, or am I looking at it
-> wrong?
->
-> >   faster in copy mode(5 seconds vs 5.35 seconds). E.g. if we account
-> >   time spent in 'poll()', copy mode looks faster(even it spends more
-> >   time in 'read()' than zerocopy loop in 'getsockopt()' + 'madvise()').
-> >   I think, it is also not obvious effect.
-> >
-> >So, according 1), it is better to use zerocopy, if You need to process
-> >big buffers, with small rx waitings(for example it nay be video stream).
-> >In other cases - it is better to use classic copy way, as it will be
-> >more lightweight.
-> >
-> >All tests were performed on x86 board with 4-core Celeron N2930 CPU(of
-> >course it is, not a mainframe, but better than test with nested guest)
-> >and 8Gb of RAM.
-> >
-> >Anyway, this is not final version, and I will continue to improve both
-> >kernel logic and performance tests.
->
-> Great work so far!
->
-> Maybe to avoid having to rebase everything later, it's already
-> worthwhile to start using Bobby's patch with skbuff.
->
-> >
-> >                           SUGGESTIONS
-> >
-> >1) I'm also working on MSG_ZEROCOPY support for virtio/vsock. May be I
-> >   can merge both patches into single one?
->
-> This is already very big, so I don't know if it's worth breaking into a
-> preparation series and then a series that adds both.
+On 11/11/22 02:46, Thomas Kupper wrote:
+> When determine the type of SFP, active cables were not handled.
+> 
+> Add the check for active cables as an extension to the passive cable check.
 
-For example, some test patches not related to zerocopy could go
-separately. Maybe even vsock_rx_perf without the zerocopy part that is
-not definitive for now.
+Is this fixing a particular problem? What SFP is this failing for? A more 
+descriptive commit message would be good.
 
-Too big a set is always scary, even if this one is divided well, but
-some patches as mentioned could go separately.
+Also, since an active cable is supposed to be advertising it's 
+capabilities in the eeprom, maybe this gets fixed via a quirk and not a 
+general check this field.
 
-I left some comments, but as said I prefer to review it after the
-rebase with skbuff, because I think it changes enough. I'm sorry about
-that, but having the skbuffs I think is very important.
+> 
+> Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
+> Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
+> ---
+>   drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c 
+> b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+> index 4064c3e3dd49..1ba550d5c52d 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+> @@ -1158,8 +1158,9 @@ static void xgbe_phy_sfp_parse_eeprom(struct 
+> xgbe_prv_data *pdata)
+>       }
+> 
+>       /* Determine the type of SFP */
+> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+> -        xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+> +    if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
+> +         phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
+> +         xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+
+This is just the same as saying:
+
+	if (xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+
+since the sfp_cable value is either PASSIVE or ACTIVE.
+
+I'm not sure I like fixing whatever issue you have in this way, though. If 
+anything, I would prefer this to be a last case scenario and be placed at 
+the end of the if-then-else block. But it may come down to applying a 
+quirk for your situation.
 
 Thanks,
-Stefano
+Tom
 
+>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
+>           phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
+> -- 
+> 2.34.1
+> 
