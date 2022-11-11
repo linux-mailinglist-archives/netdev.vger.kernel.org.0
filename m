@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B14E662637C
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 22:23:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EEED62637D
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 22:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234167AbiKKVXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 16:23:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48884 "EHLO
+        id S234376AbiKKVXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 16:23:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233179AbiKKVXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 16:23:31 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FCE10B4
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:23:29 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id fn7-20020a05600c688700b003b4fb113b86so3891715wmb.0
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:23:29 -0800 (PST)
+        with ESMTP id S234025AbiKKVXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 16:23:32 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A829FF6
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:23:30 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id j15so7980418wrq.3
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:23:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=e6Yy5Fgy/fFmhzxwj4kvbwK22iDhlH9BwFdgcuKAt24=;
-        b=GgQ5yN9aR8bX0LQ2edh3M9RyxBVAN14ksPobL1d8ceSVeMzg9lk9b3JwD8Sr8JHvyJ
-         Xr3atLcMIEgpZQks1apFIux82kUROpnfmDouKkSefqlyVxeOictcNzZtrVDy5T6whoVR
-         6M2RHL/jW5U+GLOUrbWSm/Y8qskVBU7gneSh4dt7fE2cEII5rIUpg2aw7+6Tw9nx6vNP
-         tgvyFGmsRp/b9NtTIPLUecSdzA/3hGUKuklMotY+toz+DhJIn6vtxZro0DsHuvyQTgxF
-         lzCTCNA2So4ma/l0tj7PGdkzCqU3fJ6u7UYL0fBNwt+D9xpkc5sdLbcHG+j/VeViWlG/
-         8Tyg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/wqu7ka025DHmiQHo96XTmKANEmftj8UjKkUsPUJ5+A=;
+        b=fxVJwfPadmX2Uf5lD3RgJFfhZGXHqr6rP7D8M4ssAK4uU5IWGA4BJkQKPdVttgZO+v
+         uXmVGi6Qgm563iisXM1+ajmiPXYAsXb99/we41xRtyFyhDvvDRZC8JPD9I/7OpCUqjVj
+         lUTPyvEtnEF6q4PNqyi0LwMAh7Ssg8QqgqdkV9Bx/xXvspGSWleBm83YkbIx7nY3+C+E
+         ffQkoIU0G6sAtFXGMlkKE5hog0L+8Yj5cXwmrwtBijDE4XmlKDip1EhBxi1441SQ6taO
+         2fN94oJE07p69DqUZPt7ICKiGdM2wTBzV9ok2L80GKrDG8/3wzotNFYnYwAejO3PXXMk
+         6Lkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=e6Yy5Fgy/fFmhzxwj4kvbwK22iDhlH9BwFdgcuKAt24=;
-        b=k3GTctvK3n31HRDnQv0YZbkRKFu9owBQf9FO2EEIlj5Q396EI4A8i2klGkWDieH9c+
-         kLvzFx33/s8LdenE3F6clV7PIqELaWFrWVGKXOJw8roxzkVx9vAkN5oZiQvNf0uYihDV
-         JcIuKrGyjXPTzIYpisrj0/BmlAxEYF6MI2siqkSYDXe0Ponr6LgyDKrga0RDYGsSdbK4
-         JyGYdMxzdP3KEFaSN2xvaAFwiV2qcAlHoXa1qLdEVFawzM5vTF61kmEh8ILNbqKYd5Mk
-         Ff+T78OlCww2+C9hkRX6rRNfWXX0Rtelnr0PEWAzkhz29uPwyXsLdDk+SDVKVtUtPkn3
-         ApHQ==
-X-Gm-Message-State: ANoB5pn63eQ0iLXwGlPR9RcJd4mDBeZbR9CCQc6p9fvJYdL+I81vuVD5
-        jAmS+O5MIIJ/vjo+zOd4ZfUpRw==
-X-Google-Smtp-Source: AA0mqf4u6VQV9Wt/vxFDck/AQs2RvFYT0qfgexN8yWfOheGg3mv+eFPv+/V8WFcrAh3xrxjjwDlG4Q==
-X-Received: by 2002:a7b:c5d3:0:b0:3cf:4eeb:927b with SMTP id n19-20020a7bc5d3000000b003cf4eeb927bmr2472521wmk.74.1668201807910;
-        Fri, 11 Nov 2022 13:23:27 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/wqu7ka025DHmiQHo96XTmKANEmftj8UjKkUsPUJ5+A=;
+        b=sLYa1sWPCZipq0d8J3HJBVv2wW7mKcpiF5xTe8ojQYOQjYxXFmk3k5+lCcRq9fsbpk
+         HZ7bDhdSvWkRqqshKbW0UvJEEYoue3wcAdILpalAVAVAK/oXL3wPrlRbREr9HcGkIPdB
+         ONoPmtLMujZ13zZFd7bdin213dz7GwZIw7rA0f43LJXeGXj3HQYiFZeWhJhzk5S+FNLI
+         3A/GPlLxxjitIUkGgNHj+gn05BM1+WfxDPF7zF3p4FK1izK0l+ZLumNtnIsfbEebPNSO
+         OfMYba++h+0yhv0uGajqkytSKsNe/va+wssX7IkYWVDozsbA/B+m2/4FNELa2tRppvpn
+         r4VQ==
+X-Gm-Message-State: ANoB5pkt+3ghXlhiTXbfap9/R7a256mWyTneb9Pevzh1WyWNXo2TRkgz
+        h4fL3LHmStK2AGJtTqwhrUKJsQ==
+X-Google-Smtp-Source: AA0mqf5qyVUOYbiavINF4aCT+lEdbutL4RcNHVO5ns2hb4bESLOXBnavZU1Tx0DyY7qe1LjOnH85mg==
+X-Received: by 2002:adf:f882:0:b0:236:8dd7:1919 with SMTP id u2-20020adff882000000b002368dd71919mr2114766wrp.242.1668201809379;
+        Fri, 11 Nov 2022 13:23:29 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id n18-20020a7bcbd2000000b003cf9bf5208esm9423281wmi.19.2022.11.11.13.23.26
+        by smtp.gmail.com with ESMTPSA id n18-20020a7bcbd2000000b003cf9bf5208esm9423281wmi.19.2022.11.11.13.23.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 13:23:27 -0800 (PST)
+        Fri, 11 Nov 2022 13:23:28 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
@@ -60,11 +61,17 @@ Cc:     Dmitry Safonov <dima@arista.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 0/3] net/tcp: Dynamically disable TCP-MD5 static key
-Date:   Fri, 11 Nov 2022 21:23:17 +0000
-Message-Id: <20221111212320.1386566-1-dima@arista.com>
+        netdev@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Jason Baron <jbaron@akamai.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH v3 1/3] jump_label: Prevent key->enabled int overflow
+Date:   Fri, 11 Nov 2022 21:23:18 +0000
+Message-Id: <20221111212320.1386566-2-dima@arista.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221111212320.1386566-1-dima@arista.com>
+References: <20221111212320.1386566-1-dima@arista.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -76,68 +83,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes from v2:
-- Prevent key->enabled from turning negative by overflow from
-  static_key_slow_inc() or static_key_fast_inc()
-  (addressing Peter Zijlstra's review)
-- Added checks if static_branch_inc() and static_key_fast_int()
-  were successful to TCP-MD5 code.
+1. With CONFIG_JUMP_LABEL=n static_key_slow_inc() doesn't have any
+   protection against key->enabled refcounter overflow.
+2. With CONFIG_JUMP_LABEL=y static_key_slow_inc_cpuslocked()
+   still may turn the refcounter negative as (v + 1) may overflow.
 
-Changes from v1:
-- Add static_key_fast_inc() helper rather than open-coded atomic_inc()
-  (as suggested by Eric Dumazet)
+key->enabled is indeed a ref-counter as it's documented in multiple
+places: top comment in jump_label.h, Documentation/staging/static-keys.rst,
+etc.
 
-Version 2: 
-https://lore.kernel.org/all/20221103212524.865762-1-dima@arista.com/T/#u
-Version 1: 
-https://lore.kernel.org/all/20221102211350.625011-1-dima@arista.com/T/#u
+As -1 is reserved for static key that's in process of being enabled,
+functions would break with negative key->enabled refcount:
+- for CONFIG_JUMP_LABEL=n negative return of static_key_count()
+  breaks static_key_false(), static_key_true()
+- the ref counter may become 0 from negative side by too many
+  static_key_slow_inc() calls and lead to use-after-free issues.
 
-The static key introduced by commit 6015c71e656b ("tcp: md5: add
-tcp_md5_needed jump label") is a fast-path optimization aimed at
-avoiding a cache line miss.
-Once an MD5 key is introduced in the system the static key is enabled
-and never disabled. Address this by disabling the static key when
-the last tcp_md5sig_info in system is destroyed.
+These flaws result in that some users have to introduce an additional
+mutex and prevent the reference counter from overflowing themselves,
+see bpf_enable_runtime_stats() checking the counter against INT_MAX / 2.
 
-Previously it was submitted as a part of TCP-AO patches set [1].
-Now in attempt to split 36 patches submission, I send this independently.
+Prevent the reference counter overflow by checking if (v + 1) > 0.
+Change functions API to return whether the increment was successful.
 
-Cc: Bob Gilligan <gilligan@arista.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Dmitry Safonov <0x7f454c46@gmail.com>
+While at here, provide static_key_fast_inc() helper that does ref
+counter increment in atomic fashion (without grabbing cpus_read_lock()
+on CONFIG_JUMP_LABEL=y). This is needed to add a new user for
+a static_key when the caller controls the lifetime of another user.
+The exact detail where it will be used: if a listen socket with TCP-MD5
+key receives SYN packet that passes the verification and in result
+creates a request socket - it's all done from RX softirq. At that moment
+userspace can't lock the listen socket and remove that TCP-MD5 key, so
+the tcp_md5_needed static branch can't get disabled. But the refcounter
+of the static key needs to be adjusted to account for a new user
+(the request socket).
+
+Cc: Ard Biesheuvel <ardb@kernel.org>
 Cc: Eric Dumazet <edumazet@google.com>
-Cc: Francesco Ruggeri <fruggeri@arista.com>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Salam Noureddine <noureddine@arista.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Cc: Jason Baron <jbaron@akamai.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+ include/linux/jump_label.h | 21 ++++++++++++---
+ kernel/jump_label.c        | 54 ++++++++++++++++++++++++++++----------
+ 2 files changed, 57 insertions(+), 18 deletions(-)
 
-[1]: https://lore.kernel.org/all/20221027204347.529913-1-dima@arista.com/T/#u
-
-Thanks,
-            Dmitry
-
-Dmitry Safonov (3):
-  jump_label: Prevent key->enabled int overflow
-  net/tcp: Separate tcp_md5sig_info allocation into
-    tcp_md5sig_info_add()
-  net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction
-
- include/linux/jump_label.h | 21 ++++++++--
- include/net/tcp.h          | 10 +++--
- kernel/jump_label.c        | 54 +++++++++++++++++-------
- net/ipv4/tcp.c             |  5 +--
- net/ipv4/tcp_ipv4.c        | 86 +++++++++++++++++++++++++++++++-------
- net/ipv4/tcp_minisocks.c   | 12 ++++--
- net/ipv4/tcp_output.c      |  4 +-
- net/ipv6/tcp_ipv6.c        | 10 ++---
- 8 files changed, 150 insertions(+), 52 deletions(-)
-
-
-base-commit: 4bbf3422df78029f03161640dcb1e9d1ed64d1ea
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 570831ca9951..ced5b49d24b4 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -224,9 +224,10 @@ extern bool arch_jump_label_transform_queue(struct jump_entry *entry,
+ 					    enum jump_label_type type);
+ extern void arch_jump_label_transform_apply(void);
+ extern int jump_label_text_reserved(void *start, void *end);
+-extern void static_key_slow_inc(struct static_key *key);
++extern bool static_key_slow_inc(struct static_key *key);
++extern bool static_key_fast_inc(struct static_key *key);
+ extern void static_key_slow_dec(struct static_key *key);
+-extern void static_key_slow_inc_cpuslocked(struct static_key *key);
++extern bool static_key_slow_inc_cpuslocked(struct static_key *key);
+ extern void static_key_slow_dec_cpuslocked(struct static_key *key);
+ extern int static_key_count(struct static_key *key);
+ extern void static_key_enable(struct static_key *key);
+@@ -278,11 +279,23 @@ static __always_inline bool static_key_true(struct static_key *key)
+ 	return false;
+ }
+ 
+-static inline void static_key_slow_inc(struct static_key *key)
++static inline bool static_key_fast_inc(struct static_key *key)
+ {
++	int v, v1;
++
+ 	STATIC_KEY_CHECK_USE(key);
+-	atomic_inc(&key->enabled);
++	/*
++	 * Prevent key->enabled getting negative to follow the same semantics
++	 * as for CONFIG_JUMP_LABEL=y, see kernel/jump_label.c comment.
++	 */
++	for (v = atomic_read(&key->enabled); v >= 0 && (v + 1) > 0; v = v1) {
++		v1 = atomic_cmpxchg(&key->enabled, v, v + 1);
++		if (likely(v1 == v))
++			return true;
++	}
++	return false;
+ }
++#define static_key_slow_inc(key)	static_key_fast_inc(key)
+ 
+ static inline void static_key_slow_dec(struct static_key *key)
+ {
+diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+index 714ac4c3b556..f2c1aa351d41 100644
+--- a/kernel/jump_label.c
++++ b/kernel/jump_label.c
+@@ -113,11 +113,38 @@ int static_key_count(struct static_key *key)
+ }
+ EXPORT_SYMBOL_GPL(static_key_count);
+ 
+-void static_key_slow_inc_cpuslocked(struct static_key *key)
++/***
++ * static_key_fast_inc - adds a user for a static key
++ * @key: static key that must be already enabled
++ *
++ * The caller must make sure that the static key can't get disabled while
++ * in this function. It doesn't patch jump labels, only adds a user to
++ * an already enabled static key.
++ *
++ * Returns true if the increment was done.
++ */
++bool static_key_fast_inc(struct static_key *key)
+ {
+ 	int v, v1;
+ 
+ 	STATIC_KEY_CHECK_USE(key);
++	/*
++	 * Negative key->enabled has a special meaning: it sends
++	 * static_key_slow_inc() down the slow path, and it is non-zero
++	 * so it counts as "enabled" in jump_label_update().  Note that
++	 * atomic_inc_unless_negative() checks >= 0, so roll our own.
++	 */
++	for (v = atomic_read(&key->enabled); v > 0 && (v + 1) > 0; v = v1) {
++		v1 = atomic_cmpxchg(&key->enabled, v, v + 1);
++		if (likely(v1 == v))
++			return true;
++	}
++	return false;
++}
++EXPORT_SYMBOL_GPL(static_key_fast_inc);
++
++bool static_key_slow_inc_cpuslocked(struct static_key *key)
++{
+ 	lockdep_assert_cpus_held();
+ 
+ 	/*
+@@ -126,17 +153,9 @@ void static_key_slow_inc_cpuslocked(struct static_key *key)
+ 	 * jump_label_update() process.  At the same time, however,
+ 	 * the jump_label_update() call below wants to see
+ 	 * static_key_enabled(&key) for jumps to be updated properly.
+-	 *
+-	 * So give a special meaning to negative key->enabled: it sends
+-	 * static_key_slow_inc() down the slow path, and it is non-zero
+-	 * so it counts as "enabled" in jump_label_update().  Note that
+-	 * atomic_inc_unless_negative() checks >= 0, so roll our own.
+ 	 */
+-	for (v = atomic_read(&key->enabled); v > 0; v = v1) {
+-		v1 = atomic_cmpxchg(&key->enabled, v, v + 1);
+-		if (likely(v1 == v))
+-			return;
+-	}
++	if (static_key_fast_inc(key))
++		return true;
+ 
+ 	jump_label_lock();
+ 	if (atomic_read(&key->enabled) == 0) {
+@@ -148,16 +167,23 @@ void static_key_slow_inc_cpuslocked(struct static_key *key)
+ 		 */
+ 		atomic_set_release(&key->enabled, 1);
+ 	} else {
+-		atomic_inc(&key->enabled);
++		if (WARN_ON_ONCE(static_key_fast_inc(key))) {
++			jump_label_unlock();
++			return false;
++		}
+ 	}
+ 	jump_label_unlock();
++	return true;
+ }
+ 
+-void static_key_slow_inc(struct static_key *key)
++bool static_key_slow_inc(struct static_key *key)
+ {
++	bool ret;
++
+ 	cpus_read_lock();
+-	static_key_slow_inc_cpuslocked(key);
++	ret = static_key_slow_inc_cpuslocked(key);
+ 	cpus_read_unlock();
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(static_key_slow_inc);
+ 
 -- 
 2.38.1
 
