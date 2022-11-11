@@ -2,272 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D658D625462
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 08:18:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D156D62546B
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 08:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbiKKHSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 02:18:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
+        id S232117AbiKKHal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 02:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231681AbiKKHSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 02:18:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6102478308
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 23:17:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668151048;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4QndAHwF5T4cRP2zHP2BYS+XxR0b4XY/sv0eiTHsSwQ=;
-        b=ZXlqm5LLxsELKDGPvnpWP4VRa2sqaw1Gnunco28jXd59ThOz8Ap2ugAV10fcwmhL9mcdAS
-        B0TrkP2255FzKqfGF+zNjNhKA6F4l5YVpNB3bwRIRg9yr4hBZnjpdz2LJW6gLVp+qTQk6a
-        i3IBLXxU+BmCw/7CvfswE2j0Pphh3hc=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-672-1sVyMgrwOBC98FpXC5A0FA-1; Fri, 11 Nov 2022 02:17:27 -0500
-X-MC-Unique: 1sVyMgrwOBC98FpXC5A0FA-1
-Received: by mail-oo1-f69.google.com with SMTP id k13-20020a4adfad000000b0049f0c8d234bso1353503ook.11
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 23:17:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4QndAHwF5T4cRP2zHP2BYS+XxR0b4XY/sv0eiTHsSwQ=;
-        b=afW00i7KDkeOD7WRi+SP82Zak3Qh+g17yghkPQoBEG3+GMoI6TzecL8zUx1Ez6WZaN
-         7MiKVMDR/eyt5r8u//B3yYvvaj1U8ttX7gic4MZsXqPLQ6gNIkyLn+7zysbKzZ+YMVCK
-         aNrOf3zu8fIBbMB4TCzGSjJ0uDtd6YdjWEIAHjp50+iShV63h4G6uqi8M181nmukX+4w
-         GtK3KfDDi7oM7/nf1tLVDoGbUvNxT7bkMo+zYb7LgGK+BfrOZZbHhLoO7KVVd8onH2dF
-         UYb5sEOpTyUxhMZYdBXf+KDufPJ9T8jC6iHaPImPh9VuOUs7CdKe7degYEOMFEbNEkWa
-         6CHw==
-X-Gm-Message-State: ANoB5pkRmuUh6zMHDGYl0FTPygXc4Zln0WFxKK3Ixk/qKCGlgVz5I8UX
-        QSqCebrB6oefixBSO2OOjbV21JAMelpavJbT/WL/EIemTpAM1+4rQZ+ptF/PSKGiSvYJRStyaVC
-        2Giq9P16GR3tC6ioOx++xcs5Vab5futKG
-X-Received: by 2002:a05:6830:124d:b0:66c:64d6:1bb4 with SMTP id s13-20020a056830124d00b0066c64d61bb4mr633596otp.201.1668151046375;
-        Thu, 10 Nov 2022 23:17:26 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7ZEx6mPdq+HYSFhWhFwD1Xr1pcZlFnjwz9gp+GBxZsQYEu0r/sKobQ2o5tt/vsUeaP6ytP0eDsJUY4bZUhzVc=
-X-Received: by 2002:a05:6830:124d:b0:66c:64d6:1bb4 with SMTP id
- s13-20020a056830124d00b0066c64d61bb4mr633591otp.201.1668151046080; Thu, 10
- Nov 2022 23:17:26 -0800 (PST)
+        with ESMTP id S229703AbiKKHak (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 02:30:40 -0500
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4023F5B598;
+        Thu, 10 Nov 2022 23:30:38 -0800 (PST)
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2AB25usS022459;
+        Thu, 10 Nov 2022 23:30:01 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=xIop+/tJ1aUvuJOPYH/3vx+Ci0xJ7+NK08Gw5F1yFHI=;
+ b=SvhSK7qDxQosU8CAXfTfn2R4FfTDwU0RApStt68MHzuNVlEkDE8Lk+qplFNXVwVnTFjK
+ z4DPgMWBAy4EKWlE4pvswfMrYeDXnIWH6+ZY0K3FPAzPZazRgBRTJ4P8wDKrY5nzuM+T
+ 5MMZOauWPFiNZefN5eq9M/ukk5a2EAmwyLBzpMeXi4YoosLF6i0aHlKT2bkB+evZvLVx
+ dva3/b6RFokKXrlgJMuGo956DDxNkmGXNbwN7NPWoVmnUdIDWBBYdqOsJMAUPin9EcRh
+ y2lrma/W+vq4Dh7ZVtV9zC2oahf4Y4c3dKokAfpoxuRRvTpsS0aF+yoRt4EPm7m2gePi QQ== 
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ksda8sjmq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Nov 2022 23:30:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Oa6tV7DU80BzK9HuAATU/t4PDFzN0KlbgMRxIXoVB15PMbU9BIlTHwYn6wcrMD1T4MyReky5fkV639E6I/SCpt0VNgHsxbsSLcPr3oeSmFtedWz23EiHWi/TCFLMf72Mqsdjrm7FJxGlf6Ygth8R1qmZk2TfCcfYy2ZTVr4c1j7bWTzBczSN8D8WWW8eNkR1QTjcqNYREalUczflMQixxF8OK98zpfBDmaBFAfa6iZSsMlI4c1WKTEHdeQYtXQFT4Gzz8zwji62TN3R0KjY0iZWIwOGpu/GLB3k3VV4iKd8/pj0YZXh+/KKRHOnnWFPOxKZsKrMzHmeuSdYWSzRqww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xIop+/tJ1aUvuJOPYH/3vx+Ci0xJ7+NK08Gw5F1yFHI=;
+ b=Sz2ELo+5wqFFIgj/nJMgZIjXGraqrLfKLpQrvuCH+UHY25JqHmbs1dOEdMahesLlYCBDCv69D69nXgfMXI+ETg+sfX1I5AIK9TZcGSxfVmCDx08dzThu/hR0LWRykHtNWVQpHHNNWg27Fj7p+SlXqtp4uHfx2tt+W5+QOImSWmeVSxJDkoWf2BenjCthLyKxwZQ3aZESI9KUu1xBGGiE6QT5N/QlXP92REFWMN84H+thZNzpwbPMTaFmfkC2LQxWZ2CSUlBU5G+3CNqdFsj5t0WIuOSLXmQdIipMYOiKqhjK0AtuNOMQV0q+7zXXf34YwDtFBHTKt08ILVjQy0F5OA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by DM5PR15MB1913.namprd15.prod.outlook.com (2603:10b6:4:52::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 11 Nov
+ 2022 07:29:59 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::ac66:fb37:a598:8519]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::ac66:fb37:a598:8519%7]) with mapi id 15.20.5813.013; Fri, 11 Nov 2022
+ 07:29:59 +0000
+Message-ID: <83637fd7-5daf-bce9-80e4-85383fafd4c9@meta.com>
+Date:   Thu, 10 Nov 2022 23:29:55 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [PATCH bpf v2] selftests/bpf: Fix xdp_synproxy compilation
+ failure in 32-bit arch
+Content-Language: en-US
+To:     Yang Jihong <yangjihong1@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, mykolal@fb.com, shuah@kernel.org,
+        tariqt@nvidia.com, maximmi@nvidia.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221111030836.37632-1-yangjihong1@huawei.com>
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <20221111030836.37632-1-yangjihong1@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0179.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c7::34) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-References: <20221110075821.3818-1-jasowang@redhat.com> <20221110055242-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20221110055242-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 11 Nov 2022 15:17:14 +0800
-Message-ID: <CACGkMEusb5NYi8ZTR-fovDku7n+As=HWitM+kx4CW10=oC87cQ@mail.gmail.com>
-Subject: Re: [PATCH] vdpa: allow provisioning device features
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, si-wei.liu@oracle.com,
-        eperezma@redhat.com, lingshan.zhu@intel.com, elic@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|DM5PR15MB1913:EE_
+X-MS-Office365-Filtering-Correlation-Id: 10771cdd-0717-4c44-ab81-08dac3b689aa
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YGJ7cs8luUdHDhlWBVf+uBMbuo9dKnGgcsh0K07QAkwRnbfiaUSv6prhvm3uePYgMOqI4EK8WYUBSFQVifixix4miNtG/JfcVigMeFEzSaVI3d2B+48pgpWNSbnVvbjOSsX367Mzr+Aqyg57G6M76mA7GKTOQcOvSIi1Mhtor7ynC6JGhn0dQBYgaBPvI4CqSuY44LSQmKq3mv9TDZpxebe0R9D9Y1V/i1ULl2jbD1c1UKO5vZlX7kevu0hwzx+8c7OsDgzgGCixhBrF4EdtM/bgPVHJ8M4PLB5+1OVr+oLEI54lachIsB/lQIA7d1Hi+dyJRIK5k7AVpLhw4A23Wore9AjcdOFpcURHlW/4LSrwaRvRPBwDU0utocEe6An9rHqMgQCZ4CIZ01stVcatbJ97cxvwSR4xZ71sPXwagZ5xIxZrO79hg82tBloH5S92LEx9buKC4sDqE36rBk3cShxjMvttpXzWhF0/46i5ODB7mQwTm6+guHzhqDUfCK7gKUa9xfPngbMPGa+b0lcce8J2qxqY0iuBOau8l+dylGeDwv0RSktk+1m4ePmyRC7HHenkR7357CfupC5jBd6FX8WMmhgBQ7xqjOGJHbTlg9MoTFhpTfPO8256H4DE1eVtT/cWwYX0y5U0e/M4jbaurU3yC/cJAZ/TLScsZ3+azHuhUXCNzsnyRAjZ72bdDgQcfVgUxHhVcThjmpEu/Mphki4EVAagY8pbXFlPg1Pl0HekaBx+INGDBfS1x9QyzUaXn14V8U6FHpmcMucVysKynmx1SO/vr7GaXnbnATN8qYB8sHvNbN9UU5UxZTiu+WJd
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(396003)(346002)(366004)(39860400002)(451199015)(38100700002)(4744005)(316002)(2906002)(86362001)(31696002)(921005)(6666004)(6506007)(2616005)(53546011)(66946007)(66556008)(6512007)(478600001)(6486002)(8676002)(66476007)(36756003)(5660300002)(7416002)(186003)(8936002)(41300700001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U2pYa1JjT2lsdGs3YnVMbHp4NEovU3MvSGFXL043OXg1WFFBajJrZ1h5c2Fo?=
+ =?utf-8?B?OGlUUDh3QjVjM1Jlc0NOc0luZVA1dEFhNTEvNlRlekl3Q2ZZcmdSamJTT1po?=
+ =?utf-8?B?aXJHTnNCSmVyNVBLM1hEWUdWN0xjV0h1SVhwMHJRUmU3RC9EdnRlUnNoRjM4?=
+ =?utf-8?B?THBmUkFVenZxb0pkb0MwL0hobUxCanJ0UXdXVmxxNWNRRGczR1dMMEU5NXFZ?=
+ =?utf-8?B?OFAwSFRRL0ZvUHFGT2NjZUgvRjc3SG9ONVI1TlpIMjB4V0h4WjcxU0VndDhp?=
+ =?utf-8?B?SmdyVmsreTZUTFZFdzdzWEdycTlaOFFrb1lZTXlpUzk4dUh1WWE1amNkUTlL?=
+ =?utf-8?B?U01HcTNoZEJVZi9adlJtbzV0WVducFVGNlRod2dwcGtJRDAwT29OS2g5cUNG?=
+ =?utf-8?B?UGh3ckFVTU9KNkd0RHY1cEtIOExPek9yRmNEM0JmRWlFQ210N3ZUYWZwbkVI?=
+ =?utf-8?B?amJ4ZGFpRXBwUExhemtIbUUzaVZyUUZNdlV0b1R5dS9FNFNaWkxvTjV3T1c1?=
+ =?utf-8?B?L1RYWGQxcCt1bTI4TWNCVUdEY250VzN4V3BOMUtXTWNacGQzQmJyL3JmU1BW?=
+ =?utf-8?B?enBjSStEemxlNlBIMzFLeW9HSGc2bGFJTDdaM01wbi9jaWlLVElEcnpWSTU4?=
+ =?utf-8?B?QTIvYm02K056c3FGaU9sbWRGeW1KM1V1cEFLOXpYYjBVZk5PODdCOTY3UmVG?=
+ =?utf-8?B?cVBGaWp0MkFFdnYyREZGMnVkQzR2VjQ2YlliTi9XZ0VFMXdwUUp4SWpYYi9r?=
+ =?utf-8?B?WmZxOXhiQWdmanFONHF6QTUzbll3cTBSeUg5STdzUlZFNURTUVFac2QzWlRo?=
+ =?utf-8?B?OEJZajBCejJ1VjlhNG9ST3NVRmlUd2lYa013bzF0ZWFuUXBKWVFQRjVzWWw5?=
+ =?utf-8?B?QTJXaFBaNE9kL01SWllsSzN4UTBVN2NEci9RUEVkZWt0cVpFQWplK3Y5RS8y?=
+ =?utf-8?B?QlEzODAyZTZhTm1wek1QK2FNanJ5dlQ3UWMybVBQcHZSY1dkY1FFTGtyMTMy?=
+ =?utf-8?B?cmdkS0lqM2RuRW1qMnVXTVVjci9SUXJNSVBaR1A5eWtMMzcwOEN5bDBvK1lh?=
+ =?utf-8?B?SEZ4cll3bmhuK3hmMFgvZE5CODBZTGhzL1lGdmN4cFc5dHczQUZoTnpNbXVT?=
+ =?utf-8?B?TlN1K1ZHT2VEZjBkbW1GNFdpTk1xbFNUby84SEQ0WndWMXdnMXlyS3AxOHpQ?=
+ =?utf-8?B?U21makN2OFZsU2MvMTRaNGFVYmV5ZEs3ak42RHEvOGVYRjNjN1hvL0xLQTVn?=
+ =?utf-8?B?Z0JrVUhpUEZIcThGVm8zREVqR0FWdW9Ea0xqamkxajlGK2UrbThrZGNQNERr?=
+ =?utf-8?B?eTYzNmNLRWgvbE5aV1JuZTF4djlTZEd2SUFLaEJFcHo1U2VBUzJpL3Z5U1VQ?=
+ =?utf-8?B?MFA0Uno2emoxVUFtdWowVTE0NXI5UEJldHovNWpBRlhzQndtWkxJa1IzUUp0?=
+ =?utf-8?B?eExXb0U3ZzNwNGYreEYvV3JIbXNJdVVTOVVDWnpMekQzeDhxa2dZMzB2cHVv?=
+ =?utf-8?B?eEYyVTRIYlY5TjVXdjF4M01SWHZndlFIRGZYYVhQbkJJMy8rdXB3RmVnMkVu?=
+ =?utf-8?B?OFcwSWN6WE5YODRyK2pwN1pvbTlSOUhocWRtbG42OWd2dnl4TU9hMjZVV210?=
+ =?utf-8?B?cnBOaHBjV1FpL3A0dUZsMVM3Z3ByaUY3NExNUzNUaWtkWXBjMEFncExmeU9P?=
+ =?utf-8?B?OFU5RkZ6TndIVHJ6SVhVZnRuWmpmSWZIcWNLSGF2cFNEalNuOGVNTG1LUEpj?=
+ =?utf-8?B?eGp3NmdNQ1hzQ2IzNVh6N1JqZG11ZDRpd2xsMDNEUWZlcHoxV3o3QWJmY3JC?=
+ =?utf-8?B?U3ZIQTBjNzQyU1QvTHNCS2lMZGVZcUZaN3lVdU9sSmRMbndoTWtyOStaYTlz?=
+ =?utf-8?B?cCtvWTEzeUh6aFZBeHAyeEt6QTNadkZQcWJudnNqVHlUWndxL3RPU0MzNWgx?=
+ =?utf-8?B?d0N1VHBHNXN2TDFvVW40RHFzWDFISU9sM0wzN3RyZ3dxK3VsOFR6ck1nVUcv?=
+ =?utf-8?B?eVVjVlRodFpFcFk0dUkvZzcwOW16VDdIVENxRk9VVzliRXFSTG83MnJnTVR3?=
+ =?utf-8?B?cUxFZ1gvaW1IUW0zMUdNZ3ZLYzk0SWxWZ3BRc2xyTHlzbHA5K0VkQ1k1c004?=
+ =?utf-8?B?Rk11YmwxRytTaHduYWMzd0hlR3IxMVJ5dTgzemt3RDd3U0lqV1loOS9hOEYw?=
+ =?utf-8?B?UFE9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10771cdd-0717-4c44-ab81-08dac3b689aa
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2022 07:29:58.9974
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jok0H6KV8r3OSir/GOBAMG8mI2rRG/lFENfrPNZ0PKrbRN0JecFqLPyM4kIIZcp+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1913
+X-Proofpoint-ORIG-GUID: E82RzcIbQQpO6KemDaAee3TVk0aLTqll
+X-Proofpoint-GUID: E82RzcIbQQpO6KemDaAee3TVk0aLTqll
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-11_04,2022-11-09_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 7:01 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Thu, Nov 10, 2022 at 03:58:21PM +0800, Jason Wang wrote:
-> > This patch allows device features to be provisioned via vdpa. This
-> > will be useful for preserving migration compatibility between source
-> > and destination:
-> >
-> > # vdpa dev add name dev1 mgmtdev pci/0000:02:00.0 device_features 0x300020000
-> > # dev1: mac 52:54:00:12:34:56 link up link_announce false mtu 65535
-> >       negotiated_features CTRL_VQ VERSION_1 ACCESS_PLATFORM
-> >
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> >  man/man8/vdpa-dev.8            | 10 ++++++++++
-> >  vdpa/include/uapi/linux/vdpa.h |  1 +
-> >  vdpa/vdpa.c                    | 27 ++++++++++++++++++++++++++-
-> >  3 files changed, 37 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
-> > index 9faf3838..bb45b4a6 100644
-> > --- a/man/man8/vdpa-dev.8
-> > +++ b/man/man8/vdpa-dev.8
-> > @@ -31,6 +31,7 @@ vdpa-dev \- vdpa device configuration
-> >  .I NAME
-> >  .B mgmtdev
-> >  .I MGMTDEV
-> > +.RI "[ device_features " DEVICE_FEATURES " ]"
-> >  .RI "[ mac " MACADDR " ]"
-> >  .RI "[ mtu " MTU " ]"
-> >  .RI "[ max_vqp " MAX_VQ_PAIRS " ]"
-> > @@ -74,6 +75,10 @@ Name of the new vdpa device to add.
-> >  Name of the management device to use for device addition.
-> >
-> >  .PP
-> > +.BI device_features " DEVICE_FEAETURES"
->
-> typo
 
-Will fix.
 
->
-> > +- specifies the device features that is provisioned for the new vdpa device.
->
-> I propose
->          the device features -> the virtio "device features" bit-mask
->
-> features sounds like it's a generic thing, here's it's
-> the actual binary
->
-> and maybe add "the bits can be found under include/uapi/linux/virtio*h,
-> see macros such as VIRTIO_F_ and VIRTIO_NET_F_ for specific bit values"
+On 11/10/22 7:08 PM, Yang Jihong wrote:
+> xdp_synproxy fails to be compiled in the 32-bit arch, log is as follows:
+> 
+>    xdp_synproxy.c: In function 'parse_options':
+>    xdp_synproxy.c:175:36: error: left shift count >= width of type [-Werror=shift-count-overflow]
+>      175 |                 *tcpipopts = (mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
+>          |                                    ^~
+>    xdp_synproxy.c: In function 'syncookie_open_bpf_maps':
+>    xdp_synproxy.c:289:28: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
+>      289 |                 .map_ids = (__u64)map_ids,
+>          |                            ^
+> 
+> Fix it.
+> 
+> Fixes: fb5cd0ce70d4 ("selftests/bpf: Add selftests for raw syncookie helpers")
+> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
 
-That's fine.
-
->
-> > +This is optional.
-> > +
->
-> and if not given what are the features?
-
-As in the past, determined by the parent/mgmt device, do we need to
-document this?
-
->
-> >  .BI mac " MACADDR"
-> >  - specifies the mac address for the new vdpa device.
-> >  This is applicable only for the network type of vdpa device. This is optional.
-> > @@ -127,6 +132,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net
-> >  Add the vdpa device named foo on the management device vdpa_sim_net.
-> >  .RE
-> >  .PP
-> > +vdpa dev add name foo mgmtdev vdpa_sim_net device_features 0x300020000
-> > +.RS 4
-> > +Add the vdpa device named foo on the management device vdpa_sim_net with device_features of 0x300020000
-> > +.RE
-> > +.PP
-> >  vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55
-> >  .RS 4
-> >  Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55.
-> > diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
-> > index 94e4dad1..7c961991 100644
-> > --- a/vdpa/include/uapi/linux/vdpa.h
-> > +++ b/vdpa/include/uapi/linux/vdpa.h
-> > @@ -51,6 +51,7 @@ enum vdpa_attr {
-> >       VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
-> >       VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
-> >       VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
-> > +     VDPA_ATTR_DEV_FEATURES,                 /* u64 */
-> >
-> >       /* new attributes must be added above here */
-> >       VDPA_ATTR_MAX,
-> > diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-> > index b73e40b4..9a866d61 100644
-> > --- a/vdpa/vdpa.c
-> > +++ b/vdpa/vdpa.c
-> > @@ -27,6 +27,7 @@
-> >  #define VDPA_OPT_VDEV_MTU            BIT(5)
-> >  #define VDPA_OPT_MAX_VQP             BIT(6)
-> >  #define VDPA_OPT_QUEUE_INDEX         BIT(7)
-> > +#define VDPA_OPT_VDEV_FEATURES               BIT(8)
-> >
-> >  struct vdpa_opts {
-> >       uint64_t present; /* flags of present items */
-> > @@ -38,6 +39,7 @@ struct vdpa_opts {
-> >       uint16_t mtu;
-> >       uint16_t max_vqp;
-> >       uint32_t queue_idx;
-> > +     __u64 device_features;
-> >  };
-> >
-> >  struct vdpa {
->
-> why __u and not uint here?
-
-That's possible, will do.
-
->
-> > @@ -187,6 +189,17 @@ static int vdpa_argv_u32(struct vdpa *vdpa, int argc, char **argv,
-> >       return get_u32(result, *argv, 10);
-> >  }
-> >
-> > +static int vdpa_argv_u64_hex(struct vdpa *vdpa, int argc, char **argv,
-> > +                          __u64 *result)
-> > +{
-> > +     if (argc <= 0 || !*argv) {
-> > +             fprintf(stderr, "number expected\n");
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     return get_u64(result, *argv, 16);
-> > +}
-> > +
-> >  struct vdpa_args_metadata {
-> >       uint64_t o_flag;
-> >       const char *err_msg;
-> > @@ -244,6 +257,10 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
-> >               mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vqp);
-> >       if (opts->present & VDPA_OPT_QUEUE_INDEX)
-> >               mnl_attr_put_u32(nlh, VDPA_ATTR_DEV_QUEUE_INDEX, opts->queue_idx);
-> > +     if (opts->present & VDPA_OPT_VDEV_FEATURES) {
-> > +             mnl_attr_put_u64(nlh, VDPA_ATTR_DEV_FEATURES,
-> > +                             opts->device_features);
-> > +     }
-> >  }
-> >
-> >  static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
-> > @@ -329,6 +346,14 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
-> >
-> >                       NEXT_ARG_FWD();
-> >                       o_found |= VDPA_OPT_QUEUE_INDEX;
-> > +             } else if (!strcmp(*argv, "device_features") &&
-> > +                        (o_optional & VDPA_OPT_VDEV_FEATURES)) {
-> > +                     NEXT_ARG_FWD();
-> > +                     err = vdpa_argv_u64_hex(vdpa, argc, argv,
-> > +                                             &opts->device_features);
-> > +                     if (err)
-> > +                             return err;
-> > +                     o_found |= VDPA_OPT_VDEV_FEATURES;
-> >               } else {
-> >                       fprintf(stderr, "Unknown option \"%s\"\n", *argv);
-> >                       return -EINVAL;
->
->
-> should not we validate the value we get? e.g. a mac feature
-> requires that mac is supplied, etc.
-
-This isn't an "issue" that is introduced by this patch. Management
-device is free to give _F_MAC even if the mac address is not
-provisioned by the userspace. So this should be the responsibility of
-the parent not the netlink/vdpa tool.
-
-> in fact hex isn't very user friendly. why not pass feature
-> names instead?
-
-This can be added on top if necessary. In fact there's a plan to
-accept JSON files for provisioning.
-
-The advantages of hex is we don't need to keep the name  synced with
-the new features.
-
-Thanks
-
->
->
->
-> > @@ -708,7 +733,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
-> >       err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
-> >                                 VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
-> >                                 VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU |
-> > -                               VDPA_OPT_MAX_VQP);
-> > +                               VDPA_OPT_MAX_VQP | VDPA_OPT_VDEV_FEATURES);
-> >       if (err)
-> >               return err;
-> >
-> > --
-> > 2.25.1
->
-
+Acked-by: Yonghong Song <yhs@fb.com>
