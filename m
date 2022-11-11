@@ -2,393 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A85AE625224
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 05:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B5F76252AD
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 05:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232728AbiKKEFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 23:05:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
+        id S232889AbiKKEf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 23:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232506AbiKKEE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 23:04:28 -0500
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C981B6B204
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 20:03:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1668139400; x=1699675400;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bK76DXPybIITKN0hIeCzoDste60ipqWpTYTIj7DvW4s=;
-  b=Oiy9e6Ai3Ybk8lRon2jjoY9FMOr6KBaYeKQ7J7UsuBqJozZGIePnSdL1
-   eEsYWHM22kNkbxNX5I+Cb1K59D7JGQIUeAqeWuToN1qvva0n/zMZb1bdV
-   6YIPdGee4zFkW9779nshLB3Ivf5hlGpxze6Gyku4Nj4u7RwXNB2WmoVzq
-   4=;
-X-IronPort-AV: E=Sophos;i="5.96,155,1665446400"; 
-   d="scan'208";a="261983657"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 04:03:19 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id A3DCB82C08;
-        Fri, 11 Nov 2022 04:03:17 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Fri, 11 Nov 2022 04:03:16 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.178) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Fri, 11 Nov 2022 04:03:14 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2 net-next 6/6] udp: Introduce optional per-netns hash table.
-Date:   Thu, 10 Nov 2022 20:00:34 -0800
-Message-ID: <20221111040034.29736-7-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221111040034.29736-1-kuniyu@amazon.com>
-References: <20221111040034.29736-1-kuniyu@amazon.com>
+        with ESMTP id S232887AbiKKEfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 23:35:32 -0500
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28976F361
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 20:35:09 -0800 (PST)
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20221111043508epoutp03195161f6702136d7e5cd90e9526a3787~mba6FSU3a1361613616epoutp03W
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 04:35:08 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20221111043508epoutp03195161f6702136d7e5cd90e9526a3787~mba6FSU3a1361613616epoutp03W
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1668141308;
+        bh=6h15vmBu1KlWANEt8q88z1t98BduIhW5b68r16XTLlI=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=On8UyeehhKTm5fH5JVYlilXF3E2zV+l1LfSi8JknthHcRERyH8/UsLvOqhOz0eHJ3
+         Xet8m/VPgAoMqP2UgzjUAhSaHDfd49kaZty5H4aypdpPzPNVwZUS49YtZlfI78bQHV
+         6K2PUf81tFxpTZ26RdQNSLN5NnZp+Vfq0/Jv3HPc=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20221111043507epcas5p453119b36e9f1aec4f81573152195b725~mba5YPp_p0129601296epcas5p4h;
+        Fri, 11 Nov 2022 04:35:07 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.179]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4N7m8S6qwTz4x9Q6; Fri, 11 Nov
+        2022 04:35:04 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0D.88.01710.8F0DD636; Fri, 11 Nov 2022 13:35:04 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20221111040651epcas5p25baa64cda35ccabdc28081ed50b40a9f~mbCNxl-oa1633416334epcas5p2D;
+        Fri, 11 Nov 2022 04:06:51 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20221111040651epsmtrp279291d471f5194e1af3257e224072880~mbCNwjDcu1387513875epsmtrp2Y;
+        Fri, 11 Nov 2022 04:06:51 +0000 (GMT)
+X-AuditID: b6c32a49-a41ff700000006ae-7b-636dd0f86efa
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        C8.A0.18644.B5ACD636; Fri, 11 Nov 2022 13:06:51 +0900 (KST)
+Received: from FDSFTE314 (unknown [107.122.81.85]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20221111040648epsmtip14a368cde17f779d482923804ba92d3bf~mbCKylUd32425424254epsmtip1v;
+        Fri, 11 Nov 2022 04:06:48 +0000 (GMT)
+From:   "Vivek Yadav" <vivek.2311@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
+        <rcsekar@samsung.com>, <krzysztof.kozlowski+dt@linaro.org>,
+        <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <pankaj.dubey@samsung.com>, <ravi.patel@samsung.com>,
+        <alim.akhtar@samsung.com>, <linux-fsd@tesla.com>,
+        <robh+dt@kernel.org>
+Cc:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <aswani.reddy@samsung.com>, <sriranjani.p@samsung.com>
+In-Reply-To: <277004ed-3b6b-4ee5-39e4-beb75a272e60@linaro.org>
+Subject: RE: [PATCH v2 1/6] dt-bindings: Document the SYSREG specific
+ compatibles found on FSD SoC
+Date:   Fri, 11 Nov 2022 09:36:46 +0530
+Message-ID: <001601d8f583$06d01250$147036f0$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.178]
-X-ClientProxiedBy: EX13D22UWB004.ant.amazon.com (10.43.161.165) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQFejcOECimRbNc2gYBlewkpfd/ZqQHz7ogqAVwjo3kCSHwOhwGfuKaeAOJGcdCu7RURAA==
+Content-Language: en-in
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0xTZxjGc3p6Tlugy+Ey+SDRdEWjIpd2lu6rATXBLGdRlM0MdZKw5nBC
+        ETitbdkYJo6iU2GAMGQ4hojXYZmwtFAql+o6QBgdkLG5EJhyFQM4KiXbnAIrPbLx3+/93ufJ
+        e/ny8lE/Ay+Yn8roaS2jTBfjXlzLD1s3h//dn0FJLF0yOFJlwaHd3MiDlX2nufByey8GJzvH
+        eLDoySgK22bciX5LEQZN4w8waPyrDIWj04fgQHMlDi/22Tiw/uoFLuysXgf/7JlF4NXGBR4c
+        dbbyYEW/FYOftbXz4NBsHQZvPLyD7V5HNtwa5JDVpkzy2c9DCGky5uHk8INWnDRf/5Q8vygh
+        52y/4mRRgxEhl3Iv8UiXaUO89wdp0SpamUxrRTRDqZNTmZQY8d6DSbFJUXKJNFyqgG+JRYwy
+        g44R79kXH/52arp7VLHoI2V6pvspXqnTiSN3RmvVmXpapFLr9DFiWpOcrpFpInTKDF0mkxLB
+        0PodUonkzSi38MM0leHpIE9TH5BVdcqA5yAOIh8R8AEhA8tnzVg+4sX3I1oQ4Dj3PZcN5hEw
+        bptE2MCFgBvncjmrlvsTDpxNNCNgeOQlygZTCPjt+nmPCifCwKnSRY89gDCgoHy+0xOgRC4H
+        2Gbs+IpKQOwEVoPLw/5EMmi8O46uMJfYBO6YnNgKCwkFGK6p5rLsC7q/mvAwSmwDN6/MoGxP
+        IvB88qZHH0AkgIVbNozVBIKO5wWe9gDxjQDcttfgrGEPKCxq4LHsD6bvr3IwcP3R9kpDAetS
+        HsayClSXtCIs7wL3fql0N8F3F9gK6psj2ef1oOzHOg5b9zVQ+GLi1b6EwFq1yhvBE1cxtmJd
+        KVXY61+MiCvWTFaxZrKKNRNU/F+sGuEakSBao8tIoXVRGilDf/zfl1PqDBPiuYXQd6zI7yPO
+        CDvC4SN2BPBRcYDQe0sa5SdMVn6STWvVSdrMdFpnR6Lc6y5Bg1+n1O5jYvRJUplCIpPL5TLF
+        drlUHCi8djGU8iNSlHo6jaY1tHbVx+ELgnM4TWfGaG2O8dpLIQh9eERQddjoelell37eHUK9
+        mEwR1fo8CgqaEzjIkLwSX4PZljjQc9bh21vguvfT3ekz24/si7PFHO6w7vf1OdYEc9q/PL4c
+        Ep7QHDc157XlDfPj7EZLgb53KC9htmCsPGwoNneqL8vnRITr0tMdFNPe+O2xWl+ftubx7xbL
+        9nt/0ZnYYexynaCoAVVLmbOt9Gip+Sj/wKOw+vnjTQHFrvK8C4m76ycsPdPETPbGg93TuyKX
+        5e8bahVBXiIndG7qPhl35fQzRaxkQ83mvdFkYFbXIXowiz45B1vq4qoWohvWlziZ0ELH0j9f
+        b+Pll77XhDV0Rjy+LebqVEppKKrVKf8FSw7RWZQEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sb0zMcRzH973fvyvKr6vVVyZ2EkqnzJ9vW2vmAT8siU0WVqf7LdRd566Q
+        B0RanFSU6KTumlp3U3Iq4bpxJU50pbljNaRupz+U9cdohevGevbaXu/3e58HHy7GG8B9uUck
+        qaxMIkzmk654QzPfL3j/S3FCSKXVA30qbSCR8X49hUrM53FU1tJOIFvrZwrlfunFUNPQX9HR
+        kEsgXZ+FQNof1zDUOxiDuh6VkOiG2cBBd8sLcdSq8kaTbcMAldePU6h3VE8hZUcjgbKaWijU
+        PVxDoIoPD4lN3kyd5j2HUenSmO9vugGj014kmR6LnmTu3z7D5E2HMCOGtySTW6cFzMy5WxQz
+        pvPbNS/WNVzEJh85zsrWRMS7Hv71sY+QDnueHDcUUxkgm1YAFy6k18Hn/a9IBXDl8uhGACeG
+        moFT+MLCVwO4kz2hZsZOOUM2ACerOjGHIOnVMLNgerbgRV/BYFP5UkcIoxUc+PrdDO5sdHJg
+        bcXgbMqFjoCNZ8dIB3vSh2Br5xPKwTi9HD7UjRIOdqPDYE+VCneyBzQV988yRgdB23vbf65U
+        D2HO85bCn7ZKwnnFXjiuMRDOjA989jMHyweeyjlTyjlTyjlTyjkVFcC1YCErlYsTxfJQ6VoJ
+        e0IgF4rlaZJEQUKKWAdmvyEwsBHotaMCI+BwgRFALsb3cpu3MimB5yYSpp9iZSlxsrRkVm4E
+        i7g438etQ2GK49GJwlQ2iWWlrOyf5XBdfDM4Qmv3SMG2M83d4vSr509MtNU2qHyEBwt/LT52
+        KSr89LrJ6tMBY5rV7QX9puO7LwZN01G71E2hl3SRWz+IHijUC3rdf5tqLNuDlr0wzPQnmRX6
+        JTEZVw2CgRHRzj0T+qgydzIl9Y51Ijh6c25OQHzX07r8b8u6jkrI7VnW6Bq/FE2QVnCz2KPI
+        N3hPtnxK/fjL67zSIllP2qB/n/llhS0yyb4vtseUZd8RYr95IdPCSM1GbXrWqo8B1rAVnC3X
+        Wza2l+TFWoxhiaVX5t+LyikcLNZdXu+tjmOnEjYFU/5ft3Vkb3A/kP/cpbXarzl2zeO3pXZe
+        ZM3tA9XRp6putHiJBG18XH5YGBqIyeTCPwwyymt8AwAA
+X-CMS-MailID: 20221111040651epcas5p25baa64cda35ccabdc28081ed50b40a9f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20221109100245epcas5p38a01aed025f491d39a09508ebcdcef84
+References: <20221109100928.109478-1-vivek.2311@samsung.com>
+        <CGME20221109100245epcas5p38a01aed025f491d39a09508ebcdcef84@epcas5p3.samsung.com>
+        <20221109100928.109478-2-vivek.2311@samsung.com>
+        <709daf8b-a58e-9247-c5d8-f3be3e60fe70@linaro.org>
+        <000001d8f4f6$1c7e96e0$557bc4a0$@samsung.com>
+        <277004ed-3b6b-4ee5-39e4-beb75a272e60@linaro.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The maximum hash table size is 64K due to the nature of the protocol. [0]
-It's smaller than TCP, and fewer sockets can cause a performance drop.
 
-On an EC2 c5.24xlarge instance (192 GiB memory), after running iperf3 in
-different netns, creating 32Mi sockets without data transfer in the root
-netns causes regression for the iperf3's connection.
 
-  uhash_entries		sockets		length		Gbps
-	    64K		      1		     1		5.69
-			    1Mi		    16		5.27
-			    2Mi		    32		4.90
-			    4Mi		    64		4.09
-			    8Mi		   128		2.96
-			   16Mi		   256		2.06
-			   32Mi		   512		1.12
+> -----Original Message-----
+> From: Krzysztof Kozlowski <krzysztof.kozlowski=40linaro.org>
+> Sent: 10 November 2022 17:42
+> To: Vivek Yadav <vivek.2311=40samsung.com>; rcsekar=40samsung.com;
+> krzysztof.kozlowski+dt=40linaro.org; wg=40grandegger.com;
+> mkl=40pengutronix.de; davem=40davemloft.net; edumazet=40google.com;
+> kuba=40kernel.org; pabeni=40redhat.com; pankaj.dubey=40samsung.com;
+> ravi.patel=40samsung.com; alim.akhtar=40samsung.com; linux-fsd=40tesla.co=
+m;
+> robh+dt=40kernel.org
+> Cc: linux-can=40vger.kernel.org; netdev=40vger.kernel.org; linux-
+> kernel=40vger.kernel.org; linux-arm-kernel=40lists.infradead.org; linux-
+> samsung-soc=40vger.kernel.org; devicetree=40vger.kernel.org;
+> aswani.reddy=40samsung.com; sriranjani.p=40samsung.com
+> Subject: Re: =5BPATCH v2 1/6=5D dt-bindings: Document the SYSREG specific
+> compatibles found on FSD SoC
+>=20
+> On 10/11/2022 12:18, Vivek Yadav wrote:
+> >>> +maintainers:
+> >>> +  - Alim Akhtar <alim.akhtar=40samsung.com>
+> >>> +
+> >>> +description: =7C
+> >>> +  This is a system control registers block, providing multiple low
+> >>> +level
+> >>> +  platform functions like board detection and identification,
+> >>> +software
+> >>> +  interrupt generation.
+> >>> +
+> >>> +properties:
+> >>> +  compatible:
+> >>> +    oneOf:
+> >>
+> >> No need for oneOf.
+> >>
+> > Removing this results into dt_binding_check error, so this is required.
+>=20
+> No, this is not required. You do not have more than one condition for one=
+Of.
+>=20
+Oh, ok I got it. I was not removing =22-=22 before items, which is resultin=
+g an error. I will update this in next patch series. Sorry for confusion.
+> >>> +      - items:
+> >>> +          - enum:
+> >>> +              - tesla,sysreg_fsys0
+> >>> +              - tesla,sysreg_peric
+> >>
+> >> From where did you get underscores in compatibles?
+> >>
+> > I have seen in MCAN Driver <drivers/net/can/m_can/m_can_platform.c>
+> and also too many other yaml files.
+> > Do you have any ref standard guideline of compatible which says
+> underscore is not allowed.
+>=20
+> git grep compatible arch/arm64/boot/dts/exynos/ =7C grep _ git grep
+> compatible arch/arm/boot/dts/exynos* =7C grep _
+>=20
+> Both give 0 results. For few other SoCs there such cases but that's reall=
+y,
+> really exception. Drop underscores.
+>=20
+git grep compatible arch/arm64/boot/dts/ =7C grep _ =7C wc -l=20
+This gives me 456 location, am I missing anything here ?
+Anyway I will replace with =22-=22 in next patch series.
+>=20
+> Best regards,
+> Krzysztof
+Thanks for review the patches.
 
-The per-netns hash table breaks the lengthy lists into shorter ones.  It is
-useful on a multi-tenant system with thousands of netns.  With smaller hash
-tables, we can look up sockets faster, isolate noisy neighbours, and reduce
-lock contention.
-
-The max size of the per-netns table is 64K as well.  This is because the
-possible hash range by udp_hashfn() always fits in 64K within the same
-netns and we cannot make full use of the whole buckets larger than 64K.
-
-  /* 0 < num < 64K  ->  X < hash < X + 64K */
-  (num + net_hash_mix(net)) & mask;
-
-The sysctl usage is the same with TCP:
-
-  $ dmesg | cut -d ' ' -f 6- | grep "UDP hash"
-  UDP hash table entries: 65536 (order: 9, 2097152 bytes, vmalloc)
-
-  # sysctl net.ipv4.udp_hash_entries
-  net.ipv4.udp_hash_entries = 65536  # can be changed by uhash_entries
-
-  # sysctl net.ipv4.udp_child_hash_entries
-  net.ipv4.udp_child_hash_entries = 0  # disabled by default
-
-  # ip netns add test1
-  # ip netns exec test1 sysctl net.ipv4.udp_hash_entries
-  net.ipv4.udp_hash_entries = -65536  # share the global table
-
-  # sysctl -w net.ipv4.udp_child_hash_entries=100
-  net.ipv4.udp_child_hash_entries = 100
-
-  # ip netns add test2
-  # ip netns exec test2 sysctl net.ipv4.udp_hash_entries
-  net.ipv4.udp_hash_entries = 128  # own a per-netns table with 2^n buckets
-
-We could optimise the hash table lookup/iteration further by removing
-the netns comparison for the per-netns one in the future.  Also, we
-could optimise the sparse udp_hslot layout by putting it in udp_table.
-
-[0]: https://lore.kernel.org/netdev/4ACC2815.7010101@gmail.com/
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- Documentation/networking/ip-sysctl.rst |  27 +++++++
- include/linux/udp.h                    |   1 +
- include/net/netns/ipv4.h               |   2 +
- net/ipv4/sysctl_net_ipv4.c             |  38 ++++++++++
- net/ipv4/udp.c                         | 100 +++++++++++++++++++++++--
- 5 files changed, 163 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 815efc89ad73..ea788ef4def0 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1177,6 +1177,33 @@ udp_rmem_min - INTEGER
- udp_wmem_min - INTEGER
- 	UDP does not have tx memory accounting and this tunable has no effect.
- 
-+udp_hash_entries - INTEGER
-+	Show the number of hash buckets for UDP sockets in the current
-+	networking namespace.
-+
-+	A negative value means the networking namespace does not own its
-+	hash buckets and shares the initial networking namespace's one.
-+
-+udp_child_ehash_entries - INTEGER
-+	Control the number of hash buckets for UDP sockets in the child
-+	networking namespace, which must be set before clone() or unshare().
-+
-+	If the value is not 0, the kernel uses a value rounded up to 2^n
-+	as the actual hash bucket size.  0 is a special value, meaning
-+	the child networking namespace will share the initial networking
-+	namespace's hash buckets.
-+
-+	Note that the child will use the global one in case the kernel
-+	fails to allocate enough memory.  In addition, the global hash
-+	buckets are spread over available NUMA nodes, but the allocation
-+	of the child hash table depends on the current process's NUMA
-+	policy, which could result in performance differences.
-+
-+	Possible values: 0, 2^n (n: 0 - 16 (64K))
-+
-+	Default: 0
-+
-+
- RAW variables
- =============
- 
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index 779a7c065a32..18c8c9b7e39a 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -25,6 +25,7 @@ static inline struct udphdr *udp_hdr(const struct sk_buff *skb)
- 
- #define UDP_MAX_PORT_LOG		16
- #define UDP_HTABLE_SIZE_MIN		(CONFIG_BASE_SMALL ? 128 : 256)
-+#define UDP_HTABLE_SIZE_MAX		(1 << UDP_MAX_PORT_LOG)
- 
- static inline u32 udp_hashfn(const struct net *net, u32 num, u32 mask)
- {
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index e4cc4d3cacc4..db762e35aca9 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -208,6 +208,8 @@ struct netns_ipv4 {
- 
- 	atomic_t dev_addr_genid;
- 
-+	unsigned int sysctl_udp_child_hash_entries;
-+
- #ifdef CONFIG_SYSCTL
- 	unsigned long *sysctl_local_reserved_ports;
- 	int sysctl_ip_prot_sock;
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 0af28cedd071..34a601b9e57d 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -40,6 +40,7 @@ static int one_day_secs = 24 * 3600;
- static u32 fib_multipath_hash_fields_all_mask __maybe_unused =
- 	FIB_MULTIPATH_HASH_FIELD_ALL_MASK;
- static unsigned int tcp_child_ehash_entries_max = 16 * 1024 * 1024;
-+static unsigned int udp_child_hash_entries_max = UDP_HTABLE_SIZE_MAX;
- static int tcp_plb_max_rounds = 31;
- static int tcp_plb_max_cong_thresh = 256;
- 
-@@ -408,6 +409,28 @@ static int proc_tcp_ehash_entries(struct ctl_table *table, int write,
- 	return proc_dointvec(&tbl, write, buffer, lenp, ppos);
- }
- 
-+static int proc_udp_hash_entries(struct ctl_table *table, int write,
-+				 void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	struct net *net = container_of(table->data, struct net,
-+				       ipv4.sysctl_udp_child_hash_entries);
-+	int udp_hash_entries;
-+	struct ctl_table tbl;
-+
-+	udp_hash_entries = net->ipv4.udp_table->mask + 1;
-+
-+	/* A negative number indicates that the child netns
-+	 * shares the global udp_table.
-+	 */
-+	if (!net_eq(net, &init_net) && net->ipv4.udp_table == &udp_table)
-+		udp_hash_entries *= -1;
-+
-+	tbl.data = &udp_hash_entries;
-+	tbl.maxlen = sizeof(int);
-+
-+	return proc_dointvec(&tbl, write, buffer, lenp, ppos);
-+}
-+
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
- 					  void *buffer, size_t *lenp,
-@@ -1361,6 +1384,21 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &tcp_child_ehash_entries_max,
- 	},
-+	{
-+		.procname	= "udp_hash_entries",
-+		.data		= &init_net.ipv4.sysctl_udp_child_hash_entries,
-+		.mode		= 0444,
-+		.proc_handler	= proc_udp_hash_entries,
-+	},
-+	{
-+		.procname	= "udp_child_hash_entries",
-+		.data		= &init_net.ipv4.sysctl_udp_child_hash_entries,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_douintvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= &udp_child_hash_entries_max,
-+	},
- 	{
- 		.procname	= "udp_rmem_min",
- 		.data		= &init_net.ipv4.sysctl_udp_rmem_min,
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 42d7b84a5f16..c76a4d7ee74e 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -3276,7 +3276,7 @@ void __init udp_table_init(struct udp_table *table, const char *name)
- 					      &table->log,
- 					      &table->mask,
- 					      UDP_HTABLE_SIZE_MIN,
--					      64 * 1024);
-+					      UDP_HTABLE_SIZE_MAX);
- 
- 	table->hash2 = table->hash + (table->mask + 1);
- 	for (i = 0; i <= table->mask; i++) {
-@@ -3308,22 +3308,112 @@ u32 udp_flow_hashrnd(void)
- }
- EXPORT_SYMBOL(udp_flow_hashrnd);
- 
--static int __net_init udp_sysctl_init(struct net *net)
-+static void __net_init udp_sysctl_init(struct net *net)
- {
--	net->ipv4.udp_table = &udp_table;
--
- 	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
- 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
- 
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
- #endif
-+}
-+
-+static struct udp_table __net_init *udp_pernet_table_alloc(unsigned int hash_entries)
-+{
-+	unsigned long hash_size, bitmap_size;
-+	struct udp_table *udptable;
-+	int i;
-+
-+	udptable = kmalloc(sizeof(*udptable), GFP_KERNEL);
-+	if (!udptable)
-+		goto out;
-+
-+	udptable->log = ilog2(hash_entries);
-+	udptable->mask = hash_entries - 1;
-+
-+	hash_size = L1_CACHE_ALIGN(hash_entries * 2 * sizeof(struct udp_hslot));
-+	bitmap_size = hash_entries *
-+		BITS_TO_LONGS(udp_bitmap_size(udptable)) * sizeof(unsigned long);
-+
-+	udptable->hash = vmalloc_huge(hash_size + bitmap_size, GFP_KERNEL_ACCOUNT);
-+	if (!udptable->hash)
-+		goto free_table;
-+
-+	udptable->hash2 = udptable->hash + hash_entries;
-+	udptable->bitmap = (void *)udptable->hash + hash_size;
-+
-+	for (i = 0; i < hash_entries; i++) {
-+		INIT_HLIST_HEAD(&udptable->hash[i].head);
-+		udptable->hash[i].count = 0;
-+		spin_lock_init(&udptable->hash[i].lock);
-+
-+		INIT_HLIST_HEAD(&udptable->hash2[i].head);
-+		udptable->hash2[i].count = 0;
-+		spin_lock_init(&udptable->hash2[i].lock);
-+	}
-+
-+	return udptable;
-+
-+free_table:
-+	kfree(udptable);
-+out:
-+	return NULL;
-+}
-+
-+static void __net_exit udp_pernet_table_free(struct net *net)
-+{
-+	struct udp_table *udptable = net->ipv4.udp_table;
-+
-+	if (udptable == &udp_table)
-+		return;
-+
-+	kvfree(udptable->hash);
-+	kfree(udptable);
-+}
-+
-+static void __net_init udp_set_table(struct net *net)
-+{
-+	struct udp_table *udptable;
-+	unsigned int hash_entries;
-+	struct net *old_net;
-+
-+	if (net_eq(net, &init_net))
-+		goto fallback;
-+
-+	old_net = current->nsproxy->net_ns;
-+	hash_entries = READ_ONCE(old_net->ipv4.sysctl_udp_child_hash_entries);
-+	if (!hash_entries)
-+		goto fallback;
-+
-+	hash_entries = roundup_pow_of_two(hash_entries);
-+	udptable = udp_pernet_table_alloc(hash_entries);
-+	if (udptable) {
-+		net->ipv4.udp_table = udptable;
-+	} else {
-+		pr_warn("Failed to allocate UDP hash table (entries: %u) "
-+			"for a netns, fallback to the global one\n",
-+			hash_entries);
-+fallback:
-+		net->ipv4.udp_table = &udp_table;
-+	}
-+}
-+
-+static int __net_init udp_pernet_init(struct net *net)
-+{
-+	udp_sysctl_init(net);
-+	udp_set_table(net);
- 
- 	return 0;
- }
- 
-+static void __net_exit udp_pernet_exit(struct net *net)
-+{
-+	udp_pernet_table_free(net);
-+}
-+
- static struct pernet_operations __net_initdata udp_sysctl_ops = {
--	.init	= udp_sysctl_init,
-+	.init	= udp_pernet_init,
-+	.exit	= udp_pernet_exit,
- };
- 
- #if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
--- 
-2.30.2
 
