@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B4D624F67
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 02:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4BA8624F6A
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 02:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232505AbiKKBPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 20:15:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
+        id S232529AbiKKBQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 20:16:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232111AbiKKBPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 20:15:01 -0500
+        with ESMTP id S232225AbiKKBPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 20:15:15 -0500
 Received: from tarta.nabijaczleweli.xyz (unknown [139.28.40.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24EA964A0E;
-        Thu, 10 Nov 2022 17:14:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75B002124C;
+        Thu, 10 Nov 2022 17:14:40 -0800 (PST)
 Received: from tarta.nabijaczleweli.xyz (unknown [192.168.1.250])
-        by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id 739CB740;
-        Fri, 11 Nov 2022 02:14:34 +0100 (CET)
+        by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id C64A8452;
+        Fri, 11 Nov 2022 02:14:39 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nabijaczleweli.xyz;
-        s=202211; t=1668129274;
-        bh=Be1Pxakq207nlXxpQ89ncdamlPosjQkgXJViXRRlV10=;
+        s=202211; t=1668129279;
+        bh=XRnEX2VezQMkuazgxD7F8iFgqKQr9+bZpaNouakmEn4=;
         h=Date:From:Cc:Subject:References:In-Reply-To:From;
-        b=eFoPT6Tau6WfPDeDdofL7X3GpraEEXez1hwa7ZE0Vq2fveMN6hCDcIIYxnLqh+UyX
-         w8738D+TMvGM1TCxFto5oEKbCx0JFBCXPGh0uiwaE6eI+iyKt1NXU0aQ2GyWIsIO/0
-         fzVbXmiXOJhwWI9TEoOiHYQVIA/NMqMqPNA/oTA8Gem4PbOp+bgOG/rRsqi/4xrzKn
-         mNBq+1f0qr+j7Y7/nv+wNsVTTRE2gBcVPzhJi4QlcCrrPFjaoTIuKJ0tUfZ3J95fIp
-         iRDq4/nr5O0nkCEDI0OUInPREqnCcHyrFjH1rWNTH/xMYqaITUjcVnTPrRBXKAXeuq
-         1ylH8h88He7PA==
-Date:   Fri, 11 Nov 2022 02:14:33 +0100
+        b=LoOr1h5IxF2I5nvfVnHWo1iw273I5Po3fHa1P7xCk5EA0g2b48QrUQJzChJVVQjvj
+         75guOspF4pBnL3khWq7Na/Vye65srHFSgNs+4VrQYbjJMvwCrZFF7VxliDNjvE6a+I
+         5rGAfWL5BH8T7RX0TKtRGOKVrcJYxkqD+1gYwHTZirHOG/HSlc/EE96esqbruDZrpn
+         Ft6+M61tZ+P1Ps1tyNdQfYEbDo4i3Bl/owITyxyDYdr7m6CqNj7usMwkOhGgJ1h9au
+         tWxo57/wAGXRdNXJ+aFm/GENBSYsCK5LfsK09ULo1AkEuzwWqkkMUvPIjtyWNL3xb2
+         84hhtoBc1mr+Q==
+Date:   Fri, 11 Nov 2022 02:14:38 +0100
 From:   Ahelenia =?utf-8?Q?Ziemia=C5=84ska?= 
         <nabijaczleweli@nabijaczleweli.xyz>
 Cc:     Jonathan Corbet <corbet@lwn.net>,
@@ -35,26 +35,25 @@ Cc:     Jonathan Corbet <corbet@lwn.net>,
         Alex Shi <alexs@kernel.org>,
         Yanteng Si <siyanteng@loongson.cn>,
         Hu Haowen <src.res@email.cn>,
-        Thomas Sailer <t.sailer@alumni.ethz.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kees Cook <keescook@chromium.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 11/15] hdlcdrv: remove HDLCDRV_MAGIC
-Message-ID: <fe1abc4cbe8a77841df7f2e99a77f3dc22579525.1668128257.git.nabijaczleweli@nabijaczleweli.xyz>
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Huang Pei <huangpei@loongson.cn>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH v3 12/15] drivers: net: slip: remove SLIP_MAGIC
+Message-ID: <570435f7a54ff9fbb55a7e970ae8f082b88a6454.1668128257.git.nabijaczleweli@nabijaczleweli.xyz>
 References: <cover.1668128257.git.nabijaczleweli@nabijaczleweli.xyz>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="efa56i6635dya7aa"
+        protocol="application/pgp-signature"; boundary="uvnkwibhrdezqczq"
 Content-Disposition: inline
 In-Reply-To: <cover.1668128257.git.nabijaczleweli@nabijaczleweli.xyz>
 User-Agent: NeoMutt/20220429
@@ -71,39 +70,41 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---efa56i6635dya7aa
+--uvnkwibhrdezqczq
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
+According to Greg, in the context of magic numbers as defined in
+magic-number.rst, "the tty layer should not need this and I'll gladly
+take patches".
+
 We have largely moved away from this approach, and we have better
 debugging instrumentation nowadays: kill it.
 
-Additionally, ~half HDLCDRV_MAGIC checks just early-exit instead of
-noting the bug, so they're detrimental, if anything.
+Additionally, all SLIP_MAGIC checks just early-exit instead of noting
+the bug, so they're detrimental, if anything.
 
 Link: https://lore.kernel.org/linux-doc/YyMlovoskUcHLEb7@kroah.com/
+Reviewed-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Ahelenia Ziemia=C5=84ska <nabijaczleweli@nabijaczleweli.xyz>
 ---
- Documentation/process/magic-number.rst                   | 1 -
- .../translations/it_IT/process/magic-number.rst          | 1 -
- .../translations/zh_CN/process/magic-number.rst          | 1 -
- .../translations/zh_TW/process/magic-number.rst          | 1 -
- drivers/net/hamradio/baycom_par.c                        | 1 -
- drivers/net/hamradio/baycom_ser_fdx.c                    | 3 +--
- drivers/net/hamradio/baycom_ser_hdx.c                    | 3 +--
- drivers/net/hamradio/hdlcdrv.c                           | 9 +++------
- include/linux/hdlcdrv.h                                  | 2 --
- 9 files changed, 5 insertions(+), 17 deletions(-)
+ Documentation/process/magic-number.rst                |  1 -
+ .../translations/it_IT/process/magic-number.rst       |  1 -
+ .../translations/zh_CN/process/magic-number.rst       |  1 -
+ .../translations/zh_TW/process/magic-number.rst       |  1 -
+ drivers/net/slip/slip.c                               | 11 +++++------
+ drivers/net/slip/slip.h                               |  4 ----
+ 6 files changed, 5 insertions(+), 14 deletions(-)
 
 diff --git a/Documentation/process/magic-number.rst b/Documentation/process=
 /magic-number.rst
-index c1c68c713cbc..3b3e607e1cbc 100644
+index 3b3e607e1cbc..e59c707ec785 100644
 --- a/Documentation/process/magic-number.rst
 +++ b/Documentation/process/magic-number.rst
-@@ -70,6 +70,5 @@ Magic Name            Number           Structure         =
-       File
+@@ -69,6 +69,5 @@ Changelog::
+ Magic Name            Number           Structure                File
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -111,10 +112,8 @@ index c1c68c713cbc..3b3e607e1cbc 100644
 =3D=3D=3D=3D=3D=3D
  FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
 linux/fs.h``
- SLIP_MAGIC            0x5302           slip                     ``drivers/=
+-SLIP_MAGIC            0x5302           slip                     ``drivers/=
 net/slip.h``
--HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
-linux/hdlcdrv.h``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
@@ -124,11 +123,11 @@ scsi/ncr53c8xx.c``
 =3D=3D=3D=3D=3D=3D
 diff --git a/Documentation/translations/it_IT/process/magic-number.rst b/Do=
 cumentation/translations/it_IT/process/magic-number.rst
-index 5b609ca78a14..e8c659b6a743 100644
+index e8c659b6a743..37a539867b6f 100644
 --- a/Documentation/translations/it_IT/process/magic-number.rst
 +++ b/Documentation/translations/it_IT/process/magic-number.rst
-@@ -76,6 +76,5 @@ Nome magico           Numero           Struttura         =
-       File
+@@ -75,6 +75,5 @@ Registro dei cambiamenti::
+ Nome magico           Numero           Struttura                File
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -136,10 +135,8 @@ index 5b609ca78a14..e8c659b6a743 100644
 =3D=3D=3D=3D=3D=3D
  FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
 linux/fs.h``
- SLIP_MAGIC            0x5302           slip                     ``drivers/=
+-SLIP_MAGIC            0x5302           slip                     ``drivers/=
 net/slip.h``
--HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
-linux/hdlcdrv.h``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
@@ -149,10 +146,12 @@ scsi/ncr53c8xx.c``
 =3D=3D=3D=3D=3D=3D
 diff --git a/Documentation/translations/zh_CN/process/magic-number.rst b/Do=
 cumentation/translations/zh_CN/process/magic-number.rst
-index ab4d4e32b61f..2105af32187c 100644
+index 2105af32187c..8a3a3e872c52 100644
 --- a/Documentation/translations/zh_CN/process/magic-number.rst
 +++ b/Documentation/translations/zh_CN/process/magic-number.rst
-@@ -59,6 +59,5 @@ Linux =E9=AD=94=E6=9C=AF=E6=95=B0
+@@ -58,6 +58,5 @@ Linux =E9=AD=94=E6=9C=AF=E6=95=B0
+ =E9=AD=94=E6=9C=AF=E6=95=B0=E5=90=8D              =E6=95=B0=E5=AD=97      =
+       =E7=BB=93=E6=9E=84                     =E6=96=87=E4=BB=B6
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -160,10 +159,8 @@ index ab4d4e32b61f..2105af32187c 100644
 =3D=3D=3D=3D=3D=3D
  FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
 linux/fs.h``
- SLIP_MAGIC            0x5302           slip                     ``drivers/=
+-SLIP_MAGIC            0x5302           slip                     ``drivers/=
 net/slip.h``
--HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
-linux/hdlcdrv.h``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
@@ -173,10 +170,12 @@ scsi/ncr53c8xx.c``
 =3D=3D=3D=3D=3D=3D
 diff --git a/Documentation/translations/zh_TW/process/magic-number.rst b/Do=
 cumentation/translations/zh_TW/process/magic-number.rst
-index a6131d978189..793a0ae9fb7c 100644
+index 793a0ae9fb7c..7ace7834f7f9 100644
 --- a/Documentation/translations/zh_TW/process/magic-number.rst
 +++ b/Documentation/translations/zh_TW/process/magic-number.rst
-@@ -62,6 +62,5 @@ Linux =E9=AD=94=E8=A1=93=E6=95=B8
+@@ -61,6 +61,5 @@ Linux =E9=AD=94=E8=A1=93=E6=95=B8
+ =E9=AD=94=E8=A1=93=E6=95=B8=E5=90=8D              =E6=95=B8=E5=AD=97      =
+       =E7=B5=90=E6=A7=8B                     =E6=96=87=E4=BB=B6
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -184,10 +183,8 @@ index a6131d978189..793a0ae9fb7c 100644
 =3D=3D=3D=3D=3D=3D
  FASYNC_MAGIC          0x4601           fasync_struct            ``include/=
 linux/fs.h``
- SLIP_MAGIC            0x5302           slip                     ``drivers/=
+-SLIP_MAGIC            0x5302           slip                     ``drivers/=
 net/slip.h``
--HDLCDRV_MAGIC         0x5ac6e778       hdlcdrv_state            ``include/=
-linux/hdlcdrv.h``
  CCB_MAGIC             0xf2691ad2       ccb                      ``drivers/=
 scsi/ncr53c8xx.c``
  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=
@@ -195,163 +192,106 @@ scsi/ncr53c8xx.c``
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D
-diff --git a/drivers/net/hamradio/baycom_par.c b/drivers/net/hamradio/bayco=
-m_par.c
-index fd7da5bb1fa5..e1cf3ed42df6 100644
---- a/drivers/net/hamradio/baycom_par.c
-+++ b/drivers/net/hamradio/baycom_par.c
-@@ -418,7 +418,6 @@ static int baycom_ioctl(struct net_device *dev, void __=
-user *data,
- 		return -EINVAL;
+diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+index 6865d32270e5..95f5c79772e7 100644
+--- a/drivers/net/slip/slip.c
++++ b/drivers/net/slip/slip.c
+@@ -426,7 +426,7 @@ static void slip_transmit(struct work_struct *work)
 =20
- 	bc =3D netdev_priv(dev);
--	BUG_ON(bc->hdrv.magic !=3D HDLCDRV_MAGIC);
-=20
- 	if (cmd !=3D SIOCDEVPRIVATE)
- 		return -ENOIOCTLCMD;
-diff --git a/drivers/net/hamradio/baycom_ser_fdx.c b/drivers/net/hamradio/b=
-aycom_ser_fdx.c
-index 646f605e358f..65113cb6de8d 100644
---- a/drivers/net/hamradio/baycom_ser_fdx.c
-+++ b/drivers/net/hamradio/baycom_ser_fdx.c
-@@ -252,7 +252,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_i=
-d)
- 	unsigned char iir, msr;
- 	unsigned int txcount =3D 0;
-=20
--	if (!bc || bc->hdrv.magic !=3D HDLCDRV_MAGIC)
-+	if (!bc)
- 		return IRQ_NONE;
- 	/* fast way out for shared irq */
- 	if ((iir =3D inb(IIR(dev->base_addr))) & 1) =09
-@@ -507,7 +507,6 @@ static int baycom_ioctl(struct net_device *dev, void __=
-user *data,
- 		return -EINVAL;
-=20
- 	bc =3D netdev_priv(dev);
--	BUG_ON(bc->hdrv.magic !=3D HDLCDRV_MAGIC);
-=20
- 	if (cmd !=3D SIOCDEVPRIVATE)
- 		return -ENOIOCTLCMD;
-diff --git a/drivers/net/hamradio/baycom_ser_hdx.c b/drivers/net/hamradio/b=
-aycom_ser_hdx.c
-index 5d1ab4840753..df33e5cdb5c2 100644
---- a/drivers/net/hamradio/baycom_ser_hdx.c
-+++ b/drivers/net/hamradio/baycom_ser_hdx.c
-@@ -365,7 +365,7 @@ static irqreturn_t ser12_interrupt(int irq, void *dev_i=
-d)
- 	struct baycom_state *bc =3D netdev_priv(dev);
- 	unsigned char iir;
-=20
--	if (!dev || !bc || bc->hdrv.magic !=3D HDLCDRV_MAGIC)
-+	if (!dev || !bc)
- 		return IRQ_NONE;
- 	/* fast way out */
- 	if ((iir =3D inb(IIR(dev->base_addr))) & 1)
-@@ -561,7 +561,6 @@ static int baycom_ioctl(struct net_device *dev, void __=
-user *data,
- 		return -EINVAL;
-=20
- 	bc =3D netdev_priv(dev);
--	BUG_ON(bc->hdrv.magic !=3D HDLCDRV_MAGIC);
-=20
- 	if (cmd !=3D SIOCDEVPRIVATE)
- 		return -ENOIOCTLCMD;
-diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
-index 2263029d1a20..60abd6008cc7 100644
---- a/drivers/net/hamradio/hdlcdrv.c
-+++ b/drivers/net/hamradio/hdlcdrv.c
-@@ -158,7 +158,7 @@ void hdlcdrv_receiver(struct net_device *dev, struct hd=
-lcdrv_state *s)
- 	int i;
- 	unsigned int mask1, mask2, mask3, mask4, mask5, mask6, word;
- =09
--	if (!s || s->magic !=3D HDLCDRV_MAGIC)=20
-+	if (!s)
+ 	spin_lock_bh(&sl->lock);
+ 	/* First make sure we're connected. */
+-	if (!sl->tty || sl->magic !=3D SLIP_MAGIC || !netif_running(sl->dev)) {
++	if (!sl->tty || !netif_running(sl->dev)) {
+ 		spin_unlock_bh(&sl->lock);
  		return;
- 	if (test_and_set_bit(0, &s->hdlcrx.in_hdlc_rx))
- 		return;
-@@ -257,7 +257,7 @@ void hdlcdrv_transmitter(struct net_device *dev, struct=
- hdlcdrv_state *s)
- 	struct sk_buff *skb;
- 	int pkt_len;
-=20
--	if (!s || s->magic !=3D HDLCDRV_MAGIC)=20
-+	if (!s)
- 		return;
- 	if (test_and_set_bit(0, &s->hdlctx.in_hdlc_tx))
- 		return;
-@@ -364,7 +364,7 @@ static void start_tx(struct net_device *dev, struct hdl=
-cdrv_state *s)
-=20
- void hdlcdrv_arbitrate(struct net_device *dev, struct hdlcdrv_state *s)
+ 	}
+@@ -690,7 +690,7 @@ static void slip_receive_buf(struct tty_struct *tty, co=
+nst unsigned char *cp,
  {
--	if (!s || s->magic !=3D HDLCDRV_MAGIC || s->hdlctx.ptt || !s->skb)=20
-+	if (!s || s->hdlctx.ptt || !s->skb)
- 		return;
- 	if (s->ch_params.fulldup) {
- 		start_tx(dev, s);
-@@ -701,7 +701,6 @@ struct net_device *hdlcdrv_register(const struct hdlcdr=
-v_ops *ops,
- 	 * initialize part of the hdlcdrv_state struct
- 	 */
- 	s =3D netdev_priv(dev);
--	s->magic =3D HDLCDRV_MAGIC;
- 	s->ops =3D ops;
- 	dev->base_addr =3D baseaddr;
- 	dev->irq =3D irq;
-@@ -723,8 +722,6 @@ void hdlcdrv_unregister(struct net_device *dev)
- {
- 	struct hdlcdrv_state *s =3D netdev_priv(dev);
+ 	struct slip *sl =3D tty->disc_data;
 =20
--	BUG_ON(s->magic !=3D HDLCDRV_MAGIC);
+-	if (!sl || sl->magic !=3D SLIP_MAGIC || !netif_running(sl->dev))
++	if (!sl || !netif_running(sl->dev))
+ 		return;
+=20
+ 	/* Read the characters out of the buffer */
+@@ -761,7 +761,6 @@ static struct slip *sl_alloc(void)
+ 	sl =3D netdev_priv(dev);
+=20
+ 	/* Initialize channel control data */
+-	sl->magic       =3D SLIP_MAGIC;
+ 	sl->dev	      	=3D dev;
+ 	spin_lock_init(&sl->lock);
+ 	INIT_WORK(&sl->tx_work, slip_transmit);
+@@ -809,7 +808,7 @@ static int slip_open(struct tty_struct *tty)
+=20
+ 	err =3D -EEXIST;
+ 	/* First make sure we're not already connected. */
+-	if (sl && sl->magic =3D=3D SLIP_MAGIC)
++	if (sl)
+ 		goto err_exit;
+=20
+ 	/* OK.  Find a free SLIP channel to use. */
+@@ -886,7 +885,7 @@ static void slip_close(struct tty_struct *tty)
+ 	struct slip *sl =3D tty->disc_data;
+=20
+ 	/* First make sure we're connected. */
+-	if (!sl || sl->magic !=3D SLIP_MAGIC || sl->tty !=3D tty)
++	if (!sl || sl->tty !=3D tty)
+ 		return;
+=20
+ 	spin_lock_bh(&sl->lock);
+@@ -1080,7 +1079,7 @@ static int slip_ioctl(struct tty_struct *tty, unsigne=
+d int cmd,
+ 	int __user *p =3D (int __user *)arg;
+=20
+ 	/* First make sure we're connected. */
+-	if (!sl || sl->magic !=3D SLIP_MAGIC)
++	if (!sl)
+ 		return -EINVAL;
+=20
+ 	switch (cmd) {
+diff --git a/drivers/net/slip/slip.h b/drivers/net/slip/slip.h
+index 3d7f88b330c1..d7dbedd27669 100644
+--- a/drivers/net/slip/slip.h
++++ b/drivers/net/slip/slip.h
+@@ -50,8 +50,6 @@
+=20
+=20
+ struct slip {
+-  int			magic;
 -
- 	if (s->opened && s->ops->close)
- 		s->ops->close(dev);
- 	unregister_netdev(dev);
-diff --git a/include/linux/hdlcdrv.h b/include/linux/hdlcdrv.h
-index 5d70c3f98f5b..809ad0f5c99c 100644
---- a/include/linux/hdlcdrv.h
-+++ b/include/linux/hdlcdrv.h
-@@ -13,7 +13,6 @@
- #include <linux/spinlock.h>
- #include <uapi/linux/hdlcdrv.h>
-=20
--#define HDLCDRV_MAGIC      0x5ac6e778
- #define HDLCDRV_HDLCBUFFER  32 /* should be a power of 2 for speed reasons=
- */
- #define HDLCDRV_BITBUFFER  256 /* should be a power of 2 for speed reasons=
- */
- #undef HDLCDRV_LOOPBACK  /* define for HDLC debugging purposes */
-@@ -84,7 +83,6 @@ struct hdlcdrv_ops {
+   /* Various fields. */
+   struct tty_struct	*tty;		/* ptr to TTY structure		*/
+   struct net_device	*dev;		/* easy for intr handling	*/
+@@ -100,6 +98,4 @@ struct slip {
+ #endif
  };
 =20
- struct hdlcdrv_state {
--	int magic;
- 	int opened;
-=20
- 	const struct hdlcdrv_ops *ops;
+-#define SLIP_MAGIC 0x5302
+-
+ #endif	/* _LINUX_SLIP.H */
 --=20
 2.30.2
 
---efa56i6635dya7aa
+--uvnkwibhrdezqczq
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmNtofgACgkQvP0LAY0m
-WPG4ow//VM1Atfl+btMcZSQMTLeQQsx1NyiTh1Lg8C4MhWWQt/qRKSgvBjs1aBdd
-MqsuTpzTaVMijc/7IPHjMEDaHmKivtrCiLtNtpxmnmWWN9MKQEx6ATTe2euHqWtJ
-FhiNBN5yOBiVb30ZTkf+D/IyCWROxyXgDuloNT+jhPdCiX4HXgAQBAdtf22LWzip
-hqdQf8sYexSxTdoHkM6tOlF0e0Yolmxf1BlQDyAXQwHpeUWPRBPxPKPNPNtiWFdl
-ltMn5JbmF2tHrb1vbNq5s0OEEsDiVso8tIwTIWhHyy5q759CVYaUk33LXzGo8WEv
-aMhgejXeNFbwwD1D4T3MtDJNehbeMox76w7qYVjejmu0zR5vCC/VwTevV/SeuXBG
-FdeSv3PLkZ1SLnkEBjinR3Wu7yOLQWbio7hn6emNTLqajVnCLKv9O88Wu11gZPNy
-KqsdZ2+WGWkX2UwV3x7qhqhaMaRBPLoylsj7mmFAYy8qt3v48P/r5HKXMvrkLrW5
-ClkixjD/h8DGsK9NOVZopoZ+lzZdPmoQ/CnXmOCvV7Sfs32TYK2uu9AvFwRdp+6X
-Me33Tkt+gzGNGuPtaHLMdixOWw/h68yO6jBj01nlIzcjnXbL5RC7xh4QRBje70OS
-P2nWms8VXCfoFBadUrVbkqWwapGyvewNgfVQOF8lVVs3xqVRJP0=
-=6uHZ
+iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmNtof4ACgkQvP0LAY0m
+WPF7txAAqYTBlNdjEqyRFVYm7nWFIK9kDqijhb5lre58NkyUFLmeu+75VoLFJGPP
+NwWaPpgq/pdP23Ui+rwkU9rDoGxAjg6m3WlKxvrBbK2PmJAZMOyHfr5INOKVbmjr
+DZhixuFIpr9su3K3RqPLuflGUPpemGwIq2RXyDhbr0phl04rP8Zza+WuH3QioOIV
+FegoIkKQLtTJEiG3BRa590kTOqqSXE2LrPbV2nBQsjdO7W9LGocvNfon2Vzyv3AF
+wDpVuUWVe/23CLNee8OFKR2xSsrpDpLCFB+5jGyCER36nhWi+ksiFlc3ATKnhBzY
+vJi0ObTYh4FzNfs8jEXI7JRUF33+MX+bfp17GscwVDnDEprPZ6V+pwsMKONOIV9V
+BIpnI3985EUUL2mUM6lk8a2USDTu3/F5b0AS/tc6j8Eex7gig+2vCg4ezaaIakxw
+XOYFYdjzLc2iXu4+1AckzEam9/wFL7r/p83u5Qx8An49PE1srNf7mCLlOQmRd6cj
+g6YtQtL96sebZYAexIFsQtr1O+nx72BzdQ2b4tQAbTpB/JVLbP9GMQoUnzrZ8O94
+eNzmbspvruAaH6k0nZ87RuP7XLGnlgqIL7R6rYNc+w3tNb3pObFX8LSNpC92BZV9
+nQxGx66ZDENVMFe0BtJ0KoUPT4Xt7+vEPU6iPbQnmjzPvQ7f2tI=
+=KmN1
 -----END PGP SIGNATURE-----
 
---efa56i6635dya7aa--
+--uvnkwibhrdezqczq--
