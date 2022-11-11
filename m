@@ -2,144 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F7A3624F7B
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 02:23:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7504624F83
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 02:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230450AbiKKBXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 20:23:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
+        id S231678AbiKKB0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 20:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiKKBXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 20:23:16 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5ECE0CD
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 17:23:15 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N7gpq3mm4zqSHs;
-        Fri, 11 Nov 2022 09:19:31 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 11 Nov 2022 09:23:13 +0800
-Message-ID: <61814668-2717-d140-5a01-f6a46e05de09@huawei.com>
-Date:   Fri, 11 Nov 2022 09:23:12 +0800
+        with ESMTP id S229536AbiKKB0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 20:26:23 -0500
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4755F15FE2;
+        Thu, 10 Nov 2022 17:26:20 -0800 (PST)
+Message-ID: <2e3c1e2d-bc60-b406-31e3-6e922eea3f9f@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1668129978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IpJQ800sy78+a8kmRcchPk+xzAsgLINxEGbosp0MZ6M=;
+        b=WSGspNZV58xAl4fDEq8lwjV5YbmNymLaeb43fC9tHUvtseT+y+TdlzQ6Brk3zbB8YOCs8y
+        xIcgIpXSoL/y9/2iHAwyh/us0pWvuVoQh7UuitPUl5mgHVzeBefGFwZ+Ye57ObMwJQ6W1l
+        IGmLkWxrgiKXp9pECIFCvcbIfv23MxA=
+Date:   Thu, 10 Nov 2022 17:26:12 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net] net/9p: fix issue of list_del corruption in
- p9_fd_cancel()
-To:     <asmadeus@codewreck.org>
-CC:     <v9fs-developer@lists.sourceforge.net>, <netdev@vger.kernel.org>,
-        <ericvh@gmail.com>, <lucho@ionkov.net>, <linux_oss@crudebyte.com>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-References: <20221110122606.383352-1-shaozhengchao@huawei.com>
- <Y2zz24jRIo9DdWw7@codewreck.org>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <Y2zz24jRIo9DdWw7@codewreck.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
+ metadata into skb context
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+ <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+ <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
+ <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev> <87leokz8lq.fsf@toke.dk>
+ <5a23b856-88a3-a57a-2191-b673f4160796@linux.dev>
+ <CAKH8qBsfVOoR1MNAFx3uR9Syoc0APHABsf97kb8SGpK+T1qcew@mail.gmail.com>
+ <32f81955-8296-6b9a-834a-5184c69d3aac@linux.dev>
+ <CAKH8qBuLMZrFmmi77Qbt7DCd1w9FJwdeK5CnZTJqHYiWxwDx6w@mail.gmail.com>
+ <87y1siyjf6.fsf@toke.dk>
+ <CAKH8qBsfzYmQ9SZXhFetf_zQPNmE_L=_H_rRxJEwZzNbqtoKJA@mail.gmail.com>
+ <87o7texv08.fsf@toke.dk>
+ <CAKH8qBtjYV=tb28y6bvo3tGonzjvm2JLyis9AFPSMTuXsL3NPA@mail.gmail.com>
+ <d8d23d7b-c997-ae8d-b4ee-a1182ff657f5@linux.dev>
+ <CAKH8qBvoR36wJShRE5zbgif2L9hweM6vSPVEHugY_ctOQgvpdQ@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <CAKH8qBvoR36wJShRE5zbgif2L9hweM6vSPVEHugY_ctOQgvpdQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/11/10 20:51, asmadeus@codewreck.org wrote:
-> Zhengchao Shao wrote on Thu, Nov 10, 2022 at 08:26:06PM +0800:
->> Syz reported the following issue:
->> kernel BUG at lib/list_debug.c:53!
->> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
->> RIP: 0010:__list_del_entry_valid.cold+0x5c/0x72
->> Call Trace:
->> <TASK>
->> p9_fd_cancel+0xb1/0x270
->> p9_client_rpc+0x8ea/0xba0
->> p9_client_create+0x9c0/0xed0
->> v9fs_session_init+0x1e0/0x1620
->> v9fs_mount+0xba/0xb80
->> legacy_get_tree+0x103/0x200
->> vfs_get_tree+0x89/0x2d0
->> path_mount+0x4c0/0x1ac0
->> __x64_sys_mount+0x33b/0x430
->> do_syscall_64+0x35/0x80
->> entry_SYSCALL_64_after_hwframe+0x46/0xb0
->> </TASK>
+On 11/10/22 4:57 PM, Stanislav Fomichev wrote:
+> On Thu, Nov 10, 2022 at 4:33 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
 >>
->> The process is as follows:
->> Thread A:                       Thread B:
->> p9_poll_workfn()                p9_client_create()
->> ...                                 ...
->>      p9_conn_cancel()                p9_fd_cancel()
->>          list_del()                      ...
->>          ...                             list_del()  //list_del
->>                                                        corruption
->> There is no lock protection when deleting list in p9_conn_cancel(). After
->> deleting list in Thread A, thread B will delete the same list again. It
->> will cause issue of list_del corruption.
-> 
-> Thanks!
-> 
-> I'd add a couple of lines here describing the actual fix.
-> Something like this?
-> ---
-> Setting req->status to REQ_STATUS_ERROR under lock prevents other
-> cleanup paths from trying to manipulate req_list.
-> The other thread can safely check req->status because it still holds a
-> reference to req at this point.
-> ---
-> 
-> With that out of the way, it's a good idea; I didn't remember that
-> p9_fd_cancel (and cancelled) check for req status before acting on it.
-> This really feels like whack-a-mole, but I'd say this is one step
-> better.
-> 
-> Please tell me if you want to send a v2 with your words, or I'll just
-> pick this up with my suggestion and submit to Linus in a week-ish after
-> testing. No point in waiting a full cycle for this.
-> 
-> 
-Hi Dominique:
-	Thank you for your review. Your suggestion looks good to me, and
-please add your suggestion. :)
->> Fixes: 52f1c45dde91 ("9p: trans_fd/p9_conn_cancel: drop client lock earlier")
->> Reported-by: syzbot+9b69b8d10ab4a7d88056@syzkaller.appspotmail.com
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> ---
->> v2: set req status when removing list
-> 
-> (I don't recall seeing a v1?)
-> 
-Sorry, please ignore this notes.
->> ---
->>   net/9p/trans_fd.c | 2 ++
->>   1 file changed, 2 insertions(+)
+>> On 11/10/22 3:52 PM, Stanislav Fomichev wrote:
+>>> On Thu, Nov 10, 2022 at 3:14 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>>>
+>>>> Skipping to the last bit:
+>>>>
+>>>>>>>>>      } else {
+>>>>>>>>>        use kfuncs
+>>>>>>>>>      }
+>>>>>>>>>
+>>>>>>>>> 5. Support the case where we keep program's metadata and kernel's
+>>>>>>>>> xdp_to_skb_metadata
+>>>>>>>>>      - skb_metadata_import_from_xdp() will "consume" it by mem-moving the
+>>>>>>>>> rest of the metadata over it and adjusting the headroom
+>>>>>>>>
+>>>>>>>> I was thinking the kernel's xdp_to_skb_metadata is always before the program's
+>>>>>>>> metadata.  xdp prog should usually work in this order also: read/write headers,
+>>>>>>>> write its own metadata, call bpf_xdp_metadata_export_to_skb(), and return
+>>>>>>>> XDP_PASS/XDP_REDIRECT.  When it is XDP_PASS, the kernel just needs to pop the
+>>>>>>>> xdp_to_skb_metadata and pass the remaining program's metadata to the bpf-tc.
+>>>>>>>>
+>>>>>>>> For the kernel and xdp prog, I don't think it matters where the
+>>>>>>>> xdp_to_skb_metadata is.  However, the xdp->data_meta (program's metadata) has to
+>>>>>>>> be before xdp->data because of the current data_meta and data comparison usage
+>>>>>>>> in the xdp prog.
+>>>>>>>>
+>>>>>>>> The order of the kernel's xdp_to_skb_metadata and the program's metadata
+>>>>>>>> probably only matters to the userspace AF_XDP.  However, I don't see how AF_XDP
+>>>>>>>> supports the program's metadata now.  afaict, it can only work now if there is
+>>>>>>>> some sort of contract between them or the AF_XDP currently does not use the
+>>>>>>>> program's metadata.  Either way, we can do the mem-moving only for AF_XDP and it
+>>>>>>>> should be a no op if there is no program's metadata?  This behavior could also
+>>>>>>>> be configurable through setsockopt?
+>>>>>>>
+>>>>>>> Agreed on all of the above. For now it seems like the safest thing to
+>>>>>>> do is to put xdp_to_skb_metadata last to allow af_xdp to properly
+>>>>>>> locate btf_id.
+>>>>>>> Let's see if Toke disagrees :-)
+>>>>>>
+>>>>>> As I replied to Martin, I'm not sure it's worth the complexity to
+>>>>>> logically split the SKB metadata from the program's own metadata (as
+>>>>>> opposed to just reusing the existing data_meta pointer)?
+>>>>>
+>>>>> I'd gladly keep my current requirement where it's either or, but not both :-)
+>>>>> We can relax it later if required?
+>>>>
+>>>> So the way I've been thinking about it is simply that the skb_metadata
+>>>> would live in the same place at the data_meta pointer (including
+>>>> adjusting that pointer to accommodate it), and just overriding the
+>>>> existing program metadata, if any exists. But looking at it now, I guess
+>>>> having the split makes it easier for a program to write its own custom
+>>>> metadata and still use the skb metadata. See below about the ordering.
+>>>>
+>>>>>> However, if we do, the layout that makes most sense to me is putting the
+>>>>>> skb metadata before the program metadata, like:
+>>>>>>
+>>>>>> --------------
+>>>>>> | skb_metadata
+>>>>>> --------------
+>>>>>> | data_meta
+>>>>>> --------------
+>>>>>> | data
+>>>>>> --------------
+>>>>>>
 >>
->> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
->> index 56a186768750..bd28e63d7666 100644
->> --- a/net/9p/trans_fd.c
->> +++ b/net/9p/trans_fd.c
->> @@ -202,9 +202,11 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
->>   
->>   	list_for_each_entry_safe(req, rtmp, &m->req_list, req_list) {
->>   		list_move(&req->req_list, &cancel_list);
->> +		req->status = REQ_STATUS_ERROR;
->>   	}
->>   	list_for_each_entry_safe(req, rtmp, &m->unsent_req_list, req_list) {
->>   		list_move(&req->req_list, &cancel_list);
->> +		req->status = REQ_STATUS_ERROR;
->>   	}
->>   
->>   	spin_unlock(&m->req_lock);
+>> Yeah, for the kernel and xdp prog (ie not AF_XDP), I meant this:
+>>
+>> | skb_metadata | custom metadata | data |
+>>
+>>>>>> Not sure if that's what you meant? :)
+>>>>>
+>>>>> I was suggesting the other way around: |custom meta|skb_metadata|data|
+>>>>> (but, as Martin points out, consuming skb_metadata in the kernel
+>>>>> becomes messier)
+>>>>>
+>>>>> af_xdp can check whether skb_metdata is present by looking at data -
+>>>>> offsetof(struct skb_metadata, btf_id).
+>>>>> progs that know how to handle custom metadata, will look at data -
+>>>>> sizeof(skb_metadata)
+>>>>>
+>>>>> Otherwise, if it's the other way around, how do we find skb_metadata
+>>>>> in a redirected frame?
+>>>>> Let's say we have |skb_metadata|custom meta|data|, how does the final
+>>>>> program find skb_metadata?
+>>>>> All the progs have to agree on the sizeof(tc/custom meta), right?
+>>>>
+>>>> Erm, maybe I'm missing something here, but skb_metadata is fixed size,
+>>>> right? So if the "skb_metadata is present" flag is set, we know that the
+>>>> sizeof(skb_metadata) bytes before the data_meta pointer contains the
+>>>> metadata, and if the flag is not set, we know those bytes are not valid
+>>>> metadata.
+>>
+>> right, so to get to the skb_metadata, it will be
+>> data_meta -= sizeof(skb_metadata);  /* probably need alignment */
+>>
+>>>>
+>>>> For AF_XDP, we'd need to transfer the flag as well, and it could apply
+>>>> the same logic (getting the size from the vmlinux BTF).
+>>>>
+>>>> By this logic, the BTF_ID should be the *first* entry of struct
+>>>> skb_metadata, since that will be the field AF_XDP programs can find
+>>>> right off the bat, no? >
+>>> The problem with AF_XDP is that, IIUC, it doesn't have a data_meta
+>>> pointer in the userspace.
+>>
+>> Yep. It is my understanding also.  Missing data_meta pointer in the AF_XDP
+>> rx_desc is a potential problem.  Having BTF_ID or not won't help.
+>>
+>>>
+>>> You get an rx descriptor where the address points to the 'data':
+>>> | 256 bytes headroom where metadata can go | data |
+>>>
+>>> So you have (at most) 256 bytes of headroom, some of that might be the
+>>> metadata, but you really don't know where it starts. But you know it
+>>> definitely ends where the data begins.
+>>>
+>>> So if we have the following, we can locate skb_metadata:
+>>> | 256-sizeof(skb_metadata) headroom | custom metadata | skb_metadata | data |
+>>> data - sizeof(skb_metadata) will get you there
+>>>
+>>> But if it's the other way around, the program has to know
+>>> sizeof(custom metadata) to locate skb_metadata:
+>>> | 256-sizeof(skb_metadata) headroom | skb_metadata | custom metadata | data |
+>>
+>> Right, this won't work if the AF_XDP user does not know how big the custom
+>> metadata is.  The kernel then needs to swap the "skb_metadata" and "custom
+>> metadata" + setting a flag in the AF_XDP rx_desc->options to make it looks like
+>> this:
+>> | custom metadata | skb_metadata | data |
+>>
+>> However, since data_meta is missing from the rx_desc, may be we can safely
+>> assume the AF_XDP user always knows the size of the custom metadata or there is
+>> usually no "custom metadata" and no swap is needed?
 > 
-> --
-> Dominique
+> If we can assume they can share that info, can they also share more
+> info on what kind of metadata they would prefer to get?
+> If they can agree on the size, maybe they also can agree on the flows
+> that need skb_metdata vs the flows that need a custom one?
+> 
+> Seems like we can start with supporting either one, but not both and
+> extend in the future once we have more understanding on whether it's
+> actually needed or not?
+> 
+> bpf_xdp_metadata_export_to_skb: adjust data meta, add uses-skb-metadata flag
+> bpf_xdp_adjust_meta: unconditionally reset uses-skb-metadata flag
+hmm... I am thinking:
+
+bpf_xdp_adjust_meta: move the existing (if any) skb_metadata and adjust 
+xdp->data_meta.
+
+bpf_xdp_metadata_export_to_skb: If skb_metadata exists, overwrites the existing 
+one.  If not exists, gets headroom before xdp->data_meta and writes hints.
