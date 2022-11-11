@@ -2,131 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4112D624FA5
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 02:35:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 440BC624FB7
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 02:39:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231586AbiKKBfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 20:35:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
+        id S229667AbiKKBjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 20:39:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232700AbiKKBfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 20:35:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE9758027;
-        Thu, 10 Nov 2022 17:35:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4A99B823D8;
-        Fri, 11 Nov 2022 01:35:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A7CCC433B5;
-        Fri, 11 Nov 2022 01:35:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668130549;
-        bh=6L/0mnPwwA9ecxdinj4fNf+bVxwfnZgIcrejeymF+6Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mOFq1wowsoLEcWZC+F1ia/3+QTyiVs8OkTcnfjYOh7Ilk2oZ+imMpTF5HvMoUl+AD
-         osBDH+SjxH6eFzRu1tyLW5GOJglUvnQ7ag/O2YV/ZgxnvKvamtGe4qzfEVZ6gORnBL
-         8mUas3CgyJ+ybbfZu+l4y+XSlB6hEjcLP2+uoSiD998oPXjd/68tzuFTpOMnK/j/Z8
-         jLfxfuXAmOHz53RyF9ubw6XvciJJ4VfZDYShraX1pg/sg0G8sRdHx8KIFBDEiOGj4v
-         v16+cQZ1YPzQoSvrc4NVPnJ3OBQizSOzALYuLjbdIOl1aHjovU3zekr6gifSNbb/h7
-         Ahca24rTnvPEA==
-Date:   Thu, 10 Nov 2022 17:35:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stefan Roesch <shr@devkernel.io>
-Cc:     kernel-team@fb.com, axboe@kernel.dk, olivier@trillion01.com,
-        netdev@vger.kernel.org, io-uring@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/2] io_uring: add napi busy polling support
-Message-ID: <20221110173548.3d978dea@kernel.org>
-In-Reply-To: <qvqweduae55u.fsf@dev0134.prn3.facebook.com>
-References: <20221107175240.2725952-1-shr@devkernel.io>
-        <20221107175240.2725952-2-shr@devkernel.io>
-        <20221108165659.59d6f6b1@kernel.org>
-        <qvqweduae55u.fsf@dev0134.prn3.facebook.com>
+        with ESMTP id S232115AbiKKBjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 20:39:08 -0500
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A17D6175B;
+        Thu, 10 Nov 2022 17:39:07 -0800 (PST)
+Message-ID: <ed37045f-eb3d-8db0-4e5d-12bf7da8587e@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1668130746;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=twDtSwj2Z37lCvXOgLdZKmh5FpMX714tcT+gZauocX4=;
+        b=KOIpzGnbUf+6ykkdl3c9FO5xpydUPJ3oSwuzM6myq3dUhK/+2ddxSgHbU9kvQCY/0CxXvw
+        kil1n3mvrlUGjXkDfmvRFkL2TxEsBRasxhG+Sc4RK9ZGk19KbiODfNiBKr93CiTDQQzHp+
+        VQi1/+b8rH84Qo9pF1nSINvoWS2Zqm0=
+Date:   Thu, 10 Nov 2022 17:39:00 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+Subject: Re: [xdp-hints] Re: [RFC bpf-next v2 06/14] xdp: Carry over xdp
+ metadata into skb context
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+Cc:     Stanislav Fomichev <sdf@google.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20221104032532.1615099-1-sdf@google.com>
+ <20221104032532.1615099-7-sdf@google.com>
+ <187e89c3-d7de-7bec-c72e-d9d6eb5bcca0@linux.dev>
+ <CAKH8qBv_ZO=rsJcq2Lvq36d9sTAXs6kfUmW1Hk17bB=BGiGzhw@mail.gmail.com>
+ <9a8fefe4-2fcb-95b7-cda0-06509feee78e@linux.dev>
+ <6f57370f-7ec3-07dd-54df-04423cab6d1f@linux.dev> <87leokz8lq.fsf@toke.dk>
+ <5a23b856-88a3-a57a-2191-b673f4160796@linux.dev> <871qqazyc9.fsf@toke.dk>
+ <7eb3e22a-c416-e898-dff0-1146d3cc82c0@linux.dev> <87mt8yxuag.fsf@toke.dk>
+Content-Language: en-US
+In-Reply-To: <87mt8yxuag.fsf@toke.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Nov 2022 15:36:34 -0800 Stefan Roesch wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
-> > On Mon,  7 Nov 2022 09:52:39 -0800 Stefan Roesch wrote:  
-> >> This adds the napi busy polling support in io_uring.c. It adds a new
-> >> napi_list to the io_ring_ctx structure. This list contains the list of
-> >> napi_id's that are currently enabled for busy polling. The list is
-> >> synchronized by the new napi_lock spin lock. The current default napi
-> >> busy polling time is stored in napi_busy_poll_to. If napi busy polling
-> >> is not enabled, the value is 0.
-> >>
-> >> The busy poll timeout is also stored as part of the io_wait_queue. This
-> >> is necessary as for sq polling the poll interval needs to be adjusted
-> >> and the napi callback allows only to pass in one value.
-> >>
-> >> Testing has shown that the round-trip times are reduced to 38us from
-> >> 55us by enabling napi busy polling with a busy poll timeout of 100us.  
-> >
-> > What's the test, exactly? What's the network latency? Did you busy poll
-> > on both ends?
+On 11/10/22 3:29 PM, Toke Høiland-Jørgensen wrote:
+>>> For the metadata consumed by the stack right now it's a bit
+>>> hypothetical, yeah. However, there's a bunch of metadata commonly
+>>> supported by hardware that the stack currently doesn't consume and that
+>>> hopefully this feature will end up making more accessible. My hope is
+>>> that the stack can also learn how to use this in the future, in which
+>>> case we may run out of space. So I think of that bit mostly as
+>>> future-proofing...
+>>
+>> ic. in this case, Can the btf_id be added to 'struct xdp_to_skb_metadata' later
+>> if it is indeed needed?  The 'struct xdp_to_skb_metadata' is not in UAPI and
+>> doing it with CO-RE is to give us flexibility to make this kind of changes in
+>> the future.
 > 
-> The test programs are part of the liburing patches. They consist of a
-> client and server program. The client sends a request, which has a timestamp
-> in its payload and the server replies with the same payload. The client
-> calculates the roundtrip time and stores it to calcualte the results.
-> 
-> The client is running on host1 and the server is running on host 2. The
-> measured times below are roundtrip times. These are average times over
-> 10 runs each.
-> 
-> If no napi busy polling wait is used                 : 55us
-> If napi with client busy polling is used             : 44us
-> If napi busy polling is used on the client and server: 38us
-> 
-> If you think the numbers are not that useful, I can remove them from the
-> commit message.
+> My worry is mostly that it'll be more painful to add it later than just
+> including it from the start, mostly because of AF_XDP users. But if we
+> do the randomisation thing (thus forcing AF_XDP users to deal with the
+> dynamic layout as well), it should be possible to add it later, and I
+> can live with that option as well...
 
-The latency numbers are a sum of a few components so you'd need to break
-them down a little further. At least for me. I'd anticipate we'll have
-networking delay, IRQ/completion coalescing in the NIC, and then SW
-processing time. 
+imo, considering we are trying to optimize unnecessary field initialization as 
+below, it is sort of wasteful to always initialize the btf_id with the same 
+value.  It is better to add it in the future when there is a need.
 
-I was suspecting you were only busy polling on one end, because the
-38us is very close to the default IRQ coalescing "we" have (33us).
+>>>>> We should probably also have a flag set on the xdp_frame so the stack
+>>>>> knows that the metadata area contains relevant-to-skb data, to guard
+>>>>> against an XDP program accidentally hitting the "magic number" (BTF_ID)
+>>>>> in unrelated stuff it puts into the metadata area.
+>>>>
+>>>> Yeah, I think having a flag is useful.  The flag will be set at xdp_buff and
+>>>> then transfer to the xdp_frame?
+>>>
+>>> Yeah, exactly!
+>>>
+>>>>>> After re-reading patch 6, have another question. The 'void
+>>>>>> bpf_xdp_metadata_export_to_skb();' function signature. Should it at
+>>>>>> least return ok/err? or even return a 'struct xdp_to_skb_metadata *'
+>>>>>> pointer and the xdp prog can directly read (or even write) it?
+>>>>>
+>>>>> Hmm, I'm not sure returning a failure makes sense? Failure to read one
+>>>>> or more fields just means that those fields will not be populated? We
+>>>>> should probably have a flags field inside the metadata struct itself to
+>>>>> indicate which fields are set or not, but I'm not sure returning an
+>>>>> error value adds anything? Returning a pointer to the metadata field
+>>>>> might be convenient for users (it would just be an alias to the
+>>>>> data_meta pointer, but the verifier could know its size, so the program
+>>>>> doesn't have to bounds check it).
+>>>>
+>>>> If some hints are not available, those hints should be initialized to
+>>>> 0/CHECKSUM_NONE/...etc.
+>>>
+>>> The problem with that is that then we have to spend cycles writing
+>>> eight bytes of zeroes into the checksum field :)
+>>
+>> With a common 'struct xdp_to_skb_metadata', I am not sure how some of these zero
+>> writes can be avoided.  If the xdp prog wants to optimize, it can call
+>> individual kfunc to get individual hints.
+> 
+> Erm, we just... don't write those fields? Something like:
+> 
+> void write_skb_meta(hw, ctx) {
+>    struct xdp_skb_metadata meta = ctx->data_meta - sizeof(struct xdp_skb_metadata);
+>    meta->valid_fields = 0;
+> 
+>    if (hw_has_timestamp) {
+>      meta->timestamp = hw->timestamp;
+>      meta->valid_fields |= FIELD_TIMESTAMP;
+>    } /* otherwise meta->timestamp is just uninitialised */
+> 
+>    if (hw_has_rxhash) {
+>      meta->rxhash = hw->rxhash;
+>      meta->valid_fields |= FIELD_RXHASH;
+>    } /* otherwise meta->rxhash is just uninitialised */
+>    ...etc...
+> }
 
-Simplest way to provide a clear number would be to test with IRQ coal
-set to 0/1, and back-to-back machines (or within a rack).
-If that's what you did then just add the info to the msg and the
-numbers are good :)
-
-> >> +	list_for_each_entry_safe(ne, n, napi_list, list) {
-> >> +		napi_busy_loop(ne->napi_id, NULL, NULL, true, BUSY_POLL_BUDGET);  
-> >
-> > You can't opt the user into prefer busy poll without the user asking
-> > for it. Default to false and add an explicit knob like patch 2.
-> >  
-> 
-> The above code is from the function io_napi_blocking_busy_loop().
-> However this function is only called when a busy poll timeout has been
-> configured.
-> 
-> #ifdef CONFIG_NET_RX_BUSY_POLL
->          if (iowq.busy_poll_to)
->                  io_napi_blocking_busy_loop(&local_napi_list, &iowq);
-> 
-> However we don't have that check for sqpoll, so we should add a check
-> for the napi busy poll timeout in __io_sq_thread.
-> 
-> Do we really need a knob to store if napi busy polling is enabled or is
-> sufficent to store a napi busy poll timeout value?
-
-I was asking about *prefer* busy poll, IOW SO_PREFER_BUSY_POLL.
-So I'm talking about argument 4 being set to true. 
-This feature requires system configuration to arm timers to the correct
-values within the netdev code. Normal epoll path always passes false
-there, IIRC. We can add the support in iouring but we need an opt-in.
+Ah, got it.  Make sense.  My mind was stalled in the paradigm that a helper that 
+needs to initialize the result.
