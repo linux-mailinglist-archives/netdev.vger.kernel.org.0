@@ -2,182 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 306C1625EE8
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 16:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E70F4625DD5
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 16:06:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiKKP7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 10:59:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
+        id S234896AbiKKPGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 10:06:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233842AbiKKP7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 10:59:18 -0500
-X-Greylist: delayed 2394 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Nov 2022 07:59:17 PST
-Received: from smtpout.efficios.com (smtpout.efficios.com [IPv6:2607:5300:203:5aae::31e5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2623C6CE;
-        Fri, 11 Nov 2022 07:59:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
-        s=smtpout1; t=1668177821;
-        bh=EYvFyeYoIXdpRZUrDIt9Kwnd3gAkvdIgxw1lIXG8SKY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=l66N3oiBVl0WpLOT0hkLWrSBLQJsJSW4+ouPxFZH5QD5KKmXDB6CMjzwtM8VVLLpX
-         a4mvKpJXJiuV9Qw3ANDqSRII+7K5waLtTRLYZ90oeO3HFXyKJpVusI8jz1TOHWpOiX
-         dJRcqsFN0mN40E/3U0KhejsRReLLA8QsqIZLb9mPKd4oL95EyLfXlhHXXYFtuTieM/
-         mQitMOSC/OQ89QyOELCnHdOHRibH9OXvgNxVpUIxiREjJL0PTMu3jrCYcnxgmXCUU+
-         h1vYvH07RGr00OmtJNBP+zQXctnrrr738WJXcAPDjU36sTOHtCkNno5wnO/vjAKkO+
-         R+/kME1qSOXkw==
-Received: from [172.16.0.153] (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
-        by smtpout.efficios.com (Postfix) with ESMTPSA id 4N81fh5HFrzgt1;
-        Fri, 11 Nov 2022 09:43:40 -0500 (EST)
-Message-ID: <02cdf436-6942-89a7-98b2-bfa75ba5f301@efficios.com>
-Date:   Fri, 11 Nov 2022 09:43:49 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH printk v3 00/40] reduce console_lock scope
-Content-Language: en-US
-To:     John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        with ESMTP id S234928AbiKKPEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 10:04:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8859670195;
+        Fri, 11 Nov 2022 07:02:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00DE5B8262F;
+        Fri, 11 Nov 2022 15:02:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 285ECC433C1;
+        Fri, 11 Nov 2022 15:02:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1668178928;
+        bh=RHFd6lZBWi3UidtHgAb7H5B7CyFXKaoJYUnzOJpdDKI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wZKtfKCvtkAHcRqegBZ5rvf2fSNNT5Jp9nsa7tHBLJ1FunZbXoHExBErfTh3zuzNX
+         r4hkvCOmTK0QrFH0l20rbMnWE8AU+P8nmZyOgzviFZBoh2abXcFzInYkCbLbS13H++
+         MWXzls89wSjwmcEEze0qkRehIsJUzk/MHeWbOui4=
+Date:   Fri, 11 Nov 2022 16:02:05 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     haozhe.chang@mediatek.com
+Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
         Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tony Lindgren <tony@atomide.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org, Ard Biesheuvel <ardb@kernel.org>,
-        linux-efi@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        linux-usb@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Helge Deller <deller@gmx.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Tom Rix <trix@redhat.com>, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-References: <20221107141638.3790965-1-john.ogness@linutronix.de>
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-In-Reply-To: <20221107141638.3790965-1-john.ogness@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
+        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
+        Liu Haijun <haijun.liu@mediatek.com>,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        Shang XiaoJing <shangxiaojing@huawei.com>,
+        "open list:INTEL WWAN IOSM DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:REMOTE PROCESSOR MESSAGING (RPMSG) WWAN CONTROL..." 
+        <linux-remoteproc@vger.kernel.org>,
+        "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, lambert.wang@mediatek.com,
+        xiayu.zhang@mediatek.com, hua.yang@mediatek.com
+Subject: Re: [PATCH v3] wwan: core: Support slicing in port TX flow of WWAN
+ subsystem
+Message-ID: <Y25j7fTdvCRqr26k@kroah.com>
+References: <20221111100840.105305-1-haozhe.chang@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221111100840.105305-1-haozhe.chang@mediatek.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-07 09:15, John Ogness wrote:
-[...]
+On Fri, Nov 11, 2022 at 06:08:36PM +0800, haozhe.chang@mediatek.com wrote:
+> From: haozhe chang <haozhe.chang@mediatek.com>
 > 
-> The base commit for this series is from Paul McKenney's RCU tree
-> and provides an NMI-safe SRCU implementation [1]. Without the
-> NMI-safe SRCU implementation, this series is not less safe than
-> mainline. But we will need the NMI-safe SRCU implementation for
-> atomic consoles anyway, so we might as well get it in
-> now. Especially since it _does_ increase the reliability for
-> mainline in the panic path.
+> wwan_port_fops_write inputs the SKB parameter to the TX callback of
+> the WWAN device driver. However, the WWAN device (e.g., t7xx) may
+> have an MTU less than the size of SKB, causing the TX buffer to be
+> sliced and copied once more in the WWAN device driver.
+> 
+> This patch implements the slicing in the WWAN subsystem and gives
+> the WWAN devices driver the option to slice(by frag_len) or not. By
+> doing so, the additional memory copy is reduced.
+> 
+> Meanwhile, this patch gives WWAN devices driver the option to reserve
+> headroom in fragments for the device-specific metadata.
+> 
+> Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
+> 
+> ---
+> Changes in v2
+>   -send fragments to device driver by skb frag_list.
+> 
+> Changes in v3
+>   -move frag_len and headroom_len setting to wwan_create_port.
+> ---
+>  drivers/net/wwan/iosm/iosm_ipc_port.c  |  3 +-
+>  drivers/net/wwan/mhi_wwan_ctrl.c       |  2 +-
+>  drivers/net/wwan/rpmsg_wwan_ctrl.c     |  2 +-
+>  drivers/net/wwan/t7xx/t7xx_port_wwan.c | 34 +++++++--------
+>  drivers/net/wwan/wwan_core.c           | 59 ++++++++++++++++++++------
+>  drivers/net/wwan/wwan_hwsim.c          |  2 +-
+>  drivers/usb/class/cdc-wdm.c            |  2 +-
+>  include/linux/wwan.h                   |  6 ++-
+>  8 files changed, 73 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/net/wwan/iosm/iosm_ipc_port.c b/drivers/net/wwan/iosm/iosm_ipc_port.c
+> index b6d81c627277..dc43b8f0d1af 100644
+> --- a/drivers/net/wwan/iosm/iosm_ipc_port.c
+> +++ b/drivers/net/wwan/iosm/iosm_ipc_port.c
+> @@ -63,7 +63,8 @@ struct iosm_cdev *ipc_port_init(struct iosm_imem *ipc_imem,
+>  	ipc_port->ipc_imem = ipc_imem;
+>  
+>  	ipc_port->iosm_port = wwan_create_port(ipc_port->dev, port_type,
+> -					       &ipc_wwan_ctrl_ops, ipc_port);
+> +					       &ipc_wwan_ctrl_ops, 0, 0,
+> +					       ipc_port);
 
-So, your email got me to review the SRCU nmi-safe series:
+How is 0, 0 a valid option here?
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/log/?h=srcunmisafe.2022.10.21a
+and if it is a valid option, shouldn't you just have 2 different
+functions, one that needs these values and one that does not?  That
+would make it more descriptive as to what those options are, and ensure
+that you get them right.
 
-Especially this commit:
+> @@ -112,7 +117,6 @@ void wwan_port_rx(struct wwan_port *port, struct sk_buff *skb);
+>   */
+>  void wwan_port_txoff(struct wwan_port *port);
+>  
+> -
+>  /**
 
-https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?h=srcunmisafe.2022.10.21a&id=5d0f5953b60f5f7a278085b55ddc73e2932f4c33
+Unneeded change.
 
-I disagree with the overall approach taken there, which is to create
-yet another SRCU flavor, this time with explicit "nmi-safe" read-locks.
-This adds complexity to the kernel APIs and I think we can be clever
-about this and make SRCU nmi-safe without requiring a whole new incompatible
-API.
+thanks,
 
-You can find the basic idea needed to achieve this in the libside RCU
-user-space implementation. I needed to introduce a split-counter concept
-to support rseq vs atomics to keep track of per-cpu grace period counters.
-The "rseq" counter is the fast-path, but if rseq fails, the abort handler
-uses the atomic counter instead.
-
-https://github.com/compudj/side/blob/main/src/rcu.h#L23
-
-struct side_rcu_percpu_count {
-	uintptr_t begin;
-	uintptr_t rseq_begin;
-	uintptr_t end;
-	uintptr_t rseq_end;
-}  __attribute__((__aligned__(SIDE_CACHE_LINE_SIZE)));
-
-The idea is to "split" each percpu counter into two counters, one for rseq,
-and the other for atomics. When a grace period wants to observe the value of
-a percpu counter, it simply sums the two counters:
-
-https://github.com/compudj/side/blob/main/src/rcu.c#L112
-
-The same idea can be applied to SRCU in the kernel: one counter for percpu ops,
-and the other counter for nmi context, so basically:
-
-srcu_read_lock()
-
-if (likely(!in_nmi()))
-   increment the percpu-ops lock counter
-else
-   increment the atomic lock counter
-
-srcu_read_unlock()
-
-if (likely(!in_nmi()))
-   increment the percpu-ops unlock counter
-else
-   increment the atomic unlock counter
-
-Then in the grace period sum the percpu-ops and the atomic values whenever
-each counter value is read.
-
-This would allow SRCU to be NMI-safe without requiring the callers to
-explicitly state whether they need to be nmi-safe or not, and would only
-take the overhead of the atomics in the NMI handlers rather than for all
-users which happen to use SRCU read locks shared with nmi handlers.
-
-Thoughts ?
-
-Thanks,
-
-Mathieu
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-https://www.efficios.com
-
+greg k-h
