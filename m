@@ -2,41 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA7EB633752
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 09:42:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B94396338A8
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:37:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232940AbiKVImN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 03:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
+        id S232646AbiKVJh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 04:37:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232973AbiKVImD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 03:42:03 -0500
-Received: from out28-172.mail.aliyun.com (out28-172.mail.aliyun.com [115.124.28.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF1D40902;
-        Tue, 22 Nov 2022 00:42:01 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07454813|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00569678-0.10483-0.889473;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047207;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.QE5BpFo_1669106515;
-Received: from sun-VirtualBox..(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QE5BpFo_1669106515)
-          by smtp.aliyun-inc.com;
-          Tue, 22 Nov 2022 16:41:58 +0800
-From:   Frank <Frank.Sae@motor-comm.com>
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     yinghong.zhang@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>
-Subject: [PATCH net-next v2] net: phy: add Motorcomm YT8531S phy id.
-Date:   Tue, 22 Nov 2022 16:42:32 +0800
-Message-Id: <20221122084232.3886-1-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S232748AbiKVJh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:37:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EC810CD;
+        Tue, 22 Nov 2022 01:37:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA754B81601;
+        Tue, 22 Nov 2022 09:37:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDE05C433C1;
+        Tue, 22 Nov 2022 09:37:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669109842;
+        bh=RtXvZ0p1DP/VjpMADc1HaXxLba69hdFVNPBuDmoWC7s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eQQLa7wz8Va2cZW3GNLqUJXVzNbevBPDOzgi34cXw68HqcI6g7CcdHOgjyUuZYODR
+         O212GMyq35vvp8www4x5WSLnICf8g5+mIRD9SJ2nLiqH0RmgiULkDPHCgFmn74/1e5
+         MSZH+qzJOLh/Bch9pJly+6VKvlC2jAw6WicLo6PXZI1ue9Ea7IlM6F+vDediSIfGY+
+         AqRTX+q+8iI5v99OM43eFDcD8UfAb4F//zG6afqBmPI5EwkvH54UxfoU5Y/XDL3Ivn
+         ti1BKLkqd/E0OtjX6lQCoLfyZzXfXjqYjPpJHq09MCuBVFr0M/V/nOMx0OP1Ekp/7N
+         Hy1LvXGJY2aMA==
+Date:   Fri, 11 Nov 2022 01:56:25 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, daniel@makrotopia.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        angelogioacchino.delregno@collabora.com
+Subject: Re: [PATCH v4 net-next 2/8] dt-bindings: net: mediatek: add WED RX
+ binding for MT7986 eth driver
+Message-ID: <Y22duSNJT/4MbDof@localhost.localdomain>
+References: <cover.1667687249.git.lorenzo@kernel.org>
+ <2192d3974d30b1d0b8f4277c42cdb02f6feffbb9.1667687249.git.lorenzo@kernel.org>
+ <20221110200926.GA885371-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Kig+5iN2ab7nhHx7"
+Content-Disposition: inline
+In-Reply-To: <20221110200926.GA885371-robh@kernel.org>
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -44,154 +65,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We added patch for motorcomm.c to support YT8531S. This patch has
-been tested on AM335x platform which has one YT8531S interface
-card and passed all test cases.
-The tested cases indluding: YT8531S UTP function with support of
-10M/100M/1000M; YT8531S Fiber function with support of 100M/1000M;
-and YT8531S Combo function that supports auto detection of media type.
- 
-Since most functions of YT8531S are similar to YT8521 and we reuse some
-codes for YT8521 in the patch file.
 
-Signed-off-by: Frank <Frank.Sae@motor-comm.com>
----
-patch v2:
-Hi Andrew,
- Thanks very much and based on your comments we modified the patch v2 as below.
+--Kig+5iN2ab7nhHx7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > 2.31.0.windows.1
-> 
-> Does that mean you are hosting your Linux builds on Windows machine?
+> On Sat, Nov 05, 2022 at 11:36:17PM +0100, Lorenzo Bianconi wrote:
+> > Document the binding for the RX Wireless Ethernet Dispatch core on the
+> > MT7986 ethernet driver used to offload traffic received by WLAN NIC and
+> > forwarded to LAN/WAN one.
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 52 +++++++++++++++++++
+> >  .../soc/mediatek/mediatek,mt7986-wo-ccif.yaml | 51 ++++++++++++++++++
+>=20
+> Are these blocks used for anything not networking related? If not, can=20
+> you move them to bindings/net/. Can be a follow up patch if not=20
+> respinning this again.
 
- The issue is fixed.
- 
- drivers/net/phy/Kconfig     |  2 +-
- drivers/net/phy/motorcomm.c | 52 +++++++++++++++++++++++++++++++++----
- 2 files changed, 48 insertions(+), 6 deletions(-)
+I was discussing about this with Krzysztof and he suggested to put
+mt7986-wo-ccif.yaml in bindings/soc but I am fine both ways.
+I will move them in bindings/net/ if I need to respin the series
+otherwise I will post a follow-up patch.
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 040c8bf6d05b..af00cf44cd97 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -260,7 +260,7 @@ config MOTORCOMM_PHY
- 	tristate "Motorcomm PHYs"
- 	help
- 	  Enables support for Motorcomm network PHYs.
--	  Currently supports the YT8511, YT8521 Gigabit Ethernet PHYs.
-+	  Currently supports the YT8511, YT8521, YT8531S Gigabit Ethernet PHYs.
- 
- config NATIONAL_PHY
- 	tristate "National Semiconductor PHYs"
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index bd1ab5d0631f..685190db72de 100644
---- a/drivers/net/phy/motorcomm.c
-+++ b/drivers/net/phy/motorcomm.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * Motorcomm 8511/8521 PHY driver.
-+ * Motorcomm 8511/8521/8531S PHY driver.
-  *
-  * Author: Peter Geis <pgwipeout@gmail.com>
-  * Author: Frank <Frank.Sae@motor-comm.com>
-@@ -12,9 +12,10 @@
- #include <linux/phy.h>
- 
- #define PHY_ID_YT8511		0x0000010a
--#define PHY_ID_YT8521				0x0000011A
-+#define PHY_ID_YT8521		0x0000011A
-+#define PHY_ID_YT8531S		0x4F51E91A
- 
--/* YT8521 Register Overview
-+/* YT8521/YT8531S Register Overview
-  *	UTP Register space	|	FIBER Register space
-  *  ------------------------------------------------------------
-  * |	UTP MII			|	FIBER MII		|
-@@ -147,7 +148,7 @@
- #define YT8521_LINK_TIMER_CFG2_REG		0xA5
- #define YT8521_LTCR_EN_AUTOSEN			BIT(15)
- 
--/* 0xA000, 0xA001, 0xA003 ,and 0xA006 ~ 0xA00A  are common ext registers
-+/* 0xA000, 0xA001, 0xA003, 0xA006 ~ 0xA00A and 0xA012 are common ext registers
-  * of yt8521 phy. There is no need to switch reg space when operating these
-  * registers.
-  */
-@@ -221,6 +222,9 @@
-  */
- #define YTPHY_WCR_TYPE_PULSE			BIT(0)
- 
-+#define YT8531S_SYNCE_CFG_REG			0xA012
-+#define YT8531S_SCR_SYNCE_ENABLE		BIT(6)
-+
- /* Extended Register  end */
- 
- struct yt8521_priv {
-@@ -647,6 +651,26 @@ static int yt8521_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+/**
-+ * yt8531s_probe() - read chip config then set suitable polling_mode
-+ * @phydev: a pointer to a &struct phy_device
-+ *
-+ * returns 0 or negative errno code
-+ */
-+static int yt8531s_probe(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	/* Disable SyncE clock output by default */
-+	ret = ytphy_modify_ext_with_lock(phydev, YT8531S_SYNCE_CFG_REG,
-+					 YT8531S_SCR_SYNCE_ENABLE, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* same as yt8521_probe */
-+	return yt8521_probe(phydev);
-+}
-+
- /**
-  * ytphy_utp_read_lpa() - read LPA then setup lp_advertising for utp
-  * @phydev: a pointer to a &struct phy_device
-@@ -1750,11 +1774,28 @@ static struct phy_driver motorcomm_phy_drvs[] = {
- 		.suspend	= yt8521_suspend,
- 		.resume		= yt8521_resume,
- 	},
-+	{
-+		PHY_ID_MATCH_EXACT(PHY_ID_YT8531S),
-+		.name		= "YT8531S Gigabit Ethernet",
-+		.get_features	= yt8521_get_features,
-+		.probe		= yt8531s_probe,
-+		.read_page	= yt8521_read_page,
-+		.write_page	= yt8521_write_page,
-+		.get_wol	= ytphy_get_wol,
-+		.set_wol	= ytphy_set_wol,
-+		.config_aneg	= yt8521_config_aneg,
-+		.aneg_done	= yt8521_aneg_done,
-+		.config_init	= yt8521_config_init,
-+		.read_status	= yt8521_read_status,
-+		.soft_reset	= yt8521_soft_reset,
-+		.suspend	= yt8521_suspend,
-+		.resume		= yt8521_resume,
-+	},
- };
- 
- module_phy_driver(motorcomm_phy_drvs);
- 
--MODULE_DESCRIPTION("Motorcomm 8511/8521 PHY driver");
-+MODULE_DESCRIPTION("Motorcomm 8511/8521/8531S PHY driver");
- MODULE_AUTHOR("Peter Geis");
- MODULE_AUTHOR("Frank");
- MODULE_LICENSE("GPL");
-@@ -1762,6 +1803,7 @@ MODULE_LICENSE("GPL");
- static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8521) },
-+	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531S) },
- 	{ /* sentinal */ }
- };
- 
--- 
-2.34.1
+Regards,
+Lorenzo
 
+>=20
+> Reviewed-by: Rob Herring <robh@kernel.org>
+
+--Kig+5iN2ab7nhHx7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY22dtgAKCRA6cBh0uS2t
+rBbZAP9hbo5ogUlDzpmGLInxxC89ivIwLOtkvZzX1vOg8JgufAEA9tHhLVddaNef
+sa4nGmd3gfhd+bzCszLvNWc5FZfJAwA=
+=P86E
+-----END PGP SIGNATURE-----
+
+--Kig+5iN2ab7nhHx7--
