@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B8B625AEF
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 14:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 386BF625AF2
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 14:06:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233836AbiKKNGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 08:06:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        id S233884AbiKKNGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 08:06:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233855AbiKKNF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 08:05:57 -0500
+        with ESMTP id S233925AbiKKNGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 08:06:33 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633687BE7C;
-        Fri, 11 Nov 2022 05:05:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8130862F4;
+        Fri, 11 Nov 2022 05:05:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668171949; x=1699707949;
+  t=1668171958; x=1699707958;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mYwmrTNOjBARIZVykxkW5XIgwCztK/JLX3qnOVaXM3E=;
-  b=Fyn/7GhR5sUOlkg++9KarY6dyb+D7wbvdtcx0IjU797VRwB/LNK0wd8f
-   SjmLqh86QZB9ikgvsM2fnC6mLMrQmOHdmNSe090mifajEEY5Zy7xcYj23
-   cG93Xf9nK2Q3ejFfSQa0n9CbTmqjsBhf6YPiUky6njqfkmDD8z3S3Sswb
-   4woi7GZag/S+Kt3sUV6s/ck32llTFxmTvLoIf5Y0EwEofNXfET7YjHoF3
-   GX3ZgXxVXRL19qR+jk5FQbRJG8K8HtvGRIwfc8SeNDjPhHLQA1CYtNBO2
-   uYoSpUjlTd9LsP6C3mSnuETE/kKQQiNLsEga8OOsnhfrC3vD2pA1n5csQ
+  bh=8XwoBqdgKoM5V3kbMOhCihQp2eLtKE9DTDcoUojaHV4=;
+  b=RX8MhFQdVuAkumfqNqv1sBrTpXU7jlPYgZTTuypDpdw9O6E/KJi6HrUF
+   kztBg2qCQ9VHhJAqDv3qbkucUMXB7k4WiPKHF664ps45s4v9hvsI0qzxM
+   rG4RDbnNyR1jVF9g8T4ne/jwSoAKAdae82pk9ed+GNaD3L/NswqXsivKx
+   Dl8EtUEU5x8mcptjfZ7ZO86weBjaw7RLl5f2tDzrZLVhA5X6SDAUhP39d
+   2YmQcjvlaQ2l1qitTEESj51qNtDh+W0EUiZ+yjsKU5mLI5LaNBu+SMnx7
+   UCdpLMG6wcqgcwV56pBxIzQwA4StR015a7ABOlxAj31LDGtirYy4mevvT
    w==;
 X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="183107393"
+   d="scan'208";a="123001275"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Nov 2022 06:05:47 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Nov 2022 06:05:57 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 11 Nov 2022 06:05:46 -0700
+ 15.1.2507.12; Fri, 11 Nov 2022 06:05:51 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 11 Nov 2022 06:05:42 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 11 Nov 2022 06:05:47 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -62,9 +62,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Baowen Zheng <baowen.zheng@corigine.com>,
         Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
         Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH net-next 4/6] net: microchip: sparx5: Add support for IS2 VCAP rule counters
-Date:   Fri, 11 Nov 2022 14:05:17 +0100
-Message-ID: <20221111130519.1459549-5-steen.hegelund@microchip.com>
+Subject: [PATCH net-next 5/6] net: microchip: sparx5: Add support for TC flower filter statistics
+Date:   Fri, 11 Nov 2022 14:05:18 +0100
+Message-ID: <20221111130519.1459549-6-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221111130519.1459549-1-steen.hegelund@microchip.com>
 References: <20221111130519.1459549-1-steen.hegelund@microchip.com>
@@ -80,230 +80,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds API methods to set and get a rule counter.
+This provides flower filter packet statistics (bytes are not supported) via
+the dedicated IS2 counter feature.
 
-A VCAP instance may contain the counter as part of the VCAP cache area, and
-this counter may be one or more bits in width.  This type of counter
-automatically increments it value when the rule is hit.
-
-Other VCAP instances have a dedicated counter area outside of the VCAP and
-in this case the rule must contain the counter id to be able to locate the
-counter value.  In this case there must also be a rule action that updates
-the counter using the rule id when the rule is hit.
-
-The Sparx5 IS2 VCAP uses a dedicated counter area.
+All rules having the same TC cookie will contribute to the packet
+statistics for the filter as they are considered to be part of the same TC
+flower filter.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../microchip/sparx5/sparx5_vcap_impl.c       | 47 +++++++++++-
- .../net/ethernet/microchip/vcap/vcap_api.c    | 71 +++++++++++++++++++
- .../ethernet/microchip/vcap/vcap_api_client.h | 11 +++
- 3 files changed, 127 insertions(+), 2 deletions(-)
+ .../microchip/sparx5/sparx5_tc_flower.c       | 68 +++++++++++++++++++
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 25 +++++++
+ .../ethernet/microchip/vcap/vcap_api_client.h |  3 +
+ 3 files changed, 96 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-index b62c48a3fc45..e8f3d030eba2 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-@@ -428,15 +428,58 @@ static void sparx5_vcap_cache_write(struct net_device *ndev,
- 	default:
- 		break;
- 	}
-+	if (sel & VCAP_SEL_COUNTER) {
-+		start = start & 0xfff; /* counter limit */
-+		if (admin->vinst == 0)
-+			spx5_wr(admin->cache.counter, sparx5,
-+				ANA_ACL_CNT_A(start));
-+		else
-+			spx5_wr(admin->cache.counter, sparx5,
-+				ANA_ACL_CNT_B(start));
-+		spx5_wr(admin->cache.sticky, sparx5,
-+			VCAP_SUPER_VCAP_CNT_DAT(0));
-+	}
- }
- 
- /* API callback used for reading from the VCAP into the VCAP cache */
- static void sparx5_vcap_cache_read(struct net_device *ndev,
- 				   struct vcap_admin *admin,
--				   enum vcap_selection sel, u32 start,
-+				   enum vcap_selection sel,
-+				   u32 start,
- 				   u32 count)
- {
--	/* this will be added later */
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	u32 *keystr, *mskstr, *actstr;
-+	int idx;
-+
-+	keystr = &admin->cache.keystream[start];
-+	mskstr = &admin->cache.maskstream[start];
-+	actstr = &admin->cache.actionstream[start];
-+	if (sel & VCAP_SEL_ENTRY) {
-+		for (idx = 0; idx < count; ++idx) {
-+			keystr[idx] = spx5_rd(sparx5,
-+					      VCAP_SUPER_VCAP_ENTRY_DAT(idx));
-+			mskstr[idx] = ~spx5_rd(sparx5,
-+					       VCAP_SUPER_VCAP_MASK_DAT(idx));
-+		}
-+	}
-+	if (sel & VCAP_SEL_ACTION) {
-+		for (idx = 0; idx < count; ++idx)
-+			actstr[idx] = spx5_rd(sparx5,
-+					      VCAP_SUPER_VCAP_ACTION_DAT(idx));
-+	}
-+	if (sel & VCAP_SEL_COUNTER) {
-+		start = start & 0xfff; /* counter limit */
-+		if (admin->vinst == 0)
-+			admin->cache.counter =
-+				spx5_rd(sparx5, ANA_ACL_CNT_A(start));
-+		else
-+			admin->cache.counter =
-+				spx5_rd(sparx5, ANA_ACL_CNT_B(start));
-+		admin->cache.sticky =
-+			spx5_rd(sparx5, VCAP_SUPER_VCAP_CNT_DAT(0));
-+	}
- }
- 
- /* API callback used for initializing a VCAP address range */
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index 62b675a37a96..9c660e718526 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -25,6 +25,8 @@ struct vcap_rule_internal {
- 	int actionset_sw_regs;  /* registers in a subword in an actionset */
- 	int size; /* the size of the rule: max(entry, action) */
- 	u32 addr; /* address in the VCAP at insertion */
-+	u32 counter_id; /* counter id (if a dedicated counter is available) */
-+	struct vcap_counter counter; /* last read counter value */
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+index b76b8fc567bb..a48baeacc1d2 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+@@ -21,6 +21,11 @@ struct sparx5_tc_flower_parse_usage {
+ 	unsigned int used_keys;
  };
  
- /* Moving a rule in the VCAP address space */
-@@ -651,6 +653,20 @@ static int vcap_write_rule(struct vcap_rule_internal *ri)
++struct sparx5_tc_rule_pkt_cnt {
++	u64 cookie;
++	u32 pkts;
++};
++
+ /* These protocols have dedicated keysets in IS2 and a TC dissector
+  * ETH_P_ARP does not have a TC dissector
+  */
+@@ -605,6 +610,20 @@ static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
  	return 0;
  }
  
-+static int vcap_write_counter(struct vcap_rule_internal *ri,
-+			      struct vcap_counter *ctr)
++/* Add a rule counter action - only IS2 is considered for now */
++static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
++				      struct vcap_rule *vrule)
 +{
-+	struct vcap_admin *admin = ri->admin;
-+
-+	admin->cache.counter = ctr->value;
-+	admin->cache.sticky = ctr->sticky;
-+	ri->vctrl->ops->cache_write(ri->ndev, admin, VCAP_SEL_COUNTER,
-+				    ri->counter_id, 0);
-+	ri->vctrl->ops->update(ri->ndev, admin, VCAP_CMD_WRITE,
-+			       VCAP_SEL_COUNTER, ri->addr);
-+	return 0;
-+}
-+
- /* Convert a chain id to a VCAP lookup index */
- int vcap_chain_id_to_lookup(struct vcap_admin *admin, int cur_cid)
- {
-@@ -1547,6 +1563,20 @@ int vcap_rule_add_action_u32(struct vcap_rule *rule,
- }
- EXPORT_SYMBOL_GPL(vcap_rule_add_action_u32);
- 
-+static int vcap_read_counter(struct vcap_rule_internal *ri,
-+			     struct vcap_counter *ctr)
-+{
-+	struct vcap_admin *admin = ri->admin;
-+
-+	ri->vctrl->ops->update(ri->ndev, admin, VCAP_CMD_READ, VCAP_SEL_COUNTER,
-+			       ri->addr);
-+	ri->vctrl->ops->cache_read(ri->ndev, admin, VCAP_SEL_COUNTER,
-+				   ri->counter_id, 0);
-+	ctr->value = admin->cache.counter;
-+	ctr->sticky = admin->cache.sticky;
-+	return 0;
-+}
-+
- /* Copy to host byte order */
- void vcap_netbytes_copy(u8 *dst, u8 *src, int count)
- {
-@@ -1690,6 +1720,47 @@ int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
- }
- EXPORT_SYMBOL_GPL(vcap_enable_lookups);
- 
-+/* Set a rule counter id (for certain vcaps only) */
-+void vcap_rule_set_counter_id(struct vcap_rule *rule, u32 counter_id)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+
-+	ri->counter_id = counter_id;
-+}
-+EXPORT_SYMBOL_GPL(vcap_rule_set_counter_id);
-+
-+int vcap_rule_set_counter(struct vcap_rule *rule, struct vcap_counter *ctr)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
 +	int err;
 +
-+	err = vcap_api_check(ri->vctrl);
++	err = vcap_rule_add_action_u32(vrule, VCAP_AF_CNT_ID, vrule->id);
 +	if (err)
 +		return err;
-+	if (!ctr) {
-+		pr_err("%s:%d: counter is missing\n", __func__, __LINE__);
-+		return -EINVAL;
-+	}
-+	return vcap_write_counter(ri, ctr);
-+}
-+EXPORT_SYMBOL_GPL(vcap_rule_set_counter);
 +
-+int vcap_rule_get_counter(struct vcap_rule *rule, struct vcap_counter *ctr)
++	vcap_rule_set_counter_id(vrule, vrule->id);
++	return err;
++}
++
+ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 				    struct flow_cls_offload *fco,
+ 				    struct vcap_admin *admin)
+@@ -630,6 +649,11 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 
+ 	vrule->cookie = fco->cookie;
+ 	sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
++
++	err = sparx5_tc_add_rule_counter(admin, vrule);
++	if (err)
++		goto out;
++
+ 	frule = flow_cls_offload_flow_rule(fco);
+ 	flow_action_for_each(idx, act, &frule->action) {
+ 		switch (act->id) {
+@@ -708,6 +732,48 @@ static int sparx5_tc_flower_destroy(struct net_device *ndev,
+ 	return err;
+ }
+ 
++/* Collect packet counts from all rules with the same cookie */
++static int sparx5_tc_rule_counter_cb(void *arg, struct vcap_rule *rule)
 +{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
++	struct sparx5_tc_rule_pkt_cnt *rinfo = arg;
++	struct vcap_counter counter;
++	int err = 0;
++
++	if (rule->cookie == rinfo->cookie) {
++		err = vcap_rule_get_counter(rule, &counter);
++		if (err)
++			return err;
++		rinfo->pkts += counter.value;
++		/* Reset the rule counter */
++		counter.value = 0;
++		vcap_rule_set_counter(rule, &counter);
++	}
++	return err;
++}
++
++static int sparx5_tc_flower_stats(struct net_device *ndev,
++				  struct flow_cls_offload *fco,
++				  struct vcap_admin *admin)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5_tc_rule_pkt_cnt rinfo = {};
++	struct vcap_control *vctrl;
++	ulong lastused = 0;
++	u64 drops = 0;
++	u32 pkts = 0;
 +	int err;
 +
-+	err = vcap_api_check(ri->vctrl);
++	rinfo.cookie = fco->cookie;
++	vctrl = port->sparx5->vcap_ctrl;
++	err = vcap_rule_iter(vctrl, sparx5_tc_rule_counter_cb, &rinfo);
 +	if (err)
 +		return err;
-+	if (!ctr) {
-+		pr_err("%s:%d: counter is missing\n", __func__, __LINE__);
-+		return -EINVAL;
-+	}
-+	return vcap_read_counter(ri, ctr);
++	pkts = rinfo.pkts;
++	flow_stats_update(&fco->stats, 0x0, pkts, drops, lastused,
++			  FLOW_ACTION_HW_STATS_IMMEDIATE);
++	return err;
 +}
-+EXPORT_SYMBOL_GPL(vcap_rule_get_counter);
 +
- #ifdef CONFIG_VCAP_KUNIT_TEST
- #include "vcap_api_kunit.c"
- #endif
+ int sparx5_tc_flower(struct net_device *ndev, struct flow_cls_offload *fco,
+ 		     bool ingress)
+ {
+@@ -729,6 +795,8 @@ int sparx5_tc_flower(struct net_device *ndev, struct flow_cls_offload *fco,
+ 		return sparx5_tc_flower_replace(ndev, fco, admin);
+ 	case FLOW_CLS_DESTROY:
+ 		return sparx5_tc_flower_destroy(ndev, fco, admin);
++	case FLOW_CLS_STATS:
++		return sparx5_tc_flower_stats(ndev, fco, admin);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index 9c660e718526..d12c8ec40fe2 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -1729,6 +1729,31 @@ void vcap_rule_set_counter_id(struct vcap_rule *rule, u32 counter_id)
+ }
+ EXPORT_SYMBOL_GPL(vcap_rule_set_counter_id);
+ 
++/* Provide all rules via a callback interface */
++int vcap_rule_iter(struct vcap_control *vctrl,
++		   int (*callback)(void *, struct vcap_rule *), void *arg)
++{
++	struct vcap_rule_internal *ri;
++	struct vcap_admin *admin;
++	int ret;
++
++	ret = vcap_api_check(vctrl);
++	if (ret)
++		return ret;
++
++	/* Iterate all rules in each VCAP instance */
++	list_for_each_entry(admin, &vctrl->list, list) {
++		list_for_each_entry(ri, &admin->rules, list) {
++			ret = callback(arg, &ri->data);
++			if (ret)
++				return ret;
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(vcap_rule_iter);
++
+ int vcap_rule_set_counter(struct vcap_rule *rule, struct vcap_counter *ctr)
+ {
+ 	struct vcap_rule_internal *ri = to_intrule(rule);
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-index 0ea5ec96adc8..c2655045d6d4 100644
+index c2655045d6d4..654ef8fa6d62 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-@@ -143,6 +143,11 @@ enum vcap_bit {
- 	VCAP_BIT_1
- };
+@@ -210,6 +210,9 @@ const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
+ int vcap_lookup_rule_by_cookie(struct vcap_control *vctrl, u64 cookie);
+ /* Is the next chain id in the following lookup, possible in another VCAP */
+ bool vcap_is_next_lookup(struct vcap_control *vctrl, int cur_cid, int next_cid);
++/* Provide all rules via a callback interface */
++int vcap_rule_iter(struct vcap_control *vctrl,
++		   int (*callback)(void *, struct vcap_rule *), void *arg);
  
-+struct vcap_counter {
-+	u32 value;
-+	bool sticky;
-+};
-+
- /* Enable/Disable the VCAP instance lookups. Chain id 0 means disable */
- int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
- 			int chain_id, unsigned long cookie, bool enable);
-@@ -170,6 +175,8 @@ int vcap_set_rule_set_keyset(struct vcap_rule *rule,
- /* Update the actionset for the rule */
- int vcap_set_rule_set_actionset(struct vcap_rule *rule,
- 				enum vcap_actionfield_set actionset);
-+/* Set a rule counter id (for certain VCAPs only) */
-+void vcap_rule_set_counter_id(struct vcap_rule *rule, u32 counter_id);
- 
- /* VCAP rule field operations */
- int vcap_rule_add_key_bit(struct vcap_rule *rule, enum vcap_key_field key,
-@@ -187,6 +194,10 @@ int vcap_rule_add_action_bit(struct vcap_rule *rule,
- int vcap_rule_add_action_u32(struct vcap_rule *rule,
- 			     enum vcap_action_field action, u32 value);
- 
-+/* VCAP rule counter operations */
-+int vcap_rule_set_counter(struct vcap_rule *rule, struct vcap_counter *ctr);
-+int vcap_rule_get_counter(struct vcap_rule *rule, struct vcap_counter *ctr);
-+
- /* VCAP lookup operations */
- /* Convert a chain id to a VCAP lookup index */
- int vcap_chain_id_to_lookup(struct vcap_admin *admin, int cur_cid);
+ /* Copy to host byte order */
+ void vcap_netbytes_copy(u8 *dst, u8 *src, int count);
 -- 
 2.38.1
 
