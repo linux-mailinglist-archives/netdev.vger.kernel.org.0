@@ -2,65 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D814B625F32
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 17:13:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2457D625F3E
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 17:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232506AbiKKQNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 11:13:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
+        id S233790AbiKKQRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 11:17:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbiKKQNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 11:13:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC48623B7
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 08:13:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AC6B6204E
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 16:13:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EFFEC433D7;
-        Fri, 11 Nov 2022 16:13:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668183199;
-        bh=eqga4GU1EX8a8OMybCvuwS3fJqBGWzJ2p8xlMYLE46U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aFVLjo49cGqh93HgMU7hKfjmlnwqNa1PceCYAtVKs2bv3LnzZ3vrYTqBnttbt3ENK
-         Nb93QcLRZd6gF9AFrhCbTBJpDGULmmVp2mWuh7Q3udL07X6ajOa8WB1ZJ378x9XhdE
-         35RoslTDfOmEWGQWSNF/T8WEvABp+rVGPjtEkzdtYBkAao4g5WBh646k7bQHrgeLwA
-         p4RIzXQlDZvHAHTZwMb123ybmSiLh4mtoASTfgIhvATzor4MdSCP/DbBH6Ui2HrxLk
-         T51hLDnL/hiD4yc1J2AC/MY95DG4ZMuTBYl6is3qDe3KTnrjf1+U9KpiZ7uIy0HVq0
-         TkUm3o3PlCvBg==
-Date:   Fri, 11 Nov 2022 18:13:14 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S233651AbiKKQRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 11:17:40 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59ABEDEE8
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 08:17:38 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id v27so8293419eda.1
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 08:17:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PPFK299nWfDr/V9J7p74DjQEhALYVf51OEuCFpbYSbM=;
+        b=KBU+AAvwge0Xr3lQE8QmWKlPSunFws73fRLUrfKBI3t0C7DwjZNxz9x1Rs/CD8AOg7
+         aACR3Djshp/4SGNH1bl3rM8whcVgrQwz8IpxNGkznbL+XM9X+u05meAx3yOmRGlMyEoe
+         bXMuNxJrrrdXPC6j9kBN7+DChSccZwvS1fHmE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PPFK299nWfDr/V9J7p74DjQEhALYVf51OEuCFpbYSbM=;
+        b=nOf/U3OUGD4neNnuZyRu6OQXX8XO/Y6Z9ncV5O8rnXZ8w8yYUwxM/8VimBRc3N12H4
+         z3sqSRf6Cg34fhPFDxBwvj4CPCsz0N6vsRPdIW8YQzGNR4sS0pvDfCizoIMi/veKyTYe
+         tOa3H5YKoWHsL5n8RaDBiukJmpyNxYpgCSe4fSR5oykXpSsGy6J9hE8EtghrxqH5i+Xr
+         0nC4PAwI2OOVV6vVtit5peNz0hTMoSM/fvIlFMqTVDepiLBOmPFZhyKhbDtr172I6jcj
+         jR9OEClVvyvc44gL1SlT40/6st1rB+ohSqjWTTjQKtfOVVHHrKoeoQ1cS8E3xIvAERyM
+         9kHg==
+X-Gm-Message-State: ANoB5pmTCnqzSZE9+GrjDhjMhIqbTWux4Gtz6shlNiD+9OWbx8ZIta99
+        C5co/dJ11cYiYealVobyL0KcLw==
+X-Google-Smtp-Source: AA0mqf7u9SiEuoNGLTdYBPh06DGK3wmN6MkxzOpkOfRUqlwNciq8kr6m4nWPJ2n3bwGG3KfupCj0Mg==
+X-Received: by 2002:aa7:d4d3:0:b0:45f:b80f:1fe8 with SMTP id t19-20020aa7d4d3000000b0045fb80f1fe8mr2064057edr.118.1668183456903;
+        Fri, 11 Nov 2022 08:17:36 -0800 (PST)
+Received: from prevas-ravi.tritech.se ([80.208.71.65])
+        by smtp.gmail.com with ESMTPSA id v2-20020a170906292200b007aacfce2a91sm1038990ejd.27.2022.11.11.08.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Nov 2022 08:17:35 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Tom Rix <trix@redhat.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Marco Bonelli <marco@mebeim.net>
-Subject: Re: [PATCH net-next v1] ethtool: ethtool_get_drvinfo: populate
- drvinfo fields even if callback exits
-Message-ID: <Y250mkqG20F5cpT8@unreal>
-References: <20221108035754.2143-1-mailhol.vincent@wanadoo.fr>
- <Y2vozcC2ahbhAvhM@unreal>
- <20221109122641.781b30d9@kernel.org>
- <CAMZ6Rq+K6oD9auaNzt1kJAW0nz9Hs=ODDvOiEaiKi2_1KVNA8g@mail.gmail.com>
- <Y2zASloeKjMMCgyw@unreal>
- <20221110090127.0d729f05@kernel.org>
- <CAMZ6RqKVrRufmUsJ3XuzGhc3Ea=dEjChu3rd7Xw8LZ-SBrsSUw@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: dsa: use NET_NAME_PREDICTABLE for user ports with name given in DT
+Date:   Fri, 11 Nov 2022 17:17:28 +0100
+Message-Id: <20221111161729.915233-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMZ6RqKVrRufmUsJ3XuzGhc3Ea=dEjChu3rd7Xw8LZ-SBrsSUw@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,28 +71,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 11, 2022 at 03:43:36PM +0900, Vincent MAILHOL wrote:
-> On Fri. 11 Nov. 2022 à 02:01, Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Thu, 10 Nov 2022 11:11:38 +0200 Leon Romanovsky wrote:
-> > > I will be happy to see such patch and will review it, but can't add sign-off
-> > > as I'm not netdev maintainer.
-> >
-> > Did we finish the version removal work? :S
-> >
-> > Personally I'd rather direct any effort towards writing a checkpatch /
-> > cocci / python check that catches new cases than cleaning up the pile
-> > of drivers we have. A lot of which are not actively used..
-> 
-> Agree, but I will not work on that (because of other personal
-> priorities). If someone else wants to do it, go ahead :)
+When a user port has a label in device tree, the corresponding
+netdevice is "predictably named by the kernel".
 
-It's ok, Jakub referred to me. I sent a lot of patches like this.
-https://lore.kernel.org/netdev/5d76f3116ee795071ec044eabb815d6c2bdc7dbd.1649922731.git.leonro@nvidia.com/
+Expose that information properly for the benefit of userspace tools
+that make decisions based on the name_assign_type attribute,
+e.g. a systemd-udev rule with "kernel" in NamePolicy.
 
-> 
-> What I can do is update the documentation:
-> https://lore.kernel.org/netdev/20221111064054.371965-1-mailhol.vincent@wanadoo.fr/
-> 
-> 
-> Yours sincerely,
-> Vincent Mailhol
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ net/dsa/dsa2.c  |  3 ---
+ net/dsa/slave.c | 13 +++++++++++--
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index e504a18fc125..522fc1b6e8c6 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1364,9 +1364,6 @@ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
+ 
+ static int dsa_port_parse_user(struct dsa_port *dp, const char *name)
+ {
+-	if (!name)
+-		name = "eth%d";
+-
+ 	dp->type = DSA_PORT_TYPE_USER;
+ 	dp->name = name;
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index a9fde48cffd4..dfefcc4a9ccf 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2374,16 +2374,25 @@ int dsa_slave_create(struct dsa_port *port)
+ {
+ 	struct net_device *master = dsa_port_to_master(port);
+ 	struct dsa_switch *ds = port->ds;
+-	const char *name = port->name;
+ 	struct net_device *slave_dev;
+ 	struct dsa_slave_priv *p;
++	const char *name;
++	int assign_type;
+ 	int ret;
+ 
+ 	if (!ds->num_tx_queues)
+ 		ds->num_tx_queues = 1;
+ 
++	if (port->name) {
++		name = port->name;
++		assign_type = NET_NAME_PREDICTABLE;
++	} else {
++		name = "eth%d";
++		assign_type = NET_NAME_UNKNOWN;
++	}
++
+ 	slave_dev = alloc_netdev_mqs(sizeof(struct dsa_slave_priv), name,
+-				     NET_NAME_UNKNOWN, ether_setup,
++				     assign_type, ether_setup,
+ 				     ds->num_tx_queues, 1);
+ 	if (slave_dev == NULL)
+ 		return -ENOMEM;
+-- 
+2.37.2
+
