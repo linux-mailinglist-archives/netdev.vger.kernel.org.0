@@ -2,116 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39824625EFE
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 17:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D814B625F32
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 17:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbiKKQA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 11:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        id S232506AbiKKQNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 11:13:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233187AbiKKQA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 11:00:27 -0500
-Received: from mxout017.mail.hostpoint.ch (mxout017.mail.hostpoint.ch [IPv6:2a00:d70:0:e::317])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBB33E09D
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 08:00:25 -0800 (PST)
-Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
-        by mxout017.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <thomas@kupper.org>)
-        id 1otWS7-0004jJ-4X;
-        Fri, 11 Nov 2022 17:00:23 +0100
-Received: from [82.197.179.206] (helo=[192.168.169.11])
-        by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <thomas@kupper.org>)
-        id 1otWS6-0006e4-V3;
-        Fri, 11 Nov 2022 17:00:23 +0100
-X-Authenticated-Sender-Id: thomas@kupper.org
-Message-ID: <28351727-f1ba-5b57-2f84-9eccff6d627f@kupper.org>
-Date:   Fri, 11 Nov 2022 17:00:22 +0100
+        with ESMTP id S230043AbiKKQNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 11:13:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC48623B7
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 08:13:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AC6B6204E
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 16:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EFFEC433D7;
+        Fri, 11 Nov 2022 16:13:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668183199;
+        bh=eqga4GU1EX8a8OMybCvuwS3fJqBGWzJ2p8xlMYLE46U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aFVLjo49cGqh93HgMU7hKfjmlnwqNa1PceCYAtVKs2bv3LnzZ3vrYTqBnttbt3ENK
+         Nb93QcLRZd6gF9AFrhCbTBJpDGULmmVp2mWuh7Q3udL07X6ajOa8WB1ZJ378x9XhdE
+         35RoslTDfOmEWGQWSNF/T8WEvABp+rVGPjtEkzdtYBkAao4g5WBh646k7bQHrgeLwA
+         p4RIzXQlDZvHAHTZwMb123ybmSiLh4mtoASTfgIhvATzor4MdSCP/DbBH6Ui2HrxLk
+         T51hLDnL/hiD4yc1J2AC/MY95DG4ZMuTBYl6is3qDe3KTnrjf1+U9KpiZ7uIy0HVq0
+         TkUm3o3PlCvBg==
+Date:   Fri, 11 Nov 2022 18:13:14 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>
+Subject: Re: [PATCH net-next v1] ethtool: ethtool_get_drvinfo: populate
+ drvinfo fields even if callback exits
+Message-ID: <Y250mkqG20F5cpT8@unreal>
+References: <20221108035754.2143-1-mailhol.vincent@wanadoo.fr>
+ <Y2vozcC2ahbhAvhM@unreal>
+ <20221109122641.781b30d9@kernel.org>
+ <CAMZ6Rq+K6oD9auaNzt1kJAW0nz9Hs=ODDvOiEaiKi2_1KVNA8g@mail.gmail.com>
+ <Y2zASloeKjMMCgyw@unreal>
+ <20221110090127.0d729f05@kernel.org>
+ <CAMZ6RqKVrRufmUsJ3XuzGhc3Ea=dEjChu3rd7Xw8LZ-SBrsSUw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-From:   Thomas Kupper <thomas@kupper.org>
-Subject: Re: [PATCH v2 net 1/1] amd-xgbe: fix active cable
-To:     Tom Lendacky <thomas.lendacky@amd.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Raju Rangoju <Raju.Rangoju@amd.com>
-References: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
- <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
-Content-Language: en-US
-In-Reply-To: <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CAMZ6RqKVrRufmUsJ3XuzGhc3Ea=dEjChu3rd7Xw8LZ-SBrsSUw@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 11/11/22 15:18, Tom Lendacky wrote:
-> On 11/11/22 02:46, Thomas Kupper wrote:
->> When determine the type of SFP, active cables were not handled.
->>
->> Add the check for active cables as an extension to the passive cable check.
+On Fri, Nov 11, 2022 at 03:43:36PM +0900, Vincent MAILHOL wrote:
+> On Fri. 11 Nov. 2022 � 02:01, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu, 10 Nov 2022 11:11:38 +0200 Leon Romanovsky wrote:
+> > > I will be happy to see such patch and will review it, but can't add sign-off
+> > > as I'm not netdev maintainer.
+> >
+> > Did we finish the version removal work? :S
+> >
+> > Personally I'd rather direct any effort towards writing a checkpatch /
+> > cocci / python check that catches new cases than cleaning up the pile
+> > of drivers we have. A lot of which are not actively used..
 > 
-> Is this fixing a particular problem? What SFP is this failing for? A more descriptive commit message would be good.
-> 
-> Also, since an active cable is supposed to be advertising it's capabilities in the eeprom, maybe this gets fixed via a quirk and not a general check this field.
+> Agree, but I will not work on that (because of other personal
+> priorities). If someone else wants to do it, go ahead :)
 
-It is fixing a problem regarding a Mikrotik S+AO0005 AOC cable (we were in contact back in Feb to May). And your right I should have been more descriptive in the commit message.
-
->>
->> Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
->> Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
->> ---
->>   drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
->>   1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
->> index 4064c3e3dd49..1ba550d5c52d 100644
->> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
->> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
->> @@ -1158,8 +1158,9 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
->>       }
->>
->>       /* Determine the type of SFP */
->> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
->> -        xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
->> +    if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
->> +         phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
->> +         xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
-> 
-> This is just the same as saying:
-> 
->     if (xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
-> 
-> since the sfp_cable value is either PASSIVE or ACTIVE.
-> 
-> I'm not sure I like fixing whatever issue you have in this way, though. If anything, I would prefer this to be a last case scenario and be placed at the end of the if-then-else block. But it may come down to applying a quirk for your situation.
-
-I see now that this cable is probably indeed not advertising its capabilities correctly, I didn't understand what Shyam did refer to in his mail from June 6.
-
-Unfortunately I haven't hear back from you guys after June 6 so I tried to fix it myself ... but do lack the knowledge in that area.
-
-A quirk seems a good option.
-
-From my point of view this patch can be cancelled/aborted/deleted.
-I'll look into how to fix it using a quirk but maybe I'm not the hest suited candidate to do it.
-
-/Thomas
+It's ok, Jakub referred to me. I sent a lot of patches like this.
+https://lore.kernel.org/netdev/5d76f3116ee795071ec044eabb815d6c2bdc7dbd.1649922731.git.leonro@nvidia.com/
 
 > 
-> Thanks,
-> Tom
+> What I can do is update the documentation:
+> https://lore.kernel.org/netdev/20221111064054.371965-1-mailhol.vincent@wanadoo.fr/
 > 
->>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
->>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
->>           phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
->> -- 
->> 2.34.1
->>
+> 
+> Yours sincerely,
+> Vincent Mailhol
