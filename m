@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6E06259C1
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 12:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C962C6259D8
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 12:51:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbiKKLtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 06:49:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        id S233481AbiKKLvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 06:51:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiKKLtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 06:49:03 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7970E27FF9;
-        Fri, 11 Nov 2022 03:49:00 -0800 (PST)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N7xjZ5qGxzJnZ2;
-        Fri, 11 Nov 2022 19:45:54 +0800 (CST)
+        with ESMTP id S233436AbiKKLvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 06:51:05 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C249327910;
+        Fri, 11 Nov 2022 03:51:04 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N7xq058SFzHvcV;
+        Fri, 11 Nov 2022 19:50:36 +0800 (CST)
 Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 11 Nov 2022 19:48:58 +0800
+ 15.1.2375.31; Fri, 11 Nov 2022 19:51:03 +0800
 Received: from localhost.localdomain (10.175.112.70) by
  dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 11 Nov 2022 19:48:57 +0800
+ 15.1.2375.31; Fri, 11 Nov 2022 19:51:02 +0800
 From:   Zhang Changzhong <zhangchangzhong@huawei.com>
 To:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        "Felipe Balbi (Intel)" <balbi@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>
 CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
         <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/3] can: cc770: add missing free_cc770dev() in cc770_isa_probe()
-Date:   Fri, 11 Nov 2022 20:09:16 +0800
-Message-ID: <1668168557-6024-1-git-send-email-zhangchangzhong@huawei.com>
+Subject: [PATCH 3/3] can: m_can: pci: add missing m_can_class_free_dev() in probe/remove methods
+Date:   Fri, 11 Nov 2022 20:11:23 +0800
+Message-ID: <1668168684-6390-1-git-send-email-zhangchangzhong@huawei.com>
 X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
  dggpeml500006.china.huawei.com (7.185.36.76)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -53,48 +56,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the missing free_cc770dev() before return from cc770_isa_probe() in
-the register_cc770dev() error handling case.
+In m_can_pci_remove() and error handling path of m_can_pci_probe(),
+m_can_class_free_dev() should be called to free resource allocated by
+m_can_class_allocate_dev(), otherwise there will be memleak.
 
-In addition, remove blanks before goto labels.
-
-Fixes: 7e02e5433e00 ("can: cc770: legacy CC770 ISA bus driver")
+Fixes: cab7ffc0324f ("can: m_can: add PCI glue driver for Intel Elkhart Lake")
 Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 ---
- drivers/net/can/cc770/cc770_isa.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/can/m_can/m_can_pci.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/cc770/cc770_isa.c b/drivers/net/can/cc770/cc770_isa.c
-index 194c86e..8f6dccd 100644
---- a/drivers/net/can/cc770/cc770_isa.c
-+++ b/drivers/net/can/cc770/cc770_isa.c
-@@ -264,22 +264,24 @@ static int cc770_isa_probe(struct platform_device *pdev)
- 	if (err) {
- 		dev_err(&pdev->dev,
- 			"couldn't register device (err=%d)\n", err);
--		goto exit_unmap;
-+		goto exit_free;
- 	}
+diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
+index 8f184a8..f2219aa 100644
+--- a/drivers/net/can/m_can/m_can_pci.c
++++ b/drivers/net/can/m_can/m_can_pci.c
+@@ -120,7 +120,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
  
- 	dev_info(&pdev->dev, "device registered (reg_base=0x%p, irq=%d)\n",
- 		 priv->reg_base, dev->irq);
+ 	ret = pci_alloc_irq_vectors(pci, 1, 1, PCI_IRQ_ALL_TYPES);
+ 	if (ret < 0)
+-		return ret;
++		goto err_free_dev;
+ 
+ 	mcan_class->dev = &pci->dev;
+ 	mcan_class->net->irq = pci_irq_vector(pci, 0);
+@@ -132,7 +132,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 
+ 	ret = m_can_class_register(mcan_class);
+ 	if (ret)
+-		goto err;
++		goto err_free_irq;
+ 
+ 	/* Enable interrupt control at CAN wrapper IP */
+ 	writel(0x1, base + CTL_CSR_INT_CTL_OFFSET);
+@@ -144,8 +144,10 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 
  	return 0;
  
-- exit_unmap:
-+exit_free:
-+	free_cc770dev(dev);
-+exit_unmap:
- 	if (mem[idx])
- 		iounmap(base);
-- exit_release:
-+exit_release:
- 	if (mem[idx])
- 		release_mem_region(mem[idx], iosize);
- 	else
- 		release_region(port[idx], iosize);
-- exit:
-+exit:
- 	return err;
+-err:
++err_free_irq:
+ 	pci_free_irq_vectors(pci);
++err_free_dev:
++	m_can_class_free_dev(mcan_class->net);
+ 	return ret;
+ }
+ 
+@@ -161,6 +163,7 @@ static void m_can_pci_remove(struct pci_dev *pci)
+ 	writel(0x0, priv->base + CTL_CSR_INT_CTL_OFFSET);
+ 
+ 	m_can_class_unregister(mcan_class);
++	m_can_class_free_dev(mcan_class->net);
+ 	pci_free_irq_vectors(pci);
  }
  
 -- 
