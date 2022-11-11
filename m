@@ -2,49 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EBC362516B
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 04:17:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB7062514C
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 04:11:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbiKKDRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 22:17:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
+        id S231876AbiKKDLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 22:11:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiKKDRB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 22:17:01 -0500
-X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Nov 2022 19:16:57 PST
-Received: from smtp.smtpout.orange.fr (smtp-23.smtpout.orange.fr [80.12.242.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 961612B24C
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 19:16:57 -0800 (PST)
-Received: from YC20090004.ad.ts.tri-ad.global ([103.175.111.222])
-        by smtp.orange.fr with ESMTPA
-        id tKPJoXPuTUoLVtKPpodQWK; Fri, 11 Nov 2022 04:09:25 +0100
-X-ME-Helo: YC20090004.ad.ts.tri-ad.global
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 11 Nov 2022 04:09:25 +0100
-X-ME-IP: 103.175.111.222
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>,
-        linux-kernel@vger.kernel.org, Leon Romanovsky <leonro@mellanox.com>
-Subject: [PATCH] ethtool: doc: clarify what drivers can implement in their get_drvinfo()
-Date:   Fri, 11 Nov 2022 12:08:38 +0900
-Message-Id: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S231167AbiKKDLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 22:11:45 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260552EF48;
+        Thu, 10 Nov 2022 19:11:42 -0800 (PST)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4N7kDh5RrKzJnbh;
+        Fri, 11 Nov 2022 11:08:36 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 11 Nov 2022 11:11:39 +0800
+Received: from [10.67.111.205] (10.67.111.205) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 11 Nov 2022 11:11:38 +0800
+Subject: Re: [PATCH bpf] selftests/bpf: Fix xdp_synproxy compilation failure
+ in 32-bit arch
+To:     Yonghong Song <yhs@meta.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
+        <jolsa@kernel.org>, <mykolal@fb.com>, <shuah@kernel.org>,
+        <tariqt@nvidia.com>, <maximmi@nvidia.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20221108131242.17362-1-yangjihong1@huawei.com>
+ <c8bd9f3b-52fa-08bd-e5df-e87b68ffdbba@meta.com>
+From:   Yang Jihong <yangjihong1@huawei.com>
+Message-ID: <f5391830-352a-6daa-9233-a177db43ba71@huawei.com>
+Date:   Fri, 11 Nov 2022 11:11:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
+In-Reply-To: <c8bd9f3b-52fa-08bd-e5df-e87b68ffdbba@meta.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-Originating-IP: [10.67.111.205]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,84 +61,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many of the drivers which implement ethtool_ops::get_drvinfo() will
-prints the .driver, .version or .bus_info of struct ethtool_drvinfo.
-To have a glance of current state, do:
+Hello,
 
-  $ git grep -W "get_drvinfo(struct"
+On 2022/11/8 23:59, Yonghong Song wrote:
+> 
+> 
+> On 11/8/22 5:12 AM, Yang Jihong wrote:
+>> xdp_synproxy fails to be compiled in the 32-bit arch, log is as follows:
+>>
+>>    xdp_synproxy.c: In function 'parse_options':
+>>    xdp_synproxy.c:175:36: error: left shift count >= width of type 
+>> [-Werror=shift-count-overflow]
+>>      175 |                 *tcpipopts = (mss6 << 32) | (ttl << 24) | 
+>> (wscale << 16) | mss4;
+>>          |                                    ^~
+>>    xdp_synproxy.c: In function 'syncookie_open_bpf_maps':
+>>    xdp_synproxy.c:289:28: error: cast from pointer to integer of 
+>> different size [-Werror=pointer-to-int-cast]
+>>      289 |                 .map_ids = (__u64)map_ids,
+>>          |                            ^
+>>
+>> Fix it.
+>>
+>> Fixes: fb5cd0ce70d4 ("selftests/bpf: Add selftests for raw syncookie 
+>> helpers")
+>> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+>> ---
+>>   tools/testing/selftests/bpf/xdp_synproxy.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/xdp_synproxy.c 
+>> b/tools/testing/selftests/bpf/xdp_synproxy.c
+>> index ff35320d2be9..45fef01a87a8 100644
+>> --- a/tools/testing/selftests/bpf/xdp_synproxy.c
+>> +++ b/tools/testing/selftests/bpf/xdp_synproxy.c
+>> @@ -172,7 +172,7 @@ static void parse_options(int argc, char *argv[], 
+>> unsigned int *ifindex, __u32 *
+>>       if (tcpipopts_mask == 0xf) {
+>>           if (mss4 == 0 || mss6 == 0 || wscale == 0 || ttl == 0)
+>>               usage(argv[0]);
+>> -        *tcpipopts = (mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
+>> +        *tcpipopts = ((unsigned long long)mss6 << 32) | (ttl << 24) | 
+>> (wscale << 16) | mss4;
+> 
+> This looks weird. Maybe we should define mss6 as unsigned long long to 
+> avoid this casting at all?
+OK, will fix in next version.
 
-Printing in those three fields is useless because:
-
-  - since [1], the driver version should be the kernel version (at
-    least for upstream drivers). Arguably, out of tree drivers might
-    still want to set it, but out of tree is not our focus.
-
-  - since [2], the core is able to provide default values for .driver
-    and .bus_info.
-
-In summary, drivers may provide @fw_version and @erom_version, the
-rest is expected to be done by the core. Update the doc to reflect the
-facts.
-
-Also update the dummy driver and simply remove the callback in order
-not to confuse the newcomers: most of the drivers will not need this
-callback function any more.
-
-[1] commit 6a7e25c7fb48 ("net/core: Replace driver version to be
-    kernel version")
-Link: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6a7e25c7fb482dba3e80fec953f1907bcb24d52c
-
-[2] commit edaf5df22cb8 ("ethtool: ethtool_get_drvinfo: populate
-    drvinfo fields even if callback exits")
-Link: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=edaf5df22cb8e7e849773ce69fcc9bc20ca92160
-
-CC: Leon Romanovsky <leonro@mellanox.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-Arguably, dummy.c is code and not documentation, but for me, it makes
-sense to treat it as documentation, thus I am putting everything in
-one single patch.
----
- drivers/net/dummy.c          | 7 -------
- include/uapi/linux/ethtool.h | 6 +++---
- 2 files changed, 3 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index aa0fc00faecb..c4b1b0aa438a 100644
---- a/drivers/net/dummy.c
-+++ b/drivers/net/dummy.c
-@@ -99,14 +99,7 @@ static const struct net_device_ops dummy_netdev_ops = {
- 	.ndo_change_carrier	= dummy_change_carrier,
- };
- 
--static void dummy_get_drvinfo(struct net_device *dev,
--			      struct ethtool_drvinfo *info)
--{
--	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
--}
--
- static const struct ethtool_ops dummy_ethtool_ops = {
--	.get_drvinfo            = dummy_get_drvinfo,
- 	.get_ts_info		= ethtool_op_get_ts_info,
- };
- 
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index f341de2ae612..fcee5dbf6c06 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -180,9 +180,9 @@ static inline __u32 ethtool_cmd_speed(const struct ethtool_cmd *ep)
-  * Users can use the %ETHTOOL_GSSET_INFO command to get the number of
-  * strings in any string set (from Linux 2.6.34).
-  *
-- * Drivers should set at most @driver, @version, @fw_version and
-- * @bus_info in their get_drvinfo() implementation.  The ethtool
-- * core fills in the other fields using other driver operations.
-+ * Drivers should set at most @fw_version and @erom_version in their
-+ * get_drvinfo() implementation. The ethtool core fills in the other
-+ * fields using other driver operations.
-  */
- struct ethtool_drvinfo {
- 	__u32	cmd;
--- 
-2.35.1
-
+Thanks,
+Yang
