@@ -2,381 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33BEB626381
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 22:23:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5622B6263BA
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 22:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234438AbiKKVXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 16:23:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
+        id S233276AbiKKViU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 16:38:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234357AbiKKVXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 16:23:35 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64A0F590
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:23:33 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id c3-20020a1c3503000000b003bd21e3dd7aso6344211wma.1
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:23:33 -0800 (PST)
+        with ESMTP id S230103AbiKKViT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 16:38:19 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE4542F68
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:38:18 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id u24so9292685edd.13
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 13:38:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=y+sOtKCHPX6pUlFz9QYEx87A43EGANm0QsQ80jIMaa8=;
-        b=iWHnO6vA7nQmLhUDbSJOvV9WG3MeqecBMqEjVKWFFzgNlTivR9NI1OwpD8e1XRoTgA
-         yJkjPecBctBCpJBWZ9nEpRngkG18dzfWFjeymGDKtmZ3sJxT5R97fJXjIYAHSjCYMeR7
-         UNed8MC2iV8h8P9NfspzoxN4tUYsTvJMvnabcO0uwLyk4NnatCLAbx88mfMCGT5cbgnH
-         eJU3bLLO2ffrG6oHUZP4sOXhCc5fvvh4tYrp+n6vPB0dX9XrebsYE+2EPa479MQijGeA
-         brYa8ZbqAIpDjuRB84RQDtQijRu2aWQw4xoeuZlpn8qGxtI1LYJJzy8G9Urc7ULSC7V1
-         +h0g==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0PY/hIrVyEXZoAed/OcZBz3yTo/Zs2xAryk0pt8P9cc=;
+        b=ASRKttC/wra/RSMujkeNoO1QnZyAVyzlJsgLqpuItCZFkComYKMDo5ow2YH5CdZnff
+         0JSWMlFio8Zvne7C0T6nom5tfD8D21Y6YUHIsXPPXZ6Vr3PF4irOhGvi6kYsdZp4s2E0
+         zV85f7pL+jWWCye+HBvNe6RzSGSiOPvt5go629TAb4EonT2veb6kIpEDDJwx101mdRqT
+         UFYaFa0lZV7m1fnYFzdYKEcdnR63NyWukSgdejKl/UDklmaTw+0a47BcDhi0vJ75PRKh
+         2tI9zl4uBfVk3F4QmeofEthlsClHnBweZqDNw/C63izYN/LOoK7FhJApkn2BWXdG3Vwf
+         MU0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=y+sOtKCHPX6pUlFz9QYEx87A43EGANm0QsQ80jIMaa8=;
-        b=crKqiLqSqafK5iIzIIdbMqqo7J3jmY/wcMLdNWkrPFOXfJNxvBGaKUdOvadY8Of4bK
-         wdP/y3/IU4ucFrbuB7L1mJgG5D039Yxl23ilUPm2nSPJTfyJlSsNm6XPi/pCwHjMFC3r
-         mt8Outg1+O34SpS1NtNZApAlbF8k7Bmv7eqw2Oz7fCxOT0N5wHxsMZ7k/HeU0+uHyrn3
-         1FYv0YOusiOxe839VNkIi1SNmaJNCedkb12TxiSeZ/Hp9uFyN0/kQHlBpwppgWbC1f8V
-         I/Ew88GbGXYayeHQJJ0dGquXV+KQYefUT5C664M+8VATYKen4AmcfYinGAl3OAjMhbdK
-         qlmA==
-X-Gm-Message-State: ANoB5pk9ZnBI5lZHrUv+NY6QTVw0XESaACCs1ALbB/0NJl7Dm3wD3V1x
-        lSC+RycfYMyo46Q9BIVf/3+V8x9FnZMWMw==
-X-Google-Smtp-Source: AA0mqf4DQ5od0MGwnrBJetuwTAYWt0X6/MLUxTB9YNAFDpZAxFWKoE2kiNW0ynaUQH4bbP226WxGUg==
-X-Received: by 2002:a05:600c:2298:b0:3cf:7c1b:3c29 with SMTP id 24-20020a05600c229800b003cf7c1b3c29mr2534091wmf.23.1668201812138;
-        Fri, 11 Nov 2022 13:23:32 -0800 (PST)
-Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id n18-20020a7bcbd2000000b003cf9bf5208esm9423281wmi.19.2022.11.11.13.23.30
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0PY/hIrVyEXZoAed/OcZBz3yTo/Zs2xAryk0pt8P9cc=;
+        b=OnoKFChyYT5FBVJwVXvSg4MywmIBLl3LmmI5YwW27h+dIAN0piCveTMtI1MMyMdNtw
+         eBY3FKkmCjn65OdCWnud1IxOroxmMpSI8RKgdz5XdH8sSi3jGBPOIsNkg5lrcGwYofaa
+         2l0JLaOakU9lD/ae2NRJq0+bAdlC8dB9V1nF0e7ZoDqTCIbj6240qfCB4hvdmOMwmKTg
+         z/Od2AVp9pnEcTuO2wBpLYJ89WdyS1KV9SNhNpTQPYrmiVa1BbhMv4nuI/vLNKkqYo3T
+         R5l2j/HaVnW6UoEDoL6B5XdVyDH7fUs0rEaFf4/AB6dakEchlwJkrsdSp5vkgETMttTJ
+         kghQ==
+X-Gm-Message-State: ANoB5pmM/5PuCvs7j1KRF27+e7LKVvnvmZ+Z+whuE0+CuKV6VLepvjnE
+        kVcDL36E93cf995VJr4euUQ=
+X-Google-Smtp-Source: AA0mqf4OLsqdYekJCuHXzG3dF0D2xg+t/o/nT+azfKDB3RI7dmM8gFLiHZmyxgcWDcWM8RcblSzZfQ==
+X-Received: by 2002:a05:6402:378b:b0:459:9792:a3a9 with SMTP id et11-20020a056402378b00b004599792a3a9mr3144415edb.341.1668202696962;
+        Fri, 11 Nov 2022 13:38:16 -0800 (PST)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id qq18-20020a17090720d200b0077205dd15basm1296312ejb.66.2022.11.11.13.38.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 13:23:31 -0800 (PST)
-From:   Dmitry Safonov <dima@arista.com>
-To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Dmitry Safonov <dima@arista.com>,
-        Bob Gilligan <gilligan@arista.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Fri, 11 Nov 2022 13:38:16 -0800 (PST)
+Date:   Fri, 11 Nov 2022 23:38:13 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 3/3] net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction
-Date:   Fri, 11 Nov 2022 21:23:20 +0000
-Message-Id: <20221111212320.1386566-4-dima@arista.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221111212320.1386566-1-dima@arista.com>
-References: <20221111212320.1386566-1-dima@arista.com>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: [PATCH 3/9] net: dsa: mv88e6xxx: implement get_phy_address
+Message-ID: <20221111213813.jfelkktkj5wk45qy@skbuf>
+References: <20221108082330.2086671-1-lukma@denx.de>
+ <20221108082330.2086671-4-lukma@denx.de>
+ <20221108091220.zpxsduscpvgr3zna@skbuf>
+ <Y2pbc90XD5IvZZC0@lunn.ch>
+ <20221110180053.0cb8045d@wsk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221110180053.0cb8045d@wsk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To do that, separate two scenarios:
-- where it's the first MD5 key on the system, which means that enabling
-  of the static key may need to sleep;
-- copying of an existing key from a listening socket to the request
-  socket upon receiving a signed TCP segment, where static key was
-  already enabled (when the key was added to the listening socket).
+On Thu, Nov 10, 2022 at 06:00:53PM +0100, Lukasz Majewski wrote:
+> Maybe in the generic case of PHY, yes (via Driver Model).
+> 
+> However, when you delve into the mv88e6xxx driver [1] - you would find
+> that this is not supporting it yet ...
+> 
+> As fair as I know - for the driver [1] - there was no ongoing effort
+> recently.
+> 
+> Links:
+> [1] -
+> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/net/phy/mv88e61xx.c
 
-Now the life-time of the static branch for TCP-MD5 is until:
-- last tcp_md5sig_info is destroyed
-- last socket in time-wait state with MD5 key is closed.
+U-Boot mailing list is moving a bit slower than netdev (and the patch
+set is not yet applied despite being ready), but I was talking about
+this:
+https://patchwork.ozlabs.org/project/uboot/list/?series=324983
 
-Which means that after all sockets with TCP-MD5 keys are gone, the
-system gets back the performance of disabled md5-key static branch.
-
-Signed-off-by: Dmitry Safonov <dima@arista.com>
----
- include/net/tcp.h        | 10 ++++--
- net/ipv4/tcp.c           |  5 +--
- net/ipv4/tcp_ipv4.c      | 68 ++++++++++++++++++++++++++++++++--------
- net/ipv4/tcp_minisocks.c | 12 +++++--
- net/ipv4/tcp_output.c    |  4 +--
- net/ipv6/tcp_ipv6.c      | 10 +++---
- 6 files changed, 78 insertions(+), 31 deletions(-)
-
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 14d45661a84d..a0cdf013782a 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1675,7 +1675,11 @@ int tcp_v4_md5_hash_skb(char *md5_hash, const struct tcp_md5sig_key *key,
- 			const struct sock *sk, const struct sk_buff *skb);
- int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 		   int family, u8 prefixlen, int l3index, u8 flags,
--		   const u8 *newkey, u8 newkeylen, gfp_t gfp);
-+		   const u8 *newkey, u8 newkeylen);
-+int tcp_md5_key_copy(struct sock *sk, const union tcp_md5_addr *addr,
-+		     int family, u8 prefixlen, int l3index,
-+		     struct tcp_md5sig_key *key);
-+
- int tcp_md5_do_del(struct sock *sk, const union tcp_md5_addr *addr,
- 		   int family, u8 prefixlen, int l3index, u8 flags);
- struct tcp_md5sig_key *tcp_v4_md5_lookup(const struct sock *sk,
-@@ -1683,7 +1687,7 @@ struct tcp_md5sig_key *tcp_v4_md5_lookup(const struct sock *sk,
- 
- #ifdef CONFIG_TCP_MD5SIG
- #include <linux/jump_label.h>
--extern struct static_key_false tcp_md5_needed;
-+extern struct static_key_false_deferred tcp_md5_needed;
- struct tcp_md5sig_key *__tcp_md5_do_lookup(const struct sock *sk, int l3index,
- 					   const union tcp_md5_addr *addr,
- 					   int family);
-@@ -1691,7 +1695,7 @@ static inline struct tcp_md5sig_key *
- tcp_md5_do_lookup(const struct sock *sk, int l3index,
- 		  const union tcp_md5_addr *addr, int family)
- {
--	if (!static_branch_unlikely(&tcp_md5_needed))
-+	if (!static_branch_unlikely(&tcp_md5_needed.key))
- 		return NULL;
- 	return __tcp_md5_do_lookup(sk, l3index, addr, family);
- }
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 54836a6b81d6..07a73c9b49da 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4460,11 +4460,8 @@ bool tcp_alloc_md5sig_pool(void)
- 	if (unlikely(!READ_ONCE(tcp_md5sig_pool_populated))) {
- 		mutex_lock(&tcp_md5sig_mutex);
- 
--		if (!tcp_md5sig_pool_populated) {
-+		if (!tcp_md5sig_pool_populated)
- 			__tcp_alloc_md5sig_pool();
--			if (tcp_md5sig_pool_populated)
--				static_branch_inc(&tcp_md5_needed);
--		}
- 
- 		mutex_unlock(&tcp_md5sig_mutex);
- 	}
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index fae80b1a1796..7c4cadbfdc1f 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1064,7 +1064,7 @@ static void tcp_v4_reqsk_destructor(struct request_sock *req)
-  * We need to maintain these in the sk structure.
-  */
- 
--DEFINE_STATIC_KEY_FALSE(tcp_md5_needed);
-+DEFINE_STATIC_KEY_DEFERRED_FALSE(tcp_md5_needed, HZ);
- EXPORT_SYMBOL(tcp_md5_needed);
- 
- static bool better_md5_match(struct tcp_md5sig_key *old, struct tcp_md5sig_key *new)
-@@ -1177,9 +1177,6 @@ static int tcp_md5sig_info_add(struct sock *sk, gfp_t gfp)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_md5sig_info *md5sig;
- 
--	if (rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk)))
--		return 0;
--
- 	md5sig = kmalloc(sizeof(*md5sig), gfp);
- 	if (!md5sig)
- 		return -ENOMEM;
-@@ -1191,9 +1188,9 @@ static int tcp_md5sig_info_add(struct sock *sk, gfp_t gfp)
- }
- 
- /* This can be called on a newly created socket, from other files */
--int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
--		   int family, u8 prefixlen, int l3index, u8 flags,
--		   const u8 *newkey, u8 newkeylen, gfp_t gfp)
-+static int __tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
-+			    int family, u8 prefixlen, int l3index, u8 flags,
-+			    const u8 *newkey, u8 newkeylen, gfp_t gfp)
- {
- 	/* Add Key to the list */
- 	struct tcp_md5sig_key *key;
-@@ -1220,9 +1217,6 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 		return 0;
- 	}
- 
--	if (tcp_md5sig_info_add(sk, gfp))
--		return -ENOMEM;
--
- 	md5sig = rcu_dereference_protected(tp->md5sig_info,
- 					   lockdep_sock_is_held(sk));
- 
-@@ -1246,8 +1240,56 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 	hlist_add_head_rcu(&key->node, &md5sig->head);
- 	return 0;
- }
-+
-+int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
-+		   int family, u8 prefixlen, int l3index, u8 flags,
-+		   const u8 *newkey, u8 newkeylen)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
-+		if (tcp_md5sig_info_add(sk, GFP_KERNEL))
-+			return -ENOMEM;
-+
-+		if (!static_branch_inc(&tcp_md5_needed.key)) {
-+			struct tcp_md5sig_info *md5sig = tp->md5sig_info;
-+
-+			rcu_assign_pointer(tp->md5sig_info, NULL);
-+			kfree_rcu(md5sig);
-+			return -EUSERS;
-+		}
-+	}
-+
-+	return __tcp_md5_do_add(sk, addr, family, prefixlen, l3index, flags,
-+				newkey, newkeylen, GFP_KERNEL);
-+}
- EXPORT_SYMBOL(tcp_md5_do_add);
- 
-+int tcp_md5_key_copy(struct sock *sk, const union tcp_md5_addr *addr,
-+		     int family, u8 prefixlen, int l3index,
-+		     struct tcp_md5sig_key *key)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
-+		if (tcp_md5sig_info_add(sk, sk_gfp_mask(sk, GFP_ATOMIC)))
-+			return -ENOMEM;
-+
-+		if (!static_key_fast_inc(&tcp_md5_needed.key.key)) {
-+			struct tcp_md5sig_info *md5sig = tp->md5sig_info;
-+
-+			rcu_assign_pointer(tp->md5sig_info, NULL);
-+			kfree_rcu(md5sig);
-+			return -EUSERS;
-+		}
-+	}
-+
-+	return __tcp_md5_do_add(sk, addr, family, prefixlen, l3index,
-+				key->flags, key->key, key->keylen,
-+				sk_gfp_mask(sk, GFP_ATOMIC));
-+}
-+EXPORT_SYMBOL(tcp_md5_key_copy);
-+
- int tcp_md5_do_del(struct sock *sk, const union tcp_md5_addr *addr, int family,
- 		   u8 prefixlen, int l3index, u8 flags)
- {
-@@ -1334,7 +1376,7 @@ static int tcp_v4_parse_md5_keys(struct sock *sk, int optname,
- 		return -EINVAL;
- 
- 	return tcp_md5_do_add(sk, addr, AF_INET, prefixlen, l3index, flags,
--			      cmd.tcpm_key, cmd.tcpm_keylen, GFP_KERNEL);
-+			      cmd.tcpm_key, cmd.tcpm_keylen);
- }
- 
- static int tcp_v4_md5_hash_headers(struct tcp_md5sig_pool *hp,
-@@ -1591,8 +1633,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 		 * memory, then we end up not copying the key
- 		 * across. Shucks.
- 		 */
--		tcp_md5_do_add(newsk, addr, AF_INET, 32, l3index, key->flags,
--			       key->key, key->keylen, GFP_ATOMIC);
-+		tcp_md5_key_copy(newsk, addr, AF_INET, 32, l3index, key);
- 		sk_gso_disable(newsk);
- 	}
- #endif
-@@ -2284,6 +2325,7 @@ void tcp_v4_destroy_sock(struct sock *sk)
- 		tcp_clear_md5_list(sk);
- 		kfree_rcu(rcu_dereference_protected(tp->md5sig_info, 1), rcu);
- 		tp->md5sig_info = NULL;
-+		static_branch_slow_dec_deferred(&tcp_md5_needed);
- 	}
- #endif
- 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index c375f603a16c..118fb2d939bb 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -291,13 +291,17 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 		 */
- 		do {
- 			tcptw->tw_md5_key = NULL;
--			if (static_branch_unlikely(&tcp_md5_needed)) {
-+			if (static_branch_unlikely(&tcp_md5_needed.key)) {
- 				struct tcp_md5sig_key *key;
- 
- 				key = tp->af_specific->md5_lookup(sk, sk);
- 				if (key) {
- 					tcptw->tw_md5_key = kmemdup(key, sizeof(*key), GFP_ATOMIC);
- 					BUG_ON(tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
-+					if (!static_key_fast_inc(&tcp_md5_needed.key.key)) {
-+						kfree(tcptw->tw_md5_key);
-+						tcptw->tw_md5_key = NULL;
-+					}
- 				}
- 			}
- 		} while (0);
-@@ -337,11 +341,13 @@ EXPORT_SYMBOL(tcp_time_wait);
- void tcp_twsk_destructor(struct sock *sk)
- {
- #ifdef CONFIG_TCP_MD5SIG
--	if (static_branch_unlikely(&tcp_md5_needed)) {
-+	if (static_branch_unlikely(&tcp_md5_needed.key)) {
- 		struct tcp_timewait_sock *twsk = tcp_twsk(sk);
- 
--		if (twsk->tw_md5_key)
-+		if (twsk->tw_md5_key) {
- 			kfree_rcu(twsk->tw_md5_key, rcu);
-+			static_branch_slow_dec_deferred(&tcp_md5_needed);
-+		}
- 	}
- #endif
- }
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index c69f4d966024..86e71c8c76bc 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -766,7 +766,7 @@ static unsigned int tcp_syn_options(struct sock *sk, struct sk_buff *skb,
- 
- 	*md5 = NULL;
- #ifdef CONFIG_TCP_MD5SIG
--	if (static_branch_unlikely(&tcp_md5_needed) &&
-+	if (static_branch_unlikely(&tcp_md5_needed.key) &&
- 	    rcu_access_pointer(tp->md5sig_info)) {
- 		*md5 = tp->af_specific->md5_lookup(sk, sk);
- 		if (*md5) {
-@@ -922,7 +922,7 @@ static unsigned int tcp_established_options(struct sock *sk, struct sk_buff *skb
- 
- 	*md5 = NULL;
- #ifdef CONFIG_TCP_MD5SIG
--	if (static_branch_unlikely(&tcp_md5_needed) &&
-+	if (static_branch_unlikely(&tcp_md5_needed.key) &&
- 	    rcu_access_pointer(tp->md5sig_info)) {
- 		*md5 = tp->af_specific->md5_lookup(sk, sk);
- 		if (*md5) {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 2a3f9296df1e..3e3bdc120fc8 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -677,12 +677,11 @@ static int tcp_v6_parse_md5_keys(struct sock *sk, int optname,
- 	if (ipv6_addr_v4mapped(&sin6->sin6_addr))
- 		return tcp_md5_do_add(sk, (union tcp_md5_addr *)&sin6->sin6_addr.s6_addr32[3],
- 				      AF_INET, prefixlen, l3index, flags,
--				      cmd.tcpm_key, cmd.tcpm_keylen,
--				      GFP_KERNEL);
-+				      cmd.tcpm_key, cmd.tcpm_keylen);
- 
- 	return tcp_md5_do_add(sk, (union tcp_md5_addr *)&sin6->sin6_addr,
- 			      AF_INET6, prefixlen, l3index, flags,
--			      cmd.tcpm_key, cmd.tcpm_keylen, GFP_KERNEL);
-+			      cmd.tcpm_key, cmd.tcpm_keylen);
- }
- 
- static int tcp_v6_md5_hash_headers(struct tcp_md5sig_pool *hp,
-@@ -1382,9 +1381,8 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 		 * memory, then we end up not copying the key
- 		 * across. Shucks.
- 		 */
--		tcp_md5_do_add(newsk, (union tcp_md5_addr *)&newsk->sk_v6_daddr,
--			       AF_INET6, 128, l3index, key->flags, key->key, key->keylen,
--			       sk_gfp_mask(sk, GFP_ATOMIC));
-+		tcp_md5_key_copy(newsk, (union tcp_md5_addr *)&newsk->sk_v6_daddr,
-+				 AF_INET6, 128, l3index, key);
- 	}
- #endif
- 
--- 
-2.38.1
-
+If you study DM_DSA, you'll see that only supporting PHY connection via
+phy-handle (even if the PHY is internal) (or fixed-link, in lack of a
+PHY) was an absolutely deliberate decision.
