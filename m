@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 736F262530E
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 06:27:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7D5625310
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 06:29:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230091AbiKKF1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 00:27:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
+        id S230284AbiKKF3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 00:29:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbiKKF1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 00:27:21 -0500
+        with ESMTP id S230043AbiKKF3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 00:29:52 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097964877C
-        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 21:27:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2909B10B7F
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 21:29:51 -0800 (PST)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1otMZ8-0004Zl-0V; Fri, 11 Nov 2022 06:26:58 +0100
+        id 1otMbh-0004ec-SX; Fri, 11 Nov 2022 06:29:37 +0100
 Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1otMZ6-0007bV-Eu; Fri, 11 Nov 2022 06:26:56 +0100
-Date:   Fri, 11 Nov 2022 06:26:56 +0100
+        id 1otMbh-0007dU-Hp; Fri, 11 Nov 2022 06:29:37 +0100
+Date:   Fri, 11 Nov 2022 06:29:37 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -36,16 +36,16 @@ Cc:     Woojung Huh <woojung.huh@microchip.com>,
         Arun Ramadoss <arun.ramadoss@microchip.com>,
         kernel@pengutronix.de, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 1/4] net: dsa: microchip: move max mtu to one
- location
-Message-ID: <20221111052656.GC27099@pengutronix.de>
+Subject: Re: [PATCH net-next v4 4/4] net: dsa: microchip: ksz8: add MTU
+ configuration support
+Message-ID: <20221111052937.GD27099@pengutronix.de>
 References: <20221110122225.1283326-1-o.rempel@pengutronix.de>
- <20221110122225.1283326-2-o.rempel@pengutronix.de>
- <53bd4c46-17f9-91c1-fda5-bd2d09ae2ff7@gmail.com>
+ <20221110122225.1283326-5-o.rempel@pengutronix.de>
+ <20221110130325.eklhybumv7naehxe@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <53bd4c46-17f9-91c1-fda5-bd2d09ae2ff7@gmail.com>
+In-Reply-To: <20221110130325.eklhybumv7naehxe@skbuf>
 X-Sent-From: Pengutronix Hildesheim
 X-URL:  http://www.pengutronix.de/
 X-Accept-Language: de,en
@@ -64,46 +64,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
-
-On Thu, Nov 10, 2022 at 06:42:03AM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 11/10/2022 4:22 AM, Oleksij Rempel wrote:
-> > There are no HW specific registers, so we can process all of them
-> > in one location.
+On Thu, Nov 10, 2022 at 03:03:25PM +0200, Vladimir Oltean wrote:
+> On Thu, Nov 10, 2022 at 01:22:25PM +0100, Oleksij Rempel wrote:
+> > Make MTU configurable on KSZ87xx and KSZ88xx series of switches.
+> > 
+> > Before this patch, pre-configured behavior was different on different
+> > switch series, due to opposite meaning of the same bit:
+> > - KSZ87xx: Reg 4, Bit 1 - if 1, max frame size is 1532; if 0 - 1514
+> > - KSZ88xx: Reg 4, Bit 1 - if 1, max frame size is 1514; if 0 - 1532
+> > 
+> > Since the code was telling "... SW_LEGAL_PACKET_DISABLE, true)", I
+> > assume, the idea was to set max frame size to 1532.
+> > 
+> > With this patch, by setting MTU size 1500, both switch series will be
+> > configured to the 1532 frame limit.
+> > 
+> > This patch was tested on KSZ8873.
 > > 
 > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > Tested-by: Arun Ramadoss <arun.ramadoss@microchip.com> (KSZ9893 and LAN937x)
+> > Acked-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> > ---
 > 
-> This looks good to me, just one nit see below
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 > 
-> [snip]
-> 
-> > @@ -2500,10 +2499,23 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
-> >   {
-> >   	struct ksz_device *dev = ds->priv;
-> > -	if (!dev->dev_ops->max_mtu)
-> > -		return -EOPNOTSUPP;
-> > +	switch (dev->chip_id) {
-> > +	case KSZ8563_CHIP_ID:
-> > +	case KSZ9477_CHIP_ID:
-> > +	case KSZ9563_CHIP_ID:
-> > +	case KSZ9567_CHIP_ID:
-> > +	case KSZ9893_CHIP_ID:
-> > +	case KSZ9896_CHIP_ID:
-> > +	case KSZ9897_CHIP_ID:
-> > +	case LAN9370_CHIP_ID:
-> > +	case LAN9371_CHIP_ID:
-> > +	case LAN9372_CHIP_ID:
-> > +	case LAN9373_CHIP_ID:
-> > +	case LAN9374_CHIP_ID:
-> > +		return KSZ9477_MAX_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
-> 
-> Rename to KSZ_MAX_FRAME_SIZE to denote this is a common constant?
+> As an extension to this patch set, you might also want to set
+> ds->mtu_enforcement_ingress = true, to activate the bridge MTU
+> normalization logic, since you have one MTU global to the entire switch.
 
-This is not so common. This list is extended by the patch 4, with two
-more types of switches with different max frame size.
+Ok, I'll include it in to a different patch set. There are more patches
+to mainline :)
 
 Regards,
 Oleksij
