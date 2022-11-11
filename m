@@ -2,74 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A56B562659B
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 00:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2632562659E
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 00:37:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234147AbiKKXhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 18:37:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56700 "EHLO
+        id S234448AbiKKXhq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Nov 2022 18:37:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbiKKXhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 18:37:19 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B21E659F;
-        Fri, 11 Nov 2022 15:37:18 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id 13so15934656ejn.3;
-        Fri, 11 Nov 2022 15:37:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=G9Y9yhSdHqOUHPRZdNpL0kiXERp5PNpZLc2HB4kOxrc=;
-        b=aqP76dtcskDMwQA5tvXiugSOQqfKBh/XATREu+VTrhMifbT9FEn0XJckUW907StA4f
-         hMUscUjWOPbXHLl/TyceCeC3ZzHr76gha2EfrLluOmaQQnFZLJl2uOlszSIqAN4GyKZS
-         jSqSQyzYAocBH/pXiMdePvzGhSjZqUdTeG3NokR2KKOkk8L9+UGb9t/a7/ksG/ZynKsK
-         ywCtu4Kk3+lfV+9uwco70eCO5pJsWfMDBVa5l+HindU2jFnVgmxfiuS4Hk+03kGHOxzU
-         9uXc8LzjmYR7emWvNAM9xcBQ1hDfsN7OT8HvR48s5hqis4IojJpUhpedwpDubRANNNst
-         hYXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=G9Y9yhSdHqOUHPRZdNpL0kiXERp5PNpZLc2HB4kOxrc=;
-        b=nzAUh9y1fya4gvZWmF0sOgaRFlAzj/nG0fBwuew2KpLwRy3ouio1qONeX5rmgd6MfU
-         A7B5NibphDilW1Z1FC2s8/NYW+Os3ALXcTaCgResf1+6K6eqGXH8iTLfY9iBm2O/acOW
-         dLwBpooHzWRs+e+2+3uRYxKeqqXkXCmUuMtad6RXLn2lmXc7rRwBYKY2BnvO/rhnH4dr
-         bG4/JQCFa515vjdA42ndHD33FexBEAHGQatOMG+oGMcmaboUNMFtjcAF5W+sTXUOjSs8
-         ZV2F4xXSqQAh/aY0cujSn0ozgcKqxQCQYRIOuiV+lIelaLzfaQVYw2eNz8W+dMcPKNwj
-         1ssA==
-X-Gm-Message-State: ANoB5pnEqmuA54hSxDIJRj41CQo0iuPAcW0a9r+ijfY1FLB3k0c4HaH6
-        6/3th19iL32mdG/XkuWPuNU=
-X-Google-Smtp-Source: AA0mqf5B7O94sHIfSfMhUCdqVkBIdtPjB7iO/h/cK9IbhkzrR6HnFAN2vQmsfDoM7AMPswD8FLabLg==
-X-Received: by 2002:a17:907:119a:b0:7ad:b45d:810c with SMTP id uz26-20020a170907119a00b007adb45d810cmr3791515ejb.181.1668209836544;
-        Fri, 11 Nov 2022 15:37:16 -0800 (PST)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id j17-20020aa7c411000000b00459148fbb3csm1611313edq.86.2022.11.11.15.37.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 15:37:16 -0800 (PST)
-Date:   Sat, 12 Nov 2022 01:37:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 1/4] net: dsa: add support for DSA rx
- offloading via metadata dst
-Message-ID: <20221111233714.pmbc5qvq3g3hemhr@skbuf>
-References: <20221110212212.96825-1-nbd@nbd.name>
- <20221110212212.96825-2-nbd@nbd.name>
+        with ESMTP id S230105AbiKKXho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 18:37:44 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C85E026
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 15:37:43 -0800 (PST)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2ABJOFod029111
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 15:37:42 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ks3nwm3a9-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 15:37:42 -0800
+Received: from twshared15216.17.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 11 Nov 2022 15:37:39 -0800
+Received: by devbig019.vll3.facebook.com (Postfix, from userid 137359)
+        id 3B1C9218F2885; Fri, 11 Nov 2022 15:37:33 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <davem@davemloft.net>
+CC:     <kuba@kernel.org>, <pabeni@redhat.com>, <edumazet@google.com>,
+        <daniel@iogearbox.net>, <ast@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <andrii@kernel.org>
+Subject: pull-request: bpf-next 2022-11-11
+Date:   Fri, 11 Nov 2022 15:37:33 -0800
+Message-ID: <20221111233733.1088228-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
+Content-Type: text/plain; charset="UTF-8"
+X-FB-Internal: Safe
+X-Proofpoint-GUID: J4Ed5Mq5IKDHg5tmT-P7w4INpHRAi56_
+X-Proofpoint-ORIG-GUID: J4Ed5Mq5IKDHg5tmT-P7w4INpHRAi56_
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221110212212.96825-2-nbd@nbd.name>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-11_11,2022-11-11_01,2022-06-22_01
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,98 +56,228 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 10:22:08PM +0100, Felix Fietkau wrote:
-> If a metadata dst is present with the type METADATA_HW_PORT_MUX on a dsa cpu
-> port netdev, assume that it carries the port number and that there is no DSA
-> tag present in the skb data.
-> 
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
+Hi David, hi Jakub, hi Paolo, hi Eric,
 
-Doesn't look bad to me, but...
+The following pull-request contains BPF updates for your *net-next* tree.
 
->  net/core/flow_dissector.c |  4 +++-
->  net/dsa/dsa.c             | 19 ++++++++++++++++++-
->  2 files changed, 21 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-> index 25cd35f5922e..1f476abc25e1 100644
-> --- a/net/core/flow_dissector.c
-> +++ b/net/core/flow_dissector.c
-> @@ -972,11 +972,13 @@ bool __skb_flow_dissect(const struct net *net,
->  		if (unlikely(skb->dev && netdev_uses_dsa(skb->dev) &&
->  			     proto == htons(ETH_P_XDSA))) {
->  			const struct dsa_device_ops *ops;
-> +			struct metadata_dst *md_dst = skb_metadata_dst(skb);
->  			int offset = 0;
->  
->  			ops = skb->dev->dsa_ptr->tag_ops;
->  			/* Only DSA header taggers break flow dissection */
-> -			if (ops->needed_headroom) {
-> +			if (ops->needed_headroom &&
-> +			    (!md_dst || md_dst->type != METADATA_HW_PORT_MUX)) {
->  				if (ops->flow_dissect)
->  					ops->flow_dissect(skb, &proto, &offset);
->  				else
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index 64b14f655b23..0b67622cf905 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -11,6 +11,7 @@
->  #include <linux/netdevice.h>
->  #include <linux/sysfs.h>
->  #include <linux/ptp_classify.h>
-> +#include <net/dst_metadata.h>
->  
->  #include "dsa_priv.h"
->  
-> @@ -216,6 +217,7 @@ static bool dsa_skb_defer_rx_timestamp(struct dsa_slave_priv *p,
->  static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
->  			  struct packet_type *pt, struct net_device *unused)
->  {
-> +	struct metadata_dst *md_dst = skb_metadata_dst(skb);
->  	struct dsa_port *cpu_dp = dev->dsa_ptr;
->  	struct sk_buff *nskb = NULL;
->  	struct dsa_slave_priv *p;
-> @@ -229,7 +231,22 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
->  	if (!skb)
->  		return 0;
->  
-> -	nskb = cpu_dp->rcv(skb, dev);
-> +	if (md_dst && md_dst->type == METADATA_HW_PORT_MUX) {
-> +		unsigned int port = md_dst->u.port_info.port_id;
-> +
-> +		skb_dst_set(skb, NULL);
+We've added 49 non-merge commits during the last 9 day(s) which contain
+a total of 68 files changed, 3592 insertions(+), 1371 deletions(-).
 
-If you insist on not using the refcounting feature and free your
-metadata_dst in the master's remove() function, that's going to
-invalidate absolutely any point I'm trying to make. Normally I'd leave
-you alone, however I really don't like that this is also forcing DSA to
-not use the refcount, and therefore, that it's forcing any other driver
-to do the same as mtk_eth_soc. Not sure how that's gonna scale in the
-hypothetical future when there will be a DSA master which can offload
-RX DSA tags, *and* the switch can change tagging protocols dynamically
-(which will force the master to allocate/free its metadata dst's at
-runtime too). I guess that will be for me to figure out, which I don't
-like.
+The main changes are:
 
-Jakub, what do you think? Refcounting or no refcounting?
+1) Veristat tool improvements to support custom filtering, sorting, and replay
+   of results, from Andrii Nakryiko.
 
-> +		if (!skb_has_extensions(skb))
-> +			skb->slow_gro = 0;
-> +
-> +		skb->dev = dsa_master_find_slave(dev, 0, port);
-> +		if (likely(skb->dev)) {
-> +			dsa_default_offload_fwd_mark(skb);
-> +			nskb = skb;
-> +		}
-> +	} else {
-> +		nskb = cpu_dp->rcv(skb, dev);
-> +	}
-> +
->  	if (!nskb) {
->  		kfree_skb(skb);
->  		return 0;
-> -- 
-> 2.38.1
-> 
+2) BPF verifier precision tracking fixes and improvements, from Andrii Nakryiko.
+
+3) Lots of new BPF documentation for various BPF maps, from Dave Tucker,
+   Donald Hunter, Maryam Tahhan, Bagas Sanjaya.
+
+4) BTF dedup improvements and libbpf's hashmap interface clean ups, from
+   Eduard Zingerman.
+
+5) Fix veth driver panic if XDP program is attached before veth_open, from
+   John Fastabend.
+
+6) BPF verifier clean ups and fixes in preparation for follow up features,
+   from Kumar Kartikeya Dwivedi.
+
+7) Add access to hwtstamp field from BPF sockops programs, from Martin KaFai Lau.
+
+8) Various fixes for BPF selftests and samples, from Artem Savkov,
+   Domenico Cerasuolo, Kang Minchul, Rong Tao, Yang Jihong.
+
+9) Fix redirection to tunneling device logic, preventing skb->len == 0, from
+   Stanislav Fomichev.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git tags/for-netdev
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alan Maguire, Andrii Nakryiko, Bagas Sanjaya, Björn Töpel, Dave 
+Marchevsky, David Vernet, Jakub Kicinski, kernel test robot, KP Singh, 
+Maryam Tahhan, Randy Dunlap, Stanislav Fomichev, Wang Yufen, Yonghong 
+Song
+
+----------------------------------------------------------------
+
+The following changes since commit fbeb229a6622523c092a13c02bd0e15f69240dde:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-11-03 13:21:54 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git tags/for-netdev
+
+for you to fetch changes up to eb6af4ceda2d885416d8382f096030d39896aafc:
+
+  selftests/bpf: fix veristat's singular file-or-prog filter (2022-11-11 14:06:20 -0800)
+
+----------------------------------------------------------------
+bpf-next-for-netdev
+
+----------------------------------------------------------------
+Alexei Starovoitov (2):
+      Merge branch 'veristat: replay, filtering, sorting'
+      Merge branch 'BPF verifier precision tracking improvements'
+
+Andrii Nakryiko (19):
+      selftests/bpf: add veristat replay mode
+      selftests/bpf: shorten "Total insns/states" column names in veristat
+      selftests/bpf: consolidate and improve file/prog filtering in veristat
+      selftests/bpf: ensure we always have non-ambiguous sorting in veristat
+      selftests/bpf: allow to define asc/desc ordering for sort specs in veristat
+      selftests/bpf: support simple filtering of stats in veristat
+      selftests/bpf: make veristat emit all stats in CSV mode by default
+      selftests/bpf: handle missing records in comparison mode better in veristat
+      selftests/bpf: support stats ordering in comparison mode in veristat
+      selftests/bpf: support stat filtering in comparison mode in veristat
+      bpf: propagate precision in ALU/ALU64 operations
+      bpf: propagate precision across all frames, not just the last one
+      bpf: allow precision tracking for programs with subprogs
+      bpf: stop setting precise in current state
+      bpf: aggressively forget precise markings during state checkpointing
+      selftests/bpf: make test_align selftest more robust
+      Merge branch 'libbpf: Resolve unambigous forward declarations'
+      Merge branch 'bpf: Add hwtstamp field for the sockops prog'
+      selftests/bpf: fix veristat's singular file-or-prog filter
+
+Artem Savkov (1):
+      selftests/bpf: Use consistent build-id type for liburandom_read.so
+
+Bagas Sanjaya (1):
+      Documentation: bpf: Escape underscore in BPF type name prefix
+
+Dave Tucker (1):
+      bpf, docs: Document BPF_MAP_TYPE_ARRAY
+
+Domenico Cerasuolo (1):
+      selftests: Fix test group SKIPPED result
+
+Donald Hunter (3):
+      docs/bpf: Document BPF_MAP_TYPE_LPM_TRIE map
+      docs/bpf: Document BPF ARRAY_OF_MAPS and HASH_OF_MAPS
+      docs/bpf: Document BPF map types QUEUE and STACK
+
+Eduard Zingerman (6):
+      libbpf: Resolve enum fwd as full enum64 and vice versa
+      selftests/bpf: Tests for enum fwd resolved as full enum64
+      libbpf: Hashmap interface update to allow both long and void* keys/values
+      libbpf: Resolve unambigous forward declarations
+      selftests/bpf: Tests for btf_dedup_resolve_fwds
+      libbpf: Hashmap.h update to fix build issues using LLVM14
+
+John Fastabend (1):
+      bpf: veth driver panics when xdp prog attached before veth_open
+
+Kang Minchul (1):
+      selftests/bpf: Fix u32 variable compared with less than zero
+
+Kumar Kartikeya Dwivedi (8):
+      bpf: Document UAPI details for special BPF types
+      bpf: Allow specifying volatile type modifier for kptrs
+      bpf: Clobber stack slot when writing over spilled PTR_TO_BTF_ID
+      bpf: Fix slot type check in check_stack_write_var_off
+      bpf: Drop reg_type_may_be_refcounted_or_null
+      bpf: Refactor kptr_off_tab into btf_record
+      bpf: Consolidate spin_lock, timer management into btf_record
+      bpf: Refactor map->off_arr handling
+
+Martin KaFai Lau (4):
+      Merge branch 'fix panic bringing up veth with xdp progs'
+      bpf: Add hwtstamp field for the sockops prog
+      selftests/bpf: Fix incorrect ASSERT in the tcp_hdr_options test
+      selftests/bpf: Test skops->skb_hwtstamp
+
+Maryam Tahhan (1):
+      docs/bpf: Document BPF_MAP_TYPE_CPUMAP map
+
+Rong Tao (3):
+      samples/bpf: Fix tracex2 error: No such file or directory
+      selftests/bpf: cgroup_helpers.c: Fix strncpy() fortify warning
+      samples/bpf: Fix sockex3 error: Missing BPF prog type
+
+Stanislav Fomichev (1):
+      bpf: make sure skb->len != 0 when redirecting to a tunneling device
+
+Yang Jihong (1):
+      selftests/bpf: Fix xdp_synproxy compilation failure in 32-bit arch
+
+ Documentation/bpf/bpf_design_QA.rst                |  44 +
+ Documentation/bpf/map_array.rst                    | 250 ++++++
+ Documentation/bpf/map_cpumap.rst                   | 166 ++++
+ Documentation/bpf/map_lpm_trie.rst                 | 181 +++++
+ Documentation/bpf/map_of_maps.rst                  | 126 +++
+ Documentation/bpf/map_queue_stack.rst              | 122 +++
+ drivers/net/veth.c                                 |   2 +-
+ include/linux/bpf.h                                | 179 +++--
+ include/linux/btf.h                                |  10 +-
+ include/uapi/linux/bpf.h                           |   1 +
+ kernel/bpf/arraymap.c                              |  30 +-
+ kernel/bpf/bpf_local_storage.c                     |   2 +-
+ kernel/bpf/btf.c                                   | 420 ++++++----
+ kernel/bpf/cpumap.c                                |   9 +-
+ kernel/bpf/hashtab.c                               |  38 +-
+ kernel/bpf/helpers.c                               |   6 +-
+ kernel/bpf/local_storage.c                         |   2 +-
+ kernel/bpf/map_in_map.c                            |  19 +-
+ kernel/bpf/syscall.c                               | 373 ++++-----
+ kernel/bpf/verifier.c                              | 485 +++++++----
+ net/core/bpf_sk_storage.c                          |   4 +-
+ net/core/filter.c                                  |  43 +-
+ samples/bpf/sockex3_kern.c                         |  95 ++-
+ samples/bpf/sockex3_user.c                         |  23 +-
+ samples/bpf/tracex2_kern.c                         |   4 +-
+ samples/bpf/tracex2_user.c                         |   3 +-
+ tools/bpf/bpftool/btf.c                            |  25 +-
+ tools/bpf/bpftool/common.c                         |  10 +-
+ tools/bpf/bpftool/gen.c                            |  19 +-
+ tools/bpf/bpftool/link.c                           |  10 +-
+ tools/bpf/bpftool/main.h                           |  14 +-
+ tools/bpf/bpftool/map.c                            |  10 +-
+ tools/bpf/bpftool/pids.c                           |  16 +-
+ tools/bpf/bpftool/prog.c                           |  10 +-
+ tools/include/uapi/linux/bpf.h                     |   1 +
+ tools/lib/bpf/btf.c                                | 259 ++++--
+ tools/lib/bpf/btf_dump.c                           |  15 +-
+ tools/lib/bpf/hashmap.c                            |  18 +-
+ tools/lib/bpf/hashmap.h                            |  91 ++-
+ tools/lib/bpf/libbpf.c                             |  18 +-
+ tools/lib/bpf/strset.c                             |  18 +-
+ tools/lib/bpf/usdt.c                               |  28 +-
+ tools/perf/tests/expr.c                            |  28 +-
+ tools/perf/tests/pmu-events.c                      |   6 +-
+ tools/perf/util/bpf-loader.c                       |  11 +-
+ tools/perf/util/evsel.c                            |   2 +-
+ tools/perf/util/expr.c                             |  36 +-
+ tools/perf/util/hashmap.c                          |  18 +-
+ tools/perf/util/hashmap.h                          |  91 ++-
+ tools/perf/util/metricgroup.c                      |  10 +-
+ tools/perf/util/stat-shadow.c                      |   2 +-
+ tools/perf/util/stat.c                             |   9 +-
+ tools/testing/selftests/bpf/Makefile               |   7 +-
+ tools/testing/selftests/bpf/bpf_util.h             |  19 +
+ tools/testing/selftests/bpf/cgroup_helpers.c       |   3 +-
+ tools/testing/selftests/bpf/prog_tests/align.c     |  38 +-
+ tools/testing/selftests/bpf/prog_tests/btf.c       | 264 +++++-
+ .../selftests/bpf/prog_tests/btf_dedup_split.c     |  45 +-
+ tools/testing/selftests/bpf/prog_tests/btf_dump.c  |   4 +-
+ tools/testing/selftests/bpf/prog_tests/hashmap.c   | 190 +++--
+ .../selftests/bpf/prog_tests/kprobe_multi_test.c   |   6 +-
+ .../selftests/bpf/prog_tests/tcp_hdr_options.c     |   6 +-
+ .../bpf/progs/test_misc_tcp_hdr_options.c          |   4 +
+ tools/testing/selftests/bpf/test_progs.c           |  38 +-
+ tools/testing/selftests/bpf/veristat.c             | 893 +++++++++++++++++----
+ tools/testing/selftests/bpf/xdp_synproxy.c         |   5 +-
+ tools/testing/selftests/bpf/xsk.c                  |  26 +-
+ tools/testing/selftests/bpf/xskxceiver.c           |   3 +-
+ 68 files changed, 3592 insertions(+), 1371 deletions(-)
+ create mode 100644 Documentation/bpf/map_array.rst
+ create mode 100644 Documentation/bpf/map_cpumap.rst
+ create mode 100644 Documentation/bpf/map_lpm_trie.rst
+ create mode 100644 Documentation/bpf/map_of_maps.rst
+ create mode 100644 Documentation/bpf/map_queue_stack.rst
