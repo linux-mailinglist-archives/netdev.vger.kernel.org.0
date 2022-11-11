@@ -2,86 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 580AF625CF2
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 15:25:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 306C1625EE8
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 16:59:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234223AbiKKOZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 09:25:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
+        id S234352AbiKKP7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 10:59:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233825AbiKKOZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 09:25:11 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8387391C0
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 06:25:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8YD7vYZrXCDu/cc3/7SdQkoqJr2hYQgTHeq8C1qQLo4=; b=NSK/hRK+bNhmpo38MYpxDsn3xE
-        RPte9TbKdxUfWvCZ4Pvy1rtTWz8YjaVl48stoYjJ6VKlhVL0vbG2iAA4LjcvzwwKrZjDzPNqFN/zI
-        CvMzsQXzfQ6LuaGOJG4i+yLSICmwU5gyrT9y/C84zujbFyJnMmZMb4wZ7SYS6+/9cEkg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1otUxt-0027r8-37; Fri, 11 Nov 2022 15:25:05 +0100
-Date:   Fri, 11 Nov 2022 15:25:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ian Abbott <abbotti@mev.co.uk>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [RFC] option to use proper skew timings for Micrel KSZ9021
-Message-ID: <Y25bQfVwPZDT4T5D@lunn.ch>
-References: <c3755dfd-004a-d869-3fcf-589297dd17bd@mev.co.uk>
- <Y2vi/IxoTpfwR65T@lunn.ch>
- <0b22ce6a-97b5-2784-fb52-7cbae8be39b0@mev.co.uk>
+        with ESMTP id S233842AbiKKP7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 10:59:18 -0500
+X-Greylist: delayed 2394 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Nov 2022 07:59:17 PST
+Received: from smtpout.efficios.com (smtpout.efficios.com [IPv6:2607:5300:203:5aae::31e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2623C6CE;
+        Fri, 11 Nov 2022 07:59:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
+        s=smtpout1; t=1668177821;
+        bh=EYvFyeYoIXdpRZUrDIt9Kwnd3gAkvdIgxw1lIXG8SKY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=l66N3oiBVl0WpLOT0hkLWrSBLQJsJSW4+ouPxFZH5QD5KKmXDB6CMjzwtM8VVLLpX
+         a4mvKpJXJiuV9Qw3ANDqSRII+7K5waLtTRLYZ90oeO3HFXyKJpVusI8jz1TOHWpOiX
+         dJRcqsFN0mN40E/3U0KhejsRReLLA8QsqIZLb9mPKd4oL95EyLfXlhHXXYFtuTieM/
+         mQitMOSC/OQ89QyOELCnHdOHRibH9OXvgNxVpUIxiREjJL0PTMu3jrCYcnxgmXCUU+
+         h1vYvH07RGr00OmtJNBP+zQXctnrrr738WJXcAPDjU36sTOHtCkNno5wnO/vjAKkO+
+         R+/kME1qSOXkw==
+Received: from [172.16.0.153] (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
+        by smtpout.efficios.com (Postfix) with ESMTPSA id 4N81fh5HFrzgt1;
+        Fri, 11 Nov 2022 09:43:40 -0500 (EST)
+Message-ID: <02cdf436-6942-89a7-98b2-bfa75ba5f301@efficios.com>
+Date:   Fri, 11 Nov 2022 09:43:49 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0b22ce6a-97b5-2784-fb52-7cbae8be39b0@mev.co.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH printk v3 00/40] reduce console_lock scope
+Content-Language: en-US
+To:     John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tony Lindgren <tony@atomide.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, Ard Biesheuvel <ardb@kernel.org>,
+        linux-efi@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        linux-usb@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Helge Deller <deller@gmx.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Tom Rix <trix@redhat.com>, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+In-Reply-To: <20221107141638.3790965-1-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 1. Forward planning to replace KSZ9021 with KSZ9031 in a future hardware
-> iteration.  As long as the device tree and kernel driver (and possibly the
-> bootloader if it uses the same device tree blob as the kernel internally)
-> are upgraded at the same time, software upgrades of existing hardware with
-> KSZ9021 will continue to work correctly.  Upgraded hardware with KSZ9031
-> will work properly with the updated software.
+On 2022-11-07 09:15, John Ogness wrote:
+[...]
 > 
-> 2. Due to KSZ9031 chip shortages, it may be useful to replace KSZ9031 with
-> KSZ9021 for a few manufacturing runs.  This can be done as long as the
-> device tree and driver are updated to know about the new property in time
-> for those manufacturing runs.
-> 
-> In both cases, the skew timings chosen would need to apply to both KSZ9021
-> and KSZ9031.
+> The base commit for this series is from Paul McKenney's RCU tree
+> and provides an NMI-safe SRCU implementation [1]. Without the
+> NMI-safe SRCU implementation, this series is not less safe than
+> mainline. But we will need the NMI-safe SRCU implementation for
+> atomic consoles anyway, so we might as well get it in
+> now. Especially since it _does_ increase the reliability for
+> mainline in the panic path.
 
-So you are saying that as it is pin compatible ( i assume), you can
-swap the PHY and still call it the same board, and still use the same
-device tree blob.
+So, your email got me to review the SRCU nmi-safe series:
 
-If you are going to do this, i think you really should fix all the
-bugs, not just the step. KSZ9021 has an offset of -840ps. KSZ9031 has
-an offset of -900ps. So both are broke, in that the skew is expected
-to be a signed value, 0 meaning 0.
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/log/?h=srcunmisafe.2022.10.21a
 
-I would suggest a bool property something like:
+Especially this commit:
 
-micrel,skew-equals-real-picoseconds
+https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?h=srcunmisafe.2022.10.21a&id=5d0f5953b60f5f7a278085b55ddc73e2932f4c33
 
-and you need to update the documentation in a way it is really clear
-what is going on.
+I disagree with the overall approach taken there, which is to create
+yet another SRCU flavor, this time with explicit "nmi-safe" read-locks.
+This adds complexity to the kernel APIs and I think we can be clever
+about this and make SRCU nmi-safe without requiring a whole new incompatible
+API.
 
-I would also consider adding a phydev_dbg() which prints the actual ps
-skew being used, with/without the bug.
+You can find the basic idea needed to achieve this in the libside RCU
+user-space implementation. I needed to introduce a split-counter concept
+to support rseq vs atomics to keep track of per-cpu grace period counters.
+The "rseq" counter is the fast-path, but if rseq fails, the abort handler
+uses the atomic counter instead.
 
-And since you are adding more foot guns, please validate the values in
-DT as strictly as possible, without breaking the existing binding.
+https://github.com/compudj/side/blob/main/src/rcu.h#L23
 
-   Andrew
+struct side_rcu_percpu_count {
+	uintptr_t begin;
+	uintptr_t rseq_begin;
+	uintptr_t end;
+	uintptr_t rseq_end;
+}  __attribute__((__aligned__(SIDE_CACHE_LINE_SIZE)));
+
+The idea is to "split" each percpu counter into two counters, one for rseq,
+and the other for atomics. When a grace period wants to observe the value of
+a percpu counter, it simply sums the two counters:
+
+https://github.com/compudj/side/blob/main/src/rcu.c#L112
+
+The same idea can be applied to SRCU in the kernel: one counter for percpu ops,
+and the other counter for nmi context, so basically:
+
+srcu_read_lock()
+
+if (likely(!in_nmi()))
+   increment the percpu-ops lock counter
+else
+   increment the atomic lock counter
+
+srcu_read_unlock()
+
+if (likely(!in_nmi()))
+   increment the percpu-ops unlock counter
+else
+   increment the atomic unlock counter
+
+Then in the grace period sum the percpu-ops and the atomic values whenever
+each counter value is read.
+
+This would allow SRCU to be NMI-safe without requiring the callers to
+explicitly state whether they need to be nmi-safe or not, and would only
+take the overhead of the atomics in the NMI handlers rather than for all
+users which happen to use SRCU read locks shared with nmi handlers.
+
+Thoughts ?
+
+Thanks,
+
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+https://www.efficios.com
+
