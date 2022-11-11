@@ -2,186 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BCE762588D
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 11:42:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDAF46258B2
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 11:50:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233492AbiKKKmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 05:42:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S233337AbiKKKuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 05:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiKKKmD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 05:42:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34ADB65E5A
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 02:41:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668163265;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QNTar+12P1H59OON6fBjXfGGsWJKzpaZOSFcU1s0I+c=;
-        b=H6dOFdcf8lUT8KK+3uFcpKWUur77TKoRiwsci+SqxKKxCFqrUPV2+zh8EoiB0tfwI8KNp+
-        LOzTxO9xsOiaWNHB3e3/FYFpTXzUDXo8gr7L2+LQjMS+5VEm5NCN1yHm7ulg5q6Qd58UCW
-        n0WnuzyQea+fFxdxeqqZ9aJzxQnMvv8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-434-hGcpx8u6OByAY6tBBWueNw-1; Fri, 11 Nov 2022 05:41:04 -0500
-X-MC-Unique: hGcpx8u6OByAY6tBBWueNw-1
-Received: by mail-ed1-f70.google.com with SMTP id q13-20020a056402518d00b00462b0599644so3418972edd.20
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 02:41:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QNTar+12P1H59OON6fBjXfGGsWJKzpaZOSFcU1s0I+c=;
-        b=ae+5MgpKAGitA5oWsG5pJfqf2nBFOOa+kBJAYGljwXYS6vdeq5biaD5u1Py3MTvkKw
-         lmvhAG9d6tBurrSC5ZGBGBkKsoHuU4YQ/stA8uSsywRUPO72TDer6K8E4IXNc/bL28gF
-         a/zPV0wwRT0l4jYjxY3NDQbNfgnc70fN6r0CcHfauntx6VH1Wj/3awi+hoC92Fb1CyBq
-         QXF4ai7N0NKdbk1u0vEjfN9QCvYedSl9/EYOYgDgtSAWoUJ7tjUAThk9ZnKV4WclO8pF
-         fdqRFqpOo6EiVTkbH08+IqQ1pNX1F4Fpmwsfj+uEfgvcgQpQU5Yw8bsoPRb761NUMVqU
-         13DQ==
-X-Gm-Message-State: ANoB5pmRyiJFRnvNKwlTpCBfdmoLhTquIT/DT08nsnQN2V1oqgSvKMMr
-        ifyanqkQ8iHqxWRS+3uJFu1XpE0NEz9LlIIFGIQIO/NoRW5dZMhyAujAreEobPOo/x8vhXmdgb+
-        S9fnJzFM+TzMnbNY0
-X-Received: by 2002:aa7:cd83:0:b0:461:a7f8:c8c7 with SMTP id x3-20020aa7cd83000000b00461a7f8c8c7mr872838edv.325.1668163263093;
-        Fri, 11 Nov 2022 02:41:03 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5Yvj0eHjWgLHwSjcUHmBxgq2MUCkRpUAHfcffqzj9MqAWaLMlKVBaKwON2/4JrFMAsLDM2LQ==
-X-Received: by 2002:aa7:cd83:0:b0:461:a7f8:c8c7 with SMTP id x3-20020aa7cd83000000b00461a7f8c8c7mr872811edv.325.1668163262867;
-        Fri, 11 Nov 2022 02:41:02 -0800 (PST)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id y16-20020a1709064b1000b0077a1dd3e7b7sm736940eju.102.2022.11.11.02.41.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Nov 2022 02:41:02 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <bab405af-aef0-1bc9-410b-ad815f88574c@redhat.com>
-Date:   Fri, 11 Nov 2022 11:41:00 +0100
+        with ESMTP id S233279AbiKKKuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 05:50:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0485F94
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 02:50:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66992B8258F
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 10:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EDA60C433D7;
+        Fri, 11 Nov 2022 10:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668163815;
+        bh=xcPNVIizDapKc4iT4dhRR3+2QBFgWCYmFvOGLcC50+M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EaTg6UvShe1vJQRPM+u3Slvvs9K3RIHOI/s1KCrRgYCLh4DfCXOSJtaXktYddt+HG
+         O3yBs96qDrPLUhieDZ+L4TcFyG+fSTGGFkLGuIwMi0/dHWsG/hfOzkDwtSKOPEIpTn
+         fIF+H1gh9UQFBMJ/zaWfDxoga8rQnt8POSc/vZfBt1dkRd/1FZ3AFFBT2j4PzFH8O3
+         ROk8G8JPX/OwVRTvw4oeTKRfqNxShyhnmM/jqdqMCi4TQPw3GnhBWh05YcJqIQJIG3
+         V7eE0PwdvcQTUZhs/fujCwUOXEdayOxzoujjQypZCTRyqXJ+pG+XJAS/N0BBRDhsAa
+         Mmfh86WOxTBYw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C9E45E270C6;
+        Fri, 11 Nov 2022 10:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [RFC bpf-next v2 04/14] veth: Support rx timestamp metadata for
- xdp
-Content-Language: en-US
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>
-References: <20221104032532.1615099-1-sdf@google.com>
- <20221104032532.1615099-5-sdf@google.com>
- <636c4514917fa_13c168208d0@john.notmuch>
- <CAKH8qBvS9C5Z2L2dT4Ze-dz7YBSpw52VF6iZK5phcU2k4azN5A@mail.gmail.com>
- <636c555942433_13ef3820861@john.notmuch>
- <CAKH8qBtiNiwbupP-jvs5+nSJRJS4DfZGEPsaYFdQcPKu+8G30g@mail.gmail.com>
- <636d37629d5c4_145693208e6@john.notmuch>
-In-Reply-To: <636d37629d5c4_145693208e6@john.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] nfp: change eeprom length to max length enumerators
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166816381482.5678.1863894259321677243.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Nov 2022 10:50:14 +0000
+References: <20221109202757.147024-1-simon.horman@corigine.com>
+In-Reply-To: <20221109202757.147024-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        jaco.coetzee@corigine.com, louis.peens@corigine.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 10/11/2022 18.39, John Fastabend wrote:
-> Stanislav Fomichev wrote:
->> On Wed, Nov 9, 2022 at 5:35 PM John Fastabend <john.fastabend@gmail.com> wrote:
->>>
->>> Stanislav Fomichev wrote:
->>>> On Wed, Nov 9, 2022 at 4:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
->>>>>
->>>>> Stanislav Fomichev wrote:
->>>>>> xskxceiver conveniently setups up veth pairs so it seems logical
->>>>>> to use veth as an example for some of the metadata handling.
->>>>>>
->>>>>> We timestamp skb right when we "receive" it, store its
->>>>>> pointer in new veth_xdp_buff wrapper and generate BPF bytecode to
->>>>>> reach it from the BPF program.
->>>>>>
->>>>>> This largely follows the idea of "store some queue context in
->>>>>> the xdp_buff/xdp_frame so the metadata can be reached out
->>>>>> from the BPF program".
->>>>>>
->>>>>
->>>>> [...]
->>>>>
->>>>>>        orig_data = xdp->data;
->>>>>>        orig_data_end = xdp->data_end;
->>>>>> +     vxbuf.skb = skb;
->>>>>>
->>>>>>        act = bpf_prog_run_xdp(xdp_prog, xdp);
->>>>>>
->>>>>> @@ -942,6 +946,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
->>>>>>                        struct sk_buff *skb = ptr;
->>>>>>
->>>>>>                        stats->xdp_bytes += skb->len;
->>>>>> +                     __net_timestamp(skb);
->>>>>
->>>>> Just getting to reviewing in depth a bit more. But we hit veth with lots of
->>>>> packets in some configurations I don't think we want to add a __net_timestamp
->>>>> here when vast majority of use cases will have no need for timestamp on veth
->>>>> device. I didn't do a benchmark but its not free.
->>>>>
->>>>> If there is a real use case for timestamping on veth we could do it through
->>>>> a XDP program directly? Basically fallback for devices without hw timestamps.
->>>>> Anyways I need the helper to support hardware without time stamping.
->>>>>
->>>>> Not sure if this was just part of the RFC to explore BPF programs or not.
->>>>
->>>> Initially I've done it mostly so I can have selftests on top of veth
->>>> driver, but I'd still prefer to keep it to have working tests.
->>>
->>> I can't think of a use for it though so its just extra cycles. There
->>> is a helper to read the ktime.
->>
->> As I mentioned in another reply, I wanted something SW-only to test
->> this whole metadata story.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed,  9 Nov 2022 15:27:57 -0500 you wrote:
+> From: Jaco Coetzee <jaco.coetzee@corigine.com>
 > 
-> Yeah I see the value there. Also because this is in the veth_xdp_rcv
-> path we don't actually attach XDP programs to veths except for in
-> CI anyways. I assume though if someone actually does use this in
-> prod having an extra _net_timestamp there would be extra unwanted
-> cycles.
+> Extend the size of QSFP EEPROM for types SSF8436 and SFF8636
+> from 256 to 640 bytes in order to expose all the EEPROM pages by
+> ethtool.
 > 
-
-Sorry, but I think it is wrong to add this SW-timestamp to veth.
-As John already pointed out the BPF-prog can just call ktime helper
-itself. Plus, we *do* want to use this code path as a fast-path, not
-just for CI testing.
-
-I suggest you use the offloaded VLAN tag instead.
-
-
->> The idea was:
->> - veth rx sets skb->tstamp (otherwise it's 0 at this point)
->> - veth kfunc to access rx_timestamp returns skb->tstamp
->> - xsk bpf program verifies that the metadata is non-zero
->> - the above shows end-to-end functionality with a software driver
+> For SFF-8636 and SFF-8436 specifications, the driver exposes
+> 256 bytes of EEPROM data for ethtool's get_module_eeprom()
+> callback, resulting in "netlink error: Invalid argument" when
+> an EEPROM read with an offset larger than 256 bytes is attempted.
 > 
-> Yep 100% agree very handy for testing just not sure we can add code
-> to hotpath just for testing.
+> [...]
 
-I agree, I really dislike adding code to hotpath just for testing.
+Here is the summary with links:
+  - [net] nfp: change eeprom length to max length enumerators
+    https://git.kernel.org/netdev/net/c/f3a72878a3de
 
-Using VLAN instead would solve a practical problem, that XDP lacks
-access to the offloaded VLAN tag.  Which is one of the lacking features
-that XDP-hints targets to add.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---Jesper
 
