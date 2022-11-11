@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F98C625209
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 05:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0453262520A
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 05:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232515AbiKKEAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 23:00:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
+        id S232550AbiKKEAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 23:00:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbiKKEAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 23:00:34 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F07F5D6B5;
-        Thu, 10 Nov 2022 20:00:34 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id j25-20020a056830015900b0066ca2cd96daso2202114otp.10;
-        Thu, 10 Nov 2022 20:00:33 -0800 (PST)
+        with ESMTP id S232471AbiKKEAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 23:00:36 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D34965862;
+        Thu, 10 Nov 2022 20:00:35 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id m204so3902408oib.6;
+        Thu, 10 Nov 2022 20:00:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=C0ZwMR2gCmjCo8DSne7eN5n31OgpWeA+QwMIe/AT+TA=;
-        b=njrnJ9vyO0RH4SZFlia43XxDqyHL5yQxnEjslsS8ZZ3a5GZs+uHt38cWCH3yeLB2wP
-         3/XRVO24mTH44oADo2t5CL0gWPmfoI+1xX+nsXxEzOcZCWJapa3feyvL1zMBcn0bfjeS
-         MIWz2sU5ap00WIDTAreMJcGd5UOzPPb+kxriJiYygVjEgUhWgAIU+71bscSS3PWSbZYr
-         3GfxqpbwHvbfHsN3ut6N4QyZa9WfrTgM5DWvoqgf1wggmuDGOkZhDKWSNU2SCMtQdzHX
-         nBSQdVtvOkJbOdaY/zcvaIoD2BEs9xUJn/dukih3MTRNu7YHukem3oYf4vYzJR7Xaltg
-         INzw==
+        bh=tzRDKkKs+46lV+ntk985L0+P6jvYS0wrm3ecpZliFYs=;
+        b=EXI9KlBNRoNAC/HBM2t606C6k+BIKeV0yCiHoTnP+qKe2h/QdHKK058z8mFYDDYIlB
+         ifkh+NI5b9E6h2EXFXvU85dmBLejYquO5VlXYt/3sRXdPsArf1afj7+1PSOQc5OJNxeR
+         WpViD79eNh7CtAQmQ1AIZVuEQIYhkjGZUBl4ooje1+Dk006Ye6nXJ26TLl7vE19RoxLc
+         NUCFe0PwYE2HPYsdwExhlg652eT5hm0Mv+hVE6/jc6eVjKam9IoGSJKONth26M0jCcbv
+         9fRQfEUyt1VKN206SefuI3XcTv+uPDvBFHZqYObM3nM0TicHayrNYGhqRaen7IjUlW9s
+         HGUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=C0ZwMR2gCmjCo8DSne7eN5n31OgpWeA+QwMIe/AT+TA=;
-        b=zmoINtjTZ3s1dTQxW/LtxClLUl6Y9dmCPtoIERnV4VydfvqYPlAnew8+nVbxiGneMp
-         VohVPTWdoEH2UlIfzR5vtEUZ8hptg1O3VfYIZNjKJncQFlIw+G+U96KvaLy35+s+DAqf
-         hsEaGUeBXizlNzDxqS3WFLd4p/IjM4ZnIhZBZ19e4E9ad0Cc9grOk8uopBN0On3RfoJk
-         bgI1WTN3SGQTSThZ6DxpTEI/y9XBY14pI7TpfDdfGFwkljmhkLJdjDc1rswV29egBYgY
-         qrHr8rWMGoSq3ulsV1JjgzbE/JACqStjJy7XuomMJqWCGNfFmjii0UyTq8G2gb7C6O63
-         L//Q==
-X-Gm-Message-State: ANoB5pn8vffOcsH3w5D7HYal/t2OtJPnpVIsx9JnX8GhvG61s5p2xWCh
-        5aHmm0+ydWETnO8dK50ADII2QfXXuAY=
-X-Google-Smtp-Source: AA0mqf5hhOqnQ/9iobOUUSORsscwhDEjIDe4SzmcDj3oM9x9Nk6CTns4GtZKJUoomiMp0nstW9oSJQ==
-X-Received: by 2002:a05:6830:1212:b0:663:c55e:c5ac with SMTP id r18-20020a056830121200b00663c55ec5acmr374932otp.196.1668139233135;
-        Thu, 10 Nov 2022 20:00:33 -0800 (PST)
+        bh=tzRDKkKs+46lV+ntk985L0+P6jvYS0wrm3ecpZliFYs=;
+        b=53x5w+Yq+gjxX1P/ZPTBR03t/lxVRyX174TSzf2rlnycEDbZxTe/aykhA9CdDWZBg2
+         tHnhQT4mWIFiBBMu9qOoiA6IG7qW392JjWOMT+7/mmvMa9qVw10B5JodpWEzAw7eQJax
+         UnMGjY74OH3SLwsunf0I1FHPO/sGr2ZjAoF0EGKYM55NFVmJxgGUDk0exg65DNvXtIm/
+         QEr/BJbO5LyHTts4RO087Vz41dFibiLuHj9g6FfgJOi6mfdP48ir6Bga4yBTUOoq8GtT
+         q7SY4rtMcgwZq0KPuRCttldh4NMLrPJ8EIWhjQpCM9pPBjc/6M/k/nRfORJ1qi/MlI/6
+         1iTQ==
+X-Gm-Message-State: ACrzQf1U0xF1UCaIz1xeznoInY09qVdOV2HAj+OnY0oS7xrab9VfS1V6
+        W/lmLbcryE2ic1S5TJq8nTgbbSKaPKQ=
+X-Google-Smtp-Source: AMsMyM5edoBCgwfjhFXNXfIH8nqgdrdgOPAuv0BCWrlhB7OpA0bg+Z74wF8buizABMtPnDl5vxADeQ==
+X-Received: by 2002:aca:dad4:0:b0:359:b842:e383 with SMTP id r203-20020acadad4000000b00359b842e383mr2859251oig.123.1668139234518;
+        Thu, 10 Nov 2022 20:00:34 -0800 (PST)
 Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id d74-20020a4a524d000000b0049052c66126sm471606oob.2.2022.11.10.20.00.32
+        by smtp.gmail.com with ESMTPSA id f8-20020a056830204800b0066101e9dccdsm591533otp.45.2022.11.10.20.00.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 20:00:32 -0800 (PST)
+        Thu, 10 Nov 2022 20:00:34 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
@@ -79,9 +79,9 @@ To:     linux-kernel@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>
 Cc:     Yury Norov <yury.norov@gmail.com>, linux-crypto@vger.kernel.org,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH 2/4] cpumask: introduce cpumask_nth_and_andnot()
-Date:   Thu, 10 Nov 2022 20:00:25 -0800
-Message-Id: <20221111040027.621646-3-yury.norov@gmail.com>
+Subject: [PATCH 3/4] sched: add sched_numa_find_nth_cpu()
+Date:   Thu, 10 Nov 2022 20:00:26 -0800
+Message-Id: <20221111040027.621646-4-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221111040027.621646-1-yury.norov@gmail.com>
 References: <20221111040027.621646-1-yury.norov@gmail.com>
@@ -97,46 +97,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce cpumask_nth_and_andnot() based on find_nth_and_andnot_bit().
-It's used in the following patch to traverse cpumasks without storing
-intermediate result in temporary cpumask.
+The function finds Nth set CPU in a given cpumask starting from a given
+node.
+
+Leveraging the fact that each hop in sched_domains_numa_masks includes the
+same or greater number of CPUs than the previous one, we can use binary
+search on hops instead of linear walk, which makes the overall complexity
+of O(log n) in terms of number of cpumask_weight() calls.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/cpumask.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ include/linux/topology.h |  8 ++++++++
+ kernel/sched/topology.c  | 42 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index c2aa0aa26b45..debfa2261569 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -391,6 +391,26 @@ unsigned int cpumask_nth_andnot(unsigned int cpu, const struct cpumask *srcp1,
- 				nr_cpumask_bits, cpumask_check(cpu));
+diff --git a/include/linux/topology.h b/include/linux/topology.h
+index 4564faafd0e1..63048ac3207c 100644
+--- a/include/linux/topology.h
++++ b/include/linux/topology.h
+@@ -245,5 +245,13 @@ static inline const struct cpumask *cpu_cpu_mask(int cpu)
+ 	return cpumask_of_node(cpu_to_node(cpu));
  }
  
-+/**
-+ * cpumask_nth_and_andnot - get the Nth cpu set in 1st and 2nd cpumask, and clear in 3rd.
-+ * @srcp1: the cpumask pointer
-+ * @srcp2: the cpumask pointer
-+ * @srcp3: the cpumask pointer
-+ * @cpu: the N'th cpu to find, starting from 0
-+ *
-+ * Returns >= nr_cpu_ids if such cpu doesn't exist.
-+ */
-+static inline
-+unsigned int cpumask_nth_and_andnot(unsigned int cpu, const struct cpumask *srcp1,
-+							const struct cpumask *srcp2,
-+							const struct cpumask *srcp3)
++#ifdef CONFIG_NUMA
++int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node);
++#else
++int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node)
 +{
-+	return find_nth_and_andnot_bit(cpumask_bits(srcp1),
-+					cpumask_bits(srcp2),
-+					cpumask_bits(srcp3),
-+					nr_cpumask_bits, cpumask_check(cpu));
++	return cpumask_nth(cpu, cpus);
 +}
++#endif	/* CONFIG_NUMA */
+ 
+ #endif /* _LINUX_TOPOLOGY_H */
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index 8739c2a5a54e..c8f56287de46 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -2067,6 +2067,48 @@ int sched_numa_find_closest(const struct cpumask *cpus, int cpu)
+ 	return found;
+ }
+ 
++/*
++ * sched_numa_find_nth_cpu() - given the NUMA topology, find the Nth next cpu
++ *                             closest to @cpu from @cpumask.
++ * cpumask: cpumask to find a cpu from
++ * cpu: Nth cpu to find
++ *
++ * returns: cpu, or >= nr_cpu_ids when nothing found.
++ */
++int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node)
++{
++	unsigned int first = 0, mid, last = sched_domains_numa_levels;
++	struct cpumask ***masks;
++	int w, ret = nr_cpu_ids;
 +
- #define CPU_BITS_NONE						\
- {								\
- 	[0 ... BITS_TO_LONGS(NR_CPUS)-1] = 0UL			\
++	rcu_read_lock();
++	masks = rcu_dereference(sched_domains_numa_masks);
++	if (!masks)
++		goto out;
++
++	while (last >= first) {
++		mid = (last + first) / 2;
++
++		if (cpumask_weight_and(cpus, masks[mid][node]) <= cpu) {
++			first = mid + 1;
++			continue;
++		}
++
++		w = (mid == 0) ? 0 : cpumask_weight_and(cpus, masks[mid - 1][node]);
++		if (w <= cpu)
++			break;
++
++		last = mid - 1;
++	}
++
++	ret = (mid == 0) ?
++		cpumask_nth_and(cpu - w, cpus, masks[mid][node]) :
++		cpumask_nth_and_andnot(cpu - w, cpus, masks[mid][node], masks[mid - 1][node]);
++out:
++	rcu_read_unlock();
++	return ret;
++}
++EXPORT_SYMBOL_GPL(sched_numa_find_nth_cpu);
+ #endif /* CONFIG_NUMA */
+ 
+ static int __sdt_alloc(const struct cpumask *cpu_map)
 -- 
 2.34.1
 
