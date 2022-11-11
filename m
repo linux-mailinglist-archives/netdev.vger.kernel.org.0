@@ -2,111 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A5D62601B
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 18:08:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 791B0626027
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 18:11:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234348AbiKKRI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 12:08:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
+        id S233120AbiKKRK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 12:10:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234303AbiKKRHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 12:07:53 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFD887173
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 09:07:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4C02ACE2874
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 17:07:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE7CC433D6;
-        Fri, 11 Nov 2022 17:07:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668186442;
-        bh=PQ26AHPWNJR28VnZdQ1xCyQuyADHcf2UOKzEvdM4ukY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dqUhMkj81H1ksF0h34WCR6kffwfTzB/uv3RSEGf/sefPLvJ3nnNpY8fNJmI4XlHKm
-         OoU6QoPavy3j5cL38zPlMVuo5zpjkNaKiVCi7DNi0Pkw2bRbaaOU3w/Ac+i1tauWlL
-         1X+7HGs85LEVOlbdu1DJ43tVcP3jg8Ji+8WZh+UDY86Jy6dEw1Qx14HJhSKhNHycoE
-         Se+gQlYNsY8EGfB/+ONLlw6bdcucnGuqzAtEggQvsFRh3EC774sh8HoLqsgNqVK9S6
-         nH9VKA0iU1mSXk6EosCkag1uPfPSAWMMxht6AbiYqDxWrRcmOr8TiINjhLPBQ7JgxK
-         cnRhLL8A6yFjw==
-Date:   Fri, 11 Nov 2022 09:07:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S231625AbiKKRK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 12:10:57 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76906447;
+        Fri, 11 Nov 2022 09:10:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Tk0Hf69YpxSBIfkAMdq6PCEYbR7nI6ryQyiKET4SZR0=; b=5wn/6vDBGpTFEcDieElbxGjbHR
+        gr/SORd92RIorBuTsjdfZQxlTdTfTqLg8RqY2g5VRvTSj6bWf709Y37Q9tnGcyy2uhwWtrtLXKMrf
+        u2qODuuLaKIOtxICJ7TkXV9yONeRZDymOCXwmKQCCEkApiHp3TBPv4xU3K/5wMacl8EI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1otXXc-0028Sr-7k; Fri, 11 Nov 2022 18:10:08 +0100
+Date:   Fri, 11 Nov 2022 18:10:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] ethtool: add tx aggregation parameters
-Message-ID: <20221111090720.278326d1@kernel.org>
-In-Reply-To: <20221109180249.4721-2-dnlplm@gmail.com>
-References: <20221109180249.4721-1-dnlplm@gmail.com>
-        <20221109180249.4721-2-dnlplm@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: use NET_NAME_PREDICTABLE for user ports with
+ name given in DT
+Message-ID: <Y26B8NL3Rv2u/otG@lunn.ch>
+References: <20221111161729.915233-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221111161729.915233-1-linux@rasmusvillemoes.dk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_PASS,T_SPF_HELO_TEMPERROR
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Nov 2022 19:02:47 +0100 Daniele Palmas wrote:
-> Add the following ethtool tx aggregation parameters:
-> 
-> ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE
-> Maximum size of an aggregated block of frames in tx.
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index a9fde48cffd4..dfefcc4a9ccf 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2374,16 +2374,25 @@ int dsa_slave_create(struct dsa_port *port)
+>  {
+>  	struct net_device *master = dsa_port_to_master(port);
+>  	struct dsa_switch *ds = port->ds;
+> -	const char *name = port->name;
+>  	struct net_device *slave_dev;
+>  	struct dsa_slave_priv *p;
+> +	const char *name;
+> +	int assign_type;
+>  	int ret;
+>  
+>  	if (!ds->num_tx_queues)
+>  		ds->num_tx_queues = 1;
+>  
+> +	if (port->name) {
+> +		name = port->name;
+> +		assign_type = NET_NAME_PREDICTABLE;
+> +	} else {
+> +		name = "eth%d";
+> +		assign_type = NET_NAME_UNKNOWN;
+> +	}
 
-perhaps s/size/bytes/ ? Or just mention bytes in the doc? I think it's
-the first argument in coalescing expressed in bytes, so to avoid
-confusion we should state that clearly.
+I know it is a change in behaviour, but it seems like NET_NAME_ENUM
+should be used, not NET_NAME_UNKNOWN. alloc_etherdev_mqs() uses
+NET_NAME_ENUM.
 
-> ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES
-> Maximum number of frames that can be aggregated into a block.
-> 
-> ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME
-> Time in usecs after the first packet arrival in an aggregated
-> block for the block to be sent.
+https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/netdevice.h#L42
+says that NET_NAME_UNKNOWN does not get passed to user space, but i
+assume NET_NAME_ENUM does. So maybe changing it would be an ABI
+change?
 
-Can we add this info to the ethtool-netlink.rst doc?
+Humm, i don't know what the right thing is...
 
-Can we also add a couple of sentences describing what aggregation is?
-Something about copying the packets into a contiguous buffer to submit
-as one large IO operation, usually found on USB adapters?
-
-People with very different device needs will read this and may pattern
-match the parameters to something completely different like just
-delaying ringing the doorbell. So even if things seem obvious they are
-worth documenting.
-
-> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-> index d578b8bcd8a4..a6f115867648 100644
-> --- a/Documentation/networking/ethtool-netlink.rst
-> +++ b/Documentation/networking/ethtool-netlink.rst
-> @@ -1001,6 +1001,9 @@ Kernel response contents:
->    ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
->    ``ETHTOOL_A_COALESCE_USE_CQE_TX``            bool    timer reset mode, Tx
->    ``ETHTOOL_A_COALESCE_USE_CQE_RX``            bool    timer reset mode, Rx
-> +  ``ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE``      u32     max aggr packets size, Tx
-> +  ``ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES``    u32     max aggr packets, Tx
-> +  ``ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME``    u32     time (us), aggr pkts, Tx
-
-nit: perhaps move _aggr before the specifics? e.g.
-
- ETHTOOL_A_COALESCE_TX_AGGR_MAX_SIZE
- ETHTOOL_A_COALESCE_TX_AGGR_USECS_TIME
-
-FWIW I find that the easiest way to do whole-sale renames in a series
-is to generate the patches as .patch files, run sed on those, and apply
-them back on a fresh branch. Rebasing is a PITA with renames.
-
-Other then these nit picks - looks very reasonable :)
+      Andrew
