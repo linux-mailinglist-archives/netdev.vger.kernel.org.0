@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 584436253F9
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 07:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06A176253FB
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 07:43:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbiKKGnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 01:43:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
+        id S232882AbiKKGnx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Nov 2022 01:43:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbiKKGnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 01:43:19 -0500
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3F92AE0D;
-        Thu, 10 Nov 2022 22:43:19 -0800 (PST)
-Received: from mxde.zte.com.cn (unknown [10.35.20.121])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4N7q0P3kWVz1DxF;
-        Fri, 11 Nov 2022 14:43:17 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.207.168.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxde.zte.com.cn (FangMail) with ESMTPS id 4N7q0L1kbPz9vSpp;
-        Fri, 11 Nov 2022 14:43:14 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.138])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4N7q0H3Prvz9tyD6;
-        Fri, 11 Nov 2022 14:43:11 +0800 (CST)
-Received: from mxct.zte.com.cn (unknown [192.168.251.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4N7q0C6kSVz5BNRf;
-        Fri, 11 Nov 2022 14:43:07 +0800 (CST)
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4N7q09332Zz501Qf;
-        Fri, 11 Nov 2022 14:43:05 +0800 (CST)
-Received: from xaxapp01.zte.com.cn ([10.88.40.50])
-        by mse-fl1.zte.com.cn with SMTP id 2AB6gw62075833;
-        Fri, 11 Nov 2022 14:42:58 +0800 (+08)
-        (envelope-from ye.xingchen@zte.com.cn)
-Received: from mapi (xaxapp02[null])
-        by mapi (Zmail) with MAPI id mid31;
-        Fri, 11 Nov 2022 14:43:00 +0800 (CST)
-Date:   Fri, 11 Nov 2022 14:43:00 +0800 (CST)
-X-Zmail-TransId: 2afa636deef4ffffffffac68e399
-X-Mailer: Zmail v1.0
-Message-ID: <202211111443005202576@zte.com.cn>
-Mime-Version: 1.0
-From:   <ye.xingchen@zte.com.cn>
-To:     <wg@grandegger.com>
-Cc:     <mkl@pengutronix.de>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <chi.minghao@zte.com.cn>
-Subject: =?UTF-8?B?W1BBVENIXSBjYW46IGNfY2FuOiB1c2UgZGV2bV9wbGF0Zm9ybV9nZXRfYW5kX2lvcmVtYXBfcmVzb3VyY2UoKQ==?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl1.zte.com.cn 2AB6gw62075833
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 636DEF04.000 by FangMail milter!
-X-FangMail-Envelope: 1668148997/4N7q0P3kWVz1DxF/636DEF04.000/10.35.20.121/[10.35.20.121]/mxde.zte.com.cn/<ye.xingchen@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 636DEF04.000/4N7q0P3kWVz1DxF
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S233052AbiKKGnu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 01:43:50 -0500
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABCD5B590
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 22:43:48 -0800 (PST)
+Received: by mail-pg1-f173.google.com with SMTP id 6so3701367pgm.6
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 22:43:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FH0c4rfmuxvYpFI19z+gns6kunPl+UaUJmTNoDhZsQo=;
+        b=1eGoz0CXNj4pdmkH4/Dm357u0yLG6CB9zqBHN1IppigU8RcpkoPzYitwFWCFJpij66
+         CtClJxYJolAr8lExPNnXCDWeQT8Ypc78kuu8vlxu83gsw8T1ASG7JQWlSn260oNiqIto
+         D754oEZ1LZ5CkBvTbUixpP7hjOEi0OvmiozryaUSLhJy6h+HIKhjg7p2MHY9rOeP3CXS
+         NLKzYKJFKakrCtJIgZbmODIEEkvMQZ20UTV0ofyc/dnEc3YMzC4P52opeC+A+Bd0WhjO
+         1aohtUEhhXFj7HRbHXDsiZ81V6NuKxk30hPuPkFwHLzkONYd0TNyupOWtTF0OoAKPcXo
+         2fQQ==
+X-Gm-Message-State: ANoB5pn57cMKh2aTbwBET3b31LBnBJyNhMybsetlG5dAOeolw5Y9bNRV
+        7wQxp0HP30a8hPfAuQXPGRaFv+9iXU8CUCESkwk=
+X-Google-Smtp-Source: AA0mqf7uSGh0CT822kOSE9Xu5zohrTJP/gTTk0bwb4E2B8TvYTvGVX80nXq7szlUgw8ZzC5TsGM/4Eom+KuC1xmKctA=
+X-Received: by 2002:a63:4d43:0:b0:41d:c892:2e9 with SMTP id
+ n3-20020a634d43000000b0041dc89202e9mr454319pgl.457.1668149027733; Thu, 10 Nov
+ 2022 22:43:47 -0800 (PST)
+MIME-Version: 1.0
+References: <20221108035754.2143-1-mailhol.vincent@wanadoo.fr>
+ <Y2vozcC2ahbhAvhM@unreal> <20221109122641.781b30d9@kernel.org>
+ <CAMZ6Rq+K6oD9auaNzt1kJAW0nz9Hs=ODDvOiEaiKi2_1KVNA8g@mail.gmail.com>
+ <Y2zASloeKjMMCgyw@unreal> <20221110090127.0d729f05@kernel.org>
+In-Reply-To: <20221110090127.0d729f05@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Fri, 11 Nov 2022 15:43:36 +0900
+Message-ID: <CAMZ6RqKVrRufmUsJ3XuzGhc3Ea=dEjChu3rd7Xw8LZ-SBrsSUw@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] ethtool: ethtool_get_drvinfo: populate
+ drvinfo fields even if callback exits
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
-Convert platform_get_resource(), devm_ioremap_resource() to a single
-call to devm_platform_get_and_ioremap_resource(), as this is exactly
-what this function does.
+On Fri. 11 Nov. 2022 à 02:01, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Thu, 10 Nov 2022 11:11:38 +0200 Leon Romanovsky wrote:
+> > I will be happy to see such patch and will review it, but can't add sign-off
+> > as I'm not netdev maintainer.
+>
+> Did we finish the version removal work? :S
+>
+> Personally I'd rather direct any effort towards writing a checkpatch /
+> cocci / python check that catches new cases than cleaning up the pile
+> of drivers we have. A lot of which are not actively used..
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/can/c_can/c_can_platform.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Agree, but I will not work on that (because of other personal
+priorities). If someone else wants to do it, go ahead :)
 
-diff --git a/drivers/net/can/c_can/c_can_platform.c b/drivers/net/can/c_can/c_can_platform.c
-index 86e95e9d6533..03ccb7cfacaf 100644
---- a/drivers/net/can/c_can/c_can_platform.c
-+++ b/drivers/net/can/c_can/c_can_platform.c
-@@ -290,8 +290,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
- 		goto exit;
- 	}
+What I can do is update the documentation:
+https://lore.kernel.org/netdev/20221111064054.371965-1-mailhol.vincent@wanadoo.fr/
 
--	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	addr = devm_ioremap_resource(&pdev->dev, mem);
-+	addr = devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
- 	if (IS_ERR(addr)) {
- 		ret =  PTR_ERR(addr);
- 		goto exit;
--- 
-2.25.1
+
+Yours sincerely,
+Vincent Mailhol
