@@ -2,169 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44DF5625211
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 05:00:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A99DE625217
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 05:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiKKEAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Nov 2022 23:00:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50676 "EHLO
+        id S232420AbiKKECv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Nov 2022 23:02:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232483AbiKKEAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 23:00:37 -0500
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42455D6B5;
-        Thu, 10 Nov 2022 20:00:36 -0800 (PST)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-13ba86b5ac0so4346973fac.1;
-        Thu, 10 Nov 2022 20:00:36 -0800 (PST)
+        with ESMTP id S232575AbiKKEC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Nov 2022 23:02:28 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B7C6AEF5
+        for <netdev@vger.kernel.org>; Thu, 10 Nov 2022 20:00:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rAYwtSDCtMl3bQjs+7iu2M5ENCXGl/6+Ww9pC2GxEs0=;
-        b=KR4r6IzzTgskdFP8Rme0Hyk5hPZYO4XY3H0XE01oKcqWfSSxHwOgNQFildSqG7miMu
-         yT3JwPbuvWTmFKTkqBKQ3pPoL8Qr1qekp0RBD3sCT5GSt5yT4GagQvb92eg1jLDMJNE9
-         mEZVf7PizTyM+S8UBZQU/ZzbNul6uDpvdFs7EgQoQUvTfZjbm0iEM+2jT5IsCcEPHgfZ
-         t7eOAWf9iBX7Ta/BCpfo4G3yQNl/tNB7L7b3GrIQiTrSmXz5Y6ZvzjaVb132muydXYjO
-         hlbs3i4lcl8LPuiN4zpEdO9/36k7BKO54FszguDYkNX3c5N0QauSjKVImNj9WgjS4YjD
-         cp+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rAYwtSDCtMl3bQjs+7iu2M5ENCXGl/6+Ww9pC2GxEs0=;
-        b=fF5296gH2wH1A/TEYr6UiAZ936uEmiHUL+pwzqFSJt3/WyGVPjVIr9VGMgie/hQorc
-         0JUTMZh34wYiLgFoKbGeH6O1rTjZ2joedQQdb3woGvnHilZ/zTg6tkpGVKW9uL7/DYgV
-         TvNg0xSLv5GNzHry9LjivZZOkmLhK5F/T62qoZs/54PZ/NQhfrwSQkpnhiD23ys9/lD9
-         rKxpkbZjdBDNOSq+y0pHM+ZZSRZilGmf+wArtpkYrozmWt3Vchlih2DSPHwgVKQRCWw8
-         8U2Fw5jQMYsheFcBn1+xZbrJv6VqyazbZikax8OcCQQQVo5OGS2XbjXLT1BDdULqrV27
-         h92g==
-X-Gm-Message-State: ACrzQf3CKAUVaV/Osj92d35qIscTsaUvaryK+JjsHpU0QlzBpOV0KED4
-        ElBiHxoGKmGN/h2nN8r3pbaCvvsOcIA=
-X-Google-Smtp-Source: AMsMyM7w0T3Gc5xKhp78M0R9cxJeB1gkaRqv6qQOCQrqpAz1kyY3RoQfByDnA0VaqsZydQZuKSO/oA==
-X-Received: by 2002:a05:6870:d3ca:b0:13a:f0e3:cc1f with SMTP id l10-20020a056870d3ca00b0013af0e3cc1fmr2749422oag.164.1668139236062;
-        Thu, 10 Nov 2022 20:00:36 -0800 (PST)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id er10-20020a056870c88a00b0013b911d5960sm709668oab.49.2022.11.10.20.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 20:00:35 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1668139253; x=1699675253;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=95cX7w1gc63nwBMd3jNoQHUixg9esxkQt5TmpWcRoZY=;
+  b=RdgYyCiacrZFuDkTIkGt3fmthHJxuUei0g+4TTkBpi//IEQXFAXcpQpS
+   gp7SPbrFYlHwd9h4fVfiTb/p+Xl+uK9XEvjtQOdLJgAc90U83B42KQH07
+   TlY357alEVAYgR7O8c53Hy5FbTeCUyTZ8li2cS3gK8/QguZenao3UnS5z
+   I=;
+X-IronPort-AV: E=Sophos;i="5.96,155,1665446400"; 
+   d="scan'208";a="149766677"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3554bfcf.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 04:00:51 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-m6i4x-3554bfcf.us-east-1.amazon.com (Postfix) with ESMTPS id 0DB0785814;
+        Fri, 11 Nov 2022 04:00:48 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Fri, 11 Nov 2022 04:00:48 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.178) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Fri, 11 Nov 2022 04:00:45 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Yury Norov <yury.norov@gmail.com>, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH 4/4] cpumask: improve on cpumask_local_spread() locality
-Date:   Thu, 10 Nov 2022 20:00:27 -0800
-Message-Id: <20221111040027.621646-5-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221111040027.621646-1-yury.norov@gmail.com>
-References: <20221111040027.621646-1-yury.norov@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 net-next 0/6] udp: Introduce optional per-netns hash table.
+Date:   Thu, 10 Nov 2022 20:00:28 -0800
+Message-ID: <20221111040034.29736-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.178]
+X-ClientProxiedBy: EX13D21UWA003.ant.amazon.com (10.43.160.184) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch cpumask_local_spread() to newly added sched_numa_find_nth_cpu(),
-which takes into account distances to each node in the system.
+This series is the UDP version of the per-netns ehash series [0],
+which were initially in the same patch set. [1]
 
-For the following NUMA configuration:
+The notable difference with TCP is the max table size is 64K.  This
+is because the possible hash range by udp_hashfn() always fits in 64K
+within the same netns.  Also, the UDP per-netns table isolates both
+1-tuple and 2-tuple tables.
 
-root@debian:~# numactl -H
-available: 4 nodes (0-3)
-node 0 cpus: 0 1 2 3
-node 0 size: 3869 MB
-node 0 free: 3740 MB
-node 1 cpus: 4 5
-node 1 size: 1969 MB
-node 1 free: 1937 MB
-node 2 cpus: 6 7
-node 2 size: 1967 MB
-node 2 free: 1873 MB
-node 3 cpus: 8 9 10 11 12 13 14 15
-node 3 size: 7842 MB
-node 3 free: 7723 MB
-node distances:
-node   0   1   2   3
-  0:  10  50  30  70
-  1:  50  10  70  30
-  2:  30  70  10  50
-  3:  70  30  50  10
+For details, please see the last patch.
 
-The new cpumask_local_spread() traverses cpus for each node like this:
+  patch 1 - 4: prep for per-netns hash table
+  patch     5: allocate bitmap beforehand for udp_lib_get_port() and smaller
+               hash table
+  patch     6: add per-netns hash table
 
-node 0:   0   1   2   3   6   7   4   5   8   9  10  11  12  13  14  15
-node 1:   4   5   8   9  10  11  12  13  14  15   0   1   2   3   6   7
-node 2:   6   7   0   1   2   3   8   9  10  11  12  13  14  15   4   5
-node 3:   8   9  10  11  12  13  14  15   4   5   6   7   0   1   2   3
+[0]: https://lore.kernel.org/netdev/20220908011022.45342-1-kuniyu@amazon.com/
+[1]: https://lore.kernel.org/netdev/20220826000445.46552-1-kuniyu@amazon.com/
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- lib/cpumask.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/lib/cpumask.c b/lib/cpumask.c
-index c7c392514fd3..255974cd6734 100644
---- a/lib/cpumask.c
-+++ b/lib/cpumask.c
-@@ -110,7 +110,7 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
- #endif
- 
- /**
-- * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-+ * cpumask_local_spread - select the i'th cpu based on NUMA distances
-  * @i: index number
-  * @node: local numa_node
-  *
-@@ -132,15 +132,7 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
- 		if (cpu < nr_cpu_ids)
- 			return cpu;
- 	} else {
--		/* NUMA first. */
--		cpu = cpumask_nth_and(i, cpu_online_mask, cpumask_of_node(node));
--		if (cpu < nr_cpu_ids)
--			return cpu;
--
--		i -= cpumask_weight_and(cpu_online_mask, cpumask_of_node(node));
--
--		/* Skip NUMA nodes, done above. */
--		cpu = cpumask_nth_andnot(i, cpu_online_mask, cpumask_of_node(node));
-+		cpu = sched_numa_find_nth_cpu(cpu_online_mask, i, node);
- 		if (cpu < nr_cpu_ids)
- 			return cpu;
- 	}
+Changes:
+  v3:
+    * Drop get_port() fix (posted separately later)
+    * Patch 3
+      * Fix CONFIG_PROC_FS=n build failure (kernel test robot)
+    * Patch 5
+      * Allocate bitmap when creating netns (Paolo Abeni)
+
+  v2: https://lore.kernel.org/netdev/20221104190612.24206-1-kuniyu@amazon.com/
+
+  v1: [1]
+
+
+Kuniyuki Iwashima (6):
+  udp: Clean up some functions.
+  udp: Set NULL to sk->sk_prot->h.udp_table.
+  udp: Set NULL to udp_seq_afinfo.udp_table.
+  udp: Access &udp_table via net.
+  udp: Add bitmap in udp_table.
+  udp: Introduce optional per-netns hash table.
+
+ Documentation/networking/ip-sysctl.rst |  27 ++++
+ include/linux/udp.h                    |   2 +
+ include/net/netns/ipv4.h               |   3 +
+ include/net/udp.h                      |  20 +++
+ net/core/filter.c                      |   4 +-
+ net/ipv4/sysctl_net_ipv4.c             |  38 +++++
+ net/ipv4/udp.c                         | 205 ++++++++++++++++++++-----
+ net/ipv4/udp_diag.c                    |   6 +-
+ net/ipv4/udp_offload.c                 |   5 +-
+ net/ipv6/udp.c                         |  31 ++--
+ net/ipv6/udp_offload.c                 |   5 +-
+ 11 files changed, 287 insertions(+), 59 deletions(-)
+
 -- 
-2.34.1
+2.30.2
 
