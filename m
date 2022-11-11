@@ -2,147 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DD8D625AAF
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 13:47:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C50DA625AE7
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 14:05:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbiKKMry convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Nov 2022 07:47:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        id S233761AbiKKNFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 08:05:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232983AbiKKMrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 07:47:52 -0500
-Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30E27BE70;
-        Fri, 11 Nov 2022 04:47:51 -0800 (PST)
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id 18DC916090C;
-        Fri, 11 Nov 2022 12:47:50 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id D79DC17;
-        Fri, 11 Nov 2022 12:46:57 +0000 (UTC)
-Message-ID: <180a55b046e4659609cdfeea4fd979edab17f0c9.camel@perches.com>
-Subject: Re: [PATCH net-next] net: dcb: move getapptrust to separate function
-From:   Joe Perches <joe@perches.com>
-To:     Daniel.Machon@microchip.com, petrm@nvidia.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, vladimir.oltean@nxp.com,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        lkp@intel.com
-Date:   Fri, 11 Nov 2022 04:47:45 -0800
-In-Reply-To: <Y23x/PSlybLqaQIS@DEN-LT-70577>
-References: <20221110094623.3395670-1-daniel.machon@microchip.com>
-         <87eduaoj8g.fsf@nvidia.com> <Y23x/PSlybLqaQIS@DEN-LT-70577>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        with ESMTP id S233217AbiKKNFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 08:05:32 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E0F120A4;
+        Fri, 11 Nov 2022 05:05:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668171929; x=1699707929;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OkhSa88+pvWXzzNAdUKByN9C89JcvFoOdQy9ZtA7Az4=;
+  b=cM+grD8TaT0LhSUEiPn8h9wK/zm5Sh14+fbp2JVJZSmKlQkH//wQxVjk
+   Q88LCEF1TjUv9pWc4c8csNpeaKehgIvSSUj7N5vE7ueRVf2g/YtmJJd+I
+   dYOTZ2LQ6ZrTIHyphRrUdvlapOuL6b29T+cuuZrwmKtqGaoake3df4EcY
+   KNQfYcAZXPc6t5dTzsLCYj9K58Qp1DMuKdr26944vIHX5sB+lN59cIDmA
+   xmKRVxayZaX7fISPDh54oCtVwZ7t7E5kyYjlDTt3Wla/BvLyQkE9Y+PLB
+   9kcSaHpmJyXtM2OdEOSUxi84/tmF6TTkN1lP26rm1om6MwndxhBpD0itM
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
+   d="scan'208";a="123000811"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Nov 2022 06:05:28 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 11 Nov 2022 06:05:28 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 11 Nov 2022 06:05:24 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Casper Andersson" <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        "Wojciech Drewek" <wojciech.drewek@intel.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH net-next 0/6] Add support for sorted VCAP rules in Sparx5
+Date:   Fri, 11 Nov 2022 14:05:13 +0100
+Message-ID: <20221111130519.1459549-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-Stat-Signature: 45hxah8w8oa9dxxcp8jqf88drre3n5n8
-X-Rspamd-Server: rspamout07
-X-Rspamd-Queue-Id: D79DC17
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_NONE,UNPARSEABLE_RELAY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+8PuF79mfpcN5vujTedb2OxrBxQBlz5eY=
-X-HE-Tag: 1668170817-134891
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-11-11 at 06:45 +0000, Daniel.Machon@microchip.com wrote:
-> Den Thu, Nov 10, 2022 at 05:30:43PM +0100 skrev Petr Machata:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Daniel Machon <daniel.machon@microchip.com> writes:
-> > 
-> > > diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-> > > index cec0632f96db..3f4d88c1ec78 100644
-> > > --- a/net/dcb/dcbnl.c
-> > > +++ b/net/dcb/dcbnl.c
-> > > @@ -1060,11 +1060,52 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
-> > >       return err;
-> > >  }
-> > > 
-> > > +static int dcbnl_getapptrust(struct net_device *netdev, struct sk_buff *skb)
-> > > +{
-> > > +     const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
-> > > +     int nselectors, err;
-> > > +     u8 *selectors;
-> > > +
-> > > +     selectors = kzalloc(IEEE_8021QAZ_APP_SEL_MAX + 1, GFP_KERNEL);
-> > > +     if (!selectors)
-> > > +             return -ENOMEM;
-> > > +
-> > > +     err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
-> > > +
-> > > +     if (!err) {
-> > > +             struct nlattr *apptrust;
-> > > +             int i;
-> > 
-> > (Maybe consider moving these up to the function scope. This scope
-> > business made sense in the generic function, IMHO is not as useful with
-> > a focused function like this one.)
-> 
-> I dont mind doing that, however, this 'scope business' is just staying true
-> to the rest of the dcbnl code :-) - that said, I think I agree with your
-> point.
-> 
-> > 
-> > > +
-> > > +             err = -EMSGSIZE;
-> > > +
-> > > +             apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
-> > > +             if (!apptrust)
-> > > +                     goto nla_put_failure;
-> > > +
-> > > +             for (i = 0; i < nselectors; i++) {
-> > > +                     enum ieee_attrs_app type =
-> > > +                             dcbnl_app_attr_type_get(selectors[i]);
-> > 
-> > Doesn't checkpatch warn about this? There should be a blank line after
-> > the variable declaration block. (Even if there wasn't one there in the
-> > original code either.)
-> 
-> Nope, no warning. And I think it has something to do with the way the line
-> is split.
+This provides support for adding Sparx5 VCAP rules in sorted order, VCAP
+rule counters and TC filter matching on ARP frames.
 
-yup.
+It builds on top of the initial IS2 VCAP support found in these series:
 
-And style trivia:
+https://lore.kernel.org/all/20221020130904.1215072-1-steen.hegelund@microchip.com/
+https://lore.kernel.org/all/20221109114116.3612477-1-steen.hegelund@microchip.com/
 
-I suggest adding error types after specific errors,
-reversing the test and unindenting the code too. 
+Functionality
+=============
 
-Something like:
+When a new VCAP rule is added the driver will now ensure that the rule is
+inserted in sorted order, and when a rule is removed, the remaining rules
+will be moved to keep the sorted order and remove any gaps in the VCAP
+address space.
 
-	err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
-	if (err) {
-		err = 0;
-		goto out;
-	}
+A VCAP rule is ordered using these 3 values:
 
-	apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
-	if (!apptrust) {
-		err = -EMSGSIZE;
-		goto out;
-	}
+ - Rule size: the count of VCAP addresses used by the rule.  The largest
+   rule have highest priority
 
-	for (i = 0; i < nselectors; i++) {
-		enum ieee_attrs_app type = dcbnl_app_attr_type_get(selectors[i]);
-		err = nla_put_u8(skb, type, selectors[i]);
-		if (err) {
-			nla_nest_cancel(skb, apptrust);
-			goto out;
-		}
-	}
-	nla_nest_end(skb, apptrust);
+ - Rule User: The rules are ordered by the user enumeration
 
-	err = 0;
+ - Priority: The priority provided in the flower filter.  The lowest value
+   has the highest priority.
 
-out:
-	kfree(selectors);
-	return err;
-}
+A VCAP instance may contain the counter as part of the VCAP cache area, and
+this counter may be one or more bits in width.  This type of counter
+automatically increments its value when the rule is hit.
+
+Other VCAP instances have a dedicated counter area outside of the VCAP and
+in this case the rule must contain the counter id to be able to locate the
+counter value and cause the counter to be incremented.  In this case there
+must also be a VCAP rule action that sets the counter id.
+
+The Sparx5 IS2 VCAP uses a dedicated counter area with 32bit counters.
+
+This series adds support for getting VCAP rule counters and provide these
+via the TC statistic interface.
+
+This only support packet counters, not byte counters.
+
+Finally the series adds support for the ARP frame dissector and configures
+the Sparx5 IS2 VCAP to generate the ARP keyset when ARP traffic is
+received.
+
+Delivery:
+=========
+
+This is current plan for delivering the full VCAP feature set of Sparx5:
+
+- DebugFS support for inspecting rules
+- TC protocol all support
+- Sparx5 IS0 VCAP support
+- TC policer and drop action support (depends on the Sparx5 QoS support
+  upstreamed separately)
+- Sparx5 ES0 VCAP support
+- TC flower template support
+- TC matchall filter support for mirroring and policing ports
+- TC flower filter mirror action support
+- Sparx5 ES2 VCAP support
+
+
+Steen Hegelund (6):
+  net: flow_offload: add support for ARP frame matching
+  net: microchip: sparx5: Add support for TC flower ARP dissector
+  net: microchip: sparx5: Add/delete rules in sorted order
+  net: microchip: sparx5: Add support for IS2 VCAP rule counters
+  net: microchip: sparx5: Add support for TC flower filter statistics
+  net: microchip: sparx5: Add KUNIT test of counters and sorted rules
+
+ .../microchip/sparx5/sparx5_tc_flower.c       | 144 +++++
+ .../microchip/sparx5/sparx5_vcap_impl.c       |  76 ++-
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 233 +++++++-
+ .../ethernet/microchip/vcap/vcap_api_client.h |  14 +
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  | 526 ++++++++++++++++++
+ include/net/flow_offload.h                    |   6 +
+ net/core/flow_offload.c                       |   7 +
+ 7 files changed, 990 insertions(+), 16 deletions(-)
+
+-- 
+2.38.1
 
