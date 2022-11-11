@@ -2,92 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D30D626311
-	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 21:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF74626322
+	for <lists+netdev@lfdr.de>; Fri, 11 Nov 2022 21:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234177AbiKKUkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 15:40:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34464 "EHLO
+        id S233476AbiKKUpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 15:45:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbiKKUkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 15:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583BE845E7;
-        Fri, 11 Nov 2022 12:40:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0229EB827DA;
-        Fri, 11 Nov 2022 20:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C47FC433D7;
-        Fri, 11 Nov 2022 20:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668199215;
-        bh=MGPnWxh4tvBV+1Xxqjdq4EQiObbEg9pDz4uCpUSJLNo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mRuuOmyXMHI1QHMbT3zpN17jMVaLaBPt6FvdljFLSd3lcCIyh4UgGWWchn+qS2CcU
-         04ZTzYEHH+4kRUavuFE8eQs2CxbqZrK5XgUt91ATkJULZRxgI/ZtZWzaabMUoLTZIJ
-         jRjDz/6nZXGFQ6EcBSHAP6ssihzHTh0Pfaxz46Br5tfBDgZB+ohoTcsqeQfnlpdbe7
-         N84if0ljui7fqzZJQ3Ojy/SIX5UQXoF7jpsAT2TM4Dd+STr0edSTwVVsH6+8rpXNzV
-         bJ8HVjN4w/YXUWf1xed3S/6aQPwTvfLNJ+izjQTRoxyMbEMnMoPxaIDxI+sE2zRSMX
-         wiQcB0bN6dl+w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 61F68E270EF;
-        Fri, 11 Nov 2022 20:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231625AbiKKUpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 15:45:13 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7234145A26
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 12:45:11 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id 140so4370229pfz.6
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 12:45:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=d8m2Zw4oWN2ixkNtEl2hUN3TTxVYsgtW6pwWgbf1jfs=;
+        b=eIlvZ08rE7ZmkvxASeI+Rk1XAT+QdJf6gzVO/Wj3lEcst1uDtOpVFCeNyVtG4pRuJu
+         MgCHxNAAvR8V+9BpKYfev3ut60T3C9RBnfVN8MzBMI/tmaGlFUEBHpiVAlVBvUMiIm2H
+         KNJJVpViFxKU3u9s9Q3OCZkrxRlgzPt4ULBqCxNCYNPIhIdxL1kYXOLB6xQ06c41JSlU
+         UB0F/hL3hQmt7FOgt7kMX4ULDBLaQzpwhnW2nvxBsDcBcu6e+s02Cs7kUTvmkqCmM1DG
+         aioMa2KlsTsdep3kkmXs5BVH6mskglP60IlIqpYZc8WgvmlKs0jSR9j144z1tSiNMnyC
+         LSpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=d8m2Zw4oWN2ixkNtEl2hUN3TTxVYsgtW6pwWgbf1jfs=;
+        b=WIauCxpONjsrT36hxHz34mmHNy0bLKCBn7KHLfYsZNBiJRW3x31J/j/FovCI3P2Kz5
+         ADbToVVRkHSLRPViSi97KKJR69lhaFwIMDWSOC2UHgUdSplYhXaDaNxZkAU2+pNvDsra
+         seg91pDXB/nQnRffGnldHzhlAPOdB8TEiw0ubltPyW+u45WzJnV/yp7Qd7KC4RJ/eh2W
+         577dJn7YC8oXJ3ACxbXaJY5LKGzgM6iwvONoCtWKVVVRlkUNEnuSJMSFJSkwclwR+Os8
+         j5TVTQNNlVInjQEEJAc/Kf2c9b4X99A/O7HHPOG3yDutGFz3H4psWlgrBJmhqQQifFRq
+         y3Xg==
+X-Gm-Message-State: ANoB5plZmlduDZiT4tZqEl+A4zRS2PVyt2g0tf4uGhDR5q9qfJMS4T3F
+        dBFpaZu6DG5G9yp70hIlpEjxO9+vbT/f2308lxoCs8gMqMBRdw==
+X-Google-Smtp-Source: AA0mqf4mt2NjgL9vVB4ZDGPDcEccG2UQ9q4we+to+wQ86i7yg+ny54IUTQ53sisQMKBSbrv0KMGumVx5R+xCzYCh0Vo=
+X-Received: by 2002:a63:5307:0:b0:45b:f8be:7402 with SMTP id
+ h7-20020a635307000000b0045bf8be7402mr3023424pgb.484.1668199510695; Fri, 11
+ Nov 2022 12:45:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf v2] selftests/bpf: Fix xdp_synproxy compilation failure in
- 32-bit arch
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166819921539.1528.5255567846899299026.git-patchwork-notify@kernel.org>
-Date:   Fri, 11 Nov 2022 20:40:15 +0000
-References: <20221111030836.37632-1-yangjihong1@huawei.com>
-In-Reply-To: <20221111030836.37632-1-yangjihong1@huawei.com>
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, mykolal@fb.com, shuah@kernel.org,
-        tariqt@nvidia.com, maximmi@nvidia.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Fri, 11 Nov 2022 12:44:59 -0800
+Message-ID: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
+Subject: status of rate adaptation
+To:     netdev <netdev@vger.kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Greetings,
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+I've noticed some recent commits that appear to add rate adaptation support:
+3c42563b3041 net: phy: aquantia: Add support for rate matching
+7de26bf144f6 net: phy: aquantia: Add some additional phy interfaces
+b7e9294885b6 net: phylink: Adjust advertisement based on rate matching
+ae0e4bb2a0e0 net: phylink: Adjust link settings based on rate matching
+0c3e10cb4423 net: phy: Add support for rate matching
 
-On Fri, 11 Nov 2022 11:08:36 +0800 you wrote:
-> xdp_synproxy fails to be compiled in the 32-bit arch, log is as follows:
-> 
->   xdp_synproxy.c: In function 'parse_options':
->   xdp_synproxy.c:175:36: error: left shift count >= width of type [-Werror=shift-count-overflow]
->     175 |                 *tcpipopts = (mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
->         |                                    ^~
->   xdp_synproxy.c: In function 'syncookie_open_bpf_maps':
->   xdp_synproxy.c:289:28: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
->     289 |                 .map_ids = (__u64)map_ids,
->         |                            ^
-> 
-> [...]
+I have a board with an AQR113C PHY over XFI that functions properly at
+10Gbe links but still not at 1Gbe,2.5Gbe,5.0Gbe,100M with v6.1-rc4
 
-Here is the summary with links:
-  - [bpf,v2] selftests/bpf: Fix xdp_synproxy compilation failure in 32-bit arch
-    https://git.kernel.org/bpf/bpf-next/c/e4c9cf0ce8c4
+Should I expect this to work now at those lower rates and if so what
+kind of debug information or testing can I provide?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Best Regards,
 
-
+Tim
