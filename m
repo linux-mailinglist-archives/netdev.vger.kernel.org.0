@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E891B62674B
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 07:07:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D27FC6267AE
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 08:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbiKLGHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 01:07:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
+        id S231469AbiKLHij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 02:38:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbiKLGHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 01:07:47 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259411A394
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 22:07:46 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N8Q8Z70vyz15MMX;
-        Sat, 12 Nov 2022 14:07:26 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 12 Nov 2022 14:07:42 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <pabeni@redhat.com>, Wang Yufen <wangyufen@huawei.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH] netdevsim: Fix memory leak of nsim_dev->fa_cookie
-Date:   Sat, 12 Nov 2022 14:28:05 +0800
-Message-ID: <1668234485-27635-1-git-send-email-wangyufen@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S229800AbiKLHii (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 02:38:38 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D391B783
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 23:38:37 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id 78so6061403pgb.13
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 23:38:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/fuJxEvQ8hWJBVA+YQn5WV9w4flp3A4j0tI4rSSd1Ck=;
+        b=cw45AqCUuB8ApCLRgOV9wJV3OFN7/CPZJFudJkCrGgedNjLk+8Lyo+coO3zx4ZQwes
+         vcGEFAFwgO85msXq/YAj5lY9qClAx2V5/RaO8Nkknew5cilfjfXVRMN7XJTM4ooc2WMJ
+         bu+z8X7N8nrzUvQmt3FlD9JXtBVkqEgV632Hcz0hQLPVQxyJ6BOX6VAqeIlPrBPeDaP1
+         PAPSNrgWnu3vyRuAefAJZ/r6OurbBPD+B3CUe0B1mdzSxACxfHd+IOuUF6Qxw0L2diZJ
+         9Bshn6UxqK4+tslajDpIX/lVXIHLzzwjsgPUtAiqCcbi8IU6KAKXrWa/ZQKEk+CVPGjl
+         jl1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/fuJxEvQ8hWJBVA+YQn5WV9w4flp3A4j0tI4rSSd1Ck=;
+        b=3wZhJ/Xj8VenohkhZjZW7IGyXUOZKI3ZCTYmfJPFNqeRYe/d9Z2HQsOMSJcJ0mSkgY
+         CwGCFIkeroai/u9gNRDdIvWIgwz6pdvqLtKuiHrO7rUXU9vitC2vJEe2SRLGZuzZBvOv
+         QShn/X1DrKCyESzhfAu6vasrKjVopFLko53VOoj3K4iB27G7gZGV8Y0eMIsqqId/I7QY
+         s/0BnH4x9NMc4QjoFOoZ0Bgq/voekOuVvXy2LNP9RCy2dASiGKMOZKQpN4UEx8URZVx/
+         b+oH9zDD5iYvpw8BLqHmYP1oMyjlKWlibLttqI/2bHn71AxqK/UWtbE0VQFGHveFYpp0
+         r34Q==
+X-Gm-Message-State: ANoB5pl6/9O8Ge9cBlu4pRYLNV4USTrCzqbxxsQ2hiYU80D+fqlTOnMo
+        eD06yNAxpwwdqpaHcKamon67Dz4ySJ37kwPk0gI=
+X-Google-Smtp-Source: AA0mqf78t4yQQjMbssSM6IOJk4V0WDlQmxE+nmQKIxcR+3IejGeBOm8fGvDzOTBoTgtU9K/j0+dFsvH0h85Oh5gpHVM=
+X-Received: by 2002:a63:2212:0:b0:46b:1091:16e0 with SMTP id
+ i18-20020a632212000000b0046b109116e0mr4449173pgi.587.1668238564192; Fri, 11
+ Nov 2022 23:36:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6a10:1693:b0:352:589c:a6d0 with HTTP; Fri, 11 Nov 2022
+ 23:36:03 -0800 (PST)
+Reply-To: seyba_daniel@yahoo.com
+From:   Seyba Daniel <soremoussa994@gmail.com>
+Date:   Sat, 12 Nov 2022 08:36:03 +0100
+Message-ID: <CANdXxzS410KoynUKfjrVGcefJUCSuvGwY+-k7_2r=7diD1Jh9A@mail.gmail.com>
+Subject: hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmemleak reports this issue:
+I urgently seek your service to represent me in investing in
+your region / country and you will be rewarded for your service without
+affecting your present job with very little time invested in it, which you will
+be communicated in details upon response.
 
-unreferenced object 0xffff8881bac872d0 (size 8):
-  comm "sh", pid 58603, jiffies 4481524462 (age 68.065s)
-  hex dump (first 8 bytes):
-    04 00 00 00 de ad be ef                          ........
-  backtrace:
-    [<00000000c80b8577>] __kmalloc+0x49/0x150
-    [<000000005292b8c6>] nsim_dev_trap_fa_cookie_write+0xc1/0x210 [netdevsim]
-    [<0000000093d78e77>] full_proxy_write+0xf3/0x180
-    [<000000005a662c16>] vfs_write+0x1c5/0xaf0
-    [<000000007aabf84a>] ksys_write+0xed/0x1c0
-    [<000000005f1d2e47>] do_syscall_64+0x3b/0x90
-    [<000000006001c6ec>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+My dearest regards
 
-The issue occurs in the following scenarios:
-
-nsim_dev_trap_fa_cookie_write()
-  kmalloc() fa_cookie
-  nsim_dev->fa_cookie = fa_cookie
-..
-nsim_drv_remove()
-
-nsim_dev->fa_cookie alloced, but the nsim_dev_trap_report_work()
-job has not been done, the flow action cookie has not been assigned
-to the metadata. To fix, add kfree(nsim_dev->fa_cookie) to
-nsim_drv_remove().
-
-Fixes: d3cbb907ae57 ("netdevsim: add ACL trap reporting cookie as a metadata")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Cc: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/netdevsim/dev.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index a7880c7..68e56e4 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1683,6 +1683,7 @@ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
- 				  ARRAY_SIZE(nsim_devlink_params));
- 	devl_resources_unregister(devlink);
- 	kfree(nsim_dev->vfconfigs);
-+	kfree(nsim_dev->fa_cookie);
- 	devl_unlock(devlink);
- 	devlink_free(devlink);
- 	dev_set_drvdata(&nsim_bus_dev->dev, NULL);
--- 
-1.8.3.1
-
+Seyba Daniel
