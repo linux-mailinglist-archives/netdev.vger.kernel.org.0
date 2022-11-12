@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E8C6266EE
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 05:32:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 618F16266F2
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 05:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234648AbiKLEcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 23:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        id S234250AbiKLEc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 23:32:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234522AbiKLEcT (ORCPT
+        with ESMTP id S234540AbiKLEcT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 23:32:19 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F1D5EFA0;
-        Fri, 11 Nov 2022 20:32:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347F35F875;
+        Fri, 11 Nov 2022 20:32:14 -0800 (PST)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AC1FslV018944;
-        Fri, 11 Nov 2022 20:32:04 -0800
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AC3ewmd005896;
+        Fri, 11 Nov 2022 20:32:08 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=KTMzrC1koVIxKxxPb0waus5v7F2HXLK5qZ3CQT8Kla0=;
- b=PRAM065MsAEvKEcfkYHkN4LG8Use6rmi3CdcIQRSe1F2x5zEJ9fNi15Ba31xR72R3+8+
- E3OsC1FjGG2kx/ccDxh7j9v9tLw88erck3tbwhopbswteiKIYim18iuEm8kV3dFxbetZ
- smSsq/yBcl84aU/cUkTPeAFmRNd59T65bYAceqO9cYNC3PLc8HgFgUW5Fj8acGHb1vmA
- Y2i7x94VTOsM0wO9V4OVl2CzDG2anFAIc0dIf2EteL95hjg8G2bGi2TwKk+EAmsqTsWZ
- EumfSVsSA5Cl2ebqBcfA3oE5LWxj7YxGdgYFjJSADzdcTvd1M5AljtQjPxbhB26Fw4so lg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3kt1nv0bee-3
+ content-type; s=pfpt0220; bh=4q3tmmlL79Fbns+C12MPKAKqvodXxPP2wpfNKelR2cw=;
+ b=aIm/jz1KO+s+gSMmcQ6WOe3PtZnLv8DVS5K5dcD+5sSzFF5Qb6aFY8I/5Y2kLQjg0Zp+
+ 4cEHsvmuPpU+CVVrcMhUKVt6+K8ZNFDdc2X5KQxg9lQ82BAebr67DNdY1K5hJPAMScDK
+ fPUaNHBsp1zZpnt1FUd/nz4jucM5CDJg0mXtWUaH9QLyzSDzsR3L+cSAUW4lD+PfPnSt
+ OeR0fhprxmnkjsvGZ5n/VwPwkpQYSMgNVx7jREdwIePNELBmCRZVFg8up/Kavbv3nele
+ p+3rjBwu8k7D9eLscjrU+ue/YPOTvnv2lHQhbrMuYwQD3t54rr4PL/l9i+oQ5nIhdC0g Zw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3kt1nv0bef-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 11 Nov 2022 20:32:04 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 11 Nov
- 2022 20:32:02 -0800
+        Fri, 11 Nov 2022 20:32:08 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Nov
+ 2022 20:32:06 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 11 Nov 2022 20:32:02 -0800
+ Transport; Fri, 11 Nov 2022 20:32:06 -0800
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id E90E23F7043;
-        Fri, 11 Nov 2022 20:31:58 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id E97013F704E;
+        Fri, 11 Nov 2022 20:32:02 -0800 (PST)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
         <edumazet@google.com>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
         <sbhatta@marvell.com>
-Subject: [net-next PATCH 4/9] octeontx2-af: Show count of dropped packets by DMAC filters
-Date:   Sat, 12 Nov 2022 10:01:36 +0530
-Message-ID: <20221112043141.13291-5-hkelam@marvell.com>
+Subject: [net-next PATCH 5/9] octeontx2-af: Add support for RPM FEC stats
+Date:   Sat, 12 Nov 2022 10:01:37 +0530
+Message-ID: <20221112043141.13291-6-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221112043141.13291-1-hkelam@marvell.com>
 References: <20221112043141.13291-1-hkelam@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: R2a65ela5Vbmcai38qUbuoO68pufSVpU
-X-Proofpoint-GUID: R2a65ela5Vbmcai38qUbuoO68pufSVpU
+X-Proofpoint-ORIG-GUID: DiP55cuXW17HGbgzyjPHpfdKISuXuGSb
+X-Proofpoint-GUID: DiP55cuXW17HGbgzyjPHpfdKISuXuGSb
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-11-12_02,2022-11-11_01,2022-06-22_01
@@ -66,204 +66,224 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current mac_filter debugfs file only shows list of DMAC entries
-added to CGX/RPM DMAC table, added count of packets dropped by CGX/RPM
-due to DMAC filters.
+RPM/CGX blocks support both RS-FEC and BASER modes.
+This patch adds support to display these FEC stats.
 
-Output of mac_filter file
-
-PCI dev       RVUPF   BROADCAST  MULTICAST  FILTER-MODE
-0002:03:00.0  PF2     ACCEPT     ACCEPT     UNICAST
-
-DMAC-INDEX  ADDRESS
-      0     6a:4e:f1:10:34:0f
-      1     1a:1b:1c:1d:1e:1f
-
-DMAC filter drop count: 4
+FEC stats are integrated to below file
+cat /sys/kernel/debug/cn10k/rpm/rpmx/lmacx/stats
 
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
 Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c  | 13 ++++++++++++-
- drivers/net/ethernet/marvell/octeontx2/af/cgx.h  |  2 ++
- .../ethernet/marvell/octeontx2/af/lmac_common.h  |  1 +
- drivers/net/ethernet/marvell/octeontx2/af/rpm.c  | 16 ++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/rpm.h  |  3 ++-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h  |  1 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c  | 15 +++++++++++++++
- .../ethernet/marvell/octeontx2/af/rvu_debugfs.c  |  3 +++
- 8 files changed, 52 insertions(+), 2 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   |  5 ++
+ .../marvell/octeontx2/af/lmac_common.h        |  3 ++
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 51 +++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   | 14 ++++-
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  4 +-
+ .../marvell/octeontx2/af/rvu_debugfs.c        | 11 ++++
+ 6 files changed, 86 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index f6ab85f01ee7..942ad87905e9 100644
+index 942ad87905e9..1b194b2da7cc 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -701,6 +701,16 @@ int cgx_get_tx_stats(void *cgxd, int lmac_id, int idx, u64 *tx_stat)
- 	return 0;
- }
+@@ -752,6 +752,10 @@ int cgx_get_fec_stats(void *cgxd, int lmac_id, struct cgx_fec_stats_rsp *rsp)
  
-+u64 cgx_get_dmacflt_dropped_pktcnt(void *cgxd, int lmac_id)
-+{
-+	struct cgx *cgx = cgxd;
+ 	if (!cgx || lmac_id >= cgx->lmac_count)
+ 		return -ENODEV;
 +
-+	if (!is_lmac_valid(cgx, lmac_id))
++	if (cgx->lmac_idmap[lmac_id]->link_info.fec == OTX2_FEC_NONE)
 +		return 0;
 +
-+	return cgx_read(cgx, lmac_id, CGXX_CMRX_RX_STAT4);
-+}
-+
- u64 cgx_features_get(void *cgxd)
- {
- 	return ((struct cgx *)cgxd)->hw_features;
-@@ -1773,7 +1783,8 @@ static struct mac_ops	cgx_mac_ops    = {
- 	.mac_tx_enable =		cgx_lmac_tx_enable,
- 	.pfc_config =                   cgx_lmac_pfc_config,
- 	.mac_get_pfc_frm_cfg   =        cgx_lmac_get_pfc_frm_cfg,
--	.mac_reset   =        cgx_lmac_reset,
-+	.mac_reset                       =      cgx_lmac_reset,
-+	.get_dmacflt_dropped_pktcnt      =      cgx_get_dmacflt_dropped_pktcnt,
- };
- 
- static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-index 9273b96f68d2..2bdf6de244c3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-@@ -36,6 +36,7 @@
- #define CGXX_CMRX_INT_ENA_W1S		0x058
- #define CGXX_CMRX_RX_ID_MAP		0x060
- #define CGXX_CMRX_RX_STAT0		0x070
-+#define CGXX_CMRX_RX_STAT4		0x090
- #define CGXX_CMRX_RX_LOGL_XON		0x100
- #define CGXX_CMRX_RX_LMACS		0x128
- #define CGXX_CMRX_RX_DMAC_CTL0		(0x1F8 + mac_ops->csr_offset)
-@@ -184,4 +185,5 @@ int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
- int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
- 		       int pfvf_idx);
- int cgx_lmac_reset(void *cgxd, int lmac_id);
-+u64 cgx_get_dmacflt_dropped_pktcnt(void *cgx, int lmac_id);
- #endif /* CGX_H */
+ 	fec_stats_count =
+ 		cgx_set_fec_stats_count(&cgx->lmac_idmap[lmac_id]->link_info);
+ 	if (cgx->lmac_idmap[lmac_id]->link_info.fec == OTX2_FEC_BASER) {
+@@ -1774,6 +1778,7 @@ static struct mac_ops	cgx_mac_ops    = {
+ 	.mac_lmac_intl_lbk =    cgx_lmac_internal_loopback,
+ 	.mac_get_rx_stats  =	cgx_get_rx_stats,
+ 	.mac_get_tx_stats  =	cgx_get_tx_stats,
++	.get_fec_stats	   =	cgx_get_fec_stats,
+ 	.mac_enadis_rx_pause_fwding =	cgx_lmac_enadis_rx_pause_fwding,
+ 	.mac_get_pause_frm_status =	cgx_lmac_get_pause_frm_status,
+ 	.mac_enadis_pause_frm =		cgx_lmac_enadis_pause_frm,
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-index 152c50bf6d1e..18b03940b34b 100644
+index 18b03940b34b..120f04bfa988 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-@@ -126,6 +126,7 @@ struct mac_ops {
- 	int                     (*mac_get_pfc_frm_cfg)(void *cgxd, int lmac_id,
- 						       u8 *tx_pause, u8 *rx_pause);
+@@ -128,6 +128,9 @@ struct mac_ops {
  	int			(*mac_reset)(void *cgxd, int lmac_id);
-+	u64			(*get_dmacflt_dropped_pktcnt)(void *cgxd, int lmac_id);
+ 	u64			(*get_dmacflt_dropped_pktcnt)(void *cgxd, int lmac_id);
  
++	/* FEC stats */
++	int			(*get_fec_stats)(void *cgxd, int lmac_id,
++						 struct cgx_fec_stats_rsp *rsp);
  };
  
+ struct cgx {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index d40aca0940bf..641d82000768 100644
+index 641d82000768..6aa1c6a0e02c 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -37,6 +37,7 @@ static struct mac_ops		rpm_mac_ops   = {
- 	.pfc_config =                   rpm_lmac_pfc_config,
- 	.mac_get_pfc_frm_cfg   =        rpm_lmac_get_pfc_frm_cfg,
- 	.mac_reset             =        rpm_lmac_reset,
-+	.get_dmacflt_dropped_pktcnt =   rpm_get_dmacflt_dropped_pktcnt,
- };
- 
- static struct mac_ops		rpm2_mac_ops   = {
-@@ -68,6 +69,7 @@ static struct mac_ops		rpm2_mac_ops   = {
- 	.pfc_config =                   rpm_lmac_pfc_config,
- 	.mac_get_pfc_frm_cfg   =        rpm_lmac_get_pfc_frm_cfg,
- 	.mac_reset	       =        rpm_lmac_reset,
-+	.get_dmacflt_dropped_pktcnt =   rpm_get_dmacflt_dropped_pktcnt,
- };
- 
- bool is_dev_rpm2(void *rpmd)
-@@ -434,6 +436,20 @@ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat)
+@@ -27,6 +27,7 @@ static struct mac_ops		rpm_mac_ops   = {
+ 	.mac_lmac_intl_lbk =    rpm_lmac_internal_loopback,
+ 	.mac_get_rx_stats  =	rpm_get_rx_stats,
+ 	.mac_get_tx_stats  =	rpm_get_tx_stats,
++	.get_fec_stats	   =	rpm_get_fec_stats,
+ 	.mac_enadis_rx_pause_fwding =	rpm_lmac_enadis_rx_pause_fwding,
+ 	.mac_get_pause_frm_status =	rpm_lmac_get_pause_frm_status,
+ 	.mac_enadis_pause_frm =		rpm_lmac_enadis_pause_frm,
+@@ -59,6 +60,7 @@ static struct mac_ops		rpm2_mac_ops   = {
+ 	.mac_lmac_intl_lbk =    rpm_lmac_internal_loopback,
+ 	.mac_get_rx_stats  =	rpm_get_rx_stats,
+ 	.mac_get_tx_stats  =	rpm_get_tx_stats,
++	.get_fec_stats	   =	rpm_get_fec_stats,
+ 	.mac_enadis_rx_pause_fwding =	rpm_lmac_enadis_rx_pause_fwding,
+ 	.mac_get_pause_frm_status =	rpm_lmac_get_pause_frm_status,
+ 	.mac_enadis_pause_frm =		rpm_lmac_enadis_pause_frm,
+@@ -436,6 +438,55 @@ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat)
  	return 0;
  }
  
-+u64 rpm_get_dmacflt_dropped_pktcnt(void *rpmd, int lmac_id)
++int rpm_get_fec_stats(void *rpmd, int lmac_id, struct cgx_fec_stats_rsp *rsp)
 +{
++	u64 val_lo, val_hi;
 +	rpm_t *rpm = rpmd;
-+	u64 dmac_flt_stat;
++	u64 cfg;
 +
 +	if (!is_lmac_valid(rpm, lmac_id))
++		return -ENODEV;
++
++	if (rpm->lmac_idmap[lmac_id]->link_info.fec == OTX2_FEC_NONE)
 +		return 0;
 +
-+	dmac_flt_stat = is_dev_rpm2(rpm) ? RPM2_CMRX_RX_STAT2 :
-+			RPMX_CMRX_RX_STAT2;
++	if (rpm->lmac_idmap[lmac_id]->link_info.fec == OTX2_FEC_BASER) {
++		val_lo = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_VL0_CCW_LO);
++		val_hi = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_CW_HI);
++		rsp->fec_corr_blks = (val_hi << 32 | val_lo);
 +
-+	return rpm_read(rpm, lmac_id, dmac_flt_stat);
++		val_lo = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_VL0_NCCW_LO);
++		val_hi = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_CW_HI);
++		rsp->fec_uncorr_blks = (val_hi << 32 | val_lo);
++
++		/* 50G uses 2 Physical serdes lines */
++		if (rpm->lmac_idmap[lmac_id]->link_info.lmac_type_id == LMAC_MODE_50G_R) {
++			val_lo = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_VL1_CCW_LO);
++			val_hi = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_CW_HI);
++			rsp->fec_corr_blks += (val_hi << 32 | val_lo);
++
++			val_lo = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_VL1_NCCW_LO);
++			val_hi = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_CW_HI);
++			rsp->fec_uncorr_blks += (val_hi << 32 | val_lo);
++		}
++	} else {
++		/* enable RS-FEC capture */
++		cfg = rpm_read(rpm, 0, RPMX_MTI_STAT_STATN_CONTROL);
++		cfg |= RPMX_RSFEC_RX_CAPTURE | BIT(lmac_id);
++		rpm_write(rpm, 0, RPMX_MTI_STAT_STATN_CONTROL, cfg);
++
++		val_lo = rpm_read(rpm, 0, RPMX_MTI_RSFEC_STAT_COUNTER_CAPTURE_2);
++		val_hi = rpm_read(rpm, 0, RPMX_MTI_STAT_DATA_HI_CDC);
++		rsp->fec_corr_blks = (val_hi << 32 | val_lo);
++
++		val_lo = rpm_read(rpm, 0, RPMX_MTI_RSFEC_STAT_COUNTER_CAPTURE_3);
++		val_hi = rpm_read(rpm, 0, RPMX_MTI_STAT_DATA_HI_CDC);
++		rsp->fec_uncorr_blks = (val_hi << 32 | val_lo);
++	}
++
++	return 0;
 +}
 +
- u8 rpm_get_lmac_type(void *rpmd, int lmac_id)
+ u64 rpm_get_dmacflt_dropped_pktcnt(void *rpmd, int lmac_id)
  {
  	rpm_t *rpm = rpmd;
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index 4b28b9879995..8ed2f9c9624b 100644
+index 8ed2f9c9624b..c86066d2052f 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -60,7 +60,7 @@
- #define RPMX_MTI_STAT_RX_STAT_PAGES_COUNTERX 0x12000
- #define RPMX_MTI_STAT_TX_STAT_PAGES_COUNTERX 0x13000
- #define RPMX_MTI_STAT_DATA_HI_CDC            0x10038
--
-+#define RPMX_CMRX_RX_STAT2		     0x4010
- #define RPM_LMAC_FWI			0xa
- #define RPM_TX_EN			BIT_ULL(0)
- #define RPM_RX_EN			BIT_ULL(1)
-@@ -111,6 +111,7 @@ int rpm_lmac_enadis_pause_frm(void *rpmd, int lmac_id, u8 tx_pause,
+@@ -25,7 +25,6 @@
+ #define RPMX_CMRX_SW_INT_ENA_W1S        0x198
+ #define RPMX_CMRX_LINK_CFG		0x1070
+ #define RPMX_MTI_PCS100X_CONTROL1       0x20000
+-#define RPMX_MTI_LPCSX_CONTROL1         0x30000
+ #define RPMX_MTI_PCS_LBK                BIT_ULL(14)
+ #define RPMX_MTI_LPCSX_CONTROL(id)     (0x30000 | ((id) * 0x100))
+ 
+@@ -82,6 +81,18 @@
+ #define RPMX_TS_BINARY_MODE				BIT_ULL(11)
+ #define RPMX_CONST1					0x2008
+ 
++/* FEC stats */
++#define RPMX_MTI_STAT_STATN_CONTROL			0x10018
++#define RPMX_MTI_STAT_DATA_HI_CDC			0x10038
++#define RPMX_RSFEC_RX_CAPTURE				BIT_ULL(27)
++#define RPMX_MTI_RSFEC_STAT_COUNTER_CAPTURE_2		0x40050
++#define RPMX_MTI_RSFEC_STAT_COUNTER_CAPTURE_3		0x40058
++#define RPMX_MTI_FCFECX_VL0_CCW_LO			0x38618
++#define RPMX_MTI_FCFECX_VL0_NCCW_LO			0x38620
++#define RPMX_MTI_FCFECX_VL1_CCW_LO			0x38628
++#define RPMX_MTI_FCFECX_VL1_NCCW_LO			0x38630
++#define RPMX_MTI_FCFECX_CW_HI				0x38638
++
+ /* CN10KB CSR Declaration */
+ #define  RPM2_CMRX_SW_INT				0x1b0
+ #define  RPM2_CMRX_SW_INT_ENA_W1S			0x1b8
+@@ -111,6 +122,7 @@ int rpm_lmac_enadis_pause_frm(void *rpmd, int lmac_id, u8 tx_pause,
  			      u8 rx_pause);
  int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat);
  int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat);
-+u64 rpm_get_dmacflt_dropped_pktcnt(void *rpmd, int lmac_id);
++int rpm_get_fec_stats(void *cgxd, int lmac_id, struct cgx_fec_stats_rsp *rsp);
+ u64 rpm_get_dmacflt_dropped_pktcnt(void *rpmd, int lmac_id);
  void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable);
  int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable);
- int rpm_lmac_tx_enable(void *rpmd, int lmac_id, bool enable);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 7423d50d99dd..7654c90f48df 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -848,6 +848,7 @@ int rvu_cgx_prio_flow_ctrl_cfg(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_
- 			       u16 pfc_en);
- int rvu_cgx_cfg_pause_frm(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause);
- void rvu_mac_reset(struct rvu *rvu, u16 pcifunc);
-+u64 rvu_cgx_get_dmacflt_dropped_pktcnt(void *cgxd, int lmac_id);
- u32 rvu_cgx_get_lmac_fifolen(struct rvu *rvu, int cgx, int lmac);
- int npc_get_nixlf_mcam_index(struct npc_mcam *mcam, u16 pcifunc, int nixlf,
- 			     int type);
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 3fa828feb6cd..3124aed1806f 100644
+index 3124aed1806f..fb3e5f1dbe3a 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -1264,3 +1264,18 @@ void rvu_mac_reset(struct rvu *rvu, u16 pcifunc)
- 	if (mac_ops->mac_reset(cgxd, lmac))
- 		dev_err(rvu->dev, "Failed to reset MAC\n");
- }
-+
-+u64 rvu_cgx_get_dmacflt_dropped_pktcnt(void *cgxd, int lmac_id)
-+{
+@@ -579,6 +579,7 @@ int rvu_mbox_handler_cgx_fec_stats(struct rvu *rvu,
+ 				   struct cgx_fec_stats_rsp *rsp)
+ {
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
 +	struct mac_ops *mac_ops;
-+
-+	if (!cgxd)
-+		return 0;
-+
+ 	u8 cgx_idx, lmac;
+ 	void *cgxd;
+ 
+@@ -587,7 +588,8 @@ int rvu_mbox_handler_cgx_fec_stats(struct rvu *rvu,
+ 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_idx, &lmac);
+ 
+ 	cgxd = rvu_cgx_pdata(cgx_idx, rvu);
+-	return cgx_get_fec_stats(cgxd, lmac, rsp);
 +	mac_ops = get_mac_ops(cgxd);
-+
-+	if (!mac_ops->lmac_fifo_len)
-+		return 0;
-+
-+	return mac_ops->get_dmacflt_dropped_pktcnt(cgxd, lmac_id);
-+}
++	return  mac_ops->get_fec_stats(cgxd, lmac, rsp);
+ }
+ 
+ int rvu_mbox_handler_cgx_mac_addr_set(struct rvu *rvu,
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index 4bd131ee9cc0..c5a0076b8082 100644
+index c5a0076b8082..b038ca855221 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -2566,6 +2566,9 @@ static int cgx_print_dmac_flt(struct seq_file *s, int lmac_id)
- 		}
+@@ -2388,6 +2388,7 @@ static void rvu_dbg_npa_init(struct rvu *rvu)
+ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ {
+ 	struct cgx_link_user_info linfo;
++	struct cgx_fec_stats_rsp fec_rsp;
+ 	struct mac_ops *mac_ops;
+ 	void *cgxd = s->private;
+ 	u64 ucast, mcast, bcast;
+@@ -2488,6 +2489,16 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ 		stat++;
  	}
  
-+	seq_printf(s, "\nDMAC filter drop count: %lld\n",
-+		   rvu_cgx_get_dmacflt_dropped_pktcnt(cgxd, lmac_id));
++	fec_rsp.fec_corr_blks = 0;
++	fec_rsp.fec_uncorr_blks = 0;
 +
- 	return 0;
++	seq_printf(s, "\n=======%s FEC_STATS======\n\n", mac_ops->name);
++	err = mac_ops->get_fec_stats(cgxd, lmac_id, &fec_rsp);
++	if (err)
++		return err;
++	seq_printf(s, "Fec Corrected Errors:  %llu\n",  fec_rsp.fec_corr_blks);
++	seq_printf(s, "Fec Uncorrected Errors: %llu\n", fec_rsp.fec_uncorr_blks);
++
+ 	return err;
  }
  
 -- 
