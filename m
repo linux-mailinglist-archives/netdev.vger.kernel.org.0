@@ -2,75 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 108536265DC
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 01:11:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BBF36265E1
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 01:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234590AbiKLALm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 19:11:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
+        id S234486AbiKLANc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 19:13:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234537AbiKLALh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 19:11:37 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052DA54B1A;
-        Fri, 11 Nov 2022 16:11:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668211896; x=1699747896;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=LiZwmYGwAznYW6wrpo4GEBOGDwQrkWj7tTELRkONMMw=;
-  b=Ny7JK8HlDrFRt5trB8P87UdEy36SRNwkKbkK5Q6HUb6MMK14SVOHUwh3
-   YwcA3jc/+4bWBtgh3ELR1LQQPAvwQPpboqLBIN5+4faSnMzEaIDsi7CTe
-   PBPo6CuEA6LRF0XCasaoKb8VbqnQCx72bVXujZA95PMZpfxDqor5pWOAR
-   QNbQFX8WCnVhcA6sqRPWokmzpDYKBpoXFP+rMJQUhONGwNck04YG8Sz62
-   2q+9vg9NIa27tBBAhpc5KETG7ui7BqMaJFac/+eskgR3slGU+1xoej/Zp
-   kNivApIiDEkX3/TwBg3GID0Bz7t/i7IadFNZge/bkB+2mz67W/VYVFyL6
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="313484745"
-X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
-   d="scan'208";a="313484745"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:11:35 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="615617910"
-X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
-   d="scan'208";a="615617910"
-Received: from nmpoonaw-mobl1.amr.corp.intel.com (HELO [10.252.134.46]) ([10.252.134.46])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:11:33 -0800
-Message-ID: <7d621ab2-6717-c6b6-5c3c-90af4c2f4afc@intel.com>
-Date:   Fri, 11 Nov 2022 16:11:32 -0800
+        with ESMTP id S234412AbiKLAN3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 19:13:29 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77C3D9E
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 16:13:27 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id 130so5577378pgc.5
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 16:13:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f2aTnXJgxe9dRVq9RmjeXyvcN+WV3pvmOGyDRUxHY7U=;
+        b=qHAmONvFxQcpjV2QeHrnnXtTy7XG/c3tRMnFt5HD6TemsCrC+OylJ6Pjm2/N+f6Eqm
+         JNOqFp3Une4AT5hpoWvdufSHo37iBU5DWjIO56avnd583UgX7vnUH/qcLswX5prch/sG
+         oYDd1+AqJU/qX7UKxAGU+5FT28pUAnDSwRPhGyZLaLxUJ+Q2Je7m/ZymoTIBpFqICVpl
+         8kfPJDiYSx9QQ7T61KYeG+LCwHj7bQQ27CMAtd/y+k3OQ2/BWf0raHHwDWsnlej7Ho1D
+         pI3I/YtUGf/e4E8XsXuDNyXR/bWezFRvvQno0lb1hpfTQapU9h6qOHa9FB++WcKTseCi
+         +CSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=f2aTnXJgxe9dRVq9RmjeXyvcN+WV3pvmOGyDRUxHY7U=;
+        b=DgG6m0oweK840MnPlrVhavd4QplnzHIwSkTh4rt1hZ/9j4onlJhciTBdo3QmElGXq9
+         GCRdx+YJ/zK7bFeaSuEKx+NtX6q8+KZCYdVVaYMghz250HOXgjE0eN9syNWokElzNJKR
+         G+jTR4CB42h75bMtxWzS62m5ogoHXe6z3GRfEmg/LdVEKoPar+YU0xarIsHK/PdkJH+T
+         V64i4CkXL1c2gIyBC35XXorg2H6IQKqvPOtGphqP2L2nVbMIMkxFHaLCZDAHc8z74ixu
+         FCSnRKO6eRE1CQ8aGN6D8SElIjZdSUYHkMZe8lve4mLKcd+zguhgfCLspVRTSdtD4toj
+         08Yw==
+X-Gm-Message-State: ANoB5ploka12HgEw52iHRu7keAo5WiZ+eBtf9tE2agsXvOLCzlYFBx3P
+        sWEaCmBjm0KhxeaBwck59utZBJyhD4PvHuri3oo=
+X-Google-Smtp-Source: AA0mqf42DzpU68bKwpyIa0Dqx1J5dHdBiZh4zpyKQeSdnLmCuvtvoniTXr5Th1ZAMJzrXUcsDSsMkIxaRHVfGdQfy6o=
+X-Received: by 2002:a63:134c:0:b0:45f:bf96:771c with SMTP id
+ 12-20020a63134c000000b0045fbf96771cmr3743857pgt.131.1668212007132; Fri, 11
+ Nov 2022 16:13:27 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH v2 01/12] x86/ioremap: Fix page aligned size calculation
- in __ioremap_caller()
-Content-Language: en-US
-To:     Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
-        kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
-        kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
-        hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        isaku.yamahata@intel.com, dan.j.williams@intel.com,
-        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-        iommu@lists.linux.dev
-References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
- <1668147701-4583-2-git-send-email-mikelley@microsoft.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <1668147701-4583-2-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20221111211020.543540-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20221111211020.543540-1-vladimir.oltean@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 11 Nov 2022 21:13:12 -0300
+Message-ID: <CAOMZO5BRmu-DFQ9QaPLvKXrDpPSnmK6X2ZA9m+TLXJhKqEj1dQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: make dsa_master_ioctl() see through
+ port_hwtstamp_get() shims
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        =?UTF-8?Q?Steffen_B=C3=A4tz?= <steffen@innosonix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,47 +75,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/22 22:21, Michael Kelley wrote:
-> If applying the PHYSICAL_PAGE_MASK to the phys_addr argument causes
-> upper bits to be masked out, the re-calculation of size to account for
-> page alignment is incorrect because the same bits are not masked out
-> in last_addr.
-> 
-> Fix this by masking the page aligned last_addr as well.
+Hi Vladimir,
 
-This makes sense at first glance.
+On Fri, Nov 11, 2022 at 6:10 PM Vladimir Oltean <vladimir.oltean@nxp.com> w=
+rote:
+>
+> There are multi-generational drivers like mv88e6xxx which have code like
+> this:
+>
+> int mv88e6xxx_port_hwtstamp_get(struct dsa_switch *ds, int port,
+>                                 struct ifreq *ifr)
+> {
+>         if (!chip->info->ptp_support)
+>                 return -EOPNOTSUPP;
+>
+>         ...
+> }
+>
+> DSA wants to deny PTP timestamping on the master if the switch supports
+> timestamping too. However it currently relies on the presence of the
+> port_hwtstamp_get() callback to determine PTP capability, and this
+> clearly does not work in that case (method is present but returns
+> -EOPNOTSUPP).
+>
+> We should not deny PTP on the DSA master for those switches which truly
+> do not support hardware timestamping.
+>
+> Create a dsa_port_supports_hwtstamp() method which actually probes for
+> support by calling port_hwtstamp_get() and seeing whether that returned
+> -EOPNOTSUPP or not.
+>
+> Fixes: f685e609a301 ("net: dsa: Deny PTP on master if switch supports it"=
+)
+> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20221110124345=
+.3901389-1-festevam@gmail.com/
+> Reported-by: Fabio Estevam <festevam@gmail.com>
+> Reported-by: Steffen B=C3=A4tz <steffen@innosonix.de>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-How did you notice this?  What is the impact to users?  Did the bug
-actually cause you some trouble or was it by inspection?  Do you have a
-sense of how many folks might be impacted?  Any thoughts on how it
-lasted for 14+ years?
+Thanks for your fix!
 
-For the functionality of the mapping, I guess 'size' doesn't really
-matter because even a 1-byte 'size' will map a page.  The other fallout
-would be from memtype_reserve() reserving too little.  But, that's
-unlikely to matter for small mappings because even though:
-
-	ioremap(0x1800, 0x800);
-
-would end up just reserving 0x1000->0x1800, it still wouldn't allow
-
-	ioremap(0x1000, 0x800);
-
-to succeed because *both* of them would end up trying to reserve the
-beginning of the page.  Basically, the first caller effectively reserves
-the whole page and any second user will fail.
-
-So the other place it would matter would be for mappings that span two
-pages, say:
-
-	ioremap(0x1fff, 0x2)
-
-But I guess those aren't very common.  Most large ioremap() callers seem
-to already have base and size page-aligned.
-
-Anyway, sorry to make so much of a big deal about a one-liner.  But,
-these decade-old bugs really make me wonder how they stuck around for so
-long.
-
-I'd be curious if you thought about this too while putting together this
-fox.
+Tested-by: Fabio Estevam <festevam@denx.de>
