@@ -2,63 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDB6A626703
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 05:47:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6B662671A
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 06:10:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231911AbiKLErP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 23:47:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S233940AbiKLFKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 00:10:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbiKLErO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 23:47:14 -0500
-X-Greylist: delayed 519 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Nov 2022 20:47:13 PST
-Received: from ci74p00im-qukt09081901.me.com (ci74p00im-qukt09081901.me.com [17.57.156.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C8F10B72
-        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 20:47:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-        s=1a1hai; t=1668227913;
-        bh=4ht9G50SlYlr7BPTCuy+KjNotHQlLEXbSKghIYlF3TI=;
-        h=Content-Type:From:Mime-Version:Date:Subject:Message-Id:To;
-        b=Marb1YmnZicYGgNQKLfFg2N+zNt9EVYhYKnvVebdgfjZU9/fwwaOU18yDbHfOmNmU
-         c3M2y8JIzES/kAwFs3P9YkMSelDAl3ys7Dl9cQsGJu0r5pfjkifSJjIdnyS/fVO5Xh
-         NnMmQANfzh8JhfRgjHHzqS9lJqc4EfBy4MfBlUvPwj+cKfta/blpq/dwg8Va4VH+vk
-         tW4MmYSjNDIwi+gzJCGDeCdy9MKMASGhkqDmYxm0oX6m08hNbzbmIR+WQhnw+IpfO5
-         GbI3cPvMtw1ytkVbQ/57ZAZPnkC9y24vn5SUNsmDly/vPPheQ4WRUaVnlpNojaGPh+
-         uJcD43ASPF0OQ==
-Received: from smtpclient.apple (ci77p00im-dlb-asmtp-mailmevip.me.com [17.57.156.26])
-        by ci74p00im-qukt09081901.me.com (Postfix) with ESMTPSA id 5CA6D5AC0424;
-        Sat, 12 Nov 2022 04:38:32 +0000 (UTC)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-From:   Ernest Ugwu <ernestugwu08@icloud.com>
-Mime-Version: 1.0 (1.0)
-Date:   Fri, 11 Nov 2022 22:37:26 -0800
-Subject: Re: [PATCH net-next 4/6] ixp4xx_eth: Stop referring to GPIOs
-Message-Id: <349FCFFE-BFDE-4FD7-A023-338452887EF5@icloud.com>
-Cc:     arnd@arndb.de, davem@davemloft.net, kaloz@openwrt.org,
-        khalasa@piap.pl, kuba@kernel.org, netdev@vger.kernel.org
-To:     linus.walleij@linaro.org
-X-Mailer: iPhone Mail (18H107)
-X-Proofpoint-GUID: 69v8JPlESJQvIZiXkoZjZDdbgYmn_FZJ
-X-Proofpoint-ORIG-GUID: 69v8JPlESJQvIZiXkoZjZDdbgYmn_FZJ
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.0.605.474.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2020-01-23?=
- =?UTF-8?Q?=5F02_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=376
- clxscore=1011 adultscore=0 phishscore=0 spamscore=0 mlxscore=0
- suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2211120031
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_05,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230257AbiKLFKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 00:10:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CFE391C7;
+        Fri, 11 Nov 2022 21:10:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 487BD609FE;
+        Sat, 12 Nov 2022 05:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 772AAC433B5;
+        Sat, 12 Nov 2022 05:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668229817;
+        bh=b9hy5Uu/5y7S/TF2TAungVdatpEEDrM3Mfp/gMVTcQg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Qu9JGc2sCb/GEwSr0HpmKCLsOu7Zz+SEslo20KxWtTw6zVIcuD61md/ia6uY7Vc5P
+         EvLLAX4uTA/zF/MPBJ7MWjneV+jpj8ljcBhHzjsYYWaWGBqo0FVgX0aTPw0n2/PEf4
+         bIZWo43mm6GKi6wGFRBZK3j1j2ftDzdTO6AuobXbCDlhR1FeDj0M9U88KwSf/5WTOu
+         dpx+scy55B3e19ZBxEG36dMalX48TNJn7zrf8RRFauQ78z3F96Yd+MGuR4AGkCWbj9
+         xul1FzVbhNo6odPPaXAs9Yonc+4Ca/3gD/Bjr+wKi0ZjJClEzZMplAs+tL3d7fgwgq
+         1LfU6heYafYoQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F40FC395F7;
+        Sat, 12 Nov 2022 05:10:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/1] net: stmmac: ensure tx function is not running in
+ stmmac_xdp_release()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166822981724.20406.14762867463134105044.git-patchwork-notify@kernel.org>
+Date:   Sat, 12 Nov 2022 05:10:17 +0000
+References: <20221110064552.22504-1-noor.azura.ahmad.tarmizi@linux.intel.com>
+In-Reply-To: <20221110064552.22504-1-noor.azura.ahmad.tarmizi@linux.intel.com>
+To:     Noor Azura Ahmad Tarmizi 
+        <noor.azura.ahmad.tarmizi@linux.intel.com>
+Cc:     davem@davemloft.net, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        boon.leong.ong@intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, yoong.siang.song@intel.com,
+        faizal.abdul.rahim@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 10 Nov 2022 14:45:52 +0800 you wrote:
+> From: Mohd Faizal Abdul Rahim <faizal.abdul.rahim@intel.com>
+> 
+> When stmmac_xdp_release() is called, there is a possibility that tx
+> function is still running on other queues which will lead to tx queue
+> timed out and reset adapter.
+> 
+> This commit ensure that tx function is not running xdp before release
+> flow continue to run.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/1] net: stmmac: ensure tx function is not running in stmmac_xdp_release()
+    https://git.kernel.org/netdev/net/c/77711683a504
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Sent from my iPhone
