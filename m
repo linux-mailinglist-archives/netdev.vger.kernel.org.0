@@ -2,97 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F27C3626C17
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 22:54:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8241626CA8
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 00:33:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbiKLVyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 16:54:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S235016AbiKLXdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 18:33:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234946AbiKLVyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 16:54:19 -0500
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5463C1FE;
-        Sat, 12 Nov 2022 13:54:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=e69G3zk0gUdq0LcFy0TDryQ6kdaJ3PoKF9Rf2f2etP0=; b=qXouuoBOybLJuRlLwC/26K4W+j
-        168l31Eg/PBKzgScJxE8deJ0PfWGEeNURIB3efMQfH+4/uOFuacUr+ectWhoMTpooMsL+6Yz/vP+B
-        +oWQ9x3hOjDwBPHvZuvy+cQOENfrMoCpxYzeT0O8xTi4XKdVK+szjQTWlUlV6Q9zLj2WvGFeuKoq5
-        DVdn1zNHfn62Dkj7AukFgTW/tAKwPzGeMIO6fG8c2OMLBM0fQZtM61Bd6kCMUvPGh55GtvgkXzQxJ
-        xqiQFo49g4eovaqaBxGE+PXYlGdJi9moRQZEveVv5LUdWld3Um2dnmsi6p+Ej9mTLZtmfIBX0i1mo
-        FFVuFKOQ==;
-Received: from [179.232.147.2] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1otyRy-00HHuA-IA; Sat, 12 Nov 2022 22:54:06 +0100
-Message-ID: <44bce9f3-365b-9592-83a9-8608b0cba20b@igalia.com>
-Date:   Sat, 12 Nov 2022 18:53:57 -0300
+        with ESMTP id S229584AbiKLXdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 18:33:32 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AECA1BF
+        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 15:33:30 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id q1-20020a17090a750100b002139ec1e999so7615832pjk.1
+        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 15:33:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YQ79OKVd7iIymbFIHL+sQgdxNhmZoIoceNlKtKeunJw=;
+        b=DM6O+cNUmd8Z3vjJlavPED/emmfdu4L8AXlNsnhvikxG5fiw3QJWEN8Wg71jDnOrVW
+         HaJhLIl8rxiYXGw0svEYfmcZwBE5LhBSUfyY1LpcXD88Vmozd4tPqFLNVEHLxLoarXTx
+         p7MNgY43M+wPiev83c1Vf5c3MaiIlUkNcgL5J1SVhwfQ4vRfIpQwcGPM9kk7+FYQVnI+
+         obTst+ko5nFVfZAEmJuGrYcbnC5r5Hn0Bc5Iis4+KZprefAFlbUVd7ng4xu5GpbaXZ2c
+         KfcSoyca2GGHyrs5Y+TEQ+NTMNLn+pzFI5gN4Og2Rzg67+Rhhy7yhljR7G1huqTvvuFf
+         AQVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YQ79OKVd7iIymbFIHL+sQgdxNhmZoIoceNlKtKeunJw=;
+        b=HKzFC4rN5DsT0Z+LJVTdWemrOHXb6VOlis1PBSnVPXjDPAxidSCTLhJfcfLmzSqzXM
+         NuBgKtjK8FV41lQSyQNAvkFcw8KYpYlBXsevyrXUTaoAAnK9DfnxUI6nlmb1Wj8brztu
+         taQgF9NkGTMQXYvYWdz50vo4IVXVoMmgAHrQBoRiNIlk2bo4GsFdD2q9oTGVPJ4TF8dD
+         Uxpg/cLTAYL1wTdJQ+0KEYdN4q9Dbcsq7zB0KoricwaHZOnZCsPRbJjGK8EITq8gxgab
+         Ij/Nm7v6DevJym/KqkPfrlZLAsTVrPlGCMzcknDhNiyFviHHl+xyaLOYSJbNfbXPvTHy
+         VLVg==
+X-Gm-Message-State: ANoB5pkSnS1ErLRi3q0YFMW+RgztYS8L8OcLQ7xEZok2gfX87mQUCneA
+        9U3iI2MowR9CSAFRd6LJUHEJZMyApKmXixfoH9k=
+X-Google-Smtp-Source: AA0mqf5dDnPymWZlBlyzUf8Z8QiBr7a6sr4602ZrOa05POsmmsr1jQBug2g2q113ZS90kESBi/2BLQ==
+X-Received: by 2002:a17:90b:215:b0:213:2411:50e7 with SMTP id fy21-20020a17090b021500b00213241150e7mr8015293pjb.212.1668296009566;
+        Sat, 12 Nov 2022 15:33:29 -0800 (PST)
+Received: from localhost.localdomain ([45.92.127.40])
+        by smtp.gmail.com with ESMTPSA id k29-20020aa7973d000000b0056bb7d90f0fsm3788308pfg.182.2022.11.12.15.33.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Nov 2022 15:33:29 -0800 (PST)
+From:   Yan Cangang <nalanzeyu@gmail.com>
+To:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com
+Cc:     netdev@vger.kernel.org, Yan Cangang <nalanzeyu@gmail.com>
+Subject: [PATCH] net: ethernet: mtk_eth_soc: fix memory leak in mtk_ppe_init()
+Date:   Sun, 13 Nov 2022 07:32:39 +0800
+Message-Id: <20221112233239.824389-1-nalanzeyu@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH V3 10/11] drivers/hv/vmbus, video/hyperv_fb: Untangle and
- refactor Hyper-V panic notifiers
-Content-Language: en-US
-To:     Wei Liu <wei.liu@kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "bhe@redhat.com" <bhe@redhat.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>
-References: <20220819221731.480795-1-gpiccoli@igalia.com>
- <20220819221731.480795-11-gpiccoli@igalia.com>
- <BYAPR21MB16880251FC59B60542D2D996D75A9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <ae0a1017-7ec6-9615-7154-ea34c7bd2248@igalia.com>
- <SN6PR2101MB1693BC627B22432BA42EEBC2D7299@SN6PR2101MB1693.namprd21.prod.outlook.com>
- <efdaf27e-753e-e84f-dd7d-965101563679@igalia.com>
- <Y27Q9SSM6WkGFwf5@liuwe-devbox-debian-v2>
- <Y27XsybzcgCQ3fzD@liuwe-devbox-debian-v2>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Y27XsybzcgCQ3fzD@liuwe-devbox-debian-v2>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/2022 20:16, Wei Liu wrote:
-> On Fri, Nov 11, 2022 at 10:47:17PM +0000, Wei Liu wrote:
->> On Thu, Nov 10, 2022 at 06:32:54PM -0300, Guilherme G. Piccoli wrote:
->>> [Trimming long CC list]
->>>
->>> Hi Wei / Michael, just out of curiosity, did this (and patch 9) ended-up
->>> being queued in hyperv-next?
->>>
->>
->> No. They are not queued.
->>
->> I didn't notice Michael's email and thought they would be picked up by
->> someone else while dealing with the whole series.
->>
->> I will pick them up later.
-> 
-> They are now queued to hyperv-next. Thanks.
+    When dmam_alloc_coherent() or devm_kzalloc() failed, the rhashtable
+    ppe->l2_flows isn't destroyed. Fix it.
 
-Thanks a lot Wei and Michael, much appreciated =)
+Fixes: 33fc42de3327 ("net: ethernet: mtk_eth_soc: support creating mac address based offload entries")
+Signed-off-by: Yan Cangang <nalanzeyu@gmail.com>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 2d8ca99f2467..8da4c8be59fd 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -737,7 +737,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+ 				  MTK_PPE_ENTRIES * soc->foe_entry_size,
+ 				  &ppe->foe_phys, GFP_KERNEL);
+ 	if (!foe)
+-		return NULL;
++		goto err_free_l2_flows;
+ 
+ 	ppe->foe_table = foe;
+ 
+@@ -745,11 +745,15 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
+ 			sizeof(*ppe->foe_flow);
+ 	ppe->foe_flow = devm_kzalloc(dev, foe_flow_size, GFP_KERNEL);
+ 	if (!ppe->foe_flow)
+-		return NULL;
++		goto err_free_l2_flows;
+ 
+ 	mtk_ppe_debugfs_init(ppe, index);
+ 
+ 	return ppe;
++
++err_free_l2_flows:
++	rhashtable_destroy(&ppe->l2_flows);
++	return NULL;
+ }
+ 
+ static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
+-- 
+2.30.2
+
