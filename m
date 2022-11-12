@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0860562671E
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 06:12:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F518626728
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 06:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234090AbiKLFMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 00:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
+        id S233899AbiKLFeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 00:34:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbiKLFMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 00:12:38 -0500
+        with ESMTP id S229991AbiKLFeW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 00:34:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61803C6D2;
-        Fri, 11 Nov 2022 21:12:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CC456ED7
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 21:34:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41899609FE;
-        Sat, 12 Nov 2022 05:12:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 522D5C433D6;
-        Sat, 12 Nov 2022 05:12:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DCA960695
+        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 05:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F47C433D6;
+        Sat, 12 Nov 2022 05:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668229956;
-        bh=azx5NLTy1CkkCnDF2S211KHgQ2kIoSnZnC4XVyLlpeo=;
+        s=k20201202; t=1668231259;
+        bh=Sosg3LmKz15mZAzB/URe0w9Zx9E1om3psqk509/Wlvc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LGhDUR4pTgiWl/sYID9eDpQlo8GwIbY2TA3tWL7cxLw4Aon2IqIxPjWnfPpaYIT7u
-         BA4EfDoGlmrv/V1E9WKKSzK6UVQbL4AMq9lOWtHwPjMr0cdG181vXkNhxcg/ak4/Gf
-         m5dnsabw6eppQao3X80UUbMLrGCbksRPbVaD3z458sN43zZ8rvZjoAF7kIfSK8Sc76
-         SFIPauiLCBA/6W50uQt4nF4OYQX4+ztj3XimNl0tsIHmdj1/ZbsJTJFTtqRO+NAk2o
-         hF2KD2glglA4cT6HV/UAvqSI22GMsLQqdAcJlp42CsqwkLfJNMmUs5iAZssJIVwAkX
-         dJ3OpLdF2bIjg==
-Date:   Fri, 11 Nov 2022 21:12:35 -0800
+        b=tWJaMf9ka4+tLx9Vy2jnZAH4eWaGxHFLLFVb3hq8Nol9szdkDKpXPV7+aJcNYblGZ
+         3eXkYZt8aPRYAOj2ACfzCoBixcnAvtgnO/397Hr6NbNmQN53gfYhA7LCfd1zctisXX
+         x7Sv1AoHUnt1Bd6O2yaxK9X3y6JSW8shO+v8hLB1R1UuQiyZ175v36iIVCsQUh+4tH
+         LjY2Wam//y5GTpvxLmlmPc3HmTsRNFsqjn+SX4mqm2W8snaH4hNc4G0YI2/xkZatPb
+         PXDBxJhMXPimh4N79lc3amFwObv5RCFwjSDDV9uVIvWXGh0fW1pH6kvNsk602MCl4L
+         pgFbo3g2i8hvQ==
+Date:   Fri, 11 Nov 2022 21:34:18 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 0/9] CN10KB MAC block support
-Message-ID: <20221111211235.2e8f03c0@kernel.org>
-In-Reply-To: <20221112043141.13291-1-hkelam@marvell.com>
-References: <20221112043141.13291-1-hkelam@marvell.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Thompson <davthompson@nvidia.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        cai.huoqing@linux.dev, brgl@bgdev.pl, limings@nvidia.com,
+        chenhao288@hisilicon.com, huangguangbin2@huawei.com,
+        Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: Re: [PATCH net-next v2 3/4] mlxbf_gige: add BlueField-3 Serdes
+ configuration
+Message-ID: <20221111213418.6ad3b8e7@kernel.org>
+In-Reply-To: <Y2z9u4qCsLmx507g@lunn.ch>
+References: <20221109224752.17664-1-davthompson@nvidia.com>
+        <20221109224752.17664-4-davthompson@nvidia.com>
+        <Y2z9u4qCsLmx507g@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,20 +58,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Nov 2022 10:01:32 +0530 Hariprasad Kelam wrote:
-> The nextgen silicon CN10KB supports new MAC block RPM2
-> and has a variable number of LMACS. This series of patches
-> defines new mac_ops and configures csrs specific to new
-> MAC.
+On Thu, 10 Nov 2022 14:33:47 +0100 Andrew Lunn wrote:
+> On Wed, Nov 09, 2022 at 05:47:51PM -0500, David Thompson wrote:
+> > The BlueField-3 out-of-band Ethernet interface requires
+> > SerDes configuration. There are two aspects to this:
+> > 
+> > Configuration of PLL:
+> >     1) Initialize UPHY registers to values dependent on p1clk clock
+> >     2) Load PLL best known values via the gateway register
+> >     3) Set the fuses to tune up the SerDes voltage
+> >     4) Lock the PLL
+> >     5) Get the lanes out of functional reset.
+> >     6) Configure the UPHY microcontroller via gateway reads/writes
+> > 
+> > Configuration of lanes:
+> >     1) Configure and open TX lanes
+> >     2) Configure and open RX lanes  
 > 
-> Defines new mailbox support to Reset LMAC stats, read
-> FEC stats and set Physical state such that PF netdev
-> can use mailbox support to use the features.
+> I still don't like all these black magic tables in the driver.
 > 
-> Extends debugfs support for MAC block to show dropped
-> packets by DMAC filters and show FEC stats
+> But lets see what others say.
 
-I personally see no reason for us to keep merging your AF patches.
-Upstream is for working together and there is no synergy between
-your code, other drivers and the user APIs we build. Why not just 
-keep it out of tree?
+Well, the patch was marked as Changes Requested so it seems that DaveM
+concurs :) (I'm slightly desensitized to those tables because they
+happen in WiFi relatively often.)
+
+The recommendation is to come up with a format for a binary file, load
+it via FW loader and then parse in the kernel?
+
+We did have a recommendation against parsing FW files in the kernel at
+some point, too, but perhaps this is simple enough to pass.
+
+Should this be shared infra? The problem is fairly common.
