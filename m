@@ -2,57 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC04626741
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 07:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E891B62674B
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 07:07:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiKLGA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 01:00:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        id S231562AbiKLGHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 01:07:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233446AbiKLGAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 01:00:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EC61183A;
-        Fri, 11 Nov 2022 22:00:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E25FE60B7C;
-        Sat, 12 Nov 2022 06:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2F361C433D6;
-        Sat, 12 Nov 2022 06:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668232818;
-        bh=Cc00GUziqpEEUO2BSbvzg6qh2KbXsDUerRvn2urwehE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JZUjRRdgPq1XPkkWGuabvIGGQPiqmYtVzXkyQAyNJgnSEQtUeJ2qJ3OJ21Z7t8Jqk
-         6lYmt9p5zeFEM+Llaa5+YC9Fpn1wKxDtdgxKN0B+1dzjwV+3rmwt+mlmBOhCrKjWe2
-         0TesZrqXYkDZ4MEFHwaTVQW3Tts8R744seZtXYqu76076gZqk4jftGV7z6uHQQymZ7
-         ZNuuh8RtqY02kNhU72kfnTzHp7ozJ5qWp4JZgdneEiUoFMGn1XXt+Pix7iCl9ky4FJ
-         r+7cHg6MHKPeiavVmUCGMe/O8HNvuR6wKy/pUJzbH1+pt8KsLv+IN6s//fi1hFeImt
-         yTQCsC5YkX/AA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 119ADE270C3;
-        Sat, 12 Nov 2022 06:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230043AbiKLGHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 01:07:47 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259411A394
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 22:07:46 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N8Q8Z70vyz15MMX;
+        Sat, 12 Nov 2022 14:07:26 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 12 Nov 2022 14:07:42 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
+        <pabeni@redhat.com>, Wang Yufen <wangyufen@huawei.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: [PATCH] netdevsim: Fix memory leak of nsim_dev->fa_cookie
+Date:   Sat, 12 Nov 2022 14:28:05 +0800
+Message-ID: <1668234485-27635-1-git-send-email-wangyufen@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] dt-bindings: net: qcom,ipa: relax some
- restrictions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166823281806.10181.477421817831482606.git-patchwork-notify@kernel.org>
-Date:   Sat, 12 Nov 2022 06:00:18 +0000
-References: <20221110195619.1276302-1-elder@linaro.org>
-In-Reply-To: <20221110195619.1276302-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, andersson@kernel.org, konrad.dybcio@linaro.org,
-        agross@kernel.org, elder@kernel.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,32 +44,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+kmemleak reports this issue:
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+unreferenced object 0xffff8881bac872d0 (size 8):
+  comm "sh", pid 58603, jiffies 4481524462 (age 68.065s)
+  hex dump (first 8 bytes):
+    04 00 00 00 de ad be ef                          ........
+  backtrace:
+    [<00000000c80b8577>] __kmalloc+0x49/0x150
+    [<000000005292b8c6>] nsim_dev_trap_fa_cookie_write+0xc1/0x210 [netdevsim]
+    [<0000000093d78e77>] full_proxy_write+0xf3/0x180
+    [<000000005a662c16>] vfs_write+0x1c5/0xaf0
+    [<000000007aabf84a>] ksys_write+0xed/0x1c0
+    [<000000005f1d2e47>] do_syscall_64+0x3b/0x90
+    [<000000006001c6ec>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-On Thu, 10 Nov 2022 13:56:16 -0600 you wrote:
-> The first patch in this series simply removes an unnecessary
-> requirement in the IPA binding.  Previously, if the modem was doing
-> GSI firmware loading, the firmware name property was required to
-> *not* be present.  There is no harm in having the firmware name be
-> specified, so this restriction isn't needed.
-> 
-> The second patch restates a requirement on the "memory-region"
-> property more accurately.
-> 
-> [...]
+The issue occurs in the following scenarios:
 
-Here is the summary with links:
-  - [net-next,1/2] dt-bindings: net: qcom,ipa: remove an unnecessary restriction
-    https://git.kernel.org/netdev/net-next/c/9d26628a4ce2
-  - [net-next,2/2] dt-bindings: net: qcom,ipa: restate a requirement
-    https://git.kernel.org/netdev/net-next/c/7a6ca44c1e61
+nsim_dev_trap_fa_cookie_write()
+  kmalloc() fa_cookie
+  nsim_dev->fa_cookie = fa_cookie
+..
+nsim_drv_remove()
 
-You are awesome, thank you!
+nsim_dev->fa_cookie alloced, but the nsim_dev_trap_report_work()
+job has not been done, the flow action cookie has not been assigned
+to the metadata. To fix, add kfree(nsim_dev->fa_cookie) to
+nsim_drv_remove().
+
+Fixes: d3cbb907ae57 ("netdevsim: add ACL trap reporting cookie as a metadata")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Cc: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/netdevsim/dev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index a7880c7..68e56e4 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -1683,6 +1683,7 @@ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
+ 				  ARRAY_SIZE(nsim_devlink_params));
+ 	devl_resources_unregister(devlink);
+ 	kfree(nsim_dev->vfconfigs);
++	kfree(nsim_dev->fa_cookie);
+ 	devl_unlock(devlink);
+ 	devlink_free(devlink);
+ 	dev_set_drvdata(&nsim_bus_dev->dev, NULL);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+1.8.3.1
 
