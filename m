@@ -2,222 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1543A6268F3
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 11:48:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18885626902
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 12:13:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231558AbiKLKsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 05:48:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        id S232943AbiKLLNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 06:13:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbiKLKsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 05:48:37 -0500
-Received: from vie01a-dmta-at03-1.mx.upcmail.net (vie01a-dmta-at03-1.mx.upcmail.net [62.179.121.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7311EBF70
-        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 02:48:33 -0800 (PST)
-Received: from [172.31.216.235] (helo=vie01a-pemc-psmtp-pe12.mail.upcmail.net)
-        by vie01a-dmta-at03.mx.upcmail.net with esmtp (Exim 4.92)
-        (envelope-from <thomas.zeitlhofer+lkml@ze-it.at>)
-        id 1oto3r-005fjD-AL
-        for netdev@vger.kernel.org; Sat, 12 Nov 2022 11:48:31 +0100
-Received: from ren-mail-psmtp-mg01. ([80.109.253.241])
-        by vie01a-pemc-psmtp-pe12.mail.upcmail.net with ESMTP
-        id to3qoBbwA8s8Uto3qoUqg1; Sat, 12 Nov 2022 11:48:31 +0100
-Received: from mr2 ([80.108.14.110])
-        by ren-mail-psmtp-mg01. with ESMTP
-        id to3poEhQDOG5Zto3podtXj; Sat, 12 Nov 2022 11:48:30 +0100
-X-Env-Mailfrom: thomas.zeitlhofer+lkml@ze-it.at
-X-Env-Rcptto: netdev@vger.kernel.org
-X-SourceIP: 80.108.14.110
-X-CNFS-Analysis: v=2.4 cv=KJo5sHJo c=1 sm=1 tr=0 ts=636f79fe
- a=tVdsoMYQxO1CUTS6b4mKlQ==:117 a=tVdsoMYQxO1CUTS6b4mKlQ==:17
- a=kj9zAlcOel0A:10 a=VG87k5yWxwQ-MwjZPvcA:9 a=CjuIK1q_8ugA:10
-Date:   Sat, 12 Nov 2022 11:48:27 +0100
-From:   Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        "Denis V. Lunev" <den@openvz.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Vasily Averin <vasily.averin@linux.dev>,
-        Yuwei Wang <wangyuweihx@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: neigh: decrement the family specific qlen
-Message-ID: <Y295+9+JDjqRWbwU@x1.ze-it.at>
+        with ESMTP id S231240AbiKLLNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 06:13:33 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082FE100F;
+        Sat, 12 Nov 2022 03:13:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6IVvTJ7xXdP76g3qTEs/lWl0/xdLucKLgA47BvOkZRM=; b=QMrUO1+EZdy+9uySixHhpjE/7t
+        3nETsz8RR6MfVTcuoDrt0fahThcJUTpAsm8OB5D24V7ZcCAJFOx4GPlWuWqXT/QGDIRRc0GrGXuWN
+        OYJ7HvMzgtZLDE/o6QTcGlYh/1JLvMa1lh88clfqTPIi/AZNPXriYQB/pBYEkGLuhV3A=;
+Received: from p200300daa72ee10cb9d33d2e9c9a0fe5.dip0.t-ipconnect.de ([2003:da:a72e:e10c:b9d3:3d2e:9c9a:fe5] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1otoRo-001JKe-EX; Sat, 12 Nov 2022 12:13:16 +0100
+Message-ID: <bcb33ba7-b2a3-1fe7-64b2-1e15203e2cce@nbd.name>
+Date:   Sat, 12 Nov 2022 12:13:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-CMAE-Envelope: MS4wfCwlxeqbk4wf6QOwqIRF5IhIxUmomVrqhp4ZSMdXL9CLdw+0X1vcgtW/MjnS0B2N9zby9XBunkDoRUYDVSC0plGXWa5U47Ey+/Hsk/Btm2YJa+9Y0jjt
- xbUM1AFhuaOjVnu+YzSsZcUYVcq9Ea01vsMDfUAssjEs/TABQI6+7oJxcyR/2eM3+BfSYFt+gNpXKJskk6qrXlC+sD5Fzt1s8aQ=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v3 1/4] net: dsa: add support for DSA rx
+ offloading via metadata dst
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <20221110212212.96825-1-nbd@nbd.name>
+ <20221110212212.96825-2-nbd@nbd.name> <20221111233714.pmbc5qvq3g3hemhr@skbuf>
+ <20221111204059.17b8ce95@kernel.org>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <20221111204059.17b8ce95@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 0ff4eb3d5ebb ("neighbour: make proxy_queue.qlen limit
-per-device") introduced the length counter qlen in struct neigh_parms.
-There are separate neigh_parms instances for IPv4/ARP and IPv6/ND, and
-while the family specific qlen is incremented in pneigh_enqueue(), the
-mentioned commit decrements always the IPv4/ARP specific qlen,
-regardless of the currently processed family, in pneigh_queue_purge()
-and neigh_proxy_process().
+On 12.11.22 05:40, Jakub Kicinski wrote:
+> On Sat, 12 Nov 2022 01:37:14 +0200 Vladimir Oltean wrote:
+>> Jakub, what do you think? Refcounting or no refcounting?
+> 
+> I would not trust my word over Felix's.. but since you asked I'd vote
+> for refcounted. There's probably a handful of low level redirects
+> (generic XDP, TC, NFT) that can happen and steal the packet, and
+> keep it alive for a while. I don't think they will all necessarily
+> clear the dst.
+I don't really see a valid use case in running generic XDP, TC and NFT 
+on a DSA master dealing with packets before the tag receive function has 
+been run. And after the tag has been processed, the metadata DST is 
+cleared from the skb.
+How about this: I send a v4 which uses skb_dst_drop instead of 
+skb_dst_set, so that other drivers can use refcounting if it makes sense 
+for them. For mtk_eth_soc, I prefer to leave out refcounting for 
+performance reasons.
+Is that acceptable to you guys?
 
-As a result, with IPv6/ND, the family specific qlen is only incremented
-(and never decremented) until it exceeds PROXY_QLEN, and then, according
-to the check in pneigh_enqueue(), neighbor solicitations are not
-answered anymore. As an example, this is noted when using the
-subnet-router anycast address to access a Linux router. After a certain
-amount of time (in the observed case, qlen exceeded PROXY_QLEN after two
-days), the Linux router stops answering neighbor solicitations for its
-subnet-router anycast address and effectively becomes unreachable.
-
-Another result with IPv6/ND is that the IPv4/ARP specific qlen is
-decremented more often than incremented. This leads to negative qlen
-values, as a signed integer has been used for the length counter qlen,
-and potentially to an integer overflow.
-
-Fix this by introducing the helper function neigh_parms_qlen_dec(),
-which decrements the family specific qlen. Thereby, make use of the
-existing helper function neigh_get_dev_parms_rcu(), whose definition
-therefore needs to be placed earlier in neighbour.c. Take the family
-member from struct neigh_table to determine the currently processed
-family and appropriately call neigh_parms_qlen_dec() from
-pneigh_queue_purge() and neigh_proxy_process().
-
-Additionally, use an unsigned integer for the length counter qlen.
-
-Fixes: 0ff4eb3d5ebb ("neighbour: make proxy_queue.qlen limit per-device")
-Signed-off-by: Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
----
- include/net/neighbour.h |  2 +-
- net/core/neighbour.c    | 58 +++++++++++++++++++++--------------------
- 2 files changed, 31 insertions(+), 29 deletions(-)
-
-diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-index 20745cf7ae1a..cc0b65b7c829 100644
---- a/include/net/neighbour.h
-+++ b/include/net/neighbour.h
-@@ -83,7 +83,7 @@ struct neigh_parms {
- 	struct rcu_head rcu_head;
- 
- 	int	reachable_time;
--	int	qlen;
-+	__u32	qlen;
- 	int	data[NEIGH_VAR_DATA_MAX];
- 	DECLARE_BITMAP(data_state, NEIGH_VAR_DATA_MAX);
- };
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index a77a85e357e0..952a54763358 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -307,7 +307,31 @@ static int neigh_del_timer(struct neighbour *n)
- 	return 0;
- }
- 
--static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
-+static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
-+						   int family)
-+{
-+	switch (family) {
-+	case AF_INET:
-+		return __in_dev_arp_parms_get_rcu(dev);
-+	case AF_INET6:
-+		return __in6_dev_nd_parms_get_rcu(dev);
-+	}
-+	return NULL;
-+}
-+
-+static void neigh_parms_qlen_dec(struct net_device *dev, int family)
-+{
-+	struct neigh_parms *p;
-+
-+	rcu_read_lock();
-+	p = neigh_get_dev_parms_rcu(dev, family);
-+	if (p)
-+		p->qlen--;
-+	rcu_read_unlock();
-+}
-+
-+static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net,
-+			       int family)
- {
- 	struct sk_buff_head tmp;
- 	unsigned long flags;
-@@ -321,13 +345,7 @@ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- 		struct net_device *dev = skb->dev;
- 
- 		if (net == NULL || net_eq(dev_net(dev), net)) {
--			struct in_device *in_dev;
--
--			rcu_read_lock();
--			in_dev = __in_dev_get_rcu(dev);
--			if (in_dev)
--				in_dev->arp_parms->qlen--;
--			rcu_read_unlock();
-+			neigh_parms_qlen_dec(dev, family);
- 			__skb_unlink(skb, list);
- 			__skb_queue_tail(&tmp, skb);
- 		}
-@@ -409,7 +427,8 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
- 	write_lock_bh(&tbl->lock);
- 	neigh_flush_dev(tbl, dev, skip_perm);
- 	pneigh_ifdown_and_unlock(tbl, dev);
--	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL);
-+	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL,
-+			   tbl->family);
- 	if (skb_queue_empty_lockless(&tbl->proxy_queue))
- 		del_timer_sync(&tbl->proxy_timer);
- 	return 0;
-@@ -1621,13 +1640,8 @@ static void neigh_proxy_process(struct timer_list *t)
- 
- 		if (tdif <= 0) {
- 			struct net_device *dev = skb->dev;
--			struct in_device *in_dev;
- 
--			rcu_read_lock();
--			in_dev = __in_dev_get_rcu(dev);
--			if (in_dev)
--				in_dev->arp_parms->qlen--;
--			rcu_read_unlock();
-+			neigh_parms_qlen_dec(dev, tbl->family);
- 			__skb_unlink(skb, &tbl->proxy_queue);
- 
- 			if (tbl->proxy_redo && netif_running(dev)) {
-@@ -1821,7 +1835,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
- 	cancel_delayed_work_sync(&tbl->managed_work);
- 	cancel_delayed_work_sync(&tbl->gc_work);
- 	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue, NULL);
-+	pneigh_queue_purge(&tbl->proxy_queue, NULL, tbl->family);
- 	neigh_ifdown(tbl, NULL);
- 	if (atomic_read(&tbl->entries))
- 		pr_crit("neighbour leakage\n");
-@@ -3539,18 +3553,6 @@ static int proc_unres_qlen(struct ctl_table *ctl, int write,
- 	return ret;
- }
- 
--static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
--						   int family)
--{
--	switch (family) {
--	case AF_INET:
--		return __in_dev_arp_parms_get_rcu(dev);
--	case AF_INET6:
--		return __in6_dev_nd_parms_get_rcu(dev);
--	}
--	return NULL;
--}
--
- static void neigh_copy_dflt_parms(struct net *net, struct neigh_parms *p,
- 				  int index)
- {
--- 
-2.30.2
-
+- Felix
