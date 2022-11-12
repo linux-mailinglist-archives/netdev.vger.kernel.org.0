@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A866268CD
+	by mail.lfdr.de (Postfix) with ESMTP id 6AF676268CC
 	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 11:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234673AbiKLKWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 05:22:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
+        id S234687AbiKLKWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 05:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234684AbiKLKV7 (ORCPT
+        with ESMTP id S234562AbiKLKV7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 05:21:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091E0186D8
-        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 02:21:59 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B09183BF
+        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 02:21:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC8F8B8069E
-        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 10:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B2CC433C1;
-        Sat, 12 Nov 2022 10:21:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C48E60B91
+        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 10:21:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5981CC433D6;
+        Sat, 12 Nov 2022 10:21:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668248516;
-        bh=zY67By3Pm0mIUQfokBDRjcxRS0ulGZvaf74I3wfk+Hs=;
+        s=k20201202; t=1668248517;
+        bh=DwWiONPXYwwl4zUnNkjWhAbNGvVLcN//dL753+vJu4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dplwAxST6+tLIuvBmjIXFOKQcgbJdbp1u9Sv/6i6016T7lOMdFSFUqyCPr42O5pXJ
-         0R1QdXTv9MoGng7LP2jZWAHSbXGAMkEyFdmhHlEJnwSkYbiPB+LGTLMZCj7n+vacEW
-         hDrdTsQgl+f8pINTDJSqKExqJ9bO3NtZTWq3wW2WdvB/GcOrgcRErktHms+hCJeHRh
-         95TbX3aUMO4HwG5eChzDdcNYwuabORPiusOvoxouC24zmGoPoc7ExLvwvwXe6RBD+U
-         0WWtXP2+6To+rYBt/hV5cPxKhacDNS47l8xuQT2I/jNVIa6QaFffcVdKKNLph3p1Hf
-         +XUdQ1jZrGWuQ==
+        b=H4Hj940exa5P1FOseUEWhhBlLTFX8wDyAQtDCGRS9B9rkiYq+QKSewJoK5dwsTGAS
+         z4YExz8C1xCnBfA9p0x1VbnEUZjMwkrxxdi/ObCBN9e2DO5NmYIh5d/fIylWXYDtfX
+         Thu7glVfq++T2Pcol/lgSjBFcc9v52P9lSg3iRex0Ga3kEI1HwGZcKpJ2KxKOMi16P
+         6DkbjQ2ZNz2UJh0USb36I2qb5+w2afKO8DddEDzKv0Fng1FIp/zJjFhST49PxDd5PS
+         x6H6oKMyhID8HNhGQzXxJWxvaJyXDBrM9dZbp1g/tsPG72uL8kvT0vtWb3t5hiQviQ
+         HEXCy+sRK56bA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Eli Cohen <elic@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Subject: [net-next 04/15] net/mlx5: Expose vhca_id to debugfs
-Date:   Sat, 12 Nov 2022 02:21:36 -0800
-Message-Id: <20221112102147.496378-5-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Anisse Astier <anisse@astier.eu>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [net-next 05/15] net/mlx5e: remove unused list in arfs
+Date:   Sat, 12 Nov 2022 02:21:37 -0800
+Message-Id: <20221112102147.496378-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221112102147.496378-1-saeed@kernel.org>
 References: <20221112102147.496378-1-saeed@kernel.org>
@@ -56,54 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Anisse Astier <anisse@astier.eu>
 
-hca_id is an identifier of an mlx5_core instance within the hardware.
-This identifier may be required for troubleshooting.
+This is never used, and probably something that was intended to be used
+before per-protocol hash tables were chosen instead.
 
-Expose it to debugfs.
-
-Example:
-
-$ cat /sys/kernel/debug/mlx5/mlx5_core.sf.2/vhca_id
-0x12
-
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Anisse Astier <anisse@astier.eu>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 9e6da51b7481..6d7c102861ea 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1588,6 +1588,16 @@ static int mlx5_hca_caps_alloc(struct mlx5_core_dev *dev)
- 	return -ENOMEM;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+index 0ae1865086ff..bed0c2d043e7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+@@ -57,7 +57,6 @@ struct mlx5e_arfs_tables {
+ 	struct arfs_table arfs_tables[ARFS_NUM_TYPES];
+ 	/* Protect aRFS rules list */
+ 	spinlock_t                     arfs_lock;
+-	struct list_head               rules;
+ 	int                            last_filter_id;
+ 	struct workqueue_struct        *wq;
+ };
+@@ -376,7 +375,6 @@ int mlx5e_arfs_create_tables(struct mlx5e_flow_steering *fs,
+ 		return -ENOMEM;
  
-+static int vhca_id_show(struct seq_file *file, void *priv)
-+{
-+	struct mlx5_core_dev *dev = file->private;
-+
-+	seq_printf(file, "0x%x\n", MLX5_CAP_GEN(dev, vhca_id));
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(vhca_id);
-+
- int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
- {
- 	struct mlx5_priv *priv = &dev->priv;
-@@ -1612,6 +1622,7 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
- 	priv->numa_node = dev_to_node(mlx5_core_dma_dev(dev));
- 	priv->dbg.dbg_root = debugfs_create_dir(dev_name(dev->device),
- 						mlx5_debugfs_root);
-+	debugfs_create_file("vhca_id", 0400, priv->dbg.dbg_root, dev, &vhca_id_fops);
- 	INIT_LIST_HEAD(&priv->traps);
- 
- 	err = mlx5_tout_init(dev);
+ 	spin_lock_init(&arfs->arfs_lock);
+-	INIT_LIST_HEAD(&arfs->rules);
+ 	arfs->wq = create_singlethread_workqueue("mlx5e_arfs");
+ 	if (!arfs->wq)
+ 		goto err;
 -- 
 2.38.1
 
