@@ -2,86 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BED562670A
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 05:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDB6A626703
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 05:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233563AbiKLEuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 23:50:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
+        id S231911AbiKLErP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 23:47:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232943AbiKLEuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 23:50:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81B5DB8;
-        Fri, 11 Nov 2022 20:50:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 610EF609FA;
-        Sat, 12 Nov 2022 04:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB771C433D7;
-        Sat, 12 Nov 2022 04:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668228621;
-        bh=l4AT+oslbEXAcHs2cSywHoF/9T7DsjOJ2eU5FzrcU2U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=U4N0M6gd3S3O8i+hthTD/YEP5k53K2NJECNqmaU4Guv7yiy7Mq4RbfQ8k4ORbGx4m
-         WI2CfBfV1583MLpRdaos6HtQWM1tqx9MdcXe9DMVnP5ApCDyA0cvaqXlGjx/oMHIob
-         MQuidKqi8NvKR33hHV0mkyfxOpPfnTfK+Qk9w5S7J1Dw/AJT8+C/azbnAVcsmWfA2F
-         MtzGLYJ5uW3XZ5sYwtAVetTQrwntG/JGZ5ylL9mYPyEWPhDY3y6ytC+g5P0QgqS/c/
-         h7a6u/kXhg72uzs4DmpiESV27aiVvHeXQJ+sqRA9GFmNih7XQTnVBMdIbB2Hjc/bDI
-         uFEZUFl7iWQZQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E363E270EF;
-        Sat, 12 Nov 2022 04:50:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: vlan: claim one bit from sk_buff
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166822862157.12539.11699913480152181206.git-patchwork-notify@kernel.org>
-Date:   Sat, 12 Nov 2022 04:50:21 +0000
-References: <20221109095759.1874969-1-edumazet@google.com>
-In-Reply-To: <20221109095759.1874969-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, eric.dumazet@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229991AbiKLErO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 23:47:14 -0500
+X-Greylist: delayed 519 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Nov 2022 20:47:13 PST
+Received: from ci74p00im-qukt09081901.me.com (ci74p00im-qukt09081901.me.com [17.57.156.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C8F10B72
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 20:47:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+        s=1a1hai; t=1668227913;
+        bh=4ht9G50SlYlr7BPTCuy+KjNotHQlLEXbSKghIYlF3TI=;
+        h=Content-Type:From:Mime-Version:Date:Subject:Message-Id:To;
+        b=Marb1YmnZicYGgNQKLfFg2N+zNt9EVYhYKnvVebdgfjZU9/fwwaOU18yDbHfOmNmU
+         c3M2y8JIzES/kAwFs3P9YkMSelDAl3ys7Dl9cQsGJu0r5pfjkifSJjIdnyS/fVO5Xh
+         NnMmQANfzh8JhfRgjHHzqS9lJqc4EfBy4MfBlUvPwj+cKfta/blpq/dwg8Va4VH+vk
+         tW4MmYSjNDIwi+gzJCGDeCdy9MKMASGhkqDmYxm0oX6m08hNbzbmIR+WQhnw+IpfO5
+         GbI3cPvMtw1ytkVbQ/57ZAZPnkC9y24vn5SUNsmDly/vPPheQ4WRUaVnlpNojaGPh+
+         uJcD43ASPF0OQ==
+Received: from smtpclient.apple (ci77p00im-dlb-asmtp-mailmevip.me.com [17.57.156.26])
+        by ci74p00im-qukt09081901.me.com (Postfix) with ESMTPSA id 5CA6D5AC0424;
+        Sat, 12 Nov 2022 04:38:32 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+From:   Ernest Ugwu <ernestugwu08@icloud.com>
+Mime-Version: 1.0 (1.0)
+Date:   Fri, 11 Nov 2022 22:37:26 -0800
+Subject: Re: [PATCH net-next 4/6] ixp4xx_eth: Stop referring to GPIOs
+Message-Id: <349FCFFE-BFDE-4FD7-A023-338452887EF5@icloud.com>
+Cc:     arnd@arndb.de, davem@davemloft.net, kaloz@openwrt.org,
+        khalasa@piap.pl, kuba@kernel.org, netdev@vger.kernel.org
+To:     linus.walleij@linaro.org
+X-Mailer: iPhone Mail (18H107)
+X-Proofpoint-GUID: 69v8JPlESJQvIZiXkoZjZDdbgYmn_FZJ
+X-Proofpoint-ORIG-GUID: 69v8JPlESJQvIZiXkoZjZDdbgYmn_FZJ
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=376
+ clxscore=1011 adultscore=0 phishscore=0 spamscore=0 mlxscore=0
+ suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2211120031
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_05,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  9 Nov 2022 09:57:57 +0000 you wrote:
-> First patch claims skb->vlan_present.
-> This means some bpf changes, eg for sparc32 that I could not test.
-> 
-> Second patch removes one conditional test in gro_list_prepare().
-> 
-> Eric Dumazet (2):
->   net: remove skb->vlan_present
->   net: gro: no longer use skb_vlan_tag_present()
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/2] net: remove skb->vlan_present
-    https://git.kernel.org/netdev/net-next/c/354259fa73e2
-  - [net-next,2/2] net: gro: no longer use skb_vlan_tag_present()
-    https://git.kernel.org/netdev/net-next/c/be3ed48683f0
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
+Sent from my iPhone
