@@ -2,94 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B06B8626B30
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 20:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1CD626B33
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 20:12:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbiKLTKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 14:10:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52902 "EHLO
+        id S234063AbiKLTMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 14:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbiKLTJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 14:09:55 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E8D17E30;
-        Sat, 12 Nov 2022 11:09:55 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id j6so5516358qvn.12;
-        Sat, 12 Nov 2022 11:09:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d0/IgShbjb7qZAYWczuxoDmDyDdccuNPQ9P2AVi15HY=;
-        b=J0b0MU4lkGEXnXmOdosQFkNAakaHFGH3KxRmUtgL1P2al7Bklhj93oiCUKf2JCUCj5
-         oRbpR/1t7PQLl6/UvRLUOTIuyUdncAL5/yE5RvRusGwe3OTAV4bzbqzSIycPc3wgrc7Z
-         xXohwCCcy8x686DW6W1DdRdUjMuplkiqSIfgzSohbZUIWCFAFgdMzg2Fu0bwH19bQLQC
-         v0Y0RjN2jWDdGlL4XMldpgVLcZnYRtgFTimcVd7fM/3BXXK4SBHfy0G57g8tj+lFZQsy
-         WcihYikQiL7hFjGwoCCFyqEVdzC9ha12z8CvTrg44hsq3cE0bPW0IWtS1VHzafkdHlKW
-         zv1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=d0/IgShbjb7qZAYWczuxoDmDyDdccuNPQ9P2AVi15HY=;
-        b=0PDBiMK61JszYBdPZ3HBlmY+KWXSmsD4xDk3/H1eEFossjr4yLBlSqxVnOCyx+esON
-         Srj/EiCkSBjzW9nNHcac3g9sy4SVvVxfG+VhIIZQKJ1EwMFv1xU/jU3v/eFbOenifbVn
-         eDaf5So4XJUfT2NxKjj7Rkep2AI27De7oR8fy/FPk+9Dwv5NMrJdfZ9jRAIQN63MCr/q
-         +dMSSO2964kGoB+Iq1CYb+l3hRispKhCvU3w+9YAvIaA7ttr0OqVfaBt88MmwZF7Lajd
-         EVYsii7xXfOm2dhtjoeym/gwjbpu+9C3XjYlhXLGb7OyKdN6UWW4aQTUWkyElgt+F9s7
-         jbwQ==
-X-Gm-Message-State: ANoB5pkQIsesAllBoUddeUCbMk1Pz9HjsH6OQqp8VF8lcIKEME2THs82
-        b5R4rVrDGbZ1uruWYxny0IgsmYbdt80=
-X-Google-Smtp-Source: AA0mqf6105pixBNLmobZKxKFU+O3f3FIJRVWP8gdRjg3LLp/ywJgV6u55Uu/uUndEkpCeXzVhu4ktQ==
-X-Received: by 2002:a05:6214:102a:b0:4bb:8ef1:b544 with SMTP id k10-20020a056214102a00b004bb8ef1b544mr6871877qvr.99.1668280193936;
-        Sat, 12 Nov 2022 11:09:53 -0800 (PST)
-Received: from localhost (user-24-236-74-177.knology.net. [24.236.74.177])
-        by smtp.gmail.com with ESMTPSA id bp44-20020a05620a45ac00b006f956766f76sm3577980qkb.1.2022.11.12.11.09.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Nov 2022 11:09:53 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        haniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Yury Norov <yury.norov@gmail.com>, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH v2 4/4] cpumask: improve on cpumask_local_spread() locality
-Date:   Sat, 12 Nov 2022 11:09:46 -0800
-Message-Id: <20221112190946.728270-5-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221112190946.728270-1-yury.norov@gmail.com>
-References: <20221112190946.728270-1-yury.norov@gmail.com>
+        with ESMTP id S230170AbiKLTM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 14:12:29 -0500
+Received: from mxout013.mail.hostpoint.ch (mxout013.mail.hostpoint.ch [IPv6:2a00:d70:0:e::313])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF3A1834B
+        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 11:12:27 -0800 (PST)
+Received: from [10.0.2.45] (helo=asmtp012.mail.hostpoint.ch)
+        by mxout013.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.95 (FreeBSD))
+        (envelope-from <thomas@kupper.org>)
+        id 1otvvU-000C3P-Gu;
+        Sat, 12 Nov 2022 20:12:24 +0100
+Received: from [82.197.179.206] (helo=[192.168.169.11])
+        by asmtp012.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.95 (FreeBSD))
+        (envelope-from <thomas@kupper.org>)
+        id 1otvvU-0007Ay-9W;
+        Sat, 12 Nov 2022 20:12:24 +0100
+X-Authenticated-Sender-Id: thomas@kupper.org
+Message-ID: <64edbded-51af-f055-9c2f-c1f81b0d3698@kupper.org>
+Date:   Sat, 12 Nov 2022 20:12:24 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v2 net 1/1] amd-xgbe: fix active cable
+From:   Thomas Kupper <thomas@kupper.org>
+To:     Tom Lendacky <thomas.lendacky@amd.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Raju Rangoju <Raju.Rangoju@amd.com>
+References: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
+ <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
+ <28351727-f1ba-5b57-2f84-9eccff6d627f@kupper.org>
+Content-Language: en-US
+In-Reply-To: <28351727-f1ba-5b57-2f84-9eccff6d627f@kupper.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -97,74 +53,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch cpumask_local_spread() to use newly added sched_numa_find_nth_cpu(),
-which takes into account distances to each node in the system.
 
-For the following NUMA configuration:
 
-root@debian:~# numactl -H
-available: 4 nodes (0-3)
-node 0 cpus: 0 1 2 3
-node 0 size: 3869 MB
-node 0 free: 3740 MB
-node 1 cpus: 4 5
-node 1 size: 1969 MB
-node 1 free: 1937 MB
-node 2 cpus: 6 7
-node 2 size: 1967 MB
-node 2 free: 1873 MB
-node 3 cpus: 8 9 10 11 12 13 14 15
-node 3 size: 7842 MB
-node 3 free: 7723 MB
-node distances:
-node   0   1   2   3
-  0:  10  50  30  70
-  1:  50  10  70  30
-  2:  30  70  10  50
-  3:  70  30  50  10
+On 11/11/22 17:00, Thomas Kupper wrote:
+> 
+> On 11/11/22 15:18, Tom Lendacky wrote:
+>> On 11/11/22 02:46, Thomas Kupper wrote:
+>>> When determine the type of SFP, active cables were not handled.
+>>>
+>>> Add the check for active cables as an extension to the passive cable check.
+>>
+>> Is this fixing a particular problem? What SFP is this failing for? A more descriptive commit message would be good.
+>>
+>> Also, since an active cable is supposed to be advertising it's capabilities in the eeprom, maybe this gets fixed via a quirk and not a general check this field.
 
-The new cpumask_local_spread() traverses cpus for each node like this:
+Tom,
 
-node 0:   0   1   2   3   6   7   4   5   8   9  10  11  12  13  14  15
-node 1:   4   5   8   9  10  11  12  13  14  15   0   1   2   3   6   7
-node 2:   6   7   0   1   2   3   8   9  10  11  12  13  14  15   4   5
-node 3:   8   9  10  11  12  13  14  15   4   5   6   7   0   1   2   3
+are you sure that an active cable has to advertising it's speed? Searching for details about it I read in "SFF-8472 Rev 12.4", 5.4.2, Table 5-5 Transceiver Identification Examples:
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- lib/cpumask.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+Transceiver Type Transceiver Description	Byte	Byte	Byte	Byte	Byte	Byte	Byte	Byte
+						3	4	5	6	7 	8	9	10
+...
+		10GE Active cable with SFP(3,4)	 00h	00h	00h	00h	00h	08h	00h	00h
 
-diff --git a/lib/cpumask.c b/lib/cpumask.c
-index c7c392514fd3..255974cd6734 100644
---- a/lib/cpumask.c
-+++ b/lib/cpumask.c
-@@ -110,7 +110,7 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
- #endif
- 
- /**
-- * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-+ * cpumask_local_spread - select the i'th cpu based on NUMA distances
-  * @i: index number
-  * @node: local numa_node
-  *
-@@ -132,15 +132,7 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
- 		if (cpu < nr_cpu_ids)
- 			return cpu;
- 	} else {
--		/* NUMA first. */
--		cpu = cpumask_nth_and(i, cpu_online_mask, cpumask_of_node(node));
--		if (cpu < nr_cpu_ids)
--			return cpu;
--
--		i -= cpumask_weight_and(cpu_online_mask, cpumask_of_node(node));
--
--		/* Skip NUMA nodes, done above. */
--		cpu = cpumask_nth_andnot(i, cpu_online_mask, cpumask_of_node(node));
-+		cpu = sched_numa_find_nth_cpu(cpu_online_mask, i, node);
- 		if (cpu < nr_cpu_ids)
- 			return cpu;
- 	}
--- 
-2.34.1
+And footnotes:
+3) See A0h Bytes 60 and 61 for compliance of these media to industry electrical specifications
+4) For Ethernet and SONET applications, rate capability of a link is identified in A0h Byte 12 [nominal signaling
+rate identifier]. This is due to no formal IEEE designation for passive and active cable interconnects, and lack
+of corresponding identifiers in Table 5-3.
 
+Wouldn't that suggest that byte 3 to 10 are all zero, except byte 8?
+
+
+/Thomas
+
+> 
+> It is fixing a problem regarding a Mikrotik S+AO0005 AOC cable (we were in contact back in Feb to May). And your right I should have been more descriptive in the commit message.
+> 
+>>>
+>>> Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
+>>> Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
+>>> ---
+>>>   drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
+>>>   1 file changed, 3 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> index 4064c3e3dd49..1ba550d5c52d 100644
+>>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> @@ -1158,8 +1158,9 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
+>>>       }
+>>>
+>>>       /* Determine the type of SFP */
+>>> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+>>> -        xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>> +    if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
+>>> +         phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
+>>> +         xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>
+>> This is just the same as saying:
+>>
+>>     if (xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>
+>> since the sfp_cable value is either PASSIVE or ACTIVE.
+>>
+>> I'm not sure I like fixing whatever issue you have in this way, though. If anything, I would prefer this to be a last case scenario and be placed at the end of the if-then-else block. But it may come down to applying a quirk for your situation.
+> 
+> I see now that this cable is probably indeed not advertising its capabilities correctly, I didn't understand what Shyam did refer to in his mail from June 6.
+> 
+> Unfortunately I haven't hear back from you guys after June 6 so I tried to fix it myself ... but do lack the knowledge in that area.
+> 
+> A quirk seems a good option.
+> 
+> From my point of view this patch can be cancelled/aborted/deleted.
+> I'll look into how to fix it using a quirk but maybe I'm not the hest suited candidate to do it.
+> 
+> /Thomas
+> 
+>>
+>> Thanks,
+>> Tom
+>>
+>>>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>>>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
+>>>           phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
+>>> -- 
+>>> 2.34.1
+>>>
