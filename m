@@ -2,116 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 438DB6265C4
-	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 01:05:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AECC16265CB
+	for <lists+netdev@lfdr.de>; Sat, 12 Nov 2022 01:07:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233695AbiKLAF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Nov 2022 19:05:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
+        id S233015AbiKLAHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Nov 2022 19:07:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiKLAFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 19:05:25 -0500
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F45D252B0;
-        Fri, 11 Nov 2022 16:05:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
-        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=hOjwZzcNBym1jYh8JPbeeK1TzJNtOiX/GrSls8yxePI=; b=LYmWzFGlPQ9b0AYgsYUpkBGNMh
-        mIlVpjEw7+WUsaJOoVKWn4I1UvcBbs6nreHH+lbXhx5C+X2yz13hjOgQxXX7AHhcFSm86NogYoHem
-        8xV997J33u1+Xk3+rdf2LFkVDtDwRdMgAoPE/KDoJbEgDxPzuitm+aiODGTll+aHcnuU=;
-Received: from p54ae9c3f.dip0.t-ipconnect.de ([84.174.156.63] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1ote1I-001EJk-AF; Sat, 12 Nov 2022 01:05:12 +0100
-Message-ID: <b2420602-8d64-a75b-2296-059ac0ba26ef@nbd.name>
-Date:   Sat, 12 Nov 2022 01:05:10 +0100
+        with ESMTP id S230103AbiKLAHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Nov 2022 19:07:13 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30580252B0
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 16:07:13 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id 140so4697403pfz.6
+        for <netdev@vger.kernel.org>; Fri, 11 Nov 2022 16:07:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=MSkqSoSGpW7vsl2Ge2ZKxrPL0oSevep68D5QpPhlWmU=;
+        b=Wr1p+Qu9NxiPhXS6A6LX1cM+HPlSztD/UsD4JEDRqquqq7Z0D3LykN3AL93uMiKRNB
+         wmMUK14+rCqMjo5HUxXXpBk2fsWSptdG0TrfexdfSJ7dz6J50GXXfUCO03DDz62piS9X
+         apGF/VHCrwoUXZgr/WAAav3FRYc1v28ALzDYUdFZw7DDUPHFFISfaEvP62ObNLt1rrlF
+         VhtZK1Kr2LfcxVaKD+vJ1mRUnxLfg9MS1AAbadTolTOLezbCPMolLIJCLQ3bPurBMUW7
+         EbAZiIFk7j+duITgNi6EoTIh5gUN7q7ne83k0T28k/7qwqSvYqcY0OBPKlWy87mQgpVG
+         oynA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MSkqSoSGpW7vsl2Ge2ZKxrPL0oSevep68D5QpPhlWmU=;
+        b=R1CjSIR5KvNvds8GC82wRuMoZKgKh0lqdUhubU2mPBuwJJV0KSMC806w2kCErc2GUl
+         yNfSVH44gsFOi9u7VEj0aIRHLX8/TxCdd9ow2y+d0Dl2d6w09awCdNRHxfm335loCeqo
+         r7Saq1s971RiR70evuVlsgc2uqVd1ee7mfluL+ujO/mDMVPYG0wH3WqiJc9shc8wWlXI
+         2x58zTr8vmNYODjJz38eeikebJk77a/97TwYlQCAG3iSjj2u04FIF60HjQISBs9iQaVn
+         A4+xGe8RSCaEeY4l21kf+ppyGBwuKUIrPSM+Ww9wHLXuwzsSd98kJCj1BtbdFpMs50Dm
+         ArJQ==
+X-Gm-Message-State: ANoB5pnIuAhnVzzXfSIzkqJoUVUHEdi8r0LfTTNk2tDrl8CZh5Nq17q1
+        AaRzu7RidkGsV2Oxdqum3D2SrYFLsO0MWVrbz5w=
+X-Google-Smtp-Source: AA0mqf6kXqmXdfVDP2iyclTAKjz1oHt4hgu46JT4+dXFByYtiVR0DzNU4kCs/LnR5HWy1L00J7rtSkl/ISWShWgkzes=
+X-Received: by 2002:a05:6a00:f99:b0:571:8aec:ac4f with SMTP id
+ ct25-20020a056a000f9900b005718aecac4fmr4772257pfb.78.1668211632673; Fri, 11
+ Nov 2022 16:07:12 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Content-Language: en-US
+References: <20221110124345.3901389-1-festevam@gmail.com> <20221110125322.c436jqyplxuzdvcl@skbuf>
+ <CAOMZO5D9shR2WB+83UPOvs-CaRg7rmaZ-USokPu0K+jtvB2EYw@mail.gmail.com> <20221111214127.pzek6eonetzatc4a@skbuf>
+In-Reply-To: <20221111214127.pzek6eonetzatc4a@skbuf>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 11 Nov 2022 21:06:57 -0300
+Message-ID: <CAOMZO5Ar1ZYwruj7N0w18eihkbe1oSH2VU34uSrpTDvp8o2TzA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow hwstamping on the
+ master port
 To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <20221110212212.96825-1-nbd@nbd.name>
- <20221110212212.96825-2-nbd@nbd.name> <20221111233714.pmbc5qvq3g3hemhr@skbuf>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH net-next v3 1/4] net: dsa: add support for DSA rx
- offloading via metadata dst
-In-Reply-To: <20221111233714.pmbc5qvq3g3hemhr@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cc:     kuba@kernel.org, andrew@lunn.ch, netdev@vger.kernel.org,
+        =?UTF-8?Q?Steffen_B=C3=A4tz?= <steffen@innosonix.de>,
+        Fabio Estevam <festevam@denx.de>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.11.22 00:37, Vladimir Oltean wrote:
-> On Thu, Nov 10, 2022 at 10:22:08PM +0100, Felix Fietkau wrote:
->> If a metadata dst is present with the type METADATA_HW_PORT_MUX on a dsa cpu
->> port netdev, assume that it carries the port number and that there is no DSA
->> tag present in the skb data.
->> 
->> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->>  				else
->> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
->> index 64b14f655b23..0b67622cf905 100644
->> --- a/net/dsa/dsa.c
->> +++ b/net/dsa/dsa.c
->> @@ -11,6 +11,7 @@
->>  #include <linux/netdevice.h>
->>  #include <linux/sysfs.h>
->>  #include <linux/ptp_classify.h>
->> +#include <net/dst_metadata.h>
->>  
->>  #include "dsa_priv.h"
->>  
->> @@ -216,6 +217,7 @@ static bool dsa_skb_defer_rx_timestamp(struct dsa_slave_priv *p,
->>  static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
->>  			  struct packet_type *pt, struct net_device *unused)
->>  {
->> +	struct metadata_dst *md_dst = skb_metadata_dst(skb);
->>  	struct dsa_port *cpu_dp = dev->dsa_ptr;
->>  	struct sk_buff *nskb = NULL;
->>  	struct dsa_slave_priv *p;
->> @@ -229,7 +231,22 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
->>  	if (!skb)
->>  		return 0;
->>  
->> -	nskb = cpu_dp->rcv(skb, dev);
->> +	if (md_dst && md_dst->type == METADATA_HW_PORT_MUX) {
->> +		unsigned int port = md_dst->u.port_info.port_id;
->> +
->> +		skb_dst_set(skb, NULL);
-> 
-> If you insist on not using the refcounting feature and free your
-> metadata_dst in the master's remove() function, that's going to
-> invalidate absolutely any point I'm trying to make. Normally I'd leave
-> you alone, however I really don't like that this is also forcing DSA to
-> not use the refcount, and therefore, that it's forcing any other driver
-> to do the same as mtk_eth_soc. Not sure how that's gonna scale in the
-> hypothetical future when there will be a DSA master which can offload
-> RX DSA tags, *and* the switch can change tagging protocols dynamically
-> (which will force the master to allocate/free its metadata dst's at
-> runtime too). I guess that will be for me to figure out, which I don't
-> like.
-> 
-> Jakub, what do you think? Refcounting or no refcounting?
-If think that refcounting for the metadata dst is useful in this case, I 
-can replace the skb_dst_set call with skb_dst_drop() in v4, so it would 
-work for both cases.
+Hi Vladimir,
 
-- Felix
+On Fri, Nov 11, 2022 at 6:41 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+
+> Yeah, this is not what I meant. I posted a patch illustrating what I
+> meant here:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20221111211020.543540-1-vladimir.oltean@nxp.com/
+
+Thanks for your patch, appreciated.
+
+I tested your patch and it works fine.
+
+Cheers
