@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A755F6272FD
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 23:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C0C627310
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 23:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235512AbiKMWfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 17:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
+        id S234105AbiKMWvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 17:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234130AbiKMWfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 17:35:45 -0500
+        with ESMTP id S233850AbiKMWu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 17:50:59 -0500
 Received: from mail24.hostingvirtuale.com (mail24.hostingvirtuale.com [185.31.67.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68DBF5A
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 14:35:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B3AFD00
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 14:50:51 -0800 (PST)
 Received: from mail24.hostingvirtuale.com (localhost [127.0.0.1])
-        by mail24.hostingvirtuale.com (Postfix) with ESMTPA id AC6211233F0;
-        Sun, 13 Nov 2022 11:56:53 +0100 (CET)
+        by mail24.hostingvirtuale.com (Postfix) with ESMTPA id AD75A1234C0;
+        Sun, 13 Nov 2022 12:00:13 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=edil-stil.it;
-        s=default; t=1668337015;
-        bh=U8xfkflR7QRbBTpgv4MNi0dSYTbK7ZgepCLbaba0AgA=;
+        s=default; t=1668337215;
+        bh=7GFqMmBO6NeJ/Gw/LNLXECpJzuIoxI9PhTYaKhNY/dg=;
         h=Date:From:To:Subject:Reply-To:From;
-        b=gtbmiC5uXs0joKzc/oNHUnAXibjIczvkUBo4H+ntlIp9riBNz2pXAtjnxu2s251Mm
-         zbFA90wAjYLjovMjQQQu2a5uqP6g0VXwvYO8Y0oFD2nb4EZz75dDELAM2c+pXtYxP7
-         LJJNTvaGO2t/RXkpOJWXMVD3P4dzvBa+CyxTeDLw=
+        b=C46nyy4FBtca5XUf5lCwsAqjes1vs7VIPJ+SWI1Gimzp7LcxR0oeVwLxGjyT8xDCl
+         LCTk02FYX8R7ppXfmbho/ysiRUW+02kHKDWUhleGIszZDc28ShuFJBdEaemh9IAPYh
+         d/c51/ixTfle/MsXLZ1K0m4rcWlXZwMK87VOGbM4=
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="=_c1a8e3a7a650e43bdafc10ee48ea89fb"
+ boundary="=_1e98950145960895fc61658dca7640a0"
 Content-Transfer-Encoding: 8bit
-Date:   Sun, 13 Nov 2022 12:56:53 +0200
+Date:   Sun, 13 Nov 2022 13:00:13 +0200
 From:   Unilver-NL <calabrisello@edil-stil.it>
 To:     undisclosed-recipients:;
 Subject: Ref/Request for Quotation
 Reply-To: unileverrfq@dutchmail.com
 User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <ec78f601e6e1059942e313e92b0ed7a2@edil-stil.it>
+Message-ID: <d453eea1021f7372b35e400eed115d4e@edil-stil.it>
 X-Sender: calabrisello@edil-stil.it
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=_c1a8e3a7a650e43bdafc10ee48ea89fb
+--=_1e98950145960895fc61658dca7640a0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset=UTF-8;
  format=flowed
@@ -74,7 +74,7 @@ Kind Regards,
 Ibrahim Bakker
 
 Area Procurement officer
---=_c1a8e3a7a650e43bdafc10ee48ea89fb
+--=_1e98950145960895fc61658dca7640a0
 Content-Transfer-Encoding: base64
 Content-Type: application/pdf;
  name="Request for Quotation Letter.pdf"
@@ -28885,7 +28885,7 @@ MDAwMTU5ODcyMSAwMDAwMCBuDQowMDAxNTk5MTk5IDAwMDAwIG4NCjAwMDE2MjYxNjEgMDAwMDAg
 bg0KMDAwMTYzMjEyNiAwMDAwMCBuDQowMDAxNjQwMTA4IDAwMDAwIG4NCnRyYWlsZXIKPDwKL0lu
 Zm8gNjUgMCBSCi9Sb290IDEgMCBSCi9TaXplIDY2Cj4+CnN0YXJ0eHJlZgoxNjQwMzEyCiUlRU9G
 Cg==
---=_c1a8e3a7a650e43bdafc10ee48ea89fb
+--=_1e98950145960895fc61658dca7640a0
 Content-Transfer-Encoding: base64
 Content-Type: application/pdf;
  name="Spec5487546  (1).pdf"
@@ -29836,4 +29836,4 @@ MDAwNDUwOTYgMDAwMDAgbiAKMDAwMDA1MzA1MyAwMDAwMCBuIAowMDAwMDUzMTk1IDAwMDAwIG4g
 CjAwMDAwNTMyNTMgMDAwMDAgbiAKdHJhaWxlcgo8PC9JRFs8ZjZlYTgyZGI3ZTA3MDYwNzcxZTE0
 ZDFmMWFiZjVjOTc+IDxmNmVhODJkYjdlMDcwNjA3NzFlMTRkMWYxYWJmNWM5Nz5dL1NpemUgOD4+
 CnN0YXJ0eHJlZgoxMDYKJSVFT0YK
---=_c1a8e3a7a650e43bdafc10ee48ea89fb--
+--=_1e98950145960895fc61658dca7640a0--
