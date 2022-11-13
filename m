@@ -2,162 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51B9C6272B8
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 22:29:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 239F562730E
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 23:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235449AbiKMV30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 16:29:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        id S234034AbiKMWuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 17:50:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235472AbiKMV3R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 16:29:17 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9440B13FA9
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 13:29:16 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id jr19so5854656qtb.7
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 13:29:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=dVxoPXU1ZNqJqdFHmql+izsr21TtpvoUQ7i30aB78Cg=;
-        b=elWfGVfUO/Nc+mZ7uWMkbtcYw8svdMAsGFf9n053yogTlTQYwK+GTRE4XoH8CaoLwk
-         8+nFXpM+vgKkDM6X0tj6OhVcgxYBzJ8SDhMdkY7qJy3m9CQXGgKBG8SGZmb7ArADoam2
-         K0RZGX0g87PVPGZbTh+LUaoQj9nj1hq5nYwmpRf1W5iTzVtvmwIxFl0ZRuWsVPKvKHJT
-         i/IPrHbG57cchRho55kkBZg8FfocVusbfziq0DgrfPHNDKF5dtZFd6zPO/W4Yug6dcH4
-         YzlCXYcev+6X8vc2cfo+eTnA4XEuTreksn9mrWKQWWoz1zVNhVqW1qc7slkQqLd67O+E
-         FO5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dVxoPXU1ZNqJqdFHmql+izsr21TtpvoUQ7i30aB78Cg=;
-        b=T5BZucV3ynvAakOD5zkWHWKx2lQ0FvVFq4jy0UZ5GnBv6wgW2R93fnPJHyxRDu4kU8
-         kYw93Mlz/Q4dr+eMfWAECNGNc+2DW6dqhm4f9AEMVqOA6oTro9Vq3f6bNzCoWfaYCWz2
-         0fed3ic+l1WjcdhwWyFXnnwGXyrmOonM+X23ytzuXB6gA+ibeQVH4u8IOcwF/Bg2+pMY
-         u763H1yAbZOGuePVuznygdn3WsS0QxlS+he1vWxHDZdDbDXJMdkU8hYiYqc9hugF+LZO
-         TLyGILupWt/Own/8fT7qlk26nl+ltdX7tNEwSoNTFkQ4e/F6Kfkm4GIlYTVVpjBTCS5E
-         rhyA==
-X-Gm-Message-State: ANoB5pkOb1VmoZDmp3q3cv+6hE7IEpwLsqF75AEfmdEkct4M+5OGAaic
-        iioFdlXLgzEk1olqr8FdEP4=
-X-Google-Smtp-Source: AA0mqf6Tgdaj9suyx8zo1JtzsCKTSsJoVfR2PMV55laaWN3C7V7F67N0yCxC9iEY5YBeQfA/3DxbsQ==
-X-Received: by 2002:a05:622a:509a:b0:398:9079:69a7 with SMTP id fp26-20020a05622a509a00b00398907969a7mr9984616qtb.186.1668374955594;
-        Sun, 13 Nov 2022 13:29:15 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:9605:4823:7ae3:f0de])
-        by smtp.gmail.com with ESMTPSA id g26-20020ac8469a000000b003a5416da03csm4679923qto.96.2022.11.13.13.29.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 13:29:14 -0800 (PST)
-Date:   Sun, 13 Nov 2022 13:29:13 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, edumazet@google.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot+278279efdd2730dd14bf@syzkaller.appspotmail.com,
-        shaozhengchao <shaozhengchao@huawei.com>,
-        Tom Herbert <tom@herbertland.com>
-Subject: Re: [Patch net v2] kcm: close race conditions on sk_receive_queue
-Message-ID: <Y3FhqUL1gApPhDMT@pop-os.localdomain>
-References: <20221103184620.359451-1-xiyou.wangcong@gmail.com>
- <9ffe152671d4620eb1bfd443699c3143db377ca3.camel@redhat.com>
+        with ESMTP id S230525AbiKMWuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 17:50:12 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9163FD1F;
+        Sun, 13 Nov 2022 14:50:09 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4N9SLz2SKLz4xYV;
+        Mon, 14 Nov 2022 09:50:02 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1668379804;
+        bh=zDOsngkfXlRy4ZJSgGeBHh2499G+gL1UNyWeAO9sNtc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=IldIgoii4uuNzU0TqRsRMRO03FJWsO4khqkOLOqW4B5J6PNY77ERVKrFrpUFFdL+6
+         hqKfU+8bY89Dx8tPiXmQOx0NjgwNtvzkrdDuTbOv6qlpiTnAvBVEQ/3s7DVMZB8LpB
+         bFpN87Gwud6Cpznk27e2dsk3aWzxSU/ic41T5V06bOd5ItIwTt8RSfbV4QyRMy+DFP
+         Uqh3hxrd9fiuCj9NPGnxCaeCIESH3n+EZr4ZmEOj55nEEo+RFXytDAD+mmvQalKFyH
+         3hBPcN7bh77PMvPxSI8Bg8NjzwcoL/x0mAkRfpzs29bPLk5ESD/FY/AVmuMLx9xFC7
+         P/hzJZa4QuUeQ==
+Date:   Mon, 14 Nov 2022 09:50:00 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Xu Kuohai <xukuohai@huawei.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20221114095000.67a73239@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9ffe152671d4620eb1bfd443699c3143db377ca3.camel@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/bHXgZWadrbE1hGpq3kgqFTE";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 08, 2022 at 10:13:23AM +0100, Paolo Abeni wrote:
-> Hello,
-> On Thu, 2022-11-03 at 11:46 -0700, Cong Wang wrote:
-> > @@ -1085,53 +1085,17 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
-> >  	return err;
-> >  }
-> >  
-> > -static struct sk_buff *kcm_wait_data(struct sock *sk, int flags,
-> > -				     long timeo, int *err)
-> > -{
-> > -	struct sk_buff *skb;
-> > -
-> > -	while (!(skb = skb_peek(&sk->sk_receive_queue))) {
-> > -		if (sk->sk_err) {
-> > -			*err = sock_error(sk);
-> > -			return NULL;
-> > -		}
-> > -
-> > -		if (sock_flag(sk, SOCK_DONE))
-> > -			return NULL;
-> 
-> It looks like skb_recv_datagram() ignores the SOCK_DONE flag, so this
-> change could potentially miss some wait_data end coditions. On the flip
-> side I don't see any place where the SOCK_DONE flag is set for the kcm
-> socket, so this should be safe, but could you please document this in
-> the commit message?
+--Sig_/bHXgZWadrbE1hGpq3kgqFTE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Good catch. Indeed, this flags seems only used by stream sockets, I will
-include this in the commit message.
+Hi all,
 
-> 
-> [...]
-> 
-> > @@ -1187,11 +1147,7 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
-> >  
-> >  	/* Only support splice for SOCKSEQPACKET */
-> >  
-> > -	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
-> > -
-> > -	lock_sock(sk);
-> > -
-> > -	skb = kcm_wait_data(sk, flags, timeo, &err);
-> > +	skb = skb_recv_datagram(sk, flags, &err);
-> >  	if (!skb)
-> >  		goto err_out;
-> >  
-> > @@ -1219,13 +1175,11 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
-> >  	 * finish reading the message.
-> >  	 */
-> >  
-> > -	release_sock(sk);
-> > -
-> > +	skb_free_datagram(sk, skb);
-> >  	return copied;
-> >  
-> >  err_out:
-> > -	release_sock(sk);
-> > -
-> > +	skb_free_datagram(sk, skb);
-> 
-> We can reach here with skb == NULL and skb_free_datagram() ->
-> __kfree_skb() -> skb_release_all() does not deal correctly with NULL
-> skb, you need to check for skb explicitly here (or rearrange the error
-> paths in a suitable way).
-> 
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Are you sure? skb_free_datagram() is just consume_skb() which is guarded
-by skb_unref() which takes NULL and returns false.
+  include/linux/bpf.h
 
+between commit:
 
-1195 static inline bool skb_unref(struct sk_buff *skb)
-1196 {
-1197         if (unlikely(!skb))
-1198                 return false;
+  1f6e04a1c7b8 ("bpf: Fix offset calculation error in __copy_map_value and =
+zero_map_value")
 
-1027 void consume_skb(struct sk_buff *skb)
-1028 {
-1029         if (!skb_unref(skb))
-1030                 return;
+from the net tree and commits:
 
-320 void skb_free_datagram(struct sock *sk, struct sk_buff *skb)
-321 {
-322         consume_skb(skb);
-323 }
+  aa3496accc41 ("bpf: Refactor kptr_off_tab into btf_record")
+  f71b2f64177a ("bpf: Refactor map->off_arr handling")
 
+from the net-next tree.
 
-Thanks.
+I fixed it up (I think - see below) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc include/linux/bpf.h
+index c1bd1bd10506,798aec816970..000000000000
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@@ -311,13 -356,14 +356,14 @@@ static inline void bpf_obj_memcpy(struc
+  		return;
+  	}
+ =20
+- 	for (i =3D 0; i < map->off_arr->cnt; i++) {
+- 		u32 next_off =3D map->off_arr->field_off[i];
++ 	for (i =3D 0; i < foffs->cnt; i++) {
++ 		u32 next_off =3D foffs->field_off[i];
++ 		u32 sz =3D next_off - curr_off;
+ =20
+- 		memcpy(dst + curr_off, src + curr_off, next_off - curr_off);
+- 		curr_off =3D next_off + map->off_arr->field_sz[i];
++ 		memcpy(dst + curr_off, src + curr_off, sz);
+ -		curr_off +=3D foffs->field_sz[i];
+++		curr_off =3D next_off + foffs->field_sz[i];
+  	}
+- 	memcpy(dst + curr_off, src + curr_off, map->value_size - curr_off);
++ 	memcpy(dst + curr_off, src + curr_off, size - curr_off);
+  }
+ =20
+  static inline void copy_map_value(struct bpf_map *map, void *dst, void *s=
+rc)
+@@@ -340,13 -386,19 +386,19 @@@ static inline void bpf_obj_memzero(stru
+  		return;
+  	}
+ =20
+- 	for (i =3D 0; i < map->off_arr->cnt; i++) {
+- 		u32 next_off =3D map->off_arr->field_off[i];
++ 	for (i =3D 0; i < foffs->cnt; i++) {
++ 		u32 next_off =3D foffs->field_off[i];
++ 		u32 sz =3D next_off - curr_off;
+ =20
+- 		memset(dst + curr_off, 0, next_off - curr_off);
+- 		curr_off =3D next_off + map->off_arr->field_sz[i];
++ 		memset(dst + curr_off, 0, sz);
+ -		curr_off +=3D foffs->field_sz[i];
+++		curr_off =3D next_off + foffs->field_sz[i];
+  	}
+- 	memset(dst + curr_off, 0, map->value_size - curr_off);
++ 	memset(dst + curr_off, 0, size - curr_off);
++ }
++=20
++ static inline void zero_map_value(struct bpf_map *map, void *dst)
++ {
++ 	bpf_obj_memzero(map->field_offs, dst, map->value_size);
+  }
+ =20
+  void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+
+--Sig_/bHXgZWadrbE1hGpq3kgqFTE
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmNxdJkACgkQAVBC80lX
+0Gzq6wf/eNATYNqwjnk4fLLPJt+g4zBHX+ZjAMCY94pjLo9u/kuK36i1de4i2GUI
+96eQrGNkDR3wuJMGjn6J0YNpQcDYi82fS0Ed886xdGwZvo9MICqxRB5c3zPkIvhe
+VPmmDURxJT4COxdU09Bxs23VGgUw5sW9dUhk/mvMOPONDxJiN9WUhp9Xj1ItIjgQ
+CpMJCrSDCWe7G1ifVM6YZ37Qm8Njj8Gn0dreNUVYXZ5qCQ+DfHEov5otQGx12Y6a
+g3DYjOoE3IoqufvcejP5V0A37WlLRfS7+zo2CE+7umsfDH30myIvd1SLwYIUvRx1
+LV+xbQiEbsXsRTD1SALYf1gFotkzuA==
+=LXYp
+-----END PGP SIGNATURE-----
+
+--Sig_/bHXgZWadrbE1hGpq3kgqFTE--
