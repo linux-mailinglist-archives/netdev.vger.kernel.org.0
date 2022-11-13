@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8241626CA8
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 00:33:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F003626D9D
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 05:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235016AbiKLXdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Nov 2022 18:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
+        id S235104AbiKMECl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Nov 2022 23:02:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiKLXdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 18:33:32 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AECA1BF
-        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 15:33:30 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id q1-20020a17090a750100b002139ec1e999so7615832pjk.1
-        for <netdev@vger.kernel.org>; Sat, 12 Nov 2022 15:33:30 -0800 (PST)
+        with ESMTP id S229584AbiKMECi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Nov 2022 23:02:38 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DA6DFA0;
+        Sat, 12 Nov 2022 20:02:34 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id gw22so7648377pjb.3;
+        Sat, 12 Nov 2022 20:02:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=YQ79OKVd7iIymbFIHL+sQgdxNhmZoIoceNlKtKeunJw=;
-        b=DM6O+cNUmd8Z3vjJlavPED/emmfdu4L8AXlNsnhvikxG5fiw3QJWEN8Wg71jDnOrVW
-         HaJhLIl8rxiYXGw0svEYfmcZwBE5LhBSUfyY1LpcXD88Vmozd4tPqFLNVEHLxLoarXTx
-         p7MNgY43M+wPiev83c1Vf5c3MaiIlUkNcgL5J1SVhwfQ4vRfIpQwcGPM9kk7+FYQVnI+
-         obTst+ko5nFVfZAEmJuGrYcbnC5r5Hn0Bc5Iis4+KZprefAFlbUVd7ng4xu5GpbaXZ2c
-         KfcSoyca2GGHyrs5Y+TEQ+NTMNLn+pzFI5gN4Og2Rzg67+Rhhy7yhljR7G1huqTvvuFf
-         AQVw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aNSRPUO1v1OYkd49ueorKmsNQJVAAcCUYPFtGJiFcIg=;
+        b=JTpfsZ0jn/PD0C35/LkjaBbGMoaWE3MXg98oU61ZKtOaUvnmhYkOcm5uuUuPVAbe8E
+         qZ3zTlbJ13UwN8KEWcCPRoZcXKk6sdX8bO/RfYmuIxYhjHRtN2iqPJBQm3hTQqHX+FLP
+         yImkWB9lVND4OXHkMIBVT/LJYThmLf+N8ArHGhQVCWT9zyiC4OkHt1GXck1VC1HPZG8u
+         0qswhUyM22N0gBV3iOK0gWHJsrGVfYiUxN9UG0mXH7jIbzf88pN8RTrt+lDh8mo8pHc4
+         aPYjbK5m3z/VzznjLB3Iu7qhnWhAjHbu/27kROjxik5HdXRbDjb7iX6uA8IULDQZKbYg
+         ThAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YQ79OKVd7iIymbFIHL+sQgdxNhmZoIoceNlKtKeunJw=;
-        b=HKzFC4rN5DsT0Z+LJVTdWemrOHXb6VOlis1PBSnVPXjDPAxidSCTLhJfcfLmzSqzXM
-         NuBgKtjK8FV41lQSyQNAvkFcw8KYpYlBXsevyrXUTaoAAnK9DfnxUI6nlmb1Wj8brztu
-         taQgF9NkGTMQXYvYWdz50vo4IVXVoMmgAHrQBoRiNIlk2bo4GsFdD2q9oTGVPJ4TF8dD
-         Uxpg/cLTAYL1wTdJQ+0KEYdN4q9Dbcsq7zB0KoricwaHZOnZCsPRbJjGK8EITq8gxgab
-         Ij/Nm7v6DevJym/KqkPfrlZLAsTVrPlGCMzcknDhNiyFviHHl+xyaLOYSJbNfbXPvTHy
-         VLVg==
-X-Gm-Message-State: ANoB5pkSnS1ErLRi3q0YFMW+RgztYS8L8OcLQ7xEZok2gfX87mQUCneA
-        9U3iI2MowR9CSAFRd6LJUHEJZMyApKmXixfoH9k=
-X-Google-Smtp-Source: AA0mqf5dDnPymWZlBlyzUf8Z8QiBr7a6sr4602ZrOa05POsmmsr1jQBug2g2q113ZS90kESBi/2BLQ==
-X-Received: by 2002:a17:90b:215:b0:213:2411:50e7 with SMTP id fy21-20020a17090b021500b00213241150e7mr8015293pjb.212.1668296009566;
-        Sat, 12 Nov 2022 15:33:29 -0800 (PST)
-Received: from localhost.localdomain ([45.92.127.40])
-        by smtp.gmail.com with ESMTPSA id k29-20020aa7973d000000b0056bb7d90f0fsm3788308pfg.182.2022.11.12.15.33.25
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=aNSRPUO1v1OYkd49ueorKmsNQJVAAcCUYPFtGJiFcIg=;
+        b=o7IHAy7jSdwnxGquoP3xH2RRvAwyU8M6t0v5PVBKLruQ9D0ynkGu6rpUYJbCCxrf9n
+         J3QC91w552QszqSfuVggg7ufoL7MicZXa6pcTnb0yrpXR/blQkgClDP/VcpJw0+2gx65
+         OF5vohuzqsgo6kJ/d/FLJKgKk2GvWUIsEUxc90lAYOuiKNt6nbY7+kgfolZ22pM1SXPD
+         sY7dSiLEH81aNOPcJbll7N+mJNikZLY30ksplJ7XZ1PzJhkPu8V8xNnL2ABgf2KrnRRt
+         wW5H5woqUSEW9v7Afn1wUqODf7Z7JkRRi8tw8d+gnTuDO0LSoHcm3dBHaaDhmrmfYo+2
+         dA4g==
+X-Gm-Message-State: ANoB5pnJn3YgCSZk/7jlvlYG8c81jowBZqWRlzY03BDFhXuk5qvvUVtb
+        E2BUoMufSMz+OtXNefnTv/w=
+X-Google-Smtp-Source: AA0mqf4/qaAdXICwWYKtgHRrE3yobAei9bI2c3f/qDckf95tp7Ej5g8/0czkS1vnOzLL/PZ7qSYC3A==
+X-Received: by 2002:a17:902:e3d4:b0:188:53b9:f003 with SMTP id r20-20020a170902e3d400b0018853b9f003mr8500917ple.170.1668312153584;
+        Sat, 12 Nov 2022 20:02:33 -0800 (PST)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id n63-20020a17090a5ac500b00200461cfa99sm7122686pji.11.2022.11.12.20.02.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Nov 2022 15:33:29 -0800 (PST)
-From:   Yan Cangang <nalanzeyu@gmail.com>
-To:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com
-Cc:     netdev@vger.kernel.org, Yan Cangang <nalanzeyu@gmail.com>
-Subject: [PATCH] net: ethernet: mtk_eth_soc: fix memory leak in mtk_ppe_init()
-Date:   Sun, 13 Nov 2022 07:32:39 +0800
-Message-Id: <20221112233239.824389-1-nalanzeyu@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Sat, 12 Nov 2022 20:02:33 -0800 (PST)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v3 0/3] can: etas_es58x: report firmware, bootloader and hardware version
+Date:   Sun, 13 Nov 2022 13:01:05 +0900
+Message-Id: <20221113040108.68249-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.37.4
+In-Reply-To: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
+References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    When dmam_alloc_coherent() or devm_kzalloc() failed, the rhashtable
-    ppe->l2_flows isn't destroyed. Fix it.
+The goal of this series is to report the firmware version, the
+bootloader version and the hardware revision of ETAS ES58x
+devices.
 
-Fixes: 33fc42de3327 ("net: ethernet: mtk_eth_soc: support creating mac address based offload entries")
-Signed-off-by: Yan Cangang <nalanzeyu@gmail.com>
----
- drivers/net/ethernet/mediatek/mtk_ppe.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+These are already reported in the kernel log but this isn't best
+practise. Remove the kernel log and instead export all these in
+sysfs. In addition, the firmware version is also reported through
+ethtool.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 2d8ca99f2467..8da4c8be59fd 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -737,7 +737,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 				  MTK_PPE_ENTRIES * soc->foe_entry_size,
- 				  &ppe->foe_phys, GFP_KERNEL);
- 	if (!foe)
--		return NULL;
-+		goto err_free_l2_flows;
- 
- 	ppe->foe_table = foe;
- 
-@@ -745,11 +745,15 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 			sizeof(*ppe->foe_flow);
- 	ppe->foe_flow = devm_kzalloc(dev, foe_flow_size, GFP_KERNEL);
- 	if (!ppe->foe_flow)
--		return NULL;
-+		goto err_free_l2_flows;
- 
- 	mtk_ppe_debugfs_init(ppe, index);
- 
- 	return ppe;
-+
-+err_free_l2_flows:
-+	rhashtable_destroy(&ppe->l2_flows);
-+	return NULL;
- }
- 
- static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
+
+* Changelog *
+
+v2 -> v3:
+
+  * patch 2/3: do not spam the kernel log anymore with the product
+    number. Instead parse the product information string, extract the
+    firmware version, the bootloadar version and the hardware revision
+    and export them through sysfs.
+
+  * patch 2/3: rework the parsing in order not to need additional
+    fields in struct es58x_parameters.
+
+  * patch 3/3: only populate ethtool_drvinfo::fw_version because since
+    commit edaf5df22cb8 ("ethtool: ethtool_get_drvinfo: populate
+    drvinfo fields even if callback exits"), there is no need to
+    populate ethtool_drvinfo::driver and ethtool_drvinfo::bus_info in
+    the driver.
+
+v1 -> v2:
+
+  * was a single patch. It is now a series of three patches.
+  * add a first new patch to export  usb_cache_string().
+  * add a second new patch to apply usb_cache_string() to existing code.
+  * add missing check on product info string to prevent a buffer overflow.
+  * add comma on the last entry of struct es58x_parameters.
+
+Vincent Mailhol (3):
+  USB: core: export usb_cache_string()
+  can: etas_es58x: export firmware, bootloader and hardware versions in
+    sysfs
+  can: etas_es58x: report firmware-version through ethtool
+
+ drivers/net/can/usb/etas_es58x/Makefile      |   2 +-
+ drivers/net/can/usb/etas_es58x/es58x_core.c  |  70 ++----
+ drivers/net/can/usb/etas_es58x/es58x_core.h  |  51 ++++
+ drivers/net/can/usb/etas_es58x/es58x_sysfs.c | 231 +++++++++++++++++++
+ drivers/usb/core/message.c                   |   1 +
+ drivers/usb/core/usb.h                       |   1 -
+ include/linux/usb.h                          |   1 +
+ 7 files changed, 309 insertions(+), 48 deletions(-)
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_sysfs.c
+
 -- 
-2.30.2
+2.37.4
 
