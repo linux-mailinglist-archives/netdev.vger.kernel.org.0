@@ -2,166 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 154B9626EEF
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 11:22:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F006B626EF4
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 11:26:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235257AbiKMKWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 05:22:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
+        id S235268AbiKMK0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 05:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231972AbiKMKWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 05:22:35 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FCC11801
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 02:22:34 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id i3so8551614pfc.11
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 02:22:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xbiJG2nvJvN3b7ywG36TMHnfX1FmAXSbyZNk2mZ62aA=;
-        b=AV2OYbtAjGUf7Ghl146ADsSCrl+GMSJ/9mqWqNbRw5g6vMD6c1y1nKo7oa/jIJS67I
-         gQYhQOGI3h8DpIZTtWqZPKirKMesc1diLAXkyuhmp3lTbF16bytmMx0RVBO42jptKbWq
-         2AA4VcSqcThR07TOYAirahQngI3a/clhxhtPozs8CDZ7W8jrX4VtYoY07r3KdcsIs/PO
-         imH/5DCkRB9GnOkGFT18h0WMB7E1331eYSdnr4bj8TEgbz5JXVJds5AANrFOMRaKFk6j
-         7ULlbsuVfdnS/S6vo8u7nopztx7HMMbBsKJPJC4pOe8zMRWS9URC/WILYB78DWlbrAYM
-         Wa5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xbiJG2nvJvN3b7ywG36TMHnfX1FmAXSbyZNk2mZ62aA=;
-        b=cg1LUDx57PyS3z6FQKEDMnXY1mfIQlvrO7Ft0OnlUyhq8co5ziNhjr1lgwYlri1UuB
-         zBov/CG6SwhcLjDDXCXIePpLO8gWZDKh80ldJOG9iKt0flc+iLxjS6IilaEjLmVOLdwS
-         ALcRPh2lIGbjqCKiZ8Fv5e+wrG8IqIsR2Lhnk7PpQthuuApQxP0lhaXhhr1fgUDdabA3
-         4CrBBNNUWof5zq/+MFF4LVU7zHeVtZfwLyx4UyiISTaZMhxBSDo1PCixTTe3z+Z+ok9N
-         48oxsCju0BHECYnTZm6pxFaE5zsTLbr/19EMhfj7TnOmFjcyfhbFqf9cc6b8ldbpqkIP
-         br6g==
-X-Gm-Message-State: ANoB5pmfokS0a085QasOW/W/OFi8DO2FacR7fd26n6Bh5zvPtBvxtQTi
-        H98L06wtRW5zXtD5dMgSm4xNB4Ahmeq5JomH0qzCW5qseuY=
-X-Google-Smtp-Source: AA0mqf4IV/CuRgpVfwxC+UcjNTLeLDETeKYtOWHVaM1cOOmBacc06SrPG95E+PQal65vNCDYtO6+oOmTeCLjUY+BrHY=
-X-Received: by 2002:a63:181e:0:b0:470:f0c:96da with SMTP id
- y30-20020a63181e000000b004700f0c96damr7798398pgl.544.1668334953633; Sun, 13
- Nov 2022 02:22:33 -0800 (PST)
+        with ESMTP id S232014AbiKMK0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 05:26:00 -0500
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6ED11834;
+        Sun, 13 Nov 2022 02:25:58 -0800 (PST)
+Message-ID: <b5891f03-7283-8b52-aef6-40773f31ff10@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1668335157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7Ix5CiIju4tuYtmb+hMgKgKfn6aGjoc/cdFjHgvGIp4=;
+        b=kbkrA8sqbm48Wun+YYGfJh4HyZmFW9/V4pmgE4scxjhsWRa7N+WidivUB22QD1hdRnrBMG
+        wcF+H/3rPO5JyC1VePsEpjmol6JjZgvPkOuBLMnKQ/E99NIRp2vHt9d+TTQQ/tXKm4KKda
+        j/Ue/YUtH5gL9IeWE/G1P48euC0FK44=
+Date:   Sun, 13 Nov 2022 18:25:47 +0800
 MIME-Version: 1.0
-References: <CAL87dS2SS9rjLUPnwufh9a0O-Cu-hMAUU7Xa534mXTB9v=KM5g@mail.gmail.com>
-In-Reply-To: <CAL87dS2SS9rjLUPnwufh9a0O-Cu-hMAUU7Xa534mXTB9v=KM5g@mail.gmail.com>
-From:   mingkun bian <bianmingkun@gmail.com>
-Date:   Sun, 13 Nov 2022 18:22:22 +0800
-Message-ID: <CAL87dS1Cvbxczdyk_2nviC=M2S91bMRKPXrkp1PLHXFuX=CuKg@mail.gmail.com>
-Subject: Re: [ISSUE] suspicious sock leak
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: RE: [PATCHv2 0/6] Fix the problem that rxe can not work in net
+To:     Parav Pandit <parav@nvidia.com>, Yanjun Zhu <yanjun.zhu@linux.dev>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>,
+        "zyjzyj2000@gmail.com" <zyjzyj2000@gmail.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     Zhu Yanjun <yanjun.zhu@intel.com>
+References: <20221006085921.1323148-1-yanjun.zhu@linux.dev>
+ <204f1ef4-77b1-7d4b-4953-00a99ce83be4@linux.dev>
+ <25767d73-c7fc-4831-4a45-337764430fe7@linux.dev>
+ <PH0PR12MB54811610FD9F157330606BB7DC009@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <ef09ae0a-ad22-8791-a972-ea33e16011ba@linux.dev>
+ <PH0PR12MB548101B6A19568A3E1FBD50ADC029@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Yanjun Zhu <yanjun.zhu@linux.dev>
+In-Reply-To: <PH0PR12MB548101B6A19568A3E1FBD50ADC029@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+在 2022/11/13 12:58, Parav Pandit 写道:
+> Hi Yanjun,
+> 
+>> From: Yanjun Zhu <yanjun.zhu@linux.dev>
+>> Sent: Thursday, November 10, 2022 10:38 PM
+>>
+>>
+>> 在 2022/11/11 11:35, Parav Pandit 写道:
+>>>> From: Yanjun Zhu <yanjun.zhu@linux.dev>
+>>>> Sent: Thursday, November 10, 2022 9:37 PM
+>>>
+>>>> Can you help to review these patches?
+>>> I will try to review it before 13th.
+> 
+> I did a brief review of patch set.
+> I didn’t go line by line for each patch; hence I give lumped comments here for overall series.
+> 
+> 1. Add example and test results in below test flow in exclusive mode in cover letter.
+>     # ip netns exec net1 rdma link add rxe1 type rxe netdev eno3
+>     # ip netns del net0
+>     Verify that rdma device rxe1 is deleted.
 
-bpf map1:
-key: cookie
-value: addr daddr sport dport cookie sock*
+Hi, Parav
 
-bpf map2:
-key: sock*
-value: addr daddr sport dport cookie sock*
+Thanks a lot. I will add this example to the cover letter.
+And I confirm that rdma device rxe1 is deleted after the command "ip 
+netns del net0".
 
-1. Recv a "HTTP GET" request in user applicatoin
-map1.insert(cookie, value)
-map2.insert(sock*, value)
+I will delve into the following comments.
 
-1. kprobe inet_csk_destroy_sock:
-sk->sk_wmem_queued is 0
-sk->sk_wmem_alloc is 4201
-sk->sk_refcnt is 2
-sk->__sk_common.skc_cookie is 173585924
-saddr daddr sport dport is 192.168.10.x 80
+Thanks and Regards,
+Zhu Yanjun
 
-2. kprobe __sk_free
-can not find the "saddr daddr sport dport 192.168.10.x 80" in kprobe __sk_f=
-ree
+> 
+> 2. Usage of dev_net() in rxe_setup_udp_tunnel() is unsafe.
+>     This is because when rxe_setup_udp_tunnel() is executed, net ns of netdev can change.
+>     This needs to be synchronized with per net notifier register_pernet_subsys() of exit or exit_batch.
+>     This notifiers callback should be added to rxe module.
+> 
+> 3. You need to set bind_ifindex of udp config to the netdev given in newlink in rxe_setup_udp_tunnel.
+>     Should be a separate pre-patch to ensure that close and right relation to udp socket with netdev in a given netns.
+> 
+> 4. Rearrange series to implement delete link as separate series from net ns securing series.
+> They are unrelated. Current delink series may have use after free accesses. Those needs to be guarded in likely larger series.
+> 
+> 5. udp tunnel must shutdown synchronously when rdma link del is done.
+>     This means any new packet arriving after this point, will be dropped.
+>     Any existing packet handling present is flushed.
+>     From your cover letter description, it appears that sock deletion is refcount based and above semantics is not ensured.
+> 
+> 6. In patch 5, rxe_get_dev_from_net() can return NULL, hence l_sk6 check can be unsafe. Please add check for rdev null before rdev->l_sk6 check.
+> 
+> 7. In patch 5, I didn't fully inspect, but seems like call to rxe_find_route4() is not rcu safe.
+> Hence, extension of dev_net() in rxe_find_route4() doesn't look secure.
+> Accessing sock_net() is more accurate, because at this layer, it is processing packets at socket layer.
 
-3. kprobe __sk_free
-after a while, "kprobe __sk_free" find the "saddr daddr sport dport
-127.0.0.1 xx"' info
-value =3D map2.find(sock*)
-value1 =3D map1.find(sock->cookie)
-if (value) {
-    map2.delete(sock) //print value info, find "saddr daddr sport
-dport" is "192.168.10.x 80=E2=80=9C=EF=BC=8C and value->cookie is 173585924=
-, which is
-the same as "192.168.10.x 80" 's cookie.
-}
-
-if (value1) {
-    map1.delete(sock->cookie)
-}
-
-Here is my test flow, commented lines represents that  sock of =E2=80=9Dsad=
-dr
-daddr sport dport 192.168.10.x 80=E2=80=9C does not come in  __sk_free=EF=
-=BC=8C but it
-is reused by =E2=80=9D saddr daddr sport dport 127.0.0.1 xx"
-
-
-mingkun bian <bianmingkun@gmail.com> =E4=BA=8E2022=E5=B9=B411=E6=9C=8812=E6=
-=97=A5=E5=91=A8=E5=85=AD 17:01=E5=86=99=E9=81=93=EF=BC=9A
->
-> Hi,
->     I found a problem that a sock whose state is ESTABLISHED is not
-> freed to slab cache by __sock_free.
->     The test scenario is as follows=EF=BC=9A
->
->     1. A HTTP Server=EF=BC=8CI insert a node to ebpf
-> map(BPF_MAP_TYPE_LRU_HASH) by BPF_MAP_UPDATE_ELEM when receiving a
-> "HTTP GET" request in user application.
->     ebpf map is=EF=BC=9A
->     key: cookie(getsockopt(fd, SOL_SOCKET, SO_COOKIE, &cookie, &optlen))
->     value: saddr sport daddr dport cookie...
->
->     2. I delete the corresponding ebpf map node by "kprobe __sk_free"
-> in ebpf as following, bpf_map_delete_elem keeps returning 0.
->
->     SEC("kprobe/__sk_free")
->     int bpf_prog_destroy_sock(struct pt_regs *ctx)
->     {
->         struct sock *sk;
->         __u64 cookie;
->        struct  tcp_infos *value;
->
->        sk =3D (struct sock *) PT_REGS_PARM1(ctx);
->        bpf_probe_read(&cookie, sizeof(sk->__sk_common.skc_cookie),
-> &sk->__sk_common.skc_cookie);
->        value =3D bpf_map_lookup_elem(&bpfmap, &cookie);
->        if (value) {
->            if (bpf_map_delete_elem(&bpfmap, &cookie) !=3D 0) {
->                debugmsg("delete failed\n");
->            }
->        }
->     }
->
->    3. Sending pressure "HTTP GET" requests to HTTP Server for a while,
->  then stop to send and close the HTTP Server, then wait a long time,
-> we can not see any tcpinfo by "netstat -anp", then error occurs=EF=BC=9A
->     We can see some node which is not deleted int ebpf map by "bpftool
-> map dump id **"=EF=BC=8C it seems like "sock leak", but the sockstat's
-> inuse(cat /proc/net/sockstat) does not increase quickly.
->
-> 4. I did some more experiments by ebpf kprobe, I find that a
-> sock(state is ESTABLISHED, HTTP server recv a "HTTP GET" requset) does
-> not come in __sock_free, but the same sock will be reused by another
-> tcp connection(the most frequent is "127.0.0.1") after a while.
->    What I doubt is that why a new tcp connection can resue a old sock
-> while the old sock does not come in __sk_free.
->
-> Thanks.
