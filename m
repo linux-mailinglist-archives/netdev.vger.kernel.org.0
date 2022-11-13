@@ -2,133 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F848627267
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 21:04:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE23D62726D
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 21:11:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235402AbiKMUD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 15:03:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
+        id S232676AbiKMULG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 15:11:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235375AbiKMUD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 15:03:56 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2A426E4
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 12:03:54 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id g12so16212439lfh.3
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 12:03:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FNZiPVV38BD+NXjcSGrGQb5Ha258QJwOowf6kKzcr/g=;
-        b=Na5gUfo3ZLiN0ZNYydgqfKfqVoPdWKCWW8ouk7+N7pD50cUGc1WD7bZTkcdQsX3Dh3
-         eZ85wjHbwYgnOPUKscwVFhn0ROpkHzo4GN47imxkesVyj6Xl1+Ol0J5VBoqcR2EZYJ7u
-         9HXPg7DsvCidpC8A67Dp7OIgoiFkhpJepdCak=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FNZiPVV38BD+NXjcSGrGQb5Ha258QJwOowf6kKzcr/g=;
-        b=p5bofjkk65tfwoQeiEqnzujtW6DnurAelM0EihrlH1VUV0jkpPGW5h+19+d10N1kTe
-         ix1S+KM7iIm63OGd/it92XTmUm+FDcdypjq/sdQmeoDhDkb4ncf4hdpSdH+1ACJo/v1S
-         5MP3rUhSOnr6453us892NomEyTODjVxu65UnctxT2zokjI3FaPqtbpbnKm8McYM8r6xP
-         YFTeskO7apMDUIJws6+ltjYMLnq1Bk1ad6pc8U9ejKtsK00VsrZfJoE3D6Rp6RsL6EQQ
-         LWpgTCsMKbXgCCqPWi3o6Va8EjJUYlyFdlqzefhI0abYZgWjPh1tw9EtyGmJtayCp9Ex
-         J7Mg==
-X-Gm-Message-State: ANoB5pm/lkvV+29L6RqTvtLU/MDGywzv3zz+mvKEJDC5EBrKB3x5lu6u
-        F8dB/GOGNSCgwVOcPky3aqr5jQ==
-X-Google-Smtp-Source: AA0mqf53XtKzUTXrYt9v/fnVnq2k1Cl513Z3Y1xcF8LydNg0MnQuZdmMxcBYU2Me5Jgdnr2ZGCM8bg==
-X-Received: by 2002:ac2:4d19:0:b0:4a6:ea05:73fe with SMTP id r25-20020ac24d19000000b004a6ea0573femr3146161lfi.181.1668369833088;
-        Sun, 13 Nov 2022 12:03:53 -0800 (PST)
-Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id b6-20020a196706000000b004a4754c5db5sm1495332lfc.244.2022.11.13.12.03.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Nov 2022 12:03:52 -0800 (PST)
-Message-ID: <26d3b005-aa4e-66d3-32eb-568d3dfe6379@rasmusvillemoes.dk>
-Date:   Sun, 13 Nov 2022 21:03:52 +0100
+        with ESMTP id S230525AbiKMULD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 15:11:03 -0500
+Received: from smtp3.cs.Stanford.EDU (smtp3.cs.stanford.edu [171.64.64.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A7B9FE0
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 12:11:00 -0800 (PST)
+Received: from mail-ed1-f43.google.com ([209.85.208.43]:35722)
+        by smtp3.cs.Stanford.EDU with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <ouster@cs.stanford.edu>)
+        id 1ouJJj-0005zg-W2
+        for netdev@vger.kernel.org; Sun, 13 Nov 2022 12:11:00 -0800
+Received: by mail-ed1-f43.google.com with SMTP id x2so14574692edd.2
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 12:11:00 -0800 (PST)
+X-Gm-Message-State: ANoB5pnFSACcYCWcPGTxEPYHjVgneVrS1HNNQP0g0o6M2f76p6eeyQFT
+        B7MSjkKQ1U3lxaigzjPPKXfcyGnYVAgJk7d/jSo=
+X-Google-Smtp-Source: AA0mqf5e1Sc0kNz04BvLRo0pxRNXsxS6M+3X2d3Mop7NdHgLBvo1h+Y3QWW1cztzCwztV+c1P8yfr++53fgSOD49XAs=
+X-Received: by 2002:a05:6402:4491:b0:461:a7e0:735c with SMTP id
+ er17-20020a056402449100b00461a7e0735cmr9218486edb.14.1668370259227; Sun, 13
+ Nov 2022 12:10:59 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] net: dsa: use NET_NAME_PREDICTABLE for user ports with
- name given in DT
-Content-Language: en-US, da
+References: <CAGXJAmzTGiURc7+Xcr5A09jX3O=VzrnUQMp0K09kkh9GMaDy4A@mail.gmail.com>
+ <20221110132540.44c9463c@hermes.local> <Y22IDLhefwvjRnGX@lunn.ch>
+ <CAGXJAmw=NY17=6TnDh0oV9WTmNkQCe9Q9F3Z=uGjG9x5NKn7TQ@mail.gmail.com>
+ <Y26huGkf50zPPCmf@lunn.ch> <Y29RBxW69CtiML6I@nanopsycho> <CAGXJAmzdr1dBZb4=TYscXtN66weRvsO6p74K-K3aa_7UJ=sEuQ@mail.gmail.com>
+ <Y3ElDxZi6Hswga2D@lunn.ch>
+In-Reply-To: <Y3ElDxZi6Hswga2D@lunn.ch>
+From:   John Ousterhout <ouster@cs.stanford.edu>
+Date:   Sun, 13 Nov 2022 12:10:22 -0800
+X-Gmail-Original-Message-ID: <CAGXJAmwfyU0rdrp0g6UU8ctLHUrq_sAKTSk2R4LWoOgMTfPEAA@mail.gmail.com>
+Message-ID: <CAGXJAmwfyU0rdrp0g6UU8ctLHUrq_sAKTSk2R4LWoOgMTfPEAA@mail.gmail.com>
+Subject: Re: Upstream Homa?
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20221111161729.915233-1-linux@rasmusvillemoes.dk>
- <Y26B8NL3Rv2u/otG@lunn.ch>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <Y26B8NL3Rv2u/otG@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Score: -1.0
+X-Spam-Level: 
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Scan-Signature: 980022258218d8e0da9e8fd80fb6777b
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/2022 18.10, Andrew Lunn wrote:
->> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
->> index a9fde48cffd4..dfefcc4a9ccf 100644
->> --- a/net/dsa/slave.c
->> +++ b/net/dsa/slave.c
->> @@ -2374,16 +2374,25 @@ int dsa_slave_create(struct dsa_port *port)
->>  {
->>  	struct net_device *master = dsa_port_to_master(port);
->>  	struct dsa_switch *ds = port->ds;
->> -	const char *name = port->name;
->>  	struct net_device *slave_dev;
->>  	struct dsa_slave_priv *p;
->> +	const char *name;
->> +	int assign_type;
->>  	int ret;
->>  
->>  	if (!ds->num_tx_queues)
->>  		ds->num_tx_queues = 1;
->>  
->> +	if (port->name) {
->> +		name = port->name;
->> +		assign_type = NET_NAME_PREDICTABLE;
->> +	} else {
->> +		name = "eth%d";
->> +		assign_type = NET_NAME_UNKNOWN;
->> +	}
-> 
-> I know it is a change in behaviour, but it seems like NET_NAME_ENUM
-> should be used, not NET_NAME_UNKNOWN. alloc_etherdev_mqs() uses
-> NET_NAME_ENUM.
+On Sun, Nov 13, 2022 at 9:10 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > Homa implements RPCs rather than streams like TCP or messages like
+> > UDP. An RPC consists of a request message sent from client to server,
+> > followed by a response message from server back to client. This requires
+> > additional information in the API beyond what is provided in the arguments to
+> > sendto and recvfrom. For example, when sending a request message, the
+> > kernel returns an RPC identifier back to the application; when waiting for
+> > a response, the application can specify that it wants to receive the reply for
+> > a specific RPC identifier (or, it can specify that it will accept any
+> > reply, or any
+> > request, or both).
+>
+> This sounds like the ancillary data you can pass to sendmsg(). I've
+> not checked the code, it might be the current plumbing is only into to
+> the kernel, but i don't see why you cannot extend it to also allow
+> data to be passed back to user space. If this is new functionality,
+> maybe add a new flags argument to control it.
+>
+> recvmsg() also has ancillary data.
 
-I don't really have any strong opinion on the case where we fall back to
-eth%d, as its not relevant to any board I've worked on.
+Whoah! I'd never noticed the msg_control and msg_controllen fields before.
+These may be sufficient to do everything Homa needs. Thanks for pointing
+this out.
 
-> https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/netdevice.h#L42
-> says that NET_NAME_UNKNOWN does not get passed to user space, but i
-> assume NET_NAME_ENUM does. So maybe changing it would be an ABI
-> change?
-
-Well, the name_assign_type ABI is kind of silly. I mean, userspace knows
-that when one gets EINVAL trying to read the value, that really means
-that the value is NET_NAME_UNKNOWN. But I won't propose changing that.
-
-However, what I do propose here is obviously already an ABI change; I
-_want_ to expose more proper information in the case where the port has
-a label, and just kept the NET_NAME_UNKNOWN for the eth%d case to make
-the minimal change. But if people want to change that to NET_NAME_ENUM
-while we're here, I can certainly do that. I can't think of any real
-scenario where NET_NAME_ENUM would be treated differently than
-NET_NAME_UNKNOWN - in both cases, userspace don't know that the name can
-be trusted to be predictable.
-
-Rasmus
-
+-John-
