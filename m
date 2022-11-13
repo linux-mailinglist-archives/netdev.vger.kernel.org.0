@@ -2,142 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC76626E81
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 09:24:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 346DA626E85
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 09:34:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235225AbiKMIYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 03:24:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
+        id S234293AbiKMIeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 03:34:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiKMIYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 03:24:31 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223C9C77C
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 00:24:27 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id n20so975437ejh.0
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 00:24:27 -0800 (PST)
+        with ESMTP id S231252AbiKMIeT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 03:34:19 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96772E0EC;
+        Sun, 13 Nov 2022 00:34:18 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id r61-20020a17090a43c300b00212f4e9cccdso11233807pjg.5;
+        Sun, 13 Nov 2022 00:34:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BI9JbOCpuEbBmn9B+EpkLVjudzHQm7JEX1J1MnwlriY=;
-        b=F3quGL0Mm0a9bpiwWOalTGSAKk8AGIhS2fvdnNoNRIGU1Hph4XofM5Dieovt/yKzte
-         61KaHg8TrIbxuPOQZNgtm1juId2TxAAgHDEWlz9Os33WIqjO1PXFqYkQaIM8lhRVdrjG
-         UOoJIepIqyfNQsnSX6JIpZ0hQOKClpOGkgkgfHk2wilcZJ0vxAuvdZzBnb7LcOVXlDaE
-         O/7B/FYLrQOyUTOn4s8FQ2nIuY8LgI/YhpYOh2NZOcYQhvkK0a19P8+4pxm8Ug4wXuoV
-         AYWpOjMi/neUzTfrvtg5/EaAZxJfQ0H/bH13uMExHWZLAFMj2n+7e5sdfR1bhsB8wKJ5
-         WG4Q==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:sender:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Rh1rcfsF2jelBwTxQVNXFFfPTHy9LFON9Yin67rbwwM=;
+        b=bGoFUf6AIiMKEx+ETMtwz9F237JjvBCmBsp6iZBsU6VMaocGgUdpJvVQzOc31QsdxM
+         b+wSWpFoQUtPRsuZHtf1G59/D5ue81BMCaGpjMIJEvDGWVIfRNbb2x8Oc2mCdpzMBLMT
+         VlBEHnkqnDCDKIomrI0sAEhgNng2fZxndtXCcdBySITB46VEnY7ZwCWUFmub0NA4npn5
+         yK5lsMBDjTwN2TML+YOH/+Yo35x2AwvnZxftB1ePxpk+KAOS6Gv3kF5jLVCeHAkBmPHb
+         c/Gr1pyJLDuSNtG8iBwnMsvzPjiOaNRcZaLFqg/Gsi+H/FwPUtLobt5HVofDxQlM3P8w
+         4oIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BI9JbOCpuEbBmn9B+EpkLVjudzHQm7JEX1J1MnwlriY=;
-        b=MYBezCnjsO7+5tUYZ7bfl20wniIX2nlUKKdJrvMNUlzSCcazA7tIHZ5bpAnPN2Btva
-         7Y3KUFiXThG3g5CX+O4IOQjeIYNYBbuZ4DX/p1MuJD1N5adtrinNZa4vxoHJM4XgNzFd
-         SfP3Aagqog22lPcBbUz2PVzkxLuulliXzoZUa65mYuHwli70pzb9uDLJnrE9W84d0mDZ
-         P4tyiDDDVANAnlozwDrJljhlZU/rTnACYSYytJVuLoF0vlq15iij5QEuyERhgxX7TZ/v
-         ledrStt+DVnaW2qr7ZzojahtyqdmKUc0s6TC+YLBN0f3femjcHyoUsc1QwpJPg5LwfoG
-         xI7w==
-X-Gm-Message-State: ANoB5pkZknPAKfkV+NeHq568YwKQbZ270oWxnrKGmCVYhUowdVuMAVQG
-        QtS94SmRodcOhVIJmM9pR286Z5PAhjLFLmFG
-X-Google-Smtp-Source: AA0mqf7uz4bxdJi5xmTYqX4VILkqEl98IsthFqhX/hwgwb8PJxYSgQUZfxdqQa+obDAFIhzXoB9f1Q==
-X-Received: by 2002:a17:906:3a12:b0:781:b7f2:bce9 with SMTP id z18-20020a1709063a1200b00781b7f2bce9mr7231983eje.269.1668327865384;
-        Sun, 13 Nov 2022 00:24:25 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id fj17-20020a1709069c9100b0072a881b21d8sm2746079ejc.119.2022.11.13.00.24.24
+        h=content-transfer-encoding:sender:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Rh1rcfsF2jelBwTxQVNXFFfPTHy9LFON9Yin67rbwwM=;
+        b=RnqdJAGv9l+oQpjoL47AhQyMO/sHsOw9/cnHOkMNHBXvx1lE6/ziGhgC0sxWFjRP+a
+         YAWSISdjas4WsBbJYq45cJHdpHX7L/1UF5s7/Q1mOWgLQku8M3Frxf0LcFc4p+WbbcFD
+         bnJ+5D4luKlj3OizXko9LRHDcFrgckomcPh04ScXhrI+r/q8JjdDk7F8Kwox0Y9G90j/
+         1zNkytjzS+yCgsZKrzkXlywxU0PNyBmafwLI3PcIecbcjgNlf2MQ5YFPcMnJJq46huWe
+         vygEalRYsJa7qE4Ff2WrBXUu6wXvHUvKiM6JIW2JmOHbYQYID7J5SCsSvsQCTV9UmCd3
+         7SuQ==
+X-Gm-Message-State: ANoB5pklAIBOkQ3rINyoR2YHmpRvU68i/Xd7onMH4M4a4zXek8YPTaqB
+        SiXWXn7aKJNb3wwAl8cf98w=
+X-Google-Smtp-Source: AA0mqf7cqKRdh1qWoQfSFblruo+aoQoKAXq5AXIVXokFSJWm5JAgLhDz1QbMvmF0h8+0MhccP/aIMg==
+X-Received: by 2002:a17:90a:ad49:b0:213:3521:f83a with SMTP id w9-20020a17090aad4900b002133521f83amr9035387pjv.84.1668328458038;
+        Sun, 13 Nov 2022 00:34:18 -0800 (PST)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id lt15-20020a17090b354f00b002130c269b6fsm4284366pjb.1.2022.11.13.00.34.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 00:24:24 -0800 (PST)
-Date:   Sun, 13 Nov 2022 09:24:23 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     John Ousterhout <ouster@cs.stanford.edu>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: Upstream Homa?
-Message-ID: <Y3Cpt4qB5jMoVDDh@nanopsycho>
-References: <CAGXJAmzTGiURc7+Xcr5A09jX3O=VzrnUQMp0K09kkh9GMaDy4A@mail.gmail.com>
- <20221110132540.44c9463c@hermes.local>
- <Y22IDLhefwvjRnGX@lunn.ch>
- <CAGXJAmw=NY17=6TnDh0oV9WTmNkQCe9Q9F3Z=uGjG9x5NKn7TQ@mail.gmail.com>
- <Y26huGkf50zPPCmf@lunn.ch>
- <CAGXJAmzrjKUUDNk0GEvqCNk0SUgtdh=rkDhYSDBogoDyUmr9Tg@mail.gmail.com>
+        Sun, 13 Nov 2022 00:34:17 -0800 (PST)
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel@vger.kernel.org,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH net-next v3] ethtool: doc: clarify what drivers can implement in their get_drvinfo()
+Date:   Sun, 13 Nov 2022 17:34:04 +0900
+Message-Id: <20221113083404.86983-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.37.4
+In-Reply-To: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
+References: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGXJAmzrjKUUDNk0GEvqCNk0SUgtdh=rkDhYSDBogoDyUmr9Tg@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Nov 13, 2022 at 07:09:48AM CET, ouster@cs.stanford.edu wrote:
->On Fri, Nov 11, 2022 at 11:25 AM Andrew Lunn <andrew@lunn.ch> wrote:
->>
->> On Fri, Nov 11, 2022 at 10:59:58AM -0800, John Ousterhout wrote:
->> > The netlink and 32-bit kernel issues are new for me; I've done some digging to
->> > learn more, but still have some questions.
->> >
->>
->> > * Is the intent that netlink replaces *all* uses of /proc and ioctl? Homa
->> > currently uses ioctls on sockets for I/O (its APIs aren't sockets-compatible).
->> > It looks like switching to netlink would double the number of system calls that
->> > have to be invoked, which would be unfortunate given Homa's goal of getting the
->> > lowest possible latency. It also looks like netlink might be awkward for
->> > dumping large volumes of kernel data to user space (potential for buffer
->> > overflow?).
->>
->> I've not looked at the actually code, i'm making general comments.
->>
->> netlink, like ioctl, is meant for the control plain, not the data
->> plain. Your statistics should be reported via netlink, for
->> example. netlink is used to configure routes, setup bonding, bridges
->> etc. netlink can also dump large volumes of data, it has no problems
->> dumping the full Internet routing table for example.
->>
->> How you get real packet data between the userspace and kernel space is
->> a different question. You say it is not BSD socket compatible. But
->> maybe there is another existing kernel API which will work? Maybe post
->> what your ideal API looks like and why sockets don't work. Eric
->> Dumazet could give you some ideas about what the kernel has which
->> might do what you need. This is the uAPI point that Stephen raised.
->
->OK, will do. I'm in the middle of a major API refactor, so I'll wait
->until that is
->resolved before pursing this issue more.
->
->> > * By "32 bit kernel problems" are you referring to the lack of atomic 64-bit
->> > operations and using the facilities of u64_stats_sync.h, or is there a more
->> > general issue with 64-bit operations?
->>
->> Those helpers do the real work, and should optimise to pretty much
->> nothing on an 64 bit kernel, but do the right thing on 32 bit kernels.
->>
->> But you are right, the general point is that they are not atomic, so
->> you need to be careful with threads, and any access to a 64 bit values
->> needs to be protected somehow, hopefully in a way that is optimised
->> out on 64bit systems.
->
->Is it acceptable to have features that are only supported on 64-bit kernels?
+Many of the drivers which implement ethtool_ops::get_drvinfo() will
+prints the .driver, .version or .bus_info of struct ethtool_drvinfo.
+To have a glance of current state, do:
 
-I don't think so. There are plenty 32bit platforms supported, all should
-work there.
+  $ git grep -W "get_drvinfo(struct"
+
+Printing in those three fields is useless because:
+
+  - since [1], the driver version should be the kernel version (at
+    least for upstream drivers). Arguably, out of tree drivers might
+    still want to set a custom version, but out of tree is not our
+    focus.
+
+  - since [2], the core is able to provide default values for .driver
+    and .bus_info.
+
+In summary, drivers may provide .fw_version and .erom_version, the
+rest is expected to be done by the core. Update the doc to reflect the
+facts.
+
+Also update the dummy driver and simply remove the callback in order
+not to confuse the newcomers: most of the drivers will not need this
+callback function any more.
+
+[1] commit 6a7e25c7fb48 ("net/core: Replace driver version to be
+    kernel version")
+Link: https://git.kernel.org/torvalds/linux/c/6a7e25c7fb48
+
+[2] commit edaf5df22cb8 ("ethtool: ethtool_get_drvinfo: populate
+    drvinfo fields even if callback exits")
+Link: https://git.kernel.org/netdev/net-next/c/edaf5df22cb8
+
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+Arguably, dummy.c is code and not documentation, but for me, it makes
+sense to treat it as documentation, thus I am putting everything in
+one single patch.
+
+* Changelog *
+
+v2 -> v3:
+
+  * add Reviewed-by: Leon Romanovsky <leonro@nvidia.com> tag.
+  * use shorter links.
+
+v1 -> v2:
+
+  * forgot the net-next prefix in the patch subject... Sorry for the
+    noise.
+---
+ drivers/net/dummy.c          | 7 -------
+ include/uapi/linux/ethtool.h | 6 +++---
+ 2 files changed, 3 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
+index aa0fc00faecb..c4b1b0aa438a 100644
+--- a/drivers/net/dummy.c
++++ b/drivers/net/dummy.c
+@@ -99,14 +99,7 @@ static const struct net_device_ops dummy_netdev_ops = {
+ 	.ndo_change_carrier	= dummy_change_carrier,
+ };
+ 
+-static void dummy_get_drvinfo(struct net_device *dev,
+-			      struct ethtool_drvinfo *info)
+-{
+-	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+-}
+-
+ static const struct ethtool_ops dummy_ethtool_ops = {
+-	.get_drvinfo            = dummy_get_drvinfo,
+ 	.get_ts_info		= ethtool_op_get_ts_info,
+ };
+ 
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index f341de2ae612..fcee5dbf6c06 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -180,9 +180,9 @@ static inline __u32 ethtool_cmd_speed(const struct ethtool_cmd *ep)
+  * Users can use the %ETHTOOL_GSSET_INFO command to get the number of
+  * strings in any string set (from Linux 2.6.34).
+  *
+- * Drivers should set at most @driver, @version, @fw_version and
+- * @bus_info in their get_drvinfo() implementation.  The ethtool
+- * core fills in the other fields using other driver operations.
++ * Drivers should set at most @fw_version and @erom_version in their
++ * get_drvinfo() implementation. The ethtool core fills in the other
++ * fields using other driver operations.
+  */
+ struct ethtool_drvinfo {
+ 	__u32	cmd;
+-- 
+2.35.1
 
 
->This would be my first choice, since I don't think there will be much interest
->in Homa on 32-bit platforms.
->
->If that's not OK, are there any mechanisms available for helping people
->test on 32-bit platforms? For example, is it possible to configure Linux to
->compile in 32-bit mode so I could test that even on a 64-bit machine
->(I don't have access to a 32-bit machine)?
-
-You can do it easily in emulated environment, like qemu.
-
-
->
->-John-
