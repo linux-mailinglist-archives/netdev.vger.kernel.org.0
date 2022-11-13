@@ -2,208 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60EF6626F35
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 12:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A982626F79
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 13:29:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbiKMLM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 06:12:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
+        id S235123AbiKMM3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 07:29:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235326AbiKMLMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 06:12:44 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA62113DD8;
-        Sun, 13 Nov 2022 03:12:31 -0800 (PST)
+        with ESMTP id S232884AbiKMM3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 07:29:52 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97995EE29;
+        Sun, 13 Nov 2022 04:29:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668337952; x=1699873952;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=y3OtMKzhRZ8Kbbh523DkZkeqZ1JmNxHeI5Ulg2C2sds=;
-  b=zCIoDD4t7P01MX3nD1k7nTHp8+a7vVmbgE5s1zWjgAwfe2EnffAjTobA
-   RC9UI7kVCUui3ryFF5XB/4V0fv/YEqTP52zrY0aomoF9/QAfOlNOzFnqn
-   MgPrkImGgyI4vHzORDSCAFaroPGKliZPiUVC60wOCccBBEhbMV1nWq7B2
-   NRGV/TnHLG9H84Gxwqo+ptvSo3cP42MxbD7H67FpttMW6+vLZ5GoUuf90
-   dX9zMe97iPOQcKjw7Za5mplhaJnTSL5A/Ng8F4S3/mENQ/9jahczH7Qtw
-   bhQYyL4UTBwRvyeQEk9IaO5NLhTuX5HHlYtu2EOufNicZFBO4lTBf3vnl
-   w==;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668342591; x=1699878591;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3aDUPNbZhT7y8PFBk3x2fesIcWdCkiQc/eyvtcMv5A4=;
+  b=D5MdBdM5z+pBFnsbceA26OF4AtlI2zWEnXEJgUuB48gb/hF7AUUDB6Jr
+   q+nPEFlAPnitTafLZogjV7nJaAkTp8dqMb4Pe/cHnnzvVF03QLZl3jv8v
+   PNvrk1uyDkEwtccuczZqHYRBc7WgIjBW4PaQkr9Zn8wkUa+b66loRfyix
+   YUX2gP84loi4p/zc5Ux0yq1xNKUHotDdTOkWsQ/quvbtr68rYCdw3QM/J
+   Dz37FJQ0gIdvN+JF7IFqQRKtnw3g6WPe1uPoPRNQZt7HZovqD8iTx+JKI
+   gJXg1rtRGyoWavV42tawUUr8e1pUyC2z/zlmORar9A1lbGsyFA8RH/MF4
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10529"; a="376072774"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="183271868"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Nov 2022 04:12:31 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Sun, 13 Nov 2022 04:12:31 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Sun, 13 Nov 2022 04:12:28 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>,
-        <alexandr.lobakin@intel.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 5/5] net: lan966x: Add support for XDP_REDIRECT
-Date:   Sun, 13 Nov 2022 12:15:59 +0100
-Message-ID: <20221113111559.1028030-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20221113111559.1028030-1-horatiu.vultur@microchip.com>
-References: <20221113111559.1028030-1-horatiu.vultur@microchip.com>
+   d="scan'208";a="376072774"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2022 04:29:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10529"; a="638111594"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="638111594"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002.jf.intel.com with ESMTP; 13 Nov 2022 04:29:44 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ouC7I-00Bfs8-35;
+        Sun, 13 Nov 2022 14:29:40 +0200
+Date:   Sun, 13 Nov 2022 14:29:40 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Barry Song <baohua@kernel.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-crypto@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        "open list:HFI1 DRIVER" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH 0/4] cpumask: improve on cpumask_local_spread() locality
+Message-ID: <Y3DjNJNtiZGNLeGi@smile.fi.intel.com>
+References: <20221111040027.621646-1-yury.norov@gmail.com>
+ <20221111082551.7e71fbf4@kernel.org>
+ <CAAH8bW9jG5US0Ymn1wax9tNK3MgZpcWfQsYgu-Km_E+WZw3yiA@mail.gmail.com>
+ <a8c52fa8-f976-92a0-2948-843476a81efb@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a8c52fa8-f976-92a0-2948-843476a81efb@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend lan966x XDP support with the action XDP_REDIRECT. This is similar
-with the XDP_TX, so a lot of functionality can be reused.
+On Sun, Nov 13, 2022 at 09:37:59AM +0200, Tariq Toukan wrote:
+> On 11/11/2022 6:47 PM, Yury Norov wrote:
+> > On Fri, Nov 11, 2022, 10:25 AM Jakub Kicinski <kuba@kernel.org
+> > <mailto:kuba@kernel.org>> wrote:
+> >     On Thu, 10 Nov 2022 20:00:23 -0800 Yury Norov wrote:
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c |  9 ++++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  1 +
- .../ethernet/microchip/lan966x/lan966x_main.h |  6 ++++
- .../ethernet/microchip/lan966x/lan966x_xdp.c  | 28 +++++++++++++++++++
- 4 files changed, 44 insertions(+)
+..
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index a177ca499db4e..18de2880e202c 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0+
- 
- #include <linux/bpf.h>
-+#include <linux/filter.h>
- 
- #include "lan966x_main.h"
- 
-@@ -520,6 +521,7 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 	int dcb_reload = rx->dcb_index;
- 	struct lan966x_rx_dcb *old_dcb;
- 	struct lan966x_db *db;
-+	bool redirect = false;
- 	struct sk_buff *skb;
- 	struct page *page;
- 	int counter = 0;
-@@ -545,6 +547,10 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 		case FDMA_TX:
- 			lan966x_fdma_rx_advance_dcb(rx);
- 			continue;
-+		case FDMA_REDIRECT:
-+			lan966x_fdma_rx_advance_dcb(rx);
-+			redirect = true;
-+			continue;
- 		case FDMA_DROP:
- 			lan966x_fdma_rx_free_page(rx);
- 			lan966x_fdma_rx_advance_dcb(rx);
-@@ -581,6 +587,9 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 	if (counter < weight && napi_complete_done(napi, counter))
- 		lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
- 
-+	if (redirect)
-+		xdp_do_flush();
-+
- 	return counter;
- }
- 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 0b7707306da26..0aed244826d39 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -469,6 +469,7 @@ static const struct net_device_ops lan966x_port_netdev_ops = {
- 	.ndo_eth_ioctl			= lan966x_port_ioctl,
- 	.ndo_setup_tc			= lan966x_tc_setup,
- 	.ndo_bpf			= lan966x_xdp,
-+	.ndo_xdp_xmit			= lan966x_xdp_xmit,
- };
- 
- bool lan966x_netdevice_check(const struct net_device *dev)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index df7fec361962b..b73c5a6cc0beb 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -106,12 +106,14 @@ enum macaccess_entry_type {
-  * FDMA_ERROR, something went wrong, stop getting more frames
-  * FDMA_DROP, frame is dropped, but continue to get more frames
-  * FDMA_TX, frame is given to TX, but continue to get more frames
-+ * FDMA_REDIRECT, frame is given to TX, but continue to get more frames
-  */
- enum lan966x_fdma_action {
- 	FDMA_PASS = 0,
- 	FDMA_ERROR,
- 	FDMA_DROP,
- 	FDMA_TX,
-+	FDMA_REDIRECT,
- };
- 
- struct lan966x_port;
-@@ -564,6 +566,10 @@ int lan966x_xdp(struct net_device *dev, struct netdev_bpf *xdp);
- int lan966x_xdp_run(struct lan966x_port *port,
- 		    struct page *page,
- 		    u32 data_len);
-+int lan966x_xdp_xmit(struct net_device *dev,
-+		     int n,
-+		     struct xdp_frame **frames,
-+		     u32 flags);
- static inline bool lan966x_xdp_port_present(struct lan966x_port *port)
- {
- 	return !!port->xdp_prog;
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-index c7dcb9d443ffa..fbf04a82ef994 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-@@ -35,6 +35,29 @@ int lan966x_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	}
- }
- 
-+int lan966x_xdp_xmit(struct net_device *dev,
-+		     int n,
-+		     struct xdp_frame **frames,
-+		     u32 flags)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	int i, nxmit = 0;
-+
-+	for (i = 0; i < n; ++i) {
-+		struct xdp_frame *xdpf = frames[i];
-+		int err;
-+
-+		err = lan966x_fdma_xmit_xdpf(port, xdpf,
-+					     virt_to_head_page(xdpf->data));
-+		if (err)
-+			break;
-+
-+		nxmit++;
-+	}
-+
-+	return nxmit;
-+}
-+
- int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
- {
- 	struct bpf_prog *xdp_prog = port->xdp_prog;
-@@ -59,6 +82,11 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
- 
- 		return lan966x_fdma_xmit_xdpf(port, xdpf, page) ?
- 		       FDMA_DROP : FDMA_TX;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(port->dev, &xdp, xdp_prog))
-+			return FDMA_DROP;
-+
-+		return FDMA_REDIRECT;
- 	default:
- 		bpf_warn_invalid_xdp_action(port->dev, xdp_prog, act);
- 		fallthrough;
+> > Sure. Tariq and Valentine please send your tags as appropriate.
+> 
+> I wonder what fits best here?
+> 
+> As the contribution is based upon previous work that I developed, then
+> probably:
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+
+Then it probably means that one of you (Yury or you) should also have a
+Co-developed-by.
+
 -- 
-2.38.0
+With Best Regards,
+Andy Shevchenko
+
 
