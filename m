@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6ECD6270E9
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 17:44:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 666076270EB
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 17:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235457AbiKMQox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 11:44:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        id S235463AbiKMQoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 11:44:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235442AbiKMQou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 11:44:50 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35389DEF0;
-        Sun, 13 Nov 2022 08:44:49 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id e15so5624240qts.1;
-        Sun, 13 Nov 2022 08:44:49 -0800 (PST)
+        with ESMTP id S233029AbiKMQov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 11:44:51 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E2A11814;
+        Sun, 13 Nov 2022 08:44:50 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id l15so5611414qtv.4;
+        Sun, 13 Nov 2022 08:44:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1QWD/jUXR3p/XF022zWpAWrCQHECTDO1W29LEJMQqdc=;
-        b=MJ9OfO41w/ZJQ0AHEqLuC58HYWppcOiqalK1qjlgWK2DW60p/Z3AMLyscAS/7ESft9
-         P276fEfNv1GVIdeRXvKjlQICQM69+neZgEAdqDUkaodHvpWy7hEmnlH5EIg+aXjiCRi4
-         1ljbwUhTSqi9GBJb0U+CBC7/TH/s4mHYP6BE5nKsTOrgEvI5b+dLsmcsY/EPQDRzczbp
-         vMT2kkX1o4Mk/kx2jLegXI31CE7pjTmfn31zEvbIQUYHwxqr/NofoslFzJdC/RUnzaYo
-         TWkxHZBEXk0l1gMeaSoZsYnWFzE51m2sJ4AEXM9ICwiVNh54r2daxgPRIKMRzprfoUUD
-         zPdw==
+        bh=+tAh+Of9caxaRUw4XnH2iGsda0b31xsN0rQHDbAXeik=;
+        b=gxxTCtY0IWNwUHf31mVtlDa2G2+cjiwawgVHmzHiYCtIC3btuGn5a0tLrdPCdv27Qt
+         nN44j4je1EcVXmKVKK1Chxa9ldTm7d59RdYbhLINrz+9AgW/8eZaDmUENfzFNfJXl97h
+         ghKZCfVGZOaKgOjq6DWeiA0B1tNsi2iAIc3hIb9oe+Kvf6E3/XCSqjEhQemywSlzlgv5
+         rnyjK9GXSqfEEjtczhSAvKwptByDFDsJ/G7HDyypvQfJgMCqojRi04C/1e8vHSihuSJp
+         hpotmelYx5y+arNcexG28Gu3mFqL7SsIxnuNFzmpp2dtj0SWiO8/vNb6xDb9aKVd9Llz
+         hMrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1QWD/jUXR3p/XF022zWpAWrCQHECTDO1W29LEJMQqdc=;
-        b=jAexhBQb7VBiE6TodQyE/8/CeyzZ17Es/xrKAjJu3RPOG/zvfmDqP8Ez3DPddbnkLG
-         MmepORMSUAX3zVNRHZPRM0tRDVN6zGwl09OufbarGg8JkIjzYofidvTj5lVPpsA/ul8e
-         uNbVhHunxtal1Kz5ifLxr9JE1QLtDv0pV5CkGtoPQdg711N+/xHxp7VLlwErreIa7kmM
-         TuiN823wdzXwbRd5CYhs9iAM+SQ3aGsI2YlS5lT7MM/EDZ78CdoYMKbsKRHvIX82PqPS
-         fzx3h+lAExUR3pKZpwHxW0p6syddbeJTqE7me7dEKZgJ4qY/RLqqOEHXnjg84wtsSjAe
-         QZAg==
-X-Gm-Message-State: ANoB5pnUOWIL3kPH83Qepnb691Z24BhSEjSKnvqyNip7rJ0lSWM/x4MR
-        pUxDmIcwTNrsZAlgyyFXP0gm7NNwrZZgOg==
-X-Google-Smtp-Source: AA0mqf4lY6viBeHpddQ7BjGnzr6FiGMXWSkyOCzDkF9k8FOi5T7n9He07T3lVKmdyM9olK0ESVzriw==
-X-Received: by 2002:ac8:48d6:0:b0:35b:b0a4:a6f9 with SMTP id l22-20020ac848d6000000b0035bb0a4a6f9mr9237050qtr.559.1668357888045;
-        Sun, 13 Nov 2022 08:44:48 -0800 (PST)
+        bh=+tAh+Of9caxaRUw4XnH2iGsda0b31xsN0rQHDbAXeik=;
+        b=rNoU7+fN0GtfpHGP+8h6gvhZ/bzyTZi2PnPfIlB9sZWbi8nNx+Ta6OU+MoEXfhxOo1
+         NLLuMoDV1ezreFwanlbqOlM2BYg1HXm7cRI7vfdJ33F/5ZMhZCbdohFuZoFJTQ2yvUnA
+         0rjm9ci6qEL2BlGzCSuzwBmyVj01NiBhn6UMMeAVuZq2RU+2YWKyjwRMvPRu6GPM0sLV
+         JfBjl7ILlOxsk/3hAKur45T371/WvKS7T3LtXc4E+TGTWOJG3LjZ4/RU6RwXNWozaxol
+         yQJdgbj96LFnquY4Dg40AjDByeWbdvHY27OPRvdR7VcbRP/d/ezWcZgN8KDBT9zzT0B1
+         AZBA==
+X-Gm-Message-State: ANoB5pkFjHDWZDJHm1yzCTRpFEpwMM8AFb0R/7D91d3awJAxEXjOz6++
+        EkWBveXJ6V718azh0h+xfByHyniM3bNf0A==
+X-Google-Smtp-Source: AA0mqf67/qpID2Rull5karNhfNvmyDDwpPJqkf+XH138/6hWpStI9RN9Zu5APgVTytwcFDejtOQ9EA==
+X-Received: by 2002:a05:622a:59cf:b0:3a5:60db:4d6f with SMTP id gc15-20020a05622a59cf00b003a560db4d6fmr9231873qtb.477.1668357889103;
+        Sun, 13 Nov 2022 08:44:49 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id cf8-20020a05622a400800b0035d08c1da35sm4429191qtb.45.2022.11.13.08.44.47
+        by smtp.gmail.com with ESMTPSA id cf8-20020a05622a400800b0035d08c1da35sm4429191qtb.45.2022.11.13.08.44.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 08:44:47 -0800 (PST)
+        Sun, 13 Nov 2022 08:44:48 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -58,9 +58,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Neil Horman <nhorman@tuxdriver.com>,
         David Ahern <dsahern@gmail.com>,
         Carlo Carraro <colrack@gmail.com>
-Subject: [PATCH net-next 2/7] sctp: check ipv6 addr with sk_bound_dev if set
-Date:   Sun, 13 Nov 2022 11:44:38 -0500
-Message-Id: <1a234438372853dae6de0483c09c87399af33c93.1668357542.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 3/7] sctp: check sk_bound_dev_if when matching ep in get_port
+Date:   Sun, 13 Nov 2022 11:44:39 -0500
+Message-Id: <87135839695e35749206f2af03a53a9e03f184a3.1668357542.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1668357542.git.lucien.xin@gmail.com>
 References: <cover.1668357542.git.lucien.xin@gmail.com>
@@ -76,56 +76,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When binding to an ipv6 address, it calls ipv6_chk_addr() to check if
-this address is on any dev. If a socket binds to a l3mdev but no dev
-is passed to do this check, all l3mdev and slaves will be skipped and
-the check will fail.
-
-This patch is to pass the bound_dev to make sure the devices under the
-same l3mdev can be returned in ipv6_chk_addr(). When the bound_dev is
-not a l3mdev or l3slave, l3mdev_master_dev_rcu() will return NULL in
-__ipv6_chk_addr_and_flags(), it will keep compitable with before when
-NULL dev was passed.
+In sctp_get_port_local(), when binding to IP and PORT, it should
+also check sk_bound_dev_if to match listening sk if it's set by
+SO_BINDTOIFINDEX, so that multiple sockets with the same IP and
+PORT, but different sk_bound_dev_if can be listened at the same
+time.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/ipv6.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ net/sctp/socket.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
-index d081858c2d07..e6274cdbdf6c 100644
---- a/net/sctp/ipv6.c
-+++ b/net/sctp/ipv6.c
-@@ -680,9 +680,11 @@ static int sctp_v6_is_any(const union sctp_addr *addr)
- /* Should this be available for binding?   */
- static int sctp_v6_available(union sctp_addr *addr, struct sctp_sock *sp)
- {
--	int type;
--	struct net *net = sock_net(&sp->inet.sk);
- 	const struct in6_addr *in6 = (const struct in6_addr *)&addr->v6.sin6_addr;
-+	struct sock *sk = &sp->inet.sk;
-+	struct net *net = sock_net(sk);
-+	struct net_device *dev = NULL;
-+	int type;
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 3e83963d1b8a..4306164238ef 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -8398,6 +8398,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
+ 		 * in an endpoint.
+ 		 */
+ 		sk_for_each_bound(sk2, &pp->owner) {
++			int bound_dev_if2 = READ_ONCE(sk2->sk_bound_dev_if);
+ 			struct sctp_sock *sp2 = sctp_sk(sk2);
+ 			struct sctp_endpoint *ep2 = sp2->ep;
  
- 	type = ipv6_addr_type(in6);
- 	if (IPV6_ADDR_ANY == type)
-@@ -696,8 +698,14 @@ static int sctp_v6_available(union sctp_addr *addr, struct sctp_sock *sp)
- 	if (!(type & IPV6_ADDR_UNICAST))
- 		return 0;
+@@ -8408,7 +8409,9 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
+ 			     uid_eq(uid, sock_i_uid(sk2))))
+ 				continue;
  
-+	if (sk->sk_bound_dev_if) {
-+		dev = dev_get_by_index_rcu(net, sk->sk_bound_dev_if);
-+		if (!dev)
-+			return 0;
-+	}
-+
- 	return ipv6_can_nonlocal_bind(net, &sp->inet) ||
--	       ipv6_chk_addr(net, in6, NULL, 0);
-+	       ipv6_chk_addr(net, in6, dev, 0);
- }
- 
- /* This function checks if the address is a valid address to be used for
+-			if (sctp_bind_addr_conflict(&ep2->base.bind_addr,
++			if ((!sk->sk_bound_dev_if || !bound_dev_if2 ||
++			     sk->sk_bound_dev_if == bound_dev_if2) &&
++			    sctp_bind_addr_conflict(&ep2->base.bind_addr,
+ 						    addr, sp2, sp)) {
+ 				ret = 1;
+ 				goto fail_unlock;
 -- 
 2.31.1
 
