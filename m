@@ -2,127 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52BE66271DB
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 19:59:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6FC36271E5
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 20:04:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235513AbiKMS7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 13:59:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S235405AbiKMTEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 14:04:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235014AbiKMS7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 13:59:39 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0287B60C6;
-        Sun, 13 Nov 2022 10:59:39 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 08D1784F4D;
-        Sun, 13 Nov 2022 19:59:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1668365977;
-        bh=SgcD14pNlGB+D2FXYfYYtZpqVeLIj9nd81BTeQh2UVo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=yJEzxgDLBeOEyD52LlrRZWeu1oO3WC1kQOTp5EsFWH8MLDY63psGRCjCPq0L+4lbd
-         LnXRovO/XASZ8oz32a6rXJeZ2j+jo+HBaQC8pz0b/TrlOZTJDkMP9dEBorhkY61CpK
-         G/jEqvuFDoA8MXW0AsqvhGeohQSjYJS2ESXlJEF6OhF+AEV71B9n2mci7W4cQ0saZh
-         k0PNlG1Ro9InurtP+gH5pJkDno6NSsYkgGGwmF9kOYR7bY5jcux2ufR+kcP+5BSscE
-         IXDUJ++wRfE9Oo+shLNtjJVkzDoyNz49xhd9RlJv+95NoQWp9DGZ4J9qN+uyHhISao
-         +I+7LpyTq/4FQ==
-Message-ID: <da2bca7b-1289-747c-df11-fb424381c6e6@denx.de>
-Date:   Sun, 13 Nov 2022 19:59:36 +0100
+        with ESMTP id S232799AbiKMTEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 14:04:08 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6453FC744;
+        Sun, 13 Nov 2022 11:04:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xdAqZSVxm7Y0UeN6aDvnqxEcWxjFN6zP4RUdjTHboHw=; b=wdFlr+tVkBzJGfMDe+ohZSJYCR
+        7DGvlXDW43xCE/XPaCiFNbaeQ37R4sU1YoWdT8gWpTgBt5a5WeG7DYrHAO1Gf9E9Wvn3JIJ2B1ETE
+        dXgvmNku+hAnZV2dQwosLoK9tzmuoQctFInQ3RhlGHL3unlbz/dR/36fnQY5sOrBMfL4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ouIGx-002G7D-If; Sun, 13 Nov 2022 20:04:03 +0100
+Date:   Sun, 13 Nov 2022 20:04:03 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hariprasad Kelam <hkelam@marvell.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
+Subject: Re: [net-next PATCH 0/9] CN10KB MAC block support
+Message-ID: <Y3E/o10wIZPMxPWa@lunn.ch>
+References: <20221112043141.13291-1-hkelam@marvell.com>
+ <20221111211235.2e8f03c0@kernel.org>
+ <Y2/nhhi2jGUSk7L/@lunn.ch>
+ <PH0PR18MB4474E9CFE1E1FBF8EAF71817DE029@PH0PR18MB4474.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v5] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via
- control port
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, Angus Ainslie <angus@akkea.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-References: <20221104163339.227432-1-marex@denx.de>
- <87o7tjszyg.fsf@kernel.org> <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de>
- <877d06g98z.fsf@kernel.org> <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de>
- <871qqccd5i.fsf@kernel.org> <1c37e3f3-0616-3d60-6572-36e9f5aa0d59@denx.de>
- <87zgczs6zl.fsf@kernel.org>
-Content-Language: en-US
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <87zgczs6zl.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR18MB4474E9CFE1E1FBF8EAF71817DE029@PH0PR18MB4474.namprd18.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/22 06:39, Kalle Valo wrote:
-> Marek Vasut <marex@denx.de> writes:
-> 
->> On 11/9/22 17:20, Kalle Valo wrote:
->>> Marek Vasut <marex@denx.de> writes:
->>>
->>>> On 11/7/22 14:54, Kalle Valo wrote:
->>>>> Marek Vasut <marex@denx.de> writes:
->>>>>
->>>>>>> BTW did you test this on a real device?
->>>>>>
->>>>>> Yes, SDIO RS9116 on next-20221104 and 5.10.153 .
->>>>>
->>>>> Very good, thanks.
->>>>>
->>>>>> What prompts this question ?
->>>>>
->>>>> I get too much "fixes" which have been nowhere near real hardware and
->>>>> can break the driver instead of fixing anything, especially syzbot
->>>>> patches have been notorious. So I have become cautious.
->>>>
->>>> Ah, this is a real problem right here.
->>>>
->>>> wpa-supplicant 2.9 from OE dunfell 3.1 works.
->>>> wpa-supplicant 2.10 from OE kirkstone 4.0 fails.
->>>>
->>>> That's how I ran into this initially. My subsequent tests were with
->>>> debian wpa-supplicant 2.9 and 2.10 packages, since that was easier,
->>>> they (2.10 does, 2.9 does not) trigger the problem all the same.
->>>>
->>>> I'm afraid this RSI driver is so poorly maintained and has so many
->>>> bugs, that, there is little that can make it worse. The dealing I had
->>>> with RSI has been ... long ... and very depressing. I tried to get
->>>> documentation or anything which would help us fix the problems we have
->>>> with this RSI driver ourselves, but RSI refused it all and suggested
->>>> we instead use their downstream driver (I won't go into the quality of
->>>> that). It seems RSI has little interest in maintaining the upstream
->>>> driver, pity.
->>>>
->>>> I've been tempted to flag this driver as BROKEN for a while, to
->>>> prevent others from suffering with it.
->>>
->>> That's a pity indeed. Should we at least mark the driver as orphaned in
->>> MAINTAINERS?
->>>
->>> Or even better if you Marek would be willing to step up as the
->>> maintainer? :)
->>
->> I think best mark it orphaned, to make it clear what the state of the
->> driver really is.
->>
->> If RSI was willing to provide documentation, or at least releases
->> which are not 30k+/20k- single-all-in-one-commit dumps of code, or at
->> least any help, I would consider it. But not like this.
-> 
-> Yeah, very understandable. So let's mark the driver orphaned then, can
-> someone send a patch?
+> For  "Dropped packets by DMAC filters" did not find any equivalent APIs, so will keep it as is.
 
-Done
+Nope. Propose a generic netlink API, probably as an extension to
+ethtool, which other vendors can use as well.
+
+This is exactly Jakub and my point. Is your hardware so special it
+does things which no other vendor does? Is the concept of DMAC filters
+dropping packets unique to your hardware? Is this feature so obscure
+that no other vendor will ever implement it? And if it is that
+obscure, is any user actually going to use it?
+
+	Andrew
