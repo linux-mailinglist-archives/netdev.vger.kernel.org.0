@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BAA76271C8
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 19:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AED56271CA
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 19:47:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235558AbiKMSrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 13:47:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
+        id S235577AbiKMSrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 13:47:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiKMSrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 13:47:37 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6E1FCED;
-        Sun, 13 Nov 2022 10:47:35 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id a5so14345290edb.11;
-        Sun, 13 Nov 2022 10:47:35 -0800 (PST)
+        with ESMTP id S235539AbiKMSri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 13:47:38 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA614101E8;
+        Sun, 13 Nov 2022 10:47:37 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id a5so14345367edb.11;
+        Sun, 13 Nov 2022 10:47:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SPSCT7mL2Daw8RWymsIQzf971Rn84ofq1ETgmc/Yrg4=;
-        b=UR/aoMRfLNPHf+oe//1gZcDiKrj20/dQroVVC3bELi920m6tVVK50Ixl4Y6q7+JjUu
-         CJNoMzuRfdPpex8t1vmM9AEn5zMf1TkWwPqivZpx6gJwfYXy2A1l23klBmagqjvae7BA
-         MuYzxg1feIxkm+qn6Xb+dfR1LJy/wUxWAfKycFMBiPtpmyaR4Pn0KLSKZ42rujr1bd/w
-         8rHvlPf+9W6sWOY5NxgRzpuHoDr/ZxtzY+BwGorJZte+DWTUaG0PGJ3rZCEDx1FJhjn7
-         INMSvfAB56s2hsnAutpTBoSEC6qe593TtZujeLLyr8c47ZwjNTJROR4wLzr/Uqab0HpV
-         iLaQ==
+        bh=VMhpYyPey08UrRgT0dHRpZvgVs5y36GQ990A5ruvQkI=;
+        b=SufgRicCgiDOPBIqahr9/qv6XCI0AGxHhMBCltHUEekcrTX/c1uyCF9WIgORRc6Ip/
+         XRAS7b6cprhmW+iZnDJgEaXpwFNMWBRpe5y9VLsJtF5ajHRb3p6ZBJnmDV2b1ZOz0qDA
+         dPjnQpoIa1QHQherL+D1CxeJHmptS6jdluzWdY26FCCTmHuFdk7VPt9QY5fAJ6I+3OV6
+         H5tdTozS7aHfyf3cD3U0xYM4243pjppHWHhGsIe4orU2ud6TiAR45krRQRUVx4vcE/pW
+         lISYNkrgyKngI35yANEsBV1Mou/Xc9gNdGgOtaX+E3xsZhKMpTqOKvZV3zotCflUSwjz
+         s5Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SPSCT7mL2Daw8RWymsIQzf971Rn84ofq1ETgmc/Yrg4=;
-        b=fVG6B4CE+te3kSwINqgWkGF7M4xvs2EjDIlkzWWC/Z3hqWRn2QMJh81vfF9KBgwB0r
-         9rQ1DGHkdAF43y4+9oRFQX5Z+cCbtIWQBh/NVI2uR2P5l5+NiifrrDvAtpMx9dgaQLRq
-         ay9xuwXzVXoyyWRPwsRocIzM2qXYLFDfP7/LG+jS5QMVk/idJJb0T48IPAxkVint9uUF
-         AM8VYvMWARlM0XOfQkARBhZdRV1qfY/v+enljXbn+sX57gXzbgjT191Ra6IjvmIm5BYY
-         FeAO+jPcJAcij0Syg3osbi+GRma+46IOlZbcpyxpMTi9UeskiNiKCR53CDRjqGlch+H2
-         PxCQ==
-X-Gm-Message-State: ANoB5plvNqC7K8V6larXDyxHLhorlOu0dLRddr4XIMjG+j/TnTdcyPD+
-        NNLsv0gqFIXzYGtDgFK0lCM=
-X-Google-Smtp-Source: AA0mqf4h2dzpwsq0qL4eAdnL7K+BPsUaMF+jTK9E4MPEuBmLv4EwxVFmCmlCzPBUlL5Lo73X2XKA+g==
-X-Received: by 2002:a05:6402:1750:b0:467:d741:f359 with SMTP id v16-20020a056402175000b00467d741f359mr1680827edx.100.1668365254274;
-        Sun, 13 Nov 2022 10:47:34 -0800 (PST)
+        bh=VMhpYyPey08UrRgT0dHRpZvgVs5y36GQ990A5ruvQkI=;
+        b=l4t0R0ZDZoc0pxJZF4mzeGEmgnE1YszhNTMtTcAaZs8QukK2T23qX94iK3EX5RHaQL
+         vHm8TS5Nb6Wo9mJyaQKMQj+XO08R637NTZzBSMdYIBEtbcsaqGtdDLBc7FR9oEIZA5M7
+         CY2xP8nPFDIDTZ1E69mT91o3VzFKoa2/6NHxJNYH4W+9+gMmEEr6o1Jqc81qJCSEiHlB
+         stRNIksLCe+7/26dxxm/2XSKnHmsNl+XQYeMzQHFt+PeazpuKNanSg+R3QIgZ5Fz/PTV
+         MWF2HzxAZ0fYX/2i2UAhXgE/J1PG6kF/YJBI2vrXmMfprD20+QAj53cpKim2POYFfT/f
+         3Ogg==
+X-Gm-Message-State: ANoB5pk1Iqa0rO+qp7D/IKVQj7HeZkr4qF6C7WMEuSmyMeNkWAM/aAY9
+        mARM2bpQfDVdu5GkG8219U2FHbF4FCHN5Q==
+X-Google-Smtp-Source: AA0mqf7BpnnvpWOgQpJ2U8fnXQxafN8bgUIMf04uY9hP5Ien3e1lISxtncyBvSPPp0AdHJYS6a34vg==
+X-Received: by 2002:a05:6402:2b89:b0:45f:c7f2:297d with SMTP id fj9-20020a0564022b8900b0045fc7f2297dmr8983540edb.266.1668365256417;
+        Sun, 13 Nov 2022 10:47:36 -0800 (PST)
 Received: from fedora.. (dh207-97-48.xnet.hr. [88.207.97.48])
-        by smtp.googlemail.com with ESMTPSA id a2-20020aa7d742000000b004623028c594sm3760050eds.49.2022.11.13.10.47.32
+        by smtp.googlemail.com with ESMTPSA id a2-20020aa7d742000000b004623028c594sm3760050eds.49.2022.11.13.10.47.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 10:47:33 -0800 (PST)
+        Sun, 13 Nov 2022 10:47:35 -0800 (PST)
 From:   Robert Marko <robimarko@gmail.com>
 To:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -57,9 +57,9 @@ To:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 3/5] dt-bindings: net: ipq4019-mdio: require and validate clocks
-Date:   Sun, 13 Nov 2022 19:47:25 +0100
-Message-Id: <20221113184727.44923-3-robimarko@gmail.com>
+Subject: [PATCH 4/5] dt-bindings: net: ipq4019-mdio: document required clock-names
+Date:   Sun, 13 Nov 2022 19:47:26 +0100
+Message-Id: <20221113184727.44923-4-robimarko@gmail.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221113184727.44923-1-robimarko@gmail.com>
 References: <20221113184727.44923-1-robimarko@gmail.com>
@@ -75,66 +75,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we can match the platforms requiring clocks by compatible start
-using those to allow clocks per compatible and make them required.
+IPQ5018, IPQ6018 and IPQ8074 require clock-names to be set as driver is
+requesting the clock based on it and not index, so document that and make
+it required for the listed SoC-s.
 
 Signed-off-by: Robert Marko <robimarko@gmail.com>
 ---
- .../bindings/net/qcom,ipq4019-mdio.yaml       | 28 +++++++++++++------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-index 2c85ae43d27d..b34955b0b827 100644
+index b34955b0b827..d233009b0d49 100644
 --- a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
 +++ b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-@@ -9,9 +9,6 @@ title: Qualcomm IPQ40xx MDIO Controller
- maintainers:
-   - Robert Marko <robert.marko@sartura.hr>
- 
--allOf:
--  - $ref: "mdio.yaml#"
--
- properties:
-   compatible:
-     oneOf:
-@@ -40,18 +37,31 @@ properties:
-       the second Address and length of the register for ethernet LDO, this second
-       address range is only required by the platform IPQ50xx.
- 
--  clocks:
--    maxItems: 1
--    description: |
--      MDIO clock source frequency fixed to 100MHZ, this clock should be specified
--      by the platform IPQ807x, IPQ60xx and IPQ50xx.
--
- required:
-   - compatible
-   - reg
-   - "#address-cells"
-   - "#size-cells"
- 
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,ipq5018-mdio
-+              - qcom,ipq6018-mdio
-+              - qcom,ipq8074-mdio
-+    then:
-+      properties:
-+        clocks:
+@@ -59,8 +59,12 @@ allOf:
+         clocks:
+           items:
+             - description: MDIO clock source frequency fixed to 100MHZ
++        clock-names:
 +          items:
-+            - description: MDIO clock source frequency fixed to 100MHZ
-+      required:
-+        - clocks
-+
++            - const: gcc_mdio_ahb_clk
+       required:
+         - clocks
++        - clock-names
+ 
  unevaluatedProperties: false
  
- examples:
 -- 
 2.38.1
 
