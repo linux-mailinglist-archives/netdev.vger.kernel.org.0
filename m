@@ -2,120 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF5F2626ED9
-	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 11:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 154B9626EEF
+	for <lists+netdev@lfdr.de>; Sun, 13 Nov 2022 11:22:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235219AbiKMKEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 05:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        id S235257AbiKMKWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 05:22:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiKMKEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 05:04:45 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D375F40;
-        Sun, 13 Nov 2022 02:04:42 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id DD2D25FD20;
-        Sun, 13 Nov 2022 13:04:38 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1668333878;
-        bh=9rOROH2iebzLRkDA8NLvRPT2sy7/Kmmx1bzHXtL+1do=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=CdMPwgCnQ/YOIoUpFWj/vOdlIPUHT83RZeDLR+6+fiWC6UTjrd7O9juBsfMj9e0me
-         7VLWg5lVcdm5NUmpSK6Bf6MtskHPskZ+y/WreimzhPEhxWsVq7Dy17NiwXTN2jQ79g
-         i2XtYSCyNWt34uM4p98xcryCiP5Qy/jbF1/mCJSOCkUgAT38ZJIaxqOn627PAWDPjR
-         22DPApo4qdRpNjhH3qVZEmDU5/fwv7zfL149APKERzBriqmtzYVzlS8Hyj4fLCjzLG
-         mB473yJznuFEiJonTvTlrXUeZj1zY8sYLS8Sobysk0v7Tv1rs/OE7u2bOmx2/oLYzZ
-         znz1ygF9I43Bw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun, 13 Nov 2022 13:04:36 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        kernel <kernel@sberdevices.ru>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v3 00/11] virtio/vsock: experimental zerocopy receive
-Thread-Topic: [RFC PATCH v3 00/11] virtio/vsock: experimental zerocopy receive
-Thread-Index: AQHY8hatKKTuchPoekmnGA3HAR0Si645kb6AgAB0yICAAPn8gIABd2GA
-Date:   Sun, 13 Nov 2022 10:04:22 +0000
-Message-ID: <d4c3afcc-e8f3-d81c-597a-5311280e8e51@sberdevices.ru>
-References: <f60d7e94-795d-06fd-0321-6972533700c5@sberdevices.ru>
- <20221111134715.qxgu7t4c7jse24hp@sgarzare-redhat> <Y260WSJKJXtaJQZi@bullseye>
- <3de0302f-bd4f-5df1-9de5-cbc3b3dd94f8@sberdevices.ru>
-In-Reply-To: <3de0302f-bd4f-5df1-9de5-cbc3b3dd94f8@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CAE0D643183BAB419460FB3C6014DF3C@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S231972AbiKMKWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 05:22:35 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FCC11801
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 02:22:34 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id i3so8551614pfc.11
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 02:22:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xbiJG2nvJvN3b7ywG36TMHnfX1FmAXSbyZNk2mZ62aA=;
+        b=AV2OYbtAjGUf7Ghl146ADsSCrl+GMSJ/9mqWqNbRw5g6vMD6c1y1nKo7oa/jIJS67I
+         gQYhQOGI3h8DpIZTtWqZPKirKMesc1diLAXkyuhmp3lTbF16bytmMx0RVBO42jptKbWq
+         2AA4VcSqcThR07TOYAirahQngI3a/clhxhtPozs8CDZ7W8jrX4VtYoY07r3KdcsIs/PO
+         imH/5DCkRB9GnOkGFT18h0WMB7E1331eYSdnr4bj8TEgbz5JXVJds5AANrFOMRaKFk6j
+         7ULlbsuVfdnS/S6vo8u7nopztx7HMMbBsKJPJC4pOe8zMRWS9URC/WILYB78DWlbrAYM
+         Wa5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xbiJG2nvJvN3b7ywG36TMHnfX1FmAXSbyZNk2mZ62aA=;
+        b=cg1LUDx57PyS3z6FQKEDMnXY1mfIQlvrO7Ft0OnlUyhq8co5ziNhjr1lgwYlri1UuB
+         zBov/CG6SwhcLjDDXCXIePpLO8gWZDKh80ldJOG9iKt0flc+iLxjS6IilaEjLmVOLdwS
+         ALcRPh2lIGbjqCKiZ8Fv5e+wrG8IqIsR2Lhnk7PpQthuuApQxP0lhaXhhr1fgUDdabA3
+         4CrBBNNUWof5zq/+MFF4LVU7zHeVtZfwLyx4UyiISTaZMhxBSDo1PCixTTe3z+Z+ok9N
+         48oxsCju0BHECYnTZm6pxFaE5zsTLbr/19EMhfj7TnOmFjcyfhbFqf9cc6b8ldbpqkIP
+         br6g==
+X-Gm-Message-State: ANoB5pmfokS0a085QasOW/W/OFi8DO2FacR7fd26n6Bh5zvPtBvxtQTi
+        H98L06wtRW5zXtD5dMgSm4xNB4Ahmeq5JomH0qzCW5qseuY=
+X-Google-Smtp-Source: AA0mqf4IV/CuRgpVfwxC+UcjNTLeLDETeKYtOWHVaM1cOOmBacc06SrPG95E+PQal65vNCDYtO6+oOmTeCLjUY+BrHY=
+X-Received: by 2002:a63:181e:0:b0:470:f0c:96da with SMTP id
+ y30-20020a63181e000000b004700f0c96damr7798398pgl.544.1668334953633; Sun, 13
+ Nov 2022 02:22:33 -0800 (PST)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/11/13 04:55:00 #20572880
-X-KSMG-AntiVirus-Status: Clean, skipped
+References: <CAL87dS2SS9rjLUPnwufh9a0O-Cu-hMAUU7Xa534mXTB9v=KM5g@mail.gmail.com>
+In-Reply-To: <CAL87dS2SS9rjLUPnwufh9a0O-Cu-hMAUU7Xa534mXTB9v=KM5g@mail.gmail.com>
+From:   mingkun bian <bianmingkun@gmail.com>
+Date:   Sun, 13 Nov 2022 18:22:22 +0800
+Message-ID: <CAL87dS1Cvbxczdyk_2nviC=M2S91bMRKPXrkp1PLHXFuX=CuKg@mail.gmail.com>
+Subject: Re: [ISSUE] suspicious sock leak
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTIuMTEuMjAyMiAxNDo0MCwgQXJzZW5peSBLcmFzbm92IHdyb3RlOg0KDQpIZWxsbyBhZ2Fp
-biBCb2JieSwNCg0KaSB3YXNuJ3QgQ0NlZCBpbiBZb3VyIHBhdGNoc2V0LCBidXQgSSByZXZpZXcg
-aXQgYW55d2F5IGFuZCB3cml0ZSBjb21tZW50cyBoZXJlIGluIHRoaXMNCm1hbm5lcjopIEkgZm91
-bmQgc3RyYW5nZSB0aGluZzoNCg0KSW4gJ3ZpcnRpb190cmFuc3BvcnRfcmVjdl9lbnF1ZXVlKCkn
-IG5ldyBwYWNrZXQgY291bGQgYmUgY29waWVkIHRvIHRoZSBsYXN0IHBhY2tldCBpbg0KcnggcXVl
-dWUoc2tiIGluIGN1cnJlbnQgdmVyc2lvbikuIER1cmluZyBjb3B5IFlvdSB1cGRhdGUgbGFzdCBz
-a2IgbGVuZ3RoIGJ5IGNhbGwNCidza2JfcHV0KGxhc3Rfc2tiLCBza2ItPmxlbiknIGluc2lkZSAn
-bWVtY3B5KCknLiBTbyAnbGFzdF9za2InIG5vdyBoYXZlIG5ldyBsZW5ndGgsDQpidXQgaGVhZGVy
-IG9mIHBhY2tldCBpcyBub3QgdXBkYXRlZC4NCg0KTm93IGxldCdzIGxvb2sgdG8gJ3ZpcnRpb190
-cmFuc3BvcnRfc2VxcGFja2V0X2RvX2RlcXVldWUoKScsIGl0IHVzZXMgdmFsdWUgZnJvbSBwYWNr
-ZXQncw0KaGVhZGVyIGFzICdwa3RfbGVuJywgbm90IGZyb20gc2tiOg0KDQpwa3RfbGVuID0gKHNp
-emVfdClsZTMyX3RvX2NwdShoZHItPmxlbik7DQoNCkkgdGhpbmsgd2UgbmVlZCB0byB1cGRhdGUg
-bGFzdCBwYWNrZXQncyBoZWFkZXIgZHVyaW5nIG1lcmdpbmcgbmV3IHBhY2tldCB0byBsYXN0IHBh
-Y2tldA0Kb2YgcnggcXVldWUuDQoNClRoYW5rcywgQXJzZW5peQ0KDQoNCj4gT24gMTEuMTEuMjAy
-MiAyMzo0NSwgQm9iYnkgRXNobGVtYW4gd3JvdGU6DQo+PiBPbiBGcmksIE5vdiAxMSwgMjAyMiBh
-dCAwMjo0NzoxNVBNICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+Pj4gSGkgQXJz
-ZW5peSwNCj4+PiBtYXliZSB3ZSBzaG91bGQgc3RhcnQgcmViYXNpbmcgdGhpcyBzZXJpZXMgb24g
-dGhlIG5ldyBzdXBwb3J0IGZvciBza2J1ZmY6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwv
-MjAyMjExMTAxNzE3MjMuMjQyNjMtMS1ib2JieS5lc2hsZW1hbkBieXRlZGFuY2UuY29tLw0KPj4+
-DQo+Pj4gQ0NpbmcgQm9iYnkgdG8gc2VlIGlmIGl0J3MgZWFzeSB0byBpbnRlZ3JhdGUgc2luY2Ug
-eW91J3JlIGJvdGggY2hhbmdpbmcgdGhlDQo+Pj4gcGFja2V0IGFsbG9jYXRpb24uDQo+Pj4NCj4+
-DQo+PiBUaGlzIGxvb2tzIGxpa2UgdGhlIHBhY2tldCBhbGxvY2F0aW9uIGNhbiBiZSBtYXJyaWVk
-IHNvbWV3aGF0IG5pY2VseSBpbg0KPj4gc2luY2UgU0tCcyBtYXkgYmUgYnVpbHQgZnJvbSBwYWdl
-cyB1c2luZyBidWlsZF9za2IoKS4gVGhlcmUgbWF5IGJlIHNvbWUNCj4+IHR3ZWFraW5nIG5lY2Vz
-c2FyeSB0aG91Z2gsIHNpbmNlIGl0IGFsc28gdXNlcyB0aGUgdGFpbCBjaHVuayBvZiB0aGUgcGFn
-ZQ0KPj4gdG8gaG9sZCBzdHJ1Y3Qgc2tiX3NoYXJlZF9pbmZvIElJUkMuDQo+Pg0KPj4gSSBsZWZ0
-IHNvbWUgY29tbWVudHMgb24gdGhlIHBhdGNoIHdpdGggdGhlIGFsbG9jYXRvciBpbiBpdC4NCj4g
-SGVsbG8gQm9iYnksDQo+IA0KPiB0aGFua3MgZm9yIHJldmlldy4gSSdsbCByZWJhc2UgbXkgcGF0
-Y2hzZXQgb24gWW91ciBza2J1ZmYgc3VwcG9ydC4NCj4+DQo+Pj4NCj4+PiBNYXliZSB0byBhdm9p
-ZCBoYXZpbmcgdG8gcmViYXNlIGV2ZXJ5dGhpbmcgbGF0ZXIsIGl0J3MgYWxyZWFkeSB3b3J0aHdo
-aWxlIHRvDQo+Pj4gc3RhcnQgdXNpbmcgQm9iYnkncyBwYXRjaCB3aXRoIHNrYnVmZi4NCj4+Pg0K
-Pj4NCj4+IEknbGwgYmUgd2FpdGluZyB1bnRpbCBNb25kYXkgdG8gc2VlIGlmIHNvbWUgbW9yZSBm
-ZWVkYmFjayBjb21lcyBpbg0KPj4gYmVmb3JlIHNlbmRpbmcgb3V0IHY0LCBzbyBJIGV4cGVjdCB2
-NCBlYXJseSBuZXh0IHdlZWssIEZXSVcuDQo+IE9uZSByZXF1ZXN0IGZyb20gbWUsIGNvdWxkIFlv
-dSBwbGVhc2UgQ0MgbWUgZm9yIG5leHQgdmVyc2lvbnMgb2YNCj4gWW91ciBwYXRjaHNldCwgYmVj
-YXVzZToNCj4gMSkgSSdsbCBhbHdheXMgaGF2ZSBsYXRlc3QgdmVyc2lvbiBvZiBza2J1ZmYgc3Vw
-cG9ydC4NCj4gMikgSSdsbCBzZWUgcmV2aWV3IHByb2Nlc3MgYWxzby4NCj4gDQo+IE15IGNvbnRh
-Y3RzOg0KPiBveGZmZmZhYUBnbWFpbC5jb20NCj4gQVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1DQo+
-IA0KPiBUaGFua3MsIEFyc2VuaXkNCj4gDQo+Pg0KPj4gQmVzdCwNCj4+IEJvYmJ5DQo+IA0KDQo=
+Hi,
+
+bpf map1:
+key: cookie
+value: addr daddr sport dport cookie sock*
+
+bpf map2:
+key: sock*
+value: addr daddr sport dport cookie sock*
+
+1. Recv a "HTTP GET" request in user applicatoin
+map1.insert(cookie, value)
+map2.insert(sock*, value)
+
+1. kprobe inet_csk_destroy_sock:
+sk->sk_wmem_queued is 0
+sk->sk_wmem_alloc is 4201
+sk->sk_refcnt is 2
+sk->__sk_common.skc_cookie is 173585924
+saddr daddr sport dport is 192.168.10.x 80
+
+2. kprobe __sk_free
+can not find the "saddr daddr sport dport 192.168.10.x 80" in kprobe __sk_f=
+ree
+
+3. kprobe __sk_free
+after a while, "kprobe __sk_free" find the "saddr daddr sport dport
+127.0.0.1 xx"' info
+value =3D map2.find(sock*)
+value1 =3D map1.find(sock->cookie)
+if (value) {
+    map2.delete(sock) //print value info, find "saddr daddr sport
+dport" is "192.168.10.x 80=E2=80=9C=EF=BC=8C and value->cookie is 173585924=
+, which is
+the same as "192.168.10.x 80" 's cookie.
+}
+
+if (value1) {
+    map1.delete(sock->cookie)
+}
+
+Here is my test flow, commented lines represents that  sock of =E2=80=9Dsad=
+dr
+daddr sport dport 192.168.10.x 80=E2=80=9C does not come in  __sk_free=EF=
+=BC=8C but it
+is reused by =E2=80=9D saddr daddr sport dport 127.0.0.1 xx"
+
+
+mingkun bian <bianmingkun@gmail.com> =E4=BA=8E2022=E5=B9=B411=E6=9C=8812=E6=
+=97=A5=E5=91=A8=E5=85=AD 17:01=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Hi,
+>     I found a problem that a sock whose state is ESTABLISHED is not
+> freed to slab cache by __sock_free.
+>     The test scenario is as follows=EF=BC=9A
+>
+>     1. A HTTP Server=EF=BC=8CI insert a node to ebpf
+> map(BPF_MAP_TYPE_LRU_HASH) by BPF_MAP_UPDATE_ELEM when receiving a
+> "HTTP GET" request in user application.
+>     ebpf map is=EF=BC=9A
+>     key: cookie(getsockopt(fd, SOL_SOCKET, SO_COOKIE, &cookie, &optlen))
+>     value: saddr sport daddr dport cookie...
+>
+>     2. I delete the corresponding ebpf map node by "kprobe __sk_free"
+> in ebpf as following, bpf_map_delete_elem keeps returning 0.
+>
+>     SEC("kprobe/__sk_free")
+>     int bpf_prog_destroy_sock(struct pt_regs *ctx)
+>     {
+>         struct sock *sk;
+>         __u64 cookie;
+>        struct  tcp_infos *value;
+>
+>        sk =3D (struct sock *) PT_REGS_PARM1(ctx);
+>        bpf_probe_read(&cookie, sizeof(sk->__sk_common.skc_cookie),
+> &sk->__sk_common.skc_cookie);
+>        value =3D bpf_map_lookup_elem(&bpfmap, &cookie);
+>        if (value) {
+>            if (bpf_map_delete_elem(&bpfmap, &cookie) !=3D 0) {
+>                debugmsg("delete failed\n");
+>            }
+>        }
+>     }
+>
+>    3. Sending pressure "HTTP GET" requests to HTTP Server for a while,
+>  then stop to send and close the HTTP Server, then wait a long time,
+> we can not see any tcpinfo by "netstat -anp", then error occurs=EF=BC=9A
+>     We can see some node which is not deleted int ebpf map by "bpftool
+> map dump id **"=EF=BC=8C it seems like "sock leak", but the sockstat's
+> inuse(cat /proc/net/sockstat) does not increase quickly.
+>
+> 4. I did some more experiments by ebpf kprobe, I find that a
+> sock(state is ESTABLISHED, HTTP server recv a "HTTP GET" requset) does
+> not come in __sock_free, but the same sock will be reused by another
+> tcp connection(the most frequent is "127.0.0.1") after a while.
+>    What I doubt is that why a new tcp connection can resue a old sock
+> while the old sock does not come in __sk_free.
+>
+> Thanks.
