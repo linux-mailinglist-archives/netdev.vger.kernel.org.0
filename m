@@ -2,100 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33FAF627C94
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 12:43:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F97627D05
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 12:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236418AbiKNLnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 06:43:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
+        id S236812AbiKNLwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 06:52:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236229AbiKNLnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 06:43:31 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5044A247;
-        Mon, 14 Nov 2022 03:43:26 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id k19so12809706lji.2;
-        Mon, 14 Nov 2022 03:43:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1xnVkVYt6NjXq2U10H+GjcZriFeppA49EKxZL4u1ETg=;
-        b=DJYPWegol9Mp+1bBiyC6kheikgEvnJnOVLlM56Ma2GdT+L4kHpqtLxdqoJS24ZT5Kx
-         9PIQgwfK5ZVi/V2CUpvBZb6Ga0zgQK2ABH7cFZ5/LdW56zYq8oUfgPdxwSOOgzbvkO14
-         ufmIiDp2SBsuSqL6co4532zebqLlkVNfFhMWESDA5YFBGq8pWuFzDtHtaIYkM7vB2fCd
-         UeZZ4jaghHRxjxVxe+mt5YHjOgTYqN11bjGoo5erCApseMko7oXuhj3Rt2PpsCtyzqcy
-         KZ8tBKEUXljtyf9SMCUC12kBv4/scKdLuINUKdA6ZdnCzJ62N2+1vgo4h+pimP2A7aVS
-         wvdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1xnVkVYt6NjXq2U10H+GjcZriFeppA49EKxZL4u1ETg=;
-        b=FmDt9yH75d7d/yF2Senm3kR6LxpM7oGa/gzAYD6lOZ6+PcYWDfcZvNyYiC0pXdaONl
-         zbQAzYv/x3focnQFQBJQcztZdPuAzcZXbEViTt2FKv+pGJcsD213OeKxvlvxrjd3Ic4V
-         ZQtkwOLbh0+2WOqbpewmOwMFpCPjCrxcHuanBJEwg9lXKT4LWguau/PG+RlDmjV+zjzy
-         r3drI3xTSKere6c/GDZobvG3oaSmruLejR+g8SG4V2WkLt/sqLuzSnFVVTDLQ0NZ88eX
-         67flCVfwSszOk0VVYEUYOJmxpAunan8kWrIBeMRUOF34UO97OB9+5W9HFhxDj+YGnhqh
-         ExhA==
-X-Gm-Message-State: ANoB5pnWgqdAWpeG8pdys4u/AomVDUKBw+MmU0C1hMEkZTTSqD/yjVdN
-        H4tR9b7AlrtL6j+8Qrq6eOZtH+kUzsE=
-X-Google-Smtp-Source: AA0mqf4dfqmYZ1FjH1UgobSbvCvX8bwQXhiu0h+VQoHba7Wk2f0YpqJTU83M4MTmIQhSNHpV9VVXVw==
-X-Received: by 2002:a05:651c:88a:b0:277:2:1efc with SMTP id d10-20020a05651c088a00b0027700021efcmr4389600ljq.77.1668426204721;
-        Mon, 14 Nov 2022 03:43:24 -0800 (PST)
-Received: from [192.168.1.103] ([178.176.74.221])
-        by smtp.gmail.com with ESMTPSA id v26-20020ac2593a000000b00492b494c4e8sm1793818lfi.298.2022.11.14.03.43.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Nov 2022 03:43:24 -0800 (PST)
-Subject: Re: [net] net: usb: smsc95xx: fix external PHY reset
-To:     Alexandru Tachici <alexandru.tachici@analog.com>,
-        linux-kernel@vger.kernel.org
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, steve.glendinning@shawell.net,
-        UNGLinuxDriver@microchip.com, andre.edich@microchip.com,
-        linux-usb@vger.kernel.org
-References: <20221114131643.19450-1-alexandru.tachici@analog.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <adb2dc3c-fd1e-53ea-ca64-5c1600058890@gmail.com>
-Date:   Mon, 14 Nov 2022 14:43:22 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S236797AbiKNLw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 06:52:29 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC2F2127A;
+        Mon, 14 Nov 2022 03:48:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668426487; x=1699962487;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=et5ooO3+9cxyBYZTT10TA21nSmeMTtt6nI129QLnXM4=;
+  b=i12O5iRViFGHHB9DmqXU4tv9OthhhiyEwxHAQ3tLRvHVm3HUAXwAJvFG
+   w85nHMinwowqHjyPvD5AFdzywFZx/u7cSoNYFPPvi8zABqhYrSlYfdWob
+   /RwyVllGjuFiotXmMV3mNYY9rQQC7Rvx22/gW49S3YqbhkLoL6ul5urDh
+   cQumwU8zPqWNsvBDBZ3YKWVAuenK7aWu36wFD4uvcl+HweKq4TDXoFHmm
+   V1xg4PBY31DFOYHG05EEBY9vibpPwAQ39GqwZzVs30W6pVG/HykAEbZsA
+   dhWgASAiMmSDWpYS4+308IgGASfarn0AzEGOis7lC6ESKKFE+PhEzWI87
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="376214497"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="376214497"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 03:48:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="780896891"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="780896891"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Nov 2022 03:48:01 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ouXwU-00C9Kh-33;
+        Mon, 14 Nov 2022 13:47:58 +0200
+Date:   Mon, 14 Nov 2022 13:47:58 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Lee Jones <lee@kernel.org>, Gene Chen <gene_chen@richtek.com>,
+        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
+Message-ID: <Y3Iq7tuSveejlVEU@smile.fi.intel.com>
+References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
+ <Y1gZ/zBtc2KgXlbw@smile.fi.intel.com>
+ <Y1+NHVS5ZJLFTBke@google.com>
+ <Y1/qisszTjUL9ngU@smile.fi.intel.com>
+ <Y2pmqBXYq3WQa97u@smile.fi.intel.com>
+ <Y3IUTUr/MXf9RQEP@google.com>
+ <Y3IWMe5nGePMAEFv@smile.fi.intel.com>
+ <Y3IbW5/yTWE7z0cO@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20221114131643.19450-1-alexandru.tachici@analog.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3IbW5/yTWE7z0cO@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-On 11/14/22 4:16 PM, Alexandru Tachici wrote:
-
-> An external PHY needs settling time after power up or reser.
-
-   Reset? :-)
-
-> In the bind() function an mdio bus is registered. If at this point
-> the external PHY is still initialising, no valid PHY ID will be
-> read and on phy_find_first() the bind() function will fail.
+On Mon, Nov 14, 2022 at 11:41:31AM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Nov 14, 2022 at 12:19:29PM +0200, Andy Shevchenko wrote:
+> > On Mon, Nov 14, 2022 at 10:11:25AM +0000, Lee Jones wrote:
+> > > On Tue, 08 Nov 2022, Andy Shevchenko wrote:
+> > > > On Mon, Oct 31, 2022 at 05:32:26PM +0200, Andy Shevchenko wrote:
+> > > > > On Mon, Oct 31, 2022 at 08:53:49AM +0000, Lee Jones wrote:
+> > > > > > On Tue, 25 Oct 2022, Andy Shevchenko wrote:
+> > > > > > 
+> > > > > > > On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
+> > > > > > > > There are several users of LED framework that reimplement the
+> > > > > > > > functionality of led_init_default_state_get(). In order to
+> > > > > > > > deduplicate them move the declaration to the global header
+> > > > > > > > (patch 2) and convert users (patche 3-11).
+> > > > > > > 
+> > > > > > > Dear LED maintainers, is there any news on this series? It's hanging around
+> > > > > > > for almost 2 months now...
+> > > > > > 
+> > > > > > My offer still stands if help is required.
+> > > > > 
+> > > > > From my point of view the LED subsystem is quite laggish lately (as shown by
+> > > > > this patch series, for instance), which means that _in practice_ the help is
+> > > > > needed, but I haven't got if we have any administrative agreement on that.
+> > > > > 
+> > > > > Pavel?
+> > > > 
+> > > > So, Pavel seems quite unresponsive lately... Shall we just move on and take
+> > > > maintainership?
+> > > 
+> > > I had an off-line conversation with Greg who advised me against that.
+> > 
+> > OK. What the reasonable option we have then?
 > 
-> If an external PHY is present, wait the maximum time specified
-> in 802.3 45.2.7.1.1.
-> 
-> Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> I thought there is now a new LED maintainer, is that not working out?
 
-[...]
+No new (co-)maintainer due to stale mate situation as far as I can read it
+right now.
 
-MBR, Sergey
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
