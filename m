@@ -2,83 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D499628135
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:24:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2C1628138
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:25:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236136AbiKNNYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 08:24:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S233548AbiKNNZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 08:25:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiKNNYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:24:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72267276
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:23:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1623F61194
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 13:23:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D86FC433D6;
-        Mon, 14 Nov 2022 13:23:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668432238;
-        bh=wnpm2NS18rFbBEvcB3KHijozvFClc8bbydDGjrnn9c8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LtTwazV4c5DKoHkz7x3vGPuCKSxlYnU6Sx8SA7P/S+nXh3YlvQMkDP8CVRmk34FR6
-         tfPEcYnaHmc4OJKYwO9yR4lYO3/KhLY/nBQYlT2sANSl6H0ZoPFnljuTYZP89eMzDu
-         +DviOctPjqwLCaJWXx8nNL8fwrB78laB8xn+ljVWN5zfLrTcvnrH/muEn9Z0LdFDzt
-         sCKYIlNjDkvvV+FGonz/h3hKh+/SANVzAjRVogRc83xt/QmlKi+YOSHC2v8830FYnJ
-         oM30yxJYhA2if6I0WLMxWOup4hUwzj2QZTuPDXMvYLoLFB0uebjAJcgEer7fzz9GDr
-         2eCNoHK9dkthA==
-Date:   Mon, 14 Nov 2022 15:23:53 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com,
-        intel-wired-lan@lists.osuosl.org, jiri@nvidia.com,
-        anthony.l.nguyen@intel.com, alexandr.lobakin@intel.com,
-        sridhar.samudrala@intel.com, wojciech.drewek@intel.com,
-        lukasz.czapnik@intel.com, shiraz.saleem@intel.com,
-        jesse.brandeburg@intel.com, mustafa.ismail@intel.com,
-        przemyslaw.kitszel@intel.com, piotr.raczynski@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        leszek.kaliszczuk@intel.com
-Subject: Re: [PATCH net-next 00/13] resource management using devlink reload
-Message-ID: <Y3JBaQ7+p5ncsjuW@unreal>
-References: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
+        with ESMTP id S229925AbiKNNZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:25:51 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A376183B1
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:25:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=zFao31XckDGOMjh2X4dN1DzBdFrA/TiqLugbeR3q7PU=; b=dWqu1epLI8kun7YDZjatflfs1/
+        CaJK20x4nqUdnEoZ9fR5M8PccsUdhaGHDfsV0XEo84PGs5IZ0wnYgk7mAyI2QAStu0FvAb1QdEBEJ
+        EYWDZ0GkVX0cJYJDiF/in1SM5FrgSyiUXYhyP9iVMDUIRKM1Hsh/pj6ySfVzSge7X9Oo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ouZT9-002L5S-41; Mon, 14 Nov 2022 14:25:47 +0100
+Date:   Mon, 14 Nov 2022 14:25:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     'Mengyuan Lou' <mengyuanlou@net-swift.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: txgbe: Identify PHY and SFP module
+Message-ID: <Y3JB2xrBOOa6MR+H@lunn.ch>
+References: <20221108111907.48599-1-mengyuanlou@net-swift.com>
+ <20221108111907.48599-2-mengyuanlou@net-swift.com>
+ <Y2rBo3KI2LmjS55y@lunn.ch>
+ <02a901d8f405$1c21a350$5464e9f0$@trustnetic.com>
+ <Y2uqk9BwVjPcEtPP@lunn.ch>
+ <005c01d8f80c$574c16d0$05e44470$@trustnetic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <005c01d8f80c$574c16d0$05e44470$@trustnetic.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 01:57:42PM +0100, Michal Swiatkowski wrote:
-> Currently the default value for number of PF vectors is number of CPUs.
-> Because of that there are cases when all vectors are used for PF
-> and user can't create more VFs. It is hard to set default number of
-> CPUs right for all different use cases. Instead allow user to choose
-> how many vectors should be used for various features. After implementing
-> subdevices this mechanism will be also used to set number of vectors
-> for subfunctions.
-> 
-> The idea is to set vectors for eth or VFs using devlink resource API.
-> New value of vectors will be used after devlink reinit. Example
-> commands:
-> $ sudo devlink resource set pci/0000:31:00.0 path msix/msix_eth size 16
-> $ sudo devlink dev reload pci/0000:31:00.0
-> After reload driver will work with 16 vectors used for eth instead of
-> num_cpus.
+> When ethernet driver does a reset to the hardware, like
+> 'txgbe_reset_hw', the I2C configuration will be reset.  It needs to
+> be reconfigured once. So how could I call the I2C function here? Can
+> I treat the I2C driver as a lib?
 
-By saying "vectors", are you referring to MSI-X vectors?
-If yes, you have specific interface for that.
-https://lore.kernel.org/linux-pci/20210314124256.70253-1-leon@kernel.org/
+The I2C driver will be embedded within your MAC driver. So you have
+control over it.
 
-Thanks
+How often do you need to call txgbe_reset_hw()?  Hopefully just once
+early in the probe? So you can register the I2C bus master with the
+I2C core after the reset.
+
+If you need to use txgbe_reset_hw() at other times, you will need a
+mutex or similar in .master_xfer function so you don't perform a reset
+while an I2C transfer is happening, or start another transfer while a
+reset is happening.
+
+	Andrew
+
