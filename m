@@ -2,155 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5127F627727
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:12:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4851E627728
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:12:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236226AbiKNIL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 03:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S236227AbiKNIMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 03:12:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236155AbiKNIL4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:11:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17373193E2;
-        Mon, 14 Nov 2022 00:11:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A69D260EED;
-        Mon, 14 Nov 2022 08:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3893EC433D6;
-        Mon, 14 Nov 2022 08:11:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668413515;
-        bh=mpJwu8UPciVMvP4x1nO/f/d0FY4YaLljifKODSIp6Fo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k33TWUYSnJeJJSqCSK3BK1qBtMxZcviktUaz1E62W4dNSUSNiuH0BnICAe2VnJwkr
-         FNOrwgfUUfn04YPTZWuG2Brc2/2Kv9vEvb3/8v3JhkATlyBzq5V1Cc+d+mkM/n9Ht8
-         sOXZo0nRCudqaHPxM6nNkk7jH8o8G8rRRQsQHgdP/ddk9Oh5tzG0si68G350HklqNg
-         +F7Wb7tc9+mxb9JvX3yUo2LE/EVvs/p8wwXi59+xXFK7uSkHLvop1nTf694uRV5u1k
-         at3vjj2xvE66J8AllakgkYKHls7+q1XFybccu4tkkwy3fA1YW4dwgpv14lYCJLk9YI
-         oyu8ssz65EQug==
-Date:   Mon, 14 Nov 2022 10:11:50 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 7/7] dma-mapping: reject __GFP_COMP in dma_alloc_attrs
-Message-ID: <Y3H4RobK/pmDd3xG@unreal>
-References: <20221113163535.884299-1-hch@lst.de>
- <20221113163535.884299-8-hch@lst.de>
+        with ESMTP id S235902AbiKNIMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:12:21 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C765F19C37
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 00:12:19 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id 130so9613116pgc.5
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 00:12:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=UnN0c0KrsoTxcRuQT5q2k4pBNNHhjJ12uIRQl9glSoY=;
+        b=OX5VSkjalPkPSsqzmC9FMci4dtKudaaCD3JoBV0aXzA4YkGsQfwKjORUV6LOjZG3Mr
+         EbcLP2tL+aGEuGdzob2mZX+Pjr2WN3sqbhozBJKm0oMyvdlXhfr//EEjfpqkp577QTTK
+         /ymKfwCtHgetBBMm7ZQSawOXH5czFSny7ynX0Cyp0QymAqYZgGNgXr9NMq5bxONsDzZH
+         dKLmQfNMniY2R39KURWyYlNhYh39WeRgEDgVyJW4HwhLkju0kxDGkpY+5FgDSrkTMwFw
+         cKZbNpjwkYyebzctpN2i7gleuzqsg4p24Te5HN3bjO9AXPTpCtBi4XzhJHA3/tmcoIMR
+         HXAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UnN0c0KrsoTxcRuQT5q2k4pBNNHhjJ12uIRQl9glSoY=;
+        b=uSKg9hc7B1kvzlCBqpc0ksT8ibTy4CxD5aBdrWCqBAYvV6JcDnvBG2VSrZieguWQ+3
+         6n2rMKW3mJO4A/DjD8TQq3d8b+8ETgFyiMXjKhoP8BWGIxtw7egKqwGk5mpkRWvSaQyy
+         4zGZfBqZHlghc+YAb3Gz8hlH9LUjWqRjKzKTxAOaOCL3f2DTZ3iG1fztTr+4X98drb9s
+         erzNUZBjZfiDbv1x+VHbwhMH7R4HvN1X+7UraYPJOKMITzEnv2BaoIs8rqq4ei71eejs
+         DxUU5JNaWM0/DwpTFChqumYa+yS/x2CbZGsKJT2azYMfsIzT51wCrsJNALlocdMIv8Ok
+         lJFQ==
+X-Gm-Message-State: ANoB5pkDHawJPk1kXY9FHEb7g1eRvIN+V87BRj4gVkY6MIrf3qDG+cmf
+        IUmtHJbQ63SvX8xJA9v7by9UBH5K7WH7fA==
+X-Google-Smtp-Source: AA0mqf7Mbi5fA7iniWptV1e0oDVSThRRyuCdugXEcWnFGm/maJ62Wno29IOM1KUSGuT5fDBTYsA7xA==
+X-Received: by 2002:a63:e343:0:b0:46f:ed91:6664 with SMTP id o3-20020a63e343000000b0046fed916664mr10781301pgj.558.1668413538470;
+        Mon, 14 Nov 2022 00:12:18 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q3-20020a170902a3c300b0017a018221e2sm6681620plb.70.2022.11.14.00.12.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Nov 2022 00:12:17 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Tom Herbert <tom@herbertland.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCHv2 net] net: use struct_group to copy addresses
+Date:   Mon, 14 Nov 2022 16:12:10 +0800
+Message-Id: <20221114081210.1033795-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221113163535.884299-8-hch@lst.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 13, 2022 at 05:35:35PM +0100, Christoph Hellwig wrote:
-> DMA allocations can never be turned back into a page pointer, so
-> requesting compound pages doesn't make sense and it can't even be
-> supported at all by various backends.
-> 
-> Reject __GFP_COMP with a warning in dma_alloc_attrs, and stop clearing
-> the flag in the arm dma ops and dma-iommu.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/arm/mm/dma-mapping.c | 17 -----------------
->  drivers/iommu/dma-iommu.c |  3 ---
->  kernel/dma/mapping.c      |  8 ++++++++
->  3 files changed, 8 insertions(+), 20 deletions(-)
-> 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index d7909091cf977..c135f6e37a00c 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -564,14 +564,6 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
->  	if (mask < 0xffffffffULL)
->  		gfp |= GFP_DMA;
->  
-> -	/*
-> -	 * Following is a work-around (a.k.a. hack) to prevent pages
-> -	 * with __GFP_COMP being passed to split_page() which cannot
-> -	 * handle them.  The real problem is that this flag probably
-> -	 * should be 0 on ARM as it is not supported on this
-> -	 * platform; see CONFIG_HUGETLBFS.
-> -	 */
-> -	gfp &= ~(__GFP_COMP);
->  	args.gfp = gfp;
->  
->  	*handle = DMA_MAPPING_ERROR;
-> @@ -1093,15 +1085,6 @@ static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
->  		return __iommu_alloc_simple(dev, size, gfp, handle,
->  					    coherent_flag, attrs);
->  
-> -	/*
-> -	 * Following is a work-around (a.k.a. hack) to prevent pages
-> -	 * with __GFP_COMP being passed to split_page() which cannot
-> -	 * handle them.  The real problem is that this flag probably
-> -	 * should be 0 on ARM as it is not supported on this
-> -	 * platform; see CONFIG_HUGETLBFS.
-> -	 */
-> -	gfp &= ~(__GFP_COMP);
-> -
->  	pages = __iommu_alloc_buffer(dev, size, gfp, attrs, coherent_flag);
->  	if (!pages)
->  		return NULL;
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 9297b741f5e80..f798c44e09033 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -744,9 +744,6 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
->  	/* IOMMU can map any pages, so himem can also be used here */
->  	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
->  
-> -	/* It makes no sense to muck about with huge pages */
-> -	gfp &= ~__GFP_COMP;
-> -
->  	while (count) {
->  		struct page *page = NULL;
->  		unsigned int order_size;
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 33437d6206445..c026a5a5e0466 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -498,6 +498,14 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->  
->  	WARN_ON_ONCE(!dev->coherent_dma_mask);
->  
-> +	/*
-> +	 * DMA allocations can never be turned back into a page pointer, so
-> +	 * requesting compound pages doesn't make sense (and can't even be
-> +	 * supported at all by various backends).
-> +	 */
-> +	if (WARN_ON_ONCE(flag & __GFP_COMP))
-> +		return NULL;
+kernel test robot reported a warning when build bonding module with
+make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/bonding/:
 
-In RDMA patches, you wrote that GFP_USER is not legal flag either. So it
-is better to WARN here for everything that is not allowed.
+                 from ../drivers/net/bonding/bond_main.c:35:
+In function ‘fortify_memcpy_chk’,
+    inlined from ‘iph_to_flow_copy_v4addrs’ at ../include/net/ip.h:566:2,
+    inlined from ‘bond_flow_ip’ at ../drivers/net/bonding/bond_main.c:3984:3:
+../include/linux/fortify-string.h:413:25: warning: call to ‘__read_overflow2_field’ declared with attribute warning: detected read beyond size of f
+ield (2nd parameter); maybe use struct_group()? [-Wattribute-warning]
+  413 |                         __read_overflow2_field(q_size_field, size);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In function ‘fortify_memcpy_chk’,
+    inlined from ‘iph_to_flow_copy_v6addrs’ at ../include/net/ipv6.h:900:2,
+    inlined from ‘bond_flow_ip’ at ../drivers/net/bonding/bond_main.c:3994:3:
+../include/linux/fortify-string.h:413:25: warning: call to ‘__read_overflow2_field’ declared with attribute warning: detected read beyond size of f
+ield (2nd parameter); maybe use struct_group()? [-Wattribute-warning]
+  413 |                         __read_overflow2_field(q_size_field, size);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-> +
->  	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
->  		return cpu_addr;
->  
-> -- 
-> 2.30.2
-> 
+This is because we try to copy the whole ip/ip6 address to the flow_key,
+while we only point the to ip/ip6 saddr. Fix this by using struct_group()
+to avoid the compiler warnings/errors.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: c3f8324188fa ("net: Add full IPv6 addresses to flow_keys")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+
+v2: use struct_group() instaed of memcpy twice.
+---
+ include/net/ip.h          | 2 +-
+ include/net/ipv6.h        | 2 +-
+ include/uapi/linux/ip.h   | 6 ++++--
+ include/uapi/linux/ipv6.h | 6 ++++--
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 038097c2a152..144bdfbb25af 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -563,7 +563,7 @@ static inline void iph_to_flow_copy_v4addrs(struct flow_keys *flow,
+ 	BUILD_BUG_ON(offsetof(typeof(flow->addrs), v4addrs.dst) !=
+ 		     offsetof(typeof(flow->addrs), v4addrs.src) +
+ 			      sizeof(flow->addrs.v4addrs.src));
+-	memcpy(&flow->addrs.v4addrs, &iph->saddr, sizeof(flow->addrs.v4addrs));
++	memcpy(&flow->addrs.v4addrs, &iph->addrs, sizeof(flow->addrs.v4addrs));
+ 	flow->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+ }
+ 
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 37943ba3a73c..d383c895592a 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -897,7 +897,7 @@ static inline void iph_to_flow_copy_v6addrs(struct flow_keys *flow,
+ 	BUILD_BUG_ON(offsetof(typeof(flow->addrs), v6addrs.dst) !=
+ 		     offsetof(typeof(flow->addrs), v6addrs.src) +
+ 		     sizeof(flow->addrs.v6addrs.src));
+-	memcpy(&flow->addrs.v6addrs, &iph->saddr, sizeof(flow->addrs.v6addrs));
++	memcpy(&flow->addrs.v6addrs, &iph->addrs, sizeof(flow->addrs.v6addrs));
+ 	flow->control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
+ }
+ 
+diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
+index 961ec16a26b8..6f7e833a00f7 100644
+--- a/include/uapi/linux/ip.h
++++ b/include/uapi/linux/ip.h
+@@ -100,8 +100,10 @@ struct iphdr {
+ 	__u8	ttl;
+ 	__u8	protocol;
+ 	__sum16	check;
+-	__be32	saddr;
+-	__be32	daddr;
++	struct_group(addrs,
++		__be32	saddr;
++		__be32	daddr;
++	);
+ 	/*The options start here. */
+ };
+ 
+diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+index 03cdbe798fe3..3a3a80496c7c 100644
+--- a/include/uapi/linux/ipv6.h
++++ b/include/uapi/linux/ipv6.h
+@@ -130,8 +130,10 @@ struct ipv6hdr {
+ 	__u8			nexthdr;
+ 	__u8			hop_limit;
+ 
+-	struct	in6_addr	saddr;
+-	struct	in6_addr	daddr;
++	struct_group(addrs,
++		struct	in6_addr	saddr;
++		struct	in6_addr	daddr;
++	);
+ };
+ 
+ 
+-- 
+2.38.1
+
