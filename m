@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 190AB6280E1
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:12:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C06176280E0
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:12:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237934AbiKNNML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 08:12:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        id S237912AbiKNNMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 08:12:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237924AbiKNNMI (ORCPT
+        with ESMTP id S237926AbiKNNMI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:12:08 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EEA2B1B6
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:12:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9307F2B24D
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:12:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668431522; x=1699967522;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=u1XEetprpcT9DVPX1AZNlJyceve4yFTp+k+XYN2n7A8=;
-  b=etOX3bn5VYhLauhK3Anlkc15wXDg3528y/9qT4nIcEoskpT5Gq+RlVdc
-   34MYEZr/Xcz1DE5bdI0PrlB5Nq6UInvCOzY5N3Obh6wpUGmblO+17BSMI
-   Zd5lyzjXPaNfeT/2jqlPZOgkBy5xXff6QdGmo5E6oVjrQuMG+fBTe2uR/
-   /5/fZWedOU0+NMk3I57rto1MQCISIO5oQiweN6SM5t4wI8Mfl3jdTVonY
-   owWpWYQB/NRZDxwmxnzYTo7M9S7TK51G9lnzQx0V0/MM30DsnLTXIru3e
-   ufQyvzLwUEZaCafJ8W8AqhIsEK4aixR2hOApiAaPnb/sKqBoj7CJe6j6y
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291679834"
+  t=1668431523; x=1699967523;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7Ce8aRJrwaIeECv3XGlXlz0W0+lnMTqEOS/2LgKL3XE=;
+  b=NEe48fYBbFP0eoFUl+/9vx8Ex5/2jebfXxJ2O3S/4OgdD/bUmlG4+TQy
+   t8/CGDCH1a/kJ3fCMFmM0YsDOX/6AqqYAi1FNGsA9c8T3UBhOOHI5dQTo
+   UkeiD3JZkKUywlyXzSkYMrYAG+lG7HeEirXP3vnNltGtH5e7aaj6m4jr0
+   +vvGn3JszeCEuHiJqXdTaJt5QGZ3OQSuEjV3qIK0mA/NoAFZFrVvNwFEM
+   UQ9Hxv0Uuxy1j+LSeNSwmwoVIFF3OULvcxMtufwadtQy6XaQKDJeUwaqv
+   EB0oSSgKNl0PzMiMvz0eQ4E7N9ftDD3b+ew1Yc/1CXyLYEo7PCvQjRZLx
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291679844"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="291679834"
+   d="scan'208";a="291679844"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 05:11:50 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 05:11:55 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="616305813"
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="616305842"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="616305813"
+   d="scan'208";a="616305842"
 Received: from wasp.igk.intel.com ([10.102.20.192])
-  by orsmga006.jf.intel.com with ESMTP; 14 Nov 2022 05:11:45 -0800
+  by orsmga006.jf.intel.com with ESMTP; 14 Nov 2022 05:11:50 -0800
 From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
@@ -50,10 +50,12 @@ Cc:     intel-wired-lan@lists.osuosl.org, jiri@nvidia.com,
         jacob.e.keller@intel.com, david.m.ertman@intel.com,
         leszek.kaliszczuk@intel.com,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: [PATCH net-next 00/13] resource management using devlink reload
-Date:   Mon, 14 Nov 2022 13:57:42 +0100
-Message-Id: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
+Subject: [PATCH net-next 01/13] ice: move RDMA init to ice_idc.c
+Date:   Mon, 14 Nov 2022 13:57:43 +0100
+Message-Id: <20221114125755.13659-2-michal.swiatkowski@linux.intel.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
+References: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -65,87 +67,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the default value for number of PF vectors is number of CPUs.
-Because of that there are cases when all vectors are used for PF
-and user can't create more VFs. It is hard to set default number of
-CPUs right for all different use cases. Instead allow user to choose
-how many vectors should be used for various features. After implementing
-subdevices this mechanism will be also used to set number of vectors
-for subfunctions.
+Simplify probe flow by moving all RDMA related code to ice_init_rdma().
+Unroll irq allocation if RDMA initialization fails.
 
-The idea is to set vectors for eth or VFs using devlink resource API.
-New value of vectors will be used after devlink reinit. Example
-commands:
-$ sudo devlink resource set pci/0000:31:00.0 path msix/msix_eth size 16
-$ sudo devlink dev reload pci/0000:31:00.0
-After reload driver will work with 16 vectors used for eth instead of
-num_cpus.
+Implement ice_deinit_rdma() and use it in remove flow.
 
-The default number of queues is implicitly derived from interrupt
-vectors and can be later changed by ethtool.
-To decrease queues used on eth user can decrease vectors on eth.
-The result will be the same. Still user can change number of queues
-using ethtool:
-$ sudo ethtool -L enp24s0f0 tx 72 rx 72
-but maximum queues amount is equal to amount of vectors.
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Acked-by: Dave Ertman <david.m.ertman@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice.h      |  1 +
+ drivers/net/ethernet/intel/ice/ice_idc.c  | 52 ++++++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c | 29 +++----------
+ 3 files changed, 57 insertions(+), 25 deletions(-)
 
-Most of this patchset is about implementing driver reload mechanism.
-Part of code from probe and rebuild is used to not duplicate code.
-To allow this reuse probe and rebuild path are split into smaller
-functions.
-
-Patch "ice: split ice_vsi_setup into smaller functions" changes
-boolean variable in function call to integer and adds define
-for it. Instead of having the function called with true/false now it
-can be called with readable defines ICE_VSI_FLAG_INIT or
-ICE_VSI_FLAG_NO_INIT. It was suggested by Jacob Keller and probably this
-mechanism will be implemented across ice driver in follow up patchset.
-
-Patch 1 - 10	-> cleanup code to reuse most of the already
-                   implemented function in reload path
-Patch 11	-> implement devlink reload API
-Patch 12        -> prepare interrupts reservation, make irdma see
-                   changeable vectors count
-Patch 13        -> changing number of vectors
-
-
-Jacob Keller (1):
-  ice: stop hard coding the ICE_VSI_CTRL location
-
-Michal Kubiak (1):
-  devlink, ice: add MSIX vectors as devlink resource
-
-Michal Swiatkowski (11):
-  ice: move RDMA init to ice_idc.c
-  ice: alloc id for RDMA using xa_array
-  ice: cleanup in VSI config/deconfig code
-  ice: split ice_vsi_setup into smaller functions
-  ice: split probe into smaller functions
-  ice: sync netdev filters after clearing VSI
-  ice: move VSI delete outside deconfig
-  ice: update VSI instead of init in some case
-  ice: implement devlink reinit action
-  ice: introduce eswitch capable flag
-  ice, irdma: prepare reservation of MSI-X to reload
-
- .../networking/devlink/devlink-resource.rst   |   10 +
- drivers/infiniband/hw/irdma/main.c            |    2 +-
- drivers/net/ethernet/intel/ice/ice.h          |   23 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |   11 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  |  263 +++-
- drivers/net/ethernet/intel/ice/ice_devlink.h  |    2 +
- drivers/net/ethernet/intel/ice/ice_eswitch.c  |    6 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |    6 +-
- drivers/net/ethernet/intel/ice/ice_fltr.c     |    5 +
- drivers/net/ethernet/intel/ice/ice_idc.c      |   57 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |  789 +++++-----
- drivers/net/ethernet/intel/ice/ice_lib.h      |    8 +-
- drivers/net/ethernet/intel/ice/ice_main.c     | 1354 ++++++++++-------
- drivers/net/ethernet/intel/ice/ice_sriov.c    |    3 +-
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   |    2 +-
- include/net/devlink.h                         |   14 +
- 16 files changed, 1517 insertions(+), 1038 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index f88ee051e71c..c0079e88cda7 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -900,6 +900,7 @@ void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
+ int ice_plug_aux_dev(struct ice_pf *pf);
+ void ice_unplug_aux_dev(struct ice_pf *pf);
+ int ice_init_rdma(struct ice_pf *pf);
++void ice_deinit_rdma(struct ice_pf *pf);
+ const char *ice_aq_str(enum ice_aq_err aq_err);
+ bool ice_is_wol_supported(struct ice_hw *hw);
+ void ice_fdir_del_all_fltrs(struct ice_vsi *vsi);
+diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
+index 895c32bcc8b5..579d2a433ea1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc.c
++++ b/drivers/net/ethernet/intel/ice/ice_idc.c
+@@ -6,6 +6,8 @@
+ #include "ice_lib.h"
+ #include "ice_dcb_lib.h"
+ 
++static DEFINE_IDA(ice_aux_ida);
++
+ /**
+  * ice_get_auxiliary_drv - retrieve iidc_auxiliary_drv struct
+  * @pf: pointer to PF struct
+@@ -245,6 +247,17 @@ static int ice_reserve_rdma_qvector(struct ice_pf *pf)
+ 	return 0;
+ }
+ 
++/**
++ * ice_free_rdma_qvector - free vector resources reserved for RDMA driver
++ * @pf: board private structure to initialize
++ */
++static void ice_free_rdma_qvector(struct ice_pf *pf)
++{
++	pf->num_avail_sw_msix -= pf->num_rdma_msix;
++	ice_free_res(pf->irq_tracker, pf->rdma_base_vector,
++		     ICE_RES_RDMA_VEC_ID);
++}
++
+ /**
+  * ice_adev_release - function to be mapped to AUX dev's release op
+  * @dev: pointer to device to free
+@@ -331,12 +344,47 @@ int ice_init_rdma(struct ice_pf *pf)
+ 	struct device *dev = &pf->pdev->dev;
+ 	int ret;
+ 
++	if (!ice_is_rdma_ena(pf)) {
++		dev_warn(dev, "RDMA is not supported on this device\n");
++		return 0;
++	}
++
++	pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
++	if (pf->aux_idx < 0) {
++		dev_err(dev, "Failed to allocate device ID for AUX driver\n");
++		return -ENOMEM;
++	}
++
+ 	/* Reserve vector resources */
+ 	ret = ice_reserve_rdma_qvector(pf);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to reserve vectors for RDMA\n");
+-		return ret;
++		goto err_reserve_rdma_qvector;
+ 	}
+ 	pf->rdma_mode |= IIDC_RDMA_PROTOCOL_ROCEV2;
+-	return ice_plug_aux_dev(pf);
++	ret = ice_plug_aux_dev(pf);
++	if (ret)
++		goto err_plug_aux_dev;
++	return 0;
++
++err_plug_aux_dev:
++	ice_free_rdma_qvector(pf);
++err_reserve_rdma_qvector:
++	pf->adev = NULL;
++	ida_free(&ice_aux_ida, pf->aux_idx);
++	return ret;
++}
++
++/**
++ * ice_deinit_rdma - deinitialize RDMA on PF
++ * @pf: ptr to ice_pf
++ */
++void ice_deinit_rdma(struct ice_pf *pf)
++{
++	if (!ice_is_rdma_ena(pf))
++		return;
++
++	ice_unplug_aux_dev(pf);
++	ice_free_rdma_qvector(pf);
++	ida_free(&ice_aux_ida, pf->aux_idx);
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a9fc89aebebe..d5bd56a213ae 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -44,7 +44,6 @@ MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all), hw debug_mask (0x8XXXX
+ MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all)");
+ #endif /* !CONFIG_DYNAMIC_DEBUG */
+ 
+-static DEFINE_IDA(ice_aux_ida);
+ DEFINE_STATIC_KEY_FALSE(ice_xdp_locking_key);
+ EXPORT_SYMBOL(ice_xdp_locking_key);
+ 
+@@ -4904,30 +4903,16 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 
+ 	/* ready to go, so clear down state bit */
+ 	clear_bit(ICE_DOWN, pf->state);
+-	if (ice_is_rdma_ena(pf)) {
+-		pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
+-		if (pf->aux_idx < 0) {
+-			dev_err(dev, "Failed to allocate device ID for AUX driver\n");
+-			err = -ENOMEM;
+-			goto err_devlink_reg_param;
+-		}
+-
+-		err = ice_init_rdma(pf);
+-		if (err) {
+-			dev_err(dev, "Failed to initialize RDMA: %d\n", err);
+-			err = -EIO;
+-			goto err_init_aux_unroll;
+-		}
+-	} else {
+-		dev_warn(dev, "RDMA is not supported on this device\n");
++	err = ice_init_rdma(pf);
++	if (err) {
++		dev_err(dev, "Failed to initialize RDMA: %d\n", err);
++		err = -EIO;
++		goto err_devlink_reg_param;
+ 	}
+ 
+ 	ice_devlink_register(pf);
+ 	return 0;
+ 
+-err_init_aux_unroll:
+-	pf->adev = NULL;
+-	ida_free(&ice_aux_ida, pf->aux_idx);
+ err_devlink_reg_param:
+ 	ice_devlink_unregister_params(pf);
+ err_netdev_reg:
+@@ -5040,9 +5025,7 @@ static void ice_remove(struct pci_dev *pdev)
+ 	ice_service_task_stop(pf);
+ 
+ 	ice_aq_cancel_waiting_tasks(pf);
+-	ice_unplug_aux_dev(pf);
+-	if (pf->aux_idx >= 0)
+-		ida_free(&ice_aux_ida, pf->aux_idx);
++	ice_deinit_rdma(pf);
+ 	ice_devlink_unregister_params(pf);
+ 	set_bit(ICE_DOWN, pf->state);
+ 
 -- 
 2.36.1
 
