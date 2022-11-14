@@ -2,54 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D6F628202
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 15:08:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F412C628228
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 15:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236802AbiKNOIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 09:08:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
+        id S236602AbiKNOQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 09:16:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235639AbiKNOIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 09:08:43 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162641029;
-        Mon, 14 Nov 2022 06:08:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HEWn0hHxqLUr4VDhw38qxu5BAlhd0x0tpVrhUvGq4fs=; b=wysAvnRg1cgDEeYikw+59ARoyh
-        V1D3pIJLLBVigmA9Nk+jFtQh4xlet9hkFJR7qI3SVuN3fFuA5Nv9wc8JdSumUhOzg+gIjVO9p56Pr
-        RqvNyM7EXT57XYGzQ9gcj0CWAKbLCKwvaUab2IpXbNULd4LB62oq9BrZ0ksEOZZRU0hU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oua8F-002LO8-9s; Mon, 14 Nov 2022 15:08:15 +0100
-Date:   Mon, 14 Nov 2022 15:08:15 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Shenwei Wang <shenwei.wang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wei Fang <wei.fang@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, imx@lists.linux.dev,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v3 1/1] net: fec: add xdp and page pool statistics
-Message-ID: <Y3JLz1niXbdVbRH9@lunn.ch>
-References: <20221111153505.434398-1-shenwei.wang@nxp.com>
- <20221114134542.697174-1-alexandr.lobakin@intel.com>
+        with ESMTP id S230030AbiKNOQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 09:16:50 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EED24F19;
+        Mon, 14 Nov 2022 06:16:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668435409; x=1699971409;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VWZRwieL0MnAqoIr5PqiCwKsEkjOEOCAdig3LNLeXLs=;
+  b=JInJL6fHxfszv6AIfgcM+yVBL9NrJyJD+ELjabrUwctUT9YV94hK4jjG
+   rdmT+DShEDCxc+h9i8OZ6mLtCaN/FzKYKuOX/lvnr2qjKA1Qm2JId0LSe
+   TV6uNGY4fGQF41iuoln8BR3gICXAXKfYJAG8O0I7ZVTzfPpDHUqrYVPSI
+   Pcxks7ISMZD96XBLVSICsHfzzKwQZsdregvV1xRlokcY/cJ4JU2E4VAqV
+   V4GFdX9VpJrNNxPuZiDKkU8uxhsthrdahxNB4+qN3LcDpqMvVKRaBk+SR
+   6Snen+Vx1EWoq0musqDu/W7iZQybhlTmeZAg9cj2yC0mMTbb9My9GKrRl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="299494588"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="299494588"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 06:16:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="671573894"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="671573894"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 14 Nov 2022 06:16:46 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AEEGiQ8012563;
+        Mon, 14 Nov 2022 14:16:44 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 1/5] net: lan966x: Add XDP_PACKET_HEADROOM
+Date:   Mon, 14 Nov 2022 15:16:33 +0100
+Message-Id: <20221114141633.699268-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221113111559.1028030-2-horatiu.vultur@microchip.com>
+References: <20221113111559.1028030-1-horatiu.vultur@microchip.com> <20221113111559.1028030-2-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221114134542.697174-1-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,32 +68,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Drivers should never select PAGE_POOL_STATS. This Kconfig option was
-> made to allow user to choose whether he wants stats or better
-> performance on slower systems. It's pure user choice, if something
-> doesn't build or link, it must be guarded with
-> IS_ENABLED(CONFIG_PAGE_POOL_STATS).
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Sun, 13 Nov 2022 12:15:55 +0100
 
-Given how simple the API is, and the stubs for when
-CONFIG_PAGE_POOL_STATS is disabled, i doubt there is any need for the
-driver to do anything.
-
-> >  	struct page_pool *page_pool;
-> >  	struct xdp_rxq_info xdp_rxq;
-> > +	u32 stats[XDP_STATS_TOTAL];
+> Update the page_pool params to allocate XDP_PACKET_HEADROOM space as
+> headroom for all received frames.
+> This is needed for when the XDP_TX and XDP_REDIRECT are implemented.
 > 
-> Still not convinced it is okay to deliberately provoke overflows
-> here, maybe we need some more reviewers to help us agree on what is
-> better?
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
 
-You will find that many embedded drivers only have 32 bit hardware
-stats and do wrap around. And the hardware does not have atomic read
-and clear so you can accumulate into a u64. The FEC is from the times
-of MIB 2 ifTable, which only requires 32 bit counters. ifXtable is
-modern compared to the FEC.
+[...]
 
-Software counters like this are a different matter. The overhead of a
-u64 on a 32 bit system is probably in the noise, so i think there is
-strong argument for using u64.
+> @@ -466,7 +472,8 @@ static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx,
+>  
+>  	skb_mark_for_recycle(skb);
+>  
+> -	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
+> +	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status) + XDP_PACKET_HEADROOM);
+> +	skb_pull(skb, XDP_PACKET_HEADROOM);
 
-       Andrew
+These two must be:
+
++	skb_reserve(skb, XDP_PACKET_HEADROOM);
+ 	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
+
+i.e. you only need to add reserve, and that's it. It's not only
+faster, but also moves ::tail, which is essential.
+
+>  
+>  	lan966x_ifh_get_timestamp(skb->data, &timestamp);
+>  
+
+[...]
+
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+> @@ -44,8 +44,9 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
+>  
+>  	xdp_init_buff(&xdp, PAGE_SIZE << lan966x->rx.page_order,
+>  		      &port->xdp_rxq);
+> -	xdp_prepare_buff(&xdp, page_address(page), IFH_LEN_BYTES,
+> -			 data_len - IFH_LEN_BYTES, false);
+> +	xdp_prepare_buff(&xdp, page_address(page),
+> +			 IFH_LEN_BYTES + XDP_PACKET_HEADROOM,
+> +			 data_len - IFH_LEN_BYTES - XDP_PACKET_HEADROOM, false);
+
+Are you sure you need to substract %XDP_PACKET_HEADROOM from
+@data_len? I think @data_len is the frame length, so headroom is not
+included?
+
+>  	act = bpf_prog_run_xdp(xdp_prog, &xdp);
+>  	switch (act) {
+>  	case XDP_PASS:
+> -- 
+> 2.38.0
+
+Thanks,
+Olek
