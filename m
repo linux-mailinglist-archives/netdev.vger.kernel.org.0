@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDA06281BC
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:57:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D6F628202
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 15:08:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236175AbiKNN5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 08:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        id S236802AbiKNOIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 09:08:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235838AbiKNN5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:57:44 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B8C25EAD;
-        Mon, 14 Nov 2022 05:57:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668434263; x=1699970263;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=c1LEAEBS/B4yllpfBP/rAur6bhGZbpLPwsGMq5eUpUI=;
-  b=N+kYNlklz/cFE2HGjk/oTZg8m1xIQpd0NkxVPlkQnpDlR/dCzZp4IFkp
-   oU85O8KbuiKfkI0K+h7UxlW0t4y8HrG73/L4soTqnvfCngiAWtfD8n+4D
-   B/FBYp/2a8boHVk5gbfNzQaBMKtR0j/K2OrOthTv5Q3IliEkU0IE24mgo
-   wSC06J1XDK3ePeigyRCN3UE+tf5DXjvPw7e7EegDeSFawzx277TTSUDeH
-   oxu98gUgDBmUUgzVVRyomjJmcZ9nr1f2LTuzY3puBK6R3mm+1BEFiTLva
-   k1h7RR7dSssz4MeJxqcZ7Vqqv8v4iSgqNYkEAk5aKrDgDjiXAey8KEPJR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="309598863"
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="309598863"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 05:57:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="763489172"
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="763489172"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 14 Nov 2022 05:57:39 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AEDvbk2008805;
-        Mon, 14 Nov 2022 13:57:38 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S235639AbiKNOIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 09:08:43 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162641029;
+        Mon, 14 Nov 2022 06:08:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HEWn0hHxqLUr4VDhw38qxu5BAlhd0x0tpVrhUvGq4fs=; b=wysAvnRg1cgDEeYikw+59ARoyh
+        V1D3pIJLLBVigmA9Nk+jFtQh4xlet9hkFJR7qI3SVuN3fFuA5Nv9wc8JdSumUhOzg+gIjVO9p56Pr
+        RqvNyM7EXT57XYGzQ9gcj0CWAKbLCKwvaUab2IpXbNULd4LB62oq9BrZ0ksEOZZRU0hU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oua8F-002LO8-9s; Mon, 14 Nov 2022 15:08:15 +0100
+Date:   Mon, 14 Nov 2022 15:08:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Shenwei Wang <shenwei.wang@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "imx@lists.linux.dev" <imx@lists.linux.dev>
-Subject: Re: [PATCH v2 RESEND 1/1] net: fec: add xdp and page pool statistics
-Date:   Mon, 14 Nov 2022 14:57:26 +0100
-Message-Id: <20221114135726.698089-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <Y3JHvo4p10iC4QFH@lunn.ch>
-References: <20221109023147.242904-1-shenwei.wang@nxp.com> <4349bc93a5f2130a95305287141fde369245f921.camel@redhat.com> <PAXPR04MB91853A6A1DDDBB06F33C975E89019@PAXPR04MB9185.eurprd04.prod.outlook.com> <20221110164321.3534977-1-alexandr.lobakin@intel.com> <PAXPR04MB9185CDDD50250DFE5E492C7189019@PAXPR04MB9185.eurprd04.prod.outlook.com> <20221114133502.696740-1-alexandr.lobakin@intel.com> <Y3JHvo4p10iC4QFH@lunn.ch>
+        Wei Fang <wei.fang@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, imx@lists.linux.dev,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v3 1/1] net: fec: add xdp and page pool statistics
+Message-ID: <Y3JLz1niXbdVbRH9@lunn.ch>
+References: <20221111153505.434398-1-shenwei.wang@nxp.com>
+ <20221114134542.697174-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221114134542.697174-1-alexandr.lobakin@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Mon, 14 Nov 2022 14:50:54 +0100
+> Drivers should never select PAGE_POOL_STATS. This Kconfig option was
+> made to allow user to choose whether he wants stats or better
+> performance on slower systems. It's pure user choice, if something
+> doesn't build or link, it must be guarded with
+> IS_ENABLED(CONFIG_PAGE_POOL_STATS).
 
-> >    What is your machine and how fast your link is?
+Given how simple the API is, and the stubs for when
+CONFIG_PAGE_POOL_STATS is disabled, i doubt there is any need for the
+driver to do anything.
+
+> >  	struct page_pool *page_pool;
+> >  	struct xdp_rxq_info xdp_rxq;
+> > +	u32 stats[XDP_STATS_TOTAL];
 > 
-> Some FEC implementations are Fast Ethernet. Others are 1G.
-> 
-> I expect Shenwei is testing on a fast 64 bit machine with 1G, but
-> there are slow 32bit machines with Fast ethernet or 1G.
+> Still not convinced it is okay to deliberately provoke overflows
+> here, maybe we need some more reviewers to help us agree on what is
+> better?
 
-Okay. I can say I have link speed on 1G on MIPS32, even on those
-which are 1-core 600 MHz. And when I was adding more driver stats,
-all based on u64_stats_t, I couldn't spot any visible regression.
-100-150 Kbps maybe?
+You will find that many embedded drivers only have 32 bit hardware
+stats and do wrap around. And the hardware does not have atomic read
+and clear so you can accumulate into a u64. The FEC is from the times
+of MIB 2 ifTable, which only requires 32 bit counters. ifXtable is
+modern compared to the FEC.
 
-> 
->      Andrew
+Software counters like this are a different matter. The overhead of a
+u64 on a 32 bit system is probably in the noise, so i think there is
+strong argument for using u64.
 
-Thanks,
-Olek
+       Andrew
