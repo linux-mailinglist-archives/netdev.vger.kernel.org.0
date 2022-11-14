@@ -2,91 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0947E627AA8
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:40:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CA4627AAC
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234043AbiKNKkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 05:40:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        id S235964AbiKNKlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 05:41:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiKNKkr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:40:47 -0500
-Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6C01A062
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 02:40:44 -0800 (PST)
-Received: from violet.fr.zoreil.com ([127.0.0.1])
-        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 2AEAe5Uf820655;
-        Mon, 14 Nov 2022 11:40:05 +0100
-DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 2AEAe5Uf820655
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
-        s=v20220413; t=1668422406;
-        bh=ruWxN85n8k29Oly4aD/onyXwm+G1dWEBNEhULwlWsj8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MNdO/JPQFntF+lJh71QYeQvRSnzPu2iIdkEZFKzTecVnv9ySF5yMUZRnlhLszeD40
-         RXnLdCfCGSFXL4iVD79orRyWYf82BhNmZ5ErPLwa2HpA1BLLM6tyQXoFJ+W+e5GcU7
-         i2PWMXF3YHSvgxGyuu6IE3ys4rETYBVou2LGGV6M=
-Received: (from romieu@localhost)
-        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 2AEAe4Hp820654;
-        Mon, 14 Nov 2022 11:40:04 +0100
-Date:   Mon, 14 Nov 2022 11:40:04 +0100
-From:   Francois Romieu <romieu@fr.zoreil.com>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Moritz Fischer <mdf@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: nixge: fix potential memory leak in
- nixge_start_xmit()
-Message-ID: <Y3IbBCioK1Clt/3a@electric-eye.fr.zoreil.com>
-References: <1668416136-33530-1-git-send-email-zhangchangzhong@huawei.com>
+        with ESMTP id S235936AbiKNKlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:41:13 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADB461D675;
+        Mon, 14 Nov 2022 02:41:11 -0800 (PST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net-next 0/6] Netfilter updates for net-next
+Date:   Mon, 14 Nov 2022 11:41:00 +0100
+Message-Id: <20221114104106.8719-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1668416136-33530-1-git-send-email-zhangchangzhong@huawei.com>
-X-Organisation: Land of Sunshine Inc.
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zhang Changzhong <zhangchangzhong@huawei.com> :
-> The nixge_start_xmit() returns NETDEV_TX_OK but does not free skb on two
-> error handling cases, which can lead to memory leak.
-> 
-> To fix this, return NETDEV_TX_BUSY in case of nixge_check_tx_bd_space()
-> fails and add dev_kfree_skb_any() in case of dma_map_single() fails.
+Hi,
 
-This patch merge two unrelated changes. Please split.
+The following patchset contains Netfilter updates for net-next:
 
-> Fixes: 492caffa8a1a ("net: ethernet: nixge: Add support for National Instruments XGE netdev")
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->  drivers/net/ethernet/ni/nixge.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
-> index 19d043b593cc..b9091f9bbc77 100644
-> --- a/drivers/net/ethernet/ni/nixge.c
-> +++ b/drivers/net/ethernet/ni/nixge.c
-> @@ -521,13 +521,15 @@ static netdev_tx_t nixge_start_xmit(struct sk_buff *skb,
->  	if (nixge_check_tx_bd_space(priv, num_frag)) {
->  		if (!netif_queue_stopped(ndev))
->  			netif_stop_queue(ndev);
-> -		return NETDEV_TX_OK;
-> +		return NETDEV_TX_BUSY;
->  	}
+1) Fix sparse warning in the new nft_inner expression, reported
+   by Jakub Kicinski.
 
-The driver should probably check the available room before returning
-from hard_start_xmit and turn the check above unlikely().
+2) Incorrect vlan header check in nft_inner, from Peng Wu.
 
-Btw there is no lock and the Tx completion is irq driven: the driver
-is racy. :o(
+3) Two patches to pass reset boolean to expression dump operation,
+   in preparation for allowing to reset stateful expressions in rules.
+   This adds a new NFT_MSG_GETRULE_RESET command. From Phil Sutter.
 
--- 
-Ueimor
+4) Inconsistent indentation in nft_fib, from Jiapeng Chong.
+
+5) Speed up siphash calculation in conntrack, from Florian Westphal.
+
+This batch includes two fixes for the new inner payload/meta match
+coming in the previous nf-next pull request.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 6f1a298b2e24c703bfcc643e41bc7c0604fe4830:
+
+  Merge branch 'inet-add-drop-monitor-support' (2022-10-31 20:14:30 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git HEAD
+
+for you to fetch changes up to 21a92d58de4e399c13c43aadc2c70ca6b98c4c39:
+
+  netfilter: conntrack: use siphash_4u64 (2022-11-09 15:50:31 +0100)
+
+----------------------------------------------------------------
+Florian Westphal (1):
+      netfilter: conntrack: use siphash_4u64
+
+Jiapeng Chong (1):
+      netfilter: rpfilter/fib: clean up some inconsistent indenting
+
+Pablo Neira Ayuso (1):
+      netfilter: nft_payload: use __be16 to store gre version
+
+Peng Wu (1):
+      netfilter: nft_inner: fix return value check in nft_inner_parse_l2l3()
+
+Phil Sutter (2):
+      netfilter: nf_tables: Extend nft_expr_ops::dump callback parameters
+      netfilter: nf_tables: Introduce NFT_MSG_GETRULE_RESET
+
+ include/net/netfilter/nf_tables.h        |  5 ++--
+ include/net/netfilter/nft_fib.h          |  2 +-
+ include/net/netfilter/nft_meta.h         |  4 +--
+ include/net/netfilter/nft_reject.h       |  3 +-
+ include/uapi/linux/netfilter/nf_tables.h |  2 ++
+ net/ipv4/netfilter/nft_dup_ipv4.c        |  3 +-
+ net/ipv4/netfilter/nft_fib_ipv4.c        |  5 ++--
+ net/ipv6/netfilter/nft_dup_ipv6.c        |  3 +-
+ net/netfilter/nf_conntrack_core.c        | 28 +++++++-----------
+ net/netfilter/nf_tables_api.c            | 49 +++++++++++++++++++++-----------
+ net/netfilter/nft_bitwise.c              |  6 ++--
+ net/netfilter/nft_byteorder.c            |  3 +-
+ net/netfilter/nft_cmp.c                  |  9 ++++--
+ net/netfilter/nft_compat.c               |  9 ++++--
+ net/netfilter/nft_connlimit.c            |  3 +-
+ net/netfilter/nft_counter.c              |  5 ++--
+ net/netfilter/nft_ct.c                   |  6 ++--
+ net/netfilter/nft_dup_netdev.c           |  3 +-
+ net/netfilter/nft_dynset.c               |  7 +++--
+ net/netfilter/nft_exthdr.c               |  9 ++++--
+ net/netfilter/nft_fib.c                  |  2 +-
+ net/netfilter/nft_flow_offload.c         |  3 +-
+ net/netfilter/nft_fwd_netdev.c           |  6 ++--
+ net/netfilter/nft_hash.c                 |  4 +--
+ net/netfilter/nft_immediate.c            |  3 +-
+ net/netfilter/nft_inner.c                |  7 +++--
+ net/netfilter/nft_last.c                 |  3 +-
+ net/netfilter/nft_limit.c                |  5 ++--
+ net/netfilter/nft_log.c                  |  3 +-
+ net/netfilter/nft_lookup.c               |  3 +-
+ net/netfilter/nft_masq.c                 |  3 +-
+ net/netfilter/nft_meta.c                 |  5 ++--
+ net/netfilter/nft_nat.c                  |  3 +-
+ net/netfilter/nft_numgen.c               |  6 ++--
+ net/netfilter/nft_objref.c               |  6 ++--
+ net/netfilter/nft_osf.c                  |  3 +-
+ net/netfilter/nft_payload.c              |  9 ++++--
+ net/netfilter/nft_queue.c                |  6 ++--
+ net/netfilter/nft_quota.c                |  5 ++--
+ net/netfilter/nft_range.c                |  3 +-
+ net/netfilter/nft_redir.c                |  3 +-
+ net/netfilter/nft_reject.c               |  3 +-
+ net/netfilter/nft_rt.c                   |  2 +-
+ net/netfilter/nft_socket.c               |  2 +-
+ net/netfilter/nft_synproxy.c             |  3 +-
+ net/netfilter/nft_tproxy.c               |  2 +-
+ net/netfilter/nft_tunnel.c               |  2 +-
+ net/netfilter/nft_xfrm.c                 |  2 +-
+ 48 files changed, 166 insertions(+), 105 deletions(-)
