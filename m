@@ -2,100 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74685627F4B
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 13:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80703627C21
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 12:21:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237588AbiKNM50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 07:57:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50186 "EHLO
+        id S236548AbiKNLVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 06:21:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237567AbiKNM5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 07:57:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6429627CE1;
-        Mon, 14 Nov 2022 04:57:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0347061175;
-        Mon, 14 Nov 2022 12:57:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10023C433D7;
-        Mon, 14 Nov 2022 12:57:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668430640;
-        bh=uon6Krd1MvkrDak6DwqUCaNp/DwejxOIsxkc2HYJQwI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=LDJfw7R3m5F7ffSJYBsrmlsz45BIKmNI2WJRFhdhJ5S2NcvEU8y59iXuR2SU4bGo+
-         r9TobxQ3khv7cRqLxnWUHYx0jmgS+kTgWkWx8NzJxHp4JYZDkK9GAjfzCfBfdCTbEj
-         OnaR/N29Q+eZGQA8upobvzlPJC3lCD1g2NuR9Ksm3EqBLibYMM9iV85xB8zENY67Ye
-         P8EO6xVDzwU3ytcqpbVgKQyXiusfarBB198ZbeVuJ/K1pXyYfedhPtyXWj3eJm7Bjm
-         5vx/D2UEDvJ6i9SUljC6aML7scWntWQl7+7W71XjGIJC1GBmzWJn2WWWXybj/LHTaX
-         WMos9HNgFE5yg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-wireless@vger.kernel.org, Angus Ainslie <angus@akkea.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v5] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via control port
-References: <20221104163339.227432-1-marex@denx.de>
-        <87o7tjszyg.fsf@kernel.org>
-        <7a3b6d5c-1d73-1d31-434f-00703c250dd6@denx.de>
-        <877d06g98z.fsf@kernel.org>
-        <afe318c6-9a55-1df2-68b4-d554d4cecd5a@denx.de>
-        <871qqccd5i.fsf@kernel.org>
-        <1c37e3f3-0616-3d60-6572-36e9f5aa0d59@denx.de>
-        <87zgczs6zl.fsf@kernel.org>
-        <da2bca7b-1289-747c-df11-fb424381c6e6@denx.de>
-Date:   Mon, 14 Nov 2022 14:57:15 +0200
-In-Reply-To: <da2bca7b-1289-747c-df11-fb424381c6e6@denx.de> (Marek Vasut's
-        message of "Sun, 13 Nov 2022 19:59:36 +0100")
-Message-ID: <87iljhbsno.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S236146AbiKNLVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 06:21:01 -0500
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528C66475;
+        Mon, 14 Nov 2022 03:17:35 -0800 (PST)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AEA5lcD016147;
+        Mon, 14 Nov 2022 06:17:09 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ktwrrp6ck-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Nov 2022 06:17:09 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 2AEBH7Jm006008
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 14 Nov 2022 06:17:07 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Nov
+ 2022 06:17:07 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 14 Nov 2022 06:17:06 -0500
+Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.157])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2AEBGh5h031805;
+        Mon, 14 Nov 2022 06:16:45 -0500
+From:   Alexandru Tachici <alexandru.tachici@analog.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <steve.glendinning@shawell.net>,
+        <UNGLinuxDriver@microchip.com>, <andre.edich@microchip.com>,
+        <linux-usb@vger.kernel.org>
+Subject: [net] net: usb: smsc95xx: fix external PHY reset
+Date:   Mon, 14 Nov 2022 15:16:43 +0200
+Message-ID: <20221114131643.19450-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: 4Fuyddp9qQM8wFjQvmTtI4D4ho-JUD95
+X-Proofpoint-GUID: 4Fuyddp9qQM8wFjQvmTtI4D4ho-JUD95
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-14_10,2022-11-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
+ priorityscore=1501 clxscore=1011 bulkscore=0 mlxlogscore=759
+ malwarescore=0 impostorscore=0 mlxscore=0 suspectscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211140082
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marek Vasut <marex@denx.de> writes:
+An external PHY needs settling time after power up or reser.
+In the bind() function an mdio bus is registered. If at this point
+the external PHY is still initialising, no valid PHY ID will be
+read and on phy_find_first() the bind() function will fail.
 
-> On 11/10/22 06:39, Kalle Valo wrote:
->
->> Marek Vasut <marex@denx.de> writes:
->>
->>> On 11/9/22 17:20, Kalle Valo wrote:
->>>
->>>> That's a pity indeed. Should we at least mark the driver as orphaned in
->>>> MAINTAINERS?
->>>>
->>>> Or even better if you Marek would be willing to step up as the
->>>> maintainer? :)
->>>
->>> I think best mark it orphaned, to make it clear what the state of the
->>> driver really is.
->>>
->>> If RSI was willing to provide documentation, or at least releases
->>> which are not 30k+/20k- single-all-in-one-commit dumps of code, or at
->>> least any help, I would consider it. But not like this.
->>
->> Yeah, very understandable. So let's mark the driver orphaned then, can
->> someone send a patch?
->
-> Done
+If an external PHY is present, wait the maximum time specified
+in 802.3 45.2.7.1.1.
 
-Great, thank you very much.
+Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+---
+ drivers/net/usb/smsc95xx.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index bfb58c91db04..5ed001c0cd56 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1134,8 +1134,15 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		goto free_mdio;
+ 
+ 	is_internal_phy = !(val & HW_CFG_PSEL_);
+-	if (is_internal_phy)
++	if (is_internal_phy) {
+ 		pdata->mdiobus->phy_mask = ~(1u << SMSC95XX_INTERNAL_PHY_ID);
++	} else {
++		/* Driver has no knowledge at this point about the external PHY.
++		 * The 802.3 specifies that the reset process shall
++		 * be completed within 0.5 s.
++		 */
++		fsleep(500000);
++	}
+ 
+ 	pdata->mdiobus->priv = dev;
+ 	pdata->mdiobus->read = smsc95xx_mdiobus_read;
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.34.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
