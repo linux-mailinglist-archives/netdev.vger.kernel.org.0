@@ -2,106 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64770628CE7
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 00:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B720628D47
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 00:19:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237820AbiKNXC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 18:02:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51062 "EHLO
+        id S237879AbiKNXTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 18:19:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236787AbiKNXCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 18:02:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677301AD95;
-        Mon, 14 Nov 2022 15:02:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0341461496;
-        Mon, 14 Nov 2022 23:02:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4DE1C43470;
-        Mon, 14 Nov 2022 23:02:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668466943;
-        bh=atvqHdQO4CQz5dyA9Aq/ZbZb/2LT5b1pm3IB1f6BEtc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h1RAO+mYJIKOiqI9PduVuH5ox7UFRxuY8OrEa3EcVGGJGjUlJfcX1lSB/nCVt1ao+
-         HKeDoFnSR22leKuODBTvqMFdBEaRizKnHXvS+ZQYRoIVaynfBGK48r70/MGDo+9deS
-         SYNTdXVP9Yr7pnn/Zf+xEpcvFUmDVGU2c1GQAGHg9+6kxh5WKOSju7ANg2c64i0KJB
-         thUfF+9r2zxlZ+cDb058lle+BnPgzYJHFg5R6WTe//2CSV9/N4RI2ARQh+CMHrQp08
-         99Ul7qUWHWQPrDYNM7G3AvDWz9zQkWAH+c/E29bKc/Y1E+ANkShpNYgf5sgg8HRX6L
-         Bhf/lknvkid6Q==
-Date:   Mon, 14 Nov 2022 17:02:06 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH 2/2][next] wifi: brcmfmac: Use struct_size() and array_size()
- in code ralated to struct brcmf_gscan_config
-Message-ID: <de0226a549c8d000d8974e207ede786220a3df1a.1668466470.git.gustavoars@kernel.org>
-References: <cover.1668466470.git.gustavoars@kernel.org>
-MIME-Version: 1.0
+        with ESMTP id S238073AbiKNXS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 18:18:57 -0500
+Received: from ci74p00im-qukt09081902.me.com (ci74p00im-qukt09081902.me.com [17.57.156.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9829D9FF8
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 15:18:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+        s=1a1hai; t=1668467410;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        h=Content-Type:From:Mime-Version:Subject:Date:Message-Id:To;
+        b=h103k0KHl5TS6E1TxViaJfmaMtfnFG1EH9QC3pJjqqGHvkL0Q5RSV80bnSnNW1gwa
+         wYRE/RbHkGwZLI1pBpCt7/ksVOAx2+H2t0wW+Vz1OmUPA6e9gjtbQlxv9SsKZKyg6f
+         6n9mmmEI/pHqFC5ZrnBEhvQAwjILOQVQ/ZirB57ygza/1RqiBMG9tcO5FVLRZWJAn7
+         lh0k0Br8bvZHIKaeIFxIIEMr5Q6dC9hke9RLKRor13xzwHP8Wa8OYrsRCYFuT3f4a5
+         9n8vaDY6KLzVq0eOWQ8CLas+svOaxzCwvXn5C/FuojwtxIXc986pGSkn+UZgaj5IXT
+         TPD5UCwMDVckA==
+Received: from [10.29.246.1] (ci77p00im-dlb-asmtp-mailmevip.me.com [17.57.156.26])
+        by ci74p00im-qukt09081902.me.com (Postfix) with ESMTPSA id 32E8429006D0;
+        Mon, 14 Nov 2022 23:10:09 +0000 (UTC)
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1668466470.git.gustavoars@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+From:   James Wick <wackooman57@icloud.com>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH 1/3] uapi: export tc tunnel key file
+Date:   Mon, 14 Nov 2022 18:10:07 -0500
+Message-Id: <CC6840A3-785D-41DD-BA6C-35B8B1FC274C@icloud.com>
+Cc:     davem@davemloft.net, jhs@mojatatu.com, netdev@vger.kernel.org,
+        pablo@netfilter.org, stephen@networkplumber.org,
+        sthemmin@microsoft.com
+To:     James Wick <wackooman57@icloud.com>
+X-Mailer: iPhone Mail (17E262)
+X-Proofpoint-GUID: TaA5VggxPJcqG9ZmxlmNyz5yp8WNLNnT
+X-Proofpoint-ORIG-GUID: TaA5VggxPJcqG9ZmxlmNyz5yp8WNLNnT
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.572,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-01-11=5F01:2022-01-11=5F01,2020-02-14=5F11,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 clxscore=1011
+ suspectscore=0 mlxlogscore=599 spamscore=0 adultscore=0 malwarescore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2211140163
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prefer struct_size() over open-coded versions of idiom:
-
-sizeof(struct-with-flex-array) + sizeof(typeof-flex-array-elements) * count
-
-where count is the max number of items the flexible array is supposed to
-contain.
-
-Also, use array_size() in call to memcpy().
-
-Link: https://github.com/KSPP/linux/issues/160
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
-index 7c5da506637f..05f66ab13bed 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
-@@ -405,7 +405,7 @@ static int brcmf_pno_config_sched_scans(struct brcmf_if *ifp)
- 	if (n_buckets < 0)
- 		return n_buckets;
- 
--	gsz = sizeof(*gscan_cfg) + n_buckets * sizeof(*buckets);
-+	gsz = struct_size(gscan_cfg, bucket, n_buckets);
- 	gscan_cfg = kzalloc(gsz, GFP_KERNEL);
- 	if (!gscan_cfg) {
- 		err = -ENOMEM;
-@@ -434,8 +434,8 @@ static int brcmf_pno_config_sched_scans(struct brcmf_if *ifp)
- 	gscan_cfg->flags = BRCMF_GSCAN_CFG_ALL_BUCKETS_IN_1ST_SCAN;
- 
- 	gscan_cfg->count_of_channel_buckets = n_buckets;
--	memcpy(&gscan_cfg->bucket[0], buckets,
--	       n_buckets * sizeof(*buckets));
-+	memcpy(gscan_cfg->bucket, buckets,
-+	       array_size(n_buckets, sizeof(*buckets)));
- 
- 	err = brcmf_fil_iovar_data_set(ifp, "pfn_gscan_cfg", gscan_cfg, gsz);
- 
--- 
-2.34.1
 
