@@ -2,183 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC5A062890F
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 20:16:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F5662892E
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 20:20:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237161AbiKNTQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 14:16:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
+        id S236888AbiKNTUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 14:20:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237071AbiKNTQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 14:16:24 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB0426AF6
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:16:23 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id s5so2528947edc.12
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:16:23 -0800 (PST)
+        with ESMTP id S237013AbiKNTUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 14:20:11 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F252275CF;
+        Mon, 14 Nov 2022 11:20:10 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id d13-20020a17090a3b0d00b00213519dfe4aso11676302pjc.2;
+        Mon, 14 Nov 2022 11:20:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7GZ7mdKRxSmNzZk248APL9GVltHD1aGTMmJ3HYRAqIU=;
-        b=GoluzNb+LAr29/2n3WnpatuY1/8sy1ptYyHh29nBg1TcI5ffSS55OWvYH2Z2UZ4sBj
-         AsfBPOqKivOl1vOwB1dPlNbUt6JlJQtWYmH6tRKd59BAP59aej7Gei4jseJjYj2DfiyM
-         OJN2iOWeMPlANFVx113TqgaW2SH7p8V+PSaeE=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZPWs3D/76vIKz8bAxu2rCoaZvjSSlJwTVNgfHpAhTT4=;
+        b=qNnu4W+xb31rg0kUgUPs9GlsQPVNjh2HtjMw9yggvLLnSr6FxqNKZvpLfpvpuM0JXI
+         43eBvgICAeTv7WNPk0Wag/ew2ILscm+nQUrJ8UKyZ/vSEyKtIQ2R6ypNqlEkU/n49gtj
+         I+hD7O3frVCdf3c/tHxxgf9nn3F9b5lYBLVQ3emJrtueXvLGoeOynbtCoX8eMcFp0cia
+         PIgKb9kuSbG6CJasI8nvz4czIkPDwSmf7Dh8vql96REUjWAJ1fdDJiJ04hmoDUf2Lmt8
+         b1e98z2Fc7Wj1VXAFKjlMf7Vgx2cnoZS0EtNMgEJjbor7ue5YugyzHGgtz3SC3v3/tTI
+         1XGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7GZ7mdKRxSmNzZk248APL9GVltHD1aGTMmJ3HYRAqIU=;
-        b=EIKix8yZrs/2JBr3jHnBawK7X+mMvle2R4ipxKPOtug0yo5ChkeumziCILyieVQ6eC
-         QTwfaTef0oyHia6iobN3yJmTtD1KF/kOTkwai4gR8XaXLJgP/TNlJ5UNNhtaVkhZX4qh
-         nXa7IAXuyXUd45vtQ0AaSe2JxgG0LfREyB/yZyj1K6fTME4n2Gkj/g4FgjUIFIV7I9PC
-         v6ws0rPYPLFq9zJ9yw84JlLjwIcTjnAPlgJWPIiMu8lLmd64Q0a3J8gjaXUkgjk9ohjl
-         eMGYg5BbZqnvB663eNuFltDF8ujZAtJ7WHiec8eDyNekZeracgwpdnc2WHodILgH8781
-         r3DA==
-X-Gm-Message-State: ANoB5pn8lF/epkoC75UxeKJX2I9T3it4OPtDafC2KZ4hfexqiWJZWXha
-        X7LSh+zdZqOUAET6gIOtqtLiWJWuDeaMWg==
-X-Google-Smtp-Source: AA0mqf72+G1Fm7cD526FPk8x053g7O2PyVF5GGOOAvDIADQT80qufQz4pjACVQO1NQ8dE97VSK62Aw==
-X-Received: by 2002:a05:6402:7da:b0:466:4168:6ea7 with SMTP id u26-20020a05640207da00b0046641686ea7mr11807928edy.273.1668453381363;
-        Mon, 14 Nov 2022 11:16:21 -0800 (PST)
-Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
-        by smtp.gmail.com with ESMTPSA id w25-20020aa7da59000000b00463bc1ddc76sm5100523eds.28.2022.11.14.11.16.20
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZPWs3D/76vIKz8bAxu2rCoaZvjSSlJwTVNgfHpAhTT4=;
+        b=KWy4ur3bLAhz4663eQKUAyh3e6soJ3d+DzeqwkVFScwErQwzGj64uZfA7rL3PxBi/m
+         Pp5MTHqdAqa90NP70nCdCoB+YY1z/CS/n8uWZanR2lcGI2VX7MhTCFvsKPudMA+5bz2l
+         CKz64C6JTzNsCROD4pWoPPUCOXian36xw4iiGFWsswTyDSdugEsGqNoATbwk19lnCBVV
+         BEPE2qD12o0GvgCgDuWUgMfUexLE6j5eRUn7rfyd4jzTrbFR9LBXqx0+KYAYMvHjzpmM
+         t0hpwhcSqRq2pWFMk+SicFBRIGELN7Js1mkR6mfKtYX1kaozaApDT6kOG9Vucu5j+8Nn
+         +QIw==
+X-Gm-Message-State: ANoB5pmla0PMaxXIwaj6wmc7C4NzzI23s/BO9qbzCmAySAb+/FgnpsvI
+        3k2uKfQtW73NxvnuLYWHWVj9etonhPA=
+X-Google-Smtp-Source: AA0mqf6SoFAMfweIoqSjN/T+2+Hr9p4QgyHXW57Yz+BaE1TqT1yme/iss5Fkp69nxaA7qUzAbslJxg==
+X-Received: by 2002:a17:903:264c:b0:188:a51c:b581 with SMTP id je12-20020a170903264c00b00188a51cb581mr672495plb.55.1668453609453;
+        Mon, 14 Nov 2022 11:20:09 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id y15-20020a17090322cf00b0018658badef3sm8006881plg.232.2022.11.14.11.20.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Nov 2022 11:16:21 -0800 (PST)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Parkin <tparkin@katalix.com>,
-        Haowei Yan <g1042620637@gmail.com>
-Subject: [PATCH net v4] l2tp: Serialize access to sk_user_data with sk_callback_lock
-Date:   Mon, 14 Nov 2022 20:16:19 +0100
-Message-Id: <20221114191619.124659-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.38.1
+        Mon, 14 Nov 2022 11:20:08 -0800 (PST)
+Date:   Mon, 14 Nov 2022 11:20:06 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     syzbot <syzbot+0f89bd13eaceccc0e126@syzkaller.appspotmail.com>
+Cc:     casey@schaufler-ca.com, jmorris@namei.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        paul@paul-moore.com, serge@hallyn.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference
+ in smack_inode_permission
+Message-ID: <Y3KU5kwa2XGS9gyy@hoboy.vegasvil.org>
+References: <00000000000061fe2205ed6300fa@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <00000000000061fe2205ed6300fa@google.com>
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk->sk_user_data has multiple users, which are not compatible with each
-other. Writers must synchronize by grabbing the sk->sk_callback_lock.
+On Sun, Nov 13, 2022 at 04:05:47PM -0800, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    56751c56c2a2 Merge branch 'for-next/fixes' into for-kernelci
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11fc8b0e880000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=606e57fd25c5c6cc
+> dashboard link: https://syzkaller.appspot.com/bug?extid=0f89bd13eaceccc0e126
+> compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+> userspace arch: arm64
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a691fa880000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1733c5b9880000
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/cf4668c75dea/disk-56751c56.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/e1ef82e91ef7/vmlinux-56751c56.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/3dabe076170f/Image-56751c56.gz.xz
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+0f89bd13eaceccc0e126@syzkaller.appspotmail.com
 
-l2tp currently fails to grab the lock when modifying the underlying tunnel
-socket fields. Fix it by adding appropriate locking.
+Why was this email addressed to me?
 
-We err on the side of safety and grab the sk_callback_lock also inside the
-sk_destruct callback overridden by l2tp, even though there should be no
-refs allowing access to the sock at the time when sk_destruct gets called.
-
-v4:
-- serialize write to sk_user_data in l2tp sk_destruct
-
-v3:
-- switch from sock lock to sk_callback_lock
-- document write-protection for sk_user_data
-
-v2:
-- update Fixes to point to origin of the bug
-- use real names in Reported/Tested-by tags
-
-Cc: Tom Parkin <tparkin@katalix.com>
-Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
-Reported-by: Haowei Yan <g1042620637@gmail.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
-
-This took me forever. Sorry about that.
-
- include/net/sock.h   |  2 +-
- net/l2tp/l2tp_core.c | 19 +++++++++++++------
- 2 files changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 5db02546941c..e0517ecc6531 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -323,7 +323,7 @@ struct sk_filter;
-   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
-   *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
-   *	@sk_socket: Identd and reporting IO signals
--  *	@sk_user_data: RPC layer private data
-+  *	@sk_user_data: RPC layer private data. Write-protected by @sk_callback_lock.
-   *	@sk_frag: cached page frag
-   *	@sk_peek_off: current peek_offset value
-   *	@sk_send_head: front of stuff to transmit
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 7499c51b1850..754fdda8a5f5 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1150,8 +1150,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
- 	}
- 
- 	/* Remove hooks into tunnel socket */
-+	write_lock_bh(&sk->sk_callback_lock);
- 	sk->sk_destruct = tunnel->old_sk_destruct;
- 	sk->sk_user_data = NULL;
-+	write_unlock_bh(&sk->sk_callback_lock);
- 
- 	/* Call the original destructor */
- 	if (sk->sk_destruct)
-@@ -1469,16 +1471,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 		sock = sockfd_lookup(tunnel->fd, &ret);
- 		if (!sock)
- 			goto err;
--
--		ret = l2tp_validate_socket(sock->sk, net, tunnel->encap);
--		if (ret < 0)
--			goto err_sock;
- 	}
- 
-+	sk = sock->sk;
-+	write_lock(&sk->sk_callback_lock);
-+
-+	ret = l2tp_validate_socket(sk, net, tunnel->encap);
-+	if (ret < 0)
-+		goto err_sock;
-+
- 	tunnel->l2tp_net = net;
- 	pn = l2tp_pernet(net);
- 
--	sk = sock->sk;
- 	sock_hold(sk);
- 	tunnel->sock = sk;
- 
-@@ -1504,7 +1508,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 
- 		setup_udp_tunnel_sock(net, sock, &udp_cfg);
- 	} else {
--		sk->sk_user_data = tunnel;
-+		rcu_assign_sk_user_data(sk, tunnel);
- 	}
- 
- 	tunnel->old_sk_destruct = sk->sk_destruct;
-@@ -1518,6 +1522,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 	if (tunnel->fd >= 0)
- 		sockfd_put(sock);
- 
-+	write_unlock(&sk->sk_callback_lock);
- 	return 0;
- 
- err_sock:
-@@ -1525,6 +1530,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 		sock_release(sock);
- 	else
- 		sockfd_put(sock);
-+
-+	write_unlock(&sk->sk_callback_lock);
- err:
- 	return ret;
- }
--- 
-2.38.1
-
+Thanks,
+Richard
