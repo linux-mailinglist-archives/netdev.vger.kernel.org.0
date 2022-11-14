@@ -2,126 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F273628B65
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 22:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28786628B7F
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 22:44:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236464AbiKNVhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 16:37:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
+        id S237656AbiKNVoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 16:44:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236250AbiKNVhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 16:37:11 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2A565B0
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 13:37:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668461831; x=1699997831;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aV2tBslTABRq7tRYvLEkPSsDGyJiVtXP4Ua9gkWBJds=;
-  b=U+dPtxZIaZTjmDxe5evYDOp2tog/oOe3V47R4m0GNzF3FpCqatbG8i8A
-   +U1r5p2q26Ap0usgRNTn3eccbp4L85pvmsjs01QHDbEvl5rks1qChBPe/
-   yymqc2mZYkyoEEkp3kELnwahX41OwDl+h6/OBIcvWNWP7u35jT702IuIL
-   /GIT+DD+rCZ5mNBRj3k1AvBuy6iTC870PlcIF8puKGALbZrma6PvJPSGc
-   Lg4aefwEoKlAXfV5f2IjhJAcYGzb/vJDLLxv66BGtjRofFnoAo2HD22y0
-   DMHWOXQU6CRBkUCRIt4JWf3CJnRCJ2CTJzfEZ7KMicuqyZj97Y3U38FSR
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291801915"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="291801915"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 13:37:10 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="669829458"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="669829458"
-Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 13:37:10 -0800
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>
-Subject: [PATCH net-next] mlxsw: update adjfine to use adjust_by_scaled_ppm
-Date:   Mon, 14 Nov 2022 13:37:01 -0800
-Message-Id: <20221114213701.815132-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.38.1.420.g319605f8f00e
+        with ESMTP id S237639AbiKNVoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 16:44:06 -0500
+X-Greylist: delayed 326 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Nov 2022 13:44:04 PST
+Received: from ns2.wdyn.eu (ns2.wdyn.eu [5.252.227.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23E7AE03;
+        Mon, 14 Nov 2022 13:44:03 -0800 (PST)
+Message-ID: <00e8e836-7a5e-3c65-b09b-b1e71d79a6c6@wetzel-home.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wetzel-home.de;
+        s=wetzel-home; t=1668461912;
+        bh=CaEb5TL7mi3Z7BL8t/8RHyqhrExer6WZWRCfyITK1C8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=tDBtN0PM1x8QOQ6yKExzpG8AX7MTCVMXcnV/vP9Dbw6MqAKXvoHuWIlZBNPVqd9ue
+         dA1szTe4LhYRK9vPuMQCBtsyi9a5I13o6MEBB8RlzmBKzs+WPDWVkuOOePnH86/gjz
+         gOylCDAbNNdpebsxs3YDYS8uRG/FaY9Z1C4bHAL4=
+Date:   Mon, 14 Nov 2022 22:38:29 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [Regression] Bug 216672 - soft lockup in ieee80211_select_queue
+ -- system freezing random time on msi laptop
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, misac1987@gmail.com
+References: <83b28e2d-7af7-f91a-7e67-7f224bcf0557@leemhuis.info>
+Content-Language: en-US
+From:   Alexander Wetzel <alexander@wetzel-home.de>
+In-Reply-To: <83b28e2d-7af7-f91a-7e67-7f224bcf0557@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mlxsw adjfine implementation in the spectrum_ptp.c file converts
-scaled_ppm into ppb before updating a cyclecounter multiplier using the
-standard "base * ppb / 1billion" calculation.
+On 13.11.22 09:22, Thorsten Leemhuis wrote:
+> Hi, this is your Linux kernel regression tracker speaking.
+> 
+> I noticed a slightly vague regression report in bugzilla.kernel.org. As
+> many (most?) kernel developer don't keep an eye on it, I decided to
+> forward it by mail. Quoting from
+> https://bugzilla.kernel.org/show_bug.cgi?id=216672 :
+> 
 
-This can be re-written to use adjust_by_scaled_ppm, directly using the
-scaled parts per million and reducing the amount of code required to
-express this calculation.
+I've tried to extrapolate the info in mail/ticket to get something we 
+can work with. But the result is insane: The CPU can't get stuck where 
+the trace claims it does. Not without some really strange and unlikely 
+HW defect.
 
-We still calculate the parts per billion for passing into
-mlxsw_sp_ptp_phc_adjfreq because this function requires the input to be in
-parts per billion.
+Based on the loaded modules the issue must be with the rtl8723ae card 
+and - according to the bug content - affect at least the kernels 5.19 
+and 6.0.6. (which are not supporting wake_tx_queue in 6.0.6)
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Amit Cohen <amcohen@nvidia.com>
-Cc: Ido Schimmel <idosch@nvidia.com>
-Cc: Petr Machata <petrm@nvidia.com>
----
+The core error message from a 6.0.6 (Ubuntu?) kernel is:
+   watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [ksoftirqd/1:23]
+   RIP: 0010:ieee80211_select_queue+0x1b/0x110 [mac80211]
 
-Noticed this while investigating conversion of max_adj to scaled PPM format.
-This was missed in the previous round of updates that modified drivers to
-use the adjust_by_scaled_ppm interface.
+According to the trace history and the identified driver the problematic 
+softirg should be a scheduled run of _rtl_pci_irq_tasklet().
+And it looks like a RX packet triggered a TCP RST reply. Which then 
+triggered the issue.
 
- .../net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+I ten checked with a Gentoo 6.0.6 mac80211 module the reference to 
+ieee80211_select_queue+0x1b:
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 7b01b9c20722..cbb6c75a6620 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -189,29 +189,17 @@ mlxsw_sp1_ptp_phc_settime(struct mlxsw_sp1_ptp_clock *clock, u64 nsec)
- static int mlxsw_sp1_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct mlxsw_sp1_ptp_clock *clock = mlxsw_sp1_ptp_clock(ptp);
--	int neg_adj = 0;
--	u32 diff;
--	u64 adj;
- 	s32 ppb;
- 
- 	ppb = scaled_ppm_to_ppb(scaled_ppm);
- 
--	if (ppb < 0) {
--		neg_adj = 1;
--		ppb = -ppb;
--	}
--
--	adj = clock->nominal_c_mult;
--	adj *= ppb;
--	diff = div_u64(adj, NSEC_PER_SEC);
--
- 	spin_lock_bh(&clock->lock);
- 	timecounter_read(&clock->tc);
--	clock->cycles.mult = neg_adj ? clock->nominal_c_mult - diff :
--				       clock->nominal_c_mult + diff;
-+	clock->cycles.mult = adjust_by_scaled_ppm(clock->nominal_c_mult,
-+						  scaled_ppm);
- 	spin_unlock_bh(&clock->lock);
- 
--	return mlxsw_sp_ptp_phc_adjfreq(&clock->common, neg_adj ? -ppb : ppb);
-+	return mlxsw_sp_ptp_phc_adjfreq(&clock->common, ppb);
- }
- 
- static int mlxsw_sp1_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+And at least in my build that's the local->ops->wake_tx_queue *check* in 
+ieee80211_select_queue(). Which of course does not make any sense short 
+of some fundamental assumption to be wrong...
 
-base-commit: f12ed9c04804eec4f1819097a0fd0b4800adac2f
--- 
-2.38.1.420.g319605f8f00e
+185             struct sta_info *sta = NULL;
+186             const u8 *ra = NULL;
+187             u16 ret;
+188
+189             /* when using iTXQ, we can do this later */
+190             if (local->ops->wake_tx_queue)
+191                     return 0;
+192
+
+Now my module is for sure far from the original but 
+ieee80211_select_queue() looks pretty harmless:
+No obvious way how we can get stuck in there...
+
+CPU broken? Strange compiler bug?
+Some stupid error from my site reading the trace?
+
+Are the traces all looking the same? Any other strange errors on the system?
+
+And can you verify that the error is indeed a regression by going back 
+to a kernel "known" to be not affected in the past?
+
+Other extreme would be to try the wireless development kernel 
+git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-testing.git 
+and hope, that it also shows a more sane problem.
+(ieee80211_select_queue() has been dropped, changing the tx flow 
+drastically when compared to 6.0.6)
+
+In short, I'm also stuck what that can be. We can try some different 
+angles and hope to hit something.
+
+
+Alexander
 
