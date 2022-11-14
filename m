@@ -2,279 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F2862833F
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 15:53:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E516A62834A
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 15:55:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236721AbiKNOxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 09:53:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        id S236650AbiKNOzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 09:55:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236713AbiKNOxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 09:53:04 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70087.outbound.protection.outlook.com [40.107.7.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C809F2CC81;
-        Mon, 14 Nov 2022 06:53:02 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eynnxxMTxy5OeTN4ypHexWyyJsatT70FyaM07ugFf5Ugm1WF9Ei3/9wE4zBdvKBIbnMHJpPSZLRUbQrCCE31sbaUAI1uyAD4/rKyfZXv+Nt9EFO+7+VwXsyx+wo6vnn+fx8UONO/2ftGgW7r84+QOSHm8J7LgOXmTCMyYXZp6yzOfzQv5VkF2rpDnICVDQpwgQNZtWaVxC0W+7Ejdqt1gYfaqvStsSd/iBZAh9vD/A9fvDU/I1jo7l0qEGrkMQjjYqf3pRYJu4yUeHovXnxQqfGswXhUcgzKTPlr+5AotViRJCR1yVxLsl4KVr/tHwoz/DuaLWDmp3l+mtcM7cCDyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l/dcdHJVyZsOzngtQVqshEOIXkRoKra+MvA56R53YKI=;
- b=V1mj1iQs9zR5P97e0hRKLS7/sk64CuC+1NenwraW6ZKH6PLKOVS5cz3DO5/GMqLsdFr/4IMcjofsyB1FBoRlQqapWOAHuqAJvzFpWAkGNeNZLf+fpe9td6HN9RXTQdMD+/rM8Q/igDu7fP82TqTNnr+e2EAC7hFXpYlMjRIrm26PVS2HxUWucT3/O2G8UAGMcg5ry+6bVAviyFphZDu1Qq+05slH788/ToIb12YO55PbrqrdormqHrvcY5/8Yv0mNAAEJ9Avtu3LQaJZ/67PlmpRxJC/TeVKN1NTqBqKkoq0aNU1JoFazR323K5oXh5XcUFclLVpp3I4pKvzedMJFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l/dcdHJVyZsOzngtQVqshEOIXkRoKra+MvA56R53YKI=;
- b=MMb3TJvneRh+/f33gDJDsdXmX8T/34FIJeVxPz8xWII1Ey9DAPZJrJXpXxeWSQunckaEvngVDFAb0yj8kjTSSUuyKp2VcIQDHWbHmOK1UEnfrIE2Inrddz7iLGTsasUyKejleF+Fp15MhoD/AV7ACVz/rfXHlW9OdSOxJShhW6Q=
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by AM9PR04MB8289.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Mon, 14 Nov
- 2022 14:53:00 +0000
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::6b44:4677:ad1d:b33a]) by PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::6b44:4677:ad1d:b33a%6]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
- 14:53:00 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "imx@lists.linux.dev" <imx@lists.linux.dev>,
-        kernel test robot <lkp@intel.com>
-Subject: RE: [EXT] Re: [PATCH v3 1/1] net: fec: add xdp and page pool
- statistics
-Thread-Topic: [EXT] Re: [PATCH v3 1/1] net: fec: add xdp and page pool
- statistics
-Thread-Index: AQHY9eM2DcCGX+tMv0uN92sufUZdVq4+cwAAgAAQvXA=
-Date:   Mon, 14 Nov 2022 14:53:00 +0000
-Message-ID: <PAXPR04MB918591AA3C3A41AE794DB41489059@PAXPR04MB9185.eurprd04.prod.outlook.com>
-References: <20221111153505.434398-1-shenwei.wang@nxp.com>
- <20221114134542.697174-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20221114134542.697174-1-alexandr.lobakin@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAXPR04MB9185:EE_|AM9PR04MB8289:EE_
-x-ms-office365-filtering-correlation-id: cac951c2-133b-4864-59cc-08dac64fecb2
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /Q60AwqFIEfIpaVWq8meF1OQC/EIvS26PxW/M8g6dkLUQUuj/OaZYNVq5XUJ1WGzxlIHGaIz9s1NHHxZYORJRvoXewB6F5fY79+QxO14k3XWVEafDnF+jwf9eUL5CHs/OnTwA3i1Jwsptw21+nYKev7bB6DdPQArdVBDlAJWmv70BzpWFsg4k2V4A8AoUUn4B3jR/FaFoMkTBdTIt7/w/Ugqlyym03MeWCBUGX6wtE0TIAxp3ZcjfGmWdJn/8Z8qBuNhfWmmP4n1lLZb65so0NVLTHlXcxcF57BbOvrq+P63l66LPI5XIAa50hDQYs83ockpcPihU6WZ5+7bkRex8HMPOe4aSddZjp+30ATZlGTLmXzLeCDbUqnzNFspjOmzYfVHE0l/zLYHunzDp8+p0LwUEIZ17a8gsi72tGogx+SZdWAUWkemUSAaDj12MyoExQojK948McGltKLP7vXqy0RmHGpM4hz0TSOnvo1uYTdN7yuqvhdanyiicY4VlSAzBW+d+mJnLLJT7XiwOSujzIr55jV8BuWMD0UvVg4Mw8aMr6ST1QHPao4kJ4O82nvZSJ90gb3pM4ixrx6J5Q2qHZNiawjSnYIYc0wOlKhaEf9WJTFpU8FO+jUqMGLjnV5ZbIDs2unEJJ6JuR9CqHeKdcBaIb61QxO+0YO13uoRpMRLj7ffQ1jhgyp4/uqruXjl0mTCIj2I8TPC+m8R+ucSKLid+jBI/SvQmwyhlnmM+8mKkIanDLPtQPkfSJ5VyEc7+D4n7OJh8or6e6tff044/g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(136003)(346002)(376002)(396003)(451199015)(64756008)(8676002)(38100700002)(66946007)(41300700001)(4326008)(83380400001)(66446008)(66476007)(66556008)(966005)(6916009)(186003)(316002)(76116006)(45080400002)(54906003)(52536014)(5660300002)(33656002)(8936002)(7416002)(44832011)(2906002)(122000001)(86362001)(38070700005)(55016003)(26005)(7696005)(55236004)(53546011)(9686003)(6506007)(71200400001)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+psbWoD0rDZTBMbjgeCMtxmR8nNibE8qoD6vy0zzyC8pxEkt3swKp9wY08IE?=
- =?us-ascii?Q?7pxqKShN4yqL4CFKPveo24gOGbRW4lQylJs9PE0BI97uSri7y1D3Spk/zMcZ?=
- =?us-ascii?Q?PHA7VbnvUo0who+jvq+uRJ8Q4es5f4Mg+X7+DRMw23ot31W/l4zuT7+ddGOb?=
- =?us-ascii?Q?j19IUujkMGo9LHI0FHz4d0T4d9PHZsaDZ7kNcW4eQQfC3fydzNtbp4F74W1a?=
- =?us-ascii?Q?tYfhFoqVhYNpLBJcmd54/OgSZDsiwqjMcKrKOFFIUxKpjaNTs6dFLKQX2+XZ?=
- =?us-ascii?Q?8ZnmfoClPZlvAVcrSk6B+iEP4UOXeuf6aO1RrTZZdIk1yzk3LcHK4bf43AU+?=
- =?us-ascii?Q?pWliM42NpcP1jLPydsti/w0PEmom5ZjpxGzHVfdMS/RiahPetYNbrgKrlg6A?=
- =?us-ascii?Q?nLFLIVPwdjX8P6whNx0mWDvMWCp2GkGI6ADBdszG+pf1dyRhoVUVJ17Ci9Bg?=
- =?us-ascii?Q?9ONN8IVXpQIFbqSljzXuRaMAJvw+GpYuSd57NW5jUG6krE/Wby5okAP7pstL?=
- =?us-ascii?Q?2DSa2nPLM1iw6lYwBBQExAeISO8/BKmTsf2GEmV5BunQGEEmH/WvwfuaR3bj?=
- =?us-ascii?Q?0Iwq60YE0YcQBXcDdrnWc5vTCuEmP7Hd3qmMDj5cKtE2LXvT8IZBo8pTXJ8T?=
- =?us-ascii?Q?1YhJJR1WRdfJILcR//8q6vtowsStXH4wbxo9oB5zPyuvsIbafrfIU+eL5Tnm?=
- =?us-ascii?Q?PrPeYLzLpFMk4lAvGH7AowE2YBEz41xa7kh78YDJnDhUr1pikF6BeePrCaF3?=
- =?us-ascii?Q?AOoi5zQXKClECqOk/P8pw7Wu7UwPwioT1B6y9wmpSk9TCeTf+1lucGsbN5J9?=
- =?us-ascii?Q?wdY7mGq0N2Vu60Krirg5V1l4PRyxCYlMAHCfkEB84GKQTFZXeEkBghUCTKUU?=
- =?us-ascii?Q?BH/2fcSNQFGU0kDn/Jn0ZCoJOlPsMtiVoYQQAmiPU+EsXFhKQYniAYhlNwPU?=
- =?us-ascii?Q?J4lgLGK0t6zhLVEaPFWslriYOR/YPTCyHruE30k+EjT6CQqXd+k77WzbrShf?=
- =?us-ascii?Q?qKzJ1dIV2DqyLGPVxDX9u/5ZiY0XKQt5TEYMqnHDr748Gxpmcn23K2xWKB6a?=
- =?us-ascii?Q?/+VEMApzi2yw5iZQXIZvYitO3bLrN+JZeiLt6HQg2PISVuhjV09HW73N5pMQ?=
- =?us-ascii?Q?GgCnyUzz7OpU7bqyUuThmhYGuWD1rOSGiTcJRMAgM9Z904MWvsgJVQGak+Ak?=
- =?us-ascii?Q?wvr0qcHxyLTFIFm2oIPe2ezaNObpCsHPYVnjEEBda5xSRY7FXqAfB2Km5Tf/?=
- =?us-ascii?Q?pfbUh8nyEWCdfWzVjm3tu0wx60zYv5tn7dtUWALnUiy88YRSSM6LGRMFKpSh?=
- =?us-ascii?Q?1wZLie1gMGlMxl6uX9eXQo5VFfy8MCpIe3ZUN8TtneDVJLr9UwY+OTJDzGNY?=
- =?us-ascii?Q?ddU3o96IRSnTnoLah1aRg8alNmJc+853L3Zlxdbt89wnpb9GdQzlH8igsmGu?=
- =?us-ascii?Q?9odHFhh0yrsd5jzgG3QSe9Ez0JhR13yUhhBAAVOhrM9SJ4QW4Gms7Tv+1BbQ?=
- =?us-ascii?Q?WUXct3om1OHZZGLTjJD5i5dUsx/4IuInH9icbH2VUSmv7KiK3pVe53Zwh8Du?=
- =?us-ascii?Q?pAWtnmEME972f8BUudZEw/ibI9AoGZjgAdCTHPD9?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S235920AbiKNOzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 09:55:53 -0500
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C47C19035
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 06:55:52 -0800 (PST)
+Received: by mail-io1-f69.google.com with SMTP id f25-20020a5d8799000000b006a44e33ddb6so5863156ion.1
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 06:55:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bwa63EUoiUdCiH174DlY0chW2QYqCxx5oOMcGGsl1B4=;
+        b=QQkB/TBtTfFLikeiFqTsa7YLEcXLiKsHg2z3A5DLh1+iymwwUMndCv57pUi1WLCzUr
+         stVmJ27ITksHhAVgP7DPN/0qsoC7R3GNTHhmd8A81nUyvjSUcp0SsZ9f0haHI9psLhHp
+         Qhd0wGHPkGpF2RbyBFeMUWv8h4rlT/0iwj3VW5pyXCpSr4606NgqUvBj8r66gUwOcfhz
+         6oeoKNsmHsy8H/QqadsS5UbghwAcvtIIkabylHZDAFnLAcAYpbE7xttCG2mmLLuxkc5W
+         Voa7c53cqHRxaGMKsz2Fe0IZHkhvHyTMFSG325GYfqg/HER4r+VG+gxW7KcMwl42W7YA
+         pCtQ==
+X-Gm-Message-State: ANoB5pk19bzwIcMlC4vJDykj8YsNOxjux4/ig67VSjF1gk89kn5fqOCy
+        L7Iwz6+/QF0qv7WIyXGHk/jo2C/x1jhlEblnJUf+7Is83vog
+X-Google-Smtp-Source: AA0mqf6Y1L3Ed2axmQjoS2i4jvVM2zoE3AogcP9FZ8PbVzne8joB54P50KhKXJmHuMNSwoAG2AqJGa5ledYvoZRo58RjOIxCWw2L
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cac951c2-133b-4864-59cc-08dac64fecb2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2022 14:53:00.2017
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: h5zdD0sq1Mi9BLOKjDlJj4WX249ed9yu0SFZSFbZ7H6nZfA+licWFM2OID3vaHISP9zOOrpIR2/PooZYblwgQA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8289
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a5d:9b19:0:b0:6c1:dfd6:abd9 with SMTP id
+ y25-20020a5d9b19000000b006c1dfd6abd9mr5649948ion.0.1668437751998; Mon, 14 Nov
+ 2022 06:55:51 -0800 (PST)
+Date:   Mon, 14 Nov 2022 06:55:51 -0800
+In-Reply-To: <000000000000cceef005ed659943@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000089b1a405ed6f6ff7@google.com>
+Subject: Re: [syzbot] possible deadlock in virtual_nci_close
+From:   syzbot <syzbot+8040d16d30c215f821de@syzkaller.appspotmail.com>
+To:     bongsu.jeon@samsung.com, dvyukov@google.com,
+        krzysztof.kozlowski@linaro.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
+
+HEAD commit:    1621b6eaebf7 Merge branch 'for-next/fixes' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=108bcd85880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=606e57fd25c5c6cc
+dashboard link: https://syzkaller.appspot.com/bug?extid=8040d16d30c215f821de
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11b08dd1880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14fcee02880000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/82aa7741098d/disk-1621b6ea.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/f6be08c4e4c2/vmlinux-1621b6ea.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/296b6946258a/Image-1621b6ea.gz.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8040d16d30c215f821de@syzkaller.appspotmail.com
+
+nci: nci_start_poll: failed to set local general bytes
+nci: __nci_request: wait_for_completion_interruptible_timeout failed 0
+======================================================
+WARNING: possible circular locking dependency detected
+6.1.0-rc4-syzkaller-31872-g1621b6eaebf7 #0 Not tainted
+------------------------------------------------------
+syz-executor424/3032 is trying to acquire lock:
+ffff80000d5fac10 (nci_mutex){+.+.}-{3:3}, at: virtual_nci_close+0x28/0x58 drivers/nfc/virtual_ncidev.c:44
+
+but task is already holding lock:
+ffff0000cb900350 (&ndev->req_lock){+.+.}-{3:3}, at: nci_close_device+0x74/0x2b4 net/nfc/nci/core.c:560
+
+which lock already depends on the new lock.
 
 
-> -----Original Message-----
-> From: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Sent: Monday, November 14, 2022 7:46 AM
-> To: Shenwei Wang <shenwei.wang@nxp.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>; David S. Miller
-> <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub
-> Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Alexei
-> Starovoitov <ast@kernel.org>; Daniel Borkmann <daniel@iogearbox.net>;
-> > @@ -29,6 +29,7 @@ config FEC
-> >       select CRC32
-> >       select PHYLIB
-> >       select PAGE_POOL
-> > +     select PAGE_POOL_STATS
->=20
-> Drivers should never select PAGE_POOL_STATS. This Kconfig option was made=
- to
-> allow user to choose whether he wants stats or better performance on slow=
-er
-> systems. It's pure user choice, if something doesn't build or link, it mu=
-st be
-> guarded with IS_ENABLED(CONFIG_PAGE_POOL_STATS).
+the existing dependency chain (in reverse order) is:
 
-As the PAGE_POOL_STATS is becoming the infrastructure codes for many driver=
-s, it is
-redundant for every driver to implement the stub function in case it is not=
- selected. These
-stub functions should be provided by PAGE_POOL_STATS itself if the option i=
-s not selected.
+-> #3 (&ndev->req_lock){+.+.}-{3:3}:
+       __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
+       __mutex_lock kernel/locking/mutex.c:747 [inline]
+       mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
+       nci_request net/nfc/nci/core.c:148 [inline]
+       nci_set_local_general_bytes+0xbc/0x480 net/nfc/nci/core.c:774
+       nci_start_poll+0x1e8/0x474 net/nfc/nci/core.c:838
+       nfc_start_poll+0xfc/0x170 net/nfc/core.c:225
+       nfc_genl_start_poll+0xd4/0x174 net/nfc/netlink.c:828
+       genl_family_rcv_msg_doit net/netlink/genetlink.c:756 [inline]
+       genl_family_rcv_msg net/netlink/genetlink.c:833 [inline]
+       genl_rcv_msg+0x458/0x4f4 net/netlink/genetlink.c:850
+       netlink_rcv_skb+0xe8/0x1d4 net/netlink/af_netlink.c:2540
+       genl_rcv+0x38/0x50 net/netlink/genetlink.c:861
+       netlink_unicast_kernel+0xfc/0x1dc net/netlink/af_netlink.c:1319
+       netlink_unicast+0x164/0x248 net/netlink/af_netlink.c:1345
+       netlink_sendmsg+0x484/0x584 net/netlink/af_netlink.c:1921
+       sock_sendmsg_nosec net/socket.c:714 [inline]
+       sock_sendmsg net/socket.c:734 [inline]
+       ____sys_sendmsg+0x2f8/0x440 net/socket.c:2482
+       ___sys_sendmsg net/socket.c:2536 [inline]
+       __sys_sendmsg+0x1ac/0x228 net/socket.c:2565
+       __do_sys_sendmsg net/socket.c:2574 [inline]
+       __se_sys_sendmsg net/socket.c:2572 [inline]
+       __arm64_sys_sendmsg+0x2c/0x3c net/socket.c:2572
+       __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+       invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
+       el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
+       do_el0_svc+0x48/0x164 arch/arm64/kernel/syscall.c:206
+       el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:637
+       el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+       el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
 
->=20
-> >       imply NET_SELFTESTS
-> >       help
-> >         Say Y here if you want to use the built-in 10/100 Fast
-> > ethernet diff --git a/drivers/net/ethernet/freescale/fec.h
-> > b/drivers/net/ethernet/freescale/fec.h
-> > index 61e847b18343..5ba1e0d71c68 100644
-> > --- a/drivers/net/ethernet/freescale/fec.h
-> > +++ b/drivers/net/ethernet/freescale/fec.h
-> > @@ -526,6 +526,19 @@ struct fec_enet_priv_txrx_info {
-> >       struct  sk_buff *skb;
-> >  };
-> >
-> > +enum {
-> > +     RX_XDP_REDIRECT =3D 0,
-> > +     RX_XDP_PASS,
-> > +     RX_XDP_DROP,
-> > +     RX_XDP_TX,
-> > +     RX_XDP_TX_ERRORS,
-> > +     TX_XDP_XMIT,
-> > +     TX_XDP_XMIT_ERRORS,
-> > +
-> > +     /* The following must be the last one */
-> > +     XDP_STATS_TOTAL,
-> > +};
-> > +
-> >  struct fec_enet_priv_tx_q {
-> >       struct bufdesc_prop bd;
-> >       unsigned char *tx_bounce[TX_RING_SIZE]; @@ -546,6 +559,7 @@
-> > struct fec_enet_priv_rx_q {
-> >       /* page_pool */
-> >       struct page_pool *page_pool;
-> >       struct xdp_rxq_info xdp_rxq;
-> > +     u32 stats[XDP_STATS_TOTAL];
->=20
-> Still not convinced it is okay to deliberately provoke overflows here, ma=
-ybe we
-> need some more reviewers to help us agree on what is better?
->=20
-> >
-> >       /* rx queue number, in the range 0-7 */
-> >       u8 id;
->=20
-> [...]
->=20
-> >       case ETH_SS_STATS:
-> > -             for (i =3D 0; i < ARRAY_SIZE(fec_stats); i++)
-> > -                     memcpy(data + i * ETH_GSTRING_LEN,
-> > -                             fec_stats[i].name, ETH_GSTRING_LEN);
-> > +             for (i =3D 0; i < ARRAY_SIZE(fec_stats); i++) {
-> > +                     memcpy(data, fec_stats[i].name, ETH_GSTRING_LEN);
-> > +                     data +=3D ETH_GSTRING_LEN;
-> > +             }
-> > +             for (i =3D 0; i < ARRAY_SIZE(fec_xdp_stat_strs); i++) {
-> > +                     strncpy(data, fec_xdp_stat_strs[i],
-> > + ETH_GSTRING_LEN);
->=20
-> strncpy() is deprecated in favor of strscpy(), there were tons of commits=
- which
-> replace the former with the latter across the whole tree.
->=20
+-> #2 (&genl_data->genl_data_mutex){+.+.}-{3:3}:
+       __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
+       __mutex_lock kernel/locking/mutex.c:747 [inline]
+       mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
+       nfc_urelease_event_work+0x88/0x16c net/nfc/netlink.c:1811
+       process_one_work+0x2d8/0x504 kernel/workqueue.c:2289
+       worker_thread+0x340/0x610 kernel/workqueue.c:2436
+       kthread+0x12c/0x158 kernel/kthread.c:376
+       ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:863
 
-Got it.=20
+-> #1 (nfc_devlist_mutex){+.+.}-{3:3}:
+       __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
+       __mutex_lock kernel/locking/mutex.c:747 [inline]
+       mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
+       nfc_register_device+0x34/0x208 net/nfc/core.c:1116
+       nci_register_device+0x338/0x3b0 net/nfc/nci/core.c:1256
+       virtual_ncidev_open+0x6c/0xd8 drivers/nfc/virtual_ncidev.c:146
+       misc_open+0x1b8/0x200 drivers/char/misc.c:143
+       chrdev_open+0x2b4/0x2e8 fs/char_dev.c:414
+       do_dentry_open+0x364/0x748 fs/open.c:882
+       vfs_open+0x38/0x48 fs/open.c:1013
+       do_open fs/namei.c:3557 [inline]
+       path_openat+0xe34/0x11c4 fs/namei.c:3713
+       do_filp_open+0xdc/0x1b8 fs/namei.c:3740
+       do_sys_openat2+0xb8/0x22c fs/open.c:1310
+       do_sys_open fs/open.c:1326 [inline]
+       __do_sys_openat fs/open.c:1342 [inline]
+       __se_sys_openat fs/open.c:1337 [inline]
+       __arm64_sys_openat+0xb0/0xe0 fs/open.c:1337
+       __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+       invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
+       el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
+       do_el0_svc+0x48/0x164 arch/arm64/kernel/syscall.c:206
+       el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:637
+       el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+       el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
 
-Thanks.
-Shenwei
+-> #0 (nci_mutex){+.+.}-{3:3}:
+       check_prev_add kernel/locking/lockdep.c:3097 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+       validate_chain kernel/locking/lockdep.c:3831 [inline]
+       __lock_acquire+0x1530/0x3084 kernel/locking/lockdep.c:5055
+       lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5668
+       __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
+       __mutex_lock kernel/locking/mutex.c:747 [inline]
+       mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
+       virtual_nci_close+0x28/0x58 drivers/nfc/virtual_ncidev.c:44
+       nci_close_device+0x188/0x2b4 net/nfc/nci/core.c:592
+       nci_unregister_device+0x3c/0x100 net/nfc/nci/core.c:1291
+       virtual_ncidev_close+0x70/0xb0 drivers/nfc/virtual_ncidev.c:166
+       __fput+0x198/0x3e4 fs/file_table.c:320
+       ____fput+0x20/0x30 fs/file_table.c:348
+       task_work_run+0x100/0x148 kernel/task_work.c:179
+       exit_task_work include/linux/task_work.h:38 [inline]
+       do_exit+0x2dc/0xcac kernel/exit.c:820
+       do_group_exit+0x98/0xcc kernel/exit.c:950
+       get_signal+0xabc/0xb2c kernel/signal.c:2858
+       do_signal+0x128/0x438 arch/arm64/kernel/signal.c:1071
+       do_notify_resume+0xc0/0x1f0 arch/arm64/kernel/signal.c:1124
+       prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+       exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+       el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
+       el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+       el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
 
-> > +                     data +=3D ETH_GSTRING_LEN;
-> > +             }
-> > +             page_pool_ethtool_stats_get_strings(data);
-> > +
-> >               break;
-> >       case ETH_SS_TEST:
-> >               net_selftest_get_strings(data);
->=20
-> [...]
->=20
-> > +     for (i =3D fep->num_rx_queues - 1; i >=3D 0; i--) {
-> > +             rxq =3D fep->rx_queue[i];
-> > +             for (j =3D 0; j < XDP_STATS_TOTAL; j++)
-> > +                     rxq->stats[j] =3D 0;
->=20
-> (not critical) Just memset(&rxq->stats)?
->=20
-> > +     }
-> > +
-> >       /* Don't disable MIB statistics counters */
-> >       writel(0, fep->hwp + FEC_MIB_CTRLSTAT);  } @@ -3084,6 +3156,9 @@
-> > static void fec_enet_free_buffers(struct net_device *ndev)
-> >               for (i =3D 0; i < rxq->bd.ring_size; i++)
-> >                       page_pool_release_page(rxq->page_pool,
-> > rxq->rx_skb_info[i].page);
-> >
-> > +             for (i =3D 0; i < XDP_STATS_TOTAL; i++)
-> > +                     rxq->stats[i] =3D 0;
-> > +
-> >               if (xdp_rxq_info_is_reg(&rxq->xdp_rxq))
-> >                       xdp_rxq_info_unreg(&rxq->xdp_rxq);
-> >               page_pool_destroy(rxq->page_pool);
-> > --
-> > 2.34.1
->=20
-> Could you please send a follow-up maybe, fixing at least that
-> PAGE_POOL_STATS select and strncpy()?
->=20
-> [0]
-> https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit.k=
-ernel
-> .org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Fnetdev%2Fnet-
-> next.git%2Fcommit%2F%3Fh%3Dmain%26id%3D6970ef27ff7fd1ce3455b2c6960
-> 81503d0c0f8ac&amp;data=3D05%7C01%7Cshenwei.wang%40nxp.com%7C0f6bfc
-> 73c869426e59fc08dac64692d2%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0
-> %7C0%7C638040303661645473%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4
-> wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C
-> %7C%7C&amp;sdata=3D8NbrJmoDnsbyb8WXU85OIq6BOYCOrXLBm1mjbTi%2Fam
-> Q%3D&amp;reserved=3D0
->=20
-> Thanks,
-> Olek
+other info that might help us debug this:
+
+Chain exists of:
+  nci_mutex --> &genl_data->genl_data_mutex --> &ndev->req_lock
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&ndev->req_lock);
+                               lock(&genl_data->genl_data_mutex);
+                               lock(&ndev->req_lock);
+  lock(nci_mutex);
+
+ *** DEADLOCK ***
+
+1 lock held by syz-executor424/3032:
+ #0: ffff0000cb900350 (&ndev->req_lock){+.+.}-{3:3}, at: nci_close_device+0x74/0x2b4 net/nfc/nci/core.c:560
+
+stack backtrace:
+CPU: 0 PID: 3032 Comm: syz-executor424 Not tainted 6.1.0-rc4-syzkaller-31872-g1621b6eaebf7 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
+Call trace:
+ dump_backtrace+0x1c4/0x1f0 arch/arm64/kernel/stacktrace.c:156
+ show_stack+0x2c/0x54 arch/arm64/kernel/stacktrace.c:163
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x104/0x16c lib/dump_stack.c:106
+ dump_stack+0x1c/0x58 lib/dump_stack.c:113
+ print_circular_bug+0x2c4/0x2c8 kernel/locking/lockdep.c:2055
+ check_noncircular+0x14c/0x154 kernel/locking/lockdep.c:2177
+ check_prev_add kernel/locking/lockdep.c:3097 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+ validate_chain kernel/locking/lockdep.c:3831 [inline]
+ __lock_acquire+0x1530/0x3084 kernel/locking/lockdep.c:5055
+ lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5668
+ __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
+ __mutex_lock kernel/locking/mutex.c:747 [inline]
+ mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
+ virtual_nci_close+0x28/0x58 drivers/nfc/virtual_ncidev.c:44
+ nci_close_device+0x188/0x2b4 net/nfc/nci/core.c:592
+ nci_unregister_device+0x3c/0x100 net/nfc/nci/core.c:1291
+ virtual_ncidev_close+0x70/0xb0 drivers/nfc/virtual_ncidev.c:166
+ __fput+0x198/0x3e4 fs/file_table.c:320
+ ____fput+0x20/0x30 fs/file_table.c:348
+ task_work_run+0x100/0x148 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0x2dc/0xcac kernel/exit.c:820
+ do_group_exit+0x98/0xcc kernel/exit.c:950
+ get_signal+0xabc/0xb2c kernel/signal.c:2858
+ do_signal+0x128/0x438 arch/arm64/kernel/signal.c:1071
+ do_notify_resume+0xc0/0x1f0 arch/arm64/kernel/signal.c:1124
+ prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+ exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+ el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
+ el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+ el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+
