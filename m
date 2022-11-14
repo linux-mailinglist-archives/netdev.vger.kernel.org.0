@@ -2,125 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC076273A0
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 00:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 483646273B1
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 01:05:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235501AbiKMXw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 18:52:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S235572AbiKNAFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 19:05:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiKMXw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 18:52:56 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C95B7C1;
-        Sun, 13 Nov 2022 15:52:53 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4N9TlQ74TLz4xYV;
-        Mon, 14 Nov 2022 10:52:50 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1668383571;
-        bh=pUcy/XN+scuJWHAuLv8FG4qKklNNeaoNs6lPTos5qfg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=nzVKfxz/KExLltII9HC5QfcEp9++WqNqsV7ai+H4kjwA0FZZpJEIRA2bTiW/C2KzJ
-         jXxAfzXpA9M8iqOtd1xXi8AVj+LVbfY17pfyDom8wKvDFhnU594GfgGE80JfT0RBtc
-         QrRu7IU3Q4fCSt1AN6bAfIMLMfDNpK+NGltqP8ZNMy2JljRShC9a2w1vD2fEmZiO9A
-         fAZ8vfPVrcuqiKuN3RlffEn9EAd2BXypj7fmXrqML6EQY8EdkNz7wVtQ8/YVu0Wb/w
-         v9uqkGxsG6qmTNoY6o6vMW+XdelsmLxPO2u6kzU4cKx1ZToMqddO6H4V9XzpCmKEqO
-         Q0yYlhVHRemlQ==
-Date:   Mon, 14 Nov 2022 10:52:49 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>
-Subject: linux-next: manual merge of the modules tree with the net-next tree
-Message-ID: <20221114105249.4548adbc@canb.auug.org.au>
+        with ESMTP id S235411AbiKNAFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 19:05:49 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A212F590
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 16:05:48 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id j7-20020a056e02154700b003025b3c0ea3so1467902ilu.10
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 16:05:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Hr7wS+pJ69I44GVyM4s7OZmeFSZLRy9SbGypxd6p3yc=;
+        b=Zmp9dm4K1ofSLTaoFV9RtLy+p0bwzLTWzLWgwQg22A7C5U/1cCxZyk9FmzlKuKXSWi
+         +9KxqsQiwZ2F1yNnP06HH/xvwi488nAjNDOUFpiTMHFPXevK5Ii1zqRQImS6YpaYB9b5
+         VkiiZLAkxs0HeE10799xk5Xe1PIpbAsjgUB0LAHZyxEWRi7U1b1Dt1PZk77mRvHkbDON
+         rtU72CieVTUO3iDWgscrMKEqIKC16e1dNQcY1WbgNTbIZ904bz2kXYiK1ngBcDrhD96h
+         2XPlyduiKzUYm54Yxd19An19XLBVxQzw2d2x5mBIm9T11hqzgFcgOI7NBdcRsMPzsGpu
+         uXnw==
+X-Gm-Message-State: ANoB5plk2tey3Cr6g1fsBRAutc8lqFIzYXYkQPmK3wi9IHhxh9Tpv+Rv
+        4ffJWex4fyOfL1AcNOfJyqCxiCl3J99VGMEsBpAZnpw8MRgk
+X-Google-Smtp-Source: AA0mqf5VC9l3lM2/b6X13YxJm5HhrgqaLlkjHm6c7EWMi10KVjfiDZqlulrDwDoJf5kuOjvvN0x/YgAw31Bw5FzcNveKsOPP6o1v
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/aoFZpiC=LfG81oEsRZMBqrm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:b4d2:0:b0:6dd:f70e:dda5 with SMTP id
+ d201-20020a6bb4d2000000b006ddf70edda5mr2102788iof.100.1668384347517; Sun, 13
+ Nov 2022 16:05:47 -0800 (PST)
+Date:   Sun, 13 Nov 2022 16:05:47 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000061fe2205ed6300fa@google.com>
+Subject: [syzbot] BUG: unable to handle kernel NULL pointer dereference in smack_inode_permission
+From:   syzbot <syzbot+0f89bd13eaceccc0e126@syzkaller.appspotmail.com>
+To:     casey@schaufler-ca.com, jmorris@namei.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        paul@paul-moore.com, richardcochran@gmail.com, serge@hallyn.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/aoFZpiC=LfG81oEsRZMBqrm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Hi all,
+syzbot found the following issue on:
 
-Today's linux-next merge of the modules tree got a conflict in:
+HEAD commit:    56751c56c2a2 Merge branch 'for-next/fixes' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=11fc8b0e880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=606e57fd25c5c6cc
+dashboard link: https://syzkaller.appspot.com/bug?extid=0f89bd13eaceccc0e126
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a691fa880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1733c5b9880000
 
-  kernel/trace/ftrace.c
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/cf4668c75dea/disk-56751c56.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/e1ef82e91ef7/vmlinux-56751c56.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/3dabe076170f/Image-56751c56.gz.xz
 
-between commit:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+0f89bd13eaceccc0e126@syzkaller.appspotmail.com
 
-  3640bf8584f4 ("ftrace: Add support to resolve module symbols in ftrace_lo=
-okup_symbols")
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000028
+Mem abort info:
+  ESR = 0x0000000096000004
+  EC = 0x25: DABT (current EL), IL = 32 bits
+  SET = 0, FnV = 0
+  EA = 0, S1PTW = 0
+  FSC = 0x04: level 0 translation fault
+Data abort info:
+  ISV = 0, ISS = 0x00000004
+  CM = 0, WnR = 0
+user pgtable: 4k pages, 48-bit VAs, pgdp=0000000109d98000
+[0000000000000028] pgd=0000000000000000, p4d=0000000000000000
+Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 0 PID: 2557 Comm: udevd Not tainted 6.1.0-rc4-syzkaller-31859-g56751c56c2a2 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
+pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : smack_inode_permission+0x70/0x164 security/smack/smack_lsm.c:1149
+lr : smack_inode_permission+0x68/0x164 security/smack/smack_lsm.c:1146
+sp : ffff800016a53a30
+x29: ffff800016a53a80 x28: fefefefefefefeff
+ x27: ffff0000ca5c0025
 
-from the net-next tree and commit:
+x26: 0000000000000000
+ x25: 0000000000000000
+ x24: ffff0000ca5c0025
+x23: 0000000000000000 x22: 0000000000000008 x21: 0000000000000001
+x20: 0000000000000001 x19: ffff0000c70cf2d8
+ x18: 0000000000000000
 
-  477f7e48d4f4 ("kallsyms: Delete an unused parameter related to kallsyms_o=
-n_each_symbol()")
+x17: 0000000000000000
+ x16: ffff80000db1a158
+ x15: ffff0000c4f39a40
+x14: 0000000000000090 x13: 00000000ffffffff x12: ffff0000c4f39a40
+x11: ff8080000944189c x10: 0000000000000000 x9 : ffff0000c4f39a40
+x8 : ffff80000944189c x7 : ffff8000086feb70 x6 : 0000000000000000
+x5 : ffff0000c4f39a40 x4 : 0000000000000001 x3 : 0000000000000000
+x2 : 0000000000000001 x1 : 0000000000000001 x0 : 0000000000000000
+Call trace:
+ smack_inode_permission+0x70/0x164
+ security_inode_permission+0x50/0xa4 security/security.c:1326
+ inode_permission+0xa0/0x244 fs/namei.c:533
+ may_lookup fs/namei.c:1715 [inline]
+ link_path_walk+0x138/0x628 fs/namei.c:2262
+ path_lookupat+0x54/0x208 fs/namei.c:2473
+ filename_lookup+0xf8/0x264 fs/namei.c:2503
+ user_path_at_empty+0x5c/0x114 fs/namei.c:2876
+ do_readlinkat+0x84/0x1c8 fs/stat.c:468
+ __do_sys_readlinkat fs/stat.c:495 [inline]
+ __se_sys_readlinkat fs/stat.c:492 [inline]
+ __arm64_sys_readlinkat+0x28/0x3c fs/stat.c:492
+ __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+ invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
+ el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
+ do_el0_svc+0x48/0x164 arch/arm64/kernel/syscall.c:206
+ el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:637
+ el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+ el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+Code: f90003ff 97b9817f 34000134 8b1602f6 (b94022d7) 
+---[ end trace 0000000000000000 ]---
+----------------
+Code disassembly (best guess):
+   0:	f90003ff 	str	xzr, [sp]
+   4:	97b9817f 	bl	0xfffffffffee60600
+   8:	34000134 	cbz	w20, 0x2c
+   c:	8b1602f6 	add	x22, x23, x22
+* 10:	b94022d7 	ldr	w23, [x22, #32] <-- trapping instruction
 
-from the modules tree.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc kernel/trace/ftrace.c
-index 705b990d264d,7a06991624d4..000000000000
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@@ -8257,12 -8257,7 +8257,11 @@@ struct kallsyms_data=20
-  	size_t found;
-  };
- =20
- +/* This function gets called for all kernel and module symbols
- + * and returns 1 in case we resolved all the requested symbols,
- + * 0 otherwise.
- + */
-- static int kallsyms_callback(void *data, const char *name,
-- 			     struct module *mod, unsigned long addr)
-+ static int kallsyms_callback(void *data, const char *name, unsigned long =
-addr)
-  {
-  	struct kallsyms_data *args =3D data;
-  	const char **sym;
-
---Sig_/aoFZpiC=LfG81oEsRZMBqrm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmNxg1EACgkQAVBC80lX
-0GzjiAf+OOCN11Mim0zJN8O8jOjiZu7VtagWob7Hg86RyhPIoyZfbY3OqTf9cwMo
-ItM1wADuBnsph4OZlsaq6VLnvHqs7CVolmkTjagJ31uck1J0CDVoQLNYn2u8Qyxq
-XQBfU2Hhp/QsHS59HYob0gPbM4d9TnL/Alj+V6Ek9XDoMUM5Ujzld4j84jWmYBLF
-Y5daIXjxNTyB3ykbEHvGy62m8xo9BfSvdndPj0zqMxqDw8WpgNXY5vxqfEE7S9J1
-IXuYujy+KSgqRWnr/ocmQy9e9TuFn+r7VIOcInJZTcr65GABCLJb82at4qE7WHrh
-+dzVUgMoPiuLuxoAIW0alrpLJoCnuQ==
-=uiQd
------END PGP SIGNATURE-----
-
---Sig_/aoFZpiC=LfG81oEsRZMBqrm--
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
