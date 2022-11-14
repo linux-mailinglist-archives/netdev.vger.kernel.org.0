@@ -2,120 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58EFE627A51
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C09FA627A6B
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235951AbiKNKTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 05:19:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
+        id S236140AbiKNK0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 05:26:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235809AbiKNKTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:19:38 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E99AE5F90;
-        Mon, 14 Nov 2022 02:19:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668421177; x=1699957177;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KcbCz+Nkr/BeXhgReuHAK11MwVuA/5RoWL91hSAe1P8=;
-  b=URzcqmRixvZ+zo5OQfKo8p9Q4s9nXuvOVUSthuULPzThz8hcC1ohv8As
-   wtmApyZCzjJpZfRiGJ092wmtBS1lwX0GvOq95iXlBJXG+6OL45TvPmrd9
-   c7araRNSLsIre7Ra6FJ7kvH8WXWuUMQRsxgUPg0QVhXG0wwJWArp+t3SY
-   o2OxZj90uaoRcUYi+7bXeCsFoO7ks0OVlvmRDtwTKVIPCl7ru4UQkBxXm
-   t9BuBVb69J3N2szv7YHDbf9wWbF17qicmh3dyhvYbvXM7E+4EcfuvqpVH
-   9GA9yD+F5/rLvPvOqtKHkSuOzLDlZwKQGVr7yotEyUshR/bT2U7wBTtcl
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="309560808"
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="309560808"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 02:19:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="589314455"
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="589314455"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 14 Nov 2022 02:19:32 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ouWYr-00C7Kz-1G;
-        Mon, 14 Nov 2022 12:19:29 +0200
-Date:   Mon, 14 Nov 2022 12:19:29 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee@kernel.org>
-Cc:     Gene Chen <gene_chen@richtek.com>,
-        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S235809AbiKNK0O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:26:14 -0500
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBB71BEAC
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 02:26:13 -0800 (PST)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9c:2c00:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 2AEAPcJY1111505
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Mon, 14 Nov 2022 10:25:39 GMT
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9c:2c02:34cc:c78d:869d:3d9d])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 2AEAPW0r2754597
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Mon, 14 Nov 2022 11:25:32 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1668421533; bh=b6H00eAFMGc8+8B5fthEuJXkqWQgXFuoE5TlT1Io1b8=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=CE/FbFOJE3YRtTNIY2MMIwRm41eZ7Xrsb9zovAbStoODq4lMe3VjKm+zLqNKV2LRZ
+         KZr9Nl7O8GaJ15JH/aH5eQPyjOQpmrKf7sdzHKAJKodaHHBplzrP6ouDJcl3O9/x6z
+         5QxZRmnAwuoUp3UhhwIiaA0+EFWOe3moKmIKILDQ=
+Received: (nullmailer pid 384795 invoked by uid 1000);
+        Mon, 14 Nov 2022 10:25:32 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
-Message-ID: <Y3IWMe5nGePMAEFv@smile.fi.intel.com>
-References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
- <Y1gZ/zBtc2KgXlbw@smile.fi.intel.com>
- <Y1+NHVS5ZJLFTBke@google.com>
- <Y1/qisszTjUL9ngU@smile.fi.intel.com>
- <Y2pmqBXYq3WQa97u@smile.fi.intel.com>
- <Y3IUTUr/MXf9RQEP@google.com>
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets
+ aggregation
+Organization: m
+References: <20221109180249.4721-1-dnlplm@gmail.com>
+        <20221109180249.4721-3-dnlplm@gmail.com>
+        <20221111091440.51f9c09e@kernel.org>
+        <CAGRyCJEtXx4scuFYbpjpe+-UB=XWQX26uhC+yPJPKCoYCWMM2g@mail.gmail.com>
+Date:   Mon, 14 Nov 2022 11:25:32 +0100
+In-Reply-To: <CAGRyCJEtXx4scuFYbpjpe+-UB=XWQX26uhC+yPJPKCoYCWMM2g@mail.gmail.com>
+        (Daniele Palmas's message of "Mon, 14 Nov 2022 10:13:10 +0100")
+Message-ID: <87tu31hlyb.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3IUTUr/MXf9RQEP@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.7 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 10:11:25AM +0000, Lee Jones wrote:
-> On Tue, 08 Nov 2022, Andy Shevchenko wrote:
-> > On Mon, Oct 31, 2022 at 05:32:26PM +0200, Andy Shevchenko wrote:
-> > > On Mon, Oct 31, 2022 at 08:53:49AM +0000, Lee Jones wrote:
-> > > > On Tue, 25 Oct 2022, Andy Shevchenko wrote:
-> > > > 
-> > > > > On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
-> > > > > > There are several users of LED framework that reimplement the
-> > > > > > functionality of led_init_default_state_get(). In order to
-> > > > > > deduplicate them move the declaration to the global header
-> > > > > > (patch 2) and convert users (patche 3-11).
-> > > > > 
-> > > > > Dear LED maintainers, is there any news on this series? It's hanging around
-> > > > > for almost 2 months now...
-> > > > 
-> > > > My offer still stands if help is required.
-> > > 
-> > > From my point of view the LED subsystem is quite laggish lately (as shown by
-> > > this patch series, for instance), which means that _in practice_ the help is
-> > > needed, but I haven't got if we have any administrative agreement on that.
-> > > 
-> > > Pavel?
-> > 
-> > So, Pavel seems quite unresponsive lately... Shall we just move on and take
-> > maintainership?
-> 
-> I had an off-line conversation with Greg who advised me against that.
+Daniele Palmas <dnlplm@gmail.com> writes:
+> Il giorno ven 11 nov 2022 alle ore 18:14 Jakub Kicinski
+> <kuba@kernel.org> ha scritto:
+>>
+>> On Wed,  9 Nov 2022 19:02:48 +0100 Daniele Palmas wrote:
+>> > +bool rmnet_map_tx_agg_skip(struct sk_buff *skb)
+>> > +{
+>> > +     bool is_icmp =3D 0;
+>> > +
+>> > +     if (skb->protocol =3D=3D htons(ETH_P_IP)) {
+>> > +             struct iphdr *ip4h =3D ip_hdr(skb);
+>> > +
+>> > +             if (ip4h->protocol =3D=3D IPPROTO_ICMP)
+>> > +                     is_icmp =3D true;
+>> > +     } else if (skb->protocol =3D=3D htons(ETH_P_IPV6)) {
+>> > +             unsigned int icmp_offset =3D 0;
+>> > +
+>> > +             if (ipv6_find_hdr(skb, &icmp_offset, IPPROTO_ICMPV6, NUL=
+L, NULL) =3D=3D IPPROTO_ICMPV6)
+>> > +                     is_icmp =3D true;
+>> > +     }
+>> > +
+>> > +     return is_icmp;
+>> > +}
+>>
+>> Why this? I don't see it mention in the commit message or any code
+>> comment.
+>
+> This is something I've found in downstream code: with my test setup
+> and scenario it does not make any difference on the icmp packets
+> timing (both with or without throughput tests ongoing), but I don't
+> have access to all the systems for which rmnet is used.
+>
+> So, I'm not sure if it solves a real issue in other situations.
+>
+> I can move that out and me or someone else will add it again in case
+> there will be a real issue to be solved.
 
-OK. What the reasonable option we have then?
+It looks like an attempt to "cheat" latency measurements.  I don't think
+we should do that.  Aggregation may be necessary to achieve maximum
+throughput in a radio network, but has its obvious bufferbloat downside.
+Let's not hide that fact.  Users deserve to know, and tune their systems
+accordingly.  Things like this will only make that more difficult
 
--- 
-With Best Regards,
-Andy Shevchenko
 
-
+Bj=C3=B8rn
