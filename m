@@ -2,137 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 316F96278B4
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0506278BA
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:09:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbiKNJIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 04:08:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
+        id S236727AbiKNJJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 04:09:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236797AbiKNJHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:07:50 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755815581
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:06:52 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id CB77C82A76;
-        Mon, 14 Nov 2022 10:06:50 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1668416811;
-        bh=qIWD8Gzcja6P5yxB0JQEuPr02TjjGMzkuvEXzZ9DSSs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GgqX42af6Ckus+oQzOxrhKy6GiADGKsbtnyafbbq4PD+o+ogUg9/bUOhDpTWyU73v
-         e8xNGOtkDl2qeCZKRLTzjTLE6xkgr9XJJfMnMu394rKDVkHfNjEqifEVUWLrSDdiXf
-         Cn5Wj6r3sKZb9xI7jeDJcwUiVAC0hEKCc7zWA1cMZiDfddS94rCQhZ47mS4Q2xlbZM
-         oqROz6O1cCNjIqN4+M19fSF1KQ2HbqczqBU9rBEtDomPkvHSbanuWJ8RZKMAotObeb
-         wNRT44N1mgNCsBO5vsBDYim7jCIWwLlt5xOYVOHbhGBc83Qe1LMPXETTND5Pj5Tfsy
-         M1BkTScRLiHMw==
-Date:   Mon, 14 Nov 2022 10:06:43 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 7/9] net: dsa: mv88e6071: Define max frame size (2048
- bytes)
-Message-ID: <20221114100643.14ec2dc6@wsk>
-In-Reply-To: <Y213NdYv3357ndij@lunn.ch>
-References: <20221108082330.2086671-1-lukma@denx.de>
-        <20221108082330.2086671-8-lukma@denx.de>
-        <Y2pecZmradpWbtOn@lunn.ch>
-        <20221110164236.5d24383d@wsk>
-        <Y213NdYv3357ndij@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S236444AbiKNJJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:09:07 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5BD1D64C;
+        Mon, 14 Nov 2022 01:08:46 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N9k4S6xhDzmVvC;
+        Mon, 14 Nov 2022 17:08:24 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 14 Nov 2022 17:08:44 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 14 Nov 2022 17:08:44 +0800
+Subject: Re: linux-next: build failure after merge of the modules tree
+To:     Jiri Olsa <olsajiri@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+CC:     Luis Chamberlain <mcgrof@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Linux Next Mailing List" <linux-next@vger.kernel.org>
+References: <20221114111350.38e44eec@canb.auug.org.au>
+ <Y3H12Xyt8ALo+HAU@krava>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <4d2bd614-028e-ec8c-597c-56353a0a4ccf@huawei.com>
+Date:   Mon, 14 Nov 2022 17:08:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/+Rly=VAXV=q_lN_R20v1Z8_";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y3H12Xyt8ALo+HAU@krava>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/+Rly=VAXV=q_lN_R20v1Z8_
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Andrew,
-
-> On Thu, Nov 10, 2022 at 04:42:36PM +0100, Lukasz Majewski wrote:
-> > Hi Andrew,
-> >  =20
-> > > On Tue, Nov 08, 2022 at 09:23:28AM +0100, Lukasz Majewski wrote: =20
-> > > > Accroding to the documentation - the mv88e6071 can support
-> > > > frame size up to 2048 bytes.   =20
-> > >=20
-> > > Since the mv88e6020 is in the same family, it probably is the
-> > > same? =20
-> >=20
-> > Yes it is 2048 B
-> >  =20
-> > > And what about the mv88e66220? =20
-> >=20
-> > You mean mv88e6220 ? =20
->=20
-> Upps, sorry, yes.
->=20
-> >=20
-> > IIRC they are from the same family of ICs, so my guess :-) is that
-> > they also have the same value. =20
->=20
-> My point being, you created a new _ops structure when i don't think it
-> is needed.
-
-This was mostly my precaution to not introduce regression for other
-supported ICs.
-
-However, this shall not be the problem as long as the max supported
-frame size is set for each of it. Then calling set_max_frame_size()
-callback will always provide correct value.
-
->=20
->    Andrew
 
 
+On 2022/11/14 16:01, Jiri Olsa wrote:
+> On Mon, Nov 14, 2022 at 11:13:50AM +1100, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> After merging the modules tree, today's linux-next build (powerpc
+>> ppc64_defconfig) failed like this:
+>>
+>> kernel/trace/ftrace.c: In function 'ftrace_lookup_symbols':
+>> kernel/trace/ftrace.c:8316:52: error: passing argument 1 of 'module_kallsyms_on_each_symbol' from incompatible pointer type [-Werror=incompatible-pointer-types]
+>>  8316 |         found_all = module_kallsyms_on_each_symbol(kallsyms_callback, &args);
+>>       |                                                    ^~~~~~~~~~~~~~~~~
+>>       |                                                    |
+>>       |                                                    int (*)(void *, const char *, long unsigned int)
+>> In file included from include/linux/device/driver.h:21,
+>>                  from include/linux/device.h:32,
+>>                  from include/linux/node.h:18,
+>>                  from include/linux/cpu.h:17,
+>>                  from include/linux/stop_machine.h:5,
+>>                  from kernel/trace/ftrace.c:17:
+>> include/linux/module.h:882:48: note: expected 'const char *' but argument is of type 'int (*)(void *, const char *, long unsigned int)'
+>>   882 | int module_kallsyms_on_each_symbol(const char *modname,
+>>       |                                    ~~~~~~~~~~~~^~~~~~~
+>> kernel/trace/ftrace.c:8316:71: error: passing argument 2 of 'module_kallsyms_on_each_symbol' from incompatible pointer type [-Werror=incompatible-pointer-types]
+>>  8316 |         found_all = module_kallsyms_on_each_symbol(kallsyms_callback, &args);
+>>       |                                                                       ^~~~~
+>>       |                                                                       |
+>>       |                                                                       struct kallsyms_data *
+>> include/linux/module.h:883:42: note: expected 'int (*)(void *, const char *, long unsigned int)' but argument is of type 'struct kallsyms_data *'
+>>   883 |                                    int (*fn)(void *, const char *, unsigned long),
+>>       |                                    ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/trace/ftrace.c:8316:21: error: too few arguments to function 'module_kallsyms_on_each_symbol'
+>>  8316 |         found_all = module_kallsyms_on_each_symbol(kallsyms_callback, &args);
+>>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> include/linux/module.h:882:5: note: declared here
+>>   882 | int module_kallsyms_on_each_symbol(const char *modname,
+>>       |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>
+>> Caused by commit
+>>
+>>   90de88426f3c ("livepatch: Improve the search performance of module_kallsyms_on_each_symbol()")
+>>
+>> from the modules tree interatcing with commit
+>>
+>>   3640bf8584f4 ("ftrace: Add support to resolve module symbols in ftrace_lookup_symbols")
+>>
+>> from the next-next tree.
+>>
+>> I have no idea how to easily fix this up, so I have used the modules
+>> tree from next-20221111 for today in the hope someone will send me a fix.
+> 
+> hi,
+> there's no quick fix.. I sent follow up email to the original
+> change and cc-ed you
+
+The fastest fix is drop my patch 7/9, 8/9, they depend on the interface change
+of patch 6/9，but other patches don't rely on either of them.. And I can repost
+them after v6.2-rc1.
+
+Otherwise, you'll need to modify your patch, take the module reference before
+invoking callback and put it after it is called, without passing modname.
 
 
-Best regards,
+> 
+> thanks,
+> jirka
+> .
+> 
 
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/+Rly=VAXV=q_lN_R20v1Z8_
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNyBSMACgkQAR8vZIA0
-zr3QiQgAy0ilicDNtOfW7nSC+RTp02Mc1K4Jvx5lL49X7ilsdR8ZbC7LZ+oieYsx
-LbE7hS9OfQoTB/05YqBBw/ey6y8HsDLYzh9XDU98+mGHEH0o3aVFsfnriVsbn7+1
-i5mTWkXGIBXcO7bF/gS12CsxD0e1Scyf2JzYMfT3DbEd9M/IKJ5TB8dDnFWHpQbp
-biO6D4n4UyO8bnSKR9oBk8vgjMavAIMvMKfpW6g1FNu6L3saClhGwOdAbFeb/IcT
-v48k1Dbfrt9un85zyldB+yPneF8VkEwLyypyGvNV40D6yc3bOePwvQfJCUadnhIV
-h6V1+VaCuwt3wlBXkCrYBV8FzqPyzw==
-=/GLy
------END PGP SIGNATURE-----
-
---Sig_/+Rly=VAXV=q_lN_R20v1Z8_--
+-- 
+Regards,
+  Zhen Lei
