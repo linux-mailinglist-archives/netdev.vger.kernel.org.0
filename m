@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2C1628138
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:25:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F0496280DB
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:10:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiKNNZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 08:25:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
+        id S237944AbiKNNKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 08:10:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiKNNZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:25:51 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A376183B1
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:25:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=zFao31XckDGOMjh2X4dN1DzBdFrA/TiqLugbeR3q7PU=; b=dWqu1epLI8kun7YDZjatflfs1/
-        CaJK20x4nqUdnEoZ9fR5M8PccsUdhaGHDfsV0XEo84PGs5IZ0wnYgk7mAyI2QAStu0FvAb1QdEBEJ
-        EYWDZ0GkVX0cJYJDiF/in1SM5FrgSyiUXYhyP9iVMDUIRKM1Hsh/pj6ySfVzSge7X9Oo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ouZT9-002L5S-41; Mon, 14 Nov 2022 14:25:47 +0100
-Date:   Mon, 14 Nov 2022 14:25:47 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     'Mengyuan Lou' <mengyuanlou@net-swift.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: txgbe: Identify PHY and SFP module
-Message-ID: <Y3JB2xrBOOa6MR+H@lunn.ch>
-References: <20221108111907.48599-1-mengyuanlou@net-swift.com>
- <20221108111907.48599-2-mengyuanlou@net-swift.com>
- <Y2rBo3KI2LmjS55y@lunn.ch>
- <02a901d8f405$1c21a350$5464e9f0$@trustnetic.com>
- <Y2uqk9BwVjPcEtPP@lunn.ch>
- <005c01d8f80c$574c16d0$05e44470$@trustnetic.com>
+        with ESMTP id S237953AbiKNNKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:10:18 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821AD2870B
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:10:15 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N9qR43F33zmVwG;
+        Mon, 14 Nov 2022 21:09:52 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 14 Nov 2022 21:10:12 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 14 Nov 2022 21:10:11 +0800
+From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
+To:     <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <hkelam@marvell.com>,
+        <sbhatta@marvell.com>, <davem@davemloft.net>, <radhac@marvell.com>
+CC:     <netdev@vger.kernel.org>, <yangyingliang@huawei.com>,
+        <wangxiongfeng2@huawei.com>
+Subject: [PATCH] octeontx2-af: Fix reference count issue in rvu_sdp_init()
+Date:   Mon, 14 Nov 2022 21:28:23 +0800
+Message-ID: <20221114132823.22584-1-wangxiongfeng2@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <005c01d8f80c$574c16d0$05e44470$@trustnetic.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> When ethernet driver does a reset to the hardware, like
-> 'txgbe_reset_hw', the I2C configuration will be reset.  It needs to
-> be reconfigured once. So how could I call the I2C function here? Can
-> I treat the I2C driver as a lib?
+pci_get_device() will decrease the reference count for the *from*
+parameter. So we don't need to call put_device() to decrease the
+reference. Let's remove the put_device() in the loop and only decrease
+the reference count of the returned 'pdev' for the last loop because it
+will not be passed to pci_get_device() as input parameter. Also add
+pci_dev_put() for the error path.
 
-The I2C driver will be embedded within your MAC driver. So you have
-control over it.
+Fixes: fe1939bb2340 ("octeontx2-af: Add SDP interface support")
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_sdp.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-How often do you need to call txgbe_reset_hw()?  Hopefully just once
-early in the probe? So you can register the I2C bus master with the
-I2C core after the reset.
-
-If you need to use txgbe_reset_hw() at other times, you will need a
-mutex or similar in .master_xfer function so you don't perform a reset
-while an I2C transfer is happening, or start another transfer while a
-reset is happening.
-
-	Andrew
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_sdp.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_sdp.c
+index b04fb226f708..283d1c90e083 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_sdp.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_sdp.c
+@@ -62,15 +62,19 @@ int rvu_sdp_init(struct rvu *rvu)
+ 		pfvf->sdp_info = devm_kzalloc(rvu->dev,
+ 					      sizeof(struct sdp_node_info),
+ 					      GFP_KERNEL);
+-		if (!pfvf->sdp_info)
++		if (!pfvf->sdp_info) {
++			pci_dev_put(pdev);
+ 			return -ENOMEM;
++		}
+ 
+ 		dev_info(rvu->dev, "SDP PF number:%d\n", sdp_pf_num[i]);
+ 
+-		put_device(&pdev->dev);
+ 		i++;
+ 	}
+ 
++	if (pdev)
++		pci_dev_put(pdev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.20.1
 
