@@ -2,89 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 495EA6277D3
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:35:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 756CC6278A5
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236530AbiKNIft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 03:35:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54082 "EHLO
+        id S236871AbiKNJGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 04:06:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236527AbiKNIfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:35:47 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C580F1B9E8;
-        Mon, 14 Nov 2022 00:35:46 -0800 (PST)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N9jLD0l7FzHvw1;
-        Mon, 14 Nov 2022 16:35:16 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 16:35:29 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 16:35:29 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Moritz Fischer <mdf@kernel.org>
-CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: nixge: fix potential memory leak in nixge_start_xmit()
-Date:   Mon, 14 Nov 2022 16:55:35 +0800
-Message-ID: <1668416136-33530-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236913AbiKNJFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:05:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808F51D66F;
+        Mon, 14 Nov 2022 01:04:39 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 19B291FD67;
+        Mon, 14 Nov 2022 09:04:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1668416678; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qYeyMGzPpWeJjemOhgQTqv3gXdbN1HV6WuzeSdghX/w=;
+        b=YE8YpyZ139VQeNK68TlYpnZ25AsIpwxeaayX1shw2BLDESgrmTvnKy7KsOLoovwmZBfSwj
+        feMoKYc76x8HYSZ+pvUN+xmQZPf09XVjndfDwC301JINk5rEiybUHATWKeqGyjEEiBHLXG
+        fJHUXRrpHHEd1U3ub5JGJMJKODHR4yM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1668416678;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qYeyMGzPpWeJjemOhgQTqv3gXdbN1HV6WuzeSdghX/w=;
+        b=Llx/kP6o5oi7w9LY9pE3+/vMOmMFKljhPvJvgNrLZwx0lxnO0V03LM2WxQjWChbMOB9Zo+
+        9l/BHoMLUwQN+PBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C727613A8C;
+        Mon, 14 Nov 2022 09:04:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id CAa7L6UEcmPcMwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Mon, 14 Nov 2022 09:04:37 +0000
+Date:   Mon, 14 Nov 2022 10:04:37 +0100
+Message-ID: <87leod52l6.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 6/7] ALSA: memalloc: don't pass bogus GFP_ flags to dma_alloc_*
+In-Reply-To: <20221113163535.884299-7-hch@lst.de>
+References: <20221113163535.884299-1-hch@lst.de>
+        <20221113163535.884299-7-hch@lst.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The nixge_start_xmit() returns NETDEV_TX_OK but does not free skb on two
-error handling cases, which can lead to memory leak.
+On Sun, 13 Nov 2022 17:35:34 +0100,
+Christoph Hellwig wrote:
+> 
+> dma_alloc_coherent/dma_alloc_wc is an opaque allocator that only uses
+> the GFP_ flags for allocation context control.  Don't pass __GFP_COMP
+> which makes no sense for an allocation that can't in any way be
+> converted to a page pointer.
 
-To fix this, return NETDEV_TX_BUSY in case of nixge_check_tx_bd_space()
-fails and add dev_kfree_skb_any() in case of dma_map_single() fails.
+The addition of __GFP_COMP there was really old, it was Hugh's commit
+f3d48f0373c1 at 2005:
+    [PATCH] unpaged: fix sound Bad page states
 
-Fixes: 492caffa8a1a ("net: ethernet: nixge: Add support for National Instruments XGE netdev")
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- drivers/net/ethernet/ni/nixge.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+It mentions something about sparc32/64.  I hope this isn't relevant
+any longer (honestly I have no idea about that).
 
-diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
-index 19d043b593cc..b9091f9bbc77 100644
---- a/drivers/net/ethernet/ni/nixge.c
-+++ b/drivers/net/ethernet/ni/nixge.c
-@@ -521,13 +521,15 @@ static netdev_tx_t nixge_start_xmit(struct sk_buff *skb,
- 	if (nixge_check_tx_bd_space(priv, num_frag)) {
- 		if (!netif_queue_stopped(ndev))
- 			netif_stop_queue(ndev);
--		return NETDEV_TX_OK;
-+		return NETDEV_TX_BUSY;
- 	}
- 
- 	cur_phys = dma_map_single(ndev->dev.parent, skb->data,
- 				  skb_headlen(skb), DMA_TO_DEVICE);
--	if (dma_mapping_error(ndev->dev.parent, cur_phys))
-+	if (dma_mapping_error(ndev->dev.parent, cur_phys)) {
-+		dev_kfree_skb_any(skb);
- 		goto drop;
-+	}
- 	nixge_hw_dma_bd_set_phys(cur_p, cur_phys);
- 
- 	cur_p->cntrl = skb_headlen(skb) | XAXIDMA_BD_CTRL_TXSOF_MASK;
--- 
-2.31.1
+> Note that for dma_alloc_noncoherent and dma_alloc_noncontigous in
+> combination with the DMA mmap helpers __GFP_COMP looks sketchy as well,
+> so I would suggest to drop that as well after a careful audit.
 
+Yeah, that's a cargo-cult copy&paste from the old idiom.
+Should be killed altogether.
+
+
+Thanks!
+
+Takashi
