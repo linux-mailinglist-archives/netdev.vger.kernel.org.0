@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 588366273EF
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 01:51:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAF856273F5
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 01:55:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235377AbiKNAva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 19:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
+        id S235588AbiKNAzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 19:55:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiKNAv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 19:51:28 -0500
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F6795A8
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 16:51:27 -0800 (PST)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-13be3ef361dso11008689fac.12
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 16:51:27 -0800 (PST)
+        with ESMTP id S233069AbiKNAzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 19:55:17 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB80C75C;
+        Sun, 13 Nov 2022 16:55:17 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id q186so10051097oia.9;
+        Sun, 13 Nov 2022 16:55:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=TokapDf0jizPeHR14vhzAkcfTsAR+kvJEKxSIayQiWY=;
-        b=mnimACMfnQkcgX11j0eWv7ETR08N23QRtIpjytmtoK6+DQJ/LEunk8rvi6uKM//x1u
-         9+dqfJoxKBr5YMQKm+WEkehw8Np/JTPTCcqrghxQvwy8TcMLY80+V60pDgiY3uwze6F3
-         DEBZJZPhRP9svBf0qEnDwY7PXi256V2INGeFAvI3MrxDc56zg4DDWytBb3rfrvTUzCpy
-         qiwO90KBB8GGrHU9oSVirCPQVdZ6qFgqS0CE0csf+C53swQmvaqKODzIl9Ajy0lDOlJi
-         kdYxw9k/vfmxhX5r+Yfx7t7j9QoFnL5q0YfsSOgn24jB+X/S6oFikLk3JlemEeiDQFIf
-         HXUA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1eWmdrMuwMapU7AuwfWIBLQ5gu2VO9LXeJ1JQHUSa5M=;
+        b=jHt37U4d8jNXsCEZDBNP9ic4j08D10mDXoZ6fXku34Z0l/o6Q8Zccryus5a1jbpq/7
+         GQNEtEszyPRetKWerIMjfbcub5WrwHl/UljDLgXyjqrV/H+CCE2SaNfAD/+5TU5Fp+oo
+         PB4ae29rRoL5oPx8vGJkSFCkG3Y7P/VetJi4gTAlvb+N6GmnQ9CYu5F11npG39s47bWH
+         +DtncEopKarLmD1iUFPpVBnmAsPV39o2tJLuR1G5KkHhKWp3rcs6K1IZSTjo5s4co3V5
+         AN6R3lCUFRVPpgih8Ne16BLIXCXyZJefIL8PhI/QIAHNXFWBZNkqt1kmaEx22z9d5PiX
+         0FyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TokapDf0jizPeHR14vhzAkcfTsAR+kvJEKxSIayQiWY=;
-        b=MNWnI7ws81ypQPXT2MkEyE35vh/7X5EhHQR/x7tFERLivTLgp60wiufiMRpOKM/MWn
-         f84BCUrkMBH7jIMdLTS6WtURV1VlYPL/YFLeZXQzKrJ7Zch8MIdAMaku6kQq5S1DkaXA
-         FbffPNtNKLLm9Z9y1Q7PmTIuDaNyRuZbyaeujSlG3h19NTJIHv/sQcVGCHPd9fbnzt7f
-         TWQZzmGgzmvrPgH4Tb36e/N2zwffsi7ypjUBz9dZ+K3++4a/0U3PQJPIU/ckQVrLHRA7
-         /8wL6gOvwyNOJaJbRQ8qsqB4TsRLWc+sSBSOYtuzNBPjSWu1206UhqEZ9wFlV2SWr7oL
-         9iGw==
-X-Gm-Message-State: ANoB5pmoreD+8yGiY06a81MNKbqGtkFqnlSGhsrjGSrhJBgFhze6PZ+o
-        yt+Oe00o5IARHwtpcWwoQsoBMLuIJ48=
-X-Google-Smtp-Source: AA0mqf7GG4pBPUaKs34kPpeV7998RIe0kR/7KRBdW9sviGbTIDmHRjFxbHQArgeWx+qyzRNcefTdhA==
-X-Received: by 2002:a05:6870:75c3:b0:12d:2523:bb34 with SMTP id de3-20020a05687075c300b0012d2523bb34mr5790379oab.92.1668387086646;
-        Sun, 13 Nov 2022 16:51:26 -0800 (PST)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:6343:42bb:5d9b:dded])
-        by smtp.gmail.com with ESMTPSA id d11-20020a056830044b00b0066c15490a55sm3592303otc.19.2022.11.13.16.51.24
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1eWmdrMuwMapU7AuwfWIBLQ5gu2VO9LXeJ1JQHUSa5M=;
+        b=tu0hoxLLZYUJbNutW/mAdQp82ul5CD75HvvxMxakR+jzQXy1e5n9YINdIhT0JszNAc
+         xZMDaJcA9hEFhUXrBoNw36RmhLrIkILztrm7TTa3YNoQsOuPfcVahjP0WdAKnLfeTExA
+         8ZNrM4+LZI3WRvpMQXcfcQpHObGUN9myU5dCTdk1sRWtHD+QMwMomWPZzYCJoDKrACAS
+         7OUF2YS/Nk6Y5+RiqWzKypWWDtjsrjEjm+Ewx0XoH47cvmhmz/e1RbvwGC/tYwuAZHvj
+         OAuAvMs6f1ikxoeKcXISz3WktFvvfzs6mmlT83TaHz4ssbTSDpqKqHX1UOsBRwv7Brgr
+         Z3ag==
+X-Gm-Message-State: ANoB5pnWrVvbeB72csE+YhxDurooAt9LBLJ7b8Bg5z/CsXMhom+zGd0g
+        CM3XuWK/Ulg2rEtuhvxw/kI=
+X-Google-Smtp-Source: AA0mqf4XNtLs/BAQMqK1H3kOnFuI5JppZu63jhYMwoT44oHPE/KFyzWr1o2CCKkzP9I/SNnpkIGcmQ==
+X-Received: by 2002:aca:f089:0:b0:35a:e78c:8515 with SMTP id o131-20020acaf089000000b0035ae78c8515mr1562205oih.130.1668387316451;
+        Sun, 13 Nov 2022 16:55:16 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:6343:42bb:5d9b:dded])
+        by smtp.gmail.com with ESMTPSA id q5-20020a056870328500b0012763819bcasm4262716oac.50.2022.11.13.16.55.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 16:51:26 -0800 (PST)
+        Sun, 13 Nov 2022 16:55:15 -0800 (PST)
+Date:   Sun, 13 Nov 2022 16:55:15 -0800
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, wanghai38@huawei.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot+278279efdd2730dd14bf@syzkaller.appspotmail.com,
-        shaozhengchao <shaozhengchao@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Herbert <tom@herbertland.com>
-Subject: [Patch net v3] kcm: close race conditions on sk_receive_queue
-Date:   Sun, 13 Nov 2022 16:51:19 -0800
-Message-Id: <20221114005119.597905-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.34.1
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, cong.wang@bytedance.com, f.fainelli@gmail.com,
+        tom@herbertland.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] kcm: Fix kernel NULL pointer dereference in
+ requeue_rx_msgs
+Message-ID: <Y3GR89nyWvTwHulH@pop-os.localdomain>
+References: <20221112120423.56132-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221112120423.56132-1-wanghai38@huawei.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -72,159 +73,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Sat, Nov 12, 2022 at 08:04:23PM +0800, Wang Hai wrote:
+> In kcm_rcv_strparser(), the skb is queued to the kcm that is currently
+> being reserved, and if the queue is full, unreserve_rx_kcm() will be
+> called. At this point, if KCM_RECV_DISABLE is set, then unreserve_rx_kcm()
+> will requeue received messages for the current kcm socket to other kcm
+> sockets. The kcm sock lock is not held during this time, and as long as
+> someone calls kcm_recvmsg, it will concurrently unlink the same skb, which
+> ill result in a null pointer reference.
+> 
+> cpu0 			cpu1		        cpu2
+> kcm_rcv_strparser
+>  reserve_rx_kcm
+>                         kcm_setsockopt
+>                          kcm_recv_disable
+>                           kcm->rx_disabled = 1;
+>   kcm_queue_rcv_skb
+>   unreserve_rx_kcm
+>    requeue_rx_msgs                              kcm_recvmsg
+>     __skb_dequeue
+>      __skb_unlink(skb)				  skb_unlink(skb)
+>                                                   //double unlink skb
+> 
 
-sk->sk_receive_queue is protected by skb queue lock, but for KCM
-sockets its RX path takes mux->rx_lock to protect more than just
-skb queue. However, kcm_recvmsg() still only grabs the skb queue
-lock, so race conditions still exist.
+We will hold skb queue lock after my patch, so this will not happen after
+applying my patch below?
+https://lore.kernel.org/netdev/20221114005119.597905-1-xiyou.wangcong@gmail.com/
 
-We can teach kcm_recvmsg() to grab mux->rx_lock too but this would
-introduce a potential performance regression as struct kcm_mux can
-be shared by multiple KCM sockets.
-
-So we have to enforce skb queue lock in requeue_rx_msgs() and handle
-skb peek case carefully in kcm_wait_data(). Fortunately,
-skb_recv_datagram() already handles it nicely and is widely used by
-other sockets, we can just switch to skb_recv_datagram() after
-getting rid of the unnecessary sock lock in kcm_recvmsg() and
-kcm_splice_read(). Side note: SOCK_DONE is not used by KCM sockets,
-so it is safe to get rid of this check too.
-
-I ran the original syzbot reproducer for 30 min without seeing any
-issue.
-
-Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
-Reported-by: syzbot+278279efdd2730dd14bf@syzkaller.appspotmail.com
-Reported-by: shaozhengchao <shaozhengchao@huawei.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Tom Herbert <tom@herbertland.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/kcm/kcmsock.c | 58 +++++------------------------------------------
- 1 file changed, 6 insertions(+), 52 deletions(-)
-
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index a5004228111d..890a2423f559 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -222,7 +222,7 @@ static void requeue_rx_msgs(struct kcm_mux *mux, struct sk_buff_head *head)
- 	struct sk_buff *skb;
- 	struct kcm_sock *kcm;
- 
--	while ((skb = __skb_dequeue(head))) {
-+	while ((skb = skb_dequeue(head))) {
- 		/* Reset destructor to avoid calling kcm_rcv_ready */
- 		skb->destructor = sock_rfree;
- 		skb_orphan(skb);
-@@ -1085,53 +1085,17 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	return err;
- }
- 
--static struct sk_buff *kcm_wait_data(struct sock *sk, int flags,
--				     long timeo, int *err)
--{
--	struct sk_buff *skb;
--
--	while (!(skb = skb_peek(&sk->sk_receive_queue))) {
--		if (sk->sk_err) {
--			*err = sock_error(sk);
--			return NULL;
--		}
--
--		if (sock_flag(sk, SOCK_DONE))
--			return NULL;
--
--		if ((flags & MSG_DONTWAIT) || !timeo) {
--			*err = -EAGAIN;
--			return NULL;
--		}
--
--		sk_wait_data(sk, &timeo, NULL);
--
--		/* Handle signals */
--		if (signal_pending(current)) {
--			*err = sock_intr_errno(timeo);
--			return NULL;
--		}
--	}
--
--	return skb;
--}
--
- static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- 		       size_t len, int flags)
- {
- 	struct sock *sk = sock->sk;
- 	struct kcm_sock *kcm = kcm_sk(sk);
- 	int err = 0;
--	long timeo;
- 	struct strp_msg *stm;
- 	int copied = 0;
- 	struct sk_buff *skb;
- 
--	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
--
--	lock_sock(sk);
--
--	skb = kcm_wait_data(sk, flags, timeo, &err);
-+	skb = skb_recv_datagram(sk, flags, &err);
- 	if (!skb)
- 		goto out;
- 
-@@ -1162,14 +1126,11 @@ static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- 			/* Finished with message */
- 			msg->msg_flags |= MSG_EOR;
- 			KCM_STATS_INCR(kcm->stats.rx_msgs);
--			skb_unlink(skb, &sk->sk_receive_queue);
--			kfree_skb(skb);
- 		}
- 	}
- 
- out:
--	release_sock(sk);
--
-+	skb_free_datagram(sk, skb);
- 	return copied ? : err;
- }
- 
-@@ -1179,7 +1140,6 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
- {
- 	struct sock *sk = sock->sk;
- 	struct kcm_sock *kcm = kcm_sk(sk);
--	long timeo;
- 	struct strp_msg *stm;
- 	int err = 0;
- 	ssize_t copied;
-@@ -1187,11 +1147,7 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
- 
- 	/* Only support splice for SOCKSEQPACKET */
- 
--	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
--
--	lock_sock(sk);
--
--	skb = kcm_wait_data(sk, flags, timeo, &err);
-+	skb = skb_recv_datagram(sk, flags, &err);
- 	if (!skb)
- 		goto err_out;
- 
-@@ -1219,13 +1175,11 @@ static ssize_t kcm_splice_read(struct socket *sock, loff_t *ppos,
- 	 * finish reading the message.
- 	 */
- 
--	release_sock(sk);
--
-+	skb_free_datagram(sk, skb);
- 	return copied;
- 
- err_out:
--	release_sock(sk);
--
-+	skb_free_datagram(sk, skb);
- 	return err;
- }
- 
--- 
-2.34.1
-
+Thanks.
