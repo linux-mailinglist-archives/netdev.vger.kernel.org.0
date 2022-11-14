@@ -2,106 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9DC6276E3
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 08:59:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 933EF6276EE
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235891AbiKNH72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 02:59:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
+        id S236072AbiKNIA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 03:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235771AbiKNH70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 02:59:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBD9226
-        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 23:59:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3583FB80D3C
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 07:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53915C433C1;
-        Mon, 14 Nov 2022 07:59:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668412762;
-        bh=2xMod9AjS+k2n/Wm7+JPa6ousSSe0m8eAb4ePkgOB2s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Eit9UlkAAd7e97K6/F1AxTlkBS96S/U85FfNsMDTjgMk/hnmz9SLJjh8YRfigznqQ
-         olUp4XQ2QE9voBKJgj3Okc2+Q7uonpjM6y68eYEiBHyMWmrgPu4++sViI6hTBtlwkG
-         bk5vKyo+AJg51vyqvZ6XUNSmlV2/YW3cqxR7Zb6lyE/DWfO+tYccx0rZ19UQqBHZ2n
-         dOErDGatbIsHO/X8OI6MauTEuBHC6J6T6pRNIfrGqfm+H+Dx4UE0CPQrMntJmMRxDq
-         PJfi6SJ6JC2ELpfguzA6+SZ6fS7qHJ8CfkVZ+a3qhhG6XAHEH15ysf96eLBg7v87f4
-         J96VaeJsZxAnQ==
-Date:   Mon, 14 Nov 2022 09:59:18 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yan Cangang <nalanzeyu@gmail.com>
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: fix memory leak in
- mtk_ppe_init()
-Message-ID: <Y3H1VgVOJB5kHbaa@unreal>
-References: <20221112233239.824389-1-nalanzeyu@gmail.com>
+        with ESMTP id S236024AbiKNIAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:00:51 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E744335;
+        Mon, 14 Nov 2022 00:00:51 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id y203so10294123pfb.4;
+        Mon, 14 Nov 2022 00:00:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language:subject
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Rl7XVfCURtX7IREOejYVHcuTKEa5Stt/cs0k6IIAT8s=;
+        b=g7j6iKS8QzPekE/NsHsf99xS2YkZMkU0ht/LBWHE94c6k1y0oKp+/lsAXPGSLr0eIx
+         LTIPOEdZ122h9c4+sfRLvAasLdawZd+ZzHsUepncaKIXkQhuaDA5tQ+cFo6WFMKD6ctU
+         ZzC11qUWrAWWKMDnPi2YcBnTTbs9bFYftV0swBsFpMDmH4JoJ7c44X6tz5Xyv6J2995W
+         7Fbhwsk+nsxZZcFi33+eZTaJ05i+nGBPhWKaBaIAnRsgy7hkrjtSSQYTfpWKL4SyJqtx
+         0QeQxcph9hfeU0ERm/NsxxYwzfwnOSI5y5aYoEuEKWxMGKAVsoZ/t+BC1U+z0tAV1Q1o
+         zzzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language:subject
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rl7XVfCURtX7IREOejYVHcuTKEa5Stt/cs0k6IIAT8s=;
+        b=IlNxdkX9FhE9EplfXBQNptbyc8ob6kXV62cgyoekvqK1AP1pIjCgd54xLp+lNDAjcj
+         UG0pHGxRPtVnVxznINCht2DRYdOrjwiaaU/nq7SontW+PxTTyoYAb1SbpHIeXnClKt1F
+         qWaa2P1cw7j56ETWt3FF8zoaMgdziIBzY1Wr57kxkHWyt5ky7A2f+LOm2e1R184P3nCY
+         uzRYiysHLwaYNjj0ztM333cwCLpwhSHv24BqWM5AXwd8Wxp/FcufLfvya8oMhdOHMXDG
+         yalmLSMh+3mRyR0Fcc7UvFCxGO5rqu1KXQ+7XV6Ksjq5MVPPipGvrdraNrv+G06RW/GT
+         IkEQ==
+X-Gm-Message-State: ANoB5pk2A/ZDFp1sRhh5a2nBoioldJ1rD97k3RzCbfFF3I9C45P7VtKD
+        C7BEky5z6mkHb1X/l7BJTUVx6O9/QYE=
+X-Google-Smtp-Source: AA0mqf43vZ2eUvFWOndO4XEoWcD7PQqdMC0LWR4PbveSwpL+5qefS8YkG9HEgNTQ7tnQP1GWZeA8lg==
+X-Received: by 2002:a62:648a:0:b0:561:ada0:69d7 with SMTP id y132-20020a62648a000000b00561ada069d7mr13044989pfb.9.1668412850574;
+        Mon, 14 Nov 2022 00:00:50 -0800 (PST)
+Received: from [192.168.11.9] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id q16-20020a17090311d000b00182a9c27acfsm783254plh.227.2022.11.14.00.00.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Nov 2022 00:00:49 -0800 (PST)
+Message-ID: <6a7f6bb3-bbd4-9b71-b069-b543de067079@gmail.com>
+Date:   Mon, 14 Nov 2022 17:00:45 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221112233239.824389-1-nalanzeyu@gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     andrii@kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        lorenzo@kernel.org, mtahhan@redhat.com, netdev@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+References: <20221114183131.3c68e1b5@canb.auug.org.au>
+Subject: Re: linux-next: build warnings after merge of the net-next tree
+Content-Language: en-US
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <20221114183131.3c68e1b5@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 13, 2022 at 07:32:39AM +0800, Yan Cangang wrote:
->     When dmam_alloc_coherent() or devm_kzalloc() failed, the rhashtable
->     ppe->l2_flows isn't destroyed. Fix it.
- ^^^^^
-Please fix indentation in commit message.
+On Mon, 14 Nov 2022 18:31:31 +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the net-next tree, today's linux-next build (htmldocs)
+> produced these warnings:
+> 
+> Documentation/bpf/map_cpumap.rst:50: WARNING: Error in declarator or parameters
+> Invalid C declaration: Expected identifier in nested name. [error at 67]
+>   int bpf_map_update_elem(int fd, const void *key, const void *value,
+>   -------------------------------------------------------------------^
+> Documentation/bpf/map_cpumap.rst:50: WARNING: Error in declarator or parameters
+> Invalid C declaration: Expecting "(" in parameters. [error at 11]
+>   __u64 flags);
+>   -----------^
+> Documentation/bpf/map_cpumap.rst:73: WARNING: Duplicate C declaration, also defined at bpf/map_array:35.
+> Declaration is '.. c:function:: int bpf_map_lookup_elem(int fd, const void *key, void *value);'.
+> 
+> Introduced by commit
+> 
+>   161939abc80b ("docs/bpf: Document BPF_MAP_TYPE_CPUMAP map")
+
+Hi Stephen,
+
+Maryam has posted a patch at:
+
+    https://lore.kernel.org/r/20221113103327.3287482-1-mtahhan@redhat.com/
+
+        Thanks, Akira
 
 > 
-> Fixes: 33fc42de3327 ("net: ethernet: mtk_eth_soc: support creating mac address based offload entries")
-> Signed-off-by: Yan Cangang <nalanzeyu@gmail.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_ppe.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-> index 2d8ca99f2467..8da4c8be59fd 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-> @@ -737,7 +737,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
->  				  MTK_PPE_ENTRIES * soc->foe_entry_size,
->  				  &ppe->foe_phys, GFP_KERNEL);
->  	if (!foe)
-> -		return NULL;
-> +		goto err_free_l2_flows;
->  
->  	ppe->foe_table = foe;
->  
-> @@ -745,11 +745,15 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
->  			sizeof(*ppe->foe_flow);
->  	ppe->foe_flow = devm_kzalloc(dev, foe_flow_size, GFP_KERNEL);
->  	if (!ppe->foe_flow)
-> -		return NULL;
-> +		goto err_free_l2_flows;
->  
->  	mtk_ppe_debugfs_init(ppe, index);
->  
->  	return ppe;
-> +
-> +err_free_l2_flows:
-> +	rhashtable_destroy(&ppe->l2_flows);
-
-I expect the same change to be in mtk_mdio_cleanup() too.
-
-Thanks
-
-
-> +	return NULL;
->  }
->  
->  static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
 > -- 
-> 2.30.2
-> 
+> Cheers,
+> Stephen Rothwell
