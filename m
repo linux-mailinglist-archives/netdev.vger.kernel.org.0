@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C34B628842
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 19:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B75D62884D
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 19:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236785AbiKNSXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 13:23:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
+        id S236870AbiKNSaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 13:30:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236679AbiKNSXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 13:23:05 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A483125C58;
-        Mon, 14 Nov 2022 10:23:03 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id k15so11814343pfg.2;
-        Mon, 14 Nov 2022 10:23:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dWk/FR4QZekTXFVksmzeI0cG+GSv/ciCEqMaTDLUwYk=;
-        b=Lvss1+faAjNeYJfSqXXh9qeQqentX69RdX2A35CoieF+j8Rgsk89554aC5eU9Be3gR
-         8EOYMI0VmFRHjEc5sBqXdk6G3A4gTo2jMeTcUfxUHBMVvfTeNAZ6UADEvEvJGt2C/LXf
-         mSEzx3DeDzaVC2VSwQgh31q962mp2BWka6mppGd0flRNSkdRpyOie4+ejPWAGKH9YABl
-         eFdxrhe9lrjqEtKR5+NrgMdN71zMaJMgs+XLLQDC+x4Pqriv89BXInRW8WWEyhvCUsHA
-         7cAx7ziKFFb5mgHcTNcqjB7HKST/L7PEoUeeiEBJ2fSISswyP2ySzatrmal8TLh5wJb4
-         ixmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=dWk/FR4QZekTXFVksmzeI0cG+GSv/ciCEqMaTDLUwYk=;
-        b=qL0GxWCh8SRw2cSMj1VVOB9ZZ10pG3rXGVPCwrfyTn+2A+4pG014m/FkxkZZezfNFb
-         ZMpUTkJWwmMLGpYPEjgus+m25FC6leqvNFfcmolqolZaqLRLvIw9wyBNVtg+e3K9dqTw
-         3hW24D4cvKB8xvMVhT2aq4C1p2a5p4SPtgD+dp2x8ic16oZ1fspO5ADw9Ts1T8vcFjFK
-         tXteFX5UgkdHsM3q3Gkdfm0aRFupj0ylTUmwGDnsEgfCxZJSKIDC2voJILcxhBVzXaqU
-         uHznzQwaBu46Vd/X96PNJCY55qsYSLMTOMBDj7egDcDO8tIcb3DmPDhHe7JJ1UXFcFlE
-         jWBg==
-X-Gm-Message-State: ANoB5pm33wj3C9UvdeoGEKQCvFweN2px0yyDe15Tho6FsnucmeQKrRqt
-        lECzkv+neZHK/K7SvcQxV0c=
-X-Google-Smtp-Source: AA0mqf52m7FkH9slafAgUNi/BT+yVRVvOMOcYoJu1I22EsU5/7dubBL/y1YuYXNxZKNIZd6QxRntjA==
-X-Received: by 2002:a63:fc0f:0:b0:45f:88b2:1766 with SMTP id j15-20020a63fc0f000000b0045f88b21766mr12818499pgi.357.1668450182979;
-        Mon, 14 Nov 2022 10:23:02 -0800 (PST)
-Received: from localhost ([98.97.41.121])
-        by smtp.gmail.com with ESMTPSA id ij25-20020a170902ab5900b00186f0f59d1esm7757652plb.192.2022.11.14.10.23.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Nov 2022 10:23:02 -0800 (PST)
-Date:   Mon, 14 Nov 2022 10:23:00 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Yonghong Song <yhs@meta.com>,
-        John Fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
-        daniel@iogearbox.net, kuba@kernel.org, davem@davemloft.net,
-        ast@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, sdf@google.com
-Message-ID: <63728784e2d15_43f25208be@john.notmuch>
-In-Reply-To: <10b5eb96-5200-0ffe-a1ba-6d8a16ac4ebe@meta.com>
-References: <20221109215242.1279993-1-john.fastabend@gmail.com>
- <20221109215242.1279993-2-john.fastabend@gmail.com>
- <0697cf41-eaa0-0181-b5c0-7691cb316733@meta.com>
- <636c5f21d82c1_13fe5e208e9@john.notmuch>
- <aeb8688f-7848-84d2-9502-fad400b1dcdc@meta.com>
- <636d82206e7c_154599208b0@john.notmuch>
- <636d853a8d59_15505d20826@john.notmuch>
- <86af974c-a970-863f-53f5-c57ebba9754e@meta.com>
- <637136faa95e5_2c136208dc@john.notmuch>
- <10b5eb96-5200-0ffe-a1ba-6d8a16ac4ebe@meta.com>
-Subject: Re: [1/2 bpf-next] bpf: expose net_device from xdp for metadata
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        with ESMTP id S236514AbiKNSaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 13:30:03 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2045.outbound.protection.outlook.com [40.107.92.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09F524BEB
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 10:30:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VlQq63ReB/BM1gGqxDij6+1F0CaFyW59f3fD93g1qgryI1JkStqokOicdKcE4j8Omw2t6NdEA2c6MaFeWOH7ztiMR6b6RK/9zBcTXsDFNNebRRaP8BPRf0Hubdb0RTXbAVom/HHbrm2nDDk+wCbwCiVgSTI4oS97Q4dko8ctM7YnoWQEH5AxyewF77v+V1HHU++uwr0Ss3YkrP3JDJajxVWbAmAnq0uaPNNTpWwjSpAw98RuUD1SpV6TY31S2mxyMF1jFSWAZvhLM8saOorSd7Xa1Z60b7Jcn/FlDwgzSOJpjmQphAwrPD+ZtvYENRI8b7TgaOZ3E2aw87jIpgP05A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wdiHx0gPW1TARPFhSdyUECV2cF6ogIEcFzV96Ew0Ynk=;
+ b=bD77817YZXqHcL9stIuX6qtfxSqK6o8G3CFoCIx+iw+QOqxNnG0NhD8wvds9XSOfecLFvRbYwAQH4+jP9klx5OfNH8DT6u+aWO4euQ66Tm2uKeRJxBd48Vr9MTU5pftZRpzL8I1jrtguqJb1yi+kiwc1eKRxa2nsYalsqXi3C8RmF/XyCBKmDq+5vVqRxQj7YQorECavG4WX7RpLmnexiGdeGiaccV96GKIxLPmP1lcLo8F/dvp7o+j7nIUIgQx0OS3fVgCAUhxCJOhSl1UNzUN60kGZE4oS/AJuQQwGVHFkZpnlSN2QZtkU45tNYnhua3pLgY8NJGq6vHASbzFtDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wdiHx0gPW1TARPFhSdyUECV2cF6ogIEcFzV96Ew0Ynk=;
+ b=o0V/H4JRKOG1QnHt3OUTFBT/4VIuD381TwZKSU2aZ6hUnH3rZPqW18nxX7l4lpkT6ph5yPyj0aG/EawvZBzbQTC1dP8jS9uS5O4r833Tvsx6dj36XXKT8l2CDWWpWQqib3XqNtrD+EIoJbLQy1vOzHE36qUuwY/JjGZKC8yTups=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ PH8PR12MB7448.namprd12.prod.outlook.com (2603:10b6:510:214::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Mon, 14 Nov
+ 2022 18:30:00 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::6aee:c2b3:2eb1:7c7b%5]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
+ 18:30:00 +0000
+Message-ID: <c0ba2254-2c16-e471-5a98-56106121af6f@amd.com>
+Date:   Mon, 14 Nov 2022 10:29:56 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [PATCH] net: ionic: Fix error handling in ionic_init_module()
+Content-Language: en-US
+To:     Yuan Can <yuancan@huawei.com>, snelson@pensando.io,
+        drivers@pensando.io, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, brett@pensando.io,
+        netdev@vger.kernel.org
+References: <20221113092929.19161-1-yuancan@huawei.com>
+From:   Shannon Nelson <shnelson@amd.com>
+In-Reply-To: <20221113092929.19161-1-yuancan@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0010.namprd07.prod.outlook.com
+ (2603:10b6:a02:bc::23) To DS0PR12MB6583.namprd12.prod.outlook.com
+ (2603:10b6:8:d1::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|PH8PR12MB7448:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50d0a0b0-ff5b-4988-1510-08dac66e3d0d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: X0HNqMqmDbVsPvosYtCmFYSkeEwRE58a6mKCPkKl6eC+EpIHlFLlV52Dn/zVkQRPskCB7z/KmctDzyQ92Vl1F+D9cFsW0/RLZMQlW6c5TND3UvjfZvinUTKOx+ES2OiPF+dhAy6W3h5Hb0YRRXBihz6nVNQsL6FoYWJd9Bl9aK5y5iU/Xes3OdsyW/QYb02rktYc68zvLBYdDy/JWfHdwlpJcK50Qn/qU01BJDnlg1t8escVfeFgirR9VcIaoqNpu4+0Qb0kISG3bF+sN+/qwlMXT5xB6QHKttG2mPW8F0xZJ9RZXhrpDg0KvrFtmnE+Gdnrwy2pFKJaAwemuRz1UJNjTdc8uUoIjAbIFGpbWIN0GRTaNClWXbDoo68c6XId96vtUFlITWdM6RoPzqbK5CZSQ4mM8vKRTtL3rhb37w//16xw56jZGLU/rjVlz3SqPx6StokzN/wZp8z7jafZn0XSua8c6fiNas5olNk99jDX/lvQbeJZ6Cx56nnZhA9FPHsFIwsQfc44Dskw2pbuqW4aLUrMLinuzp0AD3wfYKxso8bD+YVYekYH9h2uMN81j+VeA0uXsFQYU43JtkraJC7Wj+VaqRxTDl2jEcIDzIvo95973m/zwX5xT7Q47msJ524pXiO3KYrXxZBYxVMPeHeXcLE60O/Xy1h5j+DFo5TLHHn+GaplIrkfeQ4vQjM5r7UgLKevew7Tz+cTIruNeSGntkawfXjwzSARFws5dhH3wPssPRh38+bNYG1WeEbWfszcw8nGGMMgC0Wd6wElcEYWqaGhNITgyFIkfbCEuqY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(346002)(366004)(376002)(39860400002)(451199015)(83380400001)(2616005)(186003)(2906002)(8936002)(38100700002)(6486002)(478600001)(26005)(6666004)(6512007)(6506007)(66556008)(66476007)(5660300002)(8676002)(53546011)(66946007)(41300700001)(316002)(31686004)(36756003)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZGk0YWFuYkxqR2RXNVZWMmROQk9wZStob1YwYmdSR2tPcm5KcVd3a0tTVUcx?=
+ =?utf-8?B?NHNUV3YvMmYzbVh6VEtlUWJiTE1CYVBadWs1MGJid1ZyWFhnUlN5cWk1VnE0?=
+ =?utf-8?B?WGx5YzJWcXNibmlpNjNVKzVacFRLdys3ZzRQY2hjcUZxaWxYblB1SDdVVENU?=
+ =?utf-8?B?VlNKUXZxKzRVcVIxakFIVThhV2hHY09oTGFuRGdoSFlQcTg4OWVrQW9nNEtr?=
+ =?utf-8?B?WHFocW5kQUNJbnNHYmxFdVVGZDZZajY5bmNJZkVXNk5aY01RbWc5cDBUam1u?=
+ =?utf-8?B?ODFEYXFXbDgwODJzcmtFTllieEhnODhCSU1wVmFRUElJMGo4TGRSSmtXdHRY?=
+ =?utf-8?B?R3hlWnVUTThNWTNSWkk0cjhyd1p0ZStHZkZGWXZqQm83SVRVdjlKbVFUR3hQ?=
+ =?utf-8?B?MUtDbklpcDBYS2N5LzhoMERCaWdmaHp3V09iamxmWFFGeHBJYTRSTkQ1R2FT?=
+ =?utf-8?B?TWJpcnhsbEl6RlpVWHhiT3Vsb2lsZDBzTjNqcjdKendheXhDdnM5Y2QzSzla?=
+ =?utf-8?B?UHhVcE1xUUFDSFlpaXFCazYrK24vaVM1TFp4NERBYlBrYTRpeHU1dlEva1Nq?=
+ =?utf-8?B?NiticllKN2VXMWgwS0hxTzVQV2NSU0kvdFFwNHAyamhVdGJuOWtibVJKVEh5?=
+ =?utf-8?B?WGVOYjd0YXI5dGszSVkrQVJSOERSSmo3UnQ3ZmFCMzVNM0ZBcHlrbDFFWGtY?=
+ =?utf-8?B?aDkwcUwyaVVqNlBMaE15Zms3YnFuWnpZZDFtenoxTThmcHZsQlZoNVlxVmcz?=
+ =?utf-8?B?RFNTSnBuT0ZvVlUwems5RUFWUGI4d1Jid0JjanFRa0FiYml1RFE3a2FPNkpE?=
+ =?utf-8?B?V2NhUE43eFRJK1YwZ2tFQTZ2S0N0eno1dWoxajlqN0w2WWNPM0E5SkpPK1N3?=
+ =?utf-8?B?c3FXRFpnb1l6Qm84Uk83aXBRcHliSHkyZmJQeGhvM0NaM2RGeUFlRWd4THlr?=
+ =?utf-8?B?OTRQSzFqZ3N5L2tyZlBYdGdiV1RUaEN0ZndXTmkxR1JWd0tvcEVMbWtCUGNv?=
+ =?utf-8?B?TWE3U05wK01YVXQyMU5jWjM5K0J0cHl2OUdWRHcrQy8vdEtTbmlPN3I2b2RO?=
+ =?utf-8?B?OU1PWkhxMk01b1g1MndRR1pST2ZTU1JpKzY0dE5OdEpDNTROMzRhUEZuYllj?=
+ =?utf-8?B?VzlSdmhjMU5WOFlHdmFQVU9OdjNDK0NTUEk1Q0FCK0I4U0xyK1ZRK3Izcktq?=
+ =?utf-8?B?ams2RTNNdU9zR0MvbVNuRGNmdmdwbFJ6SFRTZDZvM2dRVnBoazEwMVpmS29M?=
+ =?utf-8?B?N1djL3ZOOEhTN3B5blI5UEgzR1NkeEEzaE1ubXJPSVRIdURiSERJSEplR2x4?=
+ =?utf-8?B?MEprMjNmOVJpOGpYdFIvM09YdjVLR3hsaFUwY1llbWExeUNSZVhseXVhbnQ1?=
+ =?utf-8?B?VnB4SEVNd2lCOWEvSm1lbGc1b3NsNmxBSlJIbXZwRXNMSjRhWGxGcnhUVGN0?=
+ =?utf-8?B?clRQZzVsL0dLQlVsZ0wyVWovVERuSGxqMUxnRDc2UlVaemlIM3FscnV6cHJn?=
+ =?utf-8?B?SWNqb0VFeUMyVnJUUmE1STZMWDFpN0x5L216b3RhcmNrbU14MVc3cWlYMGkr?=
+ =?utf-8?B?UjI0M1loRzdZWVZNRjh3TXk3aVVoYjdxeXN3RHhnRzdXaGJXaTNTUVhmaS9s?=
+ =?utf-8?B?dE1pSEtpUjNOQ2ZwSGdVUmJLenpyMFNyMnppQjBjZGN6MWNDMGE2cUxkb1Zj?=
+ =?utf-8?B?bVNya3IrSlZ5MHJ5aDBJUDNpeCtSeHltMGc0S3lxM01XYWJheWMzOXI3ekk4?=
+ =?utf-8?B?TmhsUWZyRTJPSjVyUVljcEpTVitmSjdLb0pkc0o1c2hvSlp3OVJiL0pzU05P?=
+ =?utf-8?B?TEs2VWdxNkV3WE1FK2gwQTN5bThXcDVEbHRkR0tKZ01LUzI5Ym1iVlBINHB1?=
+ =?utf-8?B?Zk5ENSthYTFsNE93alVYdXNSUGhPOUNXQmh4NHQvamRxV29RZ3JuN1QyTEJn?=
+ =?utf-8?B?N2dzT0xvckE1ck53YlpjRldRUm5RNXljbzVqZlFQdHVvVjZTOXpGanh3L255?=
+ =?utf-8?B?a2RKSHYxeldIdWdDWktCK0xPVFhHUmJvOGsrV3lYUE5aenpVT0tWdTlFazJF?=
+ =?utf-8?B?T3h5dThsUk5zT2RabGhhZ3JVb2ppelc3REwzeCszeHdIbm1peWRwV0Uyak1k?=
+ =?utf-8?Q?Px7GiJAofsn4VYbbD2DKjEK+M?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50d0a0b0-ff5b-4988-1510-08dac66e3d0d
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 18:30:00.1502
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sWiXj47EhgoFG3q8szGmn6xdVKvVRcI9bTKa82KjPvh5iO6STz2gxymgfIHuYvffPnuAlJpPDZO146J4tFEnsA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7448
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,155 +124,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yonghong Song wrote:
+On 11/13/22 1:29 AM, Yuan Can wrote:
+> A problem about ionic create debugfs failed is triggered with the
+> following log given:
 > 
+>   [  415.799514] debugfs: Directory 'ionic' with parent '/' already present!
 > 
-> On 11/13/22 10:27 AM, John Fastabend wrote:
-> > Yonghong Song wrote:
-> >>
-> >>
-> >> On 11/10/22 3:11 PM, John Fastabend wrote:
-> >>> John Fastabend wrote:
-> >>>> Yonghong Song wrote:
-> >>>>>
-> >>>>>
-> >>>>> On 11/9/22 6:17 PM, John Fastabend wrote:
-> >>>>>> Yonghong Song wrote:
-> >>>>>>>
-> >>>>>>>
-> >>>>>>> On 11/9/22 1:52 PM, John Fastabend wrote:
-> >>>>>>>> Allow xdp progs to read the net_device structure. Its useful to extract
-> >>>>>>>> info from the dev itself. Currently, our tracing tooling uses kprobes
-> >>>>>>>> to capture statistics and information about running net devices. We use
-> >>>>>>>> kprobes instead of other hooks tc/xdp because we need to collect
-> >>>>>>>> information about the interface not exposed through the xdp_md structures.
-> >>>>>>>> This has some down sides that we want to avoid by moving these into the
-> >>>>>>>> XDP hook itself. First, placing the kprobes in a generic function in
-> >>>>>>>> the kernel is after XDP so we miss redirects and such done by the
-> >>>>>>>> XDP networking program. And its needless overhead because we are
-> >>>>>>>> already paying the cost for calling the XDP program, calling yet
-> >>>>>>>> another prog is a waste. Better to do everything in one hook from
-> >>>>>>>> performance side.
-> >>>>>>>>
-> >>>>>>>> Of course we could one-off each one of these fields, but that would
-> >>>>>>>> explode the xdp_md struct and then require writing convert_ctx_access
-> >>>>>>>> writers for each field. By using BTF we avoid writing field specific
-> >>>>>>>> convertion logic, BTF just knows how to read the fields, we don't
-> >>>>>>>> have to add many fields to xdp_md, and I don't have to get every
-> >>>>>>>> field we will use in the future correct.
-> >>>>>>>>
-> >>>>>>>> For reference current examples in our code base use the ifindex,
-> >>>>>>>> ifname, qdisc stats, net_ns fields, among others. With this
-> >>>>>>>> patch we can now do the following,
-> >>>>>>>>
-> >>>>>>>>             dev = ctx->rx_dev;
-> >>>>>>>>             net = dev->nd_net.net;
-> >>>>>>>>
-> >>>>>>>> 	uid.ifindex = dev->ifindex;
-> >>>>>>>> 	memcpy(uid.ifname, dev->ifname, NAME);
-> >>>>>>>>             if (net)
-> >>>>>>>> 		uid.inum = net->ns.inum;
-> >>>>>>>>
-> >>>>>>>> to report the name, index and ns.inum which identifies an
-> >>>>>>>> interface in our system.
-> >>>>>>>
-> > 
-> > [...]
-> > 
-> >>>> Yep.
-> >>>>
-> >>>> I'm fine doing it with bpf_get_kern_ctx() did you want me to code it
-> >>>> the rest of the way up and test it?
-> >>>>
-> >>>> .John
-> >>>
-> >>> Related I think. We also want to get kernel variable net_namespace_list,
-> >>> this points to the network namespace lists. Based on above should
-> >>> we do something like,
-> >>>
-> >>>     void *bpf_get_kern_var(enum var_id);
-> >>>
-> >>> then,
-> >>>
-> >>>     net_ns_list = bpf_get_kern_var(__btf_net_namesapce_list);
-> >>>
-> >>> would get us a ptr to the list? The other thought was to put it in the
-> >>> xdp_md but from above seems better idea to get it through helper.
-> >>
-> >> Sounds great. I guess my new proposed bpf_get_kern_btf_id() kfunc could
-> >> cover such a use case as well.
-> > 
-> > Yes I think this should be good. The only catch is that we need to
-> > get the kernel global var pointer net_namespace_list.
+> The reason is that ionic_init_module() returns ionic_bus_register_driver()
+> directly without checking its return value, if ionic_bus_register_driver()
+> failed, it returns without destroy the newly created debugfs, resulting
+> the debugfs of ionic can never be created later.
 > 
-> Currently, the kernel supports percpu variable, but
-> not other global var like net_namespace_list. Currently, there is
-> an effort to add global var to BTF:
->  
-> https://lore.kernel.org/bpf/20221104231103.752040-1-stephen.s.brennan@oracle.com/
+>   ionic_init_module()
+>     ionic_debugfs_create() # create debugfs directory
+>     ionic_bus_register_driver()
+>       pci_register_driver()
+>         driver_register()
+>           bus_add_driver()
+>             priv = kzalloc(...) # OOM happened
+>     # return without destroy debugfs directory
 > 
-> > 
-> > Then we can write iterators on network namespaces and net_devices
-> > without having to do anything else. The usecase is to iterate
-> > the network namespace and collect some subset of netdevices. Populate
-> > a map with these and then keep it in sync from XDP with stats. We
-> > already hook create/destroy paths so have built up maps that track
-> > this and have some XDP stats but not everything we would want.
+> Fix by removing debugfs when ionic_bus_register_driver() returns error.
 > 
-> the net_namespace_list is defined as:
->    struct list_head net_namespace_list;
-> So it is still difficult to iterate with bpf program. But we
-> could have a bpf_iter (similar to task, task_file, etc.)
-> for net namespaces and it can provide enough context
-> for the bpf program for each namespace to satisfy your
-> above need.
+> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
 
-Considered having bpf iter programs for net_namespace and then
-net_device, but these are protected by RCU so figured rather
-than create a bunch of iterators we could just use BPF directly.
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
+
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_main.c | 8 +++++++-
+>   1 file changed, 7 insertions(+), 1 deletion(-)
 > 
-> You can also with a bounded loop to traverse net_namespace_list
-> in the bpf program, but it may incur complicated codes...
-
-This was going to be my first approach. I'll try to write a test
-program that walks the net namespace and collect all the net
-devs in a hashmap this would be more or less what our programs
-do today.
-
-Seems nicer to me to simply use native BPF codes vs iterators.
-We already have mechanisms in Tetragon to run BPF code on
-timers so could just wire it up there. If it doesn't work 
-we can add the iterators.
-
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> index 56f93b030551..5456c2b15d9b 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> @@ -687,8 +687,14 @@ int ionic_port_reset(struct ionic *ionic)
 > 
-> > 
-> > The other piece I would like to get out of the xdp ctx is the
-> > rx descriptor of the device. I want to use this to pull out info
-> > about the received buffer for debug mostly, but could also grab
-> > some fields that are useful for us to track. That we can likely
-> > do this,
-> > 
-> >    ctx->rxdesc
+>   static int __init ionic_init_module(void)
+>   {
+> +       int ret;
+> +
+>          ionic_debugfs_create();
+> -       return ionic_bus_register_driver();
+> +       ret = ionic_bus_register_driver();
+> +       if (ret)
+> +               ionic_debugfs_destroy();
+> +
+> +       return ret;
+>   }
 > 
-> I think it is possible. Adding rxdesc to xdp_buff as
->      unsigned char *rxdesc;
-> or
->      void *rxdesc;
+>   static void __exit ionic_cleanup_module(void)
+> --
+> 2.17.1
 > 
-> and using bpf_get_kern_btf_id(kctx->rxdesc, expected_btf_id)
-> to get a btf id for rxdesc. Here we assume there is
-> a struct available for rxdesc in vmlinux.h.
-> Then you can trace through rxdesc with direct memory
-> access.
-
-The trickest part here is that the rxdesc btf_id depends on 
-what device we are attached to. So would need something to
-resolve the btf_id from attached device.
-
-> 
-> I have a RFC patch
->    https://lore.kernel.org/bpf/20221114162328.622665-1-yhs@fb.com/
-> please help take a look.
-
-Will do thanks!
