@@ -2,234 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D24E6628497
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 17:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620C16284BE
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 17:13:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237304AbiKNQEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 11:04:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
+        id S235602AbiKNQNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 11:13:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237168AbiKNQEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 11:04:35 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1909FD8
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 08:04:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668441873; x=1699977873;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=rhalCYb5j23CMSTLzyouWEjLQxs9k6V4/BChGN2KmrY=;
-  b=mAqFDXXd+8qfADiTDa4R8fQgnve0ajam6oWfkRJG0D9UlwEB9K40EaNC
-   +n1ZZnO3zRhWBF7yhIrOJ9li8tdBm2Bqwx+hWjDjhHOeV9sc/7qCIs6St
-   yhi+Smw26FGJEWL4r8tPonYfJ0BWzROIcjXKipL3SpRVXn1sVAc2ZPmbD
-   u7TGu2q6negVrx59/sHw9GgX4WgMTUbXobo9HyRXxHpMc9xzY4/aOwPin
-   vc0DhCJCAymM9JfkDSePqawwep3L1l4ukyqQyFRocUW8WWk5Qmo1DEogR
-   tQe8aDkt82g+3/OqgCMC404eSouf6j+h/nZMcizLOxKsS6EU3s3laJ39n
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291721281"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="291721281"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 08:04:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="702057531"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="702057531"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Nov 2022 08:04:01 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 08:04:01 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 08:04:01 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Mon, 14 Nov 2022 08:04:01 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Mon, 14 Nov 2022 08:04:00 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NjP3sSxw7ipd0Ol/jtss+YODttxRLaFPJ6IsUVbKd3au6oG1Kbqkq/Q5DfVZbmMZVYz5cQu0od9pfCadWxr1UFJp8v05Kx4aI71ZYWNynt4/Enq3nD12YPePQ5sv50JkYv9QSym54H18opDpINmFdcDADMbEHFSmwxrmTGo36qkr3h7Nt3K73KcH1yKCiQiHZiV2VGchp18kTCicY01kuH3/WAlFTkNk4XsLjDaBCEN05HdnarKLL0yWYeldBCnbk7qWE/2/YCjexPRfYSDj0fwtW1+Afgk5JovotwW4sAW4r8VcVHgKYFdzGb+ZqrqQFJziDPeV9/YEeDcJAQg0oQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8IEYBkE2gdOaoNNYCakNUT1MsQyiFK5cNSfcLMJxBDA=;
- b=eJv5AU2t2762NxwZjGS18+tqROyaFqeX8uQhwouTQSI7mjz6E1e1TDnsrHk0nz6X8ozjLrmVvZN4adgYe82ip09RlVQFMFVuQ7pVfIOHTC7a0DSCXbuu3odXpUGPANZJoOKe0Z6LtyhiCsK+vtm3Eyio63pX6Yi2Ch3UF8OcqMcW6//fsaXzDJcE3uJFj/aZ4ea5D2KmgM0Xzul+u7VfpVOhAZPVKIRx/GYx50aHIZG9dXLchuJ6VAlF4pXc2AR615KdXmief3lX61cah+4sTdxtGnDYEp1TsNIiRDYeEwtl2qNDDlEqNM57x8igjgAmqMWZlhh18j8N83eKWT83AQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BN6PR1101MB2227.namprd11.prod.outlook.com
- (2603:10b6:405:51::14) by SJ0PR11MB4911.namprd11.prod.outlook.com
- (2603:10b6:a03:2ad::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Mon, 14 Nov
- 2022 16:03:58 +0000
-Received: from BN6PR1101MB2227.namprd11.prod.outlook.com
- ([fe80::b9e9:a694:2af7:6454]) by BN6PR1101MB2227.namprd11.prod.outlook.com
- ([fe80::b9e9:a694:2af7:6454%6]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
- 16:03:58 +0000
-Date:   Mon, 14 Nov 2022 17:03:43 +0100
-From:   Piotr Raczynski <piotr.raczynski@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-CC:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <edumazet@google.com>,
-        <intel-wired-lan@lists.osuosl.org>, <anthony.l.nguyen@intel.com>,
-        <alexandr.lobakin@intel.com>, <sridhar.samudrala@intel.com>,
-        <wojciech.drewek@intel.com>, <lukasz.czapnik@intel.com>,
-        <shiraz.saleem@intel.com>, <jesse.brandeburg@intel.com>,
-        <mustafa.ismail@intel.com>, <przemyslaw.kitszel@intel.com>,
-        <jacob.e.keller@intel.com>, <david.m.ertman@intel.com>,
-        <leszek.kaliszczuk@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>
-Subject: Re: [PATCH net-next 13/13] devlink, ice: add MSIX vectors as devlink
- resource
-Message-ID: <Y3Jm36rYH4J1jSoc@praczyns-desk3>
-References: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
- <20221114125755.13659-14-michal.swiatkowski@linux.intel.com>
- <Y3Jepn7bxkCFP+cg@nanopsycho>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y3Jepn7bxkCFP+cg@nanopsycho>
-X-ClientProxiedBy: FR0P281CA0067.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:49::21) To BN6PR1101MB2227.namprd11.prod.outlook.com
- (2603:10b6:405:51::14)
+        with ESMTP id S237390AbiKNQNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 11:13:35 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F02F17A8B
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 08:13:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=a0ILLT5WBLRd1lom4q80IO2+88jbTpnqG+ctAIo2NBs=; b=gCntbFqugGGbwHmvLvNYjn8gx6
+        3Cl9AvR1JiitKGgbPVRXwa8IvwEhuaXABC0EVDvON33brxplWb4pMl/57tWTMbSWYsoifCE7679MS
+        mWE/GgSCFDNckLQg5NuGCL+DTcYdXk9NeKv9fl6Ys5YRpHDRFP3eKbsuC6Z5a/XQQ6/V8kV801/Ab
+        XUS4AV8TF4fzsUFRq36vF4HSxPWVspZXU+XvYFZdGCPGryhisNkvvtsyvJULd1g7moQdMLxJ1Y4xZ
+        FPc98eOacWrDk7nGwREZCuoIFI2K8iaGK7eRpSCyXiQzjyHrX+ddtPvkWj9Ew5c78PA0AOCM0JYwH
+        YY7on+FA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35262)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ouc5O-000147-MM; Mon, 14 Nov 2022 16:13:26 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ouc5M-0003wF-Fo; Mon, 14 Nov 2022 16:13:24 +0000
+Date:   Mon, 14 Nov 2022 16:13:24 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Tim Harvey <tharvey@gateworks.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: status of rate adaptation
+Message-ID: <Y3JpJDvCdI21yb5v@shell.armlinux.org.uk>
+References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
+ <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com>
+ <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
+ <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
+ <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com>
+ <Y2+cgh4NBQq8EHoX@shell.armlinux.org.uk>
+ <ea320070-a949-c737-22c4-14fd199fdc23@seco.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN6PR1101MB2227:EE_|SJ0PR11MB4911:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7067f4a-4cf8-4fda-5dd5-08dac659d5a7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X9TcSOwWARcBueaEssSts9LvCpj/LFf7/ejfnmxjvMyfoYImJjXaUW+lYO0koW4Y5eatArlu/LL3DT6A69TvnOYg1PebfR+4cM+fbeui6PNllgC9OymbCTUJf+aDWRaasU35wofKw8GbLtHIaNg4reGZJmeD7GFW7j0eoDHRZKvFxuoONsM0+wv4U3YEAcppX7v1n55FczGrW5m7EQzMMZg4Ikw0olv8PTL9ioe283x3FR5K9vsPEhQYtI/VVSMCZI3ZWZyKmQbIjuWclVXwOu9RY/an1JisdkgZjiOS2CsE0z2EuHNJwizSHOWR785EYxzIdeumnsLsdOHDWEtHqpae+/48ed/7l1bAtGttnaOGQ8L8X8nehyiv7lfzP6nqtwRxAF2RRBR02nKCi6oPxHPO8jyRx0TUBdGRsi8cKv1ANJaipe/bkamooHpymgl9fIbQY0ulSu0c8Wz3rfLQAc0lZZkFZUOXYMYio7GVYgvovw7Wbku6U05SccEAnaLecFuHOnWHjOzSz5k9LAJdyoNT3mXTl9mXLSBR+7G4PMb3pLv+XvpRmd1eFQ7dJROOnv3ic6+O0giJ9sb8mtjiBZokuJyCe90pLg3xrvX5D/NNqXGlfmoQkfG25Fgvd9M2N3LBrPrrPo24UlABdAEjNFTh82x50xMpeKSX73ppj6KKcDUrrSMlXLk1v/ZFuK5jGFtUiTrrBpej8V+4T6NmXg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1101MB2227.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(366004)(136003)(346002)(396003)(39860400002)(376002)(451199015)(33716001)(6666004)(82960400001)(41300700001)(44832011)(8936002)(38100700002)(83380400001)(6486002)(478600001)(6506007)(5660300002)(6916009)(54906003)(6512007)(9686003)(26005)(86362001)(316002)(66556008)(66946007)(8676002)(4326008)(66476007)(186003)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VUaJOOeyq+ZF+VTsb1hNlhxLAAObfmxlacf9nDAMTeclWJuB1pecCYJegWNg?=
- =?us-ascii?Q?jnNmqNcgtOwHynypSJyvCitGPtw/dwrgvwYQPHjuDvrLw/WEKKf6UgT0ZhD+?=
- =?us-ascii?Q?px9NxpHhfcsmipMqOrDVpD2Lu1rtLagzFfq1nAKxY2KLOtXqWAvQvmqgDJjt?=
- =?us-ascii?Q?BOUPRcs5fvNRRmRA8IaIMzQOOCiNEh8IfRjBC86VxI3ksZsoIXSZxn3iZXKd?=
- =?us-ascii?Q?7Q6bum5GX7Z5RxvLThoHM3hfHeip8kBdv7mknW66IyJIgaaD5ndgOh/d9Edm?=
- =?us-ascii?Q?nrJv2v/FxPCg+EXuC7qSbhzo58j7r05MdbaCQg6C9X1yT+98/eqH2SADXq+i?=
- =?us-ascii?Q?jRylQxWyh4vTYmQL4At9h+5OZOJJGnj9l1aFmqGrvg+RpA4ObX/gem7xzM0k?=
- =?us-ascii?Q?+UWriFIU3tqHz41uSO+X7FA7Ty01UuW6dZYY/1TyZGgJejGQBuqmycPTZoG1?=
- =?us-ascii?Q?TdrCEwiB8oWy9CNDCcfGog0LJKaZ4JtSXab++e0mKUNZMJD6yu1DZAt4+dVd?=
- =?us-ascii?Q?7ZKR3CLy/OMoWfMl/NbwsjbsU/CqurKMJFxKzV178axDzUum+joaiU8Z7anX?=
- =?us-ascii?Q?orN89jpSBGMy+9LGzMMXauSzXUIS2xOpdyIU4AqULRCFYrVg0wIaO8S7lluN?=
- =?us-ascii?Q?3H3CwbXdmlL4dWQstGri3egOffwj7ajh2dRZBZUze+q+TbdipGXnep8u6g3z?=
- =?us-ascii?Q?xQ+Q7OOatGRMMY9uwowOSMRouq5yMlweJLUfrrCUS72grQDbRGR+9bV+zKoL?=
- =?us-ascii?Q?Oj45UXsyGTP8qCBslQaI66bBv3pQShf5lAwwtGukBsuDv98sQ+CPFOgHOhqD?=
- =?us-ascii?Q?ocge/RXG65zkB4LFsM8y3MieCqqtWEaiy4Ors0jH7jHTcO3LNpqLnKXzXv6w?=
- =?us-ascii?Q?rZshyU9o2E9A/B2rVAsiF8XODDIvj0JQEU/8AKh0ki76nHoCcz0jbi7ucgGO?=
- =?us-ascii?Q?3UYVcD+Mq/ArFmxCPFW/ZQd1f9Jb/0aXqxNdQyCQdJq60Pc2tXhMSuPjlXYh?=
- =?us-ascii?Q?cIDpI+AXZW6I05P+oD67fP4b9IY1lgShvAbBtg/zWIJnLOXTJhUPRB8plEwK?=
- =?us-ascii?Q?myvYeLU8z1qi5sbZytM5rrHDsTKZXxkT0gz53VeDlbhDoZ2lUk1M0uJnDQKL?=
- =?us-ascii?Q?6/UmHabt3e3QO9Hx3lq0D1XMt7A+9rNoISYIXwqTvUyp4uj89e7kC7kmy/dI?=
- =?us-ascii?Q?wYML/RilODyzoVEuf6FIiNFJksYSTdjgeuu96PUjHgD7GXBKzx2I0GY4KXDH?=
- =?us-ascii?Q?OFs+NHwtp110lQEPuT6k1eqS4X2Li7DDxN7xcvKSV1+NcbbqTw+PahFoerkf?=
- =?us-ascii?Q?dFW+ZNdZXWypVb2Q+A8ggl/4W39BQvJKXJEjZNmejvQjfL/tXHCRBc5yZkiE?=
- =?us-ascii?Q?4px3r+CFX9GeEmrNJEPfG5sjeIZAOVLQq7C+5pCidgxVc3vvvfdbrdVSyMEY?=
- =?us-ascii?Q?zkPeVMg8jES1lVjdjpMIWFAZHYj0ImyHBb+A/LAhHHB+KNdit+90NsKkicsY?=
- =?us-ascii?Q?lGHdogPp+PX0UvJFdmyfWPM7LUXFNbbKYaPU5FmvjWVAaxMenGl9qYxvFTs/?=
- =?us-ascii?Q?Ghi1/17ZpEs/7XIW6xA5LNwDQvzxVOgvGc4OiBVk12IJHWo2xioKTouteKG4?=
- =?us-ascii?Q?IA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7067f4a-4cf8-4fda-5dd5-08dac659d5a7
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR1101MB2227.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 16:03:57.8843
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nY1MGaLfjVNfyJuou0Hsr6SsLWl88lm26sScOqkNtIXZm31ez3NmBU0TLqKa8wDY4/swa4s09MveRj7ovSwHQsT4a7e9L11OdJ2mfJ+9mIU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4911
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ea320070-a949-c737-22c4-14fd199fdc23@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 04:28:38PM +0100, Jiri Pirko wrote:
-> Mon, Nov 14, 2022 at 01:57:55PM CET, michal.swiatkowski@linux.intel.com wrote:
-> >From: Michal Kubiak <michal.kubiak@intel.com>
-> >
-> >Implement devlink resource to control how many MSI-X vectors are
-> >used for eth, VF and RDMA. Show misc MSI-X as read only.
-> >
-> >This is first approach to control the mix of resources managed
-> >by ice driver. This commit registers number of available MSI-X
-> >as devlink resource and also add specific resources for eth, vf and RDMA.
-> >
-> >Also, make those resources generic.
-> >
-> >$ devlink resource show pci/0000:31:00.0
-> >  name msix size 1024 occ 172 unit entry dpipe_tables none
+On Mon, Nov 14, 2022 at 10:33:52AM -0500, Sean Anderson wrote:
+> On 11/12/22 08:15, Russell King (Oracle) wrote:
+> > On Fri, Nov 11, 2022 at 04:54:40PM -0500, Sean Anderson wrote:
+> >> > [    8.911932] mvpp2 f2000000.ethernet eth0: PHY
+> >> > [f212a600.mdio-mii:08] driver [Aquantia AQR113C] (irq=POLL)
+> >> > [    8.921577] mvpp2 f2000000.ethernet eth0: phy: 10gbase-r setting
+> >> > supported 00000000,00018000,000e706f advertising
+> >> > 00000000,00018000,000e706f
+> > 
+> >> > # ethtool eth0
+> >> > Settings for eth0:
+> >> >         Supported ports: [ ]
+> >> >         Supported link modes:   10baseT/Half 10baseT/Full
+> >> >                                 100baseT/Half 100baseT/Full
+> >> 
+> >> 10/100 half duplex aren't achievable with rate matching (and we avoid
+> >> turning them on), so they must be coming from somewhere else. I wonder
+> >> if this is because PHY_INTERFACE_MODE_SGMII is set in
+> >> supported_interfaces.
+> > 
+> > The reason is due to the way phylink_bringup_phy() works. This is
+> > being called with interface = 10GBASE-R, and the PHY is a C45 PHY,
+> > which means we call phy_get_rate_matching() with 
+> > PHY_INTERFACE_MODE_NA as we don't know whether the PHY will be
+> > switching its interface or not.
+> > 
+> > Looking at the Aquanta PHY driver, this will return that pause mode
+> > rate matching will be used, so config.rate_matching will be
+> > RATE_MATCH_PAUSE.
+> > 
+> > phylink_validate() will be called for PHY_INTERFACE_MODE_NA, which
+> > causes it to scan all supported interface modes (as again, we don't
+> > know which will be used by the PHY [*]) and the union of those
+> > results will be used.
+> > 
+> > So when we e.g. try SGMII mode, caps & mac_capabilities will allow
+> > the half duplex modes through.
+> > 
+> > Now for the bit marked with [*] - at this point, if rate matching is
+> > will be used, we in fact know which interface mode is going to be in
+> > operation, and it isn't going to change. So maybe we need this instead
+> > in phylink_bringup_phy():
+> > 
+> > -	if (phy->is_c45 &&
+> > +	config.rate_matching = phy_get_rate_matching(phy, interface);
+> > +	if (phy->is_c45 && config.rate_matching == RATE_MATCH_NONE &&
+> >             interface != PHY_INTERFACE_MODE_RXAUI &&
+> >             interface != PHY_INTERFACE_MODE_XAUI &&
+> >             interface != PHY_INTERFACE_MODE_USXGMII)
+> >                 config.interface = PHY_INTERFACE_MODE_NA;
+> >         else
+> >                 config.interface = interface;
+> > -	config.rate_matching = phy_get_rate_matching(phy, config.interface);
+> > 
+> >         ret = phylink_validate(pl, supported, &config);
+> > 
+> > ?
 > 
-> 
-> So, 1024 is the total vector count available in your hw?
-> 
+> Yeah, that sounds reasonable. Actually, this was the logic I was
+> thinking of when I asked Tim to try USXGMII earlier. The funny thing is
+> that the comment above this implies that the link mode is never actually
+> (R)XAUI or USXGMII.
 
-For this particular device and physical function, yes.
+I think you're misunderstanding the comment...
 
+If a clause 45 PHY is using USXGMII, then it is highly likely that the
+PHY will not switch between different interface modes depending on the
+media side negotiation.
 
-> 
-> >    resources:
-> >      name msix_misc size 4 unit entry dpipe_tables none
-> 
-> What's misc? Why you don't show occupancy for it? Yet, it seems to be
-> accounted in the total (172)
-> 
-> Also, drop the "msix_" prefix from all, you already have parent called
-> "msix".
+If a clause 45 PHY is using RXAUI or XAUI, then I believe according to
+the information available to me at the time, that there is no
+possibility of different interface modes being used.
 
-misc interrupts are for miscellaneous purposes like communication with
-Firmware or other control plane interrupts (if any).
+If any other interface type is specified (e.g. 10GBASE-R etc) then there
+is the possibility that the PHY will be switching between different
+interface modes, and we have no idea what so ever at this point what
+modes the PHY will be making use of - so the best we can do is to
+validate _all_ possible modes. This is what is done by setting the
+interface mode to _NA.
 
-> 
-> 
-> >      name msix_eth size 92 occ 92 unit entry size_min 1 size_max
-> 
-> Why "size_min is not 0 here?
+Obviously, if we are using rate matching with a particular interface
+mode (e.g. 10GBASE-R) then we know that we are only going to be using
+10GBASE-R, so we can validate just the single interface mode.
 
-Thanks, actually 0 would mean disable the eth, default, netdev at all.
-It could be done, however not implemented in this patchset. But for
-cases when the default port is not needed at all, it seems like a good
-idea.
+> On another subject, if setting the SERDES mode field above fixes the
+> issue, then the Aquantia driver should be modified to set that field to
+> use a supported interface. Will host_interfaces work for this? It seems
+> to be set only when there's an SFP module.
 
-> 
-> 
-> >	128 size_gran 1 dpipe_tables none
-> >      name msix_vf size 128 occ 0 unit entry size_min 0 size_max
-> >	1020 size_gran 1 dpipe_tables none
-> >      name msix_rdma size 76 occ 76 unit entry size_min 0 size_max
-> 
-> Okay, this means that for eth and rdma, the vectors are fully used, no
-> VF is instanciated?
+The reason I didn't push host_interfaces upstream myself is that I was
+unconvinced that it was the proper approach - and I still have my
+reservations with it. This can only tell the PHY driver what the MAC
+driver supports, and it means the PHY driver is then free to do its
+own choosing of what group of interface modes it wants to use.
 
-Yes, in this driver implementation, both eth and rdma will most probably
-be always fully utilized, but the moment you change the size and execute
-`devlink reload` then they will reconfigure with new values.
+However, think about what I've said above about phylink not having any
+clue about what interface modes the PHY is going to be using - having
+the PHY driver decide on its own which group of interface modes should
+be used adds even more complexity in a completely different chunk of
+code, one where driver authors are free to make whatever decisions
+they deem (and we know that wildly different solutions will happen.)
 
-The VF allocation here is the maximum number of interrupt vectors that
-can be assigned to actually created VFs. If so, then occ shows how many
-are actually utilized by the VFs.
+I had been toying with the idea of doing this differently, and had
+dropped most of the host_interfaces approach from my git tree, instead
+having PHYs provide a bitmap of the interface modes they support and
+having them initialise in their config_init function which interface
+modes they're going to be making use of given their resulting
+configuration. I never properly finished this though.
 
-> 
-> 
-> 
-> >	132 size_gran 1 dpipe_tables none
-> >
-> >example commands:
-> >$ devlink resource set pci/0000:31:00.0 path msix/msix_eth size 16
-> >$ devlink resource set pci/0000:31:00.0 path msix/msix_vf size 512
-> >$ devlink dev reload pci/0000:31:00.0
+> That said, imagine if Tim was using a MAC without pause support, but
+> which supported SGMII and 10GBASE-R. Currently, we would just advertise
+> 10G modes. But 1G could be supported by switching the phy interface.
+
+Note that we already have boards that make use of interface switching.
+Macchiatobin has switched between 10GBASE-R, 5GBASE-R, 2500BASE-X and
+SGMII depending on the negotiated media speed. In fact, that switching
+is rather enforced by the 3310 PHY firmware.
+
+We could force 10GBASE-R and enable rate matching, but then we get
+into the problems that the 3310 on these boards does not have MACSEC
+therefore can't send pause frames to the host MAC (and the host MAC
+doesn't support pause frames - eek) and we have not come up with an
+implementation for extending the IPG, although I believe mvpp2
+hardware is capable of it.
+
+However, there's also the BCM84881 PHY which does the same dynamic
+switching which we can't prevent (we don't know how to!)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
