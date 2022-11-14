@@ -2,134 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7091627A22
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91FB5627A2D
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbiKNKMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 05:12:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
+        id S235846AbiKNKNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 05:13:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236533AbiKNKL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:11:59 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B93920377
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 02:10:31 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S236027AbiKNKM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:12:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7D21F60C;
+        Mon, 14 Nov 2022 02:11:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id EE68F82A4D;
-        Mon, 14 Nov 2022 11:10:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1668420629;
-        bh=BPEhumdjePM766YnN0/pixKN97rftd5XsdPS3ODwWYM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O1woi+X+x2UrWVDrTyCgeGcrRjLwVfqnB8z0MyozNz1Q/JP1mSewbyJoWaoemCf87
-         qd5JxhIg1rU8dkwmdk/i29zMHWqhVDYBxphctwV3vuSXoLIe0aeG2c7VSi//RynWFJ
-         iEGp8+uHBlDwraU2aLGbVmtDj+ayMJruXZ3IriVnVGIG/YbyoSoR21xApwIwXdPNPu
-         5JZ0FS78DLSZJJGUwFHKQnnaI19C4LSEvh7U++pXNp+PhPpTV4MiVGiYfVLfotuLV4
-         VGa0jtLNHNSXqOUTCJUkVquV+iuReFXLPrYa8koZOHriXAfUK0a/pUMTZNAPRoP6lY
-         35XISdxU2fNWg==
-Date:   Mon, 14 Nov 2022 11:10:22 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id E81E4B80DA8;
+        Mon, 14 Nov 2022 10:11:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B2DC433D6;
+        Mon, 14 Nov 2022 10:11:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668420692;
+        bh=QwvAOVq2fJvIwPsgNt5K4VGQpKMoNtnaEe10rICI774=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KXIPBygAW4o4Cd6O22Jbnovr6UA54g8AiWNlc2E5/N52DHrjPdi3UAOZRO1NuxBih
+         cRAMsqrkAmeXxsISPxeZ5S6tcu03r4T9ka5UhaUxotBqeXFHTEeJWQIbFq5FNPTUzo
+         bB/gDtRzhAvzcT3TqDe9axGHz/l07p6FjIPC0986OglCfffqO2Q0lbDeM3cqs5K23+
+         0wJ5hW2SGiZEDhlcNIQ7gQSssC7jXJVDT5vnGeY00U26k9AHXP7e/90I3EVpany2q7
+         EOESr8yFzlWmmzeMpjI6WqXpwKTz3X+MOjcSWlHMWPO3COxqVyTugDo7RN6A8EU/Nw
+         hBq4rXhw2p7wQ==
+Date:   Mon, 14 Nov 2022 10:11:25 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Gene Chen <gene_chen@richtek.com>,
+        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: Re: [PATCH 3/9] net: dsa: mv88e6xxx: implement get_phy_address
-Message-ID: <20221114111022.226f3976@wsk>
-In-Reply-To: <20221111213813.jfelkktkj5wk45qy@skbuf>
-References: <20221108082330.2086671-1-lukma@denx.de>
-        <20221108082330.2086671-4-lukma@denx.de>
-        <20221108091220.zpxsduscpvgr3zna@skbuf>
-        <Y2pbc90XD5IvZZC0@lunn.ch>
-        <20221110180053.0cb8045d@wsk>
-        <20221111213813.jfelkktkj5wk45qy@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
+Message-ID: <Y3IUTUr/MXf9RQEP@google.com>
+References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
+ <Y1gZ/zBtc2KgXlbw@smile.fi.intel.com>
+ <Y1+NHVS5ZJLFTBke@google.com>
+ <Y1/qisszTjUL9ngU@smile.fi.intel.com>
+ <Y2pmqBXYq3WQa97u@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/0.N=Gb4FVJrOYsXsTJ3WJW+";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Y2pmqBXYq3WQa97u@smile.fi.intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/0.N=Gb4FVJrOYsXsTJ3WJW+
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 08 Nov 2022, Andy Shevchenko wrote:
 
-Hi Vladimir,
+> On Mon, Oct 31, 2022 at 05:32:26PM +0200, Andy Shevchenko wrote:
+> > On Mon, Oct 31, 2022 at 08:53:49AM +0000, Lee Jones wrote:
+> > > On Tue, 25 Oct 2022, Andy Shevchenko wrote:
+> > > 
+> > > > On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
+> > > > > There are several users of LED framework that reimplement the
+> > > > > functionality of led_init_default_state_get(). In order to
+> > > > > deduplicate them move the declaration to the global header
+> > > > > (patch 2) and convert users (patche 3-11).
+> > > > 
+> > > > Dear LED maintainers, is there any news on this series? It's hanging around
+> > > > for almost 2 months now...
+> > > 
+> > > My offer still stands if help is required.
+> > 
+> > From my point of view the LED subsystem is quite laggish lately (as shown by
+> > this patch series, for instance), which means that _in practice_ the help is
+> > needed, but I haven't got if we have any administrative agreement on that.
+> > 
+> > Pavel?
+> 
+> So, Pavel seems quite unresponsive lately... Shall we just move on and take
+> maintainership?
 
-> On Thu, Nov 10, 2022 at 06:00:53PM +0100, Lukasz Majewski wrote:
-> > Maybe in the generic case of PHY, yes (via Driver Model).
-> >=20
-> > However, when you delve into the mv88e6xxx driver [1] - you would
-> > find that this is not supporting it yet ...
-> >=20
-> > As fair as I know - for the driver [1] - there was no ongoing effort
-> > recently.
-> >=20
-> > Links:
-> > [1] -
-> > https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/net/phy/mv88=
-e61xx.c
-> > =20
->=20
-> U-Boot mailing list is moving a bit slower than netdev (and the patch
-> set is not yet applied despite being ready), but I was talking about
-> this:
-> https://patchwork.ozlabs.org/project/uboot/list/?series=3D324983
->=20
+I had an off-line conversation with Greg who advised me against that.
 
-Thanks for sharing this link. It looks like this driver also supports
-switchnig addresses for Marvell ICs.
-
-(This was the goal for mine previous patches).
-
-
-> If you study DM_DSA, you'll see that only supporting PHY connection
-> via phy-handle (even if the PHY is internal) (or fixed-link, in lack
-> of a PHY) was an absolutely deliberate decision.
-
-Ok. I do agree now - will adjust the code accordingly.
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/0.N=Gb4FVJrOYsXsTJ3WJW+
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmNyFA4ACgkQAR8vZIA0
-zr1v0wgA0rPDwXSVqXyDKPAAGo/AXzTG+qULxs3ULsIQqqLqZnrG4w462zGRuBgj
-Q93IxA0r53IEYami1Rd2wX9O6Q8VYwRYSw7I9rNAG8kDCItPLqze0H2a41jUY5ub
-tYIpyMxrPu3gmN4w2DZfikzpW5bfJ23B9uI/AVwwhLN1ntoBeO2I89MBqsf1+JuJ
-NVYHpUUjhGt4Wyl2ENsXDeGpjPyBIPmRJmCYZa2IicIp5YEsP9K31fNDfMpw5Zk1
-efoU9Qyd1eYOV9vDSdtUajH4vCCYyedlTbO8eGEX4+8IJWSHynZl4uy3f0s8hJ0o
-MF65c5ryLRiI3OUc95fQTh3aLbc0UQ==
-=4Lv+
------END PGP SIGNATURE-----
-
---Sig_/0.N=Gb4FVJrOYsXsTJ3WJW+--
+-- 
+Lee Jones [李琼斯]
