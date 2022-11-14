@@ -2,80 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F72627C7D
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 12:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 724BB627C7B
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 12:40:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiKNLkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 06:40:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
+        id S235947AbiKNLkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 06:40:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235903AbiKNLkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 06:40:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD717B483;
-        Mon, 14 Nov 2022 03:40:16 -0800 (PST)
+        with ESMTP id S235707AbiKNLkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 06:40:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089AFB1F3
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 03:40:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 666B0B80E6D;
-        Mon, 14 Nov 2022 11:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25EECC433D6;
-        Mon, 14 Nov 2022 11:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1668426013;
-        bh=GT3VZNYIhMGDOg7rLWaUnnZ1FVKV70ahkY/v86oWAWo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QemPfybwnr41UjfgwuxeYtmf7ZurGLUDrh0ptjCeQ2t5fUdWWqP9Tjxv3XP+g38HB
-         aPnFMxWeI9Tga8KrWqKV7tFGdQLt7QpL5s9MmAi+dWIoTxfL7W5d8t8aXAH/2aDn2u
-         YRmM9210+LfyEsJXKkKNXsJ8fXI13RGmIEEnMQGI=
-Date:   Mon, 14 Nov 2022 12:40:10 +0100
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Haozhe Chang =?utf-8?B?KOW4uOa1qeWTsik=?= 
-        <Haozhe.Chang@mediatek.com>
-Cc:     "stephan@gerhold.net" <stephan@gerhold.net>,
-        "oneukum@suse.com" <oneukum@suse.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linuxwwan@intel.com" <linuxwwan@intel.com>,
-        "m.chetan.kumar@intel.com" <m.chetan.kumar@intel.com>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Hua Yang =?utf-8?B?KOadqOWNjik=?= <Hua.Yang@mediatek.com>,
-        "chiranjeevi.rapolu@linux.intel.com" 
-        <chiranjeevi.rapolu@linux.intel.com>,
-        Haijun Liu =?utf-8?B?KOWImOa1t+WGmyk=?= 
-        <haijun.liu@mediatek.com>,
-        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "loic.poulain@linaro.org" <loic.poulain@linaro.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "chandrashekar.devegowda@intel.com" 
-        <chandrashekar.devegowda@intel.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "shangxiaojing@huawei.com" <shangxiaojing@huawei.com>,
-        Lambert Wang =?utf-8?B?KOeOi+S8nyk=?= 
-        <Lambert.Wang@mediatek.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ricardo.martinez@linux.intel.com" <ricardo.martinez@linux.intel.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Xiayu Zhang =?utf-8?B?KOW8oOWkj+Wuhyk=?= 
-        <Xiayu.Zhang@mediatek.com>
-Subject: Re: [PATCH v3] wwan: core: Support slicing in port TX flow of WWAN
- subsystem
-Message-ID: <Y3IpGs0SFSgvS0kw@kroah.com>
-References: <20221111100840.105305-1-haozhe.chang@mediatek.com>
- <Y25j7fTdvCRqr26k@kroah.com>
- <82c8728b0b0b20c7da4e25642e90de27af52feca.camel@mediatek.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 992076105A
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E8661C433B5;
+        Mon, 14 Nov 2022 11:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668426015;
+        bh=aLOGfpyvHxq3pX1IhNYNc8g51IGUhvud+aIgBaW6pFY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=BnUwkle9O69ZJsqyQlK/z52ngO52RZYSN0zBvndfdcxXpP7cZRigCr+aVusYzRpbR
+         UqIsidu2l3xfhButtCDSVdVh1qzbuVmFIpDjPpn3YpcUPZkv9dO7YcZBYly5NUdjgh
+         85iM8vMoYPnL6nRjWfV1NAHhvlAQ6ldmHveMuyRP0q0NSCB3fXjHjsr5Zxf6rFprC7
+         lrLPB2bb07/narBqvMXZygJS9FHHHmk7K8r3bC7KOVfDpP0D7YFYnAj0B0RFfVUqcx
+         VeJdbnrjf8QuRz3slg1M8SwPYMTxiAuZ51AGUyw23exRvpaf1atgeoYM1+cP+WhuW7
+         jjdGDreyE7UGQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C8492C395FE;
+        Mon, 14 Nov 2022 11:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <82c8728b0b0b20c7da4e25642e90de27af52feca.camel@mediatek.com>
+Subject: Re: [PATCH net] net: dsa: make dsa_master_ioctl() see through
+ port_hwtstamp_get() shims
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166842601481.5995.3824589653645673368.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Nov 2022 11:40:14 +0000
+References: <20221111211020.543540-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20221111211020.543540-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com, festevam@gmail.com,
+        steffen@innosonix.de
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -85,100 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 11:23:19AM +0000, Haozhe Chang (常浩哲) wrote:
-> Hi Greg Kroah-Hartman
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 11 Nov 2022 23:10:20 +0200 you wrote:
+> There are multi-generational drivers like mv88e6xxx which have code like
+> this:
 > 
-> On Fri, 2022-11-11 at 16:02 +0100, Greg Kroah-Hartman wrote:
-> > On Fri, Nov 11, 2022 at 06:08:36PM +0800, haozhe.chang@mediatek.com
-> > wrote:
-> > > From: haozhe chang <haozhe.chang@mediatek.com>
-> > > 
-> > > wwan_port_fops_write inputs the SKB parameter to the TX callback of
-> > > the WWAN device driver. However, the WWAN device (e.g., t7xx) may
-> > > have an MTU less than the size of SKB, causing the TX buffer to be
-> > > sliced and copied once more in the WWAN device driver.
-> > > 
-> > > This patch implements the slicing in the WWAN subsystem and gives
-> > > the WWAN devices driver the option to slice(by frag_len) or not. By
-> > > doing so, the additional memory copy is reduced.
-> > > 
-> > > Meanwhile, this patch gives WWAN devices driver the option to
-> > > reserve
-> > > headroom in fragments for the device-specific metadata.
-> > > 
-> > > Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
-> > > 
-> > > ---
-> > > Changes in v2
-> > >   -send fragments to device driver by skb frag_list.
-> > > 
-> > > Changes in v3
-> > >   -move frag_len and headroom_len setting to wwan_create_port.
-> > > ---
-> > >  drivers/net/wwan/iosm/iosm_ipc_port.c  |  3 +-
-> > >  drivers/net/wwan/mhi_wwan_ctrl.c       |  2 +-
-> > >  drivers/net/wwan/rpmsg_wwan_ctrl.c     |  2 +-
-> > >  drivers/net/wwan/t7xx/t7xx_port_wwan.c | 34 +++++++--------
-> > >  drivers/net/wwan/wwan_core.c           | 59 ++++++++++++++++++++
-> > > ------
-> > >  drivers/net/wwan/wwan_hwsim.c          |  2 +-
-> > >  drivers/usb/class/cdc-wdm.c            |  2 +-
-> > >  include/linux/wwan.h                   |  6 ++-
-> > >  8 files changed, 73 insertions(+), 37 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/wwan/iosm/iosm_ipc_port.c
-> > > b/drivers/net/wwan/iosm/iosm_ipc_port.c
-> > > index b6d81c627277..dc43b8f0d1af 100644
-> > > --- a/drivers/net/wwan/iosm/iosm_ipc_port.c
-> > > +++ b/drivers/net/wwan/iosm/iosm_ipc_port.c
-> > > @@ -63,7 +63,8 @@ struct iosm_cdev *ipc_port_init(struct iosm_imem
-> > > *ipc_imem,
-> > >  	ipc_port->ipc_imem = ipc_imem;
-> > >  
-> > >  	ipc_port->iosm_port = wwan_create_port(ipc_port->dev,
-> > > port_type,
-> > > -					       &ipc_wwan_ctrl_ops,
-> > > ipc_port);
-> > > +					       &ipc_wwan_ctrl_ops, 0,
-> > > 0,
-> > > +					       ipc_port);
-> > 
-> > How is 0, 0 a valid option here?
-> > 
-> > and if it is a valid option, shouldn't you just have 2 different
-> > functions, one that needs these values and one that does not?  That
-> > would make it more descriptive as to what those options are, and
-> > ensure
-> > that you get them right.
-> > 
-> 0 is a valid option. 
-> frag_len set to 0 means no split, and headroom set to 0 means no 
-> reserved headroom in skb. 
+> int mv88e6xxx_port_hwtstamp_get(struct dsa_switch *ds, int port,
+> 				struct ifreq *ifr)
+> {
+> 	if (!chip->info->ptp_support)
+> 		return -EOPNOTSUPP;
 > 
-> Sorry, I can't understand why it's more descriptive, could you help
-> with more information? It seems to me that the device driver needs to
-> know what each parameter is and how to set them, and that process is
-> also required in your proposed solution - "with 2 different functions",
-> right?
+> [...]
 
-When you see random integers in the middle of a function call like this,
-you then have to go and look up the function call to determine what
-exactly those values are and what is happening.  Using 0, 0 as valid
-values helps no one out here at all.
+Here is the summary with links:
+  - [net] net: dsa: make dsa_master_ioctl() see through port_hwtstamp_get() shims
+    https://git.kernel.org/netdev/net/c/ed1fe1bebe18
 
-While if the code said:
-	ipc_port->iosm_port = wwan_create_port(ipc_port->dev, port_type,
-						&ipc_wwan_ctrl_ops,
-						NO_SPLIT,
-						NO_RESERVED_HEADROOM,
-						ipc_port);
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-or something like that, it would make more sense, right?
-
-Remember, we write code for people to read and understand and maintain
-it over time first, for the compiler second.
-
-thanks,
-
-greg k-h
