@@ -2,193 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2F2E627ADF
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C3E627AE6
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 11:47:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236111AbiKNKqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 05:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        id S236333AbiKNKrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 05:47:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235997AbiKNKqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:46:08 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357172BD
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 02:46:07 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id bs21so17396375wrb.4
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 02:46:07 -0800 (PST)
+        with ESMTP id S236555AbiKNKrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 05:47:08 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2106.outbound.protection.outlook.com [40.107.94.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E386263CD;
+        Mon, 14 Nov 2022 02:47:06 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RrSjh2kVBRJvNpHId4LAL54jqd9RnDeXFF1pVilXQUbQWZiniVVynGxd1LU5gd4jTlnAxCb5kmszrs9XVRKp7kboWokJns+LKzZ6fEqETMfYpxTYWffwm4qI6ssNuvprCV8WhInKcVvsi5hd4nYPEc/l+jfiTMvaw6XPnDH0fGylKZC0Cw+/RwtHAKaldauv2IRpMf0JawtwvsNTGnDPWDiKO0N4LZfqhSAc8tVr17bftVdbKg+iVbqrtl9U3YcazhaSgE1IzxQBKpVYLPtiVEuWsDS0gKiFhYaNJpja4Dl4vA5TIjqJW7WYGY+xbKO45TwE8GuorVWRwZL5wZ3DNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0Cq6ZgLgbQMFWCMumov44/Pu8pi8t/noV+BLCUUgGyw=;
+ b=EtS9HdkKnkvqsQADPF8JZCvJjWdreJlfpqm/pSvoadA3qdqVY2vZpUpazKt6Qo68Q4YwBNk0tAU5gMy0qHcfilMJlpZVGPRmwm2h/+ghwzSNXgIm22tkier0N6IiliXmdcbM6klf2IS11xDXwWr0p/JTRXO0VLP9pJQH6XJXni2OUm6W5m4jizw8XYoLg8NprWpuW/L8DoMAce2tXI1JemQ0NqxZ43FyNchf8FQIsd2x3gj2PYmTyke8Nv3GWU9+Sd2N1HOzA33IZOzKFbED7z7KIrCzGCNg4boGSw9F+mLlOFE//T/CtBmy1mi2HA+gDfgvXAQRBBxTS7Q/jzBYGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U5IGLnjmTVG8rRtvQR/v8l6lnh1x9lhCX7lwftre/vE=;
-        b=AYk8+w7AK6ujg4WwIA30ZzKayW6dH25U/V3nxQiFACjWCZ1kXof1NVrXs3ecSj/tMA
-         yKj/zQBAYcgV8FrDld3XgqGn22LoL1LMaP7ngMq9WhCjmXNiLU6bApCrlBSunZrKkx6k
-         7PIZS3grg5Uwltw3g7u08zlIsZ00N95GWquCI7yjNE6sq5B/h2nBxf7NNQes7tr9sVnK
-         eISKPck7jH21S+FtgwTqnGFGAHqPdS715O81AO7msXJBVLmfP82nKPVa/LVyyjR/O0+K
-         QgFQgifXQkHvmvtlai+xgo97egu9ph8bwX1xKBFW/Jae6vZdZ5xfUzmRlMwq6hMshQVS
-         xCJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=U5IGLnjmTVG8rRtvQR/v8l6lnh1x9lhCX7lwftre/vE=;
-        b=mNYrS/KlrgvhK5JFREkkiLwbiUUA/pnPYIdKkIYKZ/BWkb+GNpLOIGAdWsurPBVVXc
-         xbOm+EgtzKfpWUjXzN3qqXS+w5Xrp751uqwVqMRxpkyHEt9u9xVfcRC9JP9vZHyStQxU
-         5umADBCliplqvStzA782MsKK2Qag0UVJooXKH0q3Irsjad0NhNMfTXbKtNsr3YyPcXqB
-         dScXv7VaUJv4RhCjbtn/wvGnafzIKpG625SYfmvyS4dUgyJPPLw3Zl1FZ/n6XK+beOOL
-         /hZ3rIXv+g83amAKDmNrTZ96a0Hz6JI5KzeNhyWFFz6nSTUXmKp1hdrrdbbZ0Fm20qWm
-         0kQA==
-X-Gm-Message-State: ANoB5plLVyE/leedBre/3GanUEgMT0VbFBPryopdrl6FT4j44qUxPUdn
-        IV2LO/IqwqRY4Arl9HdpikL0x+4FTjfhWAvBwo0=
-X-Google-Smtp-Source: AA0mqf6tGR1fRv31D0SBRlLx/GDlVF6IsOhkmdIWlJf1mwg/Jl3HCPdiDv7mzOdinASOVlqqgGUXwAZ1qDZyZ1mIsz8=
-X-Received: by 2002:adf:ce88:0:b0:23a:ce24:1bf0 with SMTP id
- r8-20020adfce88000000b0023ace241bf0mr6934672wrn.383.1668422765629; Mon, 14
- Nov 2022 02:46:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-2-dnlplm@gmail.com>
- <20221111090720.278326d1@kernel.org> <8b0aba42-627a-f5f5-a9ec-237b69b3b03f@nvidia.com>
- <CAGRyCJF49NMTt9aqPhF_Yp5T3cof_GtL7+v8PeowsBQWG0bkJQ@mail.gmail.com>
-In-Reply-To: <CAGRyCJF49NMTt9aqPhF_Yp5T3cof_GtL7+v8PeowsBQWG0bkJQ@mail.gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Mon, 14 Nov 2022 02:45:53 -0800
-Message-ID: <CAA93jw4OAWRAg+BxftuMgFaHex+BAeV3bS5JUYU7_+pM8ZOaEA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] ethtool: add tx aggregation parameters
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     Gal Pressman <gal@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0Cq6ZgLgbQMFWCMumov44/Pu8pi8t/noV+BLCUUgGyw=;
+ b=fhQl90XZe9zhXGJEqT5ec2APhBhs5g/r0DyKwbMG9aApeD0bzEXUupscAMEOaXySZzvE6mPse/m90uBClv7vu5dN6rR8UVPPMc9BYm10QmomDica3nSax8lWk54iEHdf4BqpoTkXBMkFpQd0Bp/rPPTXe0dIcr0SparIdubUSf0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM6PR13MB3707.namprd13.prod.outlook.com (2603:10b6:5:247::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Mon, 14 Nov
+ 2022 10:47:04 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::483b:9e84:fadc:da30]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::483b:9e84:fadc:da30%7]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
+ 10:47:04 +0000
+Date:   Mon, 14 Nov 2022 11:46:57 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Paolo Abeni <pabeni@redhat.com>, oss-drivers@corigine.com,
         netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [patch 07/10] net: nfp: Remove linux/msi.h includes
+Message-ID: <Y3IcoZkLMTeJPvyt@corigine.com>
+References: <20221113201935.776707081@linutronix.de>
+ <20221113202428.697888905@linutronix.de>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221113202428.697888905@linutronix.de>
+X-ClientProxiedBy: AM9P195CA0023.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21f::28) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3707:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54814a29-6872-4f45-d27c-08dac62d9139
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: V3X6XsG1F6vXx5tB4oXZ8dqHiOI1f6Bb3V3E6L5GngNMiqhKMtkiQkRORik+7QK2IF5pwBVSG9P3VVwAAfLrZQxu3v9OhCm/m7E8I+46OXhehxB1SYA9q+yGPc/6Ao9My3V1bkmgM8+vhDgfVpMqw1SZ74VcZcA5ODz71gtWQs27ryU3i4k9oOmWJY7zf/rRQeGuxMs2mqc/HgZ7rtPCENCt8rYbOiZMa4oIOO6CicQwHCuODiY/8NQNpkYpykjQmquipAxlv9EOGspHxGJAqE43fvi0nrC39cewCQNJDakdPQPW1oyvYdsdcY6IyjyzDWGl6nRyrC6bp8Fb9CQKqEg1N41fcz0tHIljstiqGAwKvQ/phe42jbMVXbVcENJQWcDZOQCrnFlKUFdy9q/fxkRfOCX69hsgw5ECYc6h1GK5XDm63d7Zj4PTO5yxcHZ3EYGda9GBLr6gCuXIJXHfgTFs9etesFqo2gZpjKsigAx56PVtW6/NYRkDZeHuqd2vZ7TJzTjhohT9hP1jB6oN5AAPD3XZsHTYbRX+ZMJVEXgvXRRCnkCHRQXdSS28NeX5tYH8SqbLuGJA4gWYj3XP3L1zk+Ce/cz/bZigH6G/OXtZVV8bi284Vae65Fk0AnR4A7hBXaGfl0/G4I3AVuSAMBDbLJUDLeoBYR6TyBMRwRuAYL1uaX/xBcSE/cRqTERD5A23cefTS9Pq86WDC4XrhMTM+zo/y/1GBT2hRL0g0++hGz6Q0aS4CeKIWvXLxmzI
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39830400003)(376002)(346002)(136003)(396003)(451199015)(6916009)(54906003)(6506007)(186003)(6666004)(36756003)(2906002)(86362001)(66556008)(966005)(6486002)(4326008)(8676002)(66946007)(66476007)(6512007)(478600001)(44832011)(2616005)(38100700002)(5660300002)(316002)(8936002)(83380400001)(41300700001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3LIPOQ0eZNS+BCX4i6wr+AfZIy+5OrCy6GJKn3aKa8kgWh2DDtM1Ek++auzH?=
+ =?us-ascii?Q?mFsHfRbTYekE3JpuBOmkqH2sEe6+u9Q5E6HtEK5R37eu4EeAoFnZH+cGBXYj?=
+ =?us-ascii?Q?zRm5daozl5fQcj26XbIuHAlMS9vkMWLMZpk6DQsAJ11F2YBP6WK4chrfbC1E?=
+ =?us-ascii?Q?C8t7RGy/TyZGMrfuYBTCmcb10dWWCQFH2lwq7vs8+WGVqO+TmAgYRE0AzcVS?=
+ =?us-ascii?Q?NNIlju76kZZufoLU7siQvxRqSxkpuVLhIkl+/0DzaCzFs34BHW4freFpNFwI?=
+ =?us-ascii?Q?gSVcAarOMXJZb8/2gNuhFvHBa6S3RhJzejzaN3M1qFL8dfLcdICQLdjO2VrN?=
+ =?us-ascii?Q?wPeVsIt4btQvRf/ZxYKKKqcw/inctux+2JodFN+4Atp97F7JalAc60bRScsa?=
+ =?us-ascii?Q?8YnpRAu6LTIXwpZGIFa+yV1GK3kBhEQdaK7TeZ/uWRDl/OVjT8lqVOcI7f1+?=
+ =?us-ascii?Q?1zKYpX6umHGN9ZLSMsKl8SXL1oHlv8hZmAv+Q1rOToaQh0q9NpgTrjaYmHo8?=
+ =?us-ascii?Q?W+Us+8VEitT4xzRfGadlB9YFZY+swAWg8RoNLDfe1fQTN4AZ8KVE76i9ChHv?=
+ =?us-ascii?Q?juD8vc5l2xieVwtdhdomkuO7w8v00mFXGlPz5YIbpjig7M2UiBhaeFQW+Gn7?=
+ =?us-ascii?Q?k1dfSiZWTLOmkLorDPYpT/c+J77J5YmnYkXHzcSOi6UNOrv7qqjUSZvwJxM2?=
+ =?us-ascii?Q?DqWLTfXqJM7mleDow8LxatWNBonEIiGcm8IELU3zIqsxc0scPtceQ90dg12M?=
+ =?us-ascii?Q?6eS+4FiF4/K7HvYKUMLezY0+ShPy9rUkZ0AFaJgnzIrZKcBMlncarCmEmgSp?=
+ =?us-ascii?Q?sEjr+PPBOTgC4GwIiQd0BlYIuNavUB1/hO3AC2KhrBVEkkWOetaClpvVYWtl?=
+ =?us-ascii?Q?CYJwzYxH/8VpGhBfXmmxcckcWtlvL9SwGv0Jg+F9CpCffFqSyF1Jg5cbtjU4?=
+ =?us-ascii?Q?uUNbVX6fbNT3+cDhpHwAnK2h1+fg9TLzDjY+wjrC8jnnXPhZv2eAp2OBsspy?=
+ =?us-ascii?Q?lO1MKcFesEs1tXi6eOIpMvO2dRG1afJyg7KeSeJY9SpHclTuhAKSbiUu+RfM?=
+ =?us-ascii?Q?emvail2wJIEXmahGf6mjIBDUDalGCC4Qc3ksOKkLrn8J73p2xGCPTUTXNUVr?=
+ =?us-ascii?Q?VHqr7mT659tOfwjnu22NQ3ZSW8oXoqy3j9pQSlrFcxL20HGY7HrSI9zrK5A6?=
+ =?us-ascii?Q?ypP6GHA8fOgsuwEprq/QPxgU/1+wh0FjTQERyH1BrEgd9fK0/RXVY+QBklII?=
+ =?us-ascii?Q?ULVJxkDggvM6lZzAWWHThJO82G20YvckbJBHYJXG6bL5SdrDhznYF4C1oip4?=
+ =?us-ascii?Q?FzP++HyvXQ2S3IH34J7yzhVcmO2hmr1QLlYO+6Rl7kzJNy08T+hUfprsBJXH?=
+ =?us-ascii?Q?Fphy4AaRldQ5tXZGfVINldc+0A5hPiCOMyQcFxQ5qnyDd0XXoDLpquVOdpeb?=
+ =?us-ascii?Q?hQXSEgdSOsfJvgPzJ20sF3AWPH8KLvn0/CrXrR60mk4i5c7R28fb6SEebqlg?=
+ =?us-ascii?Q?70gEp9sA783743F01bw0keZobtYaC01Won4uY19T2rP1QsWWqV6bI/1rJpuI?=
+ =?us-ascii?Q?MxdC6zKi8UJgzBQatog/CnHmyB9cXyrD+DCV9H9QtnFYmzx4CkShXvUzWBAZ?=
+ =?us-ascii?Q?RWdqexEs+mFnWJnhJoRjQsqLxfsOkKT0spThhaAHAY7JVCyH95kiHP3m3wz6?=
+ =?us-ascii?Q?aO71rA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54814a29-6872-4f45-d27c-08dac62d9139
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 10:47:03.9441
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: l1MNvf0aZD4s3dkW4jZDtvFW1BDkoAnOiAIW/Yt7oz2wbXfvWukJwy9+GL5Ra/Pday08kA3Hids8dRaoMmmU4iWAMzQH3wPxVm47ggO2L9c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3707
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 2:31 AM Daniele Palmas <dnlplm@gmail.com> wrote:
->
-> Hello Gal,
->
-> Il giorno dom 13 nov 2022 alle ore 10:48 Gal Pressman <gal@nvidia.com>
-> ha scritto:
-> >
-> > On 11/11/2022 19:07, Jakub Kicinski wrote:
-> > > On Wed,  9 Nov 2022 19:02:47 +0100 Daniele Palmas wrote:
-> > >> Add the following ethtool tx aggregation parameters:
-> > >>
-> > >> ETHTOOL_A_COALESCE_TX_MAX_AGGR_SIZE
-> > >> Maximum size of an aggregated block of frames in tx.
-> > > perhaps s/size/bytes/ ? Or just mention bytes in the doc? I think it'=
-s
-> > > the first argument in coalescing expressed in bytes, so to avoid
-> > > confusion we should state that clearly.
-> > >
-> > >> ETHTOOL_A_COALESCE_TX_MAX_AGGR_FRAMES
-> > >> Maximum number of frames that can be aggregated into a block.
-> > >>
-> > >> ETHTOOL_A_COALESCE_TX_USECS_AGGR_TIME
-> > >> Time in usecs after the first packet arrival in an aggregated
-> > >> block for the block to be sent.
-> > > Can we add this info to the ethtool-netlink.rst doc?
-> > >
-> > > Can we also add a couple of sentences describing what aggregation is?
-> > > Something about copying the packets into a contiguous buffer to submi=
-t
-> > > as one large IO operation, usually found on USB adapters?
-> > >
-> > > People with very different device needs will read this and may patter=
-n
-> > > match the parameters to something completely different like just
-> > > delaying ringing the doorbell. So even if things seem obvious they ar=
-e
-> > > worth documenting.
-> >
-> > Seems like I am these people, I was under the impression this is kind o=
-f
-> > a threshold for xmit more or something?
-> > What is this contiguous buffer?
->
-> I would like to explain the issue I'm trying to solve.
->
-> I'm using an USB modem that is driven by qmi_wwan which creates a
-> netdevice: on top of this the rmnet module creates another netdevice,
-> needed since packets sent to the modem needs to follow the qmap
-> protocol both for multiplexing and performance.
->
-> Without tx packets aggregation each tx packet sent to the rmnet
-> netdevice makes an URB to be sent through qmi_wwan/usbnet, so that
-> there is a 1:1 relation between a qmap packet and an URB.
->
-> So far, this has not been an issue, but I've run into a family of
-> modems for which this behavior does not work well, preventing the
-> modem from reaching the maximum throughput both in rx and tx (an
-> example of the issue is described at
-> https://lore.kernel.org/netdev/CAGRyCJEkTHpLVsD9zTzSQp8d98SBM24nyqq-HA0jb=
-vHUre+C4g@mail.gmail.com/
-> )
->
-> Tx packets aggregation allows to overcome this issue, so that a single
-> URB holds N qmap packets, reducing URBs frequency.
+On Sun, Nov 13, 2022 at 09:34:05PM +0100, Thomas Gleixner wrote:
+> [Some people who received this message don't often get email from tglx@linutronix.de. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> 
+> Nothing in these files needs anything from linux/msi.h
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Simon Horman <simon.horman@corigine.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: oss-drivers@corigine.com
+> Cc: netdev@vger.kernel.org
 
-While I understand the use case... it's generally been my hope we got
-to a BQL-like mechanism for
-4G and 5G that keeps the latency under control. Right now, that can be
-really, really, really miserable -
-measured in *seconds* - and adding in packet aggregation naively is
-what messed up Wifi for the
-past decade. Please lose 8 minutes of your life to this (hilarious)
-explanation of why aggregation can be bad.
+Acked-by: Simon Horman <simon.horman@corigine.com>
 
-https://www.youtube.com/watch?v=3DRb-UnHDw02o&t=3D1560s
-
-So given a choice between being able to drive the modem at the maximum
-rate in a testbed...
-or having it behave well at all possible (and highly variable) egress
-rates, I would so love for more to focus on the latter problem than
-the former, at whatever levels and layers in the stack it takes.
-
-As a test, what happens on the flent "rrul" test, before and after
-this patch? Under good wireless conditions, and bad?
-
-flent -H server -t my-test-conditions -x --socket-stats rrul
-flent -H server -t my-test-conditions -x --socket-stats
---test-parameter=3Dupload_streams=3D4 tcp_nup
-
-I have servers for that all over the world
-{de,london,fremont,dallas,singapore,toronto,}.starlink.taht.net
-
-> The maximum number of allowed packets in a single URB and the maximum
-> size of the URB are dictated by the modem through the qmi control
-> protocol: the values returned by the modem are then configured in the
-> driver with the new ethtool parameters.
->
-> > Isn't this the same as TX copybreak? TX
-> > copybreak for multiple packets?
->
-> I tried looking at how tx copybreak works to understand your comment,
-> but I could not find any useful document. Probably my fault, but can
-> you please point me to something I can read?
->
-> Thanks,
-> Daniele
-
-
-
---=20
-This song goes out to all the folk that thought Stadia would work:
-https://www.linkedin.com/posts/dtaht_the-mushroom-song-activity-69813666656=
-07352320-FXtz
-Dave T=C3=A4ht CEO, TekLibre, LLC
+> ---
+>  drivers/net/ethernet/netronome/nfp/nfp_main.h       |    1 -
+>  drivers/net/ethernet/netronome/nfp/nfp_net_common.c |    1 -
+>  drivers/net/ethernet/netronome/nfp/nfp_net_main.c   |    1 -
+>  3 files changed, 3 deletions(-)
+> 
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_main.h
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_main.h
+> @@ -12,7 +12,6 @@
+>  #include <linux/ethtool.h>
+>  #include <linux/list.h>
+>  #include <linux/types.h>
+> -#include <linux/msi.h>
+>  #include <linux/pci.h>
+>  #include <linux/workqueue.h>
+>  #include <net/devlink.h>
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> @@ -27,7 +27,6 @@
+>  #include <linux/page_ref.h>
+>  #include <linux/pci.h>
+>  #include <linux/pci_regs.h>
+> -#include <linux/msi.h>
+>  #include <linux/ethtool.h>
+>  #include <linux/log2.h>
+>  #include <linux/if_vlan.h>
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+> @@ -16,7 +16,6 @@
+>  #include <linux/lockdep.h>
+>  #include <linux/pci.h>
+>  #include <linux/pci_regs.h>
+> -#include <linux/msi.h>
+>  #include <linux/random.h>
+>  #include <linux/rtnetlink.h>
+> 
+> 
