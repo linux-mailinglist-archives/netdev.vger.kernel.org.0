@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E98B628515
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 17:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8F6C62851C
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 17:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237451AbiKNQXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 11:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
+        id S237160AbiKNQZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 11:25:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237448AbiKNQXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 11:23:34 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD80BF6;
-        Mon, 14 Nov 2022 08:23:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668443012; x=1699979012;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=YG88I7VKq38DmjvfFFAngUFF9qTpl6rTFa1hUvsPS78=;
-  b=gRxaiBv0T3ycOWy7yxxvtGO3Dy0AyslJEuGVGrHLowdI4pVzLsKDb8oe
-   +inCOIYPfEWHwu+0Jy9bMCo8UH3b6XO1jkCMGbMrOjQqy5WO9w2KB6oPg
-   PcJQc5aPeiynmrMPnYA9MNGc6L5ogVUuvn4HPtMZjmFN7KwTdP83tkVky
-   zJQNkTIRJAschGsC7xdX2SQVOglOKq9+HVL7Z1OTdwKQPl6Wa06CCDVU8
-   V6xpRtfRwYKouMd4T5XLe+HpWrP1fFWq22/buqn6SUPX+g16Uf8CE9mx3
-   B4b0gJFN3mVQjoz42z2L0WvfCptf1mvtGyOPMCbLK7XhzgnGneBvzxPTo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="292410010"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="292410010"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 08:23:32 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="640830720"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="640830720"
-Received: from satyanay-mobl1.amr.corp.intel.com (HELO [10.209.114.162]) ([10.209.114.162])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 08:23:29 -0800
-Message-ID: <ac5f0e24-cac8-828c-3b4b-995f77f81ce3@intel.com>
-Date:   Mon, 14 Nov 2022 08:23:28 -0800
+        with ESMTP id S236334AbiKNQZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 11:25:08 -0500
+Received: from mx0a-00190b01.pphosted.com (mx0a-00190b01.pphosted.com [IPv6:2620:100:9001:583::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18203E22;
+        Mon, 14 Nov 2022 08:25:07 -0800 (PST)
+Received: from pps.filterd (m0050093.ppops.net [127.0.0.1])
+        by m0050093.ppops.net-00190b01. (8.17.1.19/8.17.1.19) with ESMTP id 2AEFx4gI026291;
+        Mon, 14 Nov 2022 16:24:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=boc4w+PutdRa5i975DOUeNjWMrbdjVCCGWGYmKFDTWk=;
+ b=h7hkO73hNumxE4A1Gtykj4VAKPEmoYMcqacbE7gv37lPcvvGYEIEmrORC9kHbJ+vSdGH
+ vQvVmBeYbCcIKjiudNFd+ZMN1GK6luobmd3tWSWe7+AtsU6ICduvLCnVn29n3/F3H5Uf
+ gg86l1boAQJwPqV5L6nBV+7DVvxhx3JUfuAnUKiaQH1IkCJBhs8mEjTp6f3CaVOsYvOm
+ BjzqfRGHrWMqN5PnZUJYhIuuQHFeA4854UlvH95UeZlRy6jcqLHWZ34uOdCbH7kUUFyF
+ dvzdijmg+NsdW4P51xPMJnElM2UDwddMddf9UUxDQNlt2mB08c+JqXnlB0goIAIOTs02 hw== 
+Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
+        by m0050093.ppops.net-00190b01. (PPS) with ESMTPS id 3kupb6ckm9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Nov 2022 16:24:18 +0000
+Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
+        by prod-mail-ppoint1.akamai.com (8.17.1.5/8.17.1.5) with ESMTP id 2AEEWijw022729;
+        Mon, 14 Nov 2022 11:24:17 -0500
+Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
+        by prod-mail-ppoint1.akamai.com (PPS) with ESMTP id 3kt7q31n5p-1;
+        Mon, 14 Nov 2022 11:24:17 -0500
+Received: from [172.19.35.148] (bos-lpa4700a.bos01.corp.akamai.com [172.19.35.148])
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id DE8942F8B6;
+        Mon, 14 Nov 2022 16:24:16 +0000 (GMT)
+Message-ID: <ae9e4333-7070-d550-c0b5-f4d122d2f025@akamai.com>
+Date:   Mon, 14 Nov 2022 11:24:17 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH v2 02/12] x86/ioapic: Gate decrypted mapping on
- cc_platform_has() attribute
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 1/3] jump_label: Prevent key->enabled int overflow
 Content-Language: en-US
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
- <1668147701-4583-3-git-send-email-mikelley@microsoft.com>
- <50a8517d-328e-2178-e98c-4b160456e092@intel.com>
- <BYAPR21MB168860D4D19F088CB41E7548D7039@BYAPR21MB1688.namprd21.prod.outlook.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <BYAPR21MB168860D4D19F088CB41E7548D7039@BYAPR21MB1688.namprd21.prod.outlook.com>
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Bob Gilligan <gilligan@arista.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        netdev@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+References: <20221111212320.1386566-1-dima@arista.com>
+ <20221111212320.1386566-2-dima@arista.com>
+From:   Jason Baron <jbaron@akamai.com>
+In-Reply-To: <20221111212320.1386566-2-dima@arista.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-14_12,2022-11-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 spamscore=0
+ bulkscore=0 suspectscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2211140116
+X-Proofpoint-GUID: DPrtwzoezN_Vdf9iGFZ3HZfW1OTY918I
+X-Proofpoint-ORIG-GUID: DPrtwzoezN_Vdf9iGFZ3HZfW1OTY918I
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-14_12,2022-11-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 lowpriorityscore=0
+ suspectscore=0 mlxscore=0 bulkscore=0 spamscore=0 priorityscore=1501
+ impostorscore=0 clxscore=1011 phishscore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2211140116
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -104,28 +94,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/22 20:48, Michael Kelley (LINUX) wrote:
-> From: Dave Hansen <dave.hansen@intel.com> Sent: Friday, November 11, 2022 4:22 PM
->> On 11/10/22 22:21, Michael Kelley wrote:
->>>  	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
->>>  	 * bits, just like normal ioremap():
->>>  	 */
->>> -	flags = pgprot_decrypted(flags);
->>> +	if (!cc_platform_has(CC_ATTR_HAS_PARAVISOR))
->>> +		flags = pgprot_decrypted(flags);
->> This begs the question whether *all* paravisors will want to avoid a
->> decrypted ioapic mapping.  Is this _fundamental_ to paravisors, or it is
->> an implementation detail of this _individual_ paravisor?
-> Hard to say.  The paravisor that Hyper-V provides for use with the vTOM
-> option in a SEV SNP VM is the only paravisor I've seen.  At least as defined
-> by Hyper-V and AMD SNP Virtual Machine Privilege Levels (VMPLs), the
-> paravisor resides within the VM trust boundary.  Anything that a paravisor
-> emulates would be in the "private" (i.e., encrypted) memory so it can be
-> accessed by both the guest OS and the paravisor.  But nothing fundamental
-> says that IOAPIC emulation *must* be done in the paravisor.
 
-Please just make this check more specific.  Either make this a specific
-Hyper-V+SVM check, or rename it HAS_EMULATED_IOAPIC, like you were
-thinking.  If paravisors catch on and we end up with ten more of these
-things across five different paravisors and see a pattern, *then* a
-paravisor-specific one makes sense.
+On 11/11/22 16:23, Dmitry Safonov wrote:
+> diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+> index 714ac4c3b556..f2c1aa351d41 100644
+> --- a/kernel/jump_label.c
+> +++ b/kernel/jump_label.c
+> @@ -113,11 +113,38 @@ int static_key_count(struct static_key *key)
+>  }
+>  EXPORT_SYMBOL_GPL(static_key_count);
+>  
+> -void static_key_slow_inc_cpuslocked(struct static_key *key)
+> +/***
+> + * static_key_fast_inc - adds a user for a static key
+> + * @key: static key that must be already enabled
+> + *
+> + * The caller must make sure that the static key can't get disabled while
+> + * in this function. It doesn't patch jump labels, only adds a user to
+> + * an already enabled static key.
+> + *
+> + * Returns true if the increment was done.
+> + */
+> +bool static_key_fast_inc(struct static_key *key)
+>  {
+>  	int v, v1;
+>  
+>  	STATIC_KEY_CHECK_USE(key);
+> +	/*
+> +	 * Negative key->enabled has a special meaning: it sends
+> +	 * static_key_slow_inc() down the slow path, and it is non-zero
+> +	 * so it counts as "enabled" in jump_label_update().  Note that
+> +	 * atomic_inc_unless_negative() checks >= 0, so roll our own.
+> +	 */
+> +	for (v = atomic_read(&key->enabled); v > 0 && (v + 1) > 0; v = v1) {
+> +		v1 = atomic_cmpxchg(&key->enabled, v, v + 1);
+> +		if (likely(v1 == v))
+> +			return true;
+> +	}
+> +	return false;
+> +}
+> +EXPORT_SYMBOL_GPL(static_key_fast_inc);
+> +
+> +bool static_key_slow_inc_cpuslocked(struct static_key *key)
+> +{
+>  	lockdep_assert_cpus_held();
+>  
+>  	/*
+> @@ -126,17 +153,9 @@ void static_key_slow_inc_cpuslocked(struct static_key *key)
+>  	 * jump_label_update() process.  At the same time, however,
+>  	 * the jump_label_update() call below wants to see
+>  	 * static_key_enabled(&key) for jumps to be updated properly.
+> -	 *
+> -	 * So give a special meaning to negative key->enabled: it sends
+> -	 * static_key_slow_inc() down the slow path, and it is non-zero
+> -	 * so it counts as "enabled" in jump_label_update().  Note that
+> -	 * atomic_inc_unless_negative() checks >= 0, so roll our own.
+>  	 */
+> -	for (v = atomic_read(&key->enabled); v > 0; v = v1) {
+> -		v1 = atomic_cmpxchg(&key->enabled, v, v + 1);
+> -		if (likely(v1 == v))
+> -			return;
+> -	}
+> +	if (static_key_fast_inc(key))
+> +		return true;
+>  
+>  	jump_label_lock();
+>  	if (atomic_read(&key->enabled) == 0) {
+> @@ -148,16 +167,23 @@ void static_key_slow_inc_cpuslocked(struct static_key *key)
+>  		 */
+>  		atomic_set_release(&key->enabled, 1);
+>  	} else {
+> -		atomic_inc(&key->enabled);
+> +		if (WARN_ON_ONCE(static_key_fast_inc(key))) {
+
+Shouldn't that be negated to catch the overflow:
+
+if (WARN_ON_ONCE(!static_key_fast_inc(key)))
+
+
+
+> +			jump_label_unlock();
+> +			return false;
+> +		}
+>  	}
+>  	jump_label_unlock();
+> +	return true;
+>  }
+>  
+> -void static_key_slow_inc(struct static_key *key)
+> +bool static_key_slow_inc(struct static_key *key)
+>  {
+> +	bool ret;
+> +
+>  	cpus_read_lock();
+> -	static_key_slow_inc_cpuslocked(key);
+> +	ret = static_key_slow_inc_cpuslocked(key);
+>  	cpus_read_unlock();
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(static_key_slow_inc);
+>  
