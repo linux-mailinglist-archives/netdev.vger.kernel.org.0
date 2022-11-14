@@ -2,136 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E87D627951
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:45:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCFF62796E
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:49:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbiKNJpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 04:45:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        id S236187AbiKNJtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 04:49:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235864AbiKNJpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:45:52 -0500
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727621DF08
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:45:49 -0800 (PST)
-Received: by mail-io1-f69.google.com with SMTP id n23-20020a056602341700b00689fc6dbfd6so5481070ioz.8
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:45:49 -0800 (PST)
+        with ESMTP id S236368AbiKNJs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:48:56 -0500
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1049962E2
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:48:53 -0800 (PST)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-13b23e29e36so11896951fac.8
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:48:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=6irsbmfk+V0npVVee3jQo/E+g1bW94YLyBFGezbqQUk=;
+        b=DrdWUilX1YDvJCjZ1WeHWLZaoAWRz3fyeQql7g9ET3ivaD3jsc8UHOUC88kr3Zwoq7
+         iUpxmqnBzu+cD2GP+X5RUsC9CO1ZrFvFYDyTuB8Mwq3LOSvNqfKbXI0V0LobKIsAe+8k
+         KKdjmF/VO+rYL/xBfkNBetciCPH+6RZuA2y7LN/OPpXTR5p5gEbXi+UrR3vU8V5SdE8u
+         zYrrdCM6AsVweP/oHFQGg/KpRMwIHTTc6OhyeDciubm2pqjfKzHKTTzcS3KObKOlyQzw
+         IW3TNBuzrzXmBq7WXdF9d2EuiF4Ie0/JiACY6mwZasqphg4fSadl3gW5GFuRzQGO012f
+         GMEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GUL3MobidaaGFE5xTUouvIf/4fdEFRDpBRQmnEe4eUQ=;
-        b=BInPAUSVPfS+OL9uO4+IvEr5rpM6n+oP0V/8t4BZpqZMTeIiVWfNoADOtEIY7suy0U
-         //oL9rdrPG1qJqg/jBZiSH25+HIkx+f8QsDcCxeRDJl/MGsb7eiioWIphtsf2ytDDSsQ
-         RHt0PQXHDAi5ELwrvPH89kUJjWTiCbIH+zNio0piHO48620Ngr+/sLnZieq8qHs/Glqd
-         jiCzw9m3ImJkA3lKKlcZir+dTAaIe/qCRHaU7nFommuHHFn8W5AZoXrIi4HXIq6qB1Ng
-         rGLBxMamad7VrfPVdsb+Gaat8aQtLR/SM0WWN+fc5USbSEtGqlOL5/gLRy+8jvo3oJbU
-         Fsag==
-X-Gm-Message-State: ANoB5pmwHyxkAE/i/R9H1deeOJqtV69OxAG7poKwRe81eeaEjsyvWUG/
-        Dd7zZ1zPA2PJKdkmNMWwgJv2cAkSOEjYZnfX2igcIKtyv8TC
-X-Google-Smtp-Source: AA0mqf5G1Rh67bQf/38ogYalSTEMhlmBhJW4QCcvRBW/Eh00/SwrZ8g9QgL3Fh02gDow6oEeRq95N9IDaX2YynSu4fcm4D4M/JZ6
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6irsbmfk+V0npVVee3jQo/E+g1bW94YLyBFGezbqQUk=;
+        b=k4n5wD2gpA81OaImvT2MNxhhcUz1Go36/t6kyrJQVvs8RqzLpAK5FKw/wv+b2ksSXE
+         KafGzVwSeEoxs4XFiwMnEvXe4qRtkkP/55b17SuAazvFk1RgG4GmK22O+mGmVcp4yF13
+         EwNQAeLmaZ6FffEcpDRlOwdrkz8bbEVanD5EFc+Ep+0RnFZfmXSG8K7zpBksWTtoBSR3
+         FwhP+GsOh81cUZ5QPX9pj4cZbUQ2DaVJa5TYJ3ikaV72/nfA5NEyN18yap6V8ZvBINVK
+         vN5yUvymsRdKhvWvxQniEhsu7AbW78euhYy5f7O3dd2OZ7wdYX2Bftp+iCM58+/brLG/
+         Vtzw==
+X-Gm-Message-State: ANoB5pnOwAcBpXyodfTeD0X5dimN+q2DlVQ6j4nPs7xLVA3yMOo07OcN
+        Mgx9WH9CEP7y204oO++gOz4aJP4MW9lQgG2KCgz/2Q==
+X-Google-Smtp-Source: AA0mqf6tN6eywsS5DEi92Tj2fkeTCYxLnmqMBW43Ktkfa45WRiTi0FGWKJFPFB/dX83W7HDLvyWQUcdRN8T9eYN5rik=
+X-Received: by 2002:a05:6870:bf0b:b0:13c:7d1c:5108 with SMTP id
+ qh11-20020a056870bf0b00b0013c7d1c5108mr6312271oab.282.1668419332195; Mon, 14
+ Nov 2022 01:48:52 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:9f05:0:b0:375:5e4b:4f97 with SMTP id
- z5-20020a029f05000000b003755e4b4f97mr5316223jal.199.1668419148783; Mon, 14
- Nov 2022 01:45:48 -0800 (PST)
-Date:   Mon, 14 Nov 2022 01:45:48 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b325fb05ed6b1a69@google.com>
-Subject: [syzbot] WARNING: ODEBUG bug in nci_free_device
-From:   syzbot <syzbot+c8ba0eb624e8efbb37a1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org, linma@zju.edu.cn,
+References: <000000000000cceef005ed659943@google.com>
+In-Reply-To: <000000000000cceef005ed659943@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 14 Nov 2022 10:48:41 +0100
+Message-ID: <CACT4Y+abV9E6wAwxeTD+DUG0-VknM-CPMZW_p3SXstiqwRH=tQ@mail.gmail.com>
+Subject: Re: [syzbot] possible deadlock in virtual_nci_close
+To:     syzbot <syzbot+8040d16d30c215f821de@syzkaller.appspotmail.com>
+Cc:     bongsu.jeon@samsung.com, krzysztof.kozlowski@linaro.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, 14 Nov 2022 at 04:11, syzbot
+<syzbot+8040d16d30c215f821de@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    af7a05689189 Merge tag 'mips-fixes_6.1_1' of git://git.ker..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13d30249880000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=9d1d2dd6d424a076
+> dashboard link: https://syzkaller.appspot.com/bug?extid=8040d16d30c215f821de
+> compiler:       aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> userspace arch: arm64
+>
+> Unfortunately, I don't have any reproducer for this issue yet.
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+8040d16d30c215f821de@syzkaller.appspotmail.com
 
-syzbot found the following issue on:
+This should be fixed by the following commit when/if it's merged. The
+commit removes nci_mutex.
 
-HEAD commit:    af7a05689189 Merge tag 'mips-fixes_6.1_1' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17f74649880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7abe2506fc0b8c90
-dashboard link: https://syzkaller.appspot.com/bug?extid=c8ba0eb624e8efbb37a1
-compiler:       arm-linux-gnueabi-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c8ba0eb624e8efbb37a1@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 10093 at lib/debugobjects.c:502 debug_print_object+0xb0/0xc4 lib/debugobjects.c:502
-ODEBUG: free active (active state 0) object type: timer_list hint: nci_cmd_timer+0x0/0x2c net/nfc/nci/core.c:625
-Modules linked in:
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 10093 Comm: syz-executor.1 Not tainted 6.1.0-rc4-syzkaller #0
-Hardware name: ARM-Versatile Express
-Backtrace: 
-[<8173b47c>] (dump_backtrace) from [<8173b570>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:253)
- r7:81cfb8d0 r6:822228ec r5:600a0093 r4:81d09cb8
-[<8173b558>] (show_stack) from [<81757650>] (__dump_stack lib/dump_stack.c:88 [inline])
-[<8173b558>] (show_stack) from [<81757650>] (dump_stack_lvl+0x48/0x54 lib/dump_stack.c:106)
-[<81757608>] (dump_stack_lvl) from [<81757674>] (dump_stack+0x18/0x1c lib/dump_stack.c:113)
- r5:00000000 r4:82448d14
-[<8175765c>] (dump_stack) from [<8173c118>] (panic+0x11c/0x360 kernel/panic.c:274)
-[<8173bffc>] (panic) from [<80241604>] (__warn+0x98/0x1a4 kernel/panic.c:621)
- r3:00000001 r2:00000000 r1:00000000 r0:81cfb8d0
- r7:807a8834
-[<8024156c>] (__warn) from [<8173c3f8>] (warn_slowpath_fmt+0x9c/0xd4 kernel/panic.c:651)
- r8:00000009 r7:807a8834 r6:000001f6 r5:81d53dac r4:81d53d6c
-[<8173c360>] (warn_slowpath_fmt) from [<807a8834>] (debug_print_object+0xb0/0xc4 lib/debugobjects.c:502)
- r8:81804850 r7:81d20a24 r6:841589a8 r5:824cc2cc r4:8220cd94
-[<807a8784>] (debug_print_object) from [<807a9f9c>] (__debug_check_no_obj_freed lib/debugobjects.c:989 [inline])
-[<807a8784>] (debug_print_object) from [<807a9f9c>] (debug_check_no_obj_freed+0x1e8/0x230 lib/debugobjects.c:1020)
- r8:81804850 r7:00000122 r6:84f3e000 r5:84f3e030 r4:841589a8
-[<807a9db4>] (debug_check_no_obj_freed) from [<80481b64>] (slab_free_hook mm/slub.c:1699 [inline])
-[<807a9db4>] (debug_check_no_obj_freed) from [<80481b64>] (slab_free_freelist_hook mm/slub.c:1750 [inline])
-[<807a9db4>] (debug_check_no_obj_freed) from [<80481b64>] (slab_free mm/slub.c:3661 [inline])
-[<807a9db4>] (debug_check_no_obj_freed) from [<80481b64>] (__kmem_cache_free+0x16c/0x340 mm/slub.c:3674)
- r10:5ac3c35a r9:00000000 r8:84ef8490 r7:816ca63c r6:ddeab3e0 r5:84f3e000
- r4:82801600
-[<804819f8>] (__kmem_cache_free) from [<80425fa8>] (kfree+0x6c/0x158 mm/slab_common.c:1007)
- r10:5ac3c35a r9:7efffd08 r8:84ef8490 r7:833d4450 r6:816ca63c r5:ddeab3e0
- r4:84f3e000
-[<80425f3c>] (kfree) from [<816ca63c>] (nci_free_device+0x2c/0x30 net/nfc/nci/core.c:1205)
- r7:833d4450 r6:834eaf68 r5:000e001b r4:84f3e000
-[<816ca610>] (nci_free_device) from [<809f1974>] (virtual_ncidev_close+0x6c/0x7c drivers/nfc/virtual_ncidev.c:167)
- r5:000e001b r4:824fd054
-[<809f1908>] (virtual_ncidev_close) from [<804a9600>] (__fput+0x84/0x264 fs/file_table.c:320)
- r5:000e001b r4:84303900
-[<804a957c>] (__fput) from [<804a985c>] (____fput+0x10/0x14 fs/file_table.c:348)
- r9:7efffd08 r8:83e56fc4 r7:824495dc r6:83e56780 r5:83e56f94 r4:00000000
-[<804a984c>] (____fput) from [<8026618c>] (task_work_run+0x8c/0xb4 kernel/task_work.c:179)
-[<80266100>] (task_work_run) from [<8020c070>] (resume_user_mode_work include/linux/resume_user_mode.h:49 [inline])
-[<80266100>] (task_work_run) from [<8020c070>] (do_work_pending+0x420/0x524 arch/arm/kernel/signal.c:630)
- r9:7efffd08 r8:80200288 r7:fffffe30 r6:80200288 r5:e031dfb0 r4:83e56780
-[<8020bc50>] (do_work_pending) from [<80200088>] (slow_work_pending+0xc/0x20)
-Exception stack(0xe031dfb0 to 0xe031dff8)
-dfa0:                                     00000000 00000002 00000000 00000003
-dfc0: 00000004 015c14c0 00000000 00000006 00140000 000003e8 0014c048 00000000
-dfe0: 2ec60000 7ec52408 0002993c 00029df8 80000010 00000003
- r10:00000006 r9:83e56780 r8:80200288 r7:00000006 r6:00000000 r5:015c14c0
- r4:00000004
-Rebooting in 86400 seconds..
+nfc: Allow to create multiple virtual nci devices
+https://lore.kernel.org/all/20221104170422.979558-1-dvyukov@google.com/
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> nci: __nci_request: wait_for_completion_interruptible_timeout failed 0
+> ======================================================
+> WARNING: possible circular locking dependency detected
+> 6.1.0-rc4-syzkaller-00372-gaf7a05689189 #0 Not tainted
+> ------------------------------------------------------
+> syz-executor.1/8551 is trying to acquire lock:
+> ffff80000e6854c8 (nci_mutex){+.+.}-{3:3}, at: virtual_nci_close+0x2c/0x60 drivers/nfc/virtual_ncidev.c:44
+>
+> but task is already holding lock:
+> ffff000030115350 (&ndev->req_lock){+.+.}-{3:3}, at: nci_close_device+0x5c/0x360 net/nfc/nci/core.c:560
+>
+> which lock already depends on the new lock.
+>
+>
+> the existing dependency chain (in reverse order) is:
+>
+> -> #3 (&ndev->req_lock){+.+.}-{3:3}:
+>        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>        __mutex_lock+0x124/0x83c kernel/locking/mutex.c:747
+>        mutex_lock_nested+0x2c/0x40 kernel/locking/mutex.c:799
+>        nci_request net/nfc/nci/core.c:148 [inline]
+>        nci_set_local_general_bytes net/nfc/nci/core.c:774 [inline]
+>        nci_start_poll+0x36c/0x624 net/nfc/nci/core.c:838
+>        nfc_start_poll+0x114/0x270 net/nfc/core.c:225
+>        nfc_genl_start_poll+0x154/0x3b0 net/nfc/netlink.c:828
+>        genl_family_rcv_msg_doit+0x1b8/0x2a0 net/netlink/genetlink.c:756
+>        genl_family_rcv_msg net/netlink/genetlink.c:833 [inline]
+>        genl_rcv_msg+0x2f8/0x594 net/netlink/genetlink.c:850
+>        netlink_rcv_skb+0x180/0x330 net/netlink/af_netlink.c:2540
+>        genl_rcv+0x38/0x50 net/netlink/genetlink.c:861
+>        netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>        netlink_unicast+0x3ec/0x684 net/netlink/af_netlink.c:1345
+>        netlink_sendmsg+0x690/0xb1c net/netlink/af_netlink.c:1921
+>        sock_sendmsg_nosec net/socket.c:714 [inline]
+>        sock_sendmsg+0xc0/0xf4 net/socket.c:734
+>        ____sys_sendmsg+0x534/0x6b0 net/socket.c:2482
+>        ___sys_sendmsg+0xf0/0x174 net/socket.c:2536
+>        __sys_sendmsg+0xc4/0x154 net/socket.c:2565
+>        __do_sys_sendmsg net/socket.c:2574 [inline]
+>        __se_sys_sendmsg net/socket.c:2572 [inline]
+>        __arm64_sys_sendmsg+0x70/0xa0 net/socket.c:2572
+>        __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+>        invoke_syscall+0x6c/0x260 arch/arm64/kernel/syscall.c:52
+>        el0_svc_common.constprop.0+0xc4/0x254 arch/arm64/kernel/syscall.c:142
+>        do_el0_svc+0x50/0x14c arch/arm64/kernel/syscall.c:206
+>        el0_svc+0x54/0x140 arch/arm64/kernel/entry-common.c:637
+>        el0t_64_sync_handler+0xb8/0xc0 arch/arm64/kernel/entry-common.c:655
+>        el0t_64_sync+0x18c/0x190 arch/arm64/kernel/entry.S:581
+>
+> -> #2 (&genl_data->genl_data_mutex){+.+.}-{3:3}:
+>        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>        __mutex_lock+0x124/0x83c kernel/locking/mutex.c:747
+>        mutex_lock_nested+0x2c/0x40 kernel/locking/mutex.c:799
+>        nfc_urelease_event_work+0x118/0x270 net/nfc/netlink.c:1811
+>        process_one_work+0x780/0x184c kernel/workqueue.c:2289
+>        worker_thread+0x3cc/0xc40 kernel/workqueue.c:2436
+>        kthread+0x23c/0x2a0 kernel/kthread.c:376
+>        ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:860
+>
+> -> #1 (nfc_devlist_mutex){+.+.}-{3:3}:
+>        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>        __mutex_lock+0x124/0x83c kernel/locking/mutex.c:747
+>        mutex_lock_nested+0x2c/0x40 kernel/locking/mutex.c:799
+>        nfc_register_device+0x34/0x320 net/nfc/core.c:1116
+>        nci_register_device+0x604/0x8c0 net/nfc/nci/core.c:1256
+>        virtual_ncidev_open+0x64/0xe0 drivers/nfc/virtual_ncidev.c:146
+>        misc_open+0x294/0x394 drivers/char/misc.c:143
+>        chrdev_open+0x1c0/0x54c fs/char_dev.c:414
+>        do_dentry_open+0x3c4/0xf40 fs/open.c:882
+>        vfs_open+0x90/0xd0 fs/open.c:1013
+>        do_open fs/namei.c:3557 [inline]
+>        path_openat+0x1030/0x1fe0 fs/namei.c:3713
+>        do_filp_open+0x154/0x330 fs/namei.c:3740
+>        do_sys_openat2+0x124/0x390 fs/open.c:1310
+>        do_sys_open fs/open.c:1326 [inline]
+>        __do_sys_openat fs/open.c:1342 [inline]
+>        __se_sys_openat fs/open.c:1337 [inline]
+>        __arm64_sys_openat+0x130/0x1c0 fs/open.c:1337
+>        __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+>        invoke_syscall+0x6c/0x260 arch/arm64/kernel/syscall.c:52
+>        el0_svc_common.constprop.0+0xc4/0x254 arch/arm64/kernel/syscall.c:142
+>        do_el0_svc+0x50/0x14c arch/arm64/kernel/syscall.c:206
+>        el0_svc+0x54/0x140 arch/arm64/kernel/entry-common.c:637
+>        el0t_64_sync_handler+0xb8/0xc0 arch/arm64/kernel/entry-common.c:655
+>        el0t_64_sync+0x18c/0x190 arch/arm64/kernel/entry.S:581
+>
+> -> #0 (nci_mutex){+.+.}-{3:3}:
+>        check_prev_add kernel/locking/lockdep.c:3097 [inline]
+>        check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+>        validate_chain kernel/locking/lockdep.c:3831 [inline]
+>        __lock_acquire+0x2788/0x56d0 kernel/locking/lockdep.c:5055
+>        lock_acquire kernel/locking/lockdep.c:5668 [inline]
+>        lock_acquire+0x58c/0x9a0 kernel/locking/lockdep.c:5633
+>        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>        __mutex_lock+0x124/0x83c kernel/locking/mutex.c:747
+>        mutex_lock_nested+0x2c/0x40 kernel/locking/mutex.c:799
+>        virtual_nci_close+0x2c/0x60 drivers/nfc/virtual_ncidev.c:44
+>        nci_close_device+0x200/0x360 net/nfc/nci/core.c:592
+>        nci_unregister_device+0x40/0x280 net/nfc/nci/core.c:1291
+>        virtual_ncidev_close+0x70/0x90 drivers/nfc/virtual_ncidev.c:166
+>        __fput+0x1ac/0x860 fs/file_table.c:320
+>        ____fput+0x10/0x1c fs/file_table.c:348
+>        task_work_run+0x12c/0x220 kernel/task_work.c:179
+>        resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+>        do_notify_resume+0x920/0x2840 arch/arm64/kernel/signal.c:1127
+>        prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+>        exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+>        el0_svc+0x11c/0x140 arch/arm64/kernel/entry-common.c:638
+>        el0t_64_sync_handler+0xb8/0xc0 arch/arm64/kernel/entry-common.c:655
+>        el0t_64_sync+0x18c/0x190 arch/arm64/kernel/entry.S:581
+>
+> other info that might help us debug this:
+>
+> Chain exists of:
+>   nci_mutex --> &genl_data->genl_data_mutex --> &ndev->req_lock
+>
+>  Possible unsafe locking scenario:
+>
+>        CPU0                    CPU1
+>        ----                    ----
+>   lock(&ndev->req_lock);
+>                                lock(&genl_data->genl_data_mutex);
+>                                lock(&ndev->req_lock);
+>   lock(nci_mutex);
+>
+>  *** DEADLOCK ***
+>
+> 1 lock held by syz-executor.1/8551:
+>  #0: ffff000030115350 (&ndev->req_lock){+.+.}-{3:3}, at: nci_close_device+0x5c/0x360 net/nfc/nci/core.c:560
+>
+> stack backtrace:
+> CPU: 1 PID: 8551 Comm: syz-executor.1 Not tainted 6.1.0-rc4-syzkaller-00372-gaf7a05689189 #0
+> Hardware name: linux,dummy-virt (DT)
+> Call trace:
+>  dump_backtrace+0xe0/0x140 arch/arm64/kernel/stacktrace.c:156
+>  show_stack+0x18/0x40 arch/arm64/kernel/stacktrace.c:163
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0x9c/0xd8 lib/dump_stack.c:106
+>  dump_stack+0x1c/0x38 lib/dump_stack.c:113
+>  print_circular_bug+0x2d4/0x2ec kernel/locking/lockdep.c:2055
+>  check_noncircular+0x26c/0x2e0 kernel/locking/lockdep.c:2177
+>  check_prev_add kernel/locking/lockdep.c:3097 [inline]
+>  check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+>  validate_chain kernel/locking/lockdep.c:3831 [inline]
+>  __lock_acquire+0x2788/0x56d0 kernel/locking/lockdep.c:5055
+>  lock_acquire kernel/locking/lockdep.c:5668 [inline]
+>  lock_acquire+0x58c/0x9a0 kernel/locking/lockdep.c:5633
+>  __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>  __mutex_lock+0x124/0x83c kernel/locking/mutex.c:747
+>  mutex_lock_nested+0x2c/0x40 kernel/locking/mutex.c:799
+>  virtual_nci_close+0x2c/0x60 drivers/nfc/virtual_ncidev.c:44
+>  nci_close_device+0x200/0x360 net/nfc/nci/core.c:592
+>  nci_unregister_device+0x40/0x280 net/nfc/nci/core.c:1291
+>  virtual_ncidev_close+0x70/0x90 drivers/nfc/virtual_ncidev.c:166
+>  __fput+0x1ac/0x860 fs/file_table.c:320
+>  ____fput+0x10/0x1c fs/file_table.c:348
+>  task_work_run+0x12c/0x220 kernel/task_work.c:179
+>  resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+>  do_notify_resume+0x920/0x2840 arch/arm64/kernel/signal.c:1127
+>  prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+>  exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+>  el0_svc+0x11c/0x140 arch/arm64/kernel/entry-common.c:638
+>  el0t_64_sync_handler+0xb8/0xc0 arch/arm64/kernel/entry-common.c:655
+>  el0t_64_sync+0x18c/0x190 arch/arm64/kernel/entry.S:581
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000cceef005ed659943%40google.com.
