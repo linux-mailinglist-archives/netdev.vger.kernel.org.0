@@ -2,224 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D12EC6278E5
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:20:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDAAB6278E2
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236352AbiKNJUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 04:20:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S235950AbiKNJTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 04:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236421AbiKNJUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:20:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA09E0CC
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:20:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FCFF60E9F
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EBFC433C1;
-        Mon, 14 Nov 2022 09:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668417635;
-        bh=4bClsQ2V2y/lEZ4oVLI8XCwXCN/+WWMxTBRMeqCWYwM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZPYYJDacKKMjlqJORAM4WevZPa2eZH3N1EVNEb2si1eb3DucEQdmQrKjR0Y0cwxLF
-         JWjHY07YVR+i8xRQf7C5ACz4qBiRjHj+yzrswar5himMFHn5vP92E1kI6LR3UPfQYE
-         L02lTFs+NRiQ5z3XRZcCVjt774Q9Qs9JytCKLu4vtcF2NS2sCJt0yFQ148iIbiwt4n
-         AA32s05PutbRNzjU69uHv7EX7QBtrBssYiNMs0i3aynblRqqaJROYGhTytz4MZRJEe
-         ptAp3afMdS6lvbfPbfNh3qpVC2ph1ZjreASjKgm2Q9DTpNSohzJFZamkzc94qYXE5b
-         vwWqgswmhpEdA==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Antoine Tenart <atenart@kernel.org>, sd@queasysnail.net,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next] net: phy: mscc: macsec: do not copy encryption keys
-Date:   Mon, 14 Nov 2022 10:20:33 +0100
-Message-Id: <20221114092033.34405-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S236352AbiKNJTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:19:35 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC403E0E0;
+        Mon, 14 Nov 2022 01:19:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668417574; x=1699953574;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tj5P+zXbOOesl3lSAdcCPziPUfeUV9ZWH1wNdH5xCyY=;
+  b=bRKm9XN0W2O9Kvlv6fImqmhUekEelr17FtuepIgNXKTzhC0FLGPdCIaJ
+   zQ9e3N7eHViRqMy6D+EGxEek+1P8RX1BtJrrWPCAP6IAtZBlLpdI8Af4j
+   YdZm1pcx3Pv2OsxWZCZ+XycZFuTz7bBd8XIsZsGn7wZox0Uieh75FMWxQ
+   6fO2u6qwH+qWgfoypElbaqAA86EoPxX9k9WoRVcBl2pwYZnbEr2ZbFQwY
+   T1zC8n6iLCdkdlVBu1Tr+EKJl3Hm+nJOyVvdJuqo3dIDBpgS9iF3pBMtk
+   xBhlXxSI3/yQgEpFT1gP45/00oMIRhGkZqY3w9wOf3ODOPCUmeh5QhBGE
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="199672163"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Nov 2022 02:19:33 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 14 Nov 2022 02:19:33 -0700
+Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 14 Nov 2022 02:19:31 -0700
+From:   Daniel Machon <daniel.machon@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <joe@perches.com>,
+        <daniel.machon@microchip.com>, <vladimir.oltean@nxp.com>,
+        <petrm@nvidia.com>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, "kernel test robot" <lkp@intel.com>
+Subject: [PATCH net-next v2 1/1] net: dcb: move getapptrust to separate function
+Date:   Mon, 14 Nov 2022 10:29:50 +0100
+Message-ID: <20221114092950.2490451-1-daniel.machon@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of calling memzero_explicit on the key when freeing a flow,
-let's simply not copy the key in the first place as it's only used when
-a new flow is set up.
+This patch fixes a frame size warning, reported by kernel test robot.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
+>> net/dcb/dcbnl.c:1230:1: warning: the frame size of 1244 bytes is
+>> larger than 1024 bytes [-Wframe-larger-than=]
+
+The getapptrust part of dcbnl_ieee_fill is moved to a separate function,
+and the selector array is now dynamically allocated, instead of stack
+allocated.
+
+Tested on microchip sparx5 driver.
+
+Fixes: 6182d5875c33 ("net: dcb: add new apptrust attribute")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 ---
+ net/dcb/dcbnl.c | 65 ++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 43 insertions(+), 22 deletions(-)
 
-Following
-https://lore.kernel.org/all/20221108153459.811293-1-atenart@kernel.org/T/
-refactor the MSCC PHY driver not to make a copy the encryption keys.
-
- drivers/net/phy/mscc/mscc_macsec.c | 57 ++++++++++++++++--------------
- drivers/net/phy/mscc/mscc_macsec.h |  2 --
- 2 files changed, 30 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-index f81b077618f4..018253a573b8 100644
---- a/drivers/net/phy/mscc/mscc_macsec.c
-+++ b/drivers/net/phy/mscc/mscc_macsec.c
-@@ -501,8 +501,7 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
+diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
+index cec0632f96db..f9949e051f49 100644
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -1060,11 +1060,50 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
+ 	return err;
  }
  
- /* Derive the AES key to get a key for the hash autentication */
--static int vsc8584_macsec_derive_key(const u8 key[MACSEC_MAX_KEY_LEN],
--				     u16 key_len, u8 hkey[16])
-+static int vsc8584_macsec_derive_key(const u8 *key, u16 key_len, u8 hkey[16])
++static int dcbnl_getapptrust(struct net_device *netdev, struct sk_buff *skb)
++{
++	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
++	enum ieee_attrs_app type;
++	struct nlattr *apptrust;
++	int nselectors, err, i;
++	u8 *selectors;
++
++	selectors = kzalloc(IEEE_8021QAZ_APP_SEL_MAX + 1, GFP_KERNEL);
++	if (!selectors)
++		return -ENOMEM;
++
++	err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
++	if (err) {
++		err = 0;
++		goto out;
++	}
++
++	apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
++	if (!apptrust) {
++		err = -EMSGSIZE;
++		goto out;
++	}
++
++	for (i = 0; i < nselectors; i++) {
++		type = dcbnl_app_attr_type_get(selectors[i]);
++		err = nla_put_u8(skb, type, selectors[i]);
++		if (err) {
++			nla_nest_cancel(skb, apptrust);
++			goto out;
++		}
++	}
++	nla_nest_end(skb, apptrust);
++
++out:
++	kfree(selectors);
++	return err;
++}
++
+ /* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
+ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
  {
- 	const u8 input[AES_BLOCK_SIZE] = {0};
- 	struct crypto_aes_ctx ctx;
-@@ -518,7 +517,8 @@ static int vsc8584_macsec_derive_key(const u8 key[MACSEC_MAX_KEY_LEN],
- }
+ 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+-	struct nlattr *ieee, *app, *apptrust;
++	struct nlattr *ieee, *app;
+ 	struct dcb_app_type *itr;
+ 	int dcbx;
+ 	int err;
+@@ -1168,27 +1207,9 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
+ 	nla_nest_end(skb, app);
  
- static int vsc8584_macsec_transformation(struct phy_device *phydev,
--					 struct macsec_flow *flow)
-+					 struct macsec_flow *flow,
-+					 const u8 *key)
- {
- 	struct vsc8531_private *priv = phydev->priv;
- 	enum macsec_bank bank = flow->bank;
-@@ -527,7 +527,7 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
- 	u8 hkey[16];
- 	u64 sci;
- 
--	ret = vsc8584_macsec_derive_key(flow->key, priv->secy->key_len, hkey);
-+	ret = vsc8584_macsec_derive_key(key, priv->secy->key_len, hkey);
- 	if (ret)
- 		return ret;
- 
-@@ -563,7 +563,7 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
- 	for (i = 0; i < priv->secy->key_len / sizeof(u32); i++)
- 		vsc8584_macsec_phy_write(phydev, bank,
- 					 MSCC_MS_XFORM_REC(index, rec++),
--					 ((u32 *)flow->key)[i]);
-+					 ((u32 *)key)[i]);
- 
- 	/* Set the authentication key */
- 	for (i = 0; i < 4; i++)
-@@ -632,28 +632,14 @@ static void vsc8584_macsec_free_flow(struct vsc8531_private *priv,
- 
- 	list_del(&flow->list);
- 	clear_bit(flow->index, bitmap);
--	memzero_explicit(flow->key, sizeof(flow->key));
- 	kfree(flow);
- }
- 
--static int vsc8584_macsec_add_flow(struct phy_device *phydev,
--				   struct macsec_flow *flow, bool update)
-+static void vsc8584_macsec_add_flow(struct phy_device *phydev,
-+				    struct macsec_flow *flow)
- {
--	int ret;
+ 	if (ops->dcbnl_getapptrust) {
+-		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
+-		int nselectors, i;
 -
- 	flow->port = MSCC_MS_PORT_CONTROLLED;
- 	vsc8584_macsec_flow(phydev, flow);
+-		apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
+-		if (!apptrust)
+-			return -EMSGSIZE;
 -
--	if (update)
--		return 0;
+-		err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
+-		if (!err) {
+-			for (i = 0; i < nselectors; i++) {
+-				enum ieee_attrs_app type =
+-					dcbnl_app_attr_type_get(selectors[i]);
+-				err = nla_put_u8(skb, type, selectors[i]);
+-				if (err) {
+-					nla_nest_cancel(skb, apptrust);
+-					return err;
+-				}
+-			}
+-		}
 -
--	ret = vsc8584_macsec_transformation(phydev, flow);
--	if (ret) {
--		vsc8584_macsec_free_flow(phydev->priv, flow);
--		return ret;
--	}
--
--	return 0;
- }
+-		nla_nest_end(skb, apptrust);
++		err = dcbnl_getapptrust(netdev, skb);
++		if (err)
++			return err;
+ 	}
  
- static int vsc8584_macsec_default_flows(struct phy_device *phydev)
-@@ -706,6 +692,7 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
- {
- 	struct phy_device *phydev = ctx->phydev;
- 	struct vsc8531_private *priv = phydev->priv;
-+	int ret;
- 
- 	flow->assoc_num = ctx->sa.assoc_num;
- 	flow->rx_sa = ctx->sa.rx_sa;
-@@ -717,19 +704,39 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
- 	if (priv->secy->validate_frames != MACSEC_VALIDATE_DISABLED)
- 		flow->match.untagged = 1;
- 
--	return vsc8584_macsec_add_flow(phydev, flow, update);
-+	vsc8584_macsec_add_flow(phydev, flow);
-+
-+	if (update)
-+		return 0;
-+
-+	ret = vsc8584_macsec_transformation(phydev, flow, ctx->sa.key);
-+	if (ret)
-+		vsc8584_macsec_free_flow(phydev->priv, flow);
-+
-+	return ret;
- }
- 
- static int __vsc8584_macsec_add_txsa(struct macsec_context *ctx,
- 				     struct macsec_flow *flow, bool update)
- {
-+	int ret;
-+
- 	flow->assoc_num = ctx->sa.assoc_num;
- 	flow->tx_sa = ctx->sa.tx_sa;
- 
- 	/* Always match untagged packets on egress */
- 	flow->match.untagged = 1;
- 
--	return vsc8584_macsec_add_flow(ctx->phydev, flow, update);
-+	vsc8584_macsec_add_flow(ctx->phydev, flow);
-+
-+	if (update)
-+		return 0;
-+
-+	ret = vsc8584_macsec_transformation(ctx->phydev, flow, ctx->sa.key);
-+	if (ret)
-+		vsc8584_macsec_free_flow(ctx->phydev->priv, flow);
-+
-+	return ret;
- }
- 
- static int vsc8584_macsec_dev_open(struct macsec_context *ctx)
-@@ -829,8 +836,6 @@ static int vsc8584_macsec_add_rxsa(struct macsec_context *ctx)
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
--
- 	ret = __vsc8584_macsec_add_rxsa(ctx, flow, false);
- 	if (ret)
- 		return ret;
-@@ -882,8 +887,6 @@ static int vsc8584_macsec_add_txsa(struct macsec_context *ctx)
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
--
- 	ret = __vsc8584_macsec_add_txsa(ctx, flow, false);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
-index 453304bae778..21ce3b892f7f 100644
---- a/drivers/net/phy/mscc/mscc_macsec.h
-+++ b/drivers/net/phy/mscc/mscc_macsec.h
-@@ -81,8 +81,6 @@ struct macsec_flow {
- 	/* Highest takes precedence [0..15] */
- 	u8 priority;
- 
--	u8 key[MACSEC_MAX_KEY_LEN];
--
- 	union {
- 		struct macsec_rx_sa *rx_sa;
- 		struct macsec_tx_sa *tx_sa;
+ 	/* get peer info if available */
 -- 
-2.38.1
+2.34.1
 
