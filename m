@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 620C16284BE
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 17:13:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B376284D0
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 17:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235602AbiKNQNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 11:13:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S236755AbiKNQQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 11:16:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237390AbiKNQNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 11:13:35 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F02F17A8B
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 08:13:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=a0ILLT5WBLRd1lom4q80IO2+88jbTpnqG+ctAIo2NBs=; b=gCntbFqugGGbwHmvLvNYjn8gx6
-        3Cl9AvR1JiitKGgbPVRXwa8IvwEhuaXABC0EVDvON33brxplWb4pMl/57tWTMbSWYsoifCE7679MS
-        mWE/GgSCFDNckLQg5NuGCL+DTcYdXk9NeKv9fl6Ys5YRpHDRFP3eKbsuC6Z5a/XQQ6/V8kV801/Ab
-        XUS4AV8TF4fzsUFRq36vF4HSxPWVspZXU+XvYFZdGCPGryhisNkvvtsyvJULd1g7moQdMLxJ1Y4xZ
-        FPc98eOacWrDk7nGwREZCuoIFI2K8iaGK7eRpSCyXiQzjyHrX+ddtPvkWj9Ew5c78PA0AOCM0JYwH
-        YY7on+FA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35262)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ouc5O-000147-MM; Mon, 14 Nov 2022 16:13:26 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ouc5M-0003wF-Fo; Mon, 14 Nov 2022 16:13:24 +0000
-Date:   Mon, 14 Nov 2022 16:13:24 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Tim Harvey <tharvey@gateworks.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: status of rate adaptation
-Message-ID: <Y3JpJDvCdI21yb5v@shell.armlinux.org.uk>
-References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
- <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com>
- <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
- <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
- <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com>
- <Y2+cgh4NBQq8EHoX@shell.armlinux.org.uk>
- <ea320070-a949-c737-22c4-14fd199fdc23@seco.com>
+        with ESMTP id S236951AbiKNQQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 11:16:16 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE0F24F38
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 08:16:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668442574; x=1699978574;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CiKs+dRzhy/5TxfxthpW7eDhRu3XgYqHb5P4nlBaBeI=;
+  b=TiSjyGzNXYM7c8tbBLfcMTC1DuRqKkDHVTI9LbajQwN/DCtlQ6Llm6nQ
+   zPfS7ZIfYN0kIBGtChyzg8muopuppu24fW7H9aaStNM81XNu53idlQxM3
+   VtFnOw702MOqauguQ7LhXIAsAZatV+ekxJ1k220GXjZTK7JkCw+Q8rvgy
+   pnjClX9AnE/CgpsPcIA6dEx3/j/pNSLcDY1chg26YimapdhUYsG8YNDnV
+   Lk8j43zJeEGH2L5brmuREtVS7i7SW3gIk+ZbExefhieWp6Py8GEXcLFB2
+   9lYTA9PoqCFoBJmJHKnrqJnYFAsqHk+YhR8dJaEfa+BATzKNojD9niZ8i
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="338799644"
+X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
+   d="scan'208";a="338799644"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 08:16:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="744199083"
+X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
+   d="scan'208";a="744199083"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Nov 2022 08:16:13 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AEGGC6A003837;
+        Mon, 14 Nov 2022 16:16:12 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next 4/5] net: ngbe: Initialize phy information
+Date:   Mon, 14 Nov 2022 17:16:09 +0100
+Message-Id: <20221114161609.705435-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221108111907.48599-5-mengyuanlou@net-swift.com>
+References: <20221108111907.48599-1-mengyuanlou@net-swift.com> <20221108111907.48599-5-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ea320070-a949-c737-22c4-14fd199fdc23@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,134 +63,527 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 10:33:52AM -0500, Sean Anderson wrote:
-> On 11/12/22 08:15, Russell King (Oracle) wrote:
-> > On Fri, Nov 11, 2022 at 04:54:40PM -0500, Sean Anderson wrote:
-> >> > [    8.911932] mvpp2 f2000000.ethernet eth0: PHY
-> >> > [f212a600.mdio-mii:08] driver [Aquantia AQR113C] (irq=POLL)
-> >> > [    8.921577] mvpp2 f2000000.ethernet eth0: phy: 10gbase-r setting
-> >> > supported 00000000,00018000,000e706f advertising
-> >> > 00000000,00018000,000e706f
-> > 
-> >> > # ethtool eth0
-> >> > Settings for eth0:
-> >> >         Supported ports: [ ]
-> >> >         Supported link modes:   10baseT/Half 10baseT/Full
-> >> >                                 100baseT/Half 100baseT/Full
-> >> 
-> >> 10/100 half duplex aren't achievable with rate matching (and we avoid
-> >> turning them on), so they must be coming from somewhere else. I wonder
-> >> if this is because PHY_INTERFACE_MODE_SGMII is set in
-> >> supported_interfaces.
-> > 
-> > The reason is due to the way phylink_bringup_phy() works. This is
-> > being called with interface = 10GBASE-R, and the PHY is a C45 PHY,
-> > which means we call phy_get_rate_matching() with 
-> > PHY_INTERFACE_MODE_NA as we don't know whether the PHY will be
-> > switching its interface or not.
-> > 
-> > Looking at the Aquanta PHY driver, this will return that pause mode
-> > rate matching will be used, so config.rate_matching will be
-> > RATE_MATCH_PAUSE.
-> > 
-> > phylink_validate() will be called for PHY_INTERFACE_MODE_NA, which
-> > causes it to scan all supported interface modes (as again, we don't
-> > know which will be used by the PHY [*]) and the union of those
-> > results will be used.
-> > 
-> > So when we e.g. try SGMII mode, caps & mac_capabilities will allow
-> > the half duplex modes through.
-> > 
-> > Now for the bit marked with [*] - at this point, if rate matching is
-> > will be used, we in fact know which interface mode is going to be in
-> > operation, and it isn't going to change. So maybe we need this instead
-> > in phylink_bringup_phy():
-> > 
-> > -	if (phy->is_c45 &&
-> > +	config.rate_matching = phy_get_rate_matching(phy, interface);
-> > +	if (phy->is_c45 && config.rate_matching == RATE_MATCH_NONE &&
-> >             interface != PHY_INTERFACE_MODE_RXAUI &&
-> >             interface != PHY_INTERFACE_MODE_XAUI &&
-> >             interface != PHY_INTERFACE_MODE_USXGMII)
-> >                 config.interface = PHY_INTERFACE_MODE_NA;
-> >         else
-> >                 config.interface = interface;
-> > -	config.rate_matching = phy_get_rate_matching(phy, config.interface);
-> > 
-> >         ret = phylink_validate(pl, supported, &config);
-> > 
-> > ?
+From: Mengyuan Lou <mengyuanlou@net-swift.com>
+Date: Tue,  8 Nov 2022 19:19:06 +0800
+
+> Initialize phy media type.
+> Initialize phy ops functions.
 > 
-> Yeah, that sounds reasonable. Actually, this was the logic I was
-> thinking of when I asked Tim to try USXGMII earlier. The funny thing is
-> that the comment above this implies that the link mode is never actually
-> (R)XAUI or USXGMII.
+> Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+> ---
 
-I think you're misunderstanding the comment...
+[...]
 
-If a clause 45 PHY is using USXGMII, then it is highly likely that the
-PHY will not switch between different interface modes depending on the
-media side negotiation.
+> +int ngbe_phy_led_oem_hostif(struct ngbe_hw *hw, u32 *data)
+> +{
+> +	struct wx_hic_read_shadow_ram buffer;
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	int status;
+> +
+> +	buffer.hdr.req.cmd = NGBE_FW_PHY_LED_CONF;
+> +	buffer.hdr.req.buf_lenh = 0;
+> +	buffer.hdr.req.buf_lenl = 0;
+> +	buffer.hdr.req.checksum = NGBE_FW_CMD_DEFAULT_CHECKSUM;
+> +
+> +	/* convert offset from words to bytes */
+> +	buffer.address = 0;
+> +	/* one word */
+> +	buffer.length = 0;
 
-If a clause 45 PHY is using RXAUI or XAUI, then I believe according to
-the information available to me at the time, that there is no
-possibility of different interface modes being used.
+Just declare @buffer with `= { };` and you won't need to initialize
+4 fields (2 in req, 2 here) at runtime.
 
-If any other interface type is specified (e.g. 10GBASE-R etc) then there
-is the possibility that the PHY will be switching between different
-interface modes, and we have no idea what so ever at this point what
-modes the PHY will be making use of - so the best we can do is to
-validate _all_ possible modes. This is what is done by setting the
-interface mode to _NA.
+> +
+> +	status = wx_host_interface_command(wxhw, (u32 *)&buffer, sizeof(buffer),
 
-Obviously, if we are using rate matching with a particular interface
-mode (e.g. 10GBASE-R) then we know that we are only going to be using
-10GBASE-R, so we can validate just the single interface mode.
+Please don't cast structures to scalars. Can it be done via a union
+or so?
 
-> On another subject, if setting the SERDES mode field above fixes the
-> issue, then the Aquantia driver should be modified to set that field to
-> use a supported interface. Will host_interfaces work for this? It seems
-> to be set only when there's an SFP module.
+> +					   WX_HI_COMMAND_TIMEOUT, false);
+> +
+> +	if (status)
+> +		return status;
+> +
+> +	*data = rd32a(wxhw, WX_MNG_MBOX, 1);
+> +	if (*data == NGBE_FW_CMD_ST_PASS)
+> +		*data = rd32a(wxhw, WX_MNG_MBOX, 2);
+> +	else
+> +		*data = 0xffffffff;
 
-The reason I didn't push host_interfaces upstream myself is that I was
-unconvinced that it was the proper approach - and I still have my
-reservations with it. This can only tell the PHY driver what the MAC
-driver supports, and it means the PHY driver is then free to do its
-own choosing of what group of interface modes it wants to use.
+Why perform the first read into @data if it will be overwritten in
+100% cases? Would just that work
 
-However, think about what I've said above about phylink not having any
-clue about what interface modes the PHY is going to be using - having
-the PHY driver decide on its own which group of interface modes should
-be used adds even more complexity in a completely different chunk of
-code, one where driver authors are free to make whatever decisions
-they deem (and we know that wildly different solutions will happen.)
+	if (rd32a(...) == NGBE_...)
+		*data = rd32a(...);
+	else
+		*data = 0xffffffff;
 
-I had been toying with the idea of doing this differently, and had
-dropped most of the host_interfaces approach from my git tree, instead
-having PHYs provide a bitmap of the interface modes they support and
-having them initialise in their config_init function which interface
-modes they're going to be making use of given their resulting
-configuration. I never properly finished this though.
+	return 0;
 
-> That said, imagine if Tim was using a MAC without pause support, but
-> which supported SGMII and 10GBASE-R. Currently, we would just advertise
-> 10G modes. But 1G could be supported by switching the phy interface.
+?
 
-Note that we already have boards that make use of interface switching.
-Macchiatobin has switched between 10GBASE-R, 5GBASE-R, 2500BASE-X and
-SGMII depending on the negotiated media speed. In fact, that switching
-is rather enforced by the 3310 PHY firmware.
+> +
+> +	return 0;
+> +}
+> +
+>  static int ngbe_reset_misc(struct ngbe_hw *hw)
+>  {
+>  	struct wx_hw *wxhw = &hw->wxhw;
 
-We could force 10GBASE-R and enable rate matching, but then we get
-into the problems that the 3310 on these boards does not have MACSEC
-therefore can't send pause frames to the host MAC (and the host MAC
-doesn't support pause frames - eek) and we have not come up with an
-implementation for extending the IPG, although I believe mvpp2
-hardware is capable of it.
+[...]
 
-However, there's also the BCM84881 PHY which does the same dynamic
-switching which we can't prevent (we don't know how to!)
+> +static u16 ngbe_phy_read_reg_internal(struct ngbe_hw *hw, u32 reg_addr)
+> +{
+> +	u16 phy_data = 0;
+> +
+> +	phy_data = (u16)rd32(&hw->wxhw, NGBE_PHY_CONFIG(reg_addr));
+> +	return phy_data;
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+static u16 ngbe_...(...)
+{
+	return rd32(&hw->wxhw, ...);
+}
+
+and that's it.
+
+> +}
+> +
+> +static void ngbe_phy_write_reg_internal(struct ngbe_hw *hw, u32 reg_addr, u16 phy_data)
+> +{
+> +	wr32(&hw->wxhw, NGBE_PHY_CONFIG(reg_addr), phy_data);
+> +}
+
+[...]
+
+> +static u16 ngbe_phy_read_reg_ext_yt(struct ngbe_hw *hw,
+> +				    u32 reg_addr)
+> +{
+> +	u16 val = 0;
+> +
+> +	ngbe_phy_write_reg_mdi(hw, 0x1e, reg_addr);
+> +	val = ngbe_phy_read_reg_mdi(hw, 0x1f);
+> +
+> +	return val;
+
+Same here:
+
+{
+	ngbe_phy_write_...(...);
+	return ngbe_phy_read_...(...);
+}
+
+> +}
+> +
+> +static void ngbe_phy_write_reg_ext_yt(struct ngbe_hw *hw,
+> +				      u32 reg_addr,
+> +				      u16 phy_data)
+> +{
+> +	ngbe_phy_write_reg_mdi(hw, 0x1e, reg_addr);
+> +	ngbe_phy_write_reg_mdi(hw, 0x1f, phy_data);
+> +}
+> +
+> +static u16 ngbe_phy_read_reg_sds_ext_yt(struct ngbe_hw *hw,
+> +					u32 reg_addr)
+> +{
+> +	u16 val = 0;
+
+"val assigned to a value which is never used" -- you don't need to
+initialize it with 0 since it's overwritten two lines below.
+
+> +
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x02);
+> +	val = ngbe_phy_read_reg_ext_yt(hw, reg_addr);
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x00);
+> +
+> +	return val;
+> +}
+> +
+> +static void ngbe_phy_write_reg_sds_ext_yt(struct ngbe_hw *hw,
+> +					  u32 reg_addr,
+> +					  u16 phy_data)
+> +{
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x02);
+> +	ngbe_phy_write_reg_ext_yt(hw, reg_addr, phy_data);
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x00);
+> +}
+> +
+> +static u16 ngbe_phy_read_reg_sds_mii_yt(struct ngbe_hw *hw,
+> +					u32 reg_addr)
+> +{
+> +	u16 val = 0;
+
+^
+
+> +
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x02);
+> +	val = ngbe_phy_read_reg_mdi(hw, reg_addr);
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x00);
+> +
+> +	return val;
+> +}
+> +
+> +static void ngbe_phy_write_reg_sds_mii_yt(struct ngbe_hw *hw,
+> +					  u32 reg_addr,
+> +					  u16 phy_data)
+> +{
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x02);
+> +	ngbe_phy_write_reg_mdi(hw, reg_addr, phy_data);
+> +	ngbe_phy_write_reg_ext_yt(hw, 0xa000, 0x00);
+> +}
+> +
+> +static void ngbe_phy_led_ctrl_mv(struct ngbe_hw *hw)
+> +{
+> +	u16 val = 0;
+
+^
+
+> +
+> +	if (hw->led_conf == 0xffffffff) {
+
+	if (hw->led_conf != 0xffffffff)
+		return;
+
+Saves one indent level.
+
+> +		/* LED control */
+> +		ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_MV, 3);
+> +		val = ngbe_phy_read_reg(hw, NGBE_PHY_LED_FUNC_CTRL_REG_MV);
+> +		val &= ~0x00FF;
+> +		val |= (NGBE_LED1_CONF_MV << 4) | NGBE_LED0_CONF_MV;
+
+I think you could use smth like u32_replace_bits() to do that in a
+more robust way.
+
+> +		ngbe_phy_write_reg(hw, NGBE_PHY_LED_FUNC_CTRL_REG_MV, val);
+> +		val = ngbe_phy_read_reg(hw, NGBE_PHY_LED_POL_CTRL_REG_MV);
+> +		val &= ~0x000F;
+> +		val |= (NGBE_LED1_POL_MV << 2) | NGBE_LED0_POL_MV;
+> +		ngbe_phy_write_reg(hw, NGBE_PHY_LED_POL_CTRL_REG_MV, val);
+> +	}
+> +}
+> +
+> +static void ngbe_phy_led_ctrl_internal(struct ngbe_hw *hw)
+> +{
+> +	u16 val = 0;
+
+^ (don't initialize)
+
+> +
+> +	if (hw->led_conf != 0xffffffff)
+> +		val = hw->led_conf & 0xffff;
+> +	else
+> +		val = 0x205B;
+
+[...]
+
+> +static int ngbe_gphy_wait_mdio_access_on(struct ngbe_hw *hw)
+> +{
+> +	u16 val = 0;
+> +	int ret = 0;
+
+^, @ret can be left uninitialized.
+
+> +
+> +	/* select page to 0xa43*/
+> +	ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_INTERNAL, 0xa43);
+> +	/* wait to phy can access */
+> +	ret = read_poll_timeout(ngbe_phy_read_reg, val, val & 0x20, 1000,
+> +				100000, false, hw, 0x1d);
+> +
+> +	if (ret)
+> +		wx_dbg(&hw->wxhw, "Access to phy timeout\n");
+> +
+> +	return ret;
+> +}
+> +
+> +static int ngbe_phy_init_m88e1512(struct ngbe_hw *hw)
+> +{
+> +	u16 val = 0;
+> +	int ret = 0;
+
+^, both of them can be left uninitialized.
+
+> +
+> +	/* select page to 0x2 */
+> +	ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_MV, 0x2);
+> +	val = ngbe_phy_read_reg(hw, 0x15);
+> +	val &= ~NGBE_RGM_TTC_MV;
+> +	val |= NGBE_RGM_RTC_MV;
+> +	ngbe_phy_write_reg(hw, 0x15, val);
+> +
+> +	/* phy reset */
+> +	ret = ngbe_phy_reset(hw);
+> +	if (!ret)
+> +		return ret;
+
+Is it correct that if the function returns 0, you bail out? Not
+`if (ret) return ret`? If it is intended, return 0 here then.
+
+> +
+> +	/* set LED2 to interrupt output and INTn active low */
+> +	/* select page to 0x3 */
+> +	ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_MV, 0x3);
+> +	val = ngbe_phy_read_reg(hw, NGBE_PHY_INTM_REG);
+> +	val |= NGBE_INT_EN_MV;
+> +	val &= ~(NGBE_INT_POL_MV);
+> +	ngbe_phy_write_reg(hw, NGBE_PHY_INTM_REG, val);
+> +
+> +	return 0;
+> +}
+
+[...]
+
+> +static void ngbe_check_phy_id(struct ngbe_hw *hw)
+> +{
+> +	u16 phy_id_high = 0, phy_id_low = 0;
+> +	u32 phy_id = 0xffffffff;
+
+All three of them don't need to be initialized.
+
+> +
+> +	phy_id_high = ngbe_phy_read_reg(hw, NGBE_PHY_ID1_REG);
+> +	phy_id_low = ngbe_phy_read_reg(hw, NGBE_PHY_ID2_REG);
+> +
+> +	phy_id = phy_id_high << 6;
+> +	phy_id |= (phy_id_low & NGBE_PHY_ID_MASK) >> 10;
+> +
+> +	/* for yt 8521s phy id is 0 */
+> +	if (!phy_id) {
+> +		if (phy_id_low)
+> +			hw->phy.id = phy_id_low;
+> +		else
+> +			wx_dbg(&hw->wxhw, "Can not get phy id.\n");
+> +	}
+> +	hw->phy.id = phy_id;
+> +}
+
+[...]
+
+> +static int ngbe_phy_identify(struct ngbe_hw *hw)
+> +{
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	u32 phy_id = 0;
+> +	int ret = 0;
+> +
+> +	if (hw->phy.id)
+> +		return ret;
+
+		return 0; // would look more digestible
+
+> +	switch (hw->phy.type) {
+> +	case ngbe_phy_internal:
+> +	case ngbe_phy_internal_yt_sfi:
+> +		ngbe_gphy_wait_mdio_access_on(hw);
+> +		phy_id = NGBE_PHY_ID_INTERNAL;
+> +		break;
+> +	case ngbe_phy_m88e1512:
+> +	case ngbe_phy_m88e1512_sfi:
+> +	case ngbe_phy_m88e1512_mix:
+> +		phy_id = NGBE_PHY_ID_MV;
+> +		break;
+> +	case ngbe_phy_yt_mix:
+> +		phy_id = NGBE_PHY_ID_YT8521S | NGBE_PHY_ID_YT8531S;
+> +		break;
+> +	default:
+> +		ret =  -EINVAL;
+
+Shouldn't we exit here with -%EINVAL if it's not supported anyway?
+
+> +	}
+> +
+> +	ngbe_check_phy_id(hw);
+> +	if ((hw->phy.id & phy_id) != hw->phy.id) {
+> +		wx_err(wxhw, "Phy id 0x%x not supported.\n", phy_id);
+> +		return -EINVAL;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + *  ngbe_phy_init - PHY specific init
+> + *  @hw: pointer to hardware structure
+> + *
+> + *  Check phy id, Initialize phy mode and media type, Enable the required interrupt.
+> + **/
+> +int ngbe_phy_init(struct ngbe_hw *hw)
+> +{
+> +	int ret = 0;
+
+	int ret;
+
+> +	u16 val = 0;
+> +
+> +	/* Identify the PHY*/
+> +	ret = ngbe_phy_identify(hw);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ngbe_get_phy_media_type(hw);
+> +	if (ret) {
+> +		wx_err(&hw->wxhw, "The phy mode is not supported.\n");
+> +		return ret;
+> +	}
+> +
+> +	switch (hw->phy.type) {
+> +	case ngbe_phy_internal:
+> +	case ngbe_phy_internal_yt_sfi:
+> +		val = NGBE_PHY_INT_STATUS_LSC_INTERNAL |
+> +		      NGBE_PHY_INT_STATUS_ANC_INTERNAL;
+> +		/* select page to 0xa42 */
+> +		ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_INTERNAL, 0xa42);
+> +		break;
+> +	case ngbe_phy_m88e1512:
+> +		ngbe_phy_init_m88e1512(hw);
+> +		/* select page to 0x0 */
+> +		ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_MV, 0x0);
+> +		/* enable link status change and AN complete interrupts */
+> +		val = NGBE_PHY_INT_STATUS_ANC_MV | NGBE_PHY_INT_STATUS_LSC_MV;
+> +		break;
+> +	case ngbe_phy_m88e1512_sfi:
+> +		ngbe_phy_init_m88e1512(hw);
+> +		/* select page to 0x1 */
+> +		ngbe_phy_write_reg(hw, NGBE_PHY_PAGE_ACCESS_MV, 0x1);
+> +		val = ngbe_phy_read_reg(hw, 0x10);
+> +		val &= ~0x4;
+> +		ngbe_phy_write_reg(hw, 0x10, val);
+> +
+> +		/* enable link status change and AN complete interrupts */
+> +		val = NGBE_PHY_INT_STATUS_ANC_MV | NGBE_PHY_INT_STATUS_LSC_MV;
+> +		break;
+> +	case ngbe_phy_yt_mix:
+> +		/* select sds area register */
+> +		ngbe_phy_write_reg(hw, 0x1e, 0xa000);
+> +		ngbe_phy_write_reg(hw, 0x1f, 0x0);
+> +
+> +		/* enable interrupt */
+> +		val = NGBE_PHY_INT_STATUS_SDSLNKUP_YT |
+> +		      NGBE_PHY_INT_STATUS_SDSLNKDN_YT |
+> +		      NGBE_PHY_INT_STATUS_UTPLNKUP_YT |
+> +		      NGBE_PHY_INT_STATUS_UTPLNKDN_YT;
+> +		break;
+> +	default:
+> +		ret =  -EINVAL;
+
+Same?
+
+> +	}
+> +	/* write interrupts bits to register */
+> +	ngbe_phy_write_reg(hw, NGBE_PHY_INTM_REG, val);
+> +
+> +	return ret;
+> +}
+
+[...]
+
+> +static int ngbe_gphy_efuse_calibration(struct ngbe_hw *hw)
+> +{
+> +	u32 efuse[2] = {0, 0};
+
+You can always just use `= { };` next time, for both arrays and
+structures. So that you wouldn't need to adjust initializer when
+adding new fields or elements (to avoid
+-Wmissing-field-initializers).
+
+> +
+> +	ngbe_gphy_wait_mdio_access_on(hw);
+> +
+> +	efuse[0] = hw->phy.gphy_efuse[0];
+> +	efuse[1] = hw->phy.gphy_efuse[1];
+
+Nevermind, you don't need to initialize the array at all since you
+overwrite both elements.
+
+> +
+> +	if (!efuse[0] && !efuse[1]) {
+> +		efuse[0] = 0xFFFFFFFF;
+> +		efuse[1] = 0xFFFFFFFF;
+> +	}
+
+[...]
+
+> +static void ngbe_phy_setup_powerup(struct ngbe_hw *hw)
+> +{
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	u16 val = 0;
+> +	int ret = 0;
+
+Ok here I got tired of cosplaying a compiler / semantic checker,
+could you please maybe recheck all your code and remove initializers
+when they aren't needed? You can use `make W=1` if needed to make
+sure you didn't miss anything.
+
+> +
+> +	ret = read_poll_timeout(rd32, val,
+> +				!(val & (BIT(9) << wxhw->bus.func)), 1000,
+> +				100000, false, wxhw, 0x10028);
+> +
+> +	if (ret)
+> +		wx_dbg(wxhw, "Lan reset exceeds maximum times.\n");
+
+[...]
+
+> +		/* open auto sensing */
+> +		val = ngbe_phy_read_reg_sds_ext_yt(hw, 0xA5);
+> +		val |= 0x8000;
+
+Can such magic values be defined somewhere with some meaningful
+names? Like
+
+#define NGBE_SDS_EXT_SOMETHING	BIT(15)
+
+> +		ngbe_phy_write_reg_sds_ext_yt(hw, 0xA5, val);
+> +
+> +		val = ngbe_phy_read_reg_ext_yt(hw, 0xA006);
+> +		val |= 0x1;
+> +		ngbe_phy_write_reg_ext_yt(hw, 0xA006, val);
+> +skip_an_fiber:
+> +		/* RGMII_Config1 : Config rx and tx training delay */
+> +		ngbe_phy_write_reg_ext_yt(hw, 0xA003, 0x3cf1);
+> +		ngbe_phy_write_reg_ext_yt(hw, 0xA001, 0x8041);
+
+[...]
+
+> @@ -122,9 +216,16 @@ struct ngbe_phy_info {
+>  
+>  	u32 addr;
+>  	u32 id;
+> +	u8 phy_mode;
+
++ a 3-byte hole. Maybe at least combine with ::autoneg?
+
+	u32 gphy_efuse[2];
+	u8 phy_mode;
+
+	u8 autoneg:1;
+	u32 autoneg_advertised;
+
+This would give you a 2-byte hole instead of 3 and 7 free bits to
+store some more flags.
+
+> +	u32 gphy_efuse[2];
+>  
+> -	bool reset_if_overtemp;
+> +	bool autoneg;
+> +	u32 autoneg_advertised;
+> +};
+>  
+> +enum ngbe_pf_flags {
+> +	NGBE_FLAG_NEED_LINK_UPDATE,
+> +	NGBE_FLAGS_NBITS		/* must be last */
+>  };
+>  
+>  struct ngbe_hw {
+> @@ -135,5 +236,7 @@ struct ngbe_hw {
+>  	bool wol_enabled;
+>  	bool ncsi_enabled;
+>  	bool gpio_ctrl;
+> +
+> +	u32 led_conf;
+>  };
+>  #endif /* _NGBE_TYPE_H_ */
+> -- 
+> 2.38.1
+
+Thanks,
+Olek
