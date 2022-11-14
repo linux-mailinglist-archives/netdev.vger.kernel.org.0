@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B93576276D3
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 08:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 170F0627750
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:19:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236109AbiKNHzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 02:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
+        id S236272AbiKNITS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 03:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236133AbiKNHzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 02:55:06 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9716495AA;
-        Sun, 13 Nov 2022 23:54:31 -0800 (PST)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N9hQp1tCczmVxH;
-        Mon, 14 Nov 2022 15:54:10 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 15:54:29 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 14 Nov 2022 15:54:29 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S236258AbiKNITR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:19:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341B62DD8;
+        Mon, 14 Nov 2022 00:19:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E84CFB80D2B;
+        Mon, 14 Nov 2022 08:19:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C204EC433D7;
+        Mon, 14 Nov 2022 08:19:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668413954;
+        bh=IpqxtKYy8fB+4tkOtqYyskkSLY6Jq8DjMI40DthW6yU=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=HygpfE4BdeZjIJf/DgPk/N9atO89eZok3ES3ubjhm+uEcDJMxNGnHgaUlP1L0LBdl
+         fE7UVxJzBajUqHs2HajwUOLdsdcdG+I/oMqvNRuoml+jPM5mJuIKyKDtC3i7TmaaNa
+         v9Y4g63Sjt/IuhTc64S3KqaemKjMVr35NLmSji4N1Bykw3ZucD2wkPqHQvVMCFulcc
+         Bq1eq53PclDZEThfDbUct7xcGC+OZa9+JZVkIw7hWPyhuS3qivbTcM40DCV1euO81w
+         g9+zvHxyCiFIR3lkixYRKY1SVQDRpyz2Df8xgJt/chJupOt0I2iolL1JgAPRXDsQEw
+         Lola4MKO64IoA==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Long Li <longli@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>, netdev@vger.kernel.org,
+        Dexuan Cui <decui@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Arunachalam Santhanam" <arunachalam.santhanam@in.bosch.com>
-CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] can: etas_es58x: free netdev when register_candev() failed in es58x_init_netdev()
-Date:   Mon, 14 Nov 2022 16:14:44 +0800
-Message-ID: <1668413685-23354-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        Leon Romanovsky <leon@kernel.org>,
+        linux-hyperv@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        linux-rdma@vger.kernel.org
+In-Reply-To: <3c1e821279e6a165d058655d2343722d6650e776.1668160486.git.leonro@nvidia.com>
+References: <3c1e821279e6a165d058655d2343722d6650e776.1668160486.git.leonro@nvidia.com>
+Subject: Re: [PATCH rdma-next] RDMA/mana: Remove redefinition of basic u64 type
+Message-Id: <166841395000.1334860.9832196394158155110.b4-ty@kernel.org>
+Date:   Mon, 14 Nov 2022 10:19:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.11.0-dev-87e0e
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,35 +63,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of register_candev() fails, clear es58x_dev->netdev[channel_idx]
-and add free_candev(). Otherwise es58x_free_netdevs() will unregister
-the netdev that has never been registered.
+On Fri, 11 Nov 2022 11:55:29 +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> gdma_obj_handle_t is no more than redefinition of basic
+> u64 type. Remove such obfuscation.
+> 
+> 
 
-Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
-v1 -> v2: change to the correct 'Fixes' tag according to Vincent Mailhol
+Applied, thanks!
 
- drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+[1/1] RDMA/mana: Remove redefinition of basic u64 type
+      https://git.kernel.org/rdma/rdma/c/3574cfdca28543
 
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-index 25f863b..ddb7c57 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-@@ -2091,8 +2091,11 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
- 	netdev->dev_port = channel_idx;
- 
- 	ret = register_candev(netdev);
--	if (ret)
-+	if (ret) {
-+		es58x_dev->netdev[channel_idx] = NULL;
-+		free_candev(netdev);
- 		return ret;
-+	}
- 
- 	netdev_queue_set_dql_min_limit(netdev_get_tx_queue(netdev, 0),
- 				       es58x_dev->param->dql_min_limit);
+Best regards,
 -- 
-2.9.5
-
+Leon Romanovsky <leon@kernel.org>
