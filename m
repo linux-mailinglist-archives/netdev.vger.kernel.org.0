@@ -2,125 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF298628725
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 18:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A0C5628719
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 18:32:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237681AbiKNRc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 12:32:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36044 "EHLO
+        id S237532AbiKNRbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 12:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237922AbiKNRcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 12:32:35 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FD72DAA3
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:32:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668447151; x=1699983151;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CdNB1lOP9vxItqr9IW6oDfWGhWDyfTI0k898ORTLrsY=;
-  b=nFlVX/zdICBFeuDCpneD2Rth3PsIexPxBY4ThJxVMeSEsync80TZubI0
-   s8cSnDsjDkuRBkcOmi8BgQnGAFat/N54uTIHG4ocBR/EZFE0Q/qkSw43F
-   jMiQ/ahGFKYTKxzqrPnhxuhUdZUPXEEoFu4vYyop14VQKYmLGnXYaAdzB
-   iOoJ8g7qbf4eYbB7FcxkUMcuNvy67+FDB5C9B1BTvtFnFmMbt9dSFfMBQ
-   yQSqT54Qd06/Iq34VvB87HgWfTvSLUnLnZWGHyh0rENEfgkCJ1rljyZEh
-   NmjMHEiV9JvRv+NloLdrrWjjsFSkYwmj12hSCvnmU4OQ/TyohV9+t9HE7
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="376297804"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="376297804"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 09:32:31 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="781012204"
-X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="781012204"
-Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 09:32:29 -0800
-From:   Michal Wilczynski <michal.wilczynski@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
-        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
-        anthony.l.nguyen@intel.com, kuba@kernel.org,
-        ecree.xilinx@gmail.com, jiri@resnulli.us,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v11 11/11] Documentation: Add documentation for new devlink-rate attributes
-Date:   Mon, 14 Nov 2022 18:31:38 +0100
-Message-Id: <20221114173138.165319-12-michal.wilczynski@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221114173138.165319-1-michal.wilczynski@intel.com>
-References: <20221114173138.165319-1-michal.wilczynski@intel.com>
+        with ESMTP id S236638AbiKNRbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 12:31:51 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE749A476
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:31:50 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3691e040abaso113073567b3.9
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:31:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eWU2AWq8Eq3gqU4BhZFYarDK0bOR9ZheOlzcH4UPHes=;
+        b=ngsM0y8DuJGgF6yy8pkYeuleOgOYsTtSUCNcLqT1ekUQUW6OmtLiaeNsys8QDH+ULi
+         zDkbmATi0P9/UGnfA+2IHWgiCKLQwq/05CAUEP1esz1giJb3nMlqNWuqhbJVsd4Yopsp
+         BeoYCmnqFsBh2ZzgldWB8crdVBMmZpywZk6rvYgR8lxTje9VR5rJDyeuxXeWXZOevMO3
+         BUAYX+Kvx+Rbznu9Te3Sw+m0PD1lKxC08GAmEXmjgQsvx45SpLLVcV9pLMKG4stGJnat
+         CzQneiTrPCk+tLNBxb0QsNinY+OqLUyF7PFlmwSNiepf+rrsYuKZXipZ0gkrmf4oFJ+3
+         b0wA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eWU2AWq8Eq3gqU4BhZFYarDK0bOR9ZheOlzcH4UPHes=;
+        b=mJx9DfjDynACTyIFNdhb3FNIezQxpOwgjYB0b8iQl/vTjWRItE81D5qzTiJqjFOD1u
+         LcPll0e5w9ISp7NSyqO05IelVETMKi41I18mbSqlwQqiEyxSBM5R5HkbtONxiMVoq8fF
+         LKfBIt6vCh33sEgk2TqdFi//3cP5UCz0kYkvB8Bmi2FmkoptRCpDH1FSrc6ClhKUCog0
+         Z9k6f0AwdMZGNV7vmeJXZsaGnP3gseMiTRxr/F44m62g2H9tyECFqW2YZYx8ynz7NwTk
+         tA87qT64tgh4Wopna5YZ64zfRnaM9H5sS7RPyzw+XEu4nJKrltN4ngF4g9P0hBvL4/dM
+         Iqsg==
+X-Gm-Message-State: ANoB5plM0O6a5DQnIkqHG0bGjJrxuwZR3SbiZ/krqapFKMdIrP25jxj2
+        b5nxXAQ20K0yc+5gRFK1o5KVuhDnXly2aJREIJJ44g==
+X-Google-Smtp-Source: AA0mqf6vu9kuePeMS9l3b991+R2zG6hmWT5m11Wgk0SuA+Vd3yJC/GJQIOJLNpd2zjgtMumhHjn2hxZ5Cq+MesR6OZY=
+X-Received: by 2002:a81:1a16:0:b0:370:7a9a:564 with SMTP id
+ a22-20020a811a16000000b003707a9a0564mr13696670ywa.278.1668447109741; Mon, 14
+ Nov 2022 09:31:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <4fedab7ce54a389aeadbdc639f6b4f4988e9d2d7.1668386107.git.jamie.bainbridge@gmail.com>
+In-Reply-To: <4fedab7ce54a389aeadbdc639f6b4f4988e9d2d7.1668386107.git.jamie.bainbridge@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 14 Nov 2022 09:31:38 -0800
+Message-ID: <CANn89iK-X6hz0F3g1+J52cxVvm7LNizNa5fmnhpyCMJeYZBbaw@mail.gmail.com>
+Subject: Re: [PATCH v3] tcp: Add listening address to SYN flood message
+To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide documentation for newly introduced netlink attributes for
-devlink-rate: tx_priority and tx_weight.
+On Sun, Nov 13, 2022 at 5:00 PM Jamie Bainbridge
+<jamie.bainbridge@gmail.com> wrote:
+>
+> The SYN flood message prints the listening port number, but with many
+> processes bound to the same port on different IPs, it's impossible to
+> tell which socket is the problem.
+>
+> Add the listen IP address to the SYN flood message.
+>
+> For IPv6 use "[IP]:port" as per RFC-5952 and to provide ease of
+> copy-paste to "ss" filters. For IPv4 use "IP:port" to match.
+>
+> Each protcol's "any" address and a host address now look like:
+>
+>  Possible SYN flooding on port 0.0.0.0:9001.
+>  Possible SYN flooding on port 127.0.0.1:9001.
+>  Possible SYN flooding on port [::]:9001.
+>  Possible SYN flooding on port [fc00::1]:9001.
+>
+> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+> ---
 
-Mention the possibility to export tree from the driver.
-
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
----
- .../networking/devlink/devlink-port.rst       | 33 ++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
-index 7627b1da01f2..643f5903d1d8 100644
---- a/Documentation/networking/devlink/devlink-port.rst
-+++ b/Documentation/networking/devlink/devlink-port.rst
-@@ -191,13 +191,44 @@ API allows to configure following rate object's parameters:
- ``tx_max``
-   Maximum TX rate value.
- 
-+``tx_priority``
-+  Allows for usage of strict priority arbiter among siblings. This
-+  arbitration scheme attempts to schedule nodes based on their priority
-+  as long as the nodes remain within their bandwidth limit. The higher the
-+  priority the higher the probability that the node will get selected for
-+  scheduling.
-+
-+``tx_weight``
-+  Allows for usage of Weighted Fair Queuing arbitration scheme among
-+  siblings. This arbitration scheme can be used simultaneously with the
-+  strict priority. As a node is configured with a higher rate it gets more
-+  BW relative to it's siblings. Values are relative like a percentage
-+  points, they basically tell how much BW should node take relative to
-+  it's siblings.
-+
- ``parent``
-   Parent node name. Parent node rate limits are considered as additional limits
-   to all node children limits. ``tx_max`` is an upper limit for children.
-   ``tx_share`` is a total bandwidth distributed among children.
- 
-+``tx_priority`` and ``tx_weight`` can be used simultaneously. In that case
-+nodes with the same priority form a WFQ subgroup in the sibling group
-+and arbitration among them is based on assigned weights.
-+
-+Arbitration flow from the high level:
-+#. Choose a node, or group of nodes with the highest priority that stays
-+   within the BW limit and are not blocked. Use ``tx_priority`` as a
-+   parameter for this arbitration.
-+#. If group of nodes have the same priority perform WFQ arbitration on
-+   that subgroup. Use ``tx_weight`` as a parameter for this arbitration.
-+#. Select the winner node, and continue arbitration flow among it's children,
-+   until leaf node is reached, and the winner is established.
-+#. If all the nodes from the highest priority sub-group are satisfied, or
-+   overused their assigned BW, move to the lower priority nodes.
-+
- Driver implementations are allowed to support both or either rate object types
--and setting methods of their parameters.
-+and setting methods of their parameters. Additionally driver implementation
-+may export nodes/leafs and their child-parent relationships.
- 
- Terms and Definitions
- =====================
--- 
-2.37.2
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
