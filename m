@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5A26286A3
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 18:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DED966286A4
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 18:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238179AbiKNRIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 12:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46860 "EHLO
+        id S238175AbiKNRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 12:08:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238163AbiKNRIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 12:08:00 -0500
+        with ESMTP id S238169AbiKNRIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 12:08:02 -0500
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2062.outbound.protection.outlook.com [40.107.20.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D54D2D74E
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:07:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6792F008
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:08:00 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Io2vbXSteFg5ywN/nBfiCD0Ctgivg8+e+iTJmtvKLMTpBsWCcU+cDvrszdi16fNhRah09ZM0DXJFZ95Ap3KogP/8pGE5059vRSdTyBtG9wsGWhni8j5QDOYnOklf5FICBQp4V9NddNR0zCEDZ9kZuuO1c4J0BdgYRIYKEgyW9izmrrUsO8rPS1K9ABlQtz4dUZPEPold8/MnYw1usSJQpc9S7bzOlFUcyCWVTfqqKcaC9niX7yuDHtOUlr9TJHXO7Kg48DSV3YIdiRKmWhk7vHMaTXkqpMePnQ67Bj9LBpLZtIPNtIl0HlQYZr1XaBZDGcVBOFBfRDqoCNT68MFBFQ==
+ b=a26raTXPYvVlSAZ9V+yZn3Um/2/qjUEu4uOXNGseqQ+5a8x6+QIH1oOWOCj1/L/TRsE5AbCq+Da3uGAEQSlKFP/IcMl+l0lqbJvo+vn/NPWNykzDny9iD+EBYmGqGMbYn5Voro8W3yeqthYOHiMO4ct+3hsLfhJpaFS66MO3pxf5/qHJM4oJ8vEHd/47WDWwjX9AzjCf+K+sn0BEr1S/AiGZy+QIXOxmHdK+wQH2UpXzJqcEqjrjM82kEPd7X/cQNwN44D/fGioXh2rDhyvNJaW1WSp+cz3fqoPhnYnCC2XEiRajSVSg6i3VWtZseQsrTgbEZ/v7KxF6UMvNcR0Acg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pWu7D9edz9gc/S9RYMQWUQ2MZ2CorjnfC1mqyiypfT0=;
- b=TGRxnRFiUnBMOj0C6UVndvXKFxyH9f4IGlmBD5cr7xafXUYGDR++W2lcN2O+HLMnZ/UvxedEsbpipjHdlMGEY/Yc6r8j2y/1nzGJLvWebYxjgApcczGVWciSDSX1tUpLhyaCOm7MozmucMOb3NfKJN8e8CJdh1TV0+C8zuUa3o17vAicz01DyWim+xPQd1B2vuyHbv6NvtMgWm4SFDWdPDUwZbIlNWs+86pAjeyP2g2H7vYW4PMRRW01p7Hrsxgp+F1cxe+29tn7hgFS36wY2uSeq34jtMRB6hXNhvcEj+n31zxUQq3IGWbZJPhOZsm/A0inEaL9DgqlCYxx0mM1aw==
+ bh=O5bBYXRv8qvYIIaVAFYVISrK/jzDgZXjmSxu7zrv4B4=;
+ b=FApb3HK2UV3uRXLKowbGNy+p4WcDdDl1BQXF9wauUH5gTFeTfLuLM/7U3HjehH2HSYiqkbLSnROuHhIKRs7JyvmJuW0YRUoNQZSVCRouFJHTIGgE4Lc7dVqL8TvnlnBLdecbBnAHTqcjW7J9QTrGiydb88O+bliscBJh2Bj5GtrucYx61HEEEI8bfpGFH2aSf7c0Ci9ZtuONL1Ps4iiBrmHgZchTm2mPjGpWL1KkgExL4Nkr1KrGUtnJa8sBwmvFwnv1h2glDiWp+5dMzqB6wUa3M3wsjjAxWu4AmbXMQpBMrv/eU+8rdvWt/VicKtKyDeCjEwJP0PnoLXVHj/kv2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pWu7D9edz9gc/S9RYMQWUQ2MZ2CorjnfC1mqyiypfT0=;
- b=GezGF+1mJoyf/xxu+PntWALR6tTdOYLwQpUI+shREJIVAgVPA/QFgd6ICZTjIk/5SKJh2hZ7PTcxtum3iHcY+U69rj163aiJNod3q/xnVJN9BYIS4L/oRLHH83WfU5/MoNYhK6HXfFnQ7weqdsvkyWoFz/F1/cujWTiLWbSoQPg=
+ bh=O5bBYXRv8qvYIIaVAFYVISrK/jzDgZXjmSxu7zrv4B4=;
+ b=NGv95hPQq1or5bnV1pKEytKSpimayWruwj9X3GR2PgyYEGI07yYesEp6/2hlXUuBFFWQ63u6C9qpS+RpXWNrAlvI1YhvubhyPzUwsA5Gb6/qay6cb/0KA/c8QbdzVV7nl1RdA8jytFHmuQOg5Aw8FiUVccnB2tg9l50HKoU7NSA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB9280.eurprd04.prod.outlook.com (2603:10a6:102:2b6::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Mon, 14 Nov
- 2022 17:07:56 +0000
+ 2022 17:07:58 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
- 17:07:56 +0000
+ 17:07:58 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
@@ -55,9 +55,9 @@ Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2 net-next 3/4] net: mscc: ocelot: drop workaround for forcing RX flow control
-Date:   Mon, 14 Nov 2022 19:07:29 +0200
-Message-Id: <20221114170730.2189282-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 4/4] net: dsa: remove phylink_validate() method
+Date:   Mon, 14 Nov 2022 19:07:30 +0200
+Message-Id: <20221114170730.2189282-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221114170730.2189282-1-vladimir.oltean@nxp.com>
 References: <20221114170730.2189282-1-vladimir.oltean@nxp.com>
@@ -69,52 +69,52 @@ X-ClientProxiedBy: AS4P191CA0007.EURP191.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB9280:EE_
-X-MS-Office365-Filtering-Correlation-Id: b4e5aa05-f719-4955-8685-08dac662c624
+X-MS-Office365-Filtering-Correlation-Id: cfb088bf-bf72-44ba-fbde-08dac662c763
 X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r1BUKngbtHqPm02rdCqvbLd/QqFPxJMpc6J+xO0teQQND3ucUpw92U+SZDbCzJgDTAWZPlb0uX40PSIKwmSfwZ3VxJs6zUYP8UAsmnjYM/dbk8v4LeoTtA7jzgKInhFWQ8vTa4PIZae8Akt9QwHk1PWwE/Lhrdx5/ZdYilU6aa+ptrn+IzphjCFVPZ61Rh6szPHgAtgOt1oPbJPC2dTVvegevNmBWvbmsS3bBl+fij+Ziv79j/0hngVoEvdH61bPKJkFGeY+Of+fGYGrty5YIXMZ36OAtoDixXNogga/AYjr6z5edJ43eOrPmjJlrayxK/QOnj5p+f1khVmUNyRBzHXwR3ID83cNmsmF0QLIYGJr2Gf0M3MJcSp9JSXBkit2njhPSlTOgXWlx/V1ns83tE1E8vwDbcjq/7zCxQ/j9sJfDC8GEJ7/XhvVcWylsMx4HGnGO+M5k8sfHDSUxNN9vs76nDz7YPiUkZW1AiCaY0c6Whm4atf6NXY1cUT1PbOypD9YvGXtDq9xhegesDVj1IOBYMZlyTSx8D8qk0wmoxekq/lYRRTPC24ryIH6qE3PP1+kMpsDcFBFrTm9+oQv8PHJLxeKD0/Trxhf6s+W++CufgNEp3fXwleo2ukUsldXeFIpE/q5VFMtpg3tO+kb4/+JWMXbHD/oemBHDmaUcNT7d0gg3f4NNmLnUYevdW9/PjqQqzfHEFM+lhVINYY2FfmXzFbclcev+7xr8UaB+FDEo+ziVD7PtO8ubRbo5whdec7knKyAgxAUJWKzKHg9xw==
+X-Microsoft-Antispam-Message-Info: 8zfDPlttQO83oeEmKtKyG4UtDJvyTe8FjppZinNOeJmwdgfht3fV+ynmZnV3DWRRBJLCWnSWix/grq6oFGEhFxCQ+MfhZrTjYTDyrH83RqRV8e90ftJTdQvcwQOOW1Y5A4U7HQShY4/nVGaBaFDIAaxCKgPQ3gH1UWzc+lYin8vBHQY8ZHs+WXE+iQ4EpOBXmpNQIuUwvqPRKh8d04n8AVZj3+qVyy+b+Aw/A7CASxRfVuv780qCj1pk53JyVGvswvzrr/SNTRgGcGQmvMWkux7/fh7LrkOtKnGpbBWWXc2XWAOz5CuYV9O9AiJt9N9rYAN09Jk0IM/6y83sv99ULbtlDpyzFy2CE0JpJKQ3uvbjVHyWgX/yZCEmf2BuyKo+q+ReGiXyZSrwKPzKPFdDoRtvX+E2zeXFXgNLatb3T9Ql55Tu+qzyNQud8dHScsFQ01ercgGghnjuPqhZ3EK0J2v7Ij5hb0mo7JZn6jZyIOobcJsvKfQpcgbYZIdf1nyCFOWzDfe/v0yFYuJIRCBqoNxT+5YKnJlAWQYrvo8qK3/5Q/PuNUbfnRUQCzqpQR99blv1ZnsE0SLP8bvR/1K6ATJjijJ5uBk/kAhZyLtDw5EPMEcQW+nuw8MWDrEkpo7CZQdHu3THOsAJOqnHTzTQPFhypA9TXo7QNK+8gV/OoHnLVB4xTyDpuKwtVcr9GZm5KgYv5CCsXdkZrSEuTYMaZFMrc6wMLJhfl7miSkDpt4pHPYKTNMR1jMLBkPzkiKA2uL03bFYtvufBynF8xXgGaA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(376002)(366004)(346002)(136003)(451199015)(44832011)(36756003)(7416002)(6512007)(5660300002)(26005)(1076003)(6506007)(6666004)(2616005)(86362001)(8936002)(52116002)(478600001)(6486002)(83380400001)(2906002)(186003)(316002)(66946007)(66556008)(41300700001)(66476007)(6916009)(8676002)(4326008)(54906003)(38100700002)(38350700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?I3G8YaPoUbwg7KTnOlkd32PW1SRl1q/LkaVfLJ/gZePkC9c9MGAG2sLwWXPR?=
- =?us-ascii?Q?2DH6guIUgCo62YyzhgE3hjLf/z6BBXlhzTtEPBRkWYPdVMou0+4vThBY0dNL?=
- =?us-ascii?Q?6vQv2au50JDHhC2a0b4VAe1Gr43+o7hnbdOubvp1mS17z+q/97xEol53EvPS?=
- =?us-ascii?Q?vQn79vusGjlJTN3X5GzE0fXHQpTsUc0U0yVuAZ4PK0OnwCUeVFdwYuvROxPk?=
- =?us-ascii?Q?CyApnvn3VcSmNOmQsC1xYEH00qJ8s9NrzdNCDgrSYbuCFyxFz+rROaBmDM66?=
- =?us-ascii?Q?n2LavvydFSyYVE87GsPWpcis4TxSG0G3tIFzBNdk6h1DckTxscQTk55KhvqI?=
- =?us-ascii?Q?KTHE4VR0GBFzfiZ/Qdlh1Y1IXvhDgY++C+tKX3goBkgBz7E9tCHshV3/z9le?=
- =?us-ascii?Q?MPx2NMbR21QmCOgr3JPq9zHBz3nDEkJwUbP0Vqwn+z4PevYa4xCKTmWlyCue?=
- =?us-ascii?Q?S5REdpo6SME0w2+Nd6ity6Q8OyPY5zyDLvN39RMwvO/4vY5Omg5ySkgDV0wl?=
- =?us-ascii?Q?0Z/NEKKV1HWqapdUWPabLMc5v5ubhKKcQmTwf+ao77bvV+hX47UaRrp3tR/b?=
- =?us-ascii?Q?e8ngy3/7/hAbavBNmtPpBhWmyAIGI0MnL7cLlcQ+42BtAyZFqwdojbNHOATz?=
- =?us-ascii?Q?SJl1bCOZgFc1bRW0SOeCrmt547ltgHWbLWyGCFdPb9B+Uonue+X5afbE4rB2?=
- =?us-ascii?Q?BNIdVHBzE9xkU5x7jlt54iCwTkhih8nKNbZsAWr5qITt+Kx6S03KeLaevfYk?=
- =?us-ascii?Q?076aANeCqLZJ78GamB8RHpi3onyDAobQBvo/cE8oM5ywqQUSHh7sw/PK0D4a?=
- =?us-ascii?Q?fUTC0Xp6Dkf2VSYrNyg3FEnfEcj9MhsQ3JnGTpasJeXVx55WnaQwfkoTCJ+w?=
- =?us-ascii?Q?ef2Vf+LzHZQFk1e4oF9H7xIEWK0N5tR6O5l2VdXs1MnHsyigEble7DhiTt0z?=
- =?us-ascii?Q?PW5MQ0ElmUmQ3/jgQJueZl3/RM/pjhwDdxCnIheAlHvdaxk8d5IUrUSJo4nZ?=
- =?us-ascii?Q?vAupKWFagGm1uLMOS58lH4yXA+Kf8ImjwYzckEFWbq9ntHNmxX/5QIJC/AV+?=
- =?us-ascii?Q?X8f017cEOZZQGKDs6xgebR73xFPydkhNr4muyVUKJVXBGmmYCPDfV1bP5Aeo?=
- =?us-ascii?Q?l2lDxT+aCb5WbITGwtG6vVk6HqA2TNVXpPfDNOEVNSBbdwh6Yj99DKD8ymLV?=
- =?us-ascii?Q?ZUM6womM5Yjx387usHNiDzQwkVodzaaZ318p3VrFSnIPXpHQsGBy1apBDWSD?=
- =?us-ascii?Q?Y/En4rYL2YwEU0D/89wbiJrc3j0kmFrlCm+ou2b9y6cnyEAysyoQttXPwP/a?=
- =?us-ascii?Q?Ik1oP0JxGlKZMDBzOwmt/A0joYmA87ldLrnjxOAEQxfUX/sivKS7XWYc57Q0?=
- =?us-ascii?Q?fa368f7IoiqGVGdkFYp4eF1xx3Zx7nurE/FT2BrdhpjNEoPyFHdLclYHjQ+y?=
- =?us-ascii?Q?oPA4UH7l4++k5oMZUIPisMkLzMjqHaVNmeqr1wyzt/VzmjByzLgOWuXC4z4x?=
- =?us-ascii?Q?UQ7B/D5S3P0IIhraFQLVJsnjQUd0a0FGikl/qEYlNy+hh8JAY1BDazSg98A0?=
- =?us-ascii?Q?ukJn6v9MZ9YL6DjEBopMoIzVSZTCpOyR860HcIWF8BhiALLHEUOxsUeANA2y?=
- =?us-ascii?Q?yg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p6pjgWB0sU0+sZfIc3RrsDpH7/McLreJfkLCaxD0iLFgdwwjqGuy2nMyrEVF?=
+ =?us-ascii?Q?VlmMI3Of+v377Bke68i6aCPSHYzlbRmHJujQgzokH0yZSkhy59XevX57qQ+w?=
+ =?us-ascii?Q?kTjPQ89o/h8a0LXVZ6A6FcegnRdGHQ1EJrUIAGJy0LaJJPiZcpllhCIGlifF?=
+ =?us-ascii?Q?aLipljFizhZi5tNHF+ocmrj8HzLhadVcrDh1sJ+NZiOuvYK7CTFRiS8ZDVD5?=
+ =?us-ascii?Q?20ODHJZYs1P1Kht+OGCf5eAhrxXHyiLPx++xYHWe94aUMXK1d/htR19oPhi3?=
+ =?us-ascii?Q?GWVV5/JB4A/LYYWA4XswJayqNFUXp1axK9hytW4rix88Wvp+OtAe25gUSA0s?=
+ =?us-ascii?Q?MSg3gVPzLZEB8rimeh/EiRjAQmmasnmoDhrrk5u9y3u4xbyW202aQRenzUPe?=
+ =?us-ascii?Q?kn5D+z2nvEIXYaFfdbM5GwnrHQM+xL5SmR6g3sJooEIa7wtxVL/bKr4wDmDd?=
+ =?us-ascii?Q?gFh+WMcu2JPBPYIyi9UCtHNt+1w/M0z4fmlj47fqNvDiDspd0mC3ZTS4vJVE?=
+ =?us-ascii?Q?P+m1yACvUR/ccK7FJBsdf6JaS2hlquBV4zMfZP/6AiKam4I8QzcmZ8JvbFEg?=
+ =?us-ascii?Q?fh3giavAnvwnJH/fzH80E2uuWuajjxu0I33lLYFzecKSvQtDZyztLL//H46P?=
+ =?us-ascii?Q?9rhLgIHIdrTEeMqD5DAQ2/rVBHIWzr/1GeGWgxGsZcv1sP5PmyVd8h/kUhLu?=
+ =?us-ascii?Q?kMK+hyFvPATStZ0ZzCyoDmuZ4Kfoi91k+fywcUjlcigAJaIxf2iPwMgzAyiN?=
+ =?us-ascii?Q?Rtqqp1SsG1XP7dSLxsD1O42EQlDQdqqPcxjPvUkf8ENDzDIwHCf3Z09MRCyw?=
+ =?us-ascii?Q?kqe+n65rRNxUqev8nPIMbvG8IyMjaHtFKlfxsQVjgZXveRL5tdEtNaAW1+M6?=
+ =?us-ascii?Q?RAMR1peASq190PKaqdaexMsVFozHOtpOJQ/2rB1V1hN/MSD2MLmdZlQGKENu?=
+ =?us-ascii?Q?hatGCwRTfP27GEYF7sLKzXEw/hoCue/jORNnQRx1oVXxyWqJJXsnGEUwgxBK?=
+ =?us-ascii?Q?79MJX9OvZLx5O2yUnnkfydcnUnyE8GGzikOvrIC1KsCxud3ixOfmwN7ED2mP?=
+ =?us-ascii?Q?8BSR1d+vW1xE2DVT9LDhFLdd13Pn2rpafaH2MiIslLfoXjw7/EGYToIarCmd?=
+ =?us-ascii?Q?zYSFaTl5PJ/ce7ZwdVZDlH52tJXW2JG3sF4L/8WXd5a4fWnEiHrGhHKSR7qM?=
+ =?us-ascii?Q?JLL0d4s45cmrrweaN2380HQe4NjWsQOEYnr5qH512UM/69t+rwLyz01Lm0bu?=
+ =?us-ascii?Q?jJqnGALojDuLfZGxIuuxSAfK7Qz/ruxHuOC9OwmdrDM3fXwERzT1EgKlOBZ3?=
+ =?us-ascii?Q?cFIv8pQfvgcTOugtP2GcsT+ahoNhkNF7i9YzzQWb+D6TRu38nKfHOXTxLNbt?=
+ =?us-ascii?Q?vwNLoj0sldSq9OSsFWQG/UgAvrJgvkr301iU0vCelNXJgafpbUvjwPmKqM4I?=
+ =?us-ascii?Q?jRiIYy08g6HrMB6/oO5KAwI3+uW5aQv+BcNwa/BJ+6D/vFqVn4vFMPrHlUnA?=
+ =?us-ascii?Q?dQ5gfaPq/PSdFlesjrPgUJfLDxUyJelYH/QojMjkhGpSQ3rh5w160mksPkW5?=
+ =?us-ascii?Q?2jv4QAIbfUAWMTSoECGUA7egLE167GAfSxgmkJkTSvuMhyy9J8xC0bgXe2DW?=
+ =?us-ascii?Q?rg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4e5aa05-f719-4955-8685-08dac662c624
+X-MS-Exchange-CrossTenant-Network-Message-Id: cfb088bf-bf72-44ba-fbde-08dac662c763
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 17:07:56.2535
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 17:07:58.2222
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PbCHhkRcSIzig1EZ2BKImbOcsZEWAfW0tsncKDcLqNbzwZAwGM3lqDy0oUKLJM1yZFYylv1OccOnDwc+uJZ6IQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: tlqcp92WC3MRXjNnXmxOQkj7XtqJYt9HXRihAWU+Dcjwmvt7He2989/is4EuvWljtCvFaTvL5nHq+Gki8wl/Hw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9280
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -126,38 +126,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As phylink gained generic support for PHYs with rate matching via PAUSE
-frames, the phylink_mac_link_up() method will be called with the maximum
-speed and with rx_pause=true if rate matching is in use. This means that
-setups with 2500base-x as the SERDES protocol between the MAC/PCS and
-the PHY now work with no need for the driver to do anything special.
-
-Tested with fsl-ls1028a-qds-7777.dts.
+As of now, no DSA driver uses a custom link mode validation procedure
+anymore. So remove this DSA operation and let phylink determine what is
+supported based on config->mac_capabilities (if provided by the driver).
+Leave a comment why we left the code that we did, and that there is more
+work to do.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: none
+v1->v2:
+remove ds->ops->phylink_validate() but keep dsa_port_phylink_validate()
+as a no-op shim for those drivers which do not populate mac_capabilities.
+Eventually this will have to go away too, but it's outside the scope of
+the current series.
 
- drivers/net/ethernet/mscc/ocelot.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/net/dsa.h |  3 ---
+ net/dsa/port.c    | 18 ++++++++----------
+ 2 files changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 13b14110a060..da56f9bfeaf0 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -872,10 +872,8 @@ void ocelot_phylink_mac_link_up(struct ocelot *ocelot, int port,
- 		return;
- 	}
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index ee369670e20e..dde364688739 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -880,9 +880,6 @@ struct dsa_switch_ops {
+ 	 */
+ 	void	(*phylink_get_caps)(struct dsa_switch *ds, int port,
+ 				    struct phylink_config *config);
+-	void	(*phylink_validate)(struct dsa_switch *ds, int port,
+-				    unsigned long *supported,
+-				    struct phylink_link_state *state);
+ 	struct phylink_pcs *(*phylink_mac_select_pcs)(struct dsa_switch *ds,
+ 						      int port,
+ 						      phy_interface_t iface);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 208168276995..48c9eaa74aee 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1536,16 +1536,14 @@ static void dsa_port_phylink_validate(struct phylink_config *config,
+ 				      unsigned long *supported,
+ 				      struct phylink_link_state *state)
+ {
+-	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+-	struct dsa_switch *ds = dp->ds;
+-
+-	if (!ds->ops->phylink_validate) {
+-		if (config->mac_capabilities)
+-			phylink_generic_validate(config, supported, state);
+-		return;
+-	}
+-
+-	ds->ops->phylink_validate(ds, dp->index, supported, state);
++	/* Skip call for drivers which don't yet set mac_capabilities,
++	 * since validating in that case would mean their PHY will advertise
++	 * nothing. In turn, skipping validation makes them advertise
++	 * everything that the PHY supports, so those drivers should be
++	 * converted ASAP.
++	 */
++	if (config->mac_capabilities)
++		phylink_generic_validate(config, supported, state);
+ }
  
--	/* Handle RX pause in all cases, with 2500base-X this is used for rate
--	 * adaptation.
--	 */
--	mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
-+	if (rx_pause)
-+		mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
- 
- 	if (tx_pause)
- 		mac_fc_cfg |= SYS_MAC_FC_CFG_TX_FC_ENA |
+ static void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
 -- 
 2.34.1
 
