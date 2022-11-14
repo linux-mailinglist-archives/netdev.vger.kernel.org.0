@@ -2,180 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B75D62884D
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 19:30:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC5A062890F
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 20:16:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236870AbiKNSaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 13:30:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
+        id S237161AbiKNTQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 14:16:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236514AbiKNSaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 13:30:03 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2045.outbound.protection.outlook.com [40.107.92.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09F524BEB
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 10:30:02 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VlQq63ReB/BM1gGqxDij6+1F0CaFyW59f3fD93g1qgryI1JkStqokOicdKcE4j8Omw2t6NdEA2c6MaFeWOH7ztiMR6b6RK/9zBcTXsDFNNebRRaP8BPRf0Hubdb0RTXbAVom/HHbrm2nDDk+wCbwCiVgSTI4oS97Q4dko8ctM7YnoWQEH5AxyewF77v+V1HHU++uwr0Ss3YkrP3JDJajxVWbAmAnq0uaPNNTpWwjSpAw98RuUD1SpV6TY31S2mxyMF1jFSWAZvhLM8saOorSd7Xa1Z60b7Jcn/FlDwgzSOJpjmQphAwrPD+ZtvYENRI8b7TgaOZ3E2aw87jIpgP05A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wdiHx0gPW1TARPFhSdyUECV2cF6ogIEcFzV96Ew0Ynk=;
- b=bD77817YZXqHcL9stIuX6qtfxSqK6o8G3CFoCIx+iw+QOqxNnG0NhD8wvds9XSOfecLFvRbYwAQH4+jP9klx5OfNH8DT6u+aWO4euQ66Tm2uKeRJxBd48Vr9MTU5pftZRpzL8I1jrtguqJb1yi+kiwc1eKRxa2nsYalsqXi3C8RmF/XyCBKmDq+5vVqRxQj7YQorECavG4WX7RpLmnexiGdeGiaccV96GKIxLPmP1lcLo8F/dvp7o+j7nIUIgQx0OS3fVgCAUhxCJOhSl1UNzUN60kGZE4oS/AJuQQwGVHFkZpnlSN2QZtkU45tNYnhua3pLgY8NJGq6vHASbzFtDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wdiHx0gPW1TARPFhSdyUECV2cF6ogIEcFzV96Ew0Ynk=;
- b=o0V/H4JRKOG1QnHt3OUTFBT/4VIuD381TwZKSU2aZ6hUnH3rZPqW18nxX7l4lpkT6ph5yPyj0aG/EawvZBzbQTC1dP8jS9uS5O4r833Tvsx6dj36XXKT8l2CDWWpWQqib3XqNtrD+EIoJbLQy1vOzHE36qUuwY/JjGZKC8yTups=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- PH8PR12MB7448.namprd12.prod.outlook.com (2603:10b6:510:214::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Mon, 14 Nov
- 2022 18:30:00 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b%5]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
- 18:30:00 +0000
-Message-ID: <c0ba2254-2c16-e471-5a98-56106121af6f@amd.com>
-Date:   Mon, 14 Nov 2022 10:29:56 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: [PATCH] net: ionic: Fix error handling in ionic_init_module()
-Content-Language: en-US
-To:     Yuan Can <yuancan@huawei.com>, snelson@pensando.io,
-        drivers@pensando.io, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, brett@pensando.io,
-        netdev@vger.kernel.org
-References: <20221113092929.19161-1-yuancan@huawei.com>
-From:   Shannon Nelson <shnelson@amd.com>
-In-Reply-To: <20221113092929.19161-1-yuancan@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR07CA0010.namprd07.prod.outlook.com
- (2603:10b6:a02:bc::23) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+        with ESMTP id S237071AbiKNTQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 14:16:24 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB0426AF6
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:16:23 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id s5so2528947edc.12
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:16:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7GZ7mdKRxSmNzZk248APL9GVltHD1aGTMmJ3HYRAqIU=;
+        b=GoluzNb+LAr29/2n3WnpatuY1/8sy1ptYyHh29nBg1TcI5ffSS55OWvYH2Z2UZ4sBj
+         AsfBPOqKivOl1vOwB1dPlNbUt6JlJQtWYmH6tRKd59BAP59aej7Gei4jseJjYj2DfiyM
+         OJN2iOWeMPlANFVx113TqgaW2SH7p8V+PSaeE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7GZ7mdKRxSmNzZk248APL9GVltHD1aGTMmJ3HYRAqIU=;
+        b=EIKix8yZrs/2JBr3jHnBawK7X+mMvle2R4ipxKPOtug0yo5ChkeumziCILyieVQ6eC
+         QTwfaTef0oyHia6iobN3yJmTtD1KF/kOTkwai4gR8XaXLJgP/TNlJ5UNNhtaVkhZX4qh
+         nXa7IAXuyXUd45vtQ0AaSe2JxgG0LfREyB/yZyj1K6fTME4n2Gkj/g4FgjUIFIV7I9PC
+         v6ws0rPYPLFq9zJ9yw84JlLjwIcTjnAPlgJWPIiMu8lLmd64Q0a3J8gjaXUkgjk9ohjl
+         eMGYg5BbZqnvB663eNuFltDF8ujZAtJ7WHiec8eDyNekZeracgwpdnc2WHodILgH8781
+         r3DA==
+X-Gm-Message-State: ANoB5pn8lF/epkoC75UxeKJX2I9T3it4OPtDafC2KZ4hfexqiWJZWXha
+        X7LSh+zdZqOUAET6gIOtqtLiWJWuDeaMWg==
+X-Google-Smtp-Source: AA0mqf72+G1Fm7cD526FPk8x053g7O2PyVF5GGOOAvDIADQT80qufQz4pjACVQO1NQ8dE97VSK62Aw==
+X-Received: by 2002:a05:6402:7da:b0:466:4168:6ea7 with SMTP id u26-20020a05640207da00b0046641686ea7mr11807928edy.273.1668453381363;
+        Mon, 14 Nov 2022 11:16:21 -0800 (PST)
+Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
+        by smtp.gmail.com with ESMTPSA id w25-20020aa7da59000000b00463bc1ddc76sm5100523eds.28.2022.11.14.11.16.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Nov 2022 11:16:21 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tom Parkin <tparkin@katalix.com>,
+        Haowei Yan <g1042620637@gmail.com>
+Subject: [PATCH net v4] l2tp: Serialize access to sk_user_data with sk_callback_lock
+Date:   Mon, 14 Nov 2022 20:16:19 +0100
+Message-Id: <20221114191619.124659-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|PH8PR12MB7448:EE_
-X-MS-Office365-Filtering-Correlation-Id: 50d0a0b0-ff5b-4988-1510-08dac66e3d0d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X0HNqMqmDbVsPvosYtCmFYSkeEwRE58a6mKCPkKl6eC+EpIHlFLlV52Dn/zVkQRPskCB7z/KmctDzyQ92Vl1F+D9cFsW0/RLZMQlW6c5TND3UvjfZvinUTKOx+ES2OiPF+dhAy6W3h5Hb0YRRXBihz6nVNQsL6FoYWJd9Bl9aK5y5iU/Xes3OdsyW/QYb02rktYc68zvLBYdDy/JWfHdwlpJcK50Qn/qU01BJDnlg1t8escVfeFgirR9VcIaoqNpu4+0Qb0kISG3bF+sN+/qwlMXT5xB6QHKttG2mPW8F0xZJ9RZXhrpDg0KvrFtmnE+Gdnrwy2pFKJaAwemuRz1UJNjTdc8uUoIjAbIFGpbWIN0GRTaNClWXbDoo68c6XId96vtUFlITWdM6RoPzqbK5CZSQ4mM8vKRTtL3rhb37w//16xw56jZGLU/rjVlz3SqPx6StokzN/wZp8z7jafZn0XSua8c6fiNas5olNk99jDX/lvQbeJZ6Cx56nnZhA9FPHsFIwsQfc44Dskw2pbuqW4aLUrMLinuzp0AD3wfYKxso8bD+YVYekYH9h2uMN81j+VeA0uXsFQYU43JtkraJC7Wj+VaqRxTDl2jEcIDzIvo95973m/zwX5xT7Q47msJ524pXiO3KYrXxZBYxVMPeHeXcLE60O/Xy1h5j+DFo5TLHHn+GaplIrkfeQ4vQjM5r7UgLKevew7Tz+cTIruNeSGntkawfXjwzSARFws5dhH3wPssPRh38+bNYG1WeEbWfszcw8nGGMMgC0Wd6wElcEYWqaGhNITgyFIkfbCEuqY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(346002)(366004)(376002)(39860400002)(451199015)(83380400001)(2616005)(186003)(2906002)(8936002)(38100700002)(6486002)(478600001)(26005)(6666004)(6512007)(6506007)(66556008)(66476007)(5660300002)(8676002)(53546011)(66946007)(41300700001)(316002)(31686004)(36756003)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZGk0YWFuYkxqR2RXNVZWMmROQk9wZStob1YwYmdSR2tPcm5KcVd3a0tTVUcx?=
- =?utf-8?B?NHNUV3YvMmYzbVh6VEtlUWJiTE1CYVBadWs1MGJid1ZyWFhnUlN5cWk1VnE0?=
- =?utf-8?B?WGx5YzJWcXNibmlpNjNVKzVacFRLdys3ZzRQY2hjcUZxaWxYblB1SDdVVENU?=
- =?utf-8?B?VlNKUXZxKzRVcVIxakFIVThhV2hHY09oTGFuRGdoSFlQcTg4OWVrQW9nNEtr?=
- =?utf-8?B?WHFocW5kQUNJbnNHYmxFdVVGZDZZajY5bmNJZkVXNk5aY01RbWc5cDBUam1u?=
- =?utf-8?B?ODFEYXFXbDgwODJzcmtFTllieEhnODhCSU1wVmFRUElJMGo4TGRSSmtXdHRY?=
- =?utf-8?B?R3hlWnVUTThNWTNSWkk0cjhyd1p0ZStHZkZGWXZqQm83SVRVdjlKbVFUR3hQ?=
- =?utf-8?B?MUtDbklpcDBYS2N5LzhoMERCaWdmaHp3V09iamxmWFFGeHBJYTRSTkQ1R2FT?=
- =?utf-8?B?TWJpcnhsbEl6RlpVWHhiT3Vsb2lsZDBzTjNqcjdKendheXhDdnM5Y2QzSzla?=
- =?utf-8?B?UHhVcE1xUUFDSFlpaXFCazYrK24vaVM1TFp4NERBYlBrYTRpeHU1dlEva1Nq?=
- =?utf-8?B?NiticllKN2VXMWgwS0hxTzVQV2NSU0kvdFFwNHAyamhVdGJuOWtibVJKVEh5?=
- =?utf-8?B?WGVOYjd0YXI5dGszSVkrQVJSOERSSmo3UnQ3ZmFCMzVNM0ZBcHlrbDFFWGtY?=
- =?utf-8?B?aDkwcUwyaVVqNlBMaE15Zms3YnFuWnpZZDFtenoxTThmcHZsQlZoNVlxVmcz?=
- =?utf-8?B?RFNTSnBuT0ZvVlUwems5RUFWUGI4d1Jid0JjanFRa0FiYml1RFE3a2FPNkpE?=
- =?utf-8?B?V2NhUE43eFRJK1YwZ2tFQTZ2S0N0eno1dWoxajlqN0w2WWNPM0E5SkpPK1N3?=
- =?utf-8?B?c3FXRFpnb1l6Qm84Uk83aXBRcHliSHkyZmJQeGhvM0NaM2RGeUFlRWd4THlr?=
- =?utf-8?B?OTRQSzFqZ3N5L2tyZlBYdGdiV1RUaEN0ZndXTmkxR1JWd0tvcEVMbWtCUGNv?=
- =?utf-8?B?TWE3U05wK01YVXQyMU5jWjM5K0J0cHl2OUdWRHcrQy8vdEtTbmlPN3I2b2RO?=
- =?utf-8?B?OU1PWkhxMk01b1g1MndRR1pST2ZTU1JpKzY0dE5OdEpDNTROMzRhUEZuYllj?=
- =?utf-8?B?VzlSdmhjMU5WOFlHdmFQVU9OdjNDK0NTUEk1Q0FCK0I4U0xyK1ZRK3Izcktq?=
- =?utf-8?B?ams2RTNNdU9zR0MvbVNuRGNmdmdwbFJ6SFRTZDZvM2dRVnBoazEwMVpmS29M?=
- =?utf-8?B?N1djL3ZOOEhTN3B5blI5UEgzR1NkeEEzaE1ubXJPSVRIdURiSERJSEplR2x4?=
- =?utf-8?B?MEprMjNmOVJpOGpYdFIvM09YdjVLR3hsaFUwY1llbWExeUNSZVhseXVhbnQ1?=
- =?utf-8?B?VnB4SEVNd2lCOWEvSm1lbGc1b3NsNmxBSlJIbXZwRXNMSjRhWGxGcnhUVGN0?=
- =?utf-8?B?clRQZzVsL0dLQlVsZ0wyVWovVERuSGxqMUxnRDc2UlVaemlIM3FscnV6cHJn?=
- =?utf-8?B?SWNqb0VFeUMyVnJUUmE1STZMWDFpN0x5L216b3RhcmNrbU14MVc3cWlYMGkr?=
- =?utf-8?B?UjI0M1loRzdZWVZNRjh3TXk3aVVoYjdxeXN3RHhnRzdXaGJXaTNTUVhmaS9s?=
- =?utf-8?B?dE1pSEtpUjNOQ2ZwSGdVUmJLenpyMFNyMnppQjBjZGN6MWNDMGE2cUxkb1Zj?=
- =?utf-8?B?bVNya3IrSlZ5MHJ5aDBJUDNpeCtSeHltMGc0S3lxM01XYWJheWMzOXI3ekk4?=
- =?utf-8?B?TmhsUWZyRTJPSjVyUVljcEpTVitmSjdLb0pkc0o1c2hvSlp3OVJiL0pzU05P?=
- =?utf-8?B?TEs2VWdxNkV3WE1FK2gwQTN5bThXcDVEbHRkR0tKZ01LUzI5Ym1iVlBINHB1?=
- =?utf-8?B?Zk5ENSthYTFsNE93alVYdXNSUGhPOUNXQmh4NHQvamRxV29RZ3JuN1QyTEJn?=
- =?utf-8?B?N2dzT0xvckE1ck53YlpjRldRUm5RNXljbzVqZlFQdHVvVjZTOXpGanh3L255?=
- =?utf-8?B?a2RKSHYxeldIdWdDWktCK0xPVFhHUmJvOGsrV3lYUE5aenpVT0tWdTlFazJF?=
- =?utf-8?B?T3h5dThsUk5zT2RabGhhZ3JVb2ppelc3REwzeCszeHdIbm1peWRwV0Uyak1k?=
- =?utf-8?Q?Px7GiJAofsn4VYbbD2DKjEK+M?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50d0a0b0-ff5b-4988-1510-08dac66e3d0d
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 18:30:00.1502
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sWiXj47EhgoFG3q8szGmn6xdVKvVRcI9bTKa82KjPvh5iO6STz2gxymgfIHuYvffPnuAlJpPDZO146J4tFEnsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7448
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/22 1:29 AM, Yuan Can wrote:
-> A problem about ionic create debugfs failed is triggered with the
-> following log given:
-> 
->   [  415.799514] debugfs: Directory 'ionic' with parent '/' already present!
-> 
-> The reason is that ionic_init_module() returns ionic_bus_register_driver()
-> directly without checking its return value, if ionic_bus_register_driver()
-> failed, it returns without destroy the newly created debugfs, resulting
-> the debugfs of ionic can never be created later.
-> 
->   ionic_init_module()
->     ionic_debugfs_create() # create debugfs directory
->     ionic_bus_register_driver()
->       pci_register_driver()
->         driver_register()
->           bus_add_driver()
->             priv = kzalloc(...) # OOM happened
->     # return without destroy debugfs directory
-> 
-> Fix by removing debugfs when ionic_bus_register_driver() returns error.
-> 
-> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-> Signed-off-by: Yuan Can <yuancan@huawei.com>
+sk->sk_user_data has multiple users, which are not compatible with each
+other. Writers must synchronize by grabbing the sk->sk_callback_lock.
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
+l2tp currently fails to grab the lock when modifying the underlying tunnel
+socket fields. Fix it by adding appropriate locking.
 
+We err on the side of safety and grab the sk_callback_lock also inside the
+sk_destruct callback overridden by l2tp, even though there should be no
+refs allowing access to the sock at the time when sk_destruct gets called.
 
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_main.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> index 56f93b030551..5456c2b15d9b 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> @@ -687,8 +687,14 @@ int ionic_port_reset(struct ionic *ionic)
-> 
->   static int __init ionic_init_module(void)
->   {
-> +       int ret;
-> +
->          ionic_debugfs_create();
-> -       return ionic_bus_register_driver();
-> +       ret = ionic_bus_register_driver();
-> +       if (ret)
-> +               ionic_debugfs_destroy();
-> +
-> +       return ret;
->   }
-> 
->   static void __exit ionic_cleanup_module(void)
-> --
-> 2.17.1
-> 
+v4:
+- serialize write to sk_user_data in l2tp sk_destruct
+
+v3:
+- switch from sock lock to sk_callback_lock
+- document write-protection for sk_user_data
+
+v2:
+- update Fixes to point to origin of the bug
+- use real names in Reported/Tested-by tags
+
+Cc: Tom Parkin <tparkin@katalix.com>
+Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
+Reported-by: Haowei Yan <g1042620637@gmail.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+
+This took me forever. Sorry about that.
+
+ include/net/sock.h   |  2 +-
+ net/l2tp/l2tp_core.c | 19 +++++++++++++------
+ 2 files changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 5db02546941c..e0517ecc6531 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -323,7 +323,7 @@ struct sk_filter;
+   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+   *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
+   *	@sk_socket: Identd and reporting IO signals
+-  *	@sk_user_data: RPC layer private data
++  *	@sk_user_data: RPC layer private data. Write-protected by @sk_callback_lock.
+   *	@sk_frag: cached page frag
+   *	@sk_peek_off: current peek_offset value
+   *	@sk_send_head: front of stuff to transmit
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7499c51b1850..754fdda8a5f5 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1150,8 +1150,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
+ 	}
+ 
+ 	/* Remove hooks into tunnel socket */
++	write_lock_bh(&sk->sk_callback_lock);
+ 	sk->sk_destruct = tunnel->old_sk_destruct;
+ 	sk->sk_user_data = NULL;
++	write_unlock_bh(&sk->sk_callback_lock);
+ 
+ 	/* Call the original destructor */
+ 	if (sk->sk_destruct)
+@@ -1469,16 +1471,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 		sock = sockfd_lookup(tunnel->fd, &ret);
+ 		if (!sock)
+ 			goto err;
+-
+-		ret = l2tp_validate_socket(sock->sk, net, tunnel->encap);
+-		if (ret < 0)
+-			goto err_sock;
+ 	}
+ 
++	sk = sock->sk;
++	write_lock(&sk->sk_callback_lock);
++
++	ret = l2tp_validate_socket(sk, net, tunnel->encap);
++	if (ret < 0)
++		goto err_sock;
++
+ 	tunnel->l2tp_net = net;
+ 	pn = l2tp_pernet(net);
+ 
+-	sk = sock->sk;
+ 	sock_hold(sk);
+ 	tunnel->sock = sk;
+ 
+@@ -1504,7 +1508,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 
+ 		setup_udp_tunnel_sock(net, sock, &udp_cfg);
+ 	} else {
+-		sk->sk_user_data = tunnel;
++		rcu_assign_sk_user_data(sk, tunnel);
+ 	}
+ 
+ 	tunnel->old_sk_destruct = sk->sk_destruct;
+@@ -1518,6 +1522,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 	if (tunnel->fd >= 0)
+ 		sockfd_put(sock);
+ 
++	write_unlock(&sk->sk_callback_lock);
+ 	return 0;
+ 
+ err_sock:
+@@ -1525,6 +1530,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 		sock_release(sock);
+ 	else
+ 		sockfd_put(sock);
++
++	write_unlock(&sk->sk_callback_lock);
+ err:
+ 	return ret;
+ }
+-- 
+2.38.1
+
