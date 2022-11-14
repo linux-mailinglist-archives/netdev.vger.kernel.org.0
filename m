@@ -2,108 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80703627C21
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 12:21:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 190AB6280E1
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:12:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236548AbiKNLVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 06:21:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
+        id S237934AbiKNNML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 08:12:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236146AbiKNLVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 06:21:01 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528C66475;
-        Mon, 14 Nov 2022 03:17:35 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AEA5lcD016147;
-        Mon, 14 Nov 2022 06:17:09 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ktwrrp6ck-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Nov 2022 06:17:09 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 2AEBH7Jm006008
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Nov 2022 06:17:07 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Nov
- 2022 06:17:07 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 14 Nov 2022 06:17:06 -0500
-Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.157])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2AEBGh5h031805;
-        Mon, 14 Nov 2022 06:16:45 -0500
-From:   Alexandru Tachici <alexandru.tachici@analog.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <steve.glendinning@shawell.net>,
-        <UNGLinuxDriver@microchip.com>, <andre.edich@microchip.com>,
-        <linux-usb@vger.kernel.org>
-Subject: [net] net: usb: smsc95xx: fix external PHY reset
-Date:   Mon, 14 Nov 2022 15:16:43 +0200
-Message-ID: <20221114131643.19450-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S237924AbiKNNMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:12:08 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EEA2B1B6
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:12:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668431522; x=1699967522;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=u1XEetprpcT9DVPX1AZNlJyceve4yFTp+k+XYN2n7A8=;
+  b=etOX3bn5VYhLauhK3Anlkc15wXDg3528y/9qT4nIcEoskpT5Gq+RlVdc
+   34MYEZr/Xcz1DE5bdI0PrlB5Nq6UInvCOzY5N3Obh6wpUGmblO+17BSMI
+   Zd5lyzjXPaNfeT/2jqlPZOgkBy5xXff6QdGmo5E6oVjrQuMG+fBTe2uR/
+   /5/fZWedOU0+NMk3I57rto1MQCISIO5oQiweN6SM5t4wI8Mfl3jdTVonY
+   owWpWYQB/NRZDxwmxnzYTo7M9S7TK51G9lnzQx0V0/MM30DsnLTXIru3e
+   ufQyvzLwUEZaCafJ8W8AqhIsEK4aixR2hOApiAaPnb/sKqBoj7CJe6j6y
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291679834"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="291679834"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 05:11:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="616305813"
+X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
+   d="scan'208";a="616305813"
+Received: from wasp.igk.intel.com ([10.102.20.192])
+  by orsmga006.jf.intel.com with ESMTP; 14 Nov 2022 05:11:45 -0800
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Cc:     intel-wired-lan@lists.osuosl.org, jiri@nvidia.com,
+        anthony.l.nguyen@intel.com, alexandr.lobakin@intel.com,
+        sridhar.samudrala@intel.com, wojciech.drewek@intel.com,
+        lukasz.czapnik@intel.com, shiraz.saleem@intel.com,
+        jesse.brandeburg@intel.com, mustafa.ismail@intel.com,
+        przemyslaw.kitszel@intel.com, piotr.raczynski@intel.com,
+        jacob.e.keller@intel.com, david.m.ertman@intel.com,
+        leszek.kaliszczuk@intel.com,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: [PATCH net-next 00/13] resource management using devlink reload
+Date:   Mon, 14 Nov 2022 13:57:42 +0100
+Message-Id: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 4Fuyddp9qQM8wFjQvmTtI4D4ho-JUD95
-X-Proofpoint-GUID: 4Fuyddp9qQM8wFjQvmTtI4D4ho-JUD95
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-14_10,2022-11-11_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- priorityscore=1501 clxscore=1011 bulkscore=0 mlxlogscore=759
- malwarescore=0 impostorscore=0 mlxscore=0 suspectscore=0 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211140082
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An external PHY needs settling time after power up or reser.
-In the bind() function an mdio bus is registered. If at this point
-the external PHY is still initialising, no valid PHY ID will be
-read and on phy_find_first() the bind() function will fail.
+Currently the default value for number of PF vectors is number of CPUs.
+Because of that there are cases when all vectors are used for PF
+and user can't create more VFs. It is hard to set default number of
+CPUs right for all different use cases. Instead allow user to choose
+how many vectors should be used for various features. After implementing
+subdevices this mechanism will be also used to set number of vectors
+for subfunctions.
 
-If an external PHY is present, wait the maximum time specified
-in 802.3 45.2.7.1.1.
+The idea is to set vectors for eth or VFs using devlink resource API.
+New value of vectors will be used after devlink reinit. Example
+commands:
+$ sudo devlink resource set pci/0000:31:00.0 path msix/msix_eth size 16
+$ sudo devlink dev reload pci/0000:31:00.0
+After reload driver will work with 16 vectors used for eth instead of
+num_cpus.
 
-Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/net/usb/smsc95xx.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+The default number of queues is implicitly derived from interrupt
+vectors and can be later changed by ethtool.
+To decrease queues used on eth user can decrease vectors on eth.
+The result will be the same. Still user can change number of queues
+using ethtool:
+$ sudo ethtool -L enp24s0f0 tx 72 rx 72
+but maximum queues amount is equal to amount of vectors.
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index bfb58c91db04..5ed001c0cd56 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1134,8 +1134,15 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 		goto free_mdio;
- 
- 	is_internal_phy = !(val & HW_CFG_PSEL_);
--	if (is_internal_phy)
-+	if (is_internal_phy) {
- 		pdata->mdiobus->phy_mask = ~(1u << SMSC95XX_INTERNAL_PHY_ID);
-+	} else {
-+		/* Driver has no knowledge at this point about the external PHY.
-+		 * The 802.3 specifies that the reset process shall
-+		 * be completed within 0.5 s.
-+		 */
-+		fsleep(500000);
-+	}
- 
- 	pdata->mdiobus->priv = dev;
- 	pdata->mdiobus->read = smsc95xx_mdiobus_read;
+Most of this patchset is about implementing driver reload mechanism.
+Part of code from probe and rebuild is used to not duplicate code.
+To allow this reuse probe and rebuild path are split into smaller
+functions.
+
+Patch "ice: split ice_vsi_setup into smaller functions" changes
+boolean variable in function call to integer and adds define
+for it. Instead of having the function called with true/false now it
+can be called with readable defines ICE_VSI_FLAG_INIT or
+ICE_VSI_FLAG_NO_INIT. It was suggested by Jacob Keller and probably this
+mechanism will be implemented across ice driver in follow up patchset.
+
+Patch 1 - 10	-> cleanup code to reuse most of the already
+                   implemented function in reload path
+Patch 11	-> implement devlink reload API
+Patch 12        -> prepare interrupts reservation, make irdma see
+                   changeable vectors count
+Patch 13        -> changing number of vectors
+
+
+Jacob Keller (1):
+  ice: stop hard coding the ICE_VSI_CTRL location
+
+Michal Kubiak (1):
+  devlink, ice: add MSIX vectors as devlink resource
+
+Michal Swiatkowski (11):
+  ice: move RDMA init to ice_idc.c
+  ice: alloc id for RDMA using xa_array
+  ice: cleanup in VSI config/deconfig code
+  ice: split ice_vsi_setup into smaller functions
+  ice: split probe into smaller functions
+  ice: sync netdev filters after clearing VSI
+  ice: move VSI delete outside deconfig
+  ice: update VSI instead of init in some case
+  ice: implement devlink reinit action
+  ice: introduce eswitch capable flag
+  ice, irdma: prepare reservation of MSI-X to reload
+
+ .../networking/devlink/devlink-resource.rst   |   10 +
+ drivers/infiniband/hw/irdma/main.c            |    2 +-
+ drivers/net/ethernet/intel/ice/ice.h          |   23 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   11 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  263 +++-
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |    2 +
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  |    6 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |    6 +-
+ drivers/net/ethernet/intel/ice/ice_fltr.c     |    5 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      |   57 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  789 +++++-----
+ drivers/net/ethernet/intel/ice/ice_lib.h      |    8 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 1354 ++++++++++-------
+ drivers/net/ethernet/intel/ice/ice_sriov.c    |    3 +-
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c   |    2 +-
+ include/net/devlink.h                         |   14 +
+ 16 files changed, 1517 insertions(+), 1038 deletions(-)
+
 -- 
-2.34.1
+2.36.1
 
