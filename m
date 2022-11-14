@@ -2,60 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 170F0627750
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:19:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9737262776D
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 09:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236272AbiKNITS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 03:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        id S236344AbiKNIWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 03:22:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236258AbiKNITR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:19:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341B62DD8;
-        Mon, 14 Nov 2022 00:19:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E84CFB80D2B;
-        Mon, 14 Nov 2022 08:19:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C204EC433D7;
-        Mon, 14 Nov 2022 08:19:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668413954;
-        bh=IpqxtKYy8fB+4tkOtqYyskkSLY6Jq8DjMI40DthW6yU=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=HygpfE4BdeZjIJf/DgPk/N9atO89eZok3ES3ubjhm+uEcDJMxNGnHgaUlP1L0LBdl
-         fE7UVxJzBajUqHs2HajwUOLdsdcdG+I/oMqvNRuoml+jPM5mJuIKyKDtC3i7TmaaNa
-         v9Y4g63Sjt/IuhTc64S3KqaemKjMVr35NLmSji4N1Bykw3ZucD2wkPqHQvVMCFulcc
-         Bq1eq53PclDZEThfDbUct7xcGC+OZa9+JZVkIw7hWPyhuS3qivbTcM40DCV1euO81w
-         g9+zvHxyCiFIR3lkixYRKY1SVQDRpyz2Df8xgJt/chJupOt0I2iolL1JgAPRXDsQEw
-         Lola4MKO64IoA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Long Li <longli@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>, netdev@vger.kernel.org,
-        Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        linux-hyperv@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        linux-rdma@vger.kernel.org
-In-Reply-To: <3c1e821279e6a165d058655d2343722d6650e776.1668160486.git.leonro@nvidia.com>
-References: <3c1e821279e6a165d058655d2343722d6650e776.1668160486.git.leonro@nvidia.com>
-Subject: Re: [PATCH rdma-next] RDMA/mana: Remove redefinition of basic u64 type
-Message-Id: <166841395000.1334860.9832196394158155110.b4-ty@kernel.org>
-Date:   Mon, 14 Nov 2022 10:19:10 +0200
+        with ESMTP id S236409AbiKNIVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 03:21:38 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD9B1B7A0
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 00:21:21 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N9hxp3cHkzqSLS;
+        Mon, 14 Nov 2022 16:17:34 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 14 Nov
+ 2022 16:21:19 +0800
+From:   Yuan Can <yuancan@huawei.com>
+To:     <michael.jamet@intel.com>, <mika.westerberg@linux.intel.com>,
+        <YehezkelShB@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <andriy.shevchenko@linux.intel.com>, <amir.jer.levy@intel.com>,
+        <netdev@vger.kernel.org>
+CC:     <yuancan@huawei.com>
+Subject: [PATCH] net: thunderbolt: Fix error handling in tbnet_init()
+Date:   Mon, 14 Nov 2022 08:19:36 +0000
+Message-ID: <20221114081936.35804-1-yuancan@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.11.0-dev-87e0e
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,19 +46,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Nov 2022 11:55:29 +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> gdma_obj_handle_t is no more than redefinition of basic
-> u64 type. Remove such obfuscation.
-> 
-> 
+A problem about insmod thunderbolt-net failed is triggered with following
+log given while lsmod does not show thunderbolt_net:
 
-Applied, thanks!
+ insmod: ERROR: could not insert module thunderbolt-net.ko: File exists
 
-[1/1] RDMA/mana: Remove redefinition of basic u64 type
-      https://git.kernel.org/rdma/rdma/c/3574cfdca28543
+The reason is that tbnet_init() returns tb_register_service_driver()
+directly without checking its return value, if tb_register_service_driver()
+failed, it returns without removing property directory, resulting the
+property directory can never be created later.
 
-Best regards,
+ tbnet_init()
+   tb_register_property_dir() # register property directory
+   tb_register_service_driver()
+     driver_register()
+       bus_add_driver()
+         priv = kzalloc(...) # OOM happened
+   # return without remove property directory
+
+Fix by remove property directory when tb_register_service_driver() returns
+error.
+
+Fixes: e69b6c02b4c3 ("net: Add support for networking over Thunderbolt cable")
+Signed-off-by: Yuan Can <yuancan@huawei.com>
+---
+ drivers/net/thunderbolt.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
+index 83fcaeb2ac5e..fe6a9881cc75 100644
+--- a/drivers/net/thunderbolt.c
++++ b/drivers/net/thunderbolt.c
+@@ -1396,7 +1396,14 @@ static int __init tbnet_init(void)
+ 		return ret;
+ 	}
+ 
+-	return tb_register_service_driver(&tbnet_driver);
++	ret = tb_register_service_driver(&tbnet_driver);
++	if (ret) {
++		tb_unregister_property_dir("network", tbnet_dir);
++		tb_property_free_dir(tbnet_dir);
++		return ret;
++	}
++
++	return 0;
+ }
+ module_init(tbnet_init);
+ 
 -- 
-Leon Romanovsky <leon@kernel.org>
+2.17.1
+
