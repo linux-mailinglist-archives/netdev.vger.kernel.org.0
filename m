@@ -2,186 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63E97628ABB
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 21:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B563628AD2
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 21:51:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237281AbiKNUr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 15:47:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
+        id S237373AbiKNUvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 15:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236990AbiKNUr5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 15:47:57 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0E1101D2;
-        Mon, 14 Nov 2022 12:47:57 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AEGLJeQ026407;
-        Mon, 14 Nov 2022 12:47:45 -0800
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2103.outbound.protection.outlook.com [104.47.55.103])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3kus45s166-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Nov 2022 12:47:45 -0800
+        with ESMTP id S237084AbiKNUvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 15:51:18 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2058.outbound.protection.outlook.com [40.107.223.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23467178A3
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 12:51:15 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZdV3r/js63uUh8+kjvnfQzihTRmfK2WSY0uRXhRlItM6la+qTAqolV/gLTxrlJ+mAoUkK+1GQrxfrq+JnSlxed/I9DgNM8Y5b1Oeb2XKYU1dWqK8LnxVmY2McCdhYUhMi6bd9dSi55ZhSHAG6Or4ZBdEczkxB9RPnSO763bzCJSiwvELpEPnazpP8tPfqZaBINCoXT/Y8kUAFXi1EmjQ+IlzWbAKv3YrfxnIS4iAWrr9wrJeFkEthSsp0fIeNTXNsrkuBTp6Es6CS1iRFH0r703aLjVIzLHTyIbTgwCSptejtQYKuPxF7F2Kbg7zFdmtLmSzXfY+G++aijVe3wU07w==
+ b=dpxt/kS5GOzV6/E4iETOwJppfycVd7KLisOTbMigSP2g+o7rfMR6v3O7xbhezijj1Aqa4TTXGM4fkuP3HlJD0QOICC+dYd/0YYzWLJJ9X9qHxPevymXxgJEj+dfxC0AZbbYkuEm5ndqoE8OCPY2XjaTF+Egna6gFYM/cuwnfT44M0PatoDtHjlboRaevTZIvwm5gi6M0W0MQZE/yD7KOIh0GZ6Fkdb6cIbHALfUT+9K3ewpUFrvC1wN2giw+aLnpo0K0XDmBNcdme7erFpt1//KE84QMnNv1nE/tzYt1fXFuRLtDb9/74qmmeBm2VsB73fAycEDm9DpTeF3RUt9uoA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DspRwc+5L6IqvvT683112JnwWtjLKq/3mdeUeJ688FY=;
- b=AqxarByjfzeXBg5nwUIlGlCro3wRy6ODhVnsTZR3Lkd521EWD5pp293rLT36DvpvbjRREna93mwqvwO+quwAtMqRrKCWe3clLBgsf0XsiJd97P0RwwNFBsPtzOBXGYQiGR5RePO4QF7fg9FvV7mzqel8ain+Yssf5jIA9NPwIQNGhOOb+E9si1vQKeDm+NprQcwPyNV2m6P1o/u5Euozs96hLwFIZt3lovXkt7vapD93Mzi0LMxTzpGijBZfPFMRJEaHaL7yj3dHkTQGOVTqYDrIF7igyC6lpsH19ix+fDSh+ne5tOARrxtmcIbAL7Jcqq0Fao9WhgnoIMZkiUEslQ==
+ bh=jnaSn6KWqg+IJm3sP5HxhCG3MrKPJylZNWQa/zxr2ds=;
+ b=Wu3QHGmW/VMMqi9XYlsVAYyXY79GuPvbtpYBigk7Q/jSWuVHYJssYSfUBSZZVUkDY9syFo8f65H3pxS0/rC17pH6S7bo6mXDdoNYxyXuD3O7gQRTcJAKsL+11jPa22caIzyjyd+OmuxLEKiA2/lFsN4A3dmMq6ykduPCuoaflQS6O1YnYPhHZxn/JMU6U27h7jurUrnmhYatLvIwAl3Ng+zEBzWOHsLdUjbjQeyDgAvuX9TyMobMcB0JIvYMPRPGSAY7AMKoUmpQssy5Uws8K51ufBH2oMgWZqi7rtgu48582q+Ncs0Y5DFw6SCW9BCz9asCmv4yk6HBAyH2+nD+Hg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DspRwc+5L6IqvvT683112JnwWtjLKq/3mdeUeJ688FY=;
- b=pb/mFoEiq2hoae/5kR5/8Ee0QkQIaQlG4yLLuufrfOkxp2wcrnTLyFMWENhQHclvpPfSGsCj7Hm7YnRQov/fEnrM0t/HcdOWe7te5rCV9onxIP+e+Hz/8lAo5IH1Zd/089myXe9NXI4YCr6gzGxZStAwf9bLdmxLw3Yz6c+7piE=
-Received: from BYAPR18MB2423.namprd18.prod.outlook.com (2603:10b6:a03:132::28)
- by SN7PR18MB4047.namprd18.prod.outlook.com (2603:10b6:806:100::14) with
+ bh=jnaSn6KWqg+IJm3sP5HxhCG3MrKPJylZNWQa/zxr2ds=;
+ b=Fp41dHLQAd8WONvpmRXQylU9JqUUcNFqaEhGDRIfMp2GIvHyQvn+eBtayvDLjWMt4qyT905b/Op9k+SUAlc1B8WXCqE2x42VhxEKm8JvpD+nPoYmTe220H6ZdA7d/Tz4xpI3cxXhYB2XU4klm9fGnmAjOktYlY68gpBvhvF1ZoY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by LV2PR12MB5919.namprd12.prod.outlook.com (2603:10b6:408:173::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Mon, 14 Nov
- 2022 20:47:43 +0000
-Received: from BYAPR18MB2423.namprd18.prod.outlook.com
- ([fe80::81c8:f21b:cf9e:df2d]) by BYAPR18MB2423.namprd18.prod.outlook.com
- ([fe80::81c8:f21b:cf9e:df2d%3]) with mapi id 15.20.5791.027; Mon, 14 Nov 2022
- 20:47:43 +0000
-From:   Veerasenareddy Burru <vburru@marvell.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Liron Himi <lironh@marvell.com>,
-        Abhijit Ayarekar <aayarekar@marvell.com>,
-        Sathesh B Edara <sedara@marvell.com>,
-        Satananda Burla <sburla@marvell.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: RE: [EXT] Re: [PATCH net-next 1/9] octeon_ep: wait for firmware ready
-Thread-Topic: [EXT] Re: [PATCH net-next 1/9] octeon_ep: wait for firmware
- ready
-Thread-Index: AQHY8npGhIOpGkF3kEWfQ40PmZgxTK4zHjCAgAu+zqA=
-Date:   Mon, 14 Nov 2022 20:47:42 +0000
-Message-ID: <BYAPR18MB24237D62CF4947B889D84BDCCC059@BYAPR18MB2423.namprd18.prod.outlook.com>
-References: <20221107072524.9485-1-vburru@marvell.com>
- <20221107072524.9485-2-vburru@marvell.com> <Y2i/bdCAgQa95du8@unreal>
-In-Reply-To: <Y2i/bdCAgQa95du8@unreal>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Mon, 14 Nov
+ 2022 20:51:08 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
+ 20:51:08 +0000
+Message-ID: <e80db268-3aca-e5f7-6eb0-4ba88999a7a8@amd.com>
+Date:   Mon, 14 Nov 2022 14:51:06 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 net 1/1] amd-xgbe: fix active cable
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcdmJ1cnJ1XGFw?=
- =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctOTNkYzU4MjgtNjQ1ZC0xMWVkLTgzNzItZjRhNDc1?=
- =?us-ascii?Q?OWE1OGFjXGFtZS10ZXN0XDkzZGM1ODI5LTY0NWQtMTFlZC04MzcyLWY0YTQ3?=
- =?us-ascii?Q?NTlhNThhY2JvZHkudHh0IiBzej0iMTU2MyIgdD0iMTMzMTI5MzI0NjEwMzc5?=
- =?us-ascii?Q?NTMzIiBoPSJEUlBTOG1SdzJvbGRkclVXeEJ4RWEvelFYUEk9IiBpZD0iIiBi?=
- =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFQNEZBQUFO?=
- =?us-ascii?Q?MzVaV2F2allBVDBlN3ZQOGs5Z1JQUjd1OC95VDJCRUpBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFDT0JRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?RUFBUUFCQUFBQStSRzhlZ0FBQUFBQUFBQUFBQUFBQUo0QUFBQmhBR1FBWkFC?=
- =?us-ascii?Q?eUFHVUFjd0J6QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFF?=
- =?us-ascii?Q?QUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdNQWRRQnpBSFFBYndCdEFGOEFjQUJs?=
- =?us-ascii?Q?QUhJQWN3QnZBRzRBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFnQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFB?=
- =?us-ascii?Q?QUFDZUFBQUFZd0IxQUhNQWRBQnZBRzBBWHdCd0FHZ0Fid0J1QUdVQWJnQjFB?=
- =?us-ascii?Q?RzBBWWdCbEFISUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCakFIVUFj?=
- =?us-ascii?Q?d0IwQUc4QWJRQmZBSE1BY3dCdUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
-x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR1FB?=
- =?us-ascii?Q?YkFCd0FGOEFjd0JyQUhrQWNBQmxBRjhBWXdCb0FHRUFkQUJmQUcwQVpRQnpB?=
- =?us-ascii?Q?SE1BWVFCbkFHVUFYd0IyQURBQU1nQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFRQUFBQUFBQUFBQ0FBQUFBQUNlQUFBQVpBQnNBSEFBWHdCekFHd0FZ?=
- =?us-ascii?Q?UUJqQUdzQVh3QmpBR2dBWVFCMEFGOEFiUUJsQUhNQWN3QmhBR2NBWlFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFB?=
- =?us-ascii?Q?QUlBQUFBQUFKNEFBQUJrQUd3QWNBQmZBSFFBWlFCaEFHMEFjd0JmQUc4QWJn?=
- =?us-ascii?Q?QmxBR1FBY2dCcEFIWUFaUUJmQUdZQWFRQnNBR1VBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdBQUFH?=
- =?us-ascii?Q?VUFiUUJoQUdrQWJBQmZBR0VBWkFCa0FISUFaUUJ6QUhNQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFEUUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQVFBQUFBQUFBQUFDQUFBQUFBQ2VBQUFBYlFCaEFISUFkZ0JsQUd3?=
- =?us-ascii?Q?QWJBQmZBSFFBWlFCeUFHMEFhUUJ1QUhVQWN3QUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
-x-dg-reftwo: QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUE9PSIvPjwvbWV0YT4=
-x-dg-rorf: true
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR18MB2423:EE_|SN7PR18MB4047:EE_
-x-ms-office365-filtering-correlation-id: 4effde8e-05a9-4f85-8722-08dac6817a64
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SIBwkwMz6mjoXh3uBCYTOEDEFcGN5PVwnnxY/N8R63CP2m31de2VLBO7E7jw3wem7eam1IydHbt+dCVdd8UIFg3nkCG/FtzrDVZFi7SDherv1xoqUVHkEivqy8jYe2tTQsPI8/1/6f333fPHDVGG6NWsE4aNsdpmd4z1I/EbBXV8mI3B1UlBK9wsx7SQJ2D/K3l2gXbEy1Zuo2u6hZotoaz53oIcBcmbnLMscUejrr+B2W0wkDmFmKXV9ZLx5JxjbsiNU8Tg9B8nly8OonX7B/VBh65jD2n2v4fqCYYwXO0xSV+0h0T+E+zF9RN9pK5xHnrKqYL6IAJqOke0o6NOzwGqVNCSH7uwJIuYepE2xibrrAZ2wiq2EZK9Rsb8wr+j8OAkseIaz5+4pIXkwFXxOsiqO1ryXacx3Sff8xr6IC0IMgmxwd0m1wrHpN1V00izoVxB2eaXpRx/Yh93mj9R06bu0hnTqtef8Z2GVVRWVvzdNylp09rlpsnpPHZY2vwhgbYULJrhktsjiQu29D2HDzGHCJ/oS/Pd02t1WQOQjCjrEtDEhwVOjKqjnlDSUn5/V7y771oH9wYNWx/o+DIiPVqKCYOoNrrNbnc4NRbzqkx87d1lMw9UFy0q/p0p+SVMeA0C63GblxkpDTEKsXaGYFLlKVYOZjmxxmhnbo09F69v7YJlFPBE6Y4DhAxrDzFulMSKVncCqJZrvJBeO/2uY5sl0o2wVgkA5ImCcuq96qmHZrTMA69sTabgeTdzPuxQ75FNJ4KQK2OXZ+xBVr7tCg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(451199015)(122000001)(38100700002)(33656002)(86362001)(71200400001)(55016003)(66946007)(76116006)(6916009)(38070700005)(66556008)(66476007)(54906003)(66446008)(64756008)(41300700001)(2906002)(8676002)(8936002)(52536014)(5660300002)(83380400001)(4326008)(478600001)(7696005)(6506007)(316002)(53546011)(186003)(26005)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5yKHWFBBrQCxbe8EjzK2K7PM7bGI3muJWj9IZQuFHYlOPFC5NNcaR8Sqw3J2?=
- =?us-ascii?Q?y+YYJnmM8XbCSnrGcqAsjmydX+2y6ymsbO672NyUnPbl5HVOfkAX/cXR3jv0?=
- =?us-ascii?Q?SLm33VPuNqq+LFg6mmEtKHn36pNoy1O+Mg+TfLCbovrVmqhsFB4rou9tC3t5?=
- =?us-ascii?Q?ZOo9ibqEEobNSElNLgBqQHJjjXnyJ/fiK7GtcBgKIOgDYT1/evZ4bcI7uOO8?=
- =?us-ascii?Q?hnpIsKVEgvSuZIe5juGWjwKrkOFHEgmLPV4dMwpup8j4WVWbS8+NGVMV55Sz?=
- =?us-ascii?Q?55ek4OYSzGnzQmkB0T1R9woLZmohmGAAbRjgu4WTXvyvusJwiItQLeLUWG75?=
- =?us-ascii?Q?MXIdnl4wpCTJTmeqroo3pSYAQLJ3kOFZc+r4K18u6NDQVN0w4mwCS1XAN8Oq?=
- =?us-ascii?Q?/KHNHgiUQ5ZszI3r604OyHBRvDYnyBKNt/+noQ26jdfSORzGCdMMyqudJHEN?=
- =?us-ascii?Q?GuPkPWnVBQx5z9bQABkWWbe8gZ1+1ThvMK588Y8zwtcWJsguK0iNAvQ08ef2?=
- =?us-ascii?Q?iaLqZyaRPcoM5rsoE7Rp/rgQaVldE2N9q5LC0CO6CKVuKcbtG67x6knFjfVT?=
- =?us-ascii?Q?wywDhdL2WSHv157COK78B6fBJ6LmSsPnG9LaN7D/ycGp9gZ+25EcjvqvwqUL?=
- =?us-ascii?Q?I7Mg/AW+ruu3B1+Bxx2MJ1xTEzPTsvaV5KPK0oM3Akp1fXpx0ZgXZ6zNspaB?=
- =?us-ascii?Q?EFOdVa1PmSkpo7z2gpxhMM2Sia2BXitXDxy5+7tqtaLvM0VYHqJ+2b0uCAmy?=
- =?us-ascii?Q?MXBI2hjOXqWTH1gEUgLCYggv3nF+Yh4phLk4I3sBv+fDtds1s865COdV5PF1?=
- =?us-ascii?Q?yv4orHRkNuQi+itJrpm2c+c8NolwuVGCKzj942PB8ZrHLYbBP4GXNO/SaomZ?=
- =?us-ascii?Q?V2bN4fLxoFJ7LovZaBlaXUiFylV+7U2YkqWN+vx6llbcQbdU21JUslDpsAMo?=
- =?us-ascii?Q?fe4vQW7FfdVtLj6VUk8HCl7G6pn1R0rlX1zNLL5MM55yYnbZZbZEFqeK4N1J?=
- =?us-ascii?Q?t76MXtFW3mgdOvkcIkuejBPD9v3umKPx03s4vnBZY7oenSh108JQGeK0ULCK?=
- =?us-ascii?Q?LMMaX+Q97tpTXm/Cl8cfcW2CUDliNvA9bO7c6mYYBLNsAx9VQazJTNx1byq0?=
- =?us-ascii?Q?6SmFR+m45esnKGeP4RFvwpIYW6O7MaUnusfeceoZ9edNFqwIB7rZo7wiGrAw?=
- =?us-ascii?Q?7CdCshEZloIQaW+Z8bLQB/TJMu2OUusSiSdpDZLi1+vdK6tYKpF5SMSJYDXk?=
- =?us-ascii?Q?SFdkttxj1Rix6IgkwLiFFg1x6K0p1coR+CzCYUBAknuKYwo2wfhB6HCAEk1l?=
- =?us-ascii?Q?Dv1aOjz1dj7h0jeBXtxpaQUJe+pJDHFsgNnx9V+uvP0vZb4YTrLZk8+ABehs?=
- =?us-ascii?Q?ucu2xFcSEiMZ0BaWdd+EoHaUjQYRXbou+4G3g7TX500C1eV66TSb57OZVpk3?=
- =?us-ascii?Q?V4t7inETcyamRvCTrtoo9V5TTOKVc+L6XICPC8hX9SXE6OF5j9bFR1fg1wZY?=
- =?us-ascii?Q?d2VPby36UF7gbtbP3ggTn44Ie9RCF5pcRpmfxndS7Fd/JnA4jyQRtc5GwKQb?=
- =?us-ascii?Q?aypknWiURbT8dbbNces=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To:     Thomas Kupper <thomas@kupper.org>, netdev@vger.kernel.org,
+        "S-k, Shyam-sundar" <Shyam-sundar.S-k@amd.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Raju Rangoju <Raju.Rangoju@amd.com>
+References: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
+ <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
+ <28351727-f1ba-5b57-2f84-9eccff6d627f@kupper.org>
+ <64edbded-51af-f055-9c2f-c1f81b0d3698@kupper.org>
+ <9180965b-fe96-7500-d139-013d1987c498@amd.com>
+ <5fb7e87f-83fb-252b-1590-c6ff5862bbaa@kupper.org>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <5fb7e87f-83fb-252b-1590-c6ff5862bbaa@kupper.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CH0PR03CA0275.namprd03.prod.outlook.com
+ (2603:10b6:610:e6::10) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|LV2PR12MB5919:EE_
+X-MS-Office365-Filtering-Correlation-Id: ad4dc80b-f395-4377-29c8-08dac681f471
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Umz4i8xq5/2WI2dNIIck01auolBaGpbiNJBIKo3/3hg6Uv4B+y+Ynk5/NiyUI+iUJKKuWqmJqvu2ilhpGuyJEGGYAw3UTeIgYpy+1r66kRHHx5wnRnoNcbaytO7xqRxpIDc7r5L8QqGoigUBqnbl56qV8OqveJlKCyLySwhh2+YQnsyuH1S1m6yU/wVA3460/vty9wZ1IN+Jagd3VS6ZQBe0jTXWgQFAaYPbuRQv/52GnBRFDXXOBJvRqyX00wVfvWZXTMOQkh3gBfIa/M1JisCKESRTx+WDGrz4AOxmru3qXVi6zBzD/dV85SpfMc5Jzc1yJlMoUeEg70+me0UvJp4eBwYJVAmNUInDFyZ95ra5z5/0Rj78IwE7C2UyTMuKGRE2SeZlvg/GfdeQraIN9yZjIjtZXnOibMOWE6zUgynXQVMX60JiKWEfnq8zj/JHXEN3q2mgxA5JhQtElfberekfzxd6gJ2Czs1YAR7+rmOeenc4oNUODQLf/cLpDG6jymxfis3RIol18QEks4ju/jObp9o469M+egehHO4Y486c3gafQcyc3qjJ0zQL43FlBJ1AbvjCc1M+OVAOhQrxJgArB4DD+ivzOEOTTPPIOPY+wN3WY54bOHE60fa2yR0A7T1mZgE7hpd8KnAoA8WPhXKbmxngvJwepj9kg8zSDshe8Ll48FwCUJ5xByrF1VVq1rnFi5oUY+PB/EhdXFTDh7hCEdcCVMM/je+pC7Nm0d0VL68GykkzBh3xGwtHsAkykMBcgmVRLiRNTeWNFaMH9fM1zFyXGJyEaWq/BJRiIEY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(346002)(39860400002)(366004)(136003)(451199015)(2906002)(31686004)(36756003)(26005)(41300700001)(8936002)(6512007)(31696002)(86362001)(5660300002)(6506007)(478600001)(53546011)(6486002)(2616005)(186003)(66556008)(66476007)(4326008)(8676002)(83380400001)(66946007)(38100700002)(316002)(6636002)(110136005)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aVMxMS9yUGFsa09ZbUZGamhYY2dKSlkyNDFjTFZ3ZFg1QTdrQXllZnJhcDlB?=
+ =?utf-8?B?dHhjaWxTODhQMVlLOStLYURnTFRnczVFdEtqZ3BKMDZNQ2hzZGN0Y0JFeWtp?=
+ =?utf-8?B?bXZDRVJwSmVURTB4UVVCT3VBOGJZcmt1ZjUvWlVuVzRHV3dHcHQvcFRLZ0hS?=
+ =?utf-8?B?VWpOUE1wazI4L2JYS2tjYnY0NHZ4YTQ0aldEOTRQU1JhdWFNSVpHd1lwUjhD?=
+ =?utf-8?B?d0RWTWM3M1hLTEg3amtYdmM5WkMvdzl5azZ0LytBUWJhNXRJTHNHd3dreHZY?=
+ =?utf-8?B?YVZlb2ZEejRrTmlhdStybzlycWgxR1RxM2kyZlNxSkhUTHJPeVg1dDZDdGNJ?=
+ =?utf-8?B?dVlSK2FIWkV5MkhIK29uYTAweVRPTFo1TW84aEFHMEdnZlY4elZBZ0k5RHpQ?=
+ =?utf-8?B?VENweEJ4NytlRENYc3hNcGM5dUpuMFVzbUxhWjRsRjYzR0VyNmp0WHppYkVx?=
+ =?utf-8?B?OTZQSGQyUm1FZk12WGl6YzB6OUhnU0dOL2FHWjg5dExFUC9BTHk1SW91K24y?=
+ =?utf-8?B?VXV5MDJCSTIweGRidXVaWXljZjJ2OTlscGlod2tHYlhLb1pBdll0NmVoN0Er?=
+ =?utf-8?B?TjBvaXRUdS9UK3lLWFV0d29aSGtwTEt6N1NZZnBjNFVYbFh6UEliN1pBajRI?=
+ =?utf-8?B?djBaMEJ6ZC80Y3M4Smxycm1DQjZKQ1R4Yk9Ja2NPVGxRbHl0ckRYSEM0REU0?=
+ =?utf-8?B?YUZvbWNkejdIYXlTVFhETU9nM0cxbzJJd1RpSUpuOHVhdEFicXBaa0Q2bEdw?=
+ =?utf-8?B?Mis2RCs1QlI3NTNITTM5VytjME5xaUJVRlMzdk5TcXhNNDhmcE5Zcm1PNmp0?=
+ =?utf-8?B?eUdYalF3RUsyclp2RWxJQVNQNUMyQUoyS2JMc1RTVWQ5M1JueWh3UFpDMjha?=
+ =?utf-8?B?YXFlWTZyMTBFVnMwZGRhNm9DZStFRkNMRDE3MTk1dmQyUHB0TVZ0d3hTTFFH?=
+ =?utf-8?B?dFBOdXlFVEhqV0xuenRYK3hTZStnNUlFajNGaXNEMW1UczJXZ3o4enB5ZVNG?=
+ =?utf-8?B?Z1VuWUduOVVseU5WdHhIY2kxZ1Q1bzJSV2hoRldseWFtRFJhb0dqR1lDVFlC?=
+ =?utf-8?B?aTdUUjBjQXRLTC9YNW9vRVQyM2ZiTFVlT2Z0Q3dyd3dsVlFINFBpSXlrdVR1?=
+ =?utf-8?B?M3J2TzRxU2hwODE3eE9lc3RvdXRBWmZYR2hYMDFhM0FiWXh0ODlaTzgzK1Vi?=
+ =?utf-8?B?N3RDMDB6dzlDdEVMSmcwT2MvMWJYS0dBcnhON0pJWlgvTkJOZ1ZIZkxoVHV6?=
+ =?utf-8?B?WDUrdTRCbDc3c01oWEdYYUczTGtpM1BNS2lqM0YyWnVWejVqenZqSWU0RHdt?=
+ =?utf-8?B?ZlBuMDJmVGZSR3lFMndyaitVVlRWRzBtdTRmWkNGQzU0cXhleHZ1Y2F0a3VI?=
+ =?utf-8?B?RWovNHVINVZvdmFFdm5iYzQ5bFB6VDVIQmJYRDVHTExBMWI3c3czZ3c0MVB1?=
+ =?utf-8?B?VVBVYmJEdUhkaEtHZXU1Si95WE1nZk1VbTRHVTVOYlpTZ1dJT3IwNWxmZS9K?=
+ =?utf-8?B?M0J0S3B2bmxYcW0ramhEdW9xYnBGbjVWb2haSENJTmk1a2x4elpINTR4bjIw?=
+ =?utf-8?B?UkFBQVg5MzdsYWZKVlk0SGZxVnpkM2xRSndzZzdBRnp1cW00Q0xaOUQ5azVR?=
+ =?utf-8?B?bkpxd3ZEdStqTi9nb1NBS3RsUGZvWDZYQnF0YzdCTUZwK3lIUit1a1Zzc0dC?=
+ =?utf-8?B?bVkwZzJKVGQxd1NWcjhWSkxxMG9yWGU3ZjZOL01tQWhpeUZmc0dVVndJQTVE?=
+ =?utf-8?B?akFVS2QzbE1aVDN4UkxXbWdVTTBPSFJ1RCtZWlRKbUVmczV6TXhseVkycDZL?=
+ =?utf-8?B?UU5hQnkySFY4cHJndlhZZkRDVzhlOXFPd25PTGJxOS93Zysxb0V1ajNLZWZV?=
+ =?utf-8?B?bDZjZkZlVzdYZUZHS1VDenA1dUtPOFJ5MWVkUDA0bGRlcWdvNWc3NDA3Zm50?=
+ =?utf-8?B?dFNCanJmeGRLbnVWN1Nhc0Rwa1dQVFVla3RuYk1tOHBiSlhzdkkyNHJpN3RJ?=
+ =?utf-8?B?ZCt5SHJ3K2t2MmczVDZSNmVLMXZPdmgxbXFjVDB3cjdVY0x6RUZwb3ZFRlly?=
+ =?utf-8?B?ZEtOc2d2blVGL1FUUGhSZW5HanVmNWRKNDRBUFlpUVpxZ2dEUllhY2x0RXND?=
+ =?utf-8?Q?tTHEmRYLNGmCEJqjXYeUVKJPo?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad4dc80b-f395-4377-29c8-08dac681f471
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR18MB2423.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4effde8e-05a9-4f85-8722-08dac6817a64
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2022 20:47:43.2523
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2022 20:51:08.1734
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UhVPmlbp4OsjGQXMs8nyFikB5z7T1EcohU5L6NQLuSYUBMmyMZytjKjyDR0UY+v8ZLSZAe0l7nRH/jxvrikctA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR18MB4047
-X-Proofpoint-GUID: ecBp8dQ9lL75OhLqvePm3ZEzJFkI9u4T
-X-Proofpoint-ORIG-GUID: ecBp8dQ9lL75OhLqvePm3ZEzJFkI9u4T
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-14_13,2022-11-11_01,2022-06-22_01
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: j0skwQwqPM4ofFEnIbIL4XEupUpSHAVSTTA1NzJCYLIMutWgZWb4pbU7blBmZ0GaphMz8keaRV8kjJ2g6jwf5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5919
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -189,39 +129,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11/14/22 13:20, Thomas Kupper wrote:
+> On 11/14/22 18:39, Tom Lendacky wrote:
+>> On 11/12/22 13:12, Thomas Kupper wrote:
+>>> On 11/11/22 17:00, Thomas Kupper wrote:
+>>>> On 11/11/22 15:18, Tom Lendacky wrote:
+>>>>> On 11/11/22 02:46, Thomas Kupper wrote:
+>>>>>> When determine the type of SFP, active cables were not handled.
+>>>>>>
+>>>>>> Add the check for active cables as an extension to the passive cable check.
+>>>>>
+>>>>> Is this fixing a particular problem? What SFP is this failing for? A more descriptive commit message would be good.
+>>>>>
+>>>>> Also, since an active cable is supposed to be advertising it's capabilities in the eeprom, maybe this gets fixed via a quirk and not a general check this field.
+>>>
+>>> Tom,
+>>>
+>>> are you sure that an active cable has to advertising it's speed? Searching for details about it I read in "SFF-8472 Rev 12.4", 5.4.2, Table 5-5 Transceiver Identification Examples:
+>>>
+>>> Transceiver Type Transceiver Description    Byte    Byte    Byte    Byte    Byte    Byte    Byte    Byte
+>>>                          3    4    5    6    7     8    9    10
+>>> ...
+>>>          10GE Active cable with SFP(3,4)     00h    00h    00h    00h    00h    08h    00h    00h
+>>>
+>>> And footnotes:
+>>> 3) See A0h Bytes 60 and 61 for compliance of these media to industry electrical specifications
+>>> 4) For Ethernet and SONET applications, rate capability of a link is identified in A0h Byte 12 [nominal signaling
+>>> rate identifier]. This is due to no formal IEEE designation for passive and active cable interconnects, and lack
+>>> of corresponding identifiers in Table 5-3.
+>>>
+>>> Wouldn't that suggest that byte 3 to 10 are all zero, except byte 8?
+>>
+>> This issue seems to be from my misinterpretation of active vs passive.
+>> IIUC now, active and passive only applies to copper cables with SFP+ end
+>> connectors. In which case the driver likely needs an additional enum cable
+>> type, XGBE_SFP_CABLE_FIBER, as the default cable type and slightly
+>> different logic.
+>>
+>> Can you try the below patch? If it works, I'll work with Shyam to do some
+>> testing to ensure it doesn't break anything.
+> 
+> Thanks Tom for getting back to me so soon.
+> 
+> Your patch works well for me, with a passive, an active cable and a GBIC.
+> 
+> But do you think it's a good idea to just check for != XGBE_SFP_CABLE_FIBER? That would also be true for XGBE_SFP_CABLE_UNKNOWN.
 
+Except the if-then-else block above will set the cable type to one of the 
+three valid values, so this is ok.
 
-> -----Original Message-----
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Monday, November 7, 2022 12:19 AM
-> To: Veerasenareddy Burru <vburru@marvell.com>
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Liron Himi
-> <lironh@marvell.com>; Abhijit Ayarekar <aayarekar@marvell.com>; Sathesh
-> B Edara <sedara@marvell.com>; Satananda Burla <sburla@marvell.com>;
-> linux-doc@vger.kernel.org; David S. Miller <davem@davemloft.net>; Eric
-> Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>;
-> Paolo Abeni <pabeni@redhat.com>
-> Subject: [EXT] Re: [PATCH net-next 1/9] octeon_ep: wait for firmware read=
-y
->=20
-> External Email
->=20
-> ----------------------------------------------------------------------
-> On Sun, Nov 06, 2022 at 11:25:15PM -0800, Veerasenareddy Burru wrote:
-> > Make driver initialize the device only after firmware is ready
-> >  - add async device setup routine.
-> >  - poll firmware status register.
-> >  - once firmware is ready, call async device setup routine.
->=20
-> Please don't do it. It is extremely hard to do it right. The proposed cod=
-e that
-> has combination of atomics used as a locks together with absence of prope=
-r
-> locking from PCI and driver cores supports my claim.
->=20
-> Thanks
-Leon
-          What is the alternate approach you suggest here ?  Are you sugges=
-ting usage of deferred probe ? the driver initialization cannot proceed til=
-l firmware ready is set by firmware.
-Thanks
+I'll work with Shyam to do some internal testing and get a patch sent up 
+if everything looks ok on our end.
+
+Thanks,
+Tom
+
+> 
+>       /* Determine the type of SFP */
+> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+> +    if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
+>           xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
+> 
+> Cheers
+> Thomas
+> 
+>>
+>>
+>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>> index 4064c3e3dd49..868a768f424c 100644
+>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>> @@ -189,6 +189,7 @@ enum xgbe_sfp_cable {
+>>       XGBE_SFP_CABLE_UNKNOWN = 0,
+>>       XGBE_SFP_CABLE_ACTIVE,
+>>       XGBE_SFP_CABLE_PASSIVE,
+>> +    XGBE_SFP_CABLE_FIBER,
+>>   };
+>>   
+>>   enum xgbe_sfp_base {
+>> @@ -1149,16 +1150,18 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
+>>       phy_data->sfp_tx_fault = xgbe_phy_check_sfp_tx_fault(phy_data);
+>>       phy_data->sfp_rx_los = xgbe_phy_check_sfp_rx_los(phy_data);
+>>   
+>> -    /* Assume ACTIVE cable unless told it is PASSIVE */
+>> +    /* Assume FIBER cable unless told otherwise */
+>>       if (sfp_base[XGBE_SFP_BASE_CABLE] & XGBE_SFP_BASE_CABLE_PASSIVE) {
+>>           phy_data->sfp_cable = XGBE_SFP_CABLE_PASSIVE;
+>>           phy_data->sfp_cable_len = sfp_base[XGBE_SFP_BASE_CU_CABLE_LEN];
+>> -    } else {
+>> +    } else if (sfp_base[XGBE_SFP_BASE_CABLE] & XGBE_SFP_BASE_CABLE_ACTIVE) {
+>>           phy_data->sfp_cable = XGBE_SFP_CABLE_ACTIVE;
+>> +    } else {
+>> +        phy_data->sfp_cable = XGBE_SFP_CABLE_FIBER;
+>>       }
+>>   
+>>       /* Determine the type of SFP */
+>> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+>> +    if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
+>>           xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
+>>
+>>>
+>>>
+>>> /Thomas
+>>>
+>>>>
+>>>> It is fixing a problem regarding a Mikrotik S+AO0005 AOC cable (we were in contact back in Feb to May). And your right I should have been more descriptive in the commit message.
+>>>>
+>>>>>>
+>>>>>> Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
+>>>>>> Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
+>>>>>> ---
+>>>>>>   ??drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
+>>>>>>   ??1 file changed, 3 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>> index 4064c3e3dd49..1ba550d5c52d 100644
+>>>>>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>> @@ -1158,8 +1158,9 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
+>>>>>>   ????? }
+>>>>>>
+>>>>>>   ????? /* Determine the type of SFP */
+>>>>>> -??? if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+>>>>>> -??? ??? xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>>>> +??? if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
+>>>>>> +??? ???? phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
+>>>>>> +??? ???? xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>>>
+>>>>> This is just the same as saying:
+>>>>>
+>>>>>   ????if (xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>>>
+>>>>> since the sfp_cable value is either PASSIVE or ACTIVE.
+>>>>>
+>>>>> I'm not sure I like fixing whatever issue you have in this way, though. If anything, I would prefer this to be a last case scenario and be placed at the end of the if-then-else block. But it may come down to applying a quirk for your situation.
+>>>>
+>>>> I see now that this cable is probably indeed not advertising its capabilities correctly, I didn't understand what Shyam did refer to in his mail from June 6.
+>>>>
+>>>> Unfortunately I haven't hear back from you guys after June 6 so I tried to fix it myself ... but do lack the knowledge in that area.
+>>>>
+>>>> A quirk seems a good option.
+>>>>
+>>>>   From my point of view this patch can be cancelled/aborted/deleted.
+>>>> I'll look into how to fix it using a quirk but maybe I'm not the hest suited candidate to do it.
+>>>>
+>>>> /Thomas
+>>>>
+>>>>>
+>>>>> Thanks,
+>>>>> Tom
+>>>>>
+>>>>>>   ????? ??? phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>>>>>>   ????? else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
+>>>>>>   ????? ??? phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
+>>>>>> -- 
+>>>>>> 2.34.1
+>>>>>>
