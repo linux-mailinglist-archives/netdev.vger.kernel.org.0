@@ -2,128 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 428416273F8
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 02:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C81627414
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 02:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235524AbiKNBAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Nov 2022 20:00:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
+        id S235651AbiKNBMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Nov 2022 20:12:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiKNBAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 20:00:19 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A936FCE08;
-        Sun, 13 Nov 2022 17:00:18 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id y203so9667254pfb.4;
-        Sun, 13 Nov 2022 17:00:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sxm0v4ki9XH0i93sKSXzV9I8SQkMNsVCRGZp4tRqchU=;
-        b=gDcUauMnLRDVoMQppoMjGo5pQxvTnfAb8QxYhVyzyYjl1PoGmSsU0ipmvAUn8skJRD
-         DYeUf1hNZAhOtnIr6Ecq4I5i/pUNLPyS17ZtBopqB5motUzw14wcn4w6WWn1f7wOy8XH
-         +1AOfqW8wUdCVpoMohFYiUB4MK3/Y7lQvAKNpyJb3+hOAqL40Kj2ABPEXgYDavlakPx0
-         jBcZxtChJXYwm73O12yLS/5bBavqNHB45FmnRvLKRTpo+OpIj8bVH0EeeXk04UngrI+v
-         CwLMnDUAtoXDEYl8toKbNUViKLgP6Zw7acyYsOHzo1d9xMiL8pExzHSoqlGcaijabZlD
-         C9MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Sxm0v4ki9XH0i93sKSXzV9I8SQkMNsVCRGZp4tRqchU=;
-        b=NP2FurV6rl8Z9Chtt1WOXTTBOweozOMBSauAQl+vie32VRTrO8v6gZHiMjuQzdHMyW
-         4ZB5HEQnylHQdchtIdnrGfFYFz1OPFkug500sq7LYDdJfoXlaJ4qDFLADKKg9FDMbFKN
-         X6RLMkbwrFpWygrbWmG4wD5iUH+PC767DtE0ZTyYJP2VtJoc1YSqrxMV11V0vfKPs9iu
-         gMpu5Gnr2qAiSzzy48sb0cV72jG8S0+XwEBsLhVRjVho214tTIUmQ29SCHqr+K9wASRH
-         zxMNOq+q6B2x5l9aBaVP8rpefcWIm3ncgkNQ2xTTo/64McB8pWnGpxsL7h86pz9roU6f
-         DKXw==
-X-Gm-Message-State: ANoB5pkgiydo41PRdBWa8/Z9KL2mfOXkMw5SvMu4Xgjbj78q946TplsF
-        hM/1Ea/6pSyO6alau8o9FHQ=
-X-Google-Smtp-Source: AA0mqf7ZAScJgvE2SqnIyJSc3nzXq8V1qszOi3zGEMBpzWO4efW1GuVNtUqCjXguLGVg/kLE4SIBgA==
-X-Received: by 2002:a63:d156:0:b0:46e:beb0:9d2c with SMTP id c22-20020a63d156000000b0046ebeb09d2cmr10307426pgj.117.1668387618213;
-        Sun, 13 Nov 2022 17:00:18 -0800 (PST)
-Received: from localhost.localdomain ([181.41.202.223])
-        by smtp.gmail.com with ESMTPSA id r17-20020a170903411100b00186c3727294sm5780740pld.270.2022.11.13.17.00.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 17:00:17 -0800 (PST)
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] tcp: Add listening address to SYN flood message
-Date:   Mon, 14 Nov 2022 12:00:08 +1100
-Message-Id: <4fedab7ce54a389aeadbdc639f6b4f4988e9d2d7.1668386107.git.jamie.bainbridge@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S235348AbiKNBMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Nov 2022 20:12:24 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3681FCFA
+        for <netdev@vger.kernel.org>; Sun, 13 Nov 2022 17:12:22 -0800 (PST)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N9WVs0HBBzRpCt;
+        Mon, 14 Nov 2022 09:12:05 +0800 (CST)
+Received: from huawei.com (10.175.100.227) by kwepemi500016.china.huawei.com
+ (7.221.188.220) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 14 Nov
+ 2022 09:11:50 +0800
+From:   Shang XiaoJing <shangxiaojing@huawei.com>
+To:     <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <jeffrey.t.kirsher@intel.com>,
+        <shannon.nelson@intel.com>, <intel-wired-lan@lists.osuosl.org>,
+        <netdev@vger.kernel.org>
+CC:     <shangxiaojing@huawei.com>
+Subject: [PATCH] i40e: Fix error handling in i40e_init_module()
+Date:   Mon, 14 Nov 2022 09:10:22 +0800
+Message-ID: <20221114011022.25127-1-shangxiaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SYN flood message prints the listening port number, but with many
-processes bound to the same port on different IPs, it's impossible to
-tell which socket is the problem.
+i40e_init_module() won't free the debugfs directory created by
+i40e_dbg_init() when pci_register_driver() failed. Add fail path to
+call i40e_dbg_exit() to remove the debugfs entries to prevent the bug.
 
-Add the listen IP address to the SYN flood message.
+i40e: Intel(R) Ethernet Connection XL710 Network Driver
+i40e: Copyright (c) 2013 - 2019 Intel Corporation.
+debugfs: Directory 'i40e' with parent '/' already present!
 
-For IPv6 use "[IP]:port" as per RFC-5952 and to provide ease of
-copy-paste to "ss" filters. For IPv4 use "IP:port" to match.
-
-Each protcol's "any" address and a host address now look like:
-
- Possible SYN flooding on port 0.0.0.0:9001.
- Possible SYN flooding on port 127.0.0.1:9001.
- Possible SYN flooding on port [::]:9001.
- Possible SYN flooding on port [fc00::1]:9001.
-
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
 ---
-v2: Place IS_ENABLED() inside if condition c/o Andrew Lunn.
-    Change port printf to unsigned c/o Stephen Hemminger.
-    Remove long and unhelpful "Check SNMP counters" c/o Stephen H.
-v3: Use "IP:port" format c/o Eric Duamzet and Stephen H.
----
- net/ipv4/tcp_input.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 0640453fce54b6daae0861d948f3db075830daf6..6e51d8eefe19075721ec6d31036ecae9b6e0d698 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6831,9 +6831,17 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
- 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPREQQFULLDROP);
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index b5dcd15ced36..828669ea946e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -16644,6 +16644,8 @@ static struct pci_driver i40e_driver = {
+  **/
+ static int __init i40e_init_module(void)
+ {
++	int err;
++
+ 	pr_info("%s: %s\n", i40e_driver_name, i40e_driver_string);
+ 	pr_info("%s: %s\n", i40e_driver_name, i40e_copyright);
  
- 	if (!queue->synflood_warned && syncookies != 2 &&
--	    xchg(&queue->synflood_warned, 1) == 0)
--		net_info_ratelimited("%s: Possible SYN flooding on port %d. %s.  Check SNMP counters.\n",
--				     proto, sk->sk_num, msg);
-+	    xchg(&queue->synflood_warned, 1) == 0) {
-+		if (IS_ENABLED(CONFIG_IPV6) && sk->sk_family == AF_INET6) {
-+			net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c]:%u. %s.\n",
-+					proto, &sk->sk_v6_rcv_saddr,
-+					sk->sk_num, msg);
-+		} else {
-+			net_info_ratelimited("%s: Possible SYN flooding on port %pI4:%u. %s.\n",
-+					proto, &sk->sk_rcv_saddr,
-+					sk->sk_num, msg);
-+		}
+@@ -16661,7 +16663,13 @@ static int __init i40e_init_module(void)
+ 	}
+ 
+ 	i40e_dbg_init();
+-	return pci_register_driver(&i40e_driver);
++	err = pci_register_driver(&i40e_driver);
++	if (err) {
++		i40e_dbg_exit();
++		return err;
 +	}
- 
- 	return want_cookie;
++
++	return 0;
  }
+ module_init(i40e_init_module);
+ 
 -- 
-2.38.1
+2.17.1
 
