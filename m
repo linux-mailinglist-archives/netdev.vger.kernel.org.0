@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB5462839E
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 16:15:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D996283B0
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 16:19:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237173AbiKNPPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 10:15:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42664 "EHLO
+        id S237171AbiKNPTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 10:19:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231609AbiKNPPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 10:15:39 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2073.outbound.protection.outlook.com [40.107.22.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B71B4B9;
-        Mon, 14 Nov 2022 07:15:38 -0800 (PST)
+        with ESMTP id S237221AbiKNPTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 10:19:31 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70055.outbound.protection.outlook.com [40.107.7.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752436462;
+        Mon, 14 Nov 2022 07:19:30 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K5qp0qdxD7JHeOhTYFmGiJwJr3cf7/Fl6d1yYL1WZGKMtJkY0/DMIcv/+GlrowDNxugtg/nP1xj2UGsVc8b1pVNqiyeL+eL4NdDfheC9gZxTtiK+3jByoUcPo4Zo9OzYAJu8cfwnEMLzCZXVMQS53YLJQUTL3XoS2GyTmyPLZ4wuIzrGyx1rg4pOPQsJONkxvKZynSApGeCLLYZY6qtVWio8zCAxSmr+dNJQxCNrcVzjtYJKX/C3zysv2QqRVmImnolxkORX6EWIo9WtbMhYuQfug1DYvIect2DOi9eCmYHNVQ6asGqTXVoBIzDtT6L8JoEN+hCeQqZjEQRCrjIykA==
+ b=J78bmI84hSR+FYB7lfA1RW7+Bx3E6op2K2fzekItCA/ZfsWnd7AbaaEV1Vhd9za40ACDRdoMZS+kI8wg7xivKStCbvyjTzYsSt4oYHOke/oyawfnAstIyuXTq++4Q/bv4gsYvjkVx7eLAciH+Kuz/LonBgFxX8+NKR5DjiOwRAQ82mO+Y7lqhYch7LStGKim7xkaVo79W5bs5tj8kQ56S/nAWfbXXEkUkbTxMY05/GnHREJOKfpQxg96ABgbpuxEz9xtRhvv+nSoMTxWgFW8Pcogl76rhRY20zwyGoGg6iSaIAB7uKiy9FNuQ6k2E4EzCwisi8iA04Z+rvEj0a3jXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IlxMmpiW5xJXSoFag4P/gJmWQeSPD2e7ElJZVvKmNhM=;
- b=LZdCb8mBCwQPmDvMV8ncmvCiiMzfTkbkiZ5OyGN96sxrK5RlQipuo800Dhd1o9AFOKuPWLwjMOLNcowoBt1/HUB369WF21RwWPS9eXa26CDCcU/bQYW5UF/3eCxvQd+z5DVhi/x8SwvIW5YkGBIlV9o2cWzXGYLSWd2fm0+WuAydmMOtZ5MF8X2eUymZ2ckL9n3xLiTvuM+7SyzfGYk6rokFmtLVj27mM/tyawRzB5FtJb5WaYez7ddGHBw5cFjcZMceuLeSRhE9AN9UTW1riOs1eTApLiREjGsdxAfiLOVlWEcjskgXtjHMZtkJ4jae3rgcEI1YCSZtTTB7i3xAvA==
+ bh=n8O7/1dr53hCg3e6BoEG4BPxoO45XinR6+crkpI6544=;
+ b=H6LXp38qV8+CzmYX5Rba5E3sJFX8Sa1LpgI+jtLVsqibk5769UApx9fK9xAihqyRSyh8uE3JmTZvIjR67CL5fEe0uOKwDnXfz1+/ACbkeJU6OiZGBJ+PgL0WW1wulURnBigCv0C6La1W1vMqzs55MHdSRTHhG8hmMcraLL5BCXLFn7g9OtjEwuDHJHVeDlZGzTU5sJz8y2Rk+RWkCq67eDDsNWJp5SYwLMKx9f+ku+48P52o05mMsxVRUjI0PngpYR44z63o8t312EBIinFwSmF6kpcVNkTvB7Gs8Nx6hQAcV69dhA2A0pvmhH0+MauLzOplpsDrJbMWJ0j7Z7Jlwg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IlxMmpiW5xJXSoFag4P/gJmWQeSPD2e7ElJZVvKmNhM=;
- b=UdD6DGjQkiWFdwL+t1il/dOaRqLKQuBZsc4KEByuuVSl4xMyM9djBd/SaVXD/9lojpGk+XXItMe0Mm4Z2SM0CrycF5A7LkUyecjS4zMToPZ0doLaxhTRDexcJRTC3H/M5SO71JNyCMzPSXSvwA6ICwFgL+bQ3mgaO7BcwFcyv9o=
+ bh=n8O7/1dr53hCg3e6BoEG4BPxoO45XinR6+crkpI6544=;
+ b=KHKPr6h1JXU5FK1M9SfhhqYVoG5sUCj4aavNQJvAvEMzC0vrTywb9fEx5c9siZTP+M1eDJjJK3QEfbB5fsGUpq60BRbU+WTjfc4MflgI4ys6SBAEtwH9vhlMdFS9eotVvI7VD+XsBW2YaBqb6AN8WeMU3uvle96fScinRERuwhM=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM9PR04MB8355.eurprd04.prod.outlook.com (2603:10a6:20b:3b7::20) with
+ by PR3PR04MB7484.eurprd04.prod.outlook.com (2603:10a6:102:8d::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.15; Mon, 14 Nov
- 2022 15:15:36 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Mon, 14 Nov
+ 2022 15:19:26 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.017; Mon, 14 Nov 2022
- 15:15:36 +0000
+ 15:19:26 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Colin Foster <colin.foster@in-advantage.com>
 CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -47,19 +47,17 @@ CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH v1 net-next 1/2] net: mscc: ocelot: remove redundant
- stats_layout pointers
-Thread-Topic: [PATCH v1 net-next 1/2] net: mscc: ocelot: remove redundant
- stats_layout pointers
-Thread-Index: AQHY9g8iL4WNmd41D0+zI2HGRNCF864+i8WA
-Date:   Mon, 14 Nov 2022 15:15:36 +0000
-Message-ID: <20221114151535.k7rknwmy3erslfwo@skbuf>
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH v1 net-next 2/2] net: mscc: ocelot: remove unnecessary
+ exposure of stats structures
+Thread-Topic: [PATCH v1 net-next 2/2] net: mscc: ocelot: remove unnecessary
+ exposure of stats structures
+Thread-Index: AQHY9g8hhRmuyCZfD0i0QF9ebvchX64+jNeA
+Date:   Mon, 14 Nov 2022 15:19:26 +0000
+Message-ID: <20221114151925.p35ynwi7ejmr6zhc@skbuf>
 References: <20221111204924.1442282-1-colin.foster@in-advantage.com>
- <20221111204924.1442282-2-colin.foster@in-advantage.com>
-In-Reply-To: <20221111204924.1442282-2-colin.foster@in-advantage.com>
+ <20221111204924.1442282-3-colin.foster@in-advantage.com>
+In-Reply-To: <20221111204924.1442282-3-colin.foster@in-advantage.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -67,60 +65,60 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AM9PR04MB8355:EE_
-x-ms-office365-filtering-correlation-id: 69cfa636-7989-4a13-3fb9-08dac65314e0
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|PR3PR04MB7484:EE_
+x-ms-office365-filtering-correlation-id: 232e9bfe-5139-49dd-1c6c-08dac6539e4d
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 26WoNyPZinHZbzbXXKyavcKyv2DoVWbCfG/SbXNN0bcB8o3uC3Vm0wAMHkUQhoVsuNKgn6DaLri/YEm/9CdTsOSCpWpIIU1yCXOdOUysSUFZaNVnAd7rjsWVfTizsP8om8S4sUTWAxnr8VDdjtuechfGQFP4D46+gkI5IK8L0yJT5JVgHWE23dlwpc8frYdtqEE2tccpCl0VA/t3iznhUEagqsHtlz7m/x33gkpOrkLknTkgru3jYIIbrY5BNxwXDxMi6rz5DhOI3rZons8ZmWQXhmy378pI7emPskaOxs1cnejaNnMhpOgJWxgm8B5m2EzrPtV+izVk3ahBwCcrOZTl3Bhc4OnLSPJshfRoFK4mZ5keeEO8W9I6rmfGoWT8T+sQWULmUhT7Ih3XMsXj962t1CWHDTVd1+e8ptDItUxIE5+o8HN9tzMZZLSkYcdiuay3AJbH9BotO1yFqIwjKncmF+U8endy9K3t8R9sslD8Qlh0pY3vUsrkRFpmYopFDXVLp2zkW3wIEUvY0Ju5YgXjEhKI+goroR5MW1XC3/4fb9/ABlTPtCfKG53Giw8a8EksFCGdudVvcedcMYNiOucMh1FmBtKDz47oe41OVCJuFADdQ682YttUYocMDs8NCwKEF20glMu6UR5PhsGzRL7cmnqT/Hpxvt33vBAkKcBMcqLNF/ZJXq3caYOhsx+A9B/oh2BKtymzs1o7W1DqgJHtKgyp5fqiO744CvBl4TESEJ8zllhIRtxBnbEKZduN
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(346002)(376002)(396003)(366004)(39860400002)(136003)(451199015)(6512007)(26005)(478600001)(6506007)(9686003)(71200400001)(6916009)(186003)(1076003)(76116006)(316002)(8676002)(64756008)(41300700001)(4326008)(6486002)(66946007)(66446008)(66476007)(66556008)(91956017)(38100700002)(38070700005)(122000001)(86362001)(5660300002)(54906003)(44832011)(33716001)(2906002)(8936002)(7416002);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: iVE2u8jS2pdWXeJXgut1cB8iReDt41/LWrSUBnVGO4F0tmviXQ9ZSdwnQyHoFt2prtyfj3dvWB/kqdRmIHJbLqy5rIdtfA3uGFFUcBw4IsJ/WOjfBwpw2F1UqrN9RdNESkxIOz+afzKZ2Oi7itvfvLMERLCbyNuWl+hTkDLS+yjam46vOGsR38U8PW/khzqPzqnJut0rDyY28BrqeMr/5BshjeI9lzXMBFCdgA0puWJt/7T3Qy0gRwdBUH0AIRFDCgzogDTno59xQBLReJ4N5bEh1a6ccHdLx18qkFqNAzmBAgCf9FCwtiVxf86xNwaDMkwf2JE2VGzg2IFeP7Oq7Ayv4zWS7UlIiWG+NN2KovvJEEKp6Htjj89N0Y2JuKH3ggE4Xs1mqFnkQiAZHFGmE7ne75X9Jf2e5WZY8H/9qs6xO6OWQ85WYXsCCpiSRf/7C7ifDsdDW/j4sBto1v8uozI/DnLVHt6jduaCTVejAjDBj2oU1cOWk9bRh3Z0ooQup/C1chYmlsM3FOuXkHid2dLpEUqloa3aqgrNF5cc1AbNKCXk66ypRQAUh5ofxxyRn+sw2sR+gtArL9JWZf9gLt2xO+OHgJ54aEnv0HOKZzAMrsqW7VjfApADoddVepkk3y4fA7i1oPuuprzGHAHGw1n75XqZJEvcyNfCeBFLLopzTGNQohkpoLGc54EWS+iSyYEhdXPaPCE/DMxcUsKNV4Giwx+uXhCVvv9/nTPpNV676f9h1g5pwJDVKAQX8eBjJLHOi7QxZM7h7CQWL2q0rg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(39860400002)(376002)(136003)(396003)(366004)(346002)(451199015)(86362001)(2906002)(122000001)(44832011)(8936002)(38100700002)(38070700005)(83380400001)(186003)(1076003)(91956017)(6916009)(54906003)(316002)(478600001)(6486002)(33716001)(8676002)(5660300002)(66556008)(66476007)(66946007)(41300700001)(76116006)(64756008)(66446008)(4326008)(26005)(9686003)(71200400001)(6512007)(6506007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?pwqcPEqHzBQ9cR3/3PR3VNZ4R3ecrkmuE7W3WaSvspHC/Vu7rXDVzHclif8C?=
- =?us-ascii?Q?MVKeTaWF6T8XP/YM7O5PdLY8lGN7Y44YsBBICKzzJ2L50ieSdkTk3za4TYon?=
- =?us-ascii?Q?eV2hVMVFvUCCPmyYt5MleAuigM6iHkvEbP2qK7uYIrS5+QJ4i4JYQN6QDEEN?=
- =?us-ascii?Q?nKEnuYqQnczrVcSKbhyy2MbNlKtmTC2YJaMjJtq8PI5z+HjSxV4QfwUCMfrw?=
- =?us-ascii?Q?zhIgPiiRet9L9LS7Y5MzOnTh89ngFrE3TnnwZHNCAqIX3xHBh2Ohq2ItOVlu?=
- =?us-ascii?Q?UWEIuBQPmJfah4RjTgo5P+RJH267lJBxyMeegx4DS8USq6VbOQxJ/53XPlkY?=
- =?us-ascii?Q?z8ccds1QSVWkomMre/KUorTuHEJaEDtjpEy/Oq6M5tlaDyuIZlKfAoOiXXgZ?=
- =?us-ascii?Q?v0xaCbwGOPM2Ra70synXjKKyrm1RXVw9h97/YWVyo2KuVeQD85pUkiRISw9k?=
- =?us-ascii?Q?nC9Gch7rLN1S1NDQg7FRRZ6xiSBqoANXltNdVWwkcoSTJyoYfeE0gIPEaaMI?=
- =?us-ascii?Q?jjWyvg3wvSfCtkgJsRvCzkNW2XcC64WZVVWCXTAZSecYpvBpfXnv5s9QwGhZ?=
- =?us-ascii?Q?S+6PNbOeCLmFTvghQvmMspwmEOsZTvJqQD0psBUgv9wxM8eCmTY1Jd01sKXJ?=
- =?us-ascii?Q?p37hYc1+dqVWgDvlTbicLxoiuA5V+4lcMvFSzm/G0vQYGWYxVbuCx2SgJtzj?=
- =?us-ascii?Q?AZllA6d3GbiOGlJF/W0LlxxfEx5TZkqW3s/Q3QtQsTkU+wgwEodvMGw8EgqV?=
- =?us-ascii?Q?4cqUqAOvCFGx/Uh2L1E7xWLXPuJufugbS5cps5eaHNThV3kh3Z/4SG8mh16V?=
- =?us-ascii?Q?9syEOseCRGd5z05YfstuBFk28MW0IBN9p/4zXHhYeuBRBC3X/lD9nGY2p0Zz?=
- =?us-ascii?Q?S2JkGbslLngW9lZOlUBEdu9QrHhWqp0PRUDc8YtL8vAGOfOKdTL5ltGkdTXY?=
- =?us-ascii?Q?embhI6PKsAiY5//bdGCpUv6RVrJN9Aieq5UCv0dYFsSy3JsZcqmTOBkr5Pa6?=
- =?us-ascii?Q?WwItndq1/t35MR2Eb3b2RaLbB8qq+uRrmEFDQlrrnjkRlFMksj+24xrag7OV?=
- =?us-ascii?Q?5D/p5kMjldFIPv8DygchjREMJDFubhxLKNPL2C4uPifDmENnsdqEh7hPK13Q?=
- =?us-ascii?Q?YPZDYL2dwBxZN2Ic4NPu3hPI17DHf+jqnGKBwZjylqyChFU3POdeIfzcyOe1?=
- =?us-ascii?Q?SxwKrfqlitNHga9cW5nfj83aYfStFxFwgetYmxRUtZCYkNF491XBMG3aV0oq?=
- =?us-ascii?Q?QE1JVHYb1Tz0aydNir4dnMdzntyfUERy3w6NsaWHqUBP3nw/fVSa9z/2AUE0?=
- =?us-ascii?Q?T7geDwLgJk/NItx8sj2D0YxhIO6xAbvCcnvnOvycfiyq8wK+wBusO2cCFu1U?=
- =?us-ascii?Q?3Qfo1/dXWDUrniBbZOmEW3is6xnj/KmSLtLen4EKPs0RygXFbdOYMIXVLsbA?=
- =?us-ascii?Q?j1/cUJNJc6z++zi58MT01ceuf84UbAH7sZ1+sovc9kHZ4Pu/CqDYuBTS2CZK?=
- =?us-ascii?Q?z3Fo3/9QLGa9DWLQDvI02mgVgVUYCy7uhkmbSF7kMSZgZoucYh7cJPvTQPkW?=
- =?us-ascii?Q?aThV/82Tna6TDaRrrqBJgUpOgarAewn9XlW9yrxPrrcM0x2HFcsr3aA58Gyv?=
- =?us-ascii?Q?uA=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?FrkXKy/huT1Ke8XhzVzviXXb6QiXOe57b48pvTP3N6hm/clgxs1BySK9WBCp?=
+ =?us-ascii?Q?ZzS7QKHAoHQC4Xe/yR+/ISTk5GXSdm3K5AeMbOX/yKYzGtmFsapacrjvqPU9?=
+ =?us-ascii?Q?aZwNIteh3ojAEGIkJs1c5LAzql5arJvp6nwGj2T771q7y8sF+62ub0OrO5Qg?=
+ =?us-ascii?Q?xgNYOpqs9kfbMQNiCbfp1zDlO1yVljRNGCrd7zxq4HMWQjsIbl8uduBsFLwe?=
+ =?us-ascii?Q?KMqPT95EVAa8A7l9KWbRegTrjOJiQ+pkC8PQloRtw7UORwYE9yTii4S+fgKy?=
+ =?us-ascii?Q?ni7V97HNVumxGVv2PUNA951nSvPM31dgwMES6rUXmZTNXKa1OYf0voGFPYUy?=
+ =?us-ascii?Q?84PflwameHqqDGVPpikO3qegWe42mB1gASBvEfGcwEWiiss8QvCq6GFCRnZU?=
+ =?us-ascii?Q?t6VU26nXcTlqqh5XN6cHpDlZzta1vGcoPxpSbhAZchQwqnW43T6CTKwlRbeo?=
+ =?us-ascii?Q?A27zpwWzrpu6eR1E5zFT24eO65a8cwx0jyukmWF9PA7/qGEq7SYAPDBHeg3D?=
+ =?us-ascii?Q?rV3PVftfhqyzV0aIxAyO4trPSgRXqiNL0CvxzOCGZJVgODaKaNuHBU2GdtEN?=
+ =?us-ascii?Q?pI3sNhlv/CqW0q2scPUQS0adCfal/ijjjUiW3Ttb76H1yhuF8fbTaSq9wtAe?=
+ =?us-ascii?Q?ylrpWh6fY4Xeoavk83W9X1Vm1v3p8LOFt1i3BahitcqT4LDRZiyeBrmeuhGf?=
+ =?us-ascii?Q?GM6egetyeUkCTrSHis9y17tAH1mJ1syNfk/N3jywsfnqRiQe7m5MSPCTwiWr?=
+ =?us-ascii?Q?59Q7JVw7EHWUNke8WqJ1n1BNl2fHQVK0xANHFHngM7GbGwsgu+aWSkqwayH6?=
+ =?us-ascii?Q?mA8gPltx4JzNiMBGb+PCpSIWEuNItktC5S00Csg4nWnlSNIzxhLH8Dr5eEoy?=
+ =?us-ascii?Q?LMSFsI1a6DaPc2ScJyguCDwPcL9wmliOFZDom9bw14e2r0yFQ/wVoqt4Lrj1?=
+ =?us-ascii?Q?9Qb7EcH2oiPuyMNx6uwSgnTK4T9HE4EXamz6QDxu5u+4l6U8BHWaiQ/zalRT?=
+ =?us-ascii?Q?x5flgDdIZpGlILQw4bDDoE7Ix5Rf0MSvLE2YLKaOmpVbPFEqM06OfzoljgmD?=
+ =?us-ascii?Q?MnPXUeheXTtO6ffX4FqhCJCzNttU+bbOsLtGg3Kz2FOlmvDgq8n9ljXrY3BO?=
+ =?us-ascii?Q?lzHGF+mz8OlqgXAecAY1aj55LcXlq7OhGkgg3EPvoVxg/5IDd4tG7moCVMz2?=
+ =?us-ascii?Q?wfgaun7FgDY1/zxqtrAdN+q8xvxdxK3iTtaFqTDsACJYQYI6X+s6kZ6ixQKt?=
+ =?us-ascii?Q?Sm0mCsQ4Uqc3uw+0yf+WjQS7COpDLGMhDPhAHIamDBDKUhgXnV6AJGYGTVuF?=
+ =?us-ascii?Q?5BeuFQPauW/qPXaxmAlinFRJQmQemjIQNs4b7PEMXws25YwIUUp9Bnei+sy+?=
+ =?us-ascii?Q?F++X0zqRYhKcR0D49K9wtF+Zws/h+zpIBZBeuyiLrFODq1FPxwMTMkDRTcGO?=
+ =?us-ascii?Q?o8cWpGK6lV3cYoFOZ9Zq6LIGc2s4OciIWFe4hQSkap5BZ2GEm87GJpaS3m9A?=
+ =?us-ascii?Q?TS3uIBwiw2KDrXro539AB2LNB7vUl9Lq9ytBjlfMc+c3VSUsEr62ikWeb1k+?=
+ =?us-ascii?Q?REDU/KdPKrUs1hcT5SvgN9ipVkwJwnZWQwIDnK/KOeEsY1idcgv9OcBNUaGA?=
+ =?us-ascii?Q?DQ=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <19AA01A37D380E4A8EA210DB0EF56EB3@eurprd04.prod.outlook.com>
+Content-ID: <CDA39FA65497A54D97873D3508BB699F@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69cfa636-7989-4a13-3fb9-08dac65314e0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2022 15:15:36.0703
+X-MS-Exchange-CrossTenant-Network-Message-Id: 232e9bfe-5139-49dd-1c6c-08dac6539e4d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2022 15:19:26.6316
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DUMDEUv4Quu6Q7e58WHbX5njbbJTV0gKAZC4N+ON7nj2IvgPGdz60eP9mSpmd/wFQvE/0vRrxoVredXw+k6Pmw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8355
+X-MS-Exchange-CrossTenant-userprincipalname: ihmtn0wo4GgPYS8Z8Om7lBwXtkQhmMZRbRYGpaDao760KgamgCEiRZrOAqONMkTgbcZgftwWdmA11a0Ph/5hUw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7484
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,UPPERCASE_50_75 autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -128,73 +126,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Colin,
+On Fri, Nov 11, 2022 at 12:49:24PM -0800, Colin Foster wrote:
+> +#define OCELOT_COMMON_STATS \
+> +	OCELOT_STAT_ETHTOOL(RX_OCTETS, "rx_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_UNICAST, "rx_unicast"), \
+> +	OCELOT_STAT_ETHTOOL(RX_MULTICAST, "rx_multicast"), \
+> +	OCELOT_STAT_ETHTOOL(RX_BROADCAST, "rx_broadcast"), \
+> +	OCELOT_STAT_ETHTOOL(RX_SHORTS, "rx_shorts"), \
+> +	OCELOT_STAT_ETHTOOL(RX_FRAGMENTS, "rx_fragments"), \
+> +	OCELOT_STAT_ETHTOOL(RX_JABBERS, "rx_jabbers"), \
+> +	OCELOT_STAT_ETHTOOL(RX_CRC_ALIGN_ERRS, "rx_crc_align_errs"), \
+> +	OCELOT_STAT_ETHTOOL(RX_SYM_ERRS, "rx_sym_errs"), \
+> +	OCELOT_STAT_ETHTOOL(RX_64, "rx_frames_below_65_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_65_127, "rx_frames_65_to_127_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_128_255, "rx_frames_128_to_255_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_256_511, "rx_frames_256_to_511_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_512_1023, "rx_frames_512_to_1023_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_1024_1526, "rx_frames_1024_to_1526_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_1527_MAX, "rx_frames_over_1526_octets"), \
+> +	OCELOT_STAT_ETHTOOL(RX_PAUSE, "rx_pause"), \
+> +	OCELOT_STAT_ETHTOOL(RX_CONTROL, "rx_control"), \
+> +	OCELOT_STAT_ETHTOOL(RX_LONGS, "rx_longs"), \
+> +	OCELOT_STAT_ETHTOOL(RX_CLASSIFIED_DROPS, "rx_classified_drops"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_0, "rx_red_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_1, "rx_red_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_2, "rx_red_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_3, "rx_red_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_4, "rx_red_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_5, "rx_red_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_6, "rx_red_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_7, "rx_red_prio_7"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_0, "rx_yellow_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_1, "rx_yellow_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_2, "rx_yellow_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_3, "rx_yellow_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_4, "rx_yellow_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_5, "rx_yellow_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_6, "rx_yellow_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_7, "rx_yellow_prio_7"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_0, "rx_green_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_1, "rx_green_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_2, "rx_green_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_3, "rx_green_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_4, "rx_green_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_5, "rx_green_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_6, "rx_green_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_7, "rx_green_prio_7"), \
+> +	OCELOT_STAT_ETHTOOL(TX_OCTETS, "tx_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_UNICAST, "tx_unicast"), \
+> +	OCELOT_STAT_ETHTOOL(TX_MULTICAST, "tx_multicast"), \
+> +	OCELOT_STAT_ETHTOOL(TX_BROADCAST, "tx_broadcast"), \
+> +	OCELOT_STAT_ETHTOOL(TX_COLLISION, "tx_collision"), \
+> +	OCELOT_STAT_ETHTOOL(TX_DROPS, "tx_drops"), \
+> +	OCELOT_STAT_ETHTOOL(TX_PAUSE, "tx_pause"), \
+> +	OCELOT_STAT_ETHTOOL(TX_64, "tx_frames_below_65_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_65_127, "tx_frames_65_to_127_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_128_255, "tx_frames_128_255_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_256_511, "tx_frames_256_511_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_512_1023, "tx_frames_512_1023_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_1024_1526, "tx_frames_1024_1526_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_1527_MAX, "tx_frames_over_1526_octets"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_0, "tx_yellow_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_1, "tx_yellow_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_2, "tx_yellow_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_3, "tx_yellow_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_4, "tx_yellow_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_5, "tx_yellow_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_6, "tx_yellow_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_7, "tx_yellow_prio_7"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_0, "tx_green_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_1, "tx_green_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_2, "tx_green_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_3, "tx_green_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_4, "tx_green_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_5, "tx_green_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_6, "tx_green_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_7, "tx_green_prio_7"), \
+> +	OCELOT_STAT_ETHTOOL(TX_AGED, "tx_aged"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_LOCAL, "drop_local"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_TAIL, "drop_tail"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_0, "drop_yellow_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_1, "drop_yellow_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_2, "drop_yellow_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_3, "drop_yellow_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_4, "drop_yellow_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_5, "drop_yellow_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_6, "drop_yellow_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_7, "drop_yellow_prio_7"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_0, "drop_green_prio_0"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_1, "drop_green_prio_1"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_2, "drop_green_prio_2"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_3, "drop_green_prio_3"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_4, "drop_green_prio_4"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_5, "drop_green_prio_5"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_6, "drop_green_prio_6"), \
+> +	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_7, "drop_green_prio_7")
 
-On Fri, Nov 11, 2022 at 12:49:23PM -0800, Colin Foster wrote:
-> Ever since commit 4d1d157fb6a4 ("net: mscc: ocelot: share the common stat
-> definitions between all drivers") the stats_layout entry in ocelot and
-> felix drivers have become redundant. Remove the unnecessary code.
->=20
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
-
-(please also the Microchip development list, people do seem to follow it
-and do respond sometimes)
-
-Before saying anything about this patch set, I wanted to check what's
-the status with my downstream patches for the MAC Merge Layer counters.
-
-There, vsc9959_stats_layout would get expanded to look like this:
-
-static const struct ocelot_stat_layout vsc9959_stats_layout[OCELOT_NUM_STAT=
-S] =3D {
-	OCELOT_COMMON_STATS,
-	OCELOT_STAT(RX_ASSEMBLY_ERRS),
-	OCELOT_STAT(RX_SMD_ERRS),
-	OCELOT_STAT(RX_ASSEMBLY_OK),
-	OCELOT_STAT(RX_MERGE_FRAGMENTS),
-	OCELOT_STAT(TX_MERGE_FRAGMENTS),
-	OCELOT_STAT(RX_PMAC_OCTETS),
-	OCELOT_STAT(RX_PMAC_UNICAST),
-	OCELOT_STAT(RX_PMAC_MULTICAST),
-	OCELOT_STAT(RX_PMAC_BROADCAST),
-	OCELOT_STAT(RX_PMAC_SHORTS),
-	OCELOT_STAT(RX_PMAC_FRAGMENTS),
-	OCELOT_STAT(RX_PMAC_JABBERS),
-	OCELOT_STAT(RX_PMAC_CRC_ALIGN_ERRS),
-	OCELOT_STAT(RX_PMAC_SYM_ERRS),
-	OCELOT_STAT(RX_PMAC_64),
-	OCELOT_STAT(RX_PMAC_65_127),
-	OCELOT_STAT(RX_PMAC_128_255),
-	OCELOT_STAT(RX_PMAC_256_511),
-	OCELOT_STAT(RX_PMAC_512_1023),
-	OCELOT_STAT(RX_PMAC_1024_1526),
-	OCELOT_STAT(RX_PMAC_1527_MAX),
-	OCELOT_STAT(RX_PMAC_PAUSE),
-	OCELOT_STAT(RX_PMAC_CONTROL),
-	OCELOT_STAT(RX_PMAC_LONGS),
-	OCELOT_STAT(TX_PMAC_OCTETS),
-	OCELOT_STAT(TX_PMAC_UNICAST),
-	OCELOT_STAT(TX_PMAC_MULTICAST),
-	OCELOT_STAT(TX_PMAC_BROADCAST),
-	OCELOT_STAT(TX_PMAC_PAUSE),
-	OCELOT_STAT(TX_PMAC_64),
-	OCELOT_STAT(TX_PMAC_65_127),
-	OCELOT_STAT(TX_PMAC_128_255),
-	OCELOT_STAT(TX_PMAC_256_511),
-	OCELOT_STAT(TX_PMAC_512_1023),
-	OCELOT_STAT(TX_PMAC_1024_1526),
-	OCELOT_STAT(TX_PMAC_1527_MAX),
-};
-
-The issue is that not all Ocelot family switches support the MAC merge
-layer. Namely, only vsc9959 does.
-
-With your removal of the ability to have a custom per-switch stats layout,
-the only remaining thing for vsc9959 to do is to add a "bool mm_supported"
-to the common struct ocelot, and all the above extra stats will only be rea=
-d
-from the common code in ocelot_stats.c only if mm_supported is set to true.
-
-What do you think, is this acceptable?=
+If we're moving these anyway, and stopping providing anything *but*
+common stats, we could as well move them to ocelot_stats_layout and
+delete the OCELOT_COMMON_STATS macro?=
