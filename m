@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C06176280E0
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:12:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D116280E2
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 14:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237912AbiKNNMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 08:12:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
+        id S237938AbiKNNMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 08:12:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237926AbiKNNMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:12:08 -0500
+        with ESMTP id S237932AbiKNNMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 08:12:12 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9307F2B24D
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:12:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F122B185
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 05:12:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668431523; x=1699967523;
+  t=1668431528; x=1699967528;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7Ce8aRJrwaIeECv3XGlXlz0W0+lnMTqEOS/2LgKL3XE=;
-  b=NEe48fYBbFP0eoFUl+/9vx8Ex5/2jebfXxJ2O3S/4OgdD/bUmlG4+TQy
-   t8/CGDCH1a/kJ3fCMFmM0YsDOX/6AqqYAi1FNGsA9c8T3UBhOOHI5dQTo
-   UkeiD3JZkKUywlyXzSkYMrYAG+lG7HeEirXP3vnNltGtH5e7aaj6m4jr0
-   +vvGn3JszeCEuHiJqXdTaJt5QGZ3OQSuEjV3qIK0mA/NoAFZFrVvNwFEM
-   UQ9Hxv0Uuxy1j+LSeNSwmwoVIFF3OULvcxMtufwadtQy6XaQKDJeUwaqv
-   EB0oSSgKNl0PzMiMvz0eQ4E7N9ftDD3b+ew1Yc/1CXyLYEo7PCvQjRZLx
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291679844"
+  bh=RGhxY1WcWjeK9Ck3s1XWaiH0nTPWhb8gwqUkEEZ9TeY=;
+  b=JOkCwKRsS3evS4sKpfxaKHx2L64NPZ+PboeglrroZawlEZ4tngD1OnnE
+   +OB0wJGb/F/GsOhPRleU4UWY4WqhNCPu51tIVIcLzpcIQQzhJldg4yyqM
+   65eAe7RocQahNiKyI/uUd7us0Zriz+mfhSiW0pUHdawM/4u0HpUKh1p0i
+   CVzayjRYtGbxx6KK9v0oa00FyxkbLB7IHRD+KOBAArSfGkiTDnG6x4FgK
+   xa5YRltrlQhSfEywYxxKXf/NQyAv/WJxCUWuWu95GbEEsPkeD3GqoNV4v
+   yNpZWT+mHcy/10VmQ8csNnJQQCDTYBDTD/pXMQxfe4k2bk4bbb4WARjxF
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="291679889"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="291679844"
+   d="scan'208";a="291679889"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 05:11:55 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 05:12:08 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="616305842"
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="616305911"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="616305842"
+   d="scan'208";a="616305911"
 Received: from wasp.igk.intel.com ([10.102.20.192])
-  by orsmga006.jf.intel.com with ESMTP; 14 Nov 2022 05:11:50 -0800
+  by orsmga006.jf.intel.com with ESMTP; 14 Nov 2022 05:11:55 -0800
 From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
@@ -50,9 +50,9 @@ Cc:     intel-wired-lan@lists.osuosl.org, jiri@nvidia.com,
         jacob.e.keller@intel.com, david.m.ertman@intel.com,
         leszek.kaliszczuk@intel.com,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: [PATCH net-next 01/13] ice: move RDMA init to ice_idc.c
-Date:   Mon, 14 Nov 2022 13:57:43 +0100
-Message-Id: <20221114125755.13659-2-michal.swiatkowski@linux.intel.com>
+Subject: [PATCH net-next 02/13] ice: alloc id for RDMA using xa_array
+Date:   Mon, 14 Nov 2022 13:57:44 +0100
+Message-Id: <20221114125755.13659-3-michal.swiatkowski@linux.intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
 References: <20221114125755.13659-1-michal.swiatkowski@linux.intel.com>
@@ -67,171 +67,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify probe flow by moving all RDMA related code to ice_init_rdma().
-Unroll irq allocation if RDMA initialization fails.
-
-Implement ice_deinit_rdma() and use it in remove flow.
+Use xa_array instead of deprecated ida to alloc id for RDMA aux driver.
 
 Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Acked-by: Dave Ertman <david.m.ertman@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h      |  1 +
- drivers/net/ethernet/intel/ice/ice_idc.c  | 52 ++++++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_main.c | 29 +++----------
- 3 files changed, 57 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_idc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index f88ee051e71c..c0079e88cda7 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -900,6 +900,7 @@ void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
- int ice_plug_aux_dev(struct ice_pf *pf);
- void ice_unplug_aux_dev(struct ice_pf *pf);
- int ice_init_rdma(struct ice_pf *pf);
-+void ice_deinit_rdma(struct ice_pf *pf);
- const char *ice_aq_str(enum ice_aq_err aq_err);
- bool ice_is_wol_supported(struct ice_hw *hw);
- void ice_fdir_del_all_fltrs(struct ice_vsi *vsi);
 diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index 895c32bcc8b5..579d2a433ea1 100644
+index 579d2a433ea1..e6bc2285071e 100644
 --- a/drivers/net/ethernet/intel/ice/ice_idc.c
 +++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -6,6 +6,8 @@
+@@ -6,7 +6,7 @@
  #include "ice_lib.h"
  #include "ice_dcb_lib.h"
  
-+static DEFINE_IDA(ice_aux_ida);
-+
+-static DEFINE_IDA(ice_aux_ida);
++static DEFINE_XARRAY_ALLOC1(ice_aux_id);
+ 
  /**
   * ice_get_auxiliary_drv - retrieve iidc_auxiliary_drv struct
-  * @pf: pointer to PF struct
-@@ -245,6 +247,17 @@ static int ice_reserve_rdma_qvector(struct ice_pf *pf)
- 	return 0;
- }
- 
-+/**
-+ * ice_free_rdma_qvector - free vector resources reserved for RDMA driver
-+ * @pf: board private structure to initialize
-+ */
-+static void ice_free_rdma_qvector(struct ice_pf *pf)
-+{
-+	pf->num_avail_sw_msix -= pf->num_rdma_msix;
-+	ice_free_res(pf->irq_tracker, pf->rdma_base_vector,
-+		     ICE_RES_RDMA_VEC_ID);
-+}
-+
- /**
-  * ice_adev_release - function to be mapped to AUX dev's release op
-  * @dev: pointer to device to free
-@@ -331,12 +344,47 @@ int ice_init_rdma(struct ice_pf *pf)
- 	struct device *dev = &pf->pdev->dev;
- 	int ret;
- 
-+	if (!ice_is_rdma_ena(pf)) {
-+		dev_warn(dev, "RDMA is not supported on this device\n");
-+		return 0;
-+	}
-+
-+	pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
-+	if (pf->aux_idx < 0) {
-+		dev_err(dev, "Failed to allocate device ID for AUX driver\n");
-+		return -ENOMEM;
-+	}
-+
- 	/* Reserve vector resources */
- 	ret = ice_reserve_rdma_qvector(pf);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to reserve vectors for RDMA\n");
--		return ret;
-+		goto err_reserve_rdma_qvector;
- 	}
- 	pf->rdma_mode |= IIDC_RDMA_PROTOCOL_ROCEV2;
--	return ice_plug_aux_dev(pf);
-+	ret = ice_plug_aux_dev(pf);
-+	if (ret)
-+		goto err_plug_aux_dev;
-+	return 0;
-+
-+err_plug_aux_dev:
-+	ice_free_rdma_qvector(pf);
-+err_reserve_rdma_qvector:
-+	pf->adev = NULL;
-+	ida_free(&ice_aux_ida, pf->aux_idx);
-+	return ret;
-+}
-+
-+/**
-+ * ice_deinit_rdma - deinitialize RDMA on PF
-+ * @pf: ptr to ice_pf
-+ */
-+void ice_deinit_rdma(struct ice_pf *pf)
-+{
-+	if (!ice_is_rdma_ena(pf))
-+		return;
-+
-+	ice_unplug_aux_dev(pf);
-+	ice_free_rdma_qvector(pf);
-+	ida_free(&ice_aux_ida, pf->aux_idx);
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index a9fc89aebebe..d5bd56a213ae 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -44,7 +44,6 @@ MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all), hw debug_mask (0x8XXXX
- MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all)");
- #endif /* !CONFIG_DYNAMIC_DEBUG */
- 
--static DEFINE_IDA(ice_aux_ida);
- DEFINE_STATIC_KEY_FALSE(ice_xdp_locking_key);
- EXPORT_SYMBOL(ice_xdp_locking_key);
- 
-@@ -4904,30 +4903,16 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 
- 	/* ready to go, so clear down state bit */
- 	clear_bit(ICE_DOWN, pf->state);
--	if (ice_is_rdma_ena(pf)) {
--		pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
--		if (pf->aux_idx < 0) {
--			dev_err(dev, "Failed to allocate device ID for AUX driver\n");
--			err = -ENOMEM;
--			goto err_devlink_reg_param;
--		}
--
--		err = ice_init_rdma(pf);
--		if (err) {
--			dev_err(dev, "Failed to initialize RDMA: %d\n", err);
--			err = -EIO;
--			goto err_init_aux_unroll;
--		}
--	} else {
--		dev_warn(dev, "RDMA is not supported on this device\n");
-+	err = ice_init_rdma(pf);
-+	if (err) {
-+		dev_err(dev, "Failed to initialize RDMA: %d\n", err);
-+		err = -EIO;
-+		goto err_devlink_reg_param;
+@@ -349,8 +349,9 @@ int ice_init_rdma(struct ice_pf *pf)
+ 		return 0;
  	}
  
- 	ice_devlink_register(pf);
- 	return 0;
- 
--err_init_aux_unroll:
--	pf->adev = NULL;
+-	pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
+-	if (pf->aux_idx < 0) {
++	ret = xa_alloc(&ice_aux_id, &pf->aux_idx, NULL, XA_LIMIT(1, INT_MAX),
++		       GFP_KERNEL);
++	if (ret) {
+ 		dev_err(dev, "Failed to allocate device ID for AUX driver\n");
+ 		return -ENOMEM;
+ 	}
+@@ -371,7 +372,7 @@ int ice_init_rdma(struct ice_pf *pf)
+ 	ice_free_rdma_qvector(pf);
+ err_reserve_rdma_qvector:
+ 	pf->adev = NULL;
 -	ida_free(&ice_aux_ida, pf->aux_idx);
- err_devlink_reg_param:
- 	ice_devlink_unregister_params(pf);
- err_netdev_reg:
-@@ -5040,9 +5025,7 @@ static void ice_remove(struct pci_dev *pdev)
- 	ice_service_task_stop(pf);
++	xa_erase(&ice_aux_id, pf->aux_idx);
+ 	return ret;
+ }
  
- 	ice_aq_cancel_waiting_tasks(pf);
--	ice_unplug_aux_dev(pf);
--	if (pf->aux_idx >= 0)
--		ida_free(&ice_aux_ida, pf->aux_idx);
-+	ice_deinit_rdma(pf);
- 	ice_devlink_unregister_params(pf);
- 	set_bit(ICE_DOWN, pf->state);
+@@ -386,5 +387,5 @@ void ice_deinit_rdma(struct ice_pf *pf)
  
+ 	ice_unplug_aux_dev(pf);
+ 	ice_free_rdma_qvector(pf);
+-	ida_free(&ice_aux_ida, pf->aux_idx);
++	xa_erase(&ice_aux_id, pf->aux_idx);
+ }
 -- 
 2.36.1
 
