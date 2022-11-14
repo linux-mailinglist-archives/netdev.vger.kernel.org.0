@@ -2,115 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FD76278E1
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:19:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D12EC6278E5
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:20:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236465AbiKNJTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 04:19:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33716 "EHLO
+        id S236352AbiKNJUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 04:20:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235950AbiKNJTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:19:33 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9235EE0E0
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:19:30 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id f5so26735738ejc.5
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:19:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=xtQdNUKoXwD5Pbbd0mTkyBbYoAHEDkzfXHoS609j2qc=;
-        b=d8XYmMI5Bzqb5m8BXHEXDW6WBNNR6xC/E3rPPxZmLUCMTvSMfykh3RsEvybTw0YjIg
-         FY2AYLJXZohbv6QjVrJRgtGmzGFhBHcNvCIOTZyC6HzVdNXQkX6tfAgQb+jGLG8HtW4L
-         uQ9GljI6Fa2FcLUccFyZXFVCaLIGPL+Mvas9e5D9enMu3SB1v/3moUXdNNkuYag/o1jk
-         PXznOarpiYE1t0y643x16KwyWunc9xaHn/xa4Ml2WWmpyKb0cBH5HCZvlsJ1TEnFw46q
-         iy8tT4cAi9N5QO3C6WKotVJwQuvRV4jxpwRCCw74UJID29Y8f1eqCvh9qsN0KUbIup3e
-         fvgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xtQdNUKoXwD5Pbbd0mTkyBbYoAHEDkzfXHoS609j2qc=;
-        b=KEiYRW9RTLNIOJxCB7LPF4uIoiY2ov1tUm42IAFL51ioyMUFclmE5BNcvO0FYA+3/d
-         wjeMFc6Sczky8f0sjSy46/xurdNSkFDEaHHLit3fjuPwhn5Gux3VKou3GgxqGZUN+db3
-         sXzRGOjbvLUV02yeCpwuZwJqf6l66Nvpwz6lcJ8E43Pg4qubarAYGhiVfGnXbDqB4aG6
-         IHzMefGCosbR5du0TFDktbNb2QDNknZikQtFXfc1uqDLA+tQHtzp8NnmdAVh4RZVJuXa
-         llOgcDgUL8SRrXnQ21N3BY3gvTcW2+Nn10dmeaaa31Z97olNPHGr/XE4Z7ICe5MSmVTx
-         JGhA==
-X-Gm-Message-State: ANoB5pnwVpz6KPTTvB+blL86d/hpRCFa1b/tOwo0fDnWM/uMaYrvBsmB
-        smB7QPFdMbJs4SIKcvABuYUHgUZrlrZV3ST4PKg=
-X-Google-Smtp-Source: AA0mqf4D6E2hUo80jFlhX9LH6ee9N/IaTcGVJmWYAyiZyxyI6U9BOo6k8htH9Ye7EKa6m2fVieK4Q0Qs5cpDbQ1rBEc=
-X-Received: by 2002:a17:907:1749:b0:78d:4f05:6ba7 with SMTP id
- lf9-20020a170907174900b0078d4f056ba7mr9577554ejc.590.1668417568947; Mon, 14
- Nov 2022 01:19:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-3-dnlplm@gmail.com>
- <20221111091440.51f9c09e@kernel.org>
-In-Reply-To: <20221111091440.51f9c09e@kernel.org>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Mon, 14 Nov 2022 10:13:10 +0100
-Message-ID: <CAGRyCJEtXx4scuFYbpjpe+-UB=XWQX26uhC+yPJPKCoYCWMM2g@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets aggregation
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S236421AbiKNJUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:20:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA09E0CC
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:20:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FCFF60E9F
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 09:20:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EBFC433C1;
+        Mon, 14 Nov 2022 09:20:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668417635;
+        bh=4bClsQ2V2y/lEZ4oVLI8XCwXCN/+WWMxTBRMeqCWYwM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZPYYJDacKKMjlqJORAM4WevZPa2eZH3N1EVNEb2si1eb3DucEQdmQrKjR0Y0cwxLF
+         JWjHY07YVR+i8xRQf7C5ACz4qBiRjHj+yzrswar5himMFHn5vP92E1kI6LR3UPfQYE
+         L02lTFs+NRiQ5z3XRZcCVjt774Q9Qs9JytCKLu4vtcF2NS2sCJt0yFQ148iIbiwt4n
+         AA32s05PutbRNzjU69uHv7EX7QBtrBssYiNMs0i3aynblRqqaJROYGhTytz4MZRJEe
+         ptAp3afMdS6lvbfPbfNh3qpVC2ph1ZjreASjKgm2Q9DTpNSohzJFZamkzc94qYXE5b
+         vwWqgswmhpEdA==
+From:   Antoine Tenart <atenart@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Antoine Tenart <atenart@kernel.org>, sd@queasysnail.net,
         netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Subject: [PATCH net-next] net: phy: mscc: macsec: do not copy encryption keys
+Date:   Mon, 14 Nov 2022 10:20:33 +0100
+Message-Id: <20221114092033.34405-1-atenart@kernel.org>
+X-Mailer: git-send-email 2.38.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
+Instead of calling memzero_explicit on the key when freeing a flow,
+let's simply not copy the key in the first place as it's only used when
+a new flow is set up.
 
-Il giorno ven 11 nov 2022 alle ore 18:14 Jakub Kicinski
-<kuba@kernel.org> ha scritto:
->
-> On Wed,  9 Nov 2022 19:02:48 +0100 Daniele Palmas wrote:
-> > +bool rmnet_map_tx_agg_skip(struct sk_buff *skb)
-> > +{
-> > +     bool is_icmp = 0;
-> > +
-> > +     if (skb->protocol == htons(ETH_P_IP)) {
-> > +             struct iphdr *ip4h = ip_hdr(skb);
-> > +
-> > +             if (ip4h->protocol == IPPROTO_ICMP)
-> > +                     is_icmp = true;
-> > +     } else if (skb->protocol == htons(ETH_P_IPV6)) {
-> > +             unsigned int icmp_offset = 0;
-> > +
-> > +             if (ipv6_find_hdr(skb, &icmp_offset, IPPROTO_ICMPV6, NULL, NULL) == IPPROTO_ICMPV6)
-> > +                     is_icmp = true;
-> > +     }
-> > +
-> > +     return is_icmp;
-> > +}
->
-> Why this? I don't see it mention in the commit message or any code
-> comment.
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+---
 
-This is something I've found in downstream code: with my test setup
-and scenario it does not make any difference on the icmp packets
-timing (both with or without throughput tests ongoing), but I don't
-have access to all the systems for which rmnet is used.
+Following
+https://lore.kernel.org/all/20221108153459.811293-1-atenart@kernel.org/T/
+refactor the MSCC PHY driver not to make a copy the encryption keys.
 
-So, I'm not sure if it solves a real issue in other situations.
+ drivers/net/phy/mscc/mscc_macsec.c | 57 ++++++++++++++++--------------
+ drivers/net/phy/mscc/mscc_macsec.h |  2 --
+ 2 files changed, 30 insertions(+), 29 deletions(-)
 
-I can move that out and me or someone else will add it again in case
-there will be a real issue to be solved.
+diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+index f81b077618f4..018253a573b8 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.c
++++ b/drivers/net/phy/mscc/mscc_macsec.c
+@@ -501,8 +501,7 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
+ }
+ 
+ /* Derive the AES key to get a key for the hash autentication */
+-static int vsc8584_macsec_derive_key(const u8 key[MACSEC_MAX_KEY_LEN],
+-				     u16 key_len, u8 hkey[16])
++static int vsc8584_macsec_derive_key(const u8 *key, u16 key_len, u8 hkey[16])
+ {
+ 	const u8 input[AES_BLOCK_SIZE] = {0};
+ 	struct crypto_aes_ctx ctx;
+@@ -518,7 +517,8 @@ static int vsc8584_macsec_derive_key(const u8 key[MACSEC_MAX_KEY_LEN],
+ }
+ 
+ static int vsc8584_macsec_transformation(struct phy_device *phydev,
+-					 struct macsec_flow *flow)
++					 struct macsec_flow *flow,
++					 const u8 *key)
+ {
+ 	struct vsc8531_private *priv = phydev->priv;
+ 	enum macsec_bank bank = flow->bank;
+@@ -527,7 +527,7 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
+ 	u8 hkey[16];
+ 	u64 sci;
+ 
+-	ret = vsc8584_macsec_derive_key(flow->key, priv->secy->key_len, hkey);
++	ret = vsc8584_macsec_derive_key(key, priv->secy->key_len, hkey);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -563,7 +563,7 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
+ 	for (i = 0; i < priv->secy->key_len / sizeof(u32); i++)
+ 		vsc8584_macsec_phy_write(phydev, bank,
+ 					 MSCC_MS_XFORM_REC(index, rec++),
+-					 ((u32 *)flow->key)[i]);
++					 ((u32 *)key)[i]);
+ 
+ 	/* Set the authentication key */
+ 	for (i = 0; i < 4; i++)
+@@ -632,28 +632,14 @@ static void vsc8584_macsec_free_flow(struct vsc8531_private *priv,
+ 
+ 	list_del(&flow->list);
+ 	clear_bit(flow->index, bitmap);
+-	memzero_explicit(flow->key, sizeof(flow->key));
+ 	kfree(flow);
+ }
+ 
+-static int vsc8584_macsec_add_flow(struct phy_device *phydev,
+-				   struct macsec_flow *flow, bool update)
++static void vsc8584_macsec_add_flow(struct phy_device *phydev,
++				    struct macsec_flow *flow)
+ {
+-	int ret;
+-
+ 	flow->port = MSCC_MS_PORT_CONTROLLED;
+ 	vsc8584_macsec_flow(phydev, flow);
+-
+-	if (update)
+-		return 0;
+-
+-	ret = vsc8584_macsec_transformation(phydev, flow);
+-	if (ret) {
+-		vsc8584_macsec_free_flow(phydev->priv, flow);
+-		return ret;
+-	}
+-
+-	return 0;
+ }
+ 
+ static int vsc8584_macsec_default_flows(struct phy_device *phydev)
+@@ -706,6 +692,7 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
+ {
+ 	struct phy_device *phydev = ctx->phydev;
+ 	struct vsc8531_private *priv = phydev->priv;
++	int ret;
+ 
+ 	flow->assoc_num = ctx->sa.assoc_num;
+ 	flow->rx_sa = ctx->sa.rx_sa;
+@@ -717,19 +704,39 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
+ 	if (priv->secy->validate_frames != MACSEC_VALIDATE_DISABLED)
+ 		flow->match.untagged = 1;
+ 
+-	return vsc8584_macsec_add_flow(phydev, flow, update);
++	vsc8584_macsec_add_flow(phydev, flow);
++
++	if (update)
++		return 0;
++
++	ret = vsc8584_macsec_transformation(phydev, flow, ctx->sa.key);
++	if (ret)
++		vsc8584_macsec_free_flow(phydev->priv, flow);
++
++	return ret;
+ }
+ 
+ static int __vsc8584_macsec_add_txsa(struct macsec_context *ctx,
+ 				     struct macsec_flow *flow, bool update)
+ {
++	int ret;
++
+ 	flow->assoc_num = ctx->sa.assoc_num;
+ 	flow->tx_sa = ctx->sa.tx_sa;
+ 
+ 	/* Always match untagged packets on egress */
+ 	flow->match.untagged = 1;
+ 
+-	return vsc8584_macsec_add_flow(ctx->phydev, flow, update);
++	vsc8584_macsec_add_flow(ctx->phydev, flow);
++
++	if (update)
++		return 0;
++
++	ret = vsc8584_macsec_transformation(ctx->phydev, flow, ctx->sa.key);
++	if (ret)
++		vsc8584_macsec_free_flow(ctx->phydev->priv, flow);
++
++	return ret;
+ }
+ 
+ static int vsc8584_macsec_dev_open(struct macsec_context *ctx)
+@@ -829,8 +836,6 @@ static int vsc8584_macsec_add_rxsa(struct macsec_context *ctx)
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+ 
+-	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
+-
+ 	ret = __vsc8584_macsec_add_rxsa(ctx, flow, false);
+ 	if (ret)
+ 		return ret;
+@@ -882,8 +887,6 @@ static int vsc8584_macsec_add_txsa(struct macsec_context *ctx)
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+ 
+-	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
+-
+ 	ret = __vsc8584_macsec_add_txsa(ctx, flow, false);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
+index 453304bae778..21ce3b892f7f 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.h
++++ b/drivers/net/phy/mscc/mscc_macsec.h
+@@ -81,8 +81,6 @@ struct macsec_flow {
+ 	/* Highest takes precedence [0..15] */
+ 	u8 priority;
+ 
+-	u8 key[MACSEC_MAX_KEY_LEN];
+-
+ 	union {
+ 		struct macsec_rx_sa *rx_sa;
+ 		struct macsec_tx_sa *tx_sa;
+-- 
+2.38.1
 
-Thanks,
-Daniele
