@@ -2,53 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1A0628930
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 20:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5FD162896E
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 20:34:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237094AbiKNTU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 14:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
+        id S236514AbiKNTeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 14:34:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237013AbiKNTUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 14:20:53 -0500
-Received: from mxout014.mail.hostpoint.ch (mxout014.mail.hostpoint.ch [IPv6:2a00:d70:0:e::314])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3D921260
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:20:51 -0800 (PST)
-Received: from [10.0.2.45] (helo=asmtp012.mail.hostpoint.ch)
-        by mxout014.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <thomas@kupper.org>)
-        id 1ouf0i-000Kbz-LI;
-        Mon, 14 Nov 2022 20:20:48 +0100
-Received: from [82.197.179.206] (helo=[192.168.169.11])
-        by asmtp012.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <thomas@kupper.org>)
-        id 1ouf0i-000BAf-Em;
-        Mon, 14 Nov 2022 20:20:48 +0100
-X-Authenticated-Sender-Id: thomas@kupper.org
-Message-ID: <5fb7e87f-83fb-252b-1590-c6ff5862bbaa@kupper.org>
-Date:   Mon, 14 Nov 2022 20:20:48 +0100
+        with ESMTP id S236444AbiKNTeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 14:34:06 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E77BF57
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:34:03 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id n17so3478268pgh.9
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 11:34:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=sqCcwjU6jrHD7BOQ5BmFZNLAACRJ7TMsxbk7lp8LzNM=;
+        b=S3T+Fs1xDzx84loabiB7BC9DuGQP6kpae2AZViOP1KJOoatADL2nEMH3a+EYHi/5WW
+         KUt9ID0n6cqI4Kta9vv7zJSbv6tbwEmMjzRb/vhOGFlBhc8zWuDPud14LGea4ZGDKaWR
+         mBU2uT6MQplEX8Yh8FyRJ/9evMZaIgf3Wu2N09S6AKjleoYXzUdwWBvDDPE3Ugy1tsSE
+         yY1WSaaQ0n5Ms/uz03QiQsNfjamNoD9k17a3LC8t1KVsd91pUeC3ZjMWooniA43hsb4/
+         8QB5Phudoz1s5fnTMkJGxAC8/BuR6MCdpJDgc+T6vcVIGJl6Qm9lS48PRfH7P6371SmE
+         4SLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sqCcwjU6jrHD7BOQ5BmFZNLAACRJ7TMsxbk7lp8LzNM=;
+        b=R1hDzUh3ZJnVoIbNmjwqaxuPuZboU9kOkgDRrob0hQ6CqGXX3T2FzBbQaJ7e59t4np
+         Ehov9Z4Bo1NgOs6RG1b2oc5TYrOgk3P+2z/6ZB5Xw+MASQZm/IeNBNNFh17KocZnSYC+
+         GCq8jyuYSpNJwt2ZZdg8bFTaOlcw6XKjKuns85wIljMmw5sZcYFzmokgEoNSoe/Nz/BC
+         tBhEtVoXYKCgO/Z6joTyJXRyWbTiIew9hyt5oFDYhP8BL52+z/JchSt8G18sY6nYiuy2
+         PEMb21PPZh6lRSGn3yyxPOv17wkbBWf0GYUU18jF1hhjpO58ixVZ36x7NEQTcPKCn8ij
+         IQaw==
+X-Gm-Message-State: ANoB5pl9q+cRKnnbM4k+kVoSc1psY24aWbkg+/Q5+05pXnm5O+8HZ+M3
+        /+ifEfC43Ytk2l8Q6r4BQ8LCb0ypd63qxxXoL+mZaLjq8AyX9Q==
+X-Google-Smtp-Source: AA0mqf7p2x4Y2iBlAQuSKzh6GeKwIGS9PDIkpiwjuHfHFkddlPKGyhs44kMMWyXy3FQqxfPsMPz15GTmX4U0pNOyyNA=
+X-Received: by 2002:a63:1720:0:b0:46f:f93b:ddc8 with SMTP id
+ x32-20020a631720000000b0046ff93bddc8mr12480308pgl.389.1668454442372; Mon, 14
+ Nov 2022 11:34:02 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH v2 net 1/1] amd-xgbe: fix active cable
-Content-Language: en-US
-To:     Tom Lendacky <thomas.lendacky@amd.com>, netdev@vger.kernel.org,
-        "S-k, Shyam-sundar" <Shyam-sundar.S-k@amd.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Raju Rangoju <Raju.Rangoju@amd.com>
-References: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
- <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
- <28351727-f1ba-5b57-2f84-9eccff6d627f@kupper.org>
- <64edbded-51af-f055-9c2f-c1f81b0d3698@kupper.org>
- <9180965b-fe96-7500-d139-013d1987c498@amd.com>
-From:   Thomas Kupper <thomas@kupper.org>
-In-Reply-To: <9180965b-fe96-7500-d139-013d1987c498@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
+ <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com> <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
+ <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
+ <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com> <CAJ+vNU2i3xm49PJkMnrzeEddywVxGSk4XOq3s9aFOKuZxDdM=A@mail.gmail.com>
+ <b336155c-f96d-2ccb-fbfd-db6d454b3b10@seco.com>
+In-Reply-To: <b336155c-f96d-2ccb-fbfd-db6d454b3b10@seco.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Mon, 14 Nov 2022 11:33:49 -0800
+Message-ID: <CAJ+vNU1-zoug5CoN4=Ut1AL-8ykqfWKGTvJBkFPajR_Z1OCURQ@mail.gmail.com>
+Subject: Re: status of rate adaptation
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,154 +70,221 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 11, 2022 at 2:38 PM Sean Anderson <sean.anderson@seco.com> wrote:
+>
+> On 11/11/22 17:14, Tim Harvey wrote:
+> > On Fri, Nov 11, 2022 at 1:54 PM Sean Anderson <sean.anderson@seco.com> wrote:
+> >>
+> >> On 11/11/22 16:20, Tim Harvey wrote:
+> >> > On Fri, Nov 11, 2022 at 12:58 PM Sean Anderson <sean.anderson@seco.com> wrote:
+> >> >>
+> >> >> On 11/11/22 15:57, Sean Anderson wrote:
+> >> >> > Hi Tim,
+> >> >> >
+> >> >> > On 11/11/22 15:44, Tim Harvey wrote:
+> >> >> >> Greetings,
+> >> >> >>
+> >> >> >> I've noticed some recent commits that appear to add rate adaptation support:
+> >> >> >> 3c42563b3041 net: phy: aquantia: Add support for rate matching
+> >> >> >> 7de26bf144f6 net: phy: aquantia: Add some additional phy interfaces
+> >> >> >> b7e9294885b6 net: phylink: Adjust advertisement based on rate matching
+> >> >> >> ae0e4bb2a0e0 net: phylink: Adjust link settings based on rate matching
+> >> >> >> 0c3e10cb4423 net: phy: Add support for rate matching
+> >> >> >>
+> >> >> >> I have a board with an AQR113C PHY over XFI that functions properly at
+> >> >> >> 10Gbe links but still not at 1Gbe,2.5Gbe,5.0Gbe,100M with v6.1-rc4
+> >> >> >>
+> >> >> >> Should I expect this to work now at those lower rates
+> >> >> >
+> >> >> > Yes.
+> >> >
+> >> > Sean,
+> >> >
+> >> > Good to hear - thank you for your work on this feature!
+> >> >
+> >> >> >
+> >> >> >> and if so what kind of debug information or testing can I provide?
+> >> >> >
+> >> >> > Please send
+> >> >> >
+> >> >> > - Your test procedure (how do you select 1G?)
+> >> >> > - Device tree node for the interface
+> >> >> > - Output of ethtool (on both ends if possible).
+> >> >> > - Kernel logs with debug enabled for drivers/phylink.c
+> >> >>
+> >> >> Sorry, this should be drivers/net/phy/phylink.c
+> >> >>
+> >> >> >
+> >> >> > That should be enough to get us started.
+> >> >> >
+> >> >> > --Sean
+> >> >>
+> >> >
+> >> > I'm currently testing by bringing up the network interface while
+> >> > connected to a 10gbe switch, verifying link and traffic, then forcing
+> >> > the switch port to 1000mbps.
+> >> >
+> >> > The board has a CN9130 on it (NIC is mvpp2) and the dt node snippets are:
+> >> >
+> >> > #include "cn9130.dtsi" /* include SoC device tree */
+> >> >
+> >> > &cp0_xmdio {
+> >> >         pinctrl-names = "default";
+> >> >         pinctrl-0 = <&cp0_xsmi_pins>;
+> >> >         status = "okay";
+> >> >
+> >> >         phy1: ethernet-phy@8 {
+> >> >                 compatible = "ethernet-phy-ieee802.3-c45";
+> >> >                 reg = <8>;
+> >> >         };
+> >> > };
+> >> >
+> >> > &cp0_ethernet {
+> >> >         status = "okay";
+> >> > };
+> >> >
+> >> > /* 10GbE XFI AQR113C */
+> >> > &cp0_eth0 {
+> >> >         status = "okay";
+> >> >         phy = <&phy1>;
+> >> >         phy-mode = "10gbase-r";
+> >> >         phys = <&cp0_comphy4 0>;
+> >> > };
+> >> >
+> >> > Here are some logs with debug enabled in drivers/net/phy/phylink.c and
+> >> > some additional debug in mvpp2.c and aquantia_main.c:
+> >> > # ifconfig eth0 192.168.1.22
+> >> > [    8.882437] aqr107_config_init state=1:ready an=1 link=0 duplex=255
+> >> > speed=-1 26:10gbase-r
+> >> > [    8.891391] aqr107_chip_info FW 5.6, Build 7, Provisioning 6
+> >> > [    8.898165] aqr107_resume
+> >> > [    8.902853] aqr107_get_rate_matching state=1:ready an=1 link=0
+> >> > duplex=255 speed=-1 26:10gbase-r 0:
+> >> > [    8.911932] mvpp2 f2000000.ethernet eth0: PHY
+> >> > [f212a600.mdio-mii:08] driver [Aquantia AQR113C] (irq=POLL)
+> >> > [    8.921577] mvpp2 f2000000.ethernet eth0: phy: 10gbase-r setting
+> >> > supported 00000000,00018000,000e706f advertising
+> >> > 00000000,00018000,000e706f
+> >> > [    8.934349] mvpp2 f2000000.ethernet eth0: mac link down
+> >> > [    8.948812] mvpp2 f2000000.ethernet eth0: configuring for
+> >> > phy/10gbase-r link mode
+> >> > [    8.956350] mvpp2 f2000000.ethernet eth0: major config 10gbase-r
+> >> > [    8.962414] mvpp2 f2000000.ethernet eth0: phylink_mac_config:
+> >> > mode=phy/10gbase-r/Unknown/Unknown/none adv=00000000,00000000,00000000
+> >> > pause=00 link=0 an=0
+> >> > [    8.976252] mvpp2 f2000000.ethernet eth0: mac link down
+> >> > [    8.976267] aqr107_resume
+> >> > [    8.988970] mvpp2 f2000000.ethernet eth0: phy link down
+> >> > 10gbase-r/10Gbps/Full/none/off
+> >> > [    8.997086] aqr107_link_change_notify state=5:nolink an=1 link=0
+> >> > duplex=1 speed=10000 26:10gbase-r
+> >> > [   14.112540] mvpp2 f2000000.ethernet eth0: mac link up
+> >> > [   14.112594] mvpp2 f2000000.ethernet eth0: Link is Up - 10Gbps/Full
+> >> > - flow control off
+> >> > [   14.112673] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> >> > [   14.118198] mvpp2 f2000000.ethernet eth0: phy link up
+> >> > 10gbase-r/10Gbps/Full/none/off
+> >> > [   14.139808] aqr107_link_change_notify state=4:running an=1 link=1
+> >> > duplex=1 speed=10000 26:10gbase-r
+> >> >
+> >> > # ethtool eth0
+> >> > Settings for eth0:
+> >> >         Supported ports: [ ]
+> >> >         Supported link modes:   10baseT/Half 10baseT/Full
+> >> >                                 100baseT/Half 100baseT/Full
+> >>
+> >> 10/100 half duplex aren't achievable with rate matching (and we avoid
+> >> turning them on), so they must be coming from somewhere else. I wonder
+> >> if this is because PHY_INTERFACE_MODE_SGMII is set in
+> >> supported_interfaces.
+> >>
+> >> I wonder if you could enable USXGMII? Seems like mvpp2 with comphy
+> >> should support it. I'm not sure if the aquantia driver is set up for it.
+> >
+> > This appears to trigger an issue from mvpp2:
+> > mvpp2 f2000000.ethernet eth0: validation of usxgmii with support
+> > 00000000,00018000,000e706f and advertisement
+> > 00000000,00018000,000e706f failed: -EINVAL
+>
+> Ah, I forgot this was a separate phy mode. Disregard this.
+>
+> >>
+> >> >                                 1000baseT/Full
+> >> >                                 10000baseT/Full
+> >> >                                 1000baseKX/Full
+> >> >                                 10000baseKX4/Full
+> >> >                                 10000baseKR/Full
+> >> >                                 2500baseT/Full
+> >> >                                 5000baseT/Full
+> >> >         Supported pause frame use: Symmetric Receive-only
+> >> >         Supports auto-negotiation: Yes
+> >> >         Supported FEC modes: Not reported
+> >> >         Advertised link modes:  10baseT/Half 10baseT/Full
+> >> >                                 100baseT/Half 100baseT/Full
+> >> >                                 1000baseT/Full
+> >> >                                 10000baseT/Full
+> >> >                                 1000baseKX/Full
+> >> >                                 10000baseKX4/Full
+> >> >                                 10000baseKR/Full
+> >> >                                 2500baseT/Full
+> >> >                                 5000baseT/Full
+> >> >         Advertised pause frame use: Symmetric Receive-only
+> >> >         Advertised auto-negotiation: Yes
+> >> >         Advertised FEC modes: Not reported
+> >> >         Link partner advertised link modes:  100baseT/Half 100baseT/Full
+> >> >                                              1000baseT/Half 1000baseT/Full
+> >> >                                              10000baseT/Full
+> >> >                                              2500baseT/Full
+> >> >                                              5000baseT/Full
+> >> >         Link partner advertised pause frame use: No
+> >> >         Link partner advertised auto-negotiation: Yes
+> >> >         Link partner advertised FEC modes: Not reported
+> >> >         Speed: 10000Mb/s
+> >> >         Duplex: Full
+> >> >         Port: Twisted Pair
+> >> >         PHYAD: 8
+> >> >         Transceiver: external
+> >> >         Auto-negotiation: on
+> >> >         MDI-X: Unknown
+> >> >         Link detected: yes
+> >> > # ping 192.168.1.146 -c5
+> >> > PING 192.168.1.146 (192.168.1.146): 56 data bytes
+> >> > 64 bytes from 192.168.1.146: seq=0 ttl=64 time=0.991 ms
+> >> > 64 bytes from 192.168.1.146: seq=1 ttl=64 time=0.267 ms
+> >> > 64 bytes from 192.168.1.146: seq=2 ttl=64 time=0.271 ms
+> >> > 64 bytes from 192.168.1.146: seq=3 ttl=64 time=0.280 ms
+> >> > 64 bytes from 192.168.1.146: seq=4 ttl=64 time=0.271 ms
+> >> >
+> >> > --- 192.168.1.146 ping statistics ---
+> >> > 5 packets transmitted, 5 packets received, 0% packet loss
+> >> > round-trip min/avg/max = 0.267/0.416/0.991 ms
+> >> > # # force switch port to 1G
+> >> > [  193.343494] mvpp2 f2000000.ethernet eth0: phy link down
+> >> > 10gbase-r/Unknown/Unknown/none/off
+> >> > [  193.343539] mvpp2 f2000000.ethernet eth0: mac link down
+> >> > [  193.344524] mvpp2 f2000000.ethernet eth0: Link is Down
+> >> > [  193.351973] aqr107_link_change_notify state=5:nolink an=1 link=0
+> >> > duplex=255 speed=-1 26:10gbase-r
+> >> > [  197.472489] mvpp2 f2000000.ethernet eth0: phy link up /1Gbps/Full/pause/off
+> >>
+> >> Well, it looks like we have selected PHY_INTERFACE_MODE_NA. Can you send
+> >> the value of MDIO_PHYXS_VEND_IF_STATUS (dev 4, reg 0xe812)? Please also
+> >> send the global config registers (dev 0x1e, reg 0x0310 through 0x031f)
+> >> and the vendor provisioning registers (dev 4, reg 0xc440 through
+> >> 0xc449).
+> >
+> > yes, this is what I've been looking at as well. When forced to 1000m
+> > the register shows a phy type of 11 which according to the aqr113
+> > datasheet is XFI 5G:
+> > aqr107_read_status STATUS=0x00001258 (type=11) state=4:running an=1
+> > link=1 duplex=1 speed=1000 interface=0
+>
+> That's pretty strange. Seems like it's rate adapting from 5g instead of
+> 10g. Is SERDES Mode in the Global System Configuration For 1G register
+> set to XFI?
 
+1E.31C=0x0106:
+  Rate Adaptation Method: 2=Pause Rate Adaptation
+  SERDES Mode: 6=XFI/2 (XFI 5G)
 
-On 11/14/22 18:39, Tom Lendacky wrote:
-> On 11/12/22 13:12, Thomas Kupper wrote:
->> On 11/11/22 17:00, Thomas Kupper wrote:
->>> On 11/11/22 15:18, Tom Lendacky wrote:
->>>> On 11/11/22 02:46, Thomas Kupper wrote:
->>>>> When determine the type of SFP, active cables were not handled.
->>>>>
->>>>> Add the check for active cables as an extension to the passive cable check.
->>>>
->>>> Is this fixing a particular problem? What SFP is this failing for? A more descriptive commit message would be good.
->>>>
->>>> Also, since an active cable is supposed to be advertising it's capabilities in the eeprom, maybe this gets fixed via a quirk and not a general check this field.
->>
->> Tom,
->>
->> are you sure that an active cable has to advertising it's speed? Searching for details about it I read in "SFF-8472 Rev 12.4", 5.4.2, Table 5-5 Transceiver Identification Examples:
->>
->> Transceiver Type Transceiver Description    Byte    Byte    Byte    Byte    Byte    Byte    Byte    Byte
->>                         3    4    5    6    7     8    9    10
->> ...
->>         10GE Active cable with SFP(3,4)     00h    00h    00h    00h    00h    08h    00h    00h
->>
->> And footnotes:
->> 3) See A0h Bytes 60 and 61 for compliance of these media to industry electrical specifications
->> 4) For Ethernet and SONET applications, rate capability of a link is identified in A0h Byte 12 [nominal signaling
->> rate identifier]. This is due to no formal IEEE designation for passive and active cable interconnects, and lack
->> of corresponding identifiers in Table 5-3.
->>
->> Wouldn't that suggest that byte 3 to 10 are all zero, except byte 8?
-> 
-> This issue seems to be from my misinterpretation of active vs passive.
-> IIUC now, active and passive only applies to copper cables with SFP+ end
-> connectors. In which case the driver likely needs an additional enum cable
-> type, XGBE_SFP_CABLE_FIBER, as the default cable type and slightly
-> different logic.
-> 
-> Can you try the below patch? If it works, I'll work with Shyam to do some
-> testing to ensure it doesn't break anything.
-
-Thanks Tom for getting back to me so soon.
-
-Your patch works well for me, with a passive, an active cable and a GBIC.
-
-But do you think it's a good idea to just check for != XGBE_SFP_CABLE_FIBER? That would also be true for XGBE_SFP_CABLE_UNKNOWN.
-
-     /* Determine the type of SFP */
--    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
-+    if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
-         xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
-         phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
-     else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
-
-Cheers
-Thomas
-
-> 
-> 
-> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-> index 4064c3e3dd49..868a768f424c 100644
-> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-> @@ -189,6 +189,7 @@ enum xgbe_sfp_cable {
->      XGBE_SFP_CABLE_UNKNOWN = 0,
->      XGBE_SFP_CABLE_ACTIVE,
->      XGBE_SFP_CABLE_PASSIVE,
-> +    XGBE_SFP_CABLE_FIBER,
->  };
->  
->  enum xgbe_sfp_base {
-> @@ -1149,16 +1150,18 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
->      phy_data->sfp_tx_fault = xgbe_phy_check_sfp_tx_fault(phy_data);
->      phy_data->sfp_rx_los = xgbe_phy_check_sfp_rx_los(phy_data);
->  
-> -    /* Assume ACTIVE cable unless told it is PASSIVE */
-> +    /* Assume FIBER cable unless told otherwise */
->      if (sfp_base[XGBE_SFP_BASE_CABLE] & XGBE_SFP_BASE_CABLE_PASSIVE) {
->          phy_data->sfp_cable = XGBE_SFP_CABLE_PASSIVE;
->          phy_data->sfp_cable_len = sfp_base[XGBE_SFP_BASE_CU_CABLE_LEN];
-> -    } else {
-> +    } else if (sfp_base[XGBE_SFP_BASE_CABLE] & XGBE_SFP_BASE_CABLE_ACTIVE) {
->          phy_data->sfp_cable = XGBE_SFP_CABLE_ACTIVE;
-> +    } else {
-> +        phy_data->sfp_cable = XGBE_SFP_CABLE_FIBER;
->      }
->  
->      /* Determine the type of SFP */
-> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
-> +    if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
->          xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
->          phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
->      else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
-> 
->>
->>
->> /Thomas
->>
->>>
->>> It is fixing a problem regarding a Mikrotik S+AO0005 AOC cable (we were in contact back in Feb to May). And your right I should have been more descriptive in the commit message.
->>>
->>>>>
->>>>> Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
->>>>> Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
->>>>> ---
->>>>>  ??drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
->>>>>  ??1 file changed, 3 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
->>>>> index 4064c3e3dd49..1ba550d5c52d 100644
->>>>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
->>>>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
->>>>> @@ -1158,8 +1158,9 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
->>>>>  ????? }
->>>>>
->>>>>  ????? /* Determine the type of SFP */
->>>>> -??? if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
->>>>> -??? ??? xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
->>>>> +??? if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
->>>>> +??? ???? phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
->>>>> +??? ???? xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
->>>>
->>>> This is just the same as saying:
->>>>
->>>>  ????if (xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
->>>>
->>>> since the sfp_cable value is either PASSIVE or ACTIVE.
->>>>
->>>> I'm not sure I like fixing whatever issue you have in this way, though. If anything, I would prefer this to be a last case scenario and be placed at the end of the if-then-else block. But it may come down to applying a quirk for your situation.
->>>
->>> I see now that this cable is probably indeed not advertising its capabilities correctly, I didn't understand what Shyam did refer to in his mail from June 6.
->>>
->>> Unfortunately I haven't hear back from you guys after June 6 so I tried to fix it myself ... but do lack the knowledge in that area.
->>>
->>> A quirk seems a good option.
->>>
->>>  From my point of view this patch can be cancelled/aborted/deleted.
->>> I'll look into how to fix it using a quirk but maybe I'm not the hest suited candidate to do it.
->>>
->>> /Thomas
->>>
->>>>
->>>> Thanks,
->>>> Tom
->>>>
->>>>>  ????? ??? phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
->>>>>  ????? else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
->>>>>  ????? ??? phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
->>>>> -- 
->>>>> 2.34.1
->>>>>
+Tim
