@@ -2,171 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDAAB6278E2
-	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:19:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2C0462793E
+	for <lists+netdev@lfdr.de>; Mon, 14 Nov 2022 10:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235950AbiKNJTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 04:19:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
+        id S236258AbiKNJlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 04:41:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236352AbiKNJTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:19:35 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC403E0E0;
-        Mon, 14 Nov 2022 01:19:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668417574; x=1699953574;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tj5P+zXbOOesl3lSAdcCPziPUfeUV9ZWH1wNdH5xCyY=;
-  b=bRKm9XN0W2O9Kvlv6fImqmhUekEelr17FtuepIgNXKTzhC0FLGPdCIaJ
-   zQ9e3N7eHViRqMy6D+EGxEek+1P8RX1BtJrrWPCAP6IAtZBlLpdI8Af4j
-   YdZm1pcx3Pv2OsxWZCZ+XycZFuTz7bBd8XIsZsGn7wZox0Uieh75FMWxQ
-   6fO2u6qwH+qWgfoypElbaqAA86EoPxX9k9WoRVcBl2pwYZnbEr2ZbFQwY
-   T1zC8n6iLCdkdlVBu1Tr+EKJl3Hm+nJOyVvdJuqo3dIDBpgS9iF3pBMtk
-   xBhlXxSI3/yQgEpFT1gP45/00oMIRhGkZqY3w9wOf3ODOPCUmeh5QhBGE
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="199672163"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Nov 2022 02:19:33 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 14 Nov 2022 02:19:33 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 14 Nov 2022 02:19:31 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <joe@perches.com>,
-        <daniel.machon@microchip.com>, <vladimir.oltean@nxp.com>,
-        <petrm@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, "kernel test robot" <lkp@intel.com>
-Subject: [PATCH net-next v2 1/1] net: dcb: move getapptrust to separate function
-Date:   Mon, 14 Nov 2022 10:29:50 +0100
-Message-ID: <20221114092950.2490451-1-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S237012AbiKNJlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 04:41:24 -0500
+X-Greylist: delayed 405 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Nov 2022 01:41:22 PST
+Received: from relay.mgdcloud.pe (relay.mgdcloud.pe [201.234.116.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE45C1AF1E
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 01:41:21 -0800 (PST)
+Received: from relay.mgdcloud.pe (localhost.localdomain [127.0.0.1])
+        by relay.mgdcloud.pe (Proxmox) with ESMTP id 458A2229901;
+        Mon, 14 Nov 2022 04:34:32 -0500 (-05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cgracephoto.com;
+         h=cc:content-description:content-transfer-encoding:content-type
+        :content-type:date:from:from:message-id:mime-version:reply-to
+        :reply-to:subject:subject:to:to; s=Relay; bh=POmmLhbs6/14Mhmcbsw
+        HpX0H+MIlo+W0e6cG8XDkBG8=; b=FYFu2xXvFkzjGejQ/UD5Jifb4Pw8s92WmbU
+        QU+1LDkbBZDwTzA/v0BE3ZUkoaC7ImMOySla0eQzXzr0XhdyOfNHQ6/PbbQLVAlq
+        AjKOk69xp7S5tvGI6uOWg300LnQEAb2PkHwOPQDQOUAgW1xep6jKK8Lz4PyqlKJb
+        gXrneV2Na54SxzGS0KXbNoGvMFPgNgOkkxku5uNvD/qs9qPW0CjNz2jMiA9JZ1fu
+        HyaLAbfIwPtkKv2TublRNdbaPhZWT5xuvj67Jg9IFN0CKNFskk8VWucz0oaYgoKL
+        MJYFG787l025BuKNjwODzKzBFJ9lUiuhc8NQZ/N5EdhH48B9OhA==
+Received: from portal.mgd.pe (portal.mgd.pe [107.1.2.10])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by relay.mgdcloud.pe (Proxmox) with ESMTPS id 2D30C229027;
+        Mon, 14 Nov 2022 04:34:32 -0500 (-05)
+Received: from localhost (localhost [127.0.0.1])
+        by portal.mgd.pe (Postfix) with ESMTP id 0F57420187D81;
+        Mon, 14 Nov 2022 04:34:32 -0500 (-05)
+Received: from portal.mgd.pe ([127.0.0.1])
+        by localhost (portal.mgd.pe [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 7JSs882beyQV; Mon, 14 Nov 2022 04:34:31 -0500 (-05)
+Received: from localhost (localhost [127.0.0.1])
+        by portal.mgd.pe (Postfix) with ESMTP id B8A5320187D83;
+        Mon, 14 Nov 2022 04:34:31 -0500 (-05)
+X-Virus-Scanned: amavisd-new at mgd.pe
+Received: from portal.mgd.pe ([127.0.0.1])
+        by localhost (portal.mgd.pe [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id dOFRVytk0HFv; Mon, 14 Nov 2022 04:34:31 -0500 (-05)
+Received: from [103.125.190.179] (unknown [103.125.190.179])
+        by portal.mgd.pe (Postfix) with ESMTPSA id 28B0E20187D81;
+        Mon, 14 Nov 2022 04:34:24 -0500 (-05)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Strategic plan
+To:     Recipients <cindy@cgracephoto.com>
+From:   "Mr.IgorS. Lvovich" <cindy@cgracephoto.com>
+Date:   Mon, 14 Nov 2022 01:34:23 -0800
+Reply-To: richad.tang@yahoo.com.hk
+Message-Id: <20221114093425.28B0E20187D81@portal.mgd.pe>
+X-Spam-Status: Yes, score=6.4 required=5.0 tests=BAYES_95,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FORGED_REPLYTO,HK_NAME_MR_MRS,RCVD_IN_SBL,
+        SPF_FAIL,SPF_HELO_PASS,TO_EQ_FM_DOM_SPF_FAIL,TO_EQ_FM_SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: *  3.0 BAYES_95 BODY: Bayes spam probability is 95 to 99%
+        *      [score: 0.9751]
+        *  0.1 RCVD_IN_SBL RBL: Received via a relay in Spamhaus SBL
+        *      [103.125.190.179 listed in zen.spamhaus.org]
+        *  0.0 SPF_FAIL SPF: sender does not match SPF record (fail)
+        *      [SPF failed: Please see http://www.openspf.org/Why?s=mfrom;id=cindy%40cgracephoto.com;ip=201.234.116.20;r=lindbergh.monkeyblade.net]
+        * -0.0 SPF_HELO_PASS SPF: HELO matches SPF record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  1.0 HK_NAME_MR_MRS No description available.
+        *  0.1 DKIM_INVALID DKIM or DK signature exists, but is not valid
+        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
+        *  0.0 TO_EQ_FM_SPF_FAIL To == From and external SPF failed
+        *  0.0 TO_EQ_FM_DOM_SPF_FAIL To domain == From domain and external SPF
+        *       failed
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a frame size warning, reported by kernel test robot.
+Hello
+I will like to use the liberty of this medium to inform you as a consultant=
+,that my principal is interested in investing his bond/funds as a silent bu=
+siness partner in your company.Taking into proper
+consideration the Return on Investment(ROI) based on a ten (10) year strate=
+gic plan.
+I shall give you details when you reply.
 
->> net/dcb/dcbnl.c:1230:1: warning: the frame size of 1244 bytes is
->> larger than 1024 bytes [-Wframe-larger-than=]
-
-The getapptrust part of dcbnl_ieee_fill is moved to a separate function,
-and the selector array is now dynamically allocated, instead of stack
-allocated.
-
-Tested on microchip sparx5 driver.
-
-Fixes: 6182d5875c33 ("net: dcb: add new apptrust attribute")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
----
- net/dcb/dcbnl.c | 65 ++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 43 insertions(+), 22 deletions(-)
-
-diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-index cec0632f96db..f9949e051f49 100644
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -1060,11 +1060,50 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
- 	return err;
- }
- 
-+static int dcbnl_getapptrust(struct net_device *netdev, struct sk_buff *skb)
-+{
-+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
-+	enum ieee_attrs_app type;
-+	struct nlattr *apptrust;
-+	int nselectors, err, i;
-+	u8 *selectors;
-+
-+	selectors = kzalloc(IEEE_8021QAZ_APP_SEL_MAX + 1, GFP_KERNEL);
-+	if (!selectors)
-+		return -ENOMEM;
-+
-+	err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
-+	if (err) {
-+		err = 0;
-+		goto out;
-+	}
-+
-+	apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
-+	if (!apptrust) {
-+		err = -EMSGSIZE;
-+		goto out;
-+	}
-+
-+	for (i = 0; i < nselectors; i++) {
-+		type = dcbnl_app_attr_type_get(selectors[i]);
-+		err = nla_put_u8(skb, type, selectors[i]);
-+		if (err) {
-+			nla_nest_cancel(skb, apptrust);
-+			goto out;
-+		}
-+	}
-+	nla_nest_end(skb, apptrust);
-+
-+out:
-+	kfree(selectors);
-+	return err;
-+}
-+
- /* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
- static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- {
- 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
--	struct nlattr *ieee, *app, *apptrust;
-+	struct nlattr *ieee, *app;
- 	struct dcb_app_type *itr;
- 	int dcbx;
- 	int err;
-@@ -1168,27 +1207,9 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- 	nla_nest_end(skb, app);
- 
- 	if (ops->dcbnl_getapptrust) {
--		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
--		int nselectors, i;
--
--		apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
--		if (!apptrust)
--			return -EMSGSIZE;
--
--		err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
--		if (!err) {
--			for (i = 0; i < nselectors; i++) {
--				enum ieee_attrs_app type =
--					dcbnl_app_attr_type_get(selectors[i]);
--				err = nla_put_u8(skb, type, selectors[i]);
--				if (err) {
--					nla_nest_cancel(skb, apptrust);
--					return err;
--				}
--			}
--		}
--
--		nla_nest_end(skb, apptrust);
-+		err = dcbnl_getapptrust(netdev, skb);
-+		if (err)
-+			return err;
- 	}
- 
- 	/* get peer info if available */
--- 
-2.34.1
+Regards,
 
