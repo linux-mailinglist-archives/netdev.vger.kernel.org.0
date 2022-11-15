@@ -2,99 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A263629DC4
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 16:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AEDF629DC7
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 16:40:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbiKOPj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 10:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39224 "EHLO
+        id S238246AbiKOPkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 10:40:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237952AbiKOPj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 10:39:57 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8782935C;
-        Tue, 15 Nov 2022 07:39:56 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id h10so10011587qvq.7;
-        Tue, 15 Nov 2022 07:39:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MCjIA/eqXVicTJQ5RMAw6w0bmXnp4jF1cWjPhai0R80=;
-        b=h77cd59Hu3xMyqWruO1ZGLlcF/I1eUZnHtPZPkVN/roUnelGYgFVP2hhf6+ag/1sCp
-         a6yka66/CtvtJu/NZqQKwqlPBD86xakq3yEEiSB8aVSTviIOyW+8ICD4O16EjHk8I02a
-         pcewn4nBX8ZA8xyoMrLGxOZBV+6GyRUIC7RNOJ3VffCZdCX/j+76ePw12vASrRhjX3He
-         2IZJqC3tf4XPi9fYFDSn7rJLJbvQHwuSAPtSzH/T3aVvEueRXnTnrUTrQe4gR1HyNI7H
-         TGnUqem/h7XgVLeokc7weEYP82wakEHqsxH/n0JTQTOZWj+Ori8I1RLXGuRIpKgwkjhU
-         3G9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MCjIA/eqXVicTJQ5RMAw6w0bmXnp4jF1cWjPhai0R80=;
-        b=hizEZJLPQU+3+lO7hIiYuX3B9Ly97eonjxb8D67hACc67shtdq14a7FjH0va90DaTE
-         RHpOEuhTMYj0+fZXi02tgJhftgJmGKOEKdt22TW3xtZTcvp9lC7XgmsjtegYJoSdQB0u
-         APrRA+Mn5MnUaBC1etH+FzAqpRpD0zlXWKHehpOPTs2+AJ4kyzsIVWjl/byIV9pfG+FN
-         IPSq03g7UkjllsYlHEO/4rdV27/BXsSPTRaqXBdVk1PXMPmWx0VaX5J5fnt0K9NWEZYZ
-         zTg2V267IG6zRmd4yCNiEtYoljPdleWkPdvc2lafLySbN87ehR4aqF00JD4pjmgveQaf
-         xZ0g==
-X-Gm-Message-State: ANoB5pmTSNlEEP4CNiZh2cFwh8qqeyBCOlJmzxBaLGLYbWWE5REENRa6
-        JGmfRF+kn2BHPlIuHj9oNuR4JVBrXGg=
-X-Google-Smtp-Source: AA0mqf7M1dMRjnbrUMestf/zGVRIPlhZqg4fQ2AP7QhCuvh+POwiNRCTEi2aZBDiJkhJju9t6c37ZQ==
-X-Received: by 2002:ad4:51c2:0:b0:4bb:781e:6232 with SMTP id p2-20020ad451c2000000b004bb781e6232mr16786390qvq.15.1668526795376;
-        Tue, 15 Nov 2022 07:39:55 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id az36-20020a05620a172400b006ec771d8f89sm8229991qkb.112.2022.11.15.07.39.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 07:39:55 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
+        with ESMTP id S237952AbiKOPkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 10:40:41 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C6B29361;
+        Tue, 15 Nov 2022 07:40:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=IVRozCvsAl0N4wyUApbsWG3nXgbptg/3aW0X1ZtUpNU=; b=hbYowYFDGyWEkJvrZPomeEH0C3
+        4RwaDvc2XtrOCw7djpk3RnIsFEjmZQpjxJGsnLLm9Z/cjeWGXzH3ie4nRTl5J7GKzi1H39AU9Fc5s
+        7Pca08Uiw+FwspSXAbusiGt5nHoQMXJMSwHhbpJJZ2zQg3d6vw+hnWSIGOMkwyXXAMt0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ouy2h-002TR0-OJ; Tue, 15 Nov 2022 16:40:07 +0100
+Date:   Tue, 15 Nov 2022 16:40:07 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: [PATCH net-next] sctp: change to include linux/sctp.h in net/sctp/checksum.h
-Date:   Tue, 15 Nov 2022 10:39:53 -0500
-Message-Id: <ca7ea96d62a26732f0491153c3979dc1c0d8d34a.1668526793.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        Hao Chen <chenhao288@hisilicon.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>, Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org, yc-core@yandex-team.ru
+Subject: Re: [PATCH v1] net/ethtool/ioctl: ensure that we have phy ops before
+ using them
+Message-ID: <Y3Oy14CNVEttEI7T@lunn.ch>
+References: <20221114081532.3475625-1-d-tatianin@yandex-team.ru>
+ <20221114210705.216996a9@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221114210705.216996a9@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently "net/sctp/checksum.h" including "net/sctp/sctp.h" is
-included in quite some places in netfilter and openswitch and
-net/sched. It's not necessary to include "net/sctp/sctp.h" if
-a module does not have dependence on SCTP, "linux/sctp.h" is
-the right one to include.
+On Mon, Nov 14, 2022 at 09:07:05PM -0800, Jakub Kicinski wrote:
+> On Mon, 14 Nov 2022 11:15:32 +0300 Daniil Tatianin wrote:
+> > +	if (!(phydev && phy_ops && phy_ops->get_stats) &&
+> > +	    !ops->get_ethtool_phy_stats)
+> 
+> This condition is still complicated.
+> 
+> > +		return -EOPNOTSUPP;
+> 
+> The only way this crash can happen is if driver incorrectly returns
+> non-zero stats count but doesn't have a callback to read the stats.
+> So WARN_ON() would be in order here.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/net/sctp/checksum.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Daniil
 
-diff --git a/include/net/sctp/checksum.h b/include/net/sctp/checksum.h
-index 5a9bb09f32b6..f514a0aa849e 100644
---- a/include/net/sctp/checksum.h
-+++ b/include/net/sctp/checksum.h
-@@ -24,7 +24,7 @@
- #define __sctp_checksum_h__
- 
- #include <linux/types.h>
--#include <net/sctp/sctp.h>
-+#include <linux/sctp.h>
- #include <linux/crc32c.h>
- #include <linux/crc32.h>
- 
--- 
-2.31.1
+I'm missing the patch itself, and b4 does not return it. Please
+consider reposting. Since this appear to be to do with PHY statistics,
+you should Cc: the PHY maintainers.
 
+       Andrew
