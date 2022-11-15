@@ -2,100 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E18629D49
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 16:24:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5777629D4C
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 16:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiKOPYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 10:24:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56290 "EHLO
+        id S232880AbiKOPZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 10:25:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiKOPYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 10:24:08 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06C2DF09;
-        Tue, 15 Nov 2022 07:24:05 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id E3B971883A1A;
-        Tue, 15 Nov 2022 15:24:02 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id DCD3225002DE;
-        Tue, 15 Nov 2022 15:24:02 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id CC2C49EC0020; Tue, 15 Nov 2022 15:24:02 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229572AbiKOPZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 10:25:50 -0500
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E2F2D769;
+        Tue, 15 Nov 2022 07:25:49 -0800 (PST)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-13b23e29e36so16572086fac.8;
+        Tue, 15 Nov 2022 07:25:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=uf8eu5IHbsDfWimmQsuwfxum/RNqHnjNqe3CsnW4ODc=;
+        b=ikmF9JxUpBONmpcB4mzORfWBa/U1MTdwn3R1w2i5sutlkkgDz2uf68CziFe1RGek0H
+         ymxBrI5njHy6B+kik73RyUlRCgZfD7sIFThovrodiuWz+5+yNab4qwn3Uds5107w5qC2
+         mw8RsuqzuKJ5NwUC9kyOGIs8KX7d9S3xfLIaA44i17Fee0LUFnj95K9sC9OzRWD7zsJx
+         qGaRROVBmJgg5d5YPjjlhTH0/8mrTgAtmE/L+EnPFypNw6LDMi90wh7u3YHEGOlG0Y65
+         hBHByElsZnzLV0chPGnDX18wALjp+3sby4TdwBxbU4gu0SZpGp2v1cAl/84NVr1Y+2Ud
+         1faw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uf8eu5IHbsDfWimmQsuwfxum/RNqHnjNqe3CsnW4ODc=;
+        b=5RraMc2qMETfvytdb5f/iUcZivM8V45TORqocx9VrISBaOMch9lOqjawmU1rE2vjQZ
+         eiGDvIVoiNPiyoM3tyOyQ5m5ZpAErtNoDGIzYX4D+MfWcDNdO751U+J3YCuIdVmNwFl5
+         cmAG7xRZcm91LrTY/xArnL3HUTl96qD0sUdi0t/Sl47DsE+QKdxVBM9biyeh8Fzt9K1x
+         Alx0FHibd40oCk7GvEFejv1DNf0RVtQOTk503SNzYpVkhHe4BCnEBpzYkcouDpBB8o7U
+         Pv1NsemI02v8b5uH+7h/ZxY52gfodQDEgvgphtJnaz7nZkVMIBRGqCVydFR4VljZ1+lp
+         z8ag==
+X-Gm-Message-State: ANoB5pl9ztco3b/UqkodPhNR51k2LgDOh3WFlPOx0W7wf79p71ig/5zs
+        9TWZjkRI50WhmlwPkL8RJQMgvX6R1HRx6ujiRc7Xtpt1LU0=
+X-Google-Smtp-Source: AA0mqf6axPAl4K74OTmpMsym8LhatuCUAC7ETdoLLJHpfWJjYEZyOp1QCQXXRwmLeNZYB7dInHo7safsXwykqiqyhnY=
+X-Received: by 2002:a05:6870:5894:b0:13b:5fff:1d84 with SMTP id
+ be20-20020a056870589400b0013b5fff1d84mr631074oab.190.1668525949001; Tue, 15
+ Nov 2022 07:25:49 -0800 (PST)
 MIME-Version: 1.0
-Date:   Tue, 15 Nov 2022 16:24:02 +0100
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 2/2] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <Y3Osehw6Ra28HhYv@shredder>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <20221112203748.68995-3-netdev@kapio-technology.com>
- <Y3NixroyU4XGL5j6@shredder>
- <864c4ae8e549721ba1ac5cf6ef77db9d@kapio-technology.com>
- <Y3Osehw6Ra28HhYv@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <5a8195cfa02a95d614e782b9ae55546b@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <86dfdc49613ca8a8a6a3d7c7cf2e7bd8207338f2.1668357542.git.lucien.xin@gmail.com>
+ <202211140427.Bd5Zjdbe-lkp@intel.com> <CADvbK_ezonDWaT5fUdc0w5+y91PEaHc8YveV8KGyBC7sH3fWmw@mail.gmail.com>
+ <cf4ba8ec52db5fabf61032a355d2a2b57f9bb0d5.camel@redhat.com>
+In-Reply-To: <cf4ba8ec52db5fabf61032a355d2a2b57f9bb0d5.camel@redhat.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 15 Nov 2022 10:25:15 -0500
+Message-ID: <CADvbK_cvS4vJYb_jW=W20bXTpV0Fu4=eSsPEsO4pM5NLGfmwdA@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/7] sctp: add dif and sdif check in asoc and ep lookup
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, llvm@lists.linux.dev,
+        oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Ahern <dsahern@gmail.com>,
+        Carlo Carraro <colrack@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 16:12, Ido Schimmel wrote:
-> On Tue, Nov 15, 2022 at 11:36:38AM +0100, netdev@kapio-technology.com 
-> wrote:
->> On 2022-11-15 10:58, Ido Schimmel wrote:
->> > On Sat, Nov 12, 2022 at 09:37:48PM +0100, Hans J. Schultz wrote:
->> > > diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> > > b/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> > > index 8a874b6fc8e1..0a57f4e7dd46 100644
->> > > --- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> > > +++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> > > @@ -12,6 +12,7 @@
->> > >
->> > >  #include "chip.h"
->> > >  #include "global1.h"
->> > > +#include "switchdev.h"
->> > >
->> > >  /* Offset 0x01: ATU FID Register */
->> > >
->> > > @@ -426,6 +427,8 @@ static irqreturn_t
->> > > mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
->> > >  	if (err)
->> > >  		goto out;
->> > >
->> > > +	mv88e6xxx_reg_unlock(chip);
->> >
->> > Why? At minimum such a change needs to be explained in the commit
->> > message and probably split to a separate preparatory patch, assuming the
->> > change is actually required.
->> 
->> This was a change done long time ago related to that the violation 
->> handle
->> function takes the NL lock,
->> which could lead to a double-lock deadlock afair if the chip lock is 
->> taken
->> throughout the handler.
-> 
-> Why do you need to take RTNL lock? br_switchdev_event() which receives
-> the 'SWITCHDEV_FDB_ADD_TO_BRIDGE' event has this comment:
-> "/* called with RTNL or RCU */"
-> And it's using br_port_get_rtnl_rcu(), so looks like RCU is enough.
+On Tue, Nov 15, 2022 at 5:19 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Mon, 2022-11-14 at 21:38 -0500, Xin Long wrote:
+> > On Sun, Nov 13, 2022 at 3:15 PM kernel test robot <lkp@intel.com> wrote:
+> > >
+> > > Hi Xin,
+> > >
+> > > Thank you for the patch! Yet something to improve:
+> > >
+> > > [auto build test ERROR on net-next/master]
+> > >
+> > > url:    https://github.com/intel-lab-lkp/linux/commits/Xin-Long/sctp-support-vrf-processing/20221114-004540
+> > > patch link:    https://lore.kernel.org/r/86dfdc49613ca8a8a6a3d7c7cf2e7bd8207338f2.1668357542.git.lucien.xin%40gmail.com
+> > > patch subject: [PATCH net-next 5/7] sctp: add dif and sdif check in asoc and ep lookup
+> > > config: arm-randconfig-r034-20221114
+> > > compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 463da45892e2d2a262277b91b96f5f8c05dc25d0)
+> > > reproduce (this is a W=1 build):
+> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >         chmod +x ~/bin/make.cross
+> > >         # install arm cross compiling tool for clang build
+> > >         # apt-get install binutils-arm-linux-gnueabi
+> > >         # https://github.com/intel-lab-lkp/linux/commit/6129dc2e382c6e2d3198f6c32cc1f750a15a77ab
+> > >         git remote add linux-review https://github.com/intel-lab-lkp/linux
+> > >         git fetch --no-tags linux-review Xin-Long/sctp-support-vrf-processing/20221114-004540
+> > >         git checkout 6129dc2e382c6e2d3198f6c32cc1f750a15a77ab
+> > >         # save the config file
+> > >         mkdir build_dir && cp config build_dir/.config
+> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash net/openvswitch/
+> > >
+> > > If you fix the issue, kindly add following tag where applicable
+> > > > Reported-by: kernel test robot <lkp@intel.com>
+> > >
+> > > All errors (new ones prefixed by >>):
+> > >
+> > >    In file included from net/openvswitch/actions.c:26:
+> > >    In file included from include/net/sctp/checksum.h:27:
+> > > > > include/net/sctp/sctp.h:686:35: error: no member named 'sctp' in 'struct net'
+> > >            l3mdev_accept = !!READ_ONCE(net->sctp.l3mdev_accept);
+> > >                                        ~~~  ^
+> > The build disabled IP_SCTP, while net/sctp/sctp.h is included in other modules.
+> > Instead of "net/sctp/sctp.h", "linux/sctp.h" should be included, I
+> > will send another patch series to fix them.
+> >
+> > We do NOT need to change anything in this series.
+>
+> 'net->sctp' is defined only when CONFIG_SCTP is enabled. AFAICS the new
+> helper introduced by this patch is the only function in sctp.h
+> accessing 'net->sctp', so prior to this patch including sctp.h with
+>
+> # CONFIG_SCTP is not set
+>
+> was apparently safe, while not it breaks the build.
+>
+> I think the issue should be addressed here.
+I just think it's not correct to include "net/sctp/sctp.h" if one doesn't
+depend on SCTP module. I'd rather consider "net/sctp/sctp.h" as
+part of SCTP module.
 
-As I understand, dsa_port_to_bridge_port() needs to be called with the 
-NL lock taken...
+I can fix it by simply moving this function to like net/sctp/input.c, it
+just doesn't look good. Anyway, maybe I will do it to solve the build
+error in the current patch first.
+
+Thanks.
+
+>
+> Thanks,
+>
+> Paolo
+>
