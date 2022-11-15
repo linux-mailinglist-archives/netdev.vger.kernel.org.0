@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 185C762A15B
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 19:33:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BDA862A16A
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 19:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbiKOSdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 13:33:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
+        id S230322AbiKOSh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 13:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiKOSc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 13:32:58 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57741E721;
-        Tue, 15 Nov 2022 10:32:57 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id c15so9266752qtw.8;
-        Tue, 15 Nov 2022 10:32:57 -0800 (PST)
+        with ESMTP id S230176AbiKOSh5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 13:37:57 -0500
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D799209B9
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 10:37:56 -0800 (PST)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-1322d768ba7so17236667fac.5
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 10:37:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ed0lFBOrsy+uYXuj7c2RkD6jUi2Vk7diKbHkFLe1HcY=;
-        b=n1dJCa7tYLJ3cGFZBNQO095b2PM74OHihOgNuOGhGjkW8JJ5zBbZkWP90flM3pfUi6
-         REaTl/XEpk3CBAsLhAosw2oOKURDW6DZY/BCiQ0rFN6GxpKNeywaxjFbUhB5rvCyJiqR
-         +WqF/GHC1tFf8qM5smwycm3BlfyXAzRwdK2GAJxn8E4tE7GIhj3Y2GWIPh0nDigsFpGJ
-         nOJwn33eI6l0nbVYH7dzC1TrWRWQdVX6Fqia0kulP7TxDSHsqb2disGShkbv7gzY1Yn/
-         VLKGvdAW6aDdts5JmCkTfjzzISgnkZeFpX/u+ap/GnDEDVB91Cf+1FAMK50Gxzh3NcOM
-         Oepw==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QhMUoKXVcMHmZEBz9MdS5zopFN48S1PqhhOi5SQP8d8=;
+        b=V0rZ4d85Xqc2HRJ94PzmtFOnpPbAaBdwVWu/3Iev1I5GTwtDLKyuG1FwKqZDzphhWF
+         PmzT8Mue1qsX/T/wISpvNwvtp01Vxrj3doz0SdUrjfD/F0YlP82djlWuq0Uq9Xy3uaXR
+         mIM3dwXPUGMJU+MPYWN3x4Rpr5p99iyI24oWzxlEpyvnqAtPb28hjXr1WhWWU/4LwOc9
+         Qnnxs4THCRLdL5NuyM7LyBq2bigQxiVWi4zbf2+4BD5Jl9Y4CjRmr9ZQydCnd0Jaq6aP
+         VYR+eMLieAydf9FplWWfG7K8aUEXGDJ5ockZvspK2jsEbZYmIs0KDROCsjBybfTdB2gn
+         p3hQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ed0lFBOrsy+uYXuj7c2RkD6jUi2Vk7diKbHkFLe1HcY=;
-        b=b8ap//FiKcZezGI4CfEqnbJirHBpr4F31bGgVrp934sW9VOmkwqdpbkeAxTPhhQvbM
-         zYeCgqSszd4+8WgHWMV6cmhxHe0jcOZZRgoBGkjbzlIA/iktN5A4aM+SxyqsGWq4c7XU
-         45IrZrNpUODo+1nymWKNDZ7wJ6e0tAs9b/KxR8PTJnco66lf25RaIabV5se7elG8cCxk
-         8OTbpVOhpZDDdobxnlKIHTkvHhFIoSbJhlti9v/aoONvQrraIOgiZUrsct5JRakmldnB
-         vAYl83anESksTXBnK0pRQ35Bzj/+7/Q6P48QhNSBvfrPULAy6WBgO1pZ4hQtEKpxPLun
-         j7+w==
-X-Gm-Message-State: ANoB5pn+KlRhTC36g0lKx1N4K9Mbps+2MoYvawZF0ee/CfzlGC9z6egQ
-        GlVhZtjiAZKPHez1sUM95dY=
-X-Google-Smtp-Source: AA0mqf5y+6IE9CH+MFP1uJCVAAiqhugIhJFD+pcOVEmT634IOkf37MQlFcKoMgziwK5MKDeNF/d44w==
-X-Received: by 2002:a05:622a:a17:b0:39c:c0b1:be5b with SMTP id bv23-20020a05622a0a1700b0039cc0b1be5bmr17721118qtb.663.1668537157141;
-        Tue, 15 Nov 2022 10:32:37 -0800 (PST)
-Received: from localhost ([24.236.74.177])
-        by smtp.gmail.com with ESMTPSA id g6-20020a05620a40c600b006fa12a74c53sm8734899qko.61.2022.11.15.10.32.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 10:32:36 -0800 (PST)
-Date:   Tue, 15 Nov 2022 10:32:31 -0800
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        haniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] cpumask: improve on cpumask_local_spread()
- locality
-Message-ID: <Y3PXw8Hqn+RCMg2J@yury-laptop>
-References: <20221112190946.728270-1-yury.norov@gmail.com>
- <xhsmh7czwyvtj.mognet@vschneid.remote.csb>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QhMUoKXVcMHmZEBz9MdS5zopFN48S1PqhhOi5SQP8d8=;
+        b=i8vHxVNAcsYZrw9OkyIDF3sXRZz/h3alLTNvA12wD4yBsExYGe4zSvx1/OQsTl7juu
+         tYhfDLJlLNXPTkaQ+ecAbnY4Ww4ON6Jfcie4GhTMiTgNnPpcSfv0OAvEuijOgM7ITS/x
+         WR2i2B7yLb67/LAgrjgr1LdaFHcBRMj9zKEQ+NHq9mceOQOJhoJEjVdfcgUhcF//GVqh
+         wDUyXeqfOjyeziK3JvBRqkI9sfbuuD1m7Knd4QN6rf0OS2GzRoo7mtLVdaOO2KKM2e8b
+         yIzAlo3/HzbozHFf0LxZI3G/66GSmWorZMqdwdAK2QkGSHpfcS3IAvVuU6m7QBOFAGOK
+         kujA==
+X-Gm-Message-State: ANoB5pnFdSK7Fwc9lxTX1w6KdpLMBalRV3psrFTpN2I8VQUE9Rbep6oK
+        PsP1vThG2/z+u3wPdaXe0cxW1vC6BQt9XkWrG52WJA==
+X-Google-Smtp-Source: AA0mqf41NxdjStkZGmG9M30H6U1J1P0O9gnXmxLWefGJiEvgAFmccBPxAM9KsLI4KXvYYOU+yHPWdMvsDvJODX86Ef8=
+X-Received: by 2002:a05:6870:9624:b0:13b:be90:a68a with SMTP id
+ d36-20020a056870962400b0013bbe90a68amr1856335oaq.181.1668537474926; Tue, 15
+ Nov 2022 10:37:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <xhsmh7czwyvtj.mognet@vschneid.remote.csb>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221115030210.3159213-1-sdf@google.com> <20221115030210.3159213-6-sdf@google.com>
+ <87h6z0i449.fsf@toke.dk>
+In-Reply-To: <87h6z0i449.fsf@toke.dk>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 15 Nov 2022 10:37:43 -0800
+Message-ID: <CAKH8qBsEGD3L0XAVzVHcTW6k_RhEt74pfXrPLANuznSAJw7bEg@mail.gmail.com>
+Subject: Re: [xdp-hints] [PATCH bpf-next 05/11] veth: Support rx timestamp
+ metadata for xdp
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -98,86 +82,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 05:24:56PM +0000, Valentin Schneider wrote:
-> Hi,
-> 
-> On 12/11/22 11:09, Yury Norov wrote:
-> > cpumask_local_spread() currently checks local node for presence of i'th
-> > CPU, and then if it finds nothing makes a flat search among all non-local
-> > CPUs. We can do it better by checking CPUs per NUMA hops.
+On Tue, Nov 15, 2022 at 8:17 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Stanislav Fomichev <sdf@google.com> writes:
+>
+> > The goal is to enable end-to-end testing of the metadata
+> > for AF_XDP. Current rx_timestamp kfunc returns current
+> > time which should be enough to exercise this new functionality.
 > >
-> > This series is inspired by Tariq Toukan and Valentin Schneider's "net/mlx5e:
-> > Improve remote NUMA preferences used for the IRQ affinity hints"
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: David Ahern <dsahern@gmail.com>
+> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Willem de Bruijn <willemb@google.com>
+> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> > Cc: Maryam Tahhan <mtahhan@redhat.com>
+> > Cc: xdp-hints@xdp-project.net
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  drivers/net/veth.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
 > >
-> > https://patchwork.kernel.org/project/netdevbpf/patch/20220728191203.4055-3-tariqt@nvidia.com/
+> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > index 2a4592780141..c626580a2294 100644
+> > --- a/drivers/net/veth.c
+> > +++ b/drivers/net/veth.c
+> > @@ -25,6 +25,7 @@
+> >  #include <linux/filter.h>
+> >  #include <linux/ptr_ring.h>
+> >  #include <linux/bpf_trace.h>
+> > +#include <linux/bpf_patch.h>
+> >  #include <linux/net_tstamp.h>
 > >
-> > According to their measurements, for mlx5e:
+> >  #define DRV_NAME     "veth"
+> > @@ -1659,6 +1660,18 @@ static int veth_xdp(struct net_device *dev, stru=
+ct netdev_bpf *xdp)
+> >       }
+> >  }
 > >
-> >         Bottleneck in RX side is released, reached linerate (~1.8x speedup).
-> >         ~30% less cpu util on TX.
-> >
-> > This patch makes cpumask_local_spread() traversing CPUs based on NUMA
-> > distance, just as well, and I expect comparabale improvement for its
-> > users, as in case of mlx5e.
-> >
-> > I tested new behavior on my VM with the following NUMA configuration:
-> >
-> > root@debian:~# numactl -H
-> > available: 4 nodes (0-3)
-> > node 0 cpus: 0 1 2 3
-> > node 0 size: 3869 MB
-> > node 0 free: 3740 MB
-> > node 1 cpus: 4 5
-> > node 1 size: 1969 MB
-> > node 1 free: 1937 MB
-> > node 2 cpus: 6 7
-> > node 2 size: 1967 MB
-> > node 2 free: 1873 MB
-> > node 3 cpus: 8 9 10 11 12 13 14 15
-> > node 3 size: 7842 MB
-> > node 3 free: 7723 MB
-> > node distances:
-> > node   0   1   2   3
-> >   0:  10  50  30  70
-> >   1:  50  10  70  30
-> >   2:  30  70  10  50
-> >   3:  70  30  50  10
-> >
-> > And the cpumask_local_spread() for each node and offset traversing looks
-> > like this:
-> >
-> > node 0:   0   1   2   3   6   7   4   5   8   9  10  11  12  13  14  15
-> > node 1:   4   5   8   9  10  11  12  13  14  15   0   1   2   3   6   7
-> > node 2:   6   7   0   1   2   3   8   9  10  11  12  13  14  15   4   5
-> > node 3:   8   9  10  11  12  13  14  15   4   5   6   7   0   1   2   3
-> >
-> 
-> Is this meant as a replacement for [1]?
+> > +static void veth_unroll_kfunc(const struct bpf_prog *prog, u32 func_id=
+,
+> > +                           struct bpf_patch *patch)
+> > +{
+> > +     if (func_id =3D=3D xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TI=
+MESTAMP_SUPPORTED)) {
+> > +             /* return true; */
+> > +             bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
+> > +     } else if (func_id =3D=3D xdp_metadata_kfunc_id(XDP_METADATA_KFUN=
+C_RX_TIMESTAMP)) {
+> > +             /* return ktime_get_mono_fast_ns(); */
+> > +             bpf_patch_append(patch, BPF_EMIT_CALL(ktime_get_mono_fast=
+_ns));
+> > +     }
+> > +}
+>
+> So these look reasonable enough, but would be good to see some examples
+> of kfunc implementations that don't just BPF_CALL to a kernel function
+> (with those helper wrappers we were discussing before).
 
-No. Your series adds an iterator, and in my experience the code that
-uses iterators of that sort is almost always better and easier to
-understand than cpumask_nth() or cpumask_next()-like users.
-
-My series has the only advantage that it allows keep existing codebase
-untouched.
- 
-> I like that this is changing an existing interface so that all current
-> users directly benefit from the change. Now, about half of the users of
-> cpumask_local_spread() use it in a loop with incremental @i parameter,
-> which makes the repeated bsearch a bit of a shame, but then I'm tempted to
-> say the first point makes it worth it.
-> 
-> [1]: https://lore.kernel.org/all/20221028164959.1367250-1-vschneid@redhat.com/
-
-In terms of very common case of sequential invocation of local_spread()
-for cpus from 0 to nr_cpu_ids, the complexity of my approach is n * log n,
-and your approach is amortized O(n), which is better. Not a big deal _now_,
-as you mentioned in the other email. But we never know how things will
-evolve, right?
-
-So, I would take both and maybe in comment to cpumask_local_spread()
-mention that there's a better alternative for those who call the
-function for all CPUs incrementally.
-
-Thanks,
-Yury
+Let's maybe add them if/when needed as we add more metadata support?
+xdp_metadata_export_to_skb has an example, and rfc 1/2 have more
+examples, so it shouldn't be a problem to resurrect them back at some
+point?
