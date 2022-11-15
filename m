@@ -2,132 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A1A6296DE
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:11:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E939362974A
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbiKOLLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 06:11:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
+        id S230396AbiKOLWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 06:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238042AbiKOLKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:10:50 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE272704;
-        Tue, 15 Nov 2022 03:10:38 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id gv23so2433736ejb.3;
-        Tue, 15 Nov 2022 03:10:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Mbr+3Oyf/jgtDzTeLLHm4nWo0pnIhfMZ7AtWC3UFAts=;
-        b=fRYPLQsoU/BeDgB/PSy9nsXVUqxFPv5U3AdUE3oUr1KgMy+qtuUX+YmLbtb2J2SrF3
-         YpH5ynBEZimo6CJMeRvrRpD98VhGeQtlcZkHVy69EIzQoWmCdZKSs/IeQ+c95svRCxhB
-         aqToPyqMfjJNw64UYKKt83exoSrwUUzPkZfAyCpfzg2kgcO7Cw2LClSzWBaAoesRQRh0
-         pn7Me6rMR/BeanW5gr0FY0uRtKlm9MW04lg/ldRdkkG3HtSIBwIUrA9b/2Aw0IY2w6L/
-         4wtZ15F3BCYc+6JSU2Z+25wgBwRMdWEqvEPaTzmHMNLcUWiYDAymOMZEXbP3r83f5vGk
-         knjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Mbr+3Oyf/jgtDzTeLLHm4nWo0pnIhfMZ7AtWC3UFAts=;
-        b=cPLL9ZvGl9/dZi5JFs2jzqAKuEwZVn8588nssqgxm/CMfP9kHcZdPBI7dqnPQgToQ7
-         d7JOvpLJ4wRW5x0FH+mycmygoLG2A2/mhqzbnFnq6WgAjXx9V1DoQ8lPLbryWfTxlrMm
-         /Z8xJ1Q/2fhdTSaLqvCkDAu4nrZ2Dymaw+nCx68IjNtLzb47RITnbxCv7LNjbeXKLxI+
-         Okn3r26pXGHlmLW1gHdLgR9I+l/mKxu+GUHwTFk5cDTBgSBoaSQOsOrHXRh1hb8F3rhF
-         u9yypGDu2E/E/+yfRW1dTc93ZOILJ4OPoLrJa9NxiRentpQvjniu4aA5mIjDXlN/dF4L
-         Lfaw==
-X-Gm-Message-State: ANoB5pmHyGuRCcbtesvyQo5Y6wqxBCM0cwwX6ZyegzUf7llsAXHXsdxU
-        DxaSsSM8sbCZOM2odeYV6QQ=
-X-Google-Smtp-Source: AA0mqf53CgZfHn+6bAn4nKwqp2JDPLrEsO5ee7Ce55Zvan7XMU28cqB3O6jJZgAXvuK7oDtDfrpIVA==
-X-Received: by 2002:a17:906:280c:b0:7ad:88f8:761f with SMTP id r12-20020a170906280c00b007ad88f8761fmr12661981ejc.417.1668510636864;
-        Tue, 15 Nov 2022 03:10:36 -0800 (PST)
-Received: from skbuf ([188.26.57.19])
-        by smtp.gmail.com with ESMTPSA id v19-20020aa7cd53000000b0045bd14e241csm6004612edw.76.2022.11.15.03.10.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 03:10:36 -0800 (PST)
-Date:   Tue, 15 Nov 2022 13:10:34 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S230341AbiKOLWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:22:47 -0500
+X-Greylist: delayed 584 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Nov 2022 03:22:45 PST
+Received: from mail.katalix.com (mail.katalix.com [3.9.82.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6314B6551
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:22:44 -0800 (PST)
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 14A1BA7BDA;
+        Tue, 15 Nov 2022 11:12:59 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1668510779; bh=9Hmp7lsMwRXI6kuGnSdz/RVZR8abq1AKQJfN0PBVbDQ=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Tue,=2015=20Nov=202022=2011:12:58=20+0000|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20Jakub=20Sitnicki=20<jakub@clou
+         dflare.com>|Cc:=20netdev@vger.kernel.org,=20"David=20S.=20Miller"=
+         20<davem@davemloft.net>,=0D=0A=09Eric=20Dumazet=20<edumazet@google
+         .com>,=0D=0A=09Jakub=20Kicinski=20<kuba@kernel.org>,=20Paolo=20Abe
+         ni=20<pabeni@redhat.com>,=0D=0A=09Haowei=20Yan=20<g1042620637@gmai
+         l.com>|Subject:=20Re:=20[PATCH=20net=20v4]=20l2tp:=20Serialize=20a
+         ccess=20to=20sk_user_data=20with=0D=0A=20sk_callback_lock|Message-
+         ID:=20<20221115111258.GA5373@katalix.com>|References:=20<202211141
+         91619.124659-1-jakub@cloudflare.com>|MIME-Version:=201.0|Content-D
+         isposition:=20inline|In-Reply-To:=20<20221114191619.124659-1-jakub
+         @cloudflare.com>;
+        b=iFdJGih6L0hFTcE9dTErxijetOGThd8UDVpcJ7jLVc7v4s+1B1ZfW8qgzO9y4Rxvi
+         n92eZfV3rwgrHro7I7oBmo57zjs/wiPvTQgXhDzDAxES7KoipaAHFd5YH2F4jaTest
+         /FpamYFrpxgSvYUrBliP+k2TKSw8ycraMBvHg6+cMf1QYnSzKifPzOMO6tcZG6XZlO
+         hgbQMYsRq8K1eIB6CxpW8I9S0UEUCxJ6vVxxLN7uKfGmubf3cZ8FGU5uZWIRetT3F8
+         PAKDqlOOVSVUEaEsWXqVyBREwU2JKWh8VBCDRlUWbudx70tIIA3kq6+hp6sGGAi7ni
+         /o4VEeKtIp6bQ==
+Date:   Tue, 15 Nov 2022 11:12:58 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-Message-ID: <20221115111034.z5bggxqhdf7kbw64@skbuf>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <Y3NcOYvCkmcRufIn@shredder>
- <5559fa646aaad7551af9243831b48408@kapio-technology.com>
- <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
+        Haowei Yan <g1042620637@gmail.com>
+Subject: Re: [PATCH net v4] l2tp: Serialize access to sk_user_data with
+ sk_callback_lock
+Message-ID: <20221115111258.GA5373@katalix.com>
+References: <20221114191619.124659-1-jakub@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
 Content-Disposition: inline
-In-Reply-To: <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
+In-Reply-To: <20221114191619.124659-1-jakub@cloudflare.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 11:52:40AM +0100, netdev@kapio-technology.com wrote:
-> I had a discussion with Jacub, which resulted in me sending a mail to
-> maintainers on this. The problem is shown below...
-> 
-> the phy is marvell/6097/88e3082
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 332 at drivers/net/phy/phy.c:975
-> phy_error+0x28/0x54
-> Modules linked in:
-> CPU: 0 PID: 332 Comm: kworker/0:0 Tainted: G        W          6.0.0 #17
-> Hardware name: Freescale i.MX27 (Device Tree Support)
-> Workqueue: events_power_efficient phy_state_machine
->   unwind_backtrace from show_stack+0x18/0x1c
->   show_stack from dump_stack_lvl+0x28/0x30
->   dump_stack_lvl from __warn+0xb8/0x114
->   __warn from warn_slowpath_fmt+0x80/0xbc
->   warn_slowpath_fmt from phy_error+0x28/0x54
->   phy_error from phy_state_machine+0xbc/0x218
->   phy_state_machine from process_one_work+0x17c/0x244
->   process_one_work from worker_thread+0x248/0x2cc
->   worker_thread from kthread+0xb0/0xbc
->   kthread from ret_from_fork+0x14/0x2c
-> Exception stack(0xc4a71fb0 to 0xc4a71ff8)
-> 1fa0:                                     00000000 00000000 00000000 00000000
-> 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> ---[ end trace 0000000000000000 ]---
 
-Was that email public on the lists? I don't see it...
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The phy_error() is called from phy_state_machine() if one of
-phy_check_link_status() or phy_start_aneg() fails.
+On  Mon, Nov 14, 2022 at 20:16:19 +0100, Jakub Sitnicki wrote:
+> sk->sk_user_data has multiple users, which are not compatible with each
+> other. Writers must synchronize by grabbing the sk->sk_callback_lock.
+>=20
+> l2tp currently fails to grab the lock when modifying the underlying tunnel
+> socket fields. Fix it by adding appropriate locking.
+>=20
+> We err on the side of safety and grab the sk_callback_lock also inside the
+> sk_destruct callback overridden by l2tp, even though there should be no
+> refs allowing access to the sock at the time when sk_destruct gets called.
+>=20
+> v4:
+> - serialize write to sk_user_data in l2tp sk_destruct
+>=20
+> v3:
+> - switch from sock lock to sk_callback_lock
+> - document write-protection for sk_user_data
+>=20
+> v2:
+> - update Fixes to point to origin of the bug
+> - use real names in Reported/Tested-by tags
 
-Could you please print exactly the value of "err", as well as dig deeper
-to see which call is failing, all the way into the PHY driver?
+LGTM, thanks Jakub.
 
-Easiest way to do that would probably be something like:
+>=20
+> Cc: Tom Parkin <tparkin@katalix.com>
+> Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
+> Reported-by: Haowei Yan <g1042620637@gmail.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>=20
+> This took me forever. Sorry about that.
+>=20
+>  include/net/sock.h   |  2 +-
+>  net/l2tp/l2tp_core.c | 19 +++++++++++++------
+>  2 files changed, 14 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 5db02546941c..e0517ecc6531 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -323,7 +323,7 @@ struct sk_filter;
+>    *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+>    *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
+>    *	@sk_socket: Identd and reporting IO signals
+> -  *	@sk_user_data: RPC layer private data
+> +  *	@sk_user_data: RPC layer private data. Write-protected by @sk_callba=
+ck_lock.
+>    *	@sk_frag: cached page frag
+>    *	@sk_peek_off: current peek_offset value
+>    *	@sk_send_head: front of stuff to transmit
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> index 7499c51b1850..754fdda8a5f5 100644
+> --- a/net/l2tp/l2tp_core.c
+> +++ b/net/l2tp/l2tp_core.c
+> @@ -1150,8 +1150,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
+>  	}
+> =20
+>  	/* Remove hooks into tunnel socket */
+> +	write_lock_bh(&sk->sk_callback_lock);
+>  	sk->sk_destruct =3D tunnel->old_sk_destruct;
+>  	sk->sk_user_data =3D NULL;
+> +	write_unlock_bh(&sk->sk_callback_lock);
+> =20
+>  	/* Call the original destructor */
+>  	if (sk->sk_destruct)
+> @@ -1469,16 +1471,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunn=
+el, struct net *net,
+>  		sock =3D sockfd_lookup(tunnel->fd, &ret);
+>  		if (!sock)
+>  			goto err;
+> -
+> -		ret =3D l2tp_validate_socket(sock->sk, net, tunnel->encap);
+> -		if (ret < 0)
+> -			goto err_sock;
+>  	}
+> =20
+> +	sk =3D sock->sk;
+> +	write_lock(&sk->sk_callback_lock);
+> +
+> +	ret =3D l2tp_validate_socket(sk, net, tunnel->encap);
+> +	if (ret < 0)
+> +		goto err_sock;
+> +
+>  	tunnel->l2tp_net =3D net;
+>  	pn =3D l2tp_pernet(net);
+> =20
+> -	sk =3D sock->sk;
+>  	sock_hold(sk);
+>  	tunnel->sock =3D sk;
+> =20
+> @@ -1504,7 +1508,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel=
+, struct net *net,
+> =20
+>  		setup_udp_tunnel_sock(net, sock, &udp_cfg);
+>  	} else {
+> -		sk->sk_user_data =3D tunnel;
+> +		rcu_assign_sk_user_data(sk, tunnel);
+>  	}
+> =20
+>  	tunnel->old_sk_destruct =3D sk->sk_destruct;
+> @@ -1518,6 +1522,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel=
+, struct net *net,
+>  	if (tunnel->fd >=3D 0)
+>  		sockfd_put(sock);
+> =20
+> +	write_unlock(&sk->sk_callback_lock);
+>  	return 0;
+> =20
+>  err_sock:
+> @@ -1525,6 +1530,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel=
+, struct net *net,
+>  		sock_release(sock);
+>  	else
+>  		sockfd_put(sock);
+> +
+> +	write_unlock(&sk->sk_callback_lock);
+>  err:
+>  	return ret;
+>  }
+> --=20
+> 2.38.1
+>=20
 
-$ trace-cmd record -e mdio sleep 10 &
-... do your stuff ...
-$ trace-cmd report
-    kworker/u4:3-337   [001]    59.054741: mdio_access:          0000:00:00.3 read  phy:0x13 reg:0x01 val:0x7949
-    kworker/u4:3-337   [001]    59.054941: mdio_access:          0000:00:00.3 read  phy:0x13 reg:0x09 val:0x0700
-    kworker/u4:3-337   [001]    59.055262: mdio_access:          0000:00:00.3 read  phy:0x13 reg:0x0a val:0x4000
-    kworker/u4:3-337   [001]    60.075808: mdio_access:          0000:00:00.3 read  phy:0x13 reg:0x1c val:0x3005
+--=20
+Tom Parkin
+Katalix Systems Ltd
+https://katalix.com
+Catalysts for your Embedded Linux software development
 
-"val" will be negative when there is an error. This is to see quicker what fails,
-and if some MDIO access ever works.
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
 
-If you don't want to enable CONFIG_FTRACE or install trace-cmd, you
-could also probably do the debugging manually.
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmNzdDYACgkQlIwGZQq6
+i9Dl6wgAr+kHl0G5Womae44/w376HChGZ/sT+YvNpgiYvlsNCIkcDP5TsiO3/ujh
+565dDOZxbWjqaTTfYOYaOjpK0qDJ31ZfnaYL6NKudFxO9UnbYPH4e17ZJ4DInjUv
+ZWfgY1v1xps6o/2E/uF/o1DbtnlGXNwdjJth/erxdiX+0jNs0g0D8Ex3bD/W6GAo
+iFXk6f2P1pn1buv0sNAE1eWYQBX3KlSPQT1u2XWLglPko8XJXiR5BqkNNlhRAN0o
+wEz6j19o/L/J0MRCYeuOMlZCPoKcWUMNflPDZWdgNnouLYp1rTjtAYKHzm8zgu4a
+B02dvOp/ThxexiMGYouMjHv49wLnKg==
+=hzea
+-----END PGP SIGNATURE-----
+
+--x+6KMIRAuhnl3hBn--
