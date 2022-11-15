@@ -2,102 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03535629FD5
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 18:02:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A331D629FF9
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 18:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiKORCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 12:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
+        id S230378AbiKORJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 12:09:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbiKORCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 12:02:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A87275E3;
-        Tue, 15 Nov 2022 09:02:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29348B819BA;
-        Tue, 15 Nov 2022 17:02:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E0DC433C1;
-        Tue, 15 Nov 2022 17:02:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668531758;
-        bh=KABuRlXLh25sOol2t/UpXXI9wSIMYxFYsyTmlHopYp0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qgtqPtdU9Hfq4ShGXnzpTVVDB72e/1/mX/bew2o7ePx7kkl/KWaX76KjMu2RNIuhz
-         tWFVJ7nP48Rs1qwGkVJgNSE5g5AzaA1/xtjRKUyomkvDIVwLy6OLJOnACN9wajXEXE
-         8dAeGF1mDP3CKp+uCzB9SFAPEeGLX9dRSiW4qnxy8KBdAPq7+8Zd/DY5QKu/IE7myu
-         75jyR7Hp8csjUYPu1h3e5jJ8iI8AzonFAMmOZgGqOwj3vTN/oZzlAIkwvbOH6PjbKX
-         gAHDKuPmWE18ilTd6WyzPi04C9nwP6uDZ25f/LOeKe+sU1yMJdBTKewLiueqCjBdBQ
-         40F4mGZpYNt7g==
-Date:   Tue, 15 Nov 2022 09:02:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hawkins Jiawei <yin31149@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        with ESMTP id S229846AbiKORJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 12:09:18 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10F865CA;
+        Tue, 15 Nov 2022 09:09:17 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id l11so22841608edb.4;
+        Tue, 15 Nov 2022 09:09:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=13kwedfdgnKnT0nAJkpeTAEFco8AeqnjcbtoFZQynKE=;
+        b=F+/WJzugxdRYB6xGIh4hz5t74AefbRu0GH1KdogoFrjrRHoj3SeIwh2LNYCUrML4ZD
+         Rh3Z7AyjFRrT1fH4K3RG14tJfAear3uXUuD05MQrbSbiWl8nTD1uouBbj7sW0vn8w0eJ
+         S1PcdO95o5YhllXVedfMa3zRtJFxFX0oyqgK6adsv7NJ5tdEVucq/B8UlxHLHlKHdvo4
+         UKzhjbzTfK+mDOq+ccyZvGDqdxGqXb9vcmRLLtsOQHB/d5ByDNqUtVHTnLFl2IPbm3lt
+         Bwi/fXPpLm8GyGaioEECw2IUv2OiHowAtRMz2nEmFjM1RocS141FHDLOKTNY5FfK35y+
+         IfyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=13kwedfdgnKnT0nAJkpeTAEFco8AeqnjcbtoFZQynKE=;
+        b=JEdSV6P+0e7OcOl0AQoaRLxU44nFap5FGH8PhBfJ8+fbWdGVyJd+jGKhNc0jEQCP3t
+         s1jcQoHu5ArlhFb2V5va/mEqFoTC5hIReLTQjiEk5tIgF+/VKN9/4sVbu68BzxxHPbqk
+         DzOLgyY7v+xMauAj1VJwfxNYH1vdDauF9o12WjlEs8RC0ZAv9hg88hKZzZ5MjSaLoffz
+         qyLv4nI1D2KjasFskrdOXc5mLYph96e44BJJHNENuVgVUvsKLdz6Sye9MdUdBqH+B4yH
+         ZuI4t6sKv5GPXzrhq8/x1wmb9SZYufe8XHsWithRvzKcTRjT4XswbJn+Sw91K011HXWk
+         l90Q==
+X-Gm-Message-State: ANoB5pkUPYJlBEOdJ68cPlkV30yfeKtq31qYgBLJwZ0wFgG21DNuWH4W
+        hPuDAmKCpyX0Ex3qbrJWJm3I556okQCWL4n0KlY=
+X-Google-Smtp-Source: AA0mqf5zokgESgJxV0AlRiXEMRIyYAtE4sgyWuQZDtA3AbedrogGwElUjg51a/G6HIptzBnoj4JrjYbYep1HTcglsdQ=
+X-Received: by 2002:a50:fe19:0:b0:462:70ee:fdb8 with SMTP id
+ f25-20020a50fe19000000b0046270eefdb8mr16344191edt.66.1668532156039; Tue, 15
+ Nov 2022 09:09:16 -0800 (PST)
+MIME-Version: 1.0
+References: <20221108140601.149971-1-toke@redhat.com> <20221108140601.149971-4-toke@redhat.com>
+In-Reply-To: <20221108140601.149971-4-toke@redhat.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 15 Nov 2022 09:09:04 -0800
+Message-ID: <CAADnVQJjxdUAE6NHNtbbqVj3p3=8KsKrvRb3ShdYb9CcfVY8Ow@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/3] bpf: Use 64-bit return value for bpf_prog_run
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, 18801353760@163.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: sched: fix memory leak in tcindex_set_parms
-Message-ID: <20221115090237.5d5988bb@kernel.org>
-In-Reply-To: <20221113170507.8205-1-yin31149@gmail.com>
-References: <20221113170507.8205-1-yin31149@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Nov 2022 01:05:08 +0800 Hawkins Jiawei wrote:
-> diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-> index 1c9eeb98d826..d2fac9559d3e 100644
-> --- a/net/sched/cls_tcindex.c
-> +++ b/net/sched/cls_tcindex.c
-> @@ -338,6 +338,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  	struct tcf_result cr = {};
->  	int err, balloc = 0;
->  	struct tcf_exts e;
-> +	struct tcf_exts old_e = {};
+On Tue, Nov 8, 2022 at 6:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+>
+> BPF ABI always uses 64-bit return value, but so far __bpf_prog_run and
+> higher level wrappers always truncated the return value to 32-bit. We
+> want to be able to introduce a new BPF program type that returns a
+> PTR_TO_BTF_ID or NULL from the BPF program to the caller context in the
+> kernel. To be able to use this returned pointer value, the bpf_prog_run
+> invocation needs to be able to return a 64-bit value, so update the
+> definitions to allow this.
 
-This is not a valid way of initializing a structure.
-tcf_exts_init() is supposed to be called.
-If we add a list member to that structure this code will break, again.
+...
 
->  	err = tcf_exts_init(&e, net, TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
->  	if (err < 0)
-> @@ -479,6 +480,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  	}
->  
->  	if (old_r && old_r != r) {
-> +		old_e = old_r->exts;
->  		err = tcindex_filter_result_init(old_r, cp, net);
->  		if (err < 0) {
->  			kfree(f);
-> @@ -510,6 +512,12 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  		tcf_exts_destroy(&new_filter_result.exts);
->  	}
->  
-> +	/* Note: old_e should be destroyed after the RCU grace period,
-> +	 * to avoid possible use-after-free by concurrent readers.
-> +	 */
-> +	synchronize_rcu();
-> +	tcf_exts_destroy(&old_e);
+> -static __always_inline u32 __bpf_prog_run(const struct bpf_prog *prog,
+> +static __always_inline u64 __bpf_prog_run(const struct bpf_prog *prog,
+>                                           const void *ctx,
+>                                           bpf_dispatcher_fn dfunc)
+>  {
+> -       u32 ret;
+> +       u64 ret;
+>
+>         cant_migrate();
+>         if (static_branch_unlikely(&bpf_stats_enabled_key)) {
+> @@ -602,7 +602,7 @@ static __always_inline u32 __bpf_prog_run(const struc=
+t bpf_prog *prog,
+>         return ret;
+>  }
+>
+> -static __always_inline u32 bpf_prog_run(const struct bpf_prog *prog, con=
+st void *ctx)
+> +static __always_inline u64 bpf_prog_run(const struct bpf_prog *prog, con=
+st void *ctx)
+>  {
+>         return __bpf_prog_run(prog, ctx, bpf_dispatcher_nop_func);
+>  }
 
-I don't think this dance is required, @cp is a copy of the original
-data, and the original (@p) is destroyed in a safe manner below.
+I suspect 32-bit archs with JITs are partially broken with this change.
+As long as progs want to return pointers it's ok, but actual
+64-bit values will be return garbage in upper 32-bit, since 32-bit
+JITs won't populate the upper bits.
+I don't think changing u32->long retval is a good idea either,
+since BPF ISA has to be stable regardless of underlying arch.
+The u32->u64 transition is good long term, but let's add
+full 64-bit tests to lib/test_bpf and fix JITs.
 
->  	if (oldp)
->  		tcf_queue_work(&oldp->rwork, tcindex_partial_destroy_work);
->  	return 0;
+I've applied the first two patches of the series.
