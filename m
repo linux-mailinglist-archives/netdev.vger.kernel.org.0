@@ -2,175 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9062562A3B4
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 22:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3080062A3DF
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 22:19:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbiKOVIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 16:08:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
+        id S230453AbiKOVTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 16:19:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiKOVID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 16:08:03 -0500
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2057.outbound.protection.outlook.com [40.107.100.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CAC27DD3
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 13:08:00 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=muoLZvcb7wCrV4ElhngLuURCBpsehjvRDzReiF0YpCMvu/ncFNmy7oGK6UI3+kYjtxGU7vvIaBHrtc7aA1VKvil3yybh9Z/M4fF0acjamDsND1IcDzbmFLu1gjiYLntFEW2i3kSLFs8dQV78qZnH6tfKrp7fnO3ij3oFelaleQ1PDEPejjbXADF9Sz990udLQXI0ivqFW8LCtZgmH5auxocw9j0COgtOjwmKbwDm2d6ZN2Hy4uv9W3x7Hrw3UK7E67CKlE8sajj6YPJv25ydE1bS0xo9BEsQWeEgwOXkqsQ5/f1jmAkbnOdDUcjiDmCmmV/7B39pG1wcUR1OaK56Kw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SvHNDkapPcUoRudgM6hbxLa0MO4ikpEnbAhAEE+BROk=;
- b=WfyvcWpcW11Zxt1I2DAWl/KeAM3TyfkLmMsX6TZ6QUQAR0zms++JpmQNMxdKFTuciN2blxH5wi/m5rzKJnpgv8xDtXPQ6vNv7STjFERURc8Hr1Gmm8ftQpOAPJ7v5WbUj7CMH87wemxpUNJkuPMw6dWmIf00GrQCm23WbDp3Wnlqf4ZrV2qz+B/lrNy0rYYSy5nxK+d6SRpjhN/U8TI7qnMCnku2Slf/NFuN3CDlED+puKL9wPgqrx76ZLgUynO6hCwEtpcNbwW1Rl+yoH3h/z0atRahdggwynp00MnrFcoQuCNSO6opmkFRNPHXp7vanxcHn1qD9rwj/UdP1VOTcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SvHNDkapPcUoRudgM6hbxLa0MO4ikpEnbAhAEE+BROk=;
- b=IHyaOw4Mtj3A4k2vPlG2GZ2P78hLplrNspXEeUKqYmPlSlXecRFjTQee8e1b+sqmeHjxg2n5KK5gcTsY2MewaMKdv5jYZsV3r78Sj7r5ksyECnumCFBW56MEm7hd9cpDpEFki5QFZzN89yBBLBUm8MRBQiJBoAXGFhgDB92HTBvTLfDs8Y1UXt5uvrm0Yh3nnnhLp6xBHEF/yhnzv+XAslLMMZgyhOHCNpbZ51VYTevranlmhErrhQ+ZMHFCfn7Th5SvusxDhsBn9fPN6hsu/oOSNOReHrFv5kQMedKwZFJNoJ6HKFCgZ71SvMaFsz7h/1x8XXzPZ/q+PNBM9lTrCQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
- by MN2PR12MB4567.namprd12.prod.outlook.com (2603:10b6:208:263::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Tue, 15 Nov
- 2022 21:07:58 +0000
-Received: from MN2PR12MB4373.namprd12.prod.outlook.com
- ([fe80::9e16:85ac:e8ba:98c7]) by MN2PR12MB4373.namprd12.prod.outlook.com
- ([fe80::9e16:85ac:e8ba:98c7%9]) with mapi id 15.20.5813.017; Tue, 15 Nov 2022
- 21:07:58 +0000
-From:   Benjamin Poirier <bpoirier@nvidia.com>
-To:     David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-Subject: [PATCH iproute2-next] bridge: Remove unused function argument
-Date:   Tue, 15 Nov 2022 16:07:15 -0500
-Message-Id: <20221115210715.172728-1-bpoirier@nvidia.com>
-X-Mailer: git-send-email 2.37.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: YQBPR0101CA0287.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:6d::13) To MN2PR12MB4373.namprd12.prod.outlook.com
- (2603:10b6:208:261::8)
+        with ESMTP id S230211AbiKOVTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 16:19:47 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A7621824
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 13:19:46 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id g12so26359984wrs.10
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 13:19:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vZD/7uHvS5J34N2GYYAfPmKEdHy2neeRIgKH7Q4ZaFo=;
+        b=PJYCv+UxpU0P2K09mErm2HV6J0RWh+zwcSAdUZBcNry6+hpOlyCwSL2zk4qHh/3eCv
+         nxZsax44TN0KfUiX1HNcq3t5UTdc/8FgpvCNsdx6ci9CNMQou1modM/PQ7hPxh3Tzlg3
+         5ju/VdA6fWiZP0gycaJ5YysqrT+Hx2NvsdkJIK7DyJGlBi5LqZingJeYgsH3vCOaee0F
+         mQ9k9DHwH4nbK9vrcA139ojzq3lWw3tV4FUFAiSDjb9UL9oYGdDtA+mJ7i+H28G1pwut
+         iFAWZQzYdM7Yj55gGKystqyswarfz078yJAtgAskXJIrvt2cb9my1BJ25O3YgGKhp9e6
+         r3ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vZD/7uHvS5J34N2GYYAfPmKEdHy2neeRIgKH7Q4ZaFo=;
+        b=0KhBe3WEie6pG4nRN7I1oYiY6/c1SL6aauCW0uBSSIGQP7pAaQ16b7EokoyFmEqrb/
+         8V4BeAe7qMcEY/5z/IWZsup45FPyGqdwPz13SBfFSbiOQB8J/qo2HjVkaKKQrtg+b5Q7
+         LsbwdxOSOBGClWSD8goDM9Jthud9/wUOqWEwrBsczrzrBiGbHIZD4xsGANdCYmXHb+DN
+         AIdyvXIXhBQt8GYLSF8MOpfkuECO7XpAX2TgnXWSRzXHHZO1jYr2FaDYE9Hp6uo8vpDC
+         SBfaFaGZYG9RoAD438dMvfgwdM1zjdLU58IpNQ4QCZMgfbVywSZkZxncTLwabreIWZIz
+         NNFg==
+X-Gm-Message-State: ANoB5pkJPwuhThGMyACxtPp5f4iAEg1WZsgWgGz/A8A7NLx/pceqa4X8
+        WZWoVnq2CstRYkWyEiZ24hY1Ug==
+X-Google-Smtp-Source: AA0mqf4nNI8wfsKPCJV56BfDH8jzPKkB2fNgyBtM57A1yfkILgRjhBsC4hrC5cjNNfANg6YmuyIEHw==
+X-Received: by 2002:a5d:4ec4:0:b0:241:6a95:6aa1 with SMTP id s4-20020a5d4ec4000000b002416a956aa1mr12044058wrv.458.1668547152711;
+        Tue, 15 Nov 2022 13:19:12 -0800 (PST)
+Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id n41-20020a05600c502900b003c65c9a36dfsm17201487wmr.48.2022.11.15.13.19.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 13:19:12 -0800 (PST)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Dmitry Safonov <dima@arista.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Baron <jbaron@akamai.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org
+Subject: [PATCH v4 0/5] net/tcp: Dynamically disable TCP-MD5 static key
+Date:   Tue, 15 Nov 2022 21:19:00 +0000
+Message-Id: <20221115211905.1685426-1-dima@arista.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4373:EE_|MN2PR12MB4567:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6f9f97a5-5c45-4236-e5c7-08dac74d7912
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i17mB/S5QPni7vnR3zMZ+CFXnFPv1224RTT2TdXrdkN3ufKvnh2crzAoNv0SNMOI4EEuTtpFBpAuOkcrD2UKDk57D6gjDbduGRVdR3Qg4D4+lLnBTndZTulNXzrey1l+ORleZbIXRjI1sbm7V9iWRXxYfDb9W2irLpuLOZlLDq8wExUC27vnqwsWPjI2bnyGXV1UyaCrhxLvb6cNQdqvZjiSR98GfIvKpXmbAq+wUdfbQA4Wuo58NT3za265/S9KAGhhEUy1JNhvgW5t4JnSDAod71PRIa2wtryxw05zSBJ3h8rUTXm7aeXYsyrBi+cGWZw2053mW7IkUOeFDu4q4z0eyMb0fZodWCZSZ/FyqxqSBySDHbLaA4V1giC3oPDD6pLwL02bLuoBOorO9FygH24ERLE6U8wPJ7C0wK6uqRgEBCbSh70o5XhOR2yUJ1h8ys59uKt9aFcMCZY18u5vMsm7E3fh7gLaRms+pBs8/1SfRyBOLQ83jdWSkchbTv3n1DUzHfQNWTbBKZRKVi6cPRfuSTXwa/pukg15wCj32J4wULitZ73bwEpNWlao+6IBXoTkqegV+RvYa9afjr6VEWHvoQRgQ1oSFMrNjNWGwBK/Fu+Bp7gdkIZN6WIZ/t8R8TCBYORFol7mOPhG0dtAu/1gvr+35UlfBlfMWS2KlZoNJMx1qAlGCoPtL3dle7TnVw0AwKrBBAXce59SgVtbJA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(346002)(136003)(39860400002)(376002)(451199015)(5660300002)(2906002)(41300700001)(66476007)(8676002)(66946007)(66556008)(316002)(6486002)(110136005)(54906003)(4326008)(66574015)(6506007)(6666004)(107886003)(86362001)(2616005)(83380400001)(1076003)(186003)(478600001)(6512007)(26005)(8936002)(38100700002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SZSRerA9EltHfVQcIntKh4ulQIDwZoOF4jAxETH85LetDyjdIqig5N6q6sY9?=
- =?us-ascii?Q?6dA3QaY3GMHWWA/7UFOtvWxoWh3bG10oPbTqDnbp3XJiPjOLmwIBWUPYwMmA?=
- =?us-ascii?Q?YNeNEJSMAjE+Qug9MQnJY8DVMCMX5zreEk7KfjAFLvzN2kReWg7Y6aYIe1RV?=
- =?us-ascii?Q?YtuMit1hsj63btADXzZvMLaU3gPJrzMkk0uq7g0W8jBee/wnH5gZ+fmtKhUZ?=
- =?us-ascii?Q?X9nxvPxXnldETRzfKMehZ5SZMu14Lct+e1Jz1NDu8v9qbwlvLNpIAfzYYymM?=
- =?us-ascii?Q?Yenhp7AhQ2C3VxALucZXw97Y24LOZZkfyJNev/hIF4stPe9uywPQqrdO4iOi?=
- =?us-ascii?Q?EHgDHXopMZ26Eh2Lq/eLzWzqH20wNCAhLdzoEu/Xg/tc5+uoVY8txDMe8M+B?=
- =?us-ascii?Q?ygO7eCmf5N6EoI9vocyAktPn19g8IvG8g69M3ZMKS0FPlTws4zSCx1z+bVF2?=
- =?us-ascii?Q?3VNP7DC4bIEzF/kZIBMc1RRKgs6+sMKOeFUQtFEDZXgeGF3tLTe47ANL880z?=
- =?us-ascii?Q?yRslFcPvJp0odzyrjf3OctMM9hnz4t7pPBgppCL7Yr4WKLVKa3Ye+a2C1Clt?=
- =?us-ascii?Q?XXLz8ocIGTMtTg88OV1jhrCwJ1H/3ryA9fvpOJG5DEygmbQ6FVQfBPtEcL8O?=
- =?us-ascii?Q?uht1IfFC7ifzclZC21vWlLZBy8O+Wf0iRPQb9S1O51M581AD1/QhWAAJUTcG?=
- =?us-ascii?Q?QU2gTkw4/1xlhnqOl/qW1iBWKPUhIwRRu+57jZuW3zJSSxp5x0dPcCuXJZIw?=
- =?us-ascii?Q?t+X7TJ4DYKG/veeOy1b8Y+yOpno+pgzbF0uUWB+7otPy9TrWeqjFPM/oot+T?=
- =?us-ascii?Q?Qcg/NeRkB8raLXUeYVcFUhhALJri5nNge1gDpyWsX2sq5KcttpAFyIiuE/lW?=
- =?us-ascii?Q?MtwwFZ40mOmgZ81QAGawrxvyZsjlCWp15eQVtjLA8SYE8oBCcCjBEH6r0veL?=
- =?us-ascii?Q?ElW+lf8eDFJnhbYZ9BrFstTX7fgH0rbxSTcn0EA6m6r6LqyEJmJuKv11x1Hn?=
- =?us-ascii?Q?ZvAHZtMCx9gYIKcCav53njoczn1gl/ep+IjaDmdGYlnFP1IowOHPkzoxHkzi?=
- =?us-ascii?Q?3oXyZmmBwixPRajHEeeHaUb/u45MkzwGVhPH/0npfWQA67zVM9uPjl7Trgd+?=
- =?us-ascii?Q?gSa9Y0qzkhSX4wk9TBimBob9V6KaxcR7HbDUU3pKE8gFQRHBhhllKGByAp6Z?=
- =?us-ascii?Q?8ayjPDesUSF7bG5iMKGO8k3kQ3UERJ8xjawRlzPkv1PdQq472Xnrier0rzh6?=
- =?us-ascii?Q?P0mRuVAPCFXqv1tSdNr+Cfg36FcQlx2PbRID8m7myu3Ede97beR5Pf9JFAKl?=
- =?us-ascii?Q?3o5yGMwCuO3xPqGsBLGlnykRc8yoFqqp1SehIVi5FFDVQ0KEbCBpt5pL4NAS?=
- =?us-ascii?Q?UNgdqv5/yogPkarmWB9ZAe96Z8mp7/KxEQ+DPB+XlajwSyh8adRnQ/KPY7Bl?=
- =?us-ascii?Q?2xp3HWuc70zvT0iNjyM7LL/lh/R0QfmMjuqGkuwrq2sgVk9MkwAHKCWYo2jM?=
- =?us-ascii?Q?qtMyiQ59Vu/+JwZg4RBetvlJV8TiAJOtRWAcEJeN5NXDU07oozcKdHIcSSGF?=
- =?us-ascii?Q?7rYuZPGSfNk2cYNu9Fl2Pemy8vEBntGS5/9tW1kS?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f9f97a5-5c45-4236-e5c7-08dac74d7912
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 21:07:58.5599
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qavdppGQWZpI138a3LFdfU1vwKndcX5PTd6UraAoy5ALz84rD9Uj1cLOWlJKfdF00yV2XHJ9Bj3RZqelcwLnFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4567
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-print_vnifilter_rtm() was probably modeled on print_vlan_rtm() but the
-'monitor' argument is unused in the vnifilter case.
+Changes from v3:
+- Used atomic_try_cmpxchg() as suggested by Peter Zijlstra
+- Renamed static_key_fast_inc() => static_key_fast_inc_not_negative()
+  (addressing Peter Zijlstra's review)
+- Based on linux-tip/master
+- tcp_md5_key_copy() now does net_warn_ratelimited()
+  (addressing Peter Zijlstra's review)
+  tcp_md5_do_add() does not as it returns -EUSERS from setsockopt()
+  syscall back to the userspace
+- Corrected WARN_ON_ONCE(!static_key_fast_inc(key))
+  (Spotted by Jason Baron)
+- Moved declaration of static_key_fast_inc_not_negative() and its
+  EXPORT_SYMBOL_GPL() to the patch 3 that uses it,
+  "net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction"
+  (addressing Peter Zijlstra's review)
+- Added patch 4 that destroys the newly created request socket
+  if md5 info allocation or static_key increment was unsuccessful.
+  Instead of proceeding to add a socket without TCP-MD5 keys.
+- Added patch 5 that separates helper tcp_time_wait_init()
+  and converts BUG_ON() to WARN_ON_ONCE().
 
-Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
----
- bridge/br_common.h | 2 +-
- bridge/monitor.c   | 2 +-
- bridge/vni.c       | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+Changes from v2:
+- Prevent key->enabled from turning negative by overflow from
+  static_key_slow_inc() or static_key_fast_inc()
+  (addressing Peter Zijlstra's review)
+- Added checks if static_branch_inc() and static_key_fast_int()
+  were successful to TCP-MD5 code.
 
-diff --git a/bridge/br_common.h b/bridge/br_common.h
-index da677df8..1bdee658 100644
---- a/bridge/br_common.h
-+++ b/bridge/br_common.h
-@@ -14,7 +14,7 @@ void print_stp_state(__u8 state);
- int parse_stp_state(const char *arg);
- int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor,
- 		   bool global_only);
--int print_vnifilter_rtm(struct nlmsghdr *n, void *arg, bool monitor);
-+int print_vnifilter_rtm(struct nlmsghdr *n, void *arg);
- void br_print_router_port_stats(struct rtattr *pattr);
- void print_headers(FILE *fp, const char *label);
- 
-diff --git a/bridge/monitor.c b/bridge/monitor.c
-index e321516a..d82f45cc 100644
---- a/bridge/monitor.c
-+++ b/bridge/monitor.c
-@@ -63,7 +63,7 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
- 
- 	case RTM_NEWTUNNEL:
- 	case RTM_DELTUNNEL:
--		return print_vnifilter_rtm(n, arg, true);
-+		return print_vnifilter_rtm(n, arg);
- 
- 	default:
- 		return 0;
-diff --git a/bridge/vni.c b/bridge/vni.c
-index e776797a..940f251c 100644
---- a/bridge/vni.c
-+++ b/bridge/vni.c
-@@ -303,7 +303,7 @@ static void print_vni(struct rtattr *t, int ifindex)
- 	print_string(PRINT_FP, NULL, "%s", _SL_);
- }
- 
--int print_vnifilter_rtm(struct nlmsghdr *n, void *arg, bool monitor)
-+int print_vnifilter_rtm(struct nlmsghdr *n, void *arg)
- {
- 	struct tunnel_msg *tmsg = NLMSG_DATA(n);
- 	int len = n->nlmsg_len;
-@@ -364,7 +364,7 @@ int print_vnifilter_rtm(struct nlmsghdr *n, void *arg, bool monitor)
- 
- static int print_vnifilter_rtm_filter(struct nlmsghdr *n, void *arg)
- {
--	return print_vnifilter_rtm(n, arg, false);
-+	return print_vnifilter_rtm(n, arg);
- }
- 
- static int vni_show(int argc, char **argv)
+Changes from v1:
+- Add static_key_fast_inc() helper rather than open-coded atomic_inc()
+  (as suggested by Eric Dumazet)
+
+Version 3:
+https://lore.kernel.org/all/20221111212320.1386566-1-dima@arista.com/T/#u
+Version 2: 
+https://lore.kernel.org/all/20221103212524.865762-1-dima@arista.com/T/#u
+Version 1: 
+https://lore.kernel.org/all/20221102211350.625011-1-dima@arista.com/T/#u
+
+The static key introduced by commit 6015c71e656b ("tcp: md5: add
+tcp_md5_needed jump label") is a fast-path optimization aimed at
+avoiding a cache line miss.
+Once an MD5 key is introduced in the system the static key is enabled
+and never disabled. Address this by disabling the static key when
+the last tcp_md5sig_info in system is destroyed.
+
+Previously it was submitted as a part of TCP-AO patches set [1].
+Now in attempt to split 36 patches submission, I send this independently.
+
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Bob Gilligan <gilligan@arista.com>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Francesco Ruggeri <fruggeri@arista.com>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jason Baron <jbaron@akamai.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Salam Noureddine <noureddine@arista.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+[1]: https://lore.kernel.org/all/20221027204347.529913-1-dima@arista.com/T/#u
+
+Thanks,
+            Dmitry
+
+Dmitry Safonov (5):
+  jump_label: Prevent key->enabled int overflow
+  net/tcp: Separate tcp_md5sig_info allocation into
+    tcp_md5sig_info_add()
+  net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction
+  net/tcp: Do cleanup on tcp_md5_key_copy() failure
+  net/tcp: Separate initialization of twsk
+
+ include/linux/jump_label.h | 21 +++++++--
+ include/net/tcp.h          | 10 ++--
+ kernel/jump_label.c        | 55 +++++++++++++++++-----
+ net/ipv4/tcp.c             |  5 +-
+ net/ipv4/tcp_ipv4.c        | 94 +++++++++++++++++++++++++++++---------
+ net/ipv4/tcp_minisocks.c   | 61 ++++++++++++++++---------
+ net/ipv4/tcp_output.c      |  4 +-
+ net/ipv6/tcp_ipv6.c        | 21 ++++-----
+ 8 files changed, 191 insertions(+), 80 deletions(-)
+
+
+base-commit: 094226ad94f471a9f19e8f8e7140a09c2625abaa
 -- 
-2.37.2
+2.38.1
 
