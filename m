@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 370B06293F0
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 10:11:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5603C6293EF
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 10:11:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237891AbiKOJL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 04:11:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        id S237881AbiKOJLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 04:11:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233081AbiKOJLL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:11:11 -0500
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C8121E30
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:11:09 -0800 (PST)
-Received: by mail-qk1-x749.google.com with SMTP id de43-20020a05620a372b00b006fae7e5117fso13052571qkb.6
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:11:09 -0800 (PST)
+        with ESMTP id S237882AbiKOJLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:11:12 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB164220C7
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:11:11 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-368e6c449f2so129312467b3.5
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:11:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=n0VLENMcyvxwA2BZU5YBTMVw3WKcpvSd2Zjv1qxjp44=;
-        b=FtgMXTd0TUIY3ZD3cb6R+fm9VjWxuEThcuyIZHyMLZ9EFVWbeSXXXKM5iEFzhEdq7F
-         qQ10umbnCxRMJQQMm7x7VEGNrLNnQeQwaw97hdiy/VqS2mgvPp8MsT/8QmwQFBTNmlr6
-         b13mh44hDaq4D7F4UOmE4cq6etft5KSRmWsREhIPg5fqfLamowvZfZywmCBrmOsr0F07
-         1HkjGnzfr9go3lyTzWAFLl9W4bRj/zZbmOuGcdrn0c/BL5J9x+QM+HEu5zb1aUfTSiUh
-         469gzpdZWWjzo/xFx3XN8aHKSJWXy0umuItni1qKabgQ8r3ZpHePuPXD7zKVhTfEc5QL
-         GhdQ==
+        bh=IzTEGInsc651trn1H4eivMKji6foEGR4+N7CqOcQ3T8=;
+        b=lGwe+6lwEiQlGp/jWFijhh3QcJd08W/LJl/piDQ+ZuLryzNE2eqwUQ4obk1dzN8O0C
+         lSyuOhsaneuIzPOMDNRFmtKVhl7af/B0Yd8cbDm3hhHpWUqoBfnBpaOHCpzlJISYw4Pv
+         QLadFkk7gG/oynzOiWLIm0InaJZuiczzsM4tlLEPkRvfoMVJxn7RoTopInfCo84W6w8m
+         aKYxROC4hrRx8EC+78yucZF+VRhYY4QqaFAxqXqF0djT9CKIb/vwq53tWXV5gLAax8sP
+         uFFTKtMyqIcr6VbBOxouNVssEs7El9dgPGfxU4Zv+RbTZt+sDv1ZzTjhmr91oI+usLf3
+         ES0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=n0VLENMcyvxwA2BZU5YBTMVw3WKcpvSd2Zjv1qxjp44=;
-        b=QZPdS019L2ZtlH08Q5CBr37E9ClHR/jlG8dzs64ySUckPln35UgDLlV5P/OZTnkwwD
-         RodRO2Dn9Z9QBjUfA7kA248ZO5uysg3xlJH1Bc42UQlpHvheVw35sVndmmgB4EGJypBK
-         fjTss4IxnDsOei7A0qYqZIWnxK4gGPdSphHc9bPzYR7lL5CeRimz6Qfx2kBzpI4O07io
-         22qKRCsy4J6lngwBnci/fSwQxsN0nTfKX1YG/bIo+K0++XcjXTrZSP+hrvCMAYdKBB6a
-         gjyAd7Z4VxXrEMThPvnAYITsK6dE1pkvgRzIKnDF+1jj1i6BR4ZCMAM0p4E/gVlIgVwV
-         8M7A==
-X-Gm-Message-State: ANoB5pnE4n+sUdKR17hsJRgkZfAQzQ55dwSbIfksCVsqN9RSR34ek/fs
-        PBJ8TgGFFVKLhnBGnKIr+vnE7FI+zpzQCw==
-X-Google-Smtp-Source: AA0mqf4T6gvrIqro5KqII+Xa+IRxQXhYyaBp/uBardQUDLJHY6pfO7ur43XRaybvIUP9xiw5hKCJ4zrOQI7ybQ==
+        bh=IzTEGInsc651trn1H4eivMKji6foEGR4+N7CqOcQ3T8=;
+        b=gJbavJpzEa79pkqI9Knb2TS5gkOqIYWPMr0tKe/L9gWYROyOfLiMwZCFttyUqnL3UH
+         0QJ4z0l87GHZmmiBCGJ3j3Mrf8l8udo2Z4Cnp+MXxnp3BmxWAvveYqhQ1iVp6lqpm5I2
+         eugu7ZJcQq/mbIrWJKqmpzbYuNRPV5qY1PU9U0hGwcSTksL2G2tmUTKVVKEzPGQmKoy/
+         Eb9HmsJZTs4i47Eks9VpemIDLJfBMllYCZs+NZJipSwT+o6BVFbX9peqxXndamUcn93Z
+         vmQp6RCjI40mqKnemBICGcHCXEzz674ncWopngYIXJtg9zMcJW2IE6io1CLhP4MYNPXH
+         dksA==
+X-Gm-Message-State: ACrzQf06m+mg3B8IPTCNtEZyDSLTsZjpqB1bezaxXWbVMRtyfYA+q+xE
+        j3onY7fbkEyYjeSH2H65sr18vcj4RsDJAg==
+X-Google-Smtp-Source: AMsMyM4MBxsH1nQbav9mkjyf92C0Am6VF/DT/16xjtPhluXoX5eEcWD3zyHowGC87u8erRVEOS4rr3DdWnfmVQ==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6214:598d:b0:4b1:97a2:405b with SMTP
- id ll13-20020a056214598d00b004b197a2405bmr16097598qvb.27.1668503469072; Tue,
- 15 Nov 2022 01:11:09 -0800 (PST)
-Date:   Tue, 15 Nov 2022 09:10:58 +0000
+ (user=edumazet job=sendgmr) by 2002:a0d:f182:0:b0:370:7d9b:a54e with SMTP id
+ a124-20020a0df182000000b003707d9ba54emr54734296ywf.133.1668503470497; Tue, 15
+ Nov 2022 01:11:10 -0800 (PST)
+Date:   Tue, 15 Nov 2022 09:10:59 +0000
 In-Reply-To: <20221115091101.2234482-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20221115091101.2234482-1-edumazet@google.com>
 X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221115091101.2234482-4-edumazet@google.com>
-Subject: [PATCH net-next 3/6] net: net_{enable|disable}_timestamp() optimizations
+Message-ID: <20221115091101.2234482-5-edumazet@google.com>
+Subject: [PATCH net-next 4/6] net: adopt try_cmpxchg() in napi_schedule_prep()
+ and napi_complete_done()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,51 +70,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adopting atomic_try_cmpxchg() makes the code cleaner.
+This makes the code slightly more efficient.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/core/dev.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ net/core/dev.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 117e830cabb0787ecd3da13bd88f8818fddaddc1..10b56648a9d4a0a709f8e23bb3e114854a4a1b69 100644
+index 10b56648a9d4a0a709f8e23bb3e114854a4a1b69..0c12c7ad04f21da05fef4c60ca5570bff48ec491 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -2073,13 +2073,10 @@ static DECLARE_WORK(netstamp_work, netstamp_clear);
- void net_enable_timestamp(void)
+@@ -5979,10 +5979,9 @@ EXPORT_SYMBOL(__napi_schedule);
+  */
+ bool napi_schedule_prep(struct napi_struct *n)
  {
- #ifdef CONFIG_JUMP_LABEL
--	int wanted;
-+	int wanted = atomic_read(&netstamp_wanted);
+-	unsigned long val, new;
++	unsigned long new, val = READ_ONCE(n->state);
  
--	while (1) {
--		wanted = atomic_read(&netstamp_wanted);
--		if (wanted <= 0)
--			break;
--		if (atomic_cmpxchg(&netstamp_wanted, wanted, wanted + 1) == wanted)
-+	while (wanted > 0) {
-+		if (atomic_try_cmpxchg(&netstamp_wanted, &wanted, wanted + 1))
- 			return;
- 	}
- 	atomic_inc(&netstamp_needed_deferred);
-@@ -2093,13 +2090,10 @@ EXPORT_SYMBOL(net_enable_timestamp);
- void net_disable_timestamp(void)
- {
- #ifdef CONFIG_JUMP_LABEL
--	int wanted;
-+	int wanted = atomic_read(&netstamp_wanted);
+ 	do {
+-		val = READ_ONCE(n->state);
+ 		if (unlikely(val & NAPIF_STATE_DISABLE))
+ 			return false;
+ 		new = val | NAPIF_STATE_SCHED;
+@@ -5995,7 +5994,7 @@ bool napi_schedule_prep(struct napi_struct *n)
+ 		 */
+ 		new |= (val & NAPIF_STATE_SCHED) / NAPIF_STATE_SCHED *
+ 						   NAPIF_STATE_MISSED;
+-	} while (cmpxchg(&n->state, val, new) != val);
++	} while (!try_cmpxchg(&n->state, &val, new));
  
--	while (1) {
--		wanted = atomic_read(&netstamp_wanted);
--		if (wanted <= 1)
--			break;
--		if (atomic_cmpxchg(&netstamp_wanted, wanted, wanted - 1) == wanted)
-+	while (wanted > 1) {
-+		if (atomic_try_cmpxchg(&netstamp_wanted, &wanted, wanted - 1))
- 			return;
+ 	return !(val & NAPIF_STATE_SCHED);
+ }
+@@ -6063,9 +6062,8 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
+ 		local_irq_restore(flags);
  	}
- 	atomic_dec(&netstamp_needed_deferred);
+ 
++	val = READ_ONCE(n->state);
+ 	do {
+-		val = READ_ONCE(n->state);
+-
+ 		WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
+ 
+ 		new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
+@@ -6078,7 +6076,7 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
+ 		 */
+ 		new |= (val & NAPIF_STATE_MISSED) / NAPIF_STATE_MISSED *
+ 						    NAPIF_STATE_SCHED;
+-	} while (cmpxchg(&n->state, val, new) != val);
++	} while (!try_cmpxchg(&n->state, &val, new));
+ 
+ 	if (unlikely(val & NAPIF_STATE_MISSED)) {
+ 		__napi_schedule(n);
 -- 
 2.38.1.431.g37b22c650d-goog
 
