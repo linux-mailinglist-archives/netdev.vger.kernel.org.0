@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4E362905C
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 04:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 595F662905F
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 04:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237855AbiKODD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 22:03:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S237866AbiKODD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 22:03:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237221AbiKODDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 22:03:11 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B150DF0B
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 19:02:12 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id g6-20020a17090a300600b00212f609f6aeso6769058pjb.9
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 19:02:12 -0800 (PST)
+        with ESMTP id S236796AbiKODDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 22:03:12 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817CF21BB
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 19:02:16 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id z125-20020a25c983000000b006dc905e6ccfso12051584ybf.1
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 19:02:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jmoFjVUpIScIBXVlBGccTMF8ONCdDUS7UktVwh7iZmE=;
-        b=Y1uFrunl6UnS9d2RPWNj2avXr22GuFyGPTISJ3LB3jEji0/Cc1h+fSpKSRPrl2HPOB
-         WWyG+g6K4HVRRONXPZGgAkDmyEExMuVEXINiwO5WTqLT2NrZ2Ai7HjtpSIjtLyhMf27F
-         J3OUh4vSWzB9iKzGRMpmqd/FD5vLmsgahGKlAapwK6RIRpbwra6Xv73VH/asKTPl44Ql
-         GgLnQ9AvzpA06xQ5hewxqhJqXiR/RtS9Z5EwLvnfnkDxutNW+8FeTh/sZeyJoFoED7jV
-         jDgDZp5IVlao/qyQgFM1JAxBHrGrFvMIfVK+DPFzLTCRpHaX8abEt/eImkwnN4AO4tFD
-         M2aA==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=E+8IjXRgxBNITPsOwIQKMXDKqWa80/z37oUBtUuQVa0=;
+        b=WJ+Gmv5/4g5yFbrp5IctO/4xjTqfAnV73tfMi/F7yI3/SCZP1J+a2RMInH/6OsyyIe
+         Rdh8XJsAMlXQJjWlonNRg0k7V+GccC8NlXTIEmWG3jf56Pt3ZbbxrzHH0YcvjzHJkREM
+         kLMNnb+jiEbjPOkbR6ScJ5b2r80deVxSNTiYuKnzEu+PY/cPtUaNNQM5ZfOp+b9v+xX5
+         i/CVxyDT7vB9DCXEp/+Yj5ZkI1gjNKMs/mx3nxe7+J5CT7OCcwheY1XTKmVgMyOw21Ml
+         MeHMnSYXDAO7WoztOY0aKuxmltR6B8pm3cqNEc9eqdd1+Wvtzy5Sj2XfOF6P2kyBi2VL
+         TXUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jmoFjVUpIScIBXVlBGccTMF8ONCdDUS7UktVwh7iZmE=;
-        b=Pb3PnP4Ma4OrTEaX2hm09nVXOkmAXEVZcV3Q+L9/Ar2FeRDnPbRLq/Z6rgC7uOakUl
-         hxuiR5gFofpa86u0ImNm6Wbnd/nMYAzASs2ZRQ6Jlt4Mcu5PF80csWq8pyVC5xXeCF4K
-         Q5HXGL1X21+j9uem4QyRSWcL7Fch/oiF9Q4oYZY7MAydduxVSS3GhTn1GlVhxkPTuZAo
-         RhLxpEa2kAsIIxdQyeM/ZOjN2pZflv2QOZcvrp/jsNCXFF7TlrPOt9Mo245h99EDFNK2
-         Zl6p3WSAfb68OfC/d/kb0XFzAo4yTIxm9fTZrY2uNy2aryogtBQgYeStiExeQ3oMi6aV
-         3xtA==
-X-Gm-Message-State: ANoB5pkRUvInXzYDI77komKTIIIZMj8SL5CZZJp8IJAhA8sjqHr6o6qG
-        8F/LO8wfN0yT98NIfg80waj51c0=
-X-Google-Smtp-Source: AA0mqf7VU5XHuRqXRyQfM/PJ2eyCTEP96FM8RRPAA+2ZO/Hi8ZzOLB2rh5A/wMibAztCTehRhBbSDwo=
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=E+8IjXRgxBNITPsOwIQKMXDKqWa80/z37oUBtUuQVa0=;
+        b=kv4hyTNyw0Iny2Ub2vQ8i7lMsx39wDTUq1BLQTc4UAlQkT3km4jBK48EsWsm4YYf/w
+         9pTrpr1yO9xPebizgfE4TE8ltdcag/7IgLLVh71urwVhDt7mY6xdzr0JA43ujGjOrNlp
+         W2w3bkzgZSnOTesZs18gHGtJ+ygWdfEFotLwZoNaRep1Smw/dNR7m9uDgHeKT68KGrZI
+         us27Ip9OSpgkhUvCcZoqxXQ17CcI7QC3F/mLsA8EWc52f7gIEC7Ck6A5Xpvpbk/JfMiD
+         Pa6XXL8wqwm8aTk3MeJ2FbTKtxjrXl4RktW8hVixfSkAE0ZJzW7ksqFxLBmghJ4GCKPs
+         rTGg==
+X-Gm-Message-State: ANoB5pn5Mbtm6n6yUvGtBxb4SdKBm0q8LeA11xf37geySfyHSFaT5uSW
+        TcIGgj/HW2QFtE7wfO3WAY4ZgNk=
+X-Google-Smtp-Source: AA0mqf49JR+xywOcvNrrM2mX6vAJ2aTg+01p+IZYDcOS32Yl5zwEF1L6Kv8p/1IcRroXqOIzIsYPkrk=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:aa7:8891:0:b0:562:9a93:7c91 with SMTP id
- z17-20020aa78891000000b005629a937c91mr16485801pfe.21.1668481332141; Mon, 14
- Nov 2022 19:02:12 -0800 (PST)
-Date:   Mon, 14 Nov 2022 19:01:59 -0800
+ (user=sdf job=sendgmr) by 2002:a25:3801:0:b0:6cf:ef46:e780 with SMTP id
+ f1-20020a253801000000b006cfef46e780mr15073287yba.644.1668481335532; Mon, 14
+ Nov 2022 19:02:15 -0800 (PST)
+Date:   Mon, 14 Nov 2022 19:02:01 -0800
+In-Reply-To: <20221115030210.3159213-1-sdf@google.com>
 Mime-Version: 1.0
+References: <20221115030210.3159213-1-sdf@google.com>
 X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221115030210.3159213-1-sdf@google.com>
-Subject: [PATCH bpf-next 00/11] xdp: hints via kfuncs
+Message-ID: <20221115030210.3159213-3-sdf@google.com>
+Subject: [PATCH bpf-next 02/11] bpf: Introduce bpf_patch
 From:   Stanislav Fomichev <sdf@google.com>
 To:     bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -76,68 +78,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please see the first patch in the series for the overall
-design and use-cases.
+A simple abstraction around a series of instructions that transparently
+handles resizing.
 
-Changes since last RFC:
+Currently, we have insn_buf[16] in convert_ctx_accesses which might
+not be enough for xdp kfuncs.
 
-- drop ice/bnxt example implementation (Alexander)
-
-  -ENOHARDWARE to test
-
-- fix/test mlx4 implementation
-
-  Confirmed that I get reasonable looking timestamp.
-  The last patch in the series is the small xsk program that can
-  be used to dump incoming metadata.
-
-- bpf_push64/bpf_pop64 (Alexei)
-
-  x86_64+arm64(untested)+disassembler
-
-- struct xdp_to_skb_metadata -> struct xdp_skb_metadata (Toke)
-
-  s/xdp_to_skb/xdp_skb/
-
-- Documentation/bpf/xdp-rx-metadata.rst
-
-  Documents functionality, assumptions and limitations.
-
-- bpf_xdp_metadata_export_to_skb returns true/false (Martin)
-
-  Plus xdp_md->skb_metadata field to access it.
-
-- BPF_F_XDP_HAS_METADATA flag (Toke/Martin)
-
-  Drop magic, use the flag instead.
-
-- drop __randomize_layout
-
-  Not sure it's possible to sanely expose it via UAPI. Because every
-  .o potentially gets its own randomized layout, test_progs
-  refuses to link.
-
-- remove __net_timestamp in veth driver (John/Jesper)
-
-  Instead, calling ktime_get from the kfunc; enough for the selftests.
-
-Future work on RX side:
-
-- Support more devices besides veth and mlx4
-- Support more metadata besides RX timestamp.
-- Convert skb_metadata_set() callers to xdp_convert_skb_metadata()
-  which handles extra xdp_skb_metadata
-
-Prior art (to record pros/cons for different approaches):
-
-- Stable UAPI approach:
-  https://lore.kernel.org/bpf/20220628194812.1453059-1-alexandr.lobakin@intel.com/
-- Metadata+BTF_ID appoach:
-  https://lore.kernel.org/bpf/166256538687.1434226.15760041133601409770.stgit@firesoul/
-- kfuncs v2 RFC:
-  https://lore.kernel.org/bpf/20221027200019.4106375-1-sdf@google.com/
-- kfuncs v1 RFC:
-  https://lore.kernel.org/bpf/20221104032532.1615099-1-sdf@google.com/
+If we find this abstraction helpful, we might convert existing
+insn_buf[16] to it in the future.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: David Ahern <dsahern@gmail.com>
@@ -151,65 +99,146 @@ Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
 Cc: Maryam Tahhan <mtahhan@redhat.com>
 Cc: xdp-hints@xdp-project.net
 Cc: netdev@vger.kernel.org
-
-Stanislav Fomichev (11):
-  bpf: Document XDP RX metadata
-  bpf: Introduce bpf_patch
-  bpf: Support inlined/unrolled kfuncs for xdp metadata
-  bpf: Implement hidden BPF_PUSH64 and BPF_POP64 instructions
-  veth: Support rx timestamp metadata for xdp
-  xdp: Carry over xdp metadata into skb context
-  selftests/bpf: Verify xdp_metadata xdp->af_xdp path
-  selftests/bpf: Verify xdp_metadata xdp->skb path
-  mlx4: Introduce mlx4_xdp_buff wrapper for xdp_buff
-  mxl4: Support rx timestamp metadata for xdp
-  selftests/bpf: Simple program to dump XDP RX metadata
-
- Documentation/bpf/kfuncs.rst                  |   8 +
- Documentation/bpf/xdp-rx-metadata.rst         | 109 +++++
- arch/arm64/net/bpf_jit_comp.c                 |   8 +
- arch/x86/net/bpf_jit_comp.c                   |   8 +
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |   2 +
- drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  68 ++-
- drivers/net/veth.c                            |  22 +-
- include/linux/bpf.h                           |   1 +
- include/linux/bpf_patch.h                     |  29 ++
- include/linux/btf.h                           |   1 +
- include/linux/btf_ids.h                       |   4 +
- include/linux/filter.h                        |  23 +
- include/linux/mlx4/device.h                   |   7 +
- include/linux/netdevice.h                     |   5 +
- include/linux/skbuff.h                        |   4 +
- include/net/xdp.h                             |  41 ++
- include/uapi/linux/bpf.h                      |  12 +
- kernel/bpf/Makefile                           |   2 +-
- kernel/bpf/bpf_patch.c                        |  77 +++
- kernel/bpf/disasm.c                           |   6 +
- kernel/bpf/syscall.c                          |  28 +-
- kernel/bpf/verifier.c                         |  80 ++++
- net/core/dev.c                                |   7 +
- net/core/filter.c                             |  40 ++
- net/core/skbuff.c                             |  20 +
- net/core/xdp.c                                | 184 +++++++-
- tools/include/uapi/linux/bpf.h                |  12 +
- tools/testing/selftests/bpf/.gitignore        |   1 +
- tools/testing/selftests/bpf/DENYLIST.s390x    |   1 +
- tools/testing/selftests/bpf/Makefile          |   8 +-
- .../selftests/bpf/prog_tests/xdp_metadata.c   | 440 ++++++++++++++++++
- .../selftests/bpf/progs/xdp_hw_metadata.c     |  99 ++++
- .../selftests/bpf/progs/xdp_metadata.c        | 114 +++++
- tools/testing/selftests/bpf/xdp_hw_metadata.c | 404 ++++++++++++++++
- tools/testing/selftests/bpf/xdp_hw_metadata.h |   6 +
- 35 files changed, 1856 insertions(+), 25 deletions(-)
- create mode 100644 Documentation/bpf/xdp-rx-metadata.rst
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ include/linux/bpf_patch.h | 29 +++++++++++++++
+ kernel/bpf/Makefile       |  2 +-
+ kernel/bpf/bpf_patch.c    | 77 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 107 insertions(+), 1 deletion(-)
  create mode 100644 include/linux/bpf_patch.h
  create mode 100644 kernel/bpf/bpf_patch.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_metadata.c
- create mode 100644 tools/testing/selftests/bpf/xdp_hw_metadata.c
- create mode 100644 tools/testing/selftests/bpf/xdp_hw_metadata.h
 
+diff --git a/include/linux/bpf_patch.h b/include/linux/bpf_patch.h
+new file mode 100644
+index 000000000000..359c165ad68b
+--- /dev/null
++++ b/include/linux/bpf_patch.h
+@@ -0,0 +1,29 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _LINUX_BPF_PATCH_H
++#define _LINUX_BPF_PATCH_H 1
++
++#include <linux/bpf.h>
++
++struct bpf_patch {
++	struct bpf_insn *insn;
++	size_t capacity;
++	size_t len;
++	int err;
++};
++
++void bpf_patch_free(struct bpf_patch *patch);
++size_t bpf_patch_len(const struct bpf_patch *patch);
++int bpf_patch_err(const struct bpf_patch *patch);
++void __bpf_patch_append(struct bpf_patch *patch, struct bpf_insn insn);
++struct bpf_insn *bpf_patch_data(const struct bpf_patch *patch);
++void bpf_patch_resolve_jmp(struct bpf_patch *patch);
++u32 bpf_patch_magles_registers(const struct bpf_patch *patch);
++
++#define bpf_patch_append(patch, ...) ({ \
++	struct bpf_insn insn[] = { __VA_ARGS__ }; \
++	int i; \
++	for (i = 0; i < ARRAY_SIZE(insn); i++) \
++		__bpf_patch_append(patch, insn[i]); \
++})
++
++#endif
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 3a12e6b400a2..5724f36292a5 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -13,7 +13,7 @@ obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
+ obj-${CONFIG_BPF_LSM}	  += bpf_inode_storage.o
+ obj-$(CONFIG_BPF_SYSCALL) += disasm.o
+ obj-$(CONFIG_BPF_JIT) += trampoline.o
+-obj-$(CONFIG_BPF_SYSCALL) += btf.o memalloc.o
++obj-$(CONFIG_BPF_SYSCALL) += btf.o memalloc.o bpf_patch.o
+ obj-$(CONFIG_BPF_JIT) += dispatcher.o
+ ifeq ($(CONFIG_NET),y)
+ obj-$(CONFIG_BPF_SYSCALL) += devmap.o
+diff --git a/kernel/bpf/bpf_patch.c b/kernel/bpf/bpf_patch.c
+new file mode 100644
+index 000000000000..eb768398fd8f
+--- /dev/null
++++ b/kernel/bpf/bpf_patch.c
+@@ -0,0 +1,77 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/bpf_patch.h>
++
++void bpf_patch_free(struct bpf_patch *patch)
++{
++	kfree(patch->insn);
++}
++
++size_t bpf_patch_len(const struct bpf_patch *patch)
++{
++	return patch->len;
++}
++
++int bpf_patch_err(const struct bpf_patch *patch)
++{
++	return patch->err;
++}
++
++void __bpf_patch_append(struct bpf_patch *patch, struct bpf_insn insn)
++{
++	void *arr;
++
++	if (patch->err)
++		return;
++
++	if (patch->len + 1 > patch->capacity) {
++		if (!patch->capacity)
++			patch->capacity = 16;
++		else
++			patch->capacity *= 2;
++
++		arr = krealloc_array(patch->insn, patch->capacity, sizeof(insn), GFP_KERNEL);
++		if (!arr) {
++			patch->err = -ENOMEM;
++			kfree(patch->insn);
++			return;
++		}
++
++		patch->insn = arr;
++		patch->capacity *= 2;
++	}
++
++	patch->insn[patch->len++] = insn;
++}
++EXPORT_SYMBOL(__bpf_patch_append);
++
++struct bpf_insn *bpf_patch_data(const struct bpf_patch *patch)
++{
++	return patch->insn;
++}
++
++void bpf_patch_resolve_jmp(struct bpf_patch *patch)
++{
++	int i;
++
++	for (i = 0; i < patch->len; i++) {
++		if (BPF_CLASS(patch->insn[i].code) != BPF_JMP)
++			continue;
++
++		if (patch->insn[i].off != S16_MAX)
++			continue;
++
++		patch->insn[i].off = patch->len - i - 1;
++	}
++}
++
++u32 bpf_patch_magles_registers(const struct bpf_patch *patch)
++{
++	u32 mask = 0;
++	int i;
++
++	for (i = 0; i < patch->len; i++)
++		mask |= 1 << patch->insn[i].dst_reg;
++
++	return mask;
++}
 -- 
 2.38.1.431.g37b22c650d-goog
 
