@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8860162953B
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76897629574
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:13:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbiKOKEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 05:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
+        id S238386AbiKOKNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 05:13:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiKOKEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 05:04:44 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B7AE0
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:04:43 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id l127so14380139oia.8
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:04:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=14wh9fO6TVg0vKgRl3BQkvbrhVtpIEacYDli7ORPhns=;
-        b=d8xLyYxgnwcefVvzS+W378EORzn7gyNujcQPtGVcxsG/eU5SQrJYtaU54OxuDWauu5
-         KLuwsm3HJU3ZISHhTN3cCEdmhqi5QaM0h+RkjIo32sjTL+xTPIObQoV+xc01CJfm9whe
-         7UdtIzl2PvTnod01MRpcNp8POArbK/drolfpFWEje4jQhwm51tUSRTgEV2CVIEWlB3l/
-         yt6RLI8kFyx/bd+RLNE+h6hZ+xKq0MOgNJ+E4yXgBhRPWZQk8llngXR6Df/7kcy/c7dj
-         vmlHnOQPr4g0ftvoItA/vHdjfTO2b/mP4QZGYxu4C3LHRc8Umdkw/osf6Trij42UG191
-         VYMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=14wh9fO6TVg0vKgRl3BQkvbrhVtpIEacYDli7ORPhns=;
-        b=3Eigq1eyhz7/vgWsuoBcfWk8P+9uxleGpO+CqGsItVAU8zROFb2NdaCelIXRF2WOCr
-         J/N5hARigS5PUO8wKFGfKONhDGnTt1nUgHf3plZPxgLA+7nYkDcN85DsxLMjlJXrxsWp
-         Bz6tS4cSff4T8IVn5vDi+IISsAx1hJ4lux1pNA0it22K69SaVaGl2WQsBnT/LkOUjf/H
-         paOi+dRFqfvn56U8PjhVRS8XYJOXKKE2IzM4yjzLkOLpjEpFonJwaPr264UiwlbXDscj
-         DIpfrA6H6EA1xK4xtXH9D/v/Is8uSsDb84SwJLJSYKhXeB5mvGAAhxfu+L8rUjRh9uVq
-         WwmQ==
-X-Gm-Message-State: ANoB5plLcnOVkpheSU1zL7/x+8SJivB6lRubRISKy8VQXCjRn3kE1mXT
-        jSBRIvjdbeNju9Scg/Kj5OjQeAxoTIcozgT4lIE8EmJ7JPjCCQ==
-X-Google-Smtp-Source: AA0mqf6RDfoKeNbgPVjzgInaFil71dYssU0qMBhdKwGqLUlk8MG4a77KHsbv+4vsgaW/erLCbD5waXHSS8QFHBAOuVc=
-X-Received: by 2002:aca:6156:0:b0:359:cb71:328b with SMTP id
- v83-20020aca6156000000b00359cb71328bmr487185oib.282.1668506682712; Tue, 15
- Nov 2022 02:04:42 -0800 (PST)
+        with ESMTP id S238438AbiKOKMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 05:12:39 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2239E25C56
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:12:22 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed10:8c33:62a1:bd29:7c58])
+        by xavier.telenet-ops.be with bizsmtp
+        id kaCJ280030JF8f801aCJRV; Tue, 15 Nov 2022 11:12:21 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ousvR-000Xyg-IX; Tue, 15 Nov 2022 11:12:17 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ousvQ-005B9T-VS; Tue, 15 Nov 2022 11:12:16 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chris Down <chris@chrisdown.name>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH net-next] tcp: Fix tcp_syn_flood_action() if CONFIG_IPV6=n
+Date:   Tue, 15 Nov 2022 11:12:16 +0100
+Message-Id: <d1ecf500f07e063d4e8e34f4045ddca55416c686.1668507036.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20221104170422.979558-1-dvyukov@google.com> <CGME20221104170430epcas2p1d854f31557e623e8fd9d16f6c162d90d@epcms2p7>
- <20221114102729epcms2p75b469f77cdd41abab4148ffd438e8bd6@epcms2p7> <20221114163604.1b310e51@kernel.org>
-In-Reply-To: <20221114163604.1b310e51@kernel.org>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 15 Nov 2022 11:04:31 +0100
-Message-ID: <CACT4Y+bBvvZgkAYoaUwaxx+XqW-+vgYUAshtSFBX13BHAMVLTw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] nfc: Allow to create multiple virtual nci devices
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Nov 2022 at 01:36, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 14 Nov 2022 19:27:29 +0900 Bongsu Jeon wrote:
-> > Reviewed-by: Bongsu Jeon
->
-> Dmitry if the patch is good after all - would you mind reposting with
-> the review tag added (and corrected)? Thanks!
+If CONFIG_IPV6=n:
 
-Done:
-https://lore.kernel.org/all/20221115100017.787929-1-dvyukov@google.com/
+    net/ipv4/tcp_input.c: In function ‘tcp_syn_flood_action’:
+    include/net/sock.h:387:37: error: ‘const struct sock_common’ has no member named ‘skc_v6_rcv_saddr’; did you mean ‘skc_rcv_saddr’?
+      387 | #define sk_v6_rcv_saddr __sk_common.skc_v6_rcv_saddr
+	  |                                     ^~~~~~~~~~~~~~~~
+    include/linux/printk.h:429:19: note: in definition of macro ‘printk_index_wrap’
+      429 |   _p_func(_fmt, ##__VA_ARGS__);    \
+	  |                   ^~~~~~~~~~~
+    include/linux/printk.h:530:2: note: in expansion of macro ‘printk’
+      530 |  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+	  |  ^~~~~~
+    include/linux/net.h:272:3: note: in expansion of macro ‘pr_info’
+      272 |   function(__VA_ARGS__);    \
+	  |   ^~~~~~~~
+    include/linux/net.h:288:2: note: in expansion of macro ‘net_ratelimited_function’
+      288 |  net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
+	  |  ^~~~~~~~~~~~~~~~~~~~~~~~
+    include/linux/net.h:288:43: note: in expansion of macro ‘sk_v6_rcv_saddr’
+      288 |  net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
+	  |                                           ^~~~~~~~~~~
+    net/ipv4/tcp_input.c:6847:4: note: in expansion of macro ‘net_info_ratelimited’
+     6847 |    net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c]:%u. %s.\n",
+	  |    ^~~~~~~~~~~~~~~~~~~~
 
-Also sent a patch that adds "send after close" case:
-https://lore.kernel.org/all/20221115095941.787250-1-dvyukov@google.com/
+Fix this by using "#if" instead of "if", like is done for all other
+checks for CONFIG_IPV6.
 
-(these patches can be merged independently)
+Fixes: d9282e48c6088105 ("tcp: Add listening address to SYN flood message")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ net/ipv4/tcp_input.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 94024fdc2da1b28a..e5d7a33fac6666bb 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6843,11 +6843,14 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
+ 
+ 	if (!queue->synflood_warned && syncookies != 2 &&
+ 	    xchg(&queue->synflood_warned, 1) == 0) {
+-		if (IS_ENABLED(CONFIG_IPV6) && sk->sk_family == AF_INET6) {
++#if IS_ENABLED(CONFIG_IPV6)
++		if (sk->sk_family == AF_INET6) {
+ 			net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c]:%u. %s.\n",
+ 					proto, &sk->sk_v6_rcv_saddr,
+ 					sk->sk_num, msg);
+-		} else {
++		} else
++#endif
++		{
+ 			net_info_ratelimited("%s: Possible SYN flooding on port %pI4:%u. %s.\n",
+ 					proto, &sk->sk_rcv_saddr,
+ 					sk->sk_num, msg);
+-- 
+2.25.1
+
