@@ -2,138 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 882906297C0
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:50:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1817D6297D2
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:57:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237029AbiKOLub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 06:50:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        id S229686AbiKOL5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 06:57:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232253AbiKOLu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:50:29 -0500
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2064.outbound.protection.outlook.com [40.107.104.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433CECE0A;
-        Tue, 15 Nov 2022 03:50:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d1EbvD+sC1Y2zqNq2Kt8dbx7v4r6nyp48c9qZr0+JcsdQieHNODPtHUb7zBxmg7Vbx+wixG8eo1DLKr+qLs4HF9K7TBUXluI+rULW7Jj3T+vDrNAQqV8FYg0DANVx4QFOi121rRoxzSlYtyeYcam7WWwtshMY4IKth7SGUhdpBGqsPruhO3JBubqkZDRBtjMjZ8bds32z3C8smES2nk/eb0vMGxrBHgd51p6/j4qx8wY6ybyi1a3NHH6BHjgqaXOwtbWkB1qUumdkS6iB9f85BcNrbr82CGpO7LsfHxnKCS51xWU7M/TQ6yFs13rSVKHoBImZhpyCWQfO8hpnIXoQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gTEe9UHRnlI5S24R6QSgzGWVL4tEL0FlhSlwW0E/unA=;
- b=EmE7PW+sJ4i5z1rCWIBPyNtm5P/RXBLv//H5moksvX7wNOc2+dXAiyyn9ncQ7oI6e/apnMFGs4+byh8qutXjuFDFoXRC4scz5AOiKCnCF5tW+sKVmtxowVyhgsLKNSrsXZR16NW+yPVSPQ2QYPTf/PQ7bQ0YSfvj4kY9+L+0qnyhLmhvuyFcTSEVvmpuysHkudnP/3mcnOwLJzVLYYhNb/PGGjZ+H7mqYBg/2y4zgjmdGbaoLe+20ua1Yj1u2odTdiXkk0wLLvHDI1SyEmiQsWRVz7MgrR0murZQstqYmsGeIlpCq8bCLeeeOL4TPwaway3VoO7jSf4sX2uzWL9XBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gTEe9UHRnlI5S24R6QSgzGWVL4tEL0FlhSlwW0E/unA=;
- b=b3M9QV9yVMlKrUlm+QR2Jgh4w8wXy+h48O8vyBYVlW/MOQGGkCeBQGAlvZN6bx4HDdfJgfGucVUb2euC9rri5BbmKyMRvmJqavBXUI0KAD3XNQahXSwdMKx6TkuivnleJ2qNB5dzlPD5qdvJKo9ShjWJTEm99+U5pH2SXim+MMQ=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB7312.eurprd04.prod.outlook.com (2603:10a6:800:1a5::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.15; Tue, 15 Nov
- 2022 11:50:24 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.018; Tue, 15 Nov 2022
- 11:50:24 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-CC:     Felix Fietkau <nbd@nbd.name>, Jakub Kicinski <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: Re: [PATCH net-next v8 3/5] net: dsa: add out-of-band tagging
- protocol
-Thread-Topic: [PATCH net-next v8 3/5] net: dsa: add out-of-band tagging
- protocol
-Thread-Index: AQHY8HTAfetHoGxM5E6HcRPQNrr8s64vpgIAgAOCEwCAAdB8gIAK0AQAgAAnZIA=
-Date:   Tue, 15 Nov 2022 11:50:23 +0000
-Message-ID: <20221115115023.hgc4ynrx3kylf6p3@skbuf>
-References: <20221104174151.439008-1-maxime.chevallier@bootlin.com>
- <20221104174151.439008-4-maxime.chevallier@bootlin.com>
- <20221104200530.3bbe18c6@kernel.org> <20221107093950.74de3fa1@pc-8.home>
- <6b38ec27-65a3-c973-c5e1-a25bbe4f6104@nbd.name>
- <20221115102924.1329b49f@pc-7.home>
-In-Reply-To: <20221115102924.1329b49f@pc-7.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|VE1PR04MB7312:EE_
-x-ms-office365-filtering-correlation-id: fee7cfb2-fb1c-4d52-c98a-08dac6ff94ae
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vFjxmK1Q4wfoLxPD559rkOJE6yAGYhc9qKBQGcnJi6nNOFQtE+uAksFJQ4FfhO9M3nWoi1zugnYxqilF14AolVpF4xuCFyDdVTBPzGgcr92uiUJmbk1l4R+ywBRXFDTzszMRKOx/EZWFgQsiIHdQCACcJf2Q3TQGNgk4cYd88GQ1eXgwPbXbTZnWJBXcqp/WQB9rQIJBhvfC7X9byRNNk1ZlAgAMp56ciiXKPES8CJt875RvNsl/bldUxvPyrFJ2RhH1gjhC0BZVX0LbrMLbuY6dVUiTy9cTBSBCHogG1U7vGaof+4vOUM9VSpJvDfnHJ42FG1I2yh+OFrcA69fkkvmv1QOd+e+78BlZidlGNeWjn7Pwt/efZxeWqAIyvubhMEuggSU4eaa1wLuPzPMxgauUxwD1Fxw/+Yt+Ao8lVFHL9pcMxPZB4QHQFDiJMiTs+tpqOh5nQo+PnQYpM/KmlMG8By6kkALkzNanm+Qo8ofos63IxavpvyE1b1FK0vJIkRMi+RNXAGpCQGlJxmQmaCo0Q87k1ZPq5q+R9ohYGCkCY/jY/X2sxVivBQ3Wlo/4ed5Y5QKk0hPu6ioKFaZAiOlIRhRcUFH5G99UpE7OqL5TtjJyLmEpQR0mrmDqh4otA5GOZC044Gohp2Xgrbn3DEubBWeHs13oL95KwDdhaP0Q0FPjCIqOooIKs3ZfCnP9QHm9oecKok0lNNCduHqNT024pvlXYjUuLwrl+mrAWDuqTxJHE5JyjpfMghaiW6X6dckS0OINAdohdQpnFut5WFr9iOsVeqbaILoXl1zeL3M5OSXePltvbQ3hraPLJmx/9ePT2QzopSlU8mtCF/qfug==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(396003)(366004)(346002)(39860400002)(376002)(136003)(451199015)(316002)(7416002)(8936002)(5660300002)(44832011)(64756008)(66476007)(66556008)(66446008)(41300700001)(4326008)(76116006)(8676002)(66946007)(38070700005)(966005)(54906003)(6916009)(71200400001)(122000001)(478600001)(6486002)(86362001)(6512007)(6506007)(26005)(9686003)(2906002)(186003)(1076003)(33716001)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?mLsDYzuAc+uubG/CtMAhBZ4qyw1b+8Xd4RBLdMh6l/cpxmYeLKyJbSxR73FB?=
- =?us-ascii?Q?hUvq6ZHeibc8h6i4eogAiilRCciYWpx6BSuunSVVAZW8W6VvtR3luAKc/sOs?=
- =?us-ascii?Q?bQ1maCQAGg3wDf9InPhTBDuqGxQwFLsHS46FH7RTU+LnezCss0VuAZuLDzxx?=
- =?us-ascii?Q?8lhqGLflQJdG3R46NeWNjedHr2kb/jc51UBF/K1cKFo0WKSiahVJjCtyOp70?=
- =?us-ascii?Q?dkc2kV4NqushGEQOWjlxE7BYkg5UOFkpYfkvfDF5eNVWwStrHOcvUprs6alG?=
- =?us-ascii?Q?3WWGEoFggaYusPxDuwf1snihU8A6oXjx1q+8diOKyZBiSXd9uzWeGdmoYyF+?=
- =?us-ascii?Q?ML/zanxK27nMZ0zvdFTOFU58Cw2bUbgdtkweqgyErmtB2OYwoq09CviFYPAw?=
- =?us-ascii?Q?jg5/A21JnpFhEIagULLgHOhDxGWYrRBX0s+9+lLnf9Sqsjy4tMF25TiWs6Ob?=
- =?us-ascii?Q?jOIUEHPGt1v27R9uzJJ6bedRYb6rMS3Dq3in42D3WkvKOth11Mm60Gf397sx?=
- =?us-ascii?Q?doTtDrfsIv53vF3TQC14+Fxv84Nylaxs5i9xZCaPPrV20qcCgC3T4LeGEszC?=
- =?us-ascii?Q?ixuQrMmk/tlkjys4fsIN4mdflzDaOrdv1jLbqsXmTZDxYSdhEOOjebdLP2di?=
- =?us-ascii?Q?AtJ6VgXZH9YGeJ5UDu6r0cKb8dqww2yRQSXQDhdfFQIC8psIbNDSw19KRGml?=
- =?us-ascii?Q?SnHbbnN9yD+OQtxKCetVFAKlGwl9Rhk/WxeMuUD64/0kL1f8aUoOjdreDGBp?=
- =?us-ascii?Q?0P8WtCDAQX1UnW1+UiBE/ZkaPz93jcu8SLZ/iAWDReGZBTMfi/lrecjM+ywu?=
- =?us-ascii?Q?Y8SOv1umTTiqDJfX6murH4+7tZW6DPXeZEEs6+r/9bIRbq84DC3VfEbztaI5?=
- =?us-ascii?Q?i9lgCOFTNB140k4KDjKikKCw9LyWHYflE4zQSpEVFaVaGgaSLh3HAaCPqJbH?=
- =?us-ascii?Q?GrPUdIXPlbUU9kqFVDBZQOzZvaQRMC2xHUo+h1wZlND/6RB0L1NnDSi4ck5C?=
- =?us-ascii?Q?lQZd1CmnLI78d83zcSKYWEURQbW0hc2sEG5uHS8WKGBRFolb1JKt9IbqjVkz?=
- =?us-ascii?Q?3VXbMZ7Y8KEPPjE9TQSRH/n7cHtPxrIrpr00YJRSFIDqrKqEQAui0g/jm1jL?=
- =?us-ascii?Q?6ADTMBNYvKwT7rLtn3A5wBjoJS8oe4HvjnpLArl/Ulf6foBovv3iIt67opNw?=
- =?us-ascii?Q?VpEipkH/QhS1jZIUmFiMs0m0tRCuSX/5bgcBHwVKttoxU4kpO4gbYDdRujeJ?=
- =?us-ascii?Q?jzX9ny/Cj0HZ7OuNxJWsuT6UaMQ8HooIRuCqH+AKAETt8gyYkTApx/pjcyC/?=
- =?us-ascii?Q?wrYNF+uSpTJ/8aZl0IaQuRbZXphls72zZRygTgkSLQ+f4HdRg/qBuBTrXXl6?=
- =?us-ascii?Q?hKretIEKC+O+EE2XdEPzo/U8y6Osyv+Z7QcnL30siuTw0Eu7KD5ooPr3kiRo?=
- =?us-ascii?Q?uV5mUo9eOUA2qmCFNiQGc2aM+BQxE5wYBGS5HfRyjebDaaiQTBsDfSXXn2K5?=
- =?us-ascii?Q?x1hVEalRfu7/58BGvwRORvijXZgdZZS80ETp15sCnLpCPDa8prRUfMDzdJEE?=
- =?us-ascii?Q?idCS/7pfef8RF9Tcui3sP0pWJvFahCgFwLtxmrzHI0rFx3CNgZLgH43MiEij?=
- =?us-ascii?Q?aQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <89071461ED882A48874503FE5BDEB161@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230029AbiKOL5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:57:37 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EA317E29
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:57:35 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id v17so21512957edc.8
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:57:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5DmhFDazyUzrb9m31UPQqw+p6xW5I/lIFmvqcHXx144=;
+        b=Mg9wLpKO71meH4LOpjlHIoqiSVDzba1mA1aRwUAfTH5sy6rT0mLMgBhwyAyaQqrZG6
+         pRxaPG7WUyajrZN9VMVPtJSP9n/JzHy2254IAFzZo8edxe7sFZaqpL+HBV3ymn8U/X5o
+         Tl0SorhUWTXgQsJ0mIqUyPVhmYmmhOSRdTpBqFKYCHUFMkEecPzdx8UD7SYPfIvXewKD
+         /yGvrn7LPFL1MwNcypSbtMu7qtlmmQpYqtlCGP8SXGL23QdGToXNAODTdTKsIkQWJmI8
+         Ox6CcEkkO3gsw18RjzbC3wwJPto3G5ECcnQ9k+FYjeSulqasUW/w+FofdtCAum3XK3Lp
+         0B5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5DmhFDazyUzrb9m31UPQqw+p6xW5I/lIFmvqcHXx144=;
+        b=jklBSQ3EwMexcC43Tcr8Dn5rfLGgo5vOtBjKjbR/8eMOvmjG7U+vhZzQNJ9cOZbrrY
+         mUSJjEk/4KPlcIf7hHN0l0CqUC0ToU+seo6V2WhiUAvAKEDwxvRxSB0iIhoC8mINnxRO
+         qocrYRpcfffedgDPrwa1iBdo0reOCftVKDDRhJoN/qa3SQ8t0NR4p5bcCTF2Jpso63tc
+         KNYuQsAQ/DUWF6y0/2NyQglVM52NsHBcshVsQV7LCG+zU1vadb0Vjn3xF00dRnM+r6of
+         M4M5u6rQ9mZKlCak2hl5siOVZEQYjTcRpbE/ZxaTfj0gonm0XXU1KWf+Z8E53mX6aAnl
+         KVrA==
+X-Gm-Message-State: ANoB5pkF8x1ej+mx9mG77Hmlgq25x48yRHRaWmOCQwgTApOpEeYM0TZI
+        orr75UzPFNqsmPRvKYxzzqknPp/OSc0EDzSr4I8=
+X-Google-Smtp-Source: AA0mqf5bDXmfKjKRjORU+O6rvewEGPx4qkLlE1EaSh7/Oug+eO5fE6JAaGbEaJ1S0TxJAUURx7Q0BNK4hptgjUmKQQ8=
+X-Received: by 2002:aa7:cdc1:0:b0:459:41fa:8e07 with SMTP id
+ h1-20020aa7cdc1000000b0045941fa8e07mr14463352edw.140.1668513453382; Tue, 15
+ Nov 2022 03:57:33 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fee7cfb2-fb1c-4d52-c98a-08dac6ff94ae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2022 11:50:23.9320
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vynkhPU1ILOLR1MfVtC5n6NPNjJ5ERUkHMQUo4RNaDantaZc2pBRm/rRdebd1tKp0+zQDgDwRw9qVvYIJMaQcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7312
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-2-dnlplm@gmail.com>
+ <20221111090720.278326d1@kernel.org> <8b0aba42-627a-f5f5-a9ec-237b69b3b03f@nvidia.com>
+ <CAGRyCJF49NMTt9aqPhF_Yp5T3cof_GtL7+v8PeowsBQWG0bkJQ@mail.gmail.com> <CAA93jw4OAWRAg+BxftuMgFaHex+BAeV3bS5JUYU7_+pM8ZOaEA@mail.gmail.com>
+In-Reply-To: <CAA93jw4OAWRAg+BxftuMgFaHex+BAeV3bS5JUYU7_+pM8ZOaEA@mail.gmail.com>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Tue, 15 Nov 2022 12:51:13 +0100
+Message-ID: <CAGRyCJFG0kybDzwYrdj2-Y868KbePCVBxFXsOo5TTJ_4PwrQDQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] ethtool: add tx aggregation parameters
+To:     Dave Taht <dave.taht@gmail.com>
+Cc:     Gal Pressman <gal@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -141,115 +78,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 10:29:24AM +0100, Maxime Chevallier wrote:
-> Hello everyone,
->=20
-> Felix, thanks for the feedback !
->=20
-> On Tue, 8 Nov 2022 13:22:17 +0100
-> Felix Fietkau <nbd@nbd.name> wrote:
->=20
-> [...]
->=20
-> > FYI, I'm currently working on hardware DSA untagging on the mediatek
-> > mtk_eth_soc driver. On this hardware, I definitely need to keep the
-> > custom DSA tag driver, as hardware untagging is not always available.
-> > For the receive side, I came up with this patch (still untested) for
-> > using METADATA_HW_PORT_MUX.
-> > It has the advantage of being able to skip the tag protocol rcv ops
-> > call for offload-enabled packets.
-> >=20
-> > Maybe for the transmit side we could have some kind of netdev feature
-> > or capability that indicates offload support and allows skipping the
-> > tag xmit function as well.
-> > In that case, ipqess could simply use a no-op tag driver.
->=20
-> If I'm not mistaken, Florian also proposed a while ago an offload
-> mechanism for taggin/untagging :
->=20
-> https://lore.kernel.org/lkml/1438322920.20182.144.camel@edumazet-glaptop2=
-.roam.corp.google.com/T/
->=20
-> It uses some of the points you're mentionning, such as the netdev
-> feature :)
->=20
-> All in all, I'm still a bit confused about the next steps. If I can
-> summarize a bit, we have a lot of approaches, all with advantages and
-> inconvenients, I'll try to summarize the state :
->=20
->  - We could simply use the skb extensions as-is, rename the tagger
->    something like "DSA_TAG_IPQDMA" and consider this a way to perform
->    tagging on this specific class of hardware, without trying too hard
->    to make it generic.
+Hello Dave,
 
-For Felix, using skb extensions would be inconvenient, since it would
-involve per packet allocations which are now avoided with the metadata
-dsts.
+Il giorno lun 14 nov 2022 alle ore 11:46 Dave Taht
+<dave.taht@gmail.com> ha scritto:
+> > Tx packets aggregation allows to overcome this issue, so that a single
+> > URB holds N qmap packets, reducing URBs frequency.
+>
+> While I understand the use case... it's generally been my hope we got
+> to a BQL-like mechanism for
+> 4G and 5G that keeps the latency under control. Right now, that can be
+> really, really, really miserable -
+> measured in *seconds* - and adding in packet aggregation naively is
+> what messed up Wifi for the
+> past decade. Please lose 8 minutes of your life to this (hilarious)
+> explanation of why aggregation can be bad.
+>
+> https://www.youtube.com/watch?v=3DRb-UnHDw02o&t=3D1560s
+>
 
->  - We could try to move forward with this mechanism of offloading
->    tagging and untagging from the MAC driver, this would address
->    Florian's first try at this, Felix's use-case and would fit well the
->    IPQESS case
+Nice video and really instructive :-)
 
-Someone would need to take things from where Felix left them:
-https://patchwork.kernel.org/project/netdevbpf/patch/20221114124214.58199-2=
--nbd@nbd.name/
-and add TX tag offloading support as well. Here there would need to be
-a mechanism through which DSA asks "hey, this is my tagging protocol,
-can the master offload it in the TX direction or am I just going to push
-the tag into the packet?". I tried to sketch here something along those
-lines:
-https://patchwork.kernel.org/project/netdevbpf/patch/20221109163426.76164-1=
-0-nbd@nbd.name/#25084481
+> So given a choice between being able to drive the modem at the maximum
+> rate in a testbed...
+> or having it behave well at all possible (and highly variable) egress
+> rates, I would so love for more to focus on the latter problem than
+> the former, at whatever levels and layers in the stack it takes.
+>
 
->  - There's the option discussed by Vlad and Jakub to add several
->    frontends, one being a switchev driver, here I'm a bit lost TBH, if
->    we go this way I could definitely use a few pointers from Vlad :)
+I get your point, but here it's not just a testbed issue, since I
+think that the huge tx drop due to a concurrent rx can happen also in
+real life scenarios.
 
-The assumption being here that there is more functionality to cover by
-the metadata dst than a port mux. I'm really not clear what is the
-hardware design truly, hopefully you could give more details about that.
+Additionally, it seems that Qualcomm modems are meant to be used in
+this way: as far as I know all QC downstream kernel versions have this
+kind of feature in the rmnet code.
 
-The mechanism is quite simple, it's not rocket science. Take something
-like a bridge join operation, the proposal is to do something like this:
+I think that this can be seen as adding one more choice for the user:
+by default tx aggregation in rmnet would be disabled, so no one should
+notice this change and suffer from latencies different than the ones
+the current rmnet driver already has.
 
-    dsa_slave_netdevice_event
-        (net/dsa/slave.c)
-               |
-               v
-      dsa_slave_changeupper
-       (net/dsa/slave.c)
-               |
-               v
-       dsa_port_bridge_join                         ocelot_netdevice_event
-        (net/dsa/port.c)                  (drivers/net/ethernet/mscc/ocelot=
-_net.c)
-               |                                           |
-               v                                           v
-     dsa_switch_bridge_join                     ocelot_netdevice_changeuppe=
-r
-       (net/dsa/switch.c)                 (drivers/net/ethernet/mscc/ocelot=
-_net.c)
-               |                                           |
-               v                                           v
-       felix_bridge_join                        ocelot_netdevice_bridge_joi=
-n
-(drivers/net/dsa/ocelot/felix.c)          (drivers/net/ethernet/mscc/ocelot=
-_net.c)
-               |                                           |
-               |                                           |
-               +---------------------+---------------------+
-                                     |
-                                     v
-                           ocelot_port_bridge_join
-                      (drivers/net/ethernet/mscc/ocelot.c)
+But for those that are affected by the same bug I'm facing or are
+interested in a different use-case in which tx aggregation makes
+sense, this feature can help.
 
-with you maintaining the entire right branch that represents the switchdev =
-frontend,
-and more or less duplicates part of DSA.
+Hope that this makes sense.
 
-The advantage of this approach is that you can register your own NAPI
-handler where you can treat packets in whichever way you like, and have
-your own ndo_start_xmit. This driver would treat the aggregate of the
-ess DMA engine and the ipq switch as a single device, and expose it as a
-switch with DMA, basically.=
+> As a test, what happens on the flent "rrul" test, before and after
+> this patch? Under good wireless conditions, and bad?
+>
+> flent -H server -t my-test-conditions -x --socket-stats rrul
+> flent -H server -t my-test-conditions -x --socket-stats
+> --test-parameter=3Dupload_streams=3D4 tcp_nup
+>
+> I have servers for that all over the world
+> {de,london,fremont,dallas,singapore,toronto,}.starlink.taht.net
+>
+
+I've uploaded some results at
+https://drive.google.com/drive/folders/1-HjhyJaN4oWRNv8P8C__KD9-V-IoBwbL?us=
+p=3Dsharing
+
+The good network condition has been simulated through a callbox
+connected to LAN (there are also a few pictures of the throughput on
+the callbox side while performing the tests with tx aggregation
+enabled/disabled).
+
+Thanks,
+Daniele
+
+> > The maximum number of allowed packets in a single URB and the maximum
+> > size of the URB are dictated by the modem through the qmi control
+> > protocol: the values returned by the modem are then configured in the
+> > driver with the new ethtool parameters.
+> >
+> > > Isn't this the same as TX copybreak? TX
+> > > copybreak for multiple packets?
+> >
+> > I tried looking at how tx copybreak works to understand your comment,
+> > but I could not find any useful document. Probably my fault, but can
+> > you please point me to something I can read?
+> >
+> > Thanks,
+> > Daniele
+>
+>
+>
+> --
+> This song goes out to all the folk that thought Stadia would work:
+> https://www.linkedin.com/posts/dtaht_the-mushroom-song-activity-698136666=
+5607352320-FXtz
+> Dave T=C3=A4ht CEO, TekLibre, LLC
