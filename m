@@ -2,229 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7894629DE1
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 16:45:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D35F1629E10
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 16:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229992AbiKOPo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 10:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42668 "EHLO
+        id S238452AbiKOPvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 10:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiKOPo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 10:44:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197E6114C
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 07:44:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D55DB8199A
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 15:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA21CC433C1;
-        Tue, 15 Nov 2022 15:44:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668527094;
-        bh=bU5lhSWMGNbUTV03hyRVn3s1bXhCWa/IY8lnSTVMJYk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GcWiN1ZDgpNT/HUdMxtK0E+12lkQNcuUDFBifb6HaHOz9zF50OP1SoGgh1Uy0MWHm
-         ZegsNI2/13dGlom8wZg9g6T1Gi0bRZ3BMViNs1QdeRNyQIT+B81DqC8lfOVaqY6EWg
-         cUcclbUb11mZ4YzoguX3+uH3cfi+sqMbScW/f8SxKUx1r+SELegzE+71kio3uGAQbq
-         NNfRNEFyTQdvLc8lOt5QI7HNmOcpSbqGFBGO9U6ILnJburXlcNSV4R2mn1FeSLmEuO
-         BXrE04m6R0t2zQEsVktfqQXqvd/BOElMOkpelUNDmqTgPvpT99D8r7DHgF9JVDf8eQ
-         9eKGMiJxLm1Eg==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Antoine Tenart <atenart@kernel.org>, sd@queasysnail.net,
-        irusskikh@marvell.com, netdev@vger.kernel.org
-Subject: [PATCH net-next v2] net: phy: mscc: macsec: do not copy encryption keys
-Date:   Tue, 15 Nov 2022 16:44:51 +0100
-Message-Id: <20221115154451.266160-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S231406AbiKOPvE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 10:51:04 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3042E9C6;
+        Tue, 15 Nov 2022 07:50:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=bWe4UU0UXa8p1ABRwhll495O8D3qa/Pr4ibjParckTE=; b=rh+IRlUscld/0QXEfEe/6f2zKh
+        002EbrLp0z3QjCY+nZM8h4VNyTCXJQQTDG3J8s9Wr/qAGat7umMF+Jr0unnLZn+Bd4tp9IUOPpRjy
+        A2WrbkcQp6DBqccNrMqKOMXukbI1IhDM0Tj4QmNBz3UMpwIpoukl9egQ+rU8SzJJexfM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ouyD1-002TTk-Hy; Tue, 15 Nov 2022 16:50:47 +0100
+Date:   Tue, 15 Nov 2022 16:50:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hui Tang <tanghui20@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        mw@semihalf.com, linux@armlinux.org.uk, leon@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yusongping@huawei.com
+Subject: Re: [PATCH net v2] net: mvpp2: fix possible invalid pointer
+ dereference
+Message-ID: <Y3O1V4FAACa9Ed9S@lunn.ch>
+References: <20221115090433.232165-1-tanghui20@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221115090433.232165-1-tanghui20@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following 1b16b3fdf675 ("net: phy: mscc: macsec: clear encryption keys when freeing a flow"),
-go one step further and instead of calling memzero_explicit on the key
-when freeing a flow, simply not copy the key in the first place as it's
-only used when a new flow is set up.
+On Tue, Nov 15, 2022 at 05:04:33PM +0800, Hui Tang wrote:
+> It will cause invalid pointer dereference to priv->cm3_base behind,
+> if PTR_ERR(priv->cm3_base) in mvpp2_get_sram().
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
+As i pointed out for the MDIO driver, i wonder if this is the correct
+fix. mvpp2_get_sram() is probably a better place to handle this
 
-Following
-https://lore.kernel.org/all/20221108153459.811293-1-atenart@kernel.org/T/
-refactor the MSCC PHY driver not to make a copy the encryption keys.
+In fact, please add a devm_ioremap_resource_optional() which returns
+NULL if the resource does not exist, or an error code for real errors,
+and make drivers fail the probe on real errors.
 
-Since v1:
-- Reworked the commit message to include a reference to the previous
-  fix.
-
- drivers/net/phy/mscc/mscc_macsec.c | 57 ++++++++++++++++--------------
- drivers/net/phy/mscc/mscc_macsec.h |  2 --
- 2 files changed, 30 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-index f81b077618f4..018253a573b8 100644
---- a/drivers/net/phy/mscc/mscc_macsec.c
-+++ b/drivers/net/phy/mscc/mscc_macsec.c
-@@ -501,8 +501,7 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
- }
- 
- /* Derive the AES key to get a key for the hash autentication */
--static int vsc8584_macsec_derive_key(const u8 key[MACSEC_MAX_KEY_LEN],
--				     u16 key_len, u8 hkey[16])
-+static int vsc8584_macsec_derive_key(const u8 *key, u16 key_len, u8 hkey[16])
- {
- 	const u8 input[AES_BLOCK_SIZE] = {0};
- 	struct crypto_aes_ctx ctx;
-@@ -518,7 +517,8 @@ static int vsc8584_macsec_derive_key(const u8 key[MACSEC_MAX_KEY_LEN],
- }
- 
- static int vsc8584_macsec_transformation(struct phy_device *phydev,
--					 struct macsec_flow *flow)
-+					 struct macsec_flow *flow,
-+					 const u8 *key)
- {
- 	struct vsc8531_private *priv = phydev->priv;
- 	enum macsec_bank bank = flow->bank;
-@@ -527,7 +527,7 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
- 	u8 hkey[16];
- 	u64 sci;
- 
--	ret = vsc8584_macsec_derive_key(flow->key, priv->secy->key_len, hkey);
-+	ret = vsc8584_macsec_derive_key(key, priv->secy->key_len, hkey);
- 	if (ret)
- 		return ret;
- 
-@@ -563,7 +563,7 @@ static int vsc8584_macsec_transformation(struct phy_device *phydev,
- 	for (i = 0; i < priv->secy->key_len / sizeof(u32); i++)
- 		vsc8584_macsec_phy_write(phydev, bank,
- 					 MSCC_MS_XFORM_REC(index, rec++),
--					 ((u32 *)flow->key)[i]);
-+					 ((u32 *)key)[i]);
- 
- 	/* Set the authentication key */
- 	for (i = 0; i < 4; i++)
-@@ -632,28 +632,14 @@ static void vsc8584_macsec_free_flow(struct vsc8531_private *priv,
- 
- 	list_del(&flow->list);
- 	clear_bit(flow->index, bitmap);
--	memzero_explicit(flow->key, sizeof(flow->key));
- 	kfree(flow);
- }
- 
--static int vsc8584_macsec_add_flow(struct phy_device *phydev,
--				   struct macsec_flow *flow, bool update)
-+static void vsc8584_macsec_add_flow(struct phy_device *phydev,
-+				    struct macsec_flow *flow)
- {
--	int ret;
--
- 	flow->port = MSCC_MS_PORT_CONTROLLED;
- 	vsc8584_macsec_flow(phydev, flow);
--
--	if (update)
--		return 0;
--
--	ret = vsc8584_macsec_transformation(phydev, flow);
--	if (ret) {
--		vsc8584_macsec_free_flow(phydev->priv, flow);
--		return ret;
--	}
--
--	return 0;
- }
- 
- static int vsc8584_macsec_default_flows(struct phy_device *phydev)
-@@ -706,6 +692,7 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
- {
- 	struct phy_device *phydev = ctx->phydev;
- 	struct vsc8531_private *priv = phydev->priv;
-+	int ret;
- 
- 	flow->assoc_num = ctx->sa.assoc_num;
- 	flow->rx_sa = ctx->sa.rx_sa;
-@@ -717,19 +704,39 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
- 	if (priv->secy->validate_frames != MACSEC_VALIDATE_DISABLED)
- 		flow->match.untagged = 1;
- 
--	return vsc8584_macsec_add_flow(phydev, flow, update);
-+	vsc8584_macsec_add_flow(phydev, flow);
-+
-+	if (update)
-+		return 0;
-+
-+	ret = vsc8584_macsec_transformation(phydev, flow, ctx->sa.key);
-+	if (ret)
-+		vsc8584_macsec_free_flow(phydev->priv, flow);
-+
-+	return ret;
- }
- 
- static int __vsc8584_macsec_add_txsa(struct macsec_context *ctx,
- 				     struct macsec_flow *flow, bool update)
- {
-+	int ret;
-+
- 	flow->assoc_num = ctx->sa.assoc_num;
- 	flow->tx_sa = ctx->sa.tx_sa;
- 
- 	/* Always match untagged packets on egress */
- 	flow->match.untagged = 1;
- 
--	return vsc8584_macsec_add_flow(ctx->phydev, flow, update);
-+	vsc8584_macsec_add_flow(ctx->phydev, flow);
-+
-+	if (update)
-+		return 0;
-+
-+	ret = vsc8584_macsec_transformation(ctx->phydev, flow, ctx->sa.key);
-+	if (ret)
-+		vsc8584_macsec_free_flow(ctx->phydev->priv, flow);
-+
-+	return ret;
- }
- 
- static int vsc8584_macsec_dev_open(struct macsec_context *ctx)
-@@ -829,8 +836,6 @@ static int vsc8584_macsec_add_rxsa(struct macsec_context *ctx)
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
--
- 	ret = __vsc8584_macsec_add_rxsa(ctx, flow, false);
- 	if (ret)
- 		return ret;
-@@ -882,8 +887,6 @@ static int vsc8584_macsec_add_txsa(struct macsec_context *ctx)
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
--
- 	ret = __vsc8584_macsec_add_txsa(ctx, flow, false);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
-index 453304bae778..21ce3b892f7f 100644
---- a/drivers/net/phy/mscc/mscc_macsec.h
-+++ b/drivers/net/phy/mscc/mscc_macsec.h
-@@ -81,8 +81,6 @@ struct macsec_flow {
- 	/* Highest takes precedence [0..15] */
- 	u8 priority;
- 
--	u8 key[MACSEC_MAX_KEY_LEN];
--
- 	union {
- 		struct macsec_rx_sa *rx_sa;
- 		struct macsec_tx_sa *tx_sa;
--- 
-2.38.1
-
+	Andrew
