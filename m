@@ -2,66 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 608E66293A5
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 09:54:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E967A6293BE
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 10:00:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbiKOIyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 03:54:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
+        id S233011AbiKOJAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 04:00:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232638AbiKOIyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 03:54:17 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D4620F46
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 00:54:08 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id e189-20020a25e7c6000000b006e37f21e689so2563825ybh.10
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 00:54:08 -0800 (PST)
+        with ESMTP id S232632AbiKOJAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:00:37 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A689B101C2
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:00:34 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id d9so18348108wrm.13
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:00:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=d1vNEfiFhEdK7Vl0raHFNncmU/PmJJBf4lJCFIJzVYk=;
-        b=A73TZaDknkA0W7r1/PG4GQ0I2vj1fC6eXZnO1HaXcZ2s4Ae29C8pJbLzn20V2CjNnv
-         cLYIViVaZ78QoTLrSW4ngUtVoHP+GS3TlW5EvK/XKGyLuD0X9sF6UGSUizM3TBW2w9rV
-         Y9wE3f03Maa1LB4BxDK76CzBOkOLc/lETCfRt9tEGjqBX0+83Ql+wG/pvZu6JbtxyP9T
-         E/oix3o4NniKBYuANDnudZtRKe0txkUSFaBRqvL/C1qUleSpEQpPOHBT/STLqVjKg3ch
-         /hjboyDxHmNf86LvMqDIVPTmt5dmeeTR6k4ks36nFdraQDucVecdDP+LuN5YZN3897D1
-         quYQ==
+        d=ieee.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UqMA6Tje+3ZsVcAAIQPTB3aQZjTGfrywbsqDdzk9JQs=;
+        b=KIp2+/chwKI09PZkHXOBaaLZqJANenWBoecDu/vhLEPD8onbbS1Dlly1mkfV7tefeZ
+         6sw8kVUIFff+j7w99uAp1bPMm5B8+hngwOFKybRZBl0BhBYmWMmsMzSaTxCLetRaLhNE
+         hdkGZwUdt7t8k9QhYgHQU8zJ7bVLuZ2IErfgQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d1vNEfiFhEdK7Vl0raHFNncmU/PmJJBf4lJCFIJzVYk=;
-        b=inglrEDUF42qOw9aJ5iVtbtdBzk3KtY6SnOkGRq17WaCRjbzX2zC0JX60C9wCVev/i
-         JGH14LS4Kr/nvNhg+kd7qu2tWLJt4mC4jKj4BtXoTUco94UzxqsH6DMw60Zo6DAr2nv3
-         qJK9nlj3IEezIH+FdC7a4pmu3H9VjWBb5kOiiQne9K8ZCxY3k3mMjPzdSosgvYX+2wQU
-         40527uVHDezwjg8Z+lAIFzXChBCrNb+nD0WcqpTwSRpMsXvibk56C0g9y7hzOqmBn1bl
-         evGo1MeCbWSVAQnzm8DLDgMus3B0iJtdGjqVJ8yDlfbHaCGxftpo4fQ1Vk3c6qLGTdrK
-         O/5Q==
-X-Gm-Message-State: ACrzQf2WPhptaJt2J0fDTdhip+8vcnxVbPYeNMq73Fmy4fZGNw9ALdQG
-        TNDuER2/vkhcxxBp5ld7jZg2tGM6cxH4GA==
-X-Google-Smtp-Source: AMsMyM4wAdYoyG1b9EURGupQi0tRVdCD+zc9Lgpz6VKx7c67+0TS5HDI8bN37J+/qUGgKqVaG7l/9xVV4HO4hA==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:7956:0:b0:36a:2c17:4660 with SMTP id
- u83-20020a817956000000b0036a2c174660mr63905365ywc.191.1668502446941; Tue, 15
- Nov 2022 00:54:06 -0800 (PST)
-Date:   Tue, 15 Nov 2022 08:53:58 +0000
-In-Reply-To: <20221115085358.2230729-1-edumazet@google.com>
-Mime-Version: 1.0
-References: <20221115085358.2230729-1-edumazet@google.com>
-X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221115085358.2230729-5-edumazet@google.com>
-Subject: [PATCH net-next 4/4] ipv4: tunnels: use DEV_STATS_INC()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UqMA6Tje+3ZsVcAAIQPTB3aQZjTGfrywbsqDdzk9JQs=;
+        b=emWjwRtk44v9mt7U547e9+vK1PW4Aa5KH0KVgZSdLVSkEeLjexEY34noy8tuy2tid0
+         42N2kvzVxdHN+QhA5J3D7q0TT538ZBiUxzQ1OkRzXQm58PyZK4HbNsbVZAcUQ49QU1ZQ
+         tX9aLJ9SS4r+mHcbDV3P/RDGhgkSu1lA4aUDva0L3/yVqF5NzLCMfNihbM38+cNSud+q
+         neBdot3ipAu6I2ZI5nSpG87qzm0IK0LS6bFMdi3jEbO6tVHFBHfuHX+8oUy5gddv4OUh
+         91o/dP4JE8nH2LXq1tM55L9mNs95hfHHvyDd+DgpBeyUH1iav7gGqu9dEdBRRnpmt+UT
+         4ACg==
+X-Gm-Message-State: ANoB5pmb6stvFQG7iWWF98lA4Z8PnREzb8iurFT6xeHj8dMyMqkfRi+b
+        spi1aRpXDWmArItX8QbUqjb78w==
+X-Google-Smtp-Source: AA0mqf54F/lZDKhCg3Oy0nmHzH6qldXo1KDM/vSOj3Y+3NQg4tQNXmzbhq8Eh9Boh+IgZWdHw86TQw==
+X-Received: by 2002:adf:a4c1:0:b0:236:6f18:37e6 with SMTP id h1-20020adfa4c1000000b002366f1837e6mr9637216wrb.262.1668502833056;
+        Tue, 15 Nov 2022 01:00:33 -0800 (PST)
+Received: from [10.211.55.3] ([167.98.215.174])
+        by smtp.googlemail.com with ESMTPSA id w9-20020adfee49000000b00228cd9f6349sm11842579wro.106.2022.11.15.01.00.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 01:00:32 -0800 (PST)
+Message-ID: <48fbae83-728e-d7ec-7516-4f8c972a1a1d@ieee.org>
+Date:   Tue, 15 Nov 2022 03:00:31 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next 1/5] dt-bindings: net: qcom,ipa: deprecate
+ modem-init
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alex Elder <elder@linaro.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
+        elder@kernel.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221112200717.1533622-1-elder@linaro.org>
+ <20221112200717.1533622-2-elder@linaro.org>
+ <de98dbb4-afb5-de05-1e75-2959aa720333@linaro.org>
+ <2f827660-ae9d-01dd-ded8-7fd4c2f8f8ae@ieee.org>
+ <88fd2f42-6f20-7bbe-1a4d-1f482c153f07@linaro.org>
+Content-Language: en-US
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <88fd2f42-6f20-7bbe-1a4d-1f482c153f07@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,324 +81,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of code paths in tunnels are lockless (eg NETIF_F_LLTX in tx).
+On 11/15/22 01:59, Krzysztof Kozlowski wrote:
+> On 14/11/2022 18:48, Alex Elder wrote:
+>> On 11/14/22 03:56, Krzysztof Kozlowski wrote:
+>>> On 12/11/2022 21:07, Alex Elder wrote:
+>>>> GSI firmware for IPA must be loaded during initialization, either by
+>>>> the AP or by the modem.  The loader is currently specified based on
+>>>> whether the Boolean modem-init property is present.
+>>>>
+>>>> Instead, use a new property with an enumerated value to indicate
+>>>> explicitly how GSI firmware gets loaded.  With this in place, a
+>>>> third approach can be added in an upcoming patch.
+>>>>
+>>>> The new qcom,gsi-loader property has two defined values:
+>>>>     - self:   The AP loads GSI firmware
+>>>>     - modem:  The modem loads GSI firmware
+>>>> The modem-init property must still be supported, but is now marked
+>>>> deprecated.
+>>>>
+>>>> Signed-off-by: Alex Elder <elder@linaro.org>
+>>>> ---
+>>>>    .../devicetree/bindings/net/qcom,ipa.yaml     | 59 +++++++++++++++----
+>>>>    1 file changed, 46 insertions(+), 13 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>>> index e752b76192df0..0dfd6c721e045 100644
+>>>> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>>> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>>> @@ -124,12 +124,22 @@ properties:
+>>>>          - const: ipa-clock-enabled-valid
+>>>>          - const: ipa-clock-enabled
+>>>>    
+>>>> +  qcom,gsi-loader:
+>>>> +    enum:
+>>>> +      - self
+>>>> +      - modem
+>>>> +    description:
+>>>> +      This indicates how GSI firmware should be loaded.  If the AP loads
+>>>
+>>> s/This indicates/Indicate/
+>>> (or any other grammar without describing DT syntax but hardware/system)
+>>
+>> OK.
+>>
+>>>> +      and validates GSI firmware, this property has value "self".  If the
+>>>> +      modem does this, this property has value "modem".
+>>>> +
+>>>>      modem-init:
+>>>> +    deprecated: true
+>>>>        type: boolean
+>>>>        description:
+>>>> -      If present, it indicates that the modem is responsible for
+>>>> -      performing early IPA initialization, including loading and
+>>>> -      validating firwmare used by the GSI.
+>>>> +      This is the older (deprecated) way of indicating how GSI firmware
+>>>> +      should be loaded.  If present, the modem loads GSI firmware; if
+>>>> +      absent, the AP loads GSI firmware.
+>>>>    
+>>>>      memory-region:
+>>>>        maxItems: 1
+>>>> @@ -155,15 +165,36 @@ required:
+>>>>      - interconnects
+>>>>      - qcom,smem-states
+>>>>    
+>>>> -# If modem-init is not present, the AP loads GSI firmware, and
+>>>> -# memory-region must be specified
+>>>> -if:
+>>>> -  not:
+>>>> -    required:
+>>>> -      - modem-init
+>>>> -then:
+>>>> -  required:
+>>>> -    - memory-region
+>>>> +allOf:
+>>>> +  # If qcom,gsi-loader is present, modem-init must not be present
+>>>> +  - if:
+>>>> +      required:
+>>>> +        - qcom,gsi-loader
+>>>> +    then:
+>>>> +      properties:
+>>>> +        modem-init: false
+>>>
+>>> This is ok, but will not allow you to keep deprecated property in DTS
+>>> for the transition period. We talked about this that you need to keep
+>>> both or wait few cycles before applying DTS cleanups.
+>>
+>> My intention is expressed in the comment.  Is it because of the
+>> "if .... required ... qcom,gsi-loader"?
+>>
+>> Should it be "if ... properties ... qcom,gsi-loader"?
+> 
+> You disallow modem-init here, so it cannot be present in DTS if
+> gsi-loader is present. Therefore the deprecated case like this:
+>    qcom,gsi-loader = "modem"
+>    modem-init;
+> is not allowed by the schema.
+> 
+> As I said, it is fine, but your DTS should wait a cycle.
 
-Adopt SMP safe DEV_STATS_INC() to update dev->stats fields.
+OK, then this is exactly as I intended.  I am planning to wait
+until Linux v6.2-rc1 is published before I post the DTS updates
+that implement this change.  It is not technically necessary
+until IPA v5.0 is fully supported, and I don't have confidence
+all of that will accepted before then.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/ip_gre.c    | 10 +++++-----
- net/ipv4/ip_tunnel.c | 32 ++++++++++++++++----------------
- net/ipv4/ip_vti.c    | 20 ++++++++++----------
- net/ipv4/ipip.c      |  2 +-
- net/ipv4/ipmr.c      | 12 ++++++------
- 5 files changed, 38 insertions(+), 38 deletions(-)
+If I did it "your way" first I could get it done now, but then
+I'd want to do another round later to make it this way.
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index d8ee5238c3954386263598fff7c7b565de348d64..a4ccef3e6935b5c1fd1885920becccba6b8a6d3f 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -510,7 +510,7 @@ static void gre_fb_xmit(struct sk_buff *skb, struct net_device *dev,
- 
- err_free_skb:
- 	kfree_skb(skb);
--	dev->stats.tx_dropped++;
-+	DEV_STATS_INC(dev, tx_dropped);
- }
- 
- static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
-@@ -592,7 +592,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- err_free_skb:
- 	kfree_skb(skb);
--	dev->stats.tx_dropped++;
-+	DEV_STATS_INC(dev, tx_dropped);
- }
- 
- static int gre_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
-@@ -663,7 +663,7 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
- 
- free_skb:
- 	kfree_skb(skb);
--	dev->stats.tx_dropped++;
-+	DEV_STATS_INC(dev, tx_dropped);
- 	return NETDEV_TX_OK;
- }
- 
-@@ -717,7 +717,7 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
- 
- free_skb:
- 	kfree_skb(skb);
--	dev->stats.tx_dropped++;
-+	DEV_STATS_INC(dev, tx_dropped);
- 	return NETDEV_TX_OK;
- }
- 
-@@ -745,7 +745,7 @@ static netdev_tx_t gre_tap_xmit(struct sk_buff *skb,
- 
- free_skb:
- 	kfree_skb(skb);
--	dev->stats.tx_dropped++;
-+	DEV_STATS_INC(dev, tx_dropped);
- 	return NETDEV_TX_OK;
- }
- 
-diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-index 019f3b0839c5225c7055f97cf15c96533fe32a2f..de90b09dfe78fc4510985dd436c017d3c46f054c 100644
---- a/net/ipv4/ip_tunnel.c
-+++ b/net/ipv4/ip_tunnel.c
-@@ -368,23 +368,23 @@ int ip_tunnel_rcv(struct ip_tunnel *tunnel, struct sk_buff *skb,
- 
- #ifdef CONFIG_NET_IPGRE_BROADCAST
- 	if (ipv4_is_multicast(iph->daddr)) {
--		tunnel->dev->stats.multicast++;
-+		DEV_STATS_INC(tunnel->dev, multicast);
- 		skb->pkt_type = PACKET_BROADCAST;
- 	}
- #endif
- 
- 	if ((!(tpi->flags&TUNNEL_CSUM) &&  (tunnel->parms.i_flags&TUNNEL_CSUM)) ||
- 	     ((tpi->flags&TUNNEL_CSUM) && !(tunnel->parms.i_flags&TUNNEL_CSUM))) {
--		tunnel->dev->stats.rx_crc_errors++;
--		tunnel->dev->stats.rx_errors++;
-+		DEV_STATS_INC(tunnel->dev, rx_crc_errors);
-+		DEV_STATS_INC(tunnel->dev, rx_errors);
- 		goto drop;
- 	}
- 
- 	if (tunnel->parms.i_flags&TUNNEL_SEQ) {
- 		if (!(tpi->flags&TUNNEL_SEQ) ||
- 		    (tunnel->i_seqno && (s32)(ntohl(tpi->seq) - tunnel->i_seqno) < 0)) {
--			tunnel->dev->stats.rx_fifo_errors++;
--			tunnel->dev->stats.rx_errors++;
-+			DEV_STATS_INC(tunnel->dev, rx_fifo_errors);
-+			DEV_STATS_INC(tunnel->dev, rx_errors);
- 			goto drop;
- 		}
- 		tunnel->i_seqno = ntohl(tpi->seq) + 1;
-@@ -398,8 +398,8 @@ int ip_tunnel_rcv(struct ip_tunnel *tunnel, struct sk_buff *skb,
- 			net_info_ratelimited("non-ECT from %pI4 with TOS=%#x\n",
- 					&iph->saddr, iph->tos);
- 		if (err > 1) {
--			++tunnel->dev->stats.rx_frame_errors;
--			++tunnel->dev->stats.rx_errors;
-+			DEV_STATS_INC(tunnel->dev, rx_frame_errors);
-+			DEV_STATS_INC(tunnel->dev, rx_errors);
- 			goto drop;
- 		}
- 	}
-@@ -581,7 +581,7 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 	if (!rt) {
- 		rt = ip_route_output_key(tunnel->net, &fl4);
- 		if (IS_ERR(rt)) {
--			dev->stats.tx_carrier_errors++;
-+			DEV_STATS_INC(dev, tx_carrier_errors);
- 			goto tx_error;
- 		}
- 		if (use_cache)
-@@ -590,7 +590,7 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 	}
- 	if (rt->dst.dev == dev) {
- 		ip_rt_put(rt);
--		dev->stats.collisions++;
-+		DEV_STATS_INC(dev, collisions);
- 		goto tx_error;
- 	}
- 
-@@ -625,10 +625,10 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 		      df, !net_eq(tunnel->net, dev_net(dev)));
- 	return;
- tx_error:
--	dev->stats.tx_errors++;
-+	DEV_STATS_INC(dev, tx_errors);
- 	goto kfree;
- tx_dropped:
--	dev->stats.tx_dropped++;
-+	DEV_STATS_INC(dev, tx_dropped);
- kfree:
- 	kfree_skb(skb);
- }
-@@ -662,7 +662,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 		/* NBMA tunnel */
- 
- 		if (!skb_dst(skb)) {
--			dev->stats.tx_fifo_errors++;
-+			DEV_STATS_INC(dev, tx_fifo_errors);
- 			goto tx_error;
- 		}
- 
-@@ -749,7 +749,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 		rt = ip_route_output_key(tunnel->net, &fl4);
- 
- 		if (IS_ERR(rt)) {
--			dev->stats.tx_carrier_errors++;
-+			DEV_STATS_INC(dev, tx_carrier_errors);
- 			goto tx_error;
- 		}
- 		if (use_cache)
-@@ -762,7 +762,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 
- 	if (rt->dst.dev == dev) {
- 		ip_rt_put(rt);
--		dev->stats.collisions++;
-+		DEV_STATS_INC(dev, collisions);
- 		goto tx_error;
- 	}
- 
-@@ -805,7 +805,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 
- 	if (skb_cow_head(skb, dev->needed_headroom)) {
- 		ip_rt_put(rt);
--		dev->stats.tx_dropped++;
-+		DEV_STATS_INC(dev, tx_dropped);
- 		kfree_skb(skb);
- 		return;
- 	}
-@@ -819,7 +819,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
- 	dst_link_failure(skb);
- #endif
- tx_error:
--	dev->stats.tx_errors++;
-+	DEV_STATS_INC(dev, tx_errors);
- 	kfree_skb(skb);
- }
- EXPORT_SYMBOL_GPL(ip_tunnel_xmit);
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index 8c2bd1d9ddce3891998ce82417bd8c535ee20246..53bfd8af69203619cd775171c2e8b43cca3449b1 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -107,8 +107,8 @@ static int vti_rcv_cb(struct sk_buff *skb, int err)
- 	dev = tunnel->dev;
- 
- 	if (err) {
--		dev->stats.rx_errors++;
--		dev->stats.rx_dropped++;
-+		DEV_STATS_INC(dev, rx_errors);
-+		DEV_STATS_INC(dev, rx_dropped);
- 
- 		return 0;
- 	}
-@@ -183,7 +183,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 			fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
- 			rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
- 			if (IS_ERR(rt)) {
--				dev->stats.tx_carrier_errors++;
-+				DEV_STATS_INC(dev, tx_carrier_errors);
- 				goto tx_error_icmp;
- 			}
- 			dst = &rt->dst;
-@@ -198,14 +198,14 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 			if (dst->error) {
- 				dst_release(dst);
- 				dst = NULL;
--				dev->stats.tx_carrier_errors++;
-+				DEV_STATS_INC(dev, tx_carrier_errors);
- 				goto tx_error_icmp;
- 			}
- 			skb_dst_set(skb, dst);
- 			break;
- #endif
- 		default:
--			dev->stats.tx_carrier_errors++;
-+			DEV_STATS_INC(dev, tx_carrier_errors);
- 			goto tx_error_icmp;
- 		}
- 	}
-@@ -213,7 +213,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 	dst_hold(dst);
- 	dst = xfrm_lookup_route(tunnel->net, dst, fl, NULL, 0);
- 	if (IS_ERR(dst)) {
--		dev->stats.tx_carrier_errors++;
-+		DEV_STATS_INC(dev, tx_carrier_errors);
- 		goto tx_error_icmp;
- 	}
- 
-@@ -221,7 +221,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 		goto xmit;
- 
- 	if (!vti_state_check(dst->xfrm, parms->iph.daddr, parms->iph.saddr)) {
--		dev->stats.tx_carrier_errors++;
-+		DEV_STATS_INC(dev, tx_carrier_errors);
- 		dst_release(dst);
- 		goto tx_error_icmp;
- 	}
-@@ -230,7 +230,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 
- 	if (tdev == dev) {
- 		dst_release(dst);
--		dev->stats.collisions++;
-+		DEV_STATS_INC(dev, collisions);
- 		goto tx_error;
- 	}
- 
-@@ -267,7 +267,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- tx_error_icmp:
- 	dst_link_failure(skb);
- tx_error:
--	dev->stats.tx_errors++;
-+	DEV_STATS_INC(dev, tx_errors);
- 	kfree_skb(skb);
- 	return NETDEV_TX_OK;
- }
-@@ -304,7 +304,7 @@ static netdev_tx_t vti_tunnel_xmit(struct sk_buff *skb, struct net_device *dev)
- 	return vti_xmit(skb, dev, &fl);
- 
- tx_err:
--	dev->stats.tx_errors++;
-+	DEV_STATS_INC(dev, tx_errors);
- 	kfree_skb(skb);
- 	return NETDEV_TX_OK;
- }
-diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 180f9daf5bec577b8f6062185ea13f7af9e5fe33..abea77759b7e4a6b2736d936db387abbf9db1515 100644
---- a/net/ipv4/ipip.c
-+++ b/net/ipv4/ipip.c
-@@ -310,7 +310,7 @@ static netdev_tx_t ipip_tunnel_xmit(struct sk_buff *skb,
- tx_error:
- 	kfree_skb(skb);
- 
--	dev->stats.tx_errors++;
-+	DEV_STATS_INC(dev, tx_errors);
- 	return NETDEV_TX_OK;
- }
- 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index e04544ac4b4545f5beb1fc7c5dc864aefc1b7324..b58df3c1bf7dcf0d68585ef984a7327930273fa8 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -506,8 +506,8 @@ static netdev_tx_t reg_vif_xmit(struct sk_buff *skb, struct net_device *dev)
- 		return err;
- 	}
- 
--	dev->stats.tx_bytes += skb->len;
--	dev->stats.tx_packets++;
-+	DEV_STATS_ADD(dev, tx_bytes, skb->len);
-+	DEV_STATS_INC(dev, tx_packets);
- 	rcu_read_lock();
- 
- 	/* Pairs with WRITE_ONCE() in vif_add() and vif_delete() */
-@@ -1839,8 +1839,8 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
- 	if (vif->flags & VIFF_REGISTER) {
- 		WRITE_ONCE(vif->pkt_out, vif->pkt_out + 1);
- 		WRITE_ONCE(vif->bytes_out, vif->bytes_out + skb->len);
--		vif_dev->stats.tx_bytes += skb->len;
--		vif_dev->stats.tx_packets++;
-+		DEV_STATS_ADD(vif_dev, tx_bytes, skb->len);
-+		DEV_STATS_INC(vif_dev, tx_packets);
- 		ipmr_cache_report(mrt, skb, vifi, IGMPMSG_WHOLEPKT);
- 		goto out_free;
- 	}
-@@ -1898,8 +1898,8 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
- 	if (vif->flags & VIFF_TUNNEL) {
- 		ip_encap(net, skb, vif->local, vif->remote);
- 		/* FIXME: extra output firewall step used to be here. --RR */
--		vif_dev->stats.tx_packets++;
--		vif_dev->stats.tx_bytes += skb->len;
-+		DEV_STATS_INC(vif_dev, tx_packets);
-+		DEV_STATS_ADD(vif_dev, tx_bytes, skb->len);
- 	}
- 
- 	IPCB(skb)->flags |= IPSKB_FORWARDED;
--- 
-2.38.1.431.g37b22c650d-goog
+I will still send an updated series shortly, to address your
+other comment about wording in the description.  But I will
+not be changing this part.
+
+Thanks for the explanation Krzysztof.
+
+					-Alex
+
+
+> 
+> 
+> Best regards,
+> Krzysztof
+> 
 
