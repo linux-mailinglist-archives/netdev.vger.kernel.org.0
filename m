@@ -2,63 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B14629056
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 04:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AEC0629054
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 04:03:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237593AbiKODDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 22:03:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45386 "EHLO
+        id S237503AbiKODDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 22:03:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237572AbiKODCm (ORCPT
+        with ESMTP id S237577AbiKODCm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 22:02:42 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DA51D678;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A601D67C;
         Mon, 14 Nov 2022 19:00:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B89D061512;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2EF761521;
         Tue, 15 Nov 2022 03:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 162F4C433D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 21FC1C433D6;
         Tue, 15 Nov 2022 03:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1668481216;
-        bh=7GwYrxfGLtv3EWezChxqb+EW1qTYQWOsMI1x0yOy/oM=;
+        bh=aCjW9I2ksD90tKpnaOHyfyT6OVST/0eUrGqVEB1brmg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C/bEiGywRVb82J2X3iohUPsoR5VFGT138fbFv/XrIkmjGs2ZRayyC7JCaEZlnMDLC
-         3K1T4KRAtqdTekG0wTAN0zp3bcdRkrV8ZjK/kjng4ybddpNbjHoPEP2WxwojQToVph
-         z+1XmL84ug3FedJjcKeQbug0BKPQAYWWUobPpx1QAaRDLYhqEAU4EXfIv/Yc1EKN2v
-         1A1Kttu2USPTmA+F+Yp11L4ve0gbojWUX3E4K0INQ9t3agglnd0LrNSGiELzqxo0KM
-         htIZ1DFY6o1h0R3UI8Zd4eE4x3fWvjqkQHLsUYIjAlB9d2pR4AFWb38IVzM9UmQrt5
-         EGkwh/TLqp5Rw==
+        b=DzCG7MrmlIMWFn4uWo5GjDxPaptx3/e5Z11P9a5Q5q7sOrp+AO37XRGHL5iiyJQOu
+         TyX5YioVjpRncr5TkAQsk19CC0373S6yDifwbfa6TPO7+NHPhRqrSuXGus04L7lwFR
+         j7Sqbur1FxJh8nPdUErEj9xC0+TWsxKlDAbRuRZiMmc6eE82JJw6hTFP7+9tTz2cyr
+         xQPb3eJJYvr7pR5zJ7wfpSlBvtWS5n9l9zairTBt5ZyIyLVDJFwVgb++3CrbjpUBSL
+         JV4OGC4gFYREuoAeG/wd15NAG3ovMQwLsbZ3Fl79S9DyOG079KqQSvojYc17smwvhM
+         GF6aYYoMpcesw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA42FC395FE;
-        Tue, 15 Nov 2022 03:00:15 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 01C63E50D60;
+        Tue, 15 Nov 2022 03:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [patch 00/10] genirq/msi: Treewide cleanup of pointless linux/msi.h
- includes
+Subject: Re: [PATCH] net: ethernet: renesas: rswitch: Fix build error about ptp
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166848121595.31359.929419753615501478.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Nov 2022 03:00:15 +0000
-References: <20221113201935.776707081@linutronix.de>
-In-Reply-To: <20221113201935.776707081@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, maz@kernel.org, lee@kernel.org,
-        damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        james.smart@broadcom.com, dick.kennedy@broadcom.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, stuyoder@gmail.com,
-        laurentiu.tudor@nxp.com, fenghua.yu@intel.com,
-        dave.jiang@intel.com, vkoul@kernel.org, dmaengine@vger.kernel.org,
-        ioana.ciornei@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        simon.horman@corigine.com, oss-drivers@corigine.com,
-        Roy.Pledge@nxp.com, diana.craciun@oss.nxp.com,
-        alex.williamson@redhat.com, cohuck@redhat.com, kvm@vger.kernel.org,
-        joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        iommu@lists.linux.dev
+Message-Id: <166848121600.31359.6056832532519866210.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Nov 2022 03:00:16 +0000
+References: <20221110012720.3552060-1-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20221110012720.3552060-1-yoshihiro.shimoda.uh@renesas.com>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, lkp@intel.com, arnd@arndb.de
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -70,24 +58,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun, 13 Nov 2022 21:33:54 +0100 (CET) you wrote:
-> While working on per device MSI domains I noticed that quite some files
-> include linux/msi.h just because.
+On Thu, 10 Nov 2022 10:27:20 +0900 you wrote:
+> If CONFIG_PTP_1588_CLOCK_OPTIONAL=m and CONFIG_RENESAS_ETHER_SWITCH=y,
+> the following build error happened:
 > 
-> The top level comment in the header file clearly says:
-> 
->   Regular device drivers have no business with any of these functions....
+>     aarch64-linux-ld: DWARF error: could not find abbrev number 60
+>     drivers/net/ethernet/renesas/rswitch.o: in function `rswitch_get_ts_info':
+>     rswitch.c:(.text+0x408): undefined reference to `ptp_clock_index'
+>     aarch64-linux-ld: DWARF error: could not find abbrev number 1190123
+>     drivers/net/ethernet/renesas/rcar_gen4_ptp.o: in function `rcar_gen4_ptp_register':
+>     rcar_gen4_ptp.c:(.text+0x4dc): undefined reference to `ptp_clock_register'
+>     aarch64-linux-ld: drivers/net/ethernet/renesas/rcar_gen4_ptp.o: in function `rcar_gen4_ptp_unregister':
+>     rcar_gen4_ptp.c:(.text+0x584): undefined reference to `ptp_clock_unregister'
 > 
 > [...]
 
 Here is the summary with links:
-  - [06/10] net: dpaa2: Remove linux/msi.h includes
-    https://git.kernel.org/netdev/net-next/c/515e5fb6a95e
-  - [07/10] net: nfp: Remove linux/msi.h includes
-    https://git.kernel.org/netdev/net-next/c/5fd66a0b3bb4
+  - net: ethernet: renesas: rswitch: Fix build error about ptp
+    https://git.kernel.org/netdev/net-next/c/76ad97e150f1
 
 You are awesome, thank you!
 -- 
