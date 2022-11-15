@@ -2,184 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C7F462990E
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:40:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32342629912
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:41:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232632AbiKOMkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 07:40:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
+        id S232318AbiKOMlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 07:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232318AbiKOMkr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:40:47 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4061FF97;
-        Tue, 15 Nov 2022 04:40:45 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 332BA1883FF1;
-        Tue, 15 Nov 2022 12:40:43 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 2A46725002DE;
-        Tue, 15 Nov 2022 12:40:43 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 20A5891201E4; Tue, 15 Nov 2022 12:40:43 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S238060AbiKOMlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:41:07 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DA927903;
+        Tue, 15 Nov 2022 04:41:00 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id q1so13136376pgl.11;
+        Tue, 15 Nov 2022 04:41:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=X48jndA48qamIcOHPaTLYuNvAj5Lrb1g9vbTbZYhFQc=;
+        b=HAXj2tHHM24Bhc1gdboVHdUno8Z2VKIRV+vIGCA8EksN02AerQTU0kUcLCBZG4ncI+
+         ytcos098fBHesTCNGpcqhVKbGHAhjZniy7hM6Q/SciOSvslmHLOYwqhtq3UXRgKyXfXw
+         nMJrdrJc7KvSXh5vDxlRcWlNGIiH9tpbTCBMSnqQaaJ2CKJx+X75cz7L0u5oUAcw6Gck
+         IubbLDCtH4egdCuoczxO97lp7+mZbmIJdf93iecJOM6rUV2R51yP3NsgupCih1/wMcjn
+         5rVMZBZTSUw9I2Dc5MPKUyIWa4GAkmoSyUcSB0dsA+p1FATPjuYl9kE414bAcy/e8LaF
+         pM9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X48jndA48qamIcOHPaTLYuNvAj5Lrb1g9vbTbZYhFQc=;
+        b=qivblZm28/2pTII1a5d5pBIUG9SoWJw3pt318BC/SX3GxGX7iU76qnHpyCTp8ywAe8
+         5n3OGvUHh/wBdvnjKHWXcKy+VJJK5nDPxRNhvbByg+PesmpjIvdk0ivnKdZs+j+RDDJA
+         KlpxAouWSS8fAKYfIg2H0RZvaMrgCO4Qr+iu+zgrVSfngXkEV2VkNwcXA1BRMNQm5oeB
+         NdWK3fsTzK3C7N0jrBJh3dCbnQUQLlPHlqW85Pob09EPoFD3qO4vT7dv/gayUfvFernc
+         6/5XZMjBQONUbVdO+Oahwb9m2y2JbEHDyMeU3tjg9dmNkz4TIw9KngOSuzfRE2PznsTv
+         cjWw==
+X-Gm-Message-State: ANoB5pmHTfq0CM4fI4PzUWFNDi3Tl7gIuqWG+fh4BFx/puiWSkRkJz8B
+        ORVdsHcsfkP+5pT/SZpxXSyfFX8tUYNPUQ/9IO4=
+X-Google-Smtp-Source: AA0mqf5+gnQpQgUz/iVfkLxfYcva2ozYe1khPPHOU+EYpTchqGeUYmYHpgL2C6SUuNhn2oJMYwqa3W7NwHxwGITfRAQ=
+X-Received: by 2002:a05:6a00:991:b0:571:baf8:8945 with SMTP id
+ u17-20020a056a00099100b00571baf88945mr16819734pfg.83.1668516059820; Tue, 15
+ Nov 2022 04:40:59 -0800 (PST)
 MIME-Version: 1.0
-Date:   Tue, 15 Nov 2022 13:40:43 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-In-Reply-To: <20221115122237.jfa5aqv6hauqid6l@skbuf>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <Y3NcOYvCkmcRufIn@shredder>
- <5559fa646aaad7551af9243831b48408@kapio-technology.com>
- <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
- <20221115111034.z5bggxqhdf7kbw64@skbuf>
- <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
- <20221115122237.jfa5aqv6hauqid6l@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <61810a4b3afb7bb6de1bcbaa52080e01@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221115080538.18503-1-magnus.karlsson@gmail.com>
+ <20221115080538.18503-2-magnus.karlsson@gmail.com> <Y3OGJv2lym4u86C/@boxer>
+In-Reply-To: <Y3OGJv2lym4u86C/@boxer>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 15 Nov 2022 13:40:48 +0100
+Message-ID: <CAJ8uoz3kLArrELgNi7gr_xx_9dPSD6QrwZvw9-2mzqHr9y_yTw@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/3] selftests/xsk: print correct payload for packet dump
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 13:22, Vladimir Oltean wrote:
-> On Tue, Nov 15, 2022 at 12:31:59PM +0100, netdev@kapio-technology.com 
-> wrote:
->> It happens on upstart, so I would then have to hack the system upstart 
->> to
->> add trace.
-> 
-> Hack upstart or disable the service that brings the switch ports up, 
-> and
-> bring them up manually...
-> 
->> I also have:
->> mv88e6085 1002b000.ethernet-1:04: switch 0x990 detected: Marvell 
->> 88E6097/88E6097F, revision 2
->> mv88e6085 1002b000.ethernet-1:04: configuring for fixed/rgmii-id link 
->> mode
->> mv88e6085 1002b000.ethernet-1:04: Link is Up - 100Mbps/Full - flow 
->> control off
->> mv88e6085 1002b000.ethernet-1:04 eth10 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:00] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth6 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:01] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth9 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:02] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth5 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:03] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth8 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:04] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth4 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:05] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth7 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:06] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth3 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:07] driver 
->> [Generic PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth2 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:08] driver 
->> [Marvell 88E1112] (irq=174)
->> mv88e6085 1002b000.ethernet-1:04 eth1 (uninitialized): PHY 
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:09] driver 
->> [Marvell 88E1112] (irq=175)
->> 
->> after this and adding the ifaces to the bridge, it continues like:
->> 
->> br0: port 1(eth10) entered blocking state
->> br0: port 1(eth10) entered disabled state
->> br0: port 2(eth6) entered blocking state
->> br0: port 2(eth6) entered disabled state
->> device eth6 entered promiscuous mode
->> device eth10 entered promiscuous mode
->> br0: port 3(eth9) entered blocking state
->> br0: port 3(eth9) entered disabled state
->> device eth9 entered promiscuous mode
->> br0: port 4(eth5) entered blocking state
->> br0: port 4(eth5) entered disabled state
->> device eth5 entered promiscuous mode
->> br0: port 5(eth8) entered blocking state
->> br0: port 5(eth8) entered disabled state
->> device eth8 entered promiscuous mode
->> br0: port 6(eth4) entered blocking state
->> br0: port 6(eth4) entered disabled state
->> mv88e6085 1002b000.ethernet-1:04: Timeout while waiting for switch
->> mv88e6085 1002b000.ethernet-1:04: port 0 failed to add 
->> 9a:af:03:f1:bd:0a vid 1 to fdb: -110
-> 
-> Dumb question, but if you get errors like this, how can you test 
-> anything at all
-> in the patches that you submit?
+On Tue, Nov 15, 2022 at 1:29 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Tue, Nov 15, 2022 at 09:05:36AM +0100, Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> >
+> > Print the correct payload when the packet dump option is selected. The
+> > network to host conversion was forgotten and the payload was
+> > erronously declared to be an int instead of an unsigned int. Changed
+> > the loop index i too, as it does not need to be an int and was
+> > declared on the same row.
+> >
+> > The printout looks something like this after the fix:
+> >
+> > DEBUG>> L2: dst mac: 000A569EEE62
+> > DEBUG>> L2: src mac: 000A569EEE61
+> > DEBUG>> L3: ip_hdr->ihl: 05
+> > DEBUG>> L3: ip_hdr->saddr: 192.168.100.161
+> > DEBUG>> L3: ip_hdr->daddr: 192.168.100.162
+> > DEBUG>> L4: udp_hdr->src: 2121
+> > DEBUG>> L4: udp_hdr->dst: 2020
+> > DEBUG>> L5: payload: 4
+> > ---------------------------------------
+>
+> Above would be helpful if previous output was included as well but not a
+> big deal i guess.
 
-The answer is that I don't always get these errors... once in a while 
-(maaany resets) it does
-not happen, and all is fine.
+It would not bring any value IMHO. The only difference is that the
+"L5: payload" row is now showing the correct payload.
 
-The error code is... well of course -110 (timed out).
-
-> 
->> device eth4 entered promiscuous mode
->> br0: port 7(eth7) entered blocking state
->> br0: port 7(eth7) entered disabled state
->> 
->> I don't know if that gives ay clues...?
-> 
-> Not really. That error might be related - something indicating a 
-> breakage
-> in the top-level (fec IIUC) MDIO controller, or not. There was "recent"
-> rework almost everywhere.  For example commit 35da1dfd9484 ("net: dsa:
-> mv88e6xxx: Improve performance of busy bit polling"). That also hooks
-> into the mv88e6xxx cascaded MDIO controller 
-> (mv88e6xxx_g2_smi_phy_wait),
-> so there might be something there.
-> 
-
-I can check that out, but I remember that net-next has not worked on 
-this device for quite some
-time...
-
->> 
->> Otherwise I have to take more time to see what I can dig out. The 
->> easiest
->> for me is then to add some printk statements giving targeted 
->> information if told what and
->> where...
-> 
-> Do you have a timeline for when the regression was introduced?
-> Commit 35da1dfd9484 reverts cleanly, so I suppose giving it a go with
-> that reverted might be worth a shot. Otherwise, a bisect from a known
-> working version only takes a couple of hours, and shouldn't require
-> other changes to the setup.
-
-I can't say when the regression was introduced as I used modified 
-kernels, but something
-between 5.16 and 5.17, I know there was something phy related, but it's 
-a bit more complicated,
-so it is only a guess...
-
-I would have to get the whole locked port patch set etc. on a 5.16 to 
-see if that works.
-
+> >
+> > Fixes: facb7cb2e909 ("selftests/bpf: Xsk selftests - SKB POLL, NOPOLL")
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >  tools/testing/selftests/bpf/xskxceiver.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+> > index 681a5db80dae..51e693318b3f 100644
+> > --- a/tools/testing/selftests/bpf/xskxceiver.c
+> > +++ b/tools/testing/selftests/bpf/xskxceiver.c
+> > @@ -767,7 +767,7 @@ static void pkt_dump(void *pkt, u32 len)
+> >       struct ethhdr *ethhdr;
+> >       struct udphdr *udphdr;
+> >       struct iphdr *iphdr;
+> > -     int payload, i;
+> > +     u32 payload, i;
+> >
+> >       ethhdr = pkt;
+> >       iphdr = pkt + sizeof(*ethhdr);
+> > @@ -792,7 +792,7 @@ static void pkt_dump(void *pkt, u32 len)
+> >       fprintf(stdout, "DEBUG>> L4: udp_hdr->src: %d\n", ntohs(udphdr->source));
+> >       fprintf(stdout, "DEBUG>> L4: udp_hdr->dst: %d\n", ntohs(udphdr->dest));
+> >       /*extract L5 frame */
+> > -     payload = *((uint32_t *)(pkt + PKT_HDR_SIZE));
+> > +     payload = ntohl(*((u32 *)(pkt + PKT_HDR_SIZE)));
+> >
+> >       fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
+> >       fprintf(stdout, "---------------------------------------\n");
+> > --
+> > 2.34.1
+> >
