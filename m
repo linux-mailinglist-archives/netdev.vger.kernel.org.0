@@ -2,192 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D99FA62AF77
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 00:35:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7084062AF80
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 00:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbiKOXfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 18:35:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39560 "EHLO
+        id S231277AbiKOXiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 18:38:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbiKOXfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 18:35:32 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1D325E94;
-        Tue, 15 Nov 2022 15:35:31 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id l2so14821063pld.13;
-        Tue, 15 Nov 2022 15:35:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PXT6t4V5rZmP6BoieWbc03yVr+oSUgcqfVfJ/T8w1cI=;
-        b=hmz4b2JlE/NJbO7xVmWS7MVl8kMleGGd+w6QCKLC/ZHYBkqJa2ed60T8w48IrERv9/
-         0ktfpsNSNDFXO+ntj+cW5URJ/0Y32oliZg+d1VEEWPIbE4xTgjyDv3PsVV1A/GTyE/NM
-         lOuEkYxQvumP34JIMsqLvCck/jcz3DYxhc3DCDll0D6LZnKk14i5mtOcyVH3Wu+Ncmn8
-         H2W3wjwTJAzES3FNF5IiL/EoUiWJFHMdQwl+FAF1SK653f5HGsC/845b80/209nlok7g
-         9k+X/pKTuBauSd9LOUGcn9MbXl50dg6hU/ES7eCWsgLQ6W4zvnMSznqFgJB0KZf4yBb7
-         Gi1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=PXT6t4V5rZmP6BoieWbc03yVr+oSUgcqfVfJ/T8w1cI=;
-        b=siuPcwVREj90ck/Hhex19wH4lO6UElAnLz+BhXK6Gje/OEjyYZM54rQZ2CgLphy+h3
-         wpwb5SoIMsTTBZms9da8qu/9D3BKlFVMGk7ozAyHLI58yHhwtLDuJc97/0074naGQEXw
-         hJqCX+1Rs28eEaDpOXIAnr3xf5BVu8ONoHm37Scjae9WCK8PoiHTYzq9r1InEmGHApxJ
-         sN7eFDwG7Y1lDTY3+gPdH3BFrIppvdyvvBHt0792jh7LIcKdGdxy4hhqj9JFLfGRlHzd
-         BHiJstxrng45vItzXxt22MyCdhnmxAfuxvFP8uPHX28QOYu/iHdrng1MdGJ7uREwNVVs
-         ViAg==
-X-Gm-Message-State: ANoB5pmxSI8T0IgTZeYVLX/5OIGlkyBSUr3if27GmJ7GcQjhlK3cj72o
-        YGxi30OHUnDquP74+S6pbSg=
-X-Google-Smtp-Source: AA0mqf6Jcbp/QJKxg2Vqxq/VcXRV+weVW31uIj85GkroBswFjtHQgVofvlPxoYJ+hE3J9kX/oqvOfA==
-X-Received: by 2002:a17:90a:6508:b0:213:3918:f2a2 with SMTP id i8-20020a17090a650800b002133918f2a2mr695024pjj.218.1668555330639;
-        Tue, 15 Nov 2022 15:35:30 -0800 (PST)
-Received: from XH22050090-L.ad.ts.tri-ad.global ([103.175.111.222])
-        by smtp.gmail.com with ESMTPSA id k4-20020a170902c40400b00186a68ec086sm10555362plk.193.2022.11.15.15.35.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 15:35:30 -0800 (PST)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231372AbiKOXiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 18:38:03 -0500
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2125.outbound.protection.outlook.com [40.107.114.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD452A27C;
+        Tue, 15 Nov 2022 15:38:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VmM71mr1WqBYTq+RwdWEYrEShyEZfNO57dLQ8Uj/1ZXkDgmKfEzoiHQ1QaVLjdtM/WM147XCv8vZvr+Hj5RdAgJLuQKqQWXMFdLDlMi77+PQodK0VECQ2+RHWwl1CZVVfpVPO9YCoFDp6kw0tmKOX1wZ+NbyRZ2RaQLzQUyGWFOc62Ff5S/ODo8jzprJ/7tj4zfIO8dREaLJsMfhss3/QUTGB0Vi72hU3SFV6hVc/Csxh/s16wrinp4QUvmZjUi7zo++kNujSDpUVP/6bbKcnPGS/Oa0+k9XUe0RvaY5x79I/6GecoyiUeWtFueJnpIZm+mbxWNBoLDL3XZz0qwOMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GeINqwveHGAbRRt+hFZTVjobusqYaud3BE+kS2G9coo=;
+ b=DXINmqtNV9dGkhejDjMtG18HpE6dfQdcuA5Uov1Hc+l//trq+deLZjuZ49oBQmWcPPihSfXgXkKzcbC5OOQpaSIb9lTJUUXWMypXHlAaZDro9QppmCd8/L6jHUqUoONduzsDTfJxukqLh5vS8Z9jo+a3oQj3BAL5XyzgTVPyBA9tfTT5ja6xh1hQTf0B9iAkmfW7ZPo70V8JUmvy+xOchCqWv1HHiUCXsXVs2qzuyNlns9/NdyQa7Mv5m0QSal+wh5w3OTJ4kaDR300l3HJMO6wTBp9tY5zbC7qqXnsVuHHc8U4QQuwT3QRahnkFIw42gwxCuc3xVqrsyiUMBxveSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GeINqwveHGAbRRt+hFZTVjobusqYaud3BE+kS2G9coo=;
+ b=Sn/zvGAdp5eY95CcLTxHY/o82ub5a8JXtBP1aoyP4x5x5Lb6aVRzyxh+cEotuLLZkNOcKlkYZfB7K8eqSEnCvq8YkktKdCzNQUsVKvYwUS/xNmIBbjot2qtPjxpZssw+D/WEbtEW6MPS939TIXSmQiJodTNKW17qqA/GVFHflJM=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by TYCPR01MB9386.jpnprd01.prod.outlook.com
+ (2603:1096:400:196::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Tue, 15 Nov
+ 2022 23:37:59 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::cd89:4a4b:161e:b78d]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::cd89:4a4b:161e:b78d%9]) with mapi id 15.20.5813.018; Tue, 15 Nov 2022
+ 23:37:59 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Dan Carpenter <error27@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>,
-        linux-kernel@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net-next v4] ethtool: doc: clarify what drivers can implement in their get_drvinfo()
-Date:   Wed, 16 Nov 2022 08:35:24 +0900
-Message-Id: <20221115233524.805956-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: 20221111030838.1059-1-mailhol.vincent@wanadoo.fr
-References: 
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: RE: [PATCH net-next] net: ethernet: renesas: Fix return type in
+ rswitch_etha_wait_link_verification()
+Thread-Topic: [PATCH net-next] net: ethernet: renesas: Fix return type in
+ rswitch_etha_wait_link_verification()
+Thread-Index: AQHY+POVNLfovYqvYUSZM0oa3sYmQa5ApGSw
+Date:   Tue, 15 Nov 2022 23:37:59 +0000
+Message-ID: <TYBPR01MB5341B3E1D3FBE3E3587BB2C7D8049@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <Y3OPo6AOL6PTvXFU@kili>
+In-Reply-To: <Y3OPo6AOL6PTvXFU@kili>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYCPR01MB9386:EE_
+x-ms-office365-filtering-correlation-id: 87102805-d127-4a7f-b3fe-08dac7626e39
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FunfoatX8VpuW4VUPTbFHubo2tHKET5/21PesSQ2RIhjbxkN1wYn5+JZYFp6Yq9z4ywQubtGHw9LvweDOd6Y9XmrZHSxwNogZvjcSXy90iZStmnCyBySpf6obg/GjG7jGb3DJO2FUFOjHBA4FCAnQD0w0EzWpShc50shzp9HcZ54c6uWEO5VnIhqJLfLUnWw3r5ruiIC+FYGUyTqGonrKEgBIvP77+ZjV19yiwzUr03C0zeVNVkBtK7OfwzrKObQ3m4pFj9QfcrExNUpmqr0YSPSROCYuMpWFI19JM1vq7JIu1g1RsmzYAmQtAPQM+dpcVqYxqaIJmO/GqavKJtbZYezkA3ad1bNqy7jcg/NNL/cVyV5hjiqjrXXXMJ0MFkHx0OnDrSsmFOD/GLA0o1fQruqgdaOM3iR9UOhVM9yEwgT3gPkDEqLXaYTisr2diiALHWs/oy2ZdKMnsGw2cNRNpzr5vO8uZsulK3C6cCqJEteFXlR8IRUT086zc1TVN/FvfHuxz4t/Xrwi1o8uzydLr0Izo6TWHNkc2T410nIT107rGZZlvtRFJmePgDQH7GC5TZZgNSjap3uUyRd3+sDhhyfM9aqAQ9WKHYKYGoUI20XTDYWsmvmel5XM3QAY4jwUtb/KYQ724iQosPbZ4hUjSURTUl2GVwjM9ZaT35On5DhTqEoI0sjfKXkOcfk/NRv0ERBT+1g9EudZ+bbuYJDMqyTMpPhSaQiTOJySSwiFy82vN2eus2tWy7kbQbZfon0/4sD7byyAagYxX25j64+Jg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(39860400002)(366004)(376002)(136003)(451199015)(7696005)(33656002)(6506007)(38100700002)(8936002)(7416002)(52536014)(38070700005)(5660300002)(478600001)(71200400001)(2906002)(83380400001)(9686003)(122000001)(86362001)(186003)(55016003)(110136005)(66946007)(64756008)(54906003)(8676002)(41300700001)(66446008)(4326008)(66476007)(66556008)(76116006)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TFXViuzCVGv22qNGT/Vho5A8GKUo5wm2VHoWMa7RuID3u2rOrp7eDYG9mhDH?=
+ =?us-ascii?Q?Ld0knKwU7pgFawK+BQOfyOYY70lPrm97+qCsGjDFZRL3uMdCaHeAx1tgDOhJ?=
+ =?us-ascii?Q?OfafFhr5ZW0kwNEbUjhtGM+3bM/TTKMqDckKjbn+8S5Py5UKmpVtSlwOHadl?=
+ =?us-ascii?Q?JE9aSCh4RMUgcZ9DufCT3eVq5RcCuYpQmNhgqJTc9ViljUwiuvSRUsNPR9X3?=
+ =?us-ascii?Q?Gjeeqq5C1s3YVORK14KtwqSu5rRtjoc2q4x5GMaizen/oEbdEQLei2q3WLqm?=
+ =?us-ascii?Q?8xAQaOlSdDSmptCSn1mas29MlI1EOzC0vGis6QRLots5PpbKKbotEtk9p5gv?=
+ =?us-ascii?Q?bIPe6FC5dJihXPnyCscwgDVCwr2ipoQZ8yG8tAjpilLZYzJNqc+QHGrDaIUJ?=
+ =?us-ascii?Q?Nuz3PBoD6cR3hL/rvxCvBAX8Wg87C1bdk4T5+OVEAbdZXzfG3Tz4CA3PnyS5?=
+ =?us-ascii?Q?3g1NyJqrTFD7TcgdJ+bzqwkBaXqrzJd2HT6SgAA2kyH/YOAv2f1mpQOwcapG?=
+ =?us-ascii?Q?tYCbWp07WXS4yEghTIYN28ft04xR5oHcb53e8nGJcem0i6cO2qozw+nwVeOp?=
+ =?us-ascii?Q?f7jmbuCGmn5cZlDbqiXrkxfATXD3s6jQiPVgz3ZorfLcEnynjkBHdNrZ0TpT?=
+ =?us-ascii?Q?B7JhPAu0/tNIyPZqYvg2HlhFOLk0qjzGh9Ea3A9KUHglU0anhJDVGF/SP57X?=
+ =?us-ascii?Q?UcvDTcuYNOKCe/COQPKGdwvZAhyrOoO+pvwOsygWk2n8WaKbhrBYzq2VLaB5?=
+ =?us-ascii?Q?A1YNnO0GS05v+0qncgYxQuAhVnT6EpDQj3SWIiTL/4UkVmwLz4bBRsGYscLR?=
+ =?us-ascii?Q?2SuZeKOfIz2NjJYCwJJ95wyB8KQ//LjiL5oc1ILZs1tzd0SY6Cf2Ck0+MuJF?=
+ =?us-ascii?Q?yWGzomN7EwoGD8E89dsXDB45v9L69HYX/LhBIb/CtFSmWPHKiKN7/3t8AUKR?=
+ =?us-ascii?Q?KQ2Y7xSRmq1WU1U1zK/OZjhMcpFrYs+S0eQcR5Iy3Er75dX/F5Z4PNzzv32P?=
+ =?us-ascii?Q?oe2lxJzZ3nuzL17LGCYaHuCPv/1cgRvDmgFYunXpaL5CNB+r58F3PBwCNAuN?=
+ =?us-ascii?Q?BxqpZSYDLmDGtjyt8LirTJuP2YBIrDDbp325ABpw9ofDouGLmrMXceuAFlZn?=
+ =?us-ascii?Q?vicjYt0N/hR4wMgPo7Y+gvfYmXhmMBLQQCpuzy03LyZKrQllAttGGuaHj57U?=
+ =?us-ascii?Q?gkjzdAIq4F+SAY2SpLuRf6mOwhnx0WKhwznSVXw8HWKO8+utNjJAmiAQXsoL?=
+ =?us-ascii?Q?PD7ESiUrCp/Y9ofqfasR7iH57zgj1qLjjiZlESSo8xTH8yEsfD778TEIEQC/?=
+ =?us-ascii?Q?hJ8xzyUmMaxSgKSmV5AGhmdPK6NyZ3/qxBdcqBSMLuLW02O6lSUpc2UOhLA6?=
+ =?us-ascii?Q?SuvBOm7dli2HCZRh0OmRob/QE8NhHCqQ0vYn2akPkZUq6gWN86CM0jKcgPGL?=
+ =?us-ascii?Q?k8kOuHGM8jr2PiafwslbuJTY+PXsvZLierWQo2eQcsHA1/wsTY3BNgX4PKr2?=
+ =?us-ascii?Q?DYCqVf7Guk3oosQmcJzBAmTDYQehAHiEHvQ75NxidKP1RLKEToIh+/DX8BGq?=
+ =?us-ascii?Q?WpfiwM2GyqmaS1kcPxmx2lQ7xzJQBK9/RE8No/aMDNno9oyiSImtK+8SWqkm?=
+ =?us-ascii?Q?FwIS8jfoWWQXLz4RNHg3NuDrYh0DxPW5agSFT0XP2SW0ZeSno1sqVwcIhcs9?=
+ =?us-ascii?Q?GdYffQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87102805-d127-4a7f-b3fe-08dac7626e39
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2022 23:37:59.5875
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: z3cLhzATEX4zrcKV5P68zl4zwllmS0fFp6Pijiujz8lwDN2QjqnP4/J5sbcFEF1kxZsqWu254H1ekstiASu83VtupMmDy0/EwsvxIT2g+ILMcMqmcB9Nd90ZOEWjXDuP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB9386
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many of the drivers which implement ethtool_ops::get_drvinfo() will
-prints the .driver, .version or .bus_info of struct ethtool_drvinfo.
-To have a glance of current state, do:
+Hi Dan,
 
-  $ git grep -W "get_drvinfo(struct"
+> From: Dan Carpenter, Sent: Tuesday, November 15, 2022 10:10 PM
+>=20
+> The rswitch_etha_wait_link_verification() is supposed to return zero
+> on success or negative error codes.  Unfortunately it is declared as a
+> bool so the caller treats everything as success.
+>=20
+> Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet S=
+witch"")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Printing in those three fields is useless because:
+Thank you for the patch!
 
-  - since [1], the driver version should be the kernel version (at
-    least for upstream drivers). Arguably, out of tree drivers might
-    still want to set a custom version, but out of tree is not our
-    focus.
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-  - since [2], the core is able to provide default values for .driver
-    and .bus_info.
+Best regards,
+Yoshihiro Shimoda
 
-In summary, drivers may provide .fw_version and .erom_version, the
-rest is expected to be done by the core. Update the doc to reflect the
-facts and discourage developers from implementing the get_drvinfo()
-callback.
-
-Also update the dummy driver and simply remove the callback in order
-not to confuse the newcomers: most of the drivers will not need this
-callback function any more.
-
-[1] commit 6a7e25c7fb48 ("net/core: Replace driver version to be
-    kernel version")
-Link: https://git.kernel.org/torvalds/linux/c/6a7e25c7fb48
-
-[2] commit edaf5df22cb8 ("ethtool: ethtool_get_drvinfo: populate
-    drvinfo fields even if callback exits")
-Link: https://git.kernel.org/netdev/net-next/c/edaf5df22cb8
-
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-* Changelog *
-
-v3 -> v4:
-
-  * rephrasing of the documentation according to Jakub's comments.
-
-v2 -> v3:
-
-  * add Reviewed-by: Leon Romanovsky <leonro@nvidia.com> tag.
-    * use shorter links.
-
-v1 -> v2:
-
-  * forgot the net-next prefix in the patch subject... Sorry for the
-      noise.
----
- drivers/net/dummy.c          |  7 -------
- include/uapi/linux/ethtool.h | 12 +++++++-----
- 2 files changed, 7 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index aa0fc00faecb..c4b1b0aa438a 100644
---- a/drivers/net/dummy.c
-+++ b/drivers/net/dummy.c
-@@ -99,14 +99,7 @@ static const struct net_device_ops dummy_netdev_ops = {
- 	.ndo_change_carrier	= dummy_change_carrier,
- };
- 
--static void dummy_get_drvinfo(struct net_device *dev,
--			      struct ethtool_drvinfo *info)
--{
--	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
--}
--
- static const struct ethtool_ops dummy_ethtool_ops = {
--	.get_drvinfo            = dummy_get_drvinfo,
- 	.get_ts_info		= ethtool_op_get_ts_info,
- };
- 
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index dc2aa3d75b39..e801bd4bd6c7 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -159,8 +159,10 @@ static inline __u32 ethtool_cmd_speed(const struct ethtool_cmd *ep)
-  *	in its bus driver structure (e.g. pci_driver::name).  Must
-  *	not be an empty string.
-  * @version: Driver version string; may be an empty string
-- * @fw_version: Firmware version string; may be an empty string
-- * @erom_version: Expansion ROM version string; may be an empty string
-+ * @fw_version: Firmware version string; driver defined; may be an
-+ *	empty string
-+ * @erom_version: Expansion ROM version string; driver defined; may be
-+ *	an empty string
-  * @bus_info: Device bus address.  This should match the dev_name()
-  *	string for the underlying bus device, if there is one.  May be
-  *	an empty string.
-@@ -180,9 +182,9 @@ static inline __u32 ethtool_cmd_speed(const struct ethtool_cmd *ep)
-  * Users can use the %ETHTOOL_GSSET_INFO command to get the number of
-  * strings in any string set (from Linux 2.6.34).
-  *
-- * Drivers should set at most @driver, @version, @fw_version and
-- * @bus_info in their get_drvinfo() implementation.  The ethtool
-- * core fills in the other fields using other driver operations.
-+ * Modern drivers no longer have to implement the get_drvinfo()
-+ * callback. Most fields are correctly filled in by the core using
-+ * system information, or populated using other driver operations.
-  */
- struct ethtool_drvinfo {
- 	__u32	cmd;
--- 
-2.25.1
+> ---
+>  drivers/net/ethernet/renesas/rswitch.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/etherne=
+t/renesas/rswitch.c
+> index f0168fedfef9..231e8c688b89 100644
+> --- a/drivers/net/ethernet/renesas/rswitch.c
+> +++ b/drivers/net/ethernet/renesas/rswitch.c
+> @@ -920,7 +920,7 @@ static void rswitch_etha_write_mac_address(struct rsw=
+itch_etha *etha, const u8 *
+>  		  etha->addr + MRMAC1);
+>  }
+>=20
+> -static bool rswitch_etha_wait_link_verification(struct rswitch_etha *eth=
+a)
+> +static int rswitch_etha_wait_link_verification(struct rswitch_etha *etha=
+)
+>  {
+>  	iowrite32(MLVC_PLV, etha->addr + MLVC);
+>=20
+> --
+> 2.35.1
 
