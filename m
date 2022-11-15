@@ -2,94 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81AC462990B
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C7F462990E
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:40:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232322AbiKOMkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 07:40:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S232632AbiKOMkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 07:40:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232318AbiKOMkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:40:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9A3233A9
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 04:40:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8EAA61728
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 12:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A603C433D6;
-        Tue, 15 Nov 2022 12:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668516016;
-        bh=5PETkSRFfQd+d+iP64YJos6hd+wgScggoBlBGO6L3M0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=u0TmIlx5SsuiIkbTwk7A3WSLGuUKkzzb72cg7O0PPeuC9F3fywn5Pm7gq+/kHUEIb
-         AkIp5Y5velLCiNpkt/OIKhHar1gxz8a6jjNLJiohNWVEBNstDOqyQgcV0dFHTeX5RH
-         umQ7hBUHJsPVe56BJdi0jROpFwoeeKXqXWL/CtH4UPnBeBfvjzEDBfbqznW0IJ1dcm
-         MIT168r5fpzdKiXIeLMu1TwFIZSZ+0eAIziBpVCscqih29VZkNCVIaNcKtd4KnNJK0
-         uSOv9v2JXD1uF5UbXfJS1H07BXhWIIbh3TlMvzsmL4DBAEi2To61TsmjqtefAKCJL7
-         Q1F8o2Krp9u2g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF443C395F5;
-        Tue, 15 Nov 2022 12:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232318AbiKOMkr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:40:47 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4061FF97;
+        Tue, 15 Nov 2022 04:40:45 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 332BA1883FF1;
+        Tue, 15 Nov 2022 12:40:43 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 2A46725002DE;
+        Tue, 15 Nov 2022 12:40:43 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 20A5891201E4; Tue, 15 Nov 2022 12:40:43 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2 net 0/3] net: hns3: This series bugfix for the HNS3
- ethernet driver.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166851601590.3148.3051543864016009000.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Nov 2022 12:40:15 +0000
-References: <20221114082048.49450-1-lanhao@huawei.com>
-In-Reply-To: <20221114082048.49450-1-lanhao@huawei.com>
-To:     Hao Lan <lanhao@huawei.com>
-Cc:     lipeng321@huawei.com, shenjian15@huawei.com,
-        linyunsheng@huawei.com, liuyonglong@huawei.com,
-        chenhao418@huawei.com, wangjie125@huawei.com,
-        huangguangbin2@huawei.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        xiaojiantao1@h-partners.com, dvyukov@google.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Date:   Tue, 15 Nov 2022 13:40:43 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
+In-Reply-To: <20221115122237.jfa5aqv6hauqid6l@skbuf>
+References: <20221112203748.68995-1-netdev@kapio-technology.com>
+ <Y3NcOYvCkmcRufIn@shredder>
+ <5559fa646aaad7551af9243831b48408@kapio-technology.com>
+ <20221115102833.ahwnahrqstcs2eug@skbuf>
+ <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
+ <20221115111034.z5bggxqhdf7kbw64@skbuf>
+ <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
+ <20221115122237.jfa5aqv6hauqid6l@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <61810a4b3afb7bb6de1bcbaa52080e01@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon, 14 Nov 2022 16:20:45 +0800 you wrote:
-> This series includes some bugfix for the HNS3 ethernet driver.
-> Patch 1# fix incorrect hw rss hash type of rx packet.
-> Fixes: 796640778c26 ("net: hns3: support RXD advanced layout")
-> Fixes: 232fc64b6e62 ("net: hns3: Add HW RSS hash information to RX skb")
-> Fixes: ea4858670717 ("net: hns3: handle the BD info on the last BD of the packet")
+On 2022-11-15 13:22, Vladimir Oltean wrote:
+> On Tue, Nov 15, 2022 at 12:31:59PM +0100, netdev@kapio-technology.com 
+> wrote:
+>> It happens on upstart, so I would then have to hack the system upstart 
+>> to
+>> add trace.
 > 
-> Patch 2# fix return value check bug of rx copybreak.
-> Fixes: e74a726da2c4 ("net: hns3: refactor hns3_nic_reuse_page()")
-> Fixes: 99f6b5fb5f63 ("net: hns3: use bounce buffer when rx page can not be reused")
+> Hack upstart or disable the service that brings the switch ports up, 
+> and
+> bring them up manually...
 > 
-> [...]
+>> I also have:
+>> mv88e6085 1002b000.ethernet-1:04: switch 0x990 detected: Marvell 
+>> 88E6097/88E6097F, revision 2
+>> mv88e6085 1002b000.ethernet-1:04: configuring for fixed/rgmii-id link 
+>> mode
+>> mv88e6085 1002b000.ethernet-1:04: Link is Up - 100Mbps/Full - flow 
+>> control off
+>> mv88e6085 1002b000.ethernet-1:04 eth10 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:00] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth6 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:01] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth9 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:02] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth5 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:03] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth8 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:04] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth4 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:05] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth7 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:06] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth3 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:07] driver 
+>> [Generic PHY] (irq=POLL)
+>> mv88e6085 1002b000.ethernet-1:04 eth2 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:08] driver 
+>> [Marvell 88E1112] (irq=174)
+>> mv88e6085 1002b000.ethernet-1:04 eth1 (uninitialized): PHY 
+>> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:09] driver 
+>> [Marvell 88E1112] (irq=175)
+>> 
+>> after this and adding the ifaces to the bridge, it continues like:
+>> 
+>> br0: port 1(eth10) entered blocking state
+>> br0: port 1(eth10) entered disabled state
+>> br0: port 2(eth6) entered blocking state
+>> br0: port 2(eth6) entered disabled state
+>> device eth6 entered promiscuous mode
+>> device eth10 entered promiscuous mode
+>> br0: port 3(eth9) entered blocking state
+>> br0: port 3(eth9) entered disabled state
+>> device eth9 entered promiscuous mode
+>> br0: port 4(eth5) entered blocking state
+>> br0: port 4(eth5) entered disabled state
+>> device eth5 entered promiscuous mode
+>> br0: port 5(eth8) entered blocking state
+>> br0: port 5(eth8) entered disabled state
+>> device eth8 entered promiscuous mode
+>> br0: port 6(eth4) entered blocking state
+>> br0: port 6(eth4) entered disabled state
+>> mv88e6085 1002b000.ethernet-1:04: Timeout while waiting for switch
+>> mv88e6085 1002b000.ethernet-1:04: port 0 failed to add 
+>> 9a:af:03:f1:bd:0a vid 1 to fdb: -110
+> 
+> Dumb question, but if you get errors like this, how can you test 
+> anything at all
+> in the patches that you submit?
 
-Here is the summary with links:
-  - [V2,net,1/3] net: hns3: fix incorrect hw rss hash type of rx packet
-    https://git.kernel.org/netdev/net/c/a56cad694767
-  - [V2,net,2/3] net: hns3: fix return value check bug of rx copybreak
-    https://git.kernel.org/netdev/net/c/29df7c695ed6
-  - [V2,net,3/3] net: hns3: fix setting incorrect phy link ksettings for firmware in resetting process
-    https://git.kernel.org/netdev/net/c/510d7b6ae842
+The answer is that I don't always get these errors... once in a while 
+(maaany resets) it does
+not happen, and all is fine.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The error code is... well of course -110 (timed out).
 
+> 
+>> device eth4 entered promiscuous mode
+>> br0: port 7(eth7) entered blocking state
+>> br0: port 7(eth7) entered disabled state
+>> 
+>> I don't know if that gives ay clues...?
+> 
+> Not really. That error might be related - something indicating a 
+> breakage
+> in the top-level (fec IIUC) MDIO controller, or not. There was "recent"
+> rework almost everywhere.  For example commit 35da1dfd9484 ("net: dsa:
+> mv88e6xxx: Improve performance of busy bit polling"). That also hooks
+> into the mv88e6xxx cascaded MDIO controller 
+> (mv88e6xxx_g2_smi_phy_wait),
+> so there might be something there.
+> 
+
+I can check that out, but I remember that net-next has not worked on 
+this device for quite some
+time...
+
+>> 
+>> Otherwise I have to take more time to see what I can dig out. The 
+>> easiest
+>> for me is then to add some printk statements giving targeted 
+>> information if told what and
+>> where...
+> 
+> Do you have a timeline for when the regression was introduced?
+> Commit 35da1dfd9484 reverts cleanly, so I suppose giving it a go with
+> that reverted might be worth a shot. Otherwise, a bisect from a known
+> working version only takes a couple of hours, and shouldn't require
+> other changes to the setup.
+
+I can't say when the regression was introduced as I used modified 
+kernels, but something
+between 5.16 and 5.17, I know there was something phy related, but it's 
+a bit more complicated,
+so it is only a guess...
+
+I would have to get the whole locked port patch set etc. on a 5.16 to 
+see if that works.
 
