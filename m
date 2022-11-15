@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 738DD62963D
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:49:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1714F62963F
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:49:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238446AbiKOKtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 05:49:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S238360AbiKOKtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 05:49:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238396AbiKOKth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 05:49:37 -0500
+        with ESMTP id S238407AbiKOKti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 05:49:38 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E722725C6D
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:49:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5E025C69
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:49:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668509348; x=1700045348;
+  t=1668509352; x=1700045352;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VhdvxqCQL4biulH265OiUz8erelQkK1/Bt3O2b02mcI=;
-  b=U1bj4RrKpXIfwHesm+jU0jjQnubxxJW/47WtwGDDW/PkVvEKP6D1Ds/o
-   VcnDOYRXGH3ewxqyZilGlt0WvdWT4deRvdbTkrbh19MDGu4yxNYq0+azf
-   P95v+HVOkKng4mIPgqrJpB4yflzP98nOPk5Ns5UsGf0WMmKlHSu2Gp6OY
-   LBfIT2OAw6yN5ZG3SCe2zn4vnHtpyJVcptkZP90NwgyBCvJfTLn7zqtUd
-   xbvoYkA/nCRT13gS9dhtJnYa+TsKHBiMO0WDzrrxl7nTvd/1PxOKw86zH
-   ViGBfxvJzGLgzTkjo7BkINZQ7FCqSfXj8dkEVlNv73qiPe1MTgP561w1D
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="376489520"
+  bh=+ql8pVWj0wbBty/J0WWqIu/9amWAkFYhgaVeQn4K/pg=;
+  b=ZSI8Jz9jQ11bwEe3/yOUiFo8vOVk3wt2HLiUpoZstVPJ3tsXRvbZHjiZ
+   QbRNeBJo4EIVXUX/Aljq6WXElouq2RfF9uxM58P3MLsaeIISCCDu8P6y9
+   ezn5WrehT9w3p88h5XePPnPzQh8r4FooChhlrJgi3ZoV0KqV9c/VC1/Fw
+   lCF8EoMJY+BOFj6/LhjHN0/Ql6qIaEooptzcrOFYWGRn8g7TERhJSjeys
+   3cgIxo/Gi/qBvwNs7x23S8l6a3ORZuWRZMmngx6D/HKMHreTFwZdnCrmn
+   bw1VYYKa5f897ZFZBmqUVguwe843hH6q0w5ER8PDLfdMbnmGNfGbrG6uA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="376489529"
 X-IronPort-AV: E=Sophos;i="5.96,165,1665471600"; 
-   d="scan'208";a="376489520"
+   d="scan'208";a="376489529"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 02:49:08 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="633193486"
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 02:49:12 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="633193493"
 X-IronPort-AV: E=Sophos;i="5.96,165,1665471600"; 
-   d="scan'208";a="633193486"
+   d="scan'208";a="633193493"
 Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 02:49:06 -0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 02:49:09 -0800
 From:   Michal Wilczynski <michal.wilczynski@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
@@ -44,9 +44,9 @@ Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
         anthony.l.nguyen@intel.com, kuba@kernel.org,
         ecree.xilinx@gmail.com, jiri@resnulli.us,
         Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v12 08/11] ice: Implement devlink-rate API
-Date:   Tue, 15 Nov 2022 11:48:22 +0100
-Message-Id: <20221115104825.172668-9-michal.wilczynski@intel.com>
+Subject: [PATCH net-next v12 09/11] ice: Prevent ADQ, DCB coexistence with Custom Tx scheduler
+Date:   Tue, 15 Nov 2022 11:48:23 +0100
+Message-Id: <20221115104825.172668-10-michal.wilczynski@intel.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221115104825.172668-1-michal.wilczynski@intel.com>
 References: <20221115104825.172668-1-michal.wilczynski@intel.com>
@@ -61,592 +61,301 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a need to support modification of Tx scheduler tree, in the
-ice driver. This will allow user to control Tx settings of each node in
-the internal hierarchy of nodes. As a result user will be able to use
-Hierarchy QoS implemented entirely in the hardware.
+ADQ, DCB might interfere with Custom Tx Scheduler changes that user
+might introduce using devlink-rate API.
 
-This patch implemenents devlink-rate API. It also exports initial
-default hierarchy. It's mostly dictated by the fact that the tree
-can't be removed entirely, all we can do is enable the user to modify
-it. For example root node shouldn't ever be removed, also nodes that
-have children are off-limits.
+Check if ADQ, DCB is active, when user tries to change any setting
+in exported Tx scheduler tree. If any of those are active block the user
+from doing so, and log an appropriate message.
 
-Example initial tree with 2 VF's:
-
-[root@fedora ~]# devlink port function rate show
-
-pci/0000:4b:00.0/node_27: type node parent node_26
-pci/0000:4b:00.0/node_26: type node parent node_0
-pci/0000:4b:00.0/node_34: type node parent node_33
-pci/0000:4b:00.0/node_33: type node parent node_32
-pci/0000:4b:00.0/node_32: type node parent node_16
-pci/0000:4b:00.0/node_19: type node parent node_18
-pci/0000:4b:00.0/node_18: type node parent node_17
-pci/0000:4b:00.0/node_17: type node parent node_16
-pci/0000:4b:00.0/node_21: type node parent node_20
-pci/0000:4b:00.0/node_20: type node parent node_3
-pci/0000:4b:00.0/node_14: type node parent node_5
-pci/0000:4b:00.0/node_5: type node parent node_3
-pci/0000:4b:00.0/node_13: type node parent node_4
-pci/0000:4b:00.0/node_12: type node parent node_4
-pci/0000:4b:00.0/node_11: type node parent node_4
-pci/0000:4b:00.0/node_10: type node parent node_4
-pci/0000:4b:00.0/node_9: type node parent node_4
-pci/0000:4b:00.0/node_8: type node parent node_4
-pci/0000:4b:00.0/node_7: type node parent node_4
-pci/0000:4b:00.0/node_6: type node parent node_4
-pci/0000:4b:00.0/node_4: type node parent node_3
-pci/0000:4b:00.0/node_3: type node parent node_16
-pci/0000:4b:00.0/node_16: type node parent node_15
-pci/0000:4b:00.0/node_15: type node parent node_0
-pci/0000:4b:00.0/node_2: type node parent node_1
-pci/0000:4b:00.0/node_1: type node parent node_0
-pci/0000:4b:00.0/node_0: type node
-pci/0000:4b:00.0/1: type leaf parent node_27
-pci/0000:4b:00.0/2: type leaf parent node_27
-
-Let me visualize part of the tree:
-
-                    +---------+
-                    |  node_0 |
-                    +---------+
-                         |
-                    +----v----+
-                    | node_26 |
-                    +----+----+
-                         |
-                    +----v----+
-                    | node_27 |
-                    +----+----+
-                         |
-                |-----------------|
-           +----v----+       +----v----+
-           |   VF 1  |       |   VF 2  |
-           +----+----+       +----+----+
-
-So at this point there is a couple things that can be done.
-For example we could only assign parameters to VF's.
-
-[root@fedora ~]# devlink port function rate set pci/0000:4b:00.0/1 \
-                 tx_max 5Gbps
-
-This would cap the VF 1 BW to 5Gbps.
-
-But let's say you would like to create a completely new branch.
-This can be done like this:
-
-[root@fedora ~]# devlink port function rate add \
-                 pci/0000:4b:00.0/node_custom parent node_0
-[root@fedora ~]# devlink port function rate add \
-                 pci/0000:4b:00.0/node_custom_1 parent node_custom
-[root@fedora ~]# devlink port function rate set \
-                 pci/0000:4b:00.0/1 parent node_custom_1
-
-This creates a completely new branch and reassigns VF 1 to it.
-
-A number of parameters is supported per each node: tx_max, tx_share,
-tx_priority and tx_weight.
+Remove the exported hierarchy if user enable ADQ or DCB.
+Prevent ADQ or DCB from getting configured if user already made some
+changes using devlink-rate API.
 
 Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_devlink.c | 411 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_devlink.h |   2 +
- drivers/net/ethernet/intel/ice/ice_repr.c    |  13 +
- 3 files changed, 426 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c |  7 ++
+ drivers/net/ethernet/intel/ice/ice_devlink.c | 91 ++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h |  1 +
+ drivers/net/ethernet/intel/ice/ice_main.c    |  6 ++
+ drivers/net/ethernet/intel/ice/ice_repr.c    |  5 ++
+ drivers/net/ethernet/intel/ice/ice_type.h    |  1 +
+ 6 files changed, 111 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+index add90e75f05c..9defb9d0fe88 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+@@ -3,6 +3,7 @@
+ 
+ #include "ice_dcb_lib.h"
+ #include "ice_dcb_nl.h"
++#include "ice_devlink.h"
+ 
+ /**
+  * ice_dcb_get_ena_tc - return bitmap of enabled TCs
+@@ -364,6 +365,12 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
+ 	/* Enable DCB tagging only when more than one TC */
+ 	if (ice_dcb_get_num_tc(new_cfg) > 1) {
+ 		dev_dbg(dev, "DCB tagging enabled (num TC > 1)\n");
++		if (pf->hw.port_info->is_custom_tx_enabled) {
++			dev_err(dev, "Custom Tx scheduler feature enabled, can't configure DCB\n");
++			return -EBUSY;
++		}
++		ice_tear_down_devlink_rate_tree(pf);
++
+ 		set_bit(ICE_FLAG_DCB_ENA, pf->flags);
+ 	} else {
+ 		dev_dbg(dev, "DCB tagging disabled (num TC = 1)\n");
 diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 455489e9457d..46f5b587b1c8 100644
+index 46f5b587b1c8..1d638216484d 100644
 --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
 +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -713,6 +713,400 @@ ice_devlink_port_unsplit(struct devlink *devlink, struct devlink_port *port,
+@@ -8,6 +8,7 @@
+ #include "ice_devlink.h"
+ #include "ice_eswitch.h"
+ #include "ice_fw_update.h"
++#include "ice_dcb_lib.h"
+ 
+ static int ice_active_port_option = -1;
+ 
+@@ -713,6 +714,63 @@ ice_devlink_port_unsplit(struct devlink *devlink, struct devlink_port *port,
  	return ice_devlink_port_split(devlink, port, 1, extack);
  }
  
 +/**
-+ * ice_traverse_tx_tree - traverse Tx scheduler tree
-+ * @devlink: devlink struct
-+ * @node: current node, used for recursion
-+ * @tc_node: tc_node struct, that is treated as a root
++ * ice_tear_down_devlink_rate_tree - removes devlink-rate exported tree
 + * @pf: pf struct
 + *
-+ * This function traverses Tx scheduler tree and exports
-+ * entire structure to the devlink-rate.
++ * This function tears down tree exported during VF's creation.
 + */
-+static void ice_traverse_tx_tree(struct devlink *devlink, struct ice_sched_node *node,
-+				 struct ice_sched_node *tc_node, struct ice_pf *pf)
++void ice_tear_down_devlink_rate_tree(struct ice_pf *pf)
 +{
-+	struct devlink_rate *rate_node = NULL;
-+	struct ice_vf *vf;
-+	int i;
-+
-+	if (node->parent == tc_node) {
-+		/* create root node */
-+		rate_node = devl_rate_node_create(devlink, node, node->name, NULL);
-+	} else if (node->vsi_handle &&
-+		   pf->vsi[node->vsi_handle]->vf) {
-+		vf = pf->vsi[node->vsi_handle]->vf;
-+		if (!vf->devlink_port.devlink_rate)
-+			/* leaf nodes doesn't have children
-+			 * so we don't set rate_node
-+			 */
-+			devl_rate_leaf_create(&vf->devlink_port, node,
-+					      node->parent->rate_node);
-+	} else if (node->info.data.elem_type != ICE_AQC_ELEM_TYPE_LEAF &&
-+		   node->parent->rate_node) {
-+		rate_node = devl_rate_node_create(devlink, node, node->name,
-+						  node->parent->rate_node);
-+	}
-+
-+	if (rate_node && !IS_ERR(rate_node))
-+		node->rate_node = rate_node;
-+
-+	for (i = 0; i < node->num_children; i++)
-+		ice_traverse_tx_tree(devlink, node->children[i], tc_node, pf);
-+}
-+
-+/**
-+ * ice_devlink_rate_init_tx_topology - export Tx scheduler tree to devlink rate
-+ * @devlink: devlink struct
-+ * @vsi: main vsi struct
-+ *
-+ * This function finds a root node, then calls ice_traverse_tx tree, which
-+ * traverses the tree and exports it's contents to devlink rate.
-+ */
-+int ice_devlink_rate_init_tx_topology(struct devlink *devlink, struct ice_vsi *vsi)
-+{
-+	struct ice_port_info *pi = vsi->port_info;
-+	struct ice_sched_node *tc_node;
-+	struct ice_pf *pf = vsi->back;
-+	int i;
-+
-+	tc_node = pi->root->children[0];
-+	mutex_lock(&pi->sched_lock);
-+	devl_lock(devlink);
-+	for (i = 0; i < tc_node->num_children; i++)
-+		ice_traverse_tx_tree(devlink, tc_node->children[i], tc_node, pf);
-+	devl_unlock(devlink);
-+	mutex_unlock(&pi->sched_lock);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_set_object_tx_share - sets node scheduling parameter
-+ * @pi: devlink struct instance
-+ * @node: node struct instance
-+ * @bw: bandwidth in bytes per second
-+ * @extack: extended netdev ack structure
-+ *
-+ * This function sets ICE_MIN_BW scheduling BW limit.
-+ */
-+static int ice_set_object_tx_share(struct ice_port_info *pi, struct ice_sched_node *node,
-+				   u64 bw, struct netlink_ext_ack *extack)
-+{
-+	int status;
-+
-+	mutex_lock(&pi->sched_lock);
-+	/* converts bytes per second to kilo bits per second */
-+	node->tx_share = div_u64(bw, 125);
-+	status = ice_sched_set_node_bw_lmt(pi, node, ICE_MIN_BW, node->tx_share);
-+	mutex_unlock(&pi->sched_lock);
-+
-+	if (status)
-+		NL_SET_ERR_MSG_MOD(extack, "Can't set scheduling node tx_share");
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_set_object_tx_max - sets node scheduling parameter
-+ * @pi: devlink struct instance
-+ * @node: node struct instance
-+ * @bw: bandwidth in bytes per second
-+ * @extack: extended netdev ack structure
-+ *
-+ * This function sets ICE_MAX_BW scheduling BW limit.
-+ */
-+static int ice_set_object_tx_max(struct ice_port_info *pi, struct ice_sched_node *node,
-+				 u64 bw, struct netlink_ext_ack *extack)
-+{
-+	int status;
-+
-+	mutex_lock(&pi->sched_lock);
-+	/* converts bytes per second value to kilo bits per second */
-+	node->tx_max = div_u64(bw, 125);
-+	status = ice_sched_set_node_bw_lmt(pi, node, ICE_MAX_BW, node->tx_max);
-+	mutex_unlock(&pi->sched_lock);
-+
-+	if (status)
-+		NL_SET_ERR_MSG_MOD(extack, "Can't set scheduling node tx_max");
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_set_object_tx_priority - sets node scheduling parameter
-+ * @pi: devlink struct instance
-+ * @node: node struct instance
-+ * @priority: value representing priority for strict priority arbitration
-+ * @extack: extended netdev ack structure
-+ *
-+ * This function sets priority of node among siblings.
-+ */
-+static int ice_set_object_tx_priority(struct ice_port_info *pi, struct ice_sched_node *node,
-+				      u32 priority, struct netlink_ext_ack *extack)
-+{
-+	int status;
-+
-+	if (node->tx_priority >= 8) {
-+		NL_SET_ERR_MSG_MOD(extack, "Priority should be less than 8");
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&pi->sched_lock);
-+	node->tx_priority = priority;
-+	status = ice_sched_set_node_priority(pi, node, node->tx_priority);
-+	mutex_unlock(&pi->sched_lock);
-+
-+	if (status)
-+		NL_SET_ERR_MSG_MOD(extack, "Can't set scheduling node tx_priority");
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_set_object_tx_weight - sets node scheduling parameter
-+ * @pi: devlink struct instance
-+ * @node: node struct instance
-+ * @weight: value represeting relative weight for WFQ arbitration
-+ * @extack: extended netdev ack structure
-+ *
-+ * This function sets node weight for WFQ algorithm.
-+ */
-+static int ice_set_object_tx_weight(struct ice_port_info *pi, struct ice_sched_node *node,
-+				    u32 weight, struct netlink_ext_ack *extack)
-+{
-+	int status;
-+
-+	if (node->tx_weight > 200 || node->tx_weight < 1) {
-+		NL_SET_ERR_MSG_MOD(extack, "Weight must be between 1 and 200");
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&pi->sched_lock);
-+	node->tx_weight = weight;
-+	status = ice_sched_set_node_weight(pi, node, node->tx_weight);
-+	mutex_unlock(&pi->sched_lock);
-+
-+	if (status)
-+		NL_SET_ERR_MSG_MOD(extack, "Can't set scheduling node tx_weight");
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_get_pi_from_dev_rate - get port info from devlink_rate
-+ * @rate_node: devlink struct instance
-+ *
-+ * This function returns corresponding port_info struct of devlink_rate
-+ */
-+static struct ice_port_info *ice_get_pi_from_dev_rate(struct devlink_rate *rate_node)
-+{
-+	struct ice_pf *pf = devlink_priv(rate_node->devlink);
-+
-+	return ice_get_main_vsi(pf)->port_info;
-+}
-+
-+static int ice_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node;
-+	struct ice_port_info *pi;
-+
-+	pi = ice_get_pi_from_dev_rate(rate_node);
-+
-+	/* preallocate memory for ice_sched_node */
-+	node = devm_kzalloc(ice_hw_to_dev(pi->hw), sizeof(*node), GFP_KERNEL);
-+	*priv = node;
-+
-+	return 0;
-+}
-+
-+static int ice_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node, *tc_node;
-+	struct ice_port_info *pi;
-+
-+	pi = ice_get_pi_from_dev_rate(rate_node);
-+	tc_node = pi->root->children[0];
-+	node = priv;
-+
-+	if (!rate_node->parent || !node || tc_node == node || !extack)
-+		return 0;
-+
-+	/* can't allow to delete a node with children */
-+	if (node->num_children)
-+		return -EINVAL;
-+
-+	mutex_lock(&pi->sched_lock);
-+	ice_free_sched_node(pi, node);
-+	mutex_unlock(&pi->sched_lock);
-+
-+	return 0;
-+}
-+
-+static int ice_devlink_rate_leaf_tx_max_set(struct devlink_rate *rate_leaf, void *priv,
-+					    u64 tx_max, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_max(ice_get_pi_from_dev_rate(rate_leaf),
-+				     node, tx_max, extack);
-+}
-+
-+static int ice_devlink_rate_leaf_tx_share_set(struct devlink_rate *rate_leaf, void *priv,
-+					      u64 tx_share, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_share(ice_get_pi_from_dev_rate(rate_leaf), node,
-+				       tx_share, extack);
-+}
-+
-+static int ice_devlink_rate_leaf_tx_priority_set(struct devlink_rate *rate_leaf, void *priv,
-+						 u32 tx_priority, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_priority(ice_get_pi_from_dev_rate(rate_leaf), node,
-+					  tx_priority, extack);
-+}
-+
-+static int ice_devlink_rate_leaf_tx_weight_set(struct devlink_rate *rate_leaf, void *priv,
-+					       u32 tx_weight, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_weight(ice_get_pi_from_dev_rate(rate_leaf), node,
-+					tx_weight, extack);
-+}
-+
-+static int ice_devlink_rate_node_tx_max_set(struct devlink_rate *rate_node, void *priv,
-+					    u64 tx_max, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_max(ice_get_pi_from_dev_rate(rate_node),
-+				     node, tx_max, extack);
-+}
-+
-+static int ice_devlink_rate_node_tx_share_set(struct devlink_rate *rate_node, void *priv,
-+					      u64 tx_share, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_share(ice_get_pi_from_dev_rate(rate_node),
-+				       node, tx_share, extack);
-+}
-+
-+static int ice_devlink_rate_node_tx_priority_set(struct devlink_rate *rate_node, void *priv,
-+						 u32 tx_priority, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_priority(ice_get_pi_from_dev_rate(rate_node),
-+					  node, tx_priority, extack);
-+}
-+
-+static int ice_devlink_rate_node_tx_weight_set(struct devlink_rate *rate_node, void *priv,
-+					       u32 tx_weight, struct netlink_ext_ack *extack)
-+{
-+	struct ice_sched_node *node = priv;
-+
-+	if (!node)
-+		return 0;
-+
-+	return ice_set_object_tx_weight(ice_get_pi_from_dev_rate(rate_node),
-+					node, tx_weight, extack);
-+}
-+
-+static int ice_devlink_set_parent(struct devlink_rate *devlink_rate,
-+				  struct devlink_rate *parent,
-+				  void *priv, void *parent_priv,
-+				  struct netlink_ext_ack *extack)
-+{
-+	struct ice_port_info *pi = ice_get_pi_from_dev_rate(devlink_rate);
-+	struct ice_sched_node *tc_node, *node, *parent_node;
-+	u16 num_nodes_added;
-+	u32 first_node_teid;
-+	u32 node_teid;
-+	int status;
-+
-+	tc_node = pi->root->children[0];
-+	node = priv;
-+
-+	if (!extack)
-+		return 0;
-+
-+	if (!parent) {
-+		if (!node || tc_node == node || node->num_children)
-+			return -EINVAL;
-+
-+		mutex_lock(&pi->sched_lock);
-+		ice_free_sched_node(pi, node);
-+		mutex_unlock(&pi->sched_lock);
-+
-+		return 0;
-+	}
-+
-+	parent_node = parent_priv;
-+
-+	/* if the node doesn't exist, create it */
-+	if (!node->parent) {
-+		mutex_lock(&pi->sched_lock);
-+		status = ice_sched_add_elems(pi, tc_node, parent_node,
-+					     parent_node->tx_sched_layer + 1,
-+					     1, &num_nodes_added, &first_node_teid,
-+					     &node);
-+		mutex_unlock(&pi->sched_lock);
-+
-+		if (status) {
-+			NL_SET_ERR_MSG_MOD(extack, "Can't add a new node");
-+			return status;
-+		}
-+
-+		if (devlink_rate->tx_share)
-+			ice_set_object_tx_share(pi, node, devlink_rate->tx_share, extack);
-+		if (devlink_rate->tx_max)
-+			ice_set_object_tx_max(pi, node, devlink_rate->tx_max, extack);
-+		if (devlink_rate->tx_priority)
-+			ice_set_object_tx_priority(pi, node, devlink_rate->tx_priority, extack);
-+		if (devlink_rate->tx_weight)
-+			ice_set_object_tx_weight(pi, node, devlink_rate->tx_weight, extack);
-+	} else {
-+		node_teid = le32_to_cpu(node->info.node_teid);
-+		mutex_lock(&pi->sched_lock);
-+		status = ice_sched_move_nodes(pi, parent_node, 1, &node_teid);
-+		mutex_unlock(&pi->sched_lock);
-+
-+		if (status)
-+			NL_SET_ERR_MSG_MOD(extack, "Can't move existing node to a new parent");
-+	}
-+
-+	return status;
-+}
-+
- static const struct devlink_ops ice_devlink_ops = {
- 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
- 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-@@ -725,6 +1119,22 @@ static const struct devlink_ops ice_devlink_ops = {
- 	.eswitch_mode_set = ice_eswitch_mode_set,
- 	.info_get = ice_devlink_info_get,
- 	.flash_update = ice_devlink_flash_update,
-+
-+	.rate_node_new = ice_devlink_rate_node_new,
-+	.rate_node_del = ice_devlink_rate_node_del,
-+
-+	.rate_leaf_tx_max_set = ice_devlink_rate_leaf_tx_max_set,
-+	.rate_leaf_tx_share_set = ice_devlink_rate_leaf_tx_share_set,
-+	.rate_leaf_tx_priority_set = ice_devlink_rate_leaf_tx_priority_set,
-+	.rate_leaf_tx_weight_set = ice_devlink_rate_leaf_tx_weight_set,
-+
-+	.rate_node_tx_max_set = ice_devlink_rate_node_tx_max_set,
-+	.rate_node_tx_share_set = ice_devlink_rate_node_tx_share_set,
-+	.rate_node_tx_priority_set = ice_devlink_rate_node_tx_priority_set,
-+	.rate_node_tx_weight_set = ice_devlink_rate_node_tx_weight_set,
-+
-+	.rate_leaf_parent_set = ice_devlink_set_parent,
-+	.rate_node_parent_set = ice_devlink_set_parent,
- };
- 
- static int
-@@ -1089,6 +1499,7 @@ int ice_devlink_create_vf_port(struct ice_vf *vf)
-  */
- void ice_devlink_destroy_vf_port(struct ice_vf *vf)
- {
-+	devl_rate_leaf_destroy(&vf->devlink_port);
- 	devlink_port_unregister(&vf->devlink_port);
- }
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
-index fe006d9946f8..8bfed9ee2c4c 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
-@@ -18,4 +18,6 @@ void ice_devlink_destroy_vf_port(struct ice_vf *vf);
- void ice_devlink_init_regions(struct ice_pf *pf);
- void ice_devlink_destroy_regions(struct ice_pf *pf);
- 
-+int ice_devlink_rate_init_tx_topology(struct devlink *devlink, struct ice_vsi *vsi);
-+
- #endif /* _ICE_DEVLINK_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
-index 0483eb14c288..46f58d48318c 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.c
-@@ -389,6 +389,7 @@ static void ice_repr_rem(struct ice_vf *vf)
-  */
- void ice_repr_rem_from_all_vfs(struct ice_pf *pf)
- {
 +	struct devlink *devlink;
- 	struct ice_vf *vf;
- 	unsigned int bkt;
- 
-@@ -396,6 +397,14 @@ void ice_repr_rem_from_all_vfs(struct ice_pf *pf)
- 
- 	ice_for_each_vf(pf, bkt, vf)
- 		ice_repr_rem(vf);
++	struct ice_vf *vf;
++	unsigned int bkt;
 +
-+	/* since all port representors are destroyed, there is
-+	 * no point in keeping the nodes
-+	 */
 +	devlink = priv_to_devlink(pf);
++
 +	devl_lock(devlink);
++	mutex_lock(&pf->vfs.table_lock);
++	ice_for_each_vf(pf, bkt, vf) {
++		if (vf->devlink_port.devlink_rate)
++			devl_rate_leaf_destroy(&vf->devlink_port);
++	}
++	mutex_unlock(&pf->vfs.table_lock);
++
 +	devl_rate_nodes_destroy(devlink);
 +	devl_unlock(devlink);
- }
++}
++
++/**
++ * ice_enable_custom_tx - try to enable custom Tx feature
++ * @pf: pf struct
++ *
++ * This function tries to enable custom Tx feature,
++ * it's not possible to enable it, if DCB or ADQ is active.
++ */
++static bool ice_enable_custom_tx(struct ice_pf *pf)
++{
++	struct ice_port_info *pi = ice_get_main_vsi(pf)->port_info;
++	struct device *dev = ice_pf_to_dev(pf);
++
++	if (pi->is_custom_tx_enabled)
++		/* already enabled, return true */
++		return true;
++
++	if (ice_is_adq_active(pf)) {
++		dev_err(dev, "ADQ active, can't modify Tx scheduler tree\n");
++		return false;
++	}
++
++	if (ice_is_dcb_active(pf)) {
++		dev_err(dev, "DCB active, can't modify Tx scheduler tree\n");
++		return false;
++	}
++
++	pi->is_custom_tx_enabled = true;
++
++	return true;
++}
++
+ /**
+  * ice_traverse_tx_tree - traverse Tx scheduler tree
+  * @devlink: devlink struct
+@@ -914,6 +972,9 @@ static int ice_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv
+ 
+ 	pi = ice_get_pi_from_dev_rate(rate_node);
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
++		return -EBUSY;
++
+ 	/* preallocate memory for ice_sched_node */
+ 	node = devm_kzalloc(ice_hw_to_dev(pi->hw), sizeof(*node), GFP_KERNEL);
+ 	*priv = node;
+@@ -934,6 +995,9 @@ static int ice_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
+ 	if (!rate_node->parent || !node || tc_node == node || !extack)
+ 		return 0;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
++		return -EBUSY;
++
+ 	/* can't allow to delete a node with children */
+ 	if (node->num_children)
+ 		return -EINVAL;
+@@ -950,6 +1014,9 @@ static int ice_devlink_rate_leaf_tx_max_set(struct devlink_rate *rate_leaf, void
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_leaf->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -962,6 +1029,9 @@ static int ice_devlink_rate_leaf_tx_share_set(struct devlink_rate *rate_leaf, vo
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_leaf->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -974,6 +1044,9 @@ static int ice_devlink_rate_leaf_tx_priority_set(struct devlink_rate *rate_leaf,
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_leaf->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -986,6 +1059,9 @@ static int ice_devlink_rate_leaf_tx_weight_set(struct devlink_rate *rate_leaf, v
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_leaf->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -998,6 +1074,9 @@ static int ice_devlink_rate_node_tx_max_set(struct devlink_rate *rate_node, void
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -1010,6 +1089,9 @@ static int ice_devlink_rate_node_tx_share_set(struct devlink_rate *rate_node, vo
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -1022,6 +1104,9 @@ static int ice_devlink_rate_node_tx_priority_set(struct devlink_rate *rate_node,
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -1034,6 +1119,9 @@ static int ice_devlink_rate_node_tx_weight_set(struct devlink_rate *rate_node, v
+ {
+ 	struct ice_sched_node *node = priv;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
++		return -EBUSY;
++
+ 	if (!node)
+ 		return 0;
+ 
+@@ -1059,6 +1147,9 @@ static int ice_devlink_set_parent(struct devlink_rate *devlink_rate,
+ 	if (!extack)
+ 		return 0;
+ 
++	if (!ice_enable_custom_tx(devlink_priv(devlink_rate->devlink)))
++		return -EBUSY;
++
+ 	if (!parent) {
+ 		if (!node || tc_node == node || node->num_children)
+ 			return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
+index 8bfed9ee2c4c..6ec96779f52e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.h
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
+@@ -19,5 +19,6 @@ void ice_devlink_init_regions(struct ice_pf *pf);
+ void ice_devlink_destroy_regions(struct ice_pf *pf);
+ 
+ int ice_devlink_rate_init_tx_topology(struct devlink *devlink, struct ice_vsi *vsi);
++void ice_tear_down_devlink_rate_tree(struct ice_pf *pf);
+ 
+ #endif /* _ICE_DEVLINK_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a9fc89aebebe..d6f460ff1b72 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -8580,6 +8580,12 @@ static int ice_setup_tc_mqprio_qdisc(struct net_device *netdev, void *type_data)
+ 	switch (mode) {
+ 	case TC_MQPRIO_MODE_CHANNEL:
+ 
++		if (pf->hw.port_info->is_custom_tx_enabled) {
++			dev_err(dev, "Custom Tx scheduler feature enabled, can't configure ADQ\n");
++			return -EBUSY;
++		}
++		ice_tear_down_devlink_rate_tree(pf);
++
+ 		ret = ice_validate_mqprio_qopt(vsi, mqprio_qopt);
+ 		if (ret) {
+ 			netdev_err(netdev, "failed to validate_mqprio_qopt(), ret %d\n",
+diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
+index 46f58d48318c..109761c8c858 100644
+--- a/drivers/net/ethernet/intel/ice/ice_repr.c
++++ b/drivers/net/ethernet/intel/ice/ice_repr.c
+@@ -6,6 +6,7 @@
+ #include "ice_devlink.h"
+ #include "ice_sriov.h"
+ #include "ice_tc_lib.h"
++#include "ice_dcb_lib.h"
  
  /**
-@@ -404,6 +413,7 @@ void ice_repr_rem_from_all_vfs(struct ice_pf *pf)
-  */
- int ice_repr_add_for_all_vfs(struct ice_pf *pf)
- {
-+	struct devlink *devlink;
- 	struct ice_vf *vf;
- 	unsigned int bkt;
- 	int err;
-@@ -416,6 +426,9 @@ int ice_repr_add_for_all_vfs(struct ice_pf *pf)
+  * ice_repr_get_sw_port_id - get port ID associated with representor
+@@ -426,6 +427,10 @@ int ice_repr_add_for_all_vfs(struct ice_pf *pf)
  			goto err;
  	}
  
-+	devlink = priv_to_devlink(pf);
-+	ice_devlink_rate_init_tx_topology(devlink, ice_get_main_vsi(pf));
++	/* only export if ADQ and DCB disabled */
++	if (ice_is_adq_active(pf) || ice_is_dcb_active(pf))
++		return 0;
 +
- 	return 0;
+ 	devlink = priv_to_devlink(pf);
+ 	ice_devlink_rate_init_tx_topology(devlink, ice_get_main_vsi(pf));
  
- err:
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index daf86cf561bc..e3f622cad425 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -715,6 +715,7 @@ struct ice_port_info {
+ 	struct ice_qos_cfg qos_cfg;
+ 	struct xarray sched_node_ids;
+ 	u8 is_vf:1;
++	u8 is_custom_tx_enabled:1;
+ };
+ 
+ struct ice_switch_info {
 -- 
 2.37.2
 
