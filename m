@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B27AA628F23
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 02:19:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 371E1628F24
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 02:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232223AbiKOBTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 20:19:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S235675AbiKOBTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 20:19:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbiKOBTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 20:19:14 -0500
+        with ESMTP id S232194AbiKOBTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 20:19:15 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70075.outbound.protection.outlook.com [40.107.7.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A7417E10
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 17:19:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF99186C9
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 17:19:07 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pjs7QjDwk/r3RFiFTumqG/kJzc6J6rv/aZ2PxxgV8IeZtbuU7zfk6yYOdUcTkvXK6nChvZX4hpyNNBWbBWBXxPid4+XU9RafwVHGq1YDNvINcc4LIBHo32xuthwiVC42Mtlp5KxJw5FtrKv6dCn3OmaRENuy1dc0r8ynWChjFnY69Y422D+y5sK+oKsVm19xCfxUGJNY3DkG5y8wyYcj14/V3nm3aQE1iG6CkiqMmGKqzm1hgiPdDs/GASyvzGmxLlRkfwH+GjmqSD7WMJ240BrtW9HUNTel8XDO1X94BA+IhWBk74YsI+iBAIMRZeyRHz8AlgiqLI2kFPupnKLQJA==
+ b=e/AC82sGsVjLkK7/vEbBWKphk3cVLh9gn7HqtzCRJOsDoD3S7xNonGJnmEISGVsaChTLiCRhqWyfDs5KMBdJN6eEJ6SiMM5jtllFWaEfLUKiwsYS/xT4hPHp9JM569wQnT4jW9zPsjFziFr2MV1VqlYR7RaPK5ksJuM1JPXfFGuhu/tf/zqZe0pUhLPj3cY7ps/yWvOPxWOot+0gcR7enxQ9Rp3HHnHeOqEqAa+TkhmpcyTPf0g6PcbmCanLaZ2/nTGoiDKCMmC4NAWpsYOwFm5h3gjP7rMNw5x79LyC1NDhZEtHx3Z1M2uVS/5PR19uU6dXnH5+gAJ4DTKBGoxN1g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=48sYji7v5eu9xcrE/QeRVEsz88ardifB46uZI5IQcIw=;
- b=jpyHtGkRakP+4z/owDn+iHnlhj1mLWN7WtnpPk4iATUNol2cjDmN0poosiWpHf/1EwBwYMsEYpSkoyHgBmDrIJFRzXz2aoD2OPQxoWafSeM5Ro6KAaIP860uhtmb3AH2hgnwoZu6LXHOU9fnOQKag/xJQJfXZDezgN6sk3PAUP+92EOjPDOsFCWXNmJMoTmrWsQ2UH4Z0zkq66JgW3ORA93v0KqpEOFNcxO3Zgm3OcqtB/PjIrw/XBraBpznIDm5P8P1V9dwCMkpsfO1P6HWfGjhmLnWLOoZGV0hkM+DMe/eqOPesQ5ithahWTnxu5iA5jCm7PST8tdgvVTzmPLk8Q==
+ bh=9aZhbjeLIe426QGapPcbB1YXKE+rnddTiXIZ5tl1JTI=;
+ b=KuFg2fO1SZZecOVFSxYa3wL5mzVs9RyoK2WmLKbz8UcCbCSd0HrHP5wJyeAGhGtSaUmMjZGb4Bmhli40FoVSr309o/fXuK454S4ItYvlrYHlpQ1R0ydDAG/MvYPbYabUMF5VNH0dKEpZ+X5pJHE16OUTnmy44I0dyEehXQradN/luv8VFqxZBZT+lYE9ZTX0FlhUME+lPmiXC0ne7Lc+h6W77nyF5TLkcF7P7qUM0BzSTeNZl5/cNfY+SH+ZDsbI850EGX1SkSMg1nM/zqMsueStW4UoYy6pFBVWTh+7yrRfJI4mcLTL/OpyZgX4swUJV4/qlo+OSJxfc8ok5IFb5g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=48sYji7v5eu9xcrE/QeRVEsz88ardifB46uZI5IQcIw=;
- b=EebnQzWl/spNef+oYKxX3bVNyFxbfPFhbI6dUXw4tSwrpNaYAMH/5BDsL5WilbInq/V8qYdiEl70xDZWy/w6tCTweHlP21Ukpr/W1DbDwxN2fS8JaTK6ek//fKXUJIXlt+tEs+ZnJm+Op1GBb99Jjpu05H3Za00Ih8sZucECQtQ=
+ bh=9aZhbjeLIe426QGapPcbB1YXKE+rnddTiXIZ5tl1JTI=;
+ b=CD8WgrKaW8+cfELHFhPcQ3smvQxm5A+v+JozOnjIsvpjjdDM8iGNpb7lD8tWqGhZS4sCVcqKT850QLXp6rjGvo5mkSSjIEFLUxJXqruxsVNMRTSWFQ8k6onyjiW5tM5T4m8J/oMvBZ8K8LOl8Rds6zyE64J253K6eSXDhPlLHUw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AS8PR04MB7815.eurprd04.prod.outlook.com (2603:10a6:20b:28a::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Tue, 15 Nov
- 2022 01:19:03 +0000
+ 2022 01:19:04 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.018; Tue, 15 Nov 2022
- 01:19:03 +0000
+ 01:19:04 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -50,9 +50,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>,
         Michael Walle <michael@walle.cc>,
         Heiko Thiery <heiko.thiery@gmail.com>
-Subject: [PATCH v2 net-next 5/6] net: dsa: rename dsa_tag_driver_get() to dsa_tag_driver_get_by_id()
-Date:   Tue, 15 Nov 2022 03:18:46 +0200
-Message-Id: <20221115011847.2843127-6-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 6/6] net: dsa: autoload tag driver module on tagging protocol change
+Date:   Tue, 15 Nov 2022 03:18:47 +0200
+Message-Id: <20221115011847.2843127-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221115011847.2843127-1-vladimir.oltean@nxp.com>
 References: <20221115011847.2843127-1-vladimir.oltean@nxp.com>
@@ -64,51 +64,51 @@ X-ClientProxiedBy: AS4P191CA0006.EURP191.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7815:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ddd1aae-9da9-45c2-f66d-08dac6a761c1
+X-MS-Office365-Filtering-Correlation-Id: 1aa79189-3f93-4e87-6142-08dac6a76272
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZVQ6r8TShMJ9iI5ACR6f6Yb5UR8O3k6CMOjrC9vIx6jdEqN8CBFZ+HR97wKHWwUDa08U/pwtBZytO90ddQFOHLkESx4vTShEbetddID/T+VenvV7sB7kkLiHIop1I0jhPzbMJCueztYjMHvXOd+Vg9rnO9QThUL/4r5BTf4PAuKm9hYliEA/V3MOvMvLUxeoz0Ki60Z9MbmqCW5dmtGOOK5Lbv96W4gqTwD4xo+UHnPHO3XJPuykugK4a6FGDu4qjh+OYCCzpCzP9tnoqKpCEZ2LifPsvxXsESGh9GPQeFlTletgfatDW8A64vOCWN6KkX/Exnka/iCt9kqaP+NVA/BbaGZtpNPt57gaqa0A9pLWxFtejmkRq4pOu2jtAK6E/RA0xxGhFEoVnEQGIBhM7q3Q9aO3gRloON235tEukC+4w0qaaKTYMb8RAbQ3ly0mi09mgDYk+y9l1q7FtgWDKNhIH2XVP/JbNT2sUVtNflGuSxGhkKnKsqyCuvvu6NTjOQ7+Uf8bXD1GXaCzHIzBUaj9pokSIJc6NKfc+eCF/hxOhf7K3UCj2Sg/Abzz05JrRU7wDz/rKR1CMjMEUGytyUWwUJPptMeL9uVdWCeiN+tD29TwjM8J2ho5NZ6yn10D5YU9TXNEH+9xvLtjcSEYgnjqg40wjMFZWDuKKrt1azOQ+uVJk7c9+PHpSpr7S0OBfSOl5qoSTg3kXdaarUX5R9TosjvhAFlWZKLP574ZNxvUiRFQMJXCI57dGtijcENdjJIeE2hVD9Kf8iAHloGfcw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199015)(66556008)(86362001)(316002)(6916009)(4326008)(7416002)(8936002)(8676002)(36756003)(5660300002)(41300700001)(44832011)(66946007)(66476007)(2616005)(6512007)(38350700002)(54906003)(38100700002)(478600001)(186003)(83380400001)(6486002)(26005)(6506007)(52116002)(6666004)(1076003)(2906002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QgEcb5WEKyo22u+XEfzG6qTmdz1H3ZVkmK2F6upiQsfVWS63LQN6dCb22Ddh3kpl7PwnGXw6QDl84ROLupEyJaN+sebE6hLLIewjNDKIltgLY53TNX3RKZWHFWsP0XF3LflGRs2M7Nw3/sPv0O3QhOzFupJ3HatiqnOkphAzHFRn0MI315iGlHk219p5W+x7QfbnvbuHSsRY+VSjnwm2yhFOK7z7tfWsUiGetJX6d3JqhZkbYg6OSd2S6OB67TVS5BpcboqTM6Ls0EN0sJkb374dSaitGwJqXETNPOCY4hPUmb2YrEUsZGO2S+g3U4NJO1xTZJ3Htn9D38R1JUhYaF2zBLElaamm3WReU42ujyT8/V83W/X+qmjDPYWbk0sRnznPNbNfSZlflDS7PjWKoGxF6H1fpcbmYpyQBcdzgSyeqGQ8v8Z84AFqw86dK5gNfmxtu7Kl8M4rGgMIAVs7pWqiUTgRguazGijdkjKuFQAypZjeo8qjGV1BEeKJa3sS+pFYzk3ygP6Amgp0ZqPia2OOh2qg/E2gduN06H1Ly7bA5BG7H+Ff80R+zmflK1fi9LIAXeX8KYtLRhCEb5WOW07KR9+hd5WRm3dfIfVe8BY3ztJlx8mDHK9+T1rmQqh32sWj2hJAUKpDNWxMewB6tdhTSmf9+YwEiJGKElg0NyaZ6KmYuCWZg03K+iziF/tdmv5ZKxv8mqbbyudAyTdMdgirLdXkn96WMl3XID03tTti3NLI285JbfHpWmgbKe4lIORAX7S9d+F90OfQGN12azrBJczuIZKpqFfe2h6F9Sk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199015)(66556008)(86362001)(316002)(6916009)(4326008)(7416002)(8936002)(8676002)(36756003)(5660300002)(41300700001)(44832011)(66946007)(66476007)(2616005)(6512007)(38350700002)(54906003)(38100700002)(478600001)(186003)(83380400001)(6486002)(966005)(26005)(6506007)(52116002)(6666004)(1076003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DNuXHWV3x7799+IU47lP07x7UR6yQ3JW/6Uy5VUresjKzjpE9RlK4uIX7Ity?=
- =?us-ascii?Q?qpaOsCKzJdneFZZClKNV1wH60t00RAy0WuxWmyAQj404oUpdxadf4h7YRFG3?=
- =?us-ascii?Q?azi+GgWsnCtdyEHZ2nb06NyRUYT2d4m2WmjO3V5rGCeO5ZQnXhNDs+oZA7KQ?=
- =?us-ascii?Q?0dNcgt9aGmomrk1yGLYKOjLFPJ9MiRYbxvSLL1oIRaC3sOz8EY3koIoFf1ri?=
- =?us-ascii?Q?cJxI+6R7tQoR7bVdRZw77hIMliiFY6Ut4SAueovaSySu3Tq3VjFj29OfC7wa?=
- =?us-ascii?Q?/aNtAtcjZTR3rY1+fjcXvAcncHZqreVIHB0utNl/ZjZHeIau9arP3xN4cCFX?=
- =?us-ascii?Q?1Y8VwbXzRqJuuJ2VVh4y2JvQCukOccR4SRP8KzTWKVjxdoVgY532Uq79DBGQ?=
- =?us-ascii?Q?4em239RKYfqyidWVDJFVowWYmie9JiaG+BMfmiwHkuIU5nybCKmeiGVEHfXo?=
- =?us-ascii?Q?G4l0/7wnHyhQTe8CW+7UtzYRcT6Wrkpcf9ymsiMbHIFE92w98ojGIaj0Mw3w?=
- =?us-ascii?Q?PmJkCkxRwmzb/7AR3lGv8zgHqkuC1UzwsaUY1YhDAf5s06qyUFU9nq6GkOYt?=
- =?us-ascii?Q?lNtk3u/de+x47g/PoLGsACKH4Pj8b6vHjGUR7HVmRpxDYgA821h/vi5iIo3C?=
- =?us-ascii?Q?67Rp3jkF8olO33qJKP+QwNLmApMZ1D++i/Izc5O17BqOkMaK7cpHkZcGZcw7?=
- =?us-ascii?Q?qxqKC1xeVXsmX6PEKHEJo6two1IYG+s6z4g1FM4q3i45vLDA2LYpmEvBs9YD?=
- =?us-ascii?Q?TWo4HBn+gcKpqB8pGXU4CKdH6qxvx+hzgv52WphpismbNrCreGuf/UrRHgyT?=
- =?us-ascii?Q?N8IIT3l3id3DG3v6sAZ+onQjWGNK6N3C1ARSrf2hbzFkD5rQIYveSFtP6ZhL?=
- =?us-ascii?Q?9qws+t4EPcZ/zj7NfBcJzpfw4cA6I96q1riTmqv6JcMxV7uYC1skSSjAQrfk?=
- =?us-ascii?Q?NBHDicCPg0Z0ARsnkIN7yTuVmTRTJClDnvTYhn0fyvgWbbhdJ0ExF7Ppsvk6?=
- =?us-ascii?Q?meFEs7vB8i7yUMkHTItyBLKKvzrGgulvkLYZI52VbdxLg4wriDPBO/2ZanB1?=
- =?us-ascii?Q?y6Ym7LOQc4+lmviRNDz6zwSCCLk+qWBZEd23zy+RDDc3laa5ZaPIk9RZL/xb?=
- =?us-ascii?Q?O0Lpd1kQlzfD5zXxlND8yBdIJhIuVpPKp7B46waHR0auHQhkF6LEUqYtAUlQ?=
- =?us-ascii?Q?a5JwvopCgBO1Z+ae9EVlT7UCC5GcWQS31iSLRyoPkMXmr7FSTYxdHqHMFTkT?=
- =?us-ascii?Q?O24XVTvlwoNy8sN8KUzIZ+M4/JfXlOf9fFrbImQrTSFO9gm8YcErSuDqjJD0?=
- =?us-ascii?Q?+Lx8I/NqcmPCdw+iJZlLqpiPOTLH2sopO2utkfGxsQnr4EB8nyzWcS+FHVBI?=
- =?us-ascii?Q?rps/IRRV/2TwRUuuVMjhx2q4UHfaJ36zlGdVIsBJ21lJHRqGt5rqDaSy5Xfr?=
- =?us-ascii?Q?vFyBRkdbH7OONPVulEMzw5igaIG7JJTTn3zjwduNKj6dk0Y/mLfgBwUrJW0B?=
- =?us-ascii?Q?1oc6QCOW65MAFhOfivMY3peO3BRWr4Ivv2RTzQhe8BHTEV2zFj5N/nzTMBVe?=
- =?us-ascii?Q?T71Xjkbd1wqVf5ZjGMMxiaWOa2Xa3oE/ehKUr5OA8C525yDuqIoe9RIK+LpJ?=
- =?us-ascii?Q?VA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?X739IUw+9n1UlOgwZr9jypCWc5VNLUN+OnJKOaf94xzJ/HFg7PmzNE99+IXA?=
+ =?us-ascii?Q?6q6L9a4horLnDHlmGRR+MWObrgq7fc81XCj+001x5uiSgUfutBc1F7pdY293?=
+ =?us-ascii?Q?yAODcJuLZe2SQMJ++WOxQX/h2YX6X8MoeeFEpCeKNcmG2L1+crme5iMB5A6l?=
+ =?us-ascii?Q?D3n+tw86ClmxF78iwU4eZinygXFc4oMrFFea1DdDVMMNmYGogvk8+QqImTMz?=
+ =?us-ascii?Q?/0Gek1H+Fd3akccxVuqQCleG72F7FkMFvdHHkxY1vQALBC8fXKLKyfAGfbOV?=
+ =?us-ascii?Q?ZUHxEmi6iEvFLe6sLwSA8AEGlUoFo696GeeE0RUyDgb0rEU7QLr65UqCZsXf?=
+ =?us-ascii?Q?BF2JiLcKgXt9HU5wRILVKGrZIlpw05JxK+PEG24OXlUWKlKpVGipVaRMsOeg?=
+ =?us-ascii?Q?mbQqYyfzfTKBEtbXw9XN9rjpE+r2hJLg3uF4PxJpP52+Dja6sBjZ4dGpy4Kf?=
+ =?us-ascii?Q?IKzWLRcmoo3uirKnYZ/oF/R4Utly3sGeh9ZxZUCzVJdH75lP51gP7HkaOtLo?=
+ =?us-ascii?Q?sESVX33wpJFO0cDfb0YyhQ/nbj76kOuSAvOTmzgRhrtRAJM43Ew2DrJLOKqJ?=
+ =?us-ascii?Q?TB/rmwDD7aTPpPLDBW0EEfjUJICc3do6Sl2o7YwypzOGDqYl87IREQFEioGb?=
+ =?us-ascii?Q?CffO1QHaA0TObumwKDqwEqBMfvjjjISeTM0Q9AeOHMoEGfv2ZnOOrPv4U4hh?=
+ =?us-ascii?Q?Nm+9nECgpQY/TxIfhkAOBBC/qIbEVraDq6fsyBEIrmQDkG+ZANAPoKkF9hBP?=
+ =?us-ascii?Q?MWCcTIa2Jsx70RnCC33IMWA1QSii8f/uO6CVTlyBQNt7u1vgkbRHf35IfsMh?=
+ =?us-ascii?Q?79HAwdZRdYm3l/HoH8IU9eH48BA16AiNM4RR4sGuJcqBQ1E0EsIXU+9cC7r/?=
+ =?us-ascii?Q?k6HHbhOdAfgewp7h/OqByMd4g1qzW6YdbIH60+BFqRHGqMAgynR3RfZuc7rQ?=
+ =?us-ascii?Q?qCUFOR//P7Hew/z53LGhXOsKbAPU99UZ05e4GnbY53bnjA/6TgZNVS9YPT95?=
+ =?us-ascii?Q?t0VrAvzLQO9UL4KIQuxjav52PyPWRpoCzmJUdurZvKXjrYqJlcow04V2aC6e?=
+ =?us-ascii?Q?/dSU4SMnRXM/7OwFuURhkjpJXHRPksqSlHvIndretGpgOdvJ+frixLnJv36P?=
+ =?us-ascii?Q?04NpZHIr3dICqQHP03q3D/dAI7sIBO+G5cEMzi/ojB6USv7TRwK1D9URidxG?=
+ =?us-ascii?Q?s0TG6BqcA52L9PrQhqN3JyKtBbNxf323ziGmnQRxaZVOt6atWGJsbbphyAuz?=
+ =?us-ascii?Q?3I0t28E/cZ+v42v3SApSTHEg+svwZYjB/QxJzVwBROUsRnYD7fY7e5rugnst?=
+ =?us-ascii?Q?xazIOttwCbgrWLxyl9vKSZIUHKOi7reSPWaFcvpkCGVlky1tdU+RbgiOozu+?=
+ =?us-ascii?Q?CfEa/G820yB3UuK1d2M2/EPuAeBNBNRMYWUDX/EWIXzsvKgL9QL/OWG+16Ss?=
+ =?us-ascii?Q?pPrMATwSOzWRDjy9DtVOTBi9VjCuR6WtqSAdjikpAdkr1jQsz2u/hbOizlF5?=
+ =?us-ascii?Q?DrLiMVMVG5hn0XcmFO45gM/jjItG6ILxrvpXB+9nCslfP9Fmc86nBD8Y1+qf?=
+ =?us-ascii?Q?H+jZhhIMLT/NKfx6opkrOBX/bJE5hmecIbsCjCa1pj7ZRkyDocRgkx7xT6pl?=
+ =?us-ascii?Q?4A=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ddd1aae-9da9-45c2-f66d-08dac6a761c1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1aa79189-3f93-4e87-6142-08dac6a76272
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 01:19:03.0004
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 01:19:04.1722
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PNlJEuP5zEwp7qqeXyUdTT3CaS+gSUpWKxHCsPb2VlPX0fWGFFxKx+BICN3Ksf6TKPdeDVCAGD6Gy9zywr4XJA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: o9jl01ido/lEF5/VwgZLllC3OWkbsOnNcok+TyOr5BvF+ad/PjZWnWk12C5NBJGv81TH58Lea10RIB/ZUuEeKg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7815
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -120,56 +120,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A future patch will introduce one more way of getting a reference on a
-tagging protocl driver (by name). Rename the current method to "by_id".
+Issue a request_module() call when an attempt to change the tagging
+protocol is made, either by sysfs or by device tree. In the case of
+ocelot (the only driver for which the default and the alternative
+tagging protocol are compiled as different modules), the user is now no
+longer required to insert tag_ocelot_8021q.ko manually.
 
+In the particular case of ocelot, this solves a problem where
+tag_ocelot_8021q.ko is built as module, and this is present in the
+device tree:
+
+&mscc_felix_port4 {
+	dsa-tag-protocol = "ocelot-8021q";
+};
+
+&mscc_felix_port5 {
+	dsa-tag-protocol = "ocelot-8021q";
+};
+
+Because no one attempts to load the module into the kernel at boot time,
+the switch driver will fail to probe (actually forever defer) until
+someone manually inserts tag_ocelot_8021q.ko. This is now no longer
+necessary and happens automatically.
+
+Rename dsa_find_tagger_by_name() to denote the change in functionality:
+there is now feature parity with dsa_tag_driver_get_by_id(), i.o.w. we
+also load the module if it's missing.
+
+Link: https://lore.kernel.org/lkml/20221027113248.420216-1-michael@walle.cc/
+Suggested-by: Michael Walle <michael@walle.cc>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Michael Walle <michael@walle.cc> # on kontron-sl28 w/ ocelot_8021q
 ---
-v1->v2: split from previous patch 3/3
+v1->v2:
+- don't call request_module() with sysfs-formatted names that end in '\n'
 
- net/dsa/dsa.c      | 2 +-
+ net/dsa/dsa.c      | 4 +++-
  net/dsa/dsa2.c     | 2 +-
  net/dsa/dsa_priv.h | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ net/dsa/master.c   | 4 ++--
+ 4 files changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index e0ea5b309e61..d51b81cc196c 100644
+index d51b81cc196c..857d07c6d0cb 100644
 --- a/net/dsa/dsa.c
 +++ b/net/dsa/dsa.c
-@@ -101,7 +101,7 @@ const struct dsa_device_ops *dsa_find_tagger_by_name(const char *name)
- 	return ops;
- }
- 
--const struct dsa_device_ops *dsa_tag_driver_get(int tag_protocol)
-+const struct dsa_device_ops *dsa_tag_driver_get_by_id(int tag_protocol)
+@@ -78,11 +78,13 @@ const char *dsa_tag_protocol_to_str(const struct dsa_device_ops *ops)
+ /* Function takes a reference on the module owning the tagger,
+  * so dsa_tag_driver_put must be called afterwards.
+  */
+-const struct dsa_device_ops *dsa_find_tagger_by_name(const char *name)
++const struct dsa_device_ops *dsa_tag_driver_get_by_name(const char *name)
  {
+ 	const struct dsa_device_ops *ops = ERR_PTR(-ENOPROTOOPT);
  	struct dsa_tag_driver *dsa_tag_driver;
- 	const struct dsa_device_ops *ops;
+ 
++	request_module("%s%s", DSA_TAG_DRIVER_ALIAS, name);
++
+ 	mutex_lock(&dsa_tag_drivers_lock);
+ 	list_for_each_entry(dsa_tag_driver, &dsa_tag_drivers_list, list) {
+ 		const struct dsa_device_ops *tmp = dsa_tag_driver->ops;
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index b80dbd02e154..9920eed0c654 100644
+index 9920eed0c654..1bcf8a2d4a95 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -1434,7 +1434,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
- 	}
+@@ -1424,7 +1424,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
+ 			return -EINVAL;
+ 		}
  
- 	if (!tag_ops)
--		tag_ops = dsa_tag_driver_get(default_proto);
-+		tag_ops = dsa_tag_driver_get_by_id(default_proto);
- 
- 	if (IS_ERR(tag_ops)) {
- 		if (PTR_ERR(tag_ops) == -ENOPROTOOPT)
+-		tag_ops = dsa_find_tagger_by_name(user_protocol);
++		tag_ops = dsa_tag_driver_get_by_name(user_protocol);
+ 		if (IS_ERR(tag_ops)) {
+ 			dev_warn(ds->dev,
+ 				 "Failed to find a tagging driver for protocol %s, using default\n",
 diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 9fe68d3ae2f5..e128095f9e65 100644
+index e128095f9e65..d2fefc40bc7a 100644
 --- a/net/dsa/dsa_priv.h
 +++ b/net/dsa/dsa_priv.h
-@@ -243,7 +243,7 @@ struct dsa_slave_priv {
- };
+@@ -244,8 +244,8 @@ struct dsa_slave_priv {
  
  /* dsa.c */
--const struct dsa_device_ops *dsa_tag_driver_get(int tag_protocol);
-+const struct dsa_device_ops *dsa_tag_driver_get_by_id(int tag_protocol);
+ const struct dsa_device_ops *dsa_tag_driver_get_by_id(int tag_protocol);
++const struct dsa_device_ops *dsa_tag_driver_get_by_name(const char *name);
  void dsa_tag_driver_put(const struct dsa_device_ops *ops);
- const struct dsa_device_ops *dsa_find_tagger_by_name(const char *name);
+-const struct dsa_device_ops *dsa_find_tagger_by_name(const char *name);
+ 
+ bool dsa_db_equal(const struct dsa_db *a, const struct dsa_db *b);
+ 
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 104eab880076..56ed7af89ac3 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -315,9 +315,9 @@ static ssize_t tagging_store(struct device *d, struct device_attribute *attr,
+ 		return -ENOMEM;
+ 
+ 	old_tag_ops = cpu_dp->tag_ops;
+-	new_tag_ops = dsa_find_tagger_by_name(name);
++	new_tag_ops = dsa_tag_driver_get_by_name(name);
+ 	kfree(name);
+-	/* Bad tagger name, or module is not loaded? */
++	/* Bad tagger name? */
+ 	if (IS_ERR(new_tag_ops))
+ 		return PTR_ERR(new_tag_ops);
  
 -- 
 2.34.1
