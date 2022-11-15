@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A70E628DA8
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 00:43:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA45628DE6
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 01:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237880AbiKNXnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 18:43:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
+        id S231945AbiKOADc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 19:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237515AbiKNXnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 18:43:00 -0500
+        with ESMTP id S231244AbiKOADb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 19:03:31 -0500
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C032019C3F
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 15:42:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A27D5E;
+        Mon, 14 Nov 2022 16:03:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668469379; x=1700005379;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bI1uEiAjRQOJ7ZaCESNNL4ZR59Sisco88juTR70KLSM=;
-  b=axdaW+cgCKI1QTkW9RmmqwQfn2G+P8NE69xyH+H7gaVpeL1ARJno6mpI
-   Sid+F4zWamy9j6ihxcVKfkiyvxWUUj5wj5rUNzlJX3sKpC/3MZhqZoeAO
-   yI2DQ/A2I13GrxrrMPiY/sSkps8ZoMgst7QgslmbIBqThVWldfhm5YOA3
-   yDs+Hzn7vI7LCk8Jky3REaFAyg76uqYLloelVVyptnDRThVdIHOy37W8W
-   w33eYLh2Pe8wsa1WBb64bA+O0jScp+m/+/8iEIPELDstOnKP1pHA9KkbM
-   Ylhp94fjzL4iVTN/UFKTXzX8AJgMnF6HuA23LxL1k+2gFXdzXNeESejn/
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="310821198"
+  t=1668470609; x=1700006609;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=m6wPyFnyfKLUmf/g0Fl+gz9xCoPSxKkLJzIQHX9qDOY=;
+  b=LfUn6VRkj0Df1NU4JJPnIvUoB/a0DeyOqnJ/Re6ER/1Pam5jzd+CMoEq
+   kYCZvf4Uuervgky6O2wNFZDRirbHBfo5rL7s2wUADkfvSQXZI7Gz8ogWM
+   v77PqPi6N1ChB7as5QlkmSBSyWFmSvqoY1pEcD0+I1ASiWq7y7zes/liD
+   8m1MqbY6QC8ms1BIPt5n68iQvzoxUi3BeMpXHYeIMk7bjj7NSgMfvHok5
+   /wEzgU+l1YlvQ+zaFOMtaPeohO3g6NhhuyN5BDEJ0/L9kHep8NTKb22Z1
+   iAWaUtDHE8ZgpWGNWXwhGHyXx3vQfcZadv/koi5FpRhRYtXMgBzoDGFzi
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="310824662"
 X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="310821198"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 15:42:58 -0800
+   d="scan'208";a="310824662"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 16:03:29 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="702208687"
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="669870395"
 X-IronPort-AV: E=Sophos;i="5.96,164,1665471600"; 
-   d="scan'208";a="702208687"
+   d="scan'208";a="669870395"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Nov 2022 15:42:58 -0800
+  by orsmga008.jf.intel.com with ESMTP; 14 Nov 2022 16:03:28 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 7/7] ice: Use ICE_RLAN_BASE_S instead of magic number
-Date:   Mon, 14 Nov 2022 15:42:50 -0800
-Message-Id: <20221114234250.3039889-8-anthony.l.nguyen@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, bpf@vger.kernel.org
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2022-11-14 (i40e)
+Date:   Mon, 14 Nov 2022 16:03:22 -0800
+Message-Id: <20221115000324.3040207-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221114234250.3039889-1-anthony.l.nguyen@intel.com>
-References: <20221114234250.3039889-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -61,34 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+This series contains updates to i40e driver only.
 
-Commit 72adf2421d9b ("ice: Move common functions out of ice_main.c part
-2/7") moved an older version of ice_setup_rx_ctx() function with
-usage of magic number 7.
-Reimplement the commit 5ab522443bd1 ("ice: Cleanup magic number") to use
-ICE_RLAN_BASE_S instead of magic number.
+Sylwester removes attempted allocation of Rx buffers when AF_XDP is in Tx
+only mode.
 
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Bartosz adds helper to calculate Rx buffer length so that it can be
+used when interface is down; before value has been set in struct.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index e864634d66bc..554095b25f44 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -389,7 +389,7 @@ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
- 	 * Indicates the starting address of the descriptor queue defined in
- 	 * 128 Byte units.
- 	 */
--	rlan_ctx.base = ring->dma >> 7;
-+	rlan_ctx.base = ring->dma >> ICE_RLAN_BASE_S;
- 
- 	rlan_ctx.qlen = ring->count;
- 
+The following are changes since commit ed1fe1bebe18884b11e5536b5ac42e3a48960835:
+  net: dsa: make dsa_master_ioctl() see through port_hwtstamp_get() shims
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Bartosz Staszewski (1):
+  i40e: fix xdp_redirect logs error message when testing with MTU=1500
+
+Sylwester Dziedziuch (1):
+  i40e: Fix failure message when XDP is configured in TX only mode
+
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 48 +++++++++++++++------
+ 1 file changed, 34 insertions(+), 14 deletions(-)
+
 -- 
 2.35.1
 
