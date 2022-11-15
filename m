@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0CFD62917B
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 06:27:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D046629192
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 06:40:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbiKOF11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 00:27:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        id S231543AbiKOFkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 00:40:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbiKOF1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 00:27:21 -0500
+        with ESMTP id S229661AbiKOFkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 00:40:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F47E1DF37;
-        Mon, 14 Nov 2022 21:27:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D806463
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 21:40:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC33E6153E;
-        Tue, 15 Nov 2022 05:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B98DC433C1;
-        Tue, 15 Nov 2022 05:27:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B794D61546
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 05:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 015B9C4347C;
+        Tue, 15 Nov 2022 05:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668490040;
-        bh=zzu6O/zFTk5RGTsVCUeXcXFKvUuYcR2uq3r53gJiyqU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KighZU/1R+wzmmWGJdz2jgpfCMfgOr2MLLyTJwZCRuCMuMvzCUO51vroNvSsWzkfO
-         6RgGDqKffO9JgZ5DcE72gUydodzxYTXaGL0s2rUeMrLLpJ2fslVcQAM/2+N3WeThdP
-         tXZRfp02gHF9AXNEUKqSK2CAik2mbLRlQ9JeqSuvY3kLYIdleJTsYV2cm+lTWrszsR
-         ILBZM6JUppAPWe2euwWaAQoBzu8ZKN3s1vx02ZUD5lwgSbpdPuWyWsqeB56SnCDcSU
-         yTMIit8RIOKQFNku+fltLhxvQSM3VJfNUQnlul4mrUyKQTQDge3kxtbOPPppSAO4tO
-         ZrCb0gncJ6d0A==
-Date:   Mon, 14 Nov 2022 21:27:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>,
-        linux-kernel@vger.kernel.org,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: Re: [PATCH net-next v3] ethtool: doc: clarify what drivers can
- implement in their get_drvinfo()
-Message-ID: <20221114212718.76bd6c8b@kernel.org>
-In-Reply-To: <20221113083404.86983-1-mailhol.vincent@wanadoo.fr>
-References: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
-        <20221113083404.86983-1-mailhol.vincent@wanadoo.fr>
+        s=k20201202; t=1668490815;
+        bh=GwnNhfeA3c5dVglce6IKYW9ifavJ37CHhAEOf9z1Vys=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=nOvLecjwkOIqsYH5YM4kmvMAyJymC6v3DdIFpqZjbfaMwZtOY4zhT/8F7rQ/Ua9wx
+         hblrcmTboGaGGB/T6UMDV8CXRz1uoY5MYVy+Zms/mJOSjaLlITu0JMuvGHvcsHDNi9
+         N+Uim9IpqpoV37fApTVDO/jCmnhOTamCeOjtlTuG1YxOxvjV8uvccyLuYpxhEVHOki
+         ZuHbKnLXvcTZCsCs+99NAabGpO22t4KDq/Loi1PzzB2wq/9ukLBzY7cLruiTkYwFa3
+         JV+VUbAUc3PyXNLFoKDMycCtP2jtMEzR3GyjaLlRjH0zdHyx+Am7pY0xIeV0Q1YE/x
+         ofBDMdXlaDyHA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1ACBC395FE;
+        Tue, 15 Nov 2022 05:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] mlxsw: Avoid warnings when not offloaded FDB entry with
+ IPv6 is removed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166849081492.10793.2796648065104558849.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Nov 2022 05:40:14 +0000
+References: <c186de8cbd28e3eb661e06f31f7f2f2dff30020f.1668184350.git.petrm@nvidia.com>
+In-Reply-To: <c186de8cbd28e3eb661e06f31f7f2f2dff30020f.1668184350.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, idosch@nvidia.com,
+        amcohen@nvidia.com, mlxsw@nvidia.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -66,23 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 13 Nov 2022 17:34:04 +0900 Vincent Mailhol wrote:
-> - * Drivers should set at most @driver, @version, @fw_version and
-> - * @bus_info in their get_drvinfo() implementation.  The ethtool
-> - * core fills in the other fields using other driver operations.
-> + * Drivers should set at most @fw_version and @erom_version in their
-> + * get_drvinfo() implementation. The ethtool core fills in the other
-> + * fields using other driver operations.
+Hello:
 
-Can I still nit pick the working on v3? :)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Almost half of the fields are not filled in by other operations, 
-so how about we cut deeper? Even @erom_version is only filled in by 
-a single driver, and pretty much deprecated (devlink is much more
-flexible for all FW version reporting and flashing).
+On Fri, 11 Nov 2022 18:03:27 +0100 you wrote:
+> From: Amit Cohen <amcohen@nvidia.com>
+> 
+> FDB entries that perform VXLAN encapsulation with an IPv6 underlay hold
+> a reference on a resource - the KVDL entry where the IPv6 underlay
+> destination IP is stored. For that, the driver maintains two hash tables:
+> 1. Maps IPv6 to KVDL index
+> 2. Maps {MAC, FID index} to IPv6 address
+> 
+> [...]
 
-How about:
+Here is the summary with links:
+  - [net] mlxsw: Avoid warnings when not offloaded FDB entry with IPv6 is removed
+    https://git.kernel.org/netdev/net/c/30f5312d2c72
 
- * Majority of the drivers should no longer implement this callback.
- * Most fields are correctly filled in by the core using system
- * information, or populated using other driver operations.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
