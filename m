@@ -2,34 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBB762A2CE
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 21:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA1D062A2D0
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 21:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiKOU2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 15:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
+        id S231476AbiKOU2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 15:28:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiKOU2h (ORCPT
+        with ESMTP id S229553AbiKOU2h (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 15:28:37 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BB56259;
-        Tue, 15 Nov 2022 12:28:35 -0800 (PST)
-Message-ID: <20221115195802.415956561@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BB262E4;
+        Tue, 15 Nov 2022 12:28:36 -0800 (PST)
+Message-ID: <20221115202117.038937247@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668544113;
+        s=2020; t=1668544114;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=N0+DYQIzJQiuGQVL9zG7WmZVX2CclyspM4BrFbhZiQ4=;
-        b=M7ECxDE0fB4Eu8YucLFheDApDFsLZrYtCJcaFO+SOJLCYWeIswLu1kIiaw2A4DwSg7KQPs
-        s1AZ5RzM2N9m/XwTQFVZRuYoLcHvbcSDs9wLQuQ2KBFeaqa0xwsKAtJ6o05zt8Ynmm8FTC
-        njJ7KEfbuFvxFnQikQGBFrUrApiyvVt16OgJmB2MERr5pd4PYGmjjTj8CistfVWbGeYEeL
-        nHhkSE+Dpiknoo1XdNL/jkkiqgZ3mvk0GOI2nSJvddEsPE9sUtqH87wetaMUm9To3RtQ+l
-        H7XWTsjAldnu6cDgr0LFA82ogzpgjCKLWD4GLNmIPijLX000LKEdy3+W72VgOQ==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=n0dkKkggW4roLGRCIUa+7bvzAL1A7Ub2KzNnTnDcHNY=;
+        b=V/6MAHyPzrFi23hNIU7yKp2sjm0Fo4s8ktSn1TgtQreuowD63BLr3FDIiD2oFu/Ghl7TRq
+        ZBgeYTuR1Mt49G52Zv57XCeUN5X7SVySJJrA34D6ANU/oOWt3iKPkj49kNZBfSxBpewhOR
+        LxtkhWWIeKi8LY+HKLEG4GEoK610INmYKRs9Jyah5Q/1VviFHeAhH1Hp+jYcmg9RpBTo0u
+        jfPdM1vC6eRm+T040dBuoWX/LQDuCJ8BomfPhA3NWQGz/W21jfWgV0FkZb6/5rjCLgDH7s
+        L0kkbZvUVf+tBbmamNPUMTanv9XYUByoykfoVn6ZAbHeV9mbWB/WBzdjWOQTew==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668544113;
+        s=2020e; t=1668544114;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=N0+DYQIzJQiuGQVL9zG7WmZVX2CclyspM4BrFbhZiQ4=;
-        b=fvWTUM9JRU6WBtEcA9FaxJnJobRgfpEAalgfSWHfdnd4NJtaxKu1epQKvYY3Z6S7g+tSVK
-        8M5r+Fg9FZuU48Bg==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=n0dkKkggW4roLGRCIUa+7bvzAL1A7Ub2KzNnTnDcHNY=;
+        b=Wzwm5zhLaRyKmarqNDBEEnls0xQC7FvuSWazpAOJHIOb/gRW32CuT3bo8Z7wMAR+Fmlxp7
+        CoqZteH9eo1nOSAQ==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
@@ -51,8 +53,12 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [patch 00/15] timers: Provide timer_shutdown[_sync]()
-Date:   Tue, 15 Nov 2022 21:28:32 +0100 (CET)
+Subject: [patch 01/15] ARM: spear: Do not use timer namespace for
+ timer_shutdown() function
+References: <20221115195802.415956561@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 15 Nov 2022 21:28:34 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,74 +68,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tearing down timers can be tedious when there are circular dependencies to
-other things which need to be torn down. A prime example is timer and
-workqueue where the timer schedules work and the work arms the timer.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Steven and the Google Chromebook team ran into such an issue in the
-Bluetooth HCI code.
+A new "shutdown" timer state is being added to the generic timer code. One
+of the functions to change the timer into the state is called
+"timer_shutdown()". This means that there can not be other functions called
+"timer_shutdown()" as the timer code owns the "timer_*" name space.
 
-Steven suggested to create a new function del_timer_free() which marks the
-timer as shutdown. Rearm attempts of shutdown timers are discarded and he
-wanted to emit a warning for that case:
+Rename timer_shutdown() to spear_timer_shutdown() to avoid this conflict.
 
-   https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home
-
-This resulted in a lengthy discussion and suggestions how this should be
-implemented. The patch series went through several iterations and during
-the review of the last version it turned out that this approach is
-suboptimal:
-
-   https://lore.kernel.org/all/20221110064101.429013735@goodmis.org
-
-The warning is not really helpful because it's entirely unclear how it
-should be acted upon. The only way to address such a case is to add 'if
-(in_shutdown)' conditionals all over the place. This is error prone and in
-most cases of teardown like the HCI one which started this discussion not
-required all.
-
-What needs to prevented is that pending work which is drained via
-destroy_workqueue() does not rearm the previously shutdown timer. Nothing
-in that shutdown sequence relies on the timer being functional.
-
-The conclusion was that the semantics of timer_shutdown_sync() should be:
-
-    - timer is not enqueued
-    - timer callback is not running
-    - timer cannot be rearmed
-
-Preventing the rearming of shutdown timers is done by discarding rearm
-attempts silently.
-
-As Steven is short of cycles, I made some spare cycles available and
-reworked the patch series to follow the new semantics and plugged the races
-which were discovered during review.
-
-The patches have been split up into small pieces to make review easier and
-I took the liberty to throw a bunch of overdue cleanups into the picture
-instead of proliferating the existing state further.
-
-The last patch in the series addresses the HCI teardown issue for real.
-
-The series is also available from git:
-
-   git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git timers
-
-Thanks,
-
-	tglx
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Link: https://lkml.kernel.org/r/20221106212701.822440504@goodmis.org
+Link: https://lore.kernel.org/all/20221105060155.228348078@goodmis.org/
+Link: https://lore.kernel.org/r/20221110064146.810953418@goodmis.org
 ---
- Documentation/RCU/Design/Requirements/Requirements.rst |    2 
- Documentation/core-api/local_ops.rst                   |    2 
- Documentation/kernel-hacking/locking.rst               |   13 
- arch/arm/mach-spear/time.c                             |    8 
- drivers/bluetooth/hci_qca.c                            |   10 
- drivers/char/tpm/tpm-dev-common.c                      |    4 
- drivers/clocksource/arm_arch_timer.c                   |   12 
- drivers/clocksource/timer-sp804.c                      |    6 
- drivers/staging/wlan-ng/hfa384x_usb.c                  |    4 
- drivers/staging/wlan-ng/prism2usb.c                    |    6 
- include/linux/timer.h                                  |   35 +
- kernel/time/timer.c                                    |  409 +++++++++++++----
- net/sunrpc/xprt.c                                      |    2 
- 13 files changed, 383 insertions(+), 130 deletions(-)
+ arch/arm/mach-spear/time.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/mach-spear/time.c b/arch/arm/mach-spear/time.c
+index e979e2197f8e..5371c824786d 100644
+--- a/arch/arm/mach-spear/time.c
++++ b/arch/arm/mach-spear/time.c
+@@ -90,7 +90,7 @@ static void __init spear_clocksource_init(void)
+ 		200, 16, clocksource_mmio_readw_up);
+ }
+ 
+-static inline void timer_shutdown(struct clock_event_device *evt)
++static inline void spear_timer_shutdown(struct clock_event_device *evt)
+ {
+ 	u16 val = readw(gpt_base + CR(CLKEVT));
+ 
+@@ -101,7 +101,7 @@ static inline void timer_shutdown(struct clock_event_device *evt)
+ 
+ static int spear_shutdown(struct clock_event_device *evt)
+ {
+-	timer_shutdown(evt);
++	spear_timer_shutdown(evt);
+ 
+ 	return 0;
+ }
+@@ -111,7 +111,7 @@ static int spear_set_oneshot(struct clock_event_device *evt)
+ 	u16 val;
+ 
+ 	/* stop the timer */
+-	timer_shutdown(evt);
++	spear_timer_shutdown(evt);
+ 
+ 	val = readw(gpt_base + CR(CLKEVT));
+ 	val |= CTRL_ONE_SHOT;
+@@ -126,7 +126,7 @@ static int spear_set_periodic(struct clock_event_device *evt)
+ 	u16 val;
+ 
+ 	/* stop the timer */
+-	timer_shutdown(evt);
++	spear_timer_shutdown(evt);
+ 
+ 	period = clk_get_rate(gpt_clk) / HZ;
+ 	period >>= CTRL_PRESCALER16;
+-- 
+2.35.1
+
