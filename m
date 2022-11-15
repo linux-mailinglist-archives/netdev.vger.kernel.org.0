@@ -2,208 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3AE62A0BF
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 18:53:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57FFB62A0CB
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 18:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbiKORxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 12:53:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
+        id S229926AbiKOR5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 12:57:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230295AbiKORxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 12:53:32 -0500
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2042.outbound.protection.outlook.com [40.107.104.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7E921B2;
-        Tue, 15 Nov 2022 09:53:30 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MrifsGhS8xLpzkMuvNtbNs5bqtRjVZZMidSTiLiShrh0jVFHEDNY1TqtaZRdhjaaeMwS5ZQ+48DPMSltsOzyZgg9nCdmJKExlOjfaCP6qop5vNy1geGIazfpXtGs9Al/Wsj6y1RGDnNhryzLDptt0MMb8dO1afymUUShYTzvQObsafgRIEJ2Md2Hftk5Vdj1R+3GivcLkN2MfdISNYL88CPZS14BArXtxRGCZ+SRbOac45ij0kvCQn0mILomO3muZ8xkRLZbCgblk9IAN9YjNGUhXq8yKt5dCGTWq7SqreM2ahjC6tMDnHHHthOiJJc0hJ7U+2gyC0KkE6i+asTbTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u3SnbIe2Wtx2Czf5x1EnKdZNngCPChpveYTUrG46fTk=;
- b=Kr3VHsvNgmZg5GUTBwSM6tBq8FpxGTqO+AVgpvzR02EJ3xOUbYj3GwlT7vPPiNWe0jMzeKC4KA2jaY9sSmr13IxU8f485ddDC/nL2haOzv0PdFS/KyjTueQPb06j6kXe5fDF5AEURALla7VRe0bjROBGv00Klz/l8quMe2kogTnuSpHVj9J3IENPSDP1YVI7taEMytW3LEb6nsdOBaBADb7AUBoOFoljhbz+R7AGCn77hp8flUmMBF4ijwKoteF88avkIXi31+iAQpr80SxXsgc6uz+X2F+PDxMAkGIa+sKH/YcN8iU6J1MYW42IJQgcSH5RPuYAt9LBYnAiYLLC/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u3SnbIe2Wtx2Czf5x1EnKdZNngCPChpveYTUrG46fTk=;
- b=o4vFZHs7UYto8xIv0kXabTQ8ElkgVtMlzBN4yooShYEWyoHGoMuNTYR/3+37N3IJAnGBaxJefLijobm3oUznsMJbfb/QfXgdjfBaoDbvUj/6XR1LkKPWAk1GjVbydJme9DgGlIlL2jjZcHNstqXtpoaGhFu795cneO1E/Jl8Dqk=
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by PAXPR04MB8143.eurprd04.prod.outlook.com (2603:10a6:102:1c4::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Tue, 15 Nov
- 2022 17:53:28 +0000
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::6b44:4677:ad1d:b33a]) by PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::6b44:4677:ad1d:b33a%6]) with mapi id 15.20.5813.018; Tue, 15 Nov 2022
- 17:53:28 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "imx@lists.linux.dev" <imx@lists.linux.dev>,
-        kernel test robot <lkp@intel.com>
-Subject: RE: [EXT] Re: [PATCH v4 2/2] net: fec: add xdp and page pool
- statistics
-Thread-Topic: [EXT] Re: [PATCH v4 2/2] net: fec: add xdp and page pool
- statistics
-Thread-Index: AQHY+QsXk5KqzdTauEq0snVUKlqfZK5APU+AgAAGw6A=
-Date:   Tue, 15 Nov 2022 17:53:28 +0000
-Message-ID: <PAXPR04MB9185DC399BA10036C0C7930D89049@PAXPR04MB9185.eurprd04.prod.outlook.com>
-References: <20221115155744.193789-1-shenwei.wang@nxp.com>
- <20221115155744.193789-3-shenwei.wang@nxp.com> <Y3PMRwstfJkUiYwl@lunn.ch>
-In-Reply-To: <Y3PMRwstfJkUiYwl@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAXPR04MB9185:EE_|PAXPR04MB8143:EE_
-x-ms-office365-filtering-correlation-id: 5c1fe3e7-e11e-4e98-2929-08dac7324d33
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gezs1/hL7R7amr9bMW8RF4iXD33r6Geint2SSLEa83kChgFZSFiRViOYMCR9dhwZ5MsOdX3A8sTBTSb8g2f+oZbh6uSWTv5oGhOCZIHnicpLc6+RXBbz7q2D18aNVcTtOzYrpZF1pFy65som0TUGzeP0YcpTK1E60PdIUg41v0+R4PocGit+3RigxyYMx9/C4kbN8bNtBxzh3uwHx3zm5WqsEyoxKdw3qxxkxoxPUZ9tpybz5wxZW9Fk9OqCHU+hevPgNXwlytChl8EzwanZXMgklYNgGSe2cIeqDJxYu7Ry7M7zgHLm5+k50bjS9XYezPkrK1EpvI0eFBM0IEa1DJaIchOcm5R4A/LA/NujHSqgnTH5rUn9K8TnXkl1qXQ1+SGLhp9WHuY/XW/eYq20c3wXBkF3sEJq1YzAljI9qxyPss585DQAuKHK7SaIemPKZvQF9jVKxaLchOV9QgkRLb5w0T6kT3alJC6DqvYKEeQvwz6Lszan26jfr9POsDzQtDEBDgWSDdNIB18PmdhwzpRgIN+7f2yW73zwajl0dqoFwGA9S5UsN83AULrmGIE9QJcLfJdUqg6agnA99lYdoqLHphdb07amhxMYn9eL1E0a3baSvjBZyrsKTqYUW3O2bkaVFNJl+x9uRspMDormGPDFGZAzWkft02cq8eFBEl2oNgygASomRR9CNr5zaeKIIrTjKwNKQKtG3rxeFgPUsbQFsFR0iOpHdqZjMDnTABghWqwW9LmagopC46O/QIDYvAKfGqd9yWwp4/4MmRX1+Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(346002)(136003)(396003)(39860400002)(451199015)(478600001)(6916009)(54906003)(83380400001)(71200400001)(8676002)(4326008)(38070700005)(66946007)(66476007)(66556008)(76116006)(64756008)(66446008)(26005)(41300700001)(86362001)(53546011)(55236004)(38100700002)(186003)(8936002)(52536014)(5660300002)(316002)(7696005)(9686003)(6506007)(44832011)(7416002)(2906002)(33656002)(55016003)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LDEr9pEAt3stpfDltY2i3N9bny5IV39/l7jmDM6dRqkVOiFc9COwkGxPX+gH?=
- =?us-ascii?Q?LDiHDyAuFPhu451IZxA+A6EhtiEh7a8i585G8tYyO1C/wJKiKn0awy8XiHWQ?=
- =?us-ascii?Q?LJTHDMQ5wpmPQ4H+8zYsWiOSbFPBeCErZDG9YiMhbDroPvF0hTqHCrc/6NCp?=
- =?us-ascii?Q?BLvBkCVZc7Y0pdmp5YK+Kw8HM45B+eu4Z5VbFOth4Bu78epzg1EBNtg8lekO?=
- =?us-ascii?Q?UQ9U5JCOilz4AlbW1MBvLVIAAglEPrGJV2LKwDtuX3VAm64SZdRxgI6bk8oM?=
- =?us-ascii?Q?EbnUnuhxjDIMt0XpP8lMgThxYk7tKjIYRydaiR4nBbRQ7Yz00B3WVdhkdzmn?=
- =?us-ascii?Q?VJv2pVwzMGX+PxacbRK2ETZMVCW/1NuRkUmE+yH7wScbhY398ds2k1sD4Pk2?=
- =?us-ascii?Q?2TG+iuZB4qYpneX8ALovZoLR9lk8U6SREy1I1PuaYXpGi/89auU1azzf4UaS?=
- =?us-ascii?Q?Wk5k+5xYZMFCJeSVXjshn2pqgrtuDk84tpfxg9iU4fSBwYLlDxk5kEaryL8U?=
- =?us-ascii?Q?WQiatu+ZZx4Y3GDWrH8tgnyikcXbvgfjZ1zIDvE7NJxwIjGy+KWyEM5L7FPO?=
- =?us-ascii?Q?0vqaxB0tA1ku0ZznXxIi+CFGjUir6Q5tTbZex6rLWNeT58E66n6Fw4YetQuE?=
- =?us-ascii?Q?keoSZt7WeYUMcznzcy+r2h9jTWtF3EJaAQVBNbr3n9e2t6o9j1RQI2sQos7q?=
- =?us-ascii?Q?bgcBhlIyWRTu83VKl+jr2GYeGUdrvH9hjVbu5Sb+J8VEV2R0hnRmpjISQI6B?=
- =?us-ascii?Q?zmXd3ulUKC9kNQwC9naytZM9h7g4rgs/sd4f84DjqVxD+AHOj9W8WoZtQzwP?=
- =?us-ascii?Q?fvEwrI+1y7Jptb2Ia23k44SGh2VRruMagBdpMUFdZokIOR5Z3D9ClSMFJPcZ?=
- =?us-ascii?Q?WDGoFqbhYFOsXVeE0bb4higGOJpix6CSmvCuCuOq+4WByRC1z8Jo/NRQwaWZ?=
- =?us-ascii?Q?ZPRyYXm45uDPMhsTsNwzaDpGGoEwZGnK/QuxVGCob3mizGZcKzvKm6Wiulo/?=
- =?us-ascii?Q?30iR472PRZWLlAsSbEcFarrm2leqw8mcW5gRQ4Mu3YbCJC36/CC+O8mKwZpp?=
- =?us-ascii?Q?XyZ5E3XW4ZofCOXHlI+VhXKErHAeaWSY9QXQqLP3+UMaGdMNqoEcPIWvahDv?=
- =?us-ascii?Q?bKtvwCbuqqmfu9zxjxxzzdLXmZ7dcjS/HrVGvwblUU3gUFgAPop8471Qj9Ig?=
- =?us-ascii?Q?IZcSqo/DEjxaLv3EFrFun49WvB3SNFz3C/VnSO3EltkRAFs+kIa/44FMO49R?=
- =?us-ascii?Q?Fx863GnoX4SOW1E+he1MN4qTPg4KrT2lFjs8Ap6EShklKTDDwNDw5VnNgV25?=
- =?us-ascii?Q?Ds20FRWNEC4gniaRG0og/HqWx28zwCZXY6TjmahmphLKg4vYaq/9WTAIYHRl?=
- =?us-ascii?Q?+6hjsNQ+v0J+dwd8slqTfiTDXiMIem+O5geUkCZgl3zTW2w+7SYfanTyDWIj?=
- =?us-ascii?Q?JPXY33xOkugedQqUIf0yXhbYQWpdrSI7iY83nqt3QWsjGR6j4jn6zEunhCIr?=
- =?us-ascii?Q?6cBgSyIZ/QsmEi9fbO3f/uJOVbCX5arc75H5yIYitt92bAzmo2XsYVGCm1Bd?=
- =?us-ascii?Q?1e7QDi3B7l83hVlkzz65CapdusnHimMRls8RV2hR?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229841AbiKOR5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 12:57:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A993F2DA8C
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 09:57:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36518B81A16
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 17:57:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14661C433B5;
+        Tue, 15 Nov 2022 17:57:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668535033;
+        bh=ytdtL8Krb2Fy+/2ovCnOJ064N/5g/txm0wO9lFhbuEM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Drq5vCtOJRGwbRZCxWide6MhePg2ScL3R5k+u9p6hnOHu8D4qr/jFiWcjJXcsRDqJ
+         Nk9oW4pWOjxHVrx1dWQtW0O75Xju4XkMrqEhqgFoVgNjs96jK274/vq+6KI9KHgWvk
+         rkHH2ajFs2Yr/JvszpCtsd4eVgjQlGaj5FleJDRJAdkA++JhRohUXX8vfAQ5CaCHm1
+         I0+d9j1wOglnZgEk36o2vFGRJztKi0oKzUmArduQQCtMq+x1vLGC52kpeOnfIkR+4L
+         hAp8SNBfExwmmOm3lcUcXy7XGtdoe/X5T78eXWjUVbdkzY2nrhIcQvbHzdVNwf/Gol
+         FKOWlsEqIfG7g==
+Date:   Tue, 15 Nov 2022 19:57:09 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Cc:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        intel-wired-lan@lists.osuosl.org, jiri@nvidia.com,
+        anthony.l.nguyen@intel.com, alexandr.lobakin@intel.com,
+        wojciech.drewek@intel.com, lukasz.czapnik@intel.com,
+        shiraz.saleem@intel.com, jesse.brandeburg@intel.com,
+        mustafa.ismail@intel.com, przemyslaw.kitszel@intel.com,
+        piotr.raczynski@intel.com, jacob.e.keller@intel.com,
+        david.m.ertman@intel.com, leszek.kaliszczuk@intel.com
+Subject: Re: [PATCH net-next 00/13] resource management using devlink reload
+Message-ID: <Y3PS9e9MJEZo++z5@unreal>
+References: <Y3JBaQ7+p5ncsjuW@unreal>
+ <49e2792d-7580-e066-8d4e-183a9c826e68@intel.com>
+ <Y3J16ueuhwYeDaww@unreal>
+ <Y3M79CuAQNLkFV0S@localhost.localdomain>
+ <Y3NJnhxetoSIvqYV@unreal>
+ <Y3NWMVF2LV/0lqJX@localhost.localdomain>
+ <Y3NcnnNtmL+SSLU+@unreal>
+ <Y3NnGk7DCo/1KfpD@localhost.localdomain>
+ <Y3OCHLiCzOUKLlHa@unreal>
+ <Y3OcAJBfzgggVll9@localhost.localdomain>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c1fe3e7-e11e-4e98-2929-08dac7324d33
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2022 17:53:28.3212
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1iyPDKLVbmMeqbEkcjrFiTXuHXrSOdpocPA0F6/o+gOxJeIjZ1Nods0SG/ZaB1wmDgtSzlY/x8tVaW+ADju6Xg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8143
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3OcAJBfzgggVll9@localhost.localdomain>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Tuesday, November 15, 2022 11:29 AM
-> To: Shenwei Wang <shenwei.wang@nxp.com>
-> Cc: David S. Miller <davem@davemloft.net>; Eric Dumazet
-> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
-> <pabeni@redhat.com>; Jesper Dangaard Brouer <hawk@kernel.org>; Ilias
-> Apalodimas <ilias.apalodimas@linaro.org>; Alexei Starovoitov
-> <ast@kernel.org>; Daniel Borkmann <daniel@iogearbox.net>; John Fastabend
-> <john.fastabend@gmail.com>; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; imx@lists.linux.dev; kernel test robot <lkp@intel=
-.com>
-> Subject: [EXT] Re: [PATCH v4 2/2] net: fec: add xdp and page pool statist=
-ics
->=20
-> Caution: EXT Email
->=20
-> > @@ -1582,6 +1586,7 @@ fec_enet_rx_queue(struct net_device *ndev, int
-> budget, u16 queue_id)
-> >       struct bpf_prog *xdp_prog =3D READ_ONCE(fep->xdp_prog);
-> >       u32 ret, xdp_result =3D FEC_ENET_XDP_PASS;
-> >       u32 data_start =3D FEC_ENET_XDP_HEADROOM;
-> > +     u32 xdp_stats[XDP_STATS_TOTAL];
-> >       struct xdp_buff xdp;
-> >       struct page *page;
-> >       u32 sub_len =3D 4;
-> > @@ -1656,11 +1661,13 @@ fec_enet_rx_queue(struct net_device *ndev, int
-> budget, u16 queue_id)
-> >               fec_enet_update_cbd(rxq, bdp, index);
+On Tue, Nov 15, 2022 at 03:02:40PM +0100, Michal Swiatkowski wrote:
+> On Tue, Nov 15, 2022 at 02:12:12PM +0200, Leon Romanovsky wrote:
+> > On Tue, Nov 15, 2022 at 11:16:58AM +0100, Michal Swiatkowski wrote:
+> > > On Tue, Nov 15, 2022 at 11:32:14AM +0200, Leon Romanovsky wrote:
+> > > > On Tue, Nov 15, 2022 at 10:04:49AM +0100, Michal Swiatkowski wrote:
+> > > > > On Tue, Nov 15, 2022 at 10:11:10AM +0200, Leon Romanovsky wrote:
+> > > > > > On Tue, Nov 15, 2022 at 08:12:52AM +0100, Michal Swiatkowski wrote:
+> > > > > > > On Mon, Nov 14, 2022 at 07:07:54PM +0200, Leon Romanovsky wrote:
+> > > > > > > > On Mon, Nov 14, 2022 at 09:31:11AM -0600, Samudrala, Sridhar wrote:
+> > > > > > > > > On 11/14/2022 7:23 AM, Leon Romanovsky wrote:
+> > > > > > > > > > On Mon, Nov 14, 2022 at 01:57:42PM +0100, Michal Swiatkowski wrote:
+> > > > > > > > > > > Currently the default value for number of PF vectors is number of CPUs.
+> > > > > > > > > > > Because of that there are cases when all vectors are used for PF
+> > > > > > > > > > > and user can't create more VFs. It is hard to set default number of
+> > > > > > > > > > > CPUs right for all different use cases. Instead allow user to choose
+> > > > > > > > > > > how many vectors should be used for various features. After implementing
+> > > > > > > > > > > subdevices this mechanism will be also used to set number of vectors
+> > > > > > > > > > > for subfunctions.
+> > > > > > > > > > > 
+> > > > > > > > > > > The idea is to set vectors for eth or VFs using devlink resource API.
+> > > > > > > > > > > New value of vectors will be used after devlink reinit. Example
+> > > > > > > > > > > commands:
+> > > > > > > > > > > $ sudo devlink resource set pci/0000:31:00.0 path msix/msix_eth size 16
+> > > > > > > > > > > $ sudo devlink dev reload pci/0000:31:00.0
+> > > > > > > > > > > After reload driver will work with 16 vectors used for eth instead of
+> > > > > > > > > > > num_cpus.
+> > > > > > > > > > By saying "vectors", are you referring to MSI-X vectors?
+> > > > > > > > > > If yes, you have specific interface for that.
+> > > > > > > > > > https://lore.kernel.org/linux-pci/20210314124256.70253-1-leon@kernel.org/
+> > > > > > > > > 
+> > > > > > > > > This patch series is exposing a resources API to split the device level MSI-X vectors
+> > > > > > > > > across the different functions supported by the device (PF, RDMA, SR-IOV VFs and
+> > > > > > > > > in future subfunctions). Today this is all hidden in a policy implemented within
+> > > > > > > > > the PF driver.
+> > > > > > > > 
+> > > > > > > > Maybe we are talking about different VFs, but if you refer to PCI VFs,
+> > > > > > > > the amount of MSI-X comes from PCI config space for that specific VF.
+> > > > > > > > 
+> > > > > > > > You shouldn't set any value through netdev as it will cause to
+> > > > > > > > difference in output between lspci (which doesn't require any driver)
+> > > > > > > > and your newly set number.
+> > > > > > > 
+> > > > > > > If I understand correctly, lspci shows the MSI-X number for individual
+> > > > > > > VF. Value set via devlink is the total number of MSI-X that can be used
+> > > > > > > when creating VFs. 
+> > > > > > 
+> > > > > > Yes and no, lspci shows how much MSI-X vectors exist from HW point of
+> > > > > > view. Driver can use less than that. It is exactly as your proposed
+> > > > > > devlink interface.
+> > > > > > 
+> > > > > > 
+> > > > > 
+> > > > > Ok, I have to take a closer look at it. So, are You saing that we should
+> > > > > drop this devlink solution and use sysfs interface fo VFs or are You
+> > > > > fine with having both? What with MSI-X allocation for subfunction?
+> > > > 
+> > > > You should drop for VFs and PFs and keep it for SFs only.
+> > > > 
+> > > 
+> > > I understand that MSI-X for VFs can be set via sysfs interface, but what
+> > > with PFs? 
+> > 
+> > PFs are even more tricker than VFs, as you are changing that number
+> > while driver is bound. This makes me wonder what will be lspci output,
+> > as you will need to show right number before driver starts to load.
+> > 
+> > You need to present right value if user decided to unbind driver from PF too.
 > >
-> >               if (xdp_prog) {
-> > +                     memset(xdp_stats, 0, sizeof(xdp_stats));
-> >                       xdp_buff_clear_frags_flag(&xdp);
-> >                       /* subtract 16bit shift and FCS */
-> >                       xdp_prepare_buff(&xdp, page_address(page),
-> >                                        data_start, pkt_len - sub_len, f=
-alse);
-> > -                     ret =3D fec_enet_run_xdp(fep, xdp_prog, &xdp, rxq=
-, index);
-> > +                     ret =3D fec_enet_run_xdp(fep, xdp_prog, &xdp, rxq=
-,
-> > +                                            xdp_stats, index);
-> >                       xdp_result |=3D ret;
-> >                       if (ret !=3D FEC_ENET_XDP_PASS)
-> >                               goto rx_processing_done; @@ -1762,6
-> > +1769,15 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16
-> queue_id)
-> >       if (xdp_result & FEC_ENET_XDP_REDIR)
-> >               xdp_do_flush_map();
+> 
+> In case of ice driver lspci -vs shows:
+> Capabilities: [70] MSI-X: Enable+ Count=1024 Masked
+> 
+> so all vectors that hw supports (PFs, VFs, misc, etc). Because of that
+> total number of MSI-X in the devlink example from cover letter is 1024.
+> 
+> I see that mellanox shows:
+> Capabilities: [9c] MSI-X: Enable+ Count=64 Masked
+> 
+> I assume that 64 is in this case MSI-X ony for this one PF (it make
+> sense).
+
+Yes and PF MSI-X count can be changed through FW configuration tool, as
+we need to write new value when the driver is unbound and we need it to
+be persistent. Users are expecting to see "stable" number any time they
+reboot the server. It is not the case for VFs, as they are explicitly
+created after reboots and start "fresh" after every boot.
+
+So we set large enough but not too large value as a default for PFs.
+If you find sane model of how to change it through kernel, you can count
+on our support.
+
+> To be honest I don't know why we show maximum MSI-X for the device
+> there, but because of that the value will be the same afer changing
+> allocation of MSI-X across features.
+> 
+> Isn't the MSI-X capabilities read from HW register?
+
+Yes, it comes from Message Control register.
+
+> 
+> > > Should we always allow max MSI-X for PFs? So hw_max - used -
+> > > sfs? Is it save to call pci_enable_msix always with max vectors
+> > > supported by device?
+> > 
+> > I'm not sure. I think that it won't give you much if you enable
+> > more than num_online_cpu().
+> > 
+> 
+> Oh, yes, correct, I missed that.
+> 
+> > > 
+> > > I added the value for PFs, because we faced a problem with MSI-X
+> > > allocation on 8 port device. Our default value (num_cpus) was too big
+> > > (not enough vectors in hw). Changing the amount of vectors that can be
+> > > used on PFs was solving the issue.
+> > 
+> > We had something similar for mlx5 SFs, where we don't have enough vectors.
+> > Our solution is simply to move to automatic shared MSI-X mode. I would
+> > advocate for that for you as well. 
 > >
-> > +     if (xdp_prog) {
-> > +             int i;
-> > +
-> > +             u64_stats_update_begin(&rxq->syncp);
-> > +             for (i =3D 0; i < XDP_STATS_TOTAL; i++)
-> > +                     rxq->stats[i] +=3D xdp_stats[i];
-> > +             u64_stats_update_end(&rxq->syncp);
-> > +     }
-> > +
->=20
-> This looks wrong. You are processing upto the napi budget, 64 frames, in =
-a loop.
-> The memset to 0 happens inside the loop, but you do the accumulation outs=
-ide
-> the loop?
->=20
+> 
+> Thanks for proposing solution, I will take a look how this work in mlx5.
 
-My bad. That should be moved outside the loop.
+BTW, PCI spec talks about something like that in short paragraph
+"Handling MSI-X Vector Shortages".
 
-Thanks,
-Shenwei
+<...>
 
-> This patch is getting pretty big. Please break it up, at least into one p=
-atch for XDP
-> stats and one for page pool stats.
->=20
->     Andrew
+> > > 
+> > > Assuming that I gave 64 MSI-X for RDMA by setting num_comp_vectors to
+> > > 64, how I will know if I can or can't use these vectors in ethernet?
+> > 
+> > Why should you need to know? Vectors are not exclusive and they can be
+> > used by many applications at the same time. The thing is that it is far
+> > fetch to except that high performance RDMA applications and high
+> > performance ethernet can coexist on same device at the same time.
+> >
+> 
+> Yes, but after loading aux device part of vectors (num_comp_vectors) are
+> reserved for only RDMA use case (at least in ice driver). We though that
+> devlink resource interface can be a good way to change the
+> num_comp_vectors in this case.
+
+It can be, but is much better to save from users devlink magic. :)
+
+Thanks
