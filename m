@@ -2,73 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C269D6299C3
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 14:13:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0616299CA
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 14:14:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229568AbiKONNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 08:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
+        id S230355AbiKONOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 08:14:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiKONNo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 08:13:44 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908FCB6F
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 05:13:27 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id 205so2606123ybe.7
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 05:13:27 -0800 (PST)
+        with ESMTP id S230351AbiKONOa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 08:14:30 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBE8C65;
+        Tue, 15 Nov 2022 05:14:25 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id bs21so24197789wrb.4;
+        Tue, 15 Nov 2022 05:14:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=bH4GMmb1KQhQSO19yVF0qTZFCdFPGnUJIyzzOE4zXo8=;
-        b=hlqB59kd62ozw6gVOm7dIl1N/E6eE55M7eNdZvIThKfKBAAQ8ZA/19UX/8URNunS76
-         mdS8U9YEhlneiTISFo1kDycA/2SZoGx1PZtbvO+WZ7SZS/VBDk2WaWLMVOSFcl07kb0K
-         9IdFLNGaeVWv596ZltDYrUls2bBjdPw6qaud6rc8jqRQtXWRD8nJ+6iW1IxcB72ms08V
-         1sVDlNKSwdqG1uNnSordZa1MrqSMOdY3pjTDkAzPxq3/5WXbTlCcXMlzVKT/dXpiWaL0
-         ocOWCCzDJVqHf4z/64N/43x3AbZKVbdhRI//uTP0aCVw/RuM5Q/nIlT1fc7hZfdJQmlU
-         Taiw==
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VjbZZt6k/m4st8VDM4ovyYHidxFXvNCvhopAFLorMH8=;
+        b=CiZ/oLB3x+YXdUKTWEK6QZV+TY50Mx/MqIOI/6e+iK6+RJCxTOQbNRAQaaawOefdQi
+         +AI9oj94DXc5B5QQjxPsD497IzJha73+BfiB6LMBUVE5G0/Nk9tcmBQDSMqLMLzLs339
+         T+eTot5hoJspBRJRM7jUxIMk5DU2uq13E2+Gyjq1PntfrtFddmwhpeWwcvuZBB1Crrvp
+         WFGTxkfRWWERnmQCXF0Xs4dNTbORVspn5b/CRltIUwR7GiZEayhLzaDwJG+ZGp1oiTIp
+         mVcWpyf7vXItMi/HZTvmuF+GIAEL5Yc0wEvBwPCJ5e7bCBtsR8txNd9I6/hXjzk+pAUL
+         Aarg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bH4GMmb1KQhQSO19yVF0qTZFCdFPGnUJIyzzOE4zXo8=;
-        b=PxybGoGZ4VD4azkmZu74VEM6nbGsRGvXTP9OhZPpQK2czCt2kcklK81O4YydO8RQUv
-         8nmS11mnvjo7cxavgVUQY1ORfLYKu2BEu2e8nAu/pOzJmYDpa8DXzOGD5VYh38oJr+iR
-         i1n3lWZSJwUilOFSM4eLjcL/n/O/+7Qi/N2bTBgAGo4BhSxGud+6rzo+12hYN62XseJ2
-         56pJKr9/8NL6IknzPiErQY0mn46leraB5Rb+6HYo2qUjWisl2DbBFXVa/DODlQn0xTeO
-         2tpK8aUBcyeUt2cy2fBu5qhJNqdwkEOHe/2QIPmSfwUntbAQJWLejlwajZf3f9M+AjaJ
-         x4ig==
-X-Gm-Message-State: ANoB5pnhSrAMoLpuUzE11rWQMmxhr8iY/sMZEtyUNTuNXJCawfWywTgI
-        V+Qup2bi2POSbJdcAF3HD9WqhdBMOpq62jscYEQZlA==
-X-Google-Smtp-Source: AA0mqf60i1y+c0ZmAVnz30OO7VHqUpVVte/DcQTgknd/JAm560p248PSlZcXZ7UTzAtbt1XKcgPdo37W3ug/3POs9Yk=
-X-Received: by 2002:a25:2d4:0:b0:6d8:99bb:454e with SMTP id
- 203-20020a2502d4000000b006d899bb454emr16613937ybc.259.1668518006983; Tue, 15
- Nov 2022 05:13:26 -0800 (PST)
-MIME-Version: 1.0
-References: <20221102163646.131a3910@kernel.org> <Y2odOlWlonu1juWZ@Laptop-X1>
- <20221108105544.65e728ad@kernel.org> <Y2uUsmVu6pKuHnBr@Laptop-X1>
- <CAM0EoMmx6i42WR=7=9B1rz=6gcOxorgyLDGseeEH7EYRPMgnzg@mail.gmail.com>
- <20221109182053.05ca08b8@kernel.org> <CAM0EoMm1Jx3mcGJK_XasTpVjm7uGHzVXhXN8=MAQUExJhuPFvw@mail.gmail.com>
- <20221110092709.06859da9@kernel.org> <Y3MCaaHoMeG7crg5@Laptop-X1>
- <20221114205143.717fd03f@kernel.org> <Y3OJucOnuGrBvwYM@Laptop-X1>
-In-Reply-To: <Y3OJucOnuGrBvwYM@Laptop-X1>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Tue, 15 Nov 2022 08:13:15 -0500
-Message-ID: <CAM0EoMmiGBb1B=mYyG1FEvX7RRh+UvTFwguuEy9UwBPg2Jd0KA@mail.gmail.com>
-Subject: Re: [PATCH (repost) net-next] sched: add extack for tfilter_notify
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VjbZZt6k/m4st8VDM4ovyYHidxFXvNCvhopAFLorMH8=;
+        b=WnQHUfk7lStyKPS0O4/JMxZl+bkl8k4rP5uoOzd9nz2rV7BkDc50EydNDvTXoCXq65
+         qqYx6DPN+r3Fedu40xtCAK7Cg55jfRCrXRG/v7Lp3x6F29bCuCq+ixIwy0jW4npDiFmM
+         LKkVSnL85eB8awAemcuP2tYvm3eNIMbNKuma4i+mQfV03dnBoxHIemKT7pvwbAnXKdnn
+         8E4gpzV04AUDcpz98ApPqVxgfcH0/JD2c7Wu7ZdC9O0qXgXM17b2rzczjoYoY1xSRjm8
+         Y7lQUQ2MqeI2ZwKXuwEAhd8vesyh+XtgY4kYnIrObUWaD21bnwPzxKT3rf3kKFTl92CX
+         g4AA==
+X-Gm-Message-State: ANoB5pkDhBbgFVUIX9R+cctcmdngkIw3R4FZCIMJoCYVSqYBMH0JxK8S
+        Y5fMrSdS2UNLuk2o2Gs8IelJBC9wgcaJcw==
+X-Google-Smtp-Source: AA0mqf4VZQsNOGnRNu69rOYF/qrC2Pd2yRDwJ6W5ZVsFjOt9PbtiQpEjwK47YwpwvjuK6KmxA/Cerg==
+X-Received: by 2002:a5d:68d1:0:b0:22e:37ba:41c7 with SMTP id p17-20020a5d68d1000000b0022e37ba41c7mr10756844wrw.173.1668518064114;
+        Tue, 15 Nov 2022 05:14:24 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id p1-20020a1c5441000000b003b4868eb71bsm20548106wmi.25.2022.11.15.05.14.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 05:14:23 -0800 (PST)
+From:   Dan Carpenter <error27@gmail.com>
+X-Google-Original-From: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Tue, 15 Nov 2022 16:14:20 +0300
+To:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Machon <daniel.machon@microchip.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: microchip: sparx5: prevent uninitialized
+ variable
+Message-ID: <Y3OQrGoFqvX2GkbJ@kili>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,25 +75,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 7:44 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> On Mon, Nov 14, 2022 at 08:51:43PM -0800, Jakub Kicinski wrote:
-> > > So maybe I should stop on here?
-> >
-> > It's a bit of a catch 22 - I don't mind the TCA_NTF_WARN_MSG itself
-> > but I would prefer for the extack via notification to spread to other
-> > notifications.
->
-> Not sure if we could find a way to pass the GROUP ID to netlink_ack(),
-> and use nlmsg_notify() instead of nlmsg_unicast() in it. Then the tc monitor
-> could handle the NLMSG_ERROR directly.
->
+Smatch complains that:
 
-That's what I meant. Do you have time to try this? Otherwise i will make time.
-Your patch is still very specific to cls. If you only look at h/w
-offload, actions can also
-be added independently and fail independently as well. But in general this would
-be useful for all notifications.
+    drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c:112
+    sparx5_dcb_apptrust_validate() error: uninitialized symbol 'match'.
 
-cheers,
-jamal
+This would only happen if the:
+
+	if (sparx5_dcb_apptrust_policies[i].nselectors != nselectors)
+
+condition is always true (they are not equal).  The "nselectors"
+variable comes from dcbnl_ieee_set() and it is a number between 0-256.
+This seems like a probably a real bug.
+
+Fixes: 23f8382cd95d ("net: microchip: sparx5: add support for apptrust")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+index 8108f3767767..74abb946b2a3 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+@@ -90,7 +90,7 @@ static int sparx5_dcb_app_validate(struct net_device *dev,
+ static int sparx5_dcb_apptrust_validate(struct net_device *dev, u8 *selectors,
+ 					int nselectors, int *err)
+ {
+-	bool match;
++	bool match = false;
+ 	int i, ii;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(sparx5_dcb_apptrust_policies); i++) {
+-- 
+2.35.1
+
