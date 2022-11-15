@@ -2,65 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32342629912
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:41:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 902A4629918
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:42:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232318AbiKOMlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 07:41:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54140 "EHLO
+        id S230269AbiKOMm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 07:42:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238060AbiKOMlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:41:07 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DA927903;
-        Tue, 15 Nov 2022 04:41:00 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id q1so13136376pgl.11;
-        Tue, 15 Nov 2022 04:41:00 -0800 (PST)
+        with ESMTP id S229915AbiKOMm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:42:26 -0500
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B132495D
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 04:42:25 -0800 (PST)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-381662c78a9so54883987b3.7
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 04:42:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=X48jndA48qamIcOHPaTLYuNvAj5Lrb1g9vbTbZYhFQc=;
-        b=HAXj2tHHM24Bhc1gdboVHdUno8Z2VKIRV+vIGCA8EksN02AerQTU0kUcLCBZG4ncI+
-         ytcos098fBHesTCNGpcqhVKbGHAhjZniy7hM6Q/SciOSvslmHLOYwqhtq3UXRgKyXfXw
-         nMJrdrJc7KvSXh5vDxlRcWlNGIiH9tpbTCBMSnqQaaJ2CKJx+X75cz7L0u5oUAcw6Gck
-         IubbLDCtH4egdCuoczxO97lp7+mZbmIJdf93iecJOM6rUV2R51yP3NsgupCih1/wMcjn
-         5rVMZBZTSUw9I2Dc5MPKUyIWa4GAkmoSyUcSB0dsA+p1FATPjuYl9kE414bAcy/e8LaF
-         pM9g==
+        bh=ndvL+LWFIFHiR4ZFE63kQCRCZ7+lbgNMFKJx+vErgmg=;
+        b=Hl+wrTR6KNNwC4Xgu6anGZ+UXNi0mlkPHgXe3LpXymd2CzkGI0BmGwj0VIgnlBT/x/
+         XE/oQpmjsAVBJsHti7tzPKttW8lWIF5M3kHDMKFyoZhRSHJukkDIYqXkyZOr3hOuz0/9
+         HfvpnpTBW9JBGHApQLTMDkXuuYcKnLWPlEKhqkQiM3relmh6bdfbbCKs4FM2yAD0GPQg
+         f4S3hg2FwPUtENvwb475KFvYpHWgIadG6dtcyKOuA/tfGh3C08frIzrVcDmWThA26QXb
+         OSyPV6fohmpWFAB9sjqKj87USZpZIjyXfoJ8ut2pPJ+sBm1gdLTlSATy7/QoPpHNTJzO
+         lAqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=X48jndA48qamIcOHPaTLYuNvAj5Lrb1g9vbTbZYhFQc=;
-        b=qivblZm28/2pTII1a5d5pBIUG9SoWJw3pt318BC/SX3GxGX7iU76qnHpyCTp8ywAe8
-         5n3OGvUHh/wBdvnjKHWXcKy+VJJK5nDPxRNhvbByg+PesmpjIvdk0ivnKdZs+j+RDDJA
-         KlpxAouWSS8fAKYfIg2H0RZvaMrgCO4Qr+iu+zgrVSfngXkEV2VkNwcXA1BRMNQm5oeB
-         NdWK3fsTzK3C7N0jrBJh3dCbnQUQLlPHlqW85Pob09EPoFD3qO4vT7dv/gayUfvFernc
-         6/5XZMjBQONUbVdO+Oahwb9m2y2JbEHDyMeU3tjg9dmNkz4TIw9KngOSuzfRE2PznsTv
-         cjWw==
-X-Gm-Message-State: ANoB5pmHTfq0CM4fI4PzUWFNDi3Tl7gIuqWG+fh4BFx/puiWSkRkJz8B
-        ORVdsHcsfkP+5pT/SZpxXSyfFX8tUYNPUQ/9IO4=
-X-Google-Smtp-Source: AA0mqf5+gnQpQgUz/iVfkLxfYcva2ozYe1khPPHOU+EYpTchqGeUYmYHpgL2C6SUuNhn2oJMYwqa3W7NwHxwGITfRAQ=
-X-Received: by 2002:a05:6a00:991:b0:571:baf8:8945 with SMTP id
- u17-20020a056a00099100b00571baf88945mr16819734pfg.83.1668516059820; Tue, 15
- Nov 2022 04:40:59 -0800 (PST)
+        bh=ndvL+LWFIFHiR4ZFE63kQCRCZ7+lbgNMFKJx+vErgmg=;
+        b=Ok28/uGKlQ189OedOAqReS/e2bfIIlzB4nVoYbkoPjb4IfFOMlM2RlS2gD6xwsOO7Q
+         EaZTFiBjvaRRvIrG93b6SlAN9Ij/rWJtowlhFpu+NiJ9XrtwRwG+UZqEMtowCeXlMenh
+         Daus4o0p/QmtKQFBzgZ+PHk7JJXrJnzXaLLt1iW9v1dtSRcCsS9pvJ8uSvF7SlYJ151Y
+         JHJXZqIZ8jLHSwKda8FzfLhZEEvV2pP6aYx74b5vVn/oF7yTva9PWR72ZYwh6ObxewD8
+         lFeRo6NsGEMiU/5L1zud1r9vAX8eqSmeJwGHzLRMmlOLrpjrbQsY5oBJ36ReX4Q4FiJB
+         y85w==
+X-Gm-Message-State: ANoB5pkGCqTWLRnCvORMaUHOkGOLpjhU/BPC+zTMzk0Xrqxo2hmBCXxa
+        kY7HhRR//QkMcF83NhGF0cU/zRpMWYFw+vqkS3xzDg==
+X-Google-Smtp-Source: AA0mqf4glYHxwGugJypolRnlsmMVkb5rHewMTRO6Gu777NjyypKI6vWEtK0QZwVjlnUdUSqD2oSX9EjokzAofv8GakI=
+X-Received: by 2002:a81:708a:0:b0:378:a8c7:7614 with SMTP id
+ l132-20020a81708a000000b00378a8c77614mr17497509ywc.146.1668516145090; Tue, 15
+ Nov 2022 04:42:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20221115080538.18503-1-magnus.karlsson@gmail.com>
- <20221115080538.18503-2-magnus.karlsson@gmail.com> <Y3OGJv2lym4u86C/@boxer>
-In-Reply-To: <Y3OGJv2lym4u86C/@boxer>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 15 Nov 2022 13:40:48 +0100
-Message-ID: <CAJ8uoz3kLArrELgNi7gr_xx_9dPSD6QrwZvw9-2mzqHr9y_yTw@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/3] selftests/xsk: print correct payload for packet dump
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, bpf@vger.kernel.org
+References: <Y1kEtovIpgclICO3@Laptop-X1> <CAM0EoMmFCoP=PF8cm_-ufcMP9NktRnpQ+mHmoz2VNN8i2koHbw@mail.gmail.com>
+ <20221102163646.131a3910@kernel.org> <Y2odOlWlonu1juWZ@Laptop-X1>
+ <20221108105544.65e728ad@kernel.org> <Y2uUsmVu6pKuHnBr@Laptop-X1>
+ <CAM0EoMmx6i42WR=7=9B1rz=6gcOxorgyLDGseeEH7EYRPMgnzg@mail.gmail.com>
+ <20221109182053.05ca08b8@kernel.org> <CAM0EoMm1Jx3mcGJK_XasTpVjm7uGHzVXhXN8=MAQUExJhuPFvw@mail.gmail.com>
+ <20221110092709.06859da9@kernel.org> <Y3MCaaHoMeG7crg5@Laptop-X1> <20221114205143.717fd03f@kernel.org>
+In-Reply-To: <20221114205143.717fd03f@kernel.org>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Tue, 15 Nov 2022 07:42:13 -0500
+Message-ID: <CAM0EoMmS3rStT3GozeV2-n+MYS8QqeZb9q5QQcifc9EbaQWR3w@mail.gmail.com>
+Subject: Re: [PATCH (repost) net-next] sched: add extack for tfilter_notify
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,65 +76,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 1:29 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
+On Mon, Nov 14, 2022 at 11:51 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Tue, Nov 15, 2022 at 09:05:36AM +0100, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> On Tue, 15 Nov 2022 11:07:21 +0800 Hangbin Liu wrote:
+
+[..]
+> > I have finished a patch with TCA_NTF_WARN_MSG to carry the string message.
+> > But looks our discussion goes to a way that this feature is not valuable?
 > >
-> > Print the correct payload when the packet dump option is selected. The
-> > network to host conversion was forgotten and the payload was
-> > erronously declared to be an int instead of an unsigned int. Changed
-> > the loop index i too, as it does not need to be an int and was
-> > declared on the same row.
-> >
-> > The printout looks something like this after the fix:
-> >
-> > DEBUG>> L2: dst mac: 000A569EEE62
-> > DEBUG>> L2: src mac: 000A569EEE61
-> > DEBUG>> L3: ip_hdr->ihl: 05
-> > DEBUG>> L3: ip_hdr->saddr: 192.168.100.161
-> > DEBUG>> L3: ip_hdr->daddr: 192.168.100.162
-> > DEBUG>> L4: udp_hdr->src: 2121
-> > DEBUG>> L4: udp_hdr->dst: 2020
-> > DEBUG>> L5: payload: 4
-> > ---------------------------------------
+> > So maybe I should stop on here?
 >
-> Above would be helpful if previous output was included as well but not a
-> big deal i guess.
+> It's a bit of a catch 22 - I don't mind the TCA_NTF_WARN_MSG itself
+> but I would prefer for the extack via notification to spread to other
+> notifications.
+>
 
-It would not bring any value IMHO. The only difference is that the
-"L5: payload" row is now showing the correct payload.
++1.
+I got distracted but was thinking of  sending a sample patch. I think
+we can do it for all if we pass extack to nlmsg_notify() from all callers
+and then check if extack is present and do the NLM_F_ACK_TLVS
+dance in there.
+Hangbin - maybe consider this approach?
 
-> >
-> > Fixes: facb7cb2e909 ("selftests/bpf: Xsk selftests - SKB POLL, NOPOLL")
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/xskxceiver.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-> > index 681a5db80dae..51e693318b3f 100644
-> > --- a/tools/testing/selftests/bpf/xskxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xskxceiver.c
-> > @@ -767,7 +767,7 @@ static void pkt_dump(void *pkt, u32 len)
-> >       struct ethhdr *ethhdr;
-> >       struct udphdr *udphdr;
-> >       struct iphdr *iphdr;
-> > -     int payload, i;
-> > +     u32 payload, i;
-> >
-> >       ethhdr = pkt;
-> >       iphdr = pkt + sizeof(*ethhdr);
-> > @@ -792,7 +792,7 @@ static void pkt_dump(void *pkt, u32 len)
-> >       fprintf(stdout, "DEBUG>> L4: udp_hdr->src: %d\n", ntohs(udphdr->source));
-> >       fprintf(stdout, "DEBUG>> L4: udp_hdr->dst: %d\n", ntohs(udphdr->dest));
-> >       /*extract L5 frame */
-> > -     payload = *((uint32_t *)(pkt + PKT_HDR_SIZE));
-> > +     payload = ntohl(*((u32 *)(pkt + PKT_HDR_SIZE)));
-> >
-> >       fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
-> >       fprintf(stdout, "---------------------------------------\n");
-> > --
-> > 2.34.1
-> >
+cheers,
+jamal
+
+> If you have the code ready - post it, let's see how folks feel after
+> sleeping on it.
