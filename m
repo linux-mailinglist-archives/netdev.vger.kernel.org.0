@@ -2,80 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AADA66293C8
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 10:04:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D67236293E1
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 10:08:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232604AbiKOJEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 04:04:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35668 "EHLO
+        id S229514AbiKOJIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 04:08:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiKOJEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:04:41 -0500
-X-Greylist: delayed 478 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Nov 2022 01:04:40 PST
-Received: from mx.swemel.ru (mx.swemel.ru [95.143.211.150])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29B6E0B6
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:04:40 -0800 (PST)
-From:   Denis Arefev <arefev@swemel.ru>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=swemel.ru; s=mail;
-        t=1668502598;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=titrkMrDcowcbFHiIEkft2+i/QPFU6J/UtsyULbfVp4=;
-        b=guilbAL7ooXHiYs7CzcuqZVJ0qvqu6zHiMmzLxPl7XECNmqQQxjdTVRZx8rsoFwAvbFTgU
-        Izlt2TOyjAy3vSKwLyMzJAnxmpNCAeu5Qh0sHyojJfJbRkQybR/jLi5HROpSISYOcFukbN
-        r9KKeu/WrXWwwoE+xXMkSD6WcknjW38=
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, oss-drivers@netronome.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org, trufanov@swemel.ru, vfh@swemel.ru
-Subject: [PATCH] lag_conf: Added pointer check
-Date:   Tue, 15 Nov 2022 11:56:37 +0300
-Message-Id: <20221115085637.72193-1-arefev@swemel.ru>
+        with ESMTP id S237649AbiKOJIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:08:18 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A9A1E71F;
+        Tue, 15 Nov 2022 01:08:15 -0800 (PST)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NBKy95RNpzJnj5;
+        Tue, 15 Nov 2022 17:05:05 +0800 (CST)
+Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 15 Nov 2022 17:07:44 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.30) by
+ kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 15 Nov 2022 17:07:44 +0800
+From:   Hui Tang <tanghui20@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <mw@semihalf.com>, <linux@armlinux.org.uk>, <leon@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yusongping@huawei.com>
+Subject: [PATCH net v2] net: mvpp2: fix possible invalid pointer dereference
+Date:   Tue, 15 Nov 2022 17:04:33 +0800
+Message-ID: <20221115090433.232165-1-tanghui20@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.30]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600005.china.huawei.com (7.193.23.191)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return value of a function 'kmalloc_array' is dereferenced at lag_conf.c:347
-without checking for null, but it is usually checked for this function.
+It will cause invalid pointer dereference to priv->cm3_base behind,
+if PTR_ERR(priv->cm3_base) in mvpp2_get_sram().
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Denis Arefev <arefev@swemel.ru>
+Fixes: a59d354208a7 ("net: mvpp2: enable global flow control")
+Signed-off-by: Hui Tang <tanghui20@huawei.com>
 ---
- drivers/net/ethernet/netronome/nfp/flower/lag_conf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+v1 -> v2: patch title include target
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
-index 63907aeb3884..95ba6e92197d 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
-@@ -276,7 +276,7 @@ static void nfp_fl_lag_do_work(struct work_struct *work)
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index d98f7e9a480e..c92bd1922421 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -7421,7 +7421,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
  
- 	mutex_lock(&lag->lock);
- 	list_for_each_entry_safe(entry, storage, &lag->group_list, list) {
--		struct net_device *iter_netdev, **acti_netdevs;
-+		struct net_device *iter_netdev, **acti_netdevs = NULL;
- 		struct nfp_flower_repr_priv *repr_priv;
- 		int active_count = 0, slaves = 0;
- 		struct nfp_repr *repr;
-@@ -308,6 +308,8 @@ static void nfp_fl_lag_do_work(struct work_struct *work)
+ 		/* Enable global Flow Control only if handler to SRAM not NULL */
+-		if (priv->cm3_base)
++		if (!IS_ERR_OR_NULL(priv->cm3_base))
+ 			priv->global_tx_fc = true;
+ 	}
  
- 		acti_netdevs = kmalloc_array(entry->slave_cnt,
- 					     sizeof(*acti_netdevs), GFP_KERNEL);
-+		if (!acti_netdevs)
-+		 break;
- 
- 		/* Include sanity check in the loop. It may be that a bond has
- 		 * changed between processing the last notification and the
 -- 
-2.25.1
+2.17.1
 
