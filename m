@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A73B6629ED1
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 17:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C974B629ECE
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 17:19:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238627AbiKOQTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 11:19:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
+        id S238544AbiKOQT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 11:19:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238629AbiKOQTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 11:19:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC6F2F67F
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 08:17:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668529066;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dDNdu3Y9fr5FOdr8MTcDO+pL9js6k+/irqVmUcE/IG0=;
-        b=Xw+vMsLqLP9L7542ruzEvg/e4oo6xevorFsm9LwpVaYmXo25l7FJUDvuMqN+2KwgPD2tIb
-        qCO1KW8LTsT2imo6rc45KsbMTRvp7hDU4XS+0QE7h4vDRNHYsI2JeEIpuo49+ChWK9bNjM
-        BbWHlVQXhvpwW8RGZlYStvpYOQpQYTg=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-675-p7K0WqEGMOmUx3cWV-dDVA-1; Tue, 15 Nov 2022 11:17:45 -0500
-X-MC-Unique: p7K0WqEGMOmUx3cWV-dDVA-1
-Received: by mail-ej1-f72.google.com with SMTP id xj11-20020a170906db0b00b0077b6ecb23fcso7592371ejb.5
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 08:17:44 -0800 (PST)
+        with ESMTP id S238548AbiKOQTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 11:19:11 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7331FCEC;
+        Tue, 15 Nov 2022 08:18:51 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id l11so22625803edb.4;
+        Tue, 15 Nov 2022 08:18:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uINY/jIMIxRyn6m5pdLz4FKta5fxJkrYSOuMFgbaZyk=;
+        b=nNkc8aWzbTjyfUr8kEZx+5alsQ68tw9ghy1Szis2HjFmXT40tm5T6ddp4pxL12POxZ
+         c141tfSBWGqFAIw5gScAlVp79RWvnaHk0hssR9rWDYCYqYhU3+9isAEjE34yIyUWoPIn
+         EOqiO1h2hzyioaChAQKNdG0mWUlmnys2wCBtLjifrGfJC83MCs0IDZKK+Rk1Qqkdpiyd
+         mCWSJNXoyjslI1iBD7+8DmgIlggBP34oFVVFVELlnDvOCP3SMRRiUyY0vgeRnbXZqf4h
+         EctjONEQtVI++e0BUc73h71UtVhy+LJtvAKDdnmGzK0uI7mTcNSHMkslpIu46KAMYjUV
+         qCuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dDNdu3Y9fr5FOdr8MTcDO+pL9js6k+/irqVmUcE/IG0=;
-        b=kAY7aQFTxK3nq6lG5DSgYXMqPGHb6hJFnGG4FgeaLIouaO6KAVXi3JI3ds5IDBDqVl
-         hdjKenlGXpEZWF9+Qg4seYse5iOWPQ5g4IzCFFHK4eDUNEBMx2qCYZ9tkdExd6whrdLU
-         w7rZNzYNOMt1R/uN+2g5aw/9QATsUbuFk7Ze2CUL/Fr3f0Lk3giuYKLhmzvkHFyO2gx0
-         S59qEatMOBmYdH2KtyZp1mIvhyau21YaoGyd03VEHMJHzYN5JktE0EJTnCQ+SIBH+6i9
-         LPZlj1iRquCp3zKKflvVN2YDkz5CLtAgIAMjcMF5gno3AZLcU8lhBJQP4KexQhnGECD/
-         Zdzw==
-X-Gm-Message-State: ANoB5pmr+dLwS8S9QXs/YnkRva+1R0vpyLlhhimRyF7ngvrLyYkNp1+T
-        whr966ssPUm1IUHDZRrNMb5r8oZ8rKvRuhUDQo6xEjM4KJfaN6bnvc//2EwOYf11T4bjFvLhvsD
-        Vh3qAIArJRUe9mCiq
-X-Received: by 2002:a17:906:4dd6:b0:7ad:a030:487e with SMTP id f22-20020a1709064dd600b007ada030487emr14892573ejw.508.1668529063847;
-        Tue, 15 Nov 2022 08:17:43 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4cIst8+Ig0NZcClVeIsQkF2jZkdjAmTbe5xwQCO1YruIKHoWA/N3/mXPzzpNeqf2RQNQE7OA==
-X-Received: by 2002:a17:906:4dd6:b0:7ad:a030:487e with SMTP id f22-20020a1709064dd600b007ada030487emr14892527ejw.508.1668529063454;
-        Tue, 15 Nov 2022 08:17:43 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id r7-20020aa7cfc7000000b004610899742asm6234653edy.13.2022.11.15.08.17.42
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uINY/jIMIxRyn6m5pdLz4FKta5fxJkrYSOuMFgbaZyk=;
+        b=ogDdQ9pk2MiCJMZt58NZfB/3cOqj9/o5/dFNgpcBBIM3lDfT/e10ZK7bvJrH7oxFF5
+         HjCG9BPxyUp5vfvlq8Sx07ZkU5GgciLPw6rx7gzPjIbKrjbXlu3Hl/SnDyWbTvonQwXH
+         Bo2FtwOxIYCE3eb4DLbvf+OI/9lZUcnCP91baQ1E76sjVAiH466/b6hqJFpqLPgcGyTr
+         /9opHkiJ71Rt1KD8VUpElOT6ty7vDV8U3A6cSdiEdXKME99Wsa7DQfu3Xx0Jt5CkVDdy
+         V6K7xFpzksggodyfw0CCUUVsAMMvVuTWBYt2n2W2faqA3iNxOOV+ReeGnCqY7EaHvMwr
+         Kaqw==
+X-Gm-Message-State: ANoB5plA9hh4m7GIm69GoVW5BlLJRVAlNTKNGnrny2ITul6y0DIrkWiX
+        5x+wajzVGhbCW5+MseLRdws=
+X-Google-Smtp-Source: AA0mqf5Pcwb4Fcrg3PPWz2jGjAx09kUO3+McZ/HW63p07odhpPSiUWELlzhFb/g/4JGD3FZmF4kT1w==
+X-Received: by 2002:a05:6402:1856:b0:461:dc29:275b with SMTP id v22-20020a056402185600b00461dc29275bmr15819135edy.108.1668529129431;
+        Tue, 15 Nov 2022 08:18:49 -0800 (PST)
+Received: from skbuf ([188.26.57.19])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906210a00b0078dce9984afsm5625377ejt.220.2022.11.15.08.18.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 08:17:42 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4A90F7A6CDA; Tue, 15 Nov 2022 17:17:42 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] [PATCH bpf-next 05/11] veth: Support rx timestamp
- metadata for xdp
-In-Reply-To: <20221115030210.3159213-6-sdf@google.com>
-References: <20221115030210.3159213-1-sdf@google.com>
- <20221115030210.3159213-6-sdf@google.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 15 Nov 2022 17:17:42 +0100
-Message-ID: <87h6z0i449.fsf@toke.dk>
+        Tue, 15 Nov 2022 08:18:48 -0800 (PST)
+Date:   Tue, 15 Nov 2022 18:18:46 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     netdev@kapio-technology.com
+Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
+Message-ID: <20221115161846.2st2kjxylfvlncib@skbuf>
+References: <Y3NcOYvCkmcRufIn@shredder>
+ <5559fa646aaad7551af9243831b48408@kapio-technology.com>
+ <20221115102833.ahwnahrqstcs2eug@skbuf>
+ <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
+ <20221115111034.z5bggxqhdf7kbw64@skbuf>
+ <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
+ <20221115122237.jfa5aqv6hauqid6l@skbuf>
+ <fb1707b55bd8629770e77969affaa2f9@kapio-technology.com>
+ <20221115145650.gs7crhkidbq5ko6v@skbuf>
+ <f229503b98d772c936f1fc8ca826a14f@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f229503b98d772c936f1fc8ca826a14f@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,60 +84,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev <sdf@google.com> writes:
+On Tue, Nov 15, 2022 at 05:03:01PM +0100, netdev@kapio-technology.com wrote:
+> Yes, so you want me to simply increase the 50ms on line 58 in smi.c...
+> 
+> I have now tried to increase it even to 10000ms == 10s and it didn't help,
+> so something else must be needed...
 
-> The goal is to enable end-to-end testing of the metadata
-> for AF_XDP. Current rx_timestamp kfunc returns current
-> time which should be enough to exercise this new functionality.
->
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> Cc: xdp-hints@xdp-project.net
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  drivers/net/veth.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 2a4592780141..c626580a2294 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -25,6 +25,7 @@
->  #include <linux/filter.h>
->  #include <linux/ptr_ring.h>
->  #include <linux/bpf_trace.h>
-> +#include <linux/bpf_patch.h>
->  #include <linux/net_tstamp.h>
->  
->  #define DRV_NAME	"veth"
-> @@ -1659,6 +1660,18 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
->  	}
->  }
->  
-> +static void veth_unroll_kfunc(const struct bpf_prog *prog, u32 func_id,
-> +			      struct bpf_patch *patch)
-> +{
-> +	if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
-> +		/* return true; */
-> +		bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
-> +	} else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
-> +		/* return ktime_get_mono_fast_ns(); */
-> +		bpf_patch_append(patch, BPF_EMIT_CALL(ktime_get_mono_fast_ns));
-> +	}
-> +}
-
-So these look reasonable enough, but would be good to see some examples
-of kfunc implementations that don't just BPF_CALL to a kernel function
-(with those helper wrappers we were discussing before).
-
--Toke
-
+Not only that, but also the one in mv88e6xxx_wait_mask().
