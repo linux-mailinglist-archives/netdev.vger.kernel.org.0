@@ -2,157 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78FAB62978E
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C26629796
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbiKOLhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 06:37:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41788 "EHLO
+        id S229993AbiKOLjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 06:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiKOLhe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:37:34 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC9924BEB
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:37:32 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id k8so23794020wrh.1
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:37:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YiLRB+no6Obv7jh7c1l04K32ySwQNOr1SFbZK57JYcE=;
-        b=Iud274mEKb6gZLmUkIMS0HEBSJoqBMdOKEfk8qwd2MtJLczLjJRzoaL8507alqoL3D
-         Ov+cYEcS0L3k3LmCx17JcRv/B0ThjUgCbfaVyFM4lj77nww8ID8Ub2JJEDSRF43PDVYm
-         GUPab/bDvGz/S+KHx2O9YWpKHqF/3mmrIzJydxoJW3zQmciG7vttQrlhepL07+p8+iHr
-         q+k6sgMxuo+ajcoNjwpOwEMi0wL3CqwP8zTBTZ3oh5PH1l2wxHZwcP5QMoaCGP3t4HpB
-         m67QPaxcrGiGeb3aEyZ4QVK4Fv7XfllRt14Nm1YzBk9ydpIXMzvX5LNDhOCmfBb28fYX
-         EzkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YiLRB+no6Obv7jh7c1l04K32ySwQNOr1SFbZK57JYcE=;
-        b=O4lQuPLMcd/eTRmqFwvMY/p12KRouOvN4whhD+SlNvWd5PgRHRLKGqUjBgxPoLu+ZT
-         zEMkE0fmzA87SVlAInEu8HuZ8MPjiZVvqPMNA2ZmYigBSv0q7So5In099TfCw9wGT1HF
-         m/zUx7FEunaTbqYVVziFUXVbFMNfRTF/2KlJj78Mj0L+2ejIqf4VhtH8tLSfTNld5rSJ
-         Ic8f7LCbhF1NzGz73RE5RLYJ4lYsab6PwN/sVn7L7flRnGBHvrXENy0R3oSma4ULoz4S
-         f4T6aMg2qH9v6eOt4R8zfJSEc9Y1rCALabdSP/YR6CfVtWG0ca7hGx1dl7ImKWYHAdHc
-         8XMQ==
-X-Gm-Message-State: ANoB5plSgRaxK6vUwEtGff2PyP7AvfutWVr6Lmwu4KV+lT51M0h7k7hC
-        IwwpGn9bv8d5YvOy79QFbux6RA==
-X-Google-Smtp-Source: AA0mqf5qQyE4X+bB4glzYTYH+BISGK/zPAZumkOCxi5PxxgM1BHiuI2Ydnt36gENgeklnQHyuR9VNQ==
-X-Received: by 2002:a5d:49c9:0:b0:236:73fa:c56e with SMTP id t9-20020a5d49c9000000b0023673fac56emr10351544wrs.432.1668512251354;
-        Tue, 15 Nov 2022 03:37:31 -0800 (PST)
-Received: from ?IPV6:2a02:578:8593:1200:765b:95ed:f124:a78a? ([2a02:578:8593:1200:765b:95ed:f124:a78a])
-        by smtp.gmail.com with ESMTPSA id u12-20020adfdb8c000000b002417ed67bfdsm9112478wri.5.2022.11.15.03.37.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Nov 2022 03:37:30 -0800 (PST)
-Message-ID: <f3765a0c-1f57-e244-002e-148c88407f31@tessares.net>
-Date:   Tue, 15 Nov 2022 12:37:29 +0100
+        with ESMTP id S229716AbiKOLjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:39:01 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0DB17064;
+        Tue, 15 Nov 2022 03:38:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ctm4PwBv1snqtyqAMApkebcCB0sHmfgq7yaIIzkxXW8=; b=jBpVzVt7mfICokNfDgmScV1L+L
+        mqZPmFBdS1+qvD31UunFJUW8CV88m26rBFMchO2QEdd6YFmtMIWxvHK7I3ArirvB9eH/+VOCKqIE8
+        iudr6RE+k8n6cOjUzolMeVyig6AE7jROb28nEuS/gFsx1Dpi1KlpXx58eXWR9LxIMfcn6sBePsihU
+        d1EOCP980y/hvi26UmvhnEWNhbS4KHymACCtOrOgQ3dKpIXsxkVFWuyg1CYvDVEwAOgnPltYZ5JBi
+        OK/IwmZpnvtjZ503VpzqK4mXvFWY8df6XWLUaZXzszQAMgCK2Zws1hhKOcMYGRXKuJUbjxWyezFvM
+        iLIjHlnw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35284)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ouuH8-00021j-6Y; Tue, 15 Nov 2022 11:38:46 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ouuH4-0004jd-5D; Tue, 15 Nov 2022 11:38:42 +0000
+Date:   Tue, 15 Nov 2022 11:38:42 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Corentin LABBE <clabbe@baylibre.com>, andrew@lunn.ch,
+        calvin.johnson@oss.nxp.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        kuba@kernel.org, lgirdwood@gmail.com, pabeni@redhat.com,
+        robh+dt@kernel.org, samuel@sholland.org, wens@csie.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        netdev@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: Re: [PATCH v4 1/3] regulator: Add of_regulator_bulk_get_all
+Message-ID: <Y3N6Qhf+RLNrr/nW@shell.armlinux.org.uk>
+References: <20221115073603.3425396-1-clabbe@baylibre.com>
+ <20221115073603.3425396-2-clabbe@baylibre.com>
+ <Y3Nj4pA2+WRFvSNd@sirena.org.uk>
+ <Y3NnirK0bN71IgCo@Red>
+ <Y3NrQffcdGIjS64a@sirena.org.uk>
+ <Y3NtKgb0LpWs0RkB@shell.armlinux.org.uk>
+ <Y3N1JYVx9tB9pisR@sirena.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH net-next] tcp: Fix tcp_syn_flood_action() if CONFIG_IPV6=n
-Content-Language: en-GB
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Chris Down <chris@chrisdown.name>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <d1ecf500f07e063d4e8e34f4045ddca55416c686.1668507036.git.geert+renesas@glider.be>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <d1ecf500f07e063d4e8e34f4045ddca55416c686.1668507036.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3N1JYVx9tB9pisR@sirena.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
-
-On 15/11/2022 11:12, Geert Uytterhoeven wrote:
-> If CONFIG_IPV6=n:
+On Tue, Nov 15, 2022 at 11:16:53AM +0000, Mark Brown wrote:
+> On Tue, Nov 15, 2022 at 10:42:50AM +0000, Russell King (Oracle) wrote:
+> > On Tue, Nov 15, 2022 at 10:34:41AM +0000, Mark Brown wrote:
 > 
->     net/ipv4/tcp_input.c: In function ‘tcp_syn_flood_action’:
->     include/net/sock.h:387:37: error: ‘const struct sock_common’ has no member named ‘skc_v6_rcv_saddr’; did you mean ‘skc_rcv_saddr’?
->       387 | #define sk_v6_rcv_saddr __sk_common.skc_v6_rcv_saddr
-> 	  |                                     ^~~~~~~~~~~~~~~~
->     include/linux/printk.h:429:19: note: in definition of macro ‘printk_index_wrap’
->       429 |   _p_func(_fmt, ##__VA_ARGS__);    \
-> 	  |                   ^~~~~~~~~~~
->     include/linux/printk.h:530:2: note: in expansion of macro ‘printk’
->       530 |  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-> 	  |  ^~~~~~
->     include/linux/net.h:272:3: note: in expansion of macro ‘pr_info’
->       272 |   function(__VA_ARGS__);    \
-> 	  |   ^~~~~~~~
->     include/linux/net.h:288:2: note: in expansion of macro ‘net_ratelimited_function’
->       288 |  net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
-> 	  |  ^~~~~~~~~~~~~~~~~~~~~~~~
->     include/linux/net.h:288:43: note: in expansion of macro ‘sk_v6_rcv_saddr’
->       288 |  net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
-> 	  |                                           ^~~~~~~~~~~
->     net/ipv4/tcp_input.c:6847:4: note: in expansion of macro ‘net_info_ratelimited’
->      6847 |    net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c]:%u. %s.\n",
-> 	  |    ^~~~~~~~~~~~~~~~~~~~
+> > > Well, it's not making this maintainer happy :/  If we know what
+> > > PHY is there why not just look up the set of supplies based on
+> > > the compatible of the PHY?
 > 
-> Fix this by using "#if" instead of "if", like is done for all other
-> checks for CONFIG_IPV6.
-
-Thank you for the patch!
-
-Our CI validating MPTCP also found the issue. I was going to suggest a
-similar one before I saw yours :)
-
-Everything is fixed on my side after having applied the patch!
-
-Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-> Fixes: d9282e48c6088105 ("tcp: Add listening address to SYN flood message")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  net/ipv4/tcp_input.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> > It looks to me like this series fetches the regulators before the PHY
+> > is bound to the driver, so what you're proposing would mean that the
+> > core PHY code would need a table of all compatibles (which is pretty
+> > hard to do, they encode the vendor/device ID, not some descriptive
+> > name) and then a list of the regulator names. IMHO that doesn't scale.
 > 
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 94024fdc2da1b28a..e5d7a33fac6666bb 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -6843,11 +6843,14 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
->  
->  	if (!queue->synflood_warned && syncookies != 2 &&
->  	    xchg(&queue->synflood_warned, 1) == 0) {
-> -		if (IS_ENABLED(CONFIG_IPV6) && sk->sk_family == AF_INET6) {
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +		if (sk->sk_family == AF_INET6) {
->  			net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c]:%u. %s.\n",
->  					proto, &sk->sk_v6_rcv_saddr,
->  					sk->sk_num, msg);
-> -		} else {
-> +		} else
-> +#endif
-> +		{
+> Oh, PHYs have interesting enough drivers to dynamically load
+> here? The last time I was looking at MDIO stuff it was all
+> running from generic class devices but that was quite a while
+> ago.
 
-I was going to suggest to remove the unneeded braces here and just
-before + eventually fix the indentation under net_info_ratelimited()
-while at it but that's just some details not directly linked to the fix
-here.
+There's a couple of generic drivers which are used if there isn't a
+specific driver available for the vendor/device ID that has either
+been probed from the hardware, or discovered encoded in the firmware's
+compatible property.
 
-Cheers,
-Matt
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
