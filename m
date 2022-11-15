@@ -2,112 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB267629BD4
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 15:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5978B629BEE
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 15:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbiKOOSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 09:18:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        id S231316AbiKOOWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 09:22:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229922AbiKOOSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 09:18:52 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4750021A7;
-        Tue, 15 Nov 2022 06:18:48 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 92A20188373F;
-        Tue, 15 Nov 2022 14:18:45 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 8C29B25002DE;
-        Tue, 15 Nov 2022 14:18:45 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 8076291201E4; Tue, 15 Nov 2022 14:18:45 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S230215AbiKOOWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 09:22:19 -0500
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F252C130;
+        Tue, 15 Nov 2022 06:22:17 -0800 (PST)
+Received: by mail-qk1-f171.google.com with SMTP id x21so9566946qkj.0;
+        Tue, 15 Nov 2022 06:22:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MRPFekI2jAh+f9nYCsghmQc07s4JZ1qJBjgZserdqEc=;
+        b=JG6/BdvXs0eYZ4n/wKAndSqNlILRYd+jyQERx0Hu+glV3ZsiJQv26+72Q3rfu9Wodj
+         Duz5qcZ0px0UsGQzv4NB5MLHyrcQBB+KJ/9t53C0CS2qmY1GF44CqkhjOwkU1tJjwyhG
+         n+7m+7NXMOzKe1URjbVMuhw65Ge7Q8PS8AgzjwHrB4vTUUNirhMsCkrnO7fs8iXxPvD/
+         XgueruusmV52h6BCgB5rQVQH5+ZzEiVCRH9MAMjehstL6hIyw2F/FwajrK88Au97L57p
+         qeN6XueHxkuULq0JJUEL0PVEi4KZYp7YiD9jev+snPEkJkiLZZfjuh17f8LTuc1Sq0kN
+         zJYw==
+X-Gm-Message-State: ANoB5plHvOZnHgvwmNlyDWKJRq0C88E0jw18YGjT3yNyIXXbHuiqqOyE
+        phy0lnAv3BJozmsyn3XbnQ4cenyi4YZDng==
+X-Google-Smtp-Source: AA0mqf7/sTbM2QX8z06HgLWFC5+0H5fYegSYZ+4+7JyYGsYDCiAbfzYsZxXsue+j7AKhnGSlqFEtGA==
+X-Received: by 2002:a37:397:0:b0:6f4:ed58:b809 with SMTP id 145-20020a370397000000b006f4ed58b809mr14940284qkd.550.1668522136818;
+        Tue, 15 Nov 2022 06:22:16 -0800 (PST)
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
+        by smtp.gmail.com with ESMTPSA id q6-20020a37f706000000b006ed61f18651sm8142448qkj.16.2022.11.15.06.22.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 06:22:15 -0800 (PST)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-3704852322fso138032477b3.8;
+        Tue, 15 Nov 2022 06:22:14 -0800 (PST)
+X-Received: by 2002:a81:4ed2:0:b0:370:202b:f085 with SMTP id
+ c201-20020a814ed2000000b00370202bf085mr17460201ywb.502.1668522133942; Tue, 15
+ Nov 2022 06:22:13 -0800 (PST)
 MIME-Version: 1.0
-Date:   Tue, 15 Nov 2022 15:18:45 +0100
-From:   netdev@kapio-technology.com
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
+References: <Y3OPo6AOL6PTvXFU@kili>
+In-Reply-To: <Y3OPo6AOL6PTvXFU@kili>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 15 Nov 2022 15:22:02 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWqwVGYdxvMLCQ8uBLA+VoDYiMWOBMmCoKiQWqA52Uw2A@mail.gmail.com>
+Message-ID: <CAMuHMdWqwVGYdxvMLCQ8uBLA+VoDYiMWOBMmCoKiQWqA52Uw2A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: ethernet: renesas: Fix return type in rswitch_etha_wait_link_verification()
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-In-Reply-To: <Y3OSbZs6Ho07D6Yx@lunn.ch>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <Y3NcOYvCkmcRufIn@shredder>
- <5559fa646aaad7551af9243831b48408@kapio-technology.com>
- <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
- <20221115111034.z5bggxqhdf7kbw64@skbuf>
- <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
- <Y3OSbZs6Ho07D6Yx@lunn.ch>
-User-Agent: Gigahost Webmail
-Message-ID: <ed15483fc80a3513c6b41ff412a7aad7@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 14:21, Andrew Lunn wrote:
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:00] driver 
->> [Generic
->> PHY] (irq=POLL)
-> 
-> It is interesting it is using the generic PHY driver, not the Marvell
-> PHY driver.
-> 
->> mv88e6085 1002b000.ethernet-1:04 eth6 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:01] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth9 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:02] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth5 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:03] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth8 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:04] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth4 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:05] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth7 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:06] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth3 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:07] driver 
->> [Generic
->> PHY] (irq=POLL)
->> mv88e6085 1002b000.ethernet-1:04 eth2 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:08] driver
->> [Marvell 88E1112] (irq=174)
->> mv88e6085 1002b000.ethernet-1:04 eth1 (uninitialized): PHY
->> [!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:09] driver
->> [Marvell 88E1112] (irq=175)
-> 
-> And here it does use the Marvell PHY driver. Are ports 8 and 9
-> external, where as the others are internal?
-> 
->     Andrew
+On Tue, Nov 15, 2022 at 2:14 PM Dan Carpenter <error27@gmail.com> wrote:
+> The rswitch_etha_wait_link_verification() is supposed to return zero
+> on success or negative error codes.  Unfortunately it is declared as a
+> bool so the caller treats everything as success.
+>
+> Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-It is an 8 port switch, so the two (8+9) are for internal use, I guess, 
-as I
-have not had any part in the system design etc of this device.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-I have it for test and development purposes, incl. upstreaming.
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
