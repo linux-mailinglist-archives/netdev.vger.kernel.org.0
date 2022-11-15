@@ -2,157 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE19629952
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F81E629956
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:54:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbiKOMyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 07:54:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
+        id S238136AbiKOMyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 07:54:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238348AbiKOMx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:53:57 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6908A28717
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 04:53:47 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id p184so10527323iof.11
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 04:53:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7T8Z9k/WSW3C/sE+kXbNggOaFfWMjgf59LaJO7rAnEU=;
-        b=xpSP1Z0yFq9lAZSnyC0nQyN2VqA+WArLaNIOK2PliGH4W2ajvZvydR5maGEqkDyWAX
-         /6StPGUvpVEYfx6VjtQNdjhgpp78BuwegZOTdhJ6mNnJlsa7fVi7Ls2AJMDKkOpdxlo7
-         KAukloV0CwCwoeJZgw/JeARuEnA1QCbalFomoLRhGqBdnhiR0SGVPcrtdTGmg5E/KuQs
-         mO9CUZFgQNlSucFqreGh11NRPkPxubMdQD1bVYN6MRD+8by9/Tp5kY3LV+FzzKZWjMzZ
-         fzFUwcg7LZfeZ64kRlnCDsAguisHSk6c91e2JC5Eic+CgXC7zB9MTg60ifzSpSyWgCca
-         Q+EQ==
+        with ESMTP id S238256AbiKOMyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:54:03 -0500
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F6BF08;
+        Tue, 15 Nov 2022 04:54:01 -0800 (PST)
+Received: by mail-qv1-f54.google.com with SMTP id c8so9675584qvn.10;
+        Tue, 15 Nov 2022 04:54:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7T8Z9k/WSW3C/sE+kXbNggOaFfWMjgf59LaJO7rAnEU=;
-        b=GCdC7XjzgiZ8OhDNJr14T9Br8TNjBqjvjm8VsE5kUq/PWjma6nfybixZcu04NYTvKX
-         7CyGzDROxBViW7Z3U+IPs5022XbXf+taJvSoLQrKH6yUx7/Wy7yp0WmdsZvE7ZdiDOoO
-         IECzCK8dY9/OLaNGUkzH2g3Vv/3rP4UV1bdp3FoLcoAqwrEV5RQ+AeKmYx1JIEEMBHwq
-         JtIkucaOssxgZgfjKSZl1y6BavEBwE0I6tZcCjM74ctQ5EZ8wq81I5wif5oc+8JEfZhQ
-         tmcL3WX8qtWR3jdAQiIEj1tbjxTSwot/BeWmulIpVQ5o1yOjXF8M7fPRQ+B3ovKCVgRe
-         J9aA==
-X-Gm-Message-State: ANoB5pm9CzGZIz54bwEflFnjn9c2Ma8/q7lYifeYJ3CwD7VR3WKuDA1y
-        hmrwPZ2wNrZPymj3ooRN3z7mPqBJdSiCtlrZsGk76R6n2aXW8JCC
-X-Google-Smtp-Source: AA0mqf53cL6DyqN7ZIzesNpzPUxXbF6j/A6pn+eQUj0mRp9WIogr3QKH+MJHbCSIQX+UGalSXPxT9m9UdWI2F4Jdyzg=
-X-Received: by 2002:a02:ccf1:0:b0:375:ab48:de95 with SMTP id
- l17-20020a02ccf1000000b00375ab48de95mr7628617jaq.14.1668516826738; Tue, 15
- Nov 2022 04:53:46 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kNu7gqY5FuH+enfhy3h6rYwlDBJbYmHEghI0eWJOGto=;
+        b=SljO9RvVBg2lSIB3MjXszVfqTGsBSgdblt1SPJRFIsmX4BJ3NFtxPc4tniJmU4Gwc6
+         Pzwg9ObTnHnCTq6Q7+ZcCY2RhiVTA7ZR0smXq9UCarQgE83hoS2Xy33nuIR20jdFY7r3
+         dUJf54jgyWZOzR7Oer/9QwrqESg8gt6bkrXw7IK8ckIikTKRyWfINFMU4i6GimHAE0nS
+         P4p0SpIBtpt0IfX5y4WUPwKBN2+Qif9aFNTyebgg4hT515UdLlsRxsDWuH/u1H/88ZCV
+         YzLal6T4v61hU9Y5HwHiklb+EgC4yMf0Kg8LX9MWSp4WyjeafHxslNLWACoXKm/7bCPV
+         V8mg==
+X-Gm-Message-State: ANoB5pnMHkRFzmNO1lQdP8K6d2+wDaalzlAZD3EbHxzobJlznJL5L80O
+        Z01eTn8QrLCC0h5Ge/SvgwWt3Pf8AzR7TQ==
+X-Google-Smtp-Source: AA0mqf4L4XoJkaz0N84B4fZlnMo61pNwhvn1OY1j1Ec4XjZkzokjSHMXByi/99Z50ECi0e+yxT20MA==
+X-Received: by 2002:a0c:d807:0:b0:4be:a152:aca9 with SMTP id h7-20020a0cd807000000b004bea152aca9mr16460076qvj.102.1668516840765;
+        Tue, 15 Nov 2022 04:54:00 -0800 (PST)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05620a25d400b006faa88ba2b5sm8247906qko.7.2022.11.15.04.54.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 04:54:00 -0800 (PST)
+Received: by mail-yb1-f182.google.com with SMTP id b131so16355920yba.11;
+        Tue, 15 Nov 2022 04:54:00 -0800 (PST)
+X-Received: by 2002:a25:ba4c:0:b0:6dc:dc81:aaf4 with SMTP id
+ z12-20020a25ba4c000000b006dcdc81aaf4mr15188013ybj.365.1668516840123; Tue, 15
+ Nov 2022 04:54:00 -0800 (PST)
 MIME-Version: 1.0
-References: <878rkc1jk7.fsf@all.your.base.are.belong.to.us>
-In-Reply-To: <878rkc1jk7.fsf@all.your.base.are.belong.to.us>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 15 Nov 2022 13:53:36 +0100
-Message-ID: <CADYN=9LfU3g9MCk0TZZN=tv6keAM_xPUhe9bMTczLdNw=FHELQ@mail.gmail.com>
-Subject: Re: BPF, cross-compiling, and selftests
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
+References: <20221115123811.1182922-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20221115123811.1182922-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 15 Nov 2022 13:53:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV8r-QXi6KBsZs2SE8t34e8is05xwCrWqfTL3XP-mAGVA@mail.gmail.com>
+Message-ID: <CAMuHMdV8r-QXi6KBsZs2SE8t34e8is05xwCrWqfTL3XP-mAGVA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: can: renesas,rcar-canfd: Document RZ/Five SoC
+To:     Prabhakar <prabhakar.csengg@gmail.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Nov 2022 at 13:36, Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org> wrot=
-e:
+On Tue, Nov 15, 2022 at 1:51 PM Prabhakar <prabhakar.csengg@gmail.com> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 >
+> The CANFD block on the RZ/Five SoC is identical to one found on the
+> RZ/G2UL SoC. "renesas,r9a07g043-canfd" compatible string will be used
+> on the RZ/Five SoC so to make this clear, update the comment to include
+> RZ/Five SoC.
+>
+> No driver changes are required as generic compatible string
+> "renesas,rzg2l-canfd" will be used as a fallback on RZ/Five SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Hi,
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Adding the kselftest list
+Gr{oetje,eeting}s,
 
-> I ran into build issues when building selftests/net on Ubuntu/Debian,
-> which is related to that BPF program builds usually needs libc (and the
-> corresponding target host configuration/defines).
->
-> When I try to build selftests/net, on my Debian host I get:
+                        Geert
 
-I've ran into this issue too building with tuxmake [1] that uses
-debian containers.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
->
->   clang -O2 -target bpf -c bpf/nat6to4.c -I../../bpf -I../../../../lib -I=
-../../../../../usr/include/ -o /home/bjorn/src/linux/linux/tools/testing/se=
-lftests/net/bpf/nat6to4.o
->   In file included from bpf/nat6to4.c:27:
->   In file included from /usr/include/linux/bpf.h:11:
->   /usr/include/linux/types.h:5:10: fatal error: 'asm/types.h' file not fo=
-und
->   #include <asm/types.h>
->            ^~~~~~~~~~~~~
->   1 error generated.
->
-> asm/types.h lives in /usr/include/"TRIPLE" on Debian, say
-> /usr/include/x86_64-linux-gnu. Target BPF does not (obviously) add the
-> x86-64 search path. These kind of problems have been worked around in,
-> e.g., commit 167381f3eac0 ("selftests/bpf: Makefile fix "missing"
-> headers on build with -idirafter").
->
-> However, just adding the host specific path is not enough. Typically,
-> when you start to include libc files, like "sys/socket.h" it's
-> expected that host specific defines are set. On my x86-64 host:
->
->   $ clang -dM -E - < /dev/null|grep x86_
->   #define __x86_64 1
->   #define __x86_64__ 1
->
->   $ clang -target riscv64-linux-gnu -dM -E - < /dev/null|grep xlen
->   #define __riscv_xlen 64
->
-> otherwise you end up with errors like the one below.
->
-> Missing __x86_64__:
->   #if !defined __x86_64__
->   # include <gnu/stubs-32.h>
->   #endif
->
->   clang -O2 -target bpf -c bpf/nat6to4.c -idirafter /usr/lib/llvm-16/lib/=
-clang/16.0.0/include -idirafter /usr/local/include -idirafter /usr/include/=
-x86_64-linux-gnu -idirafter /usr/include  -Wno-compare-distinct-pointer-typ=
-es -I../../bpf -I../../../../lib -I../../../../../usr/include/ -o /home/bjo=
-rn/src/linux/linux/tools/testing/selftests/net/bpf/nat6to4.o
->   In file included from bpf/nat6to4.c:28:
->   In file included from /usr/include/linux/if.h:28:
->   In file included from /usr/include/x86_64-linux-gnu/sys/socket.h:22:
->   In file included from /usr/include/features.h:510:
->   /usr/include/x86_64-linux-gnu/gnu/stubs.h:7:11: fatal error: 'gnu/stubs=
--32.h' file not found
->   # include <gnu/stubs-32.h>
->             ^~~~~~~~~~~~~~~~
->   1 error generated.
->
-> Now, say that we'd like to cross-compile for a platform. Should I make
-> sure that all the target compiler's "default defines" are exported to
-> the BPF-program build step? I did a hack for RISC-V a while back in
-> commit 6016df8fe874 ("selftests/bpf: Fix broken riscv build"). Not
-> super robust, and not something I'd like to see for all supported
-> platforms.
->
-> Any ideas? Maybe a convenience switch to Clang/target bpf? :-)
-
-I added the same thing selftests/bpf have in their Makefile [2] and that
-highlighted another issue which is that selftests/net/bpf depends on
-bpf_helpers.h
-which in turn depends on the generated file bpf_helper_defs.h...
-
-
-Cheers,
-Anders
-[1] https://tuxmake.org/
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree=
-/tools/testing/selftests/bpf/Makefile#n305
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
