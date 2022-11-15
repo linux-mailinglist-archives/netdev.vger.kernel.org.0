@@ -2,105 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E1262AF22
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 00:10:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96FDD62AF4D
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 00:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbiKOXKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 18:10:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S230005AbiKOXPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 18:15:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiKOXKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 18:10:30 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9206F2B611;
-        Tue, 15 Nov 2022 15:10:28 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4NBhjS6jt0z4xG5;
-        Wed, 16 Nov 2022 10:10:20 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1668553822;
-        bh=fhm8U/HFFB9ybOHcPNtA20Cg6w7QILs8MaHaUQL6Qos=;
-        h=Date:From:To:Cc:Subject:From;
-        b=uVTTlGGMy5A4Mcer6p1i5sBWxWgPw5knKjyZN15KZAbzKU9s7oALRyIiEOFvXfZ+8
-         ZrHABKZ28mh82V5sV256/BXNoFlffBom9PhtRZH+jLRl2Sqxfc3lpcyiWeBJjygmt6
-         mDS0EpbS7LD6VShO5Q0VjeUyUGY6p7SgKWiXYwN3ZhuhKogruDGSzPUb+LVc7QJ0AO
-         HrqD33EmCOxkTs/iWAuF80pRgc8Lm1Lx4GzVgSSbawF3Y4ujn/WWRvOv5/GlkGRAXK
-         EzUuyzmYDiFhXbR1Wmi5Cvb1ezYO1lYoSpns2hKYithZbuEKuxm/JlsjAPcwdhGXKX
-         h2hnNkU4mOpWg==
-Date:   Wed, 16 Nov 2022 10:10:17 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S237902AbiKOXPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 18:15:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674ADE4B
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 15:14:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668554045;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/HeSwBts+JSgnN4qNzSCdOMxQO+gGwYD3f5ouvjaYqA=;
+        b=Vf7evLeftxjgjPox3HtzPEm9jo2z5PZBTrfiDBzW3oSih0/nW7n+SdECYIF68HT8bQDfmc
+        JppR2wLe2ylPJxzBVxxGwWZOGlxhqa2GfpKQv+NEPr4Dw2sVZCft/K5t2WHtue2GiWcXav
+        G80P6J35Cycj6x8UdiZ7s5VagHhnDs0=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-197-OFdKpYnaMgalkR7o4YAkLA-1; Tue, 15 Nov 2022 18:14:04 -0500
+X-MC-Unique: OFdKpYnaMgalkR7o4YAkLA-1
+Received: by mail-ej1-f70.google.com with SMTP id hq18-20020a1709073f1200b007ade8dd3494so8252373ejc.2
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 15:14:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/HeSwBts+JSgnN4qNzSCdOMxQO+gGwYD3f5ouvjaYqA=;
+        b=lhVOlO3nQRFxXum4co9S+gekSQIED/hQ65zD17PZFHF190hFZZJNW/6z1rj/jzs88V
+         oghrTzvXnuPnyxPKICf2DCrKRg09QpZ4ST7RyQY4JXMemnrmVtBcg8dRwMwHEfRbI0cs
+         Y1hYPy9YEC7VpbYB3O1N6fk3eggJAGhh23sCTk0+asdDo2kBjbADRBmHzJ6mBOfRndPu
+         hmDJRib1wBsKRPOrQCyghqrPHno+D9rLtr6GUsNmVOJAjPbFPAL9mqqqcgpTNGOMWGnB
+         /jAgHwym7hrJK65TwXUFu5vheIEDhwyI+B0iBi+oGlP3sqrtld/+pmQ0ppMPeuDEEgHg
+         9G+Q==
+X-Gm-Message-State: ANoB5pk8fwQ/pHPpu7sfr/tJNxgCe2EBaHW0DB5NxNjr/IkAoDwhMaV7
+        VryXTu/rE+yLVzZTY+DcgHSq9yc4icdHbB2vgf0dHotC7sb5JW3qMbssIWFbZSiDeiSu1d4T9gj
+        oKRneoxzoPj41dCHG
+X-Received: by 2002:a05:6402:b50:b0:459:2b41:3922 with SMTP id bx16-20020a0564020b5000b004592b413922mr16560734edb.160.1668554042073;
+        Tue, 15 Nov 2022 15:14:02 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7pl/gGMle47sfiL6lZ912AHH0UDHMN2Q/n0F8Q3WYCaLSOvQx4KjSEf3L5DPcBEHTJXR2z2A==
+X-Received: by 2002:a05:6402:b50:b0:459:2b41:3922 with SMTP id bx16-20020a0564020b5000b004592b413922mr16560671edb.160.1668554041139;
+        Tue, 15 Nov 2022 15:14:01 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y14-20020aa7ccce000000b0045b4b67156fsm6759985edt.45.2022.11.15.15.14.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 15:14:00 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 7AE7E7A6D67; Wed, 16 Nov 2022 00:13:59 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Xu Kuohai <xukuohai@huawei.com>
-Subject: linux-next: manual merge of the bpf-next tree with the net tree
-Message-ID: <20221116101017.235b5952@canb.auug.org.au>
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next 00/11] xdp: hints via kfuncs
+In-Reply-To: <CAADnVQKs=2zJ3=3BQp=OfCre3s6zTffjKRK+kbnwpQqvxF9ygA@mail.gmail.com>
+References: <20221115030210.3159213-1-sdf@google.com>
+ <87mt8si56i.fsf@toke.dk>
+ <CAKH8qBszV6Ni_k8JYOxtAQ2j79qe5KVryAzDqtb1Ng8+TW=+7A@mail.gmail.com>
+ <CAADnVQKs=2zJ3=3BQp=OfCre3s6zTffjKRK+kbnwpQqvxF9ygA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 16 Nov 2022 00:13:59 +0100
+Message-ID: <87zgcrdd54.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Me5A8Qfxn+JpOkY3s_c5Lj3";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Me5A8Qfxn+JpOkY3s_c5Lj3
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Hi all,
+> On Tue, Nov 15, 2022 at 10:38 AM Stanislav Fomichev <sdf@google.com> wrot=
+e:
+>>
+>> On Tue, Nov 15, 2022 at 7:54 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+>> >
+>> > Stanislav Fomichev <sdf@google.com> writes:
+>> >
+>> > > - drop __randomize_layout
+>> > >
+>> > >   Not sure it's possible to sanely expose it via UAPI. Because every
+>> > >   .o potentially gets its own randomized layout, test_progs
+>> > >   refuses to link.
+>> >
+>> > So this won't work if the struct is in a kernel-supplied UAPI header
+>> > (which would include the __randomize_layout tag). But if it's *not* in=
+ a
+>> > UAPI header it should still be included in a stable form (i.e., without
+>> > the randomize tag) in vmlinux.h, right? Which would be the point:
+>> > consumers would be forced to read it from there and do CO-RE on it...
+>>
+>> So you're suggesting something like the following in the uapi header?
+>>
+>> #ifndef __KERNEL__
+>> #define __randomize_layout
+>> #endif
+>>
+>
+> 1.
+> __randomize_layout in uapi header makes no sense.
 
-Today's linux-next merge of the bpf-next tree got a conflict in:
+I agree, which is why I wanted it to be only in vmlinux.h...
 
-  include/linux/bpf.h
+> 2.
+> It's supported by gcc plugin and afaik that plugin is broken
+> vs debug info, so dwarf is broken, hence BTF is broken too,
+> and CO-RE doesn't work on kernels compiled with that gcc plugin.
 
-between commit:
+...however this one seems a deal breaker. Ah well, too bad, seemed like
+a neat trick to enforce CO-RE :(
 
-  1f6e04a1c7b8 ("bpf: Fix offset calculation error in __copy_map_value and =
-zero_map_value")
+-Toke
 
-from the net tree and commit:
-
-  e5feed0f64f7 ("bpf: Fix copy_map_value, zero_map_value")
-
-from the bpf-next tree.
-
-I fixed it up (I just used the latter) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Me5A8Qfxn+JpOkY3s_c5Lj3
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmN0HFkACgkQAVBC80lX
-0GxPWwf/S+gFmnq8yPPU3IaosmITk2dreuKKRhL3x8Vx7ijz4/MyVWFKx9ecDWZM
-Js10zM5Z6T3Y732nRadIw/fbvmBTeuQtR3XBBr71ESzHdJ1oX8ZiLbWv/gMg2OIC
-5FmF93MqMWKyI6RaACSyb8SIZ1jiFoIY6xcaPHB6KQi0vT5mRi6jG//CA4PVXALT
-E29vL0DgR/Df72bBKCY1QLC1mmR1bnCbNA7TtgO/zHShdikDkUZjR2F0GHomY4sL
-zx2TAXNecoeCvQFAq+x/waiRwiqza4EFWaSMWiMzCYLC2dm9dS3DfahBVgaalqab
-9opeDbZvAbohl8197OI6f/EHbfLcJg==
-=f23a
------END PGP SIGNATURE-----
-
---Sig_/Me5A8Qfxn+JpOkY3s_c5Lj3--
