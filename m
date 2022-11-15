@@ -2,45 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3C8629007
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 03:50:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6287629045
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 04:00:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232213AbiKOCuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 21:50:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37188 "EHLO
+        id S231764AbiKODAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 22:00:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232592AbiKOCub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 21:50:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B2F16588
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 18:50:30 -0800 (PST)
+        with ESMTP id S237904AbiKOC7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 21:59:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BDE1D310
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 18:57:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 256B061507
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36AB8C433D6;
-        Tue, 15 Nov 2022 02:50:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A91CDB81677
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:57:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB7F7C433B5;
+        Tue, 15 Nov 2022 02:57:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668480629;
-        bh=Od/W7m8CamE4fg5e0TwB5IPcwrz5wXhILt/j88Ff79I=;
+        s=k20201202; t=1668481025;
+        bh=nslhrH/fmUqMtQKRxqTztxpVHpa9/tH/05Kg+CEcu+M=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ES3w5GvzOBBBubNEUsW6OYOwlNjphATE1BWehx5mPHqLoP7r3hEpElQKGdF3FejF+
-         RU684DsrJ2V4WGF2hj2y3GKNFMosJ1+MjQ68Yz2iw9Cc4yHGXZNArS/yubDUvi4iZk
-         iixLPZsTZr6x9TWmuUax2mkUgJnhFuDiwBpi+stgnMzlzAK5yVRT1Nxu3zc7PA95ed
-         8PYm5W+q6AfY6XOlylsZmTrBa0L1vGSINsYN0pUBWJJRspPeCnC468+YUOGX2sHSYj
-         ZT+AjMI4R/Bc+5CvZNptw4iYucvr4IA2yISdWusUzzyodPHbyx2LD4lDwDUN56JYF2
-         G4VxZv2zHw39g==
-Date:   Mon, 14 Nov 2022 18:50:28 -0800
+        b=TldKbkHEWe/5h9bsX9c3+4b87WRN714Jj9INgrqMtlDDSThlMKbx2OaRljEfYCiys
+         Ve5T0iP0/w1mD3aQMnKCyLo6Nub45ln4AAUTpleMqib5mELPZ48xJsRw5q3k5zcS8X
+         1Vfd2e+VrPeWZIDFNfnBy6xv1KSHxGTFjSPqcFg+M6qNButdm1V2PRP2KbHaJQEzq9
+         wgEErHlSbQFh7DOkv1C/VkxCT3Ce2U1gWkQxxwSUBzRujDhx2jXIxSOHb+q44QDonL
+         z1WFIBmnRVNUg0Y4WrEzOeekbQQfJ9qJSUDGSm4ogHh0kIMY9qGzvudjYJB86I8Y6/
+         WCyobYW45cT6A==
+Date:   Mon, 14 Nov 2022 18:57:04 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH] netdevsim: Fix memory leak of nsim_dev->fa_cookie
-Message-ID: <20221114185028.54fd7e14@kernel.org>
-In-Reply-To: <1668234485-27635-1-git-send-email-wangyufen@huawei.com>
-References: <1668234485-27635-1-git-send-email-wangyufen@huawei.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     "Hans J. Schultz" <netdev@kapio-technology.com>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
+Message-ID: <20221114185704.796b5c14@kernel.org>
+In-Reply-To: <20221112203748.68995-1-netdev@kapio-technology.com>
+References: <20221112203748.68995-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,20 +57,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Nov 2022 14:28:05 +0800 Wang Yufen wrote:
-> nsim_dev_trap_fa_cookie_write()
->   kmalloc() fa_cookie
->   nsim_dev->fa_cookie = fa_cookie
-> ..
-> nsim_drv_remove()
+On Sat, 12 Nov 2022 21:37:46 +0100 Hans J. Schultz wrote:
+> This patchset adds MAB [1] offload support in mv88e6xxx.
 > 
-> nsim_dev->fa_cookie alloced, but the nsim_dev_trap_report_work()
-> job has not been done, the flow action cookie has not been assigned
-> to the metadata. To fix, add kfree(nsim_dev->fa_cookie) to
-> nsim_drv_remove().
+> Patch #1: Fix a problem when reading the FID needed to get the VID.
+> 
+> Patch #2: The MAB implementation for mv88e6xxx.
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=a35ec8e38cdd1766f29924ca391a01de20163931
 
-I don't see the path thru nsim_dev_trap_report_work() which would free
-the fa_cookie.
-
-The fix looks right, but the commit message seems incorrect. Isn't the
-leak always there, without any race?
+Vladimir, Ido, ack?
