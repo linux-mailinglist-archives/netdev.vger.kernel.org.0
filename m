@@ -2,91 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B399562A16F
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 19:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F022662A194
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 19:55:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiKOSkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 13:40:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
+        id S230371AbiKOSzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 13:55:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiKOSkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 13:40:09 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B939F19027;
-        Tue, 15 Nov 2022 10:40:05 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 0640E18841F7;
-        Tue, 15 Nov 2022 18:40:03 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id F042725002DE;
-        Tue, 15 Nov 2022 18:40:02 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id DF63991201E4; Tue, 15 Nov 2022 18:40:02 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S230136AbiKOSza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 13:55:30 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376F927165
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 10:55:28 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id bj12so38314119ejb.13
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 10:55:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=k/HKW+IBNa8pWOy4yMffEAraQs9LDCl6tE8zOCFA9Jo=;
+        b=iu6aGXZ5JUnKXPO/0OmaHU5wgsgN4NXi8MlrJ3ncVFsulB/dqcaD9yPhWhqpDQhv31
+         L8km3/PMSRhzap6uamWAucjIGw5/zmQ6q70AWGl/xVitx+FunKP24vQY31YZMtOYmwJk
+         JFT7aTOhOf5S8aSWmd+Oj95tD7n0pJLxwe6WM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=k/HKW+IBNa8pWOy4yMffEAraQs9LDCl6tE8zOCFA9Jo=;
+        b=QSINxKLq1wQn0UyxlPG219nAgOvhisrGJOcbnR6UGwKzcN9A584SP84NsXGfzIDyVD
+         o8cHhNzYpgYnWr5O0mDwYvGytCWc/PblyDZgBCgr1xBDuFMPcyYBFbohiy9WrLiAK/rV
+         ubwDsXN5KazO50FrAjRPmXzFJ+WDy+BgONcAA0P14Id7k61yRHKCDKXcENyuDul0gIqI
+         jErZAAshV1B/c1c1xPVzWBNWBMxCgu1OxduwhdtzjDsh2E5e9gMhNQW1+PzzpzNLHj/B
+         vg2ql8gIr7CoJTz/FuCzQVcxyoyPmK+naMDBsnMLtmLePB+j/3HUABOU9kGqLc1dCD/d
+         T6cQ==
+X-Gm-Message-State: ANoB5plxPqx7xjD/tZBUAGcHZRVkcW9R7iGUhqfFZzcBwCG9T8aEoTem
+        XiYrtH/xEXWchP6e2hA/74bVjg==
+X-Google-Smtp-Source: AA0mqf59hGS6heF/IQyOMSZgrHch4FVbPi6hc8sOjvMbYixMuAIPtnyVI26lW0GmyKAd18yQK89iRg==
+X-Received: by 2002:a17:906:3c9:b0:7af:a2d4:e95c with SMTP id c9-20020a17090603c900b007afa2d4e95cmr4071754eja.666.1668538526505;
+        Tue, 15 Nov 2022 10:55:26 -0800 (PST)
+Received: from [192.168.1.149] ([80.208.71.65])
+        by smtp.gmail.com with ESMTPSA id d18-20020a056402401200b004580862ffdbsm6569490eda.59.2022.11.15.10.55.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 10:55:26 -0800 (PST)
+Message-ID: <708663f3-8e48-5e0d-a988-8d66ede02543@rasmusvillemoes.dk>
+Date:   Tue, 15 Nov 2022 19:55:24 +0100
 MIME-Version: 1.0
-Date:   Tue, 15 Nov 2022 19:40:02 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v2] net: dsa: use more appropriate NET_NAME_* constants
+ for user ports
+Content-Language: en-US, da
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-In-Reply-To: <20221115161846.2st2kjxylfvlncib@skbuf>
-References: <Y3NcOYvCkmcRufIn@shredder>
- <5559fa646aaad7551af9243831b48408@kapio-technology.com>
- <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
- <20221115111034.z5bggxqhdf7kbw64@skbuf>
- <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
- <20221115122237.jfa5aqv6hauqid6l@skbuf>
- <fb1707b55bd8629770e77969affaa2f9@kapio-technology.com>
- <20221115145650.gs7crhkidbq5ko6v@skbuf>
- <f229503b98d772c936f1fc8ca826a14f@kapio-technology.com>
- <20221115161846.2st2kjxylfvlncib@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <e05f69915a2522fc1e9854194afcc87b@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221111161729.915233-1-linux@rasmusvillemoes.dk>
+ <20221115074356.998747-1-linux@rasmusvillemoes.dk>
+ <20221115083828.06cebab1@kernel.org>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <20221115083828.06cebab1@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 17:18, Vladimir Oltean wrote:
-> On Tue, Nov 15, 2022 at 05:03:01PM +0100, netdev@kapio-technology.com 
-> wrote:
->> Yes, so you want me to simply increase the 50ms on line 58 in smi.c...
->> 
->> I have now tried to increase it even to 10000ms == 10s and it didn't 
->> help,
->> so something else must be needed...
+On 15/11/2022 17.38, Jakub Kicinski wrote:
+> On Tue, 15 Nov 2022 08:43:55 +0100 Rasmus Villemoes wrote:
+>> +	if (port->name) {
+>> +		name = port->name;
+>> +		assign_type = NET_NAME_PREDICTABLE;
+>> +	} else {
+>> +		name = "eth%d";
+>> +		assign_type = NET_NAME_ENUM;
 > 
-> Not only that, but also the one in mv88e6xxx_wait_mask().
+> Per Andrew's comment lets make the change in two steps.
+> Which one should come first is a judgment call :)
 
-So, I will not present you with a graph as it is a tedious process 
-(probably
-it is some descending gaussian curve wrt timeout occurring).
+OK. I think I'll actually do it in three steps, with the first being
+this patch but with NET_NAME_UNKNOWN kept in both places (i.e. pure
+refactoring), and the latter two just changing one assign_type at a
+time, so they can be reverted independently.
 
-But 100ms fails, 125 I had 1 port fail, at 140, 150  and 180 I saw 
-timeouts
-resulting in fdb add fails, like (and occasional port fail):
+Rasmus
 
-mv88e6085 1002b000.ethernet-1:04: Timeout while waiting for switch
-mv88e6085 1002b000.ethernet-1:04: port 0 failed to add be:7c:96:06:9f:09 
-vid 1 to fdb: -110
-
-At around 200 ms it looks like it is getting stable (like 5 runs, no 
-problems).
-
-So with the gaussian curve tail whipping ones behind (risque of failure) 
-it
-might need to be like 300 ms in my case... :-)
