@@ -2,198 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92638629785
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C769629791
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 12:37:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238036AbiKOLdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 06:33:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
+        id S230126AbiKOLhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 06:37:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238066AbiKOLcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:32:54 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A1F29345;
-        Tue, 15 Nov 2022 03:32:02 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1D5C31883F5E;
-        Tue, 15 Nov 2022 11:32:00 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 1309425002DE;
-        Tue, 15 Nov 2022 11:32:00 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 09E9B9EC0023; Tue, 15 Nov 2022 11:31:59 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Tue, 15 Nov 2022 12:31:59 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S229956AbiKOLht (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 06:37:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F047FC1
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:36:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668512214;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eoNTQnwQZyPJ5tr68qUnHNCC0pWwTkHqB6A+r52nsuc=;
+        b=OD/V+e8SkijB1cLa2rFVeOKEb261zTIvuTED/y9rbX/a6OYVgboYVhRQEiOHII40QoHCfZ
+        HTeOipJqvRxtXUmBE7Uzf/50nGBZE3MR4uWDPU5uKqE3NmmuLzK8oz/8o0sfqrc8W8KyHU
+        KoG3LqcnZRQJ8XH5GfDeIuiZdAxG7V8=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-107-iLaSJ4fDMlC48yDVhY7HJA-1; Tue, 15 Nov 2022 06:36:53 -0500
+X-MC-Unique: iLaSJ4fDMlC48yDVhY7HJA-1
+Received: by mail-qt1-f198.google.com with SMTP id c19-20020a05622a059300b003a51d69906eso10003352qtb.1
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 03:36:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eoNTQnwQZyPJ5tr68qUnHNCC0pWwTkHqB6A+r52nsuc=;
+        b=HlfLmDsyB6tUSQwRM9kd3WHRMkVjSwx0AUuQz71AVxpVaZ4P5SXAL6CC25y3bE/y7b
+         XIcDl1IV5Jc7NFqM2Mi1WwiXPb1n7dEBciJm2mKEp1fDa2sHGMpGgaWIrPDE5jpi+yHe
+         zMeJePEauXFkCJPT1vzOi5oi7Pr7qNTUIuSAOMcfCveYeLXStg5LO8zIWHg5NcJeJcmE
+         LS+HVdgIbzDSvEie6U8xjU2enknTqxA6dKn8AiyRh8NYhh+o0klJ/N3S5GL/HDXu29v/
+         VNXq5YfqWeoEWxSTVsILiDGXxgbFoO/omg0Bc5B4tJfvqhU0y16/UqELGrVLjOWcvYBA
+         HcTA==
+X-Gm-Message-State: ANoB5pl7lXUAxsosXVE9Ag6JNByLbJNNxTtow0K7dbEYw3IfJ/g0vHSy
+        sBHGvUZsitGPKOXUoQhKiv6Ym8Wo2/GjqFNLBQSbj57h/TP79PQ6qVQlFyuOdaBsrjQO1JaiOYO
+        afHj6cOpnkUnzQ4BO
+X-Received: by 2002:a05:6214:5581:b0:4bb:a1ca:2076 with SMTP id mi1-20020a056214558100b004bba1ca2076mr16013504qvb.121.1668512212676;
+        Tue, 15 Nov 2022 03:36:52 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf66e8I+WW4mzjjap63kVO4EOYJD4gJqM7n4k0zCHAtqaXWpy/NJCy70eecRYg2KePL7ubiGOA==
+X-Received: by 2002:a05:6214:5581:b0:4bb:a1ca:2076 with SMTP id mi1-20020a056214558100b004bba1ca2076mr16013494qvb.121.1668512212437;
+        Tue, 15 Nov 2022 03:36:52 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
+        by smtp.gmail.com with ESMTPSA id b13-20020ac86bcd000000b003a57a317c17sm7027844qtt.74.2022.11.15.03.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 03:36:51 -0800 (PST)
+Message-ID: <0f385a7bcb8ccf71e39581d4be23b59d3bccc2e7.camel@redhat.com>
+Subject: Re: [PATCH v2] net: sched: fix memory leak in tcindex_set_parms
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Hawkins Jiawei <yin31149@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-In-Reply-To: <20221115111034.z5bggxqhdf7kbw64@skbuf>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <Y3NcOYvCkmcRufIn@shredder>
- <5559fa646aaad7551af9243831b48408@kapio-technology.com>
- <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
- <20221115111034.z5bggxqhdf7kbw64@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     18801353760@163.com,
+        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com,
+        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 15 Nov 2022 12:36:47 +0100
+In-Reply-To: <20221113170507.8205-1-yin31149@gmail.com>
+References: <20221113170507.8205-1-yin31149@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 12:10, Vladimir Oltean wrote:
-> On Tue, Nov 15, 2022 at 11:52:40AM +0100, netdev@kapio-technology.com 
-> wrote:
->> I had a discussion with Jacub, which resulted in me sending a mail to
->> maintainers on this. The problem is shown below...
->> 
->> the phy is marvell/6097/88e3082
->> 
->> ------------[ cut here ]------------
->> WARNING: CPU: 0 PID: 332 at drivers/net/phy/phy.c:975
->> phy_error+0x28/0x54
->> Modules linked in:
->> CPU: 0 PID: 332 Comm: kworker/0:0 Tainted: G        W          6.0.0 
->> #17
->> Hardware name: Freescale i.MX27 (Device Tree Support)
->> Workqueue: events_power_efficient phy_state_machine
->>   unwind_backtrace from show_stack+0x18/0x1c
->>   show_stack from dump_stack_lvl+0x28/0x30
->>   dump_stack_lvl from __warn+0xb8/0x114
->>   __warn from warn_slowpath_fmt+0x80/0xbc
->>   warn_slowpath_fmt from phy_error+0x28/0x54
->>   phy_error from phy_state_machine+0xbc/0x218
->>   phy_state_machine from process_one_work+0x17c/0x244
->>   process_one_work from worker_thread+0x248/0x2cc
->>   worker_thread from kthread+0xb0/0xbc
->>   kthread from ret_from_fork+0x14/0x2c
->> Exception stack(0xc4a71fb0 to 0xc4a71ff8)
->> 1fa0:                                     00000000 00000000 00000000 
->> 00000000
->> 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
->> 00000000
->> 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
->> ---[ end trace 0000000000000000 ]---
+On Mon, 2022-11-14 at 01:05 +0800, Hawkins Jiawei wrote:
+> Syzkaller reports a memory leak as follows:
+> ====================================
+> BUG: memory leak
+> unreferenced object 0xffff88810c287f00 (size 256):
+>   comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
+>     [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
+>     [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
+>     [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
+>     [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
+>     [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+>     [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+>     [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+>     [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
+>     [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
+>     [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>     [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+>     [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+>     [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
+>     [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
+>     [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
+>     [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+>     [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
+>     [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
+>     [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
+>     [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
+>     [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>     [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>     [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> ====================================
 > 
-> Was that email public on the lists? I don't see it...
-
-Sorry, yes the public list was not added.
-
+> Kernel uses tcindex_change() to change an existing
+> traffic-control-indices filter properties. During the
+> process of changing, kernel clears the old
+> traffic-control-indices filter result, and updates it
+> by RCU assigning new traffic-control-indices data.
 > 
-> The phy_error() is called from phy_state_machine() if one of
-> phy_check_link_status() or phy_start_aneg() fails.
+> Yet the problem is that, kernel clears the old
+> traffic-control-indices filter result, without destroying
+> its tcf_exts structure, which triggers the above
+> memory leak.
 > 
-> Could you please print exactly the value of "err", as well as dig 
-> deeper
-> to see which call is failing, all the way into the PHY driver?
-
-It happens on upstart, so I would then have to hack the system upstart 
-to add trace.
-
-I also have:
-mv88e6085 1002b000.ethernet-1:04: switch 0x990 detected: Marvell 
-88E6097/88E6097F, revision 2
-mv88e6085 1002b000.ethernet-1:04: configuring for fixed/rgmii-id link 
-mode
-mv88e6085 1002b000.ethernet-1:04: Link is Up - 100Mbps/Full - flow 
-control off
-mv88e6085 1002b000.ethernet-1:04 eth10 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:00] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth6 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:01] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth9 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:02] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth5 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:03] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth8 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:04] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth4 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:05] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth7 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:06] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth3 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdio:07] driver 
-[Generic PHY] (irq=POLL)
-mv88e6085 1002b000.ethernet-1:04 eth2 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:08] driver 
-[Marvell 88E1112] (irq=174)
-mv88e6085 1002b000.ethernet-1:04 eth1 (uninitialized): PHY 
-[!soc!aipi@10020000!ethernet@1002b000!mdio!switch@4!mdioe:09] driver 
-[Marvell 88E1112] (irq=175)
-
-after this and adding the ifaces to the bridge, it continues like:
-
-br0: port 1(eth10) entered blocking state
-br0: port 1(eth10) entered disabled state
-br0: port 2(eth6) entered blocking state
-br0: port 2(eth6) entered disabled state
-device eth6 entered promiscuous mode
-device eth10 entered promiscuous mode
-br0: port 3(eth9) entered blocking state
-br0: port 3(eth9) entered disabled state
-device eth9 entered promiscuous mode
-br0: port 4(eth5) entered blocking state
-br0: port 4(eth5) entered disabled state
-device eth5 entered promiscuous mode
-br0: port 5(eth8) entered blocking state
-br0: port 5(eth8) entered disabled state
-device eth8 entered promiscuous mode
-br0: port 6(eth4) entered blocking state
-br0: port 6(eth4) entered disabled state
-mv88e6085 1002b000.ethernet-1:04: Timeout while waiting for switch
-mv88e6085 1002b000.ethernet-1:04: port 0 failed to add 9a:af:03:f1:bd:0a 
-vid 1 to fdb: -110
-device eth4 entered promiscuous mode
-br0: port 7(eth7) entered blocking state
-br0: port 7(eth7) entered disabled state
-
-I don't know if that gives ay clues...?
-
-Otherwise I have to take more time to see what I can dig out. The 
-easiest for me is then to
-add some printk statements giving targeted information if told what and 
-where...
-
+> This patch solves it by using tcf_exts_destroy() to
+> destroy the tcf_exts structure in old
+> traffic-control-indices filter result, after the
+> RCU grace period.
 > 
-> Easiest way to do that would probably be something like:
+> [Thanks to the suggestion from Jakub Kicinski and Cong Wang]
 > 
-> $ trace-cmd record -e mdio sleep 10 &
-> ... do your stuff ...
-> $ trace-cmd report
->     kworker/u4:3-337   [001]    59.054741: mdio_access:
-> 0000:00:00.3 read  phy:0x13 reg:0x01 val:0x7949
->     kworker/u4:3-337   [001]    59.054941: mdio_access:
-> 0000:00:00.3 read  phy:0x13 reg:0x09 val:0x0700
->     kworker/u4:3-337   [001]    59.055262: mdio_access:
-> 0000:00:00.3 read  phy:0x13 reg:0x0a val:0x4000
->     kworker/u4:3-337   [001]    60.075808: mdio_access:
-> 0000:00:00.3 read  phy:0x13 reg:0x1c val:0x3005
+> Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
+> Link: https://lore.kernel.org/all/0000000000001de5c505ebc9ec59@google.com/
+> Reported-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
+> Tested-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
+> Cc: Cong Wang <cong.wang@bytedance.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+> ---
+> v2:
+>   - remove all 'will' in commit message according to Jakub Kicinski
+>   - add Fixes tag according to Jakub Kicinski
+>   - remove all ifdefs according to Jakub Kicinski and Cong Wang
+>   - add synchronize_rcu() before destorying old_e according to
+> Cong Wang
 > 
-> "val" will be negative when there is an error. This is to see quicker
-> what fails,
-> and if some MDIO access ever works.
+> v1: https://lore.kernel.org/all/20221031060835.11722-1-yin31149@gmail.com/
+>  net/sched/cls_tcindex.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> If you don't want to enable CONFIG_FTRACE or install trace-cmd, you
-> could also probably do the debugging manually.
+> diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+> index 1c9eeb98d826..d2fac9559d3e 100644
+> --- a/net/sched/cls_tcindex.c
+> +++ b/net/sched/cls_tcindex.c
+> @@ -338,6 +338,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+>  	struct tcf_result cr = {};
+>  	int err, balloc = 0;
+>  	struct tcf_exts e;
+> +	struct tcf_exts old_e = {};
+>  
+>  	err = tcf_exts_init(&e, net, TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
+>  	if (err < 0)
+> @@ -479,6 +480,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+>  	}
+>  
+>  	if (old_r && old_r != r) {
+> +		old_e = old_r->exts;
+>  		err = tcindex_filter_result_init(old_r, cp, net);
+>  		if (err < 0) {
+>  			kfree(f);
+> @@ -510,6 +512,12 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+>  		tcf_exts_destroy(&new_filter_result.exts);
+>  	}
+>  
+> +	/* Note: old_e should be destroyed after the RCU grace period,
+> +	 * to avoid possible use-after-free by concurrent readers.
+> +	 */
+> +	synchronize_rcu();
+
+this could make tc reconfiguration potentially very slow. I'm wondering
+if we can delegate the tcf_exts_destroy() to some workqueue?
+
+Thanks!
+
+Paolo
+
