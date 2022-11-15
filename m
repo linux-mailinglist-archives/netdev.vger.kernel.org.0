@@ -2,74 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 090F362998A
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 14:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 763B96299B9
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 14:10:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbiKONEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 08:04:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
+        id S229884AbiKONKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 08:10:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiKONEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 08:04:12 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D950212AED
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 05:04:11 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id v1so24109834wrt.11
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 05:04:11 -0800 (PST)
+        with ESMTP id S230104AbiKONKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 08:10:08 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408222A715;
+        Tue, 15 Nov 2022 05:10:05 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id w14so24158901wru.8;
+        Tue, 15 Nov 2022 05:10:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=CwW0uBaAlTpBKUQdxGU5ysEd45I5AdKfsgEBUrRe/Pg=;
-        b=p24vwfJQPkjbJXqBOSWAiwvDI3M/74U1EGc5MSZ7+6vnFCGdZyKTPAMxrcvihuKV8b
-         q59/t642Ku6xoHJvm3eUFEz3qMAvMIKg7bDaf9Whb2Nzv/O9ywB/ttfWmJIpZ6cnHeZN
-         bJHCbuBunq99AZP9q0rxwEzXoGPukKIsQVbwN4fbGQIJlCyxerqL688g+h8/b7loJW8y
-         nMi6xc/Av/1CTxQCRkttoA5U5PlyFZr1E0qnJxWwuY1xFOdzlIe95STC42SfhDiM/KVu
-         uiuoycO5BRnKFRgYssrQQi9Knd2Jf8LnMTQAiO6shZGYg6DOHH5jxJwhKY0PzBC8z7fW
-         mGQQ==
+        bh=jNJqWVNJspyPRmHDknqv5wE+zsI2INSRF91ITC6GXn0=;
+        b=XxhSAxfD3ihHh+V7G+u3cBIqhSGHuGYYM+hYM6avQbw/d+mxiIUD7ZItLOaIe6/pWG
+         GGOVsRjnWBNfsH8vl5kJ1yMymrZbF5+hn/cW/19WEHiQer/M5bTNUbsnMrEHUePZ64fy
+         h0eqKB7Z2OVGAiiAJG1Jk0jkafiuCH0sybnZEa0TNgDJ5vKY+XfzxGMrYR+2rEaYSBYO
+         rl8pv20JkOfEpOex8WHg2pCmpkcKGHQbYj7GVmieEniilLEt60GXSDKm025+1cTs7qGC
+         H5g2ue/q7G+Oz9NRYTqLiMBsAAsuSdvdh+qd7LueLhnCmKoxjUvOrzaD8KOVajJOQEEe
+         ZRkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CwW0uBaAlTpBKUQdxGU5ysEd45I5AdKfsgEBUrRe/Pg=;
-        b=4uZeBCOg0kP6/wM7F5wadWGprLCP07J1UXMHjRfNrGDtR48DdJS1jTY9QDlFOMTGg/
-         KEZEaio6KuOHW6uKt9A9nJoYKPCDdQln6SdvE22VmWv9oK/Mxhis4qYV2VLKJnyQ8Qda
-         yReEqE6TVDn3sC8uEyn/YsfWKimFg61eej4qGU8TzkIEm87H8tAw/Rlou3XtE8E6TABu
-         q6Rel1ZDzhR3SYxVu3fDUyu2lxf/OINffvMJbDgPvDW0McynG1It8g3q9rM6QWVazFpH
-         9Nu5wa3KdsILoIfa697i+BCpWTjVu5zhVtkgsYN612Bnda+5hnDFWVTcr0jtrJaNvwwL
-         c5lQ==
-X-Gm-Message-State: ANoB5pkEbY5r/qNp4MN5cyCNM8ylwVmyAHB4rgGlIgyxjilaBjhAeWxr
-        MQzl/w+8iq+W8TyhWQdmSM0=
-X-Google-Smtp-Source: AA0mqf7fBT4OIl0eI5gxW3SnRLJenoxXhwahnFGD7TF0Y0Uw06Xyftzvp+EonmAZ+lfJ6LQi3gdNwQ==
-X-Received: by 2002:adf:f7d0:0:b0:22e:3d63:80bc with SMTP id a16-20020adff7d0000000b0022e3d6380bcmr11279392wrq.30.1668517450373;
-        Tue, 15 Nov 2022 05:04:10 -0800 (PST)
-Received: from [10.158.37.55] ([193.47.165.251])
-        by smtp.gmail.com with ESMTPSA id k3-20020adfd223000000b00236e834f050sm12211526wrh.35.2022.11.15.05.04.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Nov 2022 05:04:10 -0800 (PST)
-Message-ID: <d3d9737f-381b-0156-a352-fa5d4fdf8a9f@gmail.com>
-Date:   Tue, 15 Nov 2022 15:03:58 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH] net/mlx4: Check retval of mlx4_bitmap_init
-Content-Language: en-US
-To:     Peter Kosyh <pkosyh@yandex.ru>, Tariq Toukan <tariqt@nvidia.com>
+        bh=jNJqWVNJspyPRmHDknqv5wE+zsI2INSRF91ITC6GXn0=;
+        b=ctGajIJiElZd0I5GFFKkMFuACKygqIzND/HuLDnFCpNrsQdPWVevlW4fSAlk/EWzuh
+         KLoS6KsEZe1rHWgdzeyW1txs0pPMLH6+vpGxDjcxVBscUSh8W/PqdBdnxgYT7mcfnaE9
+         I7oIvSPltuWssm3S/F8vQm/Oq/Yi0csJ/G7d02Khgrtv8Z3QEEm6mvEd9Z3vxBRrtoTD
+         hrumImIgyAc1vGJ0m4eGlXrWZGJqjQDWCEKXjLOIUVnxOC9XhG/vMB9iH/Ti3SXJ1GAg
+         Qk7+wn66WEiPQBRylWfXoftDZJwVXWiQmLv/ROlRvijJlAdSp9MKqPDD1yKMFGsrswQH
+         18yA==
+X-Gm-Message-State: ANoB5plsY1MCJwq56BHnVCa2n2cUKebW9v2Qr12m+kyFkl5WtnwofyrZ
+        MQp27217HOj5sc+nwLhGNzOWxqdGfWTlgg==
+X-Google-Smtp-Source: AA0mqf7ZXhHT5P72C3QiHmY+SAs84KALSE3C8EKTBpnBIbUbHJF2tQAI3oO83HQkqxMl15gU2hxhTw==
+X-Received: by 2002:a5d:43d2:0:b0:236:4930:2465 with SMTP id v18-20020a5d43d2000000b0023649302465mr10762553wrr.235.1668517804260;
+        Tue, 15 Nov 2022 05:10:04 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id r7-20020adfce87000000b00236488f62d6sm12536841wrn.79.2022.11.15.05.10.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 05:10:03 -0800 (PST)
+From:   Dan Carpenter <error27@gmail.com>
+X-Google-Original-From: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Tue, 15 Nov 2022 16:09:55 +0300
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        lvc-project@linuxtesting.org
-References: <20221115095356.157451-1-pkosyh@yandex.ru>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20221115095356.157451-1-pkosyh@yandex.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: ethernet: renesas: Fix return type in
+ rswitch_etha_wait_link_verification()
+Message-ID: <Y3OPo6AOL6PTvXFU@kili>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,36 +74,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The rswitch_etha_wait_link_verification() is supposed to return zero
+on success or negative error codes.  Unfortunately it is declared as a
+bool so the caller treats everything as success.
 
+Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/renesas/rswitch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 11/15/2022 11:53 AM, Peter Kosyh wrote:
-> If mlx4_bitmap_init fails, mlx4_bitmap_alloc_range will dereference
-> the NULL pointer (bitmap->table).
-> 
-> Make sure, that mlx4_bitmap_alloc_range called in no error case.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Signed-off-by: Peter Kosyh <pkosyh@yandex.ru>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/qp.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/qp.c b/drivers/net/ethernet/mellanox/mlx4/qp.c
-> index b149e601f673..48cfaa7eaf50 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/qp.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/qp.c
-> @@ -697,7 +697,8 @@ static int mlx4_create_zones(struct mlx4_dev *dev,
->   			err = mlx4_bitmap_init(*bitmap + k, 1,
->   					       MLX4_QP_TABLE_RAW_ETH_SIZE - 1, 0,
->   					       0);
-> -			mlx4_bitmap_alloc_range(*bitmap + k, 1, 1, 0);
-> +			if (!err)
-> +				mlx4_bitmap_alloc_range(*bitmap + k, 1, 1, 0);
->   		}
->   
->   		if (err)
+diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+index f0168fedfef9..231e8c688b89 100644
+--- a/drivers/net/ethernet/renesas/rswitch.c
++++ b/drivers/net/ethernet/renesas/rswitch.c
+@@ -920,7 +920,7 @@ static void rswitch_etha_write_mac_address(struct rswitch_etha *etha, const u8 *
+ 		  etha->addr + MRMAC1);
+ }
+ 
+-static bool rswitch_etha_wait_link_verification(struct rswitch_etha *etha)
++static int rswitch_etha_wait_link_verification(struct rswitch_etha *etha)
+ {
+ 	iowrite32(MLVC_PLV, etha->addr + MLVC);
+ 
+-- 
+2.35.1
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-
-Thanks for your patch.
