@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0410E628F1D
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 02:19:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70367628F1F
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 02:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231837AbiKOBTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Nov 2022 20:19:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        id S232020AbiKOBTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Nov 2022 20:19:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiKOBTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 20:19:00 -0500
+        with ESMTP id S230109AbiKOBTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Nov 2022 20:19:01 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70075.outbound.protection.outlook.com [40.107.7.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B2AB59
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 17:18:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D514013DCC
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 17:19:00 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ipf2O7tEGoKvRxSbhmJCXIVQSV8ZpKiuhEh3mil3OwFoNK/06Rc+u1D22n17dvzzTuC5Qlli3vuIvIQSM5BL8gzPIz/HQvXxdhV2qftoC9vX7lyjPXoQXRG7qOGc85BZv6S+qdJFaEN7eJs3OC+ibNEzV0LnkBztOjdhzJCiq4E7LKW/qU8DmRJCUFqaYjjP5bhWM0aqkU7kPdyEBhJ9E9ti1KMCTrel2Qlsv/xC4Dtpu5uEph8OvPHH2hJ7t8BSj49IcS+o0Q0EKYibb2PZj+DkK7g1GJbKLZmGj3qB3laHTumFMyrNXyBDfs4eiRxWb+bqJj7BF5QvibFU7KULSQ==
+ b=cuk0D0IdLUqxzMTlMeXCXKjHyT/nU+qo0X6DBU6ZQOnbDoR2d3ae39/lN3dc6IlGV729Pyr3yKFg//3exTSyfYLuFGlQHRcPJR22ATf44TUJOv5GYRFb6SKpHRpUrwUj/sSC/0pRhITIONeLlIwod8C6g2DACINpskoZk9Rw4yedayyeM7oK5Orkm3BG3sicSBhn8AcqNkPMiQ9opegpOppGdj+JdfMiMpWnSwi42UGAfTb5/x4GOEjKUCNWCZYsLBm5Gu1N/n5b7U+YTitXWYnWhB30Tjrai5IePiKw+jF3JGwDaqVVE108PFlCoF28bJ6GFk/yBLLUflDNjMlIFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uKMSeKN+Y19qUc7zM3oaqeWufFiLR0HEdI++SeuJMzM=;
- b=KczdurmgudVYrG4VJMBx7ZWwswJVrfx2Rbs+kX8fcLaGLrn4y6GFTC1v+lHrv+6mKBjw32i8SuK4uLvKF82VZ+WwYf9m0etx8EuOhlL4Q/EYg5ff9UceRKMjz/pzI4jmNawEB8rOPTZ1/0MTl1SYqghgdInms0mM2cuC0cgLVjOqLxP7/NKC2717o8esY98Ik7lTiuweBqkjWfZnTunII4nqZcrv/QHjYYyxxktONVhrUcTm7bGOimqiV3YzJUetKBeEsmpea8SwxL4DbZ5t4oFoLnQT/vet1xYBK35Uvr7YbFzeGbJA2WOmOJJzF1gOch4kB/t1K+1okleikEEBGQ==
+ bh=B2Dekc/3v0V8Nyk9hNVzraoLLvZmRD3gbNJsuDM4Ey0=;
+ b=nUEXBlkz9r+ml6nePV0fxPmvnJnPM/xd6KzxdvqAyEGBKEaw00IXvl+ykSnOHDjkFzcoWN99FL9hGkKTRorNqlHUhKX3QYW0mTnb7dk+59l2Z4/wYHzLeUPzL2Caxwzy0w3iNuH8NyUNfGnSWeN6i7ZZLdwTmRShq/LM0vEvF2ftXx37N5ei9k2M/x/dCMxoZqxxKweLRDtbUmTb6a4tBihULdirJ9uCId4g5TinYDj02/9lZJjedbRfk39YKYcVG6WxUt6GoGjWKnoPxvUHflROyLptaA2hBdR5DvBiBSviS/oAIAeRWNOGtzlAzQKFSzdm66HgSPpC4rUjsco9TA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uKMSeKN+Y19qUc7zM3oaqeWufFiLR0HEdI++SeuJMzM=;
- b=QNGpXC4kpo4uygwZfyr6MEZcUqRZZ3CAw8ej83LHVopLgTla0mu3U6ctXnIJAVMimQkfg1uDXDIEbHyWf2qsbGfzjZ1kcrf2mAO652+6ymFwS1uFcs1xMBgP1g+P/zE5gXzysb0B0KvNKRyNApB6QPqRM3SXSwgrwMi/jZWpZOw=
+ bh=B2Dekc/3v0V8Nyk9hNVzraoLLvZmRD3gbNJsuDM4Ey0=;
+ b=X6eglESnP4YCRNDEv6p3NUodLCcRaIlArBJKSDwCXxkIBFsmNa+Nob5GEmc71+VOhJTa5jv/mAdphjAsLPHpooSop96WZf3TEsA+8jIcH9uX943Xn+ouveM9VyKkW+qCFe6QS/tQ7Lw9OiJ5EJZx6I8W6xljiY5SFv5oFeys7y4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AS8PR04MB7815.eurprd04.prod.outlook.com (2603:10a6:20b:28a::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Tue, 15 Nov
- 2022 01:18:57 +0000
+ 2022 01:18:58 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.018; Tue, 15 Nov 2022
- 01:18:57 +0000
+ 01:18:58 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -50,10 +50,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>,
         Michael Walle <michael@walle.cc>,
         Heiko Thiery <heiko.thiery@gmail.com>
-Subject: [PATCH v2 net-next 0/6] Autoload DSA tagging driver when dynamically changing protocol
-Date:   Tue, 15 Nov 2022 03:18:41 +0200
-Message-Id: <20221115011847.2843127-1-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 1/6] net: dsa: stop exposing tag proto module helpers to the world
+Date:   Tue, 15 Nov 2022 03:18:42 +0200
+Message-Id: <20221115011847.2843127-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221115011847.2843127-1-vladimir.oltean@nxp.com>
+References: <20221115011847.2843127-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AS4P191CA0006.EURP191.PROD.OUTLOOK.COM
@@ -62,51 +64,51 @@ X-ClientProxiedBy: AS4P191CA0006.EURP191.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7815:EE_
-X-MS-Office365-Filtering-Correlation-Id: d3934ca6-79f9-4b80-bb61-08dac6a75e29
+X-MS-Office365-Filtering-Correlation-Id: fcd33b4f-3a84-4fc7-4d2c-08dac6a75ee1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rIIMbFH8k9F/w+ldMyMMyPJuBIkqPfV4NYV/OSW9Y+Hr2ssQ/slX0uPfZUYujeuZ5IqHA+TyBVL5CqjJ4/Rik+scGTDM/2bGMY7zjgpfWRrEsXlXfTU3MYewaY+/l6RLHfi5SG88ErG4oGD4SapxlZH9UJEcztcb4mog0S+rIheEZqZpNy3nBdHjhQdW0kf/3aif4e+FihShbDq4h+Y2svgIQuYgZPjasl0M8/uOKFYkmkC2bXHp3GVq2/9GrPDczC9iCLBDf1P1xqt+kTyLql6mPiz/xkpmYEU4pyrJtp6igUUU4aSlS2tvJJph1BwXSI76p5TCFvXWuzmMIl5JZxGFJ9xi03GRbbZaASkTxxmdYaY8aModmNQoXpjsYgPpo+dPVBh5RA7HnrNZQmzmIKwpFxKw03Z2i1EQ1Nz2QdAIGoiFaNFIDIqFU5ir4q3Jfa+3tFa4A/+sDfeW7AkYiN0mpKQfwq/kGi3EqrShvZH++jOtACsr/1Frse5Wlx5ohOLx0WuSg7EEjcaFS1zFFJuQBPLxLl7bdaGJ0Ygy9gOu13Q9dJaFzvCu4jZ6JHDw2X9hEonF2RMrpHJ+v33kwbOQA1iuFg4u/LNFh+zcak4mz47UkmFzwin5e1MLJEClO5kOgVId0M32PSiP3GRVLcWX6LLhM+X1FtOIuVeZJxRSdGEbM3zGFsluWhSdcCCAjVLpeQcYabEwyc2nhcDK/nLRMzrzwJTOV67zc4e9/OxxauoQdpCxudSig+bu4mcnAQheFGcK+1cZtDeZ/EbvyWYzjf8y1Elko8Uiab0ZKL/xt2xiz9CxOJWEDIKyB3zCklMbSjibBVfnwNM47XytIw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199015)(66556008)(86362001)(316002)(6916009)(4326008)(7416002)(8936002)(8676002)(36756003)(5660300002)(41300700001)(44832011)(66946007)(66476007)(2616005)(6512007)(38350700002)(54906003)(38100700002)(478600001)(186003)(83380400001)(6486002)(966005)(26005)(6506007)(52116002)(6666004)(1076003)(2906002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ii9rz0JK22H0jFRASuc4F0xF2CDRWERh4MCN53rWxsCwp8FAICbad1O4ddktjJo/fZMUksCK+0shGizDYloSpKXQ+mLy4mOTQjspHCXrhgHGJIvPdKfjFUUlKKTxqWhZFc7YIlyPN2QWpe+0PFX7+0GNK00kuEQQN2MtFjTC5TWrFuDbsazaKIBUsSu79LsVoMPJhrwSwXBcgbmG6MoT4G7yth8iigwZQsUvfvAYFHehqB9pDPROPARm7LdKfmRTsCXYD3DneVzBn9Htu6PMl1taBCpx44hdDkld+p3SFZekiiSdQrbud1wObHiGzN3SIplmupFq0nSnMyRJHkIWl9zb4rfPGsPnhx0Qv511l0a0AJPp9gxNt0HXcji/l6obi1+pIbk7qC7Eeez6fwOcAtcvQitgRnDer8Y18GTNUfwp+RnBj3m+u8NkJ3/kdcsaNbUyZi6TRGg5tATDUI9EoKAUETTOL7vMVeSDVdEla0RVt8xgIHMx7WnF/m9hwsaS2kmCcE3kzdvZPCQjPFJmrKLsNgWujpbQukRWi0Q08V1N94EAWPMbSdYp4CuRoxyw9zacFIBGE6BwrW1tY3rgReumYDQE/Q1teqMlmjoqpVrRtScYrQqZgxQObvxg6TFz7LHUFC5dSeyERjILVz219nhfufPIjPT8/9hXNBTfr6w9pD/xYR4OoWRnPTNUiarH9FAAi/mM6kr8HpAQCEqhoJZcgIRrJx6oEjjFBw7IpiQ6cGmmTgUvauMew2iG5WcOqxS1Te8W+VU4EpcBqX5AJg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199015)(66556008)(86362001)(316002)(6916009)(4326008)(7416002)(8936002)(8676002)(36756003)(5660300002)(41300700001)(44832011)(66946007)(66476007)(2616005)(6512007)(38350700002)(54906003)(38100700002)(478600001)(186003)(83380400001)(6486002)(26005)(6506007)(52116002)(6666004)(1076003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Bq9owjyJ18nOHWOMzfHQDpKGap5sioNtlbbz3uTSPKYE3yUEZuwC9unXD1mP?=
- =?us-ascii?Q?J8Hd4h9BFdCpeJKm100LIJoSjPTz40rkzr3T6dANbmli9icX392IPwZzjuNF?=
- =?us-ascii?Q?BS+ZHeOD7npqvmNkYbwPQk9UuuOsBiKW8HN3iyR1GClr0ACsOWKxzPStv6UA?=
- =?us-ascii?Q?c9a+VdNFL3b8/nt1TqLxXn1AwL8j5rd4cWeJ+R0s2H95X4ToAm4N3phR3X2H?=
- =?us-ascii?Q?dfduROBXtEbkLXbFV7OKga9yUxSRYu6loM0B98tKjFhJWHtM7cGJR61G57Tx?=
- =?us-ascii?Q?ll4+bx9w6L1no6qxHSYQE3LHh4Gg499BFAwLtKSe18LB2oAVyowtsJuwVVzS?=
- =?us-ascii?Q?DTc8JH2Xq3AVvS41ohFGPw9pkVoThcUwWZkIRTSNivThzMpm0PAM1/nNJ7W3?=
- =?us-ascii?Q?qnKNkWNdNu2nxElUVcJvgipwDIdndJ+Muje+FT/GAiyVGV8T9h7hJhk69KB3?=
- =?us-ascii?Q?POaVW6AAKQhjiF9lBbOJZUSAc4iugxiuwYd7pJRXa/lrrQEbDoMfZ6sVZQtP?=
- =?us-ascii?Q?YN/EQgSz8T+A9K6FXAhWJJNujwLdT6fTSiYf3IJHTcnFvc65JOBuoVLpt1dG?=
- =?us-ascii?Q?ZXwE/E7Zyoj0Tcui2RGfB12K4XkcYRKlvUpW0Fy8xVeQmfmrpxnxiCI6Z7+L?=
- =?us-ascii?Q?z17Ngp48AvUJ9T+SZdtfE6wl77RSZ3yhcKtcp7SwNvtdmTd1cBA1c0/mYe4L?=
- =?us-ascii?Q?UCN/wqp59zrmAKa3hNXEUuaLkTWRE7YNmMqwTL+cY2Ba92XIRcMuu+IrBW0Y?=
- =?us-ascii?Q?hhU6MOjgMw1oo6Y1wCbtrPjCBQrAPwrt3P5TK2l5iaUb48l2AcSA+IDgjRXf?=
- =?us-ascii?Q?PTi2pQjPgdRG+Btx3qvVhkFibXSvAIu1eT5hHEMA2uhSJYVUMuH6mIbmrj48?=
- =?us-ascii?Q?a0HLhgBw2lEe2VY1X/W9yPlDVJ5fVn4olEFDV4Sj6fmgXy+kHvrf2vJN8Pz4?=
- =?us-ascii?Q?1Ftv9tAUh1FdYsSLuv2KLiUMMbD3rHTXZvc2jjQylovc21i38zF+ABfCIsfb?=
- =?us-ascii?Q?UaHcE/tJ9GVahu/lZK4JNHKMBI/L8SPIptnUjzq72olhSj/PxhKTEyizaX9j?=
- =?us-ascii?Q?zbT2uTHhLcMmn5ZTAEoVvztCnEj3XwDTOnYKKlWqDy4Z+5GrsSR22zf/fTsS?=
- =?us-ascii?Q?//WcPPbQamuPb3M4ji8tgUjjkIHe6G06ZpvIcq3GuKQ9Wukjul7k6ZdtMUnV?=
- =?us-ascii?Q?3QMJznZariqlCIHL9br8h6dc3Vf03e2CaX/LTSKwbEWuFhQsa1Ur5bHJsXzM?=
- =?us-ascii?Q?EdXlmYqPE7TO9iNQziHUDZ40ebSSZrxCCxXWMRuMTmwO4LMh8nphd2y7QiUW?=
- =?us-ascii?Q?YQ+6qtPJg7hG357E51+rAGQDr5TQdAMLctxwQKHYBhLc/gS6PDlZnwBynqUR?=
- =?us-ascii?Q?A16UlZN19kaQGr5N6H/p0ISbMP4SzhyyaSJUxF6/l1gn+UBCW0oYxZPUktdG?=
- =?us-ascii?Q?7abzFNUf8V7kWE2vE6XNlJrJOcA1q7EQ6DJyeep+IR8bbebziUagwNN1nTNb?=
- =?us-ascii?Q?AJgfKI00tgBNEAMZB6ek6GiC5pmIb4zhNhRqqxu6dvOO3CNas5wXvRSaLa8t?=
- =?us-ascii?Q?8IlyJFLcMsZE4ZwcAO3y/p4/8jiVJhmB23i6C8k5GloM8yUmtkjgFcZPPRl0?=
- =?us-ascii?Q?yA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?plV4mxGuBvYS311HSNAGHGNGU9uyJYaQ7Y6iLSmEU40hTaT1GMYSKI02n+IG?=
+ =?us-ascii?Q?aST08NTZYQsf+S0yfnEAsKmsodgOBz2vTWNKX5OPxn9jED0LIT+D+YSMg375?=
+ =?us-ascii?Q?A5JvqGOnoUwBKWV2prPu08QGvcHNafVq33Ifr2FyT+MavFnH3JN5LNtGJdbn?=
+ =?us-ascii?Q?oGzawf5bn7y423YQv5JN5USwdhkBEyVPCWf9OfZrpzyMVMCZ5o/YyQdDxsZu?=
+ =?us-ascii?Q?eehpwxPHLL1c3NQxN3el5vHy4Ykc8UGyIOxYsFyRzTekVRnqkcMLftBHeBmX?=
+ =?us-ascii?Q?/h6cBKGPDRPwGbTbOHIyUHVhxZVCTVQTWuSxLy4wREeEGKro5s/el35vq5kb?=
+ =?us-ascii?Q?ZWFEpsb8nx9nqCkXvzg7MeRiRhJIH5U8K+9Eah6aFWIvP7Mc6KDuK788RAZr?=
+ =?us-ascii?Q?Fzt6mdR24MeMVbzV45KP6SrO8GBSmXzyuPuq210fddCyvUARPEgaBXDBt1Hr?=
+ =?us-ascii?Q?AcVSblFpX+lUazoCaJTj4ItBb04+MR3AmOnEfLDMQed9VtChuez8neaLpPA/?=
+ =?us-ascii?Q?TMBvT78iCK5bU4VdLh7Ef+ICR9fTRBqHSWnJmOTMVNLJc2+ROm0lLFMv9qpR?=
+ =?us-ascii?Q?ST8aXpnBpAntux0fDgQ/KsPb/mzev0BWW3T8KCc4cN/EJggNN3P/LD5w4d+d?=
+ =?us-ascii?Q?oHVBOfgzpjO/7M1PeQSmSqv+POctfHQOI9OWXU/7cPAm+eF9aqdYAieQUJZV?=
+ =?us-ascii?Q?19bXIzR8AjYRDMmdLBgMjPb34OKnFfG0SIGQURnlPkqApjoDILYipyUFuNeA?=
+ =?us-ascii?Q?vqbj0QpzwdpU+riVl75aswWGX4InTjRJnSf5H1a00jr2zF8zLqZwa/wT0xjU?=
+ =?us-ascii?Q?7p3TEOixQSLoIloww99zlS9NmNLba/FbwCMYWrn44ML9joSYRp59OL69CbRQ?=
+ =?us-ascii?Q?ZNAFaP/anLsM8zeWVMfxs67Md0xoEZDBriLJhU6C78MunWfHdZUTk0/7Q2zl?=
+ =?us-ascii?Q?lLSe9U5HxwcOpMQOMcisT9mZOR/UnAq4a8eqGDd0QP5s+gxxodS2EYeho3bq?=
+ =?us-ascii?Q?VEWuFsavzqQgWeDhENVuw9jT6mVSZqiKVx9ocx59MZ46I8OzdGleH/jdgVuj?=
+ =?us-ascii?Q?aszpE7Ez/9QiBbZfjtW3OTzi/L4kjrBS8b/fa3ZvW4N23Ndre2N4syvEEFOI?=
+ =?us-ascii?Q?DKHMt8C9JkSUQFx9CdCZB1J+/5O+IU5yLGsmHmTuxeYUQ/JlioN7oMhDzd9U?=
+ =?us-ascii?Q?vZXj/Xg47r5aBo5XRcbDbiLa9SUXpyBQYFLq8y7Mxx+4lk+w9PI5q7An45hW?=
+ =?us-ascii?Q?r8UqWE5jyMYM0QQ0zbNV7wnm4h0oVGtB0MenE9UqHpMlFC9lcwsb4vtRKdXE?=
+ =?us-ascii?Q?65+eIpd+/VsUT/dYvKitgXg6Tn282Got5fiTAUgifinIJwq0u+30diyp6Tbi?=
+ =?us-ascii?Q?NaRjei/PGpD1Ya5+AZWQY7KSdmdghqAlq8IyHYYu5ofX1PByIeealnl+y9sq?=
+ =?us-ascii?Q?36aUQfQ0aCh6KPuWRwed0KJNVoypjolhr07yG+O3/iIvbAVss8r65c4qAXGf?=
+ =?us-ascii?Q?2FtJPFVKIfss6gpp1jsNZVfhv+R/e7wkwHd44MNb4lEI2FbTpcJobSyi2gn+?=
+ =?us-ascii?Q?JtdnUyXg+v5lWkdxNV7aFZuTmcofETfpqXV+p3TIbNsUfyB0Ns0L44HJxlTw?=
+ =?us-ascii?Q?sg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3934ca6-79f9-4b80-bb61-08dac6a75e29
+X-MS-Exchange-CrossTenant-Network-Message-Id: fcd33b4f-3a84-4fc7-4d2c-08dac6a75ee1
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 01:18:57.0165
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 01:18:58.1883
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6cNVCjeqJebSEAjzg/UtBkKexyg2qsbTFlZ5TG1SuwWLXYiK+y+TzMJs+MalXfE+aWBdEtX4cp+F34lBwByVjQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9SNmIpXW8HB4qUp6uDNYmrDWNXvNcSCAxUgNMAbclffooXcuWsH16311ZcZgVzm8dZGvYliN4hmRfo0x2baB9Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7815
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -118,82 +120,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1->v2:
-- fix module auto-loading when changing tag protocol via sysfs
-  (don't pass sysfs-formatted string with '\n' to request_module())
-- change modalias format from "dsa_tag-21" to "dsa_tag:id-21".
-- move some private DSA helpers to net/dsa/dsa_priv.h.
+The DSA tagging protocol driver macros are in the public include/net/dsa.h
+probably because that's also where the DSA_TAG_PROTO_*_VALUE macros are
+(MODULE_ALIAS_DSA_TAG_DRIVER hinges on those macro definitions).
 
-v1 at:
-https://patchwork.kernel.org/project/netdevbpf/list/?series=689585
+But there is no reason to expose these helpers to <net/dsa.h>. That
+header is shared between switch drivers (drivers/net/dsa/), tagging
+protocol drivers (net/dsa/tag_*.c), the DSA core (net/dsa/ sans tag_*.c),
+and the rest of the world (DSA master drivers, network stack, etc).
+Too much exposure.
 
-This patch set solves the issue reported by Michael and Heiko here:
-https://lore.kernel.org/lkml/20221027113248.420216-1-michael@walle.cc/
-making full use of Michael's suggestion of having two modaliases: one
-gets used for loading the tagging protocol when it's the default one
-reported by the switch driver, the other gets loaded at user's request,
-by name.
+On the other hand, net/dsa/dsa_priv.h is included only by the DSA core
+and by DSA tagging protocol drivers (or IOW, "friend" modules). Also a
+bit too much exposure - I've contemplated creating a new header which is
+only included by tagging protocol drivers, but completely separating a
+new dsa_tag_proto.h from dsa_priv.h is not immediately trivial - for
+example dsa_slave_to_port() is used both from the fast path and from the
+control path.
 
-  # modinfo tag_ocelot
-  filename:       /lib/modules/6.1.0-rc4+/kernel/net/dsa/tag_ocelot.ko
-  license:        GPL v2
-  alias:          dsa_tag:seville
-  alias:          dsa_tag:id-21
-  alias:          dsa_tag:ocelot
-  alias:          dsa_tag:id-15
-  depends:        dsa_core
-  intree:         Y
-  name:           tag_ocelot
-  vermagic:       6.1.0-rc4+ SMP preempt mod_unload modversions aarch64
+So for now, move these definitions to dsa_priv.h which at least hides
+them from the world.
 
-Tested on NXP LS1028A-RDB with the following device tree addition:
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v1->v2: patch is new
 
-&mscc_felix_port4 {
-	dsa-tag-protocol = "ocelot-8021q";
-};
+ include/net/dsa.h  | 70 ----------------------------------------------
+ net/dsa/dsa_priv.h | 70 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 70 insertions(+), 70 deletions(-)
 
-&mscc_felix_port5 {
-	dsa-tag-protocol = "ocelot-8021q";
-};
-
-CONFIG_NET_DSA and everything that depends on it is built as module.
-Everything auto-loads, and "cat /sys/class/net/eno2/dsa/tagging" shows
-"ocelot-8021q". Traffic works as well. Furthermore, "echo ocelot-8021q"
-into the aforementioned sysfs file now auto-loads the driver for it.
-
-Vladimir Oltean (6):
-  net: dsa: stop exposing tag proto module helpers to the world
-  net: dsa: rename tagging protocol driver modalias
-  net: dsa: provide a second modalias to tag proto drivers based on
-    their name
-  net: dsa: strip sysfs "tagging" string of trailing newline
-  net: dsa: rename dsa_tag_driver_get() to dsa_tag_driver_get_by_id()
-  net: dsa: autoload tag driver module on tagging protocol change
-
- include/net/dsa.h          | 70 ---------------------------------
- net/dsa/dsa.c              | 10 +++--
- net/dsa/dsa2.c             |  4 +-
- net/dsa/dsa_priv.h         | 79 +++++++++++++++++++++++++++++++++++++-
- net/dsa/master.c           | 15 +++++++-
- net/dsa/tag_ar9331.c       |  6 ++-
- net/dsa/tag_brcm.c         | 16 +++++---
- net/dsa/tag_dsa.c          | 11 ++++--
- net/dsa/tag_gswip.c        |  6 ++-
- net/dsa/tag_hellcreek.c    |  6 ++-
- net/dsa/tag_ksz.c          | 21 ++++++----
- net/dsa/tag_lan9303.c      |  6 ++-
- net/dsa/tag_mtk.c          |  6 ++-
- net/dsa/tag_ocelot.c       | 11 ++++--
- net/dsa/tag_ocelot_8021q.c |  6 ++-
- net/dsa/tag_qca.c          |  6 ++-
- net/dsa/tag_rtl4_a.c       |  6 ++-
- net/dsa/tag_rtl8_4.c       |  7 +++-
- net/dsa/tag_rzn1_a5psw.c   |  6 ++-
- net/dsa/tag_sja1105.c      | 11 ++++--
- net/dsa/tag_trailer.c      |  6 ++-
- net/dsa/tag_xrs700x.c      |  6 ++-
- 22 files changed, 191 insertions(+), 130 deletions(-)
-
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index ee369670e20e..0736e8720b5a 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -118,10 +118,6 @@ struct dsa_netdevice_ops {
+ 			     int cmd);
+ };
+ 
+-#define DSA_TAG_DRIVER_ALIAS "dsa_tag-"
+-#define MODULE_ALIAS_DSA_TAG_DRIVER(__proto)				\
+-	MODULE_ALIAS(DSA_TAG_DRIVER_ALIAS __stringify(__proto##_VALUE))
+-
+ struct dsa_lag {
+ 	struct net_device *dev;
+ 	unsigned int id;
+@@ -1403,70 +1399,4 @@ static inline bool dsa_slave_dev_check(const struct net_device *dev)
+ netdev_tx_t dsa_enqueue_skb(struct sk_buff *skb, struct net_device *dev);
+ void dsa_port_phylink_mac_change(struct dsa_switch *ds, int port, bool up);
+ 
+-struct dsa_tag_driver {
+-	const struct dsa_device_ops *ops;
+-	struct list_head list;
+-	struct module *owner;
+-};
+-
+-void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
+-			      unsigned int count,
+-			      struct module *owner);
+-void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
+-				unsigned int count);
+-
+-#define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
+-static int __init dsa_tag_driver_module_init(void)			\
+-{									\
+-	dsa_tag_drivers_register(__dsa_tag_drivers_array, __count,	\
+-				 THIS_MODULE);				\
+-	return 0;							\
+-}									\
+-module_init(dsa_tag_driver_module_init);				\
+-									\
+-static void __exit dsa_tag_driver_module_exit(void)			\
+-{									\
+-	dsa_tag_drivers_unregister(__dsa_tag_drivers_array, __count);	\
+-}									\
+-module_exit(dsa_tag_driver_module_exit)
+-
+-/**
+- * module_dsa_tag_drivers() - Helper macro for registering DSA tag
+- * drivers
+- * @__ops_array: Array of tag driver structures
+- *
+- * Helper macro for DSA tag drivers which do not do anything special
+- * in module init/exit. Each module may only use this macro once, and
+- * calling it replaces module_init() and module_exit().
+- */
+-#define module_dsa_tag_drivers(__ops_array)				\
+-dsa_tag_driver_module_drivers(__ops_array, ARRAY_SIZE(__ops_array))
+-
+-#define DSA_TAG_DRIVER_NAME(__ops) dsa_tag_driver ## _ ## __ops
+-
+-/* Create a static structure we can build a linked list of dsa_tag
+- * drivers
+- */
+-#define DSA_TAG_DRIVER(__ops)						\
+-static struct dsa_tag_driver DSA_TAG_DRIVER_NAME(__ops) = {		\
+-	.ops = &__ops,							\
+-}
+-
+-/**
+- * module_dsa_tag_driver() - Helper macro for registering a single DSA tag
+- * driver
+- * @__ops: Single tag driver structures
+- *
+- * Helper macro for DSA tag drivers which do not do anything special
+- * in module init/exit. Each module may only use this macro once, and
+- * calling it replaces module_init() and module_exit().
+- */
+-#define module_dsa_tag_driver(__ops)					\
+-DSA_TAG_DRIVER(__ops);							\
+-									\
+-static struct dsa_tag_driver *dsa_tag_driver_array[] =	{		\
+-	&DSA_TAG_DRIVER_NAME(__ops)					\
+-};									\
+-module_dsa_tag_drivers(dsa_tag_driver_array)
+ #endif
+-
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 6e65c7ffd6f3..a7f1c2ca1089 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -17,6 +17,76 @@
+ 
+ #define DSA_MAX_NUM_OFFLOADING_BRIDGES		BITS_PER_LONG
+ 
++#define DSA_TAG_DRIVER_ALIAS "dsa_tag-"
++#define MODULE_ALIAS_DSA_TAG_DRIVER(__proto)				\
++	MODULE_ALIAS(DSA_TAG_DRIVER_ALIAS __stringify(__proto##_VALUE))
++
++struct dsa_tag_driver {
++	const struct dsa_device_ops *ops;
++	struct list_head list;
++	struct module *owner;
++};
++
++void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
++			      unsigned int count,
++			      struct module *owner);
++void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
++				unsigned int count);
++
++#define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
++static int __init dsa_tag_driver_module_init(void)			\
++{									\
++	dsa_tag_drivers_register(__dsa_tag_drivers_array, __count,	\
++				 THIS_MODULE);				\
++	return 0;							\
++}									\
++module_init(dsa_tag_driver_module_init);				\
++									\
++static void __exit dsa_tag_driver_module_exit(void)			\
++{									\
++	dsa_tag_drivers_unregister(__dsa_tag_drivers_array, __count);	\
++}									\
++module_exit(dsa_tag_driver_module_exit)
++
++/**
++ * module_dsa_tag_drivers() - Helper macro for registering DSA tag
++ * drivers
++ * @__ops_array: Array of tag driver structures
++ *
++ * Helper macro for DSA tag drivers which do not do anything special
++ * in module init/exit. Each module may only use this macro once, and
++ * calling it replaces module_init() and module_exit().
++ */
++#define module_dsa_tag_drivers(__ops_array)				\
++dsa_tag_driver_module_drivers(__ops_array, ARRAY_SIZE(__ops_array))
++
++#define DSA_TAG_DRIVER_NAME(__ops) dsa_tag_driver ## _ ## __ops
++
++/* Create a static structure we can build a linked list of dsa_tag
++ * drivers
++ */
++#define DSA_TAG_DRIVER(__ops)						\
++static struct dsa_tag_driver DSA_TAG_DRIVER_NAME(__ops) = {		\
++	.ops = &__ops,							\
++}
++
++/**
++ * module_dsa_tag_driver() - Helper macro for registering a single DSA tag
++ * driver
++ * @__ops: Single tag driver structures
++ *
++ * Helper macro for DSA tag drivers which do not do anything special
++ * in module init/exit. Each module may only use this macro once, and
++ * calling it replaces module_init() and module_exit().
++ */
++#define module_dsa_tag_driver(__ops)					\
++DSA_TAG_DRIVER(__ops);							\
++									\
++static struct dsa_tag_driver *dsa_tag_driver_array[] =	{		\
++	&DSA_TAG_DRIVER_NAME(__ops)					\
++};									\
++module_dsa_tag_drivers(dsa_tag_driver_array)
++
+ enum {
+ 	DSA_NOTIFIER_AGEING_TIME,
+ 	DSA_NOTIFIER_BRIDGE_JOIN,
 -- 
 2.34.1
 
