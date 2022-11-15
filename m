@@ -2,104 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0119862951A
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 10:59:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A8E962951B
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:00:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238144AbiKOJ7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 04:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50584 "EHLO
+        id S238231AbiKOKAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 05:00:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238170AbiKOJ7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:59:30 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 163735FFC;
-        Tue, 15 Nov 2022 01:59:29 -0800 (PST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next 6/6] netfilter: conntrack: use siphash_4u64
-Date:   Tue, 15 Nov 2022 10:59:22 +0100
-Message-Id: <20221115095922.139954-7-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221115095922.139954-1-pablo@netfilter.org>
-References: <20221115095922.139954-1-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S238170AbiKOJ74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 04:59:56 -0500
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6CD12635
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:59:47 -0800 (PST)
+Received: by mail-ed1-x54a.google.com with SMTP id f20-20020a0564021e9400b00461ea0ce17cso9718314edf.16
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 01:59:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=FTQ23B2MPYm/xTCyBXCoyWZGN4LbfmWfydRT6HS/aY8=;
+        b=ckIN8YvHQE/sxX5Hmrd1QGUyr2FepfDNVEZWfKxjly1gmUVG4CDit+7LWz73pM4TBr
+         yvVT3x8eN7QsPk3m1pO04qYdjqB8edoCFZgFBoE5ukKEPH+bg8uW4z6QuIs3P2wQ+IeB
+         637/xPvL4mHvv3uinpHrbDj6VGwG/pCbxnilGMeyyFeFZm+FdJKCS/9rTfrxSVh+xBCe
+         5Ve6j6tpiKrkRuhaf906Nv3H2lZAedxF7XOjoJCBz7DlKVR3tbwxbR7om8EX8Q930YsB
+         JhmmKpsRPMjh0tLvDtcT/B+DXqFFZ6XZu3ZoRXoWlnNcVUMLtq+A/5DWeHQLgrSJwnYk
+         ZtMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FTQ23B2MPYm/xTCyBXCoyWZGN4LbfmWfydRT6HS/aY8=;
+        b=Yo4vNQZGLCd86H8ftgx3LqELUktv3SannR6azIjKX1e5KTjgbhQ5kG3TpSTtJv6L3d
+         RY8HyBEScR4Cmbvu56fjWqZyqLFiBpx9EzLT91eDHu1ylLpN8issSKFuYYgJT9ddHBCQ
+         SE3LVoOj6CyBn9OQ5d9WjbBaY3329xEPrWhGO4SyT/GJELRMHB5/Rs5YG9uT3Pyca+Sq
+         jznwSkmUV0lhBEUE9gty/cpSdikprq1z3TKBOjwCs2Rj2uxgrMgwXK4LyQkfSO+VDy7J
+         YWkb+uTzU3G2Zu7vapH9OQM/4MezX4mZRzeegCSnZdcklJWjq+ka5audG6nm/ey/Aary
+         lqWw==
+X-Gm-Message-State: ANoB5pnOjoL3DBvSPh1+lBJNNL/pXm1tsdw97B1nDkTYTLtT3rSzMTPM
+        cLspstjYFkWesf45T4hNCyjoO7oQuhUs
+X-Google-Smtp-Source: AA0mqf5uRSwXRfQLVhEMT2E3nAMlxn3xkDDTPzRQ6zTyXc0I1wyTeTAJ3m2vV2mq97Dp38YCQGyKUu/gZFCZ
+X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:9c:201:45dd:dca2:ac94:b937])
+ (user=dvyukov job=sendgmr) by 2002:a05:6402:1859:b0:468:51b0:295 with SMTP id
+ v25-20020a056402185900b0046851b00295mr803137edy.319.1668506386210; Tue, 15
+ Nov 2022 01:59:46 -0800 (PST)
+Date:   Tue, 15 Nov 2022 10:59:41 +0100
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
+Message-ID: <20221115095941.787250-1-dvyukov@google.com>
+Subject: [PATCH net-next] NFC: nci: Extend virtual NCI deinit test
+From:   Dmitry Vyukov <dvyukov@google.com>
+To:     bongsu.jeon@samsung.com, krzysztof.kozlowski@linaro.org,
+        netdev@vger.kernel.org
+Cc:     syzkaller@googlegroups.com, Dmitry Vyukov <dvyukov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+Extend the test to check the scenario when NCI core tries to send data
+to already closed device to ensure that nothing bad happens.
 
-This function is used for every packet, siphash_4u64 is noticeably faster
-than using local buffer + siphash:
-
-Before:
-  1.23%  kpktgend_0       [kernel.vmlinux]     [k] __siphash_unaligned
-  0.14%  kpktgend_0       [nf_conntrack]       [k] hash_conntrack_raw
-After:
-  0.79%  kpktgend_0       [kernel.vmlinux]     [k] siphash_4u64
-  0.15%  kpktgend_0       [nf_conntrack]       [k] hash_conntrack_raw
-
-In the pktgen test this gives about ~2.4% performance improvement.
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
 ---
- net/netfilter/nf_conntrack_core.c | 30 +++++++++++++-----------------
- 1 file changed, 13 insertions(+), 17 deletions(-)
+ tools/testing/selftests/nci/nci_dev.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index f97bda06d2a9..057ebdcc25d7 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -211,28 +211,24 @@ static u32 hash_conntrack_raw(const struct nf_conntrack_tuple *tuple,
- 			      unsigned int zoneid,
- 			      const struct net *net)
- {
--	struct {
--		struct nf_conntrack_man src;
--		union nf_inet_addr dst_addr;
--		unsigned int zone;
--		u32 net_mix;
--		u16 dport;
--		u16 proto;
--	} __aligned(SIPHASH_ALIGNMENT) combined;
-+	u64 a, b, c, d;
- 
- 	get_random_once(&nf_conntrack_hash_rnd, sizeof(nf_conntrack_hash_rnd));
- 
--	memset(&combined, 0, sizeof(combined));
-+	/* The direction must be ignored, handle usable tuplehash members manually */
-+	a = (u64)tuple->src.u3.all[0] << 32 | tuple->src.u3.all[3];
-+	b = (u64)tuple->dst.u3.all[0] << 32 | tuple->dst.u3.all[3];
- 
--	/* The direction must be ignored, so handle usable members manually. */
--	combined.src = tuple->src;
--	combined.dst_addr = tuple->dst.u3;
--	combined.zone = zoneid;
--	combined.net_mix = net_hash_mix(net);
--	combined.dport = (__force __u16)tuple->dst.u.all;
--	combined.proto = tuple->dst.protonum;
-+	c = (__force u64)tuple->src.u.all << 32 | (__force u64)tuple->dst.u.all << 16;
-+	c |= tuple->dst.protonum;
- 
--	return (u32)siphash(&combined, sizeof(combined), &nf_conntrack_hash_rnd);
-+	d = (u64)zoneid << 32 | net_hash_mix(net);
+diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
+index 162c41e9bcae8..272958a4ad102 100644
+--- a/tools/testing/selftests/nci/nci_dev.c
++++ b/tools/testing/selftests/nci/nci_dev.c
+@@ -888,6 +888,16 @@ TEST_F(NCI, deinit)
+ 			   &msg);
+ 	ASSERT_EQ(rc, 0);
+ 	EXPECT_EQ(get_dev_enable_state(&msg), 0);
 +
-+	/* IPv4: u3.all[1,2,3] == 0 */
-+	c ^= (u64)tuple->src.u3.all[1] << 32 | tuple->src.u3.all[2];
-+	d += (u64)tuple->dst.u3.all[1] << 32 | tuple->dst.u3.all[2];
-+
-+	return (u32)siphash_4u64(a, b, c, d, &nf_conntrack_hash_rnd);
++	// Test that operations that normally send packets to the driver
++	// don't cause issues when the device is already closed.
++	// Note: the send of NFC_CMD_DEV_UP itself still succeeds it's just
++	// that the device won't actually be up.
++	close(self->virtual_nci_fd);
++	self->virtual_nci_fd = -1;
++	rc = send_cmd_with_idx(self->sd, self->fid, self->pid,
++			       NFC_CMD_DEV_UP, self->dev_idex);
++	EXPECT_EQ(rc, 0);
  }
  
- static u32 scale_hash(u32 hash)
+ TEST_HARNESS_MAIN
+
+base-commit: f12ed9c04804eec4f1819097a0fd0b4800adac2f
+prerequisite-patch-id: 214c5357c652cee65ee803d0f45f4b15cfcc9861
 -- 
-2.30.2
+2.38.1.431.g37b22c650d-goog
 
