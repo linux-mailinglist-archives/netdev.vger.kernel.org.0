@@ -2,50 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B7F562916F
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 06:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0CFD62917B
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 06:27:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiKOFSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 00:18:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
+        id S231598AbiKOF11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 00:27:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiKOFSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 00:18:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46AC1DF19
-        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 21:18:08 -0800 (PST)
+        with ESMTP id S231384AbiKOF1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 00:27:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F47E1DF37;
+        Mon, 14 Nov 2022 21:27:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E405B811FF
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 05:18:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A841CC433D6;
-        Tue, 15 Nov 2022 05:18:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC33E6153E;
+        Tue, 15 Nov 2022 05:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B98DC433C1;
+        Tue, 15 Nov 2022 05:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668489486;
-        bh=arqRUFX1wYG6wG0Ya1t0rErRKFJyaXMpJvVM297Vks8=;
+        s=k20201202; t=1668490040;
+        bh=zzu6O/zFTk5RGTsVCUeXcXFKvUuYcR2uq3r53gJiyqU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AjJ8ilFNoCsL0CoNn3865mZy4igj7AR5FfKCnlFCuPpZEKVA8iORUJgF4JUC8mDf2
-         xMH1Lz5g97SGjvG+HQgEyP7VQAnZZ26Ye+bZ8qZjb+rTtr02PfJSO/S1qTLWssGBIY
-         S1gxQwcqbJzucZoyPGowlAXBmxXMOyrngxOi1LpaejT/vNOdJwQ9+AXpKXeMDxeSay
-         QgGn1vIc8LeO8osCpnMGSfH7WoHdvxsiRXduSCA4nlByHlHWxaLDD0Scwi6VKlwD9G
-         LdsOSz9gVHfvUk/XCMxv6tyRaTfXibfpbGcL3HSIj5d1vM4W2BpDWr5zCKp9T4kQod
-         2XDXVUFENvXPg==
-Date:   Mon, 14 Nov 2022 21:18:04 -0800
+        b=KighZU/1R+wzmmWGJdz2jgpfCMfgOr2MLLyTJwZCRuCMuMvzCUO51vroNvSsWzkfO
+         6RgGDqKffO9JgZ5DcE72gUydodzxYTXaGL0s2rUeMrLLpJ2fslVcQAM/2+N3WeThdP
+         tXZRfp02gHF9AXNEUKqSK2CAik2mbLRlQ9JeqSuvY3kLYIdleJTsYV2cm+lTWrszsR
+         ILBZM6JUppAPWe2euwWaAQoBzu8ZKN3s1vx02ZUD5lwgSbpdPuWyWsqeB56SnCDcSU
+         yTMIit8RIOKQFNku+fltLhxvQSM3VJfNUQnlul4mrUyKQTQDge3kxtbOPPppSAO4tO
+         ZrCb0gncJ6d0A==
+Date:   Mon, 14 Nov 2022 21:27:18 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>
-Cc:     "Hans J. Schultz" <netdev@kapio-technology.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-Message-ID: <20221114211804.478206da@kernel.org>
-In-Reply-To: <20221114185704.796b5c14@kernel.org>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
-        <20221114185704.796b5c14@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel@vger.kernel.org,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: Re: [PATCH net-next v3] ethtool: doc: clarify what drivers can
+ implement in their get_drvinfo()
+Message-ID: <20221114212718.76bd6c8b@kernel.org>
+In-Reply-To: <20221113083404.86983-1-mailhol.vincent@wanadoo.fr>
+References: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
+        <20221113083404.86983-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,23 +66,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Nov 2022 18:57:04 -0800 Jakub Kicinski wrote:
-> On Sat, 12 Nov 2022 21:37:46 +0100 Hans J. Schultz wrote:
-> > This patchset adds MAB [1] offload support in mv88e6xxx.
-> > 
-> > Patch #1: Fix a problem when reading the FID needed to get the VID.
-> > 
-> > Patch #2: The MAB implementation for mv88e6xxx.
-> > 
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=a35ec8e38cdd1766f29924ca391a01de20163931  
-> 
-> Vladimir, Ido, ack?
+On Sun, 13 Nov 2022 17:34:04 +0900 Vincent Mailhol wrote:
+> - * Drivers should set at most @driver, @version, @fw_version and
+> - * @bus_info in their get_drvinfo() implementation.  The ethtool
+> - * core fills in the other fields using other driver operations.
+> + * Drivers should set at most @fw_version and @erom_version in their
+> + * get_drvinfo() implementation. The ethtool core fills in the other
+> + * fields using other driver operations.
 
-Ah, either way a v9 will be needed:
+Can I still nit pick the working on v3? :)
 
-drivers/net/dsa/mv88e6xxx/switchdev.c:33:5: warning: no previous prototype for function 'mv88e6xxx_handle_violation' [-Wmissing-prototypes]
-int mv88e6xxx_handle_violation(struct mv88e6xxx_chip *chip, int port,
-    ^
-drivers/net/dsa/mv88e6xxx/switchdev.c:33:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-int mv88e6xxx_handle_violation(struct mv88e6xxx_chip *chip, int port,
-^
+Almost half of the fields are not filled in by other operations, 
+so how about we cut deeper? Even @erom_version is only filled in by 
+a single driver, and pretty much deprecated (devlink is much more
+flexible for all FW version reporting and flashing).
+
+How about:
+
+ * Majority of the drivers should no longer implement this callback.
+ * Most fields are correctly filled in by the core using system
+ * information, or populated using other driver operations.
