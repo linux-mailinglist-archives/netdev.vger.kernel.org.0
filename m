@@ -2,65 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9363629627
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA16629634
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 11:48:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237652AbiKOKnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 05:43:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S229954AbiKOKsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 05:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbiKOKnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 05:43:11 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD0F25C51;
-        Tue, 15 Nov 2022 02:43:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=B85cuMRk7m/GxUw8KclvU5Eto26IVRvj2aMlFbVY1SU=; b=MS5yRjBVqNX8Cz7qZ346BZzJEO
-        AFtoeic2FvsFskee3v2ZQRh3/japbhQiR5YrJ4/9KArJwNO5p0NU9rR3R+tr+z91ElT5UaRCAhApX
-        sAFKZ2zfPaKEenDMRdaw48TZqmfO4OuYRNApSXCZB5hTQ1CLXomRywfBfV5a/NyF9Z8P3zKeaH2fq
-        gGtqWJdPJ8NNDzxvtNaZv2KeLzuPciybCvHrLlsMmbS3xAL/ViJNW6kSrFMzL9fvhTJjeTW9LXX/a
-        B/xPE0BtvgrPvWWvm5nn0vCGuoAGv7cQ674hyPc57SoaaQCxhMqRdqY/TiUDXjSmVDZ4knGYd/M9e
-        XIGE2K5w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35282)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1outP4-0001vu-6Q; Tue, 15 Nov 2022 10:42:54 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1outP0-0004iD-2t; Tue, 15 Nov 2022 10:42:50 +0000
-Date:   Tue, 15 Nov 2022 10:42:50 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Corentin LABBE <clabbe@baylibre.com>, andrew@lunn.ch,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, pabeni@redhat.com,
-        robh+dt@kernel.org, samuel@sholland.org, wens@csie.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        netdev@vger.kernel.org, linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v4 1/3] regulator: Add of_regulator_bulk_get_all
-Message-ID: <Y3NtKgb0LpWs0RkB@shell.armlinux.org.uk>
-References: <20221115073603.3425396-1-clabbe@baylibre.com>
- <20221115073603.3425396-2-clabbe@baylibre.com>
- <Y3Nj4pA2+WRFvSNd@sirena.org.uk>
- <Y3NnirK0bN71IgCo@Red>
- <Y3NrQffcdGIjS64a@sirena.org.uk>
+        with ESMTP id S229944AbiKOKso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 05:48:44 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5C510FE0
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 02:48:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668509321; x=1700045321;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=eTCWESO+SqdLpgLhDDEnOIAbUv0/LK4O/2Og0yZ71Us=;
+  b=GTABadC2SGdAfT+C05gFTei3af8gHEKBnkH5ZU+weBfhVzmqyVORah3+
+   NBTskOWnhet0ekG1ZaDPAi+HyH0YNYpdXEbBj9TWD8CNLRBZNeIwAj7Es
+   En7diEHvlrBSL/Hm1Qwkti1aYM9SWYcF6vMQKds2RVSYsABDV9iZ3XDZ4
+   MneVJk07DAeMV3S2DaivTDSh/n+qs3GeSXEeJmKYtTkNHeSLaNJSUB/Qq
+   9calvA4Z6TUn+rSMsPmhrjsAFvrKdSMZVtPb67B1D2RtLr6hwjPhVpsjQ
+   13o3JQeP4/YAgoydFsXYhpOjvjz+Ev3KAvMBRs9I1yygnup0ahTcq/0lW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="313371145"
+X-IronPort-AV: E=Sophos;i="5.96,165,1665471600"; 
+   d="scan'208";a="313371145"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 02:48:40 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="633193360"
+X-IronPort-AV: E=Sophos;i="5.96,165,1665471600"; 
+   d="scan'208";a="633193360"
+Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 02:48:38 -0800
+From:   Michal Wilczynski <michal.wilczynski@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
+        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
+        anthony.l.nguyen@intel.com, kuba@kernel.org,
+        ecree.xilinx@gmail.com, jiri@resnulli.us,
+        Michal Wilczynski <michal.wilczynski@intel.com>
+Subject: [PATCH net-next v12 00/11] Implement devlink-rate API and extend it
+Date:   Tue, 15 Nov 2022 11:48:14 +0100
+Message-Id: <20221115104825.172668-1-michal.wilczynski@intel.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y3NrQffcdGIjS64a@sirena.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,27 +60,201 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 10:34:41AM +0000, Mark Brown wrote:
-> On Tue, Nov 15, 2022 at 11:18:50AM +0100, Corentin LABBE wrote:
-> > Le Tue, Nov 15, 2022 at 10:03:14AM +0000, Mark Brown a écrit :
-> 
-> > > What's the use case - why would a device not know which supplies
-> > > it requires?  This just looks like an invitation to badly written
-> > > consumers TBH.
-> 
-> > The device know which supply it have, but I found only this way to made all maintainers happy.
-> > See https://lore.kernel.org/netdev/0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org/t/#m7a2e012f4c7c7058478811929774ab2af9bfcbf6
-> 
-> Well, it's not making this maintainer happy :/  If we know what
-> PHY is there why not just look up the set of supplies based on
-> the compatible of the PHY?
+This patch series implements devlink-rate for ice driver. Unfortunately
+current API isn't flexible enough for our use case, so there is a need to
+extend it. Some functions have been introduced to enable the driver to
+export current Tx scheduling configuration.
 
-It looks to me like this series fetches the regulators before the PHY
-is bound to the driver, so what you're proposing would mean that the
-core PHY code would need a table of all compatibles (which is pretty
-hard to do, they encode the vendor/device ID, not some descriptive
-name) and then a list of the regulator names. IMHO that doesn't scale.
+Pasting justification for this series from commit implementing devlink-rate
+in ice driver(that is a part of this series):
+
+There is a need to support modification of Tx scheduler tree, in the
+ice driver. This will allow user to control Tx settings of each node in
+the internal hierarchy of nodes. As a result user will be able to use
+Hierarchy QoS implemented entirely in the hardware.
+
+This patch implemenents devlink-rate API. It also exports initial
+default hierarchy. It's mostly dictated by the fact that the tree
+can't be removed entirely, all we can do is enable the user to modify
+it. For example root node shouldn't ever be removed, also nodes that
+have children are off-limits.
+
+Example initial tree with 2 VF's:
+
+[root@fedora ~]# devlink port function rate show
+pci/0000:4b:00.0/node_27: type node parent node_26
+pci/0000:4b:00.0/node_26: type node parent node_0
+pci/0000:4b:00.0/node_34: type node parent node_33
+pci/0000:4b:00.0/node_33: type node parent node_32
+pci/0000:4b:00.0/node_32: type node parent node_16
+pci/0000:4b:00.0/node_19: type node parent node_18
+pci/0000:4b:00.0/node_18: type node parent node_17
+pci/0000:4b:00.0/node_17: type node parent node_16
+pci/0000:4b:00.0/node_21: type node parent node_20
+pci/0000:4b:00.0/node_20: type node parent node_3
+pci/0000:4b:00.0/node_14: type node parent node_5
+pci/0000:4b:00.0/node_5: type node parent node_3
+pci/0000:4b:00.0/node_13: type node parent node_4
+pci/0000:4b:00.0/node_12: type node parent node_4
+pci/0000:4b:00.0/node_11: type node parent node_4
+pci/0000:4b:00.0/node_10: type node parent node_4
+pci/0000:4b:00.0/node_9: type node parent node_4
+pci/0000:4b:00.0/node_8: type node parent node_4
+pci/0000:4b:00.0/node_7: type node parent node_4
+pci/0000:4b:00.0/node_6: type node parent node_4
+pci/0000:4b:00.0/node_4: type node parent node_3
+pci/0000:4b:00.0/node_3: type node parent node_16
+pci/0000:4b:00.0/node_16: type node parent node_15
+pci/0000:4b:00.0/node_15: type node parent node_0
+pci/0000:4b:00.0/node_2: type node parent node_1
+pci/0000:4b:00.0/node_1: type node parent node_0
+pci/0000:4b:00.0/node_0: type node
+pci/0000:4b:00.0/1: type leaf parent node_27
+pci/0000:4b:00.0/2: type leaf parent node_27
+
+Let me visualize part of the tree:
+
+                        +---------+
+                        |  node_0 |
+                        +---------+
+                             |
+                        +----v----+
+                        | node_26 |
+                        +----+----+
+                             |
+                        +----v----+
+                        | node_27 |
+                        +----+----+
+                             |
+                    |-----------------|
+               +----v----+       +----v----+
+               |   VF 1  |       |   VF 2  |
+               +----+----+       +----+----+
+
+So at this point there is a couple things that can be done.
+For example we could only assign parameters to VF's.
+
+[root@fedora ~]# devlink port function rate set pci/0000:4b:00.0/1 \
+                 tx_max 5Gbps
+
+This would cap the VF 1 BW to 5Gbps.
+
+But let's say you would like to create a completely new branch.
+This can be done like this:
+
+[root@fedora ~]# devlink port function rate add \
+                 pci/0000:4b:00.0/node_custom parent node_0
+[root@fedora ~]# devlink port function rate add \
+                 pci/0000:4b:00.0/node_custom_1 parent node_custom
+[root@fedora ~]# devlink port function rate set \
+                 pci/0000:4b:00.0/1 parent node_custom_1
+
+This creates a completely new branch and reassigns VF 1 to it.
+
+A number of parameters is supported per each node: tx_max, tx_share,
+tx_priority and tx_weight.
+
+V12:
+ - fixed warnings
+ - added comment about conversion from bytes/s to kilobits/s
+
+V11:
+ - updated documentation in ice.rst to clarify how new parameters
+   are used, and describe in more detail how and when the hierarchy
+   is exported/deleted, and how mutual exclusivity with DCB/ADQ
+   works
+ - added documentation of new parameters in devlink-port.rst
+ - refactored ice_set_object_tx_priority, ice_set_object_tx_max,
+   ice_set_object_tx_weight, ice_set_object_tx_share to avoid
+   code duplication
+
+V10:
+ - changed attributes type from u16 to u32 as they are padded to u32
+   anyway
+ - changed NL_SET_ERR_MSG_MOD to NL_SET_ERR_MSG_ATTR as it points to
+   a problem with specific attribute
+ - fixed function parameter not described
+ - added documentation in ice.rst
+
+V9:
+ - changed misleading name from 'parameter' to 'attribute'
+ - removed mechanism referring for kernel object by string,
+   now it's referring to them as pointers
+ - removed limiting name size in devl_rate_node_create()
+ - removed commit that allowed for change of priv in set_parent
+   callback
+ - added commit that allows for pre-allocation of ice_sched
+   elements
+
+V8:
+- address minor formatting issues
+- fix memory leak
+- address warnings
+
+V7:
+- split into smaller commits
+- paste justification for this series to cover letter
+
+V6:
+- replaced strncpy with strscpy
+- renamed rate_vport -> rate_leaf
+
+V5:
+- removed queue support per community request
+- fix division of 64bit variable with 32bit divisor by using div_u64()
+- remove RDMA, ADQ exlusion as it's not necessary anymore
+- changed how driver exports configuration, as queues are not supported
+  anymore
+- changed IDA to Xarray for unique node identification
+
+V4:
+- changed static variable counter to per port IDA to
+  uniquely identify nodes
+
+V3:
+- removed shift macros, since FIELD_PREP is used
+- added static_assert for struct
+- removed unnecessary functions
+- used tab instead of space in define
+
+V2:
+- fixed Alexandr comments
+- refactored code to fix checkpatch issues
+- added mutual exclusion for RDMA, DCB
+
+Michal Wilczynski (11):
+  devlink: Introduce new attribute 'tx_priority' to devlink-rate
+  devlink: Introduce new attribute 'tx_weight' to devlink-rate
+  devlink: Enable creation of the devlink-rate nodes from the driver
+  devlink: Allow for devlink-rate nodes parent reassignment
+  devlink: Allow to set up parent in devl_rate_leaf_create()
+  ice: Introduce new parameters in ice_sched_node
+  ice: Add an option to pre-allocate memory for ice_sched_node
+  ice: Implement devlink-rate API
+  ice: Prevent ADQ, DCB coexistence with Custom Tx scheduler
+  ice: Add documentation for devlink-rate implementation
+  Documentation: Add documentation for new devlink-rate attributes
+
+ .../networking/devlink/devlink-port.rst       |  33 +-
+ Documentation/networking/devlink/ice.rst      | 115 ++++
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   7 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |   2 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   7 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 502 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   3 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |   6 +
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  18 +
+ drivers/net/ethernet/intel/ice/ice_sched.c    | 104 +++-
+ drivers/net/ethernet/intel/ice/ice_sched.h    |  31 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   9 +
+ .../mellanox/mlx5/core/esw/devlink_port.c     |   4 +-
+ drivers/net/netdevsim/dev.c                   |   2 +-
+ include/net/devlink.h                         |  18 +-
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            | 130 ++++-
+ 18 files changed, 970 insertions(+), 28 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.37.2
+
