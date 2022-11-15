@@ -2,121 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51908629BFF
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 15:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE19629C3A
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 15:39:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbiKOOYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 09:24:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
+        id S229918AbiKOOjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 09:39:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbiKOOY2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 09:24:28 -0500
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2265522537
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 06:24:27 -0800 (PST)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-37063f855e5so138375737b3.3
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 06:24:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=j1fPL+nMBhiiMv7wUlO9WZriEt9grZuM8SVZB1W8ZQ4=;
-        b=qPp0f+6GLqfGfP15pWUOHK/dJugx2vBVe0of8jlEgnc9p0V4x6ZPdbdf1ikBvGn9xM
-         DBCCSmOtgrLVgGF2zPfur97lhHFHB6W2SSfBMpDj72JDmC6vFfEW4egt32VHQZ/HnihC
-         oVBK9pFvdwtlDsCwJFZNgGYTVgxBs1QTYkoFoRcMGMFlL6orrdshjI5tV7SpAhhEjE9R
-         rvJ4wY92JWRPHMC4yYwPix7XLr4SD5all2BiCbnR3X9ksEYDzXI2AeiELlpYDDuXd5FM
-         C6kHfX2zmGUS2mtA5EoPCgfHQ5Nlki13omVzeictAvcvd/wkkFacIIsdUbFlrSrBNtrH
-         Ecog==
+        with ESMTP id S229665AbiKOOjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 09:39:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACC2140B1
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 06:38:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668523092;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tgM9yBaibwMrsZ9xdO1WAh2Xif4sqr+hPAuzkTHUCqI=;
+        b=aMffMpsv4D87Rgi+Tnsf6NoDAvl2+1ozQYe1PEGS4ijt0LUslllbiVPavm9QmpkNDHDsrz
+        WBbVLSdJLh0QAJLNf5u5dtmf2aIDSTvpVR7Wtln07VEkuiu8Jrs5BNCXUt46E0ujTL3rlv
+        lSc1L8XVK0xH30saGtw30+OLNAbYhZM=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-596-xhK7-sH5NrypmtNEJJstyQ-1; Tue, 15 Nov 2022 09:38:10 -0500
+X-MC-Unique: xhK7-sH5NrypmtNEJJstyQ-1
+Received: by mail-qt1-f199.google.com with SMTP id ay12-20020a05622a228c00b003a52bd33749so10266146qtb.8
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 06:38:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=j1fPL+nMBhiiMv7wUlO9WZriEt9grZuM8SVZB1W8ZQ4=;
-        b=Hl5Qb0gkI/GpXdPkCHYV0ii+bmebLIhOs16BA2cil9qxIZZyBFY3+vq9Zv6YXlAI79
-         TzfZ1oNq8ute8sWkyxqZ8jJj3DK8uC6cIUBdZ62m7qi3E+1sO6bwP0il7lIx8Akxcc7F
-         7l4MsxpqmiwHIZ3CXwhpqE+DmV4jJOl76O9n174JbKHmeNDwjYjzvRCB2krNi7WOB6zB
-         2VSvkIfbGNxvUi8ysu2kVj/91x1kuzo0PalqvrS8xE0Y1KbT74PVQXyE/qombNQaFPyC
-         0SblQecf2iFOC+k3IeSwJCithyiZRTQ1dVmC77KZYumGjuIYbG7Ys1b7Ri76vhV8rAd2
-         IOwQ==
-X-Gm-Message-State: ANoB5pklvDUCHOBZNqRpxJvhy1xuZJmd5PiQ/p9+hS+IEoqUpuxyO1ce
-        Q32YgCTOOsO6C8/yJHZzgY6qmKTnIbQNEluOEDg=
-X-Google-Smtp-Source: AA0mqf6LKyis6E14AIsUpXGtuPvG8x7RqpIZZXVHpjAHCUM6g86mpy5rvUEr/g8GtfhpFHUJrjXR1YVsn40LTLG6sEU=
-X-Received: by 2002:a81:9bc1:0:b0:370:4a99:df7d with SMTP id
- s184-20020a819bc1000000b003704a99df7dmr17206747ywg.308.1668522266327; Tue, 15
- Nov 2022 06:24:26 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:a05:6919:c70d:b0:f0:aad8:4678 with HTTP; Tue, 15 Nov 2022
- 06:24:26 -0800 (PST)
-Reply-To: westernuniontg453@gmail.com
-From:   POST OFFICE <westernuniontogorepublic55@gmail.com>
-Date:   Tue, 15 Nov 2022 14:24:26 +0000
-Message-ID: <CACT2zkrhiHF1zOW2_m5dKv5LTNLzQakUs2VkHd-jiFFVA6haxQ@mail.gmail.com>
-Subject: =?UTF-8?B?R8O8bsO8bsO8eiB4ZXlpciDJmXppemlt?=
-To:     undisclosed-recipients:;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tgM9yBaibwMrsZ9xdO1WAh2Xif4sqr+hPAuzkTHUCqI=;
+        b=NrVaiitKw4E4TP3U4hsi/HmTNP7OJp4OYmsTkCWcK0O6Lsed1+TWuN5p/ZdKK4Dw+O
+         ve6an0bB0OVb7LQf2nt6lpn3Qv4MPVdQWZBT7mdz5G4Rfh4ZRMrZ1okjIG5eSNhiAIK5
+         YVJEy7kSy9X6jA/kkGsO3vclDmJPu1Wq7w8GnmDXw1qM1mhXAJuQAq6Eh2v9fvkXK940
+         nSiteZpFnsiAS4/7OibXTi+xFQcWCLyKuORyQoQjaI0pXcpduN+YNcHh7aW33MPAK0AN
+         G5bTEWGW+rzH6pMJbK6BUuIibW3hNA7ix2dQ8emp2u6YO5SNOatgf5ewC8egREF2Z7K6
+         UPxg==
+X-Gm-Message-State: ANoB5pmXdUNeeNXqCRcVuLQh47tQLvgAz7+3XfdnWAMazFqJA/v7qpYO
+        9wNFN7xEOSfrZS8fuTNBupsf0a7bc6/SXbTxc786YcAmqcJ6Lgg1pqVx3zQ5Ll5fNfxgSY2fJ9p
+        XtIISrolt9tD28/23
+X-Received: by 2002:a05:6214:15ce:b0:4bc:22ff:39ce with SMTP id p14-20020a05621415ce00b004bc22ff39cemr16799737qvz.91.1668523089759;
+        Tue, 15 Nov 2022 06:38:09 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4Ugs0MnizyLhOd/gDTLlV5AAwZ2bECHUhV9BMK2FxYla92o4Le2yIt56mBxiPiY7Jnxsq37A==
+X-Received: by 2002:a05:6214:15ce:b0:4bc:22ff:39ce with SMTP id p14-20020a05621415ce00b004bc22ff39cemr16799718qvz.91.1668523089475;
+        Tue, 15 Nov 2022 06:38:09 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
+        by smtp.gmail.com with ESMTPSA id f2-20020ac87f02000000b003a4c3c4d2d4sm7333875qtk.49.2022.11.15.06.38.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 06:38:08 -0800 (PST)
+Message-ID: <9facd5682e29fa5e02062c8f665d9c2370a16fdb.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: phy: mscc: macsec: do not copy encryption
+ keys
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com
+Cc:     sd@queasysnail.net, netdev@vger.kernel.org
+Date:   Tue, 15 Nov 2022 15:38:06 +0100
+In-Reply-To: <20221114092033.34405-1-atenart@kernel.org>
+References: <20221114092033.34405-1-atenart@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:112a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [westernuniontogorepublic55[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [westernuniontg453[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [westernuniontogorepublic55[at]gmail.com]
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMO2cm3JmXRsaSBFLXBvw6d0IFNhaGliaTsNCg0KQmV5bsmZbHhhbHEgVmFseXV0YSBGb25kdSAo
-QlZGKSBiw7x0w7xuIGTJmWzJmWR1emx1cSBxdXJiYW5sYXLEsW5hIHbJmSB0yZlsyZliDQpvbHVu
-bWFtxLHFnyB2yZlzYWl0bMmZcmkgb2xhbmxhcmEga29tcGVuc2FzaXlhIMO2ZMmZeWlyIHbJmSBz
-aXppbiBlLXBvw6d0DQrDvG52YW7EsW7EsXogdMmZbMmZYiBvbHVubWF5YW4gZm9uZCBzaXlhaMSx
-c8SxbmRhIHRhcMSxbGTEsS4gQnUgV2VzdGVybiBVbmlvbg0Kb2Zpc2kgQlZGIHTJmXLJmWZpbmTJ
-mW4ga29tcGVuc2FzaXlhbsSxesSxIFdlc3Rlcm4gVW5pb24gTW9uZXkgVHJhbnNmZXINCnZhc2l0
-yZlzaWzJmSBzaXrJmSBrw7bDp8O8cm3JmWsgdGFwxZ/EsXLEscSfxLEgdmVyaWIuIEJpeiBhcmHF
-n2TEsXJkxLFxIHbJmSBidSBmb25kdW4NCnFhbnVuaSBzYWhpYmkgb2xkdcSfdW51enUgbcO8yZl5
-ecmZbiBldGRpay4NCg0KQnVudW5sYSBiZWzJmSwgw7xtdW1pIG3JmWJsyZnEnyA4MDAsMDAwLjAw
-IEFCxZ4gZG9sbGFyxLEgdGFtYW1pbMmZIHNpesmZDQprw7bDp8O8csO8bMmZbsmZIHHJmWTJmXIg
-Yml6IMO2eiDDtmTJmW5pxZ9pbml6aSBXZXN0ZXJuIFVuaW9uIE1vbmV5IFRyYW5zZmVyDQp2YXNp
-dMmZc2lsyZkgaMmZciBnw7xuICQ1MDAwIGvDtsOnw7xybcmZayBxyZlyYXLEsW5hIGfJmWxkaWsu
-DQoNCkJpeiBidSDDtmTJmW5pxZ9pIHlhbG7EsXogZS1wb8OndCDDvG52YW7EsW7EsXpsYSBnw7Zu
-ZMmZcsmZIGJpbG3JmXnJmWPJmXlpaywgb25hDQpnw7ZyyZkgZMmZIHNpesmZIGfDvG5kyZlsaWsg
-NTAwMCBkb2xsYXIgZ8O2bmTJmXLJmWPJmXlpbWl6IHllcsmZIG3JmWx1bWF0xLFuxLF6DQpsYXrE
-sW1kxLFyLCBtyZlzyZlsyZluOw0KDQpBbMSxY8SxbsSxbiBhZMSxOiBfX19fX19fX19fX19fX19f
-DQrDnG52YW46IF9fX19fX19fX19fX19fX18NCsOWbGvJmTogX19fX19fX19fX19fX19fXw0KUGXF
-n8mZOiBfX19fX19fX19fX19fX19fDQpUZWxlZm9uIG7Dtm1yyZlzaTpfX19fX19fX19fX19fX19f
-DQrFnsmZeHNpeXnJmXQgdsmZc2lxyZluaXppbiDJmWxhdsmZIGVkaWxtacWfIHN1csmZdGk6IF9f
-X19fX19fX19fDQpZYcWfOiBfX19fX19fX19fX19fX19fX19fX19fDQoNCll1eGFyxLFkYWvEsSBt
-yZlsdW1hdMSxbsSxesSxIGFsYW4ga2ltaSBrw7bDp8O8cm3JmXnJmSBiYcWfbGF5YWNhxJ/EsXEs
-IMaPbGFxyZkNCkUtcG/Dp3R1OiAod2VzdGVybnVuaW9udGc0NTNAZ21haWwuY29tKQ0KDQpzyZlk
-YXHJmXRsyZkgdMmZxZ/JmWtrw7xyIGVkaXLJmW0sDQoNClhhbsSxbSBNYXJ0aW5zIE5hbm55LCBX
-ZXN0ZXJuIFVuaW9uIE1vbmV5IFRyYW5zZmVyIMWfaXJryZl0aW5pbiBkaXJla3RvcnUsDQpCYcWf
-IG9maXMgTG9tZSBUb3FvLg0K
+Hello,
+
+On Mon, 2022-11-14 at 10:20 +0100, Antoine Tenart wrote:
+> Instead of calling memzero_explicit on the key when freeing a flow,
+> let's simply not copy the key in the first place as it's only used when
+> a new flow is set up.
+> 
+> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> ---
+> 
+> Following
+> https://lore.kernel.org/all/20221108153459.811293-1-atenart@kernel.org/T/
+> refactor the MSCC PHY driver not to make a copy the encryption keys.
+
+The patch LGTM, but would you mind including into the commit message a
+reference to the -net commit, so that the dependency is there to
+simplify eventual backports?
+
+Thanks!
+
+Paolo
+
