@@ -2,152 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6E16292B9
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 08:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F20A86292D6
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 08:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232306AbiKOHwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 02:52:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        id S232491AbiKOH76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 02:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiKOHww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 02:52:52 -0500
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0871D0F0;
-        Mon, 14 Nov 2022 23:52:51 -0800 (PST)
-Received: by mail-pg1-f178.google.com with SMTP id q1so12554299pgl.11;
-        Mon, 14 Nov 2022 23:52:51 -0800 (PST)
+        with ESMTP id S232596AbiKOH7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 02:59:54 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9F220BC4
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 23:59:51 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id d6so23164407lfs.10
+        for <netdev@vger.kernel.org>; Mon, 14 Nov 2022 23:59:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HJPFTJOGuPRhd7ksoWE06DkherlyxwNY/RJOZ9ATVqs=;
+        b=hO1pWG9FFw6lcA0dz0nGIKvIKA4R/SiXFR4HgemXVKeuy4ri+jgZm9KmbvhcTkPemv
+         9ZPEmoWV29gKa+KZ3+bVE3krOfiof6B2Miohku1IQFC6r1ZB2pa+OckJ9K/AgXva+/1C
+         qV8JLBtSUR8i9ufUY/1Zw5bUQqOvy6uGGzVol5BxOvWR5XsDP7P3g7Er/spdOOdVPuK5
+         9I2nC8zz2eG+VcaF1vK9Z34SeBvF/iSThHPxPxjH2jvy/9qHtcXuS56MAmVamZ7jixxm
+         1zjcu/F9Wdp4X/UurrUyZow9zrbqD+7cA+gSrPT843Smx57rhfuqTqyfHh0euoXhAWbK
+         lIvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kZybfrF86Isnu1Sla8zVBFWj7ao5uvMkrnCtqwRprBM=;
-        b=GIBF83ESPhpAGJZc4WUzStNWEqOcDE1E6/rtF1FPxQqOUhlcToklXPJKDFRcACTiYj
-         PveElhxE0CRRH+1DTeX9ilom9MbcNCbEAZyEIsQ2jQakmDu7DHBodG0up3GQ577nhXLo
-         OVnlaUQeeQnKuc8JWoPWWdDi8S50/mKDDR3eP7Qj2C8ofR7MKulQzZ5OCvCAborihR+u
-         PTa8/Nyb7qiZMwmRxwrLDpnrPrRZFotEygW2tXsXkO3e7z5DNQnVueGWKLyDAEuBw1/d
-         K9EPhkkYWvfQ4KRHKs7e99Fzb1iizh0I16P/yUVdRn0FG2TnQ5LTAa//LN6YH1XI1cC6
-         5TMw==
-X-Gm-Message-State: ANoB5plKKuFRUKDu77La+0lhUQKb8ZsxxCrIET4orIMmLri6OxRVavpB
-        f2IKchua6LQ0utczRQyX7fcws+dy3f7Hx1KLZPw=
-X-Google-Smtp-Source: AA0mqf41vXGArtfDSUyMswbfOLqJ1t1YqkneHkNvJ2EoA5l4fISCHPgoymwpBNQa/cVif7yIDFvjMLsgKQHVHbSAAaU=
-X-Received: by 2002:a63:4d43:0:b0:41d:c892:2e9 with SMTP id
- n3-20020a634d43000000b0041dc89202e9mr14812125pgl.457.1668498770574; Mon, 14
- Nov 2022 23:52:50 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HJPFTJOGuPRhd7ksoWE06DkherlyxwNY/RJOZ9ATVqs=;
+        b=KRMli9ZMS6/NT4YqUoKaJPllCZCzhY4ahWriI+Ml8hcx+uIVLJi9MfhPEduo9c3g+z
+         z1OasnqPF7eZ0p070tb8U4UkoNUCkaHmuGUT5czNtrkuMiX2YkotjYJk8snLrUxwRj1T
+         1iR2S6CrNQnrLjwd6WMHZfEBLDn5t3hhIR/XdqQJDBsb4WvRxClgcEqDbhbInLy7FEjg
+         UJ5wQhsPeGr9B6DGnoZSHw/BOAphSIsQt5liZNsfffvE4VdS7BAJM1gAMsqOX/1bVdyh
+         xI1s7M4MmMbOVfaXIeJvWdZLHWnUN5m1efPrUJecOdCbsD3UQpFB/7T7y3w93dVBXFhd
+         kvwA==
+X-Gm-Message-State: ANoB5plyHXEGhmbnlpo/zN7+AbG1hRM1tXUOuelpvEGHa43RG/MxeeI8
+        MKuHUDsjrOx8MQY8x4BePYAT2g==
+X-Google-Smtp-Source: AA0mqf4DsOuYz5YY9s6MWxbp9QH+GSKO3GjqvZ5CD3NNuQLOAKv/l/8yIDLggMj1iSKZHpcGsP8elg==
+X-Received: by 2002:a05:6512:2803:b0:4a6:2ff6:f32f with SMTP id cf3-20020a056512280300b004a62ff6f32fmr6024570lfb.1.1668499190153;
+        Mon, 14 Nov 2022 23:59:50 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id a27-20020a2eb55b000000b0026e8b82eba6sm2388385ljn.34.2022.11.14.23.59.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Nov 2022 23:59:49 -0800 (PST)
+Message-ID: <88fd2f42-6f20-7bbe-1a4d-1f482c153f07@linaro.org>
+Date:   Tue, 15 Nov 2022 08:59:48 +0100
 MIME-Version: 1.0
-References: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
- <20221113083404.86983-1-mailhol.vincent@wanadoo.fr> <20221114212718.76bd6c8b@kernel.org>
-In-Reply-To: <20221114212718.76bd6c8b@kernel.org>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 15 Nov 2022 16:52:39 +0900
-Message-ID: <CAMZ6RqJ-2_ymLiGuObmBLRDpNNy0ZpMCeRU2qgNPvq2oArnX8A@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] ethtool: doc: clarify what drivers can
- implement in their get_drvinfo()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>,
-        linux-kernel@vger.kernel.org,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next 1/5] dt-bindings: net: qcom,ipa: deprecate
+ modem-init
+Content-Language: en-US
+To:     Alex Elder <elder@ieee.org>, Alex Elder <elder@linaro.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
+        elder@kernel.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221112200717.1533622-1-elder@linaro.org>
+ <20221112200717.1533622-2-elder@linaro.org>
+ <de98dbb4-afb5-de05-1e75-2959aa720333@linaro.org>
+ <2f827660-ae9d-01dd-ded8-7fd4c2f8f8ae@ieee.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <2f827660-ae9d-01dd-ded8-7fd4c2f8f8ae@ieee.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 15 Nov. 2022 at 14:27, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Sun, 13 Nov 2022 17:34:04 +0900 Vincent Mailhol wrote:
-> > - * Drivers should set at most @driver, @version, @fw_version and
-> > - * @bus_info in their get_drvinfo() implementation.  The ethtool
-> > - * core fills in the other fields using other driver operations.
-> > + * Drivers should set at most @fw_version and @erom_version in their
-> > + * get_drvinfo() implementation. The ethtool core fills in the other
-> > + * fields using other driver operations.
->
-> Can I still nit pick the working on v3? :)
+On 14/11/2022 18:48, Alex Elder wrote:
+> On 11/14/22 03:56, Krzysztof Kozlowski wrote:
+>> On 12/11/2022 21:07, Alex Elder wrote:
+>>> GSI firmware for IPA must be loaded during initialization, either by
+>>> the AP or by the modem.  The loader is currently specified based on
+>>> whether the Boolean modem-init property is present.
+>>>
+>>> Instead, use a new property with an enumerated value to indicate
+>>> explicitly how GSI firmware gets loaded.  With this in place, a
+>>> third approach can be added in an upcoming patch.
+>>>
+>>> The new qcom,gsi-loader property has two defined values:
+>>>    - self:   The AP loads GSI firmware
+>>>    - modem:  The modem loads GSI firmware
+>>> The modem-init property must still be supported, but is now marked
+>>> deprecated.
+>>>
+>>> Signed-off-by: Alex Elder <elder@linaro.org>
+>>> ---
+>>>   .../devicetree/bindings/net/qcom,ipa.yaml     | 59 +++++++++++++++----
+>>>   1 file changed, 46 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>> index e752b76192df0..0dfd6c721e045 100644
+>>> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>> @@ -124,12 +124,22 @@ properties:
+>>>         - const: ipa-clock-enabled-valid
+>>>         - const: ipa-clock-enabled
+>>>   
+>>> +  qcom,gsi-loader:
+>>> +    enum:
+>>> +      - self
+>>> +      - modem
+>>> +    description:
+>>> +      This indicates how GSI firmware should be loaded.  If the AP loads
+>>
+>> s/This indicates/Indicate/
+>> (or any other grammar without describing DT syntax but hardware/system)
+> 
+> OK.
+> 
+>>> +      and validates GSI firmware, this property has value "self".  If the
+>>> +      modem does this, this property has value "modem".
+>>> +
+>>>     modem-init:
+>>> +    deprecated: true
+>>>       type: boolean
+>>>       description:
+>>> -      If present, it indicates that the modem is responsible for
+>>> -      performing early IPA initialization, including loading and
+>>> -      validating firwmare used by the GSI.
+>>> +      This is the older (deprecated) way of indicating how GSI firmware
+>>> +      should be loaded.  If present, the modem loads GSI firmware; if
+>>> +      absent, the AP loads GSI firmware.
+>>>   
+>>>     memory-region:
+>>>       maxItems: 1
+>>> @@ -155,15 +165,36 @@ required:
+>>>     - interconnects
+>>>     - qcom,smem-states
+>>>   
+>>> -# If modem-init is not present, the AP loads GSI firmware, and
+>>> -# memory-region must be specified
+>>> -if:
+>>> -  not:
+>>> -    required:
+>>> -      - modem-init
+>>> -then:
+>>> -  required:
+>>> -    - memory-region
+>>> +allOf:
+>>> +  # If qcom,gsi-loader is present, modem-init must not be present
+>>> +  - if:
+>>> +      required:
+>>> +        - qcom,gsi-loader
+>>> +    then:
+>>> +      properties:
+>>> +        modem-init: false
+>>
+>> This is ok, but will not allow you to keep deprecated property in DTS
+>> for the transition period. We talked about this that you need to keep
+>> both or wait few cycles before applying DTS cleanups.
+> 
+> My intention is expressed in the comment.  Is it because of the
+> "if .... required ... qcom,gsi-loader"?
+> 
+> Should it be "if ... properties ... qcom,gsi-loader"?
 
-Nitpicks are welcome!
+You disallow modem-init here, so it cannot be present in DTS if
+gsi-loader is present. Therefore the deprecated case like this:
+  qcom,gsi-loader = "modem"
+  modem-init;
+is not allowed by the schema.
 
-> Almost half of the fields are not filled in by other operations,
-> so how about we cut deeper? Even @erom_version is only filled in by
-> a single driver, and pretty much deprecated
-
-I do not like to say that it is "pretty much deprecated". Either it is
-deprecated and we can start to clean things up, or it is not and
-people can continue to use it. It is good to have a clear position,
-whatever it is.
-
-> (devlink is much more flexible for all FW version reporting and flashing).
-
-Side note, I just started to study devlink.
-
-> How about:
->
->  * Majority of the drivers should no longer implement this callback.
->  * Most fields are correctly filled in by the core using system
->  * information, or populated using other driver operations.
-
-> * Majority of the drivers should no longer implement this callback.
-                                                       ^^^^
-In this context, "this callback" is not defined (there is no prior mention in
-this struct doc). I will replace it with "the drv_info() callback".
-
-I am fine to try to discourage the developper from implementing the
-callback. But I still want a small note to state the facts (c.f. above
-comment, unless we explicitly deprecate the drv_info(), I do not think
-we should try to completely hide its existence).
-
-What about this:
+As I said, it is fine, but your DTS should wait a cycle.
 
 
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index dc2aa3d75b39..fe4d8dddb0a7 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -159,8 +159,10 @@ static inline __u32 ethtool_cmd_speed(const
-struct ethtool_cmd *ep)
-  *     in its bus driver structure (e.g. pci_driver::name).  Must
-  *     not be an empty string.
-  * @version: Driver version string; may be an empty string
-- * @fw_version: Firmware version string; may be an empty string
-- * @erom_version: Expansion ROM version string; may be an empty string
-+ * @fw_version: Firmware version string; drivers can set it; may be an
-+ *     empty string
-+ * @erom_version: Expansion ROM version string; drivers can set it;
-+ *     may be an empty string
-  * @bus_info: Device bus address.  This should match the dev_name()
-  *     string for the underlying bus device, if there is one.  May be
-  *     an empty string.
-@@ -180,9 +182,10 @@ static inline __u32 ethtool_cmd_speed(const
-struct ethtool_cmd *ep)
-  * Users can use the %ETHTOOL_GSSET_INFO command to get the number of
-  * strings in any string set (from Linux 2.6.34).
-  *
-- * Drivers should set at most @driver, @version, @fw_version and
-- * @bus_info in their get_drvinfo() implementation.  The ethtool
-- * core fills in the other fields using other driver operations.
-+ * Majority of the drivers should no longer implement the
-+ * get_drvinfo() callback.  Most fields are correctly filled in by the
-+ * core using system information, or populated using other driver
-+ * operations.
-  */
- struct ethtool_drvinfo {
-        __u32   cmd;
+Best regards,
+Krzysztof
 
-
-Yours sincerely,
-Vincent Mailhol
