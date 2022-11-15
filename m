@@ -2,71 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 611C5629A0E
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 14:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE59A629A19
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 14:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238016AbiKONZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 08:25:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
+        id S229986AbiKON0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 08:26:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiKONZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 08:25:16 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695BCCE16;
-        Tue, 15 Nov 2022 05:25:15 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1DE5B18838A3;
-        Tue, 15 Nov 2022 13:25:14 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id DBD6625002DE;
-        Tue, 15 Nov 2022 13:25:13 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id D002491201E4; Tue, 15 Nov 2022 13:25:13 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Tue, 15 Nov 2022 14:25:13 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S229545AbiKON0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 08:26:13 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF621116B;
+        Tue, 15 Nov 2022 05:26:12 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id l14so24247849wrw.2;
+        Tue, 15 Nov 2022 05:26:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UkG9A5GEaL+iS91A1sP8f+OHFyccXyI/9fKl7gdZSI4=;
+        b=lYC5JBRTM5eHKD6SMbbqo7rjWAdVHt8UX8yK3yeoJdAquX9842yoOmuh6Ksj3+V2Xx
+         KVEHb/gU1xog5n1xXCS9ATcEiK4Hmw4comE9Ws9+2aiqXzujEhcuW5hTW1c1+2KeRksw
+         I7mSyYzo+jECQNfFsMeK5TLPoq9uYJC7TiA+tU9AsCIQTdSwo677tmmnZHcglrK4YYe9
+         moF5uN8rA3NdjVJo5uk6lnj7Yc6ZhoKqjx2phIGeOAlqJQLavqYKd8dSmYRFNHkz4lB+
+         BW/hjj6RYrtMdhFJoiluvtWNu9Q+z7mqc8eQ0cajwY8gP5rVQVO5grFMom3rw/qYmwen
+         VRGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UkG9A5GEaL+iS91A1sP8f+OHFyccXyI/9fKl7gdZSI4=;
+        b=iSFrfPKU3QKYIbyyENYOtFkTVsIpfg0EX2IwBj4L/In5fzxPUMtF5ymFG+J54jgI+a
+         CXHLeidM1KR78bOJhvl0L3RLccoIufps7MiUSHtePLGTWMrINAltS53dtryrREfuEqo1
+         XEVif2jD4tcVEIXKC2Oq0fT2q8TLmbMIGKxlsSkkhr+VNmN1FHxIhzVYYZjjahO+Ua8j
+         BoRbHD9HDLYsPChHq8sgNYRaZLjn7omvX3dXf9f+mP5pp91LdCK2EKY1AlnIK/jaKRac
+         PAWwGV/ZPK9yTRDbTcK045mYnhO9KBqpo5JsGzbcViKC76SzN1OO+YdMVVvQBUbFzcTf
+         mU+A==
+X-Gm-Message-State: ANoB5pnB8NstQwyd8BlBRFxQEYRq4FEqXZGBVqRnU74vwd4lwXtFIn3O
+        iTVKOTPWHQle4OT9xhkk3Gk=
+X-Google-Smtp-Source: AA0mqf65gfPaZvyGgF2Go0sorV/aS1Gnaa76RvR8QG13OhEGBZmfq+49ld6g7elY235WTkAGgSYn4g==
+X-Received: by 2002:adf:fc0a:0:b0:22d:6988:30de with SMTP id i10-20020adffc0a000000b0022d698830demr10613276wrr.186.1668518771269;
+        Tue, 15 Nov 2022 05:26:11 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id r2-20020a5d6942000000b0022e47b57735sm12557498wrw.97.2022.11.15.05.26.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 05:26:10 -0800 (PST)
+Date:   Tue, 15 Nov 2022 16:26:07 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-In-Reply-To: <20221115122237.jfa5aqv6hauqid6l@skbuf>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <Y3NcOYvCkmcRufIn@shredder>
- <5559fa646aaad7551af9243831b48408@kapio-technology.com>
- <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
- <20221115111034.z5bggxqhdf7kbw64@skbuf>
- <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
- <20221115122237.jfa5aqv6hauqid6l@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <fb1707b55bd8629770e77969affaa2f9@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next/netfilter] netfilter: nft_inner: fix IS_ERR() vs
+ NULL check
+Message-ID: <Y2PTO4xIJrwhcgyM@kili>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 13:22, Vladimir Oltean wrote:
+The __nft_expr_type_get() function returns NULL on error.  It never
+returns error pointers.
 
-> Do you have a timeline for when the regression was introduced?
-> Commit 35da1dfd9484 reverts cleanly, so I suppose giving it a go with
-> that reverted might be worth a shot. Otherwise, a bisect from a known
-> working version only takes a couple of hours, and shouldn't require
-> other changes to the setup.
+Fixes: 3a07327d10a0 ("netfilter: nft_inner: support for inner tunnel header matching")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+This applies to net-next but presumably it's going to go through the
+netfilter tree?
 
+ net/netfilter/nf_tables_api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Wow! Reverting 35da1dfd9484 and the problem has disappeared. :-)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 62da204eed41..6b159494c86b 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2873,8 +2873,8 @@ int nft_expr_inner_parse(const struct nft_ctx *ctx, const struct nlattr *nla,
+ 		return -EINVAL;
+ 
+ 	type = __nft_expr_type_get(ctx->family, tb[NFTA_EXPR_NAME]);
+-	if (IS_ERR(type))
+-		return PTR_ERR(type);
++	if (!type)
++		return -ENOENT;
+ 
+ 	if (!type->inner_ops)
+ 		return -EOPNOTSUPP;
+-- 
+2.35.1
 
-The bridge_locked_port.sh tests all succeeded... as expected... ;-)
