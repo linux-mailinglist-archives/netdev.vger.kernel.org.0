@@ -2,116 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F31596298F9
-	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14174629907
+	for <lists+netdev@lfdr.de>; Tue, 15 Nov 2022 13:39:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiKOMgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 07:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
+        id S232120AbiKOMjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 07:39:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiKOMgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:36:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279BDA198;
-        Tue, 15 Nov 2022 04:36:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B6446171A;
-        Tue, 15 Nov 2022 12:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B09BC433C1;
-        Tue, 15 Nov 2022 12:36:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668515772;
-        bh=qmPFiEaraXdgB5f1UJNBrZjNvt2PgIKdA/nVThcBsEQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EiS6erefJTY+H7GXTdMUJUTMWyMXtFAk9NEzWd13Naw6lFjciU/Ptok0pvk/kWav2
-         1A9XbBduLrSGo9mc+cGMl8YcSZgFTUdNdWnTId9Q1EnfotuYWqbsjicP0QNzekw2AP
-         gLYHu/GEBKckP/4Ykfq/9eW/rCmm9vDeUqtENCnerV2Ic9Et0dXQYAKdRYWRPigk6r
-         mOLAVtEPwp1rgfIaFP8RORBByHbreXdcD64ULgbhcSwzLNay1W3mHNsY1oyAWA/XiU
-         qSPgSVATAfDViyH9iHNlKnVTdv9/xACZ61DwDiDzgVxPD7eXYHjSHCAcHN3+6bHwR6
-         hC+3tM168wiqA==
-From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Anders Roxell <anders.roxell@linaro.org>
-Subject: BPF, cross-compiling, and selftests
-Date:   Tue, 15 Nov 2022 13:36:08 +0100
-Message-ID: <878rkc1jk7.fsf@all.your.base.are.belong.to.us>
+        with ESMTP id S229781AbiKOMjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 07:39:07 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA201FF97;
+        Tue, 15 Nov 2022 04:39:05 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id j15so24062818wrq.3;
+        Tue, 15 Nov 2022 04:39:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QKEXLyPGXjJRKPyvW3PaMhdvkr3/5SmF5s8yvu+zTKo=;
+        b=NmWecbfPc3BUXQz2DWCZAXcNm8nXoinDTs8mMqCsMqBQOS83ucUtmaru3L/0xEFY78
+         v5xjfaF1k5d639TGBRJfDsGlo4iqw1cTeIZWY9b2tDG669D9Bnm0USvWmCaW0HzSqyyR
+         JX4ZFafXCEVWEc4Np7IQRGttEgNeKUZx9mQZy+dB/ftO2lFfFlZB59QmUD9u3mx1ycZo
+         pnuToKBnOu/Bbe9XIBQdJZo0lhreWYN6SEdJVcUK1JGUP6Wz0O5doccRIicJu+1CSR2d
+         kgVR21EiXBHrCbsBwoc6bLbn0oTkgYxgyfKss94IhB89FJxOOuMAirjayTIgocruMt68
+         kBaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QKEXLyPGXjJRKPyvW3PaMhdvkr3/5SmF5s8yvu+zTKo=;
+        b=BWod6FeIRGIhaseV2vmGvSi96Y4I1YzJPZa5HRSKO/nRX+VOjumHwBb5WxTwKnjQ4E
+         APUpK0+aslRe/vMvF1B5jZPwG8TmF3IqG55QST8dav0fmzPCSZUmG7MwgB2ydEtia4AG
+         ZUnSGfA3wiXq9dNXbX0Q7Ub1BirYw/k5P8thnZehD6BcRzSrGnJzFE5lnBFZXRJlDrYN
+         AQ9kKedT2p4WRb1+KUMV9cQinMUn+b1+kflLp0MTfwquYxAJRlWrRY4yAOBqj0oEV5Nr
+         YDVwL1M5TD1mbke4BGhb3/DkCAhnwrT1kSS4917J1ZLJm5cd1VzEmjzQvfFnh78itwGm
+         yEdw==
+X-Gm-Message-State: ANoB5pkOI5j2/xZaOL/ILqMrzpi/9MB/uoo2jwPinh+spbTh9pGlOqv8
+        aYEYskGEfMLnQr3mbvsaQUU=
+X-Google-Smtp-Source: AA0mqf6tmoz1BJJ0n5zUU8CY0LabZNgtpI2+CtgwsY8wssR/lutYM+mj34Bhl0yB6iOJaiI9THy/Sg==
+X-Received: by 2002:a05:6000:1806:b0:241:7277:6aa4 with SMTP id m6-20020a056000180600b0024172776aa4mr10038121wrh.660.1668515944078;
+        Tue, 15 Nov 2022 04:39:04 -0800 (PST)
+Received: from prasmi.home ([2a00:23c8:2501:c701:d94a:6345:c378:e255])
+        by smtp.gmail.com with ESMTPSA id r8-20020a05600c2f0800b003c701c12a17sm20735803wmn.12.2022.11.15.04.39.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 04:39:02 -0800 (PST)
+From:   Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] dt-bindings: can: renesas,rcar-canfd: Document RZ/Five SoC
+Date:   Tue, 15 Nov 2022 12:38:11 +0000
+Message-Id: <20221115123811.1182922-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I ran into build issues when building selftests/net on Ubuntu/Debian,
-which is related to that BPF program builds usually needs libc (and the
-corresponding target host configuration/defines).
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-When I try to build selftests/net, on my Debian host I get:
+The CANFD block on the RZ/Five SoC is identical to one found on the
+RZ/G2UL SoC. "renesas,r9a07g043-canfd" compatible string will be used
+on the RZ/Five SoC so to make this clear, update the comment to include
+RZ/Five SoC.
 
-  clang -O2 -target bpf -c bpf/nat6to4.c -I../../bpf -I../../../../lib -I..=
-/../../../../usr/include/ -o /home/bjorn/src/linux/linux/tools/testing/self=
-tests/net/bpf/nat6to4.o
-  In file included from bpf/nat6to4.c:27:
-  In file included from /usr/include/linux/bpf.h:11:
-  /usr/include/linux/types.h:5:10: fatal error: 'asm/types.h' file not found
-  #include <asm/types.h>
-           ^~~~~~~~~~~~~
-  1 error generated.
+No driver changes are required as generic compatible string
+"renesas,rzg2l-canfd" will be used as a fallback on RZ/Five SoC.
 
-asm/types.h lives in /usr/include/"TRIPLE" on Debian, say
-/usr/include/x86_64-linux-gnu. Target BPF does not (obviously) add the
-x86-64 search path. These kind of problems have been worked around in,
-e.g., commit 167381f3eac0 ("selftests/bpf: Makefile fix "missing"
-headers on build with -idirafter").
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ .../devicetree/bindings/net/can/renesas,rcar-canfd.yaml         | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-However, just adding the host specific path is not enough. Typically,
-when you start to include libc files, like "sys/socket.h" it's
-expected that host specific defines are set. On my x86-64 host:
+diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+index 6f71fc96bc4e..8347053a96dc 100644
+--- a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
++++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+@@ -33,7 +33,7 @@ properties:
+ 
+       - items:
+           - enum:
+-              - renesas,r9a07g043-canfd    # RZ/G2UL
++              - renesas,r9a07g043-canfd    # RZ/G2UL and RZ/Five
+               - renesas,r9a07g044-canfd    # RZ/G2{L,LC}
+               - renesas,r9a07g054-canfd    # RZ/V2L
+           - const: renesas,rzg2l-canfd     # RZ/G2L family
+-- 
+2.25.1
 
-  $ clang -dM -E - < /dev/null|grep x86_
-  #define __x86_64 1
-  #define __x86_64__ 1
-=20=20
-  $ clang -target riscv64-linux-gnu -dM -E - < /dev/null|grep xlen
-  #define __riscv_xlen 64
-
-otherwise you end up with errors like the one below.
-
-Missing __x86_64__:
-  #if !defined __x86_64__
-  # include <gnu/stubs-32.h>
-  #endif
-
-  clang -O2 -target bpf -c bpf/nat6to4.c -idirafter /usr/lib/llvm-16/lib/cl=
-ang/16.0.0/include -idirafter /usr/local/include -idirafter /usr/include/x8=
-6_64-linux-gnu -idirafter /usr/include  -Wno-compare-distinct-pointer-types=
- -I../../bpf -I../../../../lib -I../../../../../usr/include/ -o /home/bjorn=
-/src/linux/linux/tools/testing/selftests/net/bpf/nat6to4.o
-  In file included from bpf/nat6to4.c:28:
-  In file included from /usr/include/linux/if.h:28:
-  In file included from /usr/include/x86_64-linux-gnu/sys/socket.h:22:
-  In file included from /usr/include/features.h:510:
-  /usr/include/x86_64-linux-gnu/gnu/stubs.h:7:11: fatal error: 'gnu/stubs-3=
-2.h' file not found
-  # include <gnu/stubs-32.h>
-            ^~~~~~~~~~~~~~~~
-  1 error generated.
-
-Now, say that we'd like to cross-compile for a platform. Should I make
-sure that all the target compiler's "default defines" are exported to
-the BPF-program build step? I did a hack for RISC-V a while back in
-commit 6016df8fe874 ("selftests/bpf: Fix broken riscv build"). Not
-super robust, and not something I'd like to see for all supported
-platforms.
-
-Any ideas? Maybe a convenience switch to Clang/target bpf? :-)
-
-
-Bj=C3=B6rn
