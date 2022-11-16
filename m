@@ -2,149 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0957362BF21
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 14:11:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D4B62BF55
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 14:23:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233944AbiKPNLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 08:11:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S233267AbiKPNW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 08:22:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238085AbiKPNLc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 08:11:32 -0500
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5BEA209BB;
-        Wed, 16 Nov 2022 05:11:29 -0800 (PST)
-Received: by ajax-webmail-mail-app2 (Coremail) ; Wed, 16 Nov 2022 21:11:16
- +0800 (GMT+08:00)
-X-Originating-IP: [10.192.27.165]
-Date:   Wed, 16 Nov 2022 21:11:16 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Lin Ma" <linma@zju.edu.cn>
-To:     syzbot <syzbot+10257d01dd285b15170a@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference
- in nci_cmd_timer
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <00000000000055882e05ed9445a2@google.com>
-References: <00000000000055882e05ed9445a2@google.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S233855AbiKPNWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 08:22:42 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FC623EA1;
+        Wed, 16 Nov 2022 05:22:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cEubFAXTxlXp4Bl5RMHL1mpPTLghpJ/m8vKWINbfjC0=; b=KbRLKJCKeyKw7SV6cIFscmYNs5
+        LugG1OfVv5brn3pH5WqXqdTD7nDpRkzy5j7kv2jFIIOhsK8EKsSfZbiVOu3FSbAVmWqYr4AIwf0eU
+        LgyYJZYkyCW73jpIGruke2tctc8hR8WkypR+yCiecbi4flVawilGAKK9y6B3RM481wfg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ovILk-002ZLK-Bt; Wed, 16 Nov 2022 14:21:08 +0100
+Date:   Wed, 16 Nov 2022 14:21:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hui Tang <tanghui20@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, mw@semihalf.com, linux@armlinux.org.uk,
+        leon@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yusongping@huawei.com
+Subject: Re: [PATCH net v4] net: mvpp2: fix possible invalid pointer
+ dereference
+Message-ID: <Y3TjxEd9tbsyv24v@lunn.ch>
+References: <20221116020617.137247-1-tanghui20@huawei.com>
+ <20221116021437.145204-1-tanghui20@huawei.com>
+ <20221115202850.7beeea87@kernel.org>
+ <a061d870-d0ce-a580-636d-600a9a4b006f@huawei.com>
 MIME-Version: 1.0
-Message-ID: <a700b13.191985.1848090ad97.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: en_US
-X-CM-TRANSID: by_KCgBHC7F04XRj+Km2Bw--.4599W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwMQElNG3I6jmQACs9
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_00,SORTED_RECIPS,
-        SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a061d870-d0ce-a580-636d-600a9a4b006f@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBzeXpib3QgPHN5emJvdCsxMDI1N2QwMWRkMjg1YjE1MTcwYUBzeXprYWxsZXIuYXBw
-c3BvdG1haWwuY29tPgo+IFNlbnQgVGltZTogMjAyMi0xMS0xNiAxODo1MjozNyAoV2VkbmVzZGF5
-KQo+IFRvOiBkYXZlbUBkYXZlbWxvZnQubmV0LCBlZHVtYXpldEBnb29nbGUuY29tLCBrcnp5c3p0
-b2Yua296bG93c2tpQGxpbmFyby5vcmcsIGt1YmFAa2VybmVsLm9yZywgbGlubWFAemp1LmVkdS5j
-biwgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywgbmV0ZGV2QHZnZXIua2VybmVsLm9yZywg
-cGFiZW5pQHJlZGhhdC5jb20sIHN5emthbGxlci1idWdzQGdvb2dsZWdyb3Vwcy5jb20KPiBDYzog
-Cj4gU3ViamVjdDogW3N5emJvdF0gQlVHOiB1bmFibGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBv
-aW50ZXIgZGVyZWZlcmVuY2UgaW4gbmNpX2NtZF90aW1lcgo+IAo+IEhlbGxvLAo+IAo+IHN5emJv
-dCBmb3VuZCB0aGUgZm9sbG93aW5nIGlzc3VlIG9uOgo+IAo+IEhFQUQgY29tbWl0OiAgICA5NTAw
-ZmM2ZTllNjAgTWVyZ2UgYnJhbmNoICdmb3ItbmV4dC9jb3JlJyBpbnRvIGZvci1rZXJuZWxjaQo+
-IGdpdCB0cmVlOiAgICAgICBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5l
-bC9naXQvYXJtNjQvbGludXguZ2l0IGZvci1rZXJuZWxjaQo+IGNvbnNvbGUgb3V0cHV0OiBodHRw
-czovL3N5emthbGxlci5hcHBzcG90LmNvbS94L2xvZy50eHQ/eD0xNmNiZjdhNTg4MDAwMAo+IGtl
-cm5lbCBjb25maWc6ICBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94Ly5jb25maWc/eD1i
-MjVjOWYyMTg2ODZkZDVlCj4gZGFzaGJvYXJkIGxpbms6IGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNw
-b3QuY29tL2J1Zz9leHRpZD0xMDI1N2QwMWRkMjg1YjE1MTcwYQo+IGNvbXBpbGVyOiAgICAgICBE
-ZWJpYW4gY2xhbmcgdmVyc2lvbiAxMy4wLjEtKysyMDIyMDEyNjA5MjAzMys3NWUzM2Y3MWMyZGEt
-MX5leHAxfjIwMjIwMTI2MjEyMTEyLjYzLCBHTlUgbGQgKEdOVSBCaW51dGlscyBmb3IgRGViaWFu
-KSAyLjM1LjIKPiB1c2Vyc3BhY2UgYXJjaDogYXJtNjQKPiBzeXogcmVwcm86ICAgICAgaHR0cHM6
-Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20veC9yZXByby5zeXo/eD0xMzU0ZGNlOTg4MDAwMAo+IEMg
-cmVwcm9kdWNlcjogICBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L3JlcHJvLmM/eD0x
-MDg4MGE5NTg4MDAwMAo+IAo+IERvd25sb2FkYWJsZSBhc3NldHM6Cj4gZGlzayBpbWFnZTogaHR0
-cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3N5emJvdC1hc3NldHMvMTM2M2U2MDY1MmY3L2Rp
-c2stOTUwMGZjNmUucmF3Lnh6Cj4gdm1saW51eDogaHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMu
-Y29tL3N5emJvdC1hc3NldHMvZmNjNGRhODExYmI2L3ZtbGludXgtOTUwMGZjNmUueHoKPiBrZXJu
-ZWwgaW1hZ2U6IGh0dHBzOi8vc3RvcmFnZS5nb29nbGVhcGlzLmNvbS9zeXpib3QtYXNzZXRzLzBi
-NTU0Mjk4ZjFmYS9JbWFnZS05NTAwZmM2ZS5nei54ego+IAo+IElNUE9SVEFOVDogaWYgeW91IGZp
-eCB0aGUgaXNzdWUsIHBsZWFzZSBhZGQgdGhlIGZvbGxvd2luZyB0YWcgdG8gdGhlIGNvbW1pdDoK
-PiBSZXBvcnRlZC1ieTogc3l6Ym90KzEwMjU3ZDAxZGQyODViMTUxNzBhQHN5emthbGxlci5hcHBz
-cG90bWFpbC5jb20KPiAKPiBVbmFibGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVy
-ZWZlcmVuY2UgYXQgdmlydHVhbCBhZGRyZXNzIDAwMDAwMDAwMDAwMDAwMDAKPiBNZW0gYWJvcnQg
-aW5mbzoKPiAgIEVTUiA9IDB4MDAwMDAwMDA5NjAwMDAwNAo+ICAgRUMgPSAweDI1OiBEQUJUIChj
-dXJyZW50IEVMKSwgSUwgPSAzMiBiaXRzCj4gICBTRVQgPSAwLCBGblYgPSAwCj4gICBFQSA9IDAs
-IFMxUFRXID0gMAo+ICAgRlNDID0gMHgwNDogbGV2ZWwgMCB0cmFuc2xhdGlvbiBmYXVsdAo+IERh
-dGEgYWJvcnQgaW5mbzoKPiAgIElTViA9IDAsIElTUyA9IDB4MDAwMDAwMDQKPiAgIENNID0gMCwg
-V25SID0gMAo+IHVzZXIgcGd0YWJsZTogNGsgcGFnZXMsIDQ4LWJpdCBWQXMsIHBnZHA9MDAwMDAw
-MDEwYzc1YjAwMAo+IFswMDAwMDAwMDAwMDAwMDAwXSBwZ2Q9MDAwMDAwMDAwMDAwMDAwMCwgcDRk
-PTAwMDAwMDAwMDAwMDAwMDAKPiBJbnRlcm5hbCBlcnJvcjogT29wczogMDAwMDAwMDA5NjAwMDAw
-NCBbIzFdIFBSRUVNUFQgU01QCj4gTW9kdWxlcyBsaW5rZWQgaW46Cj4gQ1BVOiAwIFBJRDogMCBD
-b21tOiBzd2FwcGVyLzAgTm90IHRhaW50ZWQgNi4xLjAtcmM1LXN5emthbGxlci0zMjI2OS1nOTUw
-MGZjNmU5ZTYwICMwCj4gSGFyZHdhcmUgbmFtZTogR29vZ2xlIEdvb2dsZSBDb21wdXRlIEVuZ2lu
-ZS9Hb29nbGUgQ29tcHV0ZSBFbmdpbmUsIEJJT1MgR29vZ2xlIDA5LzMwLzIwMjIKPiBwc3RhdGU6
-IDAwNDAwMGM1IChuemN2IGRhSUYgK1BBTiAtVUFPIC1UQ08gLURJVCAtU1NCUyBCVFlQRT0tLSkK
-PiBwYyA6IF9fcXVldWVfd29yaysweDNjNC8weDhiNAo+IGxyIDogX19xdWV1ZV93b3JrKzB4M2M0
-LzB4OGI0IGtlcm5lbC93b3JrcXVldWUuYzoxNDU4Cj4gc3AgOiBmZmZmODAwMDA4MDAzZDYwCj4g
-eDI5OiBmZmZmODAwMDA4MDAzZDYwIHgyODogMDAwMDAwMDAwMDAwMDAwMCB4Mjc6IGZmZmY4MDAw
-MGQzYTkwMDAKPiB4MjY6IGZmZmY4MDAwMGQzYWQwNTAgeDI1OiBmZmZmODAwMDBkMmZlMDA4IHgy
-NDogZmZmZjgwMDAwZGI1NDAwMAo+IHgyMzogMDAwMDAwMDAwMDAwMDAwMCB4MjI6IDAwMDAwMDAw
-MDAwMDAwMjMgeDIxOiBmZmZmMDAwMGM3YTk1NDAwCj4geDIwOiAwMDAwMDAwMDAwMDAwMDA4IHgx
-OTogZmZmZjAwMDBjZDBkMjBmOCB4MTg6IGZmZmY4MDAwMGRiNzgxNTgKPiB4MTc6IGZmZmY4MDAw
-MGRkZGExOTggeDE2OiBmZmZmODAwMDBkYzE4MTU4IHgxNTogZmZmZjgwMDAwZDNjYmM4MAo+IHgx
-NDogMDAwMDAwMDAwMDAwMDAwMCB4MTM6IDAwMDAwMDAwZmZmZmZmZmYgeDEyOiBmZmZmODAwMDBk
-M2NiYzgwCj4geDExOiBmZjgwODAwMDBjMDdkZmU0IHgxMDogMDAwMDAwMDAwMDAwMDAwMCB4OSA6
-IGZmZmY4MDAwMGMwN2RmZTQKPiB4OCA6IGZmZmY4MDAwMGQzY2JjODAgeDcgOiBmZmZmODAwMDA4
-MTNiYWU4IHg2IDogMDAwMDAwMDAwMDAwMDAwMAo+IHg1IDogMDAwMDAwMDAwMDAwMDA4MCB4NCA6
-IDAwMDAwMDAwMDAwMDAwMDAgeDMgOiAwMDAwMDAwMDAwMDAwMDAyCj4geDIgOiAwMDAwMDAwMDAw
-MDAwMDA4IHgxIDogMDAwMDAwMDAwMDAwMDAwMCB4MCA6IGZmZmYwMDAwYzAwMTRjMDAKPiBDYWxs
-IHRyYWNlOgo+ICBfX3F1ZXVlX3dvcmsrMHgzYzQvMHg4YjQga2VybmVsL3dvcmtxdWV1ZS5jOjE0
-NTgKPiAgcXVldWVfd29ya19vbisweGIwLzB4MTVjIGtlcm5lbC93b3JrcXVldWUuYzoxNTQ1Cj4g
-IHF1ZXVlX3dvcmsgaW5jbHVkZS9saW51eC93b3JrcXVldWUuaDo1MDMgW2lubGluZV0KPiAgbmNp
-X2NtZF90aW1lcisweDMwLzB4NDAgbmV0L25mYy9uY2kvY29yZS5jOjYxNQo+ICBjYWxsX3RpbWVy
-X2ZuKzB4OTAvMHgxNDQga2VybmVsL3RpbWUvdGltZXIuYzoxNDc0Cj4gIGV4cGlyZV90aW1lcnMg
-a2VybmVsL3RpbWUvdGltZXIuYzoxNTE5IFtpbmxpbmVdCj4gIF9fcnVuX3RpbWVycysweDI4MC8w
-eDM3NCBrZXJuZWwvdGltZS90aW1lci5jOjE3OTAKPiAgcnVuX3RpbWVyX3NvZnRpcnErMHgzNC8w
-eDVjIGtlcm5lbC90aW1lL3RpbWVyLmM6MTgwMwo+ICBfc3RleHQrMHgxNjgvMHgzN2MKPiAgX19f
-X2RvX3NvZnRpcnErMHgxNC8weDIwIGFyY2gvYXJtNjQva2VybmVsL2lycS5jOjc5Cj4gIGNhbGxf
-b25faXJxX3N0YWNrKzB4MmMvMHg1NCBhcmNoL2FybTY0L2tlcm5lbC9lbnRyeS5TOjg5Mgo+ICBk
-b19zb2Z0aXJxX293bl9zdGFjaysweDIwLzB4MmMgYXJjaC9hcm02NC9rZXJuZWwvaXJxLmM6ODQK
-PiAgaW52b2tlX3NvZnRpcnErMHg3MC8weGJjIGtlcm5lbC9zb2Z0aXJxLmM6NDUyCj4gIF9faXJx
-X2V4aXRfcmN1KzB4ZjAvMHgxNDAga2VybmVsL3NvZnRpcnEuYzo2NTAKPiAgaXJxX2V4aXRfcmN1
-KzB4MTAvMHg0MCBrZXJuZWwvc29mdGlycS5jOjY2Mgo+ICBfX2VsMV9pcnEgYXJjaC9hcm02NC9r
-ZXJuZWwvZW50cnktY29tbW9uLmM6NDcyIFtpbmxpbmVdCj4gIGVsMV9pbnRlcnJ1cHQrMHgzOC8w
-eDY4IGFyY2gvYXJtNjQva2VybmVsL2VudHJ5LWNvbW1vbi5jOjQ4Ngo+ICBlbDFoXzY0X2lycV9o
-YW5kbGVyKzB4MTgvMHgyNCBhcmNoL2FybTY0L2tlcm5lbC9lbnRyeS1jb21tb24uYzo0OTEKPiAg
-ZWwxaF82NF9pcnErMHg2NC8weDY4IGFyY2gvYXJtNjQva2VybmVsL2VudHJ5LlM6NTgwCj4gIGFy
-Y2hfbG9jYWxfaXJxX2VuYWJsZSsweGMvMHgxOCBhcmNoL2FybTY0L2luY2x1ZGUvYXNtL2lycWZs
-YWdzLmg6MzUKPiAgZGVmYXVsdF9pZGxlX2NhbGwrMHg0OC8weGI4IGtlcm5lbC9zY2hlZC9pZGxl
-LmM6MTA5Cj4gIGNwdWlkbGVfaWRsZV9jYWxsIGtlcm5lbC9zY2hlZC9pZGxlLmM6MTkxIFtpbmxp
-bmVdCj4gIGRvX2lkbGUrMHgxMTAvMHgyZDQga2VybmVsL3NjaGVkL2lkbGUuYzozMDMKPiAgY3B1
-X3N0YXJ0dXBfZW50cnkrMHgyNC8weDI4IGtlcm5lbC9zY2hlZC9pZGxlLmM6NDAwCj4gIGtlcm5l
-bF9pbml0KzB4MC8weDI5MCBpbml0L21haW4uYzo3MjkKPiAgc3RhcnRfa2VybmVsKzB4MC8weDYy
-MCBpbml0L21haW4uYzo4OTAKPiAgc3RhcnRfa2VybmVsKzB4NDUwLzB4NjIwIGluaXQvbWFpbi5j
-OjExNDUKPiAgX19wcmltYXJ5X3N3aXRjaGVkKzB4YjQvMHhiYyBhcmNoL2FybTY0L2tlcm5lbC9o
-ZWFkLlM6NDcxCj4gQ29kZTogOTQwMDEzODQgYWEwMDAzZjcgYWExMzAzZTAgOTQwMDE0NGEgKGY5
-NDAwMmY4KSAKPiAtLS1bIGVuZCB0cmFjZSAwMDAwMDAwMDAwMDAwMDAwIF0tLS0KPiAtLS0tLS0t
-LS0tLS0tLS0tCj4gQ29kZSBkaXNhc3NlbWJseSAoYmVzdCBndWVzcyk6Cj4gICAgMDoJOTQwMDEz
-ODQgCWJsCTB4NGUxMAo+ICAgIDQ6CWFhMDAwM2Y3IAltb3YJeDIzLCB4MAo+ICAgIDg6CWFhMTMw
-M2UwIAltb3YJeDAsIHgxOQo+ICAgIGM6CTk0MDAxNDRhIAlibAkweDUxMzQKPiAqIDEwOglmOTQw
-MDJmOCAJbGRyCXgyNCwgW3gyM10gPC0tIHRyYXBwaW5nIGluc3RydWN0aW9uCj4gCj4gCj4gLS0t
-Cj4gVGhpcyByZXBvcnQgaXMgZ2VuZXJhdGVkIGJ5IGEgYm90LiBJdCBtYXkgY29udGFpbiBlcnJv
-cnMuCj4gU2VlIGh0dHBzOi8vZ29vLmdsL3Rwc21FSiBmb3IgbW9yZSBpbmZvcm1hdGlvbiBhYm91
-dCBzeXpib3QuCj4gc3l6Ym90IGVuZ2luZWVycyBjYW4gYmUgcmVhY2hlZCBhdCBzeXprYWxsZXJA
-Z29vZ2xlZ3JvdXBzLmNvbS4KPiAKPiBzeXpib3Qgd2lsbCBrZWVwIHRyYWNrIG9mIHRoaXMgaXNz
-dWUuIFNlZToKPiBodHRwczovL2dvby5nbC90cHNtRUojc3RhdHVzIGZvciBob3cgdG8gY29tbXVu
-aWNhdGUgd2l0aCBzeXpib3QuCj4gc3l6Ym90IGNhbiB0ZXN0IHBhdGNoZXMgZm9yIHRoaXMgaXNz
-dWUsIGZvciBkZXRhaWxzIHNlZToKPiBodHRwczovL2dvby5nbC90cHNtRUojdGVzdGluZy1wYXRj
-aGVzCgojc3l6IHRlc3Q6IGh0dHBzOi8vZ2l0aHViLmNvbS9mMHJtMmwxbi9saW51eC1maXguZ2l0
-IG1hc3Rlcg==
+> Thanks for pointing out, but should I resend it with [PATCH net v3]
+> or [PATCH net v5]?
+
+The number should always increment. It is how we tell older versions
+from newer versions.
+
+     Andrew
