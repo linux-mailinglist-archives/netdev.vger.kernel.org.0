@@ -2,75 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CB0F62C675
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 18:36:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B48B562C72D
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233977AbiKPRgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 12:36:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49844 "EHLO
+        id S231265AbiKPSD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 13:03:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiKPRgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 12:36:19 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4CC59FDB
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 09:36:18 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id x21-20020a5d9455000000b006bc1172e639so9122296ior.18
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 09:36:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EIBMIUlEv2vA4/PacwH55R4V2Z07uwQvktbQ5zVwV/4=;
-        b=etzPAPKxRKX7uVT2tzSjIBCYqcOu3OcQ3vsF8BcGhV0xK20q7PhTcNmzXEml524ban
-         uaApaXvZ7Ytr+J8wbmOg6C5WTc66O1yOHUNycTeYS9HFq9bQsY3Nje3gRZxs+fiay9aV
-         UGlK4YayakgpIHvJSj4D7+sz8eumQjjK9gkCrGH/niSHPIkSdIAh9/wyfK5WhTUai9QJ
-         lNvtjEI5pfbrJcKiaTioE7+T8mpjKld0iDJsr/+eO2PfyIuk0Ff51rv3s2iw5cMSrnYh
-         aGpkt11DnUL0lQ8l5cKKP/ufVC10qetzr53Bp6kR10aVa6w8FQpTDemHzaP7g3Vr5un4
-         Qukw==
-X-Gm-Message-State: ANoB5pn48fH2oA9LMYbZoAMHyRP70wuXLAXJTWbtuIq7ce/ksDgvYFLX
-        z7/m2GQgqFGBMbJZkFmy6pmSLZVNsVaYS9X7+YWVbyuL7W8y
-X-Google-Smtp-Source: AA0mqf6FMdeh0AhnbiI6JMMc+ZTmkb9utBkiT/Cz4NQzF9XqimlvojrqkRJlwNkIbdhbdNtmRoSMxZIT6GQtQ69QSyVjyajKGxRj
+        with ESMTP id S238951AbiKPSCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:02:45 -0500
+X-Greylist: delayed 596 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Nov 2022 10:02:43 PST
+Received: from 2.mo619.mail-out.ovh.net (2.mo619.mail-out.ovh.net [178.33.254.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98DF63159
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:02:43 -0800 (PST)
+Received: from ex2.mail.ovh.net (unknown [10.111.172.35])
+        by mo619.mail-out.ovh.net (Postfix) with ESMTPS id BCE01215D4
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 17:46:10 +0000 (UTC)
+Received: from DAG17EX3.indiv2.local (172.16.2.173) by DAG17EX1.indiv2.local
+ (172.16.2.171) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16; Wed, 16 Nov
+ 2022 18:46:10 +0100
+Received: from DAG17EX3.indiv2.local ([fe80::ac31:2b29:cb2d:aef6]) by
+ DAG17EX3.indiv2.local ([fe80::ac31:2b29:cb2d:aef6%2]) with mapi id
+ 15.01.2507.016; Wed, 16 Nov 2022 18:46:10 +0100
+From:   =?utf-8?B?Q2hyaXN0aWFuIFDDtnNzaW5nZXI=?= <christian@poessinger.com>
+To:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: iproute2/tc invalid JSON in v6.0.0-42-g49c63bc7 for "tc filter"
+Thread-Topic: iproute2/tc invalid JSON in v6.0.0-42-g49c63bc7 for "tc filter"
+Thread-Index: Adj54owLkDIeVJIPTS+lVCSTPJKKkw==
+Date:   Wed, 16 Nov 2022 17:46:09 +0000
+Message-ID: <e1fa5169db254301bc3b5b766c2df76a@poessinger.com>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [217.249.217.176]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1046:b0:2fa:f363:2696 with SMTP id
- p6-20020a056e02104600b002faf3632696mr11532789ilj.174.1668620177656; Wed, 16
- Nov 2022 09:36:17 -0800 (PST)
-Date:   Wed, 16 Nov 2022 09:36:17 -0800
-In-Reply-To: <206f349d.191969.184808e4f19.Coremail.linma@zju.edu.cn>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f4537405ed99e87b@google.com>
-Subject: Re: [syzbot] WARNING in nci_send_cmd
-From:   syzbot <syzbot+43475bf3cfbd6e41f5b7@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org, linma@zju.edu.cn,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Ovh-Tracer-Id: 2441513951329265783
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: 0
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvgedrgeeigddutdefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvffuthffkfhitgfgggesthgsjhdttddtjeenucfhrhhomhepvehhrhhishhtihgrnhcurfpnshhsihhnghgvrhcuoegthhhrihhsthhirghnsehpohgvshhsihhnghgvrhdrtghomheqnecuggftrfgrthhtvghrnhepudfhtddufffgueeijeehuefgheekvdfhheehvefggfejhfeuieeivdehvddtuddtnecukfhppeduvdejrddtrddtrddupddvudejrddvgeelrddvudejrddujeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddvjedrtddrtddruddpmhgrihhlfhhrohhmpeeotghhrhhishhtihgrnhesphhovghsshhinhhgvghrrdgtohhmqedpnhgspghrtghpthhtohepuddprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoieduledpmhhouggvpehsmhhtphhouhht
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
-
-Reported-and-tested-by: syzbot+43475bf3cfbd6e41f5b7@syzkaller.appspotmail.com
-
-Tested on:
-
-commit:         1c96c97c nfc/nci: fix race with opening and closing
-git tree:       https://github.com/f0rm2l1n/linux-fix.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=17699f35880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c42faa14acb6dc7f
-dashboard link: https://syzkaller.appspot.com/bug?extid=43475bf3cfbd6e41f5b7
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
-
-Note: no patches were applied.
-Note: testing is done by a robot and is best-effort only.
+RGVhciBNYWludGFpbmVycywNCg0KdXNpbmcgcmV2aXNpb24gdjYuMC4wLTQyLWc0OWM2M2JjNyBJ
+IG5vdGljZWQgYW4gaW52YWxpZCBKU09OIG91dHB1dCB3aGVuIGludm9raW5nIHRjIC1qc29uIGZp
+bHRlci4NCg0KVG8gcmVwcm9kdWNlIHRoZSBpc3N1ZToNCg0KJCB0YyBxZGlzYyBhZGQgZGV2IGV0
+aDEgaGFuZGxlIGZmZmY6IGluZ3Jlc3MNCiQgdGMgZmlsdGVyIGFkZCBkZXYgZXRoMSBwYXJlbnQg
+ZmZmZjogcHJpbyAyMCBwcm90b2NvbCBhbGwgdTMyIG1hdGNoIGlwIGRwb3J0IDIyIFwNCiAgICAw
+eGZmZmYgYWN0aW9uIHBvbGljZSBjb25mb3JtLWV4Y2VlZCBkcm9wL29rIHJhdGUgMTAwMDAwIGJ1
+cnN0IDE1ayBmbG93aWQgZmZmZjoxDQoNCiQgdGMgZmlsdGVyIGFkZCBkZXYgZXRoMSBwYXJlbnQg
+ZmZmZjogcHJpbyAyNTUgcHJvdG9jb2wgYWxsIGJhc2ljIGFjdGlvbiBwb2xpY2UgXA0KICAgIGNv
+bmZvcm0tZXhjZWVkIGRyb3Avb2sgcmF0ZSAxMDAwMDAgYnVyc3QgMTVrIGZsb3dpZCBmZmZmOjMN
+Cg0KDQokIHRjIC1kZXRhaWwgLWpzb24gZmlsdGVyIHNob3cgZGV2IGV0aDEgaW5ncmVzcw0KW3si
+cGFyZW50IjoiZmZmZjoiLCJwcm90b2NvbCI6ImFsbCIsInByZWYiOjIwLCJraW5kIjoidTMyIiwi
+Y2hhaW4iOjB9LHsicGFyZW50IjoiZmZmZjoiLCJwcm90b2NvbCI6ImFsbCIsInByZWYiOjIwLCJr
+aW5kIjoidTMyIiwiY2hhaW4iOjAsDQoib3B0aW9ucyI6eyJmaCI6IjgwMDoiLCJodF9kaXZpc29y
+IjoxfX0seyJwYXJlbnQiOiJmZmZmOiIsInByb3RvY29sIjoiYWxsIiwicHJlZiI6MjAsImtpbmQi
+OiJ1MzIiLCJjaGFpbiI6MCwib3B0aW9ucyI6eyJmaCI6IjgwMDo6ODAwIiwNCiJvcmRlciI6MjA0
+OCwia2V5X2h0IjoiODAwIiwiYmt0IjoiMCIsImZsb3dpZCI6ImZmZmY6MSIsIm5vdF9pbl9odyI6
+dHJ1ZSwibWF0Y2giOnsidmFsdWUiOiIxNiIsIm1hc2siOiJmZmZmIiwib2ZmbWFzayI6IiIsIm9m
+ZiI6MjB9LA0KImFjdGlvbnMiOlt7Im9yZGVyIjoxLCJraW5kIjoicG9saWNlIiwiaW5kZXgiOjEs
+ImNvbnRyb2xfYWN0aW9uIjp7InR5cGUiOiJkcm9wIn0sIm92ZXJoZWFkIjowLCJsaW5rbGF5ZXIi
+OiJldGhlcm5ldCIsInJlZiI6MSwiYmluZCI6MX1dfX0sDQp7InBhcmVudCI6ImZmZmY6IiwicHJv
+dG9jb2wiOiJhbGwiLCJwcmVmIjoyNTUsImtpbmQiOiJiYXNpYyIsImNoYWluIjowfSx7InBhcmVu
+dCI6ImZmZmY6IiwicHJvdG9jb2wiOiJhbGwiLCJwcmVmIjoyNTUsImtpbmQiOiJiYXNpYyIsImNo
+YWluIjowLA0KIm9wdGlvbnMiOntoYW5kbGUgMHgxIGZsb3dpZCBmZmZmOjMgImFjdGlvbnMiOlt7
+Im9yZGVyIjoxLCJraW5kIjoicG9saWNlIiwiaW5kZXgiOjIsImNvbnRyb2xfYWN0aW9uIjp7InR5
+cGUiOiJkcm9wIn0sIm92ZXJoZWFkIjowLCJsaW5rbGF5ZXIiOiJldGhlcm5ldCIsInJlZiI6MSwi
+YmluZCI6MX1dfX1dDQoNCg0KPj4+IGpzb24ubG9hZHModG1wKQ0KVHJhY2ViYWNrIChtb3N0IHJl
+Y2VudCBjYWxsIGxhc3QpOg0KICBGaWxlICI8c3RkaW4+IiwgbGluZSAxLCBpbiA8bW9kdWxlPg0K
+ICBGaWxlICIvdXNyL2xpYi9weXRob24zLjkvanNvbi9fX2luaXRfXy5weSIsIGxpbmUgMzQ2LCBp
+biBsb2Fkcw0KICAgIHJldHVybiBfZGVmYXVsdF9kZWNvZGVyLmRlY29kZShzKQ0KICBGaWxlICIv
+dXNyL2xpYi9weXRob24zLjkvanNvbi9kZWNvZGVyLnB5IiwgbGluZSAzMzcsIGluIGRlY29kZQ0K
+ICAgIG9iaiwgZW5kID0gc2VsZi5yYXdfZGVjb2RlKHMsIGlkeD1fdyhzLCAwKS5lbmQoKSkNCiAg
+RmlsZSAiL3Vzci9saWIvcHl0aG9uMy45L2pzb24vZGVjb2Rlci5weSIsIGxpbmUgMzUzLCBpbiBy
+YXdfZGVjb2RlDQogICAgb2JqLCBlbmQgPSBzZWxmLnNjYW5fb25jZShzLCBpZHgpDQpqc29uLmRl
+Y29kZXIuSlNPTkRlY29kZUVycm9yOiBFeHBlY3RpbmcgcHJvcGVydHkgbmFtZSBlbmNsb3NlZCBp
+biBkb3VibGUgcXVvdGVzOiBsaW5lIDEgY29sdW1uIDY5OCAoY2hhciA2OTcpDQoNClRoaXMgYWN0
+dWFsbHkgY29udGFpbnMgaW52YWxpZCBKU09OIGhlcmUNCg0KLi4uICJvcHRpb25zIjp7aGFuZGxl
+IDB4MSBmbG93aWQgZmZmZjozICJhY3Rpb25zIjpbeyJvcmRlciIgLi4uDQoNCkl0IHNob3VsZCBh
+Y3R1YWxseSByZWFkOg0KDQouLi4gIm9wdGlvbnMiOnsiaGFuZGxlIjoiMHgxIiwiZmxvd2lkIjoi
+ZmZmZjozIiwiYWN0aW9ucyI6W3sib3JkZXIiIC4uLg0KDQpJZiB5b3UgY2FuIHBvaW50IG1lIHRv
+IHRoZSBsb2NhdGlvbiB3aGljaCBjb3VsZCBiZSByZXNwb25zaWJsZSBmb3IgdGhpcyBpc3N1ZSwg
+SSBhbSBoYXBweSB0byBzdWJtaXQgYSBmaXggdG8gdGhlIG5ldCB0cmVlLg0KDQpUaGFua3MgaW4g
+YWR2YW5jZSwNCkNocmlzdGlhbiBQb2Vzc2luZ2VyDQo=
