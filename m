@@ -2,75 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7BE662C774
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:17:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F05462C777
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:17:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239106AbiKPSRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 13:17:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
+        id S239077AbiKPSRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 13:17:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239155AbiKPSRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:17:30 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5C563CF6
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:24 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id x21-20020a5d9455000000b006bc1172e639so9181675ior.18
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:24 -0800 (PST)
+        with ESMTP id S239163AbiKPSRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:17:31 -0500
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1001063B98
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:29 -0800 (PST)
+Received: by mail-pf1-x449.google.com with SMTP id x11-20020a056a000bcb00b0056c6ec11eefso10218098pfu.14
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=VMwPEFrt7ea3bvb3EzfSrD2jHVFJpV/Y0eShB9jO2zQ=;
+        b=MpTpwQpKHZNiObi76Q0Ew9i3fVZRmBhvSQZrRRRx71pHCW7L3BHuOU4pvz+9CBohg9
+         0K+HRu5ToVvmDtOdPnkUZn6d3tfZPXelsz6mWM0zeztgCHcpu3nLyNHwwHg6IFeyPZwG
+         PMs9aIC1/Nm2Uem6AIJtAVGC1WMHLs/6CGNY0CNKfPTEXE8TjJY2gJVWeHr9UuTSNqZ/
+         QC7g23ao2GnEcrY/1Awsai+MyWJ5RBMLpjVHKVJit0jaGcgO8SxgpOaV5zfnRRvoFFWL
+         FmVL1tH/KyPh6l2dUncd+6UKu3ZsMg9PaCvTlkFjhqBKv0rbZb5EdAYwgfSDSJqZkJQL
+         UGCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7OndYXh8YdBOGRjDenydUtY0hFqgWlEV17sQog75UHw=;
-        b=J0C8QFPbbYX7Dp5/pnls7RR0xxYrqpcttJsdxYe8Qjb4yKhkEtCC5mTAQ/54eMcNAz
-         7Dxh5XFH6HVdNouzcd6iDIs0jSaCg0k8jBseSBZGTMeSLZnnHrFFGokM8ncuNy8sjy4J
-         PR0VbgdwNddfVOOnsE+FeLWPw0OqhrMaLUU/9t6zwvYXnUOgim3XFmjQu/pHKNES5ffy
-         Bn6VWuqMKCjfu1JHD+FnJzS1U99h1QAyoPJqiWmVCQWTsuEYSWjkq2Bh0y26jnIpkJF3
-         4M/kszPvN5gJs2CB6JBf1AlgB2+Rw4T0Ea99wJ2VILzW27Fm+EDVgItKS1cBM1lV8ZnL
-         h6vA==
-X-Gm-Message-State: ANoB5pmQGXDCmoprviNfguU3EkOFVrYbRQus0QJbxRIozwwX8Vh94HyU
-        uEaafI2OkMaAUbLg/cdyVuZYF67TrGGiu9oHP7UNajNmGFs/
-X-Google-Smtp-Source: AA0mqf5MZGLf+LT0YuUCsrkaeTE8MY5BN0l4FU8jpLa5ph/uDKldbRg0/SQBxohx9ht0gFfHi0tnJ97010+4ifk5YO2OlC5NGbNX
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:489:b0:300:b9c4:8c1 with SMTP id
- b9-20020a056e02048900b00300b9c408c1mr11045689ils.124.1668622643740; Wed, 16
- Nov 2022 10:17:23 -0800 (PST)
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VMwPEFrt7ea3bvb3EzfSrD2jHVFJpV/Y0eShB9jO2zQ=;
+        b=hSk116c5uK7lpBbMAAiZ/fBN26fbxYAKg05750AROm1eLfjZdYwh0ajHVNKhjN0BaW
+         xaoIq1m9cXyKXQGretGLkavp2eHCgrHz/1zI8ceJg575QumCg+zlQJQE4YupATcXPoFe
+         B62rs+3eq6q8t7vgfDLEmCdggiPtT1+pB5u4OzaPv8eke7/5+i/5m7DczNjeFx7hJnax
+         +hlcDNlqSOLSzD2e0vAEOZFKHrmTIbLpPWa9L0tZNkbnbUJ4NiokOiB+yBir5rFZtJl6
+         I0ibZynvGgj6cvPO+3uKhBtlUJhMZlbhXSFWJyCezJQPkzxJqi44DFECWH1jwoVNgGjr
+         9aSA==
+X-Gm-Message-State: ANoB5plvquX2zJYvuSqgSrb/Qcz0XcFa3hVY2x6KKE3W8QxLr+IOksLG
+        S4C2cH8dI5laW9bD04G2mbgVHX1EFinsFxvfamPYCABKOhQPK65zIpfGnarJjziUqgWdjWe6ZVc
+        OIqa2y0PVypJPWNnov2FgaMm4z/jh6r/8+/3M81JizstHIr0liq7QNT36BGvS4IguPDk=
+X-Google-Smtp-Source: AA0mqf5ZJSe33U295TTh/uhDMUi9tld9Qvx1CSrxtQ6a14q5s2QbdT69XURCLed3nNN4ld8ieDe8Gdo4FC+i9w==
+X-Received: from jeroendb9128802.sea.corp.google.com ([2620:15c:100:202:131e:f4f:919b:71c5])
+ (user=jeroendb job=sendgmr) by 2002:a05:6a00:15d2:b0:563:1231:1da with SMTP
+ id o18-20020a056a0015d200b00563123101damr24812674pfu.5.1668622648448; Wed, 16
+ Nov 2022 10:17:28 -0800 (PST)
 Date:   Wed, 16 Nov 2022 10:17:23 -0800
-In-Reply-To: <a700b13.191985.1848090ad97.Coremail.linma@zju.edu.cn>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f1c64505ed9a7bde@google.com>
-Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference in nci_cmd_timer
-From:   syzbot <syzbot+10257d01dd285b15170a@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org, linma@zju.edu.cn,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
+Message-ID: <20221116181725.2207544-1-jeroendb@google.com>
+Subject: [PATCH net-next v4 0/2] Handle alternate miss-completions
+From:   Jeroen de Borst <jeroendb@google.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jesse.brandeburg@intel.com,
+        Jeroen de Borst <jeroendb@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Some versions of the virtual NIC present miss-completions in
+an alternative way. Let the diver handle these alternate completions
+and announce this capability to the device.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+The capability is announced uing a new AdminQ command that sends
+driver information to the device. The device can refuse a driver
+if it is lacking support for a capability, or it can adopt it's
+behavior to work around it.
 
-Reported-and-tested-by: syzbot+10257d01dd285b15170a@syzkaller.appspotmail.com
+Changed in v4:
+- Clarified new AdminQ command in cover letter
+- Changed EOPNOTSUPP to ENOTSUPP to match device's response
+Changed in v3:
+- Rewording cover letter
+- Added 'Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>'
+Changes in v2:
+- Changed the subject to include 'gve:'
 
-Tested on:
+Jeroen de Borst (2):
+  gve: Adding a new AdminQ command to verify driver
+  gve: Handle alternate miss completions
 
-commit:         1c96c97c nfc/nci: fix race with opening and closing
-git tree:       https://github.com/f0rm2l1n/linux-fix.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=16b3ea01880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c42faa14acb6dc7f
-dashboard link: https://syzkaller.appspot.com/bug?extid=10257d01dd285b15170a
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
+ drivers/net/ethernet/google/gve/gve.h         |  1 +
+ drivers/net/ethernet/google/gve/gve_adminq.c  | 19 +++++++
+ drivers/net/ethernet/google/gve/gve_adminq.h  | 51 ++++++++++++++++++
+ .../net/ethernet/google/gve/gve_desc_dqo.h    |  5 ++
+ drivers/net/ethernet/google/gve/gve_main.c    | 52 +++++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_tx_dqo.c  | 18 ++++---
+ 6 files changed, 140 insertions(+), 6 deletions(-)
 
-Note: no patches were applied.
-Note: testing is done by a robot and is best-effort only.
+-- 
+2.38.1.431.g37b22c650d-goog
+
