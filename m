@@ -2,74 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0326962C716
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9121E62C742
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:09:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239046AbiKPSAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 13:00:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43708 "EHLO
+        id S233875AbiKPSJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 13:09:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238294AbiKPSAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:00:21 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930C260EBE
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:00:20 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id y5-20020a056602120500b006cf628c14ddso9090576iot.15
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:00:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ycgML46GVnsWZeJ4w7iB/iE60xPyJH5cRCy0usl0TcE=;
-        b=Ngc/Fk9cOd/Tng781mz6duG/B+vWCUZ2fpVWkz2iOQfAuMLPR+UXxZI7ayqYGkBHMK
-         Y9CVkStkG2pMnm+oWBZV80jivxo3MBSuzteO/1ZxcD+a3k+MOWKcwbEoRyxTckg3Fyfq
-         qxIiyQwxyLWFNWGppyr1qwEPZ45Vx7Ud+odICULE4GKbTKSg+v0d4U4ETnm+W2ok/EIA
-         RuEjPMQYWyNnFJ0j0uFmx8fqKkwBMmesDRSYrO+TnK3kn6sTlGKzYGSKX8EWwqxX72/Z
-         fWY5yKi0yfkLC+nejvpCRDrDqQj4lqvRtiDuMFAgTsBsesGe2HhO2P8LLgbSum33KTqv
-         sElA==
-X-Gm-Message-State: ANoB5pn6z97i49INYhI9yM8liKWTUO1Cxr/sVx7RAtdugabWXwgPHGTY
-        XeGIrsuhabN64IkgBdmTzV+mA2vaTRCszoQyelc5PU8FQhfx
-X-Google-Smtp-Source: AA0mqf5NtoIlGoJ2s3JWmc44IFhUzxfdBe1A5rYNXkxFD59dySblOo06dnvl7e4yNEM1ogQwETU7n+4Oiku6UbAgzWxTktgKwZlb
+        with ESMTP id S229489AbiKPSJo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:09:44 -0500
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64A765DC;
+        Wed, 16 Nov 2022 10:09:42 -0800 (PST)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9c:2c00:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 2AGI9CfT1223379
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 16 Nov 2022 18:09:14 GMT
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9c:2c02:34cc:c78d:869d:3d9d])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 2AGI97Nh3152598
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 16 Nov 2022 19:09:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1668622147; bh=jtyIbh1dY7XyEMajfvkSl+SKwUTaVXtQNcZ1xCMTwYQ=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=PhNyJRin7mlxIxKx/2Jse+2p+9InxdBMxDkQNOWQ3IGG2XKyMpHzbfwCPJK+pB+Bk
+         4sJH8sIEUAcw36yjFHEQfM7SnvHCPGIIe7GWZBwSWMcpdnLavLfVXxexz4vBAyXZGC
+         htPbhUVKupI7xOCvpQa+uvfX7cFTe/WVD5IgVb7U=
+Received: (nullmailer pid 458000 invoked by uid 1000);
+        Wed, 16 Nov 2022 18:09:07 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Enrico Sau <enrico.sau@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: add Telit 0x103a composition
+Organization: m
+References: <20221115105859.14324-1-enrico.sau@gmail.com>
+Date:   Wed, 16 Nov 2022 19:09:07 +0100
+In-Reply-To: <20221115105859.14324-1-enrico.sau@gmail.com> (Enrico Sau's
+        message of "Tue, 15 Nov 2022 11:58:59 +0100")
+Message-ID: <87y1sa7ovw.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-X-Received: by 2002:a92:d8c8:0:b0:300:a79f:c8c8 with SMTP id
- l8-20020a92d8c8000000b00300a79fc8c8mr11819921ilo.206.1668621619981; Wed, 16
- Nov 2022 10:00:19 -0800 (PST)
-Date:   Wed, 16 Nov 2022 10:00:19 -0800
-In-Reply-To: <110c82d2.191982.18480907a32.Coremail.linma@zju.edu.cn>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ec751205ed9a3ebb@google.com>
-Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference in nci_send_cmd
-From:   syzbot <syzbot+4adf5ff0f6e6876c6a81@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org, linma@zju.edu.cn,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.7 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Enrico Sau <enrico.sau@gmail.com> writes:
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+> Add the following Telit LE910C4-WWX composition:
+>
+> 0x103a: rmnet
+>
+> Signed-off-by: Enrico Sau <enrico.sau@gmail.com>
 
-Reported-and-tested-by: syzbot+4adf5ff0f6e6876c6a81@syzkaller.appspotmail.com
+Looks good.  Thanks
 
-Tested on:
-
-commit:         1c96c97c nfc/nci: fix race with opening and closing
-git tree:       https://github.com/f0rm2l1n/linux-fix.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=12f48735880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a2318f9a4fc31ad
-dashboard link: https://syzkaller.appspot.com/bug?extid=4adf5ff0f6e6876c6a81
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Note: no patches were applied.
-Note: testing is done by a robot and is best-effort only.
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
