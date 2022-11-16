@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F6662B49C
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 09:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E6462B4A2
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 09:09:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238658AbiKPIIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 03:08:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
+        id S238702AbiKPIJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 03:09:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235752AbiKPIH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 03:07:59 -0500
+        with ESMTP id S238543AbiKPIIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 03:08:12 -0500
 Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5391E0AE;
-        Wed, 16 Nov 2022 00:07:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74577B845;
+        Wed, 16 Nov 2022 00:07:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=PToLlVAdjcZ/qy/zoY1jvNL8DDMxZViTaE5aO1OxFHo=; b=WiiMAUn8ypELNmPEL47UPh46Wh
-        lYxMzkh1oUyIIvNQEEtzNNO1srId3ui2QnbTAovCxXFNyBnapZ9thCvrPeJqk0H7YQ6zS8sa1xLTm
-        yzMZ/1nXkPtJxvJKgx7KrMLHBbsxNl9cgOtdLb4GGH14pYqpoxkc96tJjt1tIypnM19Q=;
+        bh=QcTlWUKVC2/cQIdxmlzW6LcCIg0FG9Do0dcgy2oaaog=; b=FJlGLNJvPDJXA0gr5HSzexYVcc
+        g09gP2L2hebhW9VIKAAAAA3/6Ce6MVt1XHAZxUg+2XUONIFHodVoSKN/fK5vTvERzeMi1lYXi6Cfo
+        gsLyQ1oyLSZHxVpVMv2BPt5JcoQtjzgeOFN+K61OIB4Ottq3Tu6Qv2sZCsgndLER6RJU=;
 Received: from p200300daa72ee10015f07c5633889601.dip0.t-ipconnect.de ([2003:da:a72e:e100:15f0:7c56:3388:9601] helo=Maecks.lan)
         by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
         (Exim 4.94.2)
         (envelope-from <nbd@nbd.name>)
-        id 1ovDSK-002Xoe-A5; Wed, 16 Nov 2022 09:07:36 +0100
+        id 1ovDSK-002Xoe-Vh; Wed, 16 Nov 2022 09:07:37 +0100
 From:   Felix Fietkau <nbd@nbd.name>
 To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>,
@@ -40,9 +40,9 @@ To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
 Cc:     linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/6] net: ethernet: mtk_eth_soc: drop packets to WDMA if the ring is full
-Date:   Wed, 16 Nov 2022 09:07:30 +0100
-Message-Id: <20221116080734.44013-3-nbd@nbd.name>
+Subject: [PATCH net-next 3/6] net: ethernet: mtk_eth_soc: avoid port_mg assignment on MT7622 and newer
+Date:   Wed, 16 Nov 2022 09:07:31 +0100
+Message-Id: <20221116080734.44013-4-nbd@nbd.name>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221116080734.44013-1-nbd@nbd.name>
 References: <20221116080734.44013-1-nbd@nbd.name>
@@ -57,45 +57,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improves handling of DMA ring overflow.
-Clarify other WDMA drop related comment.
+On newer chips, this field is unused and contains some bits related to queue
+assignment. Initialize it to 0 in those cases.
+Fix offload_version on MT7621 and MT7623, which still need the previous value.
 
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 5 ++++-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++--
+ drivers/net/ethernet/mediatek/mtk_ppe.c     | 4 +++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index a9a6b53b4286..fbfc23923bf5 100644
+index fbfc23923bf5..9e5545242216 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -3393,9 +3393,12 @@ static int mtk_hw_init(struct mtk_eth *eth)
- 	mtk_w32(eth, 0x21021000, MTK_FE_INT_GRP);
- 
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
--		/* PSE should not drop port8 and port9 packets */
-+		/* PSE should not drop port8 and port9 packets from WDMA Tx */
- 		mtk_w32(eth, 0x00000300, PSE_DROP_CFG);
- 
-+		/* PSE should drop packets to port 8/9 on WDMA Rx ring full */
-+		mtk_w32(eth, 0x00000300, PSE_PPE0_DROP);
+@@ -4312,7 +4312,7 @@ static const struct mtk_soc_data mt7621_data = {
+ 	.hw_features = MTK_HW_FEATURES,
+ 	.required_clks = MT7621_CLKS_BITMAP,
+ 	.required_pctl = false,
+-	.offload_version = 2,
++	.offload_version = 1,
+ 	.hash_offset = 2,
+ 	.foe_entry_size = sizeof(struct mtk_foe_entry) - 16,
+ 	.txrx = {
+@@ -4351,7 +4351,7 @@ static const struct mtk_soc_data mt7623_data = {
+ 	.hw_features = MTK_HW_FEATURES,
+ 	.required_clks = MT7623_CLKS_BITMAP,
+ 	.required_pctl = true,
+-	.offload_version = 2,
++	.offload_version = 1,
+ 	.hash_offset = 2,
+ 	.foe_entry_size = sizeof(struct mtk_foe_entry) - 16,
+ 	.txrx = {
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 2d8ca99f2467..3ee2bf53f9e5 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -175,6 +175,8 @@ int mtk_foe_entry_prepare(struct mtk_eth *eth, struct mtk_foe_entry *entry,
+ 		val = FIELD_PREP(MTK_FOE_IB2_DEST_PORT_V2, pse_port) |
+ 		      FIELD_PREP(MTK_FOE_IB2_PORT_AG_V2, 0xf);
+ 	} else {
++		int port_mg = eth->soc->offload_version > 1 ? 0 : 0x3f;
 +
- 		/* PSE Free Queue Flow Control  */
- 		mtk_w32(eth, 0x01fa01f4, PSE_FQFC_CFG2);
+ 		val = FIELD_PREP(MTK_FOE_IB1_STATE, MTK_FOE_STATE_BIND) |
+ 		      FIELD_PREP(MTK_FOE_IB1_PACKET_TYPE, type) |
+ 		      FIELD_PREP(MTK_FOE_IB1_UDP, l4proto == IPPROTO_UDP) |
+@@ -182,7 +184,7 @@ int mtk_foe_entry_prepare(struct mtk_eth *eth, struct mtk_foe_entry *entry,
+ 		entry->ib1 = val;
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 72d3bfc2323d..eaaa0c67ef2a 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -127,6 +127,7 @@
- #define PSE_FQFC_CFG1		0x100
- #define PSE_FQFC_CFG2		0x104
- #define PSE_DROP_CFG		0x108
-+#define PSE_PPE0_DROP		0x110
+ 		val = FIELD_PREP(MTK_FOE_IB2_DEST_PORT, pse_port) |
+-		      FIELD_PREP(MTK_FOE_IB2_PORT_MG, 0x3f) |
++		      FIELD_PREP(MTK_FOE_IB2_PORT_MG, port_mg) |
+ 		      FIELD_PREP(MTK_FOE_IB2_PORT_AG, 0x1f);
+ 	}
  
- /* PSE Input Queue Reservation Register*/
- #define PSE_IQ_REV(x)		(0x140 + (((x) - 1) << 2))
 -- 
 2.38.1
 
