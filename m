@@ -2,79 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2047062C46C
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 17:30:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C99E62C46F
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 17:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239025AbiKPQ32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 11:29:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S233066AbiKPQay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 11:30:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238902AbiKPQ3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 11:29:00 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C203A5E9FD;
-        Wed, 16 Nov 2022 08:23:18 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id u8-20020a17090a5e4800b002106dcdd4a0so2796455pji.1;
-        Wed, 16 Nov 2022 08:23:18 -0800 (PST)
+        with ESMTP id S239005AbiKPQ3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 11:29:25 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA96B7E2
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 08:23:36 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id p13-20020a05600c468d00b003cf8859ed1bso1843788wmo.1
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 08:23:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=27tC8IXiM4AvJpzfsuZEF5jyq+wtXGGlnypYcMRERZw=;
-        b=buK+Hw7hNMt/hnn0pP0nRsrDoQfcVA94Deh4aquQzMD1eM0AuREQhsNHa4giuT7mTw
-         o0cPvdem0u8DB6KNe/0u/xto2sSLiQDysSwXB/yWXcR2UCGXISa68Ep1wlwWpANa2kdh
-         usMl15F6jAElVC6G/bxPOIuFLOtpHj6HPqZDqOlUamJuVW+TmyDkA3NtA44Wyd2FQmFo
-         OcdAbIM6I1ojZVWHvNMnLdcv4G7gIQ4vykRA5+q5i4CE/8pm7nG/nUC2i6ssDpZckhIX
-         GKTQAGJqq5UIEgh3EBdk5w4JMRauNMoO7orEffIEFr4jGArNSH3p3zH2IxAg41l9RW/N
-         GJUQ==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=TGqq6aQ7ZABE0Da5sqyheFL7eGFTlYjj+eXlfJbfp0w=;
+        b=gn9ZdOvVO/oW9ndJbD3R1czLku3UPkr8qIPv/ER+aeVgV97zJA6oDl4uWWcFHvrCEU
+         amwAunZ52L+uS+vwzb6Y+8i5c2aUkiPs+d7gtjEp1lhGzh1YjuBc0+fQt58iItx+znbR
+         xBpXxqVFt2+PPXVfuXGb+1JmMYAr51r6pL+psAIrtwhwYKKNfZnam3xcoCVoDko7IJ0S
+         dIgxaJy/e5OBrxez0TTjiEQ+BL9gvDbI6rVdHYMsIypYkYCjlIUpl+wTy5R6bmHGh0Kn
+         uu7BKborJ7+oDHTFPnKUlWQFikYkjhZ5dDTo8thxNSdYvleQvESydbP0VGkwp6DagIbw
+         99XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=27tC8IXiM4AvJpzfsuZEF5jyq+wtXGGlnypYcMRERZw=;
-        b=msd1wLH22EXGZcolk/xOvbiKoqpLT+NqaNcCbSAqXSBlCCkxRSBvXKj6eTvspLKnCO
-         D0nZHeTqONr41ABAK4G5SX/SbqsmpvAqB32XKlKXN91cFNJaW1FkwcA7PgVJL2K2oMQ/
-         QBGNj8rq9o+43Hg5lAeRfxATSb5mgo/vULaWme2HE7VJ43m2ZpMhFvGIf7qSyZIsvS76
-         WkvTTCZtMn0XiXxKy4Hc5s9X1Hj1rtrAZYED51MBPWlqmgoa2imDyyOUGUfhunjF96Cs
-         KL1h48/XTroylxcWYVhkSV6wQqpZSKIzew4DcHvWNuZ37LCXfNBlwYonRtU3xDRB86Ib
-         GM1w==
-X-Gm-Message-State: ANoB5pneAthb2Nnw5oVDtGvfKxwGoRRQklUA+hBph+i11J293EZHtgLd
-        a1aBpMKMVKOw0DAviG56n44=
-X-Google-Smtp-Source: AA0mqf64sk7TQqJmvrQDzB96SP3oUaKm0LI6Nz1gSJygeNKxzlmGzBZpeH4TQEQZTJIcVJQJCYRMpA==
-X-Received: by 2002:a17:90a:4283:b0:218:4953:58aa with SMTP id p3-20020a17090a428300b00218495358aamr4441129pjg.219.1668615798399;
-        Wed, 16 Nov 2022 08:23:18 -0800 (PST)
-Received: from ?IPV6:2600:8802:b00:4a48:9801:5907:5eb0:dd5f? ([2600:8802:b00:4a48:9801:5907:5eb0:dd5f])
-        by smtp.gmail.com with ESMTPSA id 98-20020a17090a0feb00b002135fdfa995sm1791392pjz.25.2022.11.16.08.23.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Nov 2022 08:23:17 -0800 (PST)
-Message-ID: <d2f15412-0a16-f1cf-1472-87c2d71f6ffa@gmail.com>
-Date:   Wed, 16 Nov 2022 08:23:16 -0800
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TGqq6aQ7ZABE0Da5sqyheFL7eGFTlYjj+eXlfJbfp0w=;
+        b=D5WyKeF4rgQ8FrG221kpQcqaFb44mKS3LAon5jIZyniEK6nNC3xAJj/ZpbUMeuDRr5
+         n1Tc690keoFMJciVW8kYmItMTODatnvLf4y+B1hLaFE5gvSut2jQccySd7oI0lO+Jpjl
+         3JfIl+BFkoxCDOJTxpHbiZbbGCL+2g3ej6VtQLkN7qUlDUh6btqvfdjHenIT3XDSWCWr
+         z+G9kYygplIas/xJ+Vr3fSxQAOwsDnfd+ubS+5tk1eeXGV9+gum093TacCidKsN1Kq+1
+         FefoDGnQOnjke7TtbA2GLhyPIa5vm+u7nYTK1a0NqT8hcS5nicb3+BnJqipgs5LwyIkn
+         rWtQ==
+X-Gm-Message-State: ANoB5pm0Iy6Sw1lKcVrduRtwDkNDH4IqSWVK7BtSYL2KzgozcNvdIIqF
+        URpy19rQbcJjYWmDcFX2NjkyVt4X5wOEW4F+5nZNV1FROs0=
+X-Google-Smtp-Source: AA0mqf7T0i1pKTtMcAQqiB+n67AYYhJRfVmLxz6OxYnG1c4hyfj2bWlSsFP0uhHWjloNfR9J1RYWWg9R9r2qPIOvkxU=
+X-Received: by 2002:a05:600c:1e89:b0:3cf:ecdb:bcb7 with SMTP id
+ be9-20020a05600c1e8900b003cfecdbbcb7mr2524389wmb.180.1668615815109; Wed, 16
+ Nov 2022 08:23:35 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v3 3/3] net: dsa: set name_assign_type to NET_NAME_ENUM
- for enumerated user ports
-Content-Language: en-US
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221115074356.998747-1-linux@rasmusvillemoes.dk>
- <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
- <20221116105205.1127843-4-linux@rasmusvillemoes.dk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221116105205.1127843-4-linux@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221114233514.1913116-1-jeroendb@google.com> <20221114233514.1913116-3-jeroendb@google.com>
+ <Y3RyUn8RLzyA6bGF@x130.lan>
+In-Reply-To: <Y3RyUn8RLzyA6bGF@x130.lan>
+From:   Jeroen de Borst <jeroendb@google.com>
+Date:   Wed, 16 Nov 2022 08:23:23 -0800
+Message-ID: <CAErkTsQALv3NL2jvFY1xgaXsWCPtavZP1UTgDcqo-YBdQCyjzQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/2] gve: Handle alternate miss completions
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jesse.brandeburg@intel.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,21 +68,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Saeed,
+
+Thanks for your review. I like the suggestion, but
+__test_and_clear_bit is for unsigned longs, comptag is a short.
+
+Jeroen
 
 
-On 11/16/2022 2:52 AM, Rasmus Villemoes wrote:
-> When a user port does not have a label in device tree, and we thus
-> fall back to the eth%d scheme, the proper constant to use is
-> NET_NAME_ENUM. See also commit e9f656b7a214 ("net: ethernet: set
-> default assignment identifier to NET_NAME_ENUM"), which in turn quoted
-> commit 685343fc3ba6 ("net: add name_assign_type netdev attribute"):
-> 
->      ... when the kernel has given the interface a name using global
->      device enumeration based on order of discovery (ethX, wlanY, etc)
->      ... are labelled NET_NAME_ENUM.
-> 
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-
-Reviewed-by: Florian Fainelli <f.faineli@gmail.com>
--- 
-Florian
+On Tue, Nov 15, 2022 at 9:17 PM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> On 14 Nov 15:35, Jeroen de Borst wrote:
+> >The virtual NIC has 2 ways of indicating a miss-path
+> >completion. This handles the alternate.
+> >
+> >Signed-off-by: Jeroen de Borst <jeroendb@google.com>
+> >Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> >---
+> > drivers/net/ethernet/google/gve/gve_adminq.h   |  4 +++-
+> > drivers/net/ethernet/google/gve/gve_desc_dqo.h |  5 +++++
+> > drivers/net/ethernet/google/gve/gve_tx_dqo.c   | 18 ++++++++++++------
+> > 3 files changed, 20 insertions(+), 7 deletions(-)
+> >
+> >diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
+> >index b9ee8be73f96..cf29662e6ad1 100644
+> >--- a/drivers/net/ethernet/google/gve/gve_adminq.h
+> >+++ b/drivers/net/ethernet/google/gve/gve_adminq.h
+> >@@ -154,6 +154,7 @@ enum gve_driver_capbility {
+> >       gve_driver_capability_gqi_rda = 1,
+> >       gve_driver_capability_dqo_qpl = 2, /* reserved for future use */
+> >       gve_driver_capability_dqo_rda = 3,
+> >+      gve_driver_capability_alt_miss_compl = 4,
+> > };
+> >
+> > #define GVE_CAP1(a) BIT((int)a)
+> >@@ -164,7 +165,8 @@ enum gve_driver_capbility {
+> > #define GVE_DRIVER_CAPABILITY_FLAGS1 \
+> >       (GVE_CAP1(gve_driver_capability_gqi_qpl) | \
+> >        GVE_CAP1(gve_driver_capability_gqi_rda) | \
+> >-       GVE_CAP1(gve_driver_capability_dqo_rda))
+> >+       GVE_CAP1(gve_driver_capability_dqo_rda) | \
+> >+       GVE_CAP1(gve_driver_capability_alt_miss_compl))
+> >
+> > #define GVE_DRIVER_CAPABILITY_FLAGS2 0x0
+> > #define GVE_DRIVER_CAPABILITY_FLAGS3 0x0
+> >diff --git a/drivers/net/ethernet/google/gve/gve_desc_dqo.h b/drivers/net/ethernet/google/gve/gve_desc_dqo.h
+> >index e8fe9adef7f2..f79cd0591110 100644
+> >--- a/drivers/net/ethernet/google/gve/gve_desc_dqo.h
+> >+++ b/drivers/net/ethernet/google/gve/gve_desc_dqo.h
+> >@@ -176,6 +176,11 @@ static_assert(sizeof(struct gve_tx_compl_desc) == 8);
+> > #define GVE_COMPL_TYPE_DQO_MISS 0x1 /* Miss path completion */
+> > #define GVE_COMPL_TYPE_DQO_REINJECTION 0x3 /* Re-injection completion */
+> >
+> >+/* The most significant bit in the completion tag can change the completion
+> >+ * type from packet completion to miss path completion.
+> >+ */
+> >+#define GVE_ALT_MISS_COMPL_BIT BIT(15)
+> >+
+> > /* Descriptor to post buffers to HW on buffer queue. */
+> > struct gve_rx_desc_dqo {
+> >       __le16 buf_id; /* ID returned in Rx completion descriptor */
+> >diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
+> >index 588d64819ed5..762915c6063b 100644
+> >--- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
+> >+++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
+> >@@ -953,12 +953,18 @@ int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
+> >                       atomic_set_release(&tx->dqo_compl.hw_tx_head, tx_head);
+> >               } else if (type == GVE_COMPL_TYPE_DQO_PKT) {
+> >                       u16 compl_tag = le16_to_cpu(compl_desc->completion_tag);
+> >-
+> >-                      gve_handle_packet_completion(priv, tx, !!napi,
+> >-                                                   compl_tag,
+> >-                                                   &pkt_compl_bytes,
+> >-                                                   &pkt_compl_pkts,
+> >-                                                   /*is_reinjection=*/false);
+> >+                      if (compl_tag & GVE_ALT_MISS_COMPL_BIT) {
+> >+                              compl_tag &= ~GVE_ALT_MISS_COMPL_BIT;
+>
+> nit: __test_and_clear_bit() and reduce to oneline. also you can drop the
+> braces in the if else statements once you squashed the two lines.
+>
+> >+                              gve_handle_miss_completion(priv, tx, compl_tag,
+> >+                                                         &miss_compl_bytes,
+> >+                                                         &miss_compl_pkts);
+> >+                      } else {
+> >+                              gve_handle_packet_completion(priv, tx, !!napi,
+> >+                                                           compl_tag,
+> >+                                                           &pkt_compl_bytes,
+> >+                                                           &pkt_compl_pkts,
+> >+                                                           /*is_reinjection=*/false);
+> >+                      }
+> >               } else if (type == GVE_COMPL_TYPE_DQO_MISS) {
+> >                       u16 compl_tag = le16_to_cpu(compl_desc->completion_tag);
+> >
+> >--
+> >2.38.1.431.g37b22c650d-goog
+> >
