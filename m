@@ -2,161 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B58762C933
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 20:49:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFFC562C960
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbiKPTtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 14:49:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
+        id S234720AbiKPUBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 15:01:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiKPTtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 14:49:41 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E501F43AC0
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 11:49:38 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id o15-20020a6bf80f000000b006de313e5cfeso3731816ioh.6
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 11:49:38 -0800 (PST)
+        with ESMTP id S234630AbiKPUB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:01:28 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2689663B94;
+        Wed, 16 Nov 2022 12:01:27 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id c15so11434303qtw.8;
+        Wed, 16 Nov 2022 12:01:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=cgNyxqLmmLctmSF/4BskxSA/5tgM3jspyo0wtb8y+7A=;
+        b=myyfg7qo2sNUd/k5rngiZ4MXQjBF1VcxpRwoD4uy7Pl9MT/bEs36FpCYbxpB4WaDj2
+         3JN7Lp0s6phVIJUcINhip1/1yUc8WXqLp2lZEhpoFwB4DrNKWupc7c8k/w/VaGfIMD54
+         YuGzEWJ2MYu9T7pTts9XDogw85hzHxfZvNB85k7OftIk3tk7kr5MuqN/5mhiRfHAZL0r
+         +T4BRZ758xq5z72JAn6IP34htKSNtw+JmakUHB98jI0qj3pxQWT9dtt1+GDTESVsu9Ri
+         +6Roy5hN3plMrbAIS1ceos0mjb+Eme94S0Q9lUXvnqC/0loSZgwc46ilPs0b8Vpk4x10
+         N86A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ylx9QLebQ8HlwldCA/mF1PGxYhL2fUmTzgnhvgEJwW8=;
-        b=hNJ6jy5uqWO3HPOPWC+giGpmMp8j5tvtdektTnI67XVd7qJL16MOmehMul5mayTeWU
-         206zWgfcxHLaUgDt3pE8p8BlqpT+luCl/vvmxLXQXQkLdJFDx7I1XZ0XcLSPMfriw+4q
-         ARKswlbAoZPqJgzml4IIWSwUHHbMTGJL5tGMA+v7m93+VRa5AxGj8D1cSThzNjPzPBsN
-         CfG97kuJe2CR9B1DE9l9H5ubblhgFLM3zgwKf7+D7LgoX09BG+g5yWn698faAmA3QEsu
-         M9hlscPhbmOJA5NVbA87NYLrUlnUtOXuXiLh1qd+hYTOZYA2ADB3VHc4FFJq7KVEqulT
-         /11A==
-X-Gm-Message-State: ANoB5pkqz5oWMmsIiSr9ht/I8LUX04sYqEH66/VFxH4sQzDga1iToWRU
-        jGRoUN8Wnr4YCEHMrF7yvmnzYtB7Q/+5U53uyPbigWvqPh0X
-X-Google-Smtp-Source: AA0mqf69YPhcGGUxa9GkyzmgDq5B5IKNcF87mVDxLG211elxXgiSy1QpD2lEwGMPYSL4SZ8zHatI+575ZdDayi8LjVYE05btFqNP
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cgNyxqLmmLctmSF/4BskxSA/5tgM3jspyo0wtb8y+7A=;
+        b=P9oxC7q8eHDJSCx1uyTM3V1jnaGIx9sk3BoWO3520ZIsEHWvB6yfIUUJbVXiLgQiDk
+         DyFFT19V6uDe8wj6UOs9N7QN+SAGrzCZqsoOtlVb7hl29ROewFbmxehChcb+iCO2JSFU
+         Wt03hinN6+cRfY7YMwldgStUA2x77H6eO1F5vmKeb82dTdF7+YKgMgEpnFEbIibamcYb
+         ikmxNeDrK4nMnfYL6zyCxwk4dBi1EkozOV08Jq0jV+/wG4+2f4bMDB3iVNAmA6qlXySb
+         mwe58NwmV5bEaXmE2WHiFQ9A7LU8GmralDF6S7FC9mTrcksDKBh6CKphPLpCOlDHeBvW
+         MIfA==
+X-Gm-Message-State: ANoB5pmBmj+QIO2d482P5EmlY0BzZSH2CdhvSE01DlebTUOQGamFgJNM
+        SEQjBEu8sNGH2jdsroF626HTTUzxXOs17A==
+X-Google-Smtp-Source: AA0mqf6/YsW4rh6Wc08KSkEGVMw70auoadCZfVkhVZkvtkOroBm0+Q8IPsMtv5odVnqTKq0PiqYsTA==
+X-Received: by 2002:a05:622a:1349:b0:3a5:f932:f16d with SMTP id w9-20020a05622a134900b003a5f932f16dmr9111023qtk.44.1668628885806;
+        Wed, 16 Nov 2022 12:01:25 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id d7-20020a05620a240700b006fba44843a5sm2900411qkn.52.2022.11.16.12.01.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Nov 2022 12:01:25 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Ahern <dsahern@gmail.com>,
+        Carlo Carraro <colrack@gmail.com>
+Subject: [PATCHv2 net-next 0/7] sctp: support vrf processing
+Date:   Wed, 16 Nov 2022 15:01:15 -0500
+Message-Id: <cover.1668628394.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:cba5:0:b0:375:175c:b00e with SMTP id
- v5-20020a02cba5000000b00375175cb00emr10778411jap.215.1668628178282; Wed, 16
- Nov 2022 11:49:38 -0800 (PST)
-Date:   Wed, 16 Nov 2022 11:49:38 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d433c705ed9bc569@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in p9_client_prepare_req
-From:   syzbot <syzbot+69c3bf057b7a81f47758@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patchset adds the VRF processing in SCTP. Simliar to TCP/UDP,
+it includes socket bind and socket/association lookup changes.
 
-syzbot found the following issue on:
+For socket bind change, it allows sockets to bind to a VRF device
+and allows multiple sockets with the same IP and PORT to bind to
+different interfaces in patch 1-3.
 
-HEAD commit:    9500fc6e9e60 Merge branch 'for-next/core' into for-kernelci
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=13bdf3f1880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b25c9f218686dd5e
-dashboard link: https://syzkaller.appspot.com/bug?extid=69c3bf057b7a81f47758
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17f6d5cd880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=154f2a45880000
+For socket/association lookup change, it adds dif and sdif check
+in both asoc and ep lookup in patch 4 and 5, and when binding to
+nodev, users can decide if accept the packets received from one
+l3mdev by setup a sysctl option in patch 6.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/1363e60652f7/disk-9500fc6e.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/fcc4da811bb6/vmlinux-9500fc6e.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/0b554298f1fa/Image-9500fc6e.gz.xz
+Note with VRF support, in a netns, an association will be decided
+by src ip + src port + dst ip + dst port + bound_dev_if, and it's
+possible for ss to have:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+69c3bf057b7a81f47758@syzkaller.appspotmail.com
+# ss --sctp -n
+  State       Local Address:Port      Peer Address:Port
+   ESTAB     192.168.1.2%vrf-s1:1234
+   `- ESTAB   192.168.1.2%veth1:1234   192.168.1.1:1234
+   ESTAB     192.168.1.2%vrf-s2:1234
+   `- ESTAB   192.168.1.2%veth2:1234   192.168.1.1:1234
 
-Unable to handle kernel paging request at virtual address bf908d5e7640333a
-Mem abort info:
-  ESR = 0x0000000096000004
-  EC = 0x25: DABT (current EL), IL = 32 bits
-  SET = 0, FnV = 0
-  EA = 0, S1PTW = 0
-  FSC = 0x04: level 0 translation fault
-Data abort info:
-  ISV = 0, ISS = 0x00000004
-  CM = 0, WnR = 0
-[bf908d5e7640333a] address between user and kernel address ranges
-Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 0 PID: 3084 Comm: syz-executor291 Not tainted 6.1.0-rc5-syzkaller-32269-g9500fc6e9e60 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
-pstate: 40400005 (nZcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : __kmem_cache_alloc_node+0x17c/0x350 mm/slub.c:3437
-lr : slab_pre_alloc_hook mm/slab.h:712 [inline]
-lr : slab_alloc_node mm/slub.c:3318 [inline]
-lr : __kmem_cache_alloc_node+0x80/0x350 mm/slub.c:3437
-sp : ffff80000ff636c0
-x29: ffff80000ff636d0 x28: ffff0000c9848000 x27: 0000000000000000
-x26: 0000000000001000 x25: 00000000ffffffff x24: ffff80000bea07bc
-x23: 0000000000001000 x22: bf908d5e76402b3a x21: 0000000000000000
-x20: 0000000000000c40 x19: ffff0000c0001700 x18: 000000000000ba7e
-x17: 000000000000b67e x16: ffff80000dc18158 x15: ffff0000c9848000
-x14: 0000000000000010 x13: 0000000000000000 x12: ffff0000c9848000
-x11: 0000000000000001 x10: 0000000000000000 x9 : 0000000000000800
-x8 : 00000000000613f9 x7 : ffff8000084c0640 x6 : 0000000000000000
-x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000061401
-x2 : 0000000000000000 x1 : 0000000000000c40 x0 : fffffc00032ed000
-Call trace:
- next_tid mm/slub.c:2349 [inline]
- slab_alloc_node mm/slub.c:3382 [inline]
- __kmem_cache_alloc_node+0x17c/0x350 mm/slub.c:3437
- __do_kmalloc_node mm/slab_common.c:954 [inline]
- __kmalloc+0xb4/0x140 mm/slab_common.c:968
- kmalloc include/linux/slab.h:558 [inline]
- p9_fcall_init net/9p/client.c:228 [inline]
- p9_tag_alloc net/9p/client.c:293 [inline]
- p9_client_prepare_req+0x2b0/0x53c net/9p/client.c:631
- p9_client_rpc+0xbc/0x548 net/9p/client.c:678
- p9_client_flush+0x118/0x1b0 net/9p/client.c:596
- p9_client_rpc+0x4cc/0x548 net/9p/client.c:724
- p9_client_create+0x4d8/0x758 net/9p/client.c:1015
- v9fs_session_init+0xa4/0x9f0 fs/9p/v9fs.c:408
- v9fs_mount+0x6c/0x568 fs/9p/vfs_super.c:126
- legacy_get_tree+0x30/0x74 fs/fs_context.c:610
- vfs_get_tree+0x40/0x140 fs/super.c:1531
- do_new_mount+0x1dc/0x4e4 fs/namespace.c:3040
- path_mount+0x358/0x890 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __arm64_sys_mount+0x2c4/0x3c4 fs/namespace.c:3568
- __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
- invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
- el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
- do_el0_svc+0x48/0x164 arch/arm64/kernel/syscall.c:206
- el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:637
- el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
- el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
-Code: 54000ee1 34000eeb b9402a69 91002103 (f8696ada) 
----[ end trace 0000000000000000 ]---
-----------------
-Code disassembly (best guess):
-   0:	54000ee1 	b.ne	0x1dc  // b.any
-   4:	34000eeb 	cbz	w11, 0x1e0
-   8:	b9402a69 	ldr	w9, [x19, #40]
-   c:	91002103 	add	x3, x8, #0x8
-* 10:	f8696ada 	ldr	x26, [x22, x9] <-- trapping instruction
+See the selftest in patch 7 for more usage.
 
+Also, thanks Carlo for testing this patch series on their use.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+v1->v2:
+  - In Patch 5, move sctp_sk_bound_dev_eq() definition to net/sctp/
+    input.c to avoid a build error when IP_SCTP is disabled, as Paolo
+    suggested.
+  - In Patch 7, avoid one sleep by disabling the IPv6 dad, and remove
+    another sleep by using ss to check if the server's ready, and also
+    delete two unncessary sleeps in sctp_hello.c, as Paolo suggested.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Xin Long (7):
+  sctp: verify the bind address with the tb_id from l3mdev
+  sctp: check ipv6 addr with sk_bound_dev if set
+  sctp: check sk_bound_dev_if when matching ep in get_port
+  sctp: add skb_sdif in struct sctp_af
+  sctp: add dif and sdif check in asoc and ep lookup
+  sctp: add sysctl net.sctp.l3mdev_accept
+  selftests: add a selftest for sctp vrf
+
+ Documentation/networking/ip-sysctl.rst   |   9 ++
+ include/net/netns/sctp.h                 |   4 +
+ include/net/sctp/sctp.h                  |   6 +-
+ include/net/sctp/structs.h               |   9 +-
+ net/sctp/diag.c                          |   3 +-
+ net/sctp/endpointola.c                   |  13 +-
+ net/sctp/input.c                         | 108 +++++++-------
+ net/sctp/ipv6.c                          |  22 ++-
+ net/sctp/protocol.c                      |  19 ++-
+ net/sctp/socket.c                        |   9 +-
+ net/sctp/sysctl.c                        |  11 ++
+ tools/testing/selftests/net/Makefile     |   2 +
+ tools/testing/selftests/net/sctp_hello.c | 137 +++++++++++++++++
+ tools/testing/selftests/net/sctp_vrf.sh  | 178 +++++++++++++++++++++++
+ 14 files changed, 461 insertions(+), 69 deletions(-)
+ create mode 100644 tools/testing/selftests/net/sctp_hello.c
+ create mode 100755 tools/testing/selftests/net/sctp_vrf.sh
+
+-- 
+2.31.1
+
