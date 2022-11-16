@@ -2,124 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A04A462AFF2
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 01:19:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F5062B006
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 01:30:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiKPATG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 19:19:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
+        id S230180AbiKPAad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 19:30:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiKPATF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 19:19:05 -0500
-X-Greylist: delayed 550 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Nov 2022 16:19:03 PST
-Received: from ci74p00im-qukt09082102.me.com (ci74p00im-qukt09082102.me.com [17.57.156.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33CC1DF32
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 16:19:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-        s=1a1hai; t=1668557392;
-        bh=KkX2VtE2BagMQUs74ND1ZrgbbjxqcPIkJdZaRsxNODo=;
-        h=from:Content-Type:Mime-Version:Subject:Message-Id:Date:to;
-        b=CA4qpQyG4JGidXYMyd6qz+i3W/Ofko2D3Ewuad79nB43jvbzuSfzXsEASde8xWBuh
-         CSivYIqikQQBFvfH8uB5xkgGY9GcOlj7UpnVfwzuPFFDQxvtMQbFe4ksgEY5h31/OC
-         dIZhb3u+h5BD8aPsNO/TR5mXeuOhzX0qsAxerfWKt3EpreZs4Y3ffEboS4wfIjAwfc
-         AutyF+OCGUJ86mjzskt/Mu7N3QGnmrrqMGY5Y1fafLe8GMyQy07CCizJlMKaJM3nd9
-         DWyP4rmoIMR0J1uBWyznav8P1K/zxW2xxXK11Hh5HS3MipDcK4MibKMecEu13j3hRB
-         5aCDkDgmAfiHw==
-Received: from smtpclient.apple (ci77p00im-dlb-asmtp-mailmevip.me.com [17.57.156.26])
-        by ci74p00im-qukt09082102.me.com (Postfix) with ESMTPSA id B533819C057C
-        for <netdev_at_vger_kernel_org_jfadfw9b6n6d7t_a1bd1007@icloud.com>; Wed, 16 Nov 2022 00:09:51 +0000 (UTC)
-from:   hotter_scads.0h@icloud.com
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.200.110.1.12\))
-Subject: Lenovo BIOS/UEFI 1.24 broke WiFi on ThinkPad T14s (Fedora 36/37)
-Message-Id: <F5BA9F2E-41B8-4CC9-A743-75A7C94EC48C@me.com>
-Date:   Tue, 15 Nov 2022 19:09:40 -0500
-to:     netdev@vger.kernel.org
-X-Mailer: Apple Mail (2.3731.200.110.1.12)
-X-MANTSH: 1TEIXSUMdHVoaGkNHB1tfQV4aEhsaGxsaGxEKTEMXGxoEGxwSBBscGgQfGhAbHho
- fGhEKTFkXHB4RCllEF2tEGQV6HhtzGRJOEQpZTRdkRURPEQpZSRcHGRpxGwYHHBp3BhMeBhoGG
- gYaBhpxGhAadwYaBhoGGgYaBhoGGnEaEBp3BhoRClleF2NjeREKQ04XWmAeGVpiQFx9elB8X0V
- Ee0kHSUBIfVpfZ1p/E3lyeWwRClhcFxkEGgQeEwcdGEkfHx1JGQUbGhoEEhgEHhgEGBMQGx4aH
- xoRCl5ZF0tbSR1bEQpMWhdoQ2tvaxEKRVkXb2trEQpDWhcbGR8EGBkEGBgcBBgcEQpCXhcbEQp
- EXhcYEQpeThcbEQpCRRd6XUt5TEdDWxt+QREKQk4XbHBgeUAdYlJpGmIRCkJMF3pdS3lMR0NbG
- 35BEQpCbhdjYkB7S1BtE3pkThEKQmwXel1LeUxHQ1sbfkERCkJAF2FtAXBmbWlkYRxnEQpCWBd
- mRmB9Yl0aRFhpQREKRUMXGxEKcGgXYHxzZUxlSAVvbF0QBxkaEQpwaBdkWUcbUx9vaFpPWhAHG
- RoRCnBoF295Ex0eTkttbmkBEAcZGhEKcGgXYVldAUNjf1xBXG4QBxkaEQpwaBd6Q15kWkt/eWJ
- uWhAHGRoRCnBMF3p9Tl9MXxlgYVpyEAcZGhEKbX4XGhEKWE0XSxE=
-X-CLX-Shades: None
-X-CLX-UShades: None
-X-CLX-Score: 64
-X-CLX-UnSpecialScore: None
-X-CLX-Spam: false
-X-Proofpoint-GUID: pJ43pHjvWPzVuonQc-cjbWpuMpU9SXSF
-X-Proofpoint-ORIG-GUID: pJ43pHjvWPzVuonQc-cjbWpuMpU9SXSF
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.0.605.474.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2020-01-23?=
- =?UTF-8?Q?=5F02_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 clxscore=64 suspectscore=0
- spamscore=0 phishscore=0 malwarescore=0 mlxscore=0 mlxlogscore=996
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2211150166
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229478AbiKPAac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 19:30:32 -0500
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C538B1F600;
+        Tue, 15 Nov 2022 16:30:31 -0800 (PST)
+Received: by mail-pg1-f180.google.com with SMTP id f3so8738293pgc.2;
+        Tue, 15 Nov 2022 16:30:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZYHGI3jLNlZEliAN2rIJksm2B5bhLJHcux1Z9oNJmdY=;
+        b=UYgYP/fHQ+aREmugo3hri0nH3SoWPpREWafSYMtt7Vcag6rRLR9wCWIZILtJTxzK2Z
+         fx5f5pzCOkiAsZjZPm3p8B5IkaLzrc/hlrD39uUtU4NQHEAEktKN76JzQkXX+I4UGDYi
+         deDZQ29w87aF6VDZL5wZ2IdAKJH+fJd2epv4VEgPkB0Uf9vZ5UZVCXk54Sx1c0Un6fF4
+         aWQj4cZesQuvi8aUWjSnYiZaIluwTqmWWWlTn2QYWiA7RY1V7tJkOPeYOT7OQ6SDDd6g
+         G1Y6FfjrztTBX44o/5zHH1edaDmdalgtLzImds201uVtzM1pq+/DvrnF0d5IUNvNRkj0
+         8ESw==
+X-Gm-Message-State: ANoB5pnfI3iMFESPEAfuB+btoEMCB71RKMOdeMbKGU76SSSBg8eRfENz
+        CB6z8eZOkPAyd46o6QG9yN5SuQqsmgJ0pXlrKw25kXQJusSU2Q==
+X-Google-Smtp-Source: AA0mqf4EyP5874AvCyj085gpv3Bcq+rDW4K9uchgSQtJJbGOZbhhyZK5iQ8YmUdyTOnHHA6U8oje2F1HRUPPpoZdpMk=
+X-Received: by 2002:aa7:8759:0:b0:56b:a795:e99c with SMTP id
+ g25-20020aa78759000000b0056ba795e99cmr20849785pfo.14.1668558631188; Tue, 15
+ Nov 2022 16:30:31 -0800 (PST)
+MIME-Version: 1.0
+References: <20221111030838.1059-1-mailhol.vincent@wanadoo.fr>
+ <20221113083404.86983-1-mailhol.vincent@wanadoo.fr> <20221114212718.76bd6c8b@kernel.org>
+ <CAMZ6RqJ-2_ymLiGuObmBLRDpNNy0ZpMCeRU2qgNPvq2oArnX8A@mail.gmail.com> <20221115082830.61fffeab@kernel.org>
+In-Reply-To: <20221115082830.61fffeab@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Wed, 16 Nov 2022 09:30:19 +0900
+Message-ID: <CAMZ6Rq+Vdbt0rGwS1zCak4THPk=PY1DPxtUxXmLbvgFnnMmV8w@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] ethtool: doc: clarify what drivers can
+ implement in their get_drvinfo()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel@vger.kernel.org,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue. 16 Nov. 2022 at 01:28, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 15 Nov 2022 16:52:39 +0900 Vincent MAILHOL wrote:
+> > - * @fw_version: Firmware version string; may be an empty string
+> > - * @erom_version: Expansion ROM version string; may be an empty string
+> > + * @fw_version: Firmware version string; drivers can set it; may be an
+> > + *     empty string
+> > + * @erom_version: Expansion ROM version string; drivers can set it;
+> > + *     may be an empty string
+>
+> "drivers can set it" rings a little odd to my non-native-English-
+> -speaker's ear. Perhaps "driver-defined;" ? Either way is fine, tho.
 
-After upgrading the UEFI/BIOS firmware from 1.21 to 1.24 on a Lenovo =
-ThinkPad T14s Gen 2 running Fedora 36/37, the WiFi stopped working. The =
-WiFi router I=E2=80=99m using is Netgear R7000. The kernel is Fedora=E2=80=
-=99s 6.0.8-300.fc37.x86_64.
-This new firmware,1.24, was released two days ago, on Nov 13, 2022.
+I am not a native speaker either so I won't argue here. Changed to
+"driver defined" in v4.
 
-This is the kernel log with the new 1.24 BIOS firmware, which causes the =
-wifi to never work, and the kernel just keeps printing this:
+> >   * @bus_info: Device bus address.  This should match the dev_name()
+> >   *     string for the underlying bus device, if there is one.  May be
+> >   *     an empty string.
+> > @@ -180,9 +182,10 @@ static inline __u32 ethtool_cmd_speed(const
+> > struct ethtool_cmd *ep)
+> >   * Users can use the %ETHTOOL_GSSET_INFO command to get the number of
+> >   * strings in any string set (from Linux 2.6.34).
+> >   *
+> > - * Drivers should set at most @driver, @version, @fw_version and
+> > - * @bus_info in their get_drvinfo() implementation.  The ethtool
+> > - * core fills in the other fields using other driver operations.
+> > + * Majority of the drivers should no longer implement the
+> > + * get_drvinfo() callback.  Most fields are correctly filled in by the
+> > + * core using system information, or populated using other driver
+> > + * operations.
+>
+> SG! Good point on the doc being for the struct. We can make the notice
+> even stronger if you want by saying s/Majority of the/Modern/
 
-Nov 15 15:04:42 fedora kernel: wlp3s0: authenticate with =
-9c:3d:cf:8d:41:a8
-Nov 15 15:04:42 fedora kernel: wlp3s0: bad VHT capabilities, disabling =
-VHT
-Nov 15 15:04:42 fedora kernel: wlp3s0: Invalid HE elem, Disable HE
-Nov 15 15:04:42 fedora kernel: wlp3s0: 80 MHz not supported, disabling =
-VHT
-Nov 15 15:04:42 fedora kernel: wlp3s0: send auth to 9c:3d:cf:8d:41:a8 =
-(try 1/3)
-Nov 15 15:04:42 fedora kernel: wlp3s0: send auth to 9c:3d:cf:8d:41:a8 =
-(try 2/3)
-Nov 15 15:04:42 fedora kernel: wlp3s0: send auth to 9c:3d:cf:8d:41:a8 =
-(try 3/3)
-Nov 15 15:04:42 fedora kernel: wlp3s0: authentication with =
-9c:3d:cf:8d:41:a8 timed out
+"Modern drivers should no longer..." sounds like an unconditional
+interdiction. I changed it to "Modern drivers no longer have to..." to
+nuance the terms and suggest that they remain some edge cases.
 
-And this keeps on printing on and on, as the laptop tries to connect to =
-the wifi router, and it never does. (To use networking, I had to connect =
-an ethernet cable=E2=80=A6)
+I sent the v4 but messed up the In-Reply-To tag so it became a new thread:
+https://lore.kernel.org/netdev/20221115233524.805956-1-mailhol.vincent@wanadoo.fr/T/#u
 
-However after downgrading back to BIOS 1.21, the wifi works fine, just =
-as before/expected, and the kernel prints this:
 
-[ 221.928935] wlp3s0: authenticate with 9c:3d:cf:8d:41:a7
-[ 221.941349] wlp3s0: Invalid HE elem, Disable HE
-[ 222.487032] wlp3s0: send auth to 9c:3d:cf:8d:41:a7 (try 1/3)
-[ 222.589808] wlp3s0: send auth to 9c:3d:cf:8d:41:a7 (try 2/3)
-[ 222.592570] wlp3s0: authenticated
-[ 222.600506] wlp3s0: associate with 9c:3d:cf:8d:41:a7 (try 1/3)
-[ 222.603264] wlp3s0: RX AssocResp from 9c:3d:cf:8d:41:a7 (capab=3D0x1011 =
-status=3D0 aid=3D2)
-[ 222.634583] wlp3s0: associated
-
-Hope this helps in figuring out what the problem could be with the new =
-firmware, and maybe come up with a workaround in the kernel, at least =
-until Lenovo fixes this in the firmware with a new release.
-
-Regards=E2=80=A6
-
+Yours sincerely,
+Vincent Mailhol
