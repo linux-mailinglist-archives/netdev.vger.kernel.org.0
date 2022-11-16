@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F05462C777
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C703062C776
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:17:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239077AbiKPSRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S239130AbiKPSRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 16 Nov 2022 13:17:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239163AbiKPSRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:17:31 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1001063B98
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:29 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id x11-20020a056a000bcb00b0056c6ec11eefso10218098pfu.14
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:29 -0800 (PST)
+        with ESMTP id S238983AbiKPSRd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:17:33 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A2663BA1
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:30 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id 186-20020a6301c3000000b0046fa202f720so9833138pgb.20
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:17:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=VMwPEFrt7ea3bvb3EzfSrD2jHVFJpV/Y0eShB9jO2zQ=;
-        b=MpTpwQpKHZNiObi76Q0Ew9i3fVZRmBhvSQZrRRRx71pHCW7L3BHuOU4pvz+9CBohg9
-         0K+HRu5ToVvmDtOdPnkUZn6d3tfZPXelsz6mWM0zeztgCHcpu3nLyNHwwHg6IFeyPZwG
-         PMs9aIC1/Nm2Uem6AIJtAVGC1WMHLs/6CGNY0CNKfPTEXE8TjJY2gJVWeHr9UuTSNqZ/
-         QC7g23ao2GnEcrY/1Awsai+MyWJ5RBMLpjVHKVJit0jaGcgO8SxgpOaV5zfnRRvoFFWL
-         FmVL1tH/KyPh6l2dUncd+6UKu3ZsMg9PaCvTlkFjhqBKv0rbZb5EdAYwgfSDSJqZkJQL
-         UGCw==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oz6HTb0GmeHKdPOEGIc2FZFneoAch14jOz3al27JPt4=;
+        b=YkDszNNkJDITrWxhFFswWuREWMqc0BcMJWQcWfo3p3i4ZZaAdfHqAXpdQ3oUz3hgbo
+         Voq5+Sf4boQQbpNSqaUvqT9UfNS+Y/mfh2NJXfyxfvilHrMVfZyiOoWWUMijN8h0495k
+         pyu+y9I0Km298KKa3eSE3fCkfv1/crv5vPMUym66fq0HlbJsFQHZSGI8+cNtQAjxCY4Y
+         EQwNjyuvgaMV1F0kBrFjcCkQWTY04IBUTekR2W1y3l/a9YDc8dfYFnYkANWF1kRv0a8W
+         zg8ywhffLcj10KArNIwOEZZSM+xb1oN+SLbVG63VCZB3EtmRYl7A3c6cDvm0OvXYebse
+         J1+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VMwPEFrt7ea3bvb3EzfSrD2jHVFJpV/Y0eShB9jO2zQ=;
-        b=hSk116c5uK7lpBbMAAiZ/fBN26fbxYAKg05750AROm1eLfjZdYwh0ajHVNKhjN0BaW
-         xaoIq1m9cXyKXQGretGLkavp2eHCgrHz/1zI8ceJg575QumCg+zlQJQE4YupATcXPoFe
-         B62rs+3eq6q8t7vgfDLEmCdggiPtT1+pB5u4OzaPv8eke7/5+i/5m7DczNjeFx7hJnax
-         +hlcDNlqSOLSzD2e0vAEOZFKHrmTIbLpPWa9L0tZNkbnbUJ4NiokOiB+yBir5rFZtJl6
-         I0ibZynvGgj6cvPO+3uKhBtlUJhMZlbhXSFWJyCezJQPkzxJqi44DFECWH1jwoVNgGjr
-         9aSA==
-X-Gm-Message-State: ANoB5plvquX2zJYvuSqgSrb/Qcz0XcFa3hVY2x6KKE3W8QxLr+IOksLG
-        S4C2cH8dI5laW9bD04G2mbgVHX1EFinsFxvfamPYCABKOhQPK65zIpfGnarJjziUqgWdjWe6ZVc
-        OIqa2y0PVypJPWNnov2FgaMm4z/jh6r/8+/3M81JizstHIr0liq7QNT36BGvS4IguPDk=
-X-Google-Smtp-Source: AA0mqf5ZJSe33U295TTh/uhDMUi9tld9Qvx1CSrxtQ6a14q5s2QbdT69XURCLed3nNN4ld8ieDe8Gdo4FC+i9w==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=oz6HTb0GmeHKdPOEGIc2FZFneoAch14jOz3al27JPt4=;
+        b=2jXdV6ZJAnf6gYGRk2mhxvM+3xeD9HFQAJiX9jvx4unMWZD6fMXXWdA5q7gaT6d/Ke
+         5dEWwgeauPIoYXnVbrZRAZfj/PjwSvICW/DopsJ3MU07TbONeQahJhV6vpEBYxTBqEMR
+         5/PaAMK6KEVqwvk5UWKkUHaXFvJ4gZyqKJawUwytHFzMJnvvE5UyDwr74XlPZPi1gqLb
+         fFsV3XUM1ahnT37ajG0Z4VZDN6BqK0wIJobPrw2Ut0g7GWVBAjS7sEc1d0m+fVNQMPwy
+         c3AAznVPBJVLR3tz0/GKWENwFWFMR2HgSCsaZqEGV5TcrbSnOL/JLo+byMPPxgxsAq4n
+         /VjA==
+X-Gm-Message-State: ANoB5pmp5FgBcSHDHiADSOT0p5sfHp+uJFsCjTtrIH9a31k4t047sLcM
+        aVuF+zu/ovyYHxAGUAW3byYc4FRMYi9C/pmmD5rHYcFA3GhJgxEwIWtU33PZuIt/68EnfkJ0YqP
+        LzCIyXiEarMp4bgN69fRW1VgNYPQEtOTLt2pWeJKWeAG/Yk9gx4teZrFsMmUi7p86jqk=
+X-Google-Smtp-Source: AA0mqf7uK1xXJ/MbPSz2BQF+b4hHBJbTWKHfPThulD1YZCNRT4XbB1eRPIDPgC+15jpdPapXjRGIqnUvvztDyA==
 X-Received: from jeroendb9128802.sea.corp.google.com ([2620:15c:100:202:131e:f4f:919b:71c5])
- (user=jeroendb job=sendgmr) by 2002:a05:6a00:15d2:b0:563:1231:1da with SMTP
- id o18-20020a056a0015d200b00563123101damr24812674pfu.5.1668622648448; Wed, 16
- Nov 2022 10:17:28 -0800 (PST)
-Date:   Wed, 16 Nov 2022 10:17:23 -0800
+ (user=jeroendb job=sendgmr) by 2002:a05:6a00:1143:b0:56d:91d1:a903 with SMTP
+ id b3-20020a056a00114300b0056d91d1a903mr24662220pfm.61.1668622650155; Wed, 16
+ Nov 2022 10:17:30 -0800 (PST)
+Date:   Wed, 16 Nov 2022 10:17:24 -0800
+In-Reply-To: <20221116181725.2207544-1-jeroendb@google.com>
 Mime-Version: 1.0
+References: <20221116181725.2207544-1-jeroendb@google.com>
 X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221116181725.2207544-1-jeroendb@google.com>
-Subject: [PATCH net-next v4 0/2] Handle alternate miss-completions
+Message-ID: <20221116181725.2207544-2-jeroendb@google.com>
+Subject: [PATCH net-next v4 1/2] gve: Adding a new AdminQ command to verify driver
 From:   Jeroen de Borst <jeroendb@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jesse.brandeburg@intel.com,
@@ -66,36 +68,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some versions of the virtual NIC present miss-completions in
-an alternative way. Let the diver handle these alternate completions
-and announce this capability to the device.
+Check whether the driver is compatible with the device
+presented.
 
-The capability is announced uing a new AdminQ command that sends
-driver information to the device. The device can refuse a driver
-if it is lacking support for a capability, or it can adopt it's
-behavior to work around it.
+Signed-off-by: Jeroen de Borst <jeroendb@google.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+ drivers/net/ethernet/google/gve/gve.h        |  1 +
+ drivers/net/ethernet/google/gve/gve_adminq.c | 19 +++++++
+ drivers/net/ethernet/google/gve/gve_adminq.h | 49 ++++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_main.c   | 52 ++++++++++++++++++++
+ 4 files changed, 121 insertions(+)
 
-Changed in v4:
-- Clarified new AdminQ command in cover letter
-- Changed EOPNOTSUPP to ENOTSUPP to match device's response
-Changed in v3:
-- Rewording cover letter
-- Added 'Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>'
-Changes in v2:
-- Changed the subject to include 'gve:'
-
-Jeroen de Borst (2):
-  gve: Adding a new AdminQ command to verify driver
-  gve: Handle alternate miss completions
-
- drivers/net/ethernet/google/gve/gve.h         |  1 +
- drivers/net/ethernet/google/gve/gve_adminq.c  | 19 +++++++
- drivers/net/ethernet/google/gve/gve_adminq.h  | 51 ++++++++++++++++++
- .../net/ethernet/google/gve/gve_desc_dqo.h    |  5 ++
- drivers/net/ethernet/google/gve/gve_main.c    | 52 +++++++++++++++++++
- drivers/net/ethernet/google/gve/gve_tx_dqo.c  | 18 ++++---
- 6 files changed, 140 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 5655da9cd236..64eb0442c82f 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -563,6 +563,7 @@ struct gve_priv {
+ 	u32 adminq_report_stats_cnt;
+ 	u32 adminq_report_link_speed_cnt;
+ 	u32 adminq_get_ptype_map_cnt;
++	u32 adminq_verify_driver_compatibility_cnt;
+ 
+ 	/* Global stats */
+ 	u32 interface_up_cnt; /* count of times interface turned up since last reset */
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+index f7621ab672b9..6a12b30a9f87 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -407,6 +407,9 @@ static int gve_adminq_issue_cmd(struct gve_priv *priv,
+ 	case GVE_ADMINQ_GET_PTYPE_MAP:
+ 		priv->adminq_get_ptype_map_cnt++;
+ 		break;
++	case GVE_ADMINQ_VERIFY_DRIVER_COMPATIBILITY:
++		priv->adminq_verify_driver_compatibility_cnt++;
++		break;
+ 	default:
+ 		dev_err(&priv->pdev->dev, "unknown AQ command opcode %d\n", opcode);
+ 	}
+@@ -878,6 +881,22 @@ int gve_adminq_report_stats(struct gve_priv *priv, u64 stats_report_len,
+ 	return gve_adminq_execute_cmd(priv, &cmd);
+ }
+ 
++int gve_adminq_verify_driver_compatibility(struct gve_priv *priv,
++					   u64 driver_info_len,
++					   dma_addr_t driver_info_addr)
++{
++	union gve_adminq_command cmd;
++
++	memset(&cmd, 0, sizeof(cmd));
++	cmd.opcode = cpu_to_be32(GVE_ADMINQ_VERIFY_DRIVER_COMPATIBILITY);
++	cmd.verify_driver_compatibility = (struct gve_adminq_verify_driver_compatibility) {
++		.driver_info_len = cpu_to_be64(driver_info_len),
++		.driver_info_addr = cpu_to_be64(driver_info_addr),
++	};
++
++	return gve_adminq_execute_cmd(priv, &cmd);
++}
++
+ int gve_adminq_report_link_speed(struct gve_priv *priv)
+ {
+ 	union gve_adminq_command gvnic_cmd;
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
+index 83c0b40cd2d9..b9ee8be73f96 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.h
++++ b/drivers/net/ethernet/google/gve/gve_adminq.h
+@@ -24,6 +24,7 @@ enum gve_adminq_opcodes {
+ 	GVE_ADMINQ_REPORT_STATS			= 0xC,
+ 	GVE_ADMINQ_REPORT_LINK_SPEED		= 0xD,
+ 	GVE_ADMINQ_GET_PTYPE_MAP		= 0xE,
++	GVE_ADMINQ_VERIFY_DRIVER_COMPATIBILITY	= 0xF,
+ };
+ 
+ /* Admin queue status codes */
+@@ -146,6 +147,49 @@ enum gve_sup_feature_mask {
+ 
+ #define GVE_DEV_OPT_LEN_GQI_RAW_ADDRESSING 0x0
+ 
++#define GVE_VERSION_STR_LEN 128
++
++enum gve_driver_capbility {
++	gve_driver_capability_gqi_qpl = 0,
++	gve_driver_capability_gqi_rda = 1,
++	gve_driver_capability_dqo_qpl = 2, /* reserved for future use */
++	gve_driver_capability_dqo_rda = 3,
++};
++
++#define GVE_CAP1(a) BIT((int)a)
++#define GVE_CAP2(a) BIT(((int)a) - 64)
++#define GVE_CAP3(a) BIT(((int)a) - 128)
++#define GVE_CAP4(a) BIT(((int)a) - 192)
++
++#define GVE_DRIVER_CAPABILITY_FLAGS1 \
++	(GVE_CAP1(gve_driver_capability_gqi_qpl) | \
++	 GVE_CAP1(gve_driver_capability_gqi_rda) | \
++	 GVE_CAP1(gve_driver_capability_dqo_rda))
++
++#define GVE_DRIVER_CAPABILITY_FLAGS2 0x0
++#define GVE_DRIVER_CAPABILITY_FLAGS3 0x0
++#define GVE_DRIVER_CAPABILITY_FLAGS4 0x0
++
++struct gve_driver_info {
++	u8 os_type;	/* 0x01 = Linux */
++	u8 driver_major;
++	u8 driver_minor;
++	u8 driver_sub;
++	__be32 os_version_major;
++	__be32 os_version_minor;
++	__be32 os_version_sub;
++	__be64 driver_capability_flags[4];
++	u8 os_version_str1[GVE_VERSION_STR_LEN];
++	u8 os_version_str2[GVE_VERSION_STR_LEN];
++};
++
++struct gve_adminq_verify_driver_compatibility {
++	__be64 driver_info_len;
++	__be64 driver_info_addr;
++};
++
++static_assert(sizeof(struct gve_adminq_verify_driver_compatibility) == 16);
++
+ struct gve_adminq_configure_device_resources {
+ 	__be64 counter_array;
+ 	__be64 irq_db_addr;
+@@ -345,6 +389,8 @@ union gve_adminq_command {
+ 			struct gve_adminq_report_stats report_stats;
+ 			struct gve_adminq_report_link_speed report_link_speed;
+ 			struct gve_adminq_get_ptype_map get_ptype_map;
++			struct gve_adminq_verify_driver_compatibility
++						verify_driver_compatibility;
+ 		};
+ 	};
+ 	u8 reserved[64];
+@@ -372,6 +418,9 @@ int gve_adminq_unregister_page_list(struct gve_priv *priv, u32 page_list_id);
+ int gve_adminq_set_mtu(struct gve_priv *priv, u64 mtu);
+ int gve_adminq_report_stats(struct gve_priv *priv, u64 stats_report_len,
+ 			    dma_addr_t stats_report_addr, u64 interval);
++int gve_adminq_verify_driver_compatibility(struct gve_priv *priv,
++					   u64 driver_info_len,
++					   dma_addr_t driver_info_addr);
+ int gve_adminq_report_link_speed(struct gve_priv *priv);
+ 
+ struct gve_ptype_lut;
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 5a229a01f49d..6a9af9c86ab2 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -12,6 +12,8 @@
+ #include <linux/sched.h>
+ #include <linux/timer.h>
+ #include <linux/workqueue.h>
++#include <linux/utsname.h>
++#include <linux/version.h>
+ #include <net/sch_generic.h>
+ #include "gve.h"
+ #include "gve_dqo.h"
+@@ -30,6 +32,49 @@
+ const char gve_version_str[] = GVE_VERSION;
+ static const char gve_version_prefix[] = GVE_VERSION_PREFIX;
+ 
++static int gve_verify_driver_compatibility(struct gve_priv *priv)
++{
++	int err;
++	struct gve_driver_info *driver_info;
++	dma_addr_t driver_info_bus;
++
++	driver_info = dma_alloc_coherent(&priv->pdev->dev,
++					 sizeof(struct gve_driver_info),
++					 &driver_info_bus, GFP_KERNEL);
++	if (!driver_info)
++		return -ENOMEM;
++
++	*driver_info = (struct gve_driver_info) {
++		.os_type = 1, /* Linux */
++		.os_version_major = cpu_to_be32(LINUX_VERSION_MAJOR),
++		.os_version_minor = cpu_to_be32(LINUX_VERSION_SUBLEVEL),
++		.os_version_sub = cpu_to_be32(LINUX_VERSION_PATCHLEVEL),
++		.driver_capability_flags = {
++			cpu_to_be64(GVE_DRIVER_CAPABILITY_FLAGS1),
++			cpu_to_be64(GVE_DRIVER_CAPABILITY_FLAGS2),
++			cpu_to_be64(GVE_DRIVER_CAPABILITY_FLAGS3),
++			cpu_to_be64(GVE_DRIVER_CAPABILITY_FLAGS4),
++		},
++	};
++	strscpy(driver_info->os_version_str1, utsname()->release,
++		sizeof(driver_info->os_version_str1));
++	strscpy(driver_info->os_version_str2, utsname()->version,
++		sizeof(driver_info->os_version_str2));
++
++	err = gve_adminq_verify_driver_compatibility(priv,
++						     sizeof(struct gve_driver_info),
++						     driver_info_bus);
++
++	/* It's ok if the device doesn't support this */
++	if (err == -ENOTSUPP)
++		err = 0;
++
++	dma_free_coherent(&priv->pdev->dev,
++			  sizeof(struct gve_driver_info),
++			  driver_info, driver_info_bus);
++	return err;
++}
++
+ static netdev_tx_t gve_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct gve_priv *priv = netdev_priv(dev);
+@@ -1368,6 +1413,13 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
+ 		return err;
+ 	}
+ 
++	err = gve_verify_driver_compatibility(priv);
++	if (err) {
++		dev_err(&priv->pdev->dev,
++			"Could not verify driver compatibility: err=%d\n", err);
++		goto err;
++	}
++
+ 	if (skip_describe_device)
+ 		goto setup_device;
+ 
 -- 
 2.38.1.431.g37b22c650d-goog
 
