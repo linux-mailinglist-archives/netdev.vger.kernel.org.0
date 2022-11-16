@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E55CE62BFCC
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 14:42:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5443462BFEA
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 14:46:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233370AbiKPNmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 08:42:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54922 "EHLO
+        id S232231AbiKPNql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 08:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233701AbiKPNmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 08:42:14 -0500
+        with ESMTP id S232007AbiKPNqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 08:46:40 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EF643AD1;
-        Wed, 16 Nov 2022 05:42:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B466B17E29;
+        Wed, 16 Nov 2022 05:46:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vOhf5Vs6Hr0hFLYE0bv9EyZDIkrIxvZ7t0QosSy46mc=; b=kZE4gqPIYo/A4YjNtK5dgxelvc
-        bjDr5FzQ385E0lRz8s9S9mn1/ziD2ZOPIaTIMDyYsZxWFL2obLV7zSWqbxV86H8PPuK1bQsd1gaBo
-        ifyn0eLn93N16vKL9mKeSXzFYjpm8bgYnlW6rX+nwKtgtMsSb5zI5Wb9/18Q3/XiqOyM=;
+        bh=pefjafUqIIIDXpqaasVAKbU2CnZvuItW0KOov0jNJWk=; b=ZUqNLY66MzSOhd4yZEOq32HA9w
+        l85AxyW0RhyRztBgGBYkauOHhKOph57L6usUE94sMgIyPHJoQml/jMbwPh6/CZMtvMmLNTIJ0Lm6i
+        v6TUegfVp13hb9SnpU2e97LoWYINp8SWR53iSUaJFLHC6QSAFp9EHx9C4Pk5Z6yxopU0=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1ovIfy-002ZVJ-2K; Wed, 16 Nov 2022 14:42:02 +0100
-Date:   Wed, 16 Nov 2022 14:42:02 +0100
+        id 1ovIjz-002ZXZ-KD; Wed, 16 Nov 2022 14:46:11 +0100
+Date:   Wed, 16 Nov 2022 14:46:11 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] net: dsa: set name_assign_type to NET_NAME_ENUM
- for enumerated user ports
-Message-ID: <Y3ToqglHWb+QKnz2@lunn.ch>
-References: <20221115074356.998747-1-linux@rasmusvillemoes.dk>
- <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
- <20221116105205.1127843-4-linux@rasmusvillemoes.dk>
+To:     Alexandru Tachici <alexandru.tachici@analog.com>
+Cc:     linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
+        andre.edich@microchip.com, linux-usb@vger.kernel.org
+Subject: Re: [net v2 1/1] net: usb: smsc95xx: fix external PHY reset
+Message-ID: <Y3Tpo6wo2ytMRpXf@lunn.ch>
+References: <20221115114434.9991-1-alexandru.tachici@analog.com>
+ <20221115114434.9991-2-alexandru.tachici@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221116105205.1127843-4-linux@rasmusvillemoes.dk>
+In-Reply-To: <20221115114434.9991-2-alexandru.tachici@analog.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -54,18 +50,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 11:52:04AM +0100, Rasmus Villemoes wrote:
-> When a user port does not have a label in device tree, and we thus
-> fall back to the eth%d scheme, the proper constant to use is
-> NET_NAME_ENUM. See also commit e9f656b7a214 ("net: ethernet: set
-> default assignment identifier to NET_NAME_ENUM"), which in turn quoted
-> commit 685343fc3ba6 ("net: add name_assign_type netdev attribute"):
+On Tue, Nov 15, 2022 at 01:44:34PM +0200, Alexandru Tachici wrote:
+> An external PHY needs settling time after power up or reset.
+> In the bind() function an mdio bus is registered. If at this point
+> the external PHY is still initialising, no valid PHY ID will be
+> read and on phy_find_first() the bind() function will fail.
 > 
->     ... when the kernel has given the interface a name using global
->     device enumeration based on order of discovery (ethX, wlanY, etc)
->     ... are labelled NET_NAME_ENUM.
+> If an external PHY is present, wait the maximum time specified
+> in 802.3 45.2.7.1.1.
 > 
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+
+Thanks for making Russell suggested change.
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
