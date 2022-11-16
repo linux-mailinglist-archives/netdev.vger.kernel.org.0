@@ -2,132 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7295262CF38
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 00:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 090DB62CF3F
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 00:59:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234554AbiKPX4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 18:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44636 "EHLO
+        id S232804AbiKPX7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 18:59:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231871AbiKPX4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 18:56:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61175657E5;
-        Wed, 16 Nov 2022 15:56:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F15466205D;
-        Wed, 16 Nov 2022 23:55:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABDBC433D6;
-        Wed, 16 Nov 2022 23:55:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="goQ4eWiA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1668642952;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sM9LBQZ376u5w/8PZH+YQVlUaxTNIyanmkjPT3FYfMU=;
-        b=goQ4eWiAvkZqWkfss8gq1ex5AtlA/ahfxEBk6r2fheEdHDzxQqDvdaI7jHnRtKQZacSknN
-        xALKJahBGIU2w4KpYkodsz6zSfQUgQjwtn/9XiLQzmbduxm8SAGcIyMTbNpEffPJ6eVtj8
-        fknlTQXlnEW5l9AjbJbPQ6U48mWYP8U=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 48c033fa (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 16 Nov 2022 23:55:51 +0000 (UTC)
-Date:   Thu, 17 Nov 2022 00:55:47 +0100
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Christoph =?utf-8?Q?B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mmc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        ydroneaud@opteya.com
-Subject: Re: [PATCH v2 3/3] treewide: use get_random_u32_between() when
- possible
-Message-ID: <Y3V4g8eorwiU++Y3@zx2c4.com>
-References: <20221114164558.1180362-1-Jason@zx2c4.com>
- <20221114164558.1180362-4-Jason@zx2c4.com>
- <202211161436.A45AD719A@keescook>
+        with ESMTP id S231300AbiKPX7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 18:59:03 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB6A17057;
+        Wed, 16 Nov 2022 15:59:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=THRVaYizhgSM/LrXu2xoRek9BSvZhHKUNBtqQFkqPUY=; b=UZ44W5ZJPQr4YHN4fXXhJuzJ5L
+        v2xD3zuWI71vGnriO31FhHfCfwcEjqm8T2rlBrHfziE7z2FPdCkKSVY3mxBuEn7mQrMFoyAN60LZ4
+        m0xWULPZiAAYnx44w3gToRnWOCkcigkDE5zg+PzJpa7UWVrKjbj8yglra1m6U+YfQNzQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ovSHy-002cuv-Tp; Thu, 17 Nov 2022 00:57:54 +0100
+Date:   Thu, 17 Nov 2022 00:57:54 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Xiaolei Wang <xiaolei.wang@windriver.com>, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: fec: Create device link between phy dev and mac
+ dev
+Message-ID: <Y3V5AgBMBOx/ptwx@lunn.ch>
+References: <20221116144305.2317573-1-xiaolei.wang@windriver.com>
+ <20221116144305.2317573-3-xiaolei.wang@windriver.com>
+ <Y3T8wliAKdl/paS6@lunn.ch>
+ <355a8611-b60e-1166-0f7b-87a194debd07@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202211161436.A45AD719A@keescook>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <355a8611-b60e-1166-0f7b-87a194debd07@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 02:43:13PM -0800, Kees Cook wrote:
-> On Mon, Nov 14, 2022 at 05:45:58PM +0100, Jason A. Donenfeld wrote:
-> > -				(get_random_u32_below(1024) + 1) * PAGE_SIZE;
-> > +				get_random_u32_between(1, 1024 + 1) * PAGE_SIZE;
+On Wed, Nov 16, 2022 at 03:27:39PM -0800, Florian Fainelli wrote:
+> On 11/16/22 07:07, Andrew Lunn wrote:
+> > On Wed, Nov 16, 2022 at 10:43:05PM +0800, Xiaolei Wang wrote:
+> > > On imx6sx, there are two fec interfaces, but the external
+> > > phys can only be configured by fec0 mii_bus. That means
+> > > the fec1 can't work independently, it only work when the
+> > > fec0 is active. It is alright in the normal boot since the
+> > > fec0 will be probed first. But then the fec0 maybe moved
+> > > behind of fec1 in the dpm_list due to various device link.
 > 
-> I really don't like "between". Can't this be named "inclusive" (and
-> avoid adding 1 everywhere, which seems ugly), or at least named
-> something less ambiguous?
+> Humm, but if FEC1 depends upon its PHY to be available by the FEC0 MDIO bus
+> provider, then surely we will need to make sure that FEC0's MDIO bus is
+> always functional, and that includes surviving re-ordering as well as any
+> sort of run-time power management that can occur.
+
+Runtime PM is solved for the FECs MDIO bus, because there are switches
+hanging off it, which have their own life cycle independent of the
+MAC. This is something i had to fix many moons ago, when the FEC would
+power off the MDIO bus when the interface is admin down, stopping
+access to the switch. The mdio read and write functions now do run
+time pm get and put as needed.
+
+I've never done suspend/resume with a switch, it is not something
+needed in the use cases i've covered.
+
+> > > So in system suspend and resume, we would get the following
+> > > warning when configuring the external phy of fec1 via the
+> > > fec0 mii_bus due to the inactive of fec0. In order to fix
+> > > this issue, we create a device link between phy dev and fec0.
+> > > This will make sure that fec0 is always active when fec1
+> > > is in active mode.
 > 
-> > -		n = get_random_u32_below(100) + 1;
-> > +		n = get_random_u32_between(1, 101);
-> 
-> Because I find this much less readable. "Below 100" is clear: 0-99
-> inclusive, plus 1, so 1-100 inclusive. "Between 1 and 101" is not obvious
-> to me to mean: 1-100 inclusive.
-> 
-> These seem so much nicer:
-> 	get_random_u32_inclusive(1, 1024)
-> 	get_random_u32_inclusive(1, 100)
+> Still not clear to me how the proposed fix works, let alone how it does not
+> leak device links since there is no device_link_del(), also you are going to
+> be creating guaranteed regressions by putting that change in the PHY
+> library.
 
-Yann pointed out something similar -- the half-closed interval being
-confusing -- and while I was initially dismissive, I've warmed up to
-doing this fully closed after sending a diff of that:
+The reference leak is bad, but i think phylib is the correct place to
+fix this general issue. It is not specific to the FEC. There are other
+boards with dual MAC SoCs and they save a couple of pins by putting
+both PHYs on one MDIO bus. Having the link should help better
+represent the device tree so that suspend/resume can do stuff in the
+right order.
 
-https://lore.kernel.org/lkml/Y3Qt8HiXj8giOnZy@zx2c4.com/
-
-So okay, let's say that I'll implement the inclusive version instead. We
-now have two problems to solve:
-
-1) How/whether to make f(0, UR2_MAX) safe,
-   - without additional 64-bit arithmetic,
-   - minimizing the number of branches.
-   I have a few ideas I'll code golf for a bit.
-
-2) What to call it:
-   - between I still like, because it mirrors "I'm thinking of a number
-     between 1 and 10 and..." that everybody knows,
-   - inclusive I guess works, but it's not a preposition,
-   - bikeshed color #3?
-
-I think I can make progress with (1) alone by fiddling around with
-godbolt enough, like usual. I could use some more ideas for (2) though.
-
-Jason
+      Andrew
