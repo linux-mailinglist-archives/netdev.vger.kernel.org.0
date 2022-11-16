@@ -2,99 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A5162BE79
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 13:45:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 875D762BE9F
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 13:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbiKPMpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 07:45:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
+        id S230280AbiKPMuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 07:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiKPMpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 07:45:00 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F8725FF4;
-        Wed, 16 Nov 2022 04:44:59 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47AEC1516;
-        Wed, 16 Nov 2022 04:45:05 -0800 (PST)
-Received: from [10.57.70.190] (unknown [10.57.70.190])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F16B3F663;
-        Wed, 16 Nov 2022 04:44:55 -0800 (PST)
-Message-ID: <94af81ef-782a-9cf5-b656-f2c304a8e4ef@arm.com>
-Date:   Wed, 16 Nov 2022 12:44:50 +0000
+        with ESMTP id S230115AbiKPMuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 07:50:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83B41083
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 04:50:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80739B81D45
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 12:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1A015C433C1;
+        Wed, 16 Nov 2022 12:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668603020;
+        bh=Yx9/zqZ8n6VzpXFpZGNvf+Riact1bAL2VLxx9gkNA4o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Pj9LkC/LOS124BCaZb/i+/Be9newM0dynd+AdIM4BfJYBrlsVqSJ08RPZhlAUXD5E
+         O6eDbLbexrsB2J8r3+S7V/SzzfgPeJtD7FCKooGqlKV37KTPfCUCV/ZoGDAsIg1Hy6
+         57oKmLB56tQxELF+DMVDih3OKlgi2rtYXaI2Wc77qaIQ28UjlYKDUoPgPDk6FBUc4T
+         DGpxdS72ap7ONyMD/E+m4w8ALlmEtUwk9ivb4ACJ1reLDU4KjS5f7co5eHIHYnIksT
+         f3gzikdffz4T4cR6hkktf6VF+Rgb/FTxgYHSfysu5VExrAcEvObcxB2YkeCe2PGoy4
+         w3OTe385QxmDw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 00E8BC395F0;
+        Wed, 16 Nov 2022 12:50:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH] arm64: dts: fsd: Change the reg properties from 64-bit to
- 32-bit
-Content-Language: en-GB
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Vivek Yadav <vivek.2311@samsung.com>, rcsekar@samsung.com,
-        krzysztof.kozlowski+dt@linaro.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, pankaj.dubey@samsung.com,
-        ravi.patel@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-fsd@tesla.com, Rob Herring <robh+dt@kernel.org>
-Cc:     linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        aswani.reddy@samsung.com, sriranjani.p@samsung.com,
-        ajaykumar.rs@samsung.com
-References: <CGME20221116090644epcas5p3a0fa6d51819a2b2a9570f236191748ea@epcas5p3.samsung.com>
- <20221116091247.52388-1-vivek.2311@samsung.com>
- <37d42235-1960-4001-9be9-20a85de54730@app.fastmail.com>
- <d63b59c3-f67d-e5ee-6cbf-9f97eec0aeaa@arm.com>
-In-Reply-To: <d63b59c3-f67d-e5ee-6cbf-9f97eec0aeaa@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next 0/6] net: more try_cmpxchg() conversions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166860301999.3073.2793769493705785244.git-patchwork-notify@kernel.org>
+Date:   Wed, 16 Nov 2022 12:50:19 +0000
+References: <20221115091101.2234482-1-edumazet@google.com>
+In-Reply-To: <20221115091101.2234482-1-edumazet@google.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-16 12:38, Robin Murphy wrote:
-> On 2022-11-16 11:16, Arnd Bergmann wrote:
->> On Wed, Nov 16, 2022, at 10:12, Vivek Yadav wrote:
->>> Change the reg properties from 64-bit to 32-bit for all IPs, as none of
->>> the nodes are above 32-bit range in the fsd SoC.
->>>
->>> Since dma-ranges length does not fit into 32-bit size, keep it 64-bit
->>> and move it to specific node where it is used instead of SoC section.
->>
->> I don't think that works, the dma-ranges property is part of the
->> bus, not a particular device:
->>
->>           mdma0: dma-controller@10100000 {
->>               compatible = "arm,pl330", "arm,primecell";
->> -            reg = <0x0 0x10100000 0x0 0x1000>;
->> +            reg = <0x10100000 0x1000>;
->>               interrupts = <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>;
->>               #dma-cells = <1>;
->>               clocks = <&clock_imem IMEM_DMA0_IPCLKPORT_ACLK>;
->>               clock-names = "apb_pclk";
->>               iommus = <&smmu_imem 0x800 0x0>;
->> +            #address-cells = <2>;
->> +            #size-cells = <2>;
->> +            dma-ranges = <0x0 0x0 0x0 0x10 0x0>;
->>           };
->>
->> Since the dma-controller has no children, I don't see how this has
->> any effect. Also, translating a 36-bit address into a 32-bit
->> address just means it gets truncated anyway, so there is no
->> point in making it appear to have a larger address range.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Tue, 15 Nov 2022 09:10:55 +0000 you wrote:
+> Adopt try_cmpxchg() and friends in more places, as this
+> is preferred nowadays.
 > 
-> Yes, this is definitely bogus on both counts.
+> Eric Dumazet (6):
+>   net: mm_account_pinned_pages() optimization
+>   ipv6: fib6_new_sernum() optimization
+>   net: net_{enable|disable}_timestamp() optimizations
+>   net: adopt try_cmpxchg() in napi_schedule_prep() and
+>     napi_complete_done()
+>   net: adopt try_cmpxchg() in napi_{enable|disable}()
+>   net: __sock_gen_cookie() cleanup
+> 
+> [...]
 
-Oh, and also that PL330 can only do 32-bit DMA anyway :)
+Here is the summary with links:
+  - [net-next,1/6] net: mm_account_pinned_pages() optimization
+    https://git.kernel.org/netdev/net-next/c/57fc05e8e82d
+  - [net-next,2/6] ipv6: fib6_new_sernum() optimization
+    https://git.kernel.org/netdev/net-next/c/30189806fbb9
+  - [net-next,3/6] net: net_{enable|disable}_timestamp() optimizations
+    https://git.kernel.org/netdev/net-next/c/6af645a5b2da
+  - [net-next,4/6] net: adopt try_cmpxchg() in napi_schedule_prep() and napi_complete_done()
+    https://git.kernel.org/netdev/net-next/c/1462160c7455
+  - [net-next,5/6] net: adopt try_cmpxchg() in napi_{enable|disable}()
+    https://git.kernel.org/netdev/net-next/c/4ffa1d1c6842
+  - [net-next,6/6] net: __sock_gen_cookie() cleanup
+    https://git.kernel.org/netdev/net-next/c/4ebf802cf1c6
 
-Thanks,
-Robin.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
