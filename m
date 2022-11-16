@@ -2,68 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3388A62B57C
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 09:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D4C62B5B6
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 09:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233259AbiKPIrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 03:47:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        id S232784AbiKPI4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 03:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbiKPIrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 03:47:17 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7114F19009;
-        Wed, 16 Nov 2022 00:47:16 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id v81so17747763oie.5;
-        Wed, 16 Nov 2022 00:47:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EFx3ADTqPQnIUoerCbcND56+lAT60nhJaC7HSWp/txE=;
-        b=RIGCpjYQFDBQjvYxCTHdkSWgTFx4vhsfeZYj86W1gUcNtLxbbOfB+qDH9MB4fb8RJf
-         MARkgbwU/sYvEV1k86jwlYsHiiqPiFmeKPRsmRmX5QI7EndW1zUDZC0zmllO6lKQxGDm
-         jmllwCwvQc49N62wCkABlEumaIy7OuYsG4NR3O+cds4pmgv8YgxTn4LPgeUU3EW6g9vE
-         fgmdVysxGSgR9a2N8430h636GB2iGUZlm1NV8WpT+i7DnFQwwemqBiwF2PRGzfBuB0zS
-         rIxfTJvoxY5EY4FeJwxclF85nG/kdCLqJVM9h1sZ7H9bCtmpNQ6ffAX8qgU2i/FAkzNI
-         Q4Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EFx3ADTqPQnIUoerCbcND56+lAT60nhJaC7HSWp/txE=;
-        b=2bmogAyqCm3QENX9Tvu96DJ9AiAjg62y3E++MsHOjDEE3E7lu0pm8M4Y+r5BxMcQco
-         o5wihZ6eeT2+RE93038zOyL6hg5D+gYgHRC3TsbHGzvMR7WoyfKfo5iPX496ro+Qojtb
-         qkEoFe48VJEsS2n++dBPMix+9I0h3fwfeuSxGvLUJ7B4BL8IkDWYv74sTXJuAxKzp7hE
-         YGi9ZMvxJ7wgWtBVJNITWd7dA2o7ELrMipwSph62GL6ddcqnnNqVrEFB2MO6zsFwmQI2
-         ZRlSSBgBquhAU3udhu+zoJdSdK22/hMD9qj6lf35fIdM+uR7bx2Qn5kfBGmz98Ht3+g5
-         SZaw==
-X-Gm-Message-State: ANoB5pkRSSM3pIgzWakgOP/TDkbxa/U54saHO8mWTE0W5U3zS1HDI9vg
-        Ufwb8y7MVHNJ0gbwL9BKmJnH4MeHdQnfduBoYMcdSrkOwAa1CKHRTT0=
-X-Google-Smtp-Source: AA0mqf7qE3nYJW8kHOhm1O2gl+T62j32ZFd5tMwnG6tPZCbzUm4wcO50MIa/a4qTgqv3yxc8wBEulTeJIzHf3IYqzL4=
-X-Received: by 2002:a54:468f:0:b0:35a:3c4d:9c9e with SMTP id
- k15-20020a54468f000000b0035a3c4d9c9emr1053445oic.97.1668588435747; Wed, 16
- Nov 2022 00:47:15 -0800 (PST)
+        with ESMTP id S230429AbiKPI4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 03:56:03 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8229C1142;
+        Wed, 16 Nov 2022 00:56:01 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NBxhn1yD4zmW28;
+        Wed, 16 Nov 2022 16:55:37 +0800 (CST)
+Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 16 Nov 2022 16:55:59 +0800
+Received: from [10.174.178.240] (10.174.178.240) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 16 Nov 2022 16:55:58 +0800
+Subject: Re: [PATCH net v2 3/3] net: nixge: fix tx queue handling
+To:     Francois Romieu <romieu@fr.zoreil.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mdf@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1668525024-38409-1-git-send-email-zhangchangzhong@huawei.com>
+ <1668525024-38409-4-git-send-email-zhangchangzhong@huawei.com>
+ <Y3Qa/fjjMhctsE5w@electric-eye.fr.zoreil.com>
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+Message-ID: <c476086a-14ce-6e47-8183-def31d569ec6@huawei.com>
+Date:   Wed, 16 Nov 2022 16:55:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-References: <20221116173353.19c17173@canb.auug.org.au>
-In-Reply-To: <20221116173353.19c17173@canb.auug.org.au>
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Date:   Wed, 16 Nov 2022 19:47:04 +1100
-Message-ID: <CAAvyFNgZjPQger6E7cVHkRLcic85RwKz7opd2Tmf2MdyWt8QmQ@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <Y3Qa/fjjMhctsE5w@electric-eye.fr.zoreil.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.240]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,27 +56,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Nov 2022 at 17:34, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> After merging the net-next tree, today's linux-next build (powerpc
-> pseries_le_defconfig) failed like this:
->
->
-> Caused by commit
->
->   d9282e48c608 ("tcp: Add listening address to SYN flood message")
->
-> CONFIG_IPV6 is not set for this build.
->
-> --
-> Cheers,
-> Stephen Rothwell
+On 2022/11/16 7:04, Francois Romieu wrote:
+> Zhang Changzhong <zhangchangzhong@huawei.com> :
+>> Currently the driver check for available space at the beginning of
+>> nixge_start_xmit(), and when there is not enough space for this packet,
+>> it returns NETDEV_TX_OK, which casues packet loss and memory leak.
+>>
+>> Instead the queue should be stopped after the packet is added to the BD
+>> when there may not be enough space for next packet. In addition, the
+>> queue should be wakeup only if there is enough space for a packet with
+>> max frags.
+>>
+>> Fixes: 492caffa8a1a ("net: ethernet: nixge: Add support for National Instruments XGE netdev")
+>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+>> ---
+>>  drivers/net/ethernet/ni/nixge.c | 54 +++++++++++++++++++++++++++++------------
+>>  1 file changed, 38 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
+>> index 91b7ebc..3776a03 100644
+>> --- a/drivers/net/ethernet/ni/nixge.c
+>> +++ b/drivers/net/ethernet/ni/nixge.c
+> [...]
+>>  static netdev_tx_t nixge_start_xmit(struct sk_buff *skb,
+>> @@ -518,10 +523,15 @@ static netdev_tx_t nixge_start_xmit(struct sk_buff *skb,
+>>  	cur_p = &priv->tx_bd_v[priv->tx_bd_tail];
+>>  	tx_skb = &priv->tx_skb[priv->tx_bd_tail];
+>>  
+>> -	if (nixge_check_tx_bd_space(priv, num_frag + 1)) {
+>> -		if (!netif_queue_stopped(ndev))
+>> -			netif_stop_queue(ndev);
+>> -		return NETDEV_TX_OK;
+>> +	if (unlikely(nixge_check_tx_bd_space(priv, num_frag + 1))) {
+>> +		/* Should not happen as last start_xmit call should have
+>> +		 * checked for sufficient space and queue should only be
+>> +		 * woken when sufficient space is available.
+>> +		 */
+> 
+> Almost. IRQ triggering after nixge_start_xmit::netif_stop_queue and
+> before nixge_start_xmit::smp_mb may wrongly wake queue.
+> 
 
-Yes, Geert already sent a patch:
+I don't know what you mean by "wronly wake queue". The queue is woken
+only when there is sufficient for next packet.
 
- tcp: Fix tcp_syn_flood_action() if CONFIG_IPV6=n
- https://lore.kernel.org/netdev/d1ecf500f07e063d4e8e34f4045ddca55416c686.1668507036.git.geert+renesas@glider.be/
+> Call me timorous but I would feel more confortable if this code could
+> be tested on real hardware before being fed into -net.
+> 
 
-Jamie
+I agree with you, hope someone can test and correct it.
+
+Thanks,
+Changzhong
