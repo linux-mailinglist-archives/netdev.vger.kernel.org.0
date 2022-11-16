@@ -2,107 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 529BC62BAE4
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 12:06:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3249862BAE1
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 12:06:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238598AbiKPLGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 06:06:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        id S239018AbiKPLGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 06:06:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237851AbiKPLFm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 06:05:42 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10454C243
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 02:52:13 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id u2so21309694ljl.3
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 02:52:13 -0800 (PST)
+        with ESMTP id S238613AbiKPLFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 06:05:44 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BE13F069
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 02:52:20 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id b131so19812934yba.11
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 02:52:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=boYFusMhw3G11i9yi3Rn2Pq4n201pIIehUv93eqtXLI=;
-        b=b6CMlIjkEubLoLcx9mJZnlNO6idRQolGiSGIvdTA9Flqr4dN9fekRlUxaAN3w92fVL
-         5A65vna+64WnhQnZ3OJqTkWNW41pCRpAvaiaTRLaCvVe7T1tILdkNsZYfe3bReU6qrls
-         rr6TjkCKGgTAP/gUpvVakr9JooYOULf3uN1rk=
+        bh=YoRuKDvRtfqyxGXCloGQzrbnsQ9lUzIfiyzXfdm3sb0=;
+        b=EQyRpq6xCb5QSFzpsfric99YN0ZsQ9Us/A8yUiBkDqeQa69Af3/Ws27dLusUvjCwVj
+         lbPyWiX1rvCAeMXcEEj4sEH6wrFNffdMYIdk2jECYf+YzbvKgO3U5Jnfk0GDyPsAE+5j
+         tbjbxhTXMGVfynN1opiPyTSjpthCHKwA/QuuA+i+y7BR/F+kOX6qc9UAlhTF+ciu709T
+         15Z+YPwKtf1oMMZoKOyoc/VYzbsqssNVw/cvMQ3LpYu4n+DJB1E/BAgqD2ULpPPlbmGG
+         QCWzrdyTxoLggYsxp/93kgxKxabb6kmRrlGn1qUBhr+tEAMLVzJfHZ72sCrNvgEkW5kR
+         kdUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=boYFusMhw3G11i9yi3Rn2Pq4n201pIIehUv93eqtXLI=;
-        b=aN+5WHmz8uIFhrMmZveBJP0xrEKXGSPMqsgg/sOKDP4Ob3028CAvCDRPrlYjYBqfEU
-         P4O5ZSRMzTdDMivC3Ol/Z07aThXsJVv7TtNCbmuXWCKCCuN6c+wDrVJUnmdQ0nHASVvo
-         CWvA+m0RQuQyPKTKk2XkswG6W8e6B5uhHxyAcCSs0YucEoP/cq9PC2MxiFJlKdRSBu1Q
-         Vizhw+hFHGmCnZ9j1xMWjp2mLBf5SaBCAf0vGOOKBngeCJ3iOaje/r2JpR2q+wYFZype
-         svPU25xiN6nUPoW0v8SMBJD66KV5p2xHEodrrEonCUShymXXs7WFmXUfiq0hC/Gtgq2R
-         qVZA==
-X-Gm-Message-State: ANoB5pn/u0HCeAVYS5tSVec+713XUUo923En5JM8+LxAbzahdoKDINmt
-        6gPe06MmKtvsoTZQFHhlYm1cJw==
-X-Google-Smtp-Source: AA0mqf7yX6uhPbO4HWQ1vf40mIJbfBYIMAKSkfI3irFiFqkYer+kY5sE8ODw1zVz4ucTymYNsHywaw==
-X-Received: by 2002:a2e:871a:0:b0:277:766:b715 with SMTP id m26-20020a2e871a000000b002770766b715mr7096225lji.416.1668595932308;
-        Wed, 16 Nov 2022 02:52:12 -0800 (PST)
-Received: from localhost.localdomain ([87.54.42.112])
-        by smtp.gmail.com with ESMTPSA id g42-20020a0565123baa00b004b094730074sm2547119lfv.267.2022.11.16.02.52.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 02:52:11 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/3] net: dsa: set name_assign_type to NET_NAME_ENUM for enumerated user ports
-Date:   Wed, 16 Nov 2022 11:52:04 +0100
-Message-Id: <20221116105205.1127843-4-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
-References: <20221115074356.998747-1-linux@rasmusvillemoes.dk>
- <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
+        bh=YoRuKDvRtfqyxGXCloGQzrbnsQ9lUzIfiyzXfdm3sb0=;
+        b=JZ0vAsQVWlsoVnu5y3G5Q50GXyt3RAxFMiIzlEAS88MEXBDa9/d04dM59lmreNe+og
+         BBtqRmPX9XzXpcRRhz63urfcJGCTP9/56FxlfXFzHl3k6sqTy1d++LcZTW/XkUjKJuXy
+         ylZH2/oHiSb7fiWS8z2KMIFfU1rCiDaXbGxKUPmgwNSGb2cgh3ytdZsitSwdXGmj2zpb
+         bGYMGYQMNWMsC1wLzJQ0OdwUYIPUkJVYXeP0D+F2P/3lSPhsMnsORJ7HQRoK/Et5ugfJ
+         SpqEqU+FlzV9DM7OqQre2YurNS/MXeYToAW0CSFNGcHDklQMKDkXCkuIb7ibxfHahPky
+         J2hw==
+X-Gm-Message-State: ANoB5pm7QyW8DFX14Ws0AcN4vTzp2HKek9ryhFz1SLxun8xFsJ+Ahdwp
+        6x7kgr75RpVho3X4irDBqHXMGyWY0+BddzI51PMF6Q==
+X-Google-Smtp-Source: AA0mqf670K8oXK4BKY3rGd4/pry5UiYhbONNHWXWMaIp6wf/HClXcTpOxNUWLRinurA/uSVisGW1IKI3bgfLq1d+9gU=
+X-Received: by 2002:a25:828a:0:b0:6cf:cfa9:94e9 with SMTP id
+ r10-20020a25828a000000b006cfcfa994e9mr21818067ybk.35.1668595939679; Wed, 16
+ Nov 2022 02:52:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20221108181144.433087-1-nfrayer@baylibre.com> <20221108181144.433087-5-nfrayer@baylibre.com>
+ <575fa0c61cb55845c4d3a646d0b1f48d782588a0.camel@redhat.com>
+In-Reply-To: <575fa0c61cb55845c4d3a646d0b1f48d782588a0.camel@redhat.com>
+From:   Nicolas Frayer <nfrayer@baylibre.com>
+Date:   Wed, 16 Nov 2022 11:52:08 +0100
+Message-ID: <CANyCTtRCY3_DUDbwHUt39toeUtUJDMQmV4Q9bxz+enyJkY5OWg@mail.gmail.com>
+Subject: Re: [PATCH v4 4/4] net: ethernet: ti: davinci_mdio: Deferring probe
+ when soc_device_match() returns NULL
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     nm@ti.com, ssantosh@kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, peter.ujfalusi@gmail.com,
+        vkoul@kernel.org, dmaengine@vger.kernel.org,
+        grygorii.strashko@ti.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, khilman@baylibre.com, glaroque@baylibre.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a user port does not have a label in device tree, and we thus
-fall back to the eth%d scheme, the proper constant to use is
-NET_NAME_ENUM. See also commit e9f656b7a214 ("net: ethernet: set
-default assignment identifier to NET_NAME_ENUM"), which in turn quoted
-commit 685343fc3ba6 ("net: add name_assign_type netdev attribute"):
+Le jeu. 10 nov. 2022 =C3=A0 12:21, Paolo Abeni <pabeni@redhat.com> a =C3=A9=
+crit :
+>
+> Hello,
+>
+> On Tue, 2022-11-08 at 19:11 +0100, Nicolas Frayer wrote:
+> > When the k3 socinfo driver is built as a module, there is a possibility
+> > that it will probe after the davinci mdio driver. By deferring the mdio
+> > probe we allow the k3 socinfo to probe and register the
+> > soc_device_attribute structure needed by the mdio driver.
+> >
+> > Signed-off-by: Nicolas Frayer <nfrayer@baylibre.com>
+>
+> I guess this one will go via the arm tree, right?
+>
+> I'm dropping it from the netdev PW.
+>
+> Thanks,
+>
+> Paolo
+>
+Hello Paolo,
 
-    ... when the kernel has given the interface a name using global
-    device enumeration based on order of discovery (ethX, wlanY, etc)
-    ... are labelled NET_NAME_ENUM.
+I will resend this series as individual patches, so can you please
+apply this mdio patch individually as it's independent from the others ?
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- net/dsa/slave.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index dfefcc4a9ccf..821ab79bb60a 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2388,7 +2388,7 @@ int dsa_slave_create(struct dsa_port *port)
- 		assign_type = NET_NAME_PREDICTABLE;
- 	} else {
- 		name = "eth%d";
--		assign_type = NET_NAME_UNKNOWN;
-+		assign_type = NET_NAME_ENUM;
- 	}
- 
- 	slave_dev = alloc_netdev_mqs(sizeof(struct dsa_slave_priv), name,
--- 
-2.37.2
-
+Nicolas
