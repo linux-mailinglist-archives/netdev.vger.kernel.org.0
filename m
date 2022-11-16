@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D3562C964
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:01:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87FA962C96B
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:02:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234269AbiKPUBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 15:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
+        id S233786AbiKPUBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 15:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234873AbiKPUBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:01:34 -0500
+        with ESMTP id S235013AbiKPUBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:01:36 -0500
 Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B5B6315D;
-        Wed, 16 Nov 2022 12:01:32 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id o8so12655943qvw.5;
-        Wed, 16 Nov 2022 12:01:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5CB63CC0;
+        Wed, 16 Nov 2022 12:01:33 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id i12so12663079qvs.2;
+        Wed, 16 Nov 2022 12:01:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+tAh+Of9caxaRUw4XnH2iGsda0b31xsN0rQHDbAXeik=;
-        b=iWXi/ikoYRM3N2jOulGNTMLOdZ2lZGJAEdRyIm7DaX2Kil/IHYrgGZ6RqM+Grz7yjj
-         1fG/pGZ6ovMbhcxtXzEz4Ws9RFy6R5REMU8lrRpgOBPqRy3xqNfAPYRSlk24+Rx3EDsh
-         NEL4nSBaWtmYB6PRghw/0LkjOn6JrLiboYioaUjdTjVCnFOg/rHJ5fiPfr/slc06B8aE
-         jOmLjd1KuWX7NSEs0aQw63/VFSbD+YRdp+TZn1JogocUeOzSUxivDI/ATkA0lvg5R0p1
-         R4CV+JzCQiVsAbUBnAkcwvJN+ea5zmF4UIJbC1jpLLZeQg/nI8w4HL4PzKH2t8BcLHaa
-         KQ0A==
+        bh=aOiKBaDvQLb2jhb8/1noUpn7T84J17mtkV+rkYECE5w=;
+        b=LjJpGAcdrmYcw46SC4AiN878gUOQ1HZeSN6KlEZ8xdc/D2XcFX3AP5heWmlkCROICK
+         8AC1p81IOF6nLPNYD38KyjlGfZaWXwTjbEnOHqNsouxnadJpLJo3blDo4RhxoULlPwV3
+         F2DdInjX+sglfxnNcXxKiexjDvMKImfk7TtqmTfip5xP1kuC4O6tTmJ+6wD2RT+M902u
+         JI1KLYSWT/46tW42R6Z2W2Qw1BkLTgdytu8QMT/oM0oVmRBbisBuYn/ougnsZXDP+7mL
+         9rSRRkhQo7umK1Uq0o2RK3D6i/V3fDV+OK9u5Ag0IhiBY5hMvUGyfyk/Uok0JJEA5i6m
+         vbMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+tAh+Of9caxaRUw4XnH2iGsda0b31xsN0rQHDbAXeik=;
-        b=wPsKHuys0xw+hZhCTM2iSqkAKl0GAH7J7ec7tapIbSjUizJgrkz9Nwz5X5pJHalfZR
-         kKbqW5FByeWp3aLF71MXV+ZW8AT2eMslSnaoMfXTqDbU6uYMiP0dSKIE58StPl5FEj3x
-         ZgnX2VGipAL47NeTdAQUa/wVRvDvUrs68K+BmlPb8/oOy68CI/8UsHbPDJB54RKtoKwD
-         5qeRUUMDQwnpseYciRQcd+nvGBQd9Q0qh2M3opNJVrhKvUH2NsXEncBYYuObUlQJ9EIz
-         3yG7JkjGS8FOP5oumGknuxM9qyDZsr0p2jk2afYhEX7kaYFaMNAfhJSKYjATEK4JrGGv
-         9Z6w==
-X-Gm-Message-State: ANoB5pmYMKLs6yguMZS+jFc2sBnGB1qZHGh/lTu1CtzLBtLcwv2fP2MD
-        cFP/yejLn50Cik1ZfU/Z1x3ByNKm8dRebQ==
-X-Google-Smtp-Source: AA0mqf4GbWUXR3r+amGYQntl7fo76OuyUeM5uOYsAGtaLPc5Ipeb04Y4tTLBaNJdHQ0a6KkrHGsB8Q==
-X-Received: by 2002:a0c:80e2:0:b0:4b1:be55:d235 with SMTP id 89-20020a0c80e2000000b004b1be55d235mr22169797qvb.103.1668628891418;
-        Wed, 16 Nov 2022 12:01:31 -0800 (PST)
+        bh=aOiKBaDvQLb2jhb8/1noUpn7T84J17mtkV+rkYECE5w=;
+        b=qMGXz7Py2SePyoKmLZNsJlqqgsIYfSWSTtVmkuc0VCgTHUEbDg+5qEbByPO6Th4ZBa
+         bgvYYp9WYYaSxZEOQKNfkJrkPz1XCJZ1DuLZptMVj73R5wzG/edAmqWwQ5/3AIhsaKpj
+         4SdxeRzHMp6YwnRvVCyOYWd5ETDIpOU0KsBA688Z/NfgRt0/r1IQ8QMFSNU1P9+RIgvq
+         gvpnverXq+Ism2DkRn8VgoMRiHQo0FnVUkEKfIEb14kXr87YH4rtiYx4GhuMUXsycIqt
+         REpO9bFciAXvQLvmdmBPaURz9KDCfZaOKPGgSwXuGoFpWbBvQ4RJggjtf8ISgsAdZV5K
+         x5uw==
+X-Gm-Message-State: ANoB5pm1VMZpj8eQE4n4jCWFsNecIIE7NsK2xzrQ68nS/2Z2FF0Eb4SI
+        MWIHkzliZ9U4aaam9mOYlrVhxemeEkmKhw==
+X-Google-Smtp-Source: AA0mqf433HccYRNhVdnl42CcseaSd/JYL1WIU4zvLyg94nzU1X14BMjU55uTDCqXb9XsFUOSjVY1wQ==
+X-Received: by 2002:a05:6214:3185:b0:4c6:5682:8878 with SMTP id lb5-20020a056214318500b004c656828878mr8982965qvb.5.1668628893079;
+        Wed, 16 Nov 2022 12:01:33 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id d7-20020a05620a240700b006fba44843a5sm2900411qkn.52.2022.11.16.12.01.29
+        by smtp.gmail.com with ESMTPSA id d7-20020a05620a240700b006fba44843a5sm2900411qkn.52.2022.11.16.12.01.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 12:01:31 -0800 (PST)
+        Wed, 16 Nov 2022 12:01:32 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -58,9 +58,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Neil Horman <nhorman@tuxdriver.com>,
         David Ahern <dsahern@gmail.com>,
         Carlo Carraro <colrack@gmail.com>
-Subject: [PATCHv2 net-next 3/7] sctp: check sk_bound_dev_if when matching ep in get_port
-Date:   Wed, 16 Nov 2022 15:01:18 -0500
-Message-Id: <e621dbb3322ab482fec055ed22ab385d598f9ebc.1668628394.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 4/7] sctp: add skb_sdif in struct sctp_af
+Date:   Wed, 16 Nov 2022 15:01:19 -0500
+Message-Id: <219e9965f3f8d3f41a8c448a3d0ef19b8dc2bc57.1668628394.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1668628394.git.lucien.xin@gmail.com>
 References: <cover.1668628394.git.lucien.xin@gmail.com>
@@ -76,40 +76,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In sctp_get_port_local(), when binding to IP and PORT, it should
-also check sk_bound_dev_if to match listening sk if it's set by
-SO_BINDTOIFINDEX, so that multiple sockets with the same IP and
-PORT, but different sk_bound_dev_if can be listened at the same
-time.
+Add skb_sdif function in struct sctp_af to get the enslaved device
+for both ipv4 and ipv6 when adding SCTP VRF support in sctp_rcv in
+the next patch.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/socket.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ include/net/sctp/structs.h | 1 +
+ net/sctp/ipv6.c            | 8 +++++++-
+ net/sctp/protocol.c        | 6 ++++++
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 3e83963d1b8a..4306164238ef 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -8398,6 +8398,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 		 * in an endpoint.
- 		 */
- 		sk_for_each_bound(sk2, &pp->owner) {
-+			int bound_dev_if2 = READ_ONCE(sk2->sk_bound_dev_if);
- 			struct sctp_sock *sp2 = sctp_sk(sk2);
- 			struct sctp_endpoint *ep2 = sp2->ep;
+diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+index 350f250b0dc7..7b4884c63b26 100644
+--- a/include/net/sctp/structs.h
++++ b/include/net/sctp/structs.h
+@@ -477,6 +477,7 @@ struct sctp_af {
+ 	int		(*available)	(union sctp_addr *,
+ 					 struct sctp_sock *);
+ 	int		(*skb_iif)	(const struct sk_buff *sk);
++	int		(*skb_sdif)(const struct sk_buff *sk);
+ 	int		(*is_ce)	(const struct sk_buff *sk);
+ 	void		(*seq_dump_addr)(struct seq_file *seq,
+ 					 union sctp_addr *addr);
+diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
+index e6274cdbdf6c..097bd60ce964 100644
+--- a/net/sctp/ipv6.c
++++ b/net/sctp/ipv6.c
+@@ -842,7 +842,12 @@ static int sctp_v6_addr_to_user(struct sctp_sock *sp, union sctp_addr *addr)
+ /* Where did this skb come from?  */
+ static int sctp_v6_skb_iif(const struct sk_buff *skb)
+ {
+-	return IP6CB(skb)->iif;
++	return inet6_iif(skb);
++}
++
++static int sctp_v6_skb_sdif(const struct sk_buff *skb)
++{
++	return inet6_sdif(skb);
+ }
  
-@@ -8408,7 +8409,9 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 			     uid_eq(uid, sock_i_uid(sk2))))
- 				continue;
+ /* Was this packet marked by Explicit Congestion Notification? */
+@@ -1142,6 +1147,7 @@ static struct sctp_af sctp_af_inet6 = {
+ 	.is_any		   = sctp_v6_is_any,
+ 	.available	   = sctp_v6_available,
+ 	.skb_iif	   = sctp_v6_skb_iif,
++	.skb_sdif	   = sctp_v6_skb_sdif,
+ 	.is_ce		   = sctp_v6_is_ce,
+ 	.seq_dump_addr	   = sctp_v6_seq_dump_addr,
+ 	.ecn_capable	   = sctp_v6_ecn_capable,
+diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+index dbfe7d1000c2..a18cf0471a8d 100644
+--- a/net/sctp/protocol.c
++++ b/net/sctp/protocol.c
+@@ -567,6 +567,11 @@ static int sctp_v4_skb_iif(const struct sk_buff *skb)
+ 	return inet_iif(skb);
+ }
  
--			if (sctp_bind_addr_conflict(&ep2->base.bind_addr,
-+			if ((!sk->sk_bound_dev_if || !bound_dev_if2 ||
-+			     sk->sk_bound_dev_if == bound_dev_if2) &&
-+			    sctp_bind_addr_conflict(&ep2->base.bind_addr,
- 						    addr, sp2, sp)) {
- 				ret = 1;
- 				goto fail_unlock;
++static int sctp_v4_skb_sdif(const struct sk_buff *skb)
++{
++	return inet_sdif(skb);
++}
++
+ /* Was this packet marked by Explicit Congestion Notification? */
+ static int sctp_v4_is_ce(const struct sk_buff *skb)
+ {
+@@ -1185,6 +1190,7 @@ static struct sctp_af sctp_af_inet = {
+ 	.available	   = sctp_v4_available,
+ 	.scope		   = sctp_v4_scope,
+ 	.skb_iif	   = sctp_v4_skb_iif,
++	.skb_sdif	   = sctp_v4_skb_sdif,
+ 	.is_ce		   = sctp_v4_is_ce,
+ 	.seq_dump_addr	   = sctp_v4_seq_dump_addr,
+ 	.ecn_capable	   = sctp_v4_ecn_capable,
 -- 
 2.31.1
 
