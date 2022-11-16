@@ -2,152 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2845762CBBC
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B65662CBB4
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234215AbiKPU5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 15:57:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
+        id S233544AbiKPUza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 15:55:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiKPUyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:54:02 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79232CE25
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 12:53:37 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id s5so12236717edc.12
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 12:53:37 -0800 (PST)
+        with ESMTP id S238754AbiKPUyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:54:06 -0500
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367F11FCF3
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 12:53:55 -0800 (PST)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-13ae8117023so21553662fac.9
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 12:53:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CeVee7WTu+MIVK7s97PRG5d4Tw3kKV6cU2vVtZ3DItQ=;
-        b=ofPkZh1sJHCSjcXBt5MSofHDe4685qhi1/Uc6LWnRd5EToxTmQIbpUn6ccrEQAQAns
-         SXavK0S2kbOubR/NRJ7cDZLF6RKWaQ4G757sspLKT7U2Nq1FQa21mr8+z+tgJN1JAHar
-         bAGuACN8zSgXgSFsxzahOcOiGZtZqtaI3ADgt8nVKKhB/xQ5NRUK8cjr9uuVpDjrECJG
-         ZIM8hXLVCMHjmTEFYN/pf8GLR66Zi1gz5BAhY62LqokcHeYn5zUnYo+GMZQSk9oRLSrz
-         5o59LVtNJfrNkQhOE//fxGY7XlXdPB/LDl9sjti2Spkq8u58gt9NoQCSLUs3GqyCorT1
-         nZKA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=iP31vGQdnwIPrJ8QzQNj6IEJAV4JOhauU9F/tjVw540=;
+        b=RhE3GguRkPEMkXUWs2VadW6PJBaWq89Jp2SiJNlls6JRTE8mYi/tH3+hYfFUZ0awNq
+         rdTLnbDvvlWtlAn3A555cdj2q43IH77zOkuCycZ6mFrhsSPGwqOBP1OSDhPtcf7hQ9Uh
+         nBhTGXY8+aR5+OofMmshbAQ6DRpJRA8ISYwI6CAjBYKV/kixobp2iboEeAj9OigYFk72
+         a1zhGyWFXEKFadwEDR2szNIf2XMcpM1xf2pdDKd0I5r/92MynGASw1G5HYhkOA/0gZO8
+         L8EvcpXXPkNsSNYo/1L7zgzrl3I0l/c+Qrav01bX+9oVZ+23tSVX5NvZzAFjyqSnCWn1
+         A+gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CeVee7WTu+MIVK7s97PRG5d4Tw3kKV6cU2vVtZ3DItQ=;
-        b=jA93Ri7Si7/XyX7RkAgLyQZghnOAwBHSu6/3nk/a6qOXjvio4RhKNjaWyBHM9QpdQ7
-         zwS9ORo89121PmXPDXBKJBRWI3JG7bVbdZ/UyPDlo9AX41oLI8I3pAb/GF/Ump0XR17Y
-         3lFNktMa2LhpEiWzYfmziFawMa1OEtTp4xxs9SzWLENiOLjlYekOEIXnSB4X/EN53/mn
-         9dzBMsTF15WRysB8wsTFcluUEQhsUdqjUoqz/SE55iV79df50CajpGQw14tW6O/23RIr
-         XIvK2wrcdhOPVwRhwPdxn7fvKPRWfqpCjE4BU/ixI8lu553l8ShLX4Xh8ocXyVbL3r0A
-         X2Ew==
-X-Gm-Message-State: ANoB5pkr5+7LiChQ8T83qh56zBnsNmU/pGK/lM70QcFxLkpfVNFfdTrM
-        kwIA2QpRDzdkwCDjYdBuS7G5cA==
-X-Google-Smtp-Source: AA0mqf5j6sPxY2lkGgEc/UQ8QjGsma8Lta5ZRqNfdGt0PvRbt3fxbOhFaJmq6bYcUruYMVFEqjFqeA==
-X-Received: by 2002:a05:6402:17c2:b0:459:443a:faf4 with SMTP id s2-20020a05640217c200b00459443afaf4mr20696086edy.297.1668632016031;
-        Wed, 16 Nov 2022 12:53:36 -0800 (PST)
-Received: from blmsp.fritz.box ([2001:4090:a244:804b:353b:565:addf:3aa7])
-        by smtp.gmail.com with ESMTPSA id kv17-20020a17090778d100b007aece68483csm6782828ejc.193.2022.11.16.12.53.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 12:53:35 -0800 (PST)
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH 15/15] can: tcan4x5x: Specify separate read/write ranges
-Date:   Wed, 16 Nov 2022 21:53:08 +0100
-Message-Id: <20221116205308.2996556-16-msp@baylibre.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221116205308.2996556-1-msp@baylibre.com>
-References: <20221116205308.2996556-1-msp@baylibre.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iP31vGQdnwIPrJ8QzQNj6IEJAV4JOhauU9F/tjVw540=;
+        b=TA0Tygu632vqIQwNDsay/3tJShlr5YPVOTD8PCC4auXe6aFX7aT6a/sMFh6xxolyoV
+         8B92uFU4JjkVZUspLCrSnr6Wokr5o9CiLWQjFouNaqgkopPTS5fLpW2c1VeiTP+QxnzN
+         /h7Gf9WMx+n15XLrfpcxbB3pQO8K0x9hav+AOjciPnLuQoO+sgDZb9b1YsB0J9pQ5rZb
+         Fd7HCu4oRAFAFVFnm0HiBJnbcSRX/KKhUZXzUDeFTGQvT4abJQu4fKB878yaQPB1uZXm
+         oTnn1XJoBvyNwOxyj0ZuMhX7lgjBUbwKdmt7M/EEVerdvvuy01vIv8lGbo5UZu8T7YyY
+         4B5w==
+X-Gm-Message-State: ANoB5pm3B0wxMGpq1tMjkVgys238n+0Ds/n3CzLHx8LVCktGg+7hK/wy
+        CVWKePsr4m8O5ixT2+yR38IFJmsMM0WTcwbUTAQn7A==
+X-Google-Smtp-Source: AA0mqf6eJxglnZ5l/hFZloPm9zgfAzleZbfH7DZTmauEcjQrsRWNmtnycEjocULM0ilXXaKoHeZDHShdBtF4/d0XM+w=
+X-Received: by 2002:a05:6870:e9a2:b0:13b:be90:a68a with SMTP id
+ r34-20020a056870e9a200b0013bbe90a68amr2712686oao.181.1668632034425; Wed, 16
+ Nov 2022 12:53:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20221115030210.3159213-1-sdf@google.com> <20221115030210.3159213-4-sdf@google.com>
+ <20221116124256.04a75fba@kernel.org>
+In-Reply-To: <20221116124256.04a75fba@kernel.org>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 16 Nov 2022 12:53:43 -0800
+Message-ID: <CAKH8qBvUtpVA2WgeV0wyNK=sZ1kQV7bnWLKCCDuqM2Anry1weQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 03/11] bpf: Support inlined/unrolled kfuncs for
+ xdp metadata
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Specify exactly which registers are read/writeable in the chip. This
-is supposed to help detect any violations in the future.
+On Wed, Nov 16, 2022 at 12:43 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 14 Nov 2022 19:02:02 -0800 Stanislav Fomichev wrote:
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 117e830cabb0..a2227f4f4a0b 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -9258,6 +9258,13 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+> >                       return -EOPNOTSUPP;
+> >               }
+> >
+> > +             if (new_prog &&
+> > +                 new_prog->aux->xdp_kfunc_ndo &&
+> > +                 new_prog->aux->xdp_kfunc_ndo != dev->netdev_ops) {
+> > +                     NL_SET_ERR_MSG(extack, "Cannot attach to a different target device");
+> > +                     return -EINVAL;
+> > +             }
+>
+> This chunk can go up into the large
+>
+>         if (new_prog) {
+>                 ...
+>
+> list of checks?
 
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
----
- drivers/net/can/m_can/tcan4x5x-regmap.c | 43 +++++++++++++++++++++----
- 1 file changed, 37 insertions(+), 6 deletions(-)
+Agreed, will move!
 
-diff --git a/drivers/net/can/m_can/tcan4x5x-regmap.c b/drivers/net/can/m_can/tcan4x5x-regmap.c
-index d4b79d2d4598..19215c39cd5b 100644
---- a/drivers/net/can/m_can/tcan4x5x-regmap.c
-+++ b/drivers/net/can/m_can/tcan4x5x-regmap.c
-@@ -90,16 +90,47 @@ static int tcan4x5x_regmap_read(void *context,
- 	return 0;
- }
- 
--static const struct regmap_range tcan4x5x_reg_table_yes_range[] = {
-+static const struct regmap_range tcan4x5x_reg_table_wr_range[] = {
-+	/* Device ID and SPI Registers */
-+	regmap_reg_range(0x000c, 0x001c),
-+	/* Device configuration registers and Interrupt Flags*/
-+	regmap_reg_range(0x0800, 0x080c),
-+	regmap_reg_range(0x0814, 0x0814),
-+	regmap_reg_range(0x0820, 0x0820),
-+	regmap_reg_range(0x0830, 0x0830),
-+	/* M_CAN */
-+	regmap_reg_range(0x100c, 0x102c),
-+	regmap_reg_range(0x1048, 0x1048),
-+	regmap_reg_range(0x1050, 0x105c),
-+	regmap_reg_range(0x1080, 0x1088),
-+	regmap_reg_range(0x1090, 0x1090),
-+	regmap_reg_range(0x1098, 0x10a0),
-+	regmap_reg_range(0x10a8, 0x10b0),
-+	regmap_reg_range(0x10b8, 0x10c0),
-+	regmap_reg_range(0x10c8, 0x10c8),
-+	regmap_reg_range(0x10d0, 0x10d4),
-+	regmap_reg_range(0x10e0, 0x10e4),
-+	regmap_reg_range(0x10f0, 0x10f0),
-+	regmap_reg_range(0x10f8, 0x10f8),
-+	/* MRAM */
-+	regmap_reg_range(0x8000, 0x87fc),
-+};
-+
-+static const struct regmap_range tcan4x5x_reg_table_rd_range[] = {
- 	regmap_reg_range(0x0000, 0x001c),	/* Device ID and SPI Registers */
- 	regmap_reg_range(0x0800, 0x083c),	/* Device configuration registers and Interrupt Flags*/
- 	regmap_reg_range(0x1000, 0x10fc),	/* M_CAN */
- 	regmap_reg_range(0x8000, 0x87fc),	/* MRAM */
- };
- 
--static const struct regmap_access_table tcan4x5x_reg_table = {
--	.yes_ranges = tcan4x5x_reg_table_yes_range,
--	.n_yes_ranges = ARRAY_SIZE(tcan4x5x_reg_table_yes_range),
-+static const struct regmap_access_table tcan4x5x_reg_table_wr = {
-+	.yes_ranges = tcan4x5x_reg_table_wr_range,
-+	.n_yes_ranges = ARRAY_SIZE(tcan4x5x_reg_table_wr_range),
-+};
-+
-+static const struct regmap_access_table tcan4x5x_reg_table_rd = {
-+	.yes_ranges = tcan4x5x_reg_table_rd_range,
-+	.n_yes_ranges = ARRAY_SIZE(tcan4x5x_reg_table_rd_range),
- };
- 
- static const struct regmap_config tcan4x5x_regmap = {
-@@ -107,8 +138,8 @@ static const struct regmap_config tcan4x5x_regmap = {
- 	.reg_stride = 4,
- 	.pad_bits = 8,
- 	.val_bits = 32,
--	.wr_table = &tcan4x5x_reg_table,
--	.rd_table = &tcan4x5x_reg_table,
-+	.wr_table = &tcan4x5x_reg_table_wr,
-+	.rd_table = &tcan4x5x_reg_table_rd,
- 	.max_register = TCAN4X5X_MAX_REGISTER,
- 	.cache_type = REGCACHE_NONE,
- 	.read_flag_mask = (__force unsigned long)
--- 
-2.38.1
+> nit: aux->xdp_kfunc_ndo sounds like you're storing the kfunc NDO,
+>      not all ndos. Throw in an 's' at the end, or some such?
 
+SG. But I'll most likely replace this xdp_kfunc_ndo with something
+like xdp_netdev and to add proper refcounting.
