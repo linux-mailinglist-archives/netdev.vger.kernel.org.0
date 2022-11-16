@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E53D862B734
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 11:10:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 412ED62B833
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 11:28:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232585AbiKPKKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 05:10:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
+        id S233589AbiKPK2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 05:28:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232243AbiKPKJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 05:09:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147591A825
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 02:09:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668593345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bR8ucPQr+trfcQUZ2thiHFpR+hoJKIGj1KLU+Vv+yTU=;
-        b=WSfIpdzHu9WXnQsBAmCprcG8RybID9cXMiASkv0CRtl5tMHde7WXWiBsfsTTsamJPgM3p1
-        3+9VrnNcEvEj8GIs3UMMGV6CWcFYbNm8ukqLLZPq1iLV9POr1dZsLq2f2YmGVukKgBW5Pv
-        zNLu2BNpE22F/B/Nw6kMVgarIyFGqy0=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-177-Vl24V0jJNxCLiYQx9xX0YA-1; Wed, 16 Nov 2022 05:09:04 -0500
-X-MC-Unique: Vl24V0jJNxCLiYQx9xX0YA-1
-Received: by mail-ej1-f72.google.com with SMTP id sb4-20020a1709076d8400b007ae596eac08so9696333ejc.22
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 02:09:03 -0800 (PST)
+        with ESMTP id S233638AbiKPK1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 05:27:54 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CEB2FC27;
+        Wed, 16 Nov 2022 02:24:11 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id l11so25885228edb.4;
+        Wed, 16 Nov 2022 02:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PQq+ctW/0bZAq1CHRzdd9OvAL7Rb6nTx8X5mbJS1Hbo=;
+        b=DHdB+5apex3J+Qxj5yb1BsHt6mPvVuSBotXfJ/VLRqaPY3TdXNW2R8wsVeEUiOpOLN
+         H9I/JPVTDvzfAFSd5V/Aa8mHzhExqsvJeliV+IF7Apfv8Lo4O22xjHYepmevAyg6yaYr
+         crG4KDitiHVhvhe8iOQ0mxC8+1/hqOIqG3ohLCef4K/UXpHdVhNUGvVciPWGu7CA3PCH
+         edR/LLSk4nRvnyIaz8Mru/zr9lfEwnaLHUPv5n6CM7x7WWNEN/Knp4kNcufIxyHTBBAY
+         axTd25n2e8Yh8rW85pFF/wchH22++gXfrLumVw6inS0Re2rCKJGi5ODRx2vg+TJr6e78
+         Kq/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bR8ucPQr+trfcQUZ2thiHFpR+hoJKIGj1KLU+Vv+yTU=;
-        b=oJGV0opxPz6N4TvN+DUdiEZzbgWikMkRiK0diqv2Bac40wkboX4/rzXB49uIeWDusk
-         7km8rrk1wCVUSj9JFSCx0A8/d2Oy7d6ARxcr8R4+05dCkl4qEuD1E/BfQTmceznkRYYh
-         hm85pYqVtyhxVzCjau/HMLsvtgtjEoIkw1CBXm+0N47NrbgwZF/0ZufNrKHt9I4b+eYJ
-         xH7eRzusHUVnrcD4mbzg20ywhO2JHNK2DosML6Oa2Ca5V0a5PxCf7dOPWwYW/QB46jpW
-         rSoZ+3PGpDLCdTqIQH3tRO526e8qlY8aCWjTDm0AF9OraIq4NjVVX5UOxWAlhDaAuMUr
-         1K9A==
-X-Gm-Message-State: ANoB5pl30152HuNMRhAcUk0sI4WpYysUaOHAMlN+7IYhexcKxW7JmlSL
-        WssZfezQhM8mEQqoByFMNG9RLbpRmtfpfGYXtZqgp31OYzAtRFoh3CboNB9Bpll26Sb1vPeRBIL
-        bGJ4QFKPGhL8yRR3o
-X-Received: by 2002:aa7:db15:0:b0:468:7be6:55e7 with SMTP id t21-20020aa7db15000000b004687be655e7mr2610050eds.345.1668593341270;
-        Wed, 16 Nov 2022 02:09:01 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6evcDa/XsqjO7cp/WFcVheyO/4f8hk7zT1v1XbfXNA2JuqUQmxM39cHHILJVlnp1v5BL3bTA==
-X-Received: by 2002:aa7:db15:0:b0:468:7be6:55e7 with SMTP id t21-20020aa7db15000000b004687be655e7mr2609978eds.345.1668593340017;
-        Wed, 16 Nov 2022 02:09:00 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id rl24-20020a170907217800b00770880dfc4fsm6666527ejb.29.2022.11.16.02.08.59
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PQq+ctW/0bZAq1CHRzdd9OvAL7Rb6nTx8X5mbJS1Hbo=;
+        b=jwOChoTQ8zR7y97rpAxOTcAvvq3YW/YoVJA+bK/rWcqLhsrDgTj8JtqgKmqbmb4Dz1
+         1OMSU0Ml106MMMTua8mm5seK/TuZmFyifv2nUjQNwc22UKZFpNDESzsiCpmQYcaE+wGd
+         yAVa3SmA16Kv5YZHlcelGLwnHcH7LBPr1D9zQb0eqehax0KT/tOIH3ju5w74suH88fyQ
+         zuWriZ2yQ7LOapg4QcwKJUoLbPzboGkRtAOHrin/CJx1b6lq5ktO8pFabIK6JoAQOIQV
+         FToR8ZEvRgCH+vp1Vnsz8BU4cATZaX55e+VHr7O+JEvIE9ZRdyv8hpMWZGeuOqlKPN0t
+         dWZg==
+X-Gm-Message-State: ANoB5pkypDR3GIDbuQCF2AC+ziZum+EG8JsAUgiSdlnU9c7Gqn6XWXt3
+        3K8mkO9MxlbqBltJC9OdbhY=
+X-Google-Smtp-Source: AA0mqf5JFuPzShCJ2pt2pSUwXaZLJwzHOgJnyzEWATdF4+flfGnHxI44oBBY2lNCS3pD8CuMyyZBPg==
+X-Received: by 2002:aa7:c691:0:b0:456:7669:219b with SMTP id n17-20020aa7c691000000b004567669219bmr19463966edq.221.1668594250319;
+        Wed, 16 Nov 2022 02:24:10 -0800 (PST)
+Received: from skbuf ([188.26.57.53])
+        by smtp.gmail.com with ESMTPSA id ay26-20020a056402203a00b00461816beef9sm7246517edb.14.2022.11.16.02.24.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 02:08:59 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7CED27A6DE7; Wed, 16 Nov 2022 11:08:58 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin KaFai Lau <martin.lau@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next 05/11] veth: Support rx
- timestamp metadata for xdp
-In-Reply-To: <34f89a95-a79e-751c-fdd2-93889420bf96@linux.dev>
-References: <20221115030210.3159213-1-sdf@google.com>
- <20221115030210.3159213-6-sdf@google.com> <87h6z0i449.fsf@toke.dk>
- <CAKH8qBsEGD3L0XAVzVHcTW6k_RhEt74pfXrPLANuznSAJw7bEg@mail.gmail.com>
- <8735ajet05.fsf@toke.dk>
- <CAKH8qBsg4aoFuiajuXmRN3VPKYVJZ-Z5wGzBy9pH3pV5RKCDzQ@mail.gmail.com>
- <6374854883b22_5d64b208e3@john.notmuch>
- <34f89a95-a79e-751c-fdd2-93889420bf96@linux.dev>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 16 Nov 2022 11:08:58 +0100
-Message-ID: <878rkbjjnp.fsf@toke.dk>
+        Wed, 16 Nov 2022 02:24:09 -0800 (PST)
+Date:   Wed, 16 Nov 2022 12:24:06 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     netdev@kapio-technology.com
+Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
+Message-ID: <20221116102406.gg6h7gvkx55f2ojj@skbuf>
+References: <20221115102833.ahwnahrqstcs2eug@skbuf>
+ <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
+ <20221115111034.z5bggxqhdf7kbw64@skbuf>
+ <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
+ <20221115122237.jfa5aqv6hauqid6l@skbuf>
+ <fb1707b55bd8629770e77969affaa2f9@kapio-technology.com>
+ <20221115145650.gs7crhkidbq5ko6v@skbuf>
+ <f229503b98d772c936f1fc8ca826a14f@kapio-technology.com>
+ <20221115161846.2st2kjxylfvlncib@skbuf>
+ <e05f69915a2522fc1e9854194afcc87b@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e05f69915a2522fc1e9854194afcc87b@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,132 +84,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau <martin.lau@linux.dev> writes:
+On Tue, Nov 15, 2022 at 07:40:02PM +0100, netdev@kapio-technology.com wrote:
+> So, I will not present you with a graph as it is a tedious process (probably
+> it is some descending gaussian curve wrt timeout occurring).
+> 
+> But 100ms fails, 125 I had 1 port fail, at 140, 150  and 180 I saw timeouts
+> resulting in fdb add fails, like (and occasional port fail):
+> 
+> mv88e6085 1002b000.ethernet-1:04: Timeout while waiting for switch
+> mv88e6085 1002b000.ethernet-1:04: port 0 failed to add be:7c:96:06:9f:09 vid
+> 1 to fdb: -110
+> 
+> At around 200 ms it looks like it is getting stable (like 5 runs, no
+> problems).
+> 
+> So with the gaussian curve tail whipping ones behind (risque of failure) it
+> might need to be like 300 ms in my case... :-)
 
-> On 11/15/22 10:38 PM, John Fastabend wrote:
->>>>>>> +static void veth_unroll_kfunc(const struct bpf_prog *prog, u32 func_id,
->>>>>>> +                           struct bpf_patch *patch)
->>>>>>> +{
->>>>>>> +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
->>>>>>> +             /* return true; */
->>>>>>> +             bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
->>>>>>> +     } else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
->>>>>>> +             /* return ktime_get_mono_fast_ns(); */
->>>>>>> +             bpf_patch_append(patch, BPF_EMIT_CALL(ktime_get_mono_fast_ns));
->>>>>>> +     }
->>>>>>> +}
->>>>>>
->>>>>> So these look reasonable enough, but would be good to see some examples
->>>>>> of kfunc implementations that don't just BPF_CALL to a kernel function
->>>>>> (with those helper wrappers we were discussing before).
->>>>>
->>>>> Let's maybe add them if/when needed as we add more metadata support?
->>>>> xdp_metadata_export_to_skb has an example, and rfc 1/2 have more
->>>>> examples, so it shouldn't be a problem to resurrect them back at some
->>>>> point?
->>>>
->>>> Well, the reason I asked for them is that I think having to maintain the
->>>> BPF code generation in the drivers is probably the biggest drawback of
->>>> the kfunc approach, so it would be good to be relatively sure that we
->>>> can manage that complexity (via helpers) before we commit to this :)
->>>
->>> Right, and I've added a bunch of examples in v2 rfc so we can judge
->>> whether that complexity is manageable or not :-)
->>> Do you want me to add those wrappers you've back without any real users?
->>> Because I had to remove my veth tstamp accessors due to John/Jesper
->>> objections; I can maybe bring some of this back gated by some
->>> static_branch to avoid the fastpath cost?
->> 
->> I missed the context a bit what did you mean "would be good to see some
->> examples of kfunc implementations that don't just BPF_CALL to a kernel
->> function"? In this case do you mean BPF code directly without the call?
->> 
->> Early on I thought we should just expose the rx_descriptor which would
->> be roughly the same right? (difference being code embedded in driver vs
->> a lib) Trouble I ran into is driver code using seqlock_t and mutexs
->> which wasn't as straight forward as the simpler just read it from
->> the descriptor. For example in mlx getting the ts would be easy from
->> BPF with the mlx4_cqe struct exposed
->> 
->> u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe)
->> {
->>          u64 hi, lo;
->>          struct mlx4_ts_cqe *ts_cqe = (struct mlx4_ts_cqe *)cqe;
->> 
->>          lo = (u64)be16_to_cpu(ts_cqe->timestamp_lo);
->>          hi = ((u64)be32_to_cpu(ts_cqe->timestamp_hi) + !lo) << 16;
->> 
->>          return hi | lo;
->> }
->> 
->> but converting that to nsec is a bit annoying,
->> 
->> void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
->>                              struct skb_shared_hwtstamps *hwts,
->>                              u64 timestamp)
->> {
->>          unsigned int seq;
->>          u64 nsec;
->> 
->>          do {
->>                  seq = read_seqbegin(&mdev->clock_lock);
->>                  nsec = timecounter_cyc2time(&mdev->clock, timestamp);
->>          } while (read_seqretry(&mdev->clock_lock, seq));
->> 
->>          memset(hwts, 0, sizeof(struct skb_shared_hwtstamps));
->>          hwts->hwtstamp = ns_to_ktime(nsec);
->> }
->> 
->> I think the nsec is what you really want.
->> 
->> With all the drivers doing slightly different ops we would have
->> to create read_seqbegin, read_seqretry, mutex_lock, ... to get
->> at least the mlx and ice drivers it looks like we would need some
->> more BPF primitives/helpers. Looks like some more work is needed
->> on ice driver though to get rx tstamps on all packets.
->> 
->> Anyways this convinced me real devices will probably use BPF_CALL
->> and not BPF insns directly.
->
-> Some of the mlx5 path looks like this:
->
-> #define REAL_TIME_TO_NS(hi, low) (((u64)hi) * NSEC_PER_SEC + ((u64)low))
->
-> static inline ktime_t mlx5_real_time_cyc2time(struct mlx5_clock *clock,
->                                                u64 timestamp)
-> {
->          u64 time = REAL_TIME_TO_NS(timestamp >> 32, timestamp & 0xFFFFFFFF);
->
->          return ns_to_ktime(time);
-> }
->
-> If some hints are harder to get, then just doing a kfunc call is better.
-
-Sure, but if we end up having a full function call for every field in
-the metadata, that will end up having a significant performance impact
-on the XDP data path (thinking mostly about the skb metadata case here,
-which will collect several bits of metadata).
-
-> csum may have a better chance to inline?
-
-Yup, I agree. Including that also makes it possible to benchmark this
-series against Jesper's; which I think we should definitely be doing
-before merging this.
-
-> Regardless, BPF in-lining is a well solved problem and used in many
-> bpf helpers already, so there are many examples in the kernel. I don't
-> think it is necessary to block this series because of missing some
-> helper wrappers for inlining. The driver can always start with the
-> simpler kfunc call first and optimize later if some hints from the
-> drivers allow it.
-
-Well, "solved" in the sense of "there are a few handfuls of core BPF
-people who know how to do it". My concern is that we'll end up with
-either the BPF devs having to maintain all these bits of BPF byte code
-in all the drivers; or drivers just punting to regular function calls
-because the inlining is too complicated, with sub-par performance as per
-the above. I don't think we should just hand-wave this away as "solved",
-but rather treat this as an integral part of the initial series.
-
--Toke
-
+Pick a value that is high enough to be reliable and submit a patch to
+"net" where you present the evidence for it (top-level MDIO controller,
+SoC, switch, kernel). I don't believe there's much to read into. A large
+timeout shouldn't have a negative effect on the MDIO performance,
+because it just determines how long it takes until the kernel declares
+it dead, rather than how long it takes for transactions to actually take
+place.
