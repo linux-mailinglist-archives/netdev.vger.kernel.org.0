@@ -2,104 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6DA62B384
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 07:53:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0A662B3AB
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 08:04:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231802AbiKPGx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 01:53:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
+        id S232111AbiKPHEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 02:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiKPGxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 01:53:25 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1505B92;
-        Tue, 15 Nov 2022 22:53:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1TLoj1jBh9mfMsybawiDvBcJ2RcbjxqyJGEX5P65aOg=; b=bU6HegogN9wH+X9y5iGWJdisoO
-        k2Ymc/RhPss5DD1PUdAnIYOcGXq08cIdUXnSu7fknT3bN7sh8c3wALssuMTPRne3/L+ZS61ufQZXN
-        9Pjuddt0jI5AnGbXPA5PnshgQxRaKH5b7pjnonneOw7g2lmW+ntc/7cpF944/iC6X9uPizKqiwGdK
-        yGrPUs2DpOLpw/ssxLxrGHXcx4XRjB+G1SWH2nTjcb7aJl22kQaq1RTHL3H7Tjp2lZ/2/9XEwd+ud
-        RJdtZE/gFeJt3xGddeKtNAsknRtiHqN+h32kyqNkDqp1o8h6rtdYkCvgae4U/ArvtBIqJ/eLjJGI0
-        8fpeP64A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ovCIM-000NU5-7X; Wed, 16 Nov 2022 06:53:14 +0000
-Date:   Tue, 15 Nov 2022 22:53:14 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH v2 -next] iommu/dma: avoid expensive indirect calls for
- sync operations
-Message-ID: <Y3SI2vMf58/WZDwS@infradead.org>
-References: <20221115182841.2640176-1-edumazet@google.com>
+        with ESMTP id S232022AbiKPHEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 02:04:34 -0500
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0219910A1;
+        Tue, 15 Nov 2022 23:04:31 -0800 (PST)
+Message-ID: <fd21dfd5-f458-dfba-594d-3aafd6a4648a@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1668582270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3p3BDjMaIeWiHiTfc5N33AZZ1i73cE2xBBhFOU13Cp4=;
+        b=gd4nA+inqNhDcrizoNUlUXpu2lfLcvZnEHWA8U8on2HpS5dC5SAqJP23fAsB/ewv7C97BS
+        yXJf8UCNJvYlcYZWsFel/y6L2eQmLGJKYCFetUxnpeTt+6URK2+GE5MhEpglvUHJZ0WPQX
+        YNZaFYpZhE4q3qqHr2ga/MGycd8u6G8=
+Date:   Tue, 15 Nov 2022 23:04:22 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221115182841.2640176-1-edumazet@google.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next 06/11] xdp: Carry over xdp metadata into skb
+ context
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20221115030210.3159213-1-sdf@google.com>
+ <20221115030210.3159213-7-sdf@google.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221115030210.3159213-7-sdf@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As Robing pointed out this really is mostly a dma-mapping layer
-patch and the subject should reflect that.
+On 11/14/22 7:02 PM, Stanislav Fomichev wrote:
+> Implement new bpf_xdp_metadata_export_to_skb kfunc which
+> prepares compatible xdp metadata for kernel consumption.
+> This kfunc should be called prior to bpf_redirect
+> or when XDP_PASS'ing the frame into the kernel (note, the drivers
+> have to be updated to enable consuming XDP_PASS'ed metadata).
+> 
+> veth driver is amended to consume this metadata when converting to skb.
+> 
+> Internally, XDP_FLAGS_HAS_SKB_METADATA flag is used to indicate
+> whether the frame has skb metadata. The metadata is currently
+> stored prior to xdp->data_meta. bpf_xdp_adjust_meta refuses
+> to work after a call to bpf_xdp_metadata_export_to_skb (can lift
+> this requirement later on if needed, we'd have to memmove
+> xdp_skb_metadata).
 
-> +		if (!IS_ENABLED(CONFIG_DMA_API_DEBUG) && dev_is_dma_coherent(dev))
-> +			dev->skip_dma_sync = true;
+It is ok to refuse bpf_xdp_adjust_meta() after bpf_xdp_metadata_export_to_skb() 
+for now.  However, it will also need to refuse bpf_xdp_adjust_head().
 
-I don't think CONFIG_DMA_API_DEBUG should come into play here.  It
-is independent from the low-level sync calls.  That'll need a bit
-of restructuring later on to only skil the sync calls and not the
-debug_dma_* calls, but I think that is worth it to keep the concept
-clean.
-In fact that might lead to just checking the skip_dma_sync flag in
-a wrapper in dma-mapping.h, avoiding the function call entirely
-for the fast path, at the downside of increasing code size by
-adding an extra branch in the callers, but I think that is ok.
+[ ... ]
 
-I think we should also apply the skip_dma_sync to dma-direct while
-we're it.  While dma-direct already avoids the indirect calls we can
-shave off a few more cycles with this infrastructure, so why skip that?
-
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -647,6 +647,7 @@ struct device {
->      defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
->  	bool			dma_coherent:1;
->  #endif
-> +	bool			skip_dma_sync:1;
-
-This also needs a blurb in the kerneldoc comment describing struct
-device.  Please make it very clear in the comment that the flag is
-only for internal use in the DMA mapping subsystem and not for use
-by drives.
-
-> +static inline bool dev_skip_dma_sync(struct device *dev)
+> +/* For the packets directed to the kernel, this kfunc exports XDP metadata
+> + * into skb context.
+> + */
+> +noinline int bpf_xdp_metadata_export_to_skb(const struct xdp_md *ctx)
 > +{
-> +	return dev->skip_dma_sync;
+> +	return 0;
 > +}
+> +
 
-I'd drop this wrapper and just check the flag directly.
+I think it is still better to return 'struct xdp_skb_metata *' instead of 
+true/false.  Like:
 
-> +	if (unlikely(dev->skip_dma_sync))
-> +		dev->skip_dma_sync = false;
+noinline struct xdp_skb_metata *bpf_xdp_metadata_export_to_skb(const struct 
+xdp_md *ctx)
+{
+	return 0;
+}
 
-Please add a comment here.
+The KF_RET_NULL has already been set in 
+BTF_SET8_START_GLOBAL(xdp_metadata_kfunc_ids).  There is 
+"xdp_btf_struct_access()" that can allow write access to 'struct xdp_skb_metata' 
+What else is missing? We can try to solve it.
+
+Then there is no need for this double check in patch 8 selftest which is not 
+easy to use:
+
++               if (bpf_xdp_metadata_export_to_skb(ctx) < 0) {
++                       bpf_printk("bpf_xdp_metadata_export_to_skb failed");
++                       return XDP_DROP;
++               }
+
+[ ... ]
+
++               skb_metadata = ctx->skb_metadata;
++               if (!skb_metadata) {
++                       bpf_printk("no ctx->skb_metadata");
++                       return XDP_DROP;
++               }
+
+[ ... ]
 
 
-Btw, one thing I had in my mind for a while is to do direct calls to
-dma-iommu from the core mapping code just like we for dma-direct.
-Would that be useful for your networking loads, or are the actual
-mapping calls rare enough to not matter?
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index b444b1118c4f..71e3bc7ad839 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -6116,6 +6116,12 @@ enum xdp_action {
+>   	XDP_REDIRECT,
+>   };
+>   
+> +/* Subset of XDP metadata exported to skb context.
+> + */
+> +struct xdp_skb_metadata {
+> +	__u64 rx_timestamp;
+> +};
+> +
+>   /* user accessible metadata for XDP packet hook
+>    * new fields must be added to the end of this structure
+>    */
+> @@ -6128,6 +6134,7 @@ struct xdp_md {
+>   	__u32 rx_queue_index;  /* rxq->queue_index  */
+>   
+>   	__u32 egress_ifindex;  /* txq->dev->ifindex */
+> +	__bpf_md_ptr(struct xdp_skb_metadata *, skb_metadata);
+
+Once the above bpf_xdp_metadata_export_to_skb() returning a pointer works, then 
+it can be another kfunc 'struct xdp_skb_metata * bpf_xdp_get_skb_metadata(const 
+struct xdp_md *ctx)' to return the skb_metadata which was a similar point 
+discussed in the previous RFC.
+
