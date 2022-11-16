@@ -2,100 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5620B62B174
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 03:44:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF4262B1EE
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 04:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiKPCor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Nov 2022 21:44:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
+        id S230208AbiKPDth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Nov 2022 22:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiKPCoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 21:44:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CA11C41F;
-        Tue, 15 Nov 2022 18:44:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7157861843;
-        Wed, 16 Nov 2022 02:44:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CD0C433D6;
-        Wed, 16 Nov 2022 02:44:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668566683;
-        bh=/++rVgvIq2fiB1hShSRzWBW48QNbuvdmn/4eTcyeZlY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Dabsw+YB9lfb96T1sAp8Ek5iCMRfxI78BA8VVukZZcLe4812RdsnhClvocAnwQfKJ
-         DcAfvIz9LejNakoQlk0gIA1MOeYZkcgsIYUxIWSUatbyX4J0MccBzX8f5JLwgBy6Vm
-         oEk8y06U3gD/4D2HY0razMuVxPDf//B4nFnaQb798bpFflF83IlihjPnTm5RVl0LIt
-         w0msH1+Am+YDe3a1dg6/Crkt63qW9WqdhNfwx1tjE42AqzHwkWm5nPS/wNPHl//ZGl
-         drf1b7vjMXozj/Z8kdtw8Mh+YFEoluqXizRdgfF6hRet+MfFqP/pb1djRUlOzdXDTR
-         0BII3WyziCSRA==
-Date:   Tue, 15 Nov 2022 18:44:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Hawkins Jiawei <yin31149@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, 18801353760@163.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: sched: fix memory leak in tcindex_set_parms
-Message-ID: <20221115184442.272b6ea8@kernel.org>
-In-Reply-To: <bc4616002932b25973533c39c07f48ea57afa3dc.camel@redhat.com>
-References: <20221113170507.8205-1-yin31149@gmail.com>
-        <20221115090237.5d5988bb@kernel.org>
-        <bc4616002932b25973533c39c07f48ea57afa3dc.camel@redhat.com>
+        with ESMTP id S229976AbiKPDtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Nov 2022 22:49:35 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8EEACD5
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 19:49:33 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id j6-20020a4ab1c6000000b004809a59818cso2338420ooo.0
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 19:49:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sn1PU0fhKeuhqwgr9BNVczeTZXPqtOjMcepvP649/uM=;
+        b=KSecYQqIgdvkAamvuPhaAjfNRU1nsJQxItgUhdghyteHPLHArb4UBV61+XvkB1BYZV
+         lOspB31aHbzJaoQ+U7w0Ew77M7Ww7CqsDfVV8XduYHOuy+kGpHUJfucUTxaEYC+cSh4s
+         dlQMh2etxa7oiMpwezGIU+3vbarxfV5M0HapWebEqGWJSabLb2jheictduThrDshMvph
+         crvMqa6fZ3Ff1JTnMAmzfzmH0V8Hm6EBwvo7h7HyI/hjRfX4cXwoEyzGNSonkHfmNnz8
+         f4YKyq5JHuhOiePFwRBCy4x+ePt/+YZ1Yv1L8PWj9i4KB/ooAlDrWwjml6ltBUD2vauB
+         PIvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sn1PU0fhKeuhqwgr9BNVczeTZXPqtOjMcepvP649/uM=;
+        b=qLF7iLDeCFaE8WzglKlpOcTX2lVkwyeWJCLzapiO7eY9V0nYYWWgE0hjZp0K1aNPEt
+         8fWfgRN/4LhFC+4pxkEXbFAFpvBGl2U8i/ZfdVth3u3TsOFXSghTIJcoHTZC30oVg2yi
+         qrzeXCsjvy67CStBpdpNvHy4qVhfyyA9UZnyC8x/YpoOuC2b+kS0SKbtvWdncs7lPpus
+         CYDZj2W2fpvpN9CCwPOnrC0aBu+vsbdjXp4OyKroQrJ0eFWIdCQyrdmsnRGWJQwPldaQ
+         P2kJEAz9uIkQiYwQ5QmF6azzU6pexqZfX1X0AWJ9fcSWVfBjw3I6Jfi2abZkHHtLVLY/
+         ksVw==
+X-Gm-Message-State: ANoB5plT165H9lrujibZZpUafquOxOINMuCAN/WDkkSGYV/BlDSOHcr8
+        r1hkor1t0eVkvacMAqYz8OAr0HjYgSeUEnWLqAOPKg==
+X-Google-Smtp-Source: AA0mqf5774YJd7bWBwwygoPi/UspxVSpQCcUE+J2lCZVLszFqqptm6MNss35oP+CuTYc2V6oj5n8xA3A40mR3Sdxgvo=
+X-Received: by 2002:a05:6820:1687:b0:480:a6b4:d398 with SMTP id
+ bc7-20020a056820168700b00480a6b4d398mr8995102oob.86.1668570572838; Tue, 15
+ Nov 2022 19:49:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20221115030210.3159213-1-sdf@google.com> <20221115030210.3159213-7-sdf@google.com>
+ <87wn7vdcud.fsf@toke.dk>
+In-Reply-To: <87wn7vdcud.fsf@toke.dk>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 15 Nov 2022 19:49:21 -0800
+Message-ID: <CAKH8qBugRAS_MJCgHGaYnj2L+7==E0QP37D8iais2mQ_W9ob-A@mail.gmail.com>
+Subject: Re: [xdp-hints] [PATCH bpf-next 06/11] xdp: Carry over xdp metadata
+ into skb context
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Nov 2022 19:57:10 +0100 Paolo Abeni wrote:
-> This code confuses me more than a bit, and I don't follow ?!?=20
+On Tue, Nov 15, 2022 at 3:20 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index b444b1118c4f..71e3bc7ad839 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -6116,6 +6116,12 @@ enum xdp_action {
+> >       XDP_REDIRECT,
+> >  };
+> >
+> > +/* Subset of XDP metadata exported to skb context.
+> > + */
+> > +struct xdp_skb_metadata {
+> > +     __u64 rx_timestamp;
+> > +};
+>
+> Okay, so given Alexei's comment about __randomize_struct not actually
+> working, I think we need to come up with something else for this. Just
+> sticking this in a regular UAPI header seems like a bad idea; we'd just
+> be inviting people to use it as-is.
+>
+> Do we actually need the full definition here? It's just a pointer
+> declaration below, so is an opaque forward-definition enough? Then we
+> could have the full definition in an internal header, moving the full
+> definition back to being in vmlinux.h only?
 
-It's very confusing :S
-
-For starters I don't know when r !=3D old_r. I mean now it triggers
-randomly after the RCU-ification, but in the original code when
-it was just a memset(). When would old_r ever not be null and yet
-point to a different entry?
-
-> it looks like that at this point:
->=20
-> * the data path could access 'old_r->exts' contents via 'p' just before
-> the previous 'tcindex_filter_result_init(old_r, cp, net);' but still
-> potentially within the same RCU grace period
->=20
-> * 'tcindex_filter_result_init(old_r, cp, net);' has 'unlinked' the old
-> exts from 'p'  so that will not be freed by later
-> tcindex_partial_destroy_work()=C2=A0
->=20
-> Overall it looks to me that we need some somewhat wait for the RCU
-> grace period,=20
-
-Isn't it better to make @cp a deeper copy of @p ?
-I thought it already is but we don't seem to be cloning p->h.
-Also the cloning of p->perfect looks quite lossy.
-
-> Somewhat side question: it looks like that the 'perfect hashing' usage
-> is the root cause of the issue addressed here, and very likely is
-> afflicted by other problems, e.g. the data curruption in 'err =3D
-> tcindex_filter_result_init(old_r, cp, net);'.
->=20
-> AFAICS 'perfect hashing' usage is a sort of optimization that the user-
-> space may trigger with some combination of the tcindex arguments. I'm
-> wondering if we could drop all perfect hashing related code?
-
-The thought of "how much of this can we delete" did cross my mind :)
+Looks like having a uapi-declaration only (and moving the definition
+into the kernel headers) might work. At least it does in my limited
+testing :-) So let's go with that for now. Alexei, thanks for the
+context on __randomize_struct!
