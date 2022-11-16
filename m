@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4F1E62B33F
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 07:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 752A662B334
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 07:24:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbiKPGZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 01:25:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
+        id S231878AbiKPGYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 01:24:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232545AbiKPGZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 01:25:17 -0500
+        with ESMTP id S230408AbiKPGYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 01:24:40 -0500
 Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C7D1DDE6
-        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 22:25:16 -0800 (PST)
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20221116062514epoutp04e30b7578fce89345cf3b089dc69f17c9~n-JeIuS-L1506615066epoutp04W
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 06:25:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20221116062514epoutp04e30b7578fce89345cf3b089dc69f17c9~n-JeIuS-L1506615066epoutp04W
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02441D0D3
+        for <netdev@vger.kernel.org>; Tue, 15 Nov 2022 22:24:37 -0800 (PST)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20221116062433epoutp042129bf3ea80bdf815d096e01dc3a8dd1~n-I3gmJL61687316873epoutp04m
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 06:24:33 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20221116062433epoutp042129bf3ea80bdf815d096e01dc3a8dd1~n-I3gmJL61687316873epoutp04m
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1668579914;
-        bh=qWpc8qcl6AwBZWNvnl+aNRw7/66rtCCP1RYlKzpi1rQ=;
+        s=mail20170921; t=1668579873;
+        bh=w6POZxD7EOHGAT3g0ChwszoPZ7hzzMiN6LV+nbebvYg=;
         h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=FFBLrsKVxPw+bD8lIUJrgbbpjYJJcH0r/9iKDw8/rxzoY9TD7/T6CeI4KJqvK8nX+
-         gQXL9aaNOiYiFZ66medO+oAv7iKhM62INUS3bWEW2FksmVs2qxPVjDg/N12lNsnXBf
-         UnBYxZ9H1cfYAHx+0DtocvmVvka1cvKaQtdixfbc=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20221116062513epcas5p32ce682c3909c593bc6026d32fdb2c951~n-JdWALtG1579815798epcas5p3e;
-        Wed, 16 Nov 2022 06:25:13 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.180]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4NBtMC6F1Lz4x9Q9; Wed, 16 Nov
-        2022 06:25:11 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        b=Jl3qihc6Y1zZB87RGo+ktwS/wkUqdpECO0Ga0phhlgq4EFsUnsBQ8CW3Wy7ktZZdi
+         Sf5zPJ2P7GnAndmo5o2M9n4MPFL5u1mtATamIaYxZKo5T1Rnm/ZgquK5CzJC2xzdDP
+         8fQ7LR1APzG6kEVCUFUE0yfANpAW5vk4jestHfOM=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20221116062432epcas5p47a5684acb22b004cfe8c651c539316da~n-I25gk972475324753epcas5p4p;
+        Wed, 16 Nov 2022 06:24:32 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.174]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4NBtLQ3WMTz4x9Pw; Wed, 16 Nov
+        2022 06:24:30 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
         epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        66.48.56352.74284736; Wed, 16 Nov 2022 15:25:11 +0900 (KST)
+        78.08.56352.E1284736; Wed, 16 Nov 2022 15:24:30 +0900 (KST)
 Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20221116061735epcas5p2dc6b5e49a6794c1b2171bc75a9789a1b~n-CylGthA1186411864epcas5p2b;
-        Wed, 16 Nov 2022 06:17:35 +0000 (GMT)
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20221116062142epcas5p43703e73c1a0d9b530dc0e66faa2966ed~n-GYRRnIp2687526875epcas5p4_;
+        Wed, 16 Nov 2022 06:21:42 +0000 (GMT)
 Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
         epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20221116061735epsmtrp17832c3949fbc652bae12508b13e3f78d~n-CykHNa33179531795epsmtrp1l;
-        Wed, 16 Nov 2022 06:17:35 +0000 (GMT)
-X-AuditID: b6c32a4b-5f7fe7000001dc20-33-63748247a2ef
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        20221116062142epsmtrp1848da5b0f7c3fc89ae45733f89518a7e~n-GYLsRdk0157001570epsmtrp1W;
+        Wed, 16 Nov 2022 06:21:42 +0000 (GMT)
+X-AuditID: b6c32a4b-383ff7000001dc20-72-6374821e7562
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
         epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        20.11.14392.F7084736; Wed, 16 Nov 2022 15:17:35 +0900 (KST)
-Received: from FDSFTE302 (unknown [107.122.81.78]) by epsmtip1.samsung.com
+        74.C1.14392.57184736; Wed, 16 Nov 2022 15:21:41 +0900 (KST)
+Received: from FDSFTE302 (unknown [107.122.81.78]) by epsmtip2.samsung.com
         (KnoxPortal) with ESMTPA id
-        20221116061732epsmtip14cd11451f2b9b8c136b91b6a4caa6072~n-CvvUOiA0670206702epsmtip18;
-        Wed, 16 Nov 2022 06:17:32 +0000 (GMT)
+        20221116062139epsmtip2d927bef92c6680d9a06d78e6d419fbc5~n-GVfmh1e2284422844epsmtip2S;
+        Wed, 16 Nov 2022 06:21:39 +0000 (GMT)
 From:   "Sriranjani P" <sriranjani.p@samsung.com>
 To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
         <peppe.cavallaro@st.com>, <alexandre.torgue@foss.st.com>,
@@ -66,68 +66,67 @@ Cc:     <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>,
         "'Pankaj Dubey'" <pankaj.dubey@samsung.com>,
         "'Jayati Sahu'" <jayati.sahu@samsung.com>, <ravi.patel@samsung.com>
-In-Reply-To: <82801ce8-3a25-3174-65bb-239875065761@linaro.org>
-Subject: RE: [PATCH 4/4] arm64: dts: fsd: Add Ethernet support for PERIC
- Block of FSD SoC
-Date:   Wed, 16 Nov 2022 11:47:29 +0530
-Message-ID: <04ad01d8f983$1e770c20$5b652460$@samsung.com>
+In-Reply-To: <a764159c-e67e-1ee7-4b0f-1a08a06b3b3a@linaro.org>
+Subject: RE: [PATCH 1/4] dt-bindings: net: Add EQoS compatible for FSD SoC
+Date:   Wed, 16 Nov 2022 11:51:35 +0530
+Message-ID: <04ae01d8f983$b1563ac0$1402b040$@samsung.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQHa0oM14/tprCIIIJ9eaP02I486nwEn6ORUAXidpdkB2+iDwq4ZfYRQ
+Thread-Index: AQHa0oM14/tprCIIIJ9eaP02I486nwKDxKR1AajXdTkBYjlBH64Q6vPA
 Content-Language: en-in
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Tf1DTdRjH77PvfgEtvs4JnxbZ+l4/DhLGcOAHY1Rq8jXq4tCru6xojS8b
-        ML7b7Tv80dXJaQJD5VdhuFtK/FLghIJNhYECIRyCZmloQgQIF8L8EXQcU4Q2Nov/Xs9z7+d5
-        P8/ncw8fEy5xxfxU2kgZaKWW4Pqyz/wU/Epo3H6jKry7SYqcd44CZPn5KzY60XWFgya6x3io
-        61IlCw2X3+Og/MlRDLVN23jo6pl8Dmq8PcBB11osXJQ3MM5Bxx+f5qDusgA01+cAqNz2Dw8t
-        TdsAGn3Q6mrSP4mhg21dvDdEpLXmdxY5UWDjkc3mP3hkWWMm2Vhr4pJDA61csqlyH3n//G9c
-        Mt9aC8iO8zJyYr4NI60XZgE527g2QfBheoyGUiZTBglFq3TJqbRaQcRvT9qcFBkVLguVRaMN
-        hIRWZlAKYss7CaFbU7WuXQnJLqU205VKUDIMIY2NMegyjZREo2OMCoLSJ2v1cn0Yo8xgMml1
-        GE0ZN8rCwyMiXcJP0zUTzilMXyTYk+ts4GaBo355gM+HuBx+d3JXHvDlC3E7gPllh3meYAbA
-        63WjrDzg4wrmABy2K9zsLnA4ir2iNgBnDvWwPaK/AFwa1LmZi0vh9KkTXLdIhFexYF3+98sB
-        hh/B4I2TxcDt7YPHwqEF6C5Yje+E9x7WcN3Mxl+C1SWLy84CPBr+0H7Zy6tg77HxZTMMfx6e
-        vWvBPBNJoHOimuNmEb4VPp6r9moC4UXnYcztC/EKHzg0NMDzFGyBhd3HWB5eDad6rN68GN4p
-        yPayGjZ1NXE8rIW5+w94zV6H7dctbPf8GB4MG1qknvRzsORSPcvj+zQ88mjc214Azx1/wi/D
-        ijGTl4Pg6bEZTiEgzCtWM69YzbxiBfP/bmWAXQueofRMhppiIvXraWr3f/+t0mU0guVLCIk/
-        B8ZGHoR1AhYfdALIxwiRoCrLqBIKkpV7P6cMuiRDppZiOkGk672LMPEalc51SrQxSSaPDpdH
-        RUXJo9dHyYhAQUVpiEqIq5VGKp2i9JThSR2L7yPOYq3Vf9w1MLXhVoNxzRdz2/a2d6RdnRdW
-        fDZi2+gXVFnlCOBsj0gNWTiVrfAzjTd/1OwvVC/MXriv/ib1295rLTn1HTtuOmLEBXE34qq2
-        2a9YUgLHEgsPRK5a+OTXoWE/q6Jo8JHI9DBwvMY/rsfueG123Z/v5uTe/Lr+4O7b+E77W77l
-        v7xaWDS41FtroS9/eSjlxxfv1klKzQYptlQdgXLRs31OU9v8+/bYlKCnguVZfR3FFW/3XyzI
-        VncGB9iCqJLWpH36NFvw383xIyJfS+IwnVg4rLHWLuxgzo40+NtKHXpTqXhx8c20zZN7RuSD
-        eH9MizWl5lY5Lh18YdMHqpx1Ie8RbEajlIVgBkb5L+myFPGSBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa2xLYRjHveec9pyVytHVvDZGGhO3XSoSL+YSSzixJa4JQ9B0Ry3Wbms7
-        jKCRTaamRmahma2WWrSZbLq1NbuaKcMQbDIbsdmZSzssZVPMpVPJvv3++V/yfHgoXPSBCKWS
-        VVpWrZKlSPgCwnFLEh55VKeVx+SYJcj3vgCgwkdZBCpufshDnKuHRM33zBh6VfKRhwzvunFU
-        57aT6LHDwEO2N+089PRGIR/p23t5qGj4Kg+5TCFo8L4HoBL7FxL9dtsB6v5c+3fkwTscZdc1
-        kyvETJWlA2O403aSqTa+JBmTLYOxWU/wma72Wj5TaT7KfKpv4zOGKitgbtZLGe5bHc5UNXgB
-        47WFrxNuFcQmsSnJ+1h19LJdgj2c7wOedkZ4IMdXzteBgrF6EERBegH0eM6SeiCgRHQNgJd6
-        HeQ/YwpseW3G/3EwtPx6GwhxADaed44YfDoauq8U8/2GmC7HYF9uPs8vcPocDh+06gMVL4Bl
-        lX1/BUUF0ctg10/obwfTifDY7V7MzwQdAUvP/RphIb0IVjS2BngCbLnQS/gZp+dCroML8DTo
-        7C8MnDcd+rhSnp/F9Co4PFgayEyCt325eB4INo6aMo6aMo6aMo6qmABhBZPZNI1SodRI06Qq
-        dn+URqbUZKgUUfJUpQ2MvMOc2deB0/o5qglgFGgCkMIlYuGWAo1cJEySZR5k1ak71RkprKYJ
-        hFGEZJLwsb5lp4hWyLTsXpZNY9X/XYwKCtVhrduQb9rz7Iy4MaeXK1oTGXfuE5P0R9K6yIH5
-        oBI7lVxhL+vk0AbPnajU1e71RVLnzIiwiOXtTQOJjWZtTc6n9Nl9Dme8607c3bVKcVYX12AK
-        G2dxD8THvljcYZhyrLhSTqY8MsyYt4QQyF+sWRmZ4EpIEClruovCdQt15Ue0xT1LT876EpSd
-        uik0ZGN4tOXQgk5L2YHv6f2ZnomTCWTYPV4cP5Rn0yryQy7CanzVs4Vg8/bysPWqr3GzVmJW
-        Z2RJbObU2jwVuPbVUWGcf3bo8hWTJLYaDJWtSO8cFAzEMPks7vIeieg5v+Mg2lvd8dp7+GZ/
-        Qtvx4aGi9M3BWRJCs0cmnYOrNbI/nuYZSH0DAAA=
-X-CMS-MailID: 20221116061735epcas5p2dc6b5e49a6794c1b2171bc75a9789a1b
+X-Brightmail-Tracker: H4sIAAAAAAAAA02TeVATZxjG+2Wzm8QaXUPUz4zSdDswhRaSYMClBVotMAv0oGM706GdgUxY
+        wxE2aQ4Qp45ItBxVaB1FiCmXRwWxtuHQqqEUwQMddFqOoRaGUwSsWFAEKaVJFlv++33Pe83z
+        fvPyEdEiJuEnMybawKi0BLaC23DFx8fPM9uklo/mQXJurAiQttv7uGRZSztKjlwd5JEtbSc4
+        ZF/lQ5QsuD+AkI6Jeh55p6EAJe1DXSj520UbRuZ3DaNk6cJZlLxavo6cufkAkJX1j3nk4kQ9
+        IAceXXY2uXUfIfc7Wnhvi6m6qh4ONVJYz6N+svbyqHK7mbJX52HUH12XMar2xB5qsrETowrq
+        qgH1S6OCGpl1IFTdz9OAmrZ7xgrjUkOSaFUibZDSjFqXmMxoQomY7fHvxAcGyRV+imByCyFl
+        VGl0KBH+bqxfZLLW6ZWQpqu0ZqcUqzIaCVlYiEFnNtHSJJ3RFErQ+kStXqn3N6rSjGZG48/Q
+        pjcUcnlAoDMxITXpadE0T9+/aqfFYeFmgTsr84GAD3ElvLu3BuSDFXwRfgnAivL9iCsgwqcA
+        nOl/kQ3MAJjT+QM3H/DdFU3XM1jdAWBu8bml6lEALa2t7moMl8GJ02WYKyDGT3LgmYIK9wPB
+        DyKw+7tDwJUlwMPg+amv3OyBR0Nr6TM3c3EvWNF3FHWNE+LB8NK9dS5ZiK+BN0qGuS5G8Jfg
+        +T9tCOtBCudGTqEuFuORsOCfJozNWQ9b5w4s5dQK4GyJN8vhsL+wF2PZA45fq+OxLIFjhV8u
+        sQbWttSiLGthbrZlqc9bsKnD5t4EgvvAcxdlrLwJHmn7nsOOXQUPzg9zWF0IL5Q+Z294fDBv
+        iTfCs4NT6NeAsC5zZl3mzLrMgfX/aeWAWw020HpjmoY2Buo3M3TGf/+t1qXZgfsSfGMugMH+
+        R/7NgMMHzQDyEUIsPJllUouEiarMXbRBF28wa2ljMwh0bvsbRLJWrXOeEmOKVyiD5cqgoCBl
+        8OYgBbFeeLzYVy3CNSoTnUrTetrwvI7DF0iyOOFDX3yOnpq5USb+YOj29Vf4h8pO34vuzEU9
+        cFHKkYBnxxrFCfKa175t7ygxRW348eOxhH3t7482ZXhFVL2+Z2K0xHP1ZMrap4t2VMV435Jx
+        H5N3RR8KQ+TX2tLGoybLBVv/bmtIZ+S/ZvYP+B2zvmABUwsbGxyKeUtEeo4ySmKqfJKdKuOa
+        /RPUkjh0/vfON+MDitfcjAzGZBpLT59j/OjqwG29U4mxK9vNW7Rbo4uqtr/aHtEhH1JjV3bj
+        nO6d2k3aAUHP7MvyA4fjWkOarEXZTz6l9m4rrghZPAze+yi8MGlV5q4am5c0ZTEn5q/duQ93
+        FMd0P9jBLHwSduazHAvHVkNwjUkqhS9iMKr+BXE+eJiSBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsWy7bCSvG5ZY0mywcRGRoufL6cxWsw538Ji
+        Mf/IOVaLp8cesVscObWEyeLeonesFn0vHjJb7H29ld3iwrY+VotNj6+xWlzeNYfNouvaE1aL
+        eX/XslocWyBm8e30G0aLRVu/sFv8f72V0eLhhz1AQ868YLZo3XuE3UHEY8vKm0weT/u3snvs
+        nHWX3WPBplKPTas62TzuXNvD5rF5Sb3H+31X2Tz6tqxi9Di4z9Dj6Y+9zB5b9n9m9Pi8SS6A
+        N4rLJiU1J7MstUjfLoEr4/u0z+wFD/gqmvc2szQwXuDpYuTgkBAwkThworyLkYtDSGA3o8Tb
+        abtYuhg5geIyEicfLGGGsIUlVv57zg5R9JRRYs2OTiaQBJuAvsTrFfPZQBIiAuuZJJ71TGEF
+        cZgFpjJLnDnbBdXymVHiee82dpAWTgE7ie2fuhlBbGEBL4lZ836B2SwCqhIL701nBbmJV8BS
+        YvczMZAwr4CgxMmZT8BOYhbQlnh68ymULS+x/e0cqPMUJH4+XcYKYosIuEn0/TvABlEjLnH0
+        Zw/zBEbhWUhGzUIyahaSUbOQtCxgZFnFKJlaUJybnltsWGCYl1quV5yYW1yal66XnJ+7iRGc
+        GrQ0dzBuX/VB7xAjEwfjIUYJDmYlEd6lDSXJQrwpiZVVqUX58UWlOanFhxilOViUxHkvdJ2M
+        FxJITyxJzU5NLUgtgskycXBKNTCxv5F90az3+fbqxKXtogwMrPF17Tff6omzXX4Vx5txVENu
+        otJM0ZM/zfUuSStyPnzGeT2l6eNMu7Rg8ZXXbs0/0vWxuvaKrl/Tz860hew7lqpumvpDVTq/
+        davInn7dCWvuOa4sTL3U9a/7Te65rKs+yQU3k68JrnKrZpr5+eR2jWNxfzhm3U/M3rpU5tj8
+        FUfDvm2e4cWxy9nKbduENTtX9Fl1+KZ3lTvctg84cTbV8f2pwIPz9p4uLNt1fe6+kmCj6b3s
+        /kK5BrL3y17Na16ym0O2wzhI6t1UXedfx2uiuxdMDjvJ2ntU61Kk4Cojzdxv7T/Muet4e9Q4
+        3npeP8RvXtem9zowgZldbb2n7XwlluKMREMt5qLiRAA2QyFafAMAAA==
+X-CMS-MailID: 20221116062142epcas5p43703e73c1a0d9b530dc0e66faa2966ed
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: REQ_APPROVE
 CMS-TYPE: 105P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20221104115909epcas5p25a8a564cd18910ec2368341855c1a6a2
+X-CMS-RootMailID: 20221104115841epcas5p490b99811e257b8f3f965748df0a57be5
 References: <20221104120517.77980-1-sriranjani.p@samsung.com>
-        <CGME20221104115909epcas5p25a8a564cd18910ec2368341855c1a6a2@epcas5p2.samsung.com>
-        <20221104120517.77980-5-sriranjani.p@samsung.com>
-        <82801ce8-3a25-3174-65bb-239875065761@linaro.org>
+        <CGME20221104115841epcas5p490b99811e257b8f3f965748df0a57be5@epcas5p4.samsung.com>
+        <20221104120517.77980-2-sriranjani.p@samsung.com>
+        <a764159c-e67e-1ee7-4b0f-1a08a06b3b3a@linaro.org>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -138,7 +137,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@linaro.org]
-> Sent: 04 November 2022 18:17
+> Sent: 04 November 2022 18:18
 > To: Sriranjani P <sriranjani.p@samsung.com>; peppe.cavallaro@st.com;
 > alexandre.torgue@foss.st.com; joabreu@synopsys.com;
 > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
@@ -150,31 +149,32 @@ X-Mailing-List: netdev@vger.kernel.org
 > <krzysztof.kozlowski+dt@linaro.org>; devicetree@vger.kernel.org; Pankaj
 > Dubey <pankaj.dubey@samsung.com>; Jayati Sahu
 > <jayati.sahu@samsung.com>
-> Subject: Re: [PATCH 4/4] arm64: dts: fsd: Add Ethernet support for PERIC
-> Block of FSD SoC
+> Subject: Re: [PATCH 1/4] dt-bindings: net: Add EQoS compatible for FSD SoC
 > 
 > On 04/11/2022 08:05, Sriranjani P wrote:
-> > The FSD SoC contains two instances of Synopsys DWC QoS Ethernet IP,
-> > one in
-> > FSYS0 block and other in PERIC block.
+> > Add FSD Ethernet compatible in dt-bindings document
 > >
-> > Adds device tree node for Ethernet in PERIC Block and enables the same
-> > for FSD platform.
-> >
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Paolo Abeni <pabeni@redhat.com>
 > > Cc: Rob Herring <robh+dt@kernel.org>
 > > Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> > Cc: Richard Cochran <richardcochran@gmail.com>
+> > Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> > Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> > Cc: Jose Abreu <joabreu@synopsys.com>
 > > Cc: devicetree@vger.kernel.org
 > > Signed-off-by: Pankaj Dubey <pankaj.dubey@samsung.com>
 > > Signed-off-by: Jayati Sahu <jayati.sahu@samsung.com>
 > > Signed-off-by: Sriranjani P <sriranjani.p@samsung.com>
-> > ---
 > 
-> Same comment apply.
-[Sriranjani P] Will be fixed in the next version.
+> I did not get cover letter and patch 2. Your CC list is incomplete.
+> 
+> For the record - DTS will not go via net-net but Samsung SoC tree.
+[Sriranjani P] Got it. Will update the CC list in the next version.
 > 
 > Best regards,
 > Krzysztof
-[Sriranjani P] Thank you for the review comments.
+[Sriranjani P] Thank you for the comment.
 
 
