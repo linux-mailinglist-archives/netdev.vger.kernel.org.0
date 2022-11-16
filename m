@@ -2,73 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1707262BF73
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 14:28:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAAF362BF7F
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 14:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233638AbiKPN2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 08:28:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        id S233470AbiKPNaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 08:30:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232584AbiKPN20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 08:28:26 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA9FB61
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 05:28:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=baAFvsuLRu3L05kHwX+VC7JY3NjygqfNx32ykHoXugY=; b=dMBRzKnmzqY6NptNzMYEtdPE4K
-        niynAGB2yLA753JlQUjIzWf180fjGair2vLZMG9fPmNy8U5zJZa7krbOp+k76QB67CTQyz5z225i/
-        UYV8r9CnhNg1vrQsCknL5PXRN1y+fHZQzlNCsZxdXDLAZx3DvRAJs6QjU6BNSU/OqNME=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ovISi-002ZNr-Kx; Wed, 16 Nov 2022 14:28:20 +0100
-Date:   Wed, 16 Nov 2022 14:28:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net] net: dsa: sja1105: disallow C45 transactions on the
- BASE-TX MDIO bus
-Message-ID: <Y3TldORKPxFUgqH/@lunn.ch>
-References: <20221116100653.3839654-1-vladimir.oltean@nxp.com>
+        with ESMTP id S233162AbiKPNaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 08:30:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C216DFD0;
+        Wed, 16 Nov 2022 05:30:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 446A5B81D5A;
+        Wed, 16 Nov 2022 13:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E54B2C433C1;
+        Wed, 16 Nov 2022 13:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668605418;
+        bh=bGIgDN/wI5fAzQjOOkc3yZKt/Z713qmp2KemjHT10+8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SyJLPa+EDiIq8CBgUwQPN2FDEg379+LdySKPiqg2ay9ch5vz0TAdTCo5TsQE6k5w/
+         tUscDLivkpQotgJg7Iv9BV5JZuOEDLYbkceirf+tb8Z5/5aqWbnVREm3kc1vsH+lJg
+         dkammnxlqLfyb/b/9FNP3xwlYGiAD5EQelaBdC8YoIYigGU+jHXPZ4tyHRjcwOxOci
+         Msi9t6eelj0k3+uhH1/7H3wtX0yTwlYWYWtI6s1eIcen7XgxES0QIZFOoHLhMA0Jx3
+         O3jPGcpLuAPFz+veCiW7wKDMMnNh05uLOlTlJ9IxqGbhCHyoOPsZOBd1c2wCebHaRy
+         eJHjP99exdlxw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C463EE21EFA;
+        Wed, 16 Nov 2022 13:30:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221116100653.3839654-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] tcp: configurable source port perturb table size
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166860541779.25745.3784533755037839825.git-patchwork-notify@kernel.org>
+Date:   Wed, 16 Nov 2022 13:30:17 +0000
+References: <20221114225616.16715-1-glex.spb@gmail.com>
+In-Reply-To: <20221114225616.16715-1-glex.spb@gmail.com>
+To:     Gleb Mazovetskiy <glex.spb@gmail.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        paul@crapouillou.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 12:06:53PM +0200, Vladimir Oltean wrote:
-> You'd think people know that the internal 100BASE-TX PHY on the SJA1110
-> responds only to clause 22 MDIO transactions, but they don't :)
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 14 Nov 2022 22:56:16 +0000 you wrote:
+> On embedded systems with little memory and no relevant
+> security concerns, it is beneficial to reduce the size
+> of the table.
 > 
-> When a clause 45 transaction is attempted, sja1105_base_tx_mdio_read()
-> and sja1105_base_tx_mdio_write() don't expect "reg" to contain bit 30
-> set (MII_ADDR_C45) and pack this value into the SPI transaction buffer.
+> Reducing the size from 2^16 to 2^8 saves 255 KiB
+> of kernel RAM.
+> 
+> [...]
 
-Yep, it is a common problem with MDIO busses. And driver i review now
-i asks for EOPNOTSUPP for clauses which are not supported, but there
-are old drivers out there missing such checks.
+Here is the summary with links:
+  - [1/1] tcp: configurable source port perturb table size
+    https://git.kernel.org/netdev/net/c/aeac4ec8f46d
 
-I have a bit rotting patchset which completely separates C22 and C45,
-i just spend too much time reviewing other code to get my own merged.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> Fixes: 5a8f09748ee7 ("net: dsa: sja1105: register the MDIO buses for 100base-T1 and 100base-TX")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
