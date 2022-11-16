@@ -2,227 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B41C462C081
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 15:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 451E962C0F4
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 15:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbiKPOIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 09:08:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
+        id S229666AbiKPOd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 09:33:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232990AbiKPOHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 09:07:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAFA1FF81
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 06:02:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668607354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=H8g5jHSO6mWR26lucisAGG5m8vSf+iqlQZJbZwXZnSA=;
-        b=E/tNotvhoormyTG1pYd7iddfFH6V5oR2uSQOXOFbBigHhUyUiYbgAv3KzAY2MwDofxooWb
-        ajtV+kOjjTr8PNv98nkgMlRmIE/YIJoS/kVsN5dpzu0ssziOP6z+Ct2/R6+cxuNsY356wC
-        /i97LAKYcB2forXKJy7hw12DsSKOhEo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-332-wHf1jn28OAWJuMYQoXQWEQ-1; Wed, 16 Nov 2022 09:02:32 -0500
-X-MC-Unique: wHf1jn28OAWJuMYQoXQWEQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4A0BC3C0F683;
-        Wed, 16 Nov 2022 14:02:32 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6900E53AA;
-        Wed, 16 Nov 2022 14:02:31 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix race between conn bundle lookup and bundle
- removal [ZDI-CAN-15975]
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     zdi-disclosures@trendmicro.com, zdi-disclosures@trendmicro.com,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 16 Nov 2022 14:02:28 +0000
-Message-ID: <166860734864.2970191.10633905995607769951.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
+        with ESMTP id S229863AbiKPOdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 09:33:51 -0500
+X-Greylist: delayed 468 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Nov 2022 06:33:49 PST
+Received: from smtp-190d.mail.infomaniak.ch (smtp-190d.mail.infomaniak.ch [IPv6:2001:1600:3:17::190d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A9C115C
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 06:33:49 -0800 (PST)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NC51y3DX0zMpr4P;
+        Wed, 16 Nov 2022 15:25:58 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NC51x4tq8zMppFH;
+        Wed, 16 Nov 2022 15:25:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1668608758;
+        bh=cA2XiSre0ie8e9W9T/c7lFA0jun+XpBOtWP00kYEAZg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=0csO3MmWnDppJ9r4WkZUi2gE/iXSp8G66IrNyhjT+9nvC9NUzRrH6HDzMJpK6Dm8p
+         mUGkVsFSdzitgLFomO2dwXcMVhYv/06IRYm46P3jhLi0ncH842OpYY6B3lK/AtC6ts
+         tZIHQ+hlbDBT8csDa802Twd+oPLw6d8Mn491qQjc=
+Message-ID: <2ff97355-18ef-e539-b4c1-720cd83daf1d@digikod.net>
+Date:   Wed, 16 Nov 2022 15:25:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: 
+Subject: Re: [PATCH v8 11/12] samples/landlock: Add network demo
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-12-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <20221021152644.155136-12-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After rxrpc_unbundle_conn() has removed a connection from a bundle, it
-checks to see if there are any conns with available channels and, if not,
-removes and attempts to destroy the bundle.
 
-Whilst it does check after grabbing client_bundles_lock that there are no
-connections attached, this races with rxrpc_look_up_bundle() retrieving the
-bundle, but not attaching a connection for the connection to be attached
-later.
+On 21/10/2022 17:26, Konstantin Meskhidze wrote:
+> This commit adds network demo. It's possible to allow a sandboxer to
+> bind/connect to a list of particular ports restricting network
+> actions to the rest of ports.
+> 
+> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> ---
+> 
+> Changes since v7:
+> * Removes network support if ABI < 4.
+> * Removes network support if not set by a user.
+> 
+> Changes since v6:
+> * Removes network support if ABI < 3.
+> 
+> Changes since v5:
+> * Makes network ports sandboxing optional.
+> * Fixes some logic errors.
+> * Formats code with clang-format-14.
+> 
+> Changes since v4:
+> * Adds ENV_TCP_BIND_NAME "LL_TCP_BIND" and
+> ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT" variables
+> to insert TCP ports.
+> * Renames populate_ruleset() to populate_ruleset_fs().
+> * Adds populate_ruleset_net() and parse_port_num() helpers.
+> * Refactors main() to support network sandboxing.
+> 
+> ---
+>   samples/landlock/sandboxer.c | 129 +++++++++++++++++++++++++++++++----
+>   1 file changed, 116 insertions(+), 13 deletions(-)
+> 
+> diff --git a/samples/landlock/sandboxer.c b/samples/landlock/sandboxer.c
+> index fd4237c64fb2..68582b0d7c85 100644
+> --- a/samples/landlock/sandboxer.c
+> +++ b/samples/landlock/sandboxer.c
+> @@ -51,6 +51,8 @@ static inline int landlock_restrict_self(const int ruleset_fd,
+> 
+>   #define ENV_FS_RO_NAME "LL_FS_RO"
+>   #define ENV_FS_RW_NAME "LL_FS_RW"
+> +#define ENV_TCP_BIND_NAME "LL_TCP_BIND"
+> +#define ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT"
+>   #define ENV_PATH_TOKEN ":"
+> 
+>   static int parse_path(char *env_path, const char ***const path_list)
+> @@ -71,6 +73,20 @@ static int parse_path(char *env_path, const char ***const path_list)
+>   	return num_paths;
+>   }
+> 
+> +static int parse_port_num(char *env_port)
+> +{
+> +	int i, num_ports = 0;
+> +
+> +	if (env_port) {
+> +		num_ports++;
+> +		for (i = 0; env_port[i]; i++) {
+> +			if (env_port[i] == ENV_PATH_TOKEN[0])
+> +				num_ports++;
+> +		}
+> +	}
+> +	return num_ports;
+> +}
+> +
+>   /* clang-format off */
+> 
+>   #define ACCESS_FILE ( \
+> @@ -81,8 +97,8 @@ static int parse_path(char *env_path, const char ***const path_list)
+> 
+>   /* clang-format on */
+> 
+> -static int populate_ruleset(const char *const env_var, const int ruleset_fd,
+> -			    const __u64 allowed_access)
+> +static int populate_ruleset_fs(const char *const env_var, const int ruleset_fd,
+> +			       const __u64 allowed_access)
+>   {
+>   	int num_paths, i, ret = 1;
+>   	char *env_path_name;
+> @@ -143,6 +159,48 @@ static int populate_ruleset(const char *const env_var, const int ruleset_fd,
+>   	return ret;
+>   }
+> 
+> +static int populate_ruleset_net(const char *const env_var, const int ruleset_fd,
+> +				const __u64 allowed_access)
+> +{
+> +	int num_ports, i, ret = 1;
+> +	char *env_port_name;
+> +	struct landlock_net_service_attr net_service = {
+> +		.allowed_access = 0,
+> +		.port = 0,
+> +	};
+> +
+> +	env_port_name = getenv(env_var);
+> +	if (!env_port_name) {
+> +		ret = 0;
+> +		goto out_free_name;
 
-There is therefore a window in which the bundle can get destroyed before we
-manage to attach a new connection to it.
-
-Fix this by adding an "active" counter to struct rxrpc_bundle:
-
- (1) rxrpc_connect_call() obtains an active count by prepping/looking up a
-     bundle and ditches it before returning.
-
- (2) If, during rxrpc_connect_call(), a connection is added to the bundle,
-     this obtains an active count, which is held until the connection is
-     discarded.
-
- (3) rxrpc_deactivate_bundle() is created to drop an active count on a
-     bundle and destroy it when the active count reaches 0.  The active
-     count is checked inside client_bundles_lock() to prevent a race with
-     rxrpc_look_up_bundle().
-
- (4) rxrpc_unbundle_conn() then calls rxrpc_deactivate_bundle().
-
-Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
-Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-15975
-Signed-off-by: David Howells <dhowells@redhat.com>
-Tested-by: zdi-disclosures@trendmicro.com
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
----
-
- net/rxrpc/ar-internal.h |    1 +
- net/rxrpc/conn_client.c |   38 +++++++++++++++++++++++---------------
- 2 files changed, 24 insertions(+), 15 deletions(-)
-
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 1ad0ec5afb50..8499ceb7719c 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -399,6 +399,7 @@ enum rxrpc_conn_proto_state {
- struct rxrpc_bundle {
- 	struct rxrpc_conn_parameters params;
- 	refcount_t		ref;
-+	atomic_t		active;		/* Number of active users */
- 	unsigned int		debug_id;
- 	bool			try_upgrade;	/* True if the bundle is attempting upgrade */
- 	bool			alloc_conn;	/* True if someone's getting a conn */
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 3c9eeb5b750c..bdb335cb2d05 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -40,6 +40,8 @@ __read_mostly unsigned long rxrpc_conn_idle_client_fast_expiry = 2 * HZ;
- DEFINE_IDR(rxrpc_client_conn_ids);
- static DEFINE_SPINLOCK(rxrpc_conn_id_lock);
- 
-+static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle);
-+
- /*
-  * Get a connection ID and epoch for a client connection from the global pool.
-  * The connection struct pointer is then recorded in the idr radix tree.  The
-@@ -123,6 +125,7 @@ static struct rxrpc_bundle *rxrpc_alloc_bundle(struct rxrpc_conn_parameters *cp,
- 		bundle->params = *cp;
- 		rxrpc_get_peer(bundle->params.peer);
- 		refcount_set(&bundle->ref, 1);
-+		atomic_set(&bundle->active, 1);
- 		spin_lock_init(&bundle->channel_lock);
- 		INIT_LIST_HEAD(&bundle->waiting_calls);
- 	}
-@@ -149,7 +152,7 @@ void rxrpc_put_bundle(struct rxrpc_bundle *bundle)
- 
- 	dead = __refcount_dec_and_test(&bundle->ref, &r);
- 
--	_debug("PUT B=%x %d", d, r);
-+	_debug("PUT B=%x %d", d, r - 1);
- 	if (dead)
- 		rxrpc_free_bundle(bundle);
- }
-@@ -338,6 +341,7 @@ static struct rxrpc_bundle *rxrpc_look_up_bundle(struct rxrpc_conn_parameters *c
- 	rxrpc_free_bundle(candidate);
- found_bundle:
- 	rxrpc_get_bundle(bundle);
-+	atomic_inc(&bundle->active);
- 	spin_unlock(&local->client_bundles_lock);
- 	_leave(" = %u [found]", bundle->debug_id);
- 	return bundle;
-@@ -435,6 +439,7 @@ static void rxrpc_add_conn_to_bundle(struct rxrpc_bundle *bundle, gfp_t gfp)
- 			if (old)
- 				trace_rxrpc_client(old, -1, rxrpc_client_replace);
- 			candidate->bundle_shift = shift;
-+			atomic_inc(&bundle->active);
- 			bundle->conns[i] = candidate;
- 			for (j = 0; j < RXRPC_MAXCALLS; j++)
- 				set_bit(shift + j, &bundle->avail_chans);
-@@ -725,6 +730,7 @@ int rxrpc_connect_call(struct rxrpc_sock *rx,
- 	smp_rmb();
- 
- out_put_bundle:
-+	rxrpc_deactivate_bundle(bundle);
- 	rxrpc_put_bundle(bundle);
- out:
- 	_leave(" = %d", ret);
-@@ -900,9 +906,8 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
- static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
- {
- 	struct rxrpc_bundle *bundle = conn->bundle;
--	struct rxrpc_local *local = bundle->params.local;
- 	unsigned int bindex;
--	bool need_drop = false, need_put = false;
-+	bool need_drop = false;
- 	int i;
- 
- 	_enter("C=%x", conn->debug_id);
-@@ -921,15 +926,22 @@ static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
- 	}
- 	spin_unlock(&bundle->channel_lock);
- 
--	/* If there are no more connections, remove the bundle */
--	if (!bundle->avail_chans) {
--		_debug("maybe unbundle");
--		spin_lock(&local->client_bundles_lock);
-+	if (need_drop) {
-+		rxrpc_deactivate_bundle(bundle);
-+		rxrpc_put_connection(conn);
-+	}
-+}
- 
--		for (i = 0; i < ARRAY_SIZE(bundle->conns); i++)
--			if (bundle->conns[i])
--				break;
--		if (i == ARRAY_SIZE(bundle->conns) && !bundle->params.exclusive) {
-+/*
-+ * Drop the active count on a bundle.
-+ */
-+static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
-+{
-+	struct rxrpc_local *local = bundle->params.local;
-+	bool need_put = false;
-+
-+	if (atomic_dec_and_lock(&bundle->active, &local->client_bundles_lock)) {
-+		if (!bundle->params.exclusive) {
- 			_debug("erase bundle");
- 			rb_erase(&bundle->local_node, &local->client_bundles);
- 			need_put = true;
-@@ -939,10 +951,6 @@ static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
- 		if (need_put)
- 			rxrpc_put_bundle(bundle);
- 	}
--
--	if (need_drop)
--		rxrpc_put_connection(conn);
--	_leave("");
- }
- 
- /*
+This is a bug because env_port_name is not allocated. This should simply 
+return 0.
 
 
+> +	}
+> +	env_port_name = strdup(env_port_name);
+> +	unsetenv(env_var);
+> +	num_ports = parse_port_num(env_port_name);
+> +
+> +	if (num_ports == 1 && (strtok(env_port_name, ENV_PATH_TOKEN) == NULL)) {
+> +		ret = 0;
+> +		goto out_free_name;
+> +	}
+> +
+> +	for (i = 0; i < num_ports; i++) {
+> +		net_service.allowed_access = allowed_access;
+> +		net_service.port = atoi(strsep(&env_port_name, ENV_PATH_TOKEN));
+> +		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+> +				      &net_service, 0)) {
+> +			fprintf(stderr,
+> +				"Failed to update the ruleset with port \"%d\": %s\n",
+> +				net_service.port, strerror(errno));
+> +			goto out_free_name;
+> +		}
+> +	}
+> +	ret = 0;
+> +
+> +out_free_name:
+> +	free(env_port_name);
+> +	return ret;
+> +}
+> +
+>   /* clang-format off */
+> 
+>   #define ACCESS_FS_ROUGHLY_READ ( \
+> @@ -164,41 +222,63 @@ static int populate_ruleset(const char *const env_var, const int ruleset_fd,
+>   	LANDLOCK_ACCESS_FS_REFER | \
+>   	LANDLOCK_ACCESS_FS_TRUNCATE)
+> 
+> +#define ACCESS_NET_BIND_CONNECT ( \
+> +	LANDLOCK_ACCESS_NET_BIND_TCP | \
+> +	LANDLOCK_ACCESS_NET_CONNECT_TCP)
+
+You can remove ACCESS_NET_BIND_CONNECT and make the underlying access 
+rights explicit.
+
+
+> +
+>   /* clang-format on */
+> 
+> -#define LANDLOCK_ABI_LAST 3
+> +#define LANDLOCK_ABI_LAST 4
+> 
+>   int main(const int argc, char *const argv[], char *const *const envp)
+>   {
+>   	const char *cmd_path;
+>   	char *const *cmd_argv;
+>   	int ruleset_fd, abi;
+> +	char *env_port_name;
+>   	__u64 access_fs_ro = ACCESS_FS_ROUGHLY_READ,
+> -	      access_fs_rw = ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE;
+> +	      access_fs_rw = ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE,
+> +	      access_net_tcp = ACCESS_NET_BIND_CONNECT;
+>   	struct landlock_ruleset_attr ruleset_attr = {
+>   		.handled_access_fs = access_fs_rw,
+> +		.handled_access_net = access_net_tcp,
+>   	};
+> 
+>   	if (argc < 2) {
+>   		fprintf(stderr,
+> -			"usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
+> -			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
+> +			"usage: %s=\"...\" %s=\"...\" %s=\"...\" %s=\"...\"%s "
+> +			"<cmd> [args]...\n\n",
+> +			ENV_FS_RO_NAME, ENV_FS_RW_NAME, ENV_TCP_BIND_NAME,
+> +			ENV_TCP_CONNECT_NAME, argv[0]);
+>   		fprintf(stderr,
+>   			"Launch a command in a restricted environment.\n\n");
+> -		fprintf(stderr, "Environment variables containing paths, "
+> -				"each separated by a colon:\n");
+> +		fprintf(stderr,
+> +			"Environment variables containing paths and ports "
+> +			"each separated by a colon:\n");
+>   		fprintf(stderr,
+>   			"* %s: list of paths allowed to be used in a read-only way.\n",
+>   			ENV_FS_RO_NAME);
+>   		fprintf(stderr,
+> -			"* %s: list of paths allowed to be used in a read-write way.\n",
+> +			"* %s: list of paths allowed to be used in a read-write way.\n\n",
+>   			ENV_FS_RW_NAME);
+> +		fprintf(stderr,
+> +			"Environment variables containing ports are optional "
+> +			"and could be skipped.\n");
+> +		fprintf(stderr,
+> +			"* %s: list of ports allowed to bind (server).\n",
+> +			ENV_TCP_BIND_NAME);
+> +		fprintf(stderr,
+> +			"* %s: list of ports allowed to connect (client).\n",
+> +			ENV_TCP_CONNECT_NAME);
+>   		fprintf(stderr,
+>   			"\nexample:\n"
+>   			"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
+>   			"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
+> +			"%s=\"9418\" "
+> +			"%s=\"80:443\" "
+>   			"%s bash -i\n\n",
+> -			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
+> +			ENV_FS_RO_NAME, ENV_FS_RW_NAME, ENV_TCP_BIND_NAME,
+> +			ENV_TCP_CONNECT_NAME, argv[0]);
+>   		fprintf(stderr,
+>   			"This sandboxer can use Landlock features "
+>   			"up to ABI version %d.\n",
+> @@ -240,7 +320,10 @@ int main(const int argc, char *const argv[], char *const *const envp)
+>   	case 2:
+>   		/* Removes LANDLOCK_ACCESS_FS_TRUNCATE for ABI < 3 */
+>   		ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_TRUNCATE;
+> -
+> +		__attribute__((fallthrough));
+> +	case 3:
+> +		/* Removes network support for ABI < 4 */
+> +		ruleset_attr.handled_access_net &= ~ACCESS_NET_BIND_CONNECT;
+
+You can check the TCP environment variables here and error out if one is 
+set.
+
+Please keep the newline here.
+
+
+>   		fprintf(stderr,
+>   			"Hint: You should update the running kernel "
+>   			"to leverage Landlock features "
+> @@ -259,16 +342,36 @@ int main(const int argc, char *const argv[], char *const *const envp)
+>   	access_fs_ro &= ruleset_attr.handled_access_fs;
+>   	access_fs_rw &= ruleset_attr.handled_access_fs;
+> 
+> +	/* Removes bind access attribute if not supported by a user. */
+> +	env_port_name = getenv(ENV_TCP_BIND_NAME);
+> +	if (!env_port_name) {
+
+You can move this logic at the populate_ruleset_net() call site and 
+update this helper to not call getenv() twice for the same variable.
+
+
+> +		access_net_tcp &= ~LANDLOCK_ACCESS_NET_BIND_TCP;
+> +	}
+> +	/* Removes connect access attribute if not supported by a user. */
+> +	env_port_name = getenv(ENV_TCP_CONNECT_NAME);
+> +	if (!env_port_name) {
+> +		access_net_tcp &= ~LANDLOCK_ACCESS_NET_CONNECT_TCP;
+> +	}
+> +	ruleset_attr.handled_access_net &= access_net_tcp;
+
+There is no need for access_net_tcp.
+
+> +
+>   	ruleset_fd =
+>   		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
+>   	if (ruleset_fd < 0) {
+>   		perror("Failed to create a ruleset");
+>   		return 1;
+>   	}
+
+newline
+
+> -	if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro)) {
+> +	if (populate_ruleset_fs(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro)) {
+> +		goto err_close_ruleset;
+> +	}
+> +	if (populate_ruleset_fs(ENV_FS_RW_NAME, ruleset_fd, access_fs_rw)) {
+> +		goto err_close_ruleset;
+> +	}
+
+newline
+
+> +	if (populate_ruleset_net(ENV_TCP_BIND_NAME, ruleset_fd,
+> +				 LANDLOCK_ACCESS_NET_BIND_TCP)) {
+>   		goto err_close_ruleset;
+>   	}
+> -	if (populate_ruleset(ENV_FS_RW_NAME, ruleset_fd, access_fs_rw)) {
+> +	if (populate_ruleset_net(ENV_TCP_CONNECT_NAME, ruleset_fd,
+> +				 LANDLOCK_ACCESS_NET_CONNECT_TCP)) {
+>   		goto err_close_ruleset;
+>   	}
+
+newline
+
+>   	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+> --
+> 2.25.1
+> 
