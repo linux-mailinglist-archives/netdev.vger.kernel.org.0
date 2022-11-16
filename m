@@ -2,231 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 101C562C2AD
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 16:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DEBD62C2E6
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 16:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbiKPPfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 10:35:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        id S233095AbiKPPpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 10:45:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiKPPe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 10:34:59 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74B71180B;
-        Wed, 16 Nov 2022 07:34:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668612898; x=1700148898;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Wj5K9Vlpjbs5N2B8PCfWrnygyNn/3oGRftL7tuGMhMM=;
-  b=ECg/2dNILWto8srrBJNIK5eLBDpiD4OPdb/e0W61WnV4rn5toJhfnOTl
-   nlp/BXtK6Z8op91wClOoaAOimZq5mZv2Q3jdCCGBUQTVYeCmWfjZCRM62
-   kRwu0EBRGo8fJEoUpwpHJMmvHhbiaSRnBeKhx7Xd8eDCDyp89kxtIvt9u
-   1WdR7IsudcQp1pefu0jWIHX5aHivKiJQOFAPuIgPmm7Tjxdd0s0yhJRCQ
-   i8K3zAZyClzOyEJIQ6AvfG9DLYQ0s4qFn3DpU/hM4SfLYOUo2qX229EQB
-   Cpea8RIYvPKPbsTNgggjqM7KlXNaeJnePOfA34tsCXtqPPdSh2m2j81aM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="398859749"
-X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
-   d="scan'208";a="398859749"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 07:34:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="745093734"
-X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
-   d="scan'208";a="745093734"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Nov 2022 07:34:55 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AGFYsEF029828;
-        Wed, 16 Nov 2022 15:34:54 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v2 4/5] net: lan966x: Add support for XDP_TX
-Date:   Wed, 16 Nov 2022 16:34:18 +0100
-Message-Id: <20221116153418.3389630-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221115214456.1456856-5-horatiu.vultur@microchip.com>
-References: <20221115214456.1456856-1-horatiu.vultur@microchip.com> <20221115214456.1456856-5-horatiu.vultur@microchip.com>
+        with ESMTP id S233247AbiKPPpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 10:45:16 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5411B1139;
+        Wed, 16 Nov 2022 07:45:12 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B04AC68AA6; Wed, 16 Nov 2022 16:45:07 +0100 (CET)
+Date:   Wed, 16 Nov 2022 16:45:07 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Dean Luick <dean.luick@cornelisnetworks.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 2/7] RDMA/hfi1: don't pass bogus GFP_ flags to
+ dma_alloc_coherent
+Message-ID: <20221116154507.GB18491@lst.de>
+References: <20221113163535.884299-1-hch@lst.de> <20221113163535.884299-3-hch@lst.de> <c7c6eb30-4b54-01f7-9651-07deac3662bf@cornelisnetworks.com> <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-Date: Tue, 15 Nov 2022 22:44:55 +0100
+On Wed, Nov 16, 2022 at 03:15:10PM +0000, Robin Murphy wrote:
+> Coherent DMA buffers are allocated by a kernel driver or subsystem for the 
+> use of a device managed by that driver or subsystem, and thus they 
+> fundamentally belong to the kernel as proxy for the device. Any coherent 
+> DMA buffer may be mapped to userspace with the dma_mmap_*() interfaces, but 
+> they're never a "userspace allocation" in that sense.
 
-Extend lan966x XDP support with the action XDP_TX. In this case when the
-received buffer needs to execute XDP_TX, the buffer will be moved to the
-TX buffers. So a new RX buffer will be allocated.
-When the TX finish with the frame, it would release completely this
-buffer.
-
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 78 +++++++++++++++++--
- .../ethernet/microchip/lan966x/lan966x_main.c |  4 +-
- .../ethernet/microchip/lan966x/lan966x_main.h |  8 ++
- .../ethernet/microchip/lan966x/lan966x_xdp.c  |  8 ++
- 4 files changed, 91 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index 384ed34197d58..c2e56233a8da5 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -394,13 +394,21 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
- 		dcb_buf->dev->stats.tx_bytes += dcb_buf->len;
- 
- 		dcb_buf->used = false;
--		dma_unmap_single(lan966x->dev,
--				 dcb_buf->dma_addr,
--				 dcb_buf->len,
--				 DMA_TO_DEVICE);
--		if (!dcb_buf->ptp)
-+		if (dcb_buf->skb)
-+			dma_unmap_single(lan966x->dev,
-+					 dcb_buf->dma_addr,
-+					 dcb_buf->len,
-+					 DMA_TO_DEVICE);
-+
-+		if (dcb_buf->skb && !dcb_buf->ptp)
- 			dev_kfree_skb_any(dcb_buf->skb);
- 
-+		if (dcb_buf->page) {
-+			page_pool_release_page(lan966x->rx.page_pool,
-+					       dcb_buf->page);
-+			put_page(dcb_buf->page);
-+		}
-
-Hmm, that's not really correct.
-
-For skb, you need to unmap + free, true (BPW, just use
-napi_consume_skb()).
-For %XDP_TX, as you use Page Pool, you don't need to unmap, but you
-need to do xdp_return_frame{,_bulk}. Plus, as Tx is being done here
-directly from an Rx NAPI polling cycle, xdp_return_frame_rx_napi()
-is usually used. Anyway, each of xdp_return_frame()'s variants will
-call page_pool_put_full_page() for you.
-For %XDP_REDIRECT, as you don't know the source of the XDP frame,
-you need to unmap it (as it was previously mapped in
-::ndo_xdp_xmit()), plus call xdp_return_frame{,_bulk} to free the
-XDP frame. Note that _rx_napi() variant is not applicable here.
-
-That description might be confusing, so you can take a look at the
-already existing code[0] to get the idea. I think this piece shows
-the expected logics rather well.
-
-+
- 		clear = true;
- 	}
- 
-@@ -532,6 +540,9 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 			lan966x_fdma_rx_free_page(rx);
- 			lan966x_fdma_rx_advance_dcb(rx);
- 			goto allocate_new;
-+		case FDMA_TX:
-+			lan966x_fdma_rx_advance_dcb(rx);
-+			continue;
- 		case FDMA_DROP:
- 			lan966x_fdma_rx_free_page(rx);
- 			lan966x_fdma_rx_advance_dcb(rx);
-@@ -653,6 +664,62 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
- 	tx->last_in_use = next_to_use;
- }
- 
-+int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
-+			   struct xdp_frame *xdpf,
-+			   struct page *page)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_tx_dcb_buf *next_dcb_buf;
-+	struct lan966x_tx *tx = &lan966x->tx;
-+	dma_addr_t dma_addr;
-+	int next_to_use;
-+	__be32 *ifh;
-+	int ret = 0;
-+
-+	spin_lock(&lan966x->tx_lock);
-+
-+	/* Get next index */
-+	next_to_use = lan966x_fdma_get_next_dcb(tx);
-+	if (next_to_use < 0) {
-+		netif_stop_queue(port->dev);
-+		ret = NETDEV_TX_BUSY;
-+		goto out;
-+	}
-+
-+	/* Generate new IFH */
-+	ifh = page_address(page) + XDP_PACKET_HEADROOM;
-+	memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
-+	lan966x_ifh_set_bypass(ifh, 1);
-+	lan966x_ifh_set_port(ifh, BIT_ULL(port->chip_port));
-+
-+	dma_addr = page_pool_get_dma_addr(page);
-+	dma_sync_single_for_device(lan966x->dev, dma_addr + XDP_PACKET_HEADROOM,
-+				   xdpf->len + IFH_LEN_BYTES,
-+				   DMA_TO_DEVICE);
-
-Also not correct. This page was mapped with %DMA_FROM_DEVICE in the
-Rx code, now you sync it for the opposite.
-Most drivers in case of XDP enabled create Page Pools with ::dma_dir
-set to %DMA_BIDIRECTIONAL. Now you would need only to sync it here
-with the same direction (bidir) and that's it.
-
-+
-+	/* Setup next dcb */
-+	lan966x_fdma_tx_setup_dcb(tx, next_to_use, xdpf->len + IFH_LEN_BYTES,
-+				  dma_addr + XDP_PACKET_HEADROOM);
-+
-+	/* Fill up the buffer */
-+	next_dcb_buf = &tx->dcbs_buf[next_to_use];
-+	next_dcb_buf->skb = NULL;
-+	next_dcb_buf->page = page;
-+	next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
-+	next_dcb_buf->dma_addr = dma_addr;
-+	next_dcb_buf->used = true;
-+	next_dcb_buf->ptp = false;
-+	next_dcb_buf->dev = port->dev;
-+
-+	/* Start the transmission */
-+	lan966x_fdma_tx_start(tx, next_to_use);
-+
-+out:
-+	spin_unlock(&lan966x->tx_lock);
-+
-+	return ret;
-+}
-+
- int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
-@@ -709,6 +776,7 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
- 	/* Fill up the buffer */
- 	next_dcb_buf = &tx->dcbs_buf[next_to_use];
- 	next_dcb_buf->skb = skb;
-+	next_dcb_buf->page = NULL;
- 	next_dcb_buf->len = skb->len;
- 	next_dcb_buf->dma_addr = dma_addr;
- 	next_dcb_buf->used = true;
-
-[...]
-
--- 
-2.38.0
-
-Thanks,
-Olek
+Exactly.  I could not find a place to map the buffers to userspace,
+so if it does that without using the proper interfaces we need to fix
+that as well.  Dean, can you point me to the mmap code?
