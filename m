@@ -2,179 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0AB62C26E
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 16:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 101C562C2AD
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 16:35:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233142AbiKPPZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 10:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        id S231209AbiKPPfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 10:35:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231565AbiKPPZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 10:25:38 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A466E5C
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 07:25:37 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id l4-20020a056e021aa400b00300ad9535c8so13379764ilv.1
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 07:25:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wJ4L9gWxz0iScjIBZMxOP+5QomVfwBjk3nKBWeXU/to=;
-        b=iwkmLt4e3pqjKhVX3a8PbtCY536eUmfGwW9qzGylOK3du0Gg51tt+HY/fNBLb8hLRh
-         8AUqVGvwTeUQSqNzknzhUp+n5uk2oL3DdACLJUDUGVkKGkzqkcuhHBRFpArul1kLJPJ6
-         Xw9XVVNF5bTcsQoR5+bcAgweZ/0o6pw5BoE0LNVBpgr8cbVhZjJTlKXXAcXtgqOm81vl
-         YmfuTmb5vgvmBV0InjayuNw1TBC4qxNxYroT/EKG8DYC6eNycrjBCOiIV+K81UNjiuYf
-         b4yoxJg58bVgnNwtvpftAHTCilR0Mz85SwLsLbSqQmtxqaa0anlcEEjJwwRN4QRv1y9A
-         jQMQ==
-X-Gm-Message-State: ANoB5pmnD14ZUssfc8EXIc07hrIvvCYHOZoBJxLCOKL6e7pu4mWc/OvK
-        RmVmPth+1pg8KtLS51H/C4AxoosvELv57N3k2njjwhWkhpyr
-X-Google-Smtp-Source: AA0mqf4Pel4ZBKFv8lyzlCmOdx4V98qMO5K/R54P9kni/wuO+bqtaoG/7F63JsULd4tA0Sy9PXSnM26Oh95vvY3V80bVtNB20BtE
+        with ESMTP id S229489AbiKPPe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 10:34:59 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74B71180B;
+        Wed, 16 Nov 2022 07:34:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668612898; x=1700148898;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Wj5K9Vlpjbs5N2B8PCfWrnygyNn/3oGRftL7tuGMhMM=;
+  b=ECg/2dNILWto8srrBJNIK5eLBDpiD4OPdb/e0W61WnV4rn5toJhfnOTl
+   nlp/BXtK6Z8op91wClOoaAOimZq5mZv2Q3jdCCGBUQTVYeCmWfjZCRM62
+   kRwu0EBRGo8fJEoUpwpHJMmvHhbiaSRnBeKhx7Xd8eDCDyp89kxtIvt9u
+   1WdR7IsudcQp1pefu0jWIHX5aHivKiJQOFAPuIgPmm7Tjxdd0s0yhJRCQ
+   i8K3zAZyClzOyEJIQ6AvfG9DLYQ0s4qFn3DpU/hM4SfLYOUo2qX229EQB
+   Cpea8RIYvPKPbsTNgggjqM7KlXNaeJnePOfA34tsCXtqPPdSh2m2j81aM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="398859749"
+X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
+   d="scan'208";a="398859749"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 07:34:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="745093734"
+X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
+   d="scan'208";a="745093734"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Nov 2022 07:34:55 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AGFYsEF029828;
+        Wed, 16 Nov 2022 15:34:54 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v2 4/5] net: lan966x: Add support for XDP_TX
+Date:   Wed, 16 Nov 2022 16:34:18 +0100
+Message-Id: <20221116153418.3389630-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221115214456.1456856-5-horatiu.vultur@microchip.com>
+References: <20221115214456.1456856-1-horatiu.vultur@microchip.com> <20221115214456.1456856-5-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c908:0:b0:6aa:ad87:4e3f with SMTP id
- z8-20020a5ec908000000b006aaad874e3fmr9851526iol.14.1668612336997; Wed, 16 Nov
- 2022 07:25:36 -0800 (PST)
-Date:   Wed, 16 Nov 2022 07:25:36 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009d5daa05ed9815fa@google.com>
-Subject: [syzbot] WARNING in call_timer_fn
-From:   syzbot <syzbot+6fb78d577e89e69602f9@syzkaller.appspotmail.com>
-To:     ben-linux@fluff.org, bp@alien8.de, daniel.sneddon@linux.intel.com,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, pbonzini@redhat.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Tue, 15 Nov 2022 22:44:55 +0100
 
-syzbot found the following issue on:
+Extend lan966x XDP support with the action XDP_TX. In this case when the
+received buffer needs to execute XDP_TX, the buffer will be moved to the
+TX buffers. So a new RX buffer will be allocated.
+When the TX finish with the frame, it would release completely this
+buffer.
 
-HEAD commit:    7eba4505394e net: dcb: move getapptrust to separate function
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16626ce9880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=893a728fb1a6b263
-dashboard link: https://syzkaller.appspot.com/bug?extid=6fb78d577e89e69602f9
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16899f35880000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/68b1a18c1aad/disk-7eba4505.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/f03970850c94/vmlinux-7eba4505.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/4775c120c4c6/bzImage-7eba4505.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6fb78d577e89e69602f9@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 5978 at kernel/workqueue.c:1438 __queue_work+0xf70/0x13b0 kernel/workqueue.c:1438
-Modules linked in:
-CPU: 0 PID: 5978 Comm: syz-executor.3 Not tainted 6.1.0-rc4-syzkaller-01070-g7eba4505394e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-RIP: 0010:__queue_work+0xf70/0x13b0 kernel/workqueue.c:1438
-Code: e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8 e8 64 7b 00 8b 5b 2c 31 ff 83 e3 20 89 de e8 09 5e 2e 00 85 db 75 42 e8 50 61 2e 00 <0f> 0b e9 7e f7 ff ff e8 44 61 2e 00 0f 0b e9 10 f7 ff ff e8 38 61
-RSP: 0018:ffffc90000007c98 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: 0000000000000100 RCX: 0000000000000100
-RDX: ffff888022ba9d40 RSI: ffffffff8151be20 RDI: 0000000000000005
-RBP: ffffc90000007d60 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000100 R11: 0000000000000001 R12: ffff88806ccf4b30
-R13: ffff88806ccf4b78 R14: 0000000000000000 R15: ffff88807568f000
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005555558e1708 CR3: 0000000076b84000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- call_timer_fn+0x1da/0x7c0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1514 [inline]
- __run_timers.part.0+0x4a3/0xaf0 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb7/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x1fb/0xadc kernel/softirq.c:571
- invoke_softirq kernel/softirq.c:445 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
- irq_exit_rcu+0x9/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x97/0xc0 arch/x86/kernel/apic/apic.c:1107
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0010:lock_acquire+0x227/0x630 kernel/locking/lockdep.c:5636
-Code: 76 9f 7e 83 f8 01 0f 85 3a 03 00 00 9c 58 f6 c4 02 0f 85 25 03 00 00 48 83 7c 24 08 00 74 01 fb 48 b8 00 00 00 00 00 fc ff df <48> 01 c3 48 c7 03 00 00 00 00 48 c7 43 08 00 00 00 00 48 8b 84 24
-RSP: 0018:ffffc90006f678d0 EFLAGS: 00000206
-RAX: dffffc0000000000 RBX: 1ffff92000decf1d RCX: 0000000000000001
-RDX: 1ffff110045754f1 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000001 R08: 0000000000000001 R09: ffffffff912a75ef
-R10: fffffbfff2254ebd R11: 1ffffffff212a1df R12: 0000000000000000
-R13: 0000000000000000 R14: ffff88807568f138 R15: 0000000000000000
- __flush_workqueue+0x118/0x13a0 kernel/workqueue.c:2809
- drain_workqueue+0x1a9/0x3c0 kernel/workqueue.c:2974
- hci_dev_close_sync+0x2f3/0x1200 net/bluetooth/hci_sync.c:4809
- hci_dev_do_close+0x31/0x70 net/bluetooth/hci_core.c:554
- hci_unregister_dev+0x183/0x4e0 net/bluetooth/hci_core.c:2702
- vhci_release+0x80/0xf0 drivers/bluetooth/hci_vhci.c:568
- __fput+0x27c/0xa90 fs/file_table.c:320
- task_work_run+0x16f/0x270 kernel/task_work.c:179
- exit_task_work include/linux/task_work.h:38 [inline]
- do_exit+0xb3d/0x2a30 kernel/exit.c:820
- do_group_exit+0xd4/0x2a0 kernel/exit.c:950
- __do_sys_exit_group kernel/exit.c:961 [inline]
- __se_sys_exit_group kernel/exit.c:959 [inline]
- __x64_sys_exit_group+0x3e/0x50 kernel/exit.c:959
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f3d8a68b639
-Code: Unable to access opcode bytes at 0x7f3d8a68b60f.
-RSP: 002b:00007ffd554b9878 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 0000000000000029 RCX: 00007f3d8a68b639
-RDX: 00007f3d8a68cc8a RSI: 0000000000000000 RDI: 0000000000000007
-RBP: 0000000000000007 R08: ffffffffff000000 R09: 0000000000000029
-R10: 00000000000003b8 R11: 0000000000000246 R12: 00007ffd554b9f00
-R13: 0000000000000003 R14: 00007ffd554b9e9c R15: 00007f3d8a782b60
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	76 9f                	jbe    0xffffffa1
-   2:	7e 83                	jle    0xffffff87
-   4:	f8                   	clc
-   5:	01 0f                	add    %ecx,(%rdi)
-   7:	85 3a                	test   %edi,(%rdx)
-   9:	03 00                	add    (%rax),%eax
-   b:	00 9c 58 f6 c4 02 0f 	add    %bl,0xf02c4f6(%rax,%rbx,2)
-  12:	85 25 03 00 00 48    	test   %esp,0x48000003(%rip)        # 0x4800001b
-  18:	83 7c 24 08 00       	cmpl   $0x0,0x8(%rsp)
-  1d:	74 01                	je     0x20
-  1f:	fb                   	sti
-  20:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  27:	fc ff df
-* 2a:	48 01 c3             	add    %rax,%rbx <-- trapping instruction
-  2d:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
-  34:	48 c7 43 08 00 00 00 	movq   $0x0,0x8(%rbx)
-  3b:	00
-  3c:	48                   	rex.W
-  3d:	8b                   	.byte 0x8b
-  3e:	84                   	.byte 0x84
-  3f:	24                   	.byte 0x24
-
-
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../ethernet/microchip/lan966x/lan966x_fdma.c | 78 +++++++++++++++++--
+ .../ethernet/microchip/lan966x/lan966x_main.c |  4 +-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  8 ++
+ .../ethernet/microchip/lan966x/lan966x_xdp.c  |  8 ++
+ 4 files changed, 91 insertions(+), 7 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+index 384ed34197d58..c2e56233a8da5 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+@@ -394,13 +394,21 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
+ 		dcb_buf->dev->stats.tx_bytes += dcb_buf->len;
+ 
+ 		dcb_buf->used = false;
+-		dma_unmap_single(lan966x->dev,
+-				 dcb_buf->dma_addr,
+-				 dcb_buf->len,
+-				 DMA_TO_DEVICE);
+-		if (!dcb_buf->ptp)
++		if (dcb_buf->skb)
++			dma_unmap_single(lan966x->dev,
++					 dcb_buf->dma_addr,
++					 dcb_buf->len,
++					 DMA_TO_DEVICE);
++
++		if (dcb_buf->skb && !dcb_buf->ptp)
+ 			dev_kfree_skb_any(dcb_buf->skb);
+ 
++		if (dcb_buf->page) {
++			page_pool_release_page(lan966x->rx.page_pool,
++					       dcb_buf->page);
++			put_page(dcb_buf->page);
++		}
+
+Hmm, that's not really correct.
+
+For skb, you need to unmap + free, true (BPW, just use
+napi_consume_skb()).
+For %XDP_TX, as you use Page Pool, you don't need to unmap, but you
+need to do xdp_return_frame{,_bulk}. Plus, as Tx is being done here
+directly from an Rx NAPI polling cycle, xdp_return_frame_rx_napi()
+is usually used. Anyway, each of xdp_return_frame()'s variants will
+call page_pool_put_full_page() for you.
+For %XDP_REDIRECT, as you don't know the source of the XDP frame,
+you need to unmap it (as it was previously mapped in
+::ndo_xdp_xmit()), plus call xdp_return_frame{,_bulk} to free the
+XDP frame. Note that _rx_napi() variant is not applicable here.
+
+That description might be confusing, so you can take a look at the
+already existing code[0] to get the idea. I think this piece shows
+the expected logics rather well.
+
++
+ 		clear = true;
+ 	}
+ 
+@@ -532,6 +540,9 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
+ 			lan966x_fdma_rx_free_page(rx);
+ 			lan966x_fdma_rx_advance_dcb(rx);
+ 			goto allocate_new;
++		case FDMA_TX:
++			lan966x_fdma_rx_advance_dcb(rx);
++			continue;
+ 		case FDMA_DROP:
+ 			lan966x_fdma_rx_free_page(rx);
+ 			lan966x_fdma_rx_advance_dcb(rx);
+@@ -653,6 +664,62 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
+ 	tx->last_in_use = next_to_use;
+ }
+ 
++int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
++			   struct xdp_frame *xdpf,
++			   struct page *page)
++{
++	struct lan966x *lan966x = port->lan966x;
++	struct lan966x_tx_dcb_buf *next_dcb_buf;
++	struct lan966x_tx *tx = &lan966x->tx;
++	dma_addr_t dma_addr;
++	int next_to_use;
++	__be32 *ifh;
++	int ret = 0;
++
++	spin_lock(&lan966x->tx_lock);
++
++	/* Get next index */
++	next_to_use = lan966x_fdma_get_next_dcb(tx);
++	if (next_to_use < 0) {
++		netif_stop_queue(port->dev);
++		ret = NETDEV_TX_BUSY;
++		goto out;
++	}
++
++	/* Generate new IFH */
++	ifh = page_address(page) + XDP_PACKET_HEADROOM;
++	memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
++	lan966x_ifh_set_bypass(ifh, 1);
++	lan966x_ifh_set_port(ifh, BIT_ULL(port->chip_port));
++
++	dma_addr = page_pool_get_dma_addr(page);
++	dma_sync_single_for_device(lan966x->dev, dma_addr + XDP_PACKET_HEADROOM,
++				   xdpf->len + IFH_LEN_BYTES,
++				   DMA_TO_DEVICE);
+
+Also not correct. This page was mapped with %DMA_FROM_DEVICE in the
+Rx code, now you sync it for the opposite.
+Most drivers in case of XDP enabled create Page Pools with ::dma_dir
+set to %DMA_BIDIRECTIONAL. Now you would need only to sync it here
+with the same direction (bidir) and that's it.
+
++
++	/* Setup next dcb */
++	lan966x_fdma_tx_setup_dcb(tx, next_to_use, xdpf->len + IFH_LEN_BYTES,
++				  dma_addr + XDP_PACKET_HEADROOM);
++
++	/* Fill up the buffer */
++	next_dcb_buf = &tx->dcbs_buf[next_to_use];
++	next_dcb_buf->skb = NULL;
++	next_dcb_buf->page = page;
++	next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
++	next_dcb_buf->dma_addr = dma_addr;
++	next_dcb_buf->used = true;
++	next_dcb_buf->ptp = false;
++	next_dcb_buf->dev = port->dev;
++
++	/* Start the transmission */
++	lan966x_fdma_tx_start(tx, next_to_use);
++
++out:
++	spin_unlock(&lan966x->tx_lock);
++
++	return ret;
++}
++
+ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
+ {
+ 	struct lan966x_port *port = netdev_priv(dev);
+@@ -709,6 +776,7 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
+ 	/* Fill up the buffer */
+ 	next_dcb_buf = &tx->dcbs_buf[next_to_use];
+ 	next_dcb_buf->skb = skb;
++	next_dcb_buf->page = NULL;
+ 	next_dcb_buf->len = skb->len;
+ 	next_dcb_buf->dma_addr = dma_addr;
+ 	next_dcb_buf->used = true;
+
+[...]
+
+-- 
+2.38.0
+
+Thanks,
+Olek
