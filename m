@@ -2,61 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DEBD62C2E6
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 16:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70F7662C2EC
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 16:46:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbiKPPpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 10:45:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
+        id S233136AbiKPPqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 10:46:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiKPPpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 10:45:16 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5411B1139;
-        Wed, 16 Nov 2022 07:45:12 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id B04AC68AA6; Wed, 16 Nov 2022 16:45:07 +0100 (CET)
-Date:   Wed, 16 Nov 2022 16:45:07 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Dean Luick <dean.luick@cornelisnetworks.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 2/7] RDMA/hfi1: don't pass bogus GFP_ flags to
- dma_alloc_coherent
-Message-ID: <20221116154507.GB18491@lst.de>
-References: <20221113163535.884299-1-hch@lst.de> <20221113163535.884299-3-hch@lst.de> <c7c6eb30-4b54-01f7-9651-07deac3662bf@cornelisnetworks.com> <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
+        with ESMTP id S233016AbiKPPqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 10:46:00 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAD827917;
+        Wed, 16 Nov 2022 07:45:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668613558; x=1700149558;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1/gkxejWIA7ingIPW/2Fo+kxpItp23dI6rVvmXK6vEs=;
+  b=XC08bUuMhTnfnU2IKwr/m0M+YcRuBG0cxPZCEZiXJ7A6KOi0mhySistE
+   KVB03LAn6+CZb0Y7998scwIABgw70GZxrzKWdl+7F2waOxr0TdT5uywXi
+   tDN7us5xeaM84hQX0IuJrVAuxxvhMqsVUO51jFI2PMiNQyLDmARgwfohO
+   yteXm5ZGKbEteO8CLFp2Jjv4pB8CslyyQ9qBjuMOhqEaeZwNSHRJw9L5d
+   9rmIHK6+TLBTn+049SfpdSCo+TVc+4mbgLe504M+mKW8IJS2oAeXM34IC
+   KARUeIamPL2pyrHr6cWj4AXXvYItX1Ci0iIVd90DE/kGR4+bQToWu9QFp
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="311282694"
+X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
+   d="scan'208";a="311282694"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 07:45:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="814125429"
+X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
+   d="scan'208";a="814125429"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga005.jf.intel.com with ESMTP; 16 Nov 2022 07:45:55 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AGFjstk031345;
+        Wed, 16 Nov 2022 15:45:54 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v2 1/5] net: lan966x: Add XDP_PACKET_HEADROOM
+Date:   Wed, 16 Nov 2022 16:45:28 +0100
+Message-Id: <20221116154528.3390307-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221115214456.1456856-2-horatiu.vultur@microchip.com>
+References: <20221115214456.1456856-1-horatiu.vultur@microchip.com> <20221115214456.1456856-2-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 03:15:10PM +0000, Robin Murphy wrote:
-> Coherent DMA buffers are allocated by a kernel driver or subsystem for the 
-> use of a device managed by that driver or subsystem, and thus they 
-> fundamentally belong to the kernel as proxy for the device. Any coherent 
-> DMA buffer may be mapped to userspace with the dma_mmap_*() interfaces, but 
-> they're never a "userspace allocation" in that sense.
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Tue, 15 Nov 2022 22:44:52 +0100
 
-Exactly.  I could not find a place to map the buffers to userspace,
-so if it does that without using the proper interfaces we need to fix
-that as well.  Dean, can you point me to the mmap code?
+> Update the page_pool params to allocate XDP_PACKET_HEADROOM space as
+> headroom for all received frames.
+> This is needed for when the XDP_TX and XDP_REDIRECT are implemented.
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+
+[...]
+
+> @@ -466,6 +470,7 @@ static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx,
+>  
+>  	skb_mark_for_recycle(skb);
+>  
+> +	skb_reserve(skb, XDP_PACKET_HEADROOM);
+
+Oh, forgot to ask previously. Just curious, which platforms do
+usually have this NIC? Do those platforms have
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS set?
+If no, then adding %NET_SKB_PAD to the headroom can significantly
+improve performance, as currently you have 28 bytes of IFH + 14
+bytes of Eth header, so IP header is not aligned to 4 bytes
+boundary. Kernel and other drivers often expect IP header to be
+aligned. Adding %NET_SKB_PAD to the headroom addresses that.
+...but be careful, I've just realized that you have IFH in front
+of Eth header, that means that it will also become unaligned after
+that change, so make sure you don't access it with words bigger
+than 2 bytes. Just test all the variants and pick the best :D
+
+>  	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
+>  
+>  	lan966x_ifh_get_timestamp(skb->data, &timestamp);
+> @@ -786,7 +791,8 @@ static int lan966x_fdma_get_max_frame(struct lan966x *lan966x)
+>  	return lan966x_fdma_get_max_mtu(lan966x) +
+>  	       IFH_LEN_BYTES +
+>  	       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) +
+> -	       VLAN_HLEN * 2;
+> +	       VLAN_HLEN * 2 +
+> +	       XDP_PACKET_HEADROOM;
+>  }
+
+[...]
+
+> -- 
+> 2.38.0
+
+Thanks,
+Olek
