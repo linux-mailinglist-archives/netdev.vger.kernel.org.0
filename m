@@ -2,103 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2522562C819
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B279262C81C
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 19:48:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbiKPSrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 13:47:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
+        id S232906AbiKPSss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 13:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239414AbiKPSp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:45:26 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CD663CF1
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:44:40 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id bp12so9599112ilb.9
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 10:44:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6F8zpl58bT40JxRCaS05R51J3S3Cm7X4seeHIywQrFs=;
-        b=G9FKTdHFM94LwDnKYS5xKSiYSZ6Klgc/e1X6czIeXi5ADydt5VC/Y1i2CqukKXDfMb
-         TH3fbCu+CCV23jZ9OK2fqDMNizopoWMrYxHNFNZ+edTwowYKC/dYlayMgo88Wk2FGaxr
-         EqLeEBDTXmCcmhynbLny9WYtNbkDuwXO6u7NGpA2Ees/gL6kN3tDL9lKgYsxtGJFvy0l
-         z00kW0T6KTjqJuneg9b4XnnytM2/n2ZDkR5EpLLgCDDk74yrP0H46qXf+nRlave0ZWt4
-         Thm42e6bZ94Vvs3hInMkSGz3kifigkK4I3u72SsSLl826SN20nuqQen+30PVovdrW+58
-         58jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6F8zpl58bT40JxRCaS05R51J3S3Cm7X4seeHIywQrFs=;
-        b=5K/GFRyYJELcQpTTyOcp6uoHAjMWF7bJ/L+jrAa6p5uBwcy/HspK+UmoTOOA/egcjk
-         Cvjy7CNRuDUA+lzwApMmLXAfNHjMw8PtbovbfOiPR96q5iU60yN/3TUhcNNm/wl9+v2b
-         OlWwCTHlisCG/SBICD3zfwwjhg8DlHfdYcnb+C2sZXQZjMn0B+HKlXyZCO5BjNx3HewL
-         gM9FuTsbLfrxLxe5mZd6J0zhz6lcUrlY9SZpdgrw0jV3CgANsDJFwGOtW3Y5TDX8iElX
-         JH+iiZBY98LLlXZTqpK5Bc4tChLy20tKaVoWPnw09zp9lRN0rtJ6eLNOkLXdc9Wx4JGG
-         Ibng==
-X-Gm-Message-State: ANoB5pmhtaQU/QDXcsrCCP4hUmQmFuhmmx2vQkg/ZquOmrCl3ZjHj/kn
-        VqB0+Nyi8TgybsoXCjbxqhiJEQ==
-X-Google-Smtp-Source: AA0mqf4H4NmH2GeAZ2fHObtyxSifcKL7+oq1AN7ckxhbHwnflINse6H77JNTx6Q+ynnTnWwP4tyBnw==
-X-Received: by 2002:a92:db49:0:b0:300:f59b:6d0c with SMTP id w9-20020a92db49000000b00300f59b6d0cmr11478732ilq.107.1668624279689;
-        Wed, 16 Nov 2022 10:44:39 -0800 (PST)
-Received: from [192.168.1.94] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id p1-20020a92d481000000b002f9f001de24sm6513788ilg.21.2022.11.16.10.44.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Nov 2022 10:44:39 -0800 (PST)
-Message-ID: <44c2f431-6fd0-13c7-7b53-59237e24380a@kernel.dk>
-Date:   Wed, 16 Nov 2022 11:44:38 -0700
+        with ESMTP id S239055AbiKPSsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 13:48:06 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A3B663D2;
+        Wed, 16 Nov 2022 10:45:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668624350; x=1700160350;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AMuvxwNHO0fNaYeLhzmRSMCbspfcBN0bchXkHT8SYbI=;
+  b=DGxwEjYaeekSI41cNNrrJCFEyMO/HdmtwiXDZfQ9zmcGkA690onoxeee
+   0JE6TL7bbsz93J4tf2xA1yt45LBs/KZdhWpyGYk8uiSAZuAMMy4BPJY0T
+   iRGvLNH123t3iNcH7cyay5r+6SY7fJo+ijpb1u5vqoQhLTddRc0hz5/IK
+   Q9uFFBJ9jDEap6hMBAhwlfHRlww837/wyVFQh8fG+V5vCARa7O72UcGws
+   tP7rNwNFHln7Kpuj6PjHYyQS57UihE9bAoDm4ttijgwNhmCH8kkQFythq
+   B2tIRrOqoObdv6L4haCMGumQ7gFA9NWKc1uN9lwdP7HB58AHQ+tAbnEzy
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,169,1665471600"; 
+   d="scan'208";a="189305689"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2022 11:45:48 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 16 Nov 2022 11:45:47 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Wed, 16 Nov 2022 11:45:46 -0700
+Date:   Wed, 16 Nov 2022 19:50:35 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next v2 1/5] net: lan966x: Add XDP_PACKET_HEADROOM
+Message-ID: <20221116185035.ibrby6dghiva5qdi@soft-dev3-1>
+References: <20221115214456.1456856-1-horatiu.vultur@microchip.com>
+ <20221115214456.1456856-2-horatiu.vultur@microchip.com>
+ <20221116154528.3390307-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [RFC PATCH v3 0/3] io_uring: add napi busy polling support
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Stefan Roesch <shr@devkernel.io>
-Cc:     kernel-team@fb.com, olivier@trillion01.com, netdev@vger.kernel.org,
-        io-uring@vger.kernel.org
-References: <20221115070900.1788837-1-shr@devkernel.io>
- <20221116103117.6b82e982@kernel.org>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20221116103117.6b82e982@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20221116154528.3390307-1-alexandr.lobakin@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/22 11:31 AM, Jakub Kicinski wrote:
-> On Mon, 14 Nov 2022 23:08:57 -0800 Stefan Roesch wrote:
->> This adds the napi busy polling support in io_uring.c. It adds a new
->> napi_list to the io_ring_ctx structure. This list contains the list of
->> napi_id's that are currently enabled for busy polling. This list is
->> used to determine which napi id's enabled busy polling.
->>
->> To set the new napi busy poll timeout, a new io-uring api has been
->> added. It sets the napi busy poll timeout for the corresponding ring.
->>
->> There is also a corresponding liburing patch series, which enables this
->> feature. The name of the series is "liburing: add add api for napi busy
->> poll timeout". It also contains two programs to test the this.
->>
->> Testing has shown that the round-trip times are reduced to 38us from
->> 55us by enabling napi busy polling with a busy poll timeout of 100us.
+The 11/16/2022 16:45, Alexander Lobakin wrote:
+> [Some people who received this message don't often get email from alexandr.lobakin@intel.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
 > 
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Date: Tue, 15 Nov 2022 22:44:52 +0100
 > 
-> Thanks!
+> > Update the page_pool params to allocate XDP_PACKET_HEADROOM space as
+> > headroom for all received frames.
+> > This is needed for when the XDP_TX and XDP_REDIRECT are implemented.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> 
+> [...]
+> 
+> > @@ -466,6 +470,7 @@ static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx,
+> >
+> >       skb_mark_for_recycle(skb);
+> >
+> > +     skb_reserve(skb, XDP_PACKET_HEADROOM);
+> 
+> Oh, forgot to ask previously. Just curious, which platforms do
+> usually have this NIC? Do those platforms have
+> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS set?
 
-Thanks Jakub! Question on the need for patch 3, which I think came about
-because of comments from you. Can you expand on why we need both an
-enable and timeout setting? Are there cases where timeout == 0 and
-enabled == true make sense?
+I am running on ARM and I can see that
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is set.
+
+> If no, then adding %NET_SKB_PAD to the headroom can significantly
+> improve performance, as currently you have 28 bytes of IFH + 14
+> bytes of Eth header, so IP header is not aligned to 4 bytes
+> boundary. Kernel and other drivers often expect IP header to be
+> aligned. Adding %NET_SKB_PAD to the headroom addresses that.
+> ...but be careful, I've just realized that you have IFH in front
+> of Eth header, that means that it will also become unaligned after
+> that change, so make sure you don't access it with words bigger
+> than 2 bytes. Just test all the variants and pick the best :D
+
+Thanks for a detail explanation!
+
+> 
+> >       skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
+> >
+> >       lan966x_ifh_get_timestamp(skb->data, &timestamp);
+> > @@ -786,7 +791,8 @@ static int lan966x_fdma_get_max_frame(struct lan966x *lan966x)
+> >       return lan966x_fdma_get_max_mtu(lan966x) +
+> >              IFH_LEN_BYTES +
+> >              SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) +
+> > -            VLAN_HLEN * 2;
+> > +            VLAN_HLEN * 2 +
+> > +            XDP_PACKET_HEADROOM;
+> >  }
+> 
+> [...]
+> 
+> > --
+> > 2.38.0
+> 
+> Thanks,
+> Olek
 
 -- 
-Jens Axboe
+/Horatiu
