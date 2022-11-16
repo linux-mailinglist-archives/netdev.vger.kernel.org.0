@@ -2,174 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C43DD62B423
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 08:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF5DF62B46A
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 09:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232351AbiKPHrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 02:47:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
+        id S232831AbiKPIBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 03:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231594AbiKPHrq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 02:47:46 -0500
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16106D113;
-        Tue, 15 Nov 2022 23:47:45 -0800 (PST)
-Message-ID: <34f89a95-a79e-751c-fdd2-93889420bf96@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1668584863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ed1cg6SvB5gikz9nKb2NT1RQypbDjDrNtRQGfRyCBkA=;
-        b=hwp6jDQMl5G3j8+T+IvdCqSTd926glT68BV4yjsPRXAUSq8QRGOdoP14Sy6p35T6pR5UEi
-        UmpdmyYtBCKyPNktWOOhjCxxRVpBrMeF1cXyxasG7oXnNsTd0CECUdojPJeXca3vwjoTnl
-        7pbMkvK0H4cQ3ZV6EW2YdfUevs/EEJE=
-Date:   Tue, 15 Nov 2022 23:47:38 -0800
+        with ESMTP id S232735AbiKPIB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 03:01:27 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2066.outbound.protection.outlook.com [40.107.95.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B6C266
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 00:01:26 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Al+XYblkCZu8StTntwEjJ9lTF+ZiQdUjrYyIjaDlqZdpdofXcQQcZSj8VUbqnd+mJtlJomkUeNxC36XQWZLm/cvX6EQEBjxu8WPeNtH1SPXhoLi6+2c6ltwdQgxGs/u8vOTgqJWsKXuWYp9s3xmjM0EBD892UzUD1poHDbi6Ggu9Pjzz+osA2iFYnDP69jBTMjj1zFi1BQhGSycm9DLmsik++aRq86jJM7vp0PQXVoNAurC0V6FgqRBGRV4X1JzwxercD6FdnQcRXzCLfvCqVRNRFqNORdiqa3Qm68rflMinzdgBKyRNziJWgKfbLJMLlMnVkNFNyyMPTBYWvOo3FA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mWRIvjuCfmuWWky1xkfwm9fbEJlu9oXOrJySLM17jQM=;
+ b=FXRLf8FwRYM0ru886VhmHHAUGwvUo0WtnRi+dIuYI1iUFF5OzSxfdya1KRN5a7hUVW7yL7QyvUPV0cKuiRnxzYnE6gZcrsd8tzGpzqQkPyfXmYkecX0GmyZrxCk2P4J/nty5Qp8HUq9QZIv/l50RGUIEV54Qmi2K0RUxkTNVA3f6l7hxQ68UCs1adscpyqrtghjR2HsnSq8ntnC1Df5+P+oZ42iUb+UKQWL24IcVCl/X14vya+UfBw0h4/a+I4NBHzYEH/Z4E3s7wbdmTIiQYdc6csLCUxUi/PjFZJNMvNo20c8bdnIX+qMALO96UqUXCZtwqf3FBqeoS7KCIPLzgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mWRIvjuCfmuWWky1xkfwm9fbEJlu9oXOrJySLM17jQM=;
+ b=eL0mYc7nbVnW9SJpJUL4Wdsl0PrpeEJnPv+jiFweEnvV54yv9AGBMYOnNG7fVHIUp7pl8JZkORdxF1qV5CZFK8wOXKWOAVdKIycScWyTsQp2SsYIPciDkKDJmk3trQogNFd7JoQi0PEMQIY1qoHgbF3scl4zRFg3/s8OQPcZSYVtMQTGs783eIhF+DrwiQlphkezcUlqsH2nMGqQSCcyDL3ekGugUAJit+/hUY/tnlZVOLfqywJf3Ltz36LYVuZ+TSZytn14DCzytOOCnCZCxUuFk3axIMgggSlPFQAEXcGba6kKOyNcUT9XKGKFBn87fxSHaA0Tq/yshAX+q9wMBQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by DM4PR12MB6591.namprd12.prod.outlook.com (2603:10b6:8:8e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Wed, 16 Nov
+ 2022 08:01:25 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9373:5894:9cef:ada6]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9373:5894:9cef:ada6%3]) with mapi id 15.20.5813.017; Wed, 16 Nov 2022
+ 08:01:25 +0000
+Date:   Wed, 16 Nov 2022 10:01:18 +0200
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>
+Subject: Re: [PATCH net-next] mlxsw: update adjfine to use
+ adjust_by_scaled_ppm
+Message-ID: <Y3SYzkIJYjBpViNn@shredder>
+References: <20221114213701.815132-1-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221114213701.815132-1-jacob.e.keller@intel.com>
+X-ClientProxiedBy: VI1PR09CA0179.eurprd09.prod.outlook.com
+ (2603:10a6:800:120::33) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next 05/11] veth: Support rx timestamp
- metadata for xdp
-Content-Language: en-US
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-References: <20221115030210.3159213-1-sdf@google.com>
- <20221115030210.3159213-6-sdf@google.com> <87h6z0i449.fsf@toke.dk>
- <CAKH8qBsEGD3L0XAVzVHcTW6k_RhEt74pfXrPLANuznSAJw7bEg@mail.gmail.com>
- <8735ajet05.fsf@toke.dk>
- <CAKH8qBsg4aoFuiajuXmRN3VPKYVJZ-Z5wGzBy9pH3pV5RKCDzQ@mail.gmail.com>
- <6374854883b22_5d64b208e3@john.notmuch>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <6374854883b22_5d64b208e3@john.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|DM4PR12MB6591:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5a6deee2-ac3e-40c2-c200-08dac7a8c1cd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MmEFcWhWPo0r73CKUCfpts/6ZvPPOkTbzYfgjPj7RmZ2ygosbtjBODNdBdK+QO58IX+Rb9yohOAF5zXntMgeSEadmQkeKbvf6Y1JyeG/hRi3MkBPFZC/OFosMm0owyzSk3soaDx1beEr6RABK0mAhq4sGTVTEO/BwHqEF80Js38KRaJB9jIMs0f+JLysSWKZKf3w5WVE1Cm5ewdGzhMgnrBB25C1Y/iHxvV54KKYSKWeML62nEoDwNRuCTZLzj0ACSCs8c+ySJf5t4SxbIZ0QNVzBAnXR7LLG4wfY71qyx9ltq51M9deTC3RbqiLIEdNhyGhvLlwVZ8GtHLXa8q7yaf9wujf4TPn8/oNaEsIqU9p7hweiIKIyj+y489Xw9Nk3X+3VlMtgE9r/92W8GiSnuggEnOKHuZEKffoqA8k6SIptyKwTSXO5MxH6kmOAWjMyNPvPVkAJi4Sbsc1BKadp2OasrX1kFEvOkAens3Kv7Dga48x3Pk3UvtaEPrtRpjJ24DWd2qX7iuAq+We1tEmM7gA1UnKYwJkt26Ynq+A5YUKOqUM5n61ierYQYSrtPe+IaYkO1DkzSya6cegpQ56w3UanDuag5FaXoxIZGVwBAijsVgoE68GX7fRPYyPofkksiONYDJrvBQft5XLYb/ayGTLC8XIzUxkGbZ117F9DqrJ6g8gr2DRZ6FK3K2+jstdRma+DzoYxV506CVAZhklkg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(346002)(366004)(136003)(39860400002)(396003)(376002)(451199015)(2906002)(8936002)(4744005)(41300700001)(4326008)(66476007)(66556008)(8676002)(66946007)(107886003)(86362001)(6916009)(316002)(6506007)(478600001)(38100700002)(54906003)(5660300002)(6666004)(6486002)(33716001)(26005)(6512007)(186003)(9686003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7U90Sf4LHfhMI/7bm09ELOaUaj1YP55Gxm7bBwEyV7POXDIp0VrETY4I6gzF?=
+ =?us-ascii?Q?1bLiH9w2JI0FIJ51Cg4bVvsnr2aDBS3/XdJ6ML6s2XB6UUVCeaF/J/m30my5?=
+ =?us-ascii?Q?P9W4bXzUVr7QsB0QjuKVW0VfrwYFNy+tzKP19zVr6jZfa87Bb2okhRsfFkNW?=
+ =?us-ascii?Q?Ma1GjkC8COt2Dn2T3qFx2mmURUrHYg2wUTeYWZVYHqD5x5PeMzLPI6U9NGI4?=
+ =?us-ascii?Q?iHv0thrZ+iPA/zK5LTRk5QwLKILlNig8ZHUVcg3zKgLDF0glXIWJnruucElw?=
+ =?us-ascii?Q?rbbUVd84zMkub9KSKOAbBNdYfwRGh25Q0mNMRNAhxsinnyUlirKs0doly3WP?=
+ =?us-ascii?Q?yLV+HkeppbHpToOXCakVJIwn9J+gyhL9MBjISnOly1mAgQ1gzRchQDkdCs3X?=
+ =?us-ascii?Q?IXPjWZPYNLhHBjMbqDP61fRPbOloBzy+V5/0JuJxp0Y3BpwHFzZHofM97uSV?=
+ =?us-ascii?Q?J+6ye7IfDgKveSQGppd0NsiPs+T2m6gfb6mGFo82CyMlg38z9OIbNAx9SGr8?=
+ =?us-ascii?Q?nAMAyWhqoo7HilfD/9Os7tujSQSiEKjWB+ytnHmb98b1fRSBy/mGyADiccVb?=
+ =?us-ascii?Q?YknEOx47FbbmmUt+r7UGaWd0MULkLLJeO2tlnp2Xd+zEjYW4ByZH7WAvCGfR?=
+ =?us-ascii?Q?x3UJwrRvCfPvF7mwkTDpeYyHqqWCNVjPPO15eZITsN2zccQTseINrAfh2sVC?=
+ =?us-ascii?Q?Wltuf5zatGq+QQUEnvKILJ2867xNTsbtuM+yxmdo3RYdgkk/ZCRv1wxMt4Fc?=
+ =?us-ascii?Q?CMGyfjeFzw2l1JNgjlkz4p8E5IIs9m8AHlE7ZCBxtfu/TcInDmt1HeX764b+?=
+ =?us-ascii?Q?fE3roemYbIn7caJSovHYiBlFOlcqvlUcJJqv2ENgrgAf7bzwSFjSIrIuI9iB?=
+ =?us-ascii?Q?gkvl9zQQeimcJVzPDmgmLC36hBR3Pcrerx8mKG9Wjn79FK60Q0lm8xfzRNiz?=
+ =?us-ascii?Q?RNogJgK69j3sLBZMnkZe/fhdH7CiRzaS2tCXYNuEDfE7KXJb/SFhvUSKQDkf?=
+ =?us-ascii?Q?HnuINCKPiQb+eqZKPqRtGtZMG9RuqZdWKABjtKi7sqr+Rma+rkKluPU6ACB3?=
+ =?us-ascii?Q?H2EgN7eDkwhAYcpRyXmEVQBEZbsUmMcU7RfsFjMyrPpxlceg4+Fv+e3sDomd?=
+ =?us-ascii?Q?K4fVG3y48NnorCozxAFCm6b8h3+EzBFuXHOpSFYtMftDGJK5I2DWAaIvqjx+?=
+ =?us-ascii?Q?hQIEA31rZSWeWTooGI2o5oyFTjuxhH12XnYlW7Xnz+VD2LiP88OugQD/Eg3o?=
+ =?us-ascii?Q?jHLe3hh5+PwtUoyLrDcUpEiExlRw5Lu0rgrd/YuQK73birIXz2smLD/Kzqxq?=
+ =?us-ascii?Q?r7Xy0gb+g67Gzl+VitbPM9aTaycPAjqVYyL0wlfWQcknO/yalHJ5OGMNm75a?=
+ =?us-ascii?Q?nORS+0aU9NRvKLCvG8f/wJmh/8M8CkeSfwHJrh62Ko4lmWMFmdf50yoi2Sn1?=
+ =?us-ascii?Q?FpIeks4a/LC3qqOOlv/k0d0+95dIxHvih+YPdsAFu54UyZKRuSM+eNeYFlFE?=
+ =?us-ascii?Q?SbmYMZg9i8DzgmOoEq7TI2OeN0Pul1jgh6MttP86eefBnMBssykJQnldFtaG?=
+ =?us-ascii?Q?1INmPY2ePsoyBXR48MJa3xlgs5MDIL0eMsvPFIfI?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a6deee2-ac3e-40c2-c200-08dac7a8c1cd
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 08:01:24.9235
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +CBUVvh0XPQ3L+QKTlMqeCRynbXZKUnLp3UQKYWD2eClFsCsiQ/xEUX5/joGq9owz9IXOB7yrShDwv+haQ8bzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6591
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/22 10:38 PM, John Fastabend wrote:
->>>>>> +static void veth_unroll_kfunc(const struct bpf_prog *prog, u32 func_id,
->>>>>> +                           struct bpf_patch *patch)
->>>>>> +{
->>>>>> +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
->>>>>> +             /* return true; */
->>>>>> +             bpf_patch_append(patch, BPF_MOV64_IMM(BPF_REG_0, 1));
->>>>>> +     } else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
->>>>>> +             /* return ktime_get_mono_fast_ns(); */
->>>>>> +             bpf_patch_append(patch, BPF_EMIT_CALL(ktime_get_mono_fast_ns));
->>>>>> +     }
->>>>>> +}
->>>>>
->>>>> So these look reasonable enough, but would be good to see some examples
->>>>> of kfunc implementations that don't just BPF_CALL to a kernel function
->>>>> (with those helper wrappers we were discussing before).
->>>>
->>>> Let's maybe add them if/when needed as we add more metadata support?
->>>> xdp_metadata_export_to_skb has an example, and rfc 1/2 have more
->>>> examples, so it shouldn't be a problem to resurrect them back at some
->>>> point?
->>>
->>> Well, the reason I asked for them is that I think having to maintain the
->>> BPF code generation in the drivers is probably the biggest drawback of
->>> the kfunc approach, so it would be good to be relatively sure that we
->>> can manage that complexity (via helpers) before we commit to this :)
->>
->> Right, and I've added a bunch of examples in v2 rfc so we can judge
->> whether that complexity is manageable or not :-)
->> Do you want me to add those wrappers you've back without any real users?
->> Because I had to remove my veth tstamp accessors due to John/Jesper
->> objections; I can maybe bring some of this back gated by some
->> static_branch to avoid the fastpath cost?
+On Mon, Nov 14, 2022 at 01:37:01PM -0800, Jacob Keller wrote:
+> The mlxsw adjfine implementation in the spectrum_ptp.c file converts
+> scaled_ppm into ppb before updating a cyclecounter multiplier using the
+> standard "base * ppb / 1billion" calculation.
 > 
-> I missed the context a bit what did you mean "would be good to see some
-> examples of kfunc implementations that don't just BPF_CALL to a kernel
-> function"? In this case do you mean BPF code directly without the call?
+> This can be re-written to use adjust_by_scaled_ppm, directly using the
+> scaled parts per million and reducing the amount of code required to
+> express this calculation.
 > 
-> Early on I thought we should just expose the rx_descriptor which would
-> be roughly the same right? (difference being code embedded in driver vs
-> a lib) Trouble I ran into is driver code using seqlock_t and mutexs
-> which wasn't as straight forward as the simpler just read it from
-> the descriptor. For example in mlx getting the ts would be easy from
-> BPF with the mlx4_cqe struct exposed
+> We still calculate the parts per billion for passing into
+> mlxsw_sp_ptp_phc_adjfreq because this function requires the input to be in
+> parts per billion.
 > 
-> u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe)
-> {
->          u64 hi, lo;
->          struct mlx4_ts_cqe *ts_cqe = (struct mlx4_ts_cqe *)cqe;
-> 
->          lo = (u64)be16_to_cpu(ts_cqe->timestamp_lo);
->          hi = ((u64)be32_to_cpu(ts_cqe->timestamp_hi) + !lo) << 16;
-> 
->          return hi | lo;
-> }
-> 
-> but converting that to nsec is a bit annoying,
-> 
-> void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
->                              struct skb_shared_hwtstamps *hwts,
->                              u64 timestamp)
-> {
->          unsigned int seq;
->          u64 nsec;
-> 
->          do {
->                  seq = read_seqbegin(&mdev->clock_lock);
->                  nsec = timecounter_cyc2time(&mdev->clock, timestamp);
->          } while (read_seqretry(&mdev->clock_lock, seq));
-> 
->          memset(hwts, 0, sizeof(struct skb_shared_hwtstamps));
->          hwts->hwtstamp = ns_to_ktime(nsec);
-> }
-> 
-> I think the nsec is what you really want.
-> 
-> With all the drivers doing slightly different ops we would have
-> to create read_seqbegin, read_seqretry, mutex_lock, ... to get
-> at least the mlx and ice drivers it looks like we would need some
-> more BPF primitives/helpers. Looks like some more work is needed
-> on ice driver though to get rx tstamps on all packets.
-> 
-> Anyways this convinced me real devices will probably use BPF_CALL
-> and not BPF insns directly.
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Some of the mlx5 path looks like this:
-
-#define REAL_TIME_TO_NS(hi, low) (((u64)hi) * NSEC_PER_SEC + ((u64)low))
-
-static inline ktime_t mlx5_real_time_cyc2time(struct mlx5_clock *clock,
-                                               u64 timestamp)
-{
-         u64 time = REAL_TIME_TO_NS(timestamp >> 32, timestamp & 0xFFFFFFFF);
-
-         return ns_to_ktime(time);
-}
-
-If some hints are harder to get, then just doing a kfunc call is better.
-
-csum may have a better chance to inline?
-
-Regardless, BPF in-lining is a well solved problem and used in many bpf helpers 
-already, so there are many examples in the kernel.  I don't think it is 
-necessary to block this series because of missing some helper wrappers for 
-inlining.  The driver can always start with the simpler kfunc call first and 
-optimize later if some hints from the drivers allow it.
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
