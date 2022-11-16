@@ -2,50 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9558762CB3D
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:40:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2058962CB48
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 21:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233605AbiKPUk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 15:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56728 "EHLO
+        id S232739AbiKPUnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 15:43:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233828AbiKPUkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:40:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2167140922
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 12:40:24 -0800 (PST)
+        with ESMTP id S232097AbiKPUnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 15:43:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD41D5A;
+        Wed, 16 Nov 2022 12:43:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6EAFB81D85
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 20:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 435C5C433D6;
-        Wed, 16 Nov 2022 20:40:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D87BB81EB5;
+        Wed, 16 Nov 2022 20:42:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B00CC433C1;
+        Wed, 16 Nov 2022 20:42:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668631221;
-        bh=6kuTtlEYWsFvEuamRg47m89ENW8349ouW2H94ZDAe30=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fDENrTfo5GWXzG+NE6NIxjEq8ZEaXM6+qtOlWcH544JOinC0Cc9Zw5biRzIcJGruf
-         Re/4qzFeSNUwYvrK5Gn7B/93VqRs1b9fICs3/FhKtFWUX/GBZ4Tdvi6pFc99XTfEEs
-         YZvS3MwSPSYtMD6bb4WVJgn2v8m3HN1LVzHqi4jxYiYIlyvktuEWbPJ9+GvlQC354j
-         w1WHCGkK70kBPNJW4OK+oF08ushxqT8Hq72c13KofYYM932ZryOkbAgWGLnncqIY/P
-         Va1CfxwFH+9e2d4fs1eNPYw2S6IjROJbK0RPN792qHSfbHjJvLFtqIB8cVUaBJQcZX
-         1GqtuzHNIL9fQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23771E270D5;
-        Wed, 16 Nov 2022 20:40:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1668631378;
+        bh=2PSaNIlC/i6/awrIB1H4PHloF4KJB1K+tUqNH2kcX+A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Yy5A5AFWR6yHlYe6iMP14PABCTzTHsnNYQMiYiDWM+vkG02/S9KzqdLnR75rI32B+
+         CXtvj97rBDdQjs7Y4naiwFkPpJxSFFboIRdSBsewFFidvJN9U9GugT0eSgsX7qrw4e
+         NcgSnwGdDxICrGMrEGs5dnEXmQI2wCLUKyQv+15rOgEEUHOuQXxTTUkAdmyAiLv/op
+         B9lVofNeS2v/pBtaDxvlci766xO/x/zDo2f2umLCLHJCU2IQaC6pcBechR/T3sjt9w
+         +o+wJEmHO/chrwZ54k6NH76eU9AYFrgJ5s3waAWVeWtxk0AFucIdAzWvWbZj7/3Yzr
+         a0SlNku7Tte9w==
+Date:   Wed, 16 Nov 2022 12:42:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next 03/11] bpf: Support inlined/unrolled kfuncs for
+ xdp metadata
+Message-ID: <20221116124256.04a75fba@kernel.org>
+In-Reply-To: <20221115030210.3159213-4-sdf@google.com>
+References: <20221115030210.3159213-1-sdf@google.com>
+        <20221115030210.3159213-4-sdf@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] netdevsim: Fix memory leak of nsim_dev->fa_cookie
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166863122113.12042.15149520651135830878.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Nov 2022 20:40:21 +0000
-References: <1668504625-14698-1-git-send-email-wangyufen@huawei.com>
-In-Reply-To: <1668504625-14698-1-git-send-email-wangyufen@huawei.com>
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, jiri@mellanox.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,36 +64,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 14 Nov 2022 19:02:02 -0800 Stanislav Fomichev wrote:
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 117e830cabb0..a2227f4f4a0b 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9258,6 +9258,13 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+>  			return -EOPNOTSUPP;
+>  		}
+>  
+> +		if (new_prog &&
+> +		    new_prog->aux->xdp_kfunc_ndo &&
+> +		    new_prog->aux->xdp_kfunc_ndo != dev->netdev_ops) {
+> +			NL_SET_ERR_MSG(extack, "Cannot attach to a different target device");
+> +			return -EINVAL;
+> +		}
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+This chunk can go up into the large
 
-On Tue, 15 Nov 2022 17:30:25 +0800 you wrote:
-> kmemleak reports this issue:
-> 
-> unreferenced object 0xffff8881bac872d0 (size 8):
->   comm "sh", pid 58603, jiffies 4481524462 (age 68.065s)
->   hex dump (first 8 bytes):
->     04 00 00 00 de ad be ef                          ........
->   backtrace:
->     [<00000000c80b8577>] __kmalloc+0x49/0x150
->     [<000000005292b8c6>] nsim_dev_trap_fa_cookie_write+0xc1/0x210 [netdevsim]
->     [<0000000093d78e77>] full_proxy_write+0xf3/0x180
->     [<000000005a662c16>] vfs_write+0x1c5/0xaf0
->     [<000000007aabf84a>] ksys_write+0xed/0x1c0
->     [<000000005f1d2e47>] do_syscall_64+0x3b/0x90
->     [<000000006001c6ec>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> [...]
+	if (new_prog) {
+		...
 
-Here is the summary with links:
-  - [net,v2] netdevsim: Fix memory leak of nsim_dev->fa_cookie
-    https://git.kernel.org/netdev/net/c/064bc7312bd0
+list of checks?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+nit: aux->xdp_kfunc_ndo sounds like you're storing the kfunc NDO,
+     not all ndos. Throw in an 's' at the end, or some such?
