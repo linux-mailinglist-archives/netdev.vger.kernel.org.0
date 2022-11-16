@@ -2,59 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E16262C431
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 17:23:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A746B62C460
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 17:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232718AbiKPQXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 11:23:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
+        id S238071AbiKPQ2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 11:28:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231448AbiKPQWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 11:22:53 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1F957B6D;
-        Wed, 16 Nov 2022 08:22:13 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668615732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nTf9OGb9zWeAnXP7WUtzyXzYpJkGff40DU/J1LONmEY=;
-        b=Y1QeJrew+e6r3Z7q+FGlwdWrI4cvw5D3zZSh+yYtZ1MEqsgX+54C7plSKQvhmMf4aOXQaT
-        VB5UDGsmTAu5RiwkT/vpLkAveZNL/nhhSnKNreP1IwT1LB66fbpTXNYBLVTqTfTUInn2uZ
-        ZtMz6nBbtfygicnQlCkMnZvKSiNfzeroIUJwCciUpSdoB3yTAViIjUm4q3Zuy9YPA0IAZZ
-        hH9dJXCHjBzaMXXotdH2VL1Vny2M7EHH1CVH/T2z7nhLqxD22Yv43bQ+yMIO8HuFnDu9kt
-        dij2aDJdZte4xlClhtTtLXnEduAIei5RzfkkwJbyZ3CfXdwosiQANNs1SlEaGA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668615732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nTf9OGb9zWeAnXP7WUtzyXzYpJkGff40DU/J1LONmEY=;
-        b=yP8+k9Y87ZNwimyqdvpkoA/iVWsPUdCLDpRYhp8K7DNK/Q2rt0iVEsSU3DDL7sxRHTzyY8
-        cXk/oSk+2Cr8pcBQ==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
+        with ESMTP id S234659AbiKPQ1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 11:27:44 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6CC5C747;
+        Wed, 16 Nov 2022 08:22:45 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id u8-20020a17090a5e4800b002106dcdd4a0so2794822pji.1;
+        Wed, 16 Nov 2022 08:22:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6qpYuefz2vTkOlrRHnwjbS9oeADDuMH/tiE7OpjIFi8=;
+        b=H4AlysemVxcncV5avjp921H7Rvcg1/nme3yea/AHFATMv90pHo+kCnfdQVfA0g+9FB
+         2+4ntVkPQgQU3F1HzWfJ2RwabcpluUai5qDW5KOaNdFIkgY5I36er8/S9aWNvY3KIdzL
+         Um9ezCQbUZAX0GvzqfU+dk1oQiAOKCcPX+feXJjo5NWN0ieozV4BjqHdLG5LMwaa5plb
+         1S8dvnu15kpJITdxX6hYqEILqUdKGahItXwXHGHY7TnnMASwpw0EaREkUd7lvmkZpmIR
+         8FjYzZaObE/A3si85MWmiXErlxaB0yfkOjBSEIjnTudPtUFtUM4CtA2qqVqIlq/2jfrg
+         Y+/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6qpYuefz2vTkOlrRHnwjbS9oeADDuMH/tiE7OpjIFi8=;
+        b=EmQkT+EIaZ9p+yNU9X2DbAxYXqyZtVFW76iR5KFPMlbFRgxJcbkZIOSV4woRGouo64
+         /7waSXMfeZmiRNmZu7DN9DSH9+FlQzVmB9VnelXbSQIh0nGAZfuTl8rUEDSSMMV3b6CK
+         KX/UMs3+nAZ81WNhBJyCk9Xt6sNvQ8b/aXs3JCHI9TbWGUaI+qXQJPFsTtFkHDjxwT8L
+         scO+y6jsoCZiPMoLCt0a/fMY0uLACtoyeGXcas4wro9BjQ1Yj5VsYWEd1YclZu0fMgtN
+         WwOOHZcR4qE5PAOi7nam6Q3KBeVNKRj4GgtlK2PESbNh2WgEn9L9xPnDDg1Ytgnofj8X
+         DZKw==
+X-Gm-Message-State: ANoB5plG1tWIA0nhd84h7L1hxfx9MeapNJEQ1XF2UHwvtjeWaFXdBD+4
+        2c9+dVV+xarcODEba/GVJC0=
+X-Google-Smtp-Source: AA0mqf4687xglPEMIIWBR7x4Yf1eST+P65kCNJGoWeS4D2eg2V9bxm25V4u7bpzeh2/d0tpCEh4HLg==
+X-Received: by 2002:a17:90a:df06:b0:212:d299:4758 with SMTP id gp6-20020a17090adf0600b00212d2994758mr4466625pjb.120.1668615764806;
+        Wed, 16 Nov 2022 08:22:44 -0800 (PST)
+Received: from ?IPV6:2600:8802:b00:4a48:9801:5907:5eb0:dd5f? ([2600:8802:b00:4a48:9801:5907:5eb0:dd5f])
+        by smtp.gmail.com with ESMTPSA id e12-20020a170902b78c00b00186a437f4d7sm1767319pls.147.2022.11.16.08.22.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Nov 2022 08:22:44 -0800 (PST)
+Message-ID: <a850ce56-376f-2c9a-6a6f-5ae5cd5cca4c@gmail.com>
+Date:   Wed, 16 Nov 2022 08:22:42 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v3 1/3] net: dsa: refactor name assignment for user ports
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH printk v5 31/40] netconsole: avoid CON_ENABLED misuse to track registration
-Date:   Wed, 16 Nov 2022 17:27:43 +0106
-Message-Id: <20221116162152.193147-32-john.ogness@linutronix.de>
-In-Reply-To: <20221116162152.193147-1-john.ogness@linutronix.de>
-References: <20221116162152.193147-1-john.ogness@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,INVALID_DATE_TZ_ABSURD,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221115074356.998747-1-linux@rasmusvillemoes.dk>
+ <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
+ <20221116105205.1127843-2-linux@rasmusvillemoes.dk>
+Content-Language: en-US
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20221116105205.1127843-2-linux@rasmusvillemoes.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,90 +81,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The CON_ENABLED flag is being misused to track whether or not the
-extended console should be or has been registered. Instead use
-a local variable to decide if the extended console should be
-registered and console_is_registered() to determine if it has
-been registered.
 
-Also add a check in cleanup_netconsole() to only unregister the
-extended console if it has been registered.
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
----
- drivers/net/netconsole.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+On 11/16/2022 2:52 AM, Rasmus Villemoes wrote:
+> The following two patches each have a (small) chance of causing
+> regressions for userspace and will in that case of course need to be
+> reverted.
+> 
+> In order to prepare for that and make those two patches independent
+> and individually revertable, refactor the code which sets the names
+> for user ports by moving the "fall back to eth%d if no label is given
+> in device tree" to dsa_slave_create().
+> 
+> No functional change (at least none intended).
+> 
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-diff --git a/drivers/net/netconsole.c b/drivers/net/netconsole.c
-index bdff9ac5056d..4f4f79532c6c 100644
---- a/drivers/net/netconsole.c
-+++ b/drivers/net/netconsole.c
-@@ -332,10 +332,8 @@ static ssize_t enabled_store(struct config_item *item,
- 	}
- 
- 	if (enabled) {	/* true */
--		if (nt->extended && !(netconsole_ext.flags & CON_ENABLED)) {
--			netconsole_ext.flags |= CON_ENABLED;
-+		if (nt->extended && !console_is_registered(&netconsole_ext))
- 			register_console(&netconsole_ext);
--		}
- 
- 		/*
- 		 * Skip netpoll_parse_options() -- all the attributes are
-@@ -869,7 +867,7 @@ static void write_msg(struct console *con, const char *msg, unsigned int len)
- 
- static struct console netconsole_ext = {
- 	.name	= "netcon_ext",
--	.flags	= CON_EXTENDED,	/* starts disabled, registered on first use */
-+	.flags	= CON_ENABLED | CON_EXTENDED,
- 	.write	= write_ext_msg,
- };
- 
-@@ -883,6 +881,7 @@ static int __init init_netconsole(void)
- {
- 	int err;
- 	struct netconsole_target *nt, *tmp;
-+	bool extended = false;
- 	unsigned long flags;
- 	char *target_config;
- 	char *input = config;
-@@ -895,11 +894,12 @@ static int __init init_netconsole(void)
- 				goto fail;
- 			}
- 			/* Dump existing printks when we register */
--			if (nt->extended)
--				netconsole_ext.flags |= CON_PRINTBUFFER |
--							CON_ENABLED;
--			else
-+			if (nt->extended) {
-+				extended = true;
-+				netconsole_ext.flags |= CON_PRINTBUFFER;
-+			} else {
- 				netconsole.flags |= CON_PRINTBUFFER;
-+			}
- 
- 			spin_lock_irqsave(&target_list_lock, flags);
- 			list_add(&nt->list, &target_list);
-@@ -915,7 +915,7 @@ static int __init init_netconsole(void)
- 	if (err)
- 		goto undonotifier;
- 
--	if (netconsole_ext.flags & CON_ENABLED)
-+	if (extended)
- 		register_console(&netconsole_ext);
- 	register_console(&netconsole);
- 	pr_info("network logging started\n");
-@@ -945,7 +945,8 @@ static void __exit cleanup_netconsole(void)
- {
- 	struct netconsole_target *nt, *tmp;
- 
--	unregister_console(&netconsole_ext);
-+	if (console_is_registered(&netconsole_ext))
-+		unregister_console(&netconsole_ext);
- 	unregister_console(&netconsole);
- 	dynamic_netconsole_exit();
- 	unregister_netdevice_notifier(&netconsole_netdev_notifier);
+Reviewed-by: Florian Fainelli <f.faineli@gmail.com>
 -- 
-2.30.2
-
+Florian
