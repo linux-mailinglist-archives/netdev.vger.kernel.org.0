@@ -2,110 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFC9A62CDC0
-	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 23:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FF162CDC3
+	for <lists+netdev@lfdr.de>; Wed, 16 Nov 2022 23:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238454AbiKPWfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 17:35:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53740 "EHLO
+        id S233620AbiKPWgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 17:36:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237359AbiKPWfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 17:35:16 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D7A6B22A
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 14:35:14 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id t10so391192ljj.0
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 14:35:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=/D+JOz7nkxYcdcRR3XuXah7sfLk3j19m5jZhc5FGfck=;
-        b=iKmJAmiGtU5QKm8jIIR2ZeaPMMMsZRtOvWMjpwogDxouwIqF1/ojb7hqXMNMxwAEp7
-         TQcXGJsSuebQpYIHgBgfb4rdSP1I3jQ1QpVqTjeCx/qYpQE0Qitg57ib0cRZ2oaObs4r
-         NOs2Q+4X3NYZHFOeFIEKvwt+8NS+eUhZn2xicvgu2pA8RKCXI+W4G965WU/FVs4eQrmG
-         qnSVyiNiHj110fCzob0cml56KPU1jGiHrOe0Uj2FBRSoCy1O13gj58KggHbg1+aFqwFO
-         da8E87ZiqgnmpI4+DPD6/XAyThk6F4rCDpKbWsJbZNXH0uhKjP5rNE/1u/zvxa+B7KNE
-         Ox0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/D+JOz7nkxYcdcRR3XuXah7sfLk3j19m5jZhc5FGfck=;
-        b=U9htTAJmwy9Qq10l9+PffaILhZKKqqHP+pC+tr9/CJ6hxF1V4wXbHsrnEJLheQgXrM
-         +2FvC8aBiuS++MnFb0Vem9d70Ot1U2aqFXEFSa1ImrQ87ZO5eUG1BH4/sV6XMa1tazy9
-         yquO7FqyGwh5n3Ddj02K5oXuWPHRKlQq28S1CttZPqE8HomZOwR/d07rg2rTU2thtIS0
-         JXZd0KRzsgxOQwnzPjZAfUgdqhQEoH9hZEmkkP/mV41bNi4rgikhwrE+lENMcPWtDQsN
-         GUx1BAOLDhTdV4JDVeIEyt+6yvKqkNBxzCRTqFvMKqXGNTyL6Gb4x370WDdhJaqfYMUG
-         c9uw==
-X-Gm-Message-State: ANoB5pk2CFMeB0oGFqsVilojTOdqLOFhYdmOmJlfSg4qSj2FOjk32B1a
-        CssQdx86ISirF3SulU8FkNQ8VlHGaaPfjAAyJQM=
-X-Google-Smtp-Source: AA0mqf5Po37w3ltR+1lxpWxoQW5KliOKKRfo/I9Bb2OVxWSwa2pLK4PJuA2gvN2tBVaBf7OIdJ/PRrouT6GoqLo0Lf4=
-X-Received: by 2002:a2e:983:0:b0:26e:2772:ffab with SMTP id
- 125-20020a2e0983000000b0026e2772ffabmr118409ljj.97.1668638112984; Wed, 16 Nov
- 2022 14:35:12 -0800 (PST)
+        with ESMTP id S231688AbiKPWgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 17:36:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503726AEF4;
+        Wed, 16 Nov 2022 14:36:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD0A161FF9;
+        Wed, 16 Nov 2022 22:36:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C82DC433C1;
+        Wed, 16 Nov 2022 22:36:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668638180;
+        bh=PBtBrhR6SnvnYI1/YyRvPYjE5wE5qScBBW+6ZtsQn3A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gcmbe9TPSgnloH0Xj5T7JSM1en4RAl/sPLhlLslHSATsbmeAYqb7kUZ5COZ3yBcyq
+         wnqbnvb9+DowAyBAzrLISSZPg2tPtduQFLddITss5ufGKMYuAShI1AQet08WoNyAD5
+         h/1MbJJHigEQoP19MBKvCQ2u0r1TINkJTvpIwq8fdV+wBKj2VGOXQH/mcN2Ajftm9a
+         sMP7pA2fLjSo7sA8yfZmjbM/lwC868Sh+L7juM1LPT4B9NcF+YE3m2C7p9vzuA4ir4
+         7nV3KLoZa9hk+0Sfz/1PpShtIMSuLNRuw8F8j7J5uWIw6onHqoD8sU0+D7DS0nAMnH
+         YqISmJDCbmW4w==
+Date:   Wed, 16 Nov 2022 14:36:19 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Francois Romieu <romieu@fr.zoreil.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Moritz Fischer <mdf@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: nixge: fix potential memory leak in
+ nixge_start_xmit()
+Message-ID: <Y3Vl40BzsL9nFqQv@x130.lan>
+References: <1668416136-33530-1-git-send-email-zhangchangzhong@huawei.com>
+ <Y3IbBCioK1Clt/3a@electric-eye.fr.zoreil.com>
+ <21641ba0-3ce1-c409-b513-1bbbaeccaa51@huawei.com>
 MIME-Version: 1.0
-Received: by 2002:a2e:9dd4:0:0:0:0:0 with HTTP; Wed, 16 Nov 2022 14:35:11
- -0800 (PST)
-Reply-To: mrshestherthembile580@gmail.com
-From:   "mrs. Hesther Thembile" <mrshestherthembile25@gmail.com>
-Date:   Wed, 16 Nov 2022 22:35:11 +0000
-Message-ID: <CAJ2eRGC0Odnh4-7DLPcNL4s2KaL449aRj=iCg4qCzAWDjOEXbA@mail.gmail.com>
-Subject: Selamlar
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:235 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4571]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [mrshestherthembile580[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [mrshestherthembile25[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mrshestherthembile25[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <21641ba0-3ce1-c409-b513-1bbbaeccaa51@huawei.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Ge=C3=A7en hafta size bir e-posta g=C3=B6nderildi.
-Senden gelen postay=C4=B1 geri g=C3=B6nderdim ama beni =C5=9Fa=C5=9F=C4=B1r=
-tt=C4=B1, cevap vermeye
-hi=C3=A7 zahmet etmedin. Nazik=C3=A7e
-daha fazla a=C3=A7=C4=B1klama i=C3=A7in cevap.
+On 15 Nov 21:20, Zhang Changzhong wrote:
+>On 2022/11/14 18:40, Francois Romieu wrote:
+>> Zhang Changzhong <zhangchangzhong@huawei.com> :
+>>> The nixge_start_xmit() returns NETDEV_TX_OK but does not free skb on two
+>>> error handling cases, which can lead to memory leak.
+>>>
+>>> To fix this, return NETDEV_TX_BUSY in case of nixge_check_tx_bd_space()
+>>> fails and add dev_kfree_skb_any() in case of dma_map_single() fails.
+>>
+>> This patch merge two unrelated changes. Please split.
+>>
+>>> Fixes: 492caffa8a1a ("net: ethernet: nixge: Add support for National Instruments XGE netdev")
+>>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+>>> ---
+>>>  drivers/net/ethernet/ni/nixge.c | 6 ++++--
+>>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
+>>> index 19d043b593cc..b9091f9bbc77 100644
+>>> --- a/drivers/net/ethernet/ni/nixge.c
+>>> +++ b/drivers/net/ethernet/ni/nixge.c
+>>> @@ -521,13 +521,15 @@ static netdev_tx_t nixge_start_xmit(struct sk_buff *skb,
+>>>  	if (nixge_check_tx_bd_space(priv, num_frag)) {
+>>>  		if (!netif_queue_stopped(ndev))
+>>>  			netif_stop_queue(ndev);
+>>> -		return NETDEV_TX_OK;
+>>> +		return NETDEV_TX_BUSY;
+>>>  	}
+>>
+>> The driver should probably check the available room before returning
+>> from hard_start_xmit and turn the check above unlikely().
+>>
+>> Btw there is no lock and the Tx completion is irq driven: the driver
+>> is racy. :o(
+>>
+>
+>Hi Francois,
+>
+>Thanks for you review. I'll make v2 according to your suggestion.
+>
 
-Sizden tekrar haber alana kadar kutsanm=C4=B1=C5=9F kal=C4=B1n.
+you will probably need to check out: Transmit path guidelines:
+https://www.kernel.org/doc/Documentation/networking/driver.rst
 
-Rab'de k=C4=B1z karde=C5=9Fin,
-
-Sayg=C4=B1lar=C4=B1m=C4=B1zla,
-Bayan. Hesther Thembile.
