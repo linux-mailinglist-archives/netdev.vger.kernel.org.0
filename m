@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA98B62E80C
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:17:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4981D62E858
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:24:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240464AbiKQWR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 17:17:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        id S240946AbiKQWY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 17:24:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiKQWRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:17:19 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1C57614D
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:17:17 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id w23so2896337ply.12
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:17:17 -0800 (PST)
+        with ESMTP id S240580AbiKQWYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:24:10 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FBF79934
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:22:35 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id 140so3132168pfz.6
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:22:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=content-disposition:mime-version:message-id:subject:cc:to:date:from
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=nJFXSIQ783ozGJIEcq7M0/X5+WZmAwzKbqXzhdiC6Ac=;
-        b=K0Bjuug0PMBmGyIJKJh38l6aGh9Uv5KTby8hRtEeGfVVQ1uk8H1iE3Jy3X9g3QumnZ
-         m2UP0vy7n4K5mWAusXU9baE2QnR29kZ4q50wmoljG4b2D2eX+mVF6sHH4MHZ7t18A4bO
-         LdNjNf/Fkk/7a/wD3qmB8jz3Qcgz8Rz2OAuHI=
+        bh=GWX8xZ3siPWUJmFJ+ak5rgGJi5tbSkwD+aeiBnxAmP8=;
+        b=EM8Vk/IuYu8zsCx3D/aXB1ydE3hr9wSOvvA42mWznF7gALJ+S0g32LM4VMRNu1vT0I
+         IPnZPUy1UHRB7LAfgLDHAN9pUPbP7x9qAzaFWa855hCAHbw9CsPIIBF5+anBUiN/O8k3
+         wugLM9mY7sID2s8OU8olcNXrMbck9LM8PlAVI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-disposition:mime-version:message-id:subject:cc:to:date:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nJFXSIQ783ozGJIEcq7M0/X5+WZmAwzKbqXzhdiC6Ac=;
-        b=DP3b1cvhDJWM0J2kbTowsgKrTCMyGv89mUNWKzRY89X8MPk01UYrFhhz5X0cDY8ZER
-         cuCV54Ge0ooPAszbnFwyDlpaliTfyGycBygAiWSeNWdJ0IunI+8mF5kBycC6oJ8oYF2f
-         3S7O0faf0+aTXqzsJFNn59lR4Q5n6clLovkPwnc8ulQcXdLusDuiDNyyoE3uyXm9gUBn
-         dp3TxgFW2piSyBHj1hNs0vtEOHy4laVR2629gmAv0+aUuHWwCtQ1o2tjHrgDbPT50ZMA
-         iO2oQOZlsKou387gBnpmqpsLe4XG8R+7DdACpjqdeWrgOKo/VFXG6KNKtO74gajSIye9
-         JxLw==
-X-Gm-Message-State: ANoB5plQlE2ig+fElCGlqXm0ufMGTjJhKS61X+O1/dH6vt+U4rNQx6Q2
-        h0gyzPOgbWRMTbmd2VGEgoDbfA==
-X-Google-Smtp-Source: AA0mqf41Wqejx3gjkqAto1lEjNVUWFDLIcHhPUNfGeI3XvM/RrkDVObROJw0YVQF/ox1gXuNsYVNtA==
-X-Received: by 2002:a17:90b:3d7:b0:200:2538:1ca8 with SMTP id go23-20020a17090b03d700b0020025381ca8mr10837807pjb.79.1668723436518;
-        Thu, 17 Nov 2022 14:17:16 -0800 (PST)
+        bh=GWX8xZ3siPWUJmFJ+ak5rgGJi5tbSkwD+aeiBnxAmP8=;
+        b=33LIrrVzMEPgIUS5AY/GncCBmsY6fr5R5g5+N9PMP40j75Q3YxMAWxnuq2W/IkV8JM
+         BzbL1JLV2b8Yu8r+YxI7jQXZr8o430I7zFZ9iaygS2zAb/HcHEmsruJBhfvsRJ/UT7vv
+         lGskLVLpCi92uHkhgatSxqy6RHLzTk/5n6pj1dIhMMKbquZDVxKPIvRCsbaOQ2SO17ro
+         gumtsZqJFOpoGZGdvt6fvWBIflWwzNCOouByTrY2AXCtoFlXJTPmNiG4IFSrG/R1Irea
+         RNqS7eAgR0hYinacMCsvyceIbaDFluwPJu83I6j4X0NSFsfJdMlAvaUAExa/3CPGj9q9
+         4Y7w==
+X-Gm-Message-State: ANoB5pmkhNw3v9jrFnnI3lDa7mTXi1U5aZ4VS4C9jO8aCwSd3bILnJdR
+        fa+fmg1YT24PaoRVfsBFVXGAyw==
+X-Google-Smtp-Source: AA0mqf6X+fpknreQzV9svORhPmRkzR9ZQ875/5OC9hPXiNreh29vMThcE29r/hJZCyBpnjdvstKNoQ==
+X-Received: by 2002:a63:1626:0:b0:46e:96b9:ed63 with SMTP id w38-20020a631626000000b0046e96b9ed63mr4102293pgl.258.1668723754996;
+        Thu, 17 Nov 2022 14:22:34 -0800 (PST)
 Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id t3-20020a625f03000000b0056da2ad6503sm1684293pfb.39.2022.11.17.14.17.16
+        by smtp.gmail.com with ESMTPSA id w1-20020aa79541000000b0056c360af4e3sm1690348pfq.9.2022.11.17.14.22.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 14:17:16 -0800 (PST)
+        Thu, 17 Nov 2022 14:22:34 -0800 (PST)
 From:   coverity-bot <keescook@chromium.org>
 X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
-Date:   Thu, 17 Nov 2022 14:17:15 -0800
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+Date:   Thu, 17 Nov 2022 14:22:34 -0800
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
         linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Coverity: efx_tc_rx(): Memory - illegal accesses
-Message-ID: <202211171416.0BC0EDDA36@keescook>
+Subject: Coverity: __sock_gen_cookie(): Error handling issues
+Message-ID: <202211171422.7A7A7A9@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -79,27 +83,27 @@ https://scan.coverity.com/projects/linux-next-weekly-scan
 You're getting this email because you were associated with the identified
 lines of code (noted below) that were touched by commits:
 
-  Wed Nov 16 09:07:02 2022 +0000
-    25730d8be5d8 ("sfc: add extra RX channel to receive MAE counter updates on ef100")
+  Wed Nov 16 12:42:01 2022 +0000
+    4ebf802cf1c6 ("net: __sock_gen_cookie() cleanup")
 
 Coverity reported the following:
 
-*** CID 1527356:  Memory - illegal accesses  (OVERRUN)
-drivers/net/ethernet/sfc/tc_counters.c:483 in efx_tc_rx()
-477     	}
-478
-479     	/* Update seen_gen unconditionally, to avoid a missed wakeup if
-480     	 * we race with efx_mae_stop_counters().
-481     	 */
-482     	efx->tc->seen_gen[type] = mark;
-vvv     CID 1527356:  Memory - illegal accesses  (OVERRUN)
-vvv     Overrunning array "efx->tc->flush_gen" of 3 4-byte elements at element index 3 (byte offset 15) using index "type" (which evaluates to 3).
-483     	if (efx->tc->flush_counters &&
-484     	    (s32)(efx->tc->flush_gen[type] - mark) <= 0)
-485     		wake_up(&efx->tc->flush_wq);
-486     out:
-487     	efx_free_rx_buffers(rx_queue, rx_buf, 1);
-488     	channel->rx_pkt_n_frags = 0;
+*** CID 1527347:  Error handling issues  (CHECKED_RETURN)
+net/core/sock_diag.c:33 in __sock_gen_cookie()
+27     {
+28     	u64 res = atomic64_read(&sk->sk_cookie);
+29
+30     	if (!res) {
+31     		u64 new = gen_cookie_next(&sock_cookie);
+32
+vvv     CID 1527347:  Error handling issues  (CHECKED_RETURN)
+vvv     Calling "atomic64_try_cmpxchg" without checking return value (as is done elsewhere 8 out of 9 times).
+33     		atomic64_try_cmpxchg(&sk->sk_cookie, &res, new);
+34     	}
+35     	return res;
+36     }
+37
+38     int sock_diag_check_cookie(struct sock *sk, const __u32 *cookie)
 
 If this is a false positive, please let us know so we can mark it as
 such, or teach the Coverity rules to be smarter. If not, please make
@@ -107,10 +111,8 @@ sure fixes get into linux-next. :) For patches fixing this, please
 include these lines (but double-check the "Fixes" first):
 
 Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Addresses-Coverity-ID: 1527356 ("Memory - illegal accesses")
-Fixes: 25730d8be5d8 ("sfc: add extra RX channel to receive MAE counter updates on ef100")
-
-AFAICT, efx_tc_rx_version_2() may return EFX_TC_COUNTER_TYPE_MAX.
+Addresses-Coverity-ID: 1527347 ("Error handling issues")
+Fixes: 4ebf802cf1c6 ("net: __sock_gen_cookie() cleanup")
 
 Thanks for your attention!
 
