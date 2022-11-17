@@ -2,60 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FB862D351
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 07:13:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A1F762D35A
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 07:18:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiKQGNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 01:13:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
+        id S233446AbiKQGR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 01:17:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiKQGNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 01:13:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30C22F3BB;
-        Wed, 16 Nov 2022 22:13:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA9362098;
-        Thu, 17 Nov 2022 06:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69696C433D6;
-        Thu, 17 Nov 2022 06:13:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668665587;
-        bh=gLckPaA2RbWy+qeW1Y4mm8k80EgIFB5RtSqjqWtke/Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G36v79fw4yxJ8qCDYlRX7RBZnRQJWWBmKf1QLizuJVpIqAVQvBAxSDJvtj7kH+xqh
-         2Au3NXirMSfsHSsNku6OuwgbvinSs7Oq64lnHptYILRCzYLGYRRzpDh+rtXppIPnwU
-         M8AySb3vmnGbW+V15GONVGmfmMqoHd0JYH220l38G8YfozM70LdzvsgYwAA69/PMWI
-         pa274aV5NMLbsMQXf/tEk5r0SRBND0il1CmkXmUg7P2LH2G/GXA582Z9hNjyfifSGs
-         VikO5h0SXPh90YtEbpny/QyaP25rIJ+mQZ2KQw99m2aN6KIEVhV4yqvrAx8N1VJYFg
-         5StUDY8ih0MVQ==
-Date:   Wed, 16 Nov 2022 22:13:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH net-next v2] netlink: split up copies in the ack
- construction
-Message-ID: <20221116221306.5a4bd5f8@kernel.org>
-In-Reply-To: <1b373b08-988d-b870-d363-814f8083157c@embeddedor.com>
-References: <20221027212553.2640042-1-kuba@kernel.org>
-        <20221114023927.GA685@u2004-local>
-        <20221114090614.2bfeb81c@kernel.org>
-        <202211161444.04F3EDEB@keescook>
-        <202211161454.D5FA4ED44@keescook>
-        <202211161502.142D146@keescook>
-        <1e97660d-32ff-c0cc-951b-5beda6283571@embeddedor.com>
-        <20221116170526.752c304b@kernel.org>
-        <1b373b08-988d-b870-d363-814f8083157c@embeddedor.com>
+        with ESMTP id S232139AbiKQGR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 01:17:56 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4918D29824
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 22:17:54 -0800 (PST)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NCV4f5634zJnpc;
+        Thu, 17 Nov 2022 14:14:42 +0800 (CST)
+Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
+ (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
+ 2022 14:17:52 +0800
+From:   GUO Zihua <guozihua@huawei.com>
+To:     <ericvh@gmail.com>, <lucho@ionkov.net>, <asmadeus@codewreck.org>,
+        <linux_oss@crudebyte.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <v9fs-developer@lists.sourceforge.net>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH] 9p: Fix write overflow in p9_read_work
+Date:   Thu, 17 Nov 2022 14:14:44 +0800
+Message-ID: <20221117061444.27287-1-guozihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.31]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,87 +45,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Nov 2022 19:20:51 -0600 Gustavo A. R. Silva wrote:
-> On 11/16/22 19:05, Jakub Kicinski wrote:
-> >> This seems to be a sensible change. In general, it's not a good idea
-> >> to have variable length objects (flex-array members) in structures used
-> >> as headers, and that we know will ultimately be followed by more objects
-> >> when embedded inside other structures.  
-> > 
-> > Meaning we should go back to zero-length arrays instead?  
-> 
-> No.
+This error was reported while fuzzing:
 
-I was asking based on your own commit 1e6e9d0f4859 ("uapi: revert
-flexible-array conversions"). This is uAPI as well.
+BUG: KASAN: slab-out-of-bounds in _copy_to_iter+0xd35/0x1190
+Write of size 4043 at addr ffff888008724eb1 by task kworker/1:1/24
 
-Since we can't prevent user space from wrapping structures seems
-like adding a flex member to an existing struct should never be
-permitted in uAPI headers? We can just wrap things locally, I guess:
+CPU: 1 PID: 24 Comm: kworker/1:1 Not tainted 6.1.0-rc5-00002-g1adf73218daa-dirty #223
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
+Workqueue: events p9_read_work
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x4c/0x64
+ print_report+0x178/0x4b0
+ kasan_report+0xae/0x130
+ kasan_check_range+0x179/0x1e0
+ memcpy+0x38/0x60
+ _copy_to_iter+0xd35/0x1190
+ copy_page_to_iter+0x1d5/0xb00
+ pipe_read+0x3a1/0xd90
+ __kernel_read+0x2a5/0x760
+ kernel_read+0x47/0x60
+ p9_read_work+0x463/0x780
+ process_one_work+0x91d/0x1300
+ worker_thread+0x8c/0x1210
+ kthread+0x280/0x330
+ ret_from_fork+0x22/0x30
+ </TASK>
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 9ebdf3262015..2af2f8de4043 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2479,7 +2479,10 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- {
-        struct sk_buff *skb;
-        struct nlmsghdr *rep;
--       struct nlmsgerr *errmsg;
-+       struct hashtag_silly {
-+               struct nlmsgerr err;
-+               u8 data[];
-+       } *errmsg;
-        size_t payload = sizeof(*errmsg);
-        struct netlink_sock *nlk = nlk_sk(NETLINK_CB(in_skb).sk);
-        unsigned int flags = 0;
-@@ -2507,15 +2510,14 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
-        if (!rep)
-                goto err_bad_put;
-        errmsg = nlmsg_data(rep);
--       errmsg->error = err;
--       errmsg->msg = *nlh;
-+       errmsg->err.error = err;
-+       errmsg->err.msg = *nlh;
+Allocated by task 457:
+ kasan_save_stack+0x1c/0x40
+ kasan_set_track+0x21/0x30
+ __kasan_kmalloc+0x7e/0x90
+ __kmalloc+0x59/0x140
+ p9_fcall_init.isra.11+0x5d/0x1c0
+ p9_tag_alloc+0x251/0x550
+ p9_client_prepare_req+0x162/0x350
+ p9_client_rpc+0x18d/0xa90
+ p9_client_create+0x670/0x14e0
+ v9fs_session_init+0x1fd/0x14f0
+ v9fs_mount+0xd7/0xaf0
+ legacy_get_tree+0xf3/0x1f0
+ vfs_get_tree+0x86/0x2c0
+ path_mount+0x885/0x1940
+ do_mount+0xec/0x100
+ __x64_sys_mount+0x1a0/0x1e0
+ do_syscall_64+0x3a/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+This BUG pops up when trying to reproduce
+https://syzkaller.appspot.com/bug?id=6c7cd46c7bdd0e86f95d26ec3153208ad186f9fa.
+The callstack is different but the issue is valid and re-producable with
+the same re-producer in the link.
+
+The root cause of this issue is that we check the size of the message
+received against the msize of the client in p9_read_work. However, this
+msize could be lager than the capacity of the sdata buffer. Thus,
+the message size should also be checked against sdata capacity.
+
+Reported-by: syzbot+0f89bd13eaceccc0e126@syzkaller.appspotmail.com
+Fixes: 1b0a763bdd5e ("9p: use the rcall structure passed in the request in trans_fd read_work")
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+---
+ net/9p/trans_fd.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 56a186768750..bc131a21c098 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -342,6 +342,14 @@ static void p9_read_work(struct work_struct *work)
+ 			goto error;
+ 		}
  
-        if (!(flags & NLM_F_CAPPED)) {
-                if (!nlmsg_append(skb, nlmsg_len(nlh)))
-                        goto err_bad_put;
- 
--               memcpy(errmsg->msg.nlmsg_data, nlh->nlmsg_data,
--                      nlmsg_len(nlh));
-+               memcpy(errmsg->data, nlmsg_data(nlh), nlmsg_len(nlh));
-        }
- 
-        if (tlvlen)
++		if (m->rc.size > m->rreq->rc.capacity - m->rc.offset) {
++			p9_debug(P9_DEBUG_ERROR,
++				 "requested packet size too big: %d\n",
++				 m->rc.size);
++			err = -EIO;
++			goto error;
++		}
++
+ 		if (!m->rreq->rc.sdata) {
+ 			p9_debug(P9_DEBUG_ERROR,
+ 				 "No recv fcall for tag %d (req %p), disconnecting!\n",
+-- 
+2.17.1
 
-In this particular case, tho, we're probably better off giving up 
-on the flex array and doing nlmsg_data() on both src and dst.
-
-> > Is there something in the standard that makes flexible array
-> > at the end of an embedded struct a problem?  
-> 
-> I haven't seen any problems ss long as the flex-array appears last:
-> 
-> struct foo {
-> 	... members
-> 	struct boo {
-> 		... members
-> 		char flex[];
-> 	};
-> };
-> 
-> struct complex {
-> 	... members
-> 	struct foo embedded;
-> };
-> 
-> However, the GCC docs[1] mention this:
-> 
-> "A structure containing a flexible array member [..] may not be a
-> member of a structure [..] (However, these uses are permitted by GCC
-> as extensions.)"
-> 
-> And in this case it seems that's the reason why GCC doesn't complain?
-
-Seems so, clang's warning is called -Wgnu-variable-sized-type-not-at-end
