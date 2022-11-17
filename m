@@ -2,163 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69E3B62D78A
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51CA262D78F
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:57:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234783AbiKQJzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:55:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S239257AbiKQJ5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:57:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239515AbiKQJzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:55:35 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728B07722A
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:54:34 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id c15so1269233ybf.1
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:54:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HyoUw94ARsW64l9YyYF+xfNzz2Ak/16n1BQc51W4ue0=;
-        b=GIdcIA8RPWJDIkSoYRjqlA1IMG7wgMkHD0+K6dXWd/Sb6I3EPIAfSI6Qf1g9jwqs5p
-         kjN9r+m+YKa4jpm01QTGeEB2WxW/MqoDnyVDH4O8I40o29HFkAgrc+sHNCrp5VnAgzJt
-         diE4fYnJduvzhBIziIl6c7WuE9VsqoG/Cj25mZ2VYsToyl39Zs3h+u1fGwksiJB29Fzs
-         Gy3r5cugUQOvCa9YtvreWbcSUKP6Y/AcXHk3splpgQx+7DcG3G3u4YymEPeSz/0y52uN
-         A5wCScqjtu6GD9j5k+0xAD9uZlof84UwUFg6moF7sN5WYwyJBkvUg09wIfN1Envu5YRI
-         v3+w==
+        with ESMTP id S239155AbiKQJ4w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:56:52 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098DC6F368
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:55:38 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id a14-20020a921a0e000000b003016bfa7e50so906300ila.16
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:55:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HyoUw94ARsW64l9YyYF+xfNzz2Ak/16n1BQc51W4ue0=;
-        b=KU85mOuyM1ATYi4kQbVG4FAFQHsQq+GX3tQrHpEPEIYePBdfqW6lUF5qYsGeOOkZed
-         yWQBk3uEJW0TeHNswmJimspJTZDZXW74Im00TC//5wRw5x4oFytI1oUuWJNaIiHvt0s/
-         WWpcStb/iIhoY67qx2zHPS8aJs+yhuJ0QP+zOx4hLx6Jyr9Hpfhd+sjUDLuiakUAdW21
-         JqIgoES8kqVFaUSj/ySp9KWKcELIJCMfBuJPsUUQorlSjv7FWCayQFO7+eo0UDao93s8
-         xGfvtutOD59ffBo08baHJeAWR7FuQkwpMNwO98XKkQRat6ybrws30DYAttIsBFb3WoAB
-         XlOw==
-X-Gm-Message-State: ANoB5pkogy07NrGaPxIVWqPihIzjZw5rOKYVwMxhxZj7IUsITQlJW2Gu
-        pn2n91Aojfuh2L3+epfOExn9guKiTRyIMxkvYrKh9w==
-X-Google-Smtp-Source: AA0mqf4B46y0yq1SpkC8rjBA3sp2jzaqUjAlq2hJTc75fNxEh2aDMkqXRiQQKo8gOyjZ9tryEq9HeLZHbJDJy8oG840=
-X-Received: by 2002:a25:6641:0:b0:6ca:b03:7111 with SMTP id
- z1-20020a256641000000b006ca0b037111mr1327707ybm.598.1668678873428; Thu, 17
- Nov 2022 01:54:33 -0800 (PST)
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gnQLM+uf6EzDh8opNU8l71HS9owOO9Qy4dij00CPUug=;
+        b=1glo1pcbGRhshDXsl+NTyOirwqWy3dMAsGTYNH3PaC+tPnHPcgmMMcGchjjovA7WWi
+         jCQsxtXx7Q1tQB2+ozcWUO0ZtRRy3UIgEkDILvmQlRLewOh3sLE2bXBfzPJ+1CJSjild
+         8zOMywiQLHcH+XxVHjsgpVvAsDVGqHbaYE0sYssAKzO8hrRBM35ChMP0xpyX8ZVP4pve
+         uWX5FzN11Hl9uwCHpzrtwwAKOMAjHgP+v5hxXUlQBrJxzv8xR72uZDOn7AwvUkZ/w6IH
+         9BnUE4h/MK0YGpQm/n6oVdLI0EMvQkpU8QBL3et/LtqDcBkWHcH0htL9EhsJln8gVSiF
+         n8fg==
+X-Gm-Message-State: ANoB5plliDtdVlalz9tCCb01cjw1BX0MulfuiwLBIcxT3Zn5D9KciAq8
+        Ac7JG8Gt4OgHLI5mEVM6a1QVMKjQaRwwiUYewI3yyv+204J2
+X-Google-Smtp-Source: AA0mqf4OGqMmsF/lZaJKYoWoFuYKpYEVeb2ySk4w3mbbI1CfZLnx84ngDXwl4SlEUWqSx6tp+sbTKyMztxwOoDFiGzIxyQy/5DYm
 MIME-Version: 1.0
-References: <20221114191619.124659-1-jakub@cloudflare.com> <166860541774.25745.4396978792984957790.git-patchwork-notify@kernel.org>
- <CANn89iLQUZnyGNCn2GpW31FXpE_Lt7a5Urr21RqzfAE4sYxs+w@mail.gmail.com> <871qq13oex.fsf@cloudflare.com>
-In-Reply-To: <871qq13oex.fsf@cloudflare.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 17 Nov 2022 01:54:22 -0800
-Message-ID: <CANn89iLD25rKsK9YoNexwh+fX4KOZcEjP_JC5w3DSn8y-UvFSg@mail.gmail.com>
-Subject: Re: [PATCH net v4] l2tp: Serialize access to sk_user_data with sk_callback_lock
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        tparkin@katalix.com, g1042620637@gmail.com
+X-Received: by 2002:a6b:c8cf:0:b0:688:2d29:95f0 with SMTP id
+ y198-20020a6bc8cf000000b006882d2995f0mr940094iof.173.1668678937374; Thu, 17
+ Nov 2022 01:55:37 -0800 (PST)
+Date:   Thu, 17 Nov 2022 01:55:37 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004e78ec05eda79749@google.com>
+Subject: [syzbot] BUG: sleeping function called from invalid context in static_key_slow_inc
+From:   syzbot <syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, frederic@kernel.org, juri.lelli@redhat.com,
+        kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, netdev@vger.kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, steven.price@arm.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 1:45 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> On Thu, Nov 17, 2022 at 01:07 AM -08, Eric Dumazet wrote:
-> > On Wed, Nov 16, 2022 at 5:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
-> >>
-> >> Hello:
-> >>
-> >> This patch was applied to netdev/net.git (master)
-> >> by David S. Miller <davem@davemloft.net>:
-> >>
-> >> On Mon, 14 Nov 2022 20:16:19 +0100 you wrote:
-> >> > sk->sk_user_data has multiple users, which are not compatible with each
-> >> > other. Writers must synchronize by grabbing the sk->sk_callback_lock.
-> >> >
-> >> > l2tp currently fails to grab the lock when modifying the underlying tunnel
-> >> > socket fields. Fix it by adding appropriate locking.
-> >> >
-> >> > We err on the side of safety and grab the sk_callback_lock also inside the
-> >> > sk_destruct callback overridden by l2tp, even though there should be no
-> >> > refs allowing access to the sock at the time when sk_destruct gets called.
-> >> >
-> >> > [...]
-> >>
-> >> Here is the summary with links:
-> >>   - [net,v4] l2tp: Serialize access to sk_user_data with sk_callback_lock
-> >>     https://git.kernel.org/netdev/net/c/b68777d54fac
-> >>
-> >>
-> >
-> > I guess this patch has not been tested with LOCKDEP, right ?
-> >
-> > sk_callback_lock always needs _bh safety.
-> >
-> > I will send something like:
-> >
-> > diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-> > index 754fdda8a5f52e4e8e2c0f47331c3b22765033d0..a3b06a3cf68248f5ec7ae8be2a9711d0f482ac36
-> > 100644
-> > --- a/net/l2tp/l2tp_core.c
-> > +++ b/net/l2tp/l2tp_core.c
-> > @@ -1474,7 +1474,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel
-> > *tunnel, struct net *net,
-> >         }
-> >
-> >         sk = sock->sk;
-> > -       write_lock(&sk->sk_callback_lock);
-> > +       write_lock_bh(&sk->sk_callback_lock);
-> >
-> >         ret = l2tp_validate_socket(sk, net, tunnel->encap);
-> >         if (ret < 0)
-> > @@ -1522,7 +1522,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel
-> > *tunnel, struct net *net,
-> >         if (tunnel->fd >= 0)
-> >                 sockfd_put(sock);
-> >
-> > -       write_unlock(&sk->sk_callback_lock);
-> > +       write_unlock_bh(&sk->sk_callback_lock);
-> >         return 0;
-> >
-> >  err_sock:
-> > @@ -1531,7 +1531,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel
-> > *tunnel, struct net *net,
-> >         else
-> >                 sockfd_put(sock);
-> >
-> > -       write_unlock(&sk->sk_callback_lock);
-> > +       write_unlock_bh(&sk->sk_callback_lock);
-> >  err:
-> >         return ret;
-> >  }
->
-> Hmm, weird. I double checked - I have PROVE_LOCKING enabled.
-> Didn't see any lockdep reports when running selftests/net/l2tp.sh.
->
-> I my defense - I thought _bh was not needed because
-> l2tp_tunnel_register() gets called only in the process context. I mean,
-> it's triggered by Netlink sendmsg, but that gets processed in-line
-> AFAIU:
->
-> netlink_sendmsg
->   netlink_unicast
->     ->netlink_rcv
->       genl_rcv
->         genl_rcv_msg
->           genl_family_rcv_msg
->             genl_family_rcv_msg_doit
->               ->doit
->                 l2tp_nl_cmd_tunnel_create
->                   l2tp_tunnel_register
+Hello,
 
-Three different syzbot reports will help to better understand the
-issue, sorry it is 2am for me, I am not sure in which time zone you
-are in ...
+syzbot found the following issue on:
+
+HEAD commit:    064bc7312bd0 netdevsim: Fix memory leak of nsim_dev->fa_co..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=13d3204e880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a33ac7bbc22a8c35
+dashboard link: https://syzkaller.appspot.com/bug?extid=703d9e154b3b58277261
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/0634e1c0e4cb/disk-064bc731.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/fe1039d2de22/vmlinux-064bc731.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/5a0d673875fa/bzImage-064bc731.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com
+
+BUG: sleeping function called from invalid context at include/linux/percpu-rwsem.h:49
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 9420, name: syz-executor.5
+preempt_count: 1, expected: 0
+RCU nest depth: 0, expected: 0
+INFO: lockdep is turned off.
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 PID: 9420 Comm: syz-executor.5 Not tainted 6.1.0-rc4-syzkaller-00212-g064bc7312bd0 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ __might_resched.cold+0x222/0x26b kernel/sched/core.c:9890
+ percpu_down_read include/linux/percpu-rwsem.h:49 [inline]
+ cpus_read_lock+0x1b/0x140 kernel/cpu.c:310
+ static_key_slow_inc+0x12/0x20 kernel/jump_label.c:158
+ udp_tunnel_encap_enable include/net/udp_tunnel.h:187 [inline]
+ setup_udp_tunnel_sock+0x43d/0x550 net/ipv4/udp_tunnel_core.c:81
+ l2tp_tunnel_register+0xc51/0x1210 net/l2tp/l2tp_core.c:1509
+ pppol2tp_connect+0xcdc/0x1a10 net/l2tp/l2tp_ppp.c:723
+ __sys_connect_file+0x153/0x1a0 net/socket.c:1976
+ __sys_connect+0x165/0x1a0 net/socket.c:1993
+ __do_sys_connect net/socket.c:2003 [inline]
+ __se_sys_connect net/socket.c:2000 [inline]
+ __x64_sys_connect+0x73/0xb0 net/socket.c:2000
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fd94d28b639
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fd94e038168 EFLAGS: 00000246
+ ORIG_RAX: 000000000000002a
+RAX: ffffffffffffffda RBX: 00007fd94d3abf80 RCX: 00007fd94d28b639
+RDX: 000000000000002e RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 00007fd94d2e6ae9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffde93128bf R14: 00007fd94e038300 R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
