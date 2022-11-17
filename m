@@ -2,89 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFAA662E21C
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 17:37:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB05F62E220
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 17:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234911AbiKQQhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 11:37:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
+        id S239885AbiKQQjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 11:39:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240737AbiKQQgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 11:36:33 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB846206A
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:35:40 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id k7so2106781pll.6
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:35:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oqWtwUL+XfqGYYUdjIjLArYbm8wXlzt968/7FqxybFQ=;
-        b=FEvirZFAUR5YKO20VMQmhw9zSjTlDPU/wMNABbH5hNSDYSaGARUfBpdAwHoyPsY2dF
-         gyUKBKRqPjODCnDGVOG+SCemh/jRi4dOw5kYJFrTHdPwycGlnUojdM7NkSITAuv0cAnT
-         M03VbJPDnX6JggHF2X9tn36MvcyBsc4N+j2t+Jel6PQweYgE+b9CEQcMUQ+EX2WXqT1d
-         baAvPgWHnI9VuiDMs509oaaaKzVv4MpZiMerDi3IUAi6Fn0Q2FsF9QZVklsNQYQUQu6x
-         JR8n7eQrH39PeH0FjNBGGnDlZVxfWT6QR8AU2ky88bjg6ozmm4mpSWULp4m6faNWl+/Y
-         kOSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oqWtwUL+XfqGYYUdjIjLArYbm8wXlzt968/7FqxybFQ=;
-        b=chGwo0O55SkGlw4Sls2v7H3ZIT1s8DMxnqHe81c0D//CNv1vbDE4ktCIZs0EhnmyLI
-         Y5o1i3dxSVDyCKA97TU6Spol5A0yuLQS822bKQOLAvp0+bLhGIYBqI82y1JMA6RzvcN7
-         S6GD7y8ZZP4UiSuYT9M5A8MCKZkS40UP4CupUXyENwv7Tt1tqO04lO2QrPjfSeOqZCCy
-         TIWLNj1vNCGsM8yZE/FeDydOwoBaF9Futthn/s+x97sM4InvPXi30m3rD2IXcgfvgZB3
-         cgL19G5FH3eKWm9YKAQYP9nJqPqcYeUnkpr+5eQILSTjYL22Oa+qRfFDN2q2IOuUMFam
-         rP1w==
-X-Gm-Message-State: ANoB5pkL2yeEWTh4MH6zzU0B5FQsII7wX+aTXk+o3VfmHysrmISGcAsG
-        /ZYjMlwoopt1vsiUubk2Youm0Q==
-X-Google-Smtp-Source: AA0mqf4ZHC/cy3v13ZI3GFz18URhxXLw1N0In4WmQ0Xbao0hPVke3N4mw50IF8GRWZmpFs6Z3C98kw==
-X-Received: by 2002:a17:903:2306:b0:188:f9c3:eb03 with SMTP id d6-20020a170903230600b00188f9c3eb03mr628463plh.20.1668702940443;
-        Thu, 17 Nov 2022 08:35:40 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id j8-20020a170902da8800b00176ba091cd3sm1604035plx.196.2022.11.17.08.35.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 08:35:40 -0800 (PST)
-Date:   Thu, 17 Nov 2022 08:35:37 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Lai Peter Jun Ann <jun.ann.lai@intel.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Subject: Re: [PATCH iproute2-next v1] tc_util: Fix no error return when
- large parent id used
-Message-ID: <20221117083537.6aceb759@hermes.local>
-In-Reply-To: <1668663197-22115-1-git-send-email-jun.ann.lai@intel.com>
-References: <1668663197-22115-1-git-send-email-jun.ann.lai@intel.com>
+        with ESMTP id S240672AbiKQQiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 11:38:55 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF795BD4F;
+        Thu, 17 Nov 2022 08:38:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Cc:Content-ID:Content-Description;
+        bh=szX2DX0NFuU0Ctkur/cJDq4SkrlLk8MpXL6ulWpPXM8=; b=G/ZAJYqPO61iLpXimXwEzKu2yC
+        DDJkjkdQeZDzJcfGKHGTIMtQt2HBP1j6PTmlvZSdGbRKtA7VmX0cUEmmVbloTI34rEIyE8lBJMtIs
+        qSHSMknR/N7AjvMm//Fn6hSz/MorN61PXnFW/fZmWFDRLqABJGmGasYEpcRW7b0Pcz8MeZrJKncxY
+        7PJ4ma3mofoPd316XJ0BekDJNcSZHfJJAmNiZXoaJqon0xKpbuo4vmHMetN3Q9qZYnDyLnClUVXa0
+        uuNr6ceZNdeo61tNBSh3naa9sy120hK0bO6uv7KGkdkjTYvhsOooZ65tUHaYDVXZEWFT/tBphiber
+        xlx7ydyQ==;
+Received: from [2601:1c2:d80:3110::a2e7]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ovhuT-00G1Rv-Tw; Thu, 17 Nov 2022 16:38:42 +0000
+Message-ID: <8baab0a4-aa71-2fd9-d3cd-93daf1d792cb@infradead.org>
+Date:   Thu, 17 Nov 2022 08:38:40 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: Missing generic netlink controller operations
+Content-Language: en-US
+To:     Collin <collin@burrougc.net>, linux-kernel@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>
+References: <40386821-902a-4299-98c8-cbf60dbd4c2c@app.fastmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <40386821-902a-4299-98c8-cbf60dbd4c2c@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Nov 2022 13:33:17 +0800
-Lai Peter Jun Ann <jun.ann.lai@intel.com> wrote:
+[change linux-netdev@ to netdev@]
 
-> This patch is to fix the issue where there is no error return
-> when large value of parent ID is being used. The return value by
-> stroul() is unsigned long int. Hence the datatype for maj and min
-> should defined as unsigned long to avoid overflow issue.
-> 
-> Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-> Signed-off-by: Lai Peter Jun Ann <jun.ann.lai@intel.com>
+On 11/16/22 19:54, Collin wrote:
+> While messing around with libnl and netlink I noticed that despite existing in an enum in linux/genetlink.h, the CTRL_CMD_{NEW,DEL,GET}OPS operations (and in fact, all operations except for CTRL_CMD_{NEWFAMILY,DELFAMILY,NEWMCAST_GRP,DELMCAST_GRP}) are unimplemented, and have been around, untouched, since the introduction of the generic netlink family. Is there a reason these exist without implementation, or has it simply not been done?
 
-Yes, looks good. Will apply to main.
-What about qdisc_handle as well?
+-- 
+~Randy
