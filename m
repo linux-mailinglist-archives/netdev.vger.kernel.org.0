@@ -2,56 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC6762CF50
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2367262CF54
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:07:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232869AbiKQAFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 19:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
+        id S233089AbiKQAH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 19:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbiKQAFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:05:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6906B876
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:05:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42D3A61F23
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 00:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62DAAC433D6;
-        Thu, 17 Nov 2022 00:05:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668643547;
-        bh=NoK+Dtu/WJC9kC09UYULU4slH+/XiEoJR7RRjImClT8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=HSum+XpSiJH3UqvKqHrJFb6BrGIPzg2Qj6B4/FcZBsjK1k/VLT3l0/rQsRPEcfCIa
-         jyOBLu4AqViz1pvXOKTkmrNj1EEtzI1zRwOoykY+WCHdP1AIl6NGcwNpCkwH1u7UhC
-         ShZRJaeIMe5m/QDBRFwnyQOU8iazvYT0T755AmNKhJ3F/cuVPCDaFsfszNXvDvle3V
-         yHTX42bWVFruGfjJcMwdMEfO3GQGiNoPItkLmd9PeZLmOwOPWxarmmi6t/R0Y/3aqn
-         7qEi+WLor9UQngx7ky698Z9rM2qWH5HfQXd7Q+fob8oeEf9dIPqv7gV4gipMsGaEHl
-         VoXtihrE4vffA==
-Message-ID: <7bd211f1-e970-0ad2-8346-69849f0347c4@kernel.org>
-Date:   Wed, 16 Nov 2022 17:05:46 -0700
+        with ESMTP id S232979AbiKQAH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:07:27 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623E01275E;
+        Wed, 16 Nov 2022 16:07:26 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id n12so1057732eja.11;
+        Wed, 16 Nov 2022 16:07:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=2KqcLex0Wna/k+uOkprAwQoj9V7FF00fZktU/+rB1GY=;
+        b=T+fR62zE0KCocOrum4DWcoefvDrvh0N2JJeN9EXKQGrVqAo3hg1MuXNYrD02QhYQ3N
+         eoJuU2B3qUj5YAsG8SQnolki4YP/jd/M2f61giHWkB8WQfnL6AwymXqppQh7Dq8YLlrj
+         2UVfQtX65YxG81SQ3CueXFc3Nkz6f7x7W2Z7Y1DAoP5RCM3SBlKp7R205an1bdUsU424
+         7PEPyPSL4hHLELFbVinpqx7Gb6zEJsFo6iR1wgyIPYRlHOJxcFO6zP3GrtvqqK7aH7Zf
+         JUGC8HQ2ZaFZW3iGarUU0EB7BOILI/Y3XUp8n7KGtV/MmyP11p4Vv27cI/G6iNz3YpL9
+         uL8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2KqcLex0Wna/k+uOkprAwQoj9V7FF00fZktU/+rB1GY=;
+        b=SIvPw9Zp3BFTZXMAjI5gVG+Z3KCF/wZhyI342VHtBjSrLbkquP02ShFwv0qX0Iso7w
+         E0bEq/thJPk5mVigTy4TRGHvpgltMprMn4ArJF7HRBImLc6EoxTl4A++ez0YAUvS6HyL
+         bFUxteNd2au40bg0ipshdta8SrM+TBFX43jV7pk2+dSs0O2ZDVrJqeSbxp3A3jLSo1qI
+         MQRgE0bfunuH6Zjgjs8awnAFNKbM/3m8u4lwbzagulpI+flOK6nJYN73wL0LPfOUTwHY
+         9wAvrH6Kn1xLPQjIUpJiBr1ugA8W5/j+6sjMitUo86Y7nRPL5cqulXurHSfEhOBCWOGe
+         pvSw==
+X-Gm-Message-State: ANoB5pkJA090uK1jElBTuiuhMWlVPZl7C4iTNBn+q+9yydq8vsbYk+8+
+        QNM5LDXealqg1YzU+gFGgWTaxVnzEW6e6OiLjVQ=
+X-Google-Smtp-Source: AA0mqf5dfpdvFIp+6KRsDt+gvFaE4dtHWa0UCWkbmPOAb+HH7ZOIhuyWNTBMa7itWmmZ+WkyX5olAIdjNIGEPEuFQOA=
+X-Received: by 2002:a17:906:b794:b0:7ae:6450:c620 with SMTP id
+ dt20-20020a170906b79400b007ae6450c620mr171304ejb.270.1668643644136; Wed, 16
+ Nov 2022 16:07:24 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: [PATCH net-next 2/6] ipv6: fib6_new_sernum() optimization
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20221116222805.64734-1-kuniyu@amazon.com> <20221116222805.64734-3-kuniyu@amazon.com>
+In-Reply-To: <20221116222805.64734-3-kuniyu@amazon.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Wed, 16 Nov 2022 16:07:13 -0800
+Message-ID: <CAJnrk1b-hHSp6n89uC+0dDZKm+bmVm1fRVmwP2oYqKSea9phKQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net 2/4] dccp/tcp: Remove NULL check for prev_saddr in inet_bhash2_update_saddr().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
-References: <20221115091101.2234482-1-edumazet@google.com>
- <20221115091101.2234482-3-edumazet@google.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20221115091101.2234482-3-edumazet@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@mandriva.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        dccp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,35 +78,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/22 2:10 AM, Eric Dumazet wrote:
-> Adopt atomic_try_cmpxchg() which is slightly more efficient.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> ---
->  net/ipv6/ip6_fib.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-> index 413f66781e50de62d6b20042d84798e7da59165a..2438da5ff6da810d9f612fc66df4d28510f50f10 100644
-> --- a/net/ipv6/ip6_fib.c
-> +++ b/net/ipv6/ip6_fib.c
-> @@ -91,13 +91,12 @@ static void fib6_walker_unlink(struct net *net, struct fib6_walker *w)
->  
->  static int fib6_new_sernum(struct net *net)
->  {
-> -	int new, old;
-> +	int new, old = atomic_read(&net->ipv6.fib6_sernum);
->  
->  	do {
-> -		old = atomic_read(&net->ipv6.fib6_sernum);
->  		new = old < INT_MAX ? old + 1 : 1;
-> -	} while (atomic_cmpxchg(&net->ipv6.fib6_sernum,
-> -				old, new) != old);
-> +	} while (!atomic_try_cmpxchg(&net->ipv6.fib6_sernum, &old, new));
-> +
->  	return new;
->  }
->  
+On Wed, Nov 16, 2022 at 2:29 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> When we call inet_bhash2_update_saddr(), prev_saddr is always non-NULL.
+> Let's remove the unnecessary test.
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Acked-by: Joanne Koong <joannelkoong@gmail.com>
+
+> ---
+>  net/ipv4/inet_hashtables.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+>
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 033bf3c2538f..d745f962745e 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -877,13 +877,10 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
+>
+>         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+>
+> -       if (prev_saddr) {
+> -               spin_lock_bh(&prev_saddr->lock);
+> -               __sk_del_bind2_node(sk);
+> -               inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep,
+> -                                         inet_csk(sk)->icsk_bind2_hash);
+> -               spin_unlock_bh(&prev_saddr->lock);
+> -       }
+> +       spin_lock_bh(&prev_saddr->lock);
+> +       __sk_del_bind2_node(sk);
+> +       inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
+> +       spin_unlock_bh(&prev_saddr->lock);
+>
+>         spin_lock_bh(&head2->lock);
+>         tb2 = inet_bind2_bucket_find(head2, net, port, l3mdev, sk);
+> --
+> 2.30.2
+>
