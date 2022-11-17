@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAAFD62D83B
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 11:39:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3F962D851
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 11:44:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234682AbiKQKjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 05:39:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
+        id S239362AbiKQKow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 05:44:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233725AbiKQKjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 05:39:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6151D8F
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 02:39:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7353862184
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 10:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08CA1C433C1;
-        Thu, 17 Nov 2022 10:39:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668681563;
-        bh=/E/Tubw6BE1suhVQUT1+QTHSE+hJ2/kNnDO2Pd5swzg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CgeMPYYXVOY+Dn2cS2gSVlCSx3URc4RCPsSePXJxWzkUHwjQaWUH0bRcQJusVwqTT
-         3hRrgaucrrDIQs3uYX3SAm/Mu7MrtoApL+6FpyPfQ9pfx6vgRbuCS6mXxX0JGnAUlS
-         21h/gkPceR32K430epKsw44Y4DLcV2rPvuBVC4pb3wKJ1zYZDbKCsEufu5awTyPqE1
-         867QP80u3VuzWETP+sSVnna2FTB2fyzoPOAbHt3nQS63U808yQZ44hV9b+gdjl/7UM
-         2lN/kqJ56nVigEpoygAa0hIT9YQFOhPBjprYvU/ME4yj2DhapftVHWYHELh3ww6Rzw
-         arS/lnDAAOlVg==
-Date:   Thu, 17 Nov 2022 12:39:19 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Peter Kosyh <pkosyh@yandex.ru>
-Cc:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S239307AbiKQKos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 05:44:48 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3685B10564;
+        Thu, 17 Nov 2022 02:44:45 -0800 (PST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCc3q161PzRpG1;
+        Thu, 17 Nov 2022 18:44:23 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 17 Nov 2022 18:44:44 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.175) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 17 Nov 2022 18:44:43 +0800
+From:   Lu Jialin <lujialin4@huawei.com>
+To:     Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH net v2] net/mlx4: Check retval of mlx4_bitmap_init
-Message-ID: <Y3YPV4csGxEJ6uSl@unreal>
-References: <20221116100806.226699-1-pkosyh@yandex.ru>
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        "Ilya Lesokhin" <ilyal@mellanox.com>
+CC:     Lu Jialin <lujialin4@huawei.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH] net/tls: Fix possible UAF in tls_set_device_offload
+Date:   Thu, 17 Nov 2022 18:41:32 +0800
+Message-ID: <20221117104132.119843-1-lujialin4@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221116100806.226699-1-pkosyh@yandex.ru>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.175]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,21 +54,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 01:08:06PM +0300, Peter Kosyh wrote:
-> If mlx4_bitmap_init fails, mlx4_bitmap_alloc_range will dereference
-> the NULL pointer (bitmap->table).
-> 
-> Make sure, that mlx4_bitmap_alloc_range called in no error case.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Fixes: d57febe1a478 ("net/mlx4: Add A0 hybrid steering")
-> 
-> Signed-off-by: Peter Kosyh <pkosyh@yandex.ru>
-> 
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+In tls_set_device_offload(), the error path "goto release_lock" will
+not remove start_marker_record->list from offload_ctx->records_list,
+but start_marker_record will be freed, then list traversal may cause UAF.
 
-Please don't add blank lines between tags and your Signed-off-by should
-be last.
+This fixes the following smatch warning:
 
-Thanks
+net/tls/tls_device.c:1241 tls_set_device_offload() warn: '&start_marker_record->list' not removed from list
+
+Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+Signed-off-by: Lu Jialin <lujialin4@huawei.com>
+---
+ net/tls/tls_device.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index a03d66046ca3..2def20870c58 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1234,6 +1234,7 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	up_read(&device_offload_lock);
+ 	clean_acked_data_disable(inet_csk(sk));
+ 	crypto_free_aead(offload_ctx->aead_send);
++	list_del(&start_marker_record->list);
+ free_offload_ctx:
+ 	kfree(offload_ctx);
+ 	ctx->priv_ctx_tx = NULL;
+-- 
+2.17.1
+
