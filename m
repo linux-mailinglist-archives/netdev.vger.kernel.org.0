@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1212662DAE7
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 584C262DAF2
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240189AbiKQMbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 07:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
+        id S240119AbiKQMd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 07:33:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240162AbiKQMb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:31:28 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B95A77224;
-        Thu, 17 Nov 2022 04:30:20 -0800 (PST)
+        with ESMTP id S240165AbiKQMdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:33:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E04E76178
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:32:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 90428CE1D56;
-        Thu, 17 Nov 2022 12:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ABF57C433D7;
-        Thu, 17 Nov 2022 12:30:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5C3061965
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 12:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523D2C433D6;
+        Thu, 17 Nov 2022 12:32:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668688216;
-        bh=dxewDuZ53JhFRzXcMVssnNx9vIVLWAdgouwtlbk4mgE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=THg5IYch5VJ52BwwSbX0eZZrUS0zaDvld0v4f9AyGZ/eBdmgyOQr0GIeYEIdQpW/e
-         P8UNovCFogB3XTuB6kONCxFNy/vWw6ncrT7tdvLd9Ov7Yz3dXAixJIWdlqZSce+my3
-         ipldDGcvu5Wh5B+U9CjU0/5vP+ilAka9IyFiYAAFlElo4TDO2rOyuoldfGY7Wf0KXj
-         TVDO0jnCvWoiGSBl93Vr5Nc+nJT9YSknCPvmcLuxeCkdPBbvEuXMenEW6mlfuu0HRA
-         un5B+LYvhuqe+Ym4LcV5BcoBD8GtwawKcA7vQGn01ZarEWU5sgRBmXcSCFQyrq2/oZ
-         g702OGMOD+XWw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 949C4E29F44;
-        Thu, 17 Nov 2022 12:30:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1668688336;
+        bh=dl7w4Rfw/ijV2UH1mX/hCcL7UbcWqmPRa+d5LxVKE58=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hvkBQLKV4E1L/qW9XfL7SeOcWZNIaz+RSCF22XGhbEMb7nCyAFYqLC6xhJjV0+b+f
+         MdCj0UMPBurO/GvD9o/ZoWMvX8DfW/iTLs58/uDudcf7DgkAtiRtpod1rOOG4UTFUf
+         qVlTP0UvIamVw0UB8niqvMteV5fjfK5XFYPllVtgNVLiHeyLn9KUpojdDQXSno/9+P
+         EfHAASdXzImPXgpnPcojTooI/9qPtn/9w7nXtDYi4CE3laILBQzlAYwhfYI9RwQhZp
+         vYKQWWzIMwfq3FTKJ79V+aiihdzE+BosQ415wWnuQh/L6bt16SGo0iGi7mMkFYdzzG
+         lhZrhbuWggA9Q==
+Date:   Thu, 17 Nov 2022 14:32:10 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 4/8] xfrm: add TX datapath support for IPsec
+ packet offload mode
+Message-ID: <Y3YpyplG969qtYO3@unreal>
+References: <cover.1667997522.git.leonro@nvidia.com>
+ <f0148001c77867d288251a96f6d838a16a6dbdc4.1667997522.git.leonro@nvidia.com>
+ <20221117115939.GI704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next][V2]: sundance: remove unused variable cnt
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166868821560.8111.4968020441298912876.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Nov 2022 12:30:15 +0000
-References: <20221115093137.144002-1-colin.i.king@gmail.com>
-In-Reply-To: <20221115093137.144002-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     kda@linux-powerpc.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221117115939.GI704954@gauss3.secunet.de>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,28 +57,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Tue, 15 Nov 2022 09:31:37 +0000 you wrote:
-> Variable cnt is just being incremented and it's never used
-> anywhere else. The variable and the increment are redundant so
-> remove it.
+On Thu, Nov 17, 2022 at 12:59:39PM +0100, Steffen Klassert wrote:
+> On Wed, Nov 09, 2022 at 02:54:32PM +0200, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
+> > @@ -2708,6 +2710,23 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
+> >  	if (!dev)
+> >  		goto free_dst;
+> >  
+> > +	dst1 = &xdst0->u.dst;
+> > +	/* Packet offload: both policy and SA should be offloaded */
+> > +	if ((policy->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
+> > +	     dst1->xfrm->xso.type != XFRM_DEV_OFFLOAD_PACKET) ||
+> > +	    (policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET &&
+> > +	     dst1->xfrm->xso.type == XFRM_DEV_OFFLOAD_PACKET)) {
+> > +		err = -EINVAL;
+> > +		goto free_dst;
+> > +	}
+> > +
+> > +	/* Packet offload: both policy and SA should have same device */
+> > +	if (policy->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
+> > +	    policy->xdo.dev != dst1->xfrm->xso.dev) {
+> > +		err = -EINVAL;
+> > +		goto free_dst;
+> > +	}
+> > +
 > 
-> [...]
+> This is the wrong place for these checks. Things went already wrong
+> in the lookup if policy and state do not match here.
 
-Here is the summary with links:
-  - [net-next,V2] : sundance: remove unused variable cnt
-    https://git.kernel.org/netdev/net-next/c/710cfc6ab4b8
+Where do you think we should put such checks?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+We need to make sure that both policy and SA are offloaded when handle
+packet, It prevents various corner cases where we will mix SW and HW
+paths.
 
+xfrm_bundle_create() is called when we perform XFRM lookup to create dst_entry.
 
+Thanks
