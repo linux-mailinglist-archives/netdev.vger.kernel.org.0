@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B17062E75E
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7DCB62E759
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240968AbiKQV4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 16:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34554 "EHLO
+        id S240940AbiKQV4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 16:56:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240927AbiKQV4H (ORCPT
+        with ESMTP id S240924AbiKQV4H (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:56:07 -0500
 Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E997D701AF;
-        Thu, 17 Nov 2022 13:56:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C322A701B1;
+        Thu, 17 Nov 2022 13:56:05 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D5FF01C0005;
-        Thu, 17 Nov 2022 21:56:00 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D65FA1C0004;
+        Thu, 17 Nov 2022 21:56:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1668722162;
+        t=1668722164;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dy/zzJT6DIPjgbiAzHq6ScoLM5NS3WFOG+VWUarCYNs=;
-        b=YJyPFOEc0Fftj1KifivI9hXN6MHseSPaVBUZRY+QvNdA6sxo7p5iGrzLRUdun10tIqyx+l
-        BwU0puFbdkC18lbROivYpXbS8+vzOm1VFkK2yu+xiNSEE+JNuAugiLkU/70C76lg79jMej
-        7gxVL3pTArmJRUYjaPVmBDtFtY3LPtDX/UWmUu0cgEvkhTAJect+7O5DWORMYZhJxLB1xY
-        babykq8cJpTGGjB7l3wQwFJyVczACcV1Jdbbj0yusGUffY+9qYDCFG9QKJug49lztyL5UV
-        U2h6L8L98hxvYZ/oxnNhIorPvYBieAD7T4aCHOveld37g5R/6NgrOub0sDiu5g==
+        bh=BfPYpwFw+JIzja3Q3OeYl2Qetdc/wSXMPCm2N01jyAk=;
+        b=TifaughFUXInS7qkNbiXMv18rofUv4SYpxL7Pj8hC2vlwvyLmqCN/uZiPILci0evs8FmZ3
+        wrf4PVVRfI6mVHhaaUgk6O3W4ulqebmqohn9xCr2KJjA1GrPqemj57I+iljPhw3fUE4Dg2
+        bJetUUKSPMWfPyVAHQWbYRVz2qF24jkb3aBrq3xhOy40rzdRiOhcuUIZu8uZPsbDGNBaRJ
+        ff4R5czcHFiTDnuJSB2iLKVJyIs/oEHXd/0ZEkIhYtnlQwdMT9tbH0FGcqCqy8Mox+VyXj
+        0EtW/sOHUQAuEeqrM4CNdPSJ82m2eX4b0mSOsBeV30nONmQD8+3Kj50OacSUEg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -45,11 +45,10 @@ Cc:     Marcin Wojtas <mw@semihalf.com>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: [PATCH 1/6] Revert "dt-bindings: marvell,prestera: Add description for device-tree bindings"
-Date:   Thu, 17 Nov 2022 22:55:52 +0100
-Message-Id: <20221117215557.1277033-2-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 2/6] dt-bindings: net: marvell,dfx-server: Convert to yaml
+Date:   Thu, 17 Nov 2022 22:55:53 +0100
+Message-Id: <20221117215557.1277033-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
 References: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
@@ -64,79 +63,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 40acc05271abc2852c32622edbebd75698736b9b.
+Even though this description is not used anywhere upstream (no matching
+driver), while on this file I decided I would try a conversion to yaml
+in order to clarify the prestera family description.
 
-marvell,prestera.txt is an old file describing the old Alleycat3
-standalone switches. The commit mentioned above actually hacked these
-bindings to add support for a device tree property for a more modern
-version of the IP connected over PCI, using only the generic compatible
-in order to retrieve the device node from the prestera driver to read
-one static property.
+I cannot keep the nodename dfx-server@xxxx so I switched to dfx-bus@xxxx
+which matches simple-bus.yaml. Otherwise I took the example context from
+the only user of this compatible: armada-xp-98dx3236.dtsi, which is a
+rather old and not perfect DT.
 
-The problematic property discussed here is "base-mac-provider". The
-original intent was to point to a nvmem device which could produce the
-relevant nvmem-cell. This property has never been acked by DT
-maintainers and fails all the layering that has been brought with the nvmem
-bindings by pointing at a nvmem producer, bypassing the existing nvmem
-bindings, rather than a nvmem cell directly. Furthermore, the property
-cannot even be used upstream because it expected the ONIE tlv driver to
-produce a specific cell, driver which used nacked bindings and thus was
-never merged, replaced by a more integrated concept: the nvmem-layout.
-
-So let's forget about this temporary addition, safely avoiding the need
-for any backward compatibility handling. A new (yaml) binding file will
-be brought with the prestera bindings, and there we will actually
-include a description of the modern IP over PCI, including the right way
-to point to a nvmem cell.
-
-Cc: Vadym Kochan <vadym.kochan@plvision.eu>
-Cc: Taras Chornyi <tchornyi@marvell.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- .../bindings/net/marvell,prestera.txt         | 34 -------------------
- 1 file changed, 34 deletions(-)
+I am fine dropping this file entirely as well, if judged useless.
+---
+ .../bindings/net/marvell,dfx-server.yaml      | 60 +++++++++++++++++++
+ .../bindings/net/marvell,prestera.txt         | 18 ------
+ 2 files changed, 60 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
 
+diff --git a/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+new file mode 100644
+index 000000000000..72151a78396f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/marvell,dfx-server.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Marvell Prestera DFX server
++
++maintainers:
++  - Miquel Raynal <miquel.raynal@bootlin.com>
++
++select:
++  properties:
++    compatible:
++      contains:
++        const: marvell,dfx-server
++  required:
++    - compatible
++
++properties:
++  compatible:
++    items:
++      - const: marvell,dfx-server
++      - const: simple-bus
++
++  reg: true
++
++  ranges: true
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - ranges
++
++# The DFX server may expose clocks described as subnodes
++additionalProperties: true
++
++examples:
++  - |
++
++    #define MBUS_ID(target,attributes) (((target) << 24) | ((attributes) << 16))
++    bus@0 {
++        reg = <0 0>;
++        #address-cells = <2>;
++        #size-cells = <1>;
++
++        dfx-bus@ac000000 {
++            compatible = "marvell,dfx-server", "simple-bus";
++            #address-cells = <1>;
++            #size-cells = <1>;
++            ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
++            reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
++        };
++    };
 diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.txt b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-index e28938ddfdf5..83370ebf5b89 100644
+index 83370ebf5b89..8868d774da67 100644
 --- a/Documentation/devicetree/bindings/net/marvell,prestera.txt
 +++ b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-@@ -45,37 +45,3 @@ dfx-server {
- 	ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
- 	reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
+@@ -27,21 +27,3 @@ switch {
+ 		dfx = <&dfx>;
+ 	};
  };
 -
--Marvell Prestera SwitchDev bindings
-------------------------------------
--Optional properties:
--- compatible: must be "marvell,prestera"
--- base-mac-provider: describes handle to node which provides base mac address,
--	might be a static base mac address or nvme cell provider.
+-DFX Server bindings
+--------------------
+-
+-Required properties:
+-- compatible: must be "marvell,dfx-server", "simple-bus"
+-- ranges: describes the address mapping of a memory-mapped bus.
+-- reg: address and length of the register set for the device.
 -
 -Example:
 -
--eeprom_mac_addr: eeprom-mac-addr {
--       compatible = "eeprom,mac-addr-cell";
--       status = "okay";
--
--       nvmem = <&eeprom_at24>;
--};
--
--prestera {
--       compatible = "marvell,prestera";
--       status = "okay";
--
--       base-mac-provider = <&eeprom_mac_addr>;
--};
--
--The current implementation of Prestera Switchdev PCI interface driver requires
--that BAR2 is assigned to 0xf6000000 as base address from the PCI IO range:
--
--&cp0_pcie0 {
--	ranges = <0x81000000 0x0 0xfb000000 0x0 0xfb000000 0x0 0xf0000
--		0x82000000 0x0 0xf6000000 0x0 0xf6000000 0x0 0x2000000
--		0x82000000 0x0 0xf9000000 0x0 0xf9000000 0x0 0x100000>;
--	phys = <&cp0_comphy0 0>;
--	status = "okay";
+-dfx-server {
+-	compatible = "marvell,dfx-server", "simple-bus";
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
+-	reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
 -};
 -- 
 2.34.1
