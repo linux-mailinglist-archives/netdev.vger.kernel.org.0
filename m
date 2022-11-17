@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A058A62E6F5
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3A9F62E6FB
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240880AbiKQVbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 16:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
+        id S240854AbiKQVcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 16:32:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240840AbiKQVb3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:31:29 -0500
+        with ESMTP id S240897AbiKQVbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:31:39 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7425B5BA;
-        Thu, 17 Nov 2022 13:31:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938A95B5BD;
+        Thu, 17 Nov 2022 13:31:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668720689; x=1700256689;
+  t=1668720695; x=1700256695;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yQiMXryQ5CnJworTdlI0xW4U42SpOH1ZlqiWstKe+mg=;
-  b=TuPGNbfYy0AWEKjMikryWcAioUH3DHiC9qolSptwvTDdaUKTMeLObSyi
-   vRGc2RxhCVCabEV1S4Cmd4LV5lcG2SCKHPTexTXSsZZX+1ZarESkb2Y6k
-   4/XnzVl3IIfC4aiJzHVe+fTat7l1d4UFEGaUxCLYkac6TEHM8YBSq+Wxu
-   zZQ8wzlMvCMG5GwEAfUEHoCmHkotXGHjQDc2j5uqh+t754hpTcL6PH7wW
-   wZbLGXGmdY+kaLDzd0yl8+FMgg2jcdIqX27+giKtxw/h2QxJHS8LAcmQ/
-   f347ZuTr1TZ0GsC+dpbkL4iGQm5MJJQW4yf6OwKSJiv8NfGWem14eiCRZ
+  bh=ZUP1oTqr+Bkok+eF/MjSkDF7g/U71BEDzdPwqzWGbIA=;
+  b=GZxGkBz+mzHuY7fGQYszL72EJkqSKxpwUt0bWQfo3BKapdopZ/7DpyFD
+   nRmOF0/2ZIS9bMYmDW3o90HvqD3x9G+gcaTIMCI6b0ZUv/7b5pOWXQbRh
+   xpA5YCIKQoi/U6qplwgjBZykzcWQtH8LGJK8DZKoaDtLztTDUcHC4lzfq
+   TfC8I3CrFpCWiBTaZMZDbhM3OCgRAY+sWohuTGqFZDT0N+cxIC/AvkBAq
+   OAPfWIAVy0/9+IW4Lk6+RvWxNhr4ag6E+meTcbYfO2pKvYfPqwbXauz9d
+   0AM3oZ1zTJONWj7DIrErMGYK//J5Ydp+Xmk8NDqP9Tz1gIzv6A/REvkp8
    Q==;
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="184068258"
+   d="scan'208";a="187539404"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2022 14:31:28 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2022 14:31:31 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 17 Nov 2022 14:31:25 -0700
+ 15.1.2507.12; Thu, 17 Nov 2022 14:31:29 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 17 Nov 2022 14:31:22 -0700
+ 15.1.2507.12 via Frontend Transport; Thu, 17 Nov 2022 14:31:25 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,9 +56,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Daniel Machon <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 1/8] net: microchip: sparx5: Ensure L3 protocol has a default value
-Date:   Thu, 17 Nov 2022 22:31:07 +0100
-Message-ID: <20221117213114.699375-2-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 2/8] net: microchip: sparx5: Ensure VCAP last_used_addr is set back to default
+Date:   Thu, 17 Nov 2022 22:31:08 +0100
+Message-ID: <20221117213114.699375-3-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221117213114.699375-1-steen.hegelund@microchip.com>
 References: <20221117213114.699375-1-steen.hegelund@microchip.com>
@@ -74,31 +74,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This ensures that the l3_proto always have a valid value and that any
-dissector parsing errors causes the flower rule to be discarded.
+This ensures that the last_used_addr in a VCAP instance is returned to the
+default value when all rules have been deleted.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/microchip/vcap/vcap_api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index a48baeacc1d2..04fc2f3b1979 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -648,7 +648,11 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
- 		return PTR_ERR(vrule);
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index d12c8ec40fe2..24f4ea1eacb3 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -1249,9 +1249,9 @@ int vcap_del_rule(struct vcap_control *vctrl, struct net_device *ndev, u32 id)
+ 	vctrl->ops->init(ndev, admin, admin->last_used_addr, ri->size + gap);
+ 	kfree(ri);
  
- 	vrule->cookie = fco->cookie;
--	sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
-+
-+	l3_proto = ETH_P_ALL;
-+	err = sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
-+	if (err)
-+		goto out;
- 
- 	err = sparx5_tc_add_rule_counter(admin, vrule);
- 	if (err)
+-	/* Update the last used address */
++	/* Update the last used address, set to default when no rules */
+ 	if (list_empty(&admin->rules)) {
+-		admin->last_used_addr = admin->last_valid_addr;
++		admin->last_used_addr = admin->last_valid_addr + 1;
+ 	} else {
+ 		elem = list_last_entry(&admin->rules, struct vcap_rule_internal,
+ 				       list);
 -- 
 2.38.1
 
