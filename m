@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49A2562D451
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 08:44:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52A8B62D460
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 08:49:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239389AbiKQHoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 02:44:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
+        id S234575AbiKQHtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 02:49:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239378AbiKQHoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 02:44:08 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA9543AD6;
-        Wed, 16 Nov 2022 23:44:07 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id o30so791089wms.2;
-        Wed, 16 Nov 2022 23:44:07 -0800 (PST)
+        with ESMTP id S233622AbiKQHtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 02:49:16 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CAB52895;
+        Wed, 16 Nov 2022 23:49:15 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id m22so2965364eji.10;
+        Wed, 16 Nov 2022 23:49:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MOR1JhYmBEppD4imfnJsKI2Upd7EAK5taerzvHPk9+c=;
-        b=AR0KXsHrTXScIsEPXnJ4VaCawyhMDJ/M7RpX5dxwWTYQvTj6hC23XGad4JsalGFs8D
-         3CUI151aNsXYL3cLA7Z/tPli96/onkM3frgmBqYffFIdd6gnJb9pmjkAJLG5L0M0ygZc
-         a47bfALzjR5rVmP2uQSfqXkbRBe/TDAlVrOoCF22OHkTuruCtYWETKT5HcU3aKRAS6Uh
-         rtrClzRLckGk3An0amrWhBSL325+x6osmlqulqs47ztd3jC7HrF+t3PqAyLNGAQ52baa
-         ZtlBD72N3ZMh4C1AVsME+ovfL2a66Fasi4uFoojKkxRr24OW4s18Nsu1yr7Xx9RZ5P+F
-         6VGw==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Xk1oEmkTU9H7VPwZGQRzWhMrFXqC/l98G+URF+zUWzQ=;
+        b=p3bqfivjdCBVThsXjPyPdiWmaaJ3KVtlPvlz5ibGTO97w+eHWVfn3ztrpX8+02RK7r
+         /n5JnlCLCI05orLqcPnBRJK4R+bPsH9DYMeal9vY8O/vOzLc4mmwCZsA4wliTfZTD/1k
+         PEe15RfyOHC4LfhRlJjzmgGqh361hWndQ7IlH7s8FKh4uPggrazp48fXqGNPgix4TK4o
+         BDKKQojgrChhZSy7opOWSyzmfD7tDHYpsxqrcg8YAGkZUNJjKsmbIVZ0YHQOXERzAL1O
+         BoAEt7xZmV9I6scFQJ2TzP/tB/Ldx1CfxDktxIjwHv4zP90v4Hi+bevI+uQoZIZDbgWC
+         NPug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MOR1JhYmBEppD4imfnJsKI2Upd7EAK5taerzvHPk9+c=;
-        b=SfLfsUWHcj/SQHgZvAP+ppeJ8GrT5rN0cBTr7K34x+Z8khDug8lLvJiq58hYER4xH8
-         PltVrz/FCb5q1ZO0DSl2YlSLrnhx114Fz9BuexQTQHNcbqXgttkCUv4AHrOICEOtDBHG
-         kL/FHL2HXj9tY/U4KilCYOAsSSEKx4OM+tU67GXGSojxhuWnkV/tjOv8sg9rZ+cQHEzj
-         31RiltHiB8BXfZLxuokb1EA8nlnBo55MBnDvEsKbH1ogUWIyDFccSHLkv5KkD5MyIE3/
-         x6UdTpG9u08++a44xGzL588wmDNDxbpMEXlEzc3m0nAyjW2ZwM8YGhgTR2MixNEEUSB2
-         MqDQ==
-X-Gm-Message-State: ANoB5pmOhkD3m0tBusHUBh5rGSVXQz/Uwdubaoh9RXnpMYY9WtXzwYZA
-        nD37x1DbpFbosSUe+CoK7Sg=
-X-Google-Smtp-Source: AA0mqf6NiEgyNEol/d08iW5yE2UXTFpm/iMHQ8Q//vT9l6FYLl5xikNIxKQc7vsUWjlf9T+QE3pspQ==
-X-Received: by 2002:a1c:7214:0:b0:3cf:7b65:76c5 with SMTP id n20-20020a1c7214000000b003cf7b6576c5mr760326wmc.166.1668671045992;
-        Wed, 16 Nov 2022 23:44:05 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id z14-20020a7bc7ce000000b003a6125562e1sm267463wmk.46.2022.11.16.23.44.04
+        bh=Xk1oEmkTU9H7VPwZGQRzWhMrFXqC/l98G+URF+zUWzQ=;
+        b=61S9ssEEf9YePCY61t2bBrnZcF/OI4bGZNkMCjRvcPbJ8GQU9ftBdC/h/TQb/9z4wA
+         jAmZOrxd5M7waBrgNarrB6Jg+scLDRkdgKPuV5D/45DFj2aoI9UhikyHDnwXhxJJg1kr
+         5OAg8ZUeb9zhWKqsnSpMN+iHELCBZNTYemtyzkP5Uw0OH2nvwE0ZGtkPg3b6je1ocjl2
+         gnHnKLWDQNg2FhArlO+qejDok80LXD/xGDs6W3/R86Emm/OaGX1AHpS4TJoVXruQGwyO
+         4oYjUDfYF74Jaa1AVXChYwkwK33ICr/OBfGtQotypYW21BGnfkyvAmKtxL/f7N9p2oBe
+         85tQ==
+X-Gm-Message-State: ANoB5pmXl7VTAXUs39f11w5UuwY9KiCGkdmPb9BLG79071YtqePq832B
+        PTfX0WmSMbqC+T9GqAQjA8n9AFNDNTo=
+X-Google-Smtp-Source: AA0mqf6j48PnIuhUBdYjPPrRHGMG9asjsCw4Bqww/C899ryKZXZBQZkhjhSprEaQLgVNwgiNzYA7ag==
+X-Received: by 2002:a17:906:a157:b0:7a5:7e25:5b11 with SMTP id bu23-20020a170906a15700b007a57e255b11mr1120322ejb.254.1668671353636;
+        Wed, 16 Nov 2022 23:49:13 -0800 (PST)
+Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
+        by smtp.gmail.com with ESMTPSA id bk14-20020a170906b0ce00b007ad69e9d34dsm19988ejb.54.2022.11.16.23.49.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 23:44:05 -0800 (PST)
-From:   Dan Carpenter <error27@gmail.com>
-X-Google-Original-From: Dan Carpenter <dan.carpenter@oracle.com>
-Date:   Thu, 17 Nov 2022 10:44:02 +0300
-To:     David Howells <dhowells@redhat.com>
-Cc:     Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] rxrpc: uninitialized variable in
- rxrpc_send_ack_packet()
-Message-ID: <Y3XmQsOFwTHUBSLU@kili>
+        Wed, 16 Nov 2022 23:49:13 -0800 (PST)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Thu, 17 Nov 2022 08:49:10 +0100
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Cc:     bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@rivosinc.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf 1/2] selftests/bpf: Explicitly pass RESOLVE_BTFIDS to
+ sub-make
+Message-ID: <Y3XndllQ6kmFbztg@krava>
+References: <20221115182051.582962-1-bjorn@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221115182051.582962-1-bjorn@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,37 +80,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "pkt" was supposed to have been deleted in a previous patch.  It
-leads to an uninitialized variable bug.
+On Tue, Nov 15, 2022 at 07:20:50PM +0100, Björn Töpel wrote:
+> From: Björn Töpel <bjorn@rivosinc.com>
+> 
+> When cross-compiling selftests/bpf, the resolve_btfids binary end up
+> in a different directory, than the regular resolve_btfids
+> builds. Populate RESOLVE_BTFIDS for sub-make, so it can find the
+> binary.
+> 
+> Signed-off-by: Björn Töpel <bjorn@rivosinc.com>
 
-Fixes: 72f0c6fb0579 ("rxrpc: Allocate ACK records at proposal and queue for transmission")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-Applies to net-next.
+Acked-by: Jiri Olsa <jolsa@kernel.org>
 
- net/rxrpc/output.c | 2 --
- 1 file changed, 2 deletions(-)
+thanks,
+jirka
 
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index 46432e70a16b..04f945e042ab 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -202,7 +202,6 @@ static void rxrpc_cancel_rtt_probe(struct rxrpc_call *call,
- static int rxrpc_send_ack_packet(struct rxrpc_local *local, struct rxrpc_txbuf *txb)
- {
- 	struct rxrpc_connection *conn;
--	struct rxrpc_ack_buffer *pkt;
- 	struct rxrpc_call *call = txb->call;
- 	struct msghdr msg;
- 	struct kvec iov[1];
-@@ -270,7 +269,6 @@ static int rxrpc_send_ack_packet(struct rxrpc_local *local, struct rxrpc_txbuf *
- 		rxrpc_set_keepalive(call);
- 	}
- 
--	kfree(pkt);
- 	return ret;
- }
- 
--- 
-2.35.1
-
+> ---
+>  tools/testing/selftests/bpf/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index e6cf21fad69f..8f8ede30e94e 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -200,7 +200,7 @@ $(OUTPUT)/sign-file: ../../../../scripts/sign-file.c
+>  $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_testmod/*.[ch])
+>  	$(call msg,MOD,,$@)
+>  	$(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
+> -	$(Q)$(MAKE) $(submake_extras) -C bpf_testmod
+> +	$(Q)$(MAKE) $(submake_extras) RESOLVE_BTFIDS=$(RESOLVE_BTFIDS) -C bpf_testmod
+>  	$(Q)cp bpf_testmod/bpf_testmod.ko $@
+>  
+>  DEFAULT_BPFTOOL := $(HOST_SCRATCH_DIR)/sbin/bpftool
+> 
+> base-commit: 47df8a2f78bc34ff170d147d05b121f84e252b85
+> -- 
+> 2.37.2
+> 
