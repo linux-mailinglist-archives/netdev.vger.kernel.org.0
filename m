@@ -2,152 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B47D862D135
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 03:44:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0006662D11C
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 03:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233271AbiKQCor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 21:44:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34224 "EHLO
+        id S234361AbiKQCYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 21:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231634AbiKQCoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 21:44:46 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011283FBAC
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 18:44:44 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id m14so465279pji.0
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 18:44:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8y7mAPAWKkrq2Hcc0NThS7AiX4ryCOd2Vsq1Ol2JLBo=;
-        b=nj+iRmojuZ3Jfxz1p9uIir6fdfMfxE1CAcDuWbZ+EkwoQLThgx+eftbvtkYIyuFpE7
-         /fCLCmBbMybNs/AP19QpBbI2fOeYFcLzqSPD34C5nMWRdpVJIAWr6bNKEXBXeJCP9+oD
-         SAijogaaCpZip2sQn6Z7hIT1n8OEsxSF7Y9btXpO0EexXb7xSzbfOuwgIRuwLcLRRmJD
-         aIreBeiWOMbJDIeUMPpRLqnvx057xUFw7Vr+bas8TDv/yYKKNQgEHNhVC/H1h7bSSZt7
-         Fx3PqP5ItNX5SbZrlS4ZdfOp7Jiogbx0b7rlgqj1If+54ct3NiIMOqPx+yvnQV/dg7Ez
-         ppTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8y7mAPAWKkrq2Hcc0NThS7AiX4ryCOd2Vsq1Ol2JLBo=;
-        b=bTKmBMoVRlonN3rgtzbwKYxLj9JCfjUzgnEgVn+t9BXlI5bXxiHynEcJQB0GlQ1pL8
-         aacBq4V2/u6PAaYMsiwTYYnZBPdcAuj2Oj7gs3kVwH6Qq7Z9Y9YA5mDhbg1KEU6ixFsl
-         2IbiV17FedUeFrYrOe3jAJkTF8tD5W31GQNCMVRFy6qu7iE+vhBBuDPyDv9IgID7IgAQ
-         hJbWUoNyD75Tz7x90qiRmjDYm9DrLcjU7s6lZQcyzGVvMHfReOH129laZgswwU/AHKMb
-         qqnnwzjDZab8N5bq5No/qveX52DrJBOMvs9mv3x2WNBgwM8lCiB10E0RnGzSfENl6Jyb
-         wbUg==
-X-Gm-Message-State: ANoB5pkqCHzdwcoj2mKilnVHuk5oZyrG0cfJ6NZflRpBbIvderqDbCLn
-        2swEqA9gW0sgEImkBIzY/iY=
-X-Google-Smtp-Source: AA0mqf5WuOVUF1mvlJiLPd7R+AdDklCFHB49a37AYKtUQ6Z7vjIE7rr2qHDU5e84OYR8Q7kkZvoCxw==
-X-Received: by 2002:a17:902:bd96:b0:181:b55a:f987 with SMTP id q22-20020a170902bd9600b00181b55af987mr805107pls.67.1668653084326;
-        Wed, 16 Nov 2022 18:44:44 -0800 (PST)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id g3-20020a170902868300b00186ac812ab0sm12972921plo.83.2022.11.16.18.44.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 18:44:43 -0800 (PST)
-Date:   Thu, 17 Nov 2022 10:44:38 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>, Liang Li <liali@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCHv3 net] bonding: fix ICMPv6 header handling when receiving
- IPv6 messages
-Message-ID: <Y3WgFgLlRQSaguqv@Laptop-X1>
-References: <20221109014018.312181-1-liuhangbin@gmail.com>
- <49594248-1fd7-23e2-1f17-9af896cd25b0@gmail.com>
- <17540.1668026368@famine>
- <CANn89i+eZwb3+JO6oKavj5yTi74vaUY-=Pu4CaUbcq==ue9NCw@mail.gmail.com>
- <19557.1668029004@famine>
- <CANn89iKW60QdMRbpyaYry4Vdfxm41ifh4qFt1azU5FCYkUJBiA@mail.gmail.com>
- <Y3SEXh0x4G7jNSi9@Laptop-X1>
- <17663.1668611774@famine>
+        with ESMTP id S233336AbiKQCYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 21:24:51 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24F6AEC1;
+        Wed, 16 Nov 2022 18:24:49 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCNyy6PgJzRpNW;
+        Thu, 17 Nov 2022 10:24:26 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 17 Nov 2022 10:24:47 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kuba@kernel.org>, <shuah@kernel.org>, <pabeni@redhat.com>,
+        <saeed@kernel.org>, <edumazet@google.com>, <davem@davemloft.net>,
+        Wang Yufen <wangyufen@huawei.com>,
+        =?UTF-8?q?Daniel=20M=C3=BCller?= <deso@posteo.net>
+Subject: [PATCH net v3] selftests/net: fix missing xdp_dummy
+Date:   Thu, 17 Nov 2022 10:45:03 +0800
+Message-ID: <1668653103-14212-1-git-send-email-wangyufen@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <17663.1668611774@famine>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 07:16:14AM -0800, Jay Vosburgh wrote:
-> >Hi David,
-> >
-> >The patch state[1] is Changes Requested, but I think Eric has no object on this
-> >patch now. Should I keep waiting, or re-send the patch?
-> >
-> >[1] https://patchwork.kernel.org/project/netdevbpf/patch/20221109014018.312181-1-liuhangbin@gmail.com/
-> 
-> 	The excerpt above is confirming that using skb_header_pointer()
-> is the correct implementation to use.
-> 
-> 	However, the patch needs to change to call skb_header_pointer()
-> sooner, to insure that the IPv6 header is available.  I've copied the
-> relevant part of the discussion below:
-> 
-> >>   	struct slave *curr_active_slave, *curr_arp_slave;
-> >> -	struct icmp6hdr *hdr = icmp6_hdr(skb);
-> >>   	struct in6_addr *saddr, *daddr;
-> >> +	const struct icmp6hdr *hdr;
-> >> +	struct icmp6hdr _hdr;
-> >>     	if (skb->pkt_type == PACKET_OTHERHOST ||
-> >>   	    skb->pkt_type == PACKET_LOOPBACK ||
-> >> -	    hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT)
-> >> +	    ipv6_hdr(skb)->nexthdr != NEXTHDR_ICMP)
-> >
-> >
-> >What makes sure IPv6 header is in skb->head (linear part of the skb) ?
-> 
-> 	The above comment is from Eric.  I had also mentioned that this
-> particular problem already existed in the code being patched.
+After commit afef88e65554 ("selftests/bpf: Store BPF object files with
+.bpf.o extension"), we should use xdp_dummy.bpf.o instade of xdp_dummy.o.
 
-Yes, I also saw your comments. I was thinking to fix this issue separately.
-i.e. in bond_rcv_validate(). With this we can check both IPv6 header and ARP
-header. e.g.
+In addition, use the BPF_FILE variable to save the BPF object file name,
+which can be better identified and modified.
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 2c6356232668..ae4c30a25b76 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3278,8 +3278,10 @@ int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond,
- {
- #if IS_ENABLED(CONFIG_IPV6)
- 	bool is_ipv6 = skb->protocol == __cpu_to_be16(ETH_P_IPV6);
-+	struct ipv6hdr ip6_hdr;
- #endif
- 	bool is_arp = skb->protocol == __cpu_to_be16(ETH_P_ARP);
-+	struct arphdr arp_hdr;
+Fixes: afef88e65554 ("selftests/bpf: Store BPF object files with .bpf.o extension")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Cc: Daniel Müller <deso@posteo.net>
+---
+ tools/testing/selftests/net/udpgro.sh         |  8 +++++---
+ tools/testing/selftests/net/udpgro_bench.sh   |  8 +++++---
+ tools/testing/selftests/net/udpgro_frglist.sh |  8 +++++---
+ tools/testing/selftests/net/udpgro_fwd.sh     |  3 ++-
+ tools/testing/selftests/net/veth.sh           | 11 ++++++-----
+ 5 files changed, 23 insertions(+), 15 deletions(-)
+
+diff --git a/tools/testing/selftests/net/udpgro.sh b/tools/testing/selftests/net/udpgro.sh
+index 6a443ca..0c74375 100755
+--- a/tools/testing/selftests/net/udpgro.sh
++++ b/tools/testing/selftests/net/udpgro.sh
+@@ -5,6 +5,8 @@
  
- 	slave_dbg(bond->dev, slave->dev, "%s: skb->dev %s\n",
- 		  __func__, skb->dev->name);
-@@ -3293,10 +3295,10 @@ int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond,
- 		    !slave_do_arp_validate_only(bond))
- 			slave->last_rx = jiffies;
- 		return RX_HANDLER_ANOTHER;
--	} else if (is_arp) {
-+	} else if (is_arp && skb_header_pointer(skb, 0, sizeof(arp_hdr), &arp_hdr)) {
- 		return bond_arp_rcv(skb, bond, slave);
- #if IS_ENABLED(CONFIG_IPV6)
--	} else if (is_ipv6) {
-+	} else if (is_ipv6 && skb_header_pointer(skb, 0, sizeof(ip6_hdr), &ip6_hdr)) {
- 		return bond_na_rcv(skb, bond, slave);
- #endif
- 	} else {
+ readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
+ 
++BPF_FILE="../bpf/xdp_dummy.bpf.o"
++
+ # set global exit status, but never reset nonzero one.
+ check_err()
+ {
+@@ -34,7 +36,7 @@ cfg_veth() {
+ 	ip -netns "${PEER_NS}" addr add dev veth1 192.168.1.1/24
+ 	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
+ 	ip -netns "${PEER_NS}" link set dev veth1 up
+-	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
++	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+ }
+ 
+ run_one() {
+@@ -195,8 +197,8 @@ run_all() {
+ 	return $ret
+ }
+ 
+-if [ ! -f ../bpf/xdp_dummy.o ]; then
+-	echo "Missing xdp_dummy helper. Build bpf selftest first"
++if [ ! -f ${BPF_FILE} ]; then
++	echo "Missing ${BPF_FILE}. Build bpf selftest first"
+ 	exit -1
+ fi
+ 
+diff --git a/tools/testing/selftests/net/udpgro_bench.sh b/tools/testing/selftests/net/udpgro_bench.sh
+index 8a1109a..8949728 100755
+--- a/tools/testing/selftests/net/udpgro_bench.sh
++++ b/tools/testing/selftests/net/udpgro_bench.sh
+@@ -5,6 +5,8 @@
+ 
+ readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
+ 
++BPF_FILE="../bpf/xdp_dummy.bpf.o"
++
+ cleanup() {
+ 	local -r jobs="$(jobs -p)"
+ 	local -r ns="$(ip netns list|grep $PEER_NS)"
+@@ -34,7 +36,7 @@ run_one() {
+ 	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
+ 	ip -netns "${PEER_NS}" link set dev veth1 up
+ 
+-	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
++	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -t ${rx_args} -r &
+ 
+@@ -80,8 +82,8 @@ run_all() {
+ 	run_udp "${ipv6_args}"
+ }
+ 
+-if [ ! -f ../bpf/xdp_dummy.o ]; then
+-	echo "Missing xdp_dummy helper. Build bpf selftest first"
++if [ ! -f ${BPF_FILE} ]; then
++	echo "Missing ${BPF_FILE}. Build bpf selftest first"
+ 	exit -1
+ fi
+ 
+diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+index 7fe85ba..c9c4b9d 100755
+--- a/tools/testing/selftests/net/udpgro_frglist.sh
++++ b/tools/testing/selftests/net/udpgro_frglist.sh
+@@ -5,6 +5,8 @@
+ 
+ readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
+ 
++BPF_FILE="../bpf/xdp_dummy.bpf.o"
++
+ cleanup() {
+ 	local -r jobs="$(jobs -p)"
+ 	local -r ns="$(ip netns list|grep $PEER_NS)"
+@@ -36,7 +38,7 @@ run_one() {
+ 	ip netns exec "${PEER_NS}" ethtool -K veth1 rx-gro-list on
+ 
+ 
+-	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
++	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+ 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
+ 	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
+ 	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
+@@ -81,8 +83,8 @@ run_all() {
+ 	run_udp "${ipv6_args}"
+ }
+ 
+-if [ ! -f ../bpf/xdp_dummy.o ]; then
+-	echo "Missing xdp_dummy helper. Build bpf selftest first"
++if [ ! -f ${BPF_FILE} ]; then
++	echo "Missing ${BPF_FILE}. Build bpf selftest first"
+ 	exit -1
+ fi
+ 
+diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
+index 1bcd82e..c079565 100755
+--- a/tools/testing/selftests/net/udpgro_fwd.sh
++++ b/tools/testing/selftests/net/udpgro_fwd.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
++BPF_FILE="../bpf/xdp_dummy.bpf.o"
+ readonly BASE="ns-$(mktemp -u XXXXXX)"
+ readonly SRC=2
+ readonly DST=1
+@@ -46,7 +47,7 @@ create_ns() {
+ 		ip -n $BASE$ns addr add dev veth$ns $BM_NET_V4$ns/24
+ 		ip -n $BASE$ns addr add dev veth$ns $BM_NET_V6$ns/64 nodad
+ 	done
+-	ip -n $NS_DST link set veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
++	ip -n $NS_DST link set veth$DST xdp object ${BPF_FILE} section xdp 2>/dev/null
+ }
+ 
+ create_vxlan_endpoint() {
+diff --git a/tools/testing/selftests/net/veth.sh b/tools/testing/selftests/net/veth.sh
+index 430895d..2d07359 100755
+--- a/tools/testing/selftests/net/veth.sh
++++ b/tools/testing/selftests/net/veth.sh
+@@ -1,6 +1,7 @@
+ #!/bin/sh
+ # SPDX-License-Identifier: GPL-2.0
+ 
++BPF_FILE="../bpf/xdp_dummy.bpf.o"
+ readonly STATS="$(mktemp -p /tmp ns-XXXXXX)"
+ readonly BASE=`basename $STATS`
+ readonly SRC=2
+@@ -216,8 +217,8 @@ while getopts "hs:" option; do
+ 	esac
+ done
+ 
+-if [ ! -f ../bpf/xdp_dummy.o ]; then
+-	echo "Missing xdp_dummy helper. Build bpf selftest first"
++if [ ! -f ${BPF_FILE} ]; then
++	echo "Missing ${BPF_FILE}. Build bpf selftest first"
+ 	exit 1
+ fi
+ 
+@@ -288,14 +289,14 @@ if [ $CPUS -gt 1 ]; then
+ 	ip netns exec $NS_DST ethtool -L veth$DST rx 1 tx 2 2>/dev/null
+ 	ip netns exec $NS_SRC ethtool -L veth$SRC rx 1 tx 2 2>/dev/null
+ 	printf "%-60s" "bad setting: XDP with RX nr less than TX"
+-	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
++	ip -n $NS_DST link set dev veth$DST xdp object ${BPF_FILE} \
+ 		section xdp 2>/dev/null &&\
+ 		echo "fail - set operation successful ?!?" || echo " ok "
+ 
+ 	# the following tests will run with multiple channels active
+ 	ip netns exec $NS_SRC ethtool -L veth$SRC rx 2
+ 	ip netns exec $NS_DST ethtool -L veth$DST rx 2
+-	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
++	ip -n $NS_DST link set dev veth$DST xdp object ${BPF_FILE} \
+ 		section xdp 2>/dev/null
+ 	printf "%-60s" "bad setting: reducing RX nr below peer TX with XDP set"
+ 	ip netns exec $NS_DST ethtool -L veth$DST rx 1 2>/dev/null &&\
+@@ -311,7 +312,7 @@ if [ $CPUS -gt 2 ]; then
+ 	chk_channels "setting invalid channels nr" $DST 2 2
+ fi
+ 
+-ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
++ip -n $NS_DST link set dev veth$DST xdp object ${BPF_FILE} section xdp 2>/dev/null
+ chk_gro_flag "with xdp attached - gro flag" $DST on
+ chk_gro_flag "        - peer gro flag" $SRC off
+ chk_tso_flag "        - tso flag" $SRC off
+-- 
+1.8.3.1
 
-What do you think?
-
-Thanks
-Hangbin
