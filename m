@@ -2,45 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EFD62D25A
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 05:33:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3854E62D304
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 06:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239146AbiKQEdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 23:33:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        id S234318AbiKQFyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 00:54:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233363AbiKQEds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 23:33:48 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5B92704;
-        Wed, 16 Nov 2022 20:33:47 -0800 (PST)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCRqm6CD7zRpGY;
-        Thu, 17 Nov 2022 12:33:24 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 12:33:44 +0800
-Received: from huawei.com (10.175.113.133) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 12:33:43 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <andriy.shevchenko@linux.intel.com>,
-        <liuhangbin@gmail.co>, <masa-korg@dsn.okisemi.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH net] net: pch_gbe: fix potential memleak in pch_gbe_tx_queue()
-Date:   Thu, 17 Nov 2022 14:55:27 +0800
-Message-ID: <20221117065527.71103-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S230037AbiKQFyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 00:54:13 -0500
+Received: from omta037.useast.a.cloudfilter.net (omta037.useast.a.cloudfilter.net [44.202.169.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAB54E43C;
+        Wed, 16 Nov 2022 21:54:12 -0800 (PST)
+Received: from eig-obgw-6011a.ext.cloudfilter.net ([10.0.30.170])
+        by cmsmtp with ESMTP
+        id vX3co0qNLGK0JvXqlowW8G; Thu, 17 Nov 2022 05:54:11 +0000
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with ESMTP
+        id vXqjo66hHNkqcvXqkoVxpy; Thu, 17 Nov 2022 05:54:10 +0000
+X-Authority-Analysis: v=2.4 cv=SKhR6cjH c=1 sm=1 tr=0 ts=6375cc82
+ a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=wTog8WU66it3cfrESHnF4A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10 a=9xFQ1JgjjksA:10
+ a=wYkD_t78qR0A:10 a=mDV3o1hIAAAA:8 a=2MnAaCYfOD4pXKyC1zoA:9 a=QEXdDO2ut3YA:10
+ a=DJlwVr9uAhcA:10 a=_FVE-zBwftR9WsbkzFJk:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IVX0Ndlx1QpYhjf6muh2ZPSSsujamdKE8h0m5gxriWg=; b=ugXaIBaR4SHJOdHpIfJSysQRJk
+        hMygA3NHigKCOmE5iAW0VZjHyR0CwhUgP30QHNr6WsO4z05rCNLNSbspxE82ao1QRGzoq3RImwp9j
+        GtQ9ZexrPKOHKREupWjN7634OqdDMGlVHQ6xaK5tw0bQlBdOhcEfUVn1lFAYYs0EJ/zvIh4BPinqP
+        2hcDv/2Ahg/pDw2r4SHBqlqYSG+1KTcUfUSgFmkXOx6sI8xRR4ZOb5shl3PNocyfHjBUG6Yj6YIH3
+        78Te8wPDAGFqJ68kpL3dmG8jVRkx/ECkwcC2KvnIAHwuZCi4JyMMsadD/emMtxoZZ8vgg1lzRFLGE
+        H+/OXVLQ==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:57016 helo=[192.168.15.7])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.95)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1ovTaS-001jBu-26;
+        Wed, 16 Nov 2022 19:21:04 -0600
+Message-ID: <1b373b08-988d-b870-d363-814f8083157c@embeddedor.com>
+Date:   Wed, 16 Nov 2022 19:20:51 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v2] netlink: split up copies in the ack
+ construction
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        linux-hardening@vger.kernel.org
+References: <20221027212553.2640042-1-kuba@kernel.org>
+ <20221114023927.GA685@u2004-local> <20221114090614.2bfeb81c@kernel.org>
+ <202211161444.04F3EDEB@keescook> <202211161454.D5FA4ED44@keescook>
+ <202211161502.142D146@keescook>
+ <1e97660d-32ff-c0cc-951b-5beda6283571@embeddedor.com>
+ <20221116170526.752c304b@kernel.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+In-Reply-To: <20221116170526.752c304b@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1ovTaS-001jBu-26
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.7]) [187.162.31.110]:57016
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 0
+X-Org:  HG=hgshared;ORG=hostgator;
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfGnFtwXyMzEZr0qCQ2E57yecRpTyr4V7mLRrI/N5+fofzAMLl/3YJvDZkX+M+AlacciKVOB7Yp6hNA7rDmy8K2NluJ61jKu3FxM94N0qC9U5ROmWOtan
+ Maak1/0HAGGTy6eGvb9J1UPBMB7N9DL5Qz+ICFmSqsBWBCccPeHD/eHbDwfCmIhPuTa29mBHZWy04lb4bouMM4Drya2v0sQnhrdxdB2cCbB96HkUk/WR8xSU
+ cKRI8Pjm3fstyZYzTsTuMw==
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,30 +96,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In pch_gbe_xmit_frame(), NETDEV_TX_OK will be returned whether
-pch_gbe_tx_queue() sends data successfully or not, so pch_gbe_tx_queue()
-needs to free skb before returning. But pch_gbe_tx_queue() returns without
-freeing skb in case of dma_map_single() fails. Add dev_kfree_skb_any()
-to fix it.
 
-Fixes: 77555ee72282 ("net: Add Gigabit Ethernet driver of Topcliff PCH")
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-index 3f2c30184752..c9ae47128a07 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -1143,6 +1143,7 @@ static void pch_gbe_tx_queue(struct pch_gbe_adapter *adapter,
- 		buffer_info->dma = 0;
- 		buffer_info->time_stamp = 0;
- 		tx_ring->next_to_use = ring_num;
-+		dev_kfree_skb_any(skb);
- 		return;
- 	}
- 	buffer_info->mapped = true;
--- 
-2.17.1
+On 11/16/22 19:05, Jakub Kicinski wrote:
+> On Wed, 16 Nov 2022 18:55:36 -0600 Gustavo A. R. Silva wrote:
+>>> @@ -56,7 +55,6 @@ struct nlmsghdr {
+>>>    	__u16		nlmsg_flags;
+>>>    	__u32		nlmsg_seq;
+>>>    	__u32		nlmsg_pid;
+>>> -	__u8		nlmsg_data[];
+>>>    };
+>>
+>> This seems to be a sensible change. In general, it's not a good idea
+>> to have variable length objects (flex-array members) in structures used
+>> as headers, and that we know will ultimately be followed by more objects
+>> when embedded inside other structures.
+> 
+> Meaning we should go back to zero-length arrays instead?
 
+No.
+> Is there something in the standard that makes flexible array
+> at the end of an embedded struct a problem?
+
+I haven't seen any problems ss long as the flex-array appears last:
+
+struct foo {
+	... members
+	struct boo {
+		... members
+		char flex[];
+	};
+};
+
+struct complex {
+	... members
+	struct foo embedded;
+};
+
+However, the GCC docs[1] mention this:
+
+"A structure containing a flexible array member [..] may not be a
+member of a structure [..] (However, these uses are permitted by GCC
+as extensions.)"
+
+And in this case it seems that's the reason why GCC doesn't complain?
+
+--
+Gustavo
+
+[1] https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Zero-Length.html#Zero-Length
