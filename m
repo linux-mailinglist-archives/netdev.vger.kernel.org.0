@@ -2,361 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B535962D18E
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 04:20:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8A062D1B6
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 04:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233511AbiKQDU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 22:20:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S234153AbiKQDeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 22:34:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbiKQDUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 22:20:54 -0500
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4F458BC7;
-        Wed, 16 Nov 2022 19:20:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1668655253; x=1700191253;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=K+5sPFqOp8MZSgN2T+5QrXBkxT08LykCO+5XA7n0iG4=;
-  b=CNgIXDdZ2/LFfJP61cTT8PRhcT/BMV1rbHTtvFdDzbeqUJZ3dVLrtwl1
-   Eo/aRJ249V/WhnteEAk6rkGIFo3PxAfTLb5euh0p4Oe6hVl+BrdM+AHiK
-   8fVjv5kVnjOz2IUwYyBnG9j5ERrkjM9YhuLfYHLbltnRn6y43SFpVVgt+
-   s=;
-X-IronPort-AV: E=Sophos;i="5.96,169,1665446400"; 
-   d="scan'208";a="263871726"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-83883bdb.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 03:20:49 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-m6i4x-83883bdb.us-west-2.amazon.com (Postfix) with ESMTPS id 51D8860FB3;
-        Thu, 17 Nov 2022 03:20:47 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Thu, 17 Nov 2022 03:20:45 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.178) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Thu, 17 Nov 2022 03:20:42 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <pengfei.xu@intel.com>
-CC:     <acme@mandriva.com>, <davem@davemloft.net>, <dccp@vger.kernel.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>,
-        <joannelkoong@gmail.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <martin.lau@kernel.org>,
-        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <stephen@networkplumber.org>,
-        <syzkaller@googlegroups.com>, <william.xuanziyang@huawei.com>,
-        <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v2 net 4/4] dccp/tcp: Fixup bhash2 bucket when connect() fails.
-Date:   Wed, 16 Nov 2022 19:20:14 -0800
-Message-ID: <20221117032014.80364-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <Y3WbBb/cWSopB6j6@xpf.sh.intel.com>
-References: <Y3WbBb/cWSopB6j6@xpf.sh.intel.com>
+        with ESMTP id S232117AbiKQDeI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 22:34:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67B4DF3
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 19:33:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668655994;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bEgs6r6K75N0WtORy2wa6jb70ubQdjOl8NHUGJWWq+I=;
+        b=RXm4atCRIy3NjyIvZOJFwT4l3bx7s0hxvRP6HKOfzJLdcBcCum+3R2CyYx3i/wNKgh8zrM
+        +Aa6XLO0E++I0av8eaSQI+JNuBGHoCrbmvP+EwYm5xsN4GwqBcnNrn3nSLKPwyqWXBijTG
+        lbultdKoxnJhU/nSkNxVz+zD8owfSMk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-316-0HmsnkxuP5erzPkSKma_lg-1; Wed, 16 Nov 2022 22:33:11 -0500
+X-MC-Unique: 0HmsnkxuP5erzPkSKma_lg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A09223C01DED;
+        Thu, 17 Nov 2022 03:33:10 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-248.pek2.redhat.com [10.72.13.248])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BE7E7475060;
+        Thu, 17 Nov 2022 03:33:06 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     dsahern@kernel.org, netdev@vger.kernel.org
+Cc:     virtualization@lists.linux-foundation.org, si-wei.liu@oracle.com,
+        mst@redhat.com, eperezma@redhat.com, lingshan.zhu@intel.com,
+        elic@nvidia.com, Jason Wang <jasowang@redhat.com>
+Subject: [PATCH V2] vdpa: allow provisioning device features
+Date:   Thu, 17 Nov 2022 11:33:03 +0800
+Message-Id: <20221117033303.16870-1-jasowang@redhat.com>
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.178]
-X-ClientProxiedBy: EX13D37UWA004.ant.amazon.com (10.43.160.23) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Pengfei Xu <pengfei.xu@intel.com>
-Date:   Thu, 17 Nov 2022 10:23:01 +0800
-> Hi Kuniyuki Iwashima,
-> 
-> If you consider bisect commit or some other info from below link is useful:
-> "https://lore.kernel.org/lkml/Y2xyHM1fcCkh9AKU@xpf.sh.intel.com/"
-> could you add one more Reported-by tag from me, if no, please ignore the
-> email.
+This patch allows device features to be provisioned via vdpa. This
+will be useful for preserving migration compatibility between source
+and destination:
 
-Hi,
+# vdpa dev add name dev1 mgmtdev pci/0000:02:00.0 device_features 0x300020000
+# dev1: mac 52:54:00:12:34:56 link up link_announce false mtu 65535
+      negotiated_features CTRL_VQ VERSION_1 ACCESS_PLATFORM
 
-Thanks for providing a repro and bisecting, and sorry, I didn't subscribe
-LKML and haven't noticed the thread until Stephen forwarded it to the
-netndev mailing list today. [0]
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+Changes since v1:
+- Use uint64_t instead of __u64 for device_features
+- Fix typos and tweak the manpage
+- Add device_features to the help text
+---
+ man/man8/vdpa-dev.8            | 15 +++++++++++++++
+ vdpa/include/uapi/linux/vdpa.h |  1 +
+ vdpa/vdpa.c                    | 32 +++++++++++++++++++++++++++++---
+ 3 files changed, 45 insertions(+), 3 deletions(-)
 
-The issue was brought up for discussion [1] about two weeks before the
-thread.  So, I would recommend that you check netdev first and send a
-report CCing netdev if it is a netwokring stuff.
+diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
+index 9faf3838..43e5bf48 100644
+--- a/man/man8/vdpa-dev.8
++++ b/man/man8/vdpa-dev.8
+@@ -31,6 +31,7 @@ vdpa-dev \- vdpa device configuration
+ .I NAME
+ .B mgmtdev
+ .I MGMTDEV
++.RI "[ device_features " DEVICE_FEATURES " ]"
+ .RI "[ mac " MACADDR " ]"
+ .RI "[ mtu " MTU " ]"
+ .RI "[ max_vqp " MAX_VQ_PAIRS " ]"
+@@ -74,6 +75,15 @@ Name of the new vdpa device to add.
+ Name of the management device to use for device addition.
+ 
+ .PP
++.BI device_features " DEVICE_FEATURES"
++Specifies the virtio device features bit-mask that is provisioned for the new vdpa device.
++
++The bits can be found under include/uapi/linux/virtio*h.
++
++see macros such as VIRTIO_F_ and VIRTIO_XXX(e.g NET)_F_ for specific bit values.
++
++This is optional.
++
+ .BI mac " MACADDR"
+ - specifies the mac address for the new vdpa device.
+ This is applicable only for the network type of vdpa device. This is optional.
+@@ -127,6 +137,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net
+ Add the vdpa device named foo on the management device vdpa_sim_net.
+ .RE
+ .PP
++vdpa dev add name foo mgmtdev vdpa_sim_net device_features 0x300020000
++.RS 4
++Add the vdpa device named foo on the management device vdpa_sim_net with device_features of 0x300020000
++.RE
++.PP
+ vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55
+ .RS 4
+ Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55.
+diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
+index 94e4dad1..7c961991 100644
+--- a/vdpa/include/uapi/linux/vdpa.h
++++ b/vdpa/include/uapi/linux/vdpa.h
+@@ -51,6 +51,7 @@ enum vdpa_attr {
+ 	VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+ 	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
+ 	VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
++	VDPA_ATTR_DEV_FEATURES,                 /* u64 */
+ 
+ 	/* new attributes must be added above here */
+ 	VDPA_ATTR_MAX,
+diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
+index b73e40b4..d0ce5e22 100644
+--- a/vdpa/vdpa.c
++++ b/vdpa/vdpa.c
+@@ -27,6 +27,7 @@
+ #define VDPA_OPT_VDEV_MTU		BIT(5)
+ #define VDPA_OPT_MAX_VQP		BIT(6)
+ #define VDPA_OPT_QUEUE_INDEX		BIT(7)
++#define VDPA_OPT_VDEV_FEATURES		BIT(8)
+ 
+ struct vdpa_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -38,6 +39,7 @@ struct vdpa_opts {
+ 	uint16_t mtu;
+ 	uint16_t max_vqp;
+ 	uint32_t queue_idx;
++	uint64_t device_features;
+ };
+ 
+ struct vdpa {
+@@ -187,6 +189,17 @@ static int vdpa_argv_u32(struct vdpa *vdpa, int argc, char **argv,
+ 	return get_u32(result, *argv, 10);
+ }
+ 
++static int vdpa_argv_u64_hex(struct vdpa *vdpa, int argc, char **argv,
++			     uint64_t *result)
++{
++	if (argc <= 0 || !*argv) {
++		fprintf(stderr, "number expected\n");
++		return -EINVAL;
++	}
++
++	return get_u64(result, *argv, 16);
++}
++
+ struct vdpa_args_metadata {
+ 	uint64_t o_flag;
+ 	const char *err_msg;
+@@ -244,6 +257,10 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
+ 		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vqp);
+ 	if (opts->present & VDPA_OPT_QUEUE_INDEX)
+ 		mnl_attr_put_u32(nlh, VDPA_ATTR_DEV_QUEUE_INDEX, opts->queue_idx);
++	if (opts->present & VDPA_OPT_VDEV_FEATURES) {
++		mnl_attr_put_u64(nlh, VDPA_ATTR_DEV_FEATURES,
++				opts->device_features);
++	}
+ }
+ 
+ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+@@ -329,6 +346,14 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+ 
+ 			NEXT_ARG_FWD();
+ 			o_found |= VDPA_OPT_QUEUE_INDEX;
++		} else if (!strcmp(*argv, "device_features") &&
++			   (o_optional & VDPA_OPT_VDEV_FEATURES)) {
++			NEXT_ARG_FWD();
++			err = vdpa_argv_u64_hex(vdpa, argc, argv,
++						&opts->device_features);
++			if (err)
++				return err;
++			o_found |= VDPA_OPT_VDEV_FEATURES;
+ 		} else {
+ 			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
+ 			return -EINVAL;
+@@ -615,8 +640,9 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
+ static void cmd_dev_help(void)
+ {
+ 	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
+-	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
+-	fprintf(stderr, "                                                    [ max_vqp MAX_VQ_PAIRS ]\n");
++	fprintf(stderr, "       vdpa dev add name NAME mgmtdevMANAGEMENTDEV [ device_features DEVICE_FEATURES]\n");
++	fprintf(stderr, "                                                   [ mac MACADDR ] [ mtu MTU ]\n");
++	fprintf(stderr, "                                                   [ max_vqp MAX_VQ_PAIRS ]\n");
+ 	fprintf(stderr, "       vdpa dev del DEV\n");
+ 	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
+ 	fprintf(stderr, "Usage: vdpa dev vstats COMMAND\n");
+@@ -708,7 +734,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
+ 	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
+ 				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
+ 				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU |
+-				  VDPA_OPT_MAX_VQP);
++				  VDPA_OPT_MAX_VQP | VDPA_OPT_VDEV_FEATURES);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.25.1
 
-The issue is reported by Mat[2], me[1], Ziyang[3], and you, and all of
-them were originally generated by syzkaller.
-
-If we added all Reported-by tags, they would be:
-
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Reported-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Reported-by: Ziyang Xuan (William) <william.xuanziyang@huawei.com>
-Reported-by: Pengfei Xu <pengfei.xu@intel.com>
-
-But adding my Reported-by sounds odd, so considering the order, only
-syzbot and Mat ones make sense ?
-
-Anyway, I'll leave the decision to maintainers.
-
-[0]: https://lore.kernel.org/netdev/20221116085854.0dcfa44d@hermes.local/
-[1]: https://lore.kernel.org/netdev/20221029001249.86337-1-kuniyu@amazon.com/
-[2]: https://lore.kernel.org/netdev/4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com/
-[3]: https://lore.kernel.org/netdev/4bd122d2-d606-b71e-dbe7-63fa293f0a73@huawei.com/
-
-Thank you.
-
-P.S please don't top post at Linux mailing lists :)
-
-
-> 
-> Thanks!
-> BR.
-> 
-> On 2022-11-16 at 14:28:05 -0800, Kuniyuki Iwashima wrote:
-> > If a socket bound to a wildcard address fails to connect(), we
-> > only reset saddr and keep the port.  Then, we have to fix up the
-> > bhash2 bucket; otherwise, the bucket has an inconsistent address
-> > in the list.
-> > 
-> > Also, listen() for such a socket will fire the WARN_ON() in
-> > inet_csk_get_port(). [0]
-> > 
-> > Note that when a system runs out of memory, we give up fixing the
-> > bucket and unlink sk from bhash and bhash2 by inet_put_port().
-> > 
-> > [0]:
-> > WARNING: CPU: 0 PID: 207 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> > Modules linked in:
-> > CPU: 0 PID: 207 Comm: bhash2_prev_rep Not tainted 6.1.0-rc3-00799-gc8421681c845 #63
-> > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.amzn2022.0.1 04/01/2014
-> > RIP: 0010:inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> > Code: 74 a7 eb 93 48 8b 54 24 18 0f b7 cb 4c 89 e6 4c 89 ff e8 48 b2 ff ff 49 8b 87 18 04 00 00 e9 32 ff ff ff 0f 0b e9 34 ff ff ff <0f> 0b e9 42 ff ff ff 41 8b 7f 50 41 8b 4f 54 89 fe 81 f6 00 00 ff
-> > RSP: 0018:ffffc900003d7e50 EFLAGS: 00010202
-> > RAX: ffff8881047fb500 RBX: 0000000000004e20 RCX: 0000000000000000
-> > RDX: 000000000000000a RSI: 00000000fffffe00 RDI: 00000000ffffffff
-> > RBP: ffffffff8324dc00 R08: 0000000000000001 R09: 0000000000000001
-> > R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000000
-> > R13: 0000000000000001 R14: 0000000000004e20 R15: ffff8881054e1280
-> > FS:  00007f8ac04dc740(0000) GS:ffff88842fc00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 0000000020001540 CR3: 00000001055fa003 CR4: 0000000000770ef0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > PKRU: 55555554
-> > Call Trace:
-> >  <TASK>
-> >  inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
-> >  inet_listen (net/ipv4/af_inet.c:228)
-> >  __sys_listen (net/socket.c:1810)
-> >  __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
-> >  do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> >  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> > RIP: 0033:0x7f8ac051de5d
-> > Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 93 af 1b 00 f7 d8 64 89 01 48
-> > RSP: 002b:00007ffc1c177248 EFLAGS: 00000206 ORIG_RAX: 0000000000000032
-> > RAX: ffffffffffffffda RBX: 0000000020001550 RCX: 00007f8ac051de5d
-> > RDX: ffffffffffffff80 RSI: 0000000000000000 RDI: 0000000000000004
-> > RBP: 00007ffc1c177270 R08: 0000000000000018 R09: 0000000000000007
-> > R10: 0000000020001540 R11: 0000000000000206 R12: 00007ffc1c177388
-> > R13: 0000000000401169 R14: 0000000000403e18 R15: 00007f8ac0723000
-> >  </TASK>
-> > 
-> > Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> >  include/net/inet_hashtables.h |  1 +
-> >  net/dccp/ipv4.c               |  3 +--
-> >  net/dccp/ipv6.c               |  3 +--
-> >  net/dccp/proto.c              |  3 +--
-> >  net/ipv4/inet_hashtables.c    | 38 +++++++++++++++++++++++++++++++----
-> >  net/ipv4/tcp.c                |  3 +--
-> >  net/ipv4/tcp_ipv4.c           |  3 +--
-> >  net/ipv6/tcp_ipv6.c           |  3 +--
-> >  8 files changed, 41 insertions(+), 16 deletions(-)
-> > 
-> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > index ba06e8b52264..69174093078f 100644
-> > --- a/include/net/inet_hashtables.h
-> > +++ b/include/net/inet_hashtables.h
-> > @@ -282,6 +282,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
-> >   * rcv_saddr field should already have been updated when this is called.
-> >   */
-> >  int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
-> > +void inet_bhash2_reset_saddr(struct sock *sk);
-> >  
-> >  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
-> >  		    struct inet_bind2_bucket *tb2, unsigned short port);
-> > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > index 95e376e3b911..b780827f5e0a 100644
-> > --- a/net/dccp/ipv4.c
-> > +++ b/net/dccp/ipv4.c
-> > @@ -143,8 +143,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >  	 * This unhashes the socket and releases the local port, if necessary.
-> >  	 */
-> >  	dccp_set_state(sk, DCCP_CLOSED);
-> > -	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > -		inet_reset_saddr(sk);
-> > +	inet_bhash2_reset_saddr(sk);
-> >  	ip_rt_put(rt);
-> >  	sk->sk_route_caps = 0;
-> >  	inet->inet_dport = 0;
-> > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > index 94c101ed57a9..602f3432d80b 100644
-> > --- a/net/dccp/ipv6.c
-> > +++ b/net/dccp/ipv6.c
-> > @@ -970,8 +970,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >  
-> >  late_failure:
-> >  	dccp_set_state(sk, DCCP_CLOSED);
-> > -	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > -		inet_reset_saddr(sk);
-> > +	inet_bhash2_reset_saddr(sk);
-> >  	__sk_dst_reset(sk);
-> >  failure:
-> >  	inet->inet_dport = 0;
-> > diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-> > index c548ca3e9b0e..85e35c5e8890 100644
-> > --- a/net/dccp/proto.c
-> > +++ b/net/dccp/proto.c
-> > @@ -279,8 +279,7 @@ int dccp_disconnect(struct sock *sk, int flags)
-> >  
-> >  	inet->inet_dport = 0;
-> >  
-> > -	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > -		inet_reset_saddr(sk);
-> > +	inet_bhash2_reset_saddr(sk);
-> >  
-> >  	sk->sk_shutdown = 0;
-> >  	sock_reset_flag(sk, SOCK_DONE);
-> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > index dcb6bc918966..d24a04815f20 100644
-> > --- a/net/ipv4/inet_hashtables.c
-> > +++ b/net/ipv4/inet_hashtables.c
-> > @@ -871,7 +871,7 @@ static void inet_update_saddr(struct sock *sk, void *saddr, int family)
-> >  	}
-> >  }
-> >  
-> > -int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > +static int __inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family, bool reset)
-> >  {
-> >  	struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
-> >  	struct inet_bind2_bucket *tb2, *new_tb2;
-> > @@ -882,7 +882,11 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> >  
-> >  	if (!inet_csk(sk)->icsk_bind2_hash) {
-> >  		/* Not bind()ed before. */
-> > -		inet_update_saddr(sk, saddr, family);
-> > +		if (reset)
-> > +			inet_reset_saddr(sk);
-> > +		else
-> > +			inet_update_saddr(sk, saddr, family);
-> > +
-> >  		return 0;
-> >  	}
-> >  
-> > @@ -891,8 +895,19 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> >  	 * allocation fails.
-> >  	 */
-> >  	new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
-> > -	if (!new_tb2)
-> > +	if (!new_tb2) {
-> > +		if (reset) {
-> > +			/* The (INADDR_ANY, port) bucket might have already been
-> > +			 * freed, then we cannot fixup icsk_bind2_hash, so we give
-> > +			 * up and unlink sk from bhash/bhash2 not to fire WARN_ON()
-> > +			 * in inet_csk_get_port().
-> > +			 */
-> > +			inet_put_port(sk);
-> > +			inet_reset_saddr(sk);
-> > +		}
-> > +
-> >  		return -ENOMEM;
-> > +	}
-> >  
-> >  	/* Unlink first not to show the wrong address for other threads. */
-> >  	head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
-> > @@ -902,7 +917,10 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> >  	inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
-> >  	spin_unlock_bh(&head2->lock);
-> >  
-> > -	inet_update_saddr(sk, saddr, family);
-> > +	if (reset)
-> > +		inet_reset_saddr(sk);
-> > +	else
-> > +		inet_update_saddr(sk, saddr, family);
-> >  
-> >  	/* Update bhash2 bucket. */
-> >  	head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
-> > @@ -922,8 +940,20 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> >  
-> >  	return 0;
-> >  }
-> > +
-> > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > +{
-> > +	return __inet_bhash2_update_saddr(sk, saddr, family, false);
-> > +}
-> >  EXPORT_SYMBOL_GPL(inet_bhash2_update_saddr);
-> >  
-> > +void inet_bhash2_reset_saddr(struct sock *sk)
-> > +{
-> > +	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +		__inet_bhash2_update_saddr(sk, NULL, 0, true);
-> > +}
-> > +EXPORT_SYMBOL_GPL(inet_bhash2_reset_saddr);
-> > +
-> >  /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
-> >   * Note that we use 32bit integers (vs RFC 'short integers')
-> >   * because 2^16 is not a multiple of num_ephemeral and this
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index 54836a6b81d6..4f2205756cfe 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -3114,8 +3114,7 @@ int tcp_disconnect(struct sock *sk, int flags)
-> >  
-> >  	inet->inet_dport = 0;
-> >  
-> > -	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > -		inet_reset_saddr(sk);
-> > +	inet_bhash2_reset_saddr(sk);
-> >  
-> >  	sk->sk_shutdown = 0;
-> >  	sock_reset_flag(sk, SOCK_DONE);
-> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > index 23dd7e9df2d5..da46357f501b 100644
-> > --- a/net/ipv4/tcp_ipv4.c
-> > +++ b/net/ipv4/tcp_ipv4.c
-> > @@ -331,8 +331,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >  	 * if necessary.
-> >  	 */
-> >  	tcp_set_state(sk, TCP_CLOSE);
-> > -	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > -		inet_reset_saddr(sk);
-> > +	inet_bhash2_reset_saddr(sk);
-> >  	ip_rt_put(rt);
-> >  	sk->sk_route_caps = 0;
-> >  	inet->inet_dport = 0;
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index 2f3ca3190d26..f0548dbcabd2 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -346,8 +346,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >  
-> >  late_failure:
-> >  	tcp_set_state(sk, TCP_CLOSE);
-> > -	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > -		inet_reset_saddr(sk);
-> > +	inet_bhash2_reset_saddr(sk);
-> >  failure:
-> >  	inet->inet_dport = 0;
-> >  	sk->sk_route_caps = 0;
-> > -- 
-> > 2.30.2
