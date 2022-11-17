@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 015D262E6DC
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3868062E6E8
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240858AbiKQVTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 16:19:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
+        id S235180AbiKQV1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 16:27:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239958AbiKQVSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:18:44 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2788D4BC
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 13:16:46 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id a27so1964545qtw.10
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 13:16:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=to:in-reply-to:cc:references:message-id:date:subject:mime-version
-         :from:content-transfer-encoding:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8qHr/A/HsR6Kfxxon9N/W//z78EQTrNeI3dtZDxgu7I=;
-        b=x6vjBoSKE06VUDrF0LUklQxJ155Vc79k910vj+TloiikwANfBEGLQyuSx+GirdDBdH
-         uRgZ6uJnzL/KCLdVW6cquOTXbLWm+qak55ZkpCZpwn2nen2rCmmA04UdZWV15jumMuoF
-         MEr+FMLvbF+9/HBDcpgr2nxLtnd/RyJoIOs/g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:in-reply-to:cc:references:message-id:date:subject:mime-version
-         :from:content-transfer-encoding:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8qHr/A/HsR6Kfxxon9N/W//z78EQTrNeI3dtZDxgu7I=;
-        b=1YBEAaKPyHdOujZalJLvDqgHlhTgmaAWWa7r/At49ciFHu+DmLxKR3eiDXnjcul5zb
-         VR5IBe+hiAD+pkW66TG3aBvN/Dz42t5NyvAU3lF+YlNkPq6oVV68Tc6LAcRqGsfC0fwB
-         a4SqZqi61mRk/4tQtPe3xgjD+FGltI9npGSB7GourYuorRrvezAjYzfc8wk5pKBgTJPv
-         NAGokYtbqTr/RNijdF1mb7cjWg2gw8SxCDCm4vfdb1q0V0S8ahgpkhNFzIUUjbZ4lCCP
-         UXvQrE+A9zvEiGMmN6RI4fNergb2dgJEov2FXYIofW0j9DswRu4Lt2nQp/wvKGdtRVEp
-         blPw==
-X-Gm-Message-State: ANoB5plMWJo7CVB7b63aReMlTfjOcC5rQ8gdXcNpu/ZBKRk7HwFBD9ui
-        tqUt22V1TX1mP5pE6hjUmvDYCg==
-X-Google-Smtp-Source: AA0mqf6khvBt7GMR8wp7GqQGnscxyK0aMMVFMnZPQGmleS/expSz6dqWfBEJ0QH2An3wc4fpRwsjSQ==
-X-Received: by 2002:a05:622a:514d:b0:3a5:258c:d69c with SMTP id ew13-20020a05622a514d00b003a5258cd69cmr4065956qtb.279.1668719805959;
-        Thu, 17 Nov 2022 13:16:45 -0800 (PST)
-Received: from smtpclient.apple (c-73-148-104-166.hsd1.va.comcast.net. [73.148.104.166])
-        by smtp.gmail.com with ESMTPSA id az20-20020a05620a171400b006ec771d8f89sm1162744qkb.112.2022.11.17.13.16.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Nov 2022 13:16:44 -0800 (PST)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   Joel Fernandes <joel@joelfernandes.org>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH rcu/dev 3/3] net: Use call_rcu_flush() for dst_destroy_rcu
-Date:   Thu, 17 Nov 2022 16:16:43 -0500
-Message-Id: <CC3744B1-20A7-4628-873A-2551938009D4@joelfernandes.org>
-References: <20221117192949.GD4001@paulmck-ThinkPad-P17-Gen-1>
-Cc:     Eric Dumazet <edumazet@google.com>, linux-kernel@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, rcu@vger.kernel.org,
-        rostedt@goodmis.org, fweisbec@gmail.com, jiejiang@google.com,
-        Thomas Glexiner <tglx@linutronix.de>
-In-Reply-To: <20221117192949.GD4001@paulmck-ThinkPad-P17-Gen-1>
-To:     paulmck@kernel.org
-X-Mailer: iPhone Mail (19G82)
+        with ESMTP id S233619AbiKQV1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:27:46 -0500
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E363B1
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 13:27:42 -0800 (PST)
+Received: (wp-smtpd smtp.tlen.pl 7271 invoked from network); 17 Nov 2022 22:27:38 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1668720458; bh=QAm84S5ZlKWSWkXCuY0F+3m8n9T5YQX4aAHzSgpv6l4=;
+          h=Subject:To:Cc:From;
+          b=fHRt1v32Oxs2Hu64P5AJEMrSTgjLDRW79rInA1zxuTJftVZ1fJQbOXzV+sVPvbJs5
+           4oERJFR9y81zJWlGBUwfabl0a8mb9+7kdS3ARTOB3cJuHyvXFer5NdC+lskz/TsUQ5
+           xVSMz/AppWVFx6cZtcxVqw3XEBfNzUQLWpupzQmc=
+Received: from aafn183.neoplus.adsl.tpnet.pl (HELO [192.168.1.22]) (mat.jonczyk@o2.pl@[83.4.143.183])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <brian.gix@intel.com>; 17 Nov 2022 22:27:38 +0100
+Message-ID: <232fd0ae-0002-53cb-9400-f0347e434d42@o2.pl>
+Date:   Thu, 17 Nov 2022 22:27:37 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] Bluetooth: silence a dmesg error message in hci_request.c
+Content-Language: en-GB
+To:     "Gix, Brian" <brian.gix@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "Von Dentz, Luiz" <luiz.von.dentz@intel.com>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "marcel@holtmann.org" <marcel@holtmann.org>
+References: <20221116202856.55847-1-mat.jonczyk@o2.pl>
+ <499a1278bcf1b2028f6984d61733717a849d9787.camel@intel.com>
+From:   =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>
+In-Reply-To: <499a1278bcf1b2028f6984d61733717a849d9787.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: 7fccb677ad4e849ba835e87700170acb
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 0000000 [IROE]                               
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,158 +57,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+W dniu 17.11.2022 o 21:34, Gix, Brian pisze:
+> Hi Mateusz,
+>
+> On Wed, 2022-11-16 at 21:28 +0100, Mateusz Jończyk wrote:
+>> On kernel 6.1-rcX, I have been getting the following dmesg error
+>> message
+>> on every boot, resume from suspend and rfkill unblock of the
+>> Bluetooth
+>> device:
+>>
+>>         Bluetooth: hci0: HCI_REQ-0xfcf0
+>>
+> This has a patch that fixes the usage of the deprecated HCI_REQ
+> mechanism rather than hiding the fact it is being called, as in this
+> case.
+>
+> I am still waiting for someone to give me a "Tested-By:" tag to patch:
+>
+> [PATCH 1/1] Bluetooth: Convert MSFT filter HCI cmd to hci_sync
+>
+> Which will also stop the dmesg error. If you could try that patch, and
+> resend it to the list with a Tested-By tag, it can be applied.
 
+Hello,
 
-> On Nov 17, 2022, at 2:29 PM, Paul E. McKenney <paulmck@kernel.org> wrote:
->=20
-> =EF=BB=BFOn Thu, Nov 17, 2022 at 05:40:40PM +0000, Joel Fernandes wrote:
->>> On Thu, Nov 17, 2022 at 5:38 PM Joel Fernandes <joel@joelfernandes.org> w=
-rote:
->>>=20
->>> On Thu, Nov 17, 2022 at 5:17 PM Eric Dumazet <edumazet@google.com> wrote=
-:
->>>>=20
->>>> On Thu, Nov 17, 2022 at 7:58 AM Joel Fernandes <joel@joelfernandes.org>=
- wrote:
->>>>>=20
->>>>> Hello Eric,
->>>>>=20
->>>>> On Wed, Nov 16, 2022 at 07:44:41PM -0800, Eric Dumazet wrote:
->>>>>> On Wed, Nov 16, 2022 at 7:16 PM Joel Fernandes (Google)
->>>>>> <joel@joelfernandes.org> wrote:
->>>>>>>=20
->>>>>>> In a networking test on ChromeOS, we find that using the new CONFIG_=
-RCU_LAZY
->>>>>>> causes a networking test to fail in the teardown phase.
->>>>>>>=20
->>>>>>> The failure happens during: ip netns del <name>
->>>>>>=20
->>>>>> And ? What happens then next ?
->>>>>=20
->>>>> The test is doing the 'ip netns del <name>' and then polling for the
->>>>> disappearance of a network interface name for upto 5 seconds. I believ=
-e it is
->>>>> using netlink to get a table of interfaces. That polling is timing out=
-.
->>>>>=20
->>>>> Here is some more details from the test's owner (copy pasting from ano=
-ther
->>>>> bug report):
->>>>> In the cleanup, we remove the netns, and thus will cause the veth pair=
- being
->>>>> removed automatically, so we use a poll to check that if the veth in t=
-he root
->>>>> netns still exists to know whether the cleanup is done.
->>>>>=20
->>>>> Here is a public link to the code that is failing (its in golang):
->>>>> https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:sr=
-c/platform/tast-tests/src/chromiumos/tast/local/network/virtualnet/env/env.g=
-o;drc=3D6c2841d6cc3eadd23e07912ec331943ee33d7de8;l=3D161
->>>>>=20
->>>>> Here is a public link to the line of code in the actual test leading u=
-p to the above
->>>>> path (this is the test that is run:
->>>>> network.RoutingFallthrough.ipv4_only_primary) :
->>>>> https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:sr=
-c/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/network/routing=
-_fallthrough.go;drc=3D8fbf2c53960bc8917a6a01fda5405cad7c17201e;l=3D52
->>>>>=20
->>>>>>> Using ftrace, I found the callbacks it was queuing which this series=
- fixes. Use
->>>>>>> call_rcu_flush() to revert to the old behavior. With that, the test p=
-asses.
->>>>>>=20
->>>>>> What is this test about ? What barrier was used to make it not flaky ?=
+I did not receive this patch, as I was not on the CC list; I was not
+aware of it. I will test it shortly.
 
->>>>>=20
->>>>> I provided the links above, let me know if you have any questions.
->>>>>=20
->>>>>> Was it depending on some undocumented RCU behavior ?
->>>>>=20
->>>>> This is a new RCU feature posted here for significant power-savings on=
+Any guidelines how I should test this functionality? I have a Sony Xperia 10 i4113
+mobile phone with LineageOS 19.1 / Android 12L, which according to the spec supports
+Bluetooth 5.0. Quick Google search tells me that I should do things like 
 
->>>>> battery-powered devices:
->>>>> https://lore.kernel.org/rcu/20221017140726.GG5600@paulmck-ThinkPad-P17=
--Gen-1/T/#m7a54809b8903b41538850194d67eb34f203c752a
->>>>>=20
->>>>> There is also an LPC presentation about the same, I can dig the link i=
-f you
->>>>> are interested.
->>>>>=20
->>>>>> Maybe adding a sysctl to force the flush would be better for function=
-al tests ?
->>>>>>=20
->>>>>> I would rather change the test(s), than adding call_rcu_flush(),
->>>>>> adding merge conflicts to future backports.
->>>>>=20
->>>>> I am not too sure about that, I think a user might expect the network
->>>>> interface to disappear from the networking tables quickly enough witho=
-ut
->>>>> dealing with barriers or kernel iternals. However, I added the authors=
- of the
->>>>> test to this email in the hopes he can provide is point of views as we=
-ll.
->>>>>=20
->>>>> The general approach we are taking with this sort of thing is to use
->>>>> call_rcu_flush() which is basically the same as call_rcu() for systems=
- with
->>>>> CALL_RCU_LAZY=3Dn. You can see some examples of that in the patch seri=
-es link
->>>>> above. Just to note, CALL_RCU_LAZY depends on CONFIG_RCU_NOCB_CPU so i=
-ts only
->>>>> Android and ChromeOS that are using it. I am adding Jie to share any i=
-nput,
->>>>> he is from the networking team and knows this test well.
->>>>>=20
->>>>>=20
->>>>=20
->>>> I do not know what is this RCU_LAZY thing, but IMO this should be opt-i=
-n
->>>=20
->>> You should read the links I sent you. We did already try opt-in,
->>> Thomas Gleixner made a point at LPC that we should not add new APIs
->>> for this purpose and confuse kernel developers.
->>>=20
->>>> For instance, only kfree_rcu() should use it.
->>>=20
->>> No. Most of the call_rcu() usages are for freeing memory, so the
->>> consensus is we should apply this as opt out and fix issues along the
->>> way. We already did a lot of research/diligence on seeing which users
->>> need conversion.
->>>=20
->>>> We can not review hundreds of call_rcu() call sites and decide if
->>>> adding arbitrary delays cou hurt .
->>>=20
->>> That work has already been done as much as possible, please read the
->>> links I sent.
->>=20
->> Also just to add, this test is a bit weird / corner case, as in anyone
->> expecting a quick response from call_rcu() is broken by design.
->> However, for these callbacks, it does not matter much which API they
->> use as they are quite infrequent for power savings.
->=20
-> The "broken by design" is a bit strong.  Some of those call_rcu()
-> invocations have been around for the better part of 20 years, after all.
->=20
-> That aside, I do hope that we can arrive at something that will enhance
-> battery lifetime while avoiding unnecessary disruption.  But we are
-> unlikely to be able to completely avoid disruption.  As this email
-> thread illustrates.  ;-)
+        hcitool lescan
 
-Another approach, with these 3 patches could be to keep the call_rcu() but a=
-dd an rcu_barrier() after them. I think people running ip del netns should n=
-ot have to wait for their RCU cb to take too long to run and remove user vis=
-ible state. But I would need suggestions from networking experts which CBs o=
-f these 3, to do this for. Or for all of them.
+to discover the phone, then use gatttool to list the services, etc.
 
-Alternatively, we can also patch just the test with a new knob that does rcu=
-_barrier. But I dislike that as it does not fix it for all users. Probably t=
-he ip utilities will also need a patch then.
+Greetings,
 
-Thanks,
+Mateusz
 
-- Joel=20
-
-
->=20
->                            Thanx, Paul
