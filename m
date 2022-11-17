@@ -2,103 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA1C62E1B1
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 17:27:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 733A962E1BA
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 17:27:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240330AbiKQQ1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 11:27:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
+        id S233179AbiKQQ1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 11:27:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239954AbiKQQ0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 11:26:37 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208DB2CE3E
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:26:00 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id r18so2373408pgr.12
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:26:00 -0800 (PST)
+        with ESMTP id S240743AbiKQQ1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 11:27:11 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59192CE3E
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:27:08 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id q93-20020a17090a1b6600b0021311ab9082so1479819pjq.7
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:27:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=06mQQfpHkuTm/tCqMTFcqJFO6s0dCCzyZ8bIwSvwGDE=;
-        b=vsN4SMqUx2mr7Ui4r2Xua+BzK0xBqwCwwm8ssyyDI0S86OKjQ0A2oSx+xXbjSYd8tH
-         mfRlcGhPm8wHRZwyR07JiQ5NgQpGVcGDYzAu5zuY9+9Ezs32RNo1xEdwZA6VDD6iKpKn
-         2iwfMHdvx0ssktVi9MLjtuARUdLZW8iVP+ZVBScdLypc5CnAXan7oGjHpGQcrHdYbn2y
-         W6eKlowCIsQiGl5rqt9L6isgo21FQeu3STx7OURyep0BuidZlOEWiDfclR4DlevLTuA+
-         qBM03oLO+ZuKYH+dXIfJsozRghKJe89SG8QQlMpekoJpTsJHpU/UPujSAW0gx0qlMJnX
-         ApRQ==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tv1ySBzFOYsMnZqqLBOtXPIcpiIWMGnVxO2M2U8u7+4=;
+        b=HLin/C/QBLyBpCCXQ9hWBvdiY4az2kDOOWmVAvg7T4hvsRLS2LKitIBvnCU/NWG2Vh
+         1uD/74+mEAzMpYVxzGcmjcMyoGq6rrrcR3xMOE+eohz81QUzbwpqxBcHDuqMnpqVrFXx
+         rDCTvgRWrRO8H9567zUC2JhLUKsF43d7CLm9l5bxzhwx/Q3NOgzAgqCy6NQe8uZQ21ra
+         6M6uySA9xNHNXI81RFwzpgAxMQug+pYGLiQ3VJA0Eb8ukbNZ54phhIY9pm4JwRmQQhLc
+         12Hs4B9PyXM2Z/uEejaYx7j1DYwPL2MJvF8gqBbM/ky7LJjmna/6WZ6jfe3TGk/leWOw
+         8D1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=06mQQfpHkuTm/tCqMTFcqJFO6s0dCCzyZ8bIwSvwGDE=;
-        b=xzxR9OgK3YLfiarGYHZjY0KPQ792ty5nFQHpovn+5yEwBpMqLNdhAM1VNFWDkVuvr2
-         urWg27VXxqnnrbBlQtcJyTywaYB9vacrScgjyINb0pVuzeqU2SSIstvUiX3rboB2pQeM
-         rOzfLD0XCwNH7QlTOHKwpGeyHqNdvcUoiVk1tDkWoM5hsTUTCPfHITbQMVuYx0+nkI5f
-         YaVKjHIz0Wb5JwkSS5i2qlNzL7YisclY5l9dzjQGID4ZhFeS+q5wcPqEMQOgbZlDAZjk
-         2CkT8kX1ZwHXGtLGnK6st5ouuUagTL+DbNeuSNGmTTUl2tR3xlqmPetmRGWQO5vhizVF
-         Poag==
-X-Gm-Message-State: ANoB5pli5uG+er8Ir4b0EgVIUItZhccGYUCQAuIk6eI64lfVQRzvLPVG
-        1srdhRDG6oKiF5R4GNIYp84gEA==
-X-Google-Smtp-Source: AA0mqf6ysXbFGVaYOKAC80E8xeeUZ5eLqx4BYGfUeKNLw3vsx9dMT8V9W90ZOCMW7gx4fh0hml/jJg==
-X-Received: by 2002:a63:f4b:0:b0:46f:98cf:3bb6 with SMTP id 11-20020a630f4b000000b0046f98cf3bb6mr2666847pgp.332.1668702359536;
-        Thu, 17 Nov 2022 08:25:59 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id q3-20020a17090311c300b00186a6b63525sm1617308plh.120.2022.11.17.08.25.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 08:25:59 -0800 (PST)
-Date:   Thu, 17 Nov 2022 08:25:56 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>,
-        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH net-next v2] netlink: split up copies in the ack
- construction
-Message-ID: <20221117082556.37b8028f@hermes.local>
-In-Reply-To: <20221116221306.5a4bd5f8@kernel.org>
-References: <20221027212553.2640042-1-kuba@kernel.org>
-        <20221114023927.GA685@u2004-local>
-        <20221114090614.2bfeb81c@kernel.org>
-        <202211161444.04F3EDEB@keescook>
-        <202211161454.D5FA4ED44@keescook>
-        <202211161502.142D146@keescook>
-        <1e97660d-32ff-c0cc-951b-5beda6283571@embeddedor.com>
-        <20221116170526.752c304b@kernel.org>
-        <1b373b08-988d-b870-d363-814f8083157c@embeddedor.com>
-        <20221116221306.5a4bd5f8@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tv1ySBzFOYsMnZqqLBOtXPIcpiIWMGnVxO2M2U8u7+4=;
+        b=wWBfaivEs2jcEujH+KNq+tJj+XurKDQg/awSBqSuSZVOAdr62TmnLJ8yRxR0nkcmvz
+         DgTjWfMnuirwam04rVQUvRILJQTGa58WvXh1n74UVmOm+vMzLQ32htbCcBtj0CgmeA3E
+         cdNVvPcSyEGAEqq6WMRhA8ZX8Dgt03dd0ARfWq6WwR6gS0w0hJ5H0NlEpBdE1osGxOYI
+         K+//B3l/muPPDS6UbcfZcQPkrrRiGRW9glSb4+vNKFz3GQBpEBn1xb9fT9pxy2J3xvAj
+         y2TZHoyvzns1H+JequWS8BbjfQKFeWHJrkUxqpH2xjAfYzW+4XM7B6MHuF2SirlU44xx
+         ArAg==
+X-Gm-Message-State: ANoB5pmbj+d3JglhpwPUcPl1BYPBJGdP8jZKfIi4QRy+xZS+53/3JOGe
+        tSHsYR9KfRZU0kC/QVWwxV68bdFaXgZCQGQUDnIPlhgtUfV8xqJ5o9+mZSYF1zxlp8gHnCZRdB2
+        qaOLaSe2YqpB45h1L3UBmlyvde8OIr4boQiBt8Pp4w7eG8fMCXXhYo5zQ+34c0BnBJBU=
+X-Google-Smtp-Source: AA0mqf5zJRM8KrV92yloE9QP66I2WasYxstvHkHYE/IvPNBTNv79BFsBYMlIxpSwqFHOFVEUFh3SJFIwD3DoVQ==
+X-Received: from jeroendb9128802.sea.corp.google.com ([2620:15c:100:202:7ba7:146e:ec34:b926])
+ (user=jeroendb job=sendgmr) by 2002:a17:90b:a17:b0:213:2708:8dc3 with SMTP id
+ gg23-20020a17090b0a1700b0021327088dc3mr967683pjb.2.1668702428039; Thu, 17 Nov
+ 2022 08:27:08 -0800 (PST)
+Date:   Thu, 17 Nov 2022 08:26:59 -0800
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
+Message-ID: <20221117162701.2356849-1-jeroendb@google.com>
+Subject: [PATCH net-next v5 0/2] Handle alternate miss-completions
+From:   Jeroen de Borst <jeroendb@google.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jesse.brandeburg@intel.com,
+        Jeroen de Borst <jeroendb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Nov 2022 22:13:06 -0800
-Jakub Kicinski <kuba@kernel.org> wrote:
+Some versions of the virtual NIC present miss-completions in
+an alternative way. Let the diver handle these alternate completions
+and announce this capability to the device.
 
-> On Wed, 16 Nov 2022 19:20:51 -0600 Gustavo A. R. Silva wrote:
-> > On 11/16/22 19:05, Jakub Kicinski wrote:  
-> > >> This seems to be a sensible change. In general, it's not a good idea
-> > >> to have variable length objects (flex-array members) in structures used
-> > >> as headers, and that we know will ultimately be followed by more objects
-> > >> when embedded inside other structures.    
-> > > 
-> > > Meaning we should go back to zero-length arrays instead?    
-> > 
-> > No.  
-> 
-> I was asking based on your own commit 1e6e9d0f4859 ("uapi: revert
-> flexible-array conversions"). This is uAPI as well.
- 
-Some of the flex-array conversions fixed build warnings that occur in
-iproute2 when using Gcc 12 or later.
+The capability is announced uing a new AdminQ command that sends
+driver information to the device. The device can refuse a driver
+if it is lacking support for a capability, or it can adopt it's
+behavior to work around OS specific issues.
+
+Changed in v5:
+- Removed comments in fucntion calls
+- Switched ENOTSUPP back to EOPNOTSUPP and made sure it gets passed
+Changed in v4:
+- Clarified new AdminQ command in cover letter
+- Changed EOPNOTSUPP to ENOTSUPP to match device's response
+Changed in v3:
+- Rewording cover letter
+- Added 'Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>'
+Changes in v2:
+- Changed the subject to include 'gve:'
+
+Jeroen de Borst (2):
+  Adding a new AdminQ command to verify driver
+  Handle alternate miss completions
+
+ drivers/net/ethernet/google/gve/gve.h         |  1 +
+ drivers/net/ethernet/google/gve/gve_adminq.c  | 21 +++++++-
+ drivers/net/ethernet/google/gve/gve_adminq.h  | 51 ++++++++++++++++++
+ .../net/ethernet/google/gve/gve_desc_dqo.h    |  5 ++
+ drivers/net/ethernet/google/gve/gve_main.c    | 52 +++++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_tx_dqo.c  | 20 ++++---
+ 6 files changed, 142 insertions(+), 8 deletions(-)
+
+-- 
+2.38.1.431.g37b22c650d-goog
+
