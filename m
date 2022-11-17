@@ -2,98 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E417F62CF83
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9CFA62CF8F
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:28:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234236AbiKQAYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 19:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S233981AbiKQA17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 19:27:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234361AbiKQAYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:24:39 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B2163178;
-        Wed, 16 Nov 2022 16:24:38 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id kt23so1189621ejc.7;
-        Wed, 16 Nov 2022 16:24:38 -0800 (PST)
+        with ESMTP id S233772AbiKQA1z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:27:55 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C255B627C1
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:27:53 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id p21so95492plr.7
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:27:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HFdsqLs7je4oOkfLXUnwsRZehDVieYlbWUW8cGeHsGk=;
-        b=dKpzEETPdUuJaiJDM4QfZDmUTQNsrn3XbGn6ofCFuP5uwNZwVY7MwPHo7794zps3f/
-         NAnrdhmVwBWCnObEZTdA69Azzcm+bJGELkMCmQ/zukDHbdFx6hxxBMgpBi/h/+F6UnVB
-         L5COuBc+8/2clHIcgi+lDt9QHCk7qAQDQjPpLhx+cyMp6nKHAWdy1bLthXy0v+9uCE+0
-         tf+sZDzwKf0D+EGoVdnskYL7OBsAj1q1LVpmW+uzG9bLoDKwWSnMK7PXc+vWTzLtpfhO
-         hJMofTQr3Fu5eJPnuIO/jVL2/02ySfSydQxrHAS5LwohWB6me3bBGluHy+Cok5LaFgx5
-         xIFg==
+        bh=GOfJp/fj5HzusV96DGisTfNWHmd3QApItydQHTNqdkw=;
+        b=UCb1tx0XfoRRD7aMbF1pwTgDhjSL6KNbmtqzQX3q2Sq9Mj+sJ2Qz8koQ3lL1Jc5DAV
+         LDtVORFYpaK70B24UJztTdIrEu2rJ8Ke7wIo/knOYNfAgSnpCGjPkyj2aFORmIjQocZg
+         2/eOCqSdjoTsOHlL8ldkIbqE24X5h31zq4ABU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HFdsqLs7je4oOkfLXUnwsRZehDVieYlbWUW8cGeHsGk=;
-        b=XKyrdHuaATOQZTSQgb8X41dSJDviS0F8cKuhFIJ8gMUItJlwAWirs9yjolWeolRDPI
-         J6mLjYDzRyQzgfAkD8VyGX7iXff8qUsP1LFjqUg5a14KU29z+E56GXSmzPTx56DffLMY
-         VhlBXeV5ZoUgHhZWS4j1uamldAJ+m7plVWWf6Htg7px0wF96r83Y+g4oHLXJUueGgPoF
-         dDzcE9VBWxnSamrDQqcIyTWdL/TwXtELVofocAx2rZAZqCANAP9hrCaI4W8jWHSwqp3T
-         o16yaMExiPWjZZJtInuP9muBq3I+d+OHZu8h2XpZlP2JqAXh45vumX74xjVPeXABpBXH
-         b4PA==
-X-Gm-Message-State: ANoB5plEsxFTYCG695cG0+wAnX46gCHEoOyQ5gVYmgScTWwSjDb/Maea
-        NuNKzcaEzAsfb9Lq2QR43kM=
-X-Google-Smtp-Source: AA0mqf5lNv6pSY5WPSv9bvoYLzpAB5turqhVmeJg9rx3urMPWrljiRWABbtUbkLZ3F78G+6B4zx/3g==
-X-Received: by 2002:a17:906:4d16:b0:78b:15dc:2355 with SMTP id r22-20020a1709064d1600b0078b15dc2355mr206206eju.306.1668644676212;
-        Wed, 16 Nov 2022 16:24:36 -0800 (PST)
-Received: from skbuf ([188.26.57.53])
-        by smtp.gmail.com with ESMTPSA id kv7-20020a17090778c700b007b29eb8a4dbsm42426ejc.13.2022.11.16.16.24.35
+        bh=GOfJp/fj5HzusV96DGisTfNWHmd3QApItydQHTNqdkw=;
+        b=KJT/uvc7loUxMGo5fV65Di+k0j2Z1nCrdTfJXztTulXFSCtBgzkBwrzjq/xM+BEkTP
+         wRELzk2bFdL9Ew+hR+rcLR7ORVnzK8V1KVgV32ckxfJvhS3/KK9NgYnq/SsKtBV5swmT
+         B/ua2Ua76kkHZ9q02ae2BZXW19NiwJoQCuBXAs3rdrSko+3A7fHNAxV0EEdL4RoQv/Js
+         qlVpn7khlaxopbnpe1TW7qtj6wGhtLcoZ6tmffbGF3m+rpRZmc/IGsDm77wriW8u0Sdo
+         7tBS41zjgkmEVu/WV1sAwZssJg5rBQCsASB0hvNvY8/R6k6jb/ACBAXF+N2bpsZQR1/B
+         nHGA==
+X-Gm-Message-State: ANoB5plCfel6woE7j3f6fKcpP1cqqul+4ucL1xM811oGRgOnba5Zo9JE
+        EaZq+VXOHg5IGYRmpzWcnJYdwbZjn7wTGg==
+X-Google-Smtp-Source: AA0mqf7izgIs4tamVP5xvwZJPDhJpWbrUlVRtclK4Zm0Gem7xy+bfFhhmp2zLDMVnFyCDwTaHGh3LQ==
+X-Received: by 2002:a17:90a:ff84:b0:213:1e05:f992 with SMTP id hf4-20020a17090aff8400b002131e05f992mr6254360pjb.191.1668644873195;
+        Wed, 16 Nov 2022 16:27:53 -0800 (PST)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id r17-20020a170903411100b00186c3727294sm12733956pld.270.2022.11.16.16.27.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 16:24:35 -0800 (PST)
-Date:   Thu, 17 Nov 2022 02:24:33 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates
- 2022-11-14 (i40e)
-Message-ID: <20221117002433.dvswqnfo5djobpfp@skbuf>
-References: <20221115000324.3040207-1-anthony.l.nguyen@intel.com>
- <20221116232121.ahaavt3m6wphxuyw@skbuf>
- <Y3V6OLY6YlljYZFx@boxer>
+        Wed, 16 Nov 2022 16:27:52 -0800 (PST)
+Date:   Wed, 16 Nov 2022 16:27:51 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH net-next v2] netlink: split up copies in the ack
+ construction
+Message-ID: <202211161502.142D146@keescook>
+References: <20221027212553.2640042-1-kuba@kernel.org>
+ <20221114023927.GA685@u2004-local>
+ <20221114090614.2bfeb81c@kernel.org>
+ <202211161444.04F3EDEB@keescook>
+ <202211161454.D5FA4ED44@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y3V6OLY6YlljYZFx@boxer>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <202211161454.D5FA4ED44@keescook>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maciej,
-
-On Thu, Nov 17, 2022 at 01:03:04AM +0100, Maciej Fijalkowski wrote:
-> Hey Vladimir,
+On Wed, Nov 16, 2022 at 02:56:25PM -0800, Kees Cook wrote:
+> On Mon, Nov 14, 2022 at 09:06:14AM -0800, Jakub Kicinski wrote:
+> > On Sun, 13 Nov 2022 19:39:27 -0700 David Ahern wrote:
+> > > On Thu, Oct 27, 2022 at 02:25:53PM -0700, Jakub Kicinski wrote:
+> > > > diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+> > > > index e2ae82e3f9f7..5da0da59bf01 100644
+> > > > --- a/include/uapi/linux/netlink.h
+> > > > +++ b/include/uapi/linux/netlink.h
+> > > > @@ -48,6 +48,7 @@ struct sockaddr_nl {
+> > > >   * @nlmsg_flags: Additional flags
+> > > >   * @nlmsg_seq:   Sequence number
+> > > >   * @nlmsg_pid:   Sending process port ID
+> > > > + * @nlmsg_data:  Message payload
+> > > >   */
+> > > >  struct nlmsghdr {
+> > > >  	__u32		nlmsg_len;
+> > > > @@ -55,6 +56,7 @@ struct nlmsghdr {
+> > > >  	__u16		nlmsg_flags;
+> > > >  	__u32		nlmsg_seq;
+> > > >  	__u32		nlmsg_pid;
+> > > > +	__u8		nlmsg_data[];  
+> > > 
+> > > This breaks compile of iproute2 with clang. It does not like the
+> > > variable length array in the middle of a struct. While I could re-do the
+> > > structs in iproute2, I doubt it is alone in being affected by this
+> > > change.
 > 
-> have a look at xdp_convert_zc_to_xdp_frame() in net/core/xdp.c. For XDP_TX
-> on ZC Rx side we basically create new xdp_frame backed by new page and
-> copy the contents we had in ZC buffer. Then we give back the ZC buffer to
-> XSK buff pool and new xdp_frame has to be DMA mapped to HW.
+> Eww.
+> 
+> > 
+> > Kees, would you mind lending your expertise?
 
-Ah, ok, I didn't notice the xdp_convert_zc_to_xdp_frame() call inside
-xdp_convert_buff_to_frame(), it's quite well hidden...
+Perhaps this would be better? We could leave the _header_ struct alone,
+but add the data to the nlmsgerr struct instead?
 
-So it's clear now from a correctness point of view, thanks for clarifying.
-This could spark a separate discussion about whether there is any better
-alternative to copying the RX buffer for XDP_TX and re-mapping to DMA
-something that was already mapped. But I'm not interested in that, since
-I believe who wrote the code probably thought about the high costs too.
-Anyway, I believe that in the general case (meaning from the perspective
-of the XSK API) it's perfectly fine to keep the RX buffer around for a
-while, nobody forces you to copy the frame out of it for XDP_TX.
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index 5da0da59bf01..d0629cb343b2 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -48,7 +48,6 @@ struct sockaddr_nl {
+  * @nlmsg_flags: Additional flags
+  * @nlmsg_seq:   Sequence number
+  * @nlmsg_pid:   Sending process port ID
+- * @nlmsg_data:  Message payload
+  */
+ struct nlmsghdr {
+ 	__u32		nlmsg_len;
+@@ -56,7 +55,6 @@ struct nlmsghdr {
+ 	__u16		nlmsg_flags;
+ 	__u32		nlmsg_seq;
+ 	__u32		nlmsg_pid;
+-	__u8		nlmsg_data[];
+ };
+ 
+ /* Flags values */
+@@ -121,6 +119,7 @@ struct nlmsghdr {
+ struct nlmsgerr {
+ 	int		error;
+ 	struct nlmsghdr msg;
++	__u8		data[];
+ 	/*
+ 	 * followed by the message contents unless NETLINK_CAP_ACK was set
+ 	 * or the ACK indicates success (error == 0)
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index b8afec32cff6..fe8493d3ae56 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2514,8 +2514,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 		if (!nlmsg_append(skb, nlmsg_len(nlh)))
+ 			goto err_bad_put;
+ 
+-		memcpy(errmsg->msg.nlmsg_data, nlh->nlmsg_data,
+-		       nlmsg_len(nlh));
++		memcpy(errmsg->data, nlmsg_data(nlh), nlmsg_len(nlh));
+ 	}
+ 
+ 	if (tlvlen)
+
+
+-- 
+Kees Cook
