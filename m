@@ -2,127 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 057B762E800
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:16:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA98B62E80C
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:17:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234851AbiKQWP7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 17 Nov 2022 17:15:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
+        id S240464AbiKQWR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 17:17:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240496AbiKQWPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:15:47 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3075E7AF6A
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:15:41 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-135-r8pLcNsHMNSPwdstNZNmIw-1; Thu, 17 Nov 2022 22:15:38 +0000
-X-MC-Unique: r8pLcNsHMNSPwdstNZNmIw-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 17 Nov
- 2022 22:15:36 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.044; Thu, 17 Nov 2022 22:15:36 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Theodore Ts'o' <tytso@mit.edu>, Kees Cook <kees@kernel.org>
-CC:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kees Cook <keescook@chromium.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S235042AbiKQWRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:17:19 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1C57614D
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:17:17 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id w23so2896337ply.12
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:17:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=nJFXSIQ783ozGJIEcq7M0/X5+WZmAwzKbqXzhdiC6Ac=;
+        b=K0Bjuug0PMBmGyIJKJh38l6aGh9Uv5KTby8hRtEeGfVVQ1uk8H1iE3Jy3X9g3QumnZ
+         m2UP0vy7n4K5mWAusXU9baE2QnR29kZ4q50wmoljG4b2D2eX+mVF6sHH4MHZ7t18A4bO
+         LdNjNf/Fkk/7a/wD3qmB8jz3Qcgz8Rz2OAuHI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nJFXSIQ783ozGJIEcq7M0/X5+WZmAwzKbqXzhdiC6Ac=;
+        b=DP3b1cvhDJWM0J2kbTowsgKrTCMyGv89mUNWKzRY89X8MPk01UYrFhhz5X0cDY8ZER
+         cuCV54Ge0ooPAszbnFwyDlpaliTfyGycBygAiWSeNWdJ0IunI+8mF5kBycC6oJ8oYF2f
+         3S7O0faf0+aTXqzsJFNn59lR4Q5n6clLovkPwnc8ulQcXdLusDuiDNyyoE3uyXm9gUBn
+         dp3TxgFW2piSyBHj1hNs0vtEOHy4laVR2629gmAv0+aUuHWwCtQ1o2tjHrgDbPT50ZMA
+         iO2oQOZlsKou387gBnpmqpsLe4XG8R+7DdACpjqdeWrgOKo/VFXG6KNKtO74gajSIye9
+         JxLw==
+X-Gm-Message-State: ANoB5plQlE2ig+fElCGlqXm0ufMGTjJhKS61X+O1/dH6vt+U4rNQx6Q2
+        h0gyzPOgbWRMTbmd2VGEgoDbfA==
+X-Google-Smtp-Source: AA0mqf41Wqejx3gjkqAto1lEjNVUWFDLIcHhPUNfGeI3XvM/RrkDVObROJw0YVQF/ox1gXuNsYVNtA==
+X-Received: by 2002:a17:90b:3d7:b0:200:2538:1ca8 with SMTP id go23-20020a17090b03d700b0020025381ca8mr10837807pjb.79.1668723436518;
+        Thu, 17 Nov 2022 14:17:16 -0800 (PST)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id t3-20020a625f03000000b0056da2ad6503sm1684293pfb.39.2022.11.17.14.17.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 14:17:16 -0800 (PST)
+From:   coverity-bot <keescook@chromium.org>
+X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
+Date:   Thu, 17 Nov 2022 14:17:15 -0800
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        =?iso-8859-1?Q?Christoph_B=F6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "ydroneaud@opteya.com" <ydroneaud@opteya.com>
-Subject: RE: [PATCH v2 3/3] treewide: use get_random_u32_between() when
- possible
-Thread-Topic: [PATCH v2 3/3] treewide: use get_random_u32_between() when
- possible
-Thread-Index: AQHY+pt8WAMBAHgXDk6lkwvXqmmyGK5DraKg
-Date:   Thu, 17 Nov 2022 22:15:36 +0000
-Message-ID: <5b2afac148e24181a206e540768e465b@AcuMS.aculab.com>
-References: <20221114164558.1180362-1-Jason@zx2c4.com>
- <20221114164558.1180362-4-Jason@zx2c4.com> <202211161436.A45AD719A@keescook>
- <Y3V4g8eorwiU++Y3@zx2c4.com> <Y3V6QtYMayODVDOk@zx2c4.com>
- <202211161628.164F47F@keescook> <Y3WDyl8ArQgeEoUU@zx2c4.com>
- <0EE39896-C7B6-4CB6-87D5-22AA787740A9@kernel.org> <Y3ZWbcoGOdFjlPhS@mit.edu>
-In-Reply-To: <Y3ZWbcoGOdFjlPhS@mit.edu>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Coverity: efx_tc_rx(): Memory - illegal accesses
+Message-ID: <202211171416.0BC0EDDA36@keescook>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Theodore Ts'o
-> Sent: 17 November 2022 15:43
-...
-> The problem with "between", "ranged", "spanning" is that they don't
-> tell the reader whether we're dealing with an "open interval" or a
-> "closed interval".  They are just different ways of saying that it's a
-> range between, say, 0 and 20.  But it doesn't tell you whether it
-> includes 0 or 20 or not.
-> 
-> The only way I can see for making it ambiguous is either to use the
-> terminology "closed interval" or "inclusive".  And "open" and "closed"
-> can have other meanings, so get_random_u32_inclusive() is going to be
-> less confusing than get_random_u32_closed().
+Hello!
 
-It has to be said that removing the extra function and requiring
-the callers use 'base + get_random_below(high [+1] - base)' is
-likely to be the only way to succinctly make the code readable
-and understandable.
+This is an experimental semi-automated report about issues detected by
+Coverity from a scan of next-20221117 as part of the linux-next scan project:
+https://scan.coverity.com/projects/linux-next-weekly-scan
 
-Otherwise readers either have to look up another function to see
-what it does or waste variable brain cells on more trivia.
+You're getting this email because you were associated with the identified
+lines of code (noted below) that were touched by commits:
 
-	David
+  Wed Nov 16 09:07:02 2022 +0000
+    25730d8be5d8 ("sfc: add extra RX channel to receive MAE counter updates on ef100")
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Coverity reported the following:
 
+*** CID 1527356:  Memory - illegal accesses  (OVERRUN)
+drivers/net/ethernet/sfc/tc_counters.c:483 in efx_tc_rx()
+477     	}
+478
+479     	/* Update seen_gen unconditionally, to avoid a missed wakeup if
+480     	 * we race with efx_mae_stop_counters().
+481     	 */
+482     	efx->tc->seen_gen[type] = mark;
+vvv     CID 1527356:  Memory - illegal accesses  (OVERRUN)
+vvv     Overrunning array "efx->tc->flush_gen" of 3 4-byte elements at element index 3 (byte offset 15) using index "type" (which evaluates to 3).
+483     	if (efx->tc->flush_counters &&
+484     	    (s32)(efx->tc->flush_gen[type] - mark) <= 0)
+485     		wake_up(&efx->tc->flush_wq);
+486     out:
+487     	efx_free_rx_buffers(rx_queue, rx_buf, 1);
+488     	channel->rx_pkt_n_frags = 0;
+
+If this is a false positive, please let us know so we can mark it as
+such, or teach the Coverity rules to be smarter. If not, please make
+sure fixes get into linux-next. :) For patches fixing this, please
+include these lines (but double-check the "Fixes" first):
+
+Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
+Addresses-Coverity-ID: 1527356 ("Memory - illegal accesses")
+Fixes: 25730d8be5d8 ("sfc: add extra RX channel to receive MAE counter updates on ef100")
+
+AFAICT, efx_tc_rx_version_2() may return EFX_TC_COUNTER_TYPE_MAX.
+
+Thanks for your attention!
+
+-- 
+Coverity-bot
