@@ -2,119 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A288E62D635
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:14:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 475B862D6C4
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:27:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239516AbiKQJOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:14:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
+        id S234572AbiKQJ1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:27:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239378AbiKQJOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:14:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A35419AE;
-        Thu, 17 Nov 2022 01:14:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65E1DB81D87;
-        Thu, 17 Nov 2022 09:14:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BA83C433C1;
-        Thu, 17 Nov 2022 09:14:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668676485;
-        bh=uGXucozYbw22itzsE0wlz1O95Zfv9rFrz9VjCU7noRc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B4lb3rtggfNZ+9amFQU25tWBVXZqnoO4ZhJx9cz/cLvlJxGhq48bwm/b1SNRxuwUz
-         RQNwx4llUMRVnnploo7+VOy9yC8TJ29I9Bu8CmrdU+o0X0Clmx8LdAAo5RRmK0+Gsu
-         9yabD0egnPj/gq04enlm7g+ejgcaDdLpZYxfZ2D2YLMhBu9w/Cz26XboDPZrUJfBFd
-         xKvnSkVUzAu6i8nPlnQwGrSi3QJhxgc6nONge7OcXCPfKfQSc+978wPRHl62YRX4bv
-         QGG4CiUt9Mv+JAw5JcXlK5lAhBJQqsONFufjHkZuxf79dgyVl85O7yf3pc3cg+F5b9
-         ZdCZS6QvllNyw==
-Date:   Thu, 17 Nov 2022 11:14:41 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Dan Carpenter <error27@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH] net: ethernet: renesas: rswitch: Fix MAC address info
-Message-ID: <Y3X7gWCP3h6OQb47@unreal>
-References: <20221115235519.679115-1-yoshihiro.shimoda.uh@renesas.com>
- <Y3XQBYdEG5EQFgQ+@unreal>
- <TYBPR01MB5341160928F54EF8A4814240D8069@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S240057AbiKQJ0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:26:54 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47F7635F
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:26:43 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-373582569edso14159307b3.2
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:26:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=DshYkYOEBtMMfkL1bLgUQC2c2Rhoe0BBsfF39A6p1Zo=;
+        b=q21z9LfTEliq048CMqwXjq+x4SwA+GmUUo5K5KcL45Atb9g5FvbRyJddK0r1DuwTKm
+         pq7F1CU5xKnbx+CmC+dI+a31EddEt06bi9kuuP3HFFTEQdM0G3q/H8KCLiCq8m+2sb/b
+         ehFGmkhbzJVkgmkF7AWcJ5F5V8N4vIr4/KWU+J8CFD/s7Hrh16Hz1Fh22u9xc4G5K4Hy
+         SGEiMA0QXJ4g+PMS/puWQeR7GFPZWEL5I7agFFI5wCm2Bd8rJ4nzqvllO1TW0W18Dg9S
+         0u6glwA5PTOei769Lb/lohmYSwujKAxQuPKgculJjBoksi7nCPNQT2e1R+9eznq1R0sn
+         RgJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DshYkYOEBtMMfkL1bLgUQC2c2Rhoe0BBsfF39A6p1Zo=;
+        b=axW00Tsvr1mVifXwKwV5A5M6S1QATEFu+2jfQN/QcKkSvvKgI2Txz7v5VubKbrBHRM
+         LzF8AwNHGZQaewdNE2pHL+AmlK1TliBt7R3hzewQ/ci4HpZXsLY6bACibTma6m9B7+/C
+         6o8MPOayV+mA90V4TspfaV8Qa+5tDVKYNY9/uTAJV9Y2tXygfrYhOHwXZMUVUQl1qlQa
+         iPjh8UJFT7UIyeShNoJ687GLuvWNc2XtEkVyxphydHOmtbe7fkYFsk75FFRkExof7yyi
+         HlOWMi+Qzpj4W7s3eWIqMrFoleVDeyD3vD1nTAesp2uA0NlXLu8zWk8Yr90McKDfNWBP
+         Ac+w==
+X-Gm-Message-State: ANoB5pm+TEGl50E7Cdo4Mc52oT/jfmSC6gXBsgvinM5K9ppi1Z9qU+T6
+        XScNUffMBCQMiUvLbiMgPFyuNOhgkXTFjA==
+X-Google-Smtp-Source: AA0mqf6k7EN/AVyFBLV2UnEog0fsXQ2IuSz5aJ52d0EiNkwjHm9tf/ZY0xyxUep8ebUmmQ2dndndaTBn7mZkaw==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:e80f:0:b0:6df:927f:38c9 with SMTP id
+ k15-20020a25e80f000000b006df927f38c9mr1302451ybd.92.1668677203180; Thu, 17
+ Nov 2022 01:26:43 -0800 (PST)
+Date:   Thu, 17 Nov 2022 09:26:41 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
+Message-ID: <20221117092641.3319176-1-edumazet@google.com>
+Subject: [PATCH net-next] net: fix napi_disable() logic error
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <error27@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 09:59:55AM +0100, Geert Uytterhoeven wrote:
-> Hi Shimoda-san,
-> 
-> On Thu, Nov 17, 2022 at 9:58 AM Yoshihiro Shimoda
-> <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > From: Leon Romanovsky, Sent: Thursday, November 17, 2022 3:09 PM
-> > > On Wed, Nov 16, 2022 at 08:55:19AM +0900, Yoshihiro Shimoda wrote:
-> > > > Smatch detected the following warning.
-> > > >
-> > > >     drivers/net/ethernet/renesas/rswitch.c:1717 rswitch_init() warn:
-> > > >     '%pM' cannot be followed by 'n'
-> > > >
-> > > > The 'n' should be '\n'.
-> > > >
-> > > > Reported-by: Dan Carpenter <error27@gmail.com>
-> > > > Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > > Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
-> > > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > > ---
-> > > >  drivers/net/ethernet/renesas/rswitch.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
-> > > > index f3d27aef1286..51ce5c26631b 100644
-> > > > --- a/drivers/net/ethernet/renesas/rswitch.c
-> > > > +++ b/drivers/net/ethernet/renesas/rswitch.c
-> > > > @@ -1714,7 +1714,7 @@ static int rswitch_init(struct rswitch_private *priv)
-> > > >     }
-> > > >
-> > > >     for (i = 0; i < RSWITCH_NUM_PORTS; i++)
-> > > > -           netdev_info(priv->rdev[i]->ndev, "MAC address %pMn",
-> > > > +           netdev_info(priv->rdev[i]->ndev, "MAC address %pM\n",
-> > >
-> > > You can safely drop '\n' from here. It is not needed while printing one
-> > > line.
-> >
-> > Oh, I didn't know that. I'll remove '\n' from here on v2 patch.
-> 
-> Please don't remove it.  The convention is to have the newlines.
+Dan reported a new warning after my recent patch:
 
-Can you please explain why?
+New smatch warnings:
+net/core/dev.c:6409 napi_disable() error: uninitialized symbol 'new'.
 
-Thanks
+Indeed, we must first wait for STATE_SCHED and STATE_NPSVC to be cleared,
+to make sure @new variable has been initialized properly.
 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+Fixes: 4ffa1d1c6842 ("net: adopt try_cmpxchg() in napi_{enable|disable}()")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/dev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d0fb4af9a12611c7f82798a700205604730e4d10..7627c475d991bfeb7138e0868d423e654d46f036 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6399,9 +6399,9 @@ void napi_disable(struct napi_struct *n)
+ 
+ 	val = READ_ONCE(n->state);
+ 	do {
+-		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
++		while (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
+ 			usleep_range(20, 200);
+-			continue;
++			val = READ_ONCE(n->state);
+ 		}
+ 
+ 		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
+-- 
+2.38.1.431.g37b22c650d-goog
+
