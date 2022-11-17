@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDE162CFCE
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:37:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E486462CFE1
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:43:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234079AbiKQAh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 19:37:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
+        id S233688AbiKQAnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 19:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233963AbiKQAhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:37:23 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96946AEE0
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:37:21 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id l42-20020a9d1b2d000000b0066c6366fbc3so142218otl.3
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:37:21 -0800 (PST)
+        with ESMTP id S233725AbiKQAnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:43:39 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C023FAF6;
+        Wed, 16 Nov 2022 16:43:38 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id f18so1296759ejz.5;
+        Wed, 16 Nov 2022 16:43:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=8dmrmAVfoOi1fRSc5bSaQ/r0IfiZZu9AQiLTobDLFJ4=;
-        b=ICXfSc+wd0N3yzO4SKXlNlm9pbOxDzEulWRh8y79oSPlTN4kIru1NHxxbN9fUgWdg9
-         TljuBfgWhVtiltnlFYgvORDjWB/GiRxCL1tsLdbh+7002H1IwpHEfqjAveC7T+Ef/WPJ
-         DYIFG82Upk1XdAnZb6BkjYEQdLobYCywMwJIegrwjaGxGO1KfEuQLi31uQZF02nkCKmC
-         RMTg+hGqBg/EiaM4oSnxKtVWwU8WK2Qj2fuJj83Rv2SZCtvh01f8d2QiCrWhY3SZoR6f
-         20abXchOBvfsKsqPinADt8tSSEGaqHe4wqkTKcurUzc3WBbf33D+mJFafU6VBgebo+9K
-         xheg==
+        bh=G0JZgfmoTRJ9qki/8BmeWQL1Plg/Ovwl2c/+gVPN6Ig=;
+        b=fiH0kEJH5/gtDC+r4Uwg4VlxxUtSJgxWmLI2vEOaIzEvSjO85/NsIAMrNxJYh4dQTE
+         f25jE9lyu8cLKbD+CdtJvPiytu9zzZcXPJKTRCNLMm0CexQsK6nbelEOeNTYO8idQ6zE
+         fUCDIcCMHZIJV5j2LUGwb04X20fzXvhSoC9wiXvQRAs7pkE82wF096WJ1es3SpRwy7Sg
+         YeBTuVsIO96PClber0an5a7mAbcf16Wd0TrB2lAFgxKpAVGPTuEkh2pBlmpB9a52ThgF
+         kM0JsO274TGKhE/8lgNZtQDhIAch0U2p8mjq4a8mjqXXatkQwDz7yYDu72Aa8LA1mKn0
+         zhug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=8dmrmAVfoOi1fRSc5bSaQ/r0IfiZZu9AQiLTobDLFJ4=;
-        b=CJSX6ByOR32nQXP2uebibVI5ery3uWaJhHFgmdNgYc8NdQmn1w/x+nVDgd1lsSXaAq
-         KJmpV5wpXDpr00/0bzl4r+XWec6bRHwpVlA2pkSYLYRAUWQHkdHQ2SPHJCb5n5VBFAjW
-         F51T+9fz5HUxQbfV/sLvv0JOYd8N9cjWYbxKjmgIoq7tW2LD+JGvZHEvkdspOl6p7J6X
-         qafRF/40U8xRWRfG7PQGPAohM2Yml29Z2DvC96lFfcpSMiKYjHzy5RSBwTRfuNeDDokk
-         e14rGJRDHdKSnYb0+27zUwfhi0ceIpSm6auh3vbHpupeg5u4FxO4xztfkPB2RwxDhoIN
-         I06Q==
-X-Gm-Message-State: ANoB5pnwCWhVWdmgU/OSVkPd7/ZJ3kfSxtD9rTZXgUVkmogQeLHC3ID8
-        RJedy8jO0C6eLNUArEXRSUvuIcaRaHqKn4kI9rOTpWryxcsWKg==
-X-Google-Smtp-Source: AA0mqf6s/aXLNN1LQtg/EzHIKNkb1vi4m5bSHZuTF0qmv9rcMZEwy4PKLRc1QrEt1LW9QtLXZng7d8SCsY3HfX1/Vuc=
-X-Received: by 2002:a05:6830:1254:b0:665:da4d:8d22 with SMTP id
- s20-20020a056830125400b00665da4d8d22mr294501otp.295.1668645440762; Wed, 16
- Nov 2022 16:37:20 -0800 (PST)
+        bh=G0JZgfmoTRJ9qki/8BmeWQL1Plg/Ovwl2c/+gVPN6Ig=;
+        b=hzpsHcOmTfJNrainSI8dzuSUt1oe+KE4KOetgbqtL2WYZCqhxL4jBA+2H0vot+vXcr
+         PC77f4tgVzv0RmO9zh6+758aKy+m94gMboFnKM34w9bDdv7SU/Ni2L9tZoB+T7tBWU8y
+         /TkzZGFwYzar+B0N8WZltJXZeE4O/fqgq3Ayt1g551AFnGzfUPspMTGj6lMKb0WB9oV3
+         NvQDgtxtdO8iB7hmqewQYzlxHZ/kjEnBjb2hSYYit404WlxCIOEBhkZ+NYtSvmD3WIUs
+         hB4SBp10jdFP64lTsm/rmANJAUTGmrW3WDtQWvem2ysJa2ndpRjzNXTiFfJNV/3IJ2xF
+         4AzA==
+X-Gm-Message-State: ANoB5plgBlir9T83FHKy1a5TJlJmcvjEFOoMCvBmM+JbsMugNuPEm0Uj
+        SIGZLoPF+RqGLxGrxyZU4GoP78VKZGAXmQa8YrY=
+X-Google-Smtp-Source: AA0mqf451mHT07+xk42knksjpt8i+OeirT/pIIILE+JNzJoxdHGAKBoUQkY15/lms0TxasFCBZxLmAT1xSpjI4n2J2U=
+X-Received: by 2002:a17:906:2614:b0:7ad:934e:95d3 with SMTP id
+ h20-20020a170906261400b007ad934e95d3mr242184ejc.393.1668645814333; Wed, 16
+ Nov 2022 16:43:34 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1668527318.git.lucien.xin@gmail.com> <488fbfa082eb8a0ab81622a7c13c26b6fd8a0602.1668527318.git.lucien.xin@gmail.com>
- <f7tfsei4nkn.fsf@redhat.com>
-In-Reply-To: <f7tfsei4nkn.fsf@redhat.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 16 Nov 2022 19:36:45 -0500
-Message-ID: <CADvbK_cwEznpOpjmeaVeFs2f9W7AsC-+VRnUHj1NO2AffFfSnQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/5] net: move the nat function to nf_nat_core
- for ovs and tc
-To:     Aaron Conole <aconole@redhat.com>
-Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
-        davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>
+References: <CAJnrk1YOfyGQ2Vic9xkoSj+uv7fuYAwh4wFLv1cBJ5LPiHsEvw@mail.gmail.com>
+ <20221117002010.72675-1-kuniyu@amazon.com>
+In-Reply-To: <20221117002010.72675-1-kuniyu@amazon.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Wed, 16 Nov 2022 16:43:23 -0800
+Message-ID: <CAJnrk1a5tBLmyVwCq6utOs-c5DBO4QhCNJ0V4LwZXUW20n_ZMg@mail.gmail.com>
+Subject: Re: [PATCH v2 net 1/4] dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     acme@mandriva.com, davem@davemloft.net, dccp@vger.kernel.org,
+        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
+        kuni1840@gmail.com, martin.lau@kernel.org,
+        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, pengfei.xu@intel.com,
+        stephen@networkplumber.org, william.xuanziyang@huawei.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -79,537 +72,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 4:05 PM Aaron Conole <aconole@redhat.com> wrote:
+On Wed, Nov 16, 2022 at 4:20 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 >
-> Hi Xin,
+> From:   Joanne Koong <joannelkoong@gmail.com>
+> Date:   Wed, 16 Nov 2022 16:11:21 -0800
+> > On Wed, Nov 16, 2022 at 2:28 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > >
+> > > When connect() is called on a socket bound to the wildcard address,
+> > > we change the socket's saddr to a local address.  If the socket
+> > > fails to connect() to the destination, we have to reset the saddr.
+> > >
+> > > However, when an error occurs after inet_hash6?_connect() in
+> > > (dccp|tcp)_v[46]_conect(), we forget to reset saddr and leave
+> > > the socket bound to the address.
+> > >
+> > > From the user's point of view, whether saddr is reset or not varies
+> > > with errno.  Let's fix this inconsistent behaviour.
+> > >
+> > > Note that after this patch, the repro [0] will trigger the WARN_ON()
+> > > in inet_csk_get_port() again, but this patch is not buggy and rather
+> > > fixes a bug papering over the bhash2's bug for which we need another
+> > > fix.
+> > >
+> > > For the record, the repro causes -EADDRNOTAVAIL in inet_hash6_connect()
+> > > by this sequence:
+> > >
+> > >   s1 = socket()
+> > >   s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+> > >   s1.bind(('127.0.0.1', 10000))
+> > >   s1.sendto(b'hello', MSG_FASTOPEN, (('127.0.0.1', 10000)))
+> > >   # or s1.connect(('127.0.0.1', 10000))
+> > >
+> > >   s2 = socket()
+> > >   s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+> > >   s2.bind(('0.0.0.0', 10000))
+> > >   s2.connect(('127.0.0.1', 10000))  # -EADDRNOTAVAIL
+> > >
+> > >   s2.listen(32)  # WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
+> > >
+> > > [0]: https://syzkaller.appspot.com/bug?extid=015d756bbd1f8b5c8f09
+> > >
+> > > Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
+> > > Fixes: 7c657876b63c ("[DCCP]: Initial implementation")
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> >
+> > LGTM. Btw, the 4th patch in this series overwrites these changes by
+> > moving this logic into the new inet_bhash2_reset_saddr() function you
+> > added, so we could also drop this patch from the series. OTOH, this
+> > commit message in this patch has some good background context. So I
+> > don't have a preference either way :)
+> >
+> > Acked-by: Joanne Koong <joannelkoong@gmail.com>
 >
-> Xin Long <lucien.xin@gmail.com> writes:
+> Thanks for reviewing!
 >
-> > There are two nat functions are nearly the same in both OVS and
-> > TC code, (ovs_)ct_nat_execute() and ovs_ct_nat/tcf_ct_act_nat().
-> >
-> > This patch is to move them to netfilter nf_nat_core and export
-> > nf_ct_nat() so that it can be shared by both OVS and TC, and
-> > keep the nat (type) check and nat flag update in OVS and TC's
-> > own place, as these parts are different between OVS and TC.
-> >
-> > Note that in OVS nat function it was using skb->protocol to get
-> > the proto as it already skips vlans in key_extract(), while it
-> > doesn't in TC, and TC has to call skb_protocol() to get proto.
-> > So in nf_ct_nat_execute(), we keep using skb_protocol() which
-> > works for both OVS and TC.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  include/net/netfilter/nf_nat.h |   4 +
-> >  net/netfilter/nf_nat_core.c    | 131 +++++++++++++++++++++++++++++++
-> >  net/openvswitch/conntrack.c    | 137 +++------------------------------
-> >  net/sched/act_ct.c             | 136 +++-----------------------------
-> >  4 files changed, 156 insertions(+), 252 deletions(-)
-> >
-> > diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
-> > index e9eb01e99d2f..9877f064548a 100644
-> > --- a/include/net/netfilter/nf_nat.h
-> > +++ b/include/net/netfilter/nf_nat.h
-> > @@ -104,6 +104,10 @@ unsigned int
-> >  nf_nat_inet_fn(void *priv, struct sk_buff *skb,
-> >              const struct nf_hook_state *state);
-> >
-> > +int nf_ct_nat(struct sk_buff *skb, struct nf_conn *ct,
-> > +           enum ip_conntrack_info ctinfo, int *action,
-> > +           const struct nf_nat_range2 *range, bool commit);
-> > +
-> >  static inline int nf_nat_initialized(const struct nf_conn *ct,
-> >                                    enum nf_nat_manip_type manip)
-> >  {
-> > diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-> > index e29e4ccb5c5a..1c72b8caa24e 100644
-> > --- a/net/netfilter/nf_nat_core.c
-> > +++ b/net/netfilter/nf_nat_core.c
-> > @@ -784,6 +784,137 @@ nf_nat_inet_fn(void *priv, struct sk_buff *skb,
-> >  }
-> >  EXPORT_SYMBOL_GPL(nf_nat_inet_fn);
-> >
-> > +/* Modelled after nf_nat_ipv[46]_fn().
-> > + * range is only used for new, uninitialized NAT state.
-> > + * Returns either NF_ACCEPT or NF_DROP.
-> > + */
-> > +static int nf_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
-> > +                          enum ip_conntrack_info ctinfo, int *action,
-> > +                          const struct nf_nat_range2 *range,
-> > +                          enum nf_nat_manip_type maniptype)
-> > +{
-> > +     __be16 proto = skb_protocol(skb, true);
-> > +     int hooknum, err = NF_ACCEPT;
-> > +
-> > +     /* See HOOK2MANIP(). */
-> > +     if (maniptype == NF_NAT_MANIP_SRC)
-> > +             hooknum = NF_INET_LOCAL_IN; /* Source NAT */
-> > +     else
-> > +             hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
-> > +
-> > +     switch (ctinfo) {
-> > +     case IP_CT_RELATED:
-> > +     case IP_CT_RELATED_REPLY:
-> > +             if (proto == htons(ETH_P_IP) &&
-> > +                 ip_hdr(skb)->protocol == IPPROTO_ICMP) {
-> > +                     if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
-> > +                                                        hooknum))
-> > +                             err = NF_DROP;
-> > +                     goto out;
-> > +             } else if (IS_ENABLED(CONFIG_IPV6) && proto == htons(ETH_P_IPV6)) {
-> > +                     __be16 frag_off;
-> > +                     u8 nexthdr = ipv6_hdr(skb)->nexthdr;
-> > +                     int hdrlen = ipv6_skip_exthdr(skb,
-> > +                                                   sizeof(struct ipv6hdr),
-> > +                                                   &nexthdr, &frag_off);
-> > +
-> > +                     if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
-> > +                             if (!nf_nat_icmpv6_reply_translation(skb, ct,
-> > +                                                                  ctinfo,
-> > +                                                                  hooknum,
-> > +                                                                  hdrlen))
-> > +                                     err = NF_DROP;
-> > +                             goto out;
-> > +                     }
-> > +             }
-> > +             /* Non-ICMP, fall thru to initialize if needed. */
-> > +             fallthrough;
-> > +     case IP_CT_NEW:
-> > +             /* Seen it before?  This can happen for loopback, retrans,
-> > +              * or local packets.
-> > +              */
-> > +             if (!nf_nat_initialized(ct, maniptype)) {
-> > +                     /* Initialize according to the NAT action. */
-> > +                     err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
-> > +                             /* Action is set up to establish a new
-> > +                              * mapping.
-> > +                              */
-> > +                             ? nf_nat_setup_info(ct, range, maniptype)
-> > +                             : nf_nat_alloc_null_binding(ct, hooknum);
-> > +                     if (err != NF_ACCEPT)
-> > +                             goto out;
-> > +             }
-> > +             break;
-> > +
-> > +     case IP_CT_ESTABLISHED:
-> > +     case IP_CT_ESTABLISHED_REPLY:
-> > +             break;
-> > +
-> > +     default:
-> > +             err = NF_DROP;
-> > +             goto out;
-> > +     }
-> > +
-> > +     err = nf_nat_packet(ct, ctinfo, hooknum, skb);
-> > +     if (err == NF_ACCEPT)
-> > +             *action |= (1 << maniptype);
-> > +out:
-> > +     return err;
-> > +}
-> > +
-> > +int nf_ct_nat(struct sk_buff *skb, struct nf_conn *ct,
-> > +           enum ip_conntrack_info ctinfo, int *action,
-> > +           const struct nf_nat_range2 *range, bool commit)
-> > +{
-> > +     enum nf_nat_manip_type maniptype;
-> > +     int err, ct_action = *action;
-> > +
-> > +     *action = 0;
-> > +
-> > +     /* Add NAT extension if not confirmed yet. */
-> > +     if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-> > +             return NF_ACCEPT;   /* Can't NAT. */
-> > +
-> > +     if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
-> > +         (ctinfo != IP_CT_RELATED || commit)) {
-> > +             /* NAT an established or related connection like before. */
-> > +             if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
-> > +                     /* This is the REPLY direction for a connection
-> > +                      * for which NAT was applied in the forward
-> > +                      * direction.  Do the reverse NAT.
-> > +                      */
-> > +                     maniptype = ct->status & IPS_SRC_NAT
-> > +                             ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
-> > +             else
-> > +                     maniptype = ct->status & IPS_SRC_NAT
-> > +                             ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
-> > +     } else if (ct_action & (1 << NF_NAT_MANIP_SRC)) {
-> > +             maniptype = NF_NAT_MANIP_SRC;
-> > +     } else if (ct_action & (1 << NF_NAT_MANIP_DST)) {
-> > +             maniptype = NF_NAT_MANIP_DST;
-> > +     } else {
-> > +             return NF_ACCEPT;
-> > +     }
-> > +
-> > +     err = nf_ct_nat_execute(skb, ct, ctinfo, action, range, maniptype);
-> > +     if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
-> > +             if (ct->status & IPS_SRC_NAT) {
-> > +                     if (maniptype == NF_NAT_MANIP_SRC)
-> > +                             maniptype = NF_NAT_MANIP_DST;
-> > +                     else
-> > +                             maniptype = NF_NAT_MANIP_SRC;
-> > +
-> > +                     err = nf_ct_nat_execute(skb, ct, ctinfo, action, range,
-> > +                                             maniptype);
-> > +             } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
-> > +                     err = nf_ct_nat_execute(skb, ct, ctinfo, action, NULL,
-> > +                                             NF_NAT_MANIP_SRC);
-> > +             }
-> > +     }
-> > +     return err;
-> > +}
-> > +EXPORT_SYMBOL_GPL(nf_ct_nat);
-> > +
-> >  struct nf_nat_proto_clean {
-> >       u8      l3proto;
-> >       u8      l4proto;
-> > diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-> > index cc643a556ea1..d03c75165663 100644
-> > --- a/net/openvswitch/conntrack.c
-> > +++ b/net/openvswitch/conntrack.c
-> > @@ -726,144 +726,27 @@ static void ovs_nat_update_key(struct sw_flow_key *key,
-> >       }
-> >  }
-> >
-> > -/* Modelled after nf_nat_ipv[46]_fn().
-> > - * range is only used for new, uninitialized NAT state.
-> > - * Returns either NF_ACCEPT or NF_DROP.
-> > - */
-> > -static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
-> > -                           enum ip_conntrack_info ctinfo,
-> > -                           const struct nf_nat_range2 *range,
-> > -                           enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
-> > -{
-> > -     int hooknum, err = NF_ACCEPT;
-> > -
-> > -     /* See HOOK2MANIP(). */
-> > -     if (maniptype == NF_NAT_MANIP_SRC)
-> > -             hooknum = NF_INET_LOCAL_IN; /* Source NAT */
-> > -     else
-> > -             hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
-> > -
-> > -     switch (ctinfo) {
-> > -     case IP_CT_RELATED:
-> > -     case IP_CT_RELATED_REPLY:
-> > -             if (IS_ENABLED(CONFIG_NF_NAT) &&
-> > -                 skb->protocol == htons(ETH_P_IP) &&
-> > -                 ip_hdr(skb)->protocol == IPPROTO_ICMP) {
-> > -                     if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
-> > -                                                        hooknum))
-> > -                             err = NF_DROP;
-> > -                     goto out;
-> > -             } else if (IS_ENABLED(CONFIG_IPV6) &&
-> > -                        skb->protocol == htons(ETH_P_IPV6)) {
-> > -                     __be16 frag_off;
-> > -                     u8 nexthdr = ipv6_hdr(skb)->nexthdr;
-> > -                     int hdrlen = ipv6_skip_exthdr(skb,
-> > -                                                   sizeof(struct ipv6hdr),
-> > -                                                   &nexthdr, &frag_off);
-> > -
-> > -                     if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
-> > -                             if (!nf_nat_icmpv6_reply_translation(skb, ct,
-> > -                                                                  ctinfo,
-> > -                                                                  hooknum,
-> > -                                                                  hdrlen))
-> > -                                     err = NF_DROP;
-> > -                             goto out;
-> > -                     }
-> > -             }
-> > -             /* Non-ICMP, fall thru to initialize if needed. */
-> > -             fallthrough;
-> > -     case IP_CT_NEW:
-> > -             /* Seen it before?  This can happen for loopback, retrans,
-> > -              * or local packets.
-> > -              */
-> > -             if (!nf_nat_initialized(ct, maniptype)) {
-> > -                     /* Initialize according to the NAT action. */
-> > -                     err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
-> > -                             /* Action is set up to establish a new
-> > -                              * mapping.
-> > -                              */
-> > -                             ? nf_nat_setup_info(ct, range, maniptype)
-> > -                             : nf_nat_alloc_null_binding(ct, hooknum);
-> > -                     if (err != NF_ACCEPT)
-> > -                             goto out;
-> > -             }
-> > -             break;
-> > -
-> > -     case IP_CT_ESTABLISHED:
-> > -     case IP_CT_ESTABLISHED_REPLY:
-> > -             break;
-> > -
-> > -     default:
-> > -             err = NF_DROP;
-> > -             goto out;
-> > -     }
-> > -
-> > -     err = nf_nat_packet(ct, ctinfo, hooknum, skb);
-> > -out:
-> > -     /* Update the flow key if NAT successful. */
-> > -     if (err == NF_ACCEPT)
-> > -             ovs_nat_update_key(key, skb, maniptype);
-> > -
-> > -     return err;
-> > -}
-> > -
-> >  /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwise. */
-> >  static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
-> >                     const struct ovs_conntrack_info *info,
-> >                     struct sk_buff *skb, struct nf_conn *ct,
-> >                     enum ip_conntrack_info ctinfo)
-> >  {
-> > -     enum nf_nat_manip_type maniptype;
-> > -     int err;
-> > +     int err, action = 0;
-> >
-> >       if (!(info->nat & OVS_CT_NAT))
-> >               return NF_ACCEPT;
-> > +     if (info->nat & OVS_CT_SRC_NAT)
-> > +             action |= (1 << NF_NAT_MANIP_SRC);
-> > +     if (info->nat & OVS_CT_DST_NAT)
-> > +             action |= (1 << NF_NAT_MANIP_DST);
-> >
-> > -     /* Add NAT extension if not confirmed yet. */
-> > -     if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-> > -             return NF_ACCEPT;   /* Can't NAT. */
-> > +     err = nf_ct_nat(skb, ct, ctinfo, &action, &info->range, info->commit);
-> >
-> > -     /* Determine NAT type.
-> > -      * Check if the NAT type can be deduced from the tracked connection.
-> > -      * Make sure new expected connections (IP_CT_RELATED) are NATted only
-> > -      * when committing.
-> > -      */
-> > -     if (ctinfo != IP_CT_NEW && ct->status & IPS_NAT_MASK &&
-> > -         (ctinfo != IP_CT_RELATED || info->commit)) {
-> > -             /* NAT an established or related connection like before. */
-> > -             if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
-> > -                     /* This is the REPLY direction for a connection
-> > -                      * for which NAT was applied in the forward
-> > -                      * direction.  Do the reverse NAT.
-> > -                      */
-> > -                     maniptype = ct->status & IPS_SRC_NAT
-> > -                             ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
-> > -             else
-> > -                     maniptype = ct->status & IPS_SRC_NAT
-> > -                             ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
-> > -     } else if (info->nat & OVS_CT_SRC_NAT) {
-> > -             maniptype = NF_NAT_MANIP_SRC;
-> > -     } else if (info->nat & OVS_CT_DST_NAT) {
-> > -             maniptype = NF_NAT_MANIP_DST;
-> > -     } else {
-> > -             return NF_ACCEPT; /* Connection is not NATed. */
-> > -     }
-> > -     err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype, key);
-> > -
-> > -     if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
-> > -             if (ct->status & IPS_SRC_NAT) {
-> > -                     if (maniptype == NF_NAT_MANIP_SRC)
-> > -                             maniptype = NF_NAT_MANIP_DST;
-> > -                     else
-> > -                             maniptype = NF_NAT_MANIP_SRC;
-> > -
-> > -                     err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range,
-> > -                                              maniptype, key);
-> > -             } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
-> > -                     err = ovs_ct_nat_execute(skb, ct, ctinfo, NULL,
-> > -                                              NF_NAT_MANIP_SRC, key);
-> > -             }
-> > -     }
-> > +     if (action & (1 << NF_NAT_MANIP_SRC))
-> > +             ovs_nat_update_key(key, skb, NF_NAT_MANIP_SRC);
-> > +     if (action & (1 << NF_NAT_MANIP_DST))
-> > +             ovs_nat_update_key(key, skb, NF_NAT_MANIP_DST);
+> Yes, these changes are overwritten later, but only this patch can be
+> backported to other stable versions, so I kept this separated.
 >
-> I haven't tested this yet with tuple collision, but if I'm reading the
-> code right, info->nat will only be from the parsed actions (which will
-> have a single src/dst manipulation).  But, this code was previously
-> always updated based on ct->status information, which isn't quite the
-> same.  Maybe I'm missing something.  I plan to run this testing
-> tomorrow, but maybe you have already tested for it?
-Hi, Aaron,
 
-Note "&action" is passed into nf_ct_nat() then nf_ct_nat_execute(), and
-its value might be changed in nf_ct_nat_execute():
+Gotcha, that makes sense! I will try to get my review of the other 2
+patches by tomorrow or Friday.
 
-+       err = nf_nat_packet(ct, ctinfo, hooknum, skb);
-+       if (err == NF_ACCEPT)
-+               *action |= (1 << maniptype);
-
-so it's possible to have multiple (src and dst) manipulations, and
-the code is eventually the same as before.
-
-I tested with:
-ovs-ofctl add-flow br-ovs "...nw_dst=7.7.16.3 actions=ct(commit,
-nat(dst=7.7.16.2), alg=ftp), normal"
-ovs-ofctl add-flow br-ovs "...nw_dst=7.7.16.4 actions=ct(commit,
-nat(dst=7.7.16.2), alg=ftp), normal"
-and could see actions=3 (NF_NAT_MANIP_SRC|DST).
-
-It will be good if you have more tests to be done.
-
-Thanks.
+Thanks for your work on this!
 
 >
-> >       return err;
-> >  }
-> > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> > index c7782c9a6ab6..0c410220239f 100644
-> > --- a/net/sched/act_ct.c
-> > +++ b/net/sched/act_ct.c
-> > @@ -863,90 +863,6 @@ static void tcf_ct_params_free_rcu(struct rcu_head *head)
-> >       tcf_ct_params_free(params);
-> >  }
-> >
-> > -#if IS_ENABLED(CONFIG_NF_NAT)
-> > -/* Modelled after nf_nat_ipv[46]_fn().
-> > - * range is only used for new, uninitialized NAT state.
-> > - * Returns either NF_ACCEPT or NF_DROP.
-> > - */
-> > -static int ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
-> > -                       enum ip_conntrack_info ctinfo,
-> > -                       const struct nf_nat_range2 *range,
-> > -                       enum nf_nat_manip_type maniptype)
-> > -{
-> > -     __be16 proto = skb_protocol(skb, true);
-> > -     int hooknum, err = NF_ACCEPT;
-> > -
-> > -     /* See HOOK2MANIP(). */
-> > -     if (maniptype == NF_NAT_MANIP_SRC)
-> > -             hooknum = NF_INET_LOCAL_IN; /* Source NAT */
-> > -     else
-> > -             hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
-> > -
-> > -     switch (ctinfo) {
-> > -     case IP_CT_RELATED:
-> > -     case IP_CT_RELATED_REPLY:
-> > -             if (proto == htons(ETH_P_IP) &&
-> > -                 ip_hdr(skb)->protocol == IPPROTO_ICMP) {
-> > -                     if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
-> > -                                                        hooknum))
-> > -                             err = NF_DROP;
-> > -                     goto out;
-> > -             } else if (IS_ENABLED(CONFIG_IPV6) && proto == htons(ETH_P_IPV6)) {
-> > -                     __be16 frag_off;
-> > -                     u8 nexthdr = ipv6_hdr(skb)->nexthdr;
-> > -                     int hdrlen = ipv6_skip_exthdr(skb,
-> > -                                                   sizeof(struct ipv6hdr),
-> > -                                                   &nexthdr, &frag_off);
-> > -
-> > -                     if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
-> > -                             if (!nf_nat_icmpv6_reply_translation(skb, ct,
-> > -                                                                  ctinfo,
-> > -                                                                  hooknum,
-> > -                                                                  hdrlen))
-> > -                                     err = NF_DROP;
-> > -                             goto out;
-> > -                     }
-> > -             }
-> > -             /* Non-ICMP, fall thru to initialize if needed. */
-> > -             fallthrough;
-> > -     case IP_CT_NEW:
-> > -             /* Seen it before?  This can happen for loopback, retrans,
-> > -              * or local packets.
-> > -              */
-> > -             if (!nf_nat_initialized(ct, maniptype)) {
-> > -                     /* Initialize according to the NAT action. */
-> > -                     err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
-> > -                             /* Action is set up to establish a new
-> > -                              * mapping.
-> > -                              */
-> > -                             ? nf_nat_setup_info(ct, range, maniptype)
-> > -                             : nf_nat_alloc_null_binding(ct, hooknum);
-> > -                     if (err != NF_ACCEPT)
-> > -                             goto out;
-> > -             }
-> > -             break;
-> > -
-> > -     case IP_CT_ESTABLISHED:
-> > -     case IP_CT_ESTABLISHED_REPLY:
-> > -             break;
-> > -
-> > -     default:
-> > -             err = NF_DROP;
-> > -             goto out;
-> > -     }
-> > -
-> > -     err = nf_nat_packet(ct, ctinfo, hooknum, skb);
-> > -out:
-> > -     if (err == NF_ACCEPT) {
-> > -             if (maniptype == NF_NAT_MANIP_SRC)
-> > -                     tc_skb_cb(skb)->post_ct_snat = 1;
-> > -             if (maniptype == NF_NAT_MANIP_DST)
-> > -                     tc_skb_cb(skb)->post_ct_dnat = 1;
-> > -     }
-> > -     return err;
-> > -}
-> > -#endif /* CONFIG_NF_NAT */
-> > -
-> >  static void tcf_ct_act_set_mark(struct nf_conn *ct, u32 mark, u32 mask)
-> >  {
-> >  #if IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)
-> > @@ -986,52 +902,22 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
-> >                         bool commit)
-> >  {
-> >  #if IS_ENABLED(CONFIG_NF_NAT)
-> > -     int err;
-> > -     enum nf_nat_manip_type maniptype;
-> > +     int err, action = 0;
-> >
-> >       if (!(ct_action & TCA_CT_ACT_NAT))
-> >               return NF_ACCEPT;
-> > +     if (ct_action & TCA_CT_ACT_NAT_SRC)
-> > +             action |= (1 << NF_NAT_MANIP_SRC);
-> > +     if (ct_action & TCA_CT_ACT_NAT_DST)
-> > +             action |= (1 << NF_NAT_MANIP_DST);
-> >
-> > -     /* Add NAT extension if not confirmed yet. */
-> > -     if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-> > -             return NF_ACCEPT;   /* Can't NAT. */
-> > -
-> > -     if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
-> > -         (ctinfo != IP_CT_RELATED || commit)) {
-> > -             /* NAT an established or related connection like before. */
-> > -             if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
-> > -                     /* This is the REPLY direction for a connection
-> > -                      * for which NAT was applied in the forward
-> > -                      * direction.  Do the reverse NAT.
-> > -                      */
-> > -                     maniptype = ct->status & IPS_SRC_NAT
-> > -                             ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
-> > -             else
-> > -                     maniptype = ct->status & IPS_SRC_NAT
-> > -                             ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
-> > -     } else if (ct_action & TCA_CT_ACT_NAT_SRC) {
-> > -             maniptype = NF_NAT_MANIP_SRC;
-> > -     } else if (ct_action & TCA_CT_ACT_NAT_DST) {
-> > -             maniptype = NF_NAT_MANIP_DST;
-> > -     } else {
-> > -             return NF_ACCEPT;
-> > -     }
-> > +     err = nf_ct_nat(skb, ct, ctinfo, &action, range, commit);
-> > +
-> > +     if (action & (1 << NF_NAT_MANIP_SRC))
-> > +             tc_skb_cb(skb)->post_ct_snat = 1;
-> > +     if (action & (1 << NF_NAT_MANIP_DST))
-> > +             tc_skb_cb(skb)->post_ct_dnat = 1;
-> >
-> > -     err = ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-> > -     if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
-> > -             if (ct->status & IPS_SRC_NAT) {
-> > -                     if (maniptype == NF_NAT_MANIP_SRC)
-> > -                             maniptype = NF_NAT_MANIP_DST;
-> > -                     else
-> > -                             maniptype = NF_NAT_MANIP_SRC;
-> > -
-> > -                     err = ct_nat_execute(skb, ct, ctinfo, range,
-> > -                                          maniptype);
-> > -             } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
-> > -                     err = ct_nat_execute(skb, ct, ctinfo, NULL,
-> > -                                          NF_NAT_MANIP_SRC);
-> > -             }
-> > -     }
-> >       return err;
-> >  #else
-> >       return NF_ACCEPT;
->
+> > > ---
+> > >  net/dccp/ipv4.c     | 2 ++
+> > >  net/dccp/ipv6.c     | 2 ++
+> > >  net/ipv4/tcp_ipv4.c | 2 ++
+> > >  net/ipv6/tcp_ipv6.c | 2 ++
+> > >  4 files changed, 8 insertions(+)
+> > >
+> > > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+> > > index 713b7b8dad7e..40640c26680e 100644
+> > > --- a/net/dccp/ipv4.c
+> > > +++ b/net/dccp/ipv4.c
+> > > @@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > >          * This unhashes the socket and releases the local port, if necessary.
+> > >          */
+> > >         dccp_set_state(sk, DCCP_CLOSED);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >         ip_rt_put(rt);
+> > >         sk->sk_route_caps = 0;
+> > >         inet->inet_dport = 0;
+> > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> > > index e57b43006074..626166cb6d7e 100644
+> > > --- a/net/dccp/ipv6.c
+> > > +++ b/net/dccp/ipv6.c
+> > > @@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> > >
+> > >  late_failure:
+> > >         dccp_set_state(sk, DCCP_CLOSED);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >         __sk_dst_reset(sk);
+> > >  failure:
+> > >         inet->inet_dport = 0;
+> > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > > index 87d440f47a70..6a3a732b584d 100644
+> > > --- a/net/ipv4/tcp_ipv4.c
+> > > +++ b/net/ipv4/tcp_ipv4.c
+> > > @@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > >          * if necessary.
+> > >          */
+> > >         tcp_set_state(sk, TCP_CLOSE);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >         ip_rt_put(rt);
+> > >         sk->sk_route_caps = 0;
+> > >         inet->inet_dport = 0;
+> > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > > index 2a3f9296df1e..81b396e5cf79 100644
+> > > --- a/net/ipv6/tcp_ipv6.c
+> > > +++ b/net/ipv6/tcp_ipv6.c
+> > > @@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> > >
+> > >  late_failure:
+> > >         tcp_set_state(sk, TCP_CLOSE);
+> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
+> > > +               inet_reset_saddr(sk);
+> > >  failure:
+> > >         inet->inet_dport = 0;
+> > >         sk->sk_route_caps = 0;
+> > > --
+> > > 2.30.2
