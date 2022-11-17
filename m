@@ -2,44 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC3FE62D639
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:15:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A288E62D635
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:14:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239804AbiKQJP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:15:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
+        id S239516AbiKQJOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239754AbiKQJPV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:15:21 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8347299F
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:15:20 -0800 (PST)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NCZ0f2QtDzqSWZ;
-        Thu, 17 Nov 2022 17:11:30 +0800 (CST)
-Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
- (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 17:15:19 +0800
-From:   GUO Zihua <guozihua@huawei.com>
-To:     <ericvh@gmail.com>, <lucho@ionkov.net>, <asmadeus@codewreck.org>,
-        <linux_oss@crudebyte.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <v9fs-developer@lists.sourceforge.net>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 3/3 v2] 9p: Use P9_HDRSZ for header size
-Date:   Thu, 17 Nov 2022 17:11:59 +0800
-Message-ID: <20221117091159.31533-4-guozihua@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221117091159.31533-1-guozihua@huawei.com>
-References: <20221117091159.31533-1-guozihua@huawei.com>
+        with ESMTP id S239378AbiKQJOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:14:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A35419AE;
+        Thu, 17 Nov 2022 01:14:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65E1DB81D87;
+        Thu, 17 Nov 2022 09:14:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BA83C433C1;
+        Thu, 17 Nov 2022 09:14:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668676485;
+        bh=uGXucozYbw22itzsE0wlz1O95Zfv9rFrz9VjCU7noRc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B4lb3rtggfNZ+9amFQU25tWBVXZqnoO4ZhJx9cz/cLvlJxGhq48bwm/b1SNRxuwUz
+         RQNwx4llUMRVnnploo7+VOy9yC8TJ29I9Bu8CmrdU+o0X0Clmx8LdAAo5RRmK0+Gsu
+         9yabD0egnPj/gq04enlm7g+ejgcaDdLpZYxfZ2D2YLMhBu9w/Cz26XboDPZrUJfBFd
+         xKvnSkVUzAu6i8nPlnQwGrSi3QJhxgc6nONge7OcXCPfKfQSc+978wPRHl62YRX4bv
+         QGG4CiUt9Mv+JAw5JcXlK5lAhBJQqsONFufjHkZuxf79dgyVl85O7yf3pc3cg+F5b9
+         ZdCZS6QvllNyw==
+Date:   Thu, 17 Nov 2022 11:14:41 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Dan Carpenter <error27@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH] net: ethernet: renesas: rswitch: Fix MAC address info
+Message-ID: <Y3X7gWCP3h6OQb47@unreal>
+References: <20221115235519.679115-1-yoshihiro.shimoda.uh@renesas.com>
+ <Y3XQBYdEG5EQFgQ+@unreal>
+ <TYBPR01MB5341160928F54EF8A4814240D8069@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+ <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.31]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,56 +63,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The m->rc.offset here actually represents the header size of a p9
-message. So instead we use P9_HDRSZ directly. At the mean time, update
-all header sizes as well.
+On Thu, Nov 17, 2022 at 09:59:55AM +0100, Geert Uytterhoeven wrote:
+> Hi Shimoda-san,
+> 
+> On Thu, Nov 17, 2022 at 9:58 AM Yoshihiro Shimoda
+> <yoshihiro.shimoda.uh@renesas.com> wrote:
+> > > From: Leon Romanovsky, Sent: Thursday, November 17, 2022 3:09 PM
+> > > On Wed, Nov 16, 2022 at 08:55:19AM +0900, Yoshihiro Shimoda wrote:
+> > > > Smatch detected the following warning.
+> > > >
+> > > >     drivers/net/ethernet/renesas/rswitch.c:1717 rswitch_init() warn:
+> > > >     '%pM' cannot be followed by 'n'
+> > > >
+> > > > The 'n' should be '\n'.
+> > > >
+> > > > Reported-by: Dan Carpenter <error27@gmail.com>
+> > > > Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > > Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
+> > > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > > > ---
+> > > >  drivers/net/ethernet/renesas/rswitch.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+> > > > index f3d27aef1286..51ce5c26631b 100644
+> > > > --- a/drivers/net/ethernet/renesas/rswitch.c
+> > > > +++ b/drivers/net/ethernet/renesas/rswitch.c
+> > > > @@ -1714,7 +1714,7 @@ static int rswitch_init(struct rswitch_private *priv)
+> > > >     }
+> > > >
+> > > >     for (i = 0; i < RSWITCH_NUM_PORTS; i++)
+> > > > -           netdev_info(priv->rdev[i]->ndev, "MAC address %pMn",
+> > > > +           netdev_info(priv->rdev[i]->ndev, "MAC address %pM\n",
+> > >
+> > > You can safely drop '\n' from here. It is not needed while printing one
+> > > line.
+> >
+> > Oh, I didn't know that. I'll remove '\n' from here on v2 patch.
+> 
+> Please don't remove it.  The convention is to have the newlines.
 
-Fixes: 3da2e34b64cd ("9p: Fix write overflow in p9_read_work")
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
----
- net/9p/trans_fd.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Can you please explain why?
 
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 4ba602438550..89a51fcc831d 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -120,7 +120,7 @@ struct p9_conn {
- 	struct list_head unsent_req_list;
- 	struct p9_req_t *rreq;
- 	struct p9_req_t *wreq;
--	char tmp_buf[7];
-+	char tmp_buf[P9_HDRSZ];
- 	struct p9_fcall rc;
- 	int wpos;
- 	int wsize;
-@@ -291,7 +291,7 @@ static void p9_read_work(struct work_struct *work)
- 	if (!m->rc.sdata) {
- 		m->rc.sdata = m->tmp_buf;
- 		m->rc.offset = 0;
--		m->rc.capacity = 7; /* start by reading header */
-+		m->rc.capacity = P9_HDRSZ; /* start by reading header */
- 	}
- 
- 	clear_bit(Rpending, &m->wsched);
-@@ -314,7 +314,7 @@ static void p9_read_work(struct work_struct *work)
- 		p9_debug(P9_DEBUG_TRANS, "got new header\n");
- 
- 		/* Header size */
--		m->rc.size = 7;
-+		m->rc.size = P9_HDRSZ;
- 		err = p9_parse_header(&m->rc, &m->rc.size, NULL, NULL, 0);
- 		if (err) {
- 			p9_debug(P9_DEBUG_ERROR,
-@@ -334,7 +334,7 @@ static void p9_read_work(struct work_struct *work)
- 			goto error;
- 		}
- 
--		if (m->rc.size > m->rreq->rc.capacity - m->rc.offset) {
-+		if (m->rc.size > m->rreq->rc.capacity - P9_HDRSZ) {
- 			p9_debug(P9_DEBUG_ERROR,
- 				 "requested packet size too big: %d for tag %d with capacity %zd\n",
- 				 m->rc.size, m->rc.tag, m->rreq->rc.capacity);
--- 
-2.17.1
+Thanks
 
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
