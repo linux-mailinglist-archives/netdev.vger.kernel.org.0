@@ -2,188 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D90A062CF6A
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:20:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56FDF62CF70
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233325AbiKQAUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 19:20:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
+        id S232985AbiKQAVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 19:21:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234039AbiKQAU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:20:29 -0500
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69A645EF1;
-        Wed, 16 Nov 2022 16:20:27 -0800 (PST)
+        with ESMTP id S232996AbiKQAV1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:21:27 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EFE45EFD;
+        Wed, 16 Nov 2022 16:21:26 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id v3so498447pgh.4;
+        Wed, 16 Nov 2022 16:21:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1668644427; x=1700180427;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OwavocW5NJuPb92cb+UmVHArM9k2XXgrJ2q8fSHGR3M=;
-  b=MraeKwuqFN7oJpWW9NgUruy+yYO6URBSBo21gMH5NCkPXZB/XU22DLiB
-   shAC5tBeutarJGHyumRF8nouQfyBuA7MgMSV/WT9bWtBIVSxDxW0+WFpT
-   EoA9J3THRm8bASSydkXuKV28GV0s3UM687sGJM0KiVXY6in5IS9LQFWWv
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.96,169,1665446400"; 
-   d="scan'208";a="1074475348"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 00:20:22 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id A87AFC333F;
-        Thu, 17 Nov 2022 00:20:21 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Thu, 17 Nov 2022 00:20:21 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.178) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Thu, 17 Nov 2022 00:20:18 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <joannelkoong@gmail.com>
-CC:     <acme@mandriva.com>, <davem@davemloft.net>, <dccp@vger.kernel.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>, <martin.lau@kernel.org>,
-        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <pengfei.xu@intel.com>,
-        <stephen@networkplumber.org>, <william.xuanziyang@huawei.com>,
-        <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v2 net 1/4] dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
-Date:   Wed, 16 Nov 2022 16:20:10 -0800
-Message-ID: <20221117002010.72675-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAJnrk1YOfyGQ2Vic9xkoSj+uv7fuYAwh4wFLv1cBJ5LPiHsEvw@mail.gmail.com>
-References: <CAJnrk1YOfyGQ2Vic9xkoSj+uv7fuYAwh4wFLv1cBJ5LPiHsEvw@mail.gmail.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EOTHwBvfn3j46S98TnUtdZvMLvXtq/JOOvCrOFMYfc0=;
+        b=SyOm+L0eF8cS7odyS/+IVdV+CobT8Af23hLQxh2DHW8EaivP2joAE1qPJ2mhopG+xi
+         iOTnQJqAq/0yZFeEKCJOmncw+28P1XMjJHU2KS/xby9W3f4K1bTPUQzScU3bNVffUuvq
+         buAfr0Re5/A/CG6682OHChxpn6e4SiIccXqFqwpuqm7tviFhbIRvYD1Q4nT6cEM40d8u
+         wupkg5y0/5KcQ997VHO6XGZKGBP+uOhcSJ9gSQn8fIuc2HkkrezdvKgWBoE+7QshG6j0
+         V+QHrbdyMO69j4+I5HKtQOStsV3cl+n0g4pK5GbLtF+APPG9LTfXYFEFspmHsjT/zymY
+         HaCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EOTHwBvfn3j46S98TnUtdZvMLvXtq/JOOvCrOFMYfc0=;
+        b=wLCaMo7lRFu1w4R9vazj8Z0KTyNMcItuxet6bzYn4kal9Cmc6z/qWgHm0tFFxRr7DT
+         kMoF3mz0xyLeRWT0/f6jbcYOEKfGZA98cbSdtjqxS7G7X0HS/7ArNXYn7RZOOpqm1x6Y
+         MNOS+ur39Inc2Ola0hxEKcl55MqiKGsyJHI7oC/V8ZF9hALcsw3BTHstQJVJJoVtDkMS
+         cO/pH8YAj/0KV/qWSxsX2/LA4YSCMgpaT2jVGAxuh10GiNJCajmuE+YMXdKGwc6N/p08
+         XulVxhVCIQF0bQ0eM5/sUhuNlj4LOtA1/LWnUlHvUA7Ok56B9M/8Vp5F0nGFcgOM2Vh6
+         88VQ==
+X-Gm-Message-State: ANoB5plDr2n/5cofbL/naVBXNGdiCB7sLd9z24v/WuKdGx6TA26nIHbn
+        09fciz21vaNdjhovMY0waMG1E7r+7sicoA==
+X-Google-Smtp-Source: AA0mqf5dO1qAI+9h4q1RiOcxT4xwiQJxvdSWPmTFPNPN6JC4eF+UgJnFOpScLOmhuQUdll5e6L6glA==
+X-Received: by 2002:a62:1444:0:b0:572:d54:9647 with SMTP id 65-20020a621444000000b005720d549647mr417129pfu.82.1668644485780;
+        Wed, 16 Nov 2022 16:21:25 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id nl8-20020a17090b384800b0020d48bc6661sm2232416pjb.31.2022.11.16.16.21.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Nov 2022 16:21:25 -0800 (PST)
+Message-ID: <9c9643e3-db53-bd35-6028-1c8b718e1cc2@gmail.com>
+Date:   Wed, 16 Nov 2022 16:21:16 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.178]
-X-ClientProxiedBy: EX13D34UWA001.ant.amazon.com (10.43.160.173) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 2/2] net: fec: Create device link between phy dev and mac
+ dev
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Xiaolei Wang <xiaolei.wang@windriver.com>, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221116144305.2317573-1-xiaolei.wang@windriver.com>
+ <20221116144305.2317573-3-xiaolei.wang@windriver.com>
+ <Y3T8wliAKdl/paS6@lunn.ch> <355a8611-b60e-1166-0f7b-87a194debd07@gmail.com>
+ <Y3V5AgBMBOx/ptwx@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <Y3V5AgBMBOx/ptwx@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Wed, 16 Nov 2022 16:11:21 -0800
-> On Wed, Nov 16, 2022 at 2:28 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > When connect() is called on a socket bound to the wildcard address,
-> > we change the socket's saddr to a local address.  If the socket
-> > fails to connect() to the destination, we have to reset the saddr.
-> >
-> > However, when an error occurs after inet_hash6?_connect() in
-> > (dccp|tcp)_v[46]_conect(), we forget to reset saddr and leave
-> > the socket bound to the address.
-> >
-> > From the user's point of view, whether saddr is reset or not varies
-> > with errno.  Let's fix this inconsistent behaviour.
-> >
-> > Note that after this patch, the repro [0] will trigger the WARN_ON()
-> > in inet_csk_get_port() again, but this patch is not buggy and rather
-> > fixes a bug papering over the bhash2's bug for which we need another
-> > fix.
-> >
-> > For the record, the repro causes -EADDRNOTAVAIL in inet_hash6_connect()
-> > by this sequence:
-> >
-> >   s1 = socket()
-> >   s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >   s1.bind(('127.0.0.1', 10000))
-> >   s1.sendto(b'hello', MSG_FASTOPEN, (('127.0.0.1', 10000)))
-> >   # or s1.connect(('127.0.0.1', 10000))
-> >
-> >   s2 = socket()
-> >   s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-> >   s2.bind(('0.0.0.0', 10000))
-> >   s2.connect(('127.0.0.1', 10000))  # -EADDRNOTAVAIL
-> >
-> >   s2.listen(32)  # WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
-> >
-> > [0]: https://syzkaller.appspot.com/bug?extid=015d756bbd1f8b5c8f09
-> >
-> > Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
-> > Fixes: 7c657876b63c ("[DCCP]: Initial implementation")
-> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+On 11/16/22 15:57, Andrew Lunn wrote:
+> On Wed, Nov 16, 2022 at 03:27:39PM -0800, Florian Fainelli wrote:
+>> On 11/16/22 07:07, Andrew Lunn wrote:
+>>> On Wed, Nov 16, 2022 at 10:43:05PM +0800, Xiaolei Wang wrote:
+>>>> On imx6sx, there are two fec interfaces, but the external
+>>>> phys can only be configured by fec0 mii_bus. That means
+>>>> the fec1 can't work independently, it only work when the
+>>>> fec0 is active. It is alright in the normal boot since the
+>>>> fec0 will be probed first. But then the fec0 maybe moved
+>>>> behind of fec1 in the dpm_list due to various device link.
+>>
+>> Humm, but if FEC1 depends upon its PHY to be available by the FEC0 MDIO bus
+>> provider, then surely we will need to make sure that FEC0's MDIO bus is
+>> always functional, and that includes surviving re-ordering as well as any
+>> sort of run-time power management that can occur.
 > 
-> LGTM. Btw, the 4th patch in this series overwrites these changes by
-> moving this logic into the new inet_bhash2_reset_saddr() function you
-> added, so we could also drop this patch from the series. OTOH, this
-> commit message in this patch has some good background context. So I
-> don't have a preference either way :)
+> Runtime PM is solved for the FECs MDIO bus, because there are switches
+> hanging off it, which have their own life cycle independent of the
+> MAC. This is something i had to fix many moons ago, when the FEC would
+> power off the MDIO bus when the interface is admin down, stopping
+> access to the switch. The mdio read and write functions now do run
+> time pm get and put as needed.
 > 
-> Acked-by: Joanne Koong <joannelkoong@gmail.com>
+> I've never done suspend/resume with a switch, it is not something
+> needed in the use cases i've covered.
 
-Thanks for reviewing!
+All of the systems with integrated I worked on had to support 
+suspend/resume both with HW maintaining the state, and with HW losing 
+the state because of being powered off. The whole thing is IMHO still 
+not quite well supported upstream if you have applied some configuration 
+more complicated than a bridge or standalone ports. Anyway, this is a 
+topic for another 10 years to come :)
 
-Yes, these changes are overwritten later, but only this patch can be
-backported to other stable versions, so I kept this separated.
+> 
+>>>> So in system suspend and resume, we would get the following
+>>>> warning when configuring the external phy of fec1 via the
+>>>> fec0 mii_bus due to the inactive of fec0. In order to fix
+>>>> this issue, we create a device link between phy dev and fec0.
+>>>> This will make sure that fec0 is always active when fec1
+>>>> is in active mode.
+>>
+>> Still not clear to me how the proposed fix works, let alone how it does not
+>> leak device links since there is no device_link_del(), also you are going to
+>> be creating guaranteed regressions by putting that change in the PHY
+>> library.
+> 
+> The reference leak is bad, but i think phylib is the correct place to
+> fix this general issue. It is not specific to the FEC. There are other
+> boards with dual MAC SoCs and they save a couple of pins by putting
+> both PHYs on one MDIO bus. Having the link should help better
+> represent the device tree so that suspend/resume can do stuff in the
+> right order.
 
+My concern is that we already have had a hard time solving the proper 
+suspend/resume sequence whether the MAC suspends the PHY or the MDIO bus 
+suspends the PHY and throwing device links will either change the 
+ordering in subtle ways, or hopefully just provide the same piece of 
+information we already have via mac_managed_pm.
 
-> > ---
-> >  net/dccp/ipv4.c     | 2 ++
-> >  net/dccp/ipv6.c     | 2 ++
-> >  net/ipv4/tcp_ipv4.c | 2 ++
-> >  net/ipv6/tcp_ipv6.c | 2 ++
-> >  4 files changed, 8 insertions(+)
-> >
-> > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > index 713b7b8dad7e..40640c26680e 100644
-> > --- a/net/dccp/ipv4.c
-> > +++ b/net/dccp/ipv4.c
-> > @@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >          * This unhashes the socket and releases the local port, if necessary.
-> >          */
-> >         dccp_set_state(sk, DCCP_CLOSED);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >         ip_rt_put(rt);
-> >         sk->sk_route_caps = 0;
-> >         inet->inet_dport = 0;
-> > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > index e57b43006074..626166cb6d7e 100644
-> > --- a/net/dccp/ipv6.c
-> > +++ b/net/dccp/ipv6.c
-> > @@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >
-> >  late_failure:
-> >         dccp_set_state(sk, DCCP_CLOSED);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >         __sk_dst_reset(sk);
-> >  failure:
-> >         inet->inet_dport = 0;
-> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > index 87d440f47a70..6a3a732b584d 100644
-> > --- a/net/ipv4/tcp_ipv4.c
-> > +++ b/net/ipv4/tcp_ipv4.c
-> > @@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >          * if necessary.
-> >          */
-> >         tcp_set_state(sk, TCP_CLOSE);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >         ip_rt_put(rt);
-> >         sk->sk_route_caps = 0;
-> >         inet->inet_dport = 0;
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index 2a3f9296df1e..81b396e5cf79 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >
-> >  late_failure:
-> >         tcp_set_state(sk, TCP_CLOSE);
-> > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > +               inet_reset_saddr(sk);
-> >  failure:
-> >         inet->inet_dport = 0;
-> >         sk->sk_route_caps = 0;
-> > --
-> > 2.30.2
+It seems like in Xiaolei's case, the MDIO bus should suspend the PHY and 
+that ought to take care of all dependencies, one would think.
+-- 
+Florian
+
