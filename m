@@ -2,97 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5091362DBFF
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:52:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C9462DC2C
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 14:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233526AbiKQMwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 07:52:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        id S239475AbiKQNBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 08:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239598AbiKQMwp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:52:45 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C965802B
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:52:41 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCfvP4vvzzRpLS;
-        Thu, 17 Nov 2022 20:52:17 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 20:52:38 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
-        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
-        <horatiu.vultur@microchip.com>, <bjarni.jonasson@microchip.com>
-CC:     <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <liujian56@huawei.com>
-Subject: [PATCH net] net: sparx5: fix error handling in sparx5_port_open()
-Date:   Thu, 17 Nov 2022 20:59:18 +0800
-Message-ID: <20221117125918.203997-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S234724AbiKQNA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 08:00:57 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A655916D;
+        Thu, 17 Nov 2022 05:00:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Znj/zN2SyjWqIbqwFb6gAvBXmx3ZvTt/Rr7JUuD+cp0=; b=ibMvFW/DbQabpQK9XmnHg3CC5V
+        gR5XWZWWAhzpGHocBkJMdXNQYdp8rnkLtregkjQtKEicGCdplsqGxmJPcSNUzjpuHdxOF8Zxbq84m
+        53B4wwdaDE0rFqnHzj7wEbZH5aJwSmdJ+BLNfMskz5JW9ylYkL+sR/gGjTeD6vKLgixI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oveUE-002gbS-QO; Thu, 17 Nov 2022 13:59:22 +0100
+Date:   Thu, 17 Nov 2022 13:59:22 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Marco Bonelli <marco@mebeim.net>, Tom Rix <trix@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org, yc-core@yandex-team.ru
+Subject: Re: [PATCH v1] net/ethtool/ioctl: ensure that we have phy ops before
+ using them
+Message-ID: <Y3YwKrgrZ9Aci7m1@lunn.ch>
+References: <20221114081532.3475625-1-d-tatianin@yandex-team.ru>
+ <20221114210705.216996a9@kernel.org>
+ <Y3Oy14CNVEttEI7T@lunn.ch>
+ <Y3VqUBUXdMrt4iAC@x130.lan>
+ <d220e5b6-70d8-e64f-0544-d3dfaf905a6d@yandex-team.ru>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d220e5b6-70d8-e64f-0544-d3dfaf905a6d@yandex-team.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If phylink_of_phy_connect() fails, the port should be disabled.
-If sparx5_serdes_set()/phy_power_on() fails, the port should be
-disabled and the phylink should be stopped and disconnected.
+> Strange, pretty sure it CCed the netdev ML. Unless there's something else
+> you must do for it to get through?
 
-Fixes: 946e7fd5053a ("net: sparx5: add port module support")
-Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
----
- .../net/ethernet/microchip/sparx5/sparx5_netdev.c  | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+HTML might get it rejected. But so long as you used git send-email, it
+normally works.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-index 19516ccad533..d078156581d5 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-@@ -104,7 +104,7 @@ static int sparx5_port_open(struct net_device *ndev)
- 	err = phylink_of_phy_connect(port->phylink, port->of_node, 0);
- 	if (err) {
- 		netdev_err(ndev, "Could not attach to PHY\n");
--		return err;
-+		goto err_connect;
- 	}
- 
- 	phylink_start(port->phylink);
-@@ -116,10 +116,20 @@ static int sparx5_port_open(struct net_device *ndev)
- 			err = sparx5_serdes_set(port->sparx5, port, &port->conf);
- 		else
- 			err = phy_power_on(port->serdes);
--		if (err)
-+		if (err) {
- 			netdev_err(ndev, "%s failed\n", __func__);
-+			goto out_power;
-+		}
- 	}
- 
-+	return 0;
-+
-+out_power:
-+	phylink_stop(port->phylink);
-+	phylink_disconnect_phy(port->phylink);
-+err_connect:
-+	sparx5_port_enable(port, false);
-+
- 	return err;
- }
- 
--- 
-2.17.1
+Anyway, please resend.
 
+	Andrew
