@@ -2,123 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BFFB62D5B6
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EBD62D5C1
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:04:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234690AbiKQJAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:00:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S239433AbiKQJEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:04:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234493AbiKQJAJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:00:09 -0500
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D9D1A07F;
-        Thu, 17 Nov 2022 01:00:08 -0800 (PST)
-Received: by mail-qk1-f176.google.com with SMTP id s20so736837qkg.5;
-        Thu, 17 Nov 2022 01:00:08 -0800 (PST)
+        with ESMTP id S234669AbiKQJEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:04:08 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94C656EFD
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:04:07 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id p141so899326iod.6
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:04:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dFbHHqhyDIjVW1NX7EMMrqzGcWcL3YBAWVCvlJhqqR8=;
+        b=tdsQXbmcLAGssIgEhaPNAsav/5IBmS7ya2SxLXOAKEiG7BKen4mDbmPx/5H4pwSLQs
+         vqzpdAqXIJmAz0rnnyhK5XjH5ekIduVJNv6AU+kPIZj6ttkCSC/l0ZMP/eCPPB3aDCJR
+         mupDsiowO2+yEDVLA5ly8B6360Zjpta106lRsoEoHETOjqNEumLJYkXjXs6jrmiHW1Tw
+         6L8PUhTDZJ3QTd6zbDFIitAeBkVccT+XuWn4Yo5FT8VezAarz91p4lSO8tVlZIxVC1Ze
+         iHKb383VxwvWyVIdnI3emXEqEho5TbEjbstYjr8DLXg1Z+bOEnpCKwqD7HFbrEb3VNWk
+         TYXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=q+Ko3dmESH9SV49ycFP4zKE53OIsYnH4ZILqYdwHg8s=;
-        b=CHAH1N9US8QQfbpoF5ZykjtX09XQ78sPSnSnJPtdYaTT11M4fVHgZ+F7P+VyDhWNEg
-         3qRu7t31ReIYzQv+j5/rXcTtL67uF31KNLH6dYF6ZoGhoOeR/ycmp03yO3s7+qISNiiX
-         VRxHKt+iImOjRFzvyYyddXWB8O/fF0S+kIzVTR+pkwfJrlvdnctZYnEtASuwTW96alCQ
-         VaeBG8r3aOqyebyOMGU/AOYCeTuAZ1j563RSbAUMRvyoL+tOoNiAQFLB8U8rlg24/Gso
-         8FeehazP7Lcovdy1wxuEumJwHFlbYyywCilgu7t0bMnTL5q/K2LzSk8uMVpbEQadCrb2
-         X8jg==
-X-Gm-Message-State: ANoB5pkv36I6unr8tlxaWJ27sEPrD9cuTuDAE3S/MkwAiSreHn4iNGge
-        0WNdRc6GcU3p8o2tWO7kthLNWEERQWARWw==
-X-Google-Smtp-Source: AA0mqf6/kLKZ/hZYCFJbCxQi4Oc6rs7wlN1ByBJ74pfLiUCLnfgTwFOSaUeVZ50FowwsnyzltbphDg==
-X-Received: by 2002:a05:620a:1345:b0:6f8:cdc2:b7a2 with SMTP id c5-20020a05620a134500b006f8cdc2b7a2mr869170qkl.132.1668675607611;
-        Thu, 17 Nov 2022 01:00:07 -0800 (PST)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id bw6-20020a05622a098600b003988b3d5280sm69871qtb.70.2022.11.17.01.00.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Nov 2022 01:00:07 -0800 (PST)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-39115d17f3dso6420857b3.1;
-        Thu, 17 Nov 2022 01:00:06 -0800 (PST)
-X-Received: by 2002:a81:f80f:0:b0:38e:e541:d8ca with SMTP id
- z15-20020a81f80f000000b0038ee541d8camr1071666ywm.283.1668675606564; Thu, 17
- Nov 2022 01:00:06 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dFbHHqhyDIjVW1NX7EMMrqzGcWcL3YBAWVCvlJhqqR8=;
+        b=xZvOSGiG/x431j4Gi7PPYu9jPrF3cQAcpKVIEnAbXXyS12Pgiowu4zM6ryWvU5ixn1
+         YmSpoQpRmanQlv6jpjRaOqIxkOEzQFErsWO4xEhmwbr3L92qSgxdTQbbxBOH7Aa2dM56
+         GcjOgke7Fsa96GrW5P+wsel5f+ZbVysuzhuNYRMMG2GGCZuFC/3cw5mBKHcUg16CkOJ6
+         nc5YnpGbcDckGrDB/pIEdlJg494m1YI8fDoorWKvfaGtUORT6WoB8jkJ2ydW+NK+IW4m
+         uuVFzT6Z+lSPQbzA5QI/fq0O8je/LKpkU13JtgCpV6pxGj2mzZhtg9AMPQ5mAngrIFb0
+         W7ng==
+X-Gm-Message-State: ANoB5pnRm6zL0v15rOtAbRaMtiadJUCcMJuo6l3Q26RJNJCbTr6Kvttv
+        BxUFJ02xkFXnq5Axb44LRWRpb4OmEWkYBHYYem3V7g==
+X-Google-Smtp-Source: AA0mqf7jAIntsV6CY9bgvSv+dHzPWh/bZTRjwWi9SqnNtZ6/VE8nUsYH3ZtQHo8Hv5HzGIOmenpyUiPHTP5oFVioaW0=
+X-Received: by 2002:a02:cc4d:0:b0:373:2fc2:96d7 with SMTP id
+ i13-20020a02cc4d000000b003732fc296d7mr614253jaq.177.1668675847000; Thu, 17
+ Nov 2022 01:04:07 -0800 (PST)
 MIME-Version: 1.0
-References: <20221115235519.679115-1-yoshihiro.shimoda.uh@renesas.com>
- <Y3XQBYdEG5EQFgQ+@unreal> <TYBPR01MB5341160928F54EF8A4814240D8069@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYBPR01MB5341160928F54EF8A4814240D8069@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 17 Nov 2022 09:59:55 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com>
-Message-ID: <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: renesas: rswitch: Fix MAC address info
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Dan Carpenter <error27@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
+References: <20221115182051.582962-1-bjorn@kernel.org> <20221115182051.582962-2-bjorn@kernel.org>
+In-Reply-To: <20221115182051.582962-2-bjorn@kernel.org>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Thu, 17 Nov 2022 10:03:56 +0100
+Message-ID: <CADYN=9J-Uno-CftASGsguaKuqyHdX3+=7bfD5vDvRNnbpgP7aw@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: Pass target triple to
+ get_sys_includes macro
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Cc:     bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        Mykola Lysenko <mykolal@fb.com>,
+        linux-kselftest@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shimoda-san,
-
-On Thu, Nov 17, 2022 at 9:58 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> > From: Leon Romanovsky, Sent: Thursday, November 17, 2022 3:09 PM
-> > On Wed, Nov 16, 2022 at 08:55:19AM +0900, Yoshihiro Shimoda wrote:
-> > > Smatch detected the following warning.
-> > >
-> > >     drivers/net/ethernet/renesas/rswitch.c:1717 rswitch_init() warn:
-> > >     '%pM' cannot be followed by 'n'
-> > >
-> > > The 'n' should be '\n'.
-> > >
-> > > Reported-by: Dan Carpenter <error27@gmail.com>
-> > > Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
-> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > ---
-> > >  drivers/net/ethernet/renesas/rswitch.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
-> > > index f3d27aef1286..51ce5c26631b 100644
-> > > --- a/drivers/net/ethernet/renesas/rswitch.c
-> > > +++ b/drivers/net/ethernet/renesas/rswitch.c
-> > > @@ -1714,7 +1714,7 @@ static int rswitch_init(struct rswitch_private *priv)
-> > >     }
-> > >
-> > >     for (i = 0; i < RSWITCH_NUM_PORTS; i++)
-> > > -           netdev_info(priv->rdev[i]->ndev, "MAC address %pMn",
-> > > +           netdev_info(priv->rdev[i]->ndev, "MAC address %pM\n",
-> >
-> > You can safely drop '\n' from here. It is not needed while printing one
-> > line.
+On Tue, 15 Nov 2022 at 19:21, Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org> wrot=
+e:
 >
-> Oh, I didn't know that. I'll remove '\n' from here on v2 patch.
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
+>
+> When cross-compiling [1], the get_sys_includes make macro should use
+> the target system include path, and not the build hosts system include
+> path.
+>
+> Make clang honor the CROSS_COMPILE triple.
+>
+> [1] e.g. "ARCH=3Driscv CROSS_COMPILE=3Driscv64-linux-gnu- make"
+>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
 
-Please don't remove it.  The convention is to have the newlines.
+For both patches.
+Tested-by: Anders Roxell <anders.roxell@linaro.org>
 
-Gr{oetje,eeting}s,
+> ---
+>  tools/testing/selftests/bpf/Makefile | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
+ts/bpf/Makefile
+> index 8f8ede30e94e..a2a1eae75820 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -309,9 +309,9 @@ $(RESOLVE_BTFIDS): $(HOST_BPFOBJ) | $(HOST_BUILD_DIR)=
+/resolve_btfids        \
+>  # Use '-idirafter': Don't interfere with include mechanics except where =
+the
+>  # build would have failed anyways.
+>  define get_sys_includes
+> -$(shell $(1) -v -E - </dev/null 2>&1 \
+> +$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
+>         | sed -n '/<...> search starts here:/,/End of search list./{ s| \=
+(/.*\)|-idirafter \1|p }') \
+> -$(shell $(1) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("=
+-D__riscv_xlen=3D%d -D__BITS_PER_LONG=3D%d", $$3, $$3)}')
+> +$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{pri=
+ntf("-D__riscv_xlen=3D%d -D__BITS_PER_LONG=3D%d", $$3, $$3)}')
+>  endef
+>
+>  # Determine target endianness.
+> @@ -319,7 +319,11 @@ IS_LITTLE_ENDIAN =3D $(shell $(CC) -dM -E - </dev/nu=
+ll | \
+>                         grep 'define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN=
+__')
+>  MENDIAN=3D$(if $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
+>
+> -CLANG_SYS_INCLUDES =3D $(call get_sys_includes,$(CLANG))
+> +ifneq ($(CROSS_COMPILE),)
+> +CLANG_TARGET_ARCH =3D --target=3D$(notdir $(CROSS_COMPILE:%-=3D%))
+> +endif
+> +
+> +CLANG_SYS_INCLUDES =3D $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_A=
+RCH))
 
-                        Geert
+Maybe it would make sense to move this trick into selftests/lib.mk
+since there are more Makefiles that
+would benefit from this, like tc-testing or net/bpf to name a few.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Cheers,
+Anders
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>  BPF_CFLAGS =3D -g -Werror -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN)         =
+ \
+>              -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR)                   \
+>              -I$(abspath $(OUTPUT)/../usr/include)
+> @@ -539,7 +543,7 @@ $(eval $(call DEFINE_TEST_RUNNER,test_progs,no_alu32)=
+)
+>  # Define test_progs BPF-GCC-flavored test runner.
+>  ifneq ($(BPF_GCC),)
+>  TRUNNER_BPF_BUILD_RULE :=3D GCC_BPF_BUILD_RULE
+> -TRUNNER_BPF_CFLAGS :=3D $(BPF_CFLAGS) $(call get_sys_includes,gcc)
+> +TRUNNER_BPF_CFLAGS :=3D $(BPF_CFLAGS) $(call get_sys_includes,gcc,)
+>  $(eval $(call DEFINE_TEST_RUNNER,test_progs,bpf_gcc))
+>  endif
+>
+> --
+> 2.37.2
+>
