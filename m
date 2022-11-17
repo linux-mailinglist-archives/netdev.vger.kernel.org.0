@@ -2,126 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51CA262D78F
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77DFC62D79D
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239257AbiKQJ5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        id S234755AbiKQJ6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:58:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239155AbiKQJ4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:56:52 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098DC6F368
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:55:38 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id a14-20020a921a0e000000b003016bfa7e50so906300ila.16
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:55:38 -0800 (PST)
+        with ESMTP id S239199AbiKQJ6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:58:22 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6E75A6DB
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:57:18 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id z18so1757982edb.9
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:57:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=U25kKEptb9pJlM8R4VKy1NNUUpW/KsvoS3ux9OOQkFU=;
+        b=iLBBrcj+KAH5LLe3UpgATIHpSs1Rv7cMVJRV6CbP9xEVppSSvhihtjUwqM1OFhG8n4
+         Pu0kNHufaMSgn80zuQye6FjMUIQuP+tkbQ+XaG+GiZdDkaVWGFl9fKzmbCoP++Upgz5m
+         RLXFgDrEp0Lq/nT6d426Cw8D37OVUPNyY7P1g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gnQLM+uf6EzDh8opNU8l71HS9owOO9Qy4dij00CPUug=;
-        b=1glo1pcbGRhshDXsl+NTyOirwqWy3dMAsGTYNH3PaC+tPnHPcgmMMcGchjjovA7WWi
-         jCQsxtXx7Q1tQB2+ozcWUO0ZtRRy3UIgEkDILvmQlRLewOh3sLE2bXBfzPJ+1CJSjild
-         8zOMywiQLHcH+XxVHjsgpVvAsDVGqHbaYE0sYssAKzO8hrRBM35ChMP0xpyX8ZVP4pve
-         uWX5FzN11Hl9uwCHpzrtwwAKOMAjHgP+v5hxXUlQBrJxzv8xR72uZDOn7AwvUkZ/w6IH
-         9BnUE4h/MK0YGpQm/n6oVdLI0EMvQkpU8QBL3et/LtqDcBkWHcH0htL9EhsJln8gVSiF
-         n8fg==
-X-Gm-Message-State: ANoB5plliDtdVlalz9tCCb01cjw1BX0MulfuiwLBIcxT3Zn5D9KciAq8
-        Ac7JG8Gt4OgHLI5mEVM6a1QVMKjQaRwwiUYewI3yyv+204J2
-X-Google-Smtp-Source: AA0mqf4OGqMmsF/lZaJKYoWoFuYKpYEVeb2ySk4w3mbbI1CfZLnx84ngDXwl4SlEUWqSx6tp+sbTKyMztxwOoDFiGzIxyQy/5DYm
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=U25kKEptb9pJlM8R4VKy1NNUUpW/KsvoS3ux9OOQkFU=;
+        b=CW54wECv7eqZ9YBzQ/TPi4DIa58180skrMCBPKiZh93T0XQu1I+91W/pSCcARFm2Yc
+         Cv+X9SDh11UcSBNxiWK8fog7P/XtXs5eCj0FXwNrRfm0/vomTuZecSQQBFbZX7lNDFRE
+         PqYQINdgwHI2vJSdcStHlodWoimdavLCBFGuwZO02y9jXEAEQv5vxkqtuYX1ifKodhXj
+         O3pfPl3Ilh4nTt8iwyXTnZMcvIon3oIa+HWzks3grRYNJkmsiTBYhP7oxPuoHVVbxWfv
+         nL9dioKj7uqx8LGYBVzM9/882tjAI3ban3SPIeM5N7Hhv/q2PZ2JEyAAQcg1qMiz0XCM
+         FPwQ==
+X-Gm-Message-State: ANoB5pl39O1axk9QBcHuchWd+YHS9zrbohGVAdTG+MdY11YaCeEXWR6l
+        r2OChAu+flynaIW+cP5jhIEpWQ==
+X-Google-Smtp-Source: AA0mqf7HDpEhoWrsf1kc/TJvhEEra55tb/ArGgXSGKKRkH2zDjOESb9MPZBA0c4BtlhxOGWPEypdXw==
+X-Received: by 2002:aa7:c3c2:0:b0:457:791d:8348 with SMTP id l2-20020aa7c3c2000000b00457791d8348mr1474120edr.306.1668679037078;
+        Thu, 17 Nov 2022 01:57:17 -0800 (PST)
+Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
+        by smtp.gmail.com with ESMTPSA id a14-20020a170906684e00b007acc5a42e77sm149518ejs.88.2022.11.17.01.57.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 01:57:16 -0800 (PST)
+References: <20221114191619.124659-1-jakub@cloudflare.com>
+ <166860541774.25745.4396978792984957790.git-patchwork-notify@kernel.org>
+ <CANn89iLQUZnyGNCn2GpW31FXpE_Lt7a5Urr21RqzfAE4sYxs+w@mail.gmail.com>
+ <CANn89i+8r6rvBZeVG7u01vJ4rYO5cqe+jfSFvYDvdUHyzb5HaQ@mail.gmail.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        tparkin@katalix.com, g1042620637@gmail.com
+Subject: Re: [PATCH net v4] l2tp: Serialize access to sk_user_data with
+ sk_callback_lock
+Date:   Thu, 17 Nov 2022 10:55:45 +0100
+In-reply-to: <CANn89i+8r6rvBZeVG7u01vJ4rYO5cqe+jfSFvYDvdUHyzb5HaQ@mail.gmail.com>
+Message-ID: <87wn7t29ac.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:c8cf:0:b0:688:2d29:95f0 with SMTP id
- y198-20020a6bc8cf000000b006882d2995f0mr940094iof.173.1668678937374; Thu, 17
- Nov 2022 01:55:37 -0800 (PST)
-Date:   Thu, 17 Nov 2022 01:55:37 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004e78ec05eda79749@google.com>
-Subject: [syzbot] BUG: sleeping function called from invalid context in static_key_slow_inc
-From:   syzbot <syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, frederic@kernel.org, juri.lelli@redhat.com,
-        kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, netdev@vger.kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, steven.price@arm.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Nov 17, 2022 at 01:40 AM -08, Eric Dumazet wrote:
+> On Thu, Nov 17, 2022 at 1:07 AM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> On Wed, Nov 16, 2022 at 5:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
+>> >
+>> > Hello:
+>> >
+>> > This patch was applied to netdev/net.git (master)
+>> > by David S. Miller <davem@davemloft.net>:
+>> >
+>> > On Mon, 14 Nov 2022 20:16:19 +0100 you wrote:
+>> > > sk->sk_user_data has multiple users, which are not compatible with each
+>> > > other. Writers must synchronize by grabbing the sk->sk_callback_lock.
+>> > >
+>> > > l2tp currently fails to grab the lock when modifying the underlying tunnel
+>> > > socket fields. Fix it by adding appropriate locking.
+>> > >
+>> > > We err on the side of safety and grab the sk_callback_lock also inside the
+>> > > sk_destruct callback overridden by l2tp, even though there should be no
+>> > > refs allowing access to the sock at the time when sk_destruct gets called.
+>> > >
+>> > > [...]
+>> >
+>> > Here is the summary with links:
+>> >   - [net,v4] l2tp: Serialize access to sk_user_data with sk_callback_lock
+>> >     https://git.kernel.org/netdev/net/c/b68777d54fac
+>> >
+>> >
+>>
+>> I guess this patch has not been tested with LOCKDEP, right ?
+>>
+>> sk_callback_lock always needs _bh safety.
+>>
+>> I will send something like:
+>>
+>> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+>> index 754fdda8a5f52e4e8e2c0f47331c3b22765033d0..a3b06a3cf68248f5ec7ae8be2a9711d0f482ac36
+>> 100644
+>> --- a/net/l2tp/l2tp_core.c
+>> +++ b/net/l2tp/l2tp_core.c
+>> @@ -1474,7 +1474,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel
+>> *tunnel, struct net *net,
+>>         }
+>>
+>>         sk = sock->sk;
+>> -       write_lock(&sk->sk_callback_lock);
+>> +       write_lock_bh(&sk->sk_callback_lock);
+>
+> Unfortunately this might still not work, because
+> setup_udp_tunnel_sock->udp_encap_enable() probably could sleep in
+> static_branch_inc() ?
+>
+> I will release the syzbot report, and let you folks work on a fix, thanks.
 
-syzbot found the following issue on:
-
-HEAD commit:    064bc7312bd0 netdevsim: Fix memory leak of nsim_dev->fa_co..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13d3204e880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a33ac7bbc22a8c35
-dashboard link: https://syzkaller.appspot.com/bug?extid=703d9e154b3b58277261
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/0634e1c0e4cb/disk-064bc731.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/fe1039d2de22/vmlinux-064bc731.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/5a0d673875fa/bzImage-064bc731.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com
-
-BUG: sleeping function called from invalid context at include/linux/percpu-rwsem.h:49
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 9420, name: syz-executor.5
-preempt_count: 1, expected: 0
-RCU nest depth: 0, expected: 0
-INFO: lockdep is turned off.
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 1 PID: 9420 Comm: syz-executor.5 Not tainted 6.1.0-rc4-syzkaller-00212-g064bc7312bd0 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
- __might_resched.cold+0x222/0x26b kernel/sched/core.c:9890
- percpu_down_read include/linux/percpu-rwsem.h:49 [inline]
- cpus_read_lock+0x1b/0x140 kernel/cpu.c:310
- static_key_slow_inc+0x12/0x20 kernel/jump_label.c:158
- udp_tunnel_encap_enable include/net/udp_tunnel.h:187 [inline]
- setup_udp_tunnel_sock+0x43d/0x550 net/ipv4/udp_tunnel_core.c:81
- l2tp_tunnel_register+0xc51/0x1210 net/l2tp/l2tp_core.c:1509
- pppol2tp_connect+0xcdc/0x1a10 net/l2tp/l2tp_ppp.c:723
- __sys_connect_file+0x153/0x1a0 net/socket.c:1976
- __sys_connect+0x165/0x1a0 net/socket.c:1993
- __do_sys_connect net/socket.c:2003 [inline]
- __se_sys_connect net/socket.c:2000 [inline]
- __x64_sys_connect+0x73/0xb0 net/socket.c:2000
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fd94d28b639
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd94e038168 EFLAGS: 00000246
- ORIG_RAX: 000000000000002a
-RAX: ffffffffffffffda RBX: 00007fd94d3abf80 RCX: 00007fd94d28b639
-RDX: 000000000000002e RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 00007fd94d2e6ae9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffde93128bf R14: 00007fd94e038300 R15: 0000000000022000
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Ah, the problem is with pppol2tp_connect racing with itself. Thanks for
+the syzbot report. I will take a look. I live for debugging deadlocks
+:-)
