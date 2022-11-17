@@ -2,122 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3BD62E78F
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:01:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF69E62E7C6
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:09:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241172AbiKQWA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 17:00:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
+        id S240256AbiKQWI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 17:08:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241133AbiKQWAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:00:40 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253AE8222E
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 13:59:07 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id f3so3323964pgc.2
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 13:59:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5js234S10qtjTG5ViD8Z5NsYYM8xXfh9lDGiYeYzTNk=;
-        b=FgMUyRzC1HQVet+tDCWA8ljDeGrHXk7NWmfvGzfwmovUinDK9knhVBWqOEaxR/WKhH
-         wwHz/N4KP6pHF44qAgHaZHzh9z++AStihN6Ao5uRAf+yYgVBMZnVIZpD5gjuBWFIjThJ
-         QsnQdQgUO9c1DQGCG/8tbnX/sYDH6HkHB7Fks=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5js234S10qtjTG5ViD8Z5NsYYM8xXfh9lDGiYeYzTNk=;
-        b=Cv4Z8S0WDGZaRTiSa8EBVwLAvl8jyT7SJC3XzGaVYEzPNhlxQsJPAlxCsfd+60KMP4
-         LFGIkIRWH8I2v4Juu84nuU68jpsxwTSGIDt4bfH69oxfnA80ztDQFHu30fcOXhFc/fFD
-         dbd0CBPJk9vm2Z8mUapMpRsawxzgbhnNjJl7MrAvgg6ttcB5mh28OKDNYwIibhWaBVKQ
-         KZ0XwMAtbdD2QaGAtuliXaQUMLJLWKkIa0r+a3SLecBg/pjjRrU9A2999qCSk9VEqjmj
-         HtcLPpgdwxUjF+3uptz6LtO8MCM8ABwO2JgCBVaZ0wQBZgBM7jnZVbAE4boOqYN0hGzY
-         dxiw==
-X-Gm-Message-State: ANoB5pkzcf/w+8Vn05XNTPlIkv9ifyHLFMmMiwJTIyxHeRgFNnyA3QFS
-        Mx+Lo2Q+b0FdmSHTpwscfg5P2Q==
-X-Google-Smtp-Source: AA0mqf7QpiIvhVAGN52Mpwqa6vfs4EXQo0/q1js7mM6/xkzmq3rihpfcQy2O/U405oXjhY2LdIG4eg==
-X-Received: by 2002:a63:f00d:0:b0:458:f364:b00e with SMTP id k13-20020a63f00d000000b00458f364b00emr3876253pgh.577.1668722346647;
-        Thu, 17 Nov 2022 13:59:06 -0800 (PST)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id u5-20020a17090341c500b00188fce6e8absm156864ple.280.2022.11.17.13.59.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 13:59:06 -0800 (PST)
-Date:   Thu, 17 Nov 2022 13:59:05 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Christoph =?iso-8859-1?Q?B=F6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mmc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v3 1/3] treewide: use get_random_u32_below() instead of
- deprecated function
-Message-ID: <202211171359.412AEEE0@keescook>
-References: <20221114164558.1180362-1-Jason@zx2c4.com>
- <20221117202906.2312482-1-Jason@zx2c4.com>
- <20221117202906.2312482-2-Jason@zx2c4.com>
+        with ESMTP id S241210AbiKQWIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:08:38 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE79656D76
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:08:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668722893; x=1700258893;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1bCl+6ehL1vCwRa82jupCfnWFQYXFtLYyl1Fy6cnEiI=;
+  b=HJoHwwK5I35u+kvs0GEBbsL4wgYgI35JrwGTm3mYyZQvI8OoW5W2mNwi
+   pLikQJA18wbi2e7MTkX4NFF1l+gOtghyHKzZCO6YA3h1ZbHCnLWf6iSIu
+   HOYE7weJxDMWAOZBzuc43hXF0yVG5zdC+E8oJaa44q3iCPIjiQEzF+wy2
+   AExwq7/SkSUqgnVe2KUVpSoJOnfIzkNI/10GcTNJslpWyKRYlEi7RFxeB
+   U9pCnwLjZVWpRzumFKUELJ5JdP8Z/QcQ9FOa/iYrNOjUG7ziXc1f6nQ4w
+   Ma7XAPQZP+ZFEe/QaN57BurCtH+bY5CBKHq4aRn5dOV/zdMLQcMp3AHM4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="313001214"
+X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
+   d="scan'208";a="313001214"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:08:13 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="672975615"
+X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
+   d="scan'208";a="672975615"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:08:12 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/8] devlink: support direct read from region
+Date:   Thu, 17 Nov 2022 14:07:55 -0800
+Message-Id: <20221117220803.2773887-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.38.1.420.g319605f8f00e
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221117202906.2312482-2-Jason@zx2c4.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 09:29:04PM +0100, Jason A. Donenfeld wrote:
-> This is a simple mechanical transformation done by:
-> 
-> @@
-> expression E;
-> @@
-> - prandom_u32_max
-> + get_random_u32_below
->   (E)
-> 
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Acked-by: Darrick J. Wong <djwong@kernel.org> # for xfs
-> Reviewed-by: SeongJae Park <sj@kernel.org> # for damon
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com> # for infiniband
-> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk> # for arm
-> Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # for mmc
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+A long time ago when initially implementing devlink regions in ice I
+proposed the ability to allow reading from a region without taking a
+snapshot [1]. I eventually dropped this work from the original series due to
+size. Then I eventually lost track of submitting this follow up.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+This can be useful when interacting with some region that has some
+definitive "contents" from which snapshots are made. For example the ice
+driver has regions representing the contents of the device flash.
 
+If userspace wants to read the contents today, it must first take a snapshot
+and then read from that snapshot. This makes sense if you want to read a
+large portion of data or you want to be sure reads are consistently from the
+same recording of the flash.
+
+However if user space only wants to read a small chunk, it must first
+generate a snapshot of the entire contents, perform a read from the
+snapshot, and then delete the snapshot after reading.
+
+For such a use case, a direct read from the region makes more sense. This
+can be achieved by allowing the devlink region read command to work without
+a snapshot. Instead the portion to be read can be forwarded directly to the
+driver via a new .read callback.
+
+This avoids the need to read the entire region contents into memory first
+and avoids the software overhead of creating a snapshot and then deleting
+it.
+
+This series implements such behavior and hooks up the ice NVM and shadow RAM
+regions to allow it.
+
+[1] https://lore.kernel.org/netdev/20200130225913.1671982-1-jacob.e.keller@intel.com/
+
+Cc: Jiri Pirko <jiri@nvidia.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+
+Jacob Keller (8):
+  devlink: find snapshot in devlink_nl_cmd_region_read_dumpit
+  devlink: use min_t to calculate data_size
+  devlink: report extended error message in region_read_dumpit
+  devlink: remove unnecessary parameter from chunk_fill function
+  devlink: refactor region_read_snapshot_fill to use a callback function
+  devlink: support directly reading from region memory
+  ice: use same function to snapshot both NVM and Shadow RAM
+  ice: implement direct read for NVM and Shadow RAM regions
+
+ .../networking/devlink/devlink-region.rst     |   8 ++
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 112 +++++++++-------
+ include/net/devlink.h                         |  16 +++
+ net/core/devlink.c                            | 121 +++++++++++++-----
+ 4 files changed, 180 insertions(+), 77 deletions(-)
+
+
+base-commit: b4b221bd79a1c698d9653e3ae2c3cb61cdc9aee7
 -- 
-Kees Cook
+2.38.1.420.g319605f8f00e
+
