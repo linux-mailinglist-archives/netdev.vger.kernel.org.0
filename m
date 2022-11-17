@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C873562E6F3
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:31:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A058A62E6F5
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240814AbiKQVbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 16:31:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
+        id S240880AbiKQVbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 16:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240741AbiKQVbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:31:24 -0500
+        with ESMTP id S240840AbiKQVb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:31:29 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB885A6F0;
-        Thu, 17 Nov 2022 13:31:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7425B5BA;
+        Thu, 17 Nov 2022 13:31:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668720683; x=1700256683;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zn2ANb9KGFGPelKTi4LkAAqG+JeEdH9yPs/Mesdexvs=;
-  b=JGWiwDwfMKrkWeK2OgI7hR6sXClM3LX+0uH5pVt0BFMgLfzReAOVW4al
-   yE4VJ8e8z4zGe+d4WsLccdwMNcrJsth7FJ5asL4YYFybwvykKnDcE8ag0
-   GK/4RZAGUHtgetYZnLoyqijbvVFomh+UK2nlKkXyVDjL8Fx5IG0EGfRLp
-   MmbDTTP/dbFQCNpicBIvufy4b0uoOaN9ZacyRKyEHusm0VV98UUr1wwfA
-   vmKjqFzWNSgtJgrqAS5o6bVvHwEKkvtgXgJnIc9qrrkeLzfo0vQcaJfbt
-   24F852/O3uV5zYMnKOeadesS2rIRRKzaMZLtISzK4hC8EhnsDq5/h2d8N
+  t=1668720689; x=1700256689;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yQiMXryQ5CnJworTdlI0xW4U42SpOH1ZlqiWstKe+mg=;
+  b=TuPGNbfYy0AWEKjMikryWcAioUH3DHiC9qolSptwvTDdaUKTMeLObSyi
+   vRGc2RxhCVCabEV1S4Cmd4LV5lcG2SCKHPTexTXSsZZX+1ZarESkb2Y6k
+   4/XnzVl3IIfC4aiJzHVe+fTat7l1d4UFEGaUxCLYkac6TEHM8YBSq+Wxu
+   zZQ8wzlMvCMG5GwEAfUEHoCmHkotXGHjQDc2j5uqh+t754hpTcL6PH7wW
+   wZbLGXGmdY+kaLDzd0yl8+FMgg2jcdIqX27+giKtxw/h2QxJHS8LAcmQ/
+   f347ZuTr1TZ0GsC+dpbkL4iGQm5MJJQW4yf6OwKSJiv8NfGWem14eiCRZ
    Q==;
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="123980016"
+   d="scan'208";a="184068258"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2022 14:31:22 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2022 14:31:28 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 17 Nov 2022 14:31:21 -0700
+ 15.1.2507.12; Thu, 17 Nov 2022 14:31:25 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 17 Nov 2022 14:31:18 -0700
+ 15.1.2507.12 via Frontend Transport; Thu, 17 Nov 2022 14:31:22 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,10 +56,12 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Daniel Machon <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 0/8] Add support for VCAP debugFS in Sparx5
-Date:   Thu, 17 Nov 2022 22:31:06 +0100
-Message-ID: <20221117213114.699375-1-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 1/8] net: microchip: sparx5: Ensure L3 protocol has a default value
+Date:   Thu, 17 Nov 2022 22:31:07 +0100
+Message-ID: <20221117213114.699375-2-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221117213114.699375-1-steen.hegelund@microchip.com>
+References: <20221117213114.699375-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -72,109 +74,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides support for getting VCAP instance, VCAP rule and VCAP port
-keyset configuration information via the debug file system.
+This ensures that the l3_proto always have a valid value and that any
+dissector parsing errors causes the flower rule to be discarded.
 
-It builds on top of the initial IS2 VCAP support found in these series:
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-https://lore.kernel.org/all/20221020130904.1215072-1-steen.hegelund@microchip.com/
-https://lore.kernel.org/all/20221109114116.3612477-1-steen.hegelund@microchip.com/
-https://lore.kernel.org/all/20221111130519.1459549-1-steen.hegelund@microchip.com/
-
-Functionality:
-==============
-
-The VCAP API exposes a /sys/kernel/debug/sparx5/vcaps folder containing
-the following entries:
-
-- raw_<vcap>_<instance>
-    This is a raw dump of the VCAP instance with a line for each available
-    VCAP rule.  This information is limited to the VCAP rule address, the
-    rule size and the rule keyset name as this requires very little
-    information from the VCAP cache.
-
-    This can be used to detect if a valid rule is stored at the correct
-    address.
-
-- <vcap>_<instance>
-    This dumps the VCAP instance configuration: address ranges, chain id
-    ranges, word size of keys and actions etc, and for each VCAP rule the
-    details of keys (values and masks) and actions are shown.
-
-    This is useful when discovering if the expected rule is present and in
-    which order it will be matched.
-
-- <interface>
-    This shows the keyset configuration per lookup and traffic type and the
-    set of sticky bits (common for all interfaces). This is cleared when
-    shown, so it is possible to sample over a period of time.
-
-    It also shows if this port/lookup is enabled for matching in the VCAP.
-
-    This can be used to find out which keyset the traffic being sent to a
-    port, will be matched against, and if such traffic has been seen by one
-    of the ports.
-
-Delivery:
-=========
-
-This is current plan for delivering the full VCAP feature set of Sparx5:
-
-- TC protocol all support for IS2 VCAP
-- Sparx5 IS0 VCAP support
-- TC policer and drop action support (depends on the Sparx5 QoS support
-  upstreamed separately)
-- Sparx5 ES0 VCAP support
-- TC flower template support
-- TC matchall filter support for mirroring and policing ports
-- TC flower filter mirror action support
-- Sparx5 ES2 VCAP support
-
-Version History:
-================
-v2      Removed a 'support' folder (used for integration testing) that had
-        been added in patch 6/8 by a mistake.
-        Wrapped long lines.
-
-v1      Initial version
-
-Steen Hegelund (8):
-  net: microchip: sparx5: Ensure L3 protocol has a default value
-  net: microchip: sparx5: Ensure VCAP last_used_addr is set back to
-    default
-  net: microchip: sparx5: Add VCAP debugFS support
-  net: microchip: sparx5: Add raw VCAP debugFS support for the VCAP API
-  net: microchip: sparx5: Add VCAP rule debugFS support for the VCAP API
-  net: microchip: sparx5: Add VCAP debugFS key/action support for the
-    VCAP API
-  net: microchip: sparx5: Add VCAP locking to protect rules
-  net: microchip: sparx5: Add VCAP debugfs KUNIT test
-
- .../net/ethernet/microchip/sparx5/Makefile    |   1 +
- .../ethernet/microchip/sparx5/sparx5_main.c   |   3 +
- .../ethernet/microchip/sparx5/sparx5_main.h   |   3 +
- .../microchip/sparx5/sparx5_tc_flower.c       |   6 +-
- .../microchip/sparx5/sparx5_vcap_debugfs.c    | 200 +++++
- .../microchip/sparx5/sparx5_vcap_debugfs.h    |  33 +
- .../microchip/sparx5/sparx5_vcap_impl.c       |  67 +-
- .../microchip/sparx5/sparx5_vcap_impl.h       |  48 ++
- drivers/net/ethernet/microchip/vcap/Kconfig   |   1 +
- drivers/net/ethernet/microchip/vcap/Makefile  |   1 +
- .../net/ethernet/microchip/vcap/vcap_api.c    | 106 ++-
- .../net/ethernet/microchip/vcap/vcap_api.h    |  14 +-
- .../microchip/vcap/vcap_api_debugfs.c         | 782 ++++++++++++++++++
- .../microchip/vcap/vcap_api_debugfs.h         |  41 +
- .../microchip/vcap/vcap_api_debugfs_kunit.c   | 545 ++++++++++++
- .../ethernet/microchip/vcap/vcap_api_kunit.c  |  12 +-
- .../microchip/vcap/vcap_api_private.h         | 103 +++
- 17 files changed, 1838 insertions(+), 128 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.h
- create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
- create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.h
- create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
- create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_private.h
-
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+index a48baeacc1d2..04fc2f3b1979 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+@@ -648,7 +648,11 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 		return PTR_ERR(vrule);
+ 
+ 	vrule->cookie = fco->cookie;
+-	sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
++
++	l3_proto = ETH_P_ALL;
++	err = sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
++	if (err)
++		goto out;
+ 
+ 	err = sparx5_tc_add_rule_counter(admin, vrule);
+ 	if (err)
 -- 
 2.38.1
 
