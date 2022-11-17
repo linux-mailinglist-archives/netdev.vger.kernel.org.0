@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C48862CFC4
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:33:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E28762CFC6
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 01:34:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231912AbiKQAdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 19:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S232704AbiKQAeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 19:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232704AbiKQAdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:33:21 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E6D532C5
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:33:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=EX9u5uTydEn4p+OgWvSoSP/Lj+p2xP9oUwwBGTuBWb4=; b=NL/Zi4t2z14jTsbNu6YRgL9z7P
-        +3Ob8GZkXFO6QE+Fvors29VcUh/NodUYujTwQn3eFHJONuFuF9OXmwJejN5n14WBzNlQRJaDKjeLM
-        Vyjv5LWeOhDklu77kZ74G8g9VGkDn71fCCVOtlb/hLkIvs3sEFkK1oWQ+Zf5NsptjDAg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ovSqE-002d5b-64; Thu, 17 Nov 2022 01:33:18 +0100
-Date:   Thu, 17 Nov 2022 01:33:18 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Steve Williams <steve.williams@getcruise.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] sandlan: Add the sandlan virtual network
- interface
-Message-ID: <Y3WBTvhiCLd7+R5Y@lunn.ch>
-References: <20221116222429.7466-1-steve.williams@getcruise.com>
+        with ESMTP id S229939AbiKQAeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 19:34:18 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BF8DE9A
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:34:16 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id j7-20020a056e02154700b003025b3c0ea3so227998ilu.10
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 16:34:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=C7fpKRtzxmuZr+pixes1vS//11B89ShTFWKOGGoP3bY=;
+        b=0+2Wapp5pds42DaAfSXCbh6nePrsJ26gm+39Y3e4HTrX+LJ4qahh6P7Mvf1UIITKLm
+         xZyEzHtwa1t9ymnb5VfG86/+ACh+ACL1UHwii8wGvI6sgKlDLAIh2a3WMf6IfbSNtAIx
+         xxqpeczhhHJ91p5SAi4LMbjxjxCGD6RpCpoLCBsPt7IiDhjFRv63ggWFEwxDTLSRwt/j
+         gVEembsuJT30kvGHr/BrPDD9l7yIbt7Gqwo/dCbO4bov5FwSrjNPN1kMM4kdQ/ldtVCt
+         AhFKO1ZHSZZMHqsojKdFxU7ITfgKyt0IDQG0oNynLEgdPWQ7swj4gnVB2ffdFaFuWaLP
+         iR2Q==
+X-Gm-Message-State: ANoB5pl67H72r5dlxq+kimxG5Kymt4Al6bYoqbf2DUJEe1b+uje5/l1c
+        s6Z1MgnCaZj+LqL2OfQDW7bf0yKQgQF8P9SYDDfB7PaBNuO4
+X-Google-Smtp-Source: AA0mqf5Fv/E/JgjNAnqCkyuAiMmMi01LvbjF2o+YeCzfvfXdDg1r0D/72ROyAB0i/hDxy2hmfUqb6clFk0u135HlVI/OLpTGyQtn
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221116222429.7466-1-steve.williams@getcruise.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:1918:b0:375:4dbf:6ca4 with SMTP id
+ p24-20020a056638191800b003754dbf6ca4mr11160143jal.315.1668645256039; Wed, 16
+ Nov 2022 16:34:16 -0800 (PST)
+Date:   Wed, 16 Nov 2022 16:34:16 -0800
+In-Reply-To: <00000000000058983805ed944512@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000be110905ed9fbf49@google.com>
+Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference in nci_send_cmd
+From:   syzbot <syzbot+4adf5ff0f6e6876c6a81@syzkaller.appspotmail.com>
+To:     bongsu.jeon@samsung.com, clement.perrochaud@nxp.com,
+        davem@davemloft.net, edumazet@google.com,
+        krzysztof.kozlowski@linaro.org, kuba@kernel.org,
+        kylin.formalin@gmail.com, linma@zju.edu.cn,
+        linux-kernel@vger.kernel.org, michael.thalmeier@hale.at,
+        netdev@vger.kernel.org, pabeni@redhat.com, r.baldyga@samsung.com,
+        robert.dolca@intel.com, sameo@linux.intel.com, shikha.singh@st.com,
+        syzkaller-bugs@googlegroups.com, thierry.escande@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 02:24:29PM -0800, Steve Williams wrote:
-> From: Stephen Williams <steve.williams@getcruise.com>
-> 
-> This is a virtual driver that is useful for testing network protocols
-> or other complex networking without real ethernet hardware. Arbitrarily
-> complex networks can be created and simulated by creating virtual network
-> devices and assigning them to named broadcast domains, and all the usual
-> ethernet-aware tools can operate on that network.
-> 
-> This is different from e.g. the tun/tap device driver in that it is not
-> point-to-point.
+syzbot has bisected this issue to:
 
-My experience simulating networks using GNS3 and CORE is that you
-combine tun/tap with a bridge. That reflects the reality of most of
-todays networks, in that they no longer do CSMA-CD, they have point to
-point links to a switch, the switch does address learning, filtering,
-IGMP snooping, etc, and your total net bandwidth is much higher than
-your line rate.
+commit e624e6c3e777fb3dfed036b9da4d433aee3608a5
+Author: Bongsu Jeon <bongsu.jeon@samsung.com>
+Date:   Wed Jan 27 13:08:28 2021 +0000
 
-I did however recently learn that some T1 automotive network are
-CSMA-CD, a good old fashioned shared bus.
+    nfc: Add a virtual nci device driver
 
-So have you reimplemented basic bridge functionality? I've not looked
-at the code yet to answer the question myself.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1338e6e9880000
+start commit:   81e7cfa3a9eb Merge tag 'erofs-for-6.1-rc6-fixes' of git://..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10b8e6e9880000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1738e6e9880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a2318f9a4fc31ad
+dashboard link: https://syzkaller.appspot.com/bug?extid=4adf5ff0f6e6876c6a81
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f435be880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1134d295880000
 
-> +EXAMPLE
-> +=======
-> +
-> +In this example, we create two NICs in a shared domain, and also create
-> +a 3rd in the sae domain that wireshark can use to snoop on the network
-> +traffic.
-> +
-> +First, make sure the interfaces exist::
-> +
-> +  echo +sandlan0 > /sys/class/net/sandlan_interfaces
-> +  echo +sandlan1 > /sys/class/net/sandlan_interfaces
-> +  echo +sandlan2 > /sys/class/net/sandlan_interfaces
+Reported-by: syzbot+4adf5ff0f6e6876c6a81@syzkaller.appspotmail.com
+Fixes: e624e6c3e777 ("nfc: Add a virtual nci device driver")
 
-A sysfs interface is unlikely to be accepted. You should be using
-netlink.
-
-ip link add sandlan0 type sandlan
-
-etc.
-
-> +While we're at it, demonstrate sandlan domains. Create a domain and
-> +put all the interfaces in that domain. Note that this is a
-> +connectivity domain, and not the same as netns namespaces::
-> +
-> +  echo +side > /sys/class/net/sandlan_domains
-> +  echo side > /sys/class/net/sandlan0/sandlan/domain
-> +  echo side > /sys/class/net/sandlan1/sandlan/domain
-> +  echo side > /sys/class/net/sandlan2/sandlan/domain
-
-ip link set sandlan0 domain side
-
-   Andrew
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
