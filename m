@@ -2,90 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37C1B62E175
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 17:20:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 425F362E188
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 17:23:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240396AbiKQQUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 11:20:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
+        id S240297AbiKQQXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 11:23:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240382AbiKQQUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 11:20:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2F878D7F;
-        Thu, 17 Nov 2022 08:20:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B58EEB820F9;
-        Thu, 17 Nov 2022 16:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A59CEC433B5;
-        Thu, 17 Nov 2022 16:20:07 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ShJChEFk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1668702005;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yXReeGYWAkNsw4+UICMYAUFCUliJi8syMU+jrBjtN+I=;
-        b=ShJChEFkS/WoLTYTfqnIoulaJEVDjPgHlBF73vJKzecwUuNaBWaxad+1izxyXu6Exw/TaA
-        5irR4sihjVzoDK1KiXvBd2OBPvvMwotSdLzvfkIJeE7XNMY72JeeG28zUlT5pyaHmBsZk0
-        JQ9ybm2sWtI6GOjvOwFIenKMBQ/9L7c=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d3e36533 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Thu, 17 Nov 2022 16:20:04 +0000 (UTC)
-Date:   Thu, 17 Nov 2022 17:19:52 +0100
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Theodore Ts'o <tytso@mit.edu>
-Cc:     Kees Cook <kees@kernel.org>, Kees Cook <keescook@chromium.org>,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Christoph =?utf-8?Q?B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mmc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        ydroneaud@opteya.com
-Subject: Re: [PATCH v2 3/3] treewide: use get_random_u32_between() when
- possible
-Message-ID: <Y3ZfKHTHWUkdZIMt@zx2c4.com>
-References: <20221114164558.1180362-1-Jason@zx2c4.com>
- <20221114164558.1180362-4-Jason@zx2c4.com>
- <202211161436.A45AD719A@keescook>
- <Y3V4g8eorwiU++Y3@zx2c4.com>
- <Y3V6QtYMayODVDOk@zx2c4.com>
- <202211161628.164F47F@keescook>
- <Y3WDyl8ArQgeEoUU@zx2c4.com>
- <0EE39896-C7B6-4CB6-87D5-22AA787740A9@kernel.org>
- <Y3ZWbcoGOdFjlPhS@mit.edu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Y3ZWbcoGOdFjlPhS@mit.edu>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        with ESMTP id S240577AbiKQQWl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 11:22:41 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977E87FC33
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:21:06 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-348608c1cd3so23276837b3.10
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 08:21:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=46Vuug64PODtLBjwL/B/YAALoGkMw5/FLSuRvqDbboM=;
+        b=TtzwJ5mw4lglyKWrYLIYhgXG8j7w/2Mo8x+db6cNEFZuhu4qAcqujE/l7zP4VjtDjw
+         TSJEi/tWu+DkL+f+T5BLa21qiR7Lr3MqTR3vTortlyyAhzdGNkqTUGw/1r+zV624NPcj
+         hifIpTlJ23pblofVNKuIgIvday7mJwIc3uv68imwRGkGxuxWROKlOZz0ymeUwBm71Fe9
+         /ZR5lddgTpENijpYJndlfxU8fkJP0OguzQA6YJ3rhQF8G0VA3MZ0QHHWDLUSb3rKLEKG
+         95tEQf+7X708dxIWb6xCPfG1ECcNC9cXonqhLhtVqYaPRVmqwqGtOYRr0rWM/A/9bTrW
+         qMTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=46Vuug64PODtLBjwL/B/YAALoGkMw5/FLSuRvqDbboM=;
+        b=TLKy0SuOeHl1ILtihG+EM1Ybx6qs1JN1oAm6St2pN+c+wqCqNtI/peALnnjVtdn2E5
+         8EIOZzX1JEs3mJSLH5Kv1JpKSdtyGjr4HoS+FM7aFTE/oneiiR82MF4AcgtmqMRTKk+o
+         aOTPCH8cRx5TCMtCmRBPnrY8AV+QjvyVE34q2Xa6pLcgOStmljIYo/G+4cuuUGzVB2u8
+         tm1TZUMFd+ePA1t72f80oYskW9/zjP6jrL/YjWSSZR+AI4Tac0eKP6bj1wAJ+6MRVYHO
+         +zWdjkUDe+cCmKgS+IjW1U6PA3K9ejEZuQCy9GAr2p2wuixPLtF6Ls5aa9VsaeaTSUz/
+         5uJQ==
+X-Gm-Message-State: ANoB5plC+TwJrs8slXjKCXef0Q3uS6tXWIB53HwGsn9wC6+Nxtm44PgZ
+        ODdpGQiQ4Ts1I9U4dK2sbdkQu4Wp1fdQ
+X-Google-Smtp-Source: AA0mqf43J10aYjN42GNtEeWG56YFKIkfLQiqASReL/cm4M/xCjqqmIgviWL98ab7TC7FX//GQ49zDeP5sR7P
+X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:9c:201:2498:56aa:d95d:5c2c])
+ (user=dvyukov job=sendgmr) by 2002:a81:4644:0:b0:344:ff29:4526 with SMTP id
+ t65-20020a814644000000b00344ff294526mr2666924ywa.63.1668702065098; Thu, 17
+ Nov 2022 08:21:05 -0800 (PST)
+Date:   Thu, 17 Nov 2022 17:21:01 +0100
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
+Message-ID: <20221117162101.1467069-1-dvyukov@google.com>
+Subject: [PATCH net-next v2] NFC: nci: Extend virtual NCI deinit test
+From:   Dmitry Vyukov <dvyukov@google.com>
+To:     pabeni@redhat.com, bongsu.jeon@samsung.com,
+        krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
+Cc:     syzkaller@googlegroups.com, Dmitry Vyukov <dvyukov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,37 +66,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 10:42:37AM -0500, Theodore Ts'o wrote:
-> On Wed, Nov 16, 2022 at 04:47:27PM -0800, Kees Cook wrote:
-> > >> > - between
-> > >> > - ranged
-> > >> > - spanning
-> > >> > 
-> > >> > https://www.thefreedictionary.com/List-of-prepositions.htm
-> > >> > - amid
-> > >> > 
-> > >> > Sigh, names.
-> > >> 
-> > >> I think "inclusive" is best.
-> > >
-> > >I find it not very descriptive of what the function does. Is there one
-> > >you like second best? Or are you convinced they're all much much much
-> > >worse than "inclusive" that they shouldn't be considered?
-> > 
-> > Right, I don't think any are sufficiently descriptive. "Incluisve"
-> > with two arguments seems unambiguous and complete to me. :)
-> 
-> The problem with "between", "ranged", "spanning" is that they don't
-> tell the reader whether we're dealing with an "open interval" or a
-> "closed interval".  They are just different ways of saying that it's a
-> range between, say, 0 and 20.  But it doesn't tell you whether it
-> includes 0 or 20 or not.
-> 
-> The only way I can see for making it ambiguous is either to use the
-> terminology "closed interval" or "inclusive".  And "open" and "closed"
-> can have other meanings, so get_random_u32_inclusive() is going to be
-> less confusing than get_random_u32_closed().
+Extend the test to check the scenario when NCI core tries to send data
+to already closed device to ensure that nothing bad happens.
 
-Alright, that about settles it then. I'll re-roll.
+Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
 
-Jason
+---
+
+Changes in v2:
+ - use C multi-line comment style instead of C++ style
+---
+ tools/testing/selftests/nci/nci_dev.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
+index 162c41e9bcae8..1562aa7d60b0f 100644
+--- a/tools/testing/selftests/nci/nci_dev.c
++++ b/tools/testing/selftests/nci/nci_dev.c
+@@ -888,6 +888,17 @@ TEST_F(NCI, deinit)
+ 			   &msg);
+ 	ASSERT_EQ(rc, 0);
+ 	EXPECT_EQ(get_dev_enable_state(&msg), 0);
++
++	/* Test that operations that normally send packets to the driver
++	 * don't cause issues when the device is already closed.
++	 * Note: the send of NFC_CMD_DEV_UP itself still succeeds it's just
++	 * that the device won't actually be up.
++	 */
++	close(self->virtual_nci_fd);
++	self->virtual_nci_fd = -1;
++	rc = send_cmd_with_idx(self->sd, self->fid, self->pid,
++			       NFC_CMD_DEV_UP, self->dev_idex);
++	EXPECT_EQ(rc, 0);
+ }
+ 
+ TEST_HARNESS_MAIN
+
+base-commit: f12ed9c04804eec4f1819097a0fd0b4800adac2f
+prerequisite-patch-id: 214c5357c652cee65ee803d0f45f4b15cfcc9861
+-- 
+2.38.1.431.g37b22c650d-goog
+
