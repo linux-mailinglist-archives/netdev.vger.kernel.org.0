@@ -2,116 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A287762DBEE
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:49:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8386B62DBFD
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:52:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234017AbiKQMtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 07:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
+        id S234666AbiKQMwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 07:52:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbiKQMtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:49:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031EC49082
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:47:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668689244;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=buqGHDPiQJHf1KNEW0nK5wP2/DH4XboNhmUH3LThJvY=;
-        b=eBRA4NPzqVcsLdiz29JpcWZ7k1whHimCiWDz0A2IlhlDTb/MAUGli41n7uu6fVQxwVdFK/
-        FA4GmUR7oOpoU0lap2al88sX8xsVFs8n5d0GJjWQnORE017PqyZKMdPH6QT2hmEconwQEh
-        6I3MPWHmOBRiDt48y+wHpnwQAmKJHSc=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-262-sXEVbhtdPba3qc1Ak_Tlew-1; Thu, 17 Nov 2022 07:47:23 -0500
-X-MC-Unique: sXEVbhtdPba3qc1Ak_Tlew-1
-Received: by mail-qv1-f72.google.com with SMTP id lb11-20020a056214318b00b004c63b9f91e5so1460194qvb.8
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:47:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=buqGHDPiQJHf1KNEW0nK5wP2/DH4XboNhmUH3LThJvY=;
-        b=d7+MVZvEqobq7CMSE/+JiBhlg0dY3sWfF17aMw6GP5qoWOl/iVWyuler1KrNeW9J+F
-         GzUTuvT97MroQNrKlo7u4oQyZhLBXxbnXQsTneHYNyyPKRFIOdlbkAUaOvJtbaAVkwh4
-         K5TI6aS/yK3ccg22z77iZhEhvDMr59vaeFvsqMDM9VTJjquK82qUfoaccJEnEwhojZ9W
-         ULdyvJX3lCf1qOc/uk1CJP2vkvJGX55rW/vyoEEoXOid8C1HOEXLvXXwaTAYTSKY3xG3
-         rvDv0GYSr2CXOtSiF7hs3fzmjAz3TVx6vd3oQmSJKyP58JcmEZexHESFwuOt3w3Xz8kT
-         cTzg==
-X-Gm-Message-State: ANoB5pkQ+rrsJaUdh1OaeHTOEKTo7AsfBhnUAGy7WZ9fBw7QhFc7jC6B
-        9UBsounhG7+4V05t4QlHcp1tnPoak7HDO4ior1bSLyfqXEv3HmVVc/mm9Xp5GxaQTj47PMfT0xU
-        xHBinMh69RFLIrV6F
-X-Received: by 2002:a05:6214:5e03:b0:4c6:8c62:dc26 with SMTP id li3-20020a0562145e0300b004c68c62dc26mr955987qvb.31.1668689242418;
-        Thu, 17 Nov 2022 04:47:22 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6NrRNYLZ0ls6R0kRlwmfiR1dzZc4+V2fXHP+b9MOCSAMSE9sqYH0BM/PWGnjA/EhmMQRECEw==
-X-Received: by 2002:a05:6214:5e03:b0:4c6:8c62:dc26 with SMTP id li3-20020a0562145e0300b004c68c62dc26mr955979qvb.31.1668689242181;
-        Thu, 17 Nov 2022 04:47:22 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id i11-20020a05620a248b00b006fb3884e10bsm401452qkn.24.2022.11.17.04.47.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 04:47:21 -0800 (PST)
-Message-ID: <e5a89aa3bffe442e7bb5e58af5b5b43d7745995b.camel@redhat.com>
-Subject: Re: [PATCH net-next] NFC: nci: Extend virtual NCI deinit test
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Dmitry Vyukov <dvyukov@google.com>, bongsu.jeon@samsung.com,
-        krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
-Cc:     syzkaller@googlegroups.com, Jakub Kicinski <kuba@kernel.org>
-Date:   Thu, 17 Nov 2022 13:47:18 +0100
-In-Reply-To: <20221115095941.787250-1-dvyukov@google.com>
-References: <20221115095941.787250-1-dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S239665AbiKQMvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:51:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26B456EE0
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:51:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50FD861BDD
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 12:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31153C433D6;
+        Thu, 17 Nov 2022 12:51:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668689497;
+        bh=Klcrc4zejdPo4o4dfZ7M7w33yCEQ/VsznceciXZG960=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oL1JC1cSRip2w9NuuiLefD1CMuyVUDlz5j9L26TlZHp3R8Wl1sHIkcLNxjwGKLOY0
+         w82B2/q7dpSSrvrjy2vy5ofHA2wE9jNRKbKup4s1mSwEFAg7hckDFkeYUT2e5rQ8+N
+         u/oK4Oq2NI5NGFqksMUtLg0oLH2KhSVRc7XPmAc6hRu19Si3WWLi9URaLFYAw2Rn9N
+         FRrnmbyCN2OmuD1RGaNPVuOSnXp4yDEAxBZOWm+ZdFOEdA2g4iufk7lUTLoVGAtUvQ
+         LBKIGUxIsnvonqKb2JXq7LwQYz8AFiVJ0/e9U39gvxP7L3/5Asy7pCaW8acMRRXAAr
+         tKe4ojLiaw+zg==
+Date:   Thu, 17 Nov 2022 14:51:33 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3YuVcj5uNRHS7Ek@unreal>
+References: <cover.1667997522.git.leonro@nvidia.com>
+ <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
+ <20221117121243.GJ704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221117121243.GJ704954@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-11-15 at 10:59 +0100, Dmitry Vyukov wrote:
-> Extend the test to check the scenario when NCI core tries to send data
-> to already closed device to ensure that nothing bad happens.
+On Thu, Nov 17, 2022 at 01:12:43PM +0100, Steffen Klassert wrote:
+> On Wed, Nov 09, 2022 at 02:54:34PM +0200, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > @@ -1166,16 +1187,24 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> >  			spin_lock_bh(&net->xfrm.xfrm_state_lock);
+> >  			x->km.state = XFRM_STATE_ACQ;
+> >  			list_add(&x->km.all, &net->xfrm.state_all);
+> > -			hlist_add_head_rcu(&x->bydst, net->xfrm.state_bydst + h);
+> > +			XFRM_STATE_INSERT(bydst, &x->bydst,
+> > +					  net->xfrm.state_bydst + h,
+> > +					  x->xso.type);
+> >  			h = xfrm_src_hash(net, daddr, saddr, encap_family);
+> > -			hlist_add_head_rcu(&x->bysrc, net->xfrm.state_bysrc + h);
+> > +			XFRM_STATE_INSERT(bysrc, &x->bysrc,
+> > +					  net->xfrm.state_bysrc + h,
+> > +					  x->xso.type);
+> >  			if (x->id.spi) {
+> >  				h = xfrm_spi_hash(net, &x->id.daddr, x->id.spi, x->id.proto, encap_family);
+> > -				hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
+> > +				XFRM_STATE_INSERT(byspi, &x->byspi,
+> > +						  net->xfrm.state_byspi + h,
+> > +						  x->xso.type);
+> >  			}
+> >  			if (x->km.seq) {
+> >  				h = xfrm_seq_hash(net, x->km.seq);
+> > -				hlist_add_head_rcu(&x->byseq, net->xfrm.state_byseq + h);
+> > +				XFRM_STATE_INSERT(byseq, &x->byseq,
+> > +						  net->xfrm.state_byseq + h,
+> > +						  x->xso.type);
+> >  			}
 > 
-> Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-> Cc: Bongsu Jeon <bongsu.jeon@samsung.com>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> ---
->  tools/testing/selftests/nci/nci_dev.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> This does not work. A larval state will never have a x->xso.type set.
+
+x->xso.type always exists. Default is 0, which is XFRM_DEV_OFFLOAD_UNSPECIFIED.
+It means this XFRM_STATE_INSERT() will behave exactly as hlist_add_head_rcu() before.
+
+> So this raises the question how to handle acquires with this packet
+> offload. 
+
+We handle acquires as SW policies and don't offload them.
+
+
+> You could place the type and offload device to the template,
+> but we also have to make sure not to mess too much with the non
+> offloaded codepath.
 > 
-> diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
-> index 162c41e9bcae8..272958a4ad102 100644
-> --- a/tools/testing/selftests/nci/nci_dev.c
-> +++ b/tools/testing/selftests/nci/nci_dev.c
-> @@ -888,6 +888,16 @@ TEST_F(NCI, deinit)
->  			   &msg);
->  	ASSERT_EQ(rc, 0);
->  	EXPECT_EQ(get_dev_enable_state(&msg), 0);
-> +
-> +	// Test that operations that normally send packets to the driver
-> +	// don't cause issues when the device is already closed.
-> +	// Note: the send of NFC_CMD_DEV_UP itself still succeeds it's just
-> +	// that the device won't actually be up.
-> +	close(self->virtual_nci_fd);
-> +	self->virtual_nci_fd = -1;
+> This is yet another corner case where the concept of doing policy and
+> state lookup in software for a HW offload does not work so well. I
+> fear this is not the last corner case that comes up once you put this
+> into a real network.
+> 
 
-I think you need to handle correctly negative value of virtual_nci_fd
-in FIXTURE_TEARDOWN(NCI), otherwise it should trigger an assert on
-pthread_join() - read() operation will fail in virtual_deinit*()
+It is not different from any other kernel code, bugs will be fixed.
 
-Cheers,
+BTW, IPsec packet offload mode is in use for almost two years already
+in real networks.
+https://docs.nvidia.com/networking/display/OFEDv521040/Changes+and+New+Features
 
-Paolo
-
+Thanks
