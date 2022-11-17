@@ -2,109 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F16A462DA69
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:12:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DF462DA73
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:14:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239972AbiKQMMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 07:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
+        id S240054AbiKQMOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 07:14:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240024AbiKQMMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:12:47 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713876EB42
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:12:46 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 1A48920569;
-        Thu, 17 Nov 2022 13:12:45 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id gfhUMt03ugh4; Thu, 17 Nov 2022 13:12:44 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 90FB32053B;
-        Thu, 17 Nov 2022 13:12:44 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 8B36280004A;
-        Thu, 17 Nov 2022 13:12:44 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 13:12:44 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 13:12:44 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id C7E3731808E0; Thu, 17 Nov 2022 13:12:43 +0100 (CET)
-Date:   Thu, 17 Nov 2022 13:12:43 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Leon Romanovsky <leonro@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
-Message-ID: <20221117121243.GJ704954@gauss3.secunet.de>
-References: <cover.1667997522.git.leonro@nvidia.com>
- <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
+        with ESMTP id S234237AbiKQMOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:14:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C64170196
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:13:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668687185;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D5j9DmJftbiNuyWuQp4J4DaVBp6LHbVnovAFrJEquk4=;
+        b=AyERdWz9WyjvQxT/gdl+RwEQT6Yf1Q2SRkkjWcBRhhCW4j5tADei8vwroOYgXuPFUIIGlL
+        vpwAY21lQR6PoZpMxxrP5Z9AJDOQiW63q/4eo0hrpm7WJb5eZcNdphPGX1p2o8ogOD+6Ns
+        JdJWb7N2/evjpqHXOhbNiPUtAAl/K9E=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-80-8iYopu0xPtyiukNf7zXiYw-1; Thu, 17 Nov 2022 07:13:04 -0500
+X-MC-Unique: 8iYopu0xPtyiukNf7zXiYw-1
+Received: by mail-wr1-f71.google.com with SMTP id w11-20020adfbacb000000b002418a90da01so621807wrg.16
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:13:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D5j9DmJftbiNuyWuQp4J4DaVBp6LHbVnovAFrJEquk4=;
+        b=lBybal+q0cFMfYAQbC3YywB4e44XU2jJrX+XG9THzWOMtB/yJ4b7K+Fd8yxgXRJewZ
+         sVbt5hGPzn/FV1CfVA2Dy10JMqsEOppy4JrZiUwY0yx9UXx2e9RZ916LZ/hP/1YauE8+
+         2C+8Rqu7/4/+/NN4W7Qq4ROtoLFdeUkcHg9u6ExMR6256N7xECarfNuJdd6RH9QQGQoH
+         cs4NfYxCLEl44l3a1bspLJxIfpNou+r4ChwX5LydYdbG3H+1AQXfYAiSyVggl5mo+TRM
+         FA4z1mhvmhjJW2Of+sI6B79AcZitRnyE6USsNO6CfcJSNawfQVfxddVZg2K6Kl6TjN4f
+         pklA==
+X-Gm-Message-State: ANoB5pnxdBFbL8DpVfnMNtb2wF6o9NO+i1AjA7Wdi3e9JGiRgtQ7qquP
+        csNdfpyYkTjrtmuaFRuk+TDeCYSsJFyheeeUzFrD3ETLIkbYRmssBFzK0YFJruNJ9kml8Oiv2W6
+        c1Csaet/FEGGB8WAN
+X-Received: by 2002:a1c:7318:0:b0:3cf:cb16:f24a with SMTP id d24-20020a1c7318000000b003cfcb16f24amr4940548wmb.182.1668687183284;
+        Thu, 17 Nov 2022 04:13:03 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf45Fdyv1heAo7QA/P1UGM3QqYUDdP9AyD2QFRZJEGDSgoiGR7WkHocJh68ff65K5BiMjVG/Ig==
+X-Received: by 2002:a1c:7318:0:b0:3cf:cb16:f24a with SMTP id d24-20020a1c7318000000b003cfcb16f24amr4940530wmb.182.1668687183035;
+        Thu, 17 Nov 2022 04:13:03 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
+        by smtp.gmail.com with ESMTPSA id y15-20020a1c4b0f000000b003cf7292c553sm1022914wma.13.2022.11.17.04.13.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 04:13:02 -0800 (PST)
+Message-ID: <1c43f0836d741a575b4805292d6dfff134ef6225.camel@redhat.com>
+Subject: Re: [PATCH] sctp: sm_statefuns: Remove unnecessary
+ =?UTF-8?Q?=E2=80=98NULL=E2=80=99?= values from Pointer
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Li zeming <zeming@nfschina.com>, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 17 Nov 2022 13:13:01 +0100
+In-Reply-To: <20221115015508.3054-1-zeming@nfschina.com>
+References: <20221115015508.3054-1-zeming@nfschina.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 02:54:34PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+Hi,
+
+On Tue, 2022-11-15 at 09:55 +0800, Li zeming wrote:
+> The packet pointer is assigned first. It does not need to initialize the
+> assignment.
 > 
-> @@ -1166,16 +1187,24 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
->  			spin_lock_bh(&net->xfrm.xfrm_state_lock);
->  			x->km.state = XFRM_STATE_ACQ;
->  			list_add(&x->km.all, &net->xfrm.state_all);
-> -			hlist_add_head_rcu(&x->bydst, net->xfrm.state_bydst + h);
-> +			XFRM_STATE_INSERT(bydst, &x->bydst,
-> +					  net->xfrm.state_bydst + h,
-> +					  x->xso.type);
->  			h = xfrm_src_hash(net, daddr, saddr, encap_family);
-> -			hlist_add_head_rcu(&x->bysrc, net->xfrm.state_bysrc + h);
-> +			XFRM_STATE_INSERT(bysrc, &x->bysrc,
-> +					  net->xfrm.state_bysrc + h,
-> +					  x->xso.type);
->  			if (x->id.spi) {
->  				h = xfrm_spi_hash(net, &x->id.daddr, x->id.spi, x->id.proto, encap_family);
-> -				hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
-> +				XFRM_STATE_INSERT(byspi, &x->byspi,
-> +						  net->xfrm.state_byspi + h,
-> +						  x->xso.type);
->  			}
->  			if (x->km.seq) {
->  				h = xfrm_seq_hash(net, x->km.seq);
-> -				hlist_add_head_rcu(&x->byseq, net->xfrm.state_byseq + h);
-> +				XFRM_STATE_INSERT(byseq, &x->byseq,
-> +						  net->xfrm.state_byseq + h,
-> +						  x->xso.type);
->  			}
+> Signed-off-by: Li zeming <zeming@nfschina.com>
 
-This does not work. A larval state will never have a x->xso.type set.
-So this raises the question how to handle acquires with this packet
-offload. You could place the type and offload device to the template,
-but we also have to make sure not to mess too much with the non
-offloaded codepath.
+I'm sorry, but IMHO the commit message is quite unclear, I suggest to
+re-phrase to something alike:
 
-This is yet another corner case where the concept of doing policy and
-state lookup in software for a HW offload does not work so well. I
-fear this is not the last corner case that comes up once you put this
-into a real network.
+"""
+The 'packet' pointer is always set in the later code, no need to
+initialize it at definition time.
+"""
+
+Thanks,
+
+Paolo
 
