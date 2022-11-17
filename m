@@ -2,175 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC2D962DCF5
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 14:39:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7702562DCF7
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 14:40:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240167AbiKQNjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 08:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
+        id S240154AbiKQNkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 08:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240154AbiKQNjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 08:39:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E266312D1E;
-        Thu, 17 Nov 2022 05:39:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75F9561E27;
-        Thu, 17 Nov 2022 13:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5066C4314B;
-        Thu, 17 Nov 2022 13:39:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668692348;
-        bh=/UK+9sDrGPjgYtOOoh910+Ifr/UWpMEvVanzIq+snBo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=iM5BRIb4wuR5k4Un53xb27JuddLigAwQBtkaGctVlq6BYa4RLyWlNA8DGL9rPM249
-         wi+pLcecfJZOq0WDMGmCgHVksj5jTqKr0Qliy/4zbtVUv5t49Lybv2iO83ulkwxrLO
-         CCEzZNqIIUgtHDBsJag5UxyXwEKOi3tFakAtSGA+wr/cwrowHb3f20aOZ50fkJEtWm
-         rZ0MEjQsoauuoCiGVSlelELIDxMtVXcZVV/71GnM7lD1MWP6XqR6QlNAr/rWJIrZHK
-         WrRgdkVhhTpiV+v4SKZAo9ZxyJCD4FCh29vtEv6y43om+vR7uhlbYyFLzqaVn6G7Rj
-         dlUqzsb/FQeyA==
-Received: by mail-lj1-f182.google.com with SMTP id l8so2688784ljh.13;
-        Thu, 17 Nov 2022 05:39:08 -0800 (PST)
-X-Gm-Message-State: ANoB5pllpQAgGs+Z11h5PvmN4GJ0Pp+n90shTblZ/IYGOW5/kqmfIwqF
-        UlTnI9tMgV9MOH/7wLuYbnS2p1EGMXVayDn2Iw==
-X-Google-Smtp-Source: AA0mqf68l6JlfMAOxB9IAZotx0gr19b4kW6puUPFGWYKGLd9TbYZHrsir62Is5Ol46Kkm065jI97tYyYf0dpuvBsM3M=
-X-Received: by 2002:a05:651c:2328:b0:277:14cf:6da2 with SMTP id
- bi40-20020a05651c232800b0027714cf6da2mr960398ljb.94.1668692346755; Thu, 17
- Nov 2022 05:39:06 -0800 (PST)
+        with ESMTP id S239979AbiKQNj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 08:39:59 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245132A40F
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 05:39:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668692399; x=1700228399;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=njO9KSSV6lGnBxqXX8AND9QDlSELRUY4rMWrJlvnUSs=;
+  b=LEq00oPLLQiklYS9tmSg3oDzM7xZjQDvYGwrGm597rqupqw9wCofxwH2
+   LHIG8ZSihszicnIHIFE/oaOzOxKu/4wCwGSb9AdMOBZSdIDtat2xZvVzU
+   skSo6An2ATjHdCO8fLUrS0MJKjwvQuIhq2BQ9bSTj6CQUaFZU1a9NAzVw
+   M74sS1UtZLvoEMa2hZayTGhtz99nx+6/dwbGRv5q3Phzvp1xcxxt7cO/g
+   4sx53mS3/CKMIiAL4clf7RfRCkY2hUBWP8rbJnmWH2m8MiY2VSuD3MO6W
+   43SRuGR6V9z1bjJkckUKXJ5wx6OYQ/suSdJlY5wzFH5wq9HjQ7RoaGwbj
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="292556803"
+X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
+   d="scan'208";a="292556803"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 05:39:58 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="672811666"
+X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
+   d="scan'208";a="672811666"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 05:39:53 -0800
+Date:   Thu, 17 Nov 2022 14:39:50 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        intel-wired-lan@lists.osuosl.org, jiri@nvidia.com,
+        anthony.l.nguyen@intel.com, alexandr.lobakin@intel.com,
+        wojciech.drewek@intel.com, lukasz.czapnik@intel.com,
+        shiraz.saleem@intel.com, jesse.brandeburg@intel.com,
+        mustafa.ismail@intel.com, przemyslaw.kitszel@intel.com,
+        piotr.raczynski@intel.com, jacob.e.keller@intel.com,
+        david.m.ertman@intel.com, leszek.kaliszczuk@intel.com
+Subject: Re: [PATCH net-next 00/13] resource management using devlink reload
+Message-ID: <Y3Y5phsWzatdnwok@localhost.localdomain>
+References: <Y3NnGk7DCo/1KfpD@localhost.localdomain>
+ <Y3OCHLiCzOUKLlHa@unreal>
+ <Y3OcAJBfzgggVll9@localhost.localdomain>
+ <Y3PS9e9MJEZo++z5@unreal>
+ <be2954f2-e09c-d2ef-c84a-67b8e6fc3967@intel.com>
+ <Y3R9iAMtkk8zGyaC@unreal>
+ <Y3TR1At4In5Q98OG@localhost.localdomain>
+ <Y3UlD499Yxj77vh3@unreal>
+ <Y3YWkT/lMmYU5T+3@localhost.localdomain>
+ <Y3Ye4kwmtPrl33VW@unreal>
 MIME-Version: 1.0
-References: <20221103210650.2325784-1-sean.anderson@seco.com>
- <20221109224110.erfaftzja4fybdbc@skbuf> <bcb87445-d80d-fea0-82f2-a15b20baaf06@seco.com>
- <20221110152925.3gkkp5opf74oqrxb@skbuf> <7b4fb14f-1ca0-e4f8-46ca-3884392627c2@seco.com>
- <20221110160008.6t53ouoxqeu7w7qr@skbuf> <ce6d6a26-4867-6385-8c64-0f374d027754@seco.com>
- <20221114172357.hdzua4xo7wixtbgs@skbuf> <209a0d25-f109-601f-d6f6-1adc44103aee@seco.com>
- <20221114195321.uludij5x747uzcxr@skbuf>
-In-Reply-To: <20221114195321.uludij5x747uzcxr@skbuf>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 17 Nov 2022 07:38:58 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqK+NFL-K6TF+chEFSLh9OuvV+nKUAF5KtO=aBsvqqpd4w@mail.gmail.com>
-Message-ID: <CAL_JsqK+NFL-K6TF+chEFSLh9OuvV+nKUAF5KtO=aBsvqqpd4w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 00/11] net: pcs: Add support for devices
- probed in the "usual" manner
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3Ye4kwmtPrl33VW@unreal>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 1:53 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Mon, Nov 14, 2022 at 01:08:03PM -0500, Sean Anderson wrote:
-> > On 11/14/22 12:23, Vladimir Oltean wrote:
-> > > On Thu, Nov 10, 2022 at 11:56:15AM -0500, Sean Anderson wrote:
-> > >> these will probably be in device trees for a year before the kernel
-> > >> starts using them. But once that is done, we are free to require them.
-> > >
-> > > Sorry, you need to propose something that is not "we can break compatibility
-> > > with today's device trees one year from now".
-> >
-> > But only if the kernel gets updated and not the device tree. When can
-> > such a situation occur? Are we stuck with this for the next 10 years all
-> > because someone may have a device tree which they compiled in 2017, and
-> > *insist* on using the latest kernel with? Is this how you run your
-> > systems?
->
-> I'm a developer (and I work on other platforms than the ones you're
-> planning to break), so the answer to this question doesn't mean a thing.
->
-> > We don't get the device tree from firmware on this platform; usually it
-> > is bundled with the kernel in a FIT or loaded from the same disk
-> > partition as the kernel. I can imagine that they might not always be
-> > updated at exactly the same time, but this is nuts.
->
-> What does "this" platform mean exactly? There are many platforms to
-> which you've added compatible strings to keep things working assuming a
-> dtb update, many of them very old. And those to which you did are not by
-> far all that exist. There is no requirement that all platform device
-> trees are upstreamed to the Linux kernel.
->
-> > The original device tree is broken because it doesn't include compatible
-> > strings for devices on a generic bus. There's no way to fix that other
-> > than hard-coding the driver. This can be done for some buses, but this
-> > is an MDIO bus and we already assume devices without compatibles are
-> > PHYs.
->
-> Let's be clear about this. It's "broken" in the sense that you don't like
-> the way in which it works, not in the sense that it results in a system
-> that doesn't work. And not having a compatible string is just as broken
-> as it is for other devices with detectable device IDs, like Ethernet
-> PHYs in general, PCI devices, etc.
->
-> The way in which that works here, specifically, is that a generic PHY driver
-> is bound to the Lynx PCS devices, driver which does nothing since nobody
-> calls phy_attach_direct() to it. Then, using fwnode_mdio_find_device(),
-> you follow the pcsphy-handle and you get a reference to the mdio_device
-> (parent class of phy_device) object that resulted from the generic PHY
-> driver probing on the PCS, and you program the PCS to do what you want.
->
-> The PHY core does assume that mdio_devices without compatible strings
-> are phy_devices, but also makes exceptions (and warns about it) - see
-> commit ae461131960b ("of: of_mdio: Add a whitelist of PHY compatibilities.").
-> Maybe the reverse exception could also be made, and a warning for that
-> be added as well.
->
-> > In the next version of this series, I will include a compatibility
-> > function which can bind a driver automatically if one is missing when
-> > looking up a phy. But I would really like to have an exit strategy.
->
-> You'll have to get agreement from higher level maintainers than me that
-> the strategy "wait one year, break old device trees" is okay. Generally
-> we wouldn't have answers to this kind of questions that depend on whom
-> you ask. Otherwise.. we would all know whom to ask and whom not to ;)
+On Thu, Nov 17, 2022 at 01:45:38PM +0200, Leon Romanovsky wrote:
+> On Thu, Nov 17, 2022 at 12:10:21PM +0100, Michal Swiatkowski wrote:
+> > On Wed, Nov 16, 2022 at 07:59:43PM +0200, Leon Romanovsky wrote:
+> > > On Wed, Nov 16, 2022 at 01:04:36PM +0100, Michal Swiatkowski wrote:
+> > > > On Wed, Nov 16, 2022 at 08:04:56AM +0200, Leon Romanovsky wrote:
+> > > > > On Tue, Nov 15, 2022 at 07:59:06PM -0600, Samudrala, Sridhar wrote:
+> > > > > > On 11/15/2022 11:57 AM, Leon Romanovsky wrote:
+> > > > > 
+> > > > > <...>
+> > > > > 
+> > > > > > > > In case of ice driver lspci -vs shows:
+> > > > > > > > Capabilities: [70] MSI-X: Enable+ Count=1024 Masked
+> > > > > > > > 
+> > > > > > > > so all vectors that hw supports (PFs, VFs, misc, etc). Because of that
+> > > > > > > > total number of MSI-X in the devlink example from cover letter is 1024.
+> > > > > > > > 
+> > > > > > > > I see that mellanox shows:
+> > > > > > > > Capabilities: [9c] MSI-X: Enable+ Count=64 Masked
+> > > > > > > > 
+> > > > > > > > I assume that 64 is in this case MSI-X ony for this one PF (it make
+> > > > > > > > sense).
+> > > > > > > Yes and PF MSI-X count can be changed through FW configuration tool, as
+> > > > > > > we need to write new value when the driver is unbound and we need it to
+> > > > > > > be persistent. Users are expecting to see "stable" number any time they
+> > > > > > > reboot the server. It is not the case for VFs, as they are explicitly
+> > > > > > > created after reboots and start "fresh" after every boot.
+> > > > > > > 
+> > > > > > > So we set large enough but not too large value as a default for PFs.
+> > > > > > > If you find sane model of how to change it through kernel, you can count
+> > > > > > > on our support.
+> > > > > > 
+> > > > > > I guess one main difference is that in case of ice, PF driver manager resources
+> > > > > > for all its associated functions, not the FW. So the MSI-X count reported for PF
+> > > > > > shows the total vectors(PF netdev, VFs, rdma, SFs). VFs talk to PF over a mailbox
+> > > > > > to get their MSI-X vector information.
+> > > > > 
+> > > > > What is the output of lspci for ice VF when the driver is not bound?
+> > > > > 
+> > > > > Thanks
+> > > > > 
+> > > > 
+> > > > It is the same after creating and after unbonding:
+> > > > Capabilities: [70] MSI-X: Enable- Count=17 Masked-
+> > > > 
+> > > > 17, because 16 for traffic and 1 for mailbox.
+> > > 
+> > > Interesting, I think that your PF violates PCI spec as it always
+> > > uses word "function" and not "device" while talks about MSI-X related
+> > > registers.
+> > > 
+> > > Thanks
+> > > 
+> > 
+> > I made mistake in one comment. 1024 isn't MSI-X amount for device. On
+> > ice we have 2048 for the whole device. On two ports card each PF have
+> > 1024 MSI-X. Our control register mapping to the internal space looks
+> > like that (Assuming two port card; one VF with 5 MSI-X created):
+> > INT[PF0].FIRST	0
+> > 		1
+> > 		2
+> > 		
+> > 		.
+> > 		.
+> > 		.
+> > 
+> > 		1019	INT[VF0].FIRST	__
+> > 		1020			  | interrupts used
+> > 		1021			  | by VF on PF0
+> > 		1022			  |
+> > INT[PF0].LAST	1023	INT[VF0].LAST	__|
+> > INT[PF1].FIRST	1024
+> > 		1025
+> > 		1026
+> > 
+> > 		.
+> > 		.
+> > 		.
+> > 		
+> > INT[PF1].LAST	2047
+> > 
+> > MSI-X entry table size for PF0 is 1024, but entry table for VF is a part
+> > of PF0 physical space.
+> > 
+> > Do You mean that "sharing" the entry between PF and VF is a violation of
+> > PCI spec? 
+> 
+> You should consult with your PCI specification experts. It was my
+> spec interpretation, which can be wrong.
+> 
 
-A window of time can work, but only when there's other reasons
-everyone must update the firmware/DT.
+Sure, I will
 
-> Sadly I haven't found anything "official" in either Documentation/devicetree/usage-model.rst
-> or Documentation/process/submitting-patches.rst. Maybe I missed it?
+> 
+> > Sum of MSI-X count on all function within device shouldn't be
+> > grater than 2048? 
+> 
+> No, it is 2K per-control message/per-function.
+> 
+> 
+> > It is hard to find sth about this in spec. I only read
+> > that: "MSI-X supports a maximum table size of 2048 entries". I will
+> > continue searching for information about that.
+> > 
+> > I don't think that from driver perspective we can change the table size
+> > located in message control register.
+> 
+> No, you can't, unless you decide explicitly violate spec.
+> 
+> > 
+> > I assume in mlnx the tool that You mentioned can modify this table size?
+> 
+> Yes, it is FW configuration tool.
+>
 
-Documentation/devicetree/bindings/ABI.rst
+Thanks for clarification.
+In summary, if this is really violation of PCI spec we for sure will
+have to fix that and resource managment implemented in this patchset
+will not make sense (as config for PF MSI-X amount will have to happen
+in FW).
 
-The exact policy depends on the platform (or family of platforms). In
-short, if *anyone* cares, then compatibility should not be broken.
-Vladimir uses platforms in question and cares, so don't break the
-platforms.
+If it isn't, is it still NACK from You? I mean, if we implement the
+devlink resources managment (maybe not generic one, only define in ice)
+and sysfs for setting VF MSI-X, will You be ok with that? Or using
+devlink to manage MSI-X resources isn't in general good solution?
 
-Rob
+Our motivation here is to allow user to configure MSI-X allocation for
+his own use case. For example giving only 1 MSI-X for ethernet and RDMA
+and spending rest on VFs. If I understand correctly, on mlnx card user
+can set PF MSI-X to 1 in FW configuration tool and achieve the same.
+Currently we don't have other mechanism to change default number of
+MSI-X on ethernet.
+
+> Thanks
+> 
+> > 
+> > Thanks
+> > 
+> > > > 
+> > > > Thanks
+> > > > > > 
+> > > > > > 
+> > > > > > 
