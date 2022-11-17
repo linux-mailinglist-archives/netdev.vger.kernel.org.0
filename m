@@ -2,699 +2,379 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49E0C62E704
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB3C62E707
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 22:34:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241006AbiKQVdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 16:33:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
+        id S240517AbiKQVeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 16:34:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241003AbiKQVcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:32:04 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A9C61529;
-        Thu, 17 Nov 2022 13:31:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668720712; x=1700256712;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NKnBVIPr7NjDgFEJqhiTxmzEd8Gm1JBqNzxb+YZFELM=;
-  b=fYsOuXCPG+9qyy/8UTehx4VwNKkNjMDLOLXHTqBIkMkq1ZQHyeLatRQU
-   D90AUWZSgztTCSnsz/Clry4Ynu7xU6vlpTpRlYcOmZ/NCREB4aQxJEbls
-   Rb/pf8oXneZ18AZkd61iISjphshL0dmqEN7anmLF+nidkylb2XvJ3q5An
-   bp9qWTaafUOvIISA3fOWloga6P0g4FTy6Uyu8yfsY//P+Jxqihrv8wRnA
-   ptqLvE2MJEvWq4h9FnnzB44Q3p0PtP7PQ6v2Sb4VhV9sL5obAtnpSmw1R
-   gjMHa+i+Lh7Wt5x5ex8PJfceoCuZ/W4CpA0gpks8ctRwktvl3nH9JNuLr
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="123980097"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2022 14:31:52 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 17 Nov 2022 14:31:51 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 17 Nov 2022 14:31:47 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S240973AbiKQVdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 16:33:52 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F7C72109;
+        Thu, 17 Nov 2022 13:32:31 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id i10so8396685ejg.6;
+        Thu, 17 Nov 2022 13:32:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UU3w3/QLLYOFzV8zU7DGBoUqXlf6ILUKD+Yl4yILLPs=;
+        b=Q+AZCKeCXvtJ3JZNeyuLQF20z8w2XZ27kR3QnrI82yJstSysreE/yp9iyzqdXCADzl
+         R3TG24Zp8s70YLfFEnBfDwYeL4GzBHrvhPNMlo+6KbzQTEgnKGXwO41alWPOQNLnedDT
+         i2YMV1EpUDcmU0H2jc50txiVYygJOqUuX1FDz/nCkSlMLFotZJA4vOAtKLTfu2M1Ww2X
+         hJojggvYbDsDyR/P92eKhAyx8BTexLIWbb8bc+p+0imlDpo0fDw1Y5MDhX+Nf484motO
+         QgKtTI6VNzUToEMJR1pB8FA6vy5lBIkASI1wNEAVTCXSSpckgOYJ+fDwZIUATg8UT4sO
+         tMCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UU3w3/QLLYOFzV8zU7DGBoUqXlf6ILUKD+Yl4yILLPs=;
+        b=Cx0z//XmrMI8+4Jil9EZjW4NR0RdVhZovtbmh0W8+wtkMkAHRisRA0vwn8f9fEmu9S
+         lhF3KmjG5W6tBc/16iJVdH5UME67zlRIvW6b6xDdtoaS4jWb4ufUyuMxhJQdJqlfm0XU
+         EjRrfQFHGPFp1PbVKeO4Bp46pHfJ1lW88201Q7GON07FwrYCuK9+GRDX3+fNZPTvuk2G
+         5Nr7D3PRba4roDBwqLqnxorWFV/F8tHo7e8RkTlQGQAHwrvKL9Ykx0o0PUa54tiATUlw
+         kJf6ztMEdg62u3FYcurik7CtCtQ64/MsmFWpE+agEOPjsn3gMdc5XqkLurtfgyrYP/PU
+         MX7Q==
+X-Gm-Message-State: ANoB5pnyRNhpqPblM+LGlUlxNWTXP+5Zs5UfYYTUFpy61+A+akPFYYl7
+        QW8DqulA+qIGQyY/hmAiN3n2+L73ELpLIIfmUj4=
+X-Google-Smtp-Source: AA0mqf48ZIuvZE8Tx5+8uFpw8Jt29qwxW+5fKVhBEnVfvlQmaMU2wkoThpDaXzSA7uP+IeOqtRRMJwWed04UVxFFu0w=
+X-Received: by 2002:a17:906:c449:b0:7ae:cbae:af1 with SMTP id
+ ck9-20020a170906c44900b007aecbae0af1mr3695916ejb.31.1668720749719; Thu, 17
+ Nov 2022 13:32:29 -0800 (PST)
+MIME-Version: 1.0
+References: <20221116222805.64734-1-kuniyu@amazon.com> <20221116222805.64734-4-kuniyu@amazon.com>
+In-Reply-To: <20221116222805.64734-4-kuniyu@amazon.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 17 Nov 2022 13:32:18 -0800
+Message-ID: <CAJnrk1Y=qBAYsJJRgL1_Vx8Cb+tvS9PKEiFpYXPmc1b3tFL2nQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net 3/4] dccp/tcp: Don't update saddr before unlinking
+ sk from the old bucket
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Casper Andersson" <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 8/8] net: microchip: sparx5: Add VCAP debugfs KUNIT test
-Date:   Thu, 17 Nov 2022 22:31:14 +0100
-Message-ID: <20221117213114.699375-9-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221117213114.699375-1-steen.hegelund@microchip.com>
-References: <20221117213114.699375-1-steen.hegelund@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@mandriva.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        dccp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests the functionality of the debugFS support:
+On Wed, Nov 16, 2022 at 2:29 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> Currently, we update saddr before calling inet_bhash2_update_saddr(), so
+> another thread iterating over the bhash2 bucket might see an inconsistent
+> address.
+>
+> Let's update saddr after unlinking sk from the old bhash2 bucket.
 
-- finding valid keyset on an address
-- raw VCAP output
-- full rule VCAP output
+I'm not sure whether this patch is necessary and I'm curious to hear
+your thoughts. There's no adverse effect that comes from updating the
+sk's saddr before calling inet_bhash2_update_saddr() in the current
+code. Another thread can be iterating over the bhash2 bucket, but it
+has no effect whether they see this new address or not (eg when they
+are iterating through the bucket they are trying to check for bind
+conflicts on another socket, and the sk having the new address doesn't
+affect this). What are your thoughts?
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- drivers/net/ethernet/microchip/vcap/Kconfig   |   1 +
- .../microchip/vcap/vcap_api_debugfs.c         |   4 +
- .../microchip/vcap/vcap_api_debugfs_kunit.c   | 545 ++++++++++++++++++
- .../ethernet/microchip/vcap/vcap_api_kunit.c  |   6 +-
- 4 files changed, 553 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-
-diff --git a/drivers/net/ethernet/microchip/vcap/Kconfig b/drivers/net/ethernet/microchip/vcap/Kconfig
-index 1af30a358a15..97f43fd4473f 100644
---- a/drivers/net/ethernet/microchip/vcap/Kconfig
-+++ b/drivers/net/ethernet/microchip/vcap/Kconfig
-@@ -40,6 +40,7 @@ config VCAP_KUNIT_TEST
- 	bool "KUnit test for VCAP library" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
- 	depends on KUNIT=y && VCAP=y && y
-+	select DEBUG_FS
- 	default KUNIT_ALL_TESTS
- 	help
- 	  This builds unit tests for the VCAP library.
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-index 891034e349de..d9c7ca988b76 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-@@ -776,3 +776,7 @@ struct dentry *vcap_debugfs(struct device *dev, struct dentry *parent,
- 	return dir;
- }
- EXPORT_SYMBOL_GPL(vcap_debugfs);
-+
-+#ifdef CONFIG_VCAP_KUNIT_TEST
-+#include "vcap_api_debugfs_kunit.c"
-+#endif
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-new file mode 100644
-index 000000000000..ed455dad3a14
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-@@ -0,0 +1,545 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
-+ * Microchip VCAP API kunit test suite
-+ */
-+
-+#include <kunit/test.h>
-+#include "vcap_api.h"
-+#include "vcap_api_client.h"
-+#include "vcap_api_debugfs.h"
-+#include "vcap_model_kunit.h"
-+
-+/* First we have the test infrastructure that emulates the platform
-+ * implementation
-+ */
-+#define TEST_BUF_CNT 100
-+#define TEST_BUF_SZ  350
-+#define STREAMWSIZE 64
-+
-+static u32 test_updateaddr[STREAMWSIZE] = {};
-+static int test_updateaddridx;
-+static int test_cache_erase_count;
-+static u32 test_init_start;
-+static u32 test_init_count;
-+static u32 test_hw_counter_id;
-+static struct vcap_cache_data test_hw_cache;
-+static struct net_device test_netdev = {};
-+static int test_move_addr;
-+static int test_move_offset;
-+static int test_move_count;
-+static char test_pr_buffer[TEST_BUF_CNT][TEST_BUF_SZ];
-+static int test_pr_bufferidx;
-+static int test_pr_idx;
-+
-+/* Callback used by the VCAP API */
-+static enum vcap_keyfield_set test_val_keyset(struct net_device *ndev,
-+					      struct vcap_admin *admin,
-+					      struct vcap_rule *rule,
-+					      struct vcap_keyset_list *kslist,
-+					      u16 l3_proto)
-+{
-+	int idx;
-+
-+	if (kslist->cnt > 0) {
-+		switch (admin->vtype) {
-+		case VCAP_TYPE_IS0:
-+			for (idx = 0; idx < kslist->cnt; idx++) {
-+				if (kslist->keysets[idx] == VCAP_KFS_ETAG)
-+					return kslist->keysets[idx];
-+				if (kslist->keysets[idx] ==
-+				    VCAP_KFS_PURE_5TUPLE_IP4)
-+					return kslist->keysets[idx];
-+				if (kslist->keysets[idx] ==
-+				    VCAP_KFS_NORMAL_5TUPLE_IP4)
-+					return kslist->keysets[idx];
-+				if (kslist->keysets[idx] ==
-+				    VCAP_KFS_NORMAL_7TUPLE)
-+					return kslist->keysets[idx];
-+			}
-+			break;
-+		case VCAP_TYPE_IS2:
-+			for (idx = 0; idx < kslist->cnt; idx++) {
-+				if (kslist->keysets[idx] == VCAP_KFS_MAC_ETYPE)
-+					return kslist->keysets[idx];
-+				if (kslist->keysets[idx] == VCAP_KFS_ARP)
-+					return kslist->keysets[idx];
-+				if (kslist->keysets[idx] == VCAP_KFS_IP_7TUPLE)
-+					return kslist->keysets[idx];
-+			}
-+			break;
-+		default:
-+			pr_info("%s:%d: no validation for VCAP %d\n",
-+				__func__, __LINE__, admin->vtype);
-+			break;
-+		}
-+	}
-+	return -EINVAL;
-+}
-+
-+/* Callback used by the VCAP API */
-+static void test_add_def_fields(struct net_device *ndev,
-+				struct vcap_admin *admin,
-+				struct vcap_rule *rule)
-+{
-+	if (admin->vinst == 0 || admin->vinst == 2)
-+		vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS,
-+				      VCAP_BIT_1);
-+	else
-+		vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS,
-+				      VCAP_BIT_0);
-+}
-+
-+/* Callback used by the VCAP API */
-+static void test_cache_erase(struct vcap_admin *admin)
-+{
-+	if (test_cache_erase_count) {
-+		memset(admin->cache.keystream, 0, test_cache_erase_count);
-+		memset(admin->cache.maskstream, 0, test_cache_erase_count);
-+		memset(admin->cache.actionstream, 0, test_cache_erase_count);
-+		test_cache_erase_count = 0;
-+	}
-+}
-+
-+/* Callback used by the VCAP API */
-+static void test_cache_init(struct net_device *ndev, struct vcap_admin *admin,
-+			    u32 start, u32 count)
-+{
-+	test_init_start = start;
-+	test_init_count = count;
-+}
-+
-+/* Callback used by the VCAP API */
-+static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
-+			    enum vcap_selection sel, u32 start, u32 count)
-+{
-+	u32 *keystr, *mskstr, *actstr;
-+	int idx;
-+
-+	pr_debug("%s:%d: %d %d\n", __func__, __LINE__, start, count);
-+	switch (sel) {
-+	case VCAP_SEL_ENTRY:
-+		keystr = &admin->cache.keystream[start];
-+		mskstr = &admin->cache.maskstream[start];
-+		for (idx = 0; idx < count; ++idx) {
-+			pr_debug("%s:%d: keydata[%02d]: 0x%08x\n", __func__,
-+				 __LINE__, start + idx, keystr[idx]);
-+		}
-+		for (idx = 0; idx < count; ++idx) {
-+			/* Invert the mask before decoding starts */
-+			mskstr[idx] = ~mskstr[idx];
-+			pr_debug("%s:%d: mskdata[%02d]: 0x%08x\n", __func__,
-+				 __LINE__, start + idx, mskstr[idx]);
-+		}
-+		break;
-+	case VCAP_SEL_ACTION:
-+		actstr = &admin->cache.actionstream[start];
-+		for (idx = 0; idx < count; ++idx) {
-+			pr_debug("%s:%d: actdata[%02d]: 0x%08x\n", __func__,
-+				 __LINE__, start + idx, actstr[idx]);
-+		}
-+		break;
-+	case VCAP_SEL_COUNTER:
-+		pr_debug("%s:%d\n", __func__, __LINE__);
-+		test_hw_counter_id = start;
-+		admin->cache.counter = test_hw_cache.counter;
-+		admin->cache.sticky = test_hw_cache.sticky;
-+		break;
-+	case VCAP_SEL_ALL:
-+		pr_debug("%s:%d\n", __func__, __LINE__);
-+		break;
-+	}
-+}
-+
-+/* Callback used by the VCAP API */
-+static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
-+			     enum vcap_selection sel, u32 start, u32 count)
-+{
-+	u32 *keystr, *mskstr, *actstr;
-+	int idx;
-+
-+	switch (sel) {
-+	case VCAP_SEL_ENTRY:
-+		keystr = &admin->cache.keystream[start];
-+		mskstr = &admin->cache.maskstream[start];
-+		for (idx = 0; idx < count; ++idx) {
-+			pr_debug("%s:%d: keydata[%02d]: 0x%08x\n", __func__,
-+				 __LINE__, start + idx, keystr[idx]);
-+		}
-+		for (idx = 0; idx < count; ++idx) {
-+			/* Invert the mask before encoding starts */
-+			mskstr[idx] = ~mskstr[idx];
-+			pr_debug("%s:%d: mskdata[%02d]: 0x%08x\n", __func__,
-+				 __LINE__, start + idx, mskstr[idx]);
-+		}
-+		break;
-+	case VCAP_SEL_ACTION:
-+		actstr = &admin->cache.actionstream[start];
-+		for (idx = 0; idx < count; ++idx) {
-+			pr_debug("%s:%d: actdata[%02d]: 0x%08x\n", __func__,
-+				 __LINE__, start + idx, actstr[idx]);
-+		}
-+		break;
-+	case VCAP_SEL_COUNTER:
-+		pr_debug("%s:%d\n", __func__, __LINE__);
-+		test_hw_counter_id = start;
-+		test_hw_cache.counter = admin->cache.counter;
-+		test_hw_cache.sticky = admin->cache.sticky;
-+		break;
-+	case VCAP_SEL_ALL:
-+		pr_err("%s:%d: cannot write all streams at once\n",
-+		       __func__, __LINE__);
-+		break;
-+	}
-+}
-+
-+/* Callback used by the VCAP API */
-+static void test_cache_update(struct net_device *ndev, struct vcap_admin *admin,
-+			      enum vcap_command cmd,
-+			      enum vcap_selection sel, u32 addr)
-+{
-+	if (test_updateaddridx < ARRAY_SIZE(test_updateaddr))
-+		test_updateaddr[test_updateaddridx] = addr;
-+	else
-+		pr_err("%s:%d: overflow: %d\n", __func__, __LINE__,
-+		       test_updateaddridx);
-+	test_updateaddridx++;
-+}
-+
-+static void test_cache_move(struct net_device *ndev, struct vcap_admin *admin,
-+			    u32 addr, int offset, int count)
-+{
-+	test_move_addr = addr;
-+	test_move_offset = offset;
-+	test_move_count = count;
-+}
-+
-+/* Provide port information via a callback interface */
-+static int vcap_test_port_info(struct net_device *ndev,
-+			       struct vcap_admin *admin,
-+			       struct vcap_output_print *out)
-+{
-+	return 0;
-+}
-+
-+static int vcap_test_enable(struct net_device *ndev,
-+			    struct vcap_admin *admin,
-+			    bool enable)
-+{
-+	return 0;
-+}
-+
-+static struct vcap_operations test_callbacks = {
-+	.validate_keyset = test_val_keyset,
-+	.add_default_fields = test_add_def_fields,
-+	.cache_erase = test_cache_erase,
-+	.cache_write = test_cache_write,
-+	.cache_read = test_cache_read,
-+	.init = test_cache_init,
-+	.update = test_cache_update,
-+	.move = test_cache_move,
-+	.port_info = vcap_test_port_info,
-+	.enable = vcap_test_enable,
-+};
-+
-+static struct vcap_control test_vctrl = {
-+	.vcaps = kunit_test_vcaps,
-+	.stats = &kunit_test_vcap_stats,
-+	.ops = &test_callbacks,
-+};
-+
-+static void vcap_test_api_init(struct vcap_admin *admin)
-+{
-+	/* Initialize the shared objects */
-+	INIT_LIST_HEAD(&test_vctrl.list);
-+	INIT_LIST_HEAD(&admin->list);
-+	INIT_LIST_HEAD(&admin->rules);
-+	list_add_tail(&admin->list, &test_vctrl.list);
-+	memset(test_updateaddr, 0, sizeof(test_updateaddr));
-+	test_updateaddridx = 0;
-+	test_pr_bufferidx = 0;
-+	test_pr_idx = 0;
-+}
-+
-+/* callback used by the show_admin function */
-+static __printf(2, 3)
-+int test_prf(void *out, const char *fmt, ...)
-+{
-+	static char test_buffer[TEST_BUF_SZ];
-+	va_list args;
-+	int idx, cnt;
-+
-+	if (test_pr_bufferidx >= TEST_BUF_CNT) {
-+		pr_err("%s:%d: overflow: %d\n", __func__, __LINE__,
-+		       test_pr_bufferidx);
-+		return 0;
-+	}
-+
-+	va_start(args, fmt);
-+	cnt = vscnprintf(test_buffer, TEST_BUF_SZ, fmt, args);
-+	va_end(args);
-+
-+	for (idx = 0; idx < cnt; ++idx) {
-+		test_pr_buffer[test_pr_bufferidx][test_pr_idx] =
-+			test_buffer[idx];
-+		if (test_buffer[idx] == '\n') {
-+			test_pr_buffer[test_pr_bufferidx][++test_pr_idx] = 0;
-+			test_pr_idx = 0;
-+			test_pr_bufferidx++;
-+		} else {
-+			++test_pr_idx;
-+		}
-+	}
-+
-+	return cnt;
-+}
-+
-+/* Define the test cases. */
-+
-+static void vcap_api_addr_keyset_test(struct kunit *test)
-+{
-+	u32 keydata[12] = {
-+		0x40450042, 0x000feaf3, 0x00000003, 0x00050600,
-+		0x10203040, 0x00075880, 0x633c6864, 0x00040003,
-+		0x00000020, 0x00000008, 0x00000240, 0x00000000,
-+	};
-+	u32 mskdata[12] = {
-+		0x0030ff80, 0xfff00000, 0xfffffffc, 0xfff000ff,
-+		0x00000000, 0xfff00000, 0x00000000, 0xfff3fffc,
-+		0xffffffc0, 0xffffffff, 0xfffffc03, 0xffffffff,
-+	};
-+	u32 actdata[12] = {};
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+		.cache = {
-+			.keystream = keydata,
-+			.maskstream = mskdata,
-+			.actionstream = actdata,
-+		},
-+	};
-+	int ret, idx, addr;
-+
-+	vcap_test_api_init(&admin);
-+
-+	/* Go from higher to lower addresses searching for a keyset */
-+	for (idx = ARRAY_SIZE(keydata) - 1, addr = 799; idx > 0;
-+	     --idx, --addr) {
-+		admin.cache.keystream = &keydata[idx];
-+		admin.cache.maskstream = &mskdata[idx];
-+		ret = vcap_addr_keyset(&test_vctrl, &test_netdev, &admin, addr);
-+		KUNIT_EXPECT_EQ(test, -EINVAL, ret);
-+	}
-+
-+	/* Finally we hit the start of the rule */
-+	admin.cache.keystream = &keydata[idx];
-+	admin.cache.maskstream = &mskdata[idx];
-+	ret = vcap_addr_keyset(&test_vctrl, &test_netdev, &admin,  addr);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, ret);
-+}
-+
-+static void vcap_api_show_admin_raw_test(struct kunit *test)
-+{
-+	u32 keydata[4] = {
-+		0x40450042, 0x000feaf3, 0x00000003, 0x00050600,
-+	};
-+	u32 mskdata[4] = {
-+		0x0030ff80, 0xfff00000, 0xfffffffc, 0xfff000ff,
-+	};
-+	u32 actdata[12] = {};
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+		.cache = {
-+			.keystream = keydata,
-+			.maskstream = mskdata,
-+			.actionstream = actdata,
-+		},
-+		.first_valid_addr = 786,
-+		.last_valid_addr = 788,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.ndev = &test_netdev,
-+	};
-+	struct vcap_output_print out = {
-+		.prf = (void *)test_prf,
-+	};
-+	const char *test_expected =
-+		"  addr: 786, X6 rule, keyset: VCAP_KFS_MAC_ETYPE\n";
-+	int ret;
-+
-+	vcap_test_api_init(&admin);
-+	list_add_tail(&ri.list, &admin.rules);
-+
-+	ret = vcap_show_admin_raw(&test_vctrl, &admin, &out);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	KUNIT_EXPECT_STREQ(test, test_expected, test_pr_buffer[0]);
-+}
-+
-+static const char * const test_admin_info_expect[] = {
-+	"name: is2\n",
-+	"rows: 256\n",
-+	"sw_count: 12\n",
-+	"sw_width: 52\n",
-+	"sticky_width: 1\n",
-+	"act_width: 110\n",
-+	"default_cnt: 73\n",
-+	"require_cnt_dis: 0\n",
-+	"version: 1\n",
-+	"vtype: 2\n",
-+	"vinst: 0\n",
-+	"first_cid: 10000\n",
-+	"last_cid: 19999\n",
-+	"lookups: 4\n",
-+	"first_valid_addr: 0\n",
-+	"last_valid_addr: 3071\n",
-+	"last_used_addr: 794\n",
-+};
-+
-+static void vcap_api_show_admin_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+		.first_cid = 10000,
-+		.last_cid = 19999,
-+		.lookups = 4,
-+		.last_valid_addr = 3071,
-+		.first_valid_addr = 0,
-+		.last_used_addr = 794,
-+	};
-+	struct vcap_output_print out = {
-+		.prf = (void *)test_prf,
-+	};
-+	int idx;
-+
-+	vcap_test_api_init(&admin);
-+
-+	vcap_show_admin_info(&test_vctrl, &admin, &out);
-+	for (idx = 0; idx < test_pr_bufferidx; ++idx) {
-+		/* pr_info("log[%02d]: %s", idx, test_pr_buffer[idx]); */
-+		KUNIT_EXPECT_STREQ(test, test_admin_info_expect[idx],
-+				   test_pr_buffer[idx]);
-+	}
-+}
-+
-+static const char * const test_admin_expect[] = {
-+	"name: is2\n",
-+	"rows: 256\n",
-+	"sw_count: 12\n",
-+	"sw_width: 52\n",
-+	"sticky_width: 1\n",
-+	"act_width: 110\n",
-+	"default_cnt: 73\n",
-+	"require_cnt_dis: 0\n",
-+	"version: 1\n",
-+	"vtype: 2\n",
-+	"vinst: 0\n",
-+	"first_cid: 8000000\n",
-+	"last_cid: 8199999\n",
-+	"lookups: 4\n",
-+	"first_valid_addr: 0\n",
-+	"last_valid_addr: 3071\n",
-+	"last_used_addr: 794\n",
-+	"\n",
-+	"rule: 100, addr: [794,799], X6, ctr[0]: 0, hit: 0\n",
-+	"  chain_id: 0\n",
-+	"  user: 0\n",
-+	"  priority: 0\n",
-+	"  keyset: VCAP_KFS_MAC_ETYPE\n",
-+	"  keyset_sw: 6\n",
-+	"  keyset_sw_regs: 2\n",
-+	"    ETYPE_LEN_IS: W1: 1/1\n",
-+	"    IF_IGR_PORT_MASK: W32: 0xffabcd01/0xffffffff\n",
-+	"    IF_IGR_PORT_MASK_RNG: W4: 5/15\n",
-+	"    L2_DMAC: W48: 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff\n",
-+	"    L2_PAYLOAD_ETYPE: W64: 0x9000002000000081/0xff000000000000ff\n",
-+	"    L2_SMAC: W48: b1:9e:34:32:75:88/ff:ff:ff:ff:ff:ff\n",
-+	"    LOOKUP_FIRST_IS: W1: 1/1\n",
-+	"    TYPE: W4: 0/15\n",
-+	"  actionset: VCAP_AFS_BASE_TYPE\n",
-+	"  actionset_sw: 3\n",
-+	"  actionset_sw_regs: 4\n",
-+	"    CNT_ID: W12: 100\n",
-+	"    MATCH_ID: W16: 1\n",
-+	"    MATCH_ID_MASK: W16: 1\n",
-+	"    POLICE_ENA: W1: 1\n",
-+	"    PORT_MASK: W68: 0x0514670115f3324589\n",
-+};
-+
-+static void vcap_api_show_admin_rule_test(struct kunit *test)
-+{
-+	u32 keydata[] = {
-+		0x40450042, 0x000feaf3, 0x00000003, 0x00050600,
-+		0x10203040, 0x00075880, 0x633c6864, 0x00040003,
-+		0x00000020, 0x00000008, 0x00000240, 0x00000000,
-+	};
-+	u32 mskdata[] = {
-+		0x0030ff80, 0xfff00000, 0xfffffffc, 0xfff000ff,
-+		0x00000000, 0xfff00000, 0x00000000, 0xfff3fffc,
-+		0xffffffc0, 0xffffffff, 0xfffffc03, 0xffffffff,
-+	};
-+	u32 actdata[] = {
-+		0x00040002, 0xf3324589, 0x14670115, 0x00000005,
-+		0x00000000, 0x00100000, 0x06400010, 0x00000000,
-+		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-+		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-+		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-+		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-+	};
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+		.first_cid = 8000000,
-+		.last_cid = 8199999,
-+		.lookups = 4,
-+		.last_valid_addr = 3071,
-+		.first_valid_addr = 0,
-+		.last_used_addr = 794,
-+		.cache = {
-+			.keystream = keydata,
-+			.maskstream = mskdata,
-+			.actionstream = actdata,
-+		},
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.data = {
-+			.id = 100,
-+			.keyset = VCAP_KFS_MAC_ETYPE,
-+			.actionset = VCAP_AFS_BASE_TYPE,
-+		},
-+		.size = 6,
-+		.keyset_sw = 6,
-+		.keyset_sw_regs = 2,
-+		.actionset_sw = 3,
-+		.actionset_sw_regs = 4,
-+		.addr = 794,
-+		.vctrl = &test_vctrl,
-+	};
-+	struct vcap_output_print out = {
-+		.prf = (void *)test_prf,
-+	};
-+	int ret, idx;
-+
-+	vcap_test_api_init(&admin);
-+	list_add_tail(&ri.list, &admin.rules);
-+
-+	ret = vcap_show_admin(&test_vctrl, &admin, &out);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	for (idx = 0; idx < test_pr_bufferidx; ++idx) {
-+		/* pr_info("log[%02d]: %s", idx, test_pr_buffer[idx]); */
-+		KUNIT_EXPECT_STREQ(test, test_admin_expect[idx],
-+				   test_pr_buffer[idx]);
-+	}
-+}
-+
-+static struct kunit_case vcap_api_debugfs_test_cases[] = {
-+	KUNIT_CASE(vcap_api_addr_keyset_test),
-+	KUNIT_CASE(vcap_api_show_admin_raw_test),
-+	KUNIT_CASE(vcap_api_show_admin_test),
-+	KUNIT_CASE(vcap_api_show_admin_rule_test),
-+	{}
-+};
-+
-+static struct kunit_suite vcap_api_debugfs_test_suite = {
-+	.name = "VCAP_API_DebugFS_Testsuite",
-+	.test_cases = vcap_api_debugfs_test_cases,
-+};
-+
-+kunit_test_suite(vcap_api_debugfs_test_suite);
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index a3dc1b2d029c..ec910e1c4c00 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1691,7 +1691,7 @@ static void vcap_api_rule_remove_at_end_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, 0, test_move_count);
- 	KUNIT_EXPECT_EQ(test, 780, test_init_start);
- 	KUNIT_EXPECT_EQ(test, 12, test_init_count);
--	KUNIT_EXPECT_EQ(test, 3071, admin.last_used_addr);
-+	KUNIT_EXPECT_EQ(test, 3072, admin.last_used_addr);
- }
- 
- static void vcap_api_rule_remove_in_middle_test(struct kunit *test)
-@@ -1766,7 +1766,7 @@ static void vcap_api_rule_remove_in_middle_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, 0, test_move_count);
- 	KUNIT_EXPECT_EQ(test, 798, test_init_start);
- 	KUNIT_EXPECT_EQ(test, 2, test_init_count);
--	KUNIT_EXPECT_EQ(test, 799, admin.last_used_addr);
-+	KUNIT_EXPECT_EQ(test, 800, admin.last_used_addr);
- }
- 
- static void vcap_api_rule_remove_in_front_test(struct kunit *test)
-@@ -1805,7 +1805,7 @@ static void vcap_api_rule_remove_in_front_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, 0, test_move_count);
- 	KUNIT_EXPECT_EQ(test, 780, test_init_start);
- 	KUNIT_EXPECT_EQ(test, 12, test_init_count);
--	KUNIT_EXPECT_EQ(test, 799, admin.last_used_addr);
-+	KUNIT_EXPECT_EQ(test, 800, admin.last_used_addr);
- 
- 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 20, 400, 6, 792);
- 	test_vcap_xn_rule_creator(test, 10000, VCAP_USER_QOS, 30, 300, 3, 789);
--- 
-2.38.1
-
+>
+> Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  include/net/inet_hashtables.h |  2 +-
+>  net/dccp/ipv4.c               | 22 ++++------------------
+>  net/dccp/ipv6.c               | 23 ++++-------------------
+>  net/ipv4/af_inet.c            | 11 +----------
+>  net/ipv4/inet_hashtables.c    | 31 ++++++++++++++++++++++++++++---
+>  net/ipv4/tcp_ipv4.c           | 20 ++++----------------
+>  net/ipv6/tcp_ipv6.c           | 19 +++----------------
+>  7 files changed, 45 insertions(+), 83 deletions(-)
+>
+> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> index 3af1e927247d..ba06e8b52264 100644
+> --- a/include/net/inet_hashtables.h
+> +++ b/include/net/inet_hashtables.h
+> @@ -281,7 +281,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+>   * sk_v6_rcv_saddr (ipv6) changes after it has been binded. The socket's
+>   * rcv_saddr field should already have been updated when this is called.
+>   */
+> -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk);
+> +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
+>
+>  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+>                     struct inet_bind2_bucket *tb2, unsigned short port);
+> diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+> index 40640c26680e..95e376e3b911 100644
+> --- a/net/dccp/ipv4.c
+> +++ b/net/dccp/ipv4.c
+> @@ -45,11 +45,10 @@ static unsigned int dccp_v4_pernet_id __read_mostly;
+>  int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+>  {
+>         const struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+> -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
+>         struct inet_sock *inet = inet_sk(sk);
+>         struct dccp_sock *dp = dccp_sk(sk);
+>         __be16 orig_sport, orig_dport;
+> +       __be32 daddr, nexthop;
+>         struct flowi4 *fl4;
+>         struct rtable *rt;
+>         int err;
+> @@ -91,26 +90,13 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+>                 daddr = fl4->daddr;
+>
+>         if (inet->inet_saddr == 0) {
+> -               if (inet_csk(sk)->icsk_bind2_hash) {
+> -                       prev_addr_hashbucket =
+> -                               inet_bhashfn_portaddr(&dccp_hashinfo, sk,
+> -                                                     sock_net(sk),
+> -                                                     inet->inet_num);
+> -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
+> -               }
+> -               inet->inet_saddr = fl4->saddr;
+> -       }
+> -
+> -       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> -
+> -       if (prev_addr_hashbucket) {
+> -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
+>                 if (err) {
+> -                       inet->inet_saddr = 0;
+> -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
+>                         ip_rt_put(rt);
+>                         return err;
+>                 }
+> +       } else {
+> +               sk_rcv_saddr_set(sk, inet->inet_saddr);
+>         }
+>
+>         inet->inet_dport = usin->sin_port;
+> diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> index 626166cb6d7e..94c101ed57a9 100644
+> --- a/net/dccp/ipv6.c
+> +++ b/net/dccp/ipv6.c
+> @@ -934,26 +934,11 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+>         }
+>
+>         if (saddr == NULL) {
+> -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> -               struct in6_addr prev_v6_rcv_saddr;
+> -
+> -               if (icsk->icsk_bind2_hash) {
+> -                       prev_addr_hashbucket = inet_bhashfn_portaddr(&dccp_hashinfo,
+> -                                                                    sk, sock_net(sk),
+> -                                                                    inet->inet_num);
+> -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+> -               }
+> -
+>                 saddr = &fl6.saddr;
+> -               sk->sk_v6_rcv_saddr = *saddr;
+> -
+> -               if (prev_addr_hashbucket) {
+> -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> -                       if (err) {
+> -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
+> -                               goto failure;
+> -                       }
+> -               }
+> +
+> +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
+> +               if (err)
+> +                       goto failure;
+>         }
+>
+>         /* set the source address */
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index 4728087c42a5..0da679411330 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -1230,7 +1230,6 @@ EXPORT_SYMBOL(inet_unregister_protosw);
+>
+>  static int inet_sk_reselect_saddr(struct sock *sk)
+>  {
+> -       struct inet_bind_hashbucket *prev_addr_hashbucket;
+>         struct inet_sock *inet = inet_sk(sk);
+>         __be32 old_saddr = inet->inet_saddr;
+>         __be32 daddr = inet->inet_daddr;
+> @@ -1260,16 +1259,8 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+>                 return 0;
+>         }
+>
+> -       prev_addr_hashbucket =
+> -               inet_bhashfn_portaddr(tcp_or_dccp_get_hashinfo(sk), sk,
+> -                                     sock_net(sk), inet->inet_num);
+> -
+> -       inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
+> -
+> -       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> +       err = inet_bhash2_update_saddr(sk, &new_saddr, AF_INET);
+>         if (err) {
+> -               inet->inet_saddr = old_saddr;
+> -               inet->inet_rcv_saddr = old_saddr;
+>                 ip_rt_put(rt);
+>                 return err;
+>         }
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index d745f962745e..dcb6bc918966 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -858,7 +858,20 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+>         return &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
+>  }
+>
+> -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk)
+> +static void inet_update_saddr(struct sock *sk, void *saddr, int family)
+> +{
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +       if (family == AF_INET6) {
+> +               sk->sk_v6_rcv_saddr = *(struct in6_addr *)saddr;
+> +       } else
+> +#endif
+> +       {
+> +               inet_sk(sk)->inet_saddr = *(__be32 *)saddr;
+> +               sk_rcv_saddr_set(sk, inet_sk(sk)->inet_saddr);
+> +       }
+> +}
+> +
+> +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
+>  {
+>         struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+>         struct inet_bind2_bucket *tb2, *new_tb2;
+> @@ -867,6 +880,12 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
+>         int port = inet_sk(sk)->inet_num;
+>         struct net *net = sock_net(sk);
+>
+> +       if (!inet_csk(sk)->icsk_bind2_hash) {
+> +               /* Not bind()ed before. */
+> +               inet_update_saddr(sk, saddr, family);
+> +               return 0;
+> +       }
+> +
+>         /* Allocate a bind2 bucket ahead of time to avoid permanently putting
+>          * the bhash2 table in an inconsistent state if a new tb2 bucket
+>          * allocation fails.
+> @@ -875,12 +894,18 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
+>         if (!new_tb2)
+>                 return -ENOMEM;
+>
+> +       /* Unlink first not to show the wrong address for other threads. */
+>         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+>
+> -       spin_lock_bh(&prev_saddr->lock);
+> +       spin_lock_bh(&head2->lock);
+>         __sk_del_bind2_node(sk);
+>         inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
+> -       spin_unlock_bh(&prev_saddr->lock);
+> +       spin_unlock_bh(&head2->lock);
+> +
+> +       inet_update_saddr(sk, saddr, family);
+> +
+> +       /* Update bhash2 bucket. */
+> +       head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+>
+>         spin_lock_bh(&head2->lock);
+>         tb2 = inet_bind2_bucket_find(head2, net, port, l3mdev, sk);
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index 6a3a732b584d..23dd7e9df2d5 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -199,15 +199,14 @@ static int tcp_v4_pre_connect(struct sock *sk, struct sockaddr *uaddr,
+>  /* This will initiate an outgoing connection. */
+>  int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+>  {
+> -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+>         struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+>         struct inet_timewait_death_row *tcp_death_row;
+> -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
+>         struct inet_sock *inet = inet_sk(sk);
+>         struct tcp_sock *tp = tcp_sk(sk);
+>         struct ip_options_rcu *inet_opt;
+>         struct net *net = sock_net(sk);
+>         __be16 orig_sport, orig_dport;
+> +       __be32 daddr, nexthop;
+>         struct flowi4 *fl4;
+>         struct rtable *rt;
+>         int err;
+> @@ -251,24 +250,13 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+>         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
+>
+>         if (!inet->inet_saddr) {
+> -               if (inet_csk(sk)->icsk_bind2_hash) {
+> -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
+> -                                                                    sk, net, inet->inet_num);
+> -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
+> -               }
+> -               inet->inet_saddr = fl4->saddr;
+> -       }
+> -
+> -       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> -
+> -       if (prev_addr_hashbucket) {
+> -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
+>                 if (err) {
+> -                       inet->inet_saddr = 0;
+> -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
+>                         ip_rt_put(rt);
+>                         return err;
+>                 }
+> +       } else {
+> +               sk_rcv_saddr_set(sk, inet->inet_saddr);
+>         }
+>
+>         if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index 81b396e5cf79..2f3ca3190d26 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -292,24 +292,11 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+>         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
+>
+>         if (!saddr) {
+> -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> -               struct in6_addr prev_v6_rcv_saddr;
+> -
+> -               if (icsk->icsk_bind2_hash) {
+> -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
+> -                                                                    sk, net, inet->inet_num);
+> -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+> -               }
+>                 saddr = &fl6.saddr;
+> -               sk->sk_v6_rcv_saddr = *saddr;
+>
+> -               if (prev_addr_hashbucket) {
+> -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> -                       if (err) {
+> -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
+> -                               goto failure;
+> -                       }
+> -               }
+> +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
+> +               if (err)
+> +                       goto failure;
+>         }
+>
+>         /* set the source address */
+> --
+> 2.30.2
+>
