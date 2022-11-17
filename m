@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8EC62D1D0
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 04:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9547A62D1D9
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 04:48:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233803AbiKQDo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 22:44:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57114 "EHLO
+        id S234404AbiKQDsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 22:48:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbiKQDoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 22:44:55 -0500
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C4861B84
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 19:44:54 -0800 (PST)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-39115d17f3dso976597b3.1
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 19:44:54 -0800 (PST)
+        with ESMTP id S233825AbiKQDr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 22:47:59 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14EF6443
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 19:47:58 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id k22so559701pfd.3
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 19:47:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mX/nVVLR77rl9DUJUGIPDy2hSVN2IuYJAyXn0XHxv7c=;
-        b=cP7nrbODehEq41oxats2cCXRpCH3pgtt27PbJxs7RbS06z34/NEe4qwUp4RITt1nt1
-         D/+HUWdgQAzDfbnGNQt0SNs5qqtb7DwaTu4c/0wDA9k1Mr5ov9IIVAqZj/kXjmCZFWoR
-         /9RKa/XwGL88By0mdsQ7RUST7DpM3xlbnGbjQiVnvUZVz+ypi1ljTwI7tQMHNPfptF5a
-         0bOC1eb3DC4AqpsSdu1TBTTXy1odyyGyw99u5V9ow9IYRYZz+X66gW39g8t0wfcvT3mw
-         mA/jDa11l/7qpNohYGDSOga5+DA8QS9s5UQ0Nc5VfcaEkybbSDsi01PW+1wLp2LblJ52
-         Mh4w==
+        d=sifive.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=95URDCT2lDefEfxFaVoJRtX62WLacL7D+5K3Cyu98Jc=;
+        b=X9zElDDV3y7nK9fqSmtJMXmlfj60pW0dGEPPsFGiBdzi+H0osoovNbKhHg4/9CAdVV
+         J1tEL77jotYUOWgOpA7wVm7DkiElTovf+T/pKkj77f4JQxC2Ss/UVl5qx3cWI4OgoX3j
+         0rPys2wDKdJzeoLn1iRzZxWwU8sHEW35puA8Tiyl13ZvDgsNsaQ4g4RfS1WeHyQxyy6L
+         5hXQlPsHpFqboGqOmtsHaCaM42E8Yx9JPV6bJoQ1ZflWmFyfm0tJcRe7kwowWD59iA5o
+         0eHIg9ngQEJcsnqecDDjyE1MMmjeS+O5FvNg+DDmwp3TEd0J+6hhBIkrqza46OBEY0Yc
+         T+WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=mX/nVVLR77rl9DUJUGIPDy2hSVN2IuYJAyXn0XHxv7c=;
-        b=HddAtHv9Ht6h0zsX5XgG2UIDHHo6YNAhf47PbGomfiyb4f6Js6NAJ+lAe4q3dt+bOM
-         zYl2/DuZ/sDh82K9FcOwzR+iBy2MQB6MQa+j7z+2x6a9KWbL37HyKljNZ/gbymNMMDvD
-         qyLlrgbMD8zIerx1GhO+dE+gELx+DkWx2+ACe+wPz0Etj0Realvly1dhUyaSnIdH31Yd
-         TNUQabh4BNiFuWRnZPWIpK9N/x6LSQxPIA/gBJMg62rD2CbxOIvSUDtVpL+in9rsbYwV
-         zxYdIMeamyiufdtJQlq35uj0clNU2Kwy2qApOAjNDG9ZBE4rfl+Eeq/c7l82ieNH1XUn
-         do7w==
-X-Gm-Message-State: ANoB5pk56riw7xw9fgLZip1NBVVDtk6Me8c0Oox4yIQShKrpQQUbxh2m
-        tXFAuJqWYmxbCE/F6kuOfZPfG28VS4a6FeFkD93rQA==
-X-Google-Smtp-Source: AA0mqf4ND4dr0qcwB0X64sQlUuAXu8iyuw4JOxhuWSakyAMfQKzY2rMLgSiX+xKDzhLZGfkZfM4rN3c8+1+X8QDR9bU=
-X-Received: by 2002:a0d:c103:0:b0:370:7a9a:564 with SMTP id
- c3-20020a0dc103000000b003707a9a0564mr427025ywd.278.1668656693295; Wed, 16 Nov
- 2022 19:44:53 -0800 (PST)
+        bh=95URDCT2lDefEfxFaVoJRtX62WLacL7D+5K3Cyu98Jc=;
+        b=GCC2WG3Q+Fooy3gjwRNRZUL5RzzQI10I4whWLIB9ggRs96103tKZh449YvyAL+nvPz
+         Iv/rbwEsq5cr+gJWYrZsXjMLAe1h/EaZI2AGq8kB2O3w9g08Qh6Iyeek1glWR5jlv50O
+         55JJcatOmoeBxe6VW/x3MYmzcPLT3CEW1VAZbotX4QLUWaOT/m8j32pI3jmZzUBfKKTi
+         OeSPjS+tOKti6RRnMPOwOM06stQOl5Glkh1slq4fof43/HsnLf53e85g9qF5kZeDu6rR
+         TaTT0vPWVoncvETXq/GQZajhRc8kjxGT+cOSzv1gmjZyKAd5EFs4Ha2us8wCOswrmknY
+         iSVw==
+X-Gm-Message-State: ANoB5plrCxMM2O0mlCj/Wq/QA9jRqrtX3A9VPg85SGAChhGDR/FfzJ4S
+        TZua8X0wmTrbaxFuaCzZb8XHaL+7BC/4omdC
+X-Google-Smtp-Source: AA0mqf45ZcoHgF4WpjFiGeCB2xs37Y0wkNJ+WItebNQ28OYbpBa+wiAM7jxfj0J3mwuHt7ilmLtUPA==
+X-Received: by 2002:a63:2443:0:b0:43c:e6cd:a9e4 with SMTP id k64-20020a632443000000b0043ce6cda9e4mr346241pgk.546.1668656878223;
+        Wed, 16 Nov 2022 19:47:58 -0800 (PST)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id p22-20020a1709027ed600b00187197c499asm13016723plb.164.2022.11.16.19.47.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Nov 2022 19:47:57 -0800 (PST)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     davem@davemloft.net, andrew@lunn.ch, kuba@kernel.org,
+        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, andy.chiu@sifive.com,
+        greentime.hu@sifive.com
+Subject: [PATCH v4 net-next 0/3] net: axienet: Use a DT property to configure frequency of the MDIO bus
+Date:   Thu, 17 Nov 2022 11:47:48 +0800
+Message-Id: <20221117034751.1347105-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-References: <20221117031551.1142289-1-joel@joelfernandes.org> <20221117031551.1142289-3-joel@joelfernandes.org>
-In-Reply-To: <20221117031551.1142289-3-joel@joelfernandes.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 16 Nov 2022 19:44:41 -0800
-Message-ID: <CANn89i+gKVdveEtR9DX15Xr7E9Nn2my6SEEbXTMmxbqtezm2vg@mail.gmail.com>
-Subject: Re: [PATCH rcu/dev 3/3] net: Use call_rcu_flush() for dst_destroy_rcu
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, rcu@vger.kernel.org,
-        rostedt@goodmis.org, paulmck@kernel.org, fweisbec@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 7:16 PM Joel Fernandes (Google)
-<joel@joelfernandes.org> wrote:
->
-> In a networking test on ChromeOS, we find that using the new CONFIG_RCU_LAZY
-> causes a networking test to fail in the teardown phase.
->
-> The failure happens during: ip netns del <name>
+Some FPGA platforms have to set frequency of the MDIO bus lower than 2.5
+MHz. Thus, we use a DT property, which is "clock-frequency", to work
+with it at boot time. The default 2.5 MHz would be set if the property
+is not pressent. Also, factor out mdio enable/disable functions due to
+the api change since 253761a0e61b7.
 
-And ? What happens then next ?
+Changelog:
+--- v4 ---
+1. change MAX_MDIO_FREQ to DEFAULT_MDIO_FREQ as suggested by Andrew.
+--- v3 RESEND ---
+1. Repost the exact same patch again
+--- v3 ---
+1. Fix coding style, and make probing of the driver fail if MDC overflow
+--- v2 ---
+1. Use clock-frequency, as defined in mdio.yaml, to configure MDIO
+   clock.
+2. Only print out frequency if it is set to a non-standard value.
+3. Reduce the scope of axienet_mdio_enable and remove
+   axienet_mdio_disable because no one really uses it anymore.
 
->
-> Using ftrace, I found the callbacks it was queuing which this series fixes. Use
-> call_rcu_flush() to revert to the old behavior. With that, the test passes.
+Andy Chiu (3):
+  net: axienet: Unexport and remove unused mdio functions
+  net: axienet: set mdio clock according to bus-frequency
+  dt-bindings: describe the support of "clock-frequency" in mdio
 
-What is this test about ? What barrier was used to make it not flaky ?
+ .../bindings/net/xilinx_axienet.txt           |  2 +
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  2 -
+ .../net/ethernet/xilinx/xilinx_axienet_mdio.c | 59 +++++++++++--------
+ 3 files changed, 35 insertions(+), 28 deletions(-)
 
-Was it depending on some undocumented RCU behavior ?
+-- 
+2.36.0
 
-Maybe adding a sysctl to force the flush would be better for functional tests ?
-
-I would rather change the test(s), than adding call_rcu_flush(),
-adding merge conflicts to future backports.
