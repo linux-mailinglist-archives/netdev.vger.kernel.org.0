@@ -2,53 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E314262D57B
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 09:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E18B62D581
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 09:52:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239330AbiKQIu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 03:50:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        id S234913AbiKQIwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 03:52:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239566AbiKQIux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 03:50:53 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41548BC6;
-        Thu, 17 Nov 2022 00:50:49 -0800 (PST)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCYXL3R0tzRpFK;
-        Thu, 17 Nov 2022 16:50:26 +0800 (CST)
-Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 16:50:47 +0800
-Received: from [10.67.109.54] (10.67.109.54) by kwepemm600005.china.huawei.com
- (7.193.23.191) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 16:50:46 +0800
-Subject: Re: [PATCH] net: mdio-ipq4019: fix possible invalid pointer
- dereference
-To:     Andrew Lunn <andrew@lunn.ch>
-References: <20221115045028.182441-1-tanghui20@huawei.com>
- <Y3OV4og418SxPF7+@lunn.ch>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <mw@semihalf.com>, <linux@armlinux.org.uk>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yusongping@huawei.com>
-From:   Hui Tang <tanghui20@huawei.com>
-Message-ID: <d31663c5-8ac1-f424-b0ad-737e86b4595b@huawei.com>
-Date:   Thu, 17 Nov 2022 16:50:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        with ESMTP id S239702AbiKQIwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 03:52:05 -0500
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3179CBC6
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 00:52:05 -0800 (PST)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-39115d17f3dso6269677b3.1
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 00:52:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=j2G6VBye6lDfLZBX/Rq6Nfy8Zgdvty8GsJtEgoNE0HA=;
+        b=rjUr5CoEUTXBpV7aP93AQn0oX1Gd3rBF/MKGrUpJJlz99hkwPIJpRisu1+uiwlXZzO
+         3i4JG9z1rZROt46taUBHM9kVz+WkMWciD+WxOU3R2NE0sq286ArlkcumxasoduflsEH2
+         IQTe4qGlMH+p9vu/YpdB3JCNssKIz+jDF8CKg7YSrrJdPyWGYDipm7O+7+4hRnZ7XV3J
+         hj8u+qv36gApKMCkCgH+pUBICqIhmctekozkQUFInW4t1zj7w6ckWyFhsdh7En3BYJrP
+         +v0+pZE1UWrbFA770uaTZVwQKKuY/I0ocZgQOSEfUCr/qIhDPPS3CWie5CAcuPCdTS74
+         SnDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j2G6VBye6lDfLZBX/Rq6Nfy8Zgdvty8GsJtEgoNE0HA=;
+        b=W2feuXspRg751NScueBIRKL3+O/n0ApQ9iriuoZgaNog0Yfz7+FwVXVUxp16TduFw4
+         cgeAcUed5/ImtjcEy5sz5iwNGA72z8ztMxI+QgHnCHrXvHRqSFf4zd5Bi5gILlIxTiRd
+         Hw+9VTLv6Nux/1CVhighSq11SzhDvjXQEXEhjz3iu5BtGzAJgYJLUk6AG6KkKuahZoyo
+         cRLZ6igCEUULkagywsLCbgD03Y//kPYyPx0A1pKSnhyl0kCtwb/UZg1Lil35G7tVYsjN
+         yzZRTjvBHE6EtwZKOUJpkIlgIZcL56nc19g72+oZ/yjoSa8IH+DeeZevfvtsuIIIRIU/
+         knDg==
+X-Gm-Message-State: ANoB5pnzdR3zI8TuWTGkiZuVqOUGKZVRiA+If6xOY8eQp1vkeeh04Ek/
+        Tuq6upNcSNbrYbB9R/SK5k5a336lgtKOcnoziCjjKp8C4jk=
+X-Google-Smtp-Source: AA0mqf6Y1V66zw5MMGW4qwLYY9m3hKPynVMp6SDwKLFvSieTFR+rYli2nIOyCEB/lAlcUQN2jiM2KAsILaRWEUnm/48=
+X-Received: by 2002:a0d:e601:0:b0:356:d0ed:6a79 with SMTP id
+ p1-20020a0de601000000b00356d0ed6a79mr1056006ywe.489.1668675124095; Thu, 17
+ Nov 2022 00:52:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <Y3OV4og418SxPF7+@lunn.ch>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.109.54]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600005.china.huawei.com (7.193.23.191)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <202211171520.UF5VyYSH-lkp@intel.com>
+In-Reply-To: <202211171520.UF5VyYSH-lkp@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 17 Nov 2022 00:51:53 -0800
+Message-ID: <CANn89i+va1YaFBk=3WYX0Qt1FEfz8oSnuAx2N8OxKfcAWwE6HA@mail.gmail.com>
+Subject: Re: [net-next:master 25/27] net/core/dev.c:6409 napi_disable() error:
+ uninitialized symbol 'new'.
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     oe-kbuild@lists.linux.dev, lkp@intel.com,
+        oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,43 +68,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/11/15 21:36, Andrew Lunn wrote:
-> On Tue, Nov 15, 2022 at 12:50:28PM +0800, Hui Tang wrote:
->> priv->eth_ldo_rdy is saved the return value of devm_ioremap_resource(),
->> which !IS_ERR() should be used to check.
->>
->> Fixes: 23a890d493e3 ("net: mdio: Add the reset function for IPQ MDIO driver")
->> Signed-off-by: Hui Tang <tanghui20@huawei.com>
->> ---
->>  drivers/net/mdio/mdio-ipq4019.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/mdio/mdio-ipq4019.c b/drivers/net/mdio/mdio-ipq4019.c
->> index 4eba5a91075c..d7a1f7c56f97 100644
->> --- a/drivers/net/mdio/mdio-ipq4019.c
->> +++ b/drivers/net/mdio/mdio-ipq4019.c
->> @@ -188,7 +188,7 @@ static int ipq_mdio_reset(struct mii_bus *bus)
->>  	/* To indicate CMN_PLL that ethernet_ldo has been ready if platform resource 1
->>  	 * is specified in the device tree.
->>  	 */
->> -	if (priv->eth_ldo_rdy) {
->> +	if (!IS_ERR(priv->eth_ldo_rdy)) {
->>  		val = readl(priv->eth_ldo_rdy);
->>  		val |= BIT(0);
->>  		writel(val, priv->eth_ldo_rdy);
+On Wed, Nov 16, 2022 at 11:36 PM Dan Carpenter <error27@gmail.com> wrote:
 >
-> There is a general pattern in the kernel that optional things are set
-> to NULL if the resource does not exist. Often there is a
-> get_foo_optional() which will return a NULL point if the things does
-> not exist, the thing if it does exist, or an error code if a real
-> error happened.
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
+> head:   d82303df06481235fe7cbaf605075e0c2c87e99b
+> commit: 4ffa1d1c6842a97e84cfbe56bfcf70edb23608e2 [25/27] net: adopt try_cmpxchg() in napi_{enable|disable}()
+> config: i386-randconfig-m021
+> compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
 >
-> So please follow this patterns. Check the return value in
-> ipq4019_mdio_probe(). Looking at __devm_ioremap_resource() i _think_
-> it returns -ENOMEM if the resource does not exist? So maybe any other
-> error is a real error, and should be reported, and -ENOMEM should
-> result in eth_ldo_rdy set to NULL?
+> If you fix the issue, kindly add following tag where applicable
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Reported-by: Dan Carpenter <error27@gmail.com>
+>
+> New smatch warnings:
+> net/core/dev.c:6409 napi_disable() error: uninitialized symbol 'new'.
 
-Thanks, I will resend it according to the style you said.
+Thanks, I will take care of this.
