@@ -2,68 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 212F262E9B5
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 00:42:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9526C62E9D4
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 00:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233466AbiKQXmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 18:42:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
+        id S231570AbiKQXrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 18:47:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbiKQXmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 18:42:19 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878A1769F7
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:42:18 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id k15so3311949pfg.2
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:42:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mAGr6P243bEJtDm6CtoCnv6ClOQRbaEu3tVMQQL3jDA=;
-        b=Hlyz0M972tYbGaySnnRGR5fASEaFxCPZhPK12t0O9qhM8UkTnQp/z61OfO3ceuyPI0
-         xOTkVrv1N6dbZxSbdw4Qgs9vsaFgLrSq40fyN63tQtmRqMMDLbwScY+QjDFfPxF/86V6
-         +UqTTNEDVANO54txMrYsU7i/5tk53wZMF+BOQYPuN2k3e9tKW9hlMc+6uJ0mUbDMqw5C
-         GU1ekcy0sCM9ImkWTUiARB2rnQVi1RIbkaSw64m70UzZor8Z4LdGTBmY4hvGl1AMlreL
-         mf96ALBLK7noG1zcfKx78UztxhCHXmXbfE8+jc70Ub8au+6tiQ9MXjyqQMshRILVNkVn
-         m0bA==
+        with ESMTP id S233679AbiKQXrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 18:47:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADA3A451
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:46:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668728813;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t4amhDHKsYSMHWw3ZB+fT/YBGFiZSg1p/vLZ6sF81EM=;
+        b=JT9tTRqoliJZ5A6VTL+saUo7rvl+3jylEkd2Ptr3jBOgmkgp2pZG/6FAcWA/quQ3JV/054
+        wZjjh/sTmNJm8mNOwQbycFD5d05g92owYjmfeKCmiFt7TTGvN5zybxhkKfNmUNaumQberm
+        Ub0EuuJErFPgDfI5bscGzufTVwqiNA0=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-571-n-pQsnT7NjOvfg7k2p27Cg-1; Thu, 17 Nov 2022 18:46:51 -0500
+X-MC-Unique: n-pQsnT7NjOvfg7k2p27Cg-1
+Received: by mail-ed1-f71.google.com with SMTP id g14-20020a056402090e00b0046790cd9082so2058287edz.21
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:46:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mAGr6P243bEJtDm6CtoCnv6ClOQRbaEu3tVMQQL3jDA=;
-        b=HD/i7BDAnGNSDOFHthPEHwQXQdIKGpWCKF+vfe+YlanQHZmICtfNGRfUIo3AW0VlLs
-         EZIiYQZLNof0xmwXJ2fKf9fBJIbH1AJA6yi+6EuISx647BlSJAEVQBraIn9+WyL2LDnJ
-         gdwkXaDt0LRZ+5mGkrmCC+wTqxu7Ft9dSrE05UV6V826iltMb763YbFkv4lPJY8PwtZG
-         FDyFJJ9QQgFnfknR1/7eXJjyNWM9PW+6v6bPPN/eeU1ZedZrtd1heOQH+EvAIiX5hx9U
-         vAaXZ7hljloifvHop9V8Gz16vvIjzgfuXQNDmq5PiZckP4TbHvojhn3G55ptD/X5q6i0
-         SJnQ==
-X-Gm-Message-State: ANoB5pmNGxBlE6Q21cea0jOzqFgG4Wc/fVTt5+S6Lr+MLBx8YODY5GMO
-        fDqZLknn1wZZeda0zmj9PmbMkPcduAOVokROH7PqYA==
-X-Google-Smtp-Source: AA0mqf7SEroqyooiu9roFbZs3M2ux+wP5/gp40+DcC3styfa5bIrtA7kg/9NWOvMEM8tXzzSXGt30i5jjQCabCqME2c=
-X-Received: by 2002:a63:485a:0:b0:45b:f8be:7402 with SMTP id
- x26-20020a63485a000000b0045bf8be7402mr4124594pgk.484.1668728537891; Thu, 17
- Nov 2022 15:42:17 -0800 (PST)
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=t4amhDHKsYSMHWw3ZB+fT/YBGFiZSg1p/vLZ6sF81EM=;
+        b=OJSxItCv4jIgncDulD+jKtBtFRkC+w2x/A7t+DO7OK+YfTZWMtOUb+W7PZgMktct+T
+         J17mJj/JqyaBEu/hfTQa8RDXSY68JRs+8TZEsohgMEYDtoQrHMiBubNrhW/flih3XKvo
+         OMIsvZt0uo6cuvHYR2Ydi/FMxodIcYAO9krngCKD32RtE+qrLdg5JptSLSJ9Fd3cT6KW
+         SO2B+/4SIQHPSW2N2CqIXQQUDcHbAJaU2dxuJJ2Z1/FNw5kGFB1C0E2VTy17MQMKzTJL
+         wvHKWScwLuGHzlo9qI6xxXHu6Q02A8BcrFgrskSOTdGkfH17GNg+pgBt/djz/dFFYMt+
+         xO/A==
+X-Gm-Message-State: ANoB5pnH0JezG1qPSGMMoRtH9fnPU/joedsVKyECOhkblGqcCnmH7jUX
+        54GfpolnCerj1RVdjgp5BuHOMAUIIw22oJ+SpNsVPIXyx0YijBTCIJq4DUtidIIgXVyTtEKZzl3
+        Z0R/jVAzAXqSoUs1j
+X-Received: by 2002:a17:906:791:b0:7ad:14f8:7583 with SMTP id l17-20020a170906079100b007ad14f87583mr4074848ejc.185.1668728810208;
+        Thu, 17 Nov 2022 15:46:50 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5xbcfwM/CIQaQKBLzuqeKKGNTHSR6fYH18SUafOXx+saLrIDVlD+zoA8TAuKC4YfWcmovUKg==
+X-Received: by 2002:a17:906:791:b0:7ad:14f8:7583 with SMTP id l17-20020a170906079100b007ad14f87583mr4074814ejc.185.1668728809728;
+        Thu, 17 Nov 2022 15:46:49 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id v10-20020a170906292a00b007ad96726c42sm959726ejd.91.2022.11.17.15.46.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 15:46:48 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id ED9B37A701D; Fri, 18 Nov 2022 00:46:46 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next 05/11] veth: Support rx
+ timestamp metadata for xdp
+In-Reply-To: <CAKH8qBsPinmCO0Ny1hva7kp4+C7XFdxZLPBYEHXQWDjJ5SSoYw@mail.gmail.com>
+References: <20221115030210.3159213-1-sdf@google.com>
+ <20221115030210.3159213-6-sdf@google.com> <87h6z0i449.fsf@toke.dk>
+ <CAKH8qBsEGD3L0XAVzVHcTW6k_RhEt74pfXrPLANuznSAJw7bEg@mail.gmail.com>
+ <8735ajet05.fsf@toke.dk>
+ <CAKH8qBsg4aoFuiajuXmRN3VPKYVJZ-Z5wGzBy9pH3pV5RKCDzQ@mail.gmail.com>
+ <6374854883b22_5d64b208e3@john.notmuch>
+ <34f89a95-a79e-751c-fdd2-93889420bf96@linux.dev> <878rkbjjnp.fsf@toke.dk>
+ <6375340a6c284_66f16208aa@john.notmuch>
+ <CAKH8qBs1rYXf0GGto9hPz-ELLZ9c692cFnKC9JLwAq5b7JRK-A@mail.gmail.com>
+ <637576962dada_8cd03208b0@john.notmuch>
+ <CAKH8qBtOATGBMPkgdE0jZ+76AWMsUWau360u562bB=cGYq+gdQ@mail.gmail.com>
+ <CAADnVQKTXuBvP_2O6coswXL7MSvqVo1d+qXLabeOikcbcbAKPQ@mail.gmail.com>
+ <CAKH8qBvTdnyRYT+ocNS_ZmOfoN+nBEJ5jcBcKcqZ1hx0a5WrSw@mail.gmail.com>
+ <87wn7t4y0g.fsf@toke.dk>
+ <CAADnVQJMvPjXCtKNH+WCryPmukgbWTrJyHqxrnO=2YraZEukPg@mail.gmail.com>
+ <CAKH8qBsPinmCO0Ny1hva7kp4+C7XFdxZLPBYEHXQWDjJ5SSoYw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 18 Nov 2022 00:46:46 +0100
+Message-ID: <874juxywih.fsf@toke.dk>
 MIME-Version: 1.0
-References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
- <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com> <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
- <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
- <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com> <CAJ+vNU2i3xm49PJkMnrzeEddywVxGSk4XOq3s9aFOKuZxDdM=A@mail.gmail.com>
- <b336155c-f96d-2ccb-fbfd-db6d454b3b10@seco.com> <CAJ+vNU1-zoug5CoN4=Ut1AL-8ykqfWKGTvJBkFPajR_Z1OCURQ@mail.gmail.com>
- <CAJ+vNU2pzk4c5yg1mfw=6m-+z1j3-0ydkvw-uMgYKJC28Dhf+g@mail.gmail.com> <af134bf0-d15e-2415-264b-a70766957734@seco.com>
-In-Reply-To: <af134bf0-d15e-2415-264b-a70766957734@seco.com>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Thu, 17 Nov 2022 15:42:02 -0800
-Message-ID: <CAJ+vNU2zJuujdU-epsm30C+VCBVNHWVs9CML7FUYni5VUTiJkw@mail.gmail.com>
-Subject: Re: status of rate adaptation
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,262 +111,173 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 7:38 AM Sean Anderson <sean.anderson@seco.com> wrote:
+Stanislav Fomichev <sdf@google.com> writes:
+
+> On Thu, Nov 17, 2022 at 8:59 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>>
+>> On Thu, Nov 17, 2022 at 3:32 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+>> >
+>> > Stanislav Fomichev <sdf@google.com> writes:
+>> >
+>> > >> > Doesn't look like the descriptors are as nice as you're trying to
+>> > >> > paint them (with clear hash/csum fields) :-) So not sure how much
+>> > >> > CO-RE would help.
+>> > >> > At least looking at mlx4 rx_csum, the driver consults three diffe=
+rent
+>> > >> > sets of flags to figure out the hash_type. Or am I just unlucky w=
+ith
+>> > >> > mlx4?
+>> > >>
+>> > >> Which part are you talking about ?
+>> > >>         hw_checksum =3D csum_unfold((__force __sum16)cqe->checksum);
+>> > >> is trivial enough for bpf prog to do if it has access to 'cqe' poin=
+ter
+>> > >> which is what John is proposing (I think).
+>> > >
+>> > > I'm talking about mlx4_en_process_rx_cq, the caller of that check_cs=
+um.
+>> > > In particular: if (likely(dev->features & NETIF_F_RXCSUM)) branch
+>> > > I'm assuming we want to have hash_type available to the progs?
+>> >
+>> > I agree we should expose the hash_type, but that doesn't actually look
+>> > to be that complicated, see below.
+>> >
+>> > > But also, check_csum handles other corner cases:
+>> > > - short_frame: we simply force all those small frames to skip checks=
+um complete
+>> > > - get_fixed_ipv6_csum: In IPv6 packets, hw_checksum lacks 6 bytes fr=
+om
+>> > > IPv6 header
+>> > > - get_fixed_ipv4_csum: Although the stack expects checksum which
+>> > > doesn't include the pseudo header, the HW adds it
+>> > >
+>> > > So it doesn't look like we can just unconditionally use cqe->checksu=
+m?
+>> > > The driver does a lot of massaging around that field to make it
+>> > > palatable.
+>> >
+>> > Poking around a bit in the other drivers, AFAICT it's only a subset of
+>> > drivers that support CSUM_COMPLETE at all; for instance, the Intel
+>> > drivers just set CHECKSUM_UNNECESSARY for TCP/UDP/SCTP. I think the
+>> > CHECKSUM_UNNECESSARY is actually the most important bit we'd want to
+>> > propagate?
+>> >
+>> > AFAICT, the drivers actually implementing CHECKSUM_COMPLETE need access
+>> > to other data structures than the rx descriptor to determine the status
+>> > of the checksum (mlx4 looks at priv->flags, mlx5 checks rq->state), so
+>> > just exposing the rx descriptor to BPF as John is suggesting does not
+>> > actually give the XDP program enough information to act on the checksum
+>> > field on its own. We could still have a separate kfunc to just expose
+>> > the hw checksum value (see below), but I think it probably needs to be
+>> > paired with other kfuncs to be useful.
+>> >
+>> > Looking at the mlx4 code, I think the following mapping to kfuncs (in
+>> > pseudo-C) would give the flexibility for XDP to access all the bits it
+>> > needs, while inlining everything except getting the full checksum for
+>> > non-TCP/UDP traffic. An (admittedly cursory) glance at some of the oth=
+er
+>> > drivers (mlx5, ice, i40e) indicates that this would work for those
+>> > drivers as well.
+>> >
+>> >
+>> > bpf_xdp_metadata_rx_hash_supported() {
+>> >   return dev->features & NETIF_F_RXHASH;
+>> > }
+>> >
+>> > bpf_xdp_metadata_rx_hash() {
+>> >   return be32_to_cpu(cqe->immed_rss_invalid);
+>> > }
+>> >
+>> > bpf_xdp_metdata_rx_hash_type() {
+>> >   if (likely(dev->features & NETIF_F_RXCSUM) &&
+>> >       (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_TCP | MLX4_CQE_STATUS=
+_UDP)) &&
+>> >         (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_IPOK)) &&
+>> >           cqe->checksum =3D=3D cpu_to_be16(0xffff))
+>> >      return PKT_HASH_TYPE_L4;
+>> >
+>> >    return PKT_HASH_TYPE_L3;
+>> > }
+>> >
+>> > bpf_xdp_metadata_rx_csum_supported() {
+>> >   return dev->features & NETIF_F_RXCSUM;
+>> > }
+>> >
+>> > bpf_xdp_metadata_rx_csum_level() {
+>> >         if ((cqe->status & cpu_to_be16(MLX4_CQE_STATUS_TCP |
+>> >                                        MLX4_CQE_STATUS_UDP)) &&
+>> >             (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_IPOK)) &&
+>> >             cqe->checksum =3D=3D cpu_to_be16(0xffff))
+>> >             return CHECKSUM_UNNECESSARY;
+>> >
+>> >         if (!(priv->flags & MLX4_EN_FLAG_RX_CSUM_NON_TCP_UDP &&
+>> >               (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_IP_ANY))) &&
+>> >               !short_frame(len))
+>> >             return CHECKSUM_COMPLETE; /* we could also omit this case =
+entirely */
+>> >
+>> >         return CHECKSUM_NONE;
+>> > }
+>> >
+>> > /* this one could be called by the metadata_to_skb code */
+>> > bpf_xdp_metadata_rx_csum_full() {
+>> >   return check_csum() /* BPF_CALL this after refactoring so it is skb-=
+agnostic */
+>> > }
+>> >
+>> > /* this one would be for people like John who want to re-implement
+>> >  * check_csum() themselves */
+>> > bpf_xdp_metdata_rx_csum_raw() {
+>> >   return cqe->checksum;
+>> > }
+>>
+>> Are you proposing a bunch of per-driver kfuncs that bpf prog will call.
+>> If so that works, but bpf prog needs to pass dev and cqe pointers
+>> into these kfuncs, so they need to be exposed to the prog somehow.
+>> Probably through xdp_md ?
+
+No, I didn't mean we should call per-driver kfuncs; the examples above
+were meant to be examples of what the mlx4 driver would unrolls those
+kfuncs to. Sorry that that wasn't clear.
+
+> So far I'm doing:
 >
-> On 11/16/22 17:37, Tim Harvey wrote:
-> > On Mon, Nov 14, 2022 at 11:33 AM Tim Harvey <tharvey@gateworks.com> wrote:
-> >>
-> >> On Fri, Nov 11, 2022 at 2:38 PM Sean Anderson <sean.anderson@seco.com> wrote:
-> >> >
-> >> > On 11/11/22 17:14, Tim Harvey wrote:
-> >> > > On Fri, Nov 11, 2022 at 1:54 PM Sean Anderson <sean.anderson@seco.com> wrote:
-> >> > >>
-> >> > >> On 11/11/22 16:20, Tim Harvey wrote:
-> >> > >> > On Fri, Nov 11, 2022 at 12:58 PM Sean Anderson <sean.anderson@seco.com> wrote:
-> >> > >> >>
-> >> > >> >> On 11/11/22 15:57, Sean Anderson wrote:
-> >> > >> >> > Hi Tim,
-> >> > >> >> >
-> >> > >> >> > On 11/11/22 15:44, Tim Harvey wrote:
-> >> > >> >> >> Greetings,
-> >> > >> >> >>
-> >> > >> >> >> I've noticed some recent commits that appear to add rate adaptation support:
-> >> > >> >> >> 3c42563b3041 net: phy: aquantia: Add support for rate matching
-> >> > >> >> >> 7de26bf144f6 net: phy: aquantia: Add some additional phy interfaces
-> >> > >> >> >> b7e9294885b6 net: phylink: Adjust advertisement based on rate matching
-> >> > >> >> >> ae0e4bb2a0e0 net: phylink: Adjust link settings based on rate matching
-> >> > >> >> >> 0c3e10cb4423 net: phy: Add support for rate matching
-> >> > >> >> >>
-> >> > >> >> >> I have a board with an AQR113C PHY over XFI that functions properly at
-> >> > >> >> >> 10Gbe links but still not at 1Gbe,2.5Gbe,5.0Gbe,100M with v6.1-rc4
-> >> > >> >> >>
-> >> > >> >> >> Should I expect this to work now at those lower rates
-> >> > >> >> >
-> >> > >> >> > Yes.
-> >> > >> >
-> >> > >> > Sean,
-> >> > >> >
-> >> > >> > Good to hear - thank you for your work on this feature!
-> >> > >> >
-> >> > >> >> >
-> >> > >> >> >> and if so what kind of debug information or testing can I provide?
-> >> > >> >> >
-> >> > >> >> > Please send
-> >> > >> >> >
-> >> > >> >> > - Your test procedure (how do you select 1G?)
-> >> > >> >> > - Device tree node for the interface
-> >> > >> >> > - Output of ethtool (on both ends if possible).
-> >> > >> >> > - Kernel logs with debug enabled for drivers/phylink.c
-> >> > >> >>
-> >> > >> >> Sorry, this should be drivers/net/phy/phylink.c
-> >> > >> >>
-> >> > >> >> >
-> >> > >> >> > That should be enough to get us started.
-> >> > >> >> >
-> >> > >> >> > --Sean
-> >> > >> >>
-> >> > >> >
-> >> > >> > I'm currently testing by bringing up the network interface while
-> >> > >> > connected to a 10gbe switch, verifying link and traffic, then forcing
-> >> > >> > the switch port to 1000mbps.
-> >> > >> >
-> >> > >> > The board has a CN9130 on it (NIC is mvpp2) and the dt node snippets are:
-> >> > >> >
-> >> > >> > #include "cn9130.dtsi" /* include SoC device tree */
-> >> > >> >
-> >> > >> > &cp0_xmdio {
-> >> > >> >         pinctrl-names = "default";
-> >> > >> >         pinctrl-0 = <&cp0_xsmi_pins>;
-> >> > >> >         status = "okay";
-> >> > >> >
-> >> > >> >         phy1: ethernet-phy@8 {
-> >> > >> >                 compatible = "ethernet-phy-ieee802.3-c45";
-> >> > >> >                 reg = <8>;
-> >> > >> >         };
-> >> > >> > };
-> >> > >> >
-> >> > >> > &cp0_ethernet {
-> >> > >> >         status = "okay";
-> >> > >> > };
-> >> > >> >
-> >> > >> > /* 10GbE XFI AQR113C */
-> >> > >> > &cp0_eth0 {
-> >> > >> >         status = "okay";
-> >> > >> >         phy = <&phy1>;
-> >> > >> >         phy-mode = "10gbase-r";
-> >> > >> >         phys = <&cp0_comphy4 0>;
-> >> > >> > };
-> >> > >> >
-> >> > >> > Here are some logs with debug enabled in drivers/net/phy/phylink.c and
-> >> > >> > some additional debug in mvpp2.c and aquantia_main.c:
-> >> > >> > # ifconfig eth0 192.168.1.22
-> >> > >> > [    8.882437] aqr107_config_init state=1:ready an=1 link=0 duplex=255
-> >> > >> > speed=-1 26:10gbase-r
-> >> > >> > [    8.891391] aqr107_chip_info FW 5.6, Build 7, Provisioning 6
-> >> > >> > [    8.898165] aqr107_resume
-> >> > >> > [    8.902853] aqr107_get_rate_matching state=1:ready an=1 link=0
-> >> > >> > duplex=255 speed=-1 26:10gbase-r 0:
-> >> > >> > [    8.911932] mvpp2 f2000000.ethernet eth0: PHY
-> >> > >> > [f212a600.mdio-mii:08] driver [Aquantia AQR113C] (irq=POLL)
-> >> > >> > [    8.921577] mvpp2 f2000000.ethernet eth0: phy: 10gbase-r setting
-> >> > >> > supported 00000000,00018000,000e706f advertising
-> >> > >> > 00000000,00018000,000e706f
-> >> > >> > [    8.934349] mvpp2 f2000000.ethernet eth0: mac link down
-> >> > >> > [    8.948812] mvpp2 f2000000.ethernet eth0: configuring for
-> >> > >> > phy/10gbase-r link mode
-> >> > >> > [    8.956350] mvpp2 f2000000.ethernet eth0: major config 10gbase-r
-> >> > >> > [    8.962414] mvpp2 f2000000.ethernet eth0: phylink_mac_config:
-> >> > >> > mode=phy/10gbase-r/Unknown/Unknown/none adv=00000000,00000000,00000000
-> >> > >> > pause=00 link=0 an=0
-> >> > >> > [    8.976252] mvpp2 f2000000.ethernet eth0: mac link down
-> >> > >> > [    8.976267] aqr107_resume
-> >> > >> > [    8.988970] mvpp2 f2000000.ethernet eth0: phy link down
-> >> > >> > 10gbase-r/10Gbps/Full/none/off
-> >> > >> > [    8.997086] aqr107_link_change_notify state=5:nolink an=1 link=0
-> >> > >> > duplex=1 speed=10000 26:10gbase-r
-> >> > >> > [   14.112540] mvpp2 f2000000.ethernet eth0: mac link up
-> >> > >> > [   14.112594] mvpp2 f2000000.ethernet eth0: Link is Up - 10Gbps/Full
-> >> > >> > - flow control off
-> >> > >> > [   14.112673] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-> >> > >> > [   14.118198] mvpp2 f2000000.ethernet eth0: phy link up
-> >> > >> > 10gbase-r/10Gbps/Full/none/off
-> >> > >> > [   14.139808] aqr107_link_change_notify state=4:running an=1 link=1
-> >> > >> > duplex=1 speed=10000 26:10gbase-r
-> >> > >> >
-> >> > >> > # ethtool eth0
-> >> > >> > Settings for eth0:
-> >> > >> >         Supported ports: [ ]
-> >> > >> >         Supported link modes:   10baseT/Half 10baseT/Full
-> >> > >> >                                 100baseT/Half 100baseT/Full
-> >> > >>
-> >> > >> 10/100 half duplex aren't achievable with rate matching (and we avoid
-> >> > >> turning them on), so they must be coming from somewhere else. I wonder
-> >> > >> if this is because PHY_INTERFACE_MODE_SGMII is set in
-> >> > >> supported_interfaces.
-> >> > >>
-> >> > >> I wonder if you could enable USXGMII? Seems like mvpp2 with comphy
-> >> > >> should support it. I'm not sure if the aquantia driver is set up for it.
-> >> > >
-> >> > > This appears to trigger an issue from mvpp2:
-> >> > > mvpp2 f2000000.ethernet eth0: validation of usxgmii with support
-> >> > > 00000000,00018000,000e706f and advertisement
-> >> > > 00000000,00018000,000e706f failed: -EINVAL
-> >> >
-> >> > Ah, I forgot this was a separate phy mode. Disregard this.
-> >> >
-> >> > >>
-> >> > >> >                                 1000baseT/Full
-> >> > >> >                                 10000baseT/Full
-> >> > >> >                                 1000baseKX/Full
-> >> > >> >                                 10000baseKX4/Full
-> >> > >> >                                 10000baseKR/Full
-> >> > >> >                                 2500baseT/Full
-> >> > >> >                                 5000baseT/Full
-> >> > >> >         Supported pause frame use: Symmetric Receive-only
-> >> > >> >         Supports auto-negotiation: Yes
-> >> > >> >         Supported FEC modes: Not reported
-> >> > >> >         Advertised link modes:  10baseT/Half 10baseT/Full
-> >> > >> >                                 100baseT/Half 100baseT/Full
-> >> > >> >                                 1000baseT/Full
-> >> > >> >                                 10000baseT/Full
-> >> > >> >                                 1000baseKX/Full
-> >> > >> >                                 10000baseKX4/Full
-> >> > >> >                                 10000baseKR/Full
-> >> > >> >                                 2500baseT/Full
-> >> > >> >                                 5000baseT/Full
-> >> > >> >         Advertised pause frame use: Symmetric Receive-only
-> >> > >> >         Advertised auto-negotiation: Yes
-> >> > >> >         Advertised FEC modes: Not reported
-> >> > >> >         Link partner advertised link modes:  100baseT/Half 100baseT/Full
-> >> > >> >                                              1000baseT/Half 1000baseT/Full
-> >> > >> >                                              10000baseT/Full
-> >> > >> >                                              2500baseT/Full
-> >> > >> >                                              5000baseT/Full
-> >> > >> >         Link partner advertised pause frame use: No
-> >> > >> >         Link partner advertised auto-negotiation: Yes
-> >> > >> >         Link partner advertised FEC modes: Not reported
-> >> > >> >         Speed: 10000Mb/s
-> >> > >> >         Duplex: Full
-> >> > >> >         Port: Twisted Pair
-> >> > >> >         PHYAD: 8
-> >> > >> >         Transceiver: external
-> >> > >> >         Auto-negotiation: on
-> >> > >> >         MDI-X: Unknown
-> >> > >> >         Link detected: yes
-> >> > >> > # ping 192.168.1.146 -c5
-> >> > >> > PING 192.168.1.146 (192.168.1.146): 56 data bytes
-> >> > >> > 64 bytes from 192.168.1.146: seq=0 ttl=64 time=0.991 ms
-> >> > >> > 64 bytes from 192.168.1.146: seq=1 ttl=64 time=0.267 ms
-> >> > >> > 64 bytes from 192.168.1.146: seq=2 ttl=64 time=0.271 ms
-> >> > >> > 64 bytes from 192.168.1.146: seq=3 ttl=64 time=0.280 ms
-> >> > >> > 64 bytes from 192.168.1.146: seq=4 ttl=64 time=0.271 ms
-> >> > >> >
-> >> > >> > --- 192.168.1.146 ping statistics ---
-> >> > >> > 5 packets transmitted, 5 packets received, 0% packet loss
-> >> > >> > round-trip min/avg/max = 0.267/0.416/0.991 ms
-> >> > >> > # # force switch port to 1G
-> >> > >> > [  193.343494] mvpp2 f2000000.ethernet eth0: phy link down
-> >> > >> > 10gbase-r/Unknown/Unknown/none/off
-> >> > >> > [  193.343539] mvpp2 f2000000.ethernet eth0: mac link down
-> >> > >> > [  193.344524] mvpp2 f2000000.ethernet eth0: Link is Down
-> >> > >> > [  193.351973] aqr107_link_change_notify state=5:nolink an=1 link=0
-> >> > >> > duplex=255 speed=-1 26:10gbase-r
-> >> > >> > [  197.472489] mvpp2 f2000000.ethernet eth0: phy link up /1Gbps/Full/pause/off
-> >> > >>
-> >> > >> Well, it looks like we have selected PHY_INTERFACE_MODE_NA. Can you send
-> >> > >> the value of MDIO_PHYXS_VEND_IF_STATUS (dev 4, reg 0xe812)? Please also
-> >> > >> send the global config registers (dev 0x1e, reg 0x0310 through 0x031f)
-> >> > >> and the vendor provisioning registers (dev 4, reg 0xc440 through
-> >> > >> 0xc449).
-> >> > >
-> >> > > yes, this is what I've been looking at as well. When forced to 1000m
-> >> > > the register shows a phy type of 11 which according to the aqr113
-> >> > > datasheet is XFI 5G:
-> >> > > aqr107_read_status STATUS=0x00001258 (type=11) state=4:running an=1
-> >> > > link=1 duplex=1 speed=1000 interface=0
-> >> >
-> >> > That's pretty strange. Seems like it's rate adapting from 5g instead of
-> >> > 10g. Is SERDES Mode in the Global System Configuration For 1G register
-> >> > set to XFI?
-> >>
-> >> 1E.31C=0x0106:
-> >>   Rate Adaptation Method: 2=Pause Rate Adaptation
-> >>   SERDES Mode: 6=XFI/2 (XFI 5G)
-> >>
-> >
-> > The SERDES mode here is not valid and it seems to always be set to
-> > XFI/2 unless I init/use the AQR113 in U-Boot. If I manually set SERDES
-> > Mode to 0 (XFI) in the driver I find that all rates
-> > 10g,5g,2.5g,1g,100m work fine both in Linux 6.0 and in Linux 6.1-rc5.
-> > I'm still trying to understand why I would need to set SERDES Mode
-> > manually (vs the XFI mode specific firmware setting this) but I am
-> > unclear what the rate adaptation in 6.1 provides in this case. Is it
-> > that perhaps the AQR113 is handling rate adaptation internally and
-> > that's why the non 10gbe rates are working on 6.0?
+> struct mlx4_xdp_buff {
+>   struct xdp_buff xdp;
+>   struct mlx4_cqe *cqe;
+>   struct mlx4_en_dev *mdev;
+> }
 >
-> The changes in 6.1 are
+> And then the kfuncs get ctx (aka xdp_buff) as a sole argument and can
+> find cqe/mdev via container_of.
 >
-> - We now always enable pause frame reception when doing rate adaptation.
->   This is necessary for rate adaptation to work, but wasn't done
->   automatically before.
-> - We advertise lower speed modes which are enabled with rate adaptation,
->   even if we would not otherwise be able to support them.
+> If we really need these to be exposed to the program, can we use
+> Yonghong's approach from [0]?
+
+I don't think we should expose them to the BPF program; I like your
+approach of stuffing them next to the CTX pointer and de-referencing
+that. This makes it up to the driver which extra objects it needs, and
+the caller doesn't have to know/care.
+
+I'm not vehemently opposed to *also* having the rx-desc pointer directly
+accessible (in which case Yonghong's kfunc approach is probably fine).
+However, as mentioned in my previous email, I doubt how useful that
+descriptor itself will be...
+
+>> This way we can have both: bpf prog reading cqe fields directly
+>> and using kfuncs to access things.
+>> Inlining of kfuncs should be done generically.
+>> It's not a driver job to convert native asm into bpf asm.
 >
-> I'm not sure why you'd have XFI/2 selected in 6.1 if it isn't selected
-> in 6.0.
+> Ack. I can replace the unrolling with something that just resolves
+> "generic" kfuncs to the per-driver implementation maybe? That would at
+> least avoid netdev->ndo_kfunc_xxx indirect calls at runtime..
 
-Sean,
+As stated above, I think we should keep the unrolling. If we end up with
+an actual CALL instruction for every piece of metadata that's going to
+suck performance-wise; unrolling is how we keep this fast enough! :)
 
-Thanks for the explanation. The issue I had which resulted in the
-wrong SERDES mode was simply that I was using the wrong aquantia
-firmware. They customize the firmware to default registers like SERDES
-mode specifically for customers and I was unknowingly using the
-firmware for XFI/2 instead of XFI.
+-Toke
 
-I suppose it would be worth putting something in the aquantia driver
-that verifies SERDES mode matches the phy-mode from dt to throw an
-error.
-
-Best Regards,
-
-Tim
