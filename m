@@ -2,45 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 768E062DB04
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E64462DAFC
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240270AbiKQMfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 07:35:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
+        id S240245AbiKQMeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 07:34:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240201AbiKQMfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:35:04 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48212C751
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:34:38 -0800 (PST)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NCfQb4VRtzqSGy;
-        Thu, 17 Nov 2022 20:30:47 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 20:34:36 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 20:34:36 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <aelior@marvell.com>, <skalluru@marvell.com>,
-        <manishc@marvell.com>, <davem@davemloft.net>
-Subject: [PATCH net] bnx2x: fix pci device refcount leak in bnx2x_vf_is_pcie_pending()
-Date:   Thu, 17 Nov 2022 20:33:01 +0800
-Message-ID: <20221117123301.42916-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S239572AbiKQMdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:33:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AEDE17
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:33:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7FE8B81FE9
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 12:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6612C43470;
+        Thu, 17 Nov 2022 12:33:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668688402;
+        bh=afKBreaLze6quqlPuHlTS+8T3zAztg/zJe0KgC3tCgA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lrhHTpBgY7aobakQ3uoqLuxo7ITt1eK/ze65cXoryRoHJd/kFjzddTk8IUmeoz56n
+         4RIVTMoDGSXHs2KqLK/K+XL6vecfPLNLr0Q8teGLyOnxnn1p2Ex7gGdPOZCRkVo1oy
+         D86lOBwf9tYRTlPZIeSO4Olm9sFxd27v+PmdLsy4hSEj3I7DPVpomnF6yN7auR6RLn
+         FLm9S/phHiebbnnVvOPWv1ssmzQIaW6TQfbR4hEJAGrmt5Za1v6HfEQ3PCE3Mqz6r4
+         0V7TZtHbupmGaiHMmoNOtzSqCTIhmKXiwqJGem8LlwixJcdcrmlHgzEKzBH/2v3mfV
+         ElCD87foY0Kxg==
+Date:   Thu, 17 Nov 2022 14:33:18 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 8/8] xfrm: document IPsec packet offload mode
+Message-ID: <Y3YqDgaEOG9fuM2x@unreal>
+References: <cover.1667997522.git.leonro@nvidia.com>
+ <582d8f57e2faa56ba06ff24701413aa8c397be06.1667997522.git.leonro@nvidia.com>
+ <20221117121544.GL704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221117121544.GL704954@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,36 +56,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As comment of pci_get_domain_bus_and_slot() says, it returns
-a pci device with refcount increment, when finish using it,
-the caller must decrement the reference count by calling
-pci_dev_put(). Call pci_dev_put() before returning from
-bnx2x_vf_is_pcie_pending() to avoid refcount leak.
+On Thu, Nov 17, 2022 at 01:15:44PM +0100, Steffen Klassert wrote:
+> On Wed, Nov 09, 2022 at 02:54:36PM +0200, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> >  
+> > +and for packetoffload
+> 
+> Maybe better 'packet offload'
+> 
+> >  
+> > +Full offload mode:
+> 
+> This is now 'Packet offload mode'
 
-Fixes: b56e9670ffa4 ("bnx2x: Prepare device and initialize VF database")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-index 11d15cd03600..cd5108b38542 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
-@@ -802,8 +802,11 @@ static u8 bnx2x_vf_is_pcie_pending(struct bnx2x *bp, u8 abs_vfid)
- 		return false;
- 
- 	dev = pci_get_domain_bus_and_slot(vf->domain, vf->bus, vf->devfn);
--	if (dev)
--		return bnx2x_is_pcie_pending(dev);
-+	if (dev) {
-+		bool pending = bnx2x_is_pcie_pending(dev);
-+		pci_dev_put(dev);
-+		return pending;
-+	}
- 	return false;
- }
- 
--- 
-2.25.1
+I'll fix.
 
+Thanks
