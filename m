@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8F562DEF6
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 16:04:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A31C062DF6C
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 16:16:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239833AbiKQPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 10:04:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
+        id S240250AbiKQPQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 10:16:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234751AbiKQPEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 10:04:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEF8748C9
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 07:03:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668697394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4kP3I1EFsocj5neBUfNHWwkMSIOfBtU0NTLvuRyv3+g=;
-        b=epAVELbcKhypNQl4DRt9roWS18LR9SEP64+3pVWagzhqyvv0gN0g7GJtDStYyTfOqBHe8p
-        xRkn9bbOSwKwh/jp0u3ABgLUWkCnulz3sg/x5A4hRVg3vsCRhcFUjkjs82hlJuXJKef4M6
-        vkenEySS5o9Qljq/8ALOY6db4RB3aws=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-564-il7kNngmNuq2AjhzxnYIjw-1; Thu, 17 Nov 2022 10:03:13 -0500
-X-MC-Unique: il7kNngmNuq2AjhzxnYIjw-1
-Received: by mail-qk1-f200.google.com with SMTP id bi42-20020a05620a31aa00b006faaa1664b9so2370421qkb.8
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 07:03:13 -0800 (PST)
+        with ESMTP id S240553AbiKQPQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 10:16:06 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA84B8A160
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 07:11:25 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id p10-20020a9d76ca000000b0066d6c6bce58so1205846otl.7
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 07:11:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ehFA4pny3IQLJJpNultZQb7jKbS0rLL2TzD82s2n+KE=;
+        b=EcIcPhc5/+57nFv8oQEQfYomtANi76zvLBP9/jEO7ueks99oU0IbMdOmQmOwiB/CLa
+         BEhKMGiUVasWLAJEUT9GYUWXGfADhMR3ZdFn3icKu/nb8eUS+ro9TukHICKE0//GdNdg
+         5aySxoqPe6agI+ypNQMxRGGwCClkzJXz3vmSrFicJD6yrTHdP6M/EKc3Zkl6uuQabGFn
+         ncbPvrB8Eqhz8Q9/OZ+w8XxvLfbzxUaN6Kuvl9PkMhnc9miiEJXY0p0zVMgaOg1QFfii
+         bDRHjDLcDHsavLwf5YYLh3qIOlfzDYEx3th2YLwu/kE72bS0n5M9AZnisc3O8KuyacRn
+         mJwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4kP3I1EFsocj5neBUfNHWwkMSIOfBtU0NTLvuRyv3+g=;
-        b=7ks48n0sFAPFLiX4NIjIBs/DY6CouhOs8gNVI6hy7fo74D0wONbHpCwwLRomCrlT2l
-         qn/kebVTHFBZhScnc8168Oy3m7YqpSAKsTR1JYh/YNebfPW6ZtASbvgVqSwZy/Tzl7/G
-         0G/MNgSGUuIUPwCqRLzHP/a3MeC9IxBRmfczJUdEi8Gnd7u/nOxIr1hmEG9zKS3ikyEs
-         I5Hvcse8Xgp1VJICgJIhIVS8MtFsYKEZg1fXzsf7bc+3BwP29VE+S+9VftK5fEp9NKR+
-         LSgf0NzxKLZbhKCTNhek+7o4K2xl6gY0r+2436tyJnrJUi9qk2788eq5jAfJw6+/SGc9
-         ap2g==
-X-Gm-Message-State: ANoB5pkKtoT0Vv5VcgjKGVOlcejLJVFkeFhMWVrJ992sU7uTN3W3Tju5
-        9eXqu4geg0cgmuA+ugeUij3OqRbjGxT6oI/6aWNdIc9PQ0U99wCMzO7Fg/fxpb/qKkQyyfGXK9h
-        epsGZcbdk1Ma+QwUS
-X-Received: by 2002:ae9:dec2:0:b0:6fa:1c6f:1674 with SMTP id s185-20020ae9dec2000000b006fa1c6f1674mr1957802qkf.219.1668697392571;
-        Thu, 17 Nov 2022 07:03:12 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4ETfSrHfnC9NDbUvs1Ku+VUyCrRN60tL3WKkpDiJahvICyf3/cs/lgtM0qGX5O1Kk8IWsUhw==
-X-Received: by 2002:ae9:dec2:0:b0:6fa:1c6f:1674 with SMTP id s185-20020ae9dec2000000b006fa1c6f1674mr1957782qkf.219.1668697392326;
-        Thu, 17 Nov 2022 07:03:12 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id fd3-20020a05622a4d0300b003a586888a20sm472747qtb.79.2022.11.17.07.03.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 07:03:11 -0800 (PST)
-Message-ID: <519cbacf20b10909ee362e0bcc9aa87cbb7137f3.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: microchip: sparx5: prevent uninitialized
- variable
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Dan Carpenter <error27@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Machon <daniel.machon@microchip.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Date:   Thu, 17 Nov 2022 16:03:07 +0100
-In-Reply-To: <Y3OQrGoFqvX2GkbJ@kili>
-References: <Y3OQrGoFqvX2GkbJ@kili>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ehFA4pny3IQLJJpNultZQb7jKbS0rLL2TzD82s2n+KE=;
+        b=qZFBJQqI51p3k9L9YJRKWRRhuPgI6ScY6CcCqCb7SrA9Sxv4RYrz6Wm0YCfJZzZEIz
+         gznAtEzx1fO4wZSnPULbCC78tmAlHaxMvLKy5RobhgtWQX/v1yEI0KgB+tPkVgGFKijL
+         fM+sa6eBBUw1PvUQK1qQlfknmzIUdvEKeXzEhEbcr86VNX18effCiq5fOA/uUYKuhGiJ
+         RaAJ86+RmqgK/MZAC0OBGSPQ/Nftxnd6TVM1HFLZj7I0u+DNhr6BLiouSARJtjmLt0Nk
+         vGMv5vBZKADGoZSZLM3o3El2HluFDCo3WAcd3lrg7Q4PzO3uVCWqW5IM81j5y1snlX3J
+         R2qA==
+X-Gm-Message-State: ANoB5pktP3fezHLJH0CQtwYtiRkrMwT9jS9ZtfLoFOpl0JsAzwqLvvRq
+        2yJ8hCX2Cd3a7g0ZbaUyHzTd0GwsgU7EO7itI5c6Z9OCBNqmRw==
+X-Google-Smtp-Source: AA0mqf5UPwKH605uQDOHNKHN9naZvLmkOEwaeo4/aTdlIMvOFzMvmAXc1Xwvokf4funiJCLzpefRgcJVdX/7eMEIAkw=
+X-Received: by 2002:a05:6830:1254:b0:665:da4d:8d22 with SMTP id
+ s20-20020a056830125400b00665da4d8d22mr1531490otp.295.1668697872954; Thu, 17
+ Nov 2022 07:11:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <cover.1668527318.git.lucien.xin@gmail.com> <488fbfa082eb8a0ab81622a7c13c26b6fd8a0602.1668527318.git.lucien.xin@gmail.com>
+ <Y3VcEiOlB5OG0XFS@salvia> <CADvbK_en1btAkbvOBm7+LuN7_G_mkU0==HD-GSTjAjhJPykPdQ@mail.gmail.com>
+ <Y3YTfGZ9ZkXWUSOE@salvia>
+In-Reply-To: <Y3YTfGZ9ZkXWUSOE@salvia>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 17 Nov 2022 10:10:38 -0500
+Message-ID: <CADvbK_fmFybLVZwX1GXyt4zDy4_itGULOv4qp7z6ApoSkj=b5w@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] net: move the nat function to nf_nat_core
+ for ovs and tc
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Aaron Conole <aconole@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,33 +79,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Nov 17, 2022 at 5:57 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>
+> On Wed, Nov 16, 2022 at 07:51:40PM -0500, Xin Long wrote:
+> > On Wed, Nov 16, 2022 at 4:54 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > > On Tue, Nov 15, 2022 at 10:50:57AM -0500, Xin Long wrote:
+> [...]
+> > > I'd suggest you move this code to nf_nat_ovs.c or such so we remember
+> > > these symbols are used by act_ct.c and ovs.
+> >
+> > Good idea, do you think we should also create nf_conntrack_ovs.c
+> > to have nf_ct_helper() and nf_ct_add_helper()?
+> > which were added by:
+> >
+> > https://lore.kernel.org/netdev/20221101150031.a6rtrgzwfd7kzknn@t14s.localdomain/T/
+>
+> If it is used by ovs infra, I would suggest to move there too.
+OK, I will create only "nf_conntrack_ovs.c" to have the nat functions
+in this patch.
+and post another patch to move nf_ct_helper() and nf_ct_add_helper() there, too.
 
-On Tue, 2022-11-15 at 16:14 +0300, Dan Carpenter wrote:
-> Smatch complains that:
-> 
->     drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c:112
->     sparx5_dcb_apptrust_validate() error: uninitialized symbol 'match'.
-> 
-> This would only happen if the:
-> 
-> 	if (sparx5_dcb_apptrust_policies[i].nselectors != nselectors)
-> 
-> condition is always true (they are not equal).  The "nselectors"
-> variable comes from dcbnl_ieee_set() and it is a number between 0-256.
-> This seems like a probably a real bug.
-> 
-> Fixes: 23f8382cd95d ("net: microchip: sparx5: add support for apptrust")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+I think one file "nf_conntrack_ovs.c" should be enough to include all
+these functions
+used by ovs conntrack infra.
 
-checkpatch complains about the From/SoB mismatch - 
-'Dan Carpenter <error27@gmail.com>' vs 'Dan Carpenter
-<dan.carpenter@oracle.com>'
-
-Could you please send a v2 addressing that?
-
-thanks!
-
-Paolo
-
-
+Thanks.
