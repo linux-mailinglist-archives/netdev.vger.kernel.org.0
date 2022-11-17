@@ -2,117 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06C8162D385
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 07:33:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D409862D38B
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 07:38:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbiKQGd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 01:33:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
+        id S231838AbiKQGi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 01:38:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiKQGd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 01:33:26 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD762E0;
-        Wed, 16 Nov 2022 22:33:24 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 4B7412052E;
-        Thu, 17 Nov 2022 07:33:23 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id DIxknmb5yAGe; Thu, 17 Nov 2022 07:33:22 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id BCF4320501;
-        Thu, 17 Nov 2022 07:33:22 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id ADF4E80004A;
-        Thu, 17 Nov 2022 07:33:22 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 07:33:22 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+        with ESMTP id S229451AbiKQGiZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 01:38:25 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C49B1156;
+        Wed, 16 Nov 2022 22:38:23 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCVbL3SVFzHw1L;
+        Thu, 17 Nov 2022 14:37:50 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 17 Nov
- 2022 07:33:22 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id E44F5318194B; Thu, 17 Nov 2022 07:33:21 +0100 (CET)
-Date:   Thu, 17 Nov 2022 07:33:21 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Chen Zhongjin <chenzhongjin@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <mkubecek@suse.cz>
-Subject: Re: [PATCH net] xfrm: Fix ignored return value in xfrm6_init()
-Message-ID: <20221117063321.GD704954@gauss3.secunet.de>
-References: <20221103090713.188740-1-chenzhongjin@huawei.com>
- <Y2gGIuwY368X8Won@unreal>
- <917fab11-ae57-07b9-ae67-7c290c7c6723@huawei.com>
- <Y2i8mC0fNrs4MJsq@unreal>
+ 2022 14:38:21 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <johannes@sipsolutions.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH] wifi: mac80211: fix memory leak in ieee80211_if_add()
+Date:   Thu, 17 Nov 2022 14:45:00 +0800
+Message-ID: <20221117064500.319983-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y2i8mC0fNrs4MJsq@unreal>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 10:06:48AM +0200, Leon Romanovsky wrote:
-> On Mon, Nov 07, 2022 at 11:22:40AM +0800, Chen Zhongjin wrote:
-> > Hi,
-> > 
-> > On 2022/11/7 3:08, Leon Romanovsky wrote:
-> > > On Thu, Nov 03, 2022 at 05:07:13PM +0800, Chen Zhongjin wrote:
-> > > > When IPv6 module initializing in xfrm6_init(), register_pernet_subsys()
-> > > > is possible to fail but its return value is ignored.
-> > > > 
-> > > > If IPv6 initialization fails later and xfrm6_fini() is called,
-> > > > removing uninitialized list in xfrm6_net_ops will cause null-ptr-deref:
-> > > > 
-> > > > KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> > > > CPU: 1 PID: 330 Comm: insmod
-> > > > RIP: 0010:unregister_pernet_operations+0xc9/0x450
-> > > > Call Trace:
-> > > >   <TASK>
-> > > >   unregister_pernet_subsys+0x31/0x3e
-> > > >   xfrm6_fini+0x16/0x30 [ipv6]
-> > > >   ip6_route_init+0xcd/0x128 [ipv6]
-> > > >   inet6_init+0x29c/0x602 [ipv6]
-> > > >   ...
-> > > > 
-> > > > Fix it by catching the error return value of register_pernet_subsys().
-> > > > 
-> > > > Fixes: 8d068875caca ("xfrm: make gc_thresh configurable in all namespaces")
-> > > > Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-> > > > ---
-> > > >   net/ipv6/xfrm6_policy.c | 6 +++++-
-> > > >   1 file changed, 5 insertions(+), 1 deletion(-)
-> > > I see same error in net/ipv4/xfrm4_policy.c which introduced by same
-> > > commit mentioned in Fixes line.
-> > 
-> > It's true that in xfrm4_init() the ops->init is possible to fail as well.
-> > 
-> > However there is no error handling or exit path for ipv4, so IIUC the ops
-> > won't be unregistered anyway.
-> > 
-> > Considering that ipv4 don't handle most of error in initialization, maybe
-> > it's better to keep it as it is?
-> 
-> Yeah, makes sense.
-> 
-> Thanks,
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+When register_netdevice() failed in ieee80211_if_add(), ndev->tstats
+isn't released. Fix it.
 
-Applied, thanks a lot!
+Fixes: 5a490510ba5f ("mac80211: use per-CPU TX/RX statistics")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/mac80211/iface.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
+index dd9ac1f7d2ea..46f08ec5ed76 100644
+--- a/net/mac80211/iface.c
++++ b/net/mac80211/iface.c
+@@ -2258,6 +2258,7 @@ int ieee80211_if_add(struct ieee80211_local *local, const char *name,
+ 
+ 		ret = cfg80211_register_netdevice(ndev);
+ 		if (ret) {
++			ieee80211_if_free(ndev);
+ 			free_netdev(ndev);
+ 			return ret;
+ 		}
+-- 
+2.17.1
+
