@@ -2,136 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CAE462D727
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:38:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C6662D729
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:38:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234743AbiKQJic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
+        id S234833AbiKQJi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:38:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiKQJib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:38:31 -0500
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FFD12AB3;
-        Thu, 17 Nov 2022 01:38:30 -0800 (PST)
-Received: by mail-qk1-f169.google.com with SMTP id x18so781329qki.4;
-        Thu, 17 Nov 2022 01:38:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+Y9u3yKQBInKED+z7xkcGsxdCUk6KV1imL+4jmN3ryw=;
-        b=ONXF1fSjafdA5D1UVZ+8PMPffJC5GsfIeZluW3U/m+SDkO1toylR6cgJ5sOaZ6EvLb
-         DuBg240erHCBsOepDW7RrnHQSPUMnGFJBCPHUSV73AgHA/D42dN6Htpkr5sP0cU8tVtA
-         2qSDqrXAYI4rLqX0+EP8ys4bFVpwsyONoPxoWIR0T7nIEK8jHDHryazf9m5cHeBE1vv+
-         372u/cNa2YSLE4Q9gZeoP3bDGvkpJUiSW7U+ufIywO8CbpPV3Z76los4gPLGscYewfJG
-         SPXgtBOctEqMK8kr27AMqw2hyz9WSoXALwngx0CGO5FBTVt9UydB/YCwNKArt0wCdm2n
-         +TgA==
-X-Gm-Message-State: ANoB5pnMlfuMBUQufRot/nRMeOCG7YqeuUGUl2uTTYKGGo32yomL0QmI
-        AVzb3ofF61meBzounbVTk4gQz611lDBxyQ==
-X-Google-Smtp-Source: AA0mqf4QktA318NxXVAZ4DlHQ3NiME6pPjvcmrs2Uqzyv3REz3jTkD38h9HyrCHTsLadFRsLeMuzVQ==
-X-Received: by 2002:ae9:dc06:0:b0:6fa:93b1:a061 with SMTP id q6-20020ae9dc06000000b006fa93b1a061mr900700qkf.446.1668677909417;
-        Thu, 17 Nov 2022 01:38:29 -0800 (PST)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id x13-20020a05620a448d00b006fa4ac86bfbsm145347qkp.55.2022.11.17.01.38.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Nov 2022 01:38:28 -0800 (PST)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-36cbcda2157so13240957b3.11;
-        Thu, 17 Nov 2022 01:38:28 -0800 (PST)
-X-Received: by 2002:a05:690c:b81:b0:37e:6806:a5f9 with SMTP id
- ck1-20020a05690c0b8100b0037e6806a5f9mr1281543ywb.47.1668677907929; Thu, 17
- Nov 2022 01:38:27 -0800 (PST)
+        with ESMTP id S230114AbiKQJi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:38:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BF5220C1;
+        Thu, 17 Nov 2022 01:38:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 440FFB81FB7;
+        Thu, 17 Nov 2022 09:38:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE99C433C1;
+        Thu, 17 Nov 2022 09:38:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668677933;
+        bh=4sD97q64Vhm9ohzz9hO0c5k3ICEPUHQYDQgkQsMWb5E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=PuS6mY3PsA1fp0MEU7z+3BS288r2CJvZhd2SvcMCmKyH3ksngDeuH3i/hr/CFTdai
+         plh5+MKmQUdB103Wl6SUz/0pamP2RTbPae+HV3lnPXXOLODtaTrzll8xUSbgugG0xl
+         Fzv2xumnBjzzkGWZXJY+PCj+5oEpSA3+N4qcKG5DkrTMI9bpiCmyUeu8d3W0beIL3Y
+         P9kqQY56JCdmpd7/SZsuzwEstQcE5eo8nzkPflFg4JDgYuA7QqM77oY/YGzkJn+DkW
+         B5SoT37nB/UdutFdqeYxp+sesAqmejEmUuMG//C5XzWUqdAJy/tICoPhTfP3d5V+Nx
+         LtQyqDvkzciXg==
+Message-ID: <bce12cb3-72db-d8bc-96e4-4568222507a9@kernel.org>
+Date:   Thu, 17 Nov 2022 11:38:47 +0200
 MIME-Version: 1.0
-References: <20221115235519.679115-1-yoshihiro.shimoda.uh@renesas.com>
- <Y3XQBYdEG5EQFgQ+@unreal> <TYBPR01MB5341160928F54EF8A4814240D8069@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <CAMuHMdVZDNu7drDS618XG45ua7uASMkMgs0fRzZWv05BH_p_5g@mail.gmail.com> <Y3X7gWCP3h6OQb47@unreal>
-In-Reply-To: <Y3X7gWCP3h6OQb47@unreal>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 17 Nov 2022 10:38:16 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV2feBGX1tjrGu-gzq_MwfVRS5OHY9V+=wOe_q-E2VkTg@mail.gmail.com>
-Message-ID: <CAMuHMdV2feBGX1tjrGu-gzq_MwfVRS5OHY9V+=wOe_q-E2VkTg@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: renesas: rswitch: Fix MAC address info
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Dan Carpenter <error27@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 1/4] net: ethernet: ti: am65-cpsw: Fix set channel
+ operation
+Content-Language: en-US
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     edumazet@google.com, pabeni@redhat.com, vigneshr@ti.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221116164915.13236-1-rogerq@kernel.org>
+ <20221116164915.13236-2-rogerq@kernel.org>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20221116164915.13236-2-rogerq@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Leon,
 
-On Thu, Nov 17, 2022 at 10:14 AM Leon Romanovsky <leon@kernel.org> wrote:
-> On Thu, Nov 17, 2022 at 09:59:55AM +0100, Geert Uytterhoeven wrote:
-> > On Thu, Nov 17, 2022 at 9:58 AM Yoshihiro Shimoda
-> > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > > From: Leon Romanovsky, Sent: Thursday, November 17, 2022 3:09 PM
-> > > > > --- a/drivers/net/ethernet/renesas/rswitch.c
-> > > > > +++ b/drivers/net/ethernet/renesas/rswitch.c
-> > > > > @@ -1714,7 +1714,7 @@ static int rswitch_init(struct rswitch_private *priv)
-> > > > >     }
-> > > > >
-> > > > >     for (i = 0; i < RSWITCH_NUM_PORTS; i++)
-> > > > > -           netdev_info(priv->rdev[i]->ndev, "MAC address %pMn",
-> > > > > +           netdev_info(priv->rdev[i]->ndev, "MAC address %pM\n",
-> > > >
-> > > > You can safely drop '\n' from here. It is not needed while printing one
-> > > > line.
-> > >
-> > > Oh, I didn't know that. I'll remove '\n' from here on v2 patch.
-> >
-> > Please don't remove it.  The convention is to have the newlines.
->
-> Can you please explain why?
 
-I'm quite sure this was discussed in the context of commits
-5fd29d6ccbc98884 ("printk: clean up handling of log-levels and
-newlines") and 4bcc595ccd80decb ("printk: reinstate KERN_CONT for
-printing continuation lines"), but I couldn't find a pointer to an
-official statement.
+On 16/11/2022 18:49, Roger Quadros wrote:
+> The set channel operation "ethtool -L tx <n>" broke with
+> the recent suspend/resume changes.
+> 
+> Revert back to original driver behaviour of not freeing
+> the TX/RX IRQs at am65_cpsw_nuss_common_stop(). We will
+> now free them only on .suspend() as we need to release
+> the DMA channels (as DMA looses context) and re-acquiring
+> them on .resume() may not necessarily give us the same
+> IRQs.
+> 
+> Introduce am65_cpsw_nuss_remove_rx_chns() which is similar
+> to am65_cpsw_nuss_remove_tx_chns() and invoke them both in
+> .suspend().
+> 
+> At .resume() call am65_cpsw_nuss_init_rx/tx_chns() to
+> acquire the DMA channels.
+> 
+> To as IRQs need to be requested after knowing the IRQ
+> numbers, move am65_cpsw_nuss_ndev_add_tx_napi() call to
+> am65_cpsw_nuss_init_tx_chns().
+> 
+> Also fixes the below warning during suspend/resume on multi
+> CPU system.
+> 
+> [   67.347684] ------------[ cut here ]------------
+> [   67.347700] Unbalanced enable for IRQ 119
+> [   67.347726] WARNING: CPU: 0 PID: 1080 at kernel/irq/manage.c:781 __enable_irq+0x4c/0x80
+> [   67.347754] Modules linked in: wlcore_sdio wl18xx wlcore mac80211 libarc4 cfg80211 rfkill crct10dif_ce sch_fq_codel ipv6
+> [   67.347803] CPU: 0 PID: 1080 Comm: rtcwake Not tainted 6.1.0-rc4-00023-gc826e5480732-dirty #203
+> [   67.347812] Hardware name: Texas Instruments AM625 (DT)
+> [   67.347818] pstate: 400000c5 (nZcv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   67.347829] pc : __enable_irq+0x4c/0x80
+> [   67.347838] lr : __enable_irq+0x4c/0x80
+> [   67.347846] sp : ffff80000999ba00
+> [   67.347850] x29: ffff80000999ba00 x28: ffff0000011c1c80 x27: 0000000000000000
+> [   67.347863] x26: 00000000000001f4 x25: ffff000001058358 x24: ffff000001059080
+> [   67.347876] x23: ffff000001058080 x22: ffff000001060000 x21: 0000000000000077
+> [   67.347888] x20: ffff0000011c1c80 x19: ffff000001429600 x18: 0000000000000001
+> [   67.347900] x17: 0000000000000080 x16: fffffc000176e008 x15: ffff0000011c21b0
+> [   67.347913] x14: 0000000000000000 x13: 3931312051524920 x12: 726f6620656c6261
+> [   67.347925] x11: 656820747563205b x10: 000000000000000a x9 : ffff80000999ba00
+> [   67.347938] x8 : ffff800009121068 x7 : ffff80000999b810 x6 : 00000000fffff17f
+> [   67.347950] x5 : ffff00007fb99b18 x4 : 0000000000000000 x3 : 0000000000000027
+> [   67.347962] x2 : ffff00007fb99b20 x1 : 50dd48f7f19deb00 x0 : 0000000000000000
+> [   67.347975] Call trace:
+> [   67.347980]  __enable_irq+0x4c/0x80
+> [   67.347989]  enable_irq+0x4c/0xa0
+> [   67.347999]  am65_cpsw_nuss_ndo_slave_open+0x4b0/0x568
+> [   67.348015]  am65_cpsw_nuss_resume+0x68/0x160
+> [   67.348025]  dpm_run_callback.isra.0+0x28/0x88
+> [   67.348040]  device_resume+0x78/0x160
+> [   67.348050]  dpm_resume+0xc0/0x1f8
+> [   67.348057]  dpm_resume_end+0x18/0x30
+> [   67.348063]  suspend_devices_and_enter+0x1cc/0x4e0
+> [   67.348075]  pm_suspend+0x1f8/0x268
+> [   67.348084]  state_store+0x8c/0x118
+> [   67.348092]  kobj_attr_store+0x18/0x30
+> [   67.348104]  sysfs_kf_write+0x44/0x58
+> [   67.348117]  kernfs_fop_write_iter+0x118/0x1a8
+> [   67.348127]  vfs_write+0x31c/0x418
+> [   67.348140]  ksys_write+0x6c/0xf8
+> [   67.348150]  __arm64_sys_write+0x1c/0x28
+> [   67.348160]  invoke_syscall+0x44/0x108
+> [   67.348172]  el0_svc_common.constprop.0+0x44/0xf0
+> [   67.348182]  do_el0_svc+0x2c/0xc8
+> [   67.348191]  el0_svc+0x2c/0x88
+> [   67.348201]  el0t_64_sync_handler+0xb8/0xc0
+> [   67.348209]  el0t_64_sync+0x18c/0x190
+> [   67.348218] ---[ end trace 0000000000000000 ]---
+> 
+> Fixes: fd23df72f2be ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
+> Signed-off-by: Roger Quadros <rogerq@kernel.org>
+> ---
+>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 160 +++++++++++++----------
+>  1 file changed, 88 insertions(+), 72 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> index f2e377524088..f8899ac5e249 100644
+> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> @@ -133,10 +133,7 @@
+>  			 NETIF_MSG_IFUP	| NETIF_MSG_PROBE | NETIF_MSG_IFDOWN | \
+>  			 NETIF_MSG_RX_ERR | NETIF_MSG_TX_ERR)
+>  
+> -static int am65_cpsw_nuss_init_tx_chns(struct am65_cpsw_common *common);
+> -static int am65_cpsw_nuss_init_rx_chns(struct am65_cpsw_common *common);
+> -static void am65_cpsw_nuss_free_tx_chns(struct am65_cpsw_common *common);
+> -static void am65_cpsw_nuss_free_rx_chns(struct am65_cpsw_common *common);
+> +static int am65_cpsw_nuss_ndev_add_tx_napi(struct am65_cpsw_common *common);
+>  
+>  static void am65_cpsw_port_set_sl_mac(struct am65_cpsw_port *slave,
+>  				      const u8 *dev_addr)
+> @@ -379,20 +376,6 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+>  	if (common->usage_count)
+>  		return 0;
+>  
+> -	/* init tx/rx channels */
+> -	ret = am65_cpsw_nuss_init_tx_chns(common);
+> -	if (ret) {
+> -		dev_err(common->dev, "init_tx_chns failed\n");
+> -		return ret;
+> -	}
+> -
+> -	ret = am65_cpsw_nuss_init_rx_chns(common);
+> -	if (ret) {
+> -		dev_err(common->dev, "init_rx_chns failed\n");
+> -		am65_cpsw_nuss_free_tx_chns(common);
+> -		return ret;
+> -	}
+> -
+>  	/* Control register */
+>  	writel(AM65_CPSW_CTL_P0_ENABLE | AM65_CPSW_CTL_P0_TX_CRC_REMOVE |
+>  	       AM65_CPSW_CTL_VLAN_AWARE | AM65_CPSW_CTL_P0_RX_PAD,
+> @@ -453,8 +436,7 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+>  						  GFP_KERNEL);
+>  		if (!skb) {
+>  			dev_err(common->dev, "cannot allocate skb\n");
+> -			ret = -ENOMEM;
+> -			goto err;
+> +			return -ENOMEM;
+>  		}
+>  
+>  		ret = am65_cpsw_nuss_rx_push(common, skb);
+> @@ -463,7 +445,7 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+>  				"cannot submit skb to channel rx, error %d\n",
+>  				ret);
+>  			kfree_skb(skb);
+> -			goto err;
+> +			return ret;
+>  		}
+>  		kmemleak_not_leak(skb);
+>  	}
+> @@ -472,7 +454,7 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+>  	for (i = 0; i < common->tx_ch_num; i++) {
+>  		ret = k3_udma_glue_enable_tx_chn(common->tx_chns[i].tx_chn);
+>  		if (ret)
+> -			goto err;
+> +			return ret;
+>  		napi_enable(&common->tx_chns[i].napi_tx);
+>  	}
+>  
+> @@ -484,12 +466,6 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+>  
+>  	dev_dbg(common->dev, "cpsw_nuss started\n");
+>  	return 0;
+> -
+> -err:
+> -	am65_cpsw_nuss_free_tx_chns(common);
+> -	am65_cpsw_nuss_free_rx_chns(common);
+> -
+> -	return ret;
+>  }
+>  
+>  static void am65_cpsw_nuss_tx_cleanup(void *data, dma_addr_t desc_dma);
+> @@ -543,9 +519,6 @@ static int am65_cpsw_nuss_common_stop(struct am65_cpsw_common *common)
+>  	writel(0, common->cpsw_base + AM65_CPSW_REG_CTL);
+>  	writel(0, common->cpsw_base + AM65_CPSW_REG_STAT_PORT_EN);
+>  
+> -	am65_cpsw_nuss_free_tx_chns(common);
+> -	am65_cpsw_nuss_free_rx_chns(common);
+> -
+>  	dev_dbg(common->dev, "cpsw_nuss stopped\n");
+>  	return 0;
+>  }
+> @@ -597,9 +570,6 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
+>  	cpsw_sl_ctl_set(port->slave.mac_sl, CPSW_SL_CTL_CMD_IDLE);
+>  
+>  	tmo = cpsw_sl_wait_for_idle(port->slave.mac_sl, 100);
+> -	dev_info(common->dev, "down msc_sl %08x tmo %d\n",
+> -		 cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_MACSTATUS), tmo);
+> -
 
-I did find[1], which states:
+This produces the below warning. I'll change it to dev_dbg() instead of dropping it entirely.
 
-    The printk subsystem will, for every printk, check
-    if the last printk has a newline termination and if
-    it doesn't and the current printk does not start with
-    KERN_CONT will insert a newline.
+drivers/net/ethernet/ti/am65-cpsw-nuss.c:562:13: warning: variable 'tmo' set but not used [-Wunused-but-set-variable]
 
-    The negative to this approach is the last printk,
-    if it does not have a newline, is buffered and not
-    emitted until another printk occurs.
+>  	cpsw_sl_ctl_reset(port->slave.mac_sl);
+>  
+>  	/* soft reset MAC */
+> @@ -1548,9 +1518,9 @@ static void am65_cpsw_nuss_slave_disable_unused(struct am65_cpsw_port *port)
+>  	cpsw_sl_ctl_reset(port->slave.mac_sl);
+>  }
 
-    There is also the (now small) possibility that
-    multiple concurrent kernel threads or processes
-    could interleave printks without a terminating
-    newline and a different process could emit a
-    printk that starts with KERN_CONT and the emitted
-    message could be garbled.
+<snip>
 
-[1] https://lore.kernel.org/all/b867ee8a02043ec6b18c9330bfe3a091d66c816c.camel@perches.com
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+cheers,
+-roger
