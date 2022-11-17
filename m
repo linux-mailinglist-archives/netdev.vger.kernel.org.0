@@ -2,107 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C99C062E862
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:25:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0DE62E883
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234988AbiKQWZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 17:25:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34194 "EHLO
+        id S234809AbiKQWf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 17:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiKQWZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:25:23 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371D0F6
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:25:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668723901; x=1700259901;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vovRZG0YyOT2r62E4ukWHeazcTcalAZO78ahCNwyTBQ=;
-  b=LdJHMXM3leGg3fczQKO8uHlCMgMGbrLW8vFqV2n/r1SHBkdtq/TMssPX
-   d+n6f0Ytkc6YvFawfseobs98y0hT6ExAMjtRiUeIQhNU9wqkTA8ecEMYJ
-   i1ySowqqIo1ALbImsh59Cy1W7FaEAXHOzkO8xe9rSSFUUmmH09cgDk2PP
-   fmEQQPUDDIdru7Vy1bWmyxI5ItfuEEy60J6uliAeToGlSwvvbQ5viRfT5
-   bWhEbRuqfbIfz3GaxHWfx4BIetfAmZR2q3dKMwLUiEd7Md0oi9OZLF+jg
-   eEIaaAM+LnEg9LRwkgb7Bm23EHXYXs+ZcACfuMvVAii3ic0kysvw/YEtv
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="339826326"
-X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="339826326"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:24:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="885055474"
-X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="885055474"
-Received: from avenkata-desk0.sc.intel.com ([172.25.112.42])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Nov 2022 14:24:59 -0800
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Subject: [PATCH net-next 5/5] sunvnet: Use kmap_local_page() instead of kmap_atomic()
-Date:   Thu, 17 Nov 2022 14:25:57 -0800
-Message-Id: <20221117222557.2196195-6-anirudh.venkataramanan@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
-References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
+        with ESMTP id S234174AbiKQWfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:35:34 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D847F13E35
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:35:33 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id jn7so1096267plb.13
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:35:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ABjDdrp70mWEwGd143QYXmyVvo4wL46Q8gGoARqo45Y=;
+        b=NKxbuJw7Gxm38Y6hH8OzGWlBdSuPg13MEnDt2r/WJztjvIbF8A4Po5QBqvZto8GWOv
+         G1zgp9viXVJ/Lsi0GTVdWbsiEe6gaj7IcEdnfDnCdEgdBJAKUasIMTya3SteN3mhuro7
+         XhDQATnw7HKWu3rtYOfsD9i9K4CoQw6m9GUys=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ABjDdrp70mWEwGd143QYXmyVvo4wL46Q8gGoARqo45Y=;
+        b=Yo0sqEBLy682Hjf9ZR3ZaTqFpaJYj/jTP4VHeTInipMjryu3fW0+Pl5OXbPpyadl1g
+         9nAGittDyBIeB7y5/u+l+aIY94SqxeamN1qkbOCDnfUS+gici8CfxlQosCSI+TKDZys7
+         FYMBVWPPtSwVDGuAJfVNvmtlwHCJZKYKjWW3ymdEjVNYnqr9qtp162cF+H+gOhj53EJI
+         2Rz9MPXn8z+jpjSC+MX4CDbFw6aFI8eIBg1ctxnEu9Y2g6R4MKNk5SgNI43dRe4Jaz/0
+         Q/rsRPQd76hQZmfGkIOYlYr9n4LSc68Wp/mdBe6A5JCqVhAQ+dkfjeu90RchbMDcrBtO
+         6bHA==
+X-Gm-Message-State: ANoB5pkvvS4e/CRFuDxKGChBTN36lUvtR4Bx9YphK/zcSSdrnLY45H+v
+        TIVxBDlsmMly+N1wDB6MSbsyQA==
+X-Google-Smtp-Source: AA0mqf4/q+L7EH0uH+MJ7vZW1XsLypum3yDXuWvd25VSL2AcCtRFeGfW/lFpRJ0MmG64uWII/3dQrw==
+X-Received: by 2002:a17:902:e2d3:b0:187:2430:d37d with SMTP id l19-20020a170902e2d300b001872430d37dmr4738345plc.28.1668724533394;
+        Thu, 17 Nov 2022 14:35:33 -0800 (PST)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id q12-20020a17090311cc00b001888cadf8f6sm1992162plh.49.2022.11.17.14.35.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 14:35:32 -0800 (PST)
+Date:   Thu, 17 Nov 2022 14:35:32 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH net-next v2] netlink: split up copies in the ack
+ construction
+Message-ID: <202211171431.6C8675E2@keescook>
+References: <20221114090614.2bfeb81c@kernel.org>
+ <202211161444.04F3EDEB@keescook>
+ <202211161454.D5FA4ED44@keescook>
+ <202211161502.142D146@keescook>
+ <1e97660d-32ff-c0cc-951b-5beda6283571@embeddedor.com>
+ <20221116170526.752c304b@kernel.org>
+ <1b373b08-988d-b870-d363-814f8083157c@embeddedor.com>
+ <20221116221306.5a4bd5f8@kernel.org>
+ <20221117082556.37b8028f@hermes.local>
+ <20221117123615.41d9c71a@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221117123615.41d9c71a@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmap_atomic() is being deprecated in favor of kmap_local_page().
-Replace kmap_atomic() and kunmap_atomic() with kmap_local_page()
-and kunmap_local() respectively.
+On Thu, Nov 17, 2022 at 12:36:15PM -0800, Jakub Kicinski wrote:
+> On Thu, 17 Nov 2022 08:25:56 -0800 Stephen Hemminger wrote:
+> > > I was asking based on your own commit 1e6e9d0f4859 ("uapi: revert
+> > > flexible-array conversions"). This is uAPI as well.  
+> >  
+> > Some of the flex-array conversions fixed build warnings that occur in
+> > iproute2 when using Gcc 12 or later.
+> 
+> Alright, this is getting complicated. I'll post a patch to fix 
+> the issue I've added and gently place my head back into the sand.
 
-Note that kmap_atomic() disables preemption and page-fault processing,
-but kmap_local_page() doesn't. Converting the former to the latter is safe
-only if there isn't an implicit dependency on preemption and page-fault
-handling being disabled, which does appear to be the case here.
+Thanks! I think the path forward is clear. I should not have suggested
+adding a flex-array member to the "header" struct lo these many moons
+ago. You and Gustavo are right: we need a separate struct with the header
+at the beginning, just as iproute2 is doing itself.
 
-Also note that the page being mapped is not allocated by the driver, and so
-the driver doesn't know if the page is in normal memory. This is the reason
-kmap_local_page() is used as opposed to page_address().
+As for testing, I can do that if you want -- the goal was to make sure
+the final result doesn't trip FORTIFY when built with -fstrict-flex-arrays
+(not yet in a released compiler version, but present in both GCC and Clang
+truck builds) and with __builtin_dynamic_object_size() enabled (which
+is not yet in -next, as it is waiting on the last of ksize() clean-ups).
 
-I don't have hardware, so this change has only been compile tested.
-
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
----
- drivers/net/ethernet/sun/sunvnet_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/sun/sunvnet_common.c b/drivers/net/ethernet/sun/sunvnet_common.c
-index 80fde5f..a6211b9 100644
---- a/drivers/net/ethernet/sun/sunvnet_common.c
-+++ b/drivers/net/ethernet/sun/sunvnet_common.c
-@@ -1085,13 +1085,13 @@ static inline int vnet_skb_map(struct ldc_channel *lp, struct sk_buff *skb,
- 		u8 *vaddr;
- 
- 		if (nc < ncookies) {
--			vaddr = kmap_atomic(skb_frag_page(f));
-+			vaddr = kmap_local_page(skb_frag_page(f));
- 			blen = skb_frag_size(f);
- 			blen += 8 - (blen & 7);
- 			err = ldc_map_single(lp, vaddr + skb_frag_off(f),
- 					     blen, cookies + nc, ncookies - nc,
- 					     map_perm);
--			kunmap_atomic(vaddr);
-+			kunmap_local(vaddr);
- 		} else {
- 			err = -EMSGSIZE;
- 		}
 -- 
-2.37.2
-
+Kees Cook
