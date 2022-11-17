@@ -2,319 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9DF62DA19
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C9D62DA22
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 13:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbiKQMBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 07:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
+        id S239897AbiKQMDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 07:03:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239886AbiKQMBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:01:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC621248E2
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:00:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668686440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=hGfznxLdTqHvriWwWPC6t7xIxiQJbtuQttgGqcBYOwg=;
-        b=NZsG3KeCGJLQaxr9FnUg/cklPWfdPfYYGHb9J/xeGSGgx5RD4/s22lDWiJOHYouJ+tcDX7
-        ytS7uwskHXNsRTpyjvaIVPrZOmrK8/CdYtVVEaWFqE2ZOBmZWMbEP2OmiV1lWV/iKjTO7k
-        l/17IVTi7mvpClCydHFfGx/ESC11oDo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-382-E9U6GZoUOM2z8yVV90MJMQ-1; Thu, 17 Nov 2022 07:00:37 -0500
-X-MC-Unique: E9U6GZoUOM2z8yVV90MJMQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0183D833AED;
-        Thu, 17 Nov 2022 12:00:37 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.194.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7A47040C6EC3;
-        Thu, 17 Nov 2022 12:00:35 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 6.1-rc6
-Date:   Thu, 17 Nov 2022 13:00:17 +0100
-Message-Id: <20221117120017.26184-1-pabeni@redhat.com>
+        with ESMTP id S239885AbiKQMDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 07:03:34 -0500
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4AD1CB2D
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:03:32 -0800 (PST)
+Received: by mail-io1-f72.google.com with SMTP id x5-20020a6bda05000000b006db3112c1deso787334iob.0
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 04:03:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=juTJp/R7jG3Dr/MF/K7NwS0ryQI9fpomBjZtVXayJyY=;
+        b=Jzk5JGojB/zrVPydiXtUl2jPPuSaA/LnM0sivlNO6N6yp1v98KSEMsJQeiB23r3BKP
+         Ldk+ejFERf58H8hxU3ng2WDPvpOG1IFNoZtKyxrlE5n0e/ICFK4Jzxrzfk9rAaAMPOrh
+         6iH7F02Kr3HEG7roDI39LRuTfnXd/BGLuZ7ZE02ENdZZj0pOakz3sFw80T34btF1r4ZZ
+         8Bwhx0UknSzHHCXW5qPoCy5m4ahzHQ4/e1ZkBwh1eizbT40inD8by06lB6oZVbA1tE3g
+         BU2dOegZ4s3LzCRBJB5D53+kzu5n+T9Q5RIM1KjNmA+N5i/ZAkxzP1Qfp4ORZa/oXKav
+         vJGg==
+X-Gm-Message-State: ANoB5pnanMbW7Ge3pBZ561p94GoZnHJB3iXSyXsHGs5TgNy0CRVnj3tn
+        BovxyC+oPdjz5SPa9NBzDJ3KicjA0DniNsBAHP5kVI7fNGkN
+X-Google-Smtp-Source: AA0mqf5nueY+wTiUbi0BE6eyOzMUeRG4cblCP7Ed5eeh/1mkvjHkPirp9i6w5flT9KueHHtZxzxMoF+vDJpSEQpUSUt8S2as6mZz
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:cf02:0:b0:302:3db8:6d47 with SMTP id
+ c2-20020a92cf02000000b003023db86d47mr974029ilo.301.1668686611930; Thu, 17 Nov
+ 2022 04:03:31 -0800 (PST)
+Date:   Thu, 17 Nov 2022 04:03:31 -0800
+In-Reply-To: <0000000000004e78ec05eda79749@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bef99e05eda9604a@google.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in static_key_slow_inc
+From:   syzbot <syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, edumazet@google.com,
+        frederic@kernel.org, jacob.e.keller@intel.com, jiri@nvidia.com,
+        juri.lelli@redhat.com, kirill.shutemov@linux.intel.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, netdev@vger.kernel.org,
+        nicolas.dichtel@6wind.com, pabeni@redhat.com, paul@paul-moore.com,
+        peterz@infradead.org, razor@blackwall.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, steven.price@arm.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
-
-This is mostly NIC drivers related, with a notable tcp change that
-introduces a new int config knob. It asks for the user input at
-config-time but it's guarded by EXPERT, so I hope it's ok.
-
-No new known outstanding regressions.
-
-The following changes since commit 4bbf3422df78029f03161640dcb1e9d1ed64d1ea:
-
-  Merge tag 'net-6.1-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-11-10 17:31:15 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc6
-
-for you to fetch changes up to 58e0be1ef6118c5352b56a4d06e974c5599993a5:
-
-  net: use struct_group to copy ip/ipv6 header addresses (2022-11-17 10:42:45 +0100)
-
-----------------------------------------------------------------
-Networking fixes for 6.1-rc6, including fixes from bpf
-
-Current release - regressions:
-
-  - tls: fix memory leak in tls_enc_skb() and tls_sw_fallback_init()
-
-Previous releases - regressions:
-
-  - bridge: fix memory leaks when changing VLAN protocol
-
-  - dsa: make dsa_master_ioctl() see through port_hwtstamp_get() shims
-
-  - dsa: don't leak tagger-owned storage on switch driver unbind
-
-  - eth: mlxsw: avoid warnings when not offloaded FDB entry with IPv6 is removed
-
-  - eth: stmmac: ensure tx function is not running in stmmac_xdp_release()
-
-  - eth: hns3: fix return value check bug of rx copybreak
-
-Previous releases - always broken:
-
-  - kcm: close race conditions on sk_receive_queue
-
-  - bpf: fix alignment problem in bpf_prog_test_run_skb()
-
-  - bpf: fix writing offset in case of fault in strncpy_from_kernel_nofault
-
-  - eth: macvlan: use built-in RCU list checking
-
-  - eth: marvell: add sleep time after enabling the loopback bit
-
-  - eth: octeon_ep: fix potential memory leak in octep_device_setup()
-
-Misc:
-
-  - tcp: configurable source port perturb table size
-
-  - bpf: Convert BPF_DISPATCHER to use static_call() (not ftrace)
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-
-----------------------------------------------------------------
-Alban Crequy (2):
-      maccess: Fix writing offset in case of fault in strncpy_from_kernel_nofault()
-      selftests: bpf: Add a test when bpf_probe_read_kernel_str() returns EFAULT
-
-Alexandru Tachici (1):
-      net: usb: smsc95xx: fix external PHY reset
-
-Aminuddin Jamaluddin (1):
-      net: phy: marvell: add sleep time after enabling the loopback bit
-
-Amit Cohen (1):
-      mlxsw: Avoid warnings when not offloaded FDB entry with IPv6 is removed
-
-Andrii Nakryiko (1):
-      Merge branch 'Fix offset when fault occurs in strncpy_from_kernel_nofault()'
-
-Baisong Zhong (1):
-      bpf, test_run: Fix alignment problem in bpf_prog_test_run_skb()
-
-Chuang Wang (1):
-      net: macvlan: Use built-in RCU list checking
-
-Cong Wang (1):
-      kcm: close race conditions on sk_receive_queue
-
-David S. Miller (2):
-      Merge branch 'octeon_ep-fixes'
-      Merge branch 'microchip-fixes'
-
-Enrico Sau (1):
-      net: usb: qmi_wwan: add Telit 0x103a composition
-
-Gaosheng Cui (1):
-      bnxt_en: Remove debugfs when pci_register_driver failed
-
-Gleb Mazovetskiy (1):
-      tcp: configurable source port perturb table size
-
-Guangbin Huang (1):
-      net: hns3: fix setting incorrect phy link ksettings for firmware in resetting process
-
-Hangbin Liu (1):
-      net: use struct_group to copy ip/ipv6 header addresses
-
-Ido Schimmel (1):
-      bridge: switchdev: Fix memory leaks when changing VLAN protocol
-
-Jaco Coetzee (1):
-      nfp: change eeprom length to max length enumerators
-
-Jakub Kicinski (1):
-      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-
-Jakub Sitnicki (1):
-      l2tp: Serialize access to sk_user_data with sk_callback_lock
-
-Jeremy Kerr (1):
-      mctp i2c: don't count unused / invalid keys for flow release
-
-Jian Shen (1):
-      net: hns3: fix incorrect hw rss hash type of rx packet
-
-Jie Wang (1):
-      net: hns3: fix return value check bug of rx copybreak
-
-Liu Jian (1):
-      net: ag71xx: call phylink_disconnect_phy if ag71xx_hw_enable() fail in ag71xx_open()
-
-Michael Sit Wei Hong (1):
-      net: phy: dp83867: Fix SGMII FIFO depth for non OF devices
-
-Mohd Faizal Abdul Rahim (1):
-      net: stmmac: ensure tx function is not running in stmmac_xdp_release()
-
-Nathan Chancellor (1):
-      bpf: Add explicit cast to 'void *' for __BPF_DISPATCHER_UPDATE()
-
-Paolo Abeni (1):
-      Merge branch 'net-hns3-this-series-bugfix-for-the-hns3-ethernet-driver'
-
-Peter Zijlstra (2):
-      bpf: Revert ("Fix dispatcher patchable function entry to 5 bytes nop")
-      bpf: Convert BPF_DISPATCHER to use static_call() (not ftrace)
-
-Pu Lehui (1):
-      selftests/bpf: Fix casting error when cross-compiling test_verifier for 32-bit platforms
-
-Shang XiaoJing (2):
-      net: lan966x: Fix potential null-ptr-deref in lan966x_stats_init()
-      net: microchip: sparx5: Fix potential null-ptr-deref in sparx_stats_init() and sparx5_start()
-
-Vladimir Oltean (2):
-      net: dsa: make dsa_master_ioctl() see through port_hwtstamp_get() shims
-      net: dsa: don't leak tagger-owned storage on switch driver unbind
-
-Wang ShaoBo (1):
-      mISDN: fix misuse of put_device() in mISDN_register_device()
-
-Wang Yufen (2):
-      bpf: Fix memory leaks in __check_func_call
-      netdevsim: Fix memory leak of nsim_dev->fa_cookie
-
-Wei Yongjun (3):
-      net: bgmac: Drop free_netdev() from bgmac_enet_remove()
-      net: mhi: Fix memory leak in mhi_net_dellink()
-      net/x25: Fix skb leak in x25_lapb_receive_frame()
-
-Xu Kuohai (2):
-      bpf: Initialize same number of free nodes for each pcpu_freelist
-      bpf: Fix offset calculation error in __copy_map_value and zero_map_value
-
-Yang Jihong (1):
-      selftests/bpf: Fix test_progs compilation failure in 32-bit arch
-
-Yang Yingliang (1):
-      mISDN: fix possible memory leak in mISDN_dsp_element_register()
-
-Yu Liao (1):
-      net/tls: Fix memory leak in tls_enc_skb() and tls_sw_fallback_init()
-
-Yuan Can (4):
-      net: hinic: Fix error handling in hinic_module_init()
-      net: ionic: Fix error handling in ionic_init_module()
-      net: ena: Fix error handling in ena_init()
-      net: thunderbolt: Fix error handling in tbnet_init()
-
-Zhengchao Shao (2):
-      net: liquidio: release resources when liquidio driver open failed
-      net: caif: fix double disconnect client in chnl_net_open()
-
-Ziyang Xuan (4):
-      octeon_ep: delete unnecessary napi rollback under set_queues_err in octep_open()
-      octeon_ep: ensure octep_get_link_status() successfully before octep_link_up()
-      octeon_ep: fix potential memory leak in octep_device_setup()
-      octeon_ep: ensure get mac address successfully before eth_hw_addr_set()
-
- arch/x86/net/bpf_jit_comp.c                        |  13 --
- drivers/isdn/mISDN/core.c                          |   2 +-
- drivers/isdn/mISDN/dsp_pipeline.c                  |   3 +-
- drivers/net/ethernet/amazon/ena/ena_netdev.c       |   8 +-
- drivers/net/ethernet/atheros/ag71xx.c              |   3 +-
- drivers/net/ethernet/broadcom/bgmac.c              |   1 -
- drivers/net/ethernet/broadcom/bnxt/bnxt.c          |  10 +-
- drivers/net/ethernet/cavium/liquidio/lio_main.c    |  34 ++++-
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   1 -
- .../hisilicon/hns3/hns3_common/hclge_comm_rss.c    |  20 ---
- .../hisilicon/hns3/hns3_common/hclge_comm_rss.h    |   2 -
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 167 ++++++++++++---------
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   1 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  11 +-
- drivers/net/ethernet/huawei/hinic/hinic_main.c     |   9 +-
- .../net/ethernet/marvell/octeon_ep/octep_main.c    |  16 +-
- .../ethernet/mellanox/mlxsw/spectrum_switchdev.c   |   2 +
- .../ethernet/microchip/lan966x/lan966x_ethtool.c   |   3 +
- .../net/ethernet/microchip/sparx5/sparx5_ethtool.c |   3 +
- .../net/ethernet/microchip/sparx5/sparx5_main.c    |   3 +
- .../net/ethernet/netronome/nfp/nfp_net_ethtool.c   |   6 +-
- drivers/net/ethernet/pensando/ionic/ionic_main.c   |   8 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   3 +
- drivers/net/macvlan.c                              |   4 +-
- drivers/net/mctp/mctp-i2c.c                        |  47 ++++--
- drivers/net/mhi_net.c                              |   2 +
- drivers/net/netdevsim/dev.c                        |   1 +
- drivers/net/phy/dp83867.c                          |   7 +
- drivers/net/phy/marvell.c                          |  16 +-
- drivers/net/thunderbolt.c                          |  19 ++-
- drivers/net/usb/qmi_wwan.c                         |   1 +
- drivers/net/usb/smsc95xx.c                         |  46 +++++-
- include/linux/bpf.h                                |  60 +++++---
- include/net/ip.h                                   |   2 +-
- include/net/ipv6.h                                 |   2 +-
- include/net/sock.h                                 |   2 +-
- include/uapi/linux/ip.h                            |   6 +-
- include/uapi/linux/ipv6.h                          |   6 +-
- kernel/bpf/dispatcher.c                            |  28 +---
- kernel/bpf/percpu_freelist.c                       |  23 ++-
- kernel/bpf/verifier.c                              |  14 +-
- mm/maccess.c                                       |   2 +-
- net/bpf/test_run.c                                 |   1 +
- net/bridge/br_vlan.c                               |  17 ++-
- net/caif/chnl_net.c                                |   3 -
- net/dsa/dsa2.c                                     |  10 ++
- net/dsa/dsa_priv.h                                 |   1 +
- net/dsa/master.c                                   |   3 +-
- net/dsa/port.c                                     |  16 ++
- net/ipv4/Kconfig                                   |  10 ++
- net/ipv4/inet_hashtables.c                         |  10 +-
- net/kcm/kcmsock.c                                  |  58 +------
- net/l2tp/l2tp_core.c                               |  19 ++-
- net/tls/tls_device_fallback.c                      |   5 +-
- net/x25/x25_dev.c                                  |   2 +-
- tools/testing/selftests/bpf/prog_tests/varlen.c    |   7 +
- tools/testing/selftests/bpf/progs/test_varlen.c    |   5 +
- tools/testing/selftests/bpf/test_progs.c           |   2 +-
- tools/testing/selftests/bpf/test_verifier.c        |   2 +-
- 59 files changed, 477 insertions(+), 311 deletions(-)
+syzbot has found a reproducer for the following issue on:
+
+HEAD commit:    064bc7312bd0 netdevsim: Fix memory leak of nsim_dev->fa_co..
+git tree:       net
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=16b2b231880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a33ac7bbc22a8c35
+dashboard link: https://syzkaller.appspot.com/bug?extid=703d9e154b3b58277261
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13cd2f79880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=109e1695880000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/0634e1c0e4cb/disk-064bc731.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/fe1039d2de22/vmlinux-064bc731.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/5a0d673875fa/bzImage-064bc731.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com
+
+BUG: sleeping function called from invalid context at include/linux/percpu-rwsem.h:49
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3634, name: syz-executor167
+preempt_count: 1, expected: 0
+RCU nest depth: 0, expected: 0
+3 locks held by syz-executor167/3634:
+ #0: ffffffff8df6b530 (cb_lock){++++}-{3:3}, at: genl_rcv+0x19/0x40 net/netlink/genetlink.c:860
+ #1: ffffffff8df6b5e8 (genl_mutex){+.+.}-{3:3}, at: genl_lock net/netlink/genetlink.c:33 [inline]
+ #1: ffffffff8df6b5e8 (genl_mutex){+.+.}-{3:3}, at: genl_rcv_msg+0x50d/0x780 net/netlink/genetlink.c:848
+ #2: ffff8880182fa0b8 (k-clock-AF_INET){+++.}-{2:2}, at: l2tp_tunnel_register+0x126/0x1210 net/l2tp/l2tp_core.c:1477
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 PID: 3634 Comm: syz-executor167 Not tainted 6.1.0-rc4-syzkaller-00212-g064bc7312bd0 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ __might_resched.cold+0x222/0x26b kernel/sched/core.c:9890
+ percpu_down_read include/linux/percpu-rwsem.h:49 [inline]
+ cpus_read_lock+0x1b/0x140 kernel/cpu.c:310
+ static_key_slow_inc+0x12/0x20 kernel/jump_label.c:158
+ udp_tunnel_encap_enable include/net/udp_tunnel.h:189 [inline]
+ setup_udp_tunnel_sock+0x3e1/0x550 net/ipv4/udp_tunnel_core.c:81
+ l2tp_tunnel_register+0xc51/0x1210 net/l2tp/l2tp_core.c:1509
+ l2tp_nl_cmd_tunnel_create+0x3d6/0x8b0 net/l2tp/l2tp_netlink.c:245
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:756
+ genl_family_rcv_msg net/netlink/genetlink.c:833 [inline]
+ genl_rcv_msg+0x445/0x780 net/netlink/genetlink.c:850
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ genl_rcv+0x28/0x40 net/netlink/genetlink.c:861
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ sock_no_sendpage+0x10c/0x160 net/core/sock.c:3219
+ kernel_sendpage.part.0+0x1d5/0x700 net/socket.c:3561
+ kernel_sendpage net/socket.c:3558 [inline]
+ sock_sendpage+0xe3/0x140 net/socket.c:1054
+ pipe_to_sendpage+0x2b1/0x380 fs/splice.c:361
+ splice_from_pipe_feed fs/splice.c:415 [inline]
+ __splice_from_pipe+0x449/0x8a0 fs/splice.c:559
+ splice_from_pipe fs/splice.c:594 [inline]
+ generic_splice_sendpage+0xd8/0x140 fs/splice.c:743
+ do_splice_from fs/splice.c:764 [inline]
+ direct_splice_actor+0x114/0x180 fs/splice.c:931
+ splice_direct_to_actor+0x335/0x8a0 fs/splice.c:886
+ do_splice_direct+0x1ab/0x280 fs/splice.c:974
+ do_sendfile+0xb19/0x1270 fs/read_write.c:1255
+ __do_sys_sendfile64 fs/read_write.c:1323 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1309 [inline]
+ __x64_sys_sendfile64+0x1d0/0x210 fs/read_write.c:1309
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f93d1567cb9
+Code: 28 c3 e8 5a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffdd8ae4a88 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f93d1567cb9
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000005
+RBP: 00007f93d152b680 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000100000000 R11: 0000000000000246 R12: 00007f93d152b710
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
