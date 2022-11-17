@@ -2,62 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C75062D432
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 08:36:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A31362D44F
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 08:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239372AbiKQHgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 02:36:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36914 "EHLO
+        id S234607AbiKQHny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 02:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239395AbiKQHgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 02:36:25 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33622716C4
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 23:36:24 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id t25-20020a1c7719000000b003cfa34ea516so3996371wmi.1
-        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 23:36:24 -0800 (PST)
+        with ESMTP id S239378AbiKQHnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 02:43:45 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56A72AE8;
+        Wed, 16 Nov 2022 23:43:43 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id g12so2225424wrs.10;
+        Wed, 16 Nov 2022 23:43:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=OFcbW7NW5DDCKre2yJpKCmdI+15tLoMafsU/GK41iCg=;
-        b=oHr+FaZgYEv23JaNnCjuR1kU450HEhhtx+qI1mgdxExYBkKbCAFN3d1CeBhwdbDKUU
-         MOH6YGskf/ogOfAonyZVA0CDqr8iY/90NBYrE95Vw4vCNbzdzd7CuPwda4qHgH1cm3ug
-         QZResj+c/Wu+euO8OFAvzJwwnCheNifFO76JHRV3uMr511m6Kkmiqj5vsapWDumyXgTZ
-         y3G5HbcB/spzcaU5ha6ukgyKXXQZ/Qr8qhkLlcoFZfk8oTlJ8np345efK99fqjoeLRpY
-         3V8DXaF0xKaBd/y6dir6d5OUeiNQ6vPIXIp3WV6UTyDupam/Xz0Y8/B1DP7ekpxw0Isy
-         VhmA==
+        bh=507puUosXRt+1YJ5p1yLTZSFtp0JnpD0Zo8CEq5Yvlw=;
+        b=D2bJHtvI+AGQuZc/lPoSV04Om3tjI9NSlspOXXfzeDEjxhTvYdEXSdzzIbrLkzJIrP
+         Z42dCGQaXiLy792KqxO6BtZKlqDuvvyo6X5dFdmOrtnLCFxnDdEuCJdeEHkNfPODgA8N
+         a88XL1Im1jNBVFdSpg02wgLE562rVKuKHqNHm3NKEFN4Ibl+mZMJo+Rjmcy8Cq08ths5
+         k2l4dON0UMWQx55wtiQcBrkNleB8n+IkjVBN++AfT9wYZZjX+plQdzs98PSVvtU9Qc9B
+         QcH10MaQKP6E89+9CuocNdjQHuzNvY8AhrZFxZLxkRDeb5MbyywK0vuiLC6y6tExfLUf
+         0MOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OFcbW7NW5DDCKre2yJpKCmdI+15tLoMafsU/GK41iCg=;
-        b=oEE6ld2PNxaemPqhrk3J7g66s/ilAtG9frWXUHM977Bh67ECKGz6+y4tCqnq5kuNlC
-         JooLXvArlK3X4qRTjIVPF0bb7o2ZVUQWGP9R/1BCjkdM5t6TU27qNSGJV7VFB39M00Uq
-         paXDHGgYgoU5DtIflxUNd6PlGmVq08wFw4SBls3PIHgqiH/ZVZ8cM1PL2cf0Mfe2Hy1n
-         E/dz5Bz4JQ9Y97riQOvu+ZHBN6NDgbLO2h4Vc1cJ9RJeYDajPuSQ9bekSYm7/QqTmCF6
-         HPKuq7kVtja2npPeXdDR+/ikcc0uPRTbpIcb+RUsr42t2brsIc0c077VOJroisq3hC7X
-         fGAA==
-X-Gm-Message-State: ANoB5pkM2hBOP4jaBMytqbLPPFB50Cmp4cqoxDYCzbG1WuobQKvBZZz7
-        cbql7o8VWr5NZr/C83YczIo=
-X-Google-Smtp-Source: AA0mqf43jItg7WqELp/x05EyDow+9qYAHfTbuUbJ28ducG6oUYJtvv6zNgytfK+w7qNpDpTDUYISOA==
-X-Received: by 2002:a05:600c:3ba8:b0:3cf:59c9:4a4e with SMTP id n40-20020a05600c3ba800b003cf59c94a4emr4345877wms.17.1668670582659;
-        Wed, 16 Nov 2022 23:36:22 -0800 (PST)
+        bh=507puUosXRt+1YJ5p1yLTZSFtp0JnpD0Zo8CEq5Yvlw=;
+        b=uRThQZJXeF3DDTvkqqYIpG+Mrd3KQmYLhWM94ePrkao1mHBxvP0eoVQGn890WjUsz7
+         /WKkSXWaqryEH+CDH8u4RL66a1H47ZNZnXCh/sLVDRvKa2/MxErRyogz9Z2KCNj8/Y7K
+         GzgIH9UqKHyKQcy5uEjtkP1yU5Els1xjoKEi6EY4G+tvY5zOUvFLb577oMCfYFkG5giS
+         VtK+5wWGomBZYY5BbtzozBssy+Eigc0BVcDJUjriuPuJNl2hHe7ckzm7VLUKDcHo/TTT
+         VhX2Vdj6u2sUHCGs7msc2sRdkzSk5cxKGgXwMGVpo+4M5RGqoiFXLpymjQHue4qFr+/7
+         L51Q==
+X-Gm-Message-State: ANoB5pnA5OZLklfoBVjEle7mzZnC6aknOJRBoSgjTB3aOq4H1fZPxZiK
+        E0DKeIHUesVIDFC8blSHqbI=
+X-Google-Smtp-Source: AA0mqf4vF9Jm+rkWiMKio02HzS+sNCiI6iWCCaTdPdFWk8cKgtVnTPM/H7nZClCvVksk/mRkc7QmMw==
+X-Received: by 2002:a5d:6582:0:b0:241:792f:b1fb with SMTP id q2-20020a5d6582000000b00241792fb1fbmr670043wru.436.1668671022131;
+        Wed, 16 Nov 2022 23:43:42 -0800 (PST)
 Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id n38-20020a05600c182600b003c6deb5c1edsm238259wmp.45.2022.11.16.23.36.21
+        by smtp.gmail.com with ESMTPSA id a13-20020a5d53cd000000b002383edcde09sm171842wrw.59.2022.11.16.23.43.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 23:36:22 -0800 (PST)
-Date:   Thu, 17 Nov 2022 10:36:19 +0300
+        Wed, 16 Nov 2022 23:43:41 -0800 (PST)
 From:   Dan Carpenter <error27@gmail.com>
-To:     oe-kbuild@lists.linux.dev, Eric Dumazet <edumazet@google.com>
-Cc:     lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-        netdev@vger.kernel.org
-Subject: [net-next:master 25/27] net/core/dev.c:6409 napi_disable() error:
- uninitialized symbol 'new'.
-Message-ID: <202211171520.UF5VyYSH-lkp@intel.com>
+X-Google-Original-From: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Thu, 17 Nov 2022 10:43:38 +0300
+To:     David Howells <dhowells@redhat.com>
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] rxrpc: fix rxkad_verify_response()
+Message-ID: <Y3XmKhBt5fclE6XC@kili>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -68,53 +73,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   d82303df06481235fe7cbaf605075e0c2c87e99b
-commit: 4ffa1d1c6842a97e84cfbe56bfcf70edb23608e2 [25/27] net: adopt try_cmpxchg() in napi_{enable|disable}()
-config: i386-randconfig-m021
-compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+The error handling for if skb_copy_bits() fails was accidentally deleted
+so the rxkad_decrypt_ticket() function is not called.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <error27@gmail.com>
+Fixes: 5d7edbc9231e ("rxrpc: Get rid of the Rx ring")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+This applies to net-next.  It might go throught some kind of an AFS
+tree judging by the S-o-b tags on the earlier patches?  Tracking
+everyone's trees is really complicated now that I'm dealing with over
+300 trees.
 
-New smatch warnings:
-net/core/dev.c:6409 napi_disable() error: uninitialized symbol 'new'.
+ net/rxrpc/rxkad.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Old smatch warnings:
-net/core/dev.c:10356 netdev_run_todo() warn: passing freed memory 'dev'
-
-vim +/new +6409 net/core/dev.c
-
-3b47d30396bae4 Eric Dumazet   2014-11-06  6393  void napi_disable(struct napi_struct *n)
-3b47d30396bae4 Eric Dumazet   2014-11-06  6394  {
-719c571970109b Jakub Kicinski 2021-09-24  6395  	unsigned long val, new;
-719c571970109b Jakub Kicinski 2021-09-24  6396  
-3b47d30396bae4 Eric Dumazet   2014-11-06  6397  	might_sleep();
-3b47d30396bae4 Eric Dumazet   2014-11-06  6398  	set_bit(NAPI_STATE_DISABLE, &n->state);
-3b47d30396bae4 Eric Dumazet   2014-11-06  6399  
-719c571970109b Jakub Kicinski 2021-09-24  6400  	val = READ_ONCE(n->state);
-4ffa1d1c6842a9 Eric Dumazet   2022-11-15  6401  	do {
-719c571970109b Jakub Kicinski 2021-09-24  6402  		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
-719c571970109b Jakub Kicinski 2021-09-24  6403  			usleep_range(20, 200);
-719c571970109b Jakub Kicinski 2021-09-24  6404  			continue;
-
-"new" not initialized for first iteration through the loop.
-
-719c571970109b Jakub Kicinski 2021-09-24  6405  		}
-719c571970109b Jakub Kicinski 2021-09-24  6406  
-719c571970109b Jakub Kicinski 2021-09-24  6407  		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
-719c571970109b Jakub Kicinski 2021-09-24  6408  		new &= ~(NAPIF_STATE_THREADED | NAPIF_STATE_PREFER_BUSY_POLL);
-4ffa1d1c6842a9 Eric Dumazet   2022-11-15 @6409  	} while (!try_cmpxchg(&n->state, &val, new));
-                                                                                               ^^^
-
-3b47d30396bae4 Eric Dumazet   2014-11-06  6410  
-3b47d30396bae4 Eric Dumazet   2014-11-06  6411  	hrtimer_cancel(&n->timer);
-3b47d30396bae4 Eric Dumazet   2014-11-06  6412  
-3b47d30396bae4 Eric Dumazet   2014-11-06  6413  	clear_bit(NAPI_STATE_DISABLE, &n->state);
-3b47d30396bae4 Eric Dumazet   2014-11-06  6414  }
-
+diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+index 2706e59bf992..110a5550c0a6 100644
+--- a/net/rxrpc/rxkad.c
++++ b/net/rxrpc/rxkad.c
+@@ -1165,8 +1165,10 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 
+ 	eproto = tracepoint_string("rxkad_tkt_short");
+ 	abort_code = RXKADPACKETSHORT;
+-	if (skb_copy_bits(skb, sizeof(struct rxrpc_wire_header) + sizeof(*response),
+-			  ticket, ticket_len) < 0)
++	ret = skb_copy_bits(skb, sizeof(struct rxrpc_wire_header) + sizeof(*response),
++			    ticket, ticket_len);
++	if (ret < 0)
++		goto temporary_error_free_ticket;
+ 
+ 	ret = rxkad_decrypt_ticket(conn, server_key, skb, ticket, ticket_len,
+ 				   &session_key, &expiry, _abort_code);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
 
