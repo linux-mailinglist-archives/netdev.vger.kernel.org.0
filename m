@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5B662D6C5
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1FFE62D6ED
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 10:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233785AbiKQJ2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 04:28:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        id S239180AbiKQJaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 04:30:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233502AbiKQJ2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:28:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37F9CF4
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 01:28:12 -0800 (PST)
+        with ESMTP id S233466AbiKQJaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 04:30:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6796CA3C;
+        Thu, 17 Nov 2022 01:30:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D759B81D97
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 09:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D10EC433D6;
-        Thu, 17 Nov 2022 09:28:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64EC362159;
+        Thu, 17 Nov 2022 09:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BF29CC43145;
+        Thu, 17 Nov 2022 09:30:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668677289;
-        bh=Oex1I4PJC33uMiV0mNtJNYONNRm/L2AyQ8IgLlbY8cc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tl1vMeITZNyPKTp99sn0HF9atzlO/RoeiCZRFbM4GR0dlx9/9vAPxD4fkJdqpKJC+
-         KYvPGd0vdPwBq97tnybf75m2PhGXA8qAEH6FBfe1RgbLmC2msFoxuGiFlsSLL2HOC1
-         w0vt18XmuovJVawukxGNGV4K/M+i7vrxHlqYwvSf06/20zp9WZeZ7lVHxbujh4Ux1+
-         Z1i2znkmxI2PH9fNej/vaTpuKFGa8AdMpllMeFCr6ycaE5KE7lG/2zjepdwrKmiqe5
-         DCuRAHPByGROdyHh6LgjXisV+IgK9Xxe830Pp9YO/dtxZ3egohEE19i9YRQeX9XyLI
-         5wPLEWELUZcpA==
-Date:   Thu, 17 Nov 2022 11:28:05 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shang XiaoJing <shangxiaojing@huawei.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jeffrey.t.kirsher@intel.com,
-        shannon.nelson@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] i40e: Fix error handling in i40e_init_module()
-Message-ID: <Y3X+pfOrzs8ixfN8@unreal>
-References: <20221116012725.13707-1-shangxiaojing@huawei.com>
+        s=k20201202; t=1668677415;
+        bh=w8PnUiL8+Rb3e6GdnaJKp9udSTxNnnzvsLok7fnMxBo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fZYmsrK3HScbYKDChXbOlI6DbHyF+9LgPbKYQGa0wS07KzQ86NBRlvmKJSxohSYyd
+         ZkzUxkcWJak47/22evidHZqJh8Mj6HsA7FQx1d3rmRjgV3McIu54MshATxkrA7ei/g
+         n6PUMF+HVV/NJ9swPA3lZ+wsSXepL8uviMb670C6N8xNKmDDk/tzhArbjK+ogd/nbC
+         27sU3Yzct8MgTAxQu56v1hcKKuTjbJm/xdWnVpTo+ANVMCBfRCxm41unkuAsSKN0Kf
+         TLEuVP8iK+qsSz2Cp8zfhqL9pXBXbgShmdzf4ZRPWaHtkaN4JjQEYKiQ8DvBr976p8
+         8AsuowgHlfW1g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A2746C395FE;
+        Thu, 17 Nov 2022 09:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221116012725.13707-1-shangxiaojing@huawei.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: add Telit 0x103a composition
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166867741566.24883.13179415715279429065.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Nov 2022 09:30:15 +0000
+References: <20221115105859.14324-1-enrico.sau@gmail.com>
+In-Reply-To: <20221115105859.14324-1-enrico.sau@gmail.com>
+To:     Enrico Sau <enrico.sau@gmail.com>
+Cc:     bjorn@mork.no, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,27 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 16, 2022 at 09:27:25AM +0800, Shang XiaoJing wrote:
-> i40e_init_module() won't free the debugfs directory created by
-> i40e_dbg_init() when pci_register_driver() failed. Add fail path to
-> call i40e_dbg_exit() to remove the debugfs entries to prevent the bug.
-> 
-> i40e: Intel(R) Ethernet Connection XL710 Network Driver
-> i40e: Copyright (c) 2013 - 2019 Intel Corporation.
-> debugfs: Directory 'i40e' with parent '/' already present!
-> 
-> Fixes: 41c445ff0f48 ("i40e: main driver core")
-> Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
-> ---
-> changes in v2:
-> - destroy the workqueue in fail path too.
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
+Hello:
 
-The subject line should indicate the target branch and needs
-to be [PATCH net v2] ....
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+On Tue, 15 Nov 2022 11:58:59 +0100 you wrote:
+> Add the following Telit LE910C4-WWX composition:
+> 
+> 0x103a: rmnet
+> 
+> Signed-off-by: Enrico Sau <enrico.sau@gmail.com>
+> ---
+> 
+> [...]
+
+Here is the summary with links:
+  - [1/1] net: usb: qmi_wwan: add Telit 0x103a composition
+    https://git.kernel.org/netdev/net/c/e103ba33998d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
