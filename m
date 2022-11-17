@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D2C62E7C9
+	by mail.lfdr.de (Postfix) with ESMTP id 007B662E7CA
 	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:09:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241195AbiKQWJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 17:09:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S241157AbiKQWJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 17:09:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241068AbiKQWIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:08:44 -0500
+        with ESMTP id S241131AbiKQWIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:08:45 -0500
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2550C84320
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253BD8431A
         for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:08:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1668722898; x=1700258898;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=G8eSWyLkbd/h+QNdLKu4MQsKfcDN4nHLWIyiJsy5iK0=;
-  b=Q5VawprZvNYHHCNBIrYyvGDfqjvQTtDiKfkRF+Hx2IPUH4cwVIPzZWco
-   t6zqmF4V2VKDRGpEdm/fxh/r9IBqfomndKKrSpyugtMfIJaSIQTfqywyZ
-   61vhwrlptDIi0g0jelHcansA4PKp1eHrLQpCgGrkTWXkhSco7tnCLDykt
-   B3Baab28o8Iovn7e3dXCzLwrXQfsZDhzkW7CTw5aZnRWAKZLyYv0XcDWy
-   lnZcl/JvfdAk4jj871CPQQZg9sN62+jnsgAgIBQ+H+BELYpzeNaVSvcKD
-   ltWSAaIu2FFQfHcAYp+5lotx1wqLDX05LDJ/PJXV3CfVafD8q7MsNwXo1
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="313001217"
+  bh=BH8sZVOc2gMgeixhBVj3ez8MSjCKaEWOqeRX5apb0Oo=;
+  b=I0IA6eEAz2NtsUSpnU+dqRp/p38olXaQEKVA4lho/MNpx/Y9SDvPsSFX
+   og3laU6bR2jQQJLOeZxMEf/Bh4VDVmZ0TWlX6cEr7XtBziuNxCNHOpU0o
+   NoKl7fr3ZQ8TS/NAgROdRaoqpq9X6MormDnXShMx+BmJGfBV4Dak9k6gR
+   Rv5jVG/VjAeCk8PfXXOHk8PX1eCxwO9Twx5IIFHe4ZnvHL2nSeR1xdaTv
+   KaF6l+LxgQEcTfZd47sO5U6SHWnFtM2hza0zlmubkxJpUIoFDnjNPrIRi
+   ERZYgmYdiZiXUzK63s8S1j2ajgj4QtBu2eIstbZPCneLnXfay2ntnzPcj
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="313001218"
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="313001217"
+   d="scan'208";a="313001218"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:08:13 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="672975623"
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="672975627"
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="672975623"
+   d="scan'208";a="672975627"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:08:12 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/8] devlink: report extended error message in region_read_dumpit
-Date:   Thu, 17 Nov 2022 14:07:58 -0800
-Message-Id: <20221117220803.2773887-4-jacob.e.keller@intel.com>
+Subject: [PATCH net-next 4/8] devlink: remove unnecessary parameter from chunk_fill function
+Date:   Thu, 17 Nov 2022 14:07:59 -0800
+Message-Id: <20221117220803.2773887-5-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.38.1.420.g319605f8f00e
 In-Reply-To: <20221117220803.2773887-1-jacob.e.keller@intel.com>
 References: <20221117220803.2773887-1-jacob.e.keller@intel.com>
@@ -58,53 +58,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report extended error details in the devlink_nl_cmd_region_read_dumpit
-function, by using the extack structure from the netlink_callback.
+The devlink parameter of the devlink_nl_cmd_region_read_chunk_fill
+function is not used. Remove it, to simplify the function signature.
+
+Once removed, it is also obvious that the devlink parameter is not
+necessary for the devlink_nl_region_read_snapshot_fill either.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- net/core/devlink.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ net/core/devlink.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 932476956d7e..f2ee1da5283c 100644
+index f2ee1da5283c..c28c3f2bb6e4 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -6453,8 +6453,14 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+@@ -6367,7 +6367,6 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ }
  
- 	devl_lock(devlink);
+ static int devlink_nl_cmd_region_read_chunk_fill(struct sk_buff *msg,
+-						 struct devlink *devlink,
+ 						 u8 *chunk, u32 chunk_size,
+ 						 u64 addr)
+ {
+@@ -6398,7 +6397,6 @@ static int devlink_nl_cmd_region_read_chunk_fill(struct sk_buff *msg,
+ #define DEVLINK_REGION_READ_CHUNK_SIZE 256
  
--	if (!attrs[DEVLINK_ATTR_REGION_NAME] ||
--	    !attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
-+	if (!attrs[DEVLINK_ATTR_REGION_NAME]) {
-+		NL_SET_ERR_MSG_MOD(cb->extack, "No region name provided");
-+		err = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	if (!attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
-+		NL_SET_ERR_MSG_MOD(cb->extack, "No snapshot id provided");
- 		err = -EINVAL;
- 		goto out_unlock;
- 	}
-@@ -6477,6 +6483,8 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 		region = devlink_region_get_by_name(devlink, region_name);
+ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
+-						struct devlink *devlink,
+ 						struct devlink_snapshot *snapshot,
+ 						u64 start_offset,
+ 						u64 end_offset,
+@@ -6415,9 +6413,7 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
+ 		u8 *data;
  
- 	if (!region) {
-+		NL_SET_ERR_MSG_MOD(cb->extack,
-+				   "The requested region does not exist");
- 		err = -EINVAL;
- 		goto out_unlock;
+ 		data = &snapshot->data[curr_offset];
+-		err = devlink_nl_cmd_region_read_chunk_fill(skb, devlink,
+-							    data, data_size,
+-							    curr_offset);
++		err = devlink_nl_cmd_region_read_chunk_fill(skb, data, data_size, curr_offset);
+ 		if (err)
+ 			break;
+ 
+@@ -6546,9 +6542,7 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 		goto nla_put_failure;
  	}
-@@ -6484,6 +6492,8 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 	snapshot_id = nla_get_u32(attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
- 	snapshot = devlink_region_snapshot_get_by_id(region, snapshot_id);
- 	if (!snapshot) {
-+		NL_SET_ERR_MSG_MOD(cb->extack,
-+				   "The requested snapshot id does not exist");
- 		err = -EINVAL;
- 		goto out_unlock;
- 	}
+ 
+-	err = devlink_nl_region_read_snapshot_fill(skb, devlink,
+-						   snapshot,
+-						   start_offset,
++	err = devlink_nl_region_read_snapshot_fill(skb, snapshot, start_offset,
+ 						   end_offset, &ret_offset);
+ 
+ 	if (err && err != -EMSGSIZE)
 -- 
 2.38.1.420.g319605f8f00e
 
