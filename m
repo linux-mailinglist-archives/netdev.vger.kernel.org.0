@@ -2,105 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D4B62DCDD
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 14:34:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5FF62DCE5
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 14:35:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240124AbiKQNeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 08:34:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S234926AbiKQNfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 08:35:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240142AbiKQNeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 08:34:10 -0500
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B652AE0
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 05:34:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=yDHmBSEgkzHUv2gownf19Jhq8mrsJwKM8BvJyC4LAfc=; b=sdexSol373aDIoZYVm50g1mAs6
-        aJY8XhMvTMO8KSOIDwmNgKwGEgH0w6Ak5Yrw4oBG4u4obtfWg/zSvSWkdwFp3TS3bPb562j2dfIPd
-        ce3mMQMB77TLFTiRA7cs8aWKL6OHsuHNUVcRp56PqevhmQmKpCG8aHIgoyuJPDTwDoVOVHAqz6loq
-        i3ZmCkDXHl+in5r6BBH+OQdTRmfPYoesej0pIr3vFMGep63UbsJaKb0iBytCu+Iuv7MdrHkznzNDY
-        Iad4mckZcOiKZ6CVj0CmaOc6uqOfrcHVJ+X/SxgbYT8sywsMWllL8N/rw7WoAvkj5L/iFBx7KTrg/
-        /8G/V2uWL5sTT03Hi/EJ1u03MA9uB2eNEakeRt9O1JD753VAL54rfLGTer13062VoKu1NVUtpvGMU
-        RBq+9SQjbQt3xHPt95/jfXrlbFBBdu6KT9Xe8ZTXdJYJ1StcbVf0sjD6vv2IAEWTX4iYUCdBHyMWL
-        kYxGf/vkXj/ltDmU5BrJqqHtq92WCKgbff1j2wINVJazN5mi140ha9HuSD+8NqjrrKZWMU8fhFV3T
-        rzDr42aBGYaofBUW9UP5edYZvHQFLmzp7qmPwYC1pmntXsjtUJmDKA6kFku2/ZSAzH05EJRnjv088
-        3l8hlE7m1qy7+MuLpZ83zsfeSkvb0HQBOef56U0Js=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        GUO Zihua <guozihua@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 0/3 v2] 9p: Fix write overflow in p9_read_work
-Date:   Thu, 17 Nov 2022 14:33:28 +0100
-Message-ID: <3918617.6eBe0Ihrjo@silver>
-In-Reply-To: <20221117091159.31533-1-guozihua@huawei.com>
-References: <20221117091159.31533-1-guozihua@huawei.com>
+        with ESMTP id S234901AbiKQNfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 08:35:45 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28B97341C;
+        Thu, 17 Nov 2022 05:35:43 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id t25-20020a1c7719000000b003cfa34ea516so4463216wmi.1;
+        Thu, 17 Nov 2022 05:35:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=x6POjAMUpDXmaPvarwrQ8Ki3/k/Z8hYQ/JKNUyT/xVc=;
+        b=hjkI/d6+kiYWoGMRIBaHuKzkPhiTq6Tk12jhhK6Q1Pg3N0Ooestveko6ciNfM/S/fL
+         iX+Q+Qg3g6Pp5TgITBvbk7Bp8lP+lcjqutJFmEVsh1PUPJC2GV8elDFNbOQy/f7Vbind
+         nOwlEtsLEa8q7p6zS92XMzInKL8a49M+ik4u6B43oNSYb8jVHOchBJg7AmqeEuqYaUyP
+         upXDoobYXrps2kbm6q8UQWnJem+oM+zVKde1vADU18na89/2lkLO/VTAVeevSVMsBKaO
+         QfmALTkkuX0aW24bOJXDMJlhUcW1JqGezYIjw7CNawkSjnMYkTLP1C5azLqg0EeDh/wD
+         rDeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=x6POjAMUpDXmaPvarwrQ8Ki3/k/Z8hYQ/JKNUyT/xVc=;
+        b=DVuWW2Oft03dJCqGRPHfNTZKPs+s4Vdj8PRAInbw/j4F/W3L7on+jtfQO/9+TYilaX
+         CAFF25N3rl19SWhDPXbU8Rs95huOThz80qfTvPa6DyEx22AZo2TFnS9pv6xpntyh/uGT
+         jC9JMwt5eBrrw0dCoCIqGfLaxRPqZ41K6OW4Dza17iOjBHesZ+wVZiYyfazde01gVg1u
+         owb5ic5ev43nmz4qwKLhZNCzwTb0aphOyNu4QIgRvyvH+1xNFIGQ83rrjUWp/CnEDSVh
+         SJP7GdQ9x1kZbvkW9kDjMyu2rIm+BCK371HP77lrZCt6eC+EpVkjLrnNecrsvMNHCdFc
+         tr2w==
+X-Gm-Message-State: ANoB5pmY62+gOUkaVYoVORIGQ7hkLX2zHgswAIRwRDWwXH9FPtyztJX4
+        mC8rNlX28eDjR2Dbvztli8I=
+X-Google-Smtp-Source: AA0mqf6g6+PH1eqWG2AWQPhNn4sehJNK1bk9I0WYkoZR2Hm4c1iiGh5hhb+D/+++Ag2LbhBS2+H+ng==
+X-Received: by 2002:a7b:ca45:0:b0:3c4:bda1:7c57 with SMTP id m5-20020a7bca45000000b003c4bda17c57mr5381035wml.6.1668692141707;
+        Thu, 17 Nov 2022 05:35:41 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id bg28-20020a05600c3c9c00b003cfaae07f68sm6394714wmb.17.2022.11.17.05.35.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 05:35:40 -0800 (PST)
+Date:   Thu, 17 Nov 2022 16:35:37 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] rxrpc: uninitialized variable in
+ rxrpc_send_ack_packet()
+Message-ID: <Y3Y4qa8xvRvsJBF0@kadam>
+References: <Y3YOUQM/ldDe/sgC@kadam>
+ <Y3XmQsOFwTHUBSLU@kili>
+ <3475095.1668678264@warthog.procyon.org.uk>
+ <3708248.1668686372@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3708248.1668686372@warthog.procyon.org.uk>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, November 17, 2022 10:11:56 AM CET GUO Zihua wrote:
-> This patchset fixes the write overflow issue in p9_read_work. As well as
-> some follow up cleanups.
+On Thu, Nov 17, 2022 at 11:59:32AM +0000, David Howells wrote:
+> Dan Carpenter <error27@gmail.com> wrote:
 > 
-> BUG: KASAN: slab-out-of-bounds in _copy_to_iter+0xd35/0x1190
-> Write of size 4043 at addr ffff888008724eb1 by task kworker/1:1/24
+> > We disabled GCC's check for uninitialized variables.  It could be that
+> > you have the .config to automatically zero out stack variables.
+> > 
+> > CONFIG_CC_HAS_AUTO_VAR_INIT_PATTERN=y
+> > CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_BARE=y
+> > CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO=y
 > 
-> CPU: 1 PID: 24 Comm: kworker/1:1 Not tainted 6.1.0-rc5-00002-g1adf73218daa-dirty #223
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
-> Workqueue: events p9_read_work
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x4c/0x64
->  print_report+0x178/0x4b0
->  kasan_report+0xae/0x130
->  kasan_check_range+0x179/0x1e0
->  memcpy+0x38/0x60
->  _copy_to_iter+0xd35/0x1190
->  copy_page_to_iter+0x1d5/0xb00
->  pipe_read+0x3a1/0xd90
->  __kernel_read+0x2a5/0x760
->  kernel_read+0x47/0x60
->  p9_read_work+0x463/0x780
->  process_one_work+0x91d/0x1300
->  worker_thread+0x8c/0x1210
->  kthread+0x280/0x330
->  ret_from_fork+0x22/0x30
->  </TASK>
-> 
-> GUO Zihua (3):
->   9p: Fix write overflow in p9_read_work
->   9p: Remove redundent checks for message size against msize.
->   9p: Use P9_HDRSZ for header size
+> Ah.  Is there a way to reenable that?
 
-For entire series:
+make W=2 will do it, but W=2 sucks...
 
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-
-I agree with Dominique that patch 1 and 2 should be merged.
-
->  net/9p/trans_fd.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> ---
-> 
-> v2:
->   Addition log for debugging similar issues, as well as cleanups according to
->   Dominique's comment.
-> 
-
-
-
+regards,
+dan carpenter
 
