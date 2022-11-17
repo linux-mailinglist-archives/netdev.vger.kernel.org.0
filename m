@@ -2,59 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA1A62E326
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 18:34:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F220A62E33F
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 18:38:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234810AbiKQReP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 12:34:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S240166AbiKQRi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 12:38:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiKQReN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 12:34:13 -0500
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7C879E20
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 09:34:12 -0800 (PST)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-368edbc2c18so25295927b3.13
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 09:34:12 -0800 (PST)
+        with ESMTP id S240009AbiKQRiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 12:38:16 -0500
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010A67CBAE
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 09:38:12 -0800 (PST)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-13bd2aea61bso3034553fac.0
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 09:38:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=joelfernandes.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gnHYZNnUQPhhtm+c6+nXXKTYFwWxWq5yxUS6615HEp4=;
-        b=LtzbAWE2mhQFcfcSDhzAra9cfowCswIjObI7qG4BIW5iceajiS/eY3koUUflXTA7O+
-         jrXs2/kdSmvKHX56DJK7BBFRmzH3ZkZ9SFRHhuyp49uayPjyvYV2E/iPR+8HyXJoVhxO
-         MdjeTCJvu5e2o67UHQo0dcxK1DQMxTZGvrCSpCh3HUgvX3l0wtXN1TjNf0V0sImEZL/2
-         y+y35XXuyuXHWp5wAG8/EvHJ+mkLc4qtELo7i64Ue//oMo63utDDufOKpZEw4Y37r3ap
-         Izvh6MQqVitbCfdeF4cv2WaGYvjygNa6RXWVEKN7P2SDFMuSAuaHwvpyfLHbmDogtrpN
-         4aVA==
+        bh=2eg0n52INXltTgVNrVIH+ZsLFa9v6dN3TdcbmSriltQ=;
+        b=iZKsFAwvKYkGxl0uttjUp0tImCLGi1yyh+tLFcFJsEcuA04vWHTGhzDrT6If5+djl8
+         7UXSm0I9BBnz8b8dFhVD18ZqCUEYmRoJgyZXa4QifamDAx+Tr/IjwRPYza1Pe0Zie5Zs
+         sbyw6N9iwrZaJgAyxfPTdg6Dv8nMCJdfXJnQk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=gnHYZNnUQPhhtm+c6+nXXKTYFwWxWq5yxUS6615HEp4=;
-        b=1As1lDInG1RhnSF3JVG208fNKR81OzAZ0L1xxp7zDL3M0T9HMwPJLKNXZTNbpTX2C2
-         pOyi8QWEVmHatOzY6qvLr8D9brDe4gouu8koCeABdKHGjZaF3MgCrcOho7HyabLWHjIp
-         E/COqliQIloCRQIF4H5lUhXe6G7FZ1eMHqZ7saIQwe2bry6NczcaRsZ4NPfsSwLR4zBU
-         gv43VDF7S2jPimQiR4WowaTN+0Lc6Gb5a9ULxfujCtSF7y5qXPJQCF0XppvWklfOJQ8K
-         2FaxG/6ZIYJkIeyuPQY2m0n7jrq/4EDIJEMktUtjXQBhKhQ2riwutEkQO9msXsM8t7ya
-         jlXg==
-X-Gm-Message-State: ANoB5pnU3Ah4hIswiK0VjPW+NGJpvChVu+UNX+6ZZS+egQWvASf7w4QV
-        SE7lGFcWkilLAhXw01lZMzsKFp0ChKiOwOcgOenn4Q==
-X-Google-Smtp-Source: AA0mqf6KCLRpFQbK+c5XYubxaIcqESvR9Vv03C7CIPbHJA4qgSSjlWQofuQWVyxkUGAF6iDFg/e60hLM0uLbDIjyDAI=
-X-Received: by 2002:a0d:e601:0:b0:356:d0ed:6a79 with SMTP id
- p1-20020a0de601000000b00356d0ed6a79mr2854499ywe.489.1668706451317; Thu, 17
- Nov 2022 09:34:11 -0800 (PST)
+        bh=2eg0n52INXltTgVNrVIH+ZsLFa9v6dN3TdcbmSriltQ=;
+        b=NOUc4s99Nc/DVaE3TSDwQQzEnIWFUwXbsyWZ+6Xv0W6dJQQ3+jo5ne08W5nncAn0Rp
+         cL1tIMteolgj9I8iLzUa/h2Mqop0l84nzrUj9Dve/0hZnE3zVOgHrfqH34gfnzPEaG7R
+         mM+lAXHZ9hU9QHym4CM6iQXXEp/ZNMXcF2vVdHNyFLfPD7KXKi8gK4JN6xWYqDdUoVFx
+         K6YmHUc6RKFnDseKH9APk9mbEmWwFcWUTg39LdCnebMY2+Zhe9tGTRn/paanP7G2mI7f
+         epc/QIfkzPuOyuVxm1IAXkCutIHDPWpoh1Dzyx+heOhK4UwqZCjFy80P+R/7m6bcEY+Z
+         V1xg==
+X-Gm-Message-State: ANoB5pk25Z7TJawaQ9Tc8CtZTysDWrfhlq3a+g1tntxq86bfgwFSxWL2
+        HIGgrDO1olPtP3T0TFhkadjIDL3cERWjT1UNCAIfYA==
+X-Google-Smtp-Source: AA0mqf47dvqzSrNCPJwwIIiXLsFsDAH4CGJfR2/p7Mji5chyt/6TGdyvjGQFXKuzQibAikDVe0YmTO/Iff7R2KbKYzc=
+X-Received: by 2002:a05:6870:591:b0:13b:bbbb:1623 with SMTP id
+ m17-20020a056870059100b0013bbbbb1623mr1875946oap.115.1668706692218; Thu, 17
+ Nov 2022 09:38:12 -0800 (PST)
 MIME-Version: 1.0
 References: <20221117031551.1142289-1-joel@joelfernandes.org>
  <20221117031551.1142289-3-joel@joelfernandes.org> <CANn89i+gKVdveEtR9DX15Xr7E9Nn2my6SEEbXTMmxbqtezm2vg@mail.gmail.com>
  <Y3ZaH4C4omQs1OR4@google.com> <CANn89iJRhr8+osviYKVYhcHHk5TnQQD53x87-WG3iTo4YNa0qA@mail.gmail.com>
 In-Reply-To: <CANn89iJRhr8+osviYKVYhcHHk5TnQQD53x87-WG3iTo4YNa0qA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 17 Nov 2022 09:33:59 -0800
-Message-ID: <CANn89iLSsoS1dT5GzyjV=wBFLjM6BzjXJooWMNQV+ffQvhCrYw@mail.gmail.com>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Thu, 17 Nov 2022 17:38:01 +0000
+Message-ID: <CAEXW_YRULY2KzMtkv+KjA_hSr1tSKhQLuCt-RrOkMLjjwAbwKg@mail.gmail.com>
 Subject: Re: [PATCH rcu/dev 3/3] net: Use call_rcu_flush() for dst_destroy_rcu
-To:     Joel Fernandes <joel@joelfernandes.org>
+To:     Eric Dumazet <edumazet@google.com>
 Cc:     linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
         David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -64,20 +61,18 @@ Cc:     linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>, rcu@vger.kernel.org,
         rostedt@goodmis.org, paulmck@kernel.org, fweisbec@gmail.com,
-        jiejiang@google.com
+        jiejiang@google.com, Thomas Glexiner <tglx@linutronix.de>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 9:17 AM Eric Dumazet <edumazet@google.com> wrote:
+On Thu, Nov 17, 2022 at 5:17 PM Eric Dumazet <edumazet@google.com> wrote:
 >
 > On Thu, Nov 17, 2022 at 7:58 AM Joel Fernandes <joel@joelfernandes.org> wrote:
 > >
@@ -148,11 +143,22 @@ On Thu, Nov 17, 2022 at 9:17 AM Eric Dumazet <edumazet@google.com> wrote:
 > >
 >
 > I do not know what is this RCU_LAZY thing, but IMO this should be opt-in
->
+
+You should read the links I sent you. We did already try opt-in,
+Thomas Gleixner made a point at LPC that we should not add new APIs
+for this purpose and confuse kernel developers.
+
 > For instance, only kfree_rcu() should use it.
->
+
+No. Most of the call_rcu() usages are for freeing memory, so the
+consensus is we should apply this as opt out and fix issues along the
+way. We already did a lot of research/diligence on seeing which users
+need conversion.
+
 > We can not review hundreds of call_rcu() call sites and decide if
 > adding arbitrary delays cou hurt .
 
-At a very minimum, things like rcu_barrier() should make sure that all
-'lazy' callbacks are processed in a reasonable amount of time.
+That work has already been done as much as possible, please read the
+links I sent.
+
+Thanks.
