@@ -2,128 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4CB62DE18
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 15:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4210462DE1E
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 15:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239744AbiKQO3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 09:29:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56796 "EHLO
+        id S239082AbiKQOa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 09:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239992AbiKQO3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 09:29:37 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FA227DFC
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 06:29:36 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id w27-20020a05660205db00b006dbce8dc263so929045iox.16
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 06:29:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=o9eKZjGozyGRTLpYtU3VmFYQ+RcvWdJzMHKEziJZGuw=;
-        b=iCPYf+hFpUX8/xYgR8eq8p2N7mLTtxcksZJx9Lb8ThL39TOonQiva79MMOMwPVNxCv
-         ARykf3Ac1ltRJr0GXzDBGLhJZg2L1SllkALfkWVdmCgd7vUWOquATeWK5KswYlmfZ6vl
-         xIITJrArfsL8sinmk2SHK1hkq6TnLacooLNDw32yDIhEmc/QvHrKciv4nDUaYIlqVcCA
-         lVez6ygSPKCArgpqo1rMwWpXDxa7XtrjAEKYOhr4Ng2KEYT5Zo5uXOwj4+OrPeBxB/NV
-         C7NL3/9igofDDQBjGygDssNq+AQWO6F4RiAgQNgWgIB1RxzbvTJzFYxCtvM5eiAWPLnS
-         4spg==
-X-Gm-Message-State: ANoB5pn54tMDVNnWl4qJeWIIuNZ/v5dEeVDrFOFR6lkzk4nJOLbs8/we
-        ouPt6fmwegOgOqH+OnuGAQLl0lJHWxza2KIyJu5HySlTUsNb
-X-Google-Smtp-Source: AA0mqf6iYdfVCX4SeYTc6bs4YgH7WIZD7tDSk52d2gfooJRxhdrwFhE/sItX3FKP9+wem2ie3ijJ7jdUTrbD7ROm+Gifu1hAUOEp
-MIME-Version: 1.0
-X-Received: by 2002:a92:3605:0:b0:302:a011:ae1 with SMTP id
- d5-20020a923605000000b00302a0110ae1mr634468ila.170.1668695375935; Thu, 17 Nov
- 2022 06:29:35 -0800 (PST)
-Date:   Thu, 17 Nov 2022 06:29:35 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001f056d05edab6b1e@google.com>
-Subject: [syzbot] memory leak in virtual_ncidev_write
-From:   syzbot <syzbot+cdb9a427d1bc08815104@syzkaller.appspotmail.com>
-To:     bongsu.jeon@samsung.com, krzysztof.kozlowski@linaro.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+        with ESMTP id S239934AbiKQO34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 09:29:56 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4559F2A940
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 06:29:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668695393; x=1700231393;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=N0l/IllxRT2ONp070u7b5BHm5cAR4vfPg2Fg5Ye3MoE=;
+  b=iEmh3zF9Hj+IZOPj+ViC3A/TiDgl8Fxo0b2KjQWewqXyzr5QyTgyyVja
+   HCc96RQmgP7dki36lRxNlfk+synYvrjiSJIDuYjdnHWCVJT9a5rRXGT8G
+   fTBxaBhwhcpgwIwj5APpm7Kq1pxJ5Da/Sc73rPK5jZb1JMRxtvjKjKBHm
+   /H84xcPTxgjjIFtJfo0rDsnJUhDlpG/pTHhXBGHMkSflu0bvpUtsLrx39
+   gjQBH35CJBACx43aGGrVV7EjgYFUtF3ut36cDlK5VQhR+zODH6pYmz4So
+   2pvLhVAqiM2HrIKN40Tw20KeWPN1N/e/a5uA+IZg1UIryA6hzdX+2qs5w
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
+   d="scan'208";a="200230047"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Nov 2022 07:29:52 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 17 Nov 2022 07:29:52 -0700
+Received: from den-her-m31857h.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Thu, 17 Nov 2022 07:29:49 -0700
+Message-ID: <841c618ee79adf50eb9281308d370d5c761f3a05.camel@microchip.com>
+Subject: Re: [PATCH net] net: sparx5: fix error handling in
+ sparx5_port_open()
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Liu Jian <liujian56@huawei.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
+        <daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <horatiu.vultur@microchip.com>, <bjarni.jonasson@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+Date:   Thu, 17 Nov 2022 15:29:48 +0100
+In-Reply-To: <Y3Y0B4umLgFdcD4u@shell.armlinux.org.uk>
+References: <20221117125918.203997-1-liujian56@huawei.com>
+         <Y3Y0B4umLgFdcD4u@shell.armlinux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.36.5-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Liu and Russell,
 
-syzbot found the following issue on:
+Yes, I think we should go over this and do some testing on the platform before taking it in.
 
-HEAD commit:    cc675d22e422 Merge tag 'for-linus-6.1-rc6-tag' of git://gi..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1152f8d9880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=435fb8cdd395f932
-dashboard link: https://syzkaller.appspot.com/bug?extid=cdb9a427d1bc08815104
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14bea8d9880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10015c4e880000
+On Thu, 2022-11-17 at 13:15 +0000, Russell King (Oracle) wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Thu, Nov 17, 2022 at 08:59:18PM +0800, Liu Jian wrote:
+> > If phylink_of_phy_connect() fails, the port should be disabled.
+> > If sparx5_serdes_set()/phy_power_on() fails, the port should be
+> > disabled and the phylink should be stopped and disconnected.
+> > 
+> > Fixes: 946e7fd5053a ("net: sparx5: add port module support")
+> > Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
+> > Signed-off-by: Liu Jian <liujian56@huawei.com>
+> 
+> The patch looks sane for the code structure that's there, but I question
+> whether this is the best code structure.
+> 
+> phylink_start() will call the pcs_config() method, which then goes on
+> to call sparx5_port_pcs_set() and sparx5_port_pcs_low_set() - which
+> then calls sparx5_serdes_set(). Is that safe with the serdes PHY
+> powered down? I think sparx5 maintainers need to think about that,
+> and possibly include a comment in the code if it is indeed safe.
+> 
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/4f389db5cedc/disk-cc675d22.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/c3ef1df08018/vmlinux-cc675d22.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/e11bee4d6893/bzImage-cc675d22.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cdb9a427d1bc08815104@syzkaller.appspotmail.com
-
-executing program
-BUG: memory leak
-unreferenced object 0xffff88810e144e00 (size 240):
-  comm "syz-executor284", pid 3701, jiffies 4294952403 (age 12.620s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff83ab79a9>] __alloc_skb+0x1f9/0x270 net/core/skbuff.c:497
-    [<ffffffff82a5cf64>] alloc_skb include/linux/skbuff.h:1267 [inline]
-    [<ffffffff82a5cf64>] virtual_ncidev_write+0x24/0xe0 drivers/nfc/virtual_ncidev.c:116
-    [<ffffffff815f6503>] do_loop_readv_writev fs/read_write.c:759 [inline]
-    [<ffffffff815f6503>] do_loop_readv_writev fs/read_write.c:743 [inline]
-    [<ffffffff815f6503>] do_iter_write+0x253/0x300 fs/read_write.c:863
-    [<ffffffff815f66ed>] vfs_writev+0xdd/0x240 fs/read_write.c:934
-    [<ffffffff815f68f6>] do_writev+0xa6/0x1c0 fs/read_write.c:977
-    [<ffffffff848802d5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff848802d5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84a00087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-BUG: memory leak
-unreferenced object 0xffff88810cec1a00 (size 512):
-  comm "syz-executor284", pid 3701, jiffies 4294952403 (age 12.620s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814edca7>] __do_kmalloc_node mm/slab_common.c:954 [inline]
-    [<ffffffff814edca7>] __kmalloc_node_track_caller+0x47/0x120 mm/slab_common.c:975
-    [<ffffffff83ab788d>] kmalloc_reserve net/core/skbuff.c:437 [inline]
-    [<ffffffff83ab788d>] __alloc_skb+0xdd/0x270 net/core/skbuff.c:509
-    [<ffffffff82a5cf64>] alloc_skb include/linux/skbuff.h:1267 [inline]
-    [<ffffffff82a5cf64>] virtual_ncidev_write+0x24/0xe0 drivers/nfc/virtual_ncidev.c:116
-    [<ffffffff815f6503>] do_loop_readv_writev fs/read_write.c:759 [inline]
-    [<ffffffff815f6503>] do_loop_readv_writev fs/read_write.c:743 [inline]
-    [<ffffffff815f6503>] do_iter_write+0x253/0x300 fs/read_write.c:863
-    [<ffffffff815f66ed>] vfs_writev+0xdd/0x240 fs/read_write.c:934
-    [<ffffffff815f68f6>] do_writev+0xa6/0x1c0 fs/read_write.c:977
-    [<ffffffff848802d5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff848802d5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84a00087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+BR
+Steen
 
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
