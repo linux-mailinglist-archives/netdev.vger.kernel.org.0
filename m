@@ -2,84 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A5A62D1C0
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 04:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8312E62D1E8
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 04:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbiKQDhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 22:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53802 "EHLO
+        id S233851AbiKQD60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 22:58:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232905AbiKQDhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 22:37:21 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1F0E1D;
-        Wed, 16 Nov 2022 19:37:20 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCQZd5xY3zRpGD;
-        Thu, 17 Nov 2022 11:36:57 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 11:37:18 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 11:37:17 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johnny Kim <johnny.kim@atmel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chris Park <chris.park@atmel.com>,
-        Rachel Kim <rachel.kim@atmel.com>,
-        "Nicolas Ferre" <nicolas.ferre@microchip.com>
-CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH wireless] wilc1000: fix potential memory leak in wilc_mac_xmit()
-Date:   Thu, 17 Nov 2022 11:56:58 +0800
-Message-ID: <1668657419-29240-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S233477AbiKQD6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 22:58:25 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAA4F43;
+        Wed, 16 Nov 2022 19:58:24 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id d9so1239493wrm.13;
+        Wed, 16 Nov 2022 19:58:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=J+s5q3b8+PYlz42oQnRKnwhrGKCMt1VK++v69AYnjg0=;
+        b=ONNIwuFBUzFkCoMFZF0onlDZieASK1hmVW3baMjhJcvvHFD74kOcNo7FuMTKNOgo1b
+         +gPhwwITgFh1Y7KxiX1OiPhJbaaSrzuxQ67Gq6sqIYe05l3haO+QMJ9Mv+rxj6cBZmf1
+         2VHgof0XjO8FHiZF2TzaXnCfXm9w4Rh7D+JIPRkNCDbqWwh5DAFGpVncq3bU9/ZJtN4+
+         zmnmIiAJr9ReSRrJB1ZXQeVPs3ELrqmzD9hy8depgdawF9ALAqcsP3EUlgGmbrVmSr/t
+         IdeZlEGtMwv7S8pcVfmQCN3vhsgxXqst9INOkHrJ9DSI+Kxw96F73deIQRqw2t6ePaDj
+         GJAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J+s5q3b8+PYlz42oQnRKnwhrGKCMt1VK++v69AYnjg0=;
+        b=lWvhAg+M0DMdi4brQa8B1cmnf63ifrSBZ/nw2ox3JPY0Bx+WGSvSP6ndGRTq2J6Qd9
+         JpoOsK2uGkmzVjJqk5G+2Iz7Nx4pyoK12LhEEUN+vbxLCnv1mPz8fv+Dld7PKgWIsS6T
+         CHZ8z8CEwT9ceFbAs115G3peJDN5zCyPB+wQvAliojR0yBQxZfj8i/vLOyO802DPnniU
+         iBtHUKw8SbWAYx1YAsFUg4Dq3uy6rDomoXgv9IN8uIzy9ITa/nhL+AXtFns56vTAEN8Q
+         80yCn6+XNvvqX/9dRNQ4tr5ZSLCk1Ta1NIa7Owkd00a1IEdXauYXC0x7JiZ+WWaGrbbs
+         NuyA==
+X-Gm-Message-State: ANoB5plLJb7KrCTj9nhQ/DMvnqH2O6HaDmSVXaMqHXBS6dpKs/ibOcGs
+        WX9Te9sRxVhCZJ/SddY4Ku8=
+X-Google-Smtp-Source: AA0mqf6TLrjTMien8QoyKcL77VuP2G62kEewWt7SD8X3mmHKPPXcNTNrNlwuWp/EeQAmorEMpwkdHg==
+X-Received: by 2002:a5d:4c91:0:b0:236:6d6b:fb56 with SMTP id z17-20020a5d4c91000000b002366d6bfb56mr276272wrs.198.1668657503131;
+        Wed, 16 Nov 2022 19:58:23 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id y20-20020a7bcd94000000b003cfe6fd7c60sm3824278wmj.8.2022.11.16.19.58.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Nov 2022 19:58:22 -0800 (PST)
+Date:   Thu, 17 Nov 2022 06:58:19 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH] net: ethernet: renesas: rswitch: Fix MAC address info
+Message-ID: <Y3WxW1Whoq3brPim@kadam>
+References: <20221115235519.679115-1-yoshihiro.shimoda.uh@renesas.com>
+ <Y3Vu7fOrqhHKT5hQ@x130.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3Vu7fOrqhHKT5hQ@x130.lan>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wilc_mac_xmit() returns NETDEV_TX_OK without freeing skb, add
-dev_kfree_skb() to fix it.
+On Wed, Nov 16, 2022 at 03:14:53PM -0800, Saeed Mahameed wrote:
+> On 16 Nov 08:55, Yoshihiro Shimoda wrote:
+> > Smatch detected the following warning.
+> > 
+> >    drivers/net/ethernet/renesas/rswitch.c:1717 rswitch_init() warn:
+> >    '%pM' cannot be followed by 'n'
+> > 
+> > The 'n' should be '\n'.
+> > 
+> > Reported-by: Dan Carpenter <error27@gmail.com>
+> > Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
+> 
+> I would drop the Fixes tag, this shoiuldn't go to net and -stable.
 
-Fixes: c5c77ba18ea6 ("staging: wilc1000: Add SDIO/SPI 802.11 driver")
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- drivers/net/wireless/microchip/wilc1000/netdev.c | 1 +
- 1 file changed, 1 insertion(+)
+Some maintainers would want a Fixes tag for this and some wouldn't...
+But either way Fixes doesn't really have to do with -stable.  In fact
+sometimes the Fixes tag let's you automatically filter out fixes to code
+which is newer than the -stable tree so it can mean the opposite of
+-stable.
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index 9b319a4..6f3ae0d 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.c
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -730,6 +730,7 @@ netdev_tx_t wilc_mac_xmit(struct sk_buff *skb, struct net_device *ndev)
- 
- 	if (skb->dev != ndev) {
- 		netdev_err(ndev, "Packet not destined to this device\n");
-+		dev_kfree_skb(skb);
- 		return NETDEV_TX_OK;
- 	}
- 
--- 
-2.9.5
+regards,
+dan carpenter
 
