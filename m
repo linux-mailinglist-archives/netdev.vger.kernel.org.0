@@ -2,124 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 765A262D80F
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 11:33:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD1762D816
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 11:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239528AbiKQKdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 05:33:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S239553AbiKQKfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 05:35:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiKQKdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 05:33:04 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C6259841;
-        Thu, 17 Nov 2022 02:33:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2BgNwLdh+HBA4xrzyykRGd8e3nHfE6jHoZjPyIO7tQ8=; b=vf0GDy8lKzIs95KZT9hTDN9bLB
-        KkkakBOovK/EhU72ZwXcJFd6ZXnYeh5hWZFAO+QwAUy+Iil38BRQKWQA/ovqtD2R3k/zIRWUVleNY
-        mI6EufB0EHT9QlEKH1MxQI8dlYgzNxWxQ/KJJ0HUSUpP7NgTBBgzbRiK7voh4pixtxFai3XdS+4CH
-        KUkR3sQ10UY1J1DLrBw2+xk4ToBWEQq3GT1Ou599VPaU5ywBw9TAIVKjU75NdNZTSPprpMUx5CQP1
-        Y51nu+1iINv9JXk8aPYDqbEhMoPEahldPraSq7QM6Racs8sRYiTunUTXpT5cPjddHYjb4UQdEZEgF
-        MxQo2C5A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35306)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ovcCQ-0004Iz-Pt; Thu, 17 Nov 2022 10:32:50 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ovcCG-0006jE-Em; Thu, 17 Nov 2022 10:32:40 +0000
-Date:   Thu, 17 Nov 2022 10:32:40 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S239583AbiKQKfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 05:35:03 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9941BE0;
+        Thu, 17 Nov 2022 02:35:02 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id k8so3116099wrh.1;
+        Thu, 17 Nov 2022 02:35:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1tIES8M5p31Pz85hKfNgDWDSrA68rOOdtctNl9gU1lc=;
+        b=PRqNXSwzvw5iJSs7ru7DeKpofb6jxzL+Z53vX5WEn/O5fMjy7Amvc/HX/j9fk7ozNg
+         iFh1NSmBKISw7UnbsD4L+VYOG1RZ/OG//Xcpko1p5NtCp7nbvoHSdfVJgtVOR8HMxSZn
+         WXsh0P+YRnB99yraWPA3dmb68YO61JQDXx60gqXfNmqLUZAKn3iYVucSYU09QMqQqDLA
+         8ZjRLT7lhzwpWtlc+qnTh3lFsBUjNIkSpqrSXdMAZxfDojGVTrhqSz706sUQjhDMQL7N
+         I4wvb4fW5u2PqhJz2wOqxBfNF5NxHgY42cg5NynWcTiJKN1lCTySQZJi8lM2EzzYpbgF
+         s7hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1tIES8M5p31Pz85hKfNgDWDSrA68rOOdtctNl9gU1lc=;
+        b=IkOzLkzxY4l5aVi7NehC0XUcIKm4ZoNiNj96MuQBl8BWFl6Rddi99PhtF0rhM5UNhb
+         1vvuEeGxUZpzR8BZOMM5/g6WOyv/12JMHVdczYdttjlQ2Nxu+jFp5jykYc3t+hWoUqGI
+         TgEqYAL3ZCpwPaJe6IT+Pz9jf390MAeQ3B9fmzGm8R9f3CG2Qu/bSx0MxNNfLfhbrsc6
+         dFRD0kqLp6rD3O7Agh4Ol3bXGResvz32L2hoYyAVJTLzH9WaNCAlrdY8rYoiamPerJyC
+         1J5VcqpSWvqWxZm4fhHxG1QdgZSaxljFJq4xLk8uzrs0iIhV0cJlXofTeWWe8J9R9Kmm
+         IV3g==
+X-Gm-Message-State: ANoB5pkzh2Sf+9Myl+BrcI8zipVpxjpbvEfhmVrKOJ3/fGis1VHyzz4U
+        TND20bv2JZ7dkkjg8rebSg8=
+X-Google-Smtp-Source: AA0mqf76uIFuiYDNh3PBXTnttr8pYQJIqwCARGBPlN4ZwMF+FcncsG5R8fLAeu8e2zSszihRZoP1ng==
+X-Received: by 2002:adf:f8c5:0:b0:241:b408:f170 with SMTP id f5-20020adff8c5000000b00241b408f170mr1098387wrq.42.1668681301350;
+        Thu, 17 Nov 2022 02:35:01 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id k1-20020a5d6281000000b0022ae0965a8asm604269wru.24.2022.11.17.02.34.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Nov 2022 02:34:59 -0800 (PST)
+Date:   Thu, 17 Nov 2022 13:34:57 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Christoph =?iso-8859-1?Q?B=F6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mmc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        ydroneaud@opteya.com
-Subject: Re: [PATCH v2 3/3] treewide: use get_random_u32_between() when
- possible
-Message-ID: <Y3YNyJ8oeixYuvdI@shell.armlinux.org.uk>
-References: <20221114164558.1180362-1-Jason@zx2c4.com>
- <20221114164558.1180362-4-Jason@zx2c4.com>
- <202211161436.A45AD719A@keescook>
- <Y3V4g8eorwiU++Y3@zx2c4.com>
- <Y3WW2lOgoYLKQeve@zx2c4.com>
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] rxrpc: uninitialized variable in
+ rxrpc_send_ack_packet()
+Message-ID: <Y3YOUQM/ldDe/sgC@kadam>
+References: <Y3XmQsOFwTHUBSLU@kili>
+ <3475095.1668678264@warthog.procyon.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y3WW2lOgoYLKQeve@zx2c4.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <3475095.1668678264@warthog.procyon.org.uk>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 03:05:14AM +0100, Jason A. Donenfeld wrote:
-> On Thu, Nov 17, 2022 at 12:55:47AM +0100, Jason A. Donenfeld wrote:
-> > 1) How/whether to make f(0, UR2_MAX) safe,
-> >    - without additional 64-bit arithmetic,
-> >    - minimizing the number of branches.
-> >    I have a few ideas I'll code golf for a bit.
-> > I think I can make progress with (1) alone by fiddling around with
-> > godbolt enough, like usual.
+On Thu, Nov 17, 2022 at 09:44:24AM +0000, David Howells wrote:
+> Dan Carpenter <error27@gmail.com> wrote:
 > 
-> The code gen is definitely worse.
+> > The "pkt" was supposed to have been deleted in a previous patch.  It
+> > leads to an uninitialized variable bug.
 > 
-> Original half-open interval:
+> Weird.  I don't get a compiler warning and the kernel doesn't crash, despite
+> transmitting millions of acks.
 > 
->     return floor + get_random_u32_below(ceil - floor);
+> If I disassemble the built code, I see:
 > 
-> Suggested fully closed interval:
-> 	
->     ceil = ceil - floor + 1;
->     return likely(ceil) ? floor + get_random_u32_below(ceil) : get_random_u32();
+>    0xffffffff81b09e89 <+723>:   xor    %edi,%edi
+>    0xffffffff81b09e8b <+725>:   call   0xffffffff811c0bc1 <kfree>
+> 
+> I'm not sure why it's sticking 0 in EDI, though.
 
-How many of these uses are going to have ceil and floor as a variable?
-If they're constants (e.g. due to being in an inline function with
-constant arguments) then the compiler will optimise all of the above
-and the assembly code will just be either:
+We disabled GCC's check for uninitialized variables.  It could be that
+you have the .config to automatically zero out stack variables.
 
-1. a call to get_random_u32()
-2. a call to get_random_u32_below() and an addition.
+CONFIG_CC_HAS_AUTO_VAR_INIT_PATTERN=y
+CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_BARE=y
+CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO=y
 
-If one passes ceil or floor as a variable, then yes, the code gen is
-going to be as complicated as you suggest above.
+regards,
+dan carpenter
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
