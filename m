@@ -2,236 +2,318 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0006662D11C
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 03:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96D6D62D14D
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 03:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiKQCYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Nov 2022 21:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
+        id S239085AbiKQCyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Nov 2022 21:54:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233336AbiKQCYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 21:24:51 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24F6AEC1;
-        Wed, 16 Nov 2022 18:24:49 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NCNyy6PgJzRpNW;
-        Thu, 17 Nov 2022 10:24:26 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 17 Nov 2022 10:24:47 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kuba@kernel.org>, <shuah@kernel.org>, <pabeni@redhat.com>,
-        <saeed@kernel.org>, <edumazet@google.com>, <davem@davemloft.net>,
-        Wang Yufen <wangyufen@huawei.com>,
-        =?UTF-8?q?Daniel=20M=C3=BCller?= <deso@posteo.net>
-Subject: [PATCH net v3] selftests/net: fix missing xdp_dummy
-Date:   Thu, 17 Nov 2022 10:45:03 +0800
-Message-ID: <1668653103-14212-1-git-send-email-wangyufen@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S239143AbiKQCxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Nov 2022 21:53:51 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3187B4876C
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 18:53:48 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id b124so522662oia.4
+        for <netdev@vger.kernel.org>; Wed, 16 Nov 2022 18:53:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=N1WiWI19YoHyMhnLxSGvNdwVK87PQdtocGJoZYJrP8w=;
+        b=nv4UF/qgrmqTzrar//wrdDt98dkonq6j8OlyfQJnrhLCbJR3RKkUefl7U8OFl16bRf
+         nVZYl7gJwq03vaxFt5e3hjlWUbq8IiP174cBTMMlf8YkdaPuW0UMLesal+1z3gTLtbzD
+         LAfKx6pj4HeQjkMMZsisFFtRTMB1/7AwQl29BCyzHjLaPWDwak1nsfy7FhqMf0vOvmI4
+         BSSZzBOdjIDFmoZCxWuxQKaCJwvooSCWnxnB0hWNwQl7TVfgnLy4lLq4VFFMs9lhLYvM
+         n1m9kBPx4sxdyh0qTfRSDDHSD8wCiNm2tcd0YtT3wKtcOPLuYcSUp2SmZsDA1gwRNHsk
+         CF1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=N1WiWI19YoHyMhnLxSGvNdwVK87PQdtocGJoZYJrP8w=;
+        b=MNiQQ0n5DnJtVtXHGNUPiqnFlsZYrGynGd+JPnZtB3zbJ4K3kOibgxJZIP20ZYPXJ6
+         yO1Vdw8fCrSqJynizxWhMz2txl7rvyQkkZZJsrj7s4tTq2X/8tG3+SzpvVB63m8G3135
+         CLpsd9+Xt2hxY65+i9V0LRGhJx20BREdqOl8Rl4/419hAKiTN7dheoqOgeK4AENcFqdj
+         aI3nXIOxV4YG4HWPgZkKclicK0fLlxM6jCP665ZTXd8Lpmfr3XRpZLaGk9Vmw/Jsra1m
+         D9HOADHIizNf2gjFkaRfEN4K9SkGAbHMFZsj/W+wJQhl2UdnVF9bClWlAUvILK/VX/Ur
+         1M7A==
+X-Gm-Message-State: ANoB5pm47lwleNXwvyNsVmtxMoEnYoqcPVP9uYrGjo4cajBMGtQzIuXj
+        3NLqneI1U2iailecGH7/g5mLJDdTsgw0SeVWKVVFYg==
+X-Google-Smtp-Source: AA0mqf6znsj3SSKwj4NdK7G3r/Lu8/Wr7RkL1YYIscb75J6M13IY6mdHJYJBFwzG6Jzcnu1M1iRbHHPLARNf5ycfK5M=
+X-Received: by 2002:aca:1802:0:b0:359:e812:69ee with SMTP id
+ h2-20020aca1802000000b00359e81269eemr3215524oih.125.1668653627378; Wed, 16
+ Nov 2022 18:53:47 -0800 (PST)
 MIME-Version: 1.0
+References: <20221115030210.3159213-1-sdf@google.com> <20221115030210.3159213-6-sdf@google.com>
+ <87h6z0i449.fsf@toke.dk> <CAKH8qBsEGD3L0XAVzVHcTW6k_RhEt74pfXrPLANuznSAJw7bEg@mail.gmail.com>
+ <8735ajet05.fsf@toke.dk> <CAKH8qBsg4aoFuiajuXmRN3VPKYVJZ-Z5wGzBy9pH3pV5RKCDzQ@mail.gmail.com>
+ <6374854883b22_5d64b208e3@john.notmuch> <34f89a95-a79e-751c-fdd2-93889420bf96@linux.dev>
+ <878rkbjjnp.fsf@toke.dk> <6375340a6c284_66f16208aa@john.notmuch>
+ <CAKH8qBs1rYXf0GGto9hPz-ELLZ9c692cFnKC9JLwAq5b7JRK-A@mail.gmail.com>
+ <637576962dada_8cd03208b0@john.notmuch> <CAKH8qBtOATGBMPkgdE0jZ+76AWMsUWau360u562bB=cGYq+gdQ@mail.gmail.com>
+ <CAADnVQKTXuBvP_2O6coswXL7MSvqVo1d+qXLabeOikcbcbAKPQ@mail.gmail.com>
+In-Reply-To: <CAADnVQKTXuBvP_2O6coswXL7MSvqVo1d+qXLabeOikcbcbAKPQ@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 16 Nov 2022 18:53:36 -0800
+Message-ID: <CAKH8qBvTdnyRYT+ocNS_ZmOfoN+nBEJ5jcBcKcqZ1hx0a5WrSw@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next 05/11] veth: Support rx timestamp
+ metadata for xdp
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit afef88e65554 ("selftests/bpf: Store BPF object files with
-.bpf.o extension"), we should use xdp_dummy.bpf.o instade of xdp_dummy.o.
+On Wed, Nov 16, 2022 at 6:17 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Nov 16, 2022 at 4:19 PM Stanislav Fomichev <sdf@google.com> wrote=
+:
+> >
+> > On Wed, Nov 16, 2022 at 3:47 PM John Fastabend <john.fastabend@gmail.co=
+m> wrote:
+> > >
+> > > Stanislav Fomichev wrote:
+> > > > On Wed, Nov 16, 2022 at 11:03 AM John Fastabend
+> > > > <john.fastabend@gmail.com> wrote:
+> > > > >
+> > > > > Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > > > > > Martin KaFai Lau <martin.lau@linux.dev> writes:
+> > > > > >
+> > > > > > > On 11/15/22 10:38 PM, John Fastabend wrote:
+> > > > > > >>>>>>> +static void veth_unroll_kfunc(const struct bpf_prog *p=
+rog, u32 func_id,
+> > > > > > >>>>>>> +                           struct bpf_patch *patch)
+> > > > > > >>>>>>> +{
+> > > > > > >>>>>>> +     if (func_id =3D=3D xdp_metadata_kfunc_id(XDP_META=
+DATA_KFUNC_RX_TIMESTAMP_SUPPORTED)) {
+> > > > > > >>>>>>> +             /* return true; */
+> > > > > > >>>>>>> +             bpf_patch_append(patch, BPF_MOV64_IMM(BPF=
+_REG_0, 1));
+> > > > > > >>>>>>> +     } else if (func_id =3D=3D xdp_metadata_kfunc_id(X=
+DP_METADATA_KFUNC_RX_TIMESTAMP)) {
+> > > > > > >>>>>>> +             /* return ktime_get_mono_fast_ns(); */
+> > > > > > >>>>>>> +             bpf_patch_append(patch, BPF_EMIT_CALL(kti=
+me_get_mono_fast_ns));
+> > > > > > >>>>>>> +     }
+> > > > > > >>>>>>> +}
+> > > > > > >>>>>>
+> > > > > > >>>>>> So these look reasonable enough, but would be good to se=
+e some examples
+> > > > > > >>>>>> of kfunc implementations that don't just BPF_CALL to a k=
+ernel function
+> > > > > > >>>>>> (with those helper wrappers we were discussing before).
+> > > > > > >>>>>
+> > > > > > >>>>> Let's maybe add them if/when needed as we add more metada=
+ta support?
+> > > > > > >>>>> xdp_metadata_export_to_skb has an example, and rfc 1/2 ha=
+ve more
+> > > > > > >>>>> examples, so it shouldn't be a problem to resurrect them =
+back at some
+> > > > > > >>>>> point?
+> > > > > > >>>>
+> > > > > > >>>> Well, the reason I asked for them is that I think having t=
+o maintain the
+> > > > > > >>>> BPF code generation in the drivers is probably the biggest=
+ drawback of
+> > > > > > >>>> the kfunc approach, so it would be good to be relatively s=
+ure that we
+> > > > > > >>>> can manage that complexity (via helpers) before we commit =
+to this :)
+> > > > > > >>>
+> > > > > > >>> Right, and I've added a bunch of examples in v2 rfc so we c=
+an judge
+> > > > > > >>> whether that complexity is manageable or not :-)
+> > > > > > >>> Do you want me to add those wrappers you've back without an=
+y real users?
+> > > > > > >>> Because I had to remove my veth tstamp accessors due to Joh=
+n/Jesper
+> > > > > > >>> objections; I can maybe bring some of this back gated by so=
+me
+> > > > > > >>> static_branch to avoid the fastpath cost?
+> > > > > > >>
+> > > > > > >> I missed the context a bit what did you mean "would be good =
+to see some
+> > > > > > >> examples of kfunc implementations that don't just BPF_CALL t=
+o a kernel
+> > > > > > >> function"? In this case do you mean BPF code directly withou=
+t the call?
+> > > > > > >>
+> > > > > > >> Early on I thought we should just expose the rx_descriptor w=
+hich would
+> > > > > > >> be roughly the same right? (difference being code embedded i=
+n driver vs
+> > > > > > >> a lib) Trouble I ran into is driver code using seqlock_t and=
+ mutexs
+> > > > > > >> which wasn't as straight forward as the simpler just read it=
+ from
+> > > > > > >> the descriptor. For example in mlx getting the ts would be e=
+asy from
+> > > > > > >> BPF with the mlx4_cqe struct exposed
+> > > > > > >>
+> > > > > > >> u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe)
+> > > > > > >> {
+> > > > > > >>          u64 hi, lo;
+> > > > > > >>          struct mlx4_ts_cqe *ts_cqe =3D (struct mlx4_ts_cqe =
+*)cqe;
+> > > > > > >>
+> > > > > > >>          lo =3D (u64)be16_to_cpu(ts_cqe->timestamp_lo);
+> > > > > > >>          hi =3D ((u64)be32_to_cpu(ts_cqe->timestamp_hi) + !l=
+o) << 16;
+> > > > > > >>
+> > > > > > >>          return hi | lo;
+> > > > > > >> }
+> > > > > > >>
+> > > > > > >> but converting that to nsec is a bit annoying,
+> > > > > > >>
+> > > > > > >> void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
+> > > > > > >>                              struct skb_shared_hwtstamps *hw=
+ts,
+> > > > > > >>                              u64 timestamp)
+> > > > > > >> {
+> > > > > > >>          unsigned int seq;
+> > > > > > >>          u64 nsec;
+> > > > > > >>
+> > > > > > >>          do {
+> > > > > > >>                  seq =3D read_seqbegin(&mdev->clock_lock);
+> > > > > > >>                  nsec =3D timecounter_cyc2time(&mdev->clock,=
+ timestamp);
+> > > > > > >>          } while (read_seqretry(&mdev->clock_lock, seq));
+> > > > > > >>
+> > > > > > >>          memset(hwts, 0, sizeof(struct skb_shared_hwtstamps)=
+);
+> > > > > > >>          hwts->hwtstamp =3D ns_to_ktime(nsec);
+> > > > > > >> }
+> > > > > > >>
+> > > > > > >> I think the nsec is what you really want.
+> > > > > > >>
+> > > > > > >> With all the drivers doing slightly different ops we would h=
+ave
+> > > > > > >> to create read_seqbegin, read_seqretry, mutex_lock, ... to g=
+et
+> > > > > > >> at least the mlx and ice drivers it looks like we would need=
+ some
+> > > > > > >> more BPF primitives/helpers. Looks like some more work is ne=
+eded
+> > > > > > >> on ice driver though to get rx tstamps on all packets.
+> > > > > > >>
+> > > > > > >> Anyways this convinced me real devices will probably use BPF=
+_CALL
+> > > > > > >> and not BPF insns directly.
+> > > > > > >
+> > > > > > > Some of the mlx5 path looks like this:
+> > > > > > >
+> > > > > > > #define REAL_TIME_TO_NS(hi, low) (((u64)hi) * NSEC_PER_SEC + =
+((u64)low))
+> > > > > > >
+> > > > > > > static inline ktime_t mlx5_real_time_cyc2time(struct mlx5_clo=
+ck *clock,
+> > > > > > >                                                u64 timestamp)
+> > > > > > > {
+> > > > > > >          u64 time =3D REAL_TIME_TO_NS(timestamp >> 32, timest=
+amp & 0xFFFFFFFF);
+> > > > > > >
+> > > > > > >          return ns_to_ktime(time);
+> > > > > > > }
+> > > > > > >
+> > > > > > > If some hints are harder to get, then just doing a kfunc call=
+ is better.
+> > > > > >
+> > > > > > Sure, but if we end up having a full function call for every fi=
+eld in
+> > > > > > the metadata, that will end up having a significant performance=
+ impact
+> > > > > > on the XDP data path (thinking mostly about the skb metadata ca=
+se here,
+> > > > > > which will collect several bits of metadata).
+> > > > > >
+> > > > > > > csum may have a better chance to inline?
+> > > > > >
+> > > > > > Yup, I agree. Including that also makes it possible to benchmar=
+k this
+> > > > > > series against Jesper's; which I think we should definitely be =
+doing
+> > > > > > before merging this.
+> > > > >
+> > > > > Good point I got sort of singularly focused on timestamp because =
+I have
+> > > > > a use case for it now.
+> > > > >
+> > > > > Also hash is often sitting in the rx descriptor.
+> > > >
+> > > > Ack, let me try to add something else (that's more inline-able) on =
+the
+> > > > rx side for a v2.
+> > >
+> > > If you go with in-kernel BPF kfunc approach (vs user space side) I th=
+ink
+> > > you also need to add CO-RE to be friendly for driver developers? Othe=
+rwise
+> > > they have to keep that read in sync with the descriptors? Also need t=
+o
+> > > handle versioning of descriptors where depending on specific options
+> > > and firmware and chip being enabled the descriptor might be moving
+> > > around. Of course can push this all to developer, but seems not so
+> > > nice when we have the machinery to do this and we handle it for all
+> > > other structures.
+> > >
+> > > With CO-RE you can simply do the rx_desc->hash and rx_desc->csum and
+> > > expect CO-RE sorts it out based on currently running btf_id of the
+> > > descriptor. If you go through normal path you get this for free of
+> > > course.
+> >
+> > Doesn't look like the descriptors are as nice as you're trying to
+> > paint them (with clear hash/csum fields) :-) So not sure how much
+> > CO-RE would help.
+> > At least looking at mlx4 rx_csum, the driver consults three different
+> > sets of flags to figure out the hash_type. Or am I just unlucky with
+> > mlx4?
+>
+> Which part are you talking about ?
+>         hw_checksum =3D csum_unfold((__force __sum16)cqe->checksum);
+> is trivial enough for bpf prog to do if it has access to 'cqe' pointer
+> which is what John is proposing (I think).
 
-In addition, use the BPF_FILE variable to save the BPF object file name,
-which can be better identified and modified.
+I'm talking about mlx4_en_process_rx_cq, the caller of that check_csum.
+In particular: if (likely(dev->features & NETIF_F_RXCSUM)) branch
+I'm assuming we want to have hash_type available to the progs?
 
-Fixes: afef88e65554 ("selftests/bpf: Store BPF object files with .bpf.o extension")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Cc: Daniel Müller <deso@posteo.net>
----
- tools/testing/selftests/net/udpgro.sh         |  8 +++++---
- tools/testing/selftests/net/udpgro_bench.sh   |  8 +++++---
- tools/testing/selftests/net/udpgro_frglist.sh |  8 +++++---
- tools/testing/selftests/net/udpgro_fwd.sh     |  3 ++-
- tools/testing/selftests/net/veth.sh           | 11 ++++++-----
- 5 files changed, 23 insertions(+), 15 deletions(-)
+But also, check_csum handles other corner cases:
+- short_frame: we simply force all those small frames to skip checksum comp=
+lete
+- get_fixed_ipv6_csum: In IPv6 packets, hw_checksum lacks 6 bytes from
+IPv6 header
+- get_fixed_ipv4_csum: Although the stack expects checksum which
+doesn't include the pseudo header, the HW adds it
 
-diff --git a/tools/testing/selftests/net/udpgro.sh b/tools/testing/selftests/net/udpgro.sh
-index 6a443ca..0c74375 100755
---- a/tools/testing/selftests/net/udpgro.sh
-+++ b/tools/testing/selftests/net/udpgro.sh
-@@ -5,6 +5,8 @@
- 
- readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
- 
-+BPF_FILE="../bpf/xdp_dummy.bpf.o"
-+
- # set global exit status, but never reset nonzero one.
- check_err()
- {
-@@ -34,7 +36,7 @@ cfg_veth() {
- 	ip -netns "${PEER_NS}" addr add dev veth1 192.168.1.1/24
- 	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
- 	ip -netns "${PEER_NS}" link set dev veth1 up
--	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
-+	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
- }
- 
- run_one() {
-@@ -195,8 +197,8 @@ run_all() {
- 	return $ret
- }
- 
--if [ ! -f ../bpf/xdp_dummy.o ]; then
--	echo "Missing xdp_dummy helper. Build bpf selftest first"
-+if [ ! -f ${BPF_FILE} ]; then
-+	echo "Missing ${BPF_FILE}. Build bpf selftest first"
- 	exit -1
- fi
- 
-diff --git a/tools/testing/selftests/net/udpgro_bench.sh b/tools/testing/selftests/net/udpgro_bench.sh
-index 8a1109a..8949728 100755
---- a/tools/testing/selftests/net/udpgro_bench.sh
-+++ b/tools/testing/selftests/net/udpgro_bench.sh
-@@ -5,6 +5,8 @@
- 
- readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
- 
-+BPF_FILE="../bpf/xdp_dummy.bpf.o"
-+
- cleanup() {
- 	local -r jobs="$(jobs -p)"
- 	local -r ns="$(ip netns list|grep $PEER_NS)"
-@@ -34,7 +36,7 @@ run_one() {
- 	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
- 	ip -netns "${PEER_NS}" link set dev veth1 up
- 
--	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
-+	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
- 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
- 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -t ${rx_args} -r &
- 
-@@ -80,8 +82,8 @@ run_all() {
- 	run_udp "${ipv6_args}"
- }
- 
--if [ ! -f ../bpf/xdp_dummy.o ]; then
--	echo "Missing xdp_dummy helper. Build bpf selftest first"
-+if [ ! -f ${BPF_FILE} ]; then
-+	echo "Missing ${BPF_FILE}. Build bpf selftest first"
- 	exit -1
- fi
- 
-diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
-index 7fe85ba..c9c4b9d 100755
---- a/tools/testing/selftests/net/udpgro_frglist.sh
-+++ b/tools/testing/selftests/net/udpgro_frglist.sh
-@@ -5,6 +5,8 @@
- 
- readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
- 
-+BPF_FILE="../bpf/xdp_dummy.bpf.o"
-+
- cleanup() {
- 	local -r jobs="$(jobs -p)"
- 	local -r ns="$(ip netns list|grep $PEER_NS)"
-@@ -36,7 +38,7 @@ run_one() {
- 	ip netns exec "${PEER_NS}" ethtool -K veth1 rx-gro-list on
- 
- 
--	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
-+	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
- 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
- 	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
- 	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
-@@ -81,8 +83,8 @@ run_all() {
- 	run_udp "${ipv6_args}"
- }
- 
--if [ ! -f ../bpf/xdp_dummy.o ]; then
--	echo "Missing xdp_dummy helper. Build bpf selftest first"
-+if [ ! -f ${BPF_FILE} ]; then
-+	echo "Missing ${BPF_FILE}. Build bpf selftest first"
- 	exit -1
- fi
- 
-diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
-index 1bcd82e..c079565 100755
---- a/tools/testing/selftests/net/udpgro_fwd.sh
-+++ b/tools/testing/selftests/net/udpgro_fwd.sh
-@@ -1,6 +1,7 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
-+BPF_FILE="../bpf/xdp_dummy.bpf.o"
- readonly BASE="ns-$(mktemp -u XXXXXX)"
- readonly SRC=2
- readonly DST=1
-@@ -46,7 +47,7 @@ create_ns() {
- 		ip -n $BASE$ns addr add dev veth$ns $BM_NET_V4$ns/24
- 		ip -n $BASE$ns addr add dev veth$ns $BM_NET_V6$ns/64 nodad
- 	done
--	ip -n $NS_DST link set veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
-+	ip -n $NS_DST link set veth$DST xdp object ${BPF_FILE} section xdp 2>/dev/null
- }
- 
- create_vxlan_endpoint() {
-diff --git a/tools/testing/selftests/net/veth.sh b/tools/testing/selftests/net/veth.sh
-index 430895d..2d07359 100755
---- a/tools/testing/selftests/net/veth.sh
-+++ b/tools/testing/selftests/net/veth.sh
-@@ -1,6 +1,7 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
- 
-+BPF_FILE="../bpf/xdp_dummy.bpf.o"
- readonly STATS="$(mktemp -p /tmp ns-XXXXXX)"
- readonly BASE=`basename $STATS`
- readonly SRC=2
-@@ -216,8 +217,8 @@ while getopts "hs:" option; do
- 	esac
- done
- 
--if [ ! -f ../bpf/xdp_dummy.o ]; then
--	echo "Missing xdp_dummy helper. Build bpf selftest first"
-+if [ ! -f ${BPF_FILE} ]; then
-+	echo "Missing ${BPF_FILE}. Build bpf selftest first"
- 	exit 1
- fi
- 
-@@ -288,14 +289,14 @@ if [ $CPUS -gt 1 ]; then
- 	ip netns exec $NS_DST ethtool -L veth$DST rx 1 tx 2 2>/dev/null
- 	ip netns exec $NS_SRC ethtool -L veth$SRC rx 1 tx 2 2>/dev/null
- 	printf "%-60s" "bad setting: XDP with RX nr less than TX"
--	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
-+	ip -n $NS_DST link set dev veth$DST xdp object ${BPF_FILE} \
- 		section xdp 2>/dev/null &&\
- 		echo "fail - set operation successful ?!?" || echo " ok "
- 
- 	# the following tests will run with multiple channels active
- 	ip netns exec $NS_SRC ethtool -L veth$SRC rx 2
- 	ip netns exec $NS_DST ethtool -L veth$DST rx 2
--	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
-+	ip -n $NS_DST link set dev veth$DST xdp object ${BPF_FILE} \
- 		section xdp 2>/dev/null
- 	printf "%-60s" "bad setting: reducing RX nr below peer TX with XDP set"
- 	ip netns exec $NS_DST ethtool -L veth$DST rx 1 2>/dev/null &&\
-@@ -311,7 +312,7 @@ if [ $CPUS -gt 2 ]; then
- 	chk_channels "setting invalid channels nr" $DST 2 2
- fi
- 
--ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
-+ip -n $NS_DST link set dev veth$DST xdp object ${BPF_FILE} section xdp 2>/dev/null
- chk_gro_flag "with xdp attached - gro flag" $DST on
- chk_gro_flag "        - peer gro flag" $SRC off
- chk_tso_flag "        - tso flag" $SRC off
--- 
-1.8.3.1
-
+So it doesn't look like we can just unconditionally use cqe->checksum?
+The driver does a lot of massaging around that field to make it
+palatable.
