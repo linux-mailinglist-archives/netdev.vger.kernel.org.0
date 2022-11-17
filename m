@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D69962E7CB
-	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:09:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973AB62E7CC
+	for <lists+netdev@lfdr.de>; Thu, 17 Nov 2022 23:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234972AbiKQWJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 17:09:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        id S241248AbiKQWJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 17:09:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241082AbiKQWIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:08:45 -0500
+        with ESMTP id S241175AbiKQWIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 17:08:48 -0500
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2595284323
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:08:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E49B84333
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 14:08:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668722898; x=1700258898;
+  t=1668722904; x=1700258904;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=UPhha1+oE/o6ijQ1ehWZ9ivZxkoIFU7ohh3SHtAR8Gw=;
-  b=mV/rRgEWxWNPsUTLAN19SVLI+4aLC8RS6SceodkXxfeT1Byh+A2PNYrs
-   Y/rj2kuU734N4q6qsOLRjCe/18uyMt8kTqBSCVts9Ay1uaXoPnNkiyT4B
-   8JBbHJajjFbFS81EVJxYTckGQfsGP1V6MiKQG3XJUhWekyvbCVs781FjK
-   xUGcpHzjKQyDInheXzjYTINbdqdBCCmivaxUp5BOLIMwXRq+k7tuFK788
-   Bzc116HEejII8qDorrNJX1TgSWAmMDXtTMpaWzDp9Jor8eX5XzAN1rFgt
-   H+nfiwmFr4HXEXtkXBnMt09ptBWKOMIYLsLYpwx8wEbQ5wsyCTz28Dv2u
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="313001219"
+  bh=/BKdwoyiOcpRS8zu7hqLbyqCN4Oa753qga0WC2/JyZc=;
+  b=E27J9+aZz5QDm63Bxpel7EzHsMSho/gU+mnlrDorWdG0bnh3G0crt/nM
+   pHBWebCc1I5/Jc1FNxXeYylQMkLjoov10lgBM/zsRhZDN0q9Dc1zTLi8B
+   JOh+4IqJPEo3+g651K7Dw7pky4S4/ND7imXBBQwDb4U7qjjPNHqpKKKQy
+   7Lh4TXGis4X6/YZghRjicR4ODRjPhDZBMU6ETkNac9NdcE/DFmcAEreDK
+   j7Tbn62c4Sp1F9VYWld+4ard9Be1/YbVS7M4JA64mOjRQggxVfSVPX5Cr
+   IaPoADd0CAtiF8YlYpUYc5NcgwNZjyrln6uPjJYNDz/8EmSde8KAu8M2l
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="313001220"
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="313001219"
+   d="scan'208";a="313001220"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:08:13 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="672975630"
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="672975633"
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="672975630"
+   d="scan'208";a="672975633"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 14:08:12 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 5/8] devlink: refactor region_read_snapshot_fill to use a callback function
-Date:   Thu, 17 Nov 2022 14:08:00 -0800
-Message-Id: <20221117220803.2773887-6-jacob.e.keller@intel.com>
+Subject: [PATCH net-next 6/8] devlink: support directly reading from region memory
+Date:   Thu, 17 Nov 2022 14:08:01 -0800
+Message-Id: <20221117220803.2773887-7-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.38.1.420.g319605f8f00e
 In-Reply-To: <20221117220803.2773887-1-jacob.e.keller@intel.com>
 References: <20221117220803.2773887-1-jacob.e.keller@intel.com>
@@ -58,110 +58,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devlink_nl_region_read_snapshot_fill is used to copy the contents of
-a snapshot into a message for reporting to userspace via the
-DEVLINK_CMG_REGION_READ netlink message.
+To read from a region, user space must currently request a new snapshot of
+the region and then read from that snapshot. This can sometimes be overkill
+if user space only reads a tiny portion. They first create the snapshot,
+then request a read, then destroy the snapshot.
 
-A future change is going to add support for directly reading from
-a region. Almost all of the logic for this new capability is identical.
+For regions which have a single underlying "contents", it makes sense to
+allow supporting direct reading of the region data.
 
-To help reduce code duplication and make this logic more generic,
-refactor the function to take a cb and cb_priv pointer for doing the
-actual copy.
-
-Add a devlink_region_snapshot_fill implementation that will simply copy
-the relevant chunk of the region. This does require allocating some
-storage for the chunk as opposed to simply passing the correct address
-forward to the devlink_nl_cmg_region_read_chunk_fill function.
-
-A future change to implement support for directly reading from a region
-without a snapshot will provide a separate implementation that calls the
-newly added devlink region operation.
+Extend the DEVLINK_CMD_REGION_READ to allow direct reading from a region if
+supported. Instead of reporting a missing snapshot id as invalid, check if
+the region supports direct read and if so switch to the direct access
+method for reading the region data.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- net/core/devlink.c | 44 +++++++++++++++++++++++++++++++++++---------
- 1 file changed, 35 insertions(+), 9 deletions(-)
+ .../networking/devlink/devlink-region.rst     |  8 +++
+ include/net/devlink.h                         | 16 +++++
+ net/core/devlink.c                            | 68 ++++++++++++++-----
+ 3 files changed, 74 insertions(+), 18 deletions(-)
 
+diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
+index f06dca9a1eb6..5770ecde179e 100644
+--- a/Documentation/networking/devlink/devlink-region.rst
++++ b/Documentation/networking/devlink/devlink-region.rst
+@@ -31,6 +31,10 @@ in its ``devlink_region_ops`` structure. If snapshot id is not set in
+ the ``DEVLINK_CMD_REGION_NEW`` request kernel will allocate one and send
+ the snapshot information to user space.
+ 
++Regions may optionally allow directly reading from their contents without a
++snapshot. A driver wishing to enable this for a region should implement the
++``.read`` callback in the ``devlink_region_ops`` structure.
++
+ example usage
+ -------------
+ 
+@@ -65,6 +69,10 @@ example usage
+     $ devlink region read pci/0000:00:05.0/fw-health snapshot 1 address 0 length 16
+     0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
+ 
++    # Read from the region without a snapshot
++    $ devlink region read pci/0000:00:05.0/fw-health address 16 length 16
++    0000000000000010 0000 0000 ffff ff04 0029 8c00 0028 8cc8
++
+ As regions are likely very device or driver specific, no generic regions are
+ defined. See the driver-specific documentation files for information on the
+ specific regions a driver supports.
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 611a23a3deb2..74547ebe08e7 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -647,6 +647,10 @@ struct devlink_info_req;
+  *            the data variable must be updated to point to the snapshot data.
+  *            The function will be called while the devlink instance lock is
+  *            held.
++ * @read: callback to directly read a portion of the region. On success,
++ *        the data pointer will be updated with the contents of the
++ *        requested portion of the region. The function will be called
++ *        while the devlink instance lock is held.
+  * @priv: Pointer to driver private data for the region operation
+  */
+ struct devlink_region_ops {
+@@ -656,6 +660,10 @@ struct devlink_region_ops {
+ 			const struct devlink_region_ops *ops,
+ 			struct netlink_ext_ack *extack,
+ 			u8 **data);
++	int (*read)(struct devlink *devlink,
++		    const struct devlink_region_ops *ops,
++		    struct netlink_ext_ack *extack,
++		    u64 offset, u32 size, u8 *data);
+ 	void *priv;
+ };
+ 
+@@ -667,6 +675,10 @@ struct devlink_region_ops {
+  *            the data variable must be updated to point to the snapshot data.
+  *            The function will be called while the devlink instance lock is
+  *            held.
++ * @read: callback to directly read a portion of the region. On success,
++ *        the data pointer will be updated with the contents of the
++ *        requested portion of the region. The function will be called
++ *        while the devlink instance lock is held.
+  * @priv: Pointer to driver private data for the region operation
+  */
+ struct devlink_port_region_ops {
+@@ -676,6 +688,10 @@ struct devlink_port_region_ops {
+ 			const struct devlink_port_region_ops *ops,
+ 			struct netlink_ext_ack *extack,
+ 			u8 **data);
++	int (*read)(struct devlink_port *port,
++		    const struct devlink_port_region_ops *ops,
++		    struct netlink_ext_ack *extack,
++		    u64 offset, u32 size, u8 *data);
+ 	void *priv;
+ };
+ 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index c28c3f2bb6e4..97e3a7158788 100644
+index 97e3a7158788..cdbcfdb96727 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -6396,23 +6396,34 @@ static int devlink_nl_cmd_region_read_chunk_fill(struct sk_buff *msg,
- 
- #define DEVLINK_REGION_READ_CHUNK_SIZE 256
- 
--static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
--						struct devlink_snapshot *snapshot,
--						u64 start_offset,
--						u64 end_offset,
--						u64 *new_offset)
-+typedef int devlink_chunk_fill_t(void *cb_priv, u8 *chunk, u32 chunk_size,
-+				 u64 curr_offset,
-+				 struct netlink_ext_ack *extack);
-+
-+static int
-+devlink_nl_region_read_fill(struct sk_buff *skb, devlink_chunk_fill_t *cb,
-+			    void *cb_priv, u64 start_offset, u64 end_offset,
-+			    u64 *new_offset, struct netlink_ext_ack *extack)
- {
- 	u64 curr_offset = start_offset;
- 	int err = 0;
-+	u8 *data;
-+
-+	/* Allocate and re-use a single buffer */
-+	data = kzalloc(DEVLINK_REGION_READ_CHUNK_SIZE, GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
- 
- 	*new_offset = start_offset;
- 
- 	while (curr_offset < end_offset) {
- 		u32 data_size = min_t(u32, end_offset - curr_offset,
- 				      DEVLINK_REGION_READ_CHUNK_SIZE);
--		u8 *data;
- 
--		data = &snapshot->data[curr_offset];
-+		err = cb(cb_priv, data, data_size, curr_offset, extack);
-+		if (err)
-+			break;
-+
- 		err = devlink_nl_cmd_region_read_chunk_fill(skb, data, data_size, curr_offset);
- 		if (err)
- 			break;
-@@ -6421,9 +6432,23 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
- 	}
- 	*new_offset = curr_offset;
- 
-+	kfree(data);
-+
- 	return err;
+@@ -6449,6 +6449,26 @@ devlink_region_snapshot_fill(void *cb_priv, u8 *chunk, u32 chunk_size,
+ 	return 0;
  }
  
 +static int
-+devlink_region_snapshot_fill(void *cb_priv, u8 *chunk, u32 chunk_size,
-+			     u64 curr_offset,
-+			     struct __always_unused netlink_ext_ack *extack)
++devlink_region_port_direct_fill(void *cb_priv, u8 *chunk, u32 chunk_size,
++				u64 curr_offset, struct netlink_ext_ack *extack)
 +{
-+	struct devlink_snapshot *snapshot = cb_priv;
++	struct devlink_region *region = cb_priv;
 +
-+	memcpy(chunk, &snapshot->data[curr_offset], chunk_size);
++	return region->port_ops->read(region->port, region->port_ops, extack,
++				      curr_offset, chunk_size, chunk);
++}
 +
-+	return 0;
++static int
++devlink_region_direct_fill(void *cb_priv, u8 *chunk, u32 chunk_size,
++			   u64 curr_offset, struct netlink_ext_ack *extack)
++{
++	struct devlink_region *region = cb_priv;
++
++	return region->ops->read(region->devlink, region->ops, extack,
++				 curr_offset, chunk_size, chunk);
 +}
 +
  static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
  					     struct netlink_callback *cb)
  {
-@@ -6542,8 +6567,9 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+@@ -6456,13 +6476,13 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 	u64 ret_offset, start_offset, end_offset = U64_MAX;
+ 	struct nlattr **attrs = info->attrs;
+ 	struct devlink_port *port = NULL;
+-	struct devlink_snapshot *snapshot;
++	devlink_chunk_fill_t *region_cb;
+ 	struct devlink_region *region;
+ 	struct nlattr *chunks_attr;
+ 	const char *region_name;
+ 	struct devlink *devlink;
+ 	unsigned int index;
+-	u32 snapshot_id;
++	void *region_cb_priv;
+ 	void *hdr;
+ 	int err;
+ 
+@@ -6480,12 +6500,6 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 		goto out_unlock;
+ 	}
+ 
+-	if (!attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
+-		NL_SET_ERR_MSG_MOD(cb->extack, "No snapshot id provided");
+-		err = -EINVAL;
+-		goto out_unlock;
+-	}
+-
+ 	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
+ 		index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
+ 
+@@ -6510,13 +6524,31 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 		goto out_unlock;
+ 	}
+ 
+-	snapshot_id = nla_get_u32(attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
+-	snapshot = devlink_region_snapshot_get_by_id(region, snapshot_id);
+-	if (!snapshot) {
+-		NL_SET_ERR_MSG_MOD(cb->extack,
+-				   "The requested snapshot id does not exist");
+-		err = -EINVAL;
+-		goto out_unlock;
++	if (!attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
++		if (!region->ops->read) {
++			NL_SET_ERR_MSG_MOD(cb->extack,
++					   "The requested region does not support direct read");
++			err = -EOPNOTSUPP;
++			goto out_unlock;
++		}
++		if (port)
++			region_cb = &devlink_region_port_direct_fill;
++		else
++			region_cb = &devlink_region_direct_fill;
++		region_cb_priv = region;
++	} else {
++		u32 snapshot_id = nla_get_u32(attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
++		struct devlink_snapshot *snapshot;
++
++		snapshot = devlink_region_snapshot_get_by_id(region, snapshot_id);
++		if (!snapshot) {
++			NL_SET_ERR_MSG_MOD(cb->extack,
++					   "The requested snapshot id does not exist");
++			err = -EINVAL;
++			goto out_unlock;
++		}
++		region_cb = &devlink_region_snapshot_fill;
++		region_cb_priv = snapshot;
+ 	}
+ 
+ 	if (attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR] &&
+@@ -6567,9 +6599,9 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
  		goto nla_put_failure;
  	}
  
--	err = devlink_nl_region_read_snapshot_fill(skb, snapshot, start_offset,
--						   end_offset, &ret_offset);
-+	err = devlink_nl_region_read_fill(skb, &devlink_region_snapshot_fill,
-+					  snapshot, start_offset, end_offset,
-+					  &ret_offset, cb->extack);
+-	err = devlink_nl_region_read_fill(skb, &devlink_region_snapshot_fill,
+-					  snapshot, start_offset, end_offset,
+-					  &ret_offset, cb->extack);
++	err = devlink_nl_region_read_fill(skb, region_cb, region_cb_priv,
++					  start_offset, end_offset, &ret_offset,
++					  cb->extack);
  
  	if (err && err != -EMSGSIZE)
  		goto nla_put_failure;
