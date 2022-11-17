@@ -2,131 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 507C162E9B0
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 00:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 212F262E9B5
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 00:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235002AbiKQXkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 18:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
+        id S233466AbiKQXmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 18:42:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiKQXkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 18:40:13 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2078.outbound.protection.outlook.com [40.107.22.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2C9769F9;
-        Thu, 17 Nov 2022 15:40:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UhROOCUHMVvUVue0ZmGlbVtfmKYVGYxFB0Zw6SfRDowZr3orYBGU15tRT6wvu9bk79f8dEOySYa6rRtsiY4g2VmMZbSs3EtLiwGzgN479f2qbevtE57Smob+sw05QEEXv1gXru+JSgsQicpkzDfrKOXjyXLv/HywLi3QBeZ6ZCUOqAD3UE9LJUUN8iTsmJ9jKmDtZqPEc2bISIZNqCRUJuGRZP7ErwBAl5Oe7xhy8YgcQyPS9nkjK3vvgNjYv6qYAbHCtg96mJ1s4wKHbgkO7aOcPEJxBBdIlSZEt/AXwt/b0PygWv/kIKRoHvZSKt/5SroCqIPZAE2NZSAeauSHsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PiZKtffDsPkvmzlQVz7uSSEblYZ17iUmem+n+/lj/3Q=;
- b=R24ebTBg4t3WHR+6zOx2CNiY6hPz9Gz1qWh4/U+09HPOPz3V0kd12UZjPi+aRJ5rPDDWakERBwZO1iYe4BwO87DDV5LS3QdU85ba5u9hUj12stFFARveGvm0NIgE0rtEbG7gZ2fmTxzVU2WfqqGNn1mo3H8BhbkBEAIBmsa1YTQOITdUkqwl0VTW1i3CvYyF8BpzT7oBye1UxBHjRapFWTeKnS24CCTfgQn5GtinEkOpclbCYSQJstf2/1MNZRgaVgXn5AGM64jWJA5T5RPp3YL2Fj4QefCutcI4bDfP3Y71Dnwph0xVNe5Mk7V2af3M5LV9Ybxn6oZE7mAOxLjDJQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PiZKtffDsPkvmzlQVz7uSSEblYZ17iUmem+n+/lj/3Q=;
- b=bQTZwMgNWrv+0oQcaSdJaY6UDpVOWjgQyRNFZPmiQyY8hUXOZVtKIDsBV0JnQDDoImruGg7eDhMbzz805dsQZos2zMh4KVh9BvAHbC92DQ7SvC6Fm+muPpT5I1SzXCiOtr6/2XA/ovgMt3bmZlqmISAxMtAPZ/tNYipkb8387zTgbI6T7TSXFjasObHnVGEL7TSpUaJcpp0ceDAnve7UoE0VLydwIcMmA3oHxleeXpmnzfYebd6ZZ2eXaeRt3octTfuGMBTxg+GvpcTou/NbadKgFCKRZMmlyc7PyvT3Q/qxMbKgq4IIY8IT+U+gMCC2dlFoSXjRTeeC0SydVkmZrg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
- by DB8PR03MB6330.eurprd03.prod.outlook.com (2603:10a6:10:136::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Thu, 17 Nov
- 2022 23:40:09 +0000
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::2b95:1fe4:5d8f:22fb]) by DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::2b95:1fe4:5d8f:22fb%6]) with mapi id 15.20.5813.019; Thu, 17 Nov 2022
- 23:40:08 +0000
-Message-ID: <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
-Date:   Thu, 17 Nov 2022 18:40:02 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH] phy: aquantia: Configure SERDES mode by default
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221115223732.ctvzjbpeaxulnm5l@skbuf>
- <3771f5be-3deb-06f9-d0a0-c3139d098bf0@seco.com>
- <20221115230207.2e77pifwruzkexbr@skbuf>
-From:   Sean Anderson <sean.anderson@seco.com>
-In-Reply-To: <20221115230207.2e77pifwruzkexbr@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0323.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::28) To DB9PR03MB8847.eurprd03.prod.outlook.com
- (2603:10a6:10:3dd::13)
+        with ESMTP id S231274AbiKQXmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 18:42:19 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878A1769F7
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:42:18 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id k15so3311949pfg.2
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:42:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=mAGr6P243bEJtDm6CtoCnv6ClOQRbaEu3tVMQQL3jDA=;
+        b=Hlyz0M972tYbGaySnnRGR5fASEaFxCPZhPK12t0O9qhM8UkTnQp/z61OfO3ceuyPI0
+         xOTkVrv1N6dbZxSbdw4Qgs9vsaFgLrSq40fyN63tQtmRqMMDLbwScY+QjDFfPxF/86V6
+         +UqTTNEDVANO54txMrYsU7i/5tk53wZMF+BOQYPuN2k3e9tKW9hlMc+6uJ0mUbDMqw5C
+         GU1ekcy0sCM9ImkWTUiARB2rnQVi1RIbkaSw64m70UzZor8Z4LdGTBmY4hvGl1AMlreL
+         mf96ALBLK7noG1zcfKx78UztxhCHXmXbfE8+jc70Ub8au+6tiQ9MXjyqQMshRILVNkVn
+         m0bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mAGr6P243bEJtDm6CtoCnv6ClOQRbaEu3tVMQQL3jDA=;
+        b=HD/i7BDAnGNSDOFHthPEHwQXQdIKGpWCKF+vfe+YlanQHZmICtfNGRfUIo3AW0VlLs
+         EZIiYQZLNof0xmwXJ2fKf9fBJIbH1AJA6yi+6EuISx647BlSJAEVQBraIn9+WyL2LDnJ
+         gdwkXaDt0LRZ+5mGkrmCC+wTqxu7Ft9dSrE05UV6V826iltMb763YbFkv4lPJY8PwtZG
+         FDyFJJ9QQgFnfknR1/7eXJjyNWM9PW+6v6bPPN/eeU1ZedZrtd1heOQH+EvAIiX5hx9U
+         vAaXZ7hljloifvHop9V8Gz16vvIjzgfuXQNDmq5PiZckP4TbHvojhn3G55ptD/X5q6i0
+         SJnQ==
+X-Gm-Message-State: ANoB5pmNGxBlE6Q21cea0jOzqFgG4Wc/fVTt5+S6Lr+MLBx8YODY5GMO
+        fDqZLknn1wZZeda0zmj9PmbMkPcduAOVokROH7PqYA==
+X-Google-Smtp-Source: AA0mqf7SEroqyooiu9roFbZs3M2ux+wP5/gp40+DcC3styfa5bIrtA7kg/9NWOvMEM8tXzzSXGt30i5jjQCabCqME2c=
+X-Received: by 2002:a63:485a:0:b0:45b:f8be:7402 with SMTP id
+ x26-20020a63485a000000b0045bf8be7402mr4124594pgk.484.1668728537891; Thu, 17
+ Nov 2022 15:42:17 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|DB8PR03MB6330:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2be505e0-8e12-4221-4752-08dac8f50ecd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ycw1ZB6Y1juuW6u39dglMeykvolq0Y66G+LBUZKfbuECbEhYUz107m8Kq9P6fS0wcZsC1JgK0l0jnlqFu0/8VPgREMc0AaMzGRNGFXz04OzFnPoTbnp9jrZLl2AbKKZtKMGPYp/M+kcvIRJ4nG4v3OE/2o1qbMieg+idCs6L0252rJS8sprnFeQ1oPcQCZ0h6wn9UGUxPnh9iopWuoXKYQrrD2w3vgubZIWjoi3i8dXjFM5P5ywXCYdJvAmDfwUABpdAAufMRPiWgXIF7If0TaZZanruV1hNZMDkSX8Qp2JyNVBP38O2gM12JFV0Y+omYTChN5EXKaEPwZBhSz6QkTOGzCOtzoz4UZcifK0WneJDfJoIakpUM/lzh0MXRmdmrUsF0xiXBgwMdtrpADChCOZvZ+0FFDlL4KXyNzCc3sXkBFitTvAG+a2RVox8n+oNSD158MvXViEvsU8C0e56p3dQopsSjugjii0o6FrMguaqQJlP8gNzcu/r44JHNCyC0gt6olsFLSxtk1TAy18+PiBxBAeNhFBMr29AFziF7Ucphan//icdp4uJq/STDS3A4RtQIwV6A5x/OfAxeLK829VfVbhurRrAFkRmtWtjhOOuyoWxSTe4ddlimF/+oL9FSD96DEGwxraGmbO/O4QVlFZQh/EactC4StBY/tFw4b8Yiy3rUsiC1yif7cR2juIizlaQ8rJBjTr9x/7N2OEGfcETY4OimTVu0CikTcYjC37ouG8xsj93lEzS2rVolZngZsZ73f6DHuX3+4NUUP7Kkw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(346002)(376002)(366004)(39850400004)(396003)(451199015)(31686004)(36756003)(86362001)(7416002)(2906002)(4326008)(38100700002)(8936002)(38350700002)(83380400001)(66556008)(31696002)(66476007)(41300700001)(6916009)(186003)(478600001)(6486002)(316002)(8676002)(2616005)(54906003)(52116002)(44832011)(6512007)(6666004)(5660300002)(6506007)(53546011)(26005)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aGlId3N2cTNoRGtLZnNZTDgwYjE2T0p5NVd2NXlpbjEvR1N0Y05YV1RzQmtk?=
- =?utf-8?B?MGROcWF2YWtTdG5NaXExN3BvUDJjSEw1SXovczcvYmJlZGZYSnY0V28yMU9G?=
- =?utf-8?B?WGRXVkp2aHhPZ09TVzVtZHZYUXdsaGJEOFZjbXZhbG5PZVVLMUhWd1FZVElS?=
- =?utf-8?B?Rk5Va3Fobm9jdko5aDFxMEVCZ3VONy9wclpxMzVrZE0zRm1DUEpDcnN3a2dN?=
- =?utf-8?B?RTB6MktMMEhuSXlXN015akI0Smdxa2U3Wm9hNHM0YktTU0c4cnBCTUpUQ0xa?=
- =?utf-8?B?OXR3S3hVRzJCNmtDcW1DWmdRRWJ0YlliQXZ2dDVicTFMc2NORU9MSE1NVEFD?=
- =?utf-8?B?dnpsUjJ5WTFJMEVnVm5NdGhGcUlZRnd5WUxYRjFZU0Q2NFpqUjJDRkJVK1lG?=
- =?utf-8?B?SXpRTnlNU3F6SVVXWW05djkvaFZCUUY3OUxtOXRXa28yemI0NUNTcVU4bnV4?=
- =?utf-8?B?RlV5RmtDcGx1akpVQkZuNFRwNkpRYVhMNGRxSmNyVkxxekZXS3hScmc1UVVU?=
- =?utf-8?B?bTF0dndMRUdLN3VPZVFVUURrczNvWjE3dnIzZ3pMZkNmeWc3em1HQ2lkU2xw?=
- =?utf-8?B?SExGRTBlOWxYeGs4c1ZpNGJxWkp4VnpXRGYwdFZ0NTNZK2xza2wyd0Z2NEUz?=
- =?utf-8?B?MHhCN0hTY00vRlF0U1lhcTdqN09ZenlBaVpqMGxUQkIxSlZGcXVNdGs1N3hY?=
- =?utf-8?B?TGxKY05Iem9vb3BpZ0kyelRSMkZkWHBTQ0lPTTdmZUZHS1RTbm5jVXE1VXB6?=
- =?utf-8?B?bnFMMVk2Z0NDODJaSDRodlpaOHFjVXcvRXhXYitzRUpNNmU0M1JUYTIwclVh?=
- =?utf-8?B?UmJubWx4cjNLenhUcXRYWCtSTjhDcHY1bi9ZK0xFc3R2UUZkZDVybURQVUQr?=
- =?utf-8?B?TWQrV0xKYmNQaTAwMnFUOWhFUGc0WThJRTdtVlVxRWxDOFZjVjBtM3pwS0tE?=
- =?utf-8?B?UDNibm1qQTlWdEl5ZThTeFhLdTM5YWpISFVUS0F4Qit5YURxUTR1ZzBwYjdM?=
- =?utf-8?B?b2o3VmxnNnI4WTYweWNWdkhnRDNTWkFvZEw2Q0IrZ0MrZ1VkdVV6d1Y4djB0?=
- =?utf-8?B?d01JTzcxdDZ4UlAwMjZQNCtKL0JGQURmWGFWVFVOM0VIUFpMcjh5MzY4MHpr?=
- =?utf-8?B?eE9oVlZWT3gxOWlLaTg1NVY3ZCsrM0Z1c3dVbkh1WHJ1bGpMbThxZ2drRkVY?=
- =?utf-8?B?ZCt5THIrMnBGemtHWkt1My9LclNPd0M0R2lSTFYybDdVWjFMc2dreUVWTmNJ?=
- =?utf-8?B?Y2hXcGxkSVQrbWNyTGJNSHREc3F2UWFOY2VSTDY4cWNQd1k1dGkvYVhQczdp?=
- =?utf-8?B?TWNMVFlGd0M4NFpCc1hjY2tJaUdURGRENjk2VlpSQW53UXJhV2hFT2ZiUnFr?=
- =?utf-8?B?UzQ1MXo0NG1PT3U0WUt1ZGVBNUY0cGl4UHR5RnNmRzZmOEFoajg5VDV0Uk0r?=
- =?utf-8?B?Y3RzT0I2VFRoWTdjaWhxY0l0K1lZbzl1TWRLZU51VktpcTZZYUFZWDdzMmY1?=
- =?utf-8?B?NEFIMmVNaDdXOWdMa2hFSElQQ2hRNnp5R0hmdU5LYzFlSGpPUTZFY256QUlw?=
- =?utf-8?B?SWJoRUtBbUhHS2NoTlRncklNR1VsL1JvV0hhbUZ2cHRSNzhpd3F5aHE4M1N3?=
- =?utf-8?B?M2d3VXJYcXUwaklWYXI4NFIyeHp0YlliQUczNGxoUGRXYlU5NmZBdGhTZmlB?=
- =?utf-8?B?aE8vWVA5WkJjbEF1NTRwWGk3aTJZQTRJRm14MmpVa0Vlb1k3N00vODI5UlEv?=
- =?utf-8?B?NkN0UXFUa28yRGNGL3RDRDV4YzU5bmxBUGhmYXd5YTQ0MjVUL093cEdPNUY3?=
- =?utf-8?B?OXphNWVMSDRDcHVUcWZ4TjJMRitTUWYxTVc4WjhQM1IwN2k4dkljOC9XYWlw?=
- =?utf-8?B?SGxvUnRYL3AwVnZsY1cyc1hycHFXb0k4bk1haWQ0REMwMDZ2aEY0bnA4M0M0?=
- =?utf-8?B?U05iNmxROERlRzBSbVNEY1dqVzQyc3lVMzBSeHYvdFBOVmVhZDk2VjZnWDlF?=
- =?utf-8?B?UktsMmxRQzl2d3R6aVNycG54RXRZSVJzZWZtSFduU0Y4a3FQL2pPVmdBOWgx?=
- =?utf-8?B?YkRsK1lWL2NBMks4Zko0SXFDRHdiWTJMbXFZQXczS3p3MTBVSFVoVTZ3ZWdK?=
- =?utf-8?B?dHFNZ3JVckJCOCtrWUFlMGxZWnZlRk9NclBhcWxtZCtyTDFSSVpyR2djMHFm?=
- =?utf-8?B?Y0E9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2be505e0-8e12-4221-4752-08dac8f50ecd
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR03MB8847.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2022 23:40:08.7544
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: coPhCg6aK4N3LIPT2Y4G5EeopP319U3s+m+Yj2ngt+FahiSeNmexMoCl9zLxFQoTjdQwNd6ugWqvoCsoj19Dnw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR03MB6330
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
+ <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com> <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
+ <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
+ <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com> <CAJ+vNU2i3xm49PJkMnrzeEddywVxGSk4XOq3s9aFOKuZxDdM=A@mail.gmail.com>
+ <b336155c-f96d-2ccb-fbfd-db6d454b3b10@seco.com> <CAJ+vNU1-zoug5CoN4=Ut1AL-8ykqfWKGTvJBkFPajR_Z1OCURQ@mail.gmail.com>
+ <CAJ+vNU2pzk4c5yg1mfw=6m-+z1j3-0ydkvw-uMgYKJC28Dhf+g@mail.gmail.com> <af134bf0-d15e-2415-264b-a70766957734@seco.com>
+In-Reply-To: <af134bf0-d15e-2415-264b-a70766957734@seco.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Thu, 17 Nov 2022 15:42:02 -0800
+Message-ID: <CAJ+vNU2zJuujdU-epsm30C+VCBVNHWVs9CML7FUYni5VUTiJkw@mail.gmail.com>
+Subject: Re: status of rate adaptation
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -134,83 +71,262 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/22 18:02, Vladimir Oltean wrote:
-> On Tue, Nov 15, 2022 at 05:46:54PM -0500, Sean Anderson wrote:
->> On 11/15/22 17:37, Vladimir Oltean wrote:
->> > Was this patch tested and confirmed to do something sane on any platform
->> > at all?
->> 
->> This was mainly intended for Tim to test and see if it fixed his problem.
-> 
-> And that is stated where? Does Tim know he should test it?
-> If you don't have the certainty that it works, do maintainers know not
-> to apply it, as many times unfortunately happens when there is no review
-> comment and the change looks innocuous?
+On Thu, Nov 17, 2022 at 7:38 AM Sean Anderson <sean.anderson@seco.com> wrote:
+>
+> On 11/16/22 17:37, Tim Harvey wrote:
+> > On Mon, Nov 14, 2022 at 11:33 AM Tim Harvey <tharvey@gateworks.com> wrote:
+> >>
+> >> On Fri, Nov 11, 2022 at 2:38 PM Sean Anderson <sean.anderson@seco.com> wrote:
+> >> >
+> >> > On 11/11/22 17:14, Tim Harvey wrote:
+> >> > > On Fri, Nov 11, 2022 at 1:54 PM Sean Anderson <sean.anderson@seco.com> wrote:
+> >> > >>
+> >> > >> On 11/11/22 16:20, Tim Harvey wrote:
+> >> > >> > On Fri, Nov 11, 2022 at 12:58 PM Sean Anderson <sean.anderson@seco.com> wrote:
+> >> > >> >>
+> >> > >> >> On 11/11/22 15:57, Sean Anderson wrote:
+> >> > >> >> > Hi Tim,
+> >> > >> >> >
+> >> > >> >> > On 11/11/22 15:44, Tim Harvey wrote:
+> >> > >> >> >> Greetings,
+> >> > >> >> >>
+> >> > >> >> >> I've noticed some recent commits that appear to add rate adaptation support:
+> >> > >> >> >> 3c42563b3041 net: phy: aquantia: Add support for rate matching
+> >> > >> >> >> 7de26bf144f6 net: phy: aquantia: Add some additional phy interfaces
+> >> > >> >> >> b7e9294885b6 net: phylink: Adjust advertisement based on rate matching
+> >> > >> >> >> ae0e4bb2a0e0 net: phylink: Adjust link settings based on rate matching
+> >> > >> >> >> 0c3e10cb4423 net: phy: Add support for rate matching
+> >> > >> >> >>
+> >> > >> >> >> I have a board with an AQR113C PHY over XFI that functions properly at
+> >> > >> >> >> 10Gbe links but still not at 1Gbe,2.5Gbe,5.0Gbe,100M with v6.1-rc4
+> >> > >> >> >>
+> >> > >> >> >> Should I expect this to work now at those lower rates
+> >> > >> >> >
+> >> > >> >> > Yes.
+> >> > >> >
+> >> > >> > Sean,
+> >> > >> >
+> >> > >> > Good to hear - thank you for your work on this feature!
+> >> > >> >
+> >> > >> >> >
+> >> > >> >> >> and if so what kind of debug information or testing can I provide?
+> >> > >> >> >
+> >> > >> >> > Please send
+> >> > >> >> >
+> >> > >> >> > - Your test procedure (how do you select 1G?)
+> >> > >> >> > - Device tree node for the interface
+> >> > >> >> > - Output of ethtool (on both ends if possible).
+> >> > >> >> > - Kernel logs with debug enabled for drivers/phylink.c
+> >> > >> >>
+> >> > >> >> Sorry, this should be drivers/net/phy/phylink.c
+> >> > >> >>
+> >> > >> >> >
+> >> > >> >> > That should be enough to get us started.
+> >> > >> >> >
+> >> > >> >> > --Sean
+> >> > >> >>
+> >> > >> >
+> >> > >> > I'm currently testing by bringing up the network interface while
+> >> > >> > connected to a 10gbe switch, verifying link and traffic, then forcing
+> >> > >> > the switch port to 1000mbps.
+> >> > >> >
+> >> > >> > The board has a CN9130 on it (NIC is mvpp2) and the dt node snippets are:
+> >> > >> >
+> >> > >> > #include "cn9130.dtsi" /* include SoC device tree */
+> >> > >> >
+> >> > >> > &cp0_xmdio {
+> >> > >> >         pinctrl-names = "default";
+> >> > >> >         pinctrl-0 = <&cp0_xsmi_pins>;
+> >> > >> >         status = "okay";
+> >> > >> >
+> >> > >> >         phy1: ethernet-phy@8 {
+> >> > >> >                 compatible = "ethernet-phy-ieee802.3-c45";
+> >> > >> >                 reg = <8>;
+> >> > >> >         };
+> >> > >> > };
+> >> > >> >
+> >> > >> > &cp0_ethernet {
+> >> > >> >         status = "okay";
+> >> > >> > };
+> >> > >> >
+> >> > >> > /* 10GbE XFI AQR113C */
+> >> > >> > &cp0_eth0 {
+> >> > >> >         status = "okay";
+> >> > >> >         phy = <&phy1>;
+> >> > >> >         phy-mode = "10gbase-r";
+> >> > >> >         phys = <&cp0_comphy4 0>;
+> >> > >> > };
+> >> > >> >
+> >> > >> > Here are some logs with debug enabled in drivers/net/phy/phylink.c and
+> >> > >> > some additional debug in mvpp2.c and aquantia_main.c:
+> >> > >> > # ifconfig eth0 192.168.1.22
+> >> > >> > [    8.882437] aqr107_config_init state=1:ready an=1 link=0 duplex=255
+> >> > >> > speed=-1 26:10gbase-r
+> >> > >> > [    8.891391] aqr107_chip_info FW 5.6, Build 7, Provisioning 6
+> >> > >> > [    8.898165] aqr107_resume
+> >> > >> > [    8.902853] aqr107_get_rate_matching state=1:ready an=1 link=0
+> >> > >> > duplex=255 speed=-1 26:10gbase-r 0:
+> >> > >> > [    8.911932] mvpp2 f2000000.ethernet eth0: PHY
+> >> > >> > [f212a600.mdio-mii:08] driver [Aquantia AQR113C] (irq=POLL)
+> >> > >> > [    8.921577] mvpp2 f2000000.ethernet eth0: phy: 10gbase-r setting
+> >> > >> > supported 00000000,00018000,000e706f advertising
+> >> > >> > 00000000,00018000,000e706f
+> >> > >> > [    8.934349] mvpp2 f2000000.ethernet eth0: mac link down
+> >> > >> > [    8.948812] mvpp2 f2000000.ethernet eth0: configuring for
+> >> > >> > phy/10gbase-r link mode
+> >> > >> > [    8.956350] mvpp2 f2000000.ethernet eth0: major config 10gbase-r
+> >> > >> > [    8.962414] mvpp2 f2000000.ethernet eth0: phylink_mac_config:
+> >> > >> > mode=phy/10gbase-r/Unknown/Unknown/none adv=00000000,00000000,00000000
+> >> > >> > pause=00 link=0 an=0
+> >> > >> > [    8.976252] mvpp2 f2000000.ethernet eth0: mac link down
+> >> > >> > [    8.976267] aqr107_resume
+> >> > >> > [    8.988970] mvpp2 f2000000.ethernet eth0: phy link down
+> >> > >> > 10gbase-r/10Gbps/Full/none/off
+> >> > >> > [    8.997086] aqr107_link_change_notify state=5:nolink an=1 link=0
+> >> > >> > duplex=1 speed=10000 26:10gbase-r
+> >> > >> > [   14.112540] mvpp2 f2000000.ethernet eth0: mac link up
+> >> > >> > [   14.112594] mvpp2 f2000000.ethernet eth0: Link is Up - 10Gbps/Full
+> >> > >> > - flow control off
+> >> > >> > [   14.112673] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> >> > >> > [   14.118198] mvpp2 f2000000.ethernet eth0: phy link up
+> >> > >> > 10gbase-r/10Gbps/Full/none/off
+> >> > >> > [   14.139808] aqr107_link_change_notify state=4:running an=1 link=1
+> >> > >> > duplex=1 speed=10000 26:10gbase-r
+> >> > >> >
+> >> > >> > # ethtool eth0
+> >> > >> > Settings for eth0:
+> >> > >> >         Supported ports: [ ]
+> >> > >> >         Supported link modes:   10baseT/Half 10baseT/Full
+> >> > >> >                                 100baseT/Half 100baseT/Full
+> >> > >>
+> >> > >> 10/100 half duplex aren't achievable with rate matching (and we avoid
+> >> > >> turning them on), so they must be coming from somewhere else. I wonder
+> >> > >> if this is because PHY_INTERFACE_MODE_SGMII is set in
+> >> > >> supported_interfaces.
+> >> > >>
+> >> > >> I wonder if you could enable USXGMII? Seems like mvpp2 with comphy
+> >> > >> should support it. I'm not sure if the aquantia driver is set up for it.
+> >> > >
+> >> > > This appears to trigger an issue from mvpp2:
+> >> > > mvpp2 f2000000.ethernet eth0: validation of usxgmii with support
+> >> > > 00000000,00018000,000e706f and advertisement
+> >> > > 00000000,00018000,000e706f failed: -EINVAL
+> >> >
+> >> > Ah, I forgot this was a separate phy mode. Disregard this.
+> >> >
+> >> > >>
+> >> > >> >                                 1000baseT/Full
+> >> > >> >                                 10000baseT/Full
+> >> > >> >                                 1000baseKX/Full
+> >> > >> >                                 10000baseKX4/Full
+> >> > >> >                                 10000baseKR/Full
+> >> > >> >                                 2500baseT/Full
+> >> > >> >                                 5000baseT/Full
+> >> > >> >         Supported pause frame use: Symmetric Receive-only
+> >> > >> >         Supports auto-negotiation: Yes
+> >> > >> >         Supported FEC modes: Not reported
+> >> > >> >         Advertised link modes:  10baseT/Half 10baseT/Full
+> >> > >> >                                 100baseT/Half 100baseT/Full
+> >> > >> >                                 1000baseT/Full
+> >> > >> >                                 10000baseT/Full
+> >> > >> >                                 1000baseKX/Full
+> >> > >> >                                 10000baseKX4/Full
+> >> > >> >                                 10000baseKR/Full
+> >> > >> >                                 2500baseT/Full
+> >> > >> >                                 5000baseT/Full
+> >> > >> >         Advertised pause frame use: Symmetric Receive-only
+> >> > >> >         Advertised auto-negotiation: Yes
+> >> > >> >         Advertised FEC modes: Not reported
+> >> > >> >         Link partner advertised link modes:  100baseT/Half 100baseT/Full
+> >> > >> >                                              1000baseT/Half 1000baseT/Full
+> >> > >> >                                              10000baseT/Full
+> >> > >> >                                              2500baseT/Full
+> >> > >> >                                              5000baseT/Full
+> >> > >> >         Link partner advertised pause frame use: No
+> >> > >> >         Link partner advertised auto-negotiation: Yes
+> >> > >> >         Link partner advertised FEC modes: Not reported
+> >> > >> >         Speed: 10000Mb/s
+> >> > >> >         Duplex: Full
+> >> > >> >         Port: Twisted Pair
+> >> > >> >         PHYAD: 8
+> >> > >> >         Transceiver: external
+> >> > >> >         Auto-negotiation: on
+> >> > >> >         MDI-X: Unknown
+> >> > >> >         Link detected: yes
+> >> > >> > # ping 192.168.1.146 -c5
+> >> > >> > PING 192.168.1.146 (192.168.1.146): 56 data bytes
+> >> > >> > 64 bytes from 192.168.1.146: seq=0 ttl=64 time=0.991 ms
+> >> > >> > 64 bytes from 192.168.1.146: seq=1 ttl=64 time=0.267 ms
+> >> > >> > 64 bytes from 192.168.1.146: seq=2 ttl=64 time=0.271 ms
+> >> > >> > 64 bytes from 192.168.1.146: seq=3 ttl=64 time=0.280 ms
+> >> > >> > 64 bytes from 192.168.1.146: seq=4 ttl=64 time=0.271 ms
+> >> > >> >
+> >> > >> > --- 192.168.1.146 ping statistics ---
+> >> > >> > 5 packets transmitted, 5 packets received, 0% packet loss
+> >> > >> > round-trip min/avg/max = 0.267/0.416/0.991 ms
+> >> > >> > # # force switch port to 1G
+> >> > >> > [  193.343494] mvpp2 f2000000.ethernet eth0: phy link down
+> >> > >> > 10gbase-r/Unknown/Unknown/none/off
+> >> > >> > [  193.343539] mvpp2 f2000000.ethernet eth0: mac link down
+> >> > >> > [  193.344524] mvpp2 f2000000.ethernet eth0: Link is Down
+> >> > >> > [  193.351973] aqr107_link_change_notify state=5:nolink an=1 link=0
+> >> > >> > duplex=255 speed=-1 26:10gbase-r
+> >> > >> > [  197.472489] mvpp2 f2000000.ethernet eth0: phy link up /1Gbps/Full/pause/off
+> >> > >>
+> >> > >> Well, it looks like we have selected PHY_INTERFACE_MODE_NA. Can you send
+> >> > >> the value of MDIO_PHYXS_VEND_IF_STATUS (dev 4, reg 0xe812)? Please also
+> >> > >> send the global config registers (dev 0x1e, reg 0x0310 through 0x031f)
+> >> > >> and the vendor provisioning registers (dev 4, reg 0xc440 through
+> >> > >> 0xc449).
+> >> > >
+> >> > > yes, this is what I've been looking at as well. When forced to 1000m
+> >> > > the register shows a phy type of 11 which according to the aqr113
+> >> > > datasheet is XFI 5G:
+> >> > > aqr107_read_status STATUS=0x00001258 (type=11) state=4:running an=1
+> >> > > link=1 duplex=1 speed=1000 interface=0
+> >> >
+> >> > That's pretty strange. Seems like it's rate adapting from 5g instead of
+> >> > 10g. Is SERDES Mode in the Global System Configuration For 1G register
+> >> > set to XFI?
+> >>
+> >> 1E.31C=0x0106:
+> >>   Rate Adaptation Method: 2=Pause Rate Adaptation
+> >>   SERDES Mode: 6=XFI/2 (XFI 5G)
+> >>
+> >
+> > The SERDES mode here is not valid and it seems to always be set to
+> > XFI/2 unless I init/use the AQR113 in U-Boot. If I manually set SERDES
+> > Mode to 0 (XFI) in the driver I find that all rates
+> > 10g,5g,2.5g,1g,100m work fine both in Linux 6.0 and in Linux 6.1-rc5.
+> > I'm still trying to understand why I would need to set SERDES Mode
+> > manually (vs the XFI mode specific firmware setting this) but I am
+> > unclear what the rate adaptation in 6.1 provides in this case. Is it
+> > that perhaps the AQR113 is handling rate adaptation internally and
+> > that's why the non 10gbe rates are working on 6.0?
+>
+> The changes in 6.1 are
+>
+> - We now always enable pause frame reception when doing rate adaptation.
+>   This is necessary for rate adaptation to work, but wasn't done
+>   automatically before.
+> - We advertise lower speed modes which are enabled with rate adaptation,
+>   even if we would not otherwise be able to support them.
+>
+> I'm not sure why you'd have XFI/2 selected in 6.1 if it isn't selected
+> in 6.0.
 
-Sorry, I should have done a better job communicating this (probably by
-marking it RFC).
+Sean,
 
-> Even if the change works, why would it be a good idea to overwrite some
-> random registers which are supposed to be configured correctly by the
-> firmware provided for the board?
+Thanks for the explanation. The issue I had which resulted in the
+wrong SERDES mode was simply that I was using the wrong aquantia
+firmware. They customize the firmware to default registers like SERDES
+mode specifically for customers and I was unknowingly using the
+firmware for XFI/2 instead of XFI.
 
-They're not random registers. They happen to be exactly the same registers
-we use to determine if rate adaptation is enabled.
+I suppose it would be worth putting something in the aquantia driver
+that verifies SERDES mode matches the phy-mode from dt to throw an
+error.
 
-> If the Linux fixup works for one board
-> with one firmware, how do we know it also works for another board with
-> the same PHY, but different firmware?
+Best Regards,
 
-How do we know if a fix on one board for any hardware works on another board?
-
-> Are you willing to take the risk to break someone's system to find out?
-
-I hope it doesn't come to that. I would much rather get some feedback/testing
-so I can be more confident in whatever we end up doing (or not).
-
-Well, part of my goal in sending out this patch is to get some feedback
-on the right thing to do here. As I see it, there are three ways of
-configuring this phy:
-
-- Always rate adapt to whatever the initial phy interface mode is
-- Switch phy interfaces depending on the link speed
-- Do whatever the firmware sets up
-
-On my system, the last option happens to be the same as the first.
-However, on Tim's system it's not. I had originally considered doing
-this kind of configuration in my initial rate adaptation patch. However,
-I deferred it since nothing needed to be configured for me.
-
-The problem here is that if we advertise like we are in the first mode,
-but we are not actually, then we can end up negotiating a link mode
-which we don't support.
-
-I think there are a few ways to address this:
-
-- Always enable rate adaptation, since that's what we tell phylink we
-  do. This is what this patch does. It's a bit risky (since it departs
-  from "do whatever the firmware does"). It's also a bit rigid (what if 
-- We can check all the registers to ensure we are actually going to rate
-  adapt. If we aren't, we tell phylink we don't support it. This is the
-  least risky, but we can end up not bringing up the link even in
-  circumstances where we could if we configured things properly. And we
-  generally know the right way to configure things.
-- Add a configuration option (devicetree? ethtool?) on which option
-  above to pick. This is probably what we will want to do in the long
-  term, but I feel like we have enough information to determine the
-  right thing to do most of the time (without needing manual
-  intervention).
-
-> As long as the Aquantia PHY driver doesn't contain all the necessary
-> steps for bringing the PHY up from a clean slate, but works on top of
-> what the firmware has done, changes like this make me very uncomfortable
-> to add any PHY ID to the Aquantia driver. I'd rather leave them with the
-> Generic C45 driver, even if that means I'll lose interrupt support, rate
-> matching and things like that.
-
-I think these registers should be viewed as configuration for the phy as
-a whole, rather than as guts which should be configure by firmware. At
-least for the fields we're working with, it seems clear to me what's
-going on.
-
---Sean
+Tim
