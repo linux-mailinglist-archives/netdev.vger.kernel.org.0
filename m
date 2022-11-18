@@ -2,152 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DB0262F0CB
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 10:15:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA00662F0D5
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 10:17:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241843AbiKRJPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 04:15:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        id S241859AbiKRJQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 04:16:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241210AbiKRJPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 04:15:47 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE0B419B8;
-        Fri, 18 Nov 2022 01:15:47 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id t4so3180580wmj.5;
-        Fri, 18 Nov 2022 01:15:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3X/1S90GjlN8tePoyh8v6JfLXXtmp5QanUR4qTwUYyg=;
-        b=ivrCl7eR87WFMl7HIEh9g8KNEgNJ7CyRSqNkagy0HUc6kI78j7+z/acrsRITNfpM6p
-         RMKX7zGXAABr383aK3RMwkXgNmx8hMDQUrU3m1B6dAe3xyh3arDqB6Yqp/2gV1ZOkgw6
-         HHNQWvtMXq8J3olEVAKX4aSeSMuO6j8p3+JbXjjcWzv4HzqVNZt2iF31pAUlBgzfwqXE
-         rSDM6gYyFTALm2OvWQVXie1eP4XW5R07pOp+T/EPtiP+I+Px6PAL3+gVbtWdZ+wicO1+
-         4zcedJI+Npvysmd43guvP+0e+urmfr1+jioLF+WJywwSjF2+6FQA6OfnqDdhje7fLTIe
-         ifWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3X/1S90GjlN8tePoyh8v6JfLXXtmp5QanUR4qTwUYyg=;
-        b=cEDQbLS/q9YBaBIyOalkr35MFyfIo8Ov+WgnCLvubUo4gF+uXkh//5H3dlsB+EEZJw
-         0zN9gY9P+jD6elpMvqDE91hEWYKKzayo6D9snUMLh6W/sh17/0tTo0j1+tTJmTkBuPkt
-         5sBmG/MXuBQVSyIM8LBXFMyYo18WI4A0pPdNjbnP+aKLFjWhwG0Bn6jR+eTITQIDJm1H
-         2Ghhw86GTYvRetPEttR7vcnE8hpvQhyQnMsjibdKKeK3SR1uaTLbUcxLn8kybbGoHfLS
-         le63asJMZEqTjZX6vkUwwv6n7YcxeW7wvZzg0CbTrGdfUSdCoI7vGC58RQgIVKdAciW1
-         2oxw==
-X-Gm-Message-State: ANoB5pm5holhQJjJFuO9a/UzJRwOCTctpq3lLdU/CSj90QttPWsapLQW
-        lyf1VyTJ13EoeMg8g6zPaUo=
-X-Google-Smtp-Source: AA0mqf7F/GY8GL5t96td0LCmkzg1Y6ivleyOyKEYRj0gjjaDZLmMGYBgf27oi9om7DHMcX3fjDswJw==
-X-Received: by 2002:a05:600c:34c5:b0:3cf:39b3:16bb with SMTP id d5-20020a05600c34c500b003cf39b316bbmr4193929wmq.201.1668762945535;
-        Fri, 18 Nov 2022 01:15:45 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id h8-20020a05600c350800b003d005aab31asm3080706wmq.40.2022.11.18.01.15.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 01:15:45 -0800 (PST)
-Date:   Fri, 18 Nov 2022 09:15:43 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] sfc: fix potential memleak in
- __ef100_hard_start_xmit()
-Message-ID: <Y3dNP6iEj2YyEwqJ@gmail.com>
-Mail-Followup-To: Leon Romanovsky <leon@kernel.org>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1668671409-10909-1-git-send-email-zhangchangzhong@huawei.com>
- <Y3YctdnKDDvikQcl@unreal>
- <efedaa0e-33ce-24c6-bb9d-8f9b5c4a1c38@huawei.com>
- <Y3YxlxPIiw43QiKE@unreal>
+        with ESMTP id S241858AbiKRJQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 04:16:29 -0500
+Received: from smtp-8fa8.mail.infomaniak.ch (smtp-8fa8.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fa8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BD063DF
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 01:16:27 -0800 (PST)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NDB3q1R4yzMq9pl;
+        Fri, 18 Nov 2022 10:16:23 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NDB3p4Gr5zMppFG;
+        Fri, 18 Nov 2022 10:16:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1668762983;
+        bh=WmJqtFGITHPNH6hvWB7131Vucaosx6JH+KXGbIiVYqA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gqdfNSoZDyPuRAE6h1t81Ua6sjsWVWGYoewzjtWyJbmH0k0mcJQGvGHw/Yb+cgaU3
+         OfkW9dOHZkSG5nztgac0CtGxj6/2lxYJUKBH2yA5qjAUK9hy05Hq7JwpgZXMoU97ci
+         8JTUocetwgGRQqT1psWiARphh47FyMTv/Zm08bsY=
+Message-ID: <fb9a288a-aa86-9192-e6d7-d6678d740297@digikod.net>
+Date:   Fri, 18 Nov 2022 10:16:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3YxlxPIiw43QiKE@unreal>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH] landlock: Allow filesystem layout changes for domains
+ without such rule type
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     artem.kuzin@huawei.com, gnoack3000@gmail.com,
+        willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+References: <5c6c99f7-4218-1f79-477e-5d943c9809fd@digikod.net>
+ <20221117185509.702361-1-mic@digikod.net>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <20221117185509.702361-1-mic@digikod.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 03:05:27PM +0200, Leon Romanovsky wrote:
-> On Thu, Nov 17, 2022 at 08:41:52PM +0800, Zhang Changzhong wrote:
-> > 
-> > 
-> > On 2022/11/17 19:36, Leon Romanovsky wrote:
-> > > On Thu, Nov 17, 2022 at 03:50:09PM +0800, Zhang Changzhong wrote:
-> > >> The __ef100_hard_start_xmit() returns NETDEV_TX_OK without freeing skb
-> > >> in error handling case, add dev_kfree_skb_any() to fix it.
-> > >>
-> > >> Fixes: 51b35a454efd ("sfc: skeleton EF100 PF driver")
-> > >> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> > >> ---
-> > >>  drivers/net/ethernet/sfc/ef100_netdev.c | 1 +
-> > >>  1 file changed, 1 insertion(+)
-> > >>
-> > >> diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
-> > >> index 88fa295..ddcc325 100644
-> > >> --- a/drivers/net/ethernet/sfc/ef100_netdev.c
-> > >> +++ b/drivers/net/ethernet/sfc/ef100_netdev.c
-> > >> @@ -218,6 +218,7 @@ netdev_tx_t __ef100_hard_start_xmit(struct sk_buff *skb,
-> > >>  		   skb->len, skb->data_len, channel->channel);
-> > >>  	if (!efx->n_channels || !efx->n_tx_channels || !channel) {
-> > >>  		netif_stop_queue(net_dev);
-> > >> +		dev_kfree_skb_any(skb);
-> > >>  		goto err;
-> > >>  	}
-> > > 
-> > > ef100 doesn't release in __ef100_enqueue_skb() either. SKB shouldn't be
-> > > NULL or ERR at this stage.
-> > 
-> > SKB shouldn't be NULL or ERR, so it can be freed. But this code looks weird.
+Konstantin, this patch should apply cleanly just after "01/12 landlock: 
+Make ruleset's access masks more generic". You can easily get this patch 
+with https://git.kernel.org/pub/scm/utils/b4/b4.git/
+Some adjustments are needed for the following patches. Feel free to 
+review this patch.
+
+
+On 17/11/2022 19:55, Mickaël Salaün wrote:
+> Allow mount point and root directory changes when there is no filesystem
+> rule tied to the current Landlock domain.  This doesn't change anything
+> for now because a domain must have at least a (filesystem) rule, but
+> this will change when other rule types will come.  For instance, a
+> domain only restricting the network should have no impact on filesystem
+> restrictions.
 > 
-> Please take a look __ef100_enqueue_skb() and see if it frees SKB on
-> error or not. If not, please fix it.
-
-That function looks ok to me, but I appreciate the extra eyes on it.
-
-Martin
-
-> Thanks
+> Add a new get_current_fs_domain() helper to quickly check filesystem
+> rule existence for all filesystem LSM hooks.
 > 
-> > 
-> > > 
-> > > diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
-> > > index 29ffaf35559d..426706b91d02 100644
-> > > --- a/drivers/net/ethernet/sfc/ef100_tx.c
-> > > +++ b/drivers/net/ethernet/sfc/ef100_tx.c
-> > > @@ -497,7 +497,7 @@ int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
-> > > 
-> > >  err:
-> > >         efx_enqueue_unwind(tx_queue, old_insert_count);
-> > > -       if (!IS_ERR_OR_NULL(skb))
-> > > +       if (rc)
-> > >                 dev_kfree_skb_any(skb);
-> > > 
-> > >         /* If we're not expecting another transmit and we had something to push
-> > > 
-> > > 
-> > >>  
-> > >> -- 
-> > >> 2.9.5
-> > >>
-> > > .
-> > > 
+> Remove unnecessary inlining.
+> 
+> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+> ---
+>   security/landlock/fs.c       | 73 ++++++++++++++++++------------------
+>   security/landlock/ruleset.h  | 25 +++++++++++-
+>   security/landlock/syscalls.c |  6 +--
+>   3 files changed, 62 insertions(+), 42 deletions(-)
+> 
+> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+> index 0d57c6479d29..0ae54a639e16 100644
+> --- a/security/landlock/fs.c
+> +++ b/security/landlock/fs.c
+> @@ -150,16 +150,6 @@ static struct landlock_object *get_inode_object(struct inode *const inode)
+>   	LANDLOCK_ACCESS_FS_TRUNCATE)
+>   /* clang-format on */
+>   
+> -/*
+> - * All access rights that are denied by default whether they are handled or not
+> - * by a ruleset/layer.  This must be ORed with all ruleset->fs_access_masks[]
+> - * entries when we need to get the absolute handled access masks.
+> - */
+> -/* clang-format off */
+> -#define ACCESS_INITIALLY_DENIED ( \
+> -	LANDLOCK_ACCESS_FS_REFER)
+> -/* clang-format on */
+> -
+>   /*
+>    * @path: Should have been checked by get_path_from_fd().
+>    */
+> @@ -179,8 +169,7 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+>   
+>   	/* Transforms relative access rights to absolute ones. */
+>   	access_rights |= LANDLOCK_MASK_ACCESS_FS &
+> -			 ~(landlock_get_fs_access_mask(ruleset, 0) |
+> -			   ACCESS_INITIALLY_DENIED);
+> +			 ~landlock_get_fs_access_mask(ruleset, 0);
+>   	object = get_inode_object(d_backing_inode(path->dentry));
+>   	if (IS_ERR(object))
+>   		return PTR_ERR(object);
+> @@ -287,14 +276,15 @@ static inline bool is_nouser_or_private(const struct dentry *dentry)
+>   		unlikely(IS_PRIVATE(d_backing_inode(dentry))));
+>   }
+>   
+> -static inline access_mask_t
+> -get_handled_accesses(const struct landlock_ruleset *const domain)
+> +static access_mask_t
+> +get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
+>   {
+> -	access_mask_t access_dom = ACCESS_INITIALLY_DENIED;
+> +	access_mask_t access_dom = 0;
+>   	size_t layer_level;
+>   
+>   	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
+> -		access_dom |= landlock_get_fs_access_mask(domain, layer_level);
+> +		access_dom |=
+> +			landlock_get_raw_fs_access_mask(domain, layer_level);
+>   	return access_dom & LANDLOCK_MASK_ACCESS_FS;
+>   }
+>   
+> @@ -331,13 +321,8 @@ init_layer_masks(const struct landlock_ruleset *const domain,
+>   
+>   		for_each_set_bit(access_bit, &access_req,
+>   				 ARRAY_SIZE(*layer_masks)) {
+> -			/*
+> -			 * Artificially handles all initially denied by default
+> -			 * access rights.
+> -			 */
+>   			if (BIT_ULL(access_bit) &
+> -			    (landlock_get_fs_access_mask(domain, layer_level) |
+> -			     ACCESS_INITIALLY_DENIED)) {
+> +			    landlock_get_fs_access_mask(domain, layer_level)) {
+>   				(*layer_masks)[access_bit] |=
+>   					BIT_ULL(layer_level);
+>   				handled_accesses |= BIT_ULL(access_bit);
+> @@ -347,6 +332,24 @@ init_layer_masks(const struct landlock_ruleset *const domain,
+>   	return handled_accesses;
+>   }
+>   
+> +static access_mask_t
+> +get_handled_fs_accesses(const struct landlock_ruleset *const domain)
+> +{
+> +	/* Handles all initially denied by default access rights. */
+> +	return get_raw_handled_fs_accesses(domain) | ACCESS_FS_INITIALLY_DENIED;
+> +}
+> +
+> +static const struct landlock_ruleset *get_current_fs_domain(void)
+> +{
+> +	const struct landlock_ruleset *const dom =
+> +		landlock_get_current_domain();
+> +
+> +	if (!dom || !get_raw_handled_fs_accesses(dom))
+> +		return NULL;
+> +
+> +	return dom;
+> +}
+> +
+>   /*
+>    * Check that a destination file hierarchy has more restrictions than a source
+>    * file hierarchy.  This is only used for link and rename actions.
+> @@ -519,7 +522,7 @@ static bool is_access_to_paths_allowed(
+>   		 * a superset of the meaningful requested accesses).
+>   		 */
+>   		access_masked_parent1 = access_masked_parent2 =
+> -			get_handled_accesses(domain);
+> +			get_handled_fs_accesses(domain);
+>   		is_dom_check = true;
+>   	} else {
+>   		if (WARN_ON_ONCE(dentry_child1 || dentry_child2))
+> @@ -648,11 +651,10 @@ static inline int check_access_path(const struct landlock_ruleset *const domain,
+>   	return -EACCES;
+>   }
+>   
+> -static inline int current_check_access_path(const struct path *const path,
+> +static int current_check_access_path(const struct path *const path,
+>   					    const access_mask_t access_request)
+>   {
+> -	const struct landlock_ruleset *const dom =
+> -		landlock_get_current_domain();
+> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
+>   
+>   	if (!dom)
+>   		return 0;
+> @@ -815,8 +817,7 @@ static int current_check_refer_path(struct dentry *const old_dentry,
+>   				    struct dentry *const new_dentry,
+>   				    const bool removable, const bool exchange)
+>   {
+> -	const struct landlock_ruleset *const dom =
+> -		landlock_get_current_domain();
+> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
+>   	bool allow_parent1, allow_parent2;
+>   	access_mask_t access_request_parent1, access_request_parent2;
+>   	struct path mnt_dir;
+> @@ -1050,7 +1051,7 @@ static int hook_sb_mount(const char *const dev_name,
+>   			 const struct path *const path, const char *const type,
+>   			 const unsigned long flags, void *const data)
+>   {
+> -	if (!landlock_get_current_domain())
+> +	if (!get_current_fs_domain())
+>   		return 0;
+>   	return -EPERM;
+>   }
+> @@ -1058,7 +1059,7 @@ static int hook_sb_mount(const char *const dev_name,
+>   static int hook_move_mount(const struct path *const from_path,
+>   			   const struct path *const to_path)
+>   {
+> -	if (!landlock_get_current_domain())
+> +	if (!get_current_fs_domain())
+>   		return 0;
+>   	return -EPERM;
+>   }
+> @@ -1069,14 +1070,14 @@ static int hook_move_mount(const struct path *const from_path,
+>    */
+>   static int hook_sb_umount(struct vfsmount *const mnt, const int flags)
+>   {
+> -	if (!landlock_get_current_domain())
+> +	if (!get_current_fs_domain())
+>   		return 0;
+>   	return -EPERM;
+>   }
+>   
+>   static int hook_sb_remount(struct super_block *const sb, void *const mnt_opts)
+>   {
+> -	if (!landlock_get_current_domain())
+> +	if (!get_current_fs_domain())
+>   		return 0;
+>   	return -EPERM;
+>   }
+> @@ -1092,7 +1093,7 @@ static int hook_sb_remount(struct super_block *const sb, void *const mnt_opts)
+>   static int hook_sb_pivotroot(const struct path *const old_path,
+>   			     const struct path *const new_path)
+>   {
+> -	if (!landlock_get_current_domain())
+> +	if (!get_current_fs_domain())
+>   		return 0;
+>   	return -EPERM;
+>   }
+> @@ -1128,8 +1129,7 @@ static int hook_path_mknod(const struct path *const dir,
+>   			   struct dentry *const dentry, const umode_t mode,
+>   			   const unsigned int dev)
+>   {
+> -	const struct landlock_ruleset *const dom =
+> -		landlock_get_current_domain();
+> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
+>   
+>   	if (!dom)
+>   		return 0;
+> @@ -1208,8 +1208,7 @@ static int hook_file_open(struct file *const file)
+>   	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
+>   	access_mask_t open_access_request, full_access_request, allowed_access;
+>   	const access_mask_t optional_access = LANDLOCK_ACCESS_FS_TRUNCATE;
+> -	const struct landlock_ruleset *const dom =
+> -		landlock_get_current_domain();
+> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
+>   
+>   	if (!dom)
+>   		return 0;
+> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+> index f2ad932d396c..ca46393ef3bb 100644
+> --- a/security/landlock/ruleset.h
+> +++ b/security/landlock/ruleset.h
+> @@ -15,10 +15,21 @@
+>   #include <linux/rbtree.h>
+>   #include <linux/refcount.h>
+>   #include <linux/workqueue.h>
+> +#include <uapi/linux/landlock.h>
+>   
+>   #include "limits.h"
+>   #include "object.h"
+>   
+> +/*
+> + * All access rights that are denied by default whether they are handled or not
+> + * by a ruleset/layer.  This must be ORed with all ruleset->access_masks[]
+> + * entries when we need to get the absolute handled access masks.
+> + */
+> +/* clang-format off */
+> +#define ACCESS_FS_INITIALLY_DENIED ( \
+> +	LANDLOCK_ACCESS_FS_REFER)
+> +/* clang-format on */
+> +
+>   typedef u16 access_mask_t;
+>   /* Makes sure all filesystem access rights can be stored. */
+>   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+> @@ -197,11 +208,21 @@ landlock_add_fs_access_mask(struct landlock_ruleset *const ruleset,
+>   }
+>   
+>   static inline access_mask_t
+> -landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
+> -			    const u16 layer_level)
+> +landlock_get_raw_fs_access_mask(const struct landlock_ruleset *const ruleset,
+> +				const u16 layer_level)
+>   {
+>   	return (ruleset->access_masks[layer_level] >>
+>   		LANDLOCK_SHIFT_ACCESS_FS) &
+>   	       LANDLOCK_MASK_ACCESS_FS;
+>   }
+> +
+> +static inline access_mask_t
+> +landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
+> +			    const u16 layer_level)
+> +{
+> +	/* Handles all initially denied by default access rights. */
+> +	return landlock_get_raw_fs_access_mask(ruleset, layer_level) |
+> +	       ACCESS_FS_INITIALLY_DENIED;
+> +}
+> +
+>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
+> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+> index 71aca7f990bc..d35cd5d304db 100644
+> --- a/security/landlock/syscalls.c
+> +++ b/security/landlock/syscalls.c
+> @@ -310,6 +310,7 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
+>   	struct path path;
+>   	struct landlock_ruleset *ruleset;
+>   	int res, err;
+> +	access_mask_t mask;
+>   
+>   	if (!landlock_initialized)
+>   		return -EOPNOTSUPP;
+> @@ -348,9 +349,8 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
+>   	 * Checks that allowed_access matches the @ruleset constraints
+>   	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
+>   	 */
+> -	if ((path_beneath_attr.allowed_access |
+> -	     landlock_get_fs_access_mask(ruleset, 0)) !=
+> -	    landlock_get_fs_access_mask(ruleset, 0)) {
+> +	mask = landlock_get_raw_fs_access_mask(ruleset, 0);
+> +	if ((path_beneath_attr.allowed_access | mask) != mask) {
+>   		err = -EINVAL;
+>   		goto out_put_ruleset;
+>   	}
