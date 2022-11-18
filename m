@@ -2,95 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C57B162ECF4
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 05:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 801DC62ECFE
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 05:59:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235159AbiKREuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 23:50:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
+        id S235235AbiKRE7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 23:59:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiKREuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 23:50:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD1A97AAE;
-        Thu, 17 Nov 2022 20:50:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10FA26231E;
-        Fri, 18 Nov 2022 04:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CE86C433D7;
-        Fri, 18 Nov 2022 04:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668747016;
-        bh=t7xxYvPYXc231KG6nUygpti/cAn5PnhIeSUqmicZtI4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nAQMffMa52OpSTeeU2d7Z1kRKvlLDsUR2ErmflCHdG7bJW68wf08SXY3cF0BXZIDQ
-         Z1mo894VPhQuXUg8Aj7/MvBtLMurizhwDWYhMMxwYJVYOJl+cvogIlqcFFQ62b7I2H
-         PXQSNFs9U3d32PhHANeKtOYE0+UucVYF1qNMwwylpxOHWoQ6W1HmdZEOCgl2Y+m7g3
-         b8yHsq6g+NRWuWKb+5C2vJpXx2xjL031L21dv6dyW5/iucBref6tF21UC1uTNvmhVD
-         RcnR2hZzWuAFla80aa6X8sy3Ygbce7caExOzNK6bc5RGnfBpGnSn9OrPtDjWe1waO8
-         ThZeJpdFi8xYw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3BA26C395F3;
-        Fri, 18 Nov 2022 04:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/3] net: dsa: use more appropriate NET_NAME_* constants
- for user ports
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166874701623.23195.16762278398550223590.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Nov 2022 04:50:16 +0000
-References: <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
-In-Reply-To: <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229451AbiKRE7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 23:59:45 -0500
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98AB5BD4E
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 20:59:43 -0800 (PST)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 56391C009; Fri, 18 Nov 2022 05:59:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1668747587; bh=mrSdzggaaZx2brnDeP/8mVVD2/b0o1Wo6WFGVV2aSBo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=4vwrRbyxNxs7al+rvR2pCNFE2QjgKz8o5ClmwRBKaPHgYPKIgNumOhQUNq2zN8B1j
+         QetTn82TMvlzkoEasu+s3I6ixbXvPIVzEqEcuRGxRGTNIJOX52DjlIoneNlkC0R6M0
+         RJABsOpKd5OZIqXNDxbGuhye81lBJFaLtEw7r9uqv2CCZjAkpbmlXXdtZxJkzvJope
+         STdeInKMY7n8TG6Pd/+75bX8i7RbfrKgF3Gdm31mXEl4Jw5pDJJa+SMig6tyeV82q8
+         XdNaO/sEFi9x5mGSmpmjkqcfqW7QIc01YJfFd31/VfKdj8fNHfrQp6+Voh1tGIvm66
+         Cv/iaWyBVHUGA==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 31D27C009;
+        Fri, 18 Nov 2022 05:59:42 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1668747586; bh=mrSdzggaaZx2brnDeP/8mVVD2/b0o1Wo6WFGVV2aSBo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Mv8rYpslCUJMxH7Q5Hjq6m1SCpUQowZkAN05QZBfJXkQ6a0U+YBVr3oYkYb8lqwV+
+         CTwYFt9Rp1rQj4JO9Be5t4lshMubLQ7/oRLvRupJCFUMuT73j7IpzXPubjmhrPze6y
+         v8Q8OlJAdmMoNbPMedSh5gD2SA2FwHw9cwrdptjf1MQ30m8EeSyxpAVogq7mIjtRkd
+         MJWBa4LwC/W7pHrQqahOLOefy3GKarlfTHv/NpsAeKfZ8hKVdZJ2/Qf5auWaHZBdzX
+         s1Dn2YozXSwv/F1MTVXWhy4xUKu+CWgd2xDnHNZLpbNeR7usihSEZClumGfmyCTQMs
+         sbrK1n90LiSNg==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id aa888285;
+        Fri, 18 Nov 2022 04:59:33 +0000 (UTC)
+Date:   Fri, 18 Nov 2022 13:59:18 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net,
+        GUO Zihua <guozihua@huawei.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3 v2] 9p: Fix write overflow in p9_read_work
+Message-ID: <Y3cRJsRFCZaKrzhe@codewreck.org>
+References: <20221117091159.31533-1-guozihua@huawei.com>
+ <3918617.6eBe0Ihrjo@silver>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3918617.6eBe0Ihrjo@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 16 Nov 2022 11:52:01 +0100 you wrote:
-> The intention of commit 685343fc3ba6 ("net: add name_assign_type
-> netdev attribute") was clearly that drivers be switched over one by
-> one to select appropriate NET_NAME_* constants instead of
-> NET_NAME_UNKNOWN. This small series attempts to do that for DSA user
-> ports.
+Christian Schoenebeck wrote on Thu, Nov 17, 2022 at 02:33:28PM +0100:
+> > GUO Zihua (3):
+> >   9p: Fix write overflow in p9_read_work
+> >   9p: Remove redundent checks for message size against msize.
+> >   9p: Use P9_HDRSZ for header size
 > 
-> This is obviously and intentionally user-visible changes, so there's a
-> small chance that it could lead to a regression. To make it easy to
-> revert either of the "label in DT" and "fallback to eth%d" changes,
-> this is done as a refactoring which shouldn't introduce any functional
-> change (but by itself adds code which looks a little odd, with the two
-> identical assignments in the two branches), followed by changing the
-> constant used in each case in two different patches.
+> For entire series:
 > 
-> [...]
+> Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+> 
+> I agree with Dominique that patch 1 and 2 should be merged.
 
-Here is the summary with links:
-  - [v3,1/3] net: dsa: refactor name assignment for user ports
-    https://git.kernel.org/netdev/net-next/c/0171a1d22bb9
-  - [v3,2/3] net: dsa: use NET_NAME_PREDICTABLE for user ports with name given in DT
-    https://git.kernel.org/netdev/net-next/c/6fdb03842040
-  - [v3,3/3] net: dsa: set name_assign_type to NET_NAME_ENUM for enumerated user ports
-    https://git.kernel.org/netdev/net-next/c/b8790661d90d
+Thank you both!
 
-You are awesome, thank you!
+I've just pushed the patches to my next branch:
+https://github.com/martinetd/linux/commits/9p-next
+
+... with a twist, as the original patch fails on any normal workload:
+---
+/ # ls /mnt
+9pnet: -- p9_read_work (19): requested packet size too big: 9 for tag 0 with capacity 11
+---
+(so much for having two pairs of eyes :-D
+By the way we -really- need to replace P9_DEBUG_ERROR by pr_error or
+something, these should be displayed without having to specify
+debug=1...)
+
+
+capacity is only set in a handful of places (alloc time, hardcoded 7 in
+trans_fd, after receiving packet) so I've added logs and our alloc
+really passed '11' for alloc_rsize (logging tsize/rsize)
+
+9pnet: (00000087) >>> TWALK fids 1,2 nwname 0d wname[0] (null)
+9pnet: -- p9_tag_alloc (87): allocating capacity to 17/11 for tag 0
+9pnet: -- p9_read_work (19): requested packet size too big: 9 for tag 0 with capacity 11
+
+... So this is RWALK, right:
+size[4] Rwalk tag[2] nwqid[2] nwqid*(wqid[13])
+4 ..... 5.... 7..... 9....... packet end at 9 as 0 nwqid.
+We have capacity 11 to allow rlerror_size which is bigger; everything is
+good.
+
+Long story short, the size header includes the header size, when I
+misread https://9fans.github.io/plan9port/man/man9/version.html to
+say it didn't (it just says it doesn't include the enveloping transport
+protocol, it starts from size alright and I just misread that)
+Thanksfully the code caught it.
+
+So I've just removed the - offset part and things appear to work again.
+
+Guo Zihua, can you check this still fixes your syz repro, or was that
+substraction needed? If it's still needed we have an off by 1 somewhere
+to look for.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Dominique
