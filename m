@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55CFF62ECF3
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 05:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C57B162ECF4
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 05:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235048AbiKREuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 23:50:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
+        id S235159AbiKREuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 23:50:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiKREuS (ORCPT
+        with ESMTP id S231814AbiKREuS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 23:50:18 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D38A97AB1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD1A97AAE;
         Thu, 17 Nov 2022 20:50:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DD6662323;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10FA26231E;
         Fri, 18 Nov 2022 04:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6A8B6C433C1;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CE86C433D7;
         Fri, 18 Nov 2022 04:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1668747016;
-        bh=tBhuVjI/PcP3f2i9VOpdRBwC44MerYrd7O5Cbeuy1kk=;
+        bh=t7xxYvPYXc231KG6nUygpti/cAn5PnhIeSUqmicZtI4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WkepjNANJUpVWTDfT+NseryUx4lLx4IsNCKZdZvVkYKnxU3Hlo4RGUyVXt00dVfDd
-         5R1dd0be+GGqNnBNhCYuVAyvZ3N5n7bKfDP6tk3H/vMhDA+1AcON2bznaH4ZXVPKZM
-         w6bLRArCgtIb/PlIN9bE65/5V1m2VS4uzayfHlTbGPxS/EVUlTSRXf6TaM9zyQbM8w
-         FQCDYYQUNrWcBe5+BLe+dq6Eye7ENJHJTo9IlEFYtSmmRm4Jbd0O3vMjlyZJH5hjR3
-         1/u79mE+51OEm1pralFCfWjmmVetx1QSM8Qpq7zKPDMF8o9f6TZ/eXk2OH3EnBPbzg
-         ysS5a+eoinBEg==
+        b=nAQMffMa52OpSTeeU2d7Z1kRKvlLDsUR2ErmflCHdG7bJW68wf08SXY3cF0BXZIDQ
+         Z1mo894VPhQuXUg8Aj7/MvBtLMurizhwDWYhMMxwYJVYOJl+cvogIlqcFFQ62b7I2H
+         PXQSNFs9U3d32PhHANeKtOYE0+UucVYF1qNMwwylpxOHWoQ6W1HmdZEOCgl2Y+m7g3
+         b8yHsq6g+NRWuWKb+5C2vJpXx2xjL031L21dv6dyW5/iucBref6tF21UC1uTNvmhVD
+         RcnR2hZzWuAFla80aa6X8sy3Ygbce7caExOzNK6bc5RGnfBpGnSn9OrPtDjWe1waO8
+         ThZeJpdFi8xYw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 47C31E29F45;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3BA26C395F3;
         Fri, 18 Nov 2022 04:50:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v5] ethtool: doc: clarify what drivers can implement in their
- get_drvinfo()
+Subject: Re: [PATCH v3 0/3] net: dsa: use more appropriate NET_NAME_* constants
+ for user ports
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166874701628.23195.4484319487930561442.git-patchwork-notify@kernel.org>
+Message-Id: <166874701623.23195.16762278398550223590.git-patchwork-notify@kernel.org>
 Date:   Fri, 18 Nov 2022 04:50:16 +0000
-References: <20221116171828.4093-1-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20221116171828.4093-1-mailhol.vincent@wanadoo.fr>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, andrew@lunn.ch,
-        linux@rempel-privat.de, dan.j.williams@intel.com, petrm@nvidia.com,
-        chenhao288@hisilicon.com, amcohen@nvidia.com,
-        gustavoars@kernel.org, sean.anderson@seco.com,
-        linux-kernel@vger.kernel.org, leonro@nvidia.com
+References: <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
+In-Reply-To: <20221116105205.1127843-1-linux@rasmusvillemoes.dk>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,23 +60,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 17 Nov 2022 02:18:28 +0900 you wrote:
-> Many of the drivers which implement ethtool_ops::get_drvinfo() will
-> prints the .driver, .version or .bus_info of struct ethtool_drvinfo.
-> To have a glance of current state, do:
+On Wed, 16 Nov 2022 11:52:01 +0100 you wrote:
+> The intention of commit 685343fc3ba6 ("net: add name_assign_type
+> netdev attribute") was clearly that drivers be switched over one by
+> one to select appropriate NET_NAME_* constants instead of
+> NET_NAME_UNKNOWN. This small series attempts to do that for DSA user
+> ports.
 > 
->   $ git grep -W "get_drvinfo(struct"
-> 
-> Printing in those three fields is useless because:
+> This is obviously and intentionally user-visible changes, so there's a
+> small chance that it could lead to a regression. To make it easy to
+> revert either of the "label in DT" and "fallback to eth%d" changes,
+> this is done as a refactoring which shouldn't introduce any functional
+> change (but by itself adds code which looks a little odd, with the two
+> identical assignments in the two branches), followed by changing the
+> constant used in each case in two different patches.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v5] ethtool: doc: clarify what drivers can implement in their get_drvinfo()
-    https://git.kernel.org/netdev/net-next/c/f20a0a0519f3
+  - [v3,1/3] net: dsa: refactor name assignment for user ports
+    https://git.kernel.org/netdev/net-next/c/0171a1d22bb9
+  - [v3,2/3] net: dsa: use NET_NAME_PREDICTABLE for user ports with name given in DT
+    https://git.kernel.org/netdev/net-next/c/6fdb03842040
+  - [v3,3/3] net: dsa: set name_assign_type to NET_NAME_ENUM for enumerated user ports
+    https://git.kernel.org/netdev/net-next/c/b8790661d90d
 
 You are awesome, thank you!
 -- 
