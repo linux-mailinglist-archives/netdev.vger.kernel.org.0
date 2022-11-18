@@ -2,100 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32FDC62F667
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 14:39:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 898D162F682
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 14:44:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242206AbiKRNjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 08:39:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
+        id S235271AbiKRNop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 08:44:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242133AbiKRNin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 08:38:43 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7D3920B5;
-        Fri, 18 Nov 2022 05:37:28 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6A14D1884470;
-        Fri, 18 Nov 2022 13:37:26 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 5E708250052C;
-        Fri, 18 Nov 2022 13:37:26 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 5395F9EC0020; Fri, 18 Nov 2022 13:37:26 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S241574AbiKRNon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 08:44:43 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5206C781BB;
+        Fri, 18 Nov 2022 05:44:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=OHv2PldMBepVVDAa5A0JeBaGKPLN9PMK5om1gj1ebDw=; b=iz4b8o5Xxospq1YOk7rNOn2xvx
+        W5kXpYeRlHKZhzq4FuMm6INdH/g/isz00SgdqnxwK4LEvl7/bIkud/cfLuo/QJTsaMvd6GbGOLE09
+        t37xgnsYQFHcoIba4e41VufAQT76vUncRywBdGw6hQMFzSpq9VomE6vuqtVBfp62L06Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ow1fF-002nYk-RN; Fri, 18 Nov 2022 14:44:17 +0100
+Date:   Fri, 18 Nov 2022 14:44:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hui Tang <tanghui20@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        mw@semihalf.com, linux@armlinux.org.uk, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yusongping@huawei.com
+Subject: Re: [PATCH net v2] net: mdio-ipq4019: fix possible invalid pointer
+ dereference
+Message-ID: <Y3eMMc7maaPCKUNS@lunn.ch>
+References: <20221117090514.118296-1-tanghui20@huawei.com>
+ <Y3Y94/My9Al4pw+h@lunn.ch>
+ <6cad3105-0e70-d890-162b-513855885fde@huawei.com>
 MIME-Version: 1.0
-Date:   Fri, 18 Nov 2022 14:37:26 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-In-Reply-To: <20221116102406.gg6h7gvkx55f2ojj@skbuf>
-References: <20221115102833.ahwnahrqstcs2eug@skbuf>
- <7c02d4f14e59a6e26431c086a9bb9643@kapio-technology.com>
- <20221115111034.z5bggxqhdf7kbw64@skbuf>
- <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
- <20221115122237.jfa5aqv6hauqid6l@skbuf>
- <fb1707b55bd8629770e77969affaa2f9@kapio-technology.com>
- <20221115145650.gs7crhkidbq5ko6v@skbuf>
- <f229503b98d772c936f1fc8ca826a14f@kapio-technology.com>
- <20221115161846.2st2kjxylfvlncib@skbuf>
- <e05f69915a2522fc1e9854194afcc87b@kapio-technology.com>
- <20221116102406.gg6h7gvkx55f2ojj@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <54b489e65712e50e5ee67b746c0fec74@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6cad3105-0e70-d890-162b-513855885fde@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-16 11:24, Vladimir Oltean wrote:
-> On Tue, Nov 15, 2022 at 07:40:02PM +0100, netdev@kapio-technology.com 
-> wrote:
->> So, I will not present you with a graph as it is a tedious process 
->> (probably
->> it is some descending gaussian curve wrt timeout occurring).
->> 
->> But 100ms fails, 125 I had 1 port fail, at 140, 150  and 180 I saw 
->> timeouts
->> resulting in fdb add fails, like (and occasional port fail):
->> 
->> mv88e6085 1002b000.ethernet-1:04: Timeout while waiting for switch
->> mv88e6085 1002b000.ethernet-1:04: port 0 failed to add 
->> be:7c:96:06:9f:09 vid
->> 1 to fdb: -110
->> 
->> At around 200 ms it looks like it is getting stable (like 5 runs, no
->> problems).
->> 
->> So with the gaussian curve tail whipping ones behind (risque of 
->> failure) it
->> might need to be like 300 ms in my case... :-)
+> So, the code should be as follows, is that right?
 > 
-> Pick a value that is high enough to be reliable and submit a patch to
-> "net" where you present the evidence for it (top-level MDIO controller,
-> SoC, switch, kernel). I don't believe there's much to read into. A 
-> large
-> timeout shouldn't have a negative effect on the MDIO performance,
-> because it just determines how long it takes until the kernel declares
-> it dead, rather than how long it takes for transactions to actually 
-> take
-> place.
+> +	void __iomem *devm_ioremap_resource_optional(struct device *dev,
+> +                                    	     const struct resource *res)
+> +	{
+> +		void __iomem *base;
+> +
+> +		base = __devm_ioremap_resource(dev, res, DEVM_IOREMAP);
+> +		if (IS_ERR(base) && PTR_ERR(base) == -ENOMEM)
+> +			return NULL;
+> +
+> +		return base;
+> +	}
+> 
+> 
+> [...]
+> 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -	if (res)
+> +	if (res) {
+> +		priv->eth_ldo_rdy = devm_ioremap_resource_optional(&pdev->dev, res)
+> +		if (IS_ERR(priv->eth_ldo_rdy))
+> +			return PTR_ERR(priv->eth_ldo_rdy);
+> +	}
+> [...]
 
-Would it not be appropriate to have a define that specifies the value 
-instead
-of the same value two places as it is now?
+Yes, that is the basic concept.
 
-And in so case, what would be an appropriate name?
+The only thing i might change is the double meaning of -ENOMEM.
+__devm_ioremap_resource() allocates memory, and if that memory
+allocation fails, it returns -ENOMEM. If the resource does not exist,
+it also returns -ENOMEM. So you cannot tell these two error conditions
+apart. Most of the other get_foo() calls return -ENODEV if the
+gpio/regulator/clock does not exist, so you can tell if you are out of
+memory. But ioremap is specifically about memory so -ENOMEM actually
+makes sense.
+
+If you are out of memory, it seems likely the problem is not going to
+go away quickly, so the next allocation will also fail, and hopefully
+the error handling will then work. So i don't think it is major
+issue. So yes, go with the code above.
+
+      Andrew
