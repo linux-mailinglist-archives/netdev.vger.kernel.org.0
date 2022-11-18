@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 802156302B9
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 024D96302B8
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235229AbiKRXOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 18:14:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50016 "EHLO
+        id S235357AbiKRXOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 18:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235224AbiKRXNj (ORCPT
+        with ESMTP id S235167AbiKRXNj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:39 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C40C68A6
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B282EC68AC
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:58 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id a22-20020a17090a6d9600b0021896eb5554so615713pjk.1
+Received: by mail-pj1-x102a.google.com with SMTP id d13-20020a17090a3b0d00b00213519dfe4aso6393005pjc.2
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=+5c/WgZHdCy2oUygsf8Vt6i9S6K2W0JMjMSgHf0dYXs=;
-        b=QT4emBu2VRElbZazXpWMqzy7bREKeBA1ZetVzWmchnArzLwUMjv8+EpjYxP/vNcpii
-         CWYonfsq8L3aQsk4IGdUp9Hq40Tukg5ft1UUNdy+RQ/1FfYpr+Qcz1hwCi+g3dyGK3X0
-         CG8/lK8f7zsRXogGNDPJt0axG4Lru/UmRaWl+qJYXrQg0N1q0FtiMvOevMRnrB7DIJa+
-         PrebUhBou+KT0Ua7SdqJn9c5W7af/ley/DpVFNgEm9Ucttv9MrnaVQqkAKbOBLuJlohy
-         dPq4k2Nd6DGuC/puYWg8TvznSQy9gSDcJrX2Cu+2tdc4lZZvVb1qlLeJuJuZJ+/Mcpe2
-         8B5w==
+        bh=7xu/k0uOmb9bpaVvCTmNaThIKAzwj+vYINShVjXuoGI=;
+        b=Z0NTq44M8DwPSL0fUOEU1Hsd9qtP/+1xQwtbFWCWA8Nm7s8Xa3cIWD7e070+elmoat
+         JqYxrzl4cxVlZTyHupSM3mbvgKSOYa3Ds2NIYevwJtz1t+5jcNRqvpDStSXoFhziJEN9
+         z+9kAvLFUNin33K07kFAav22YZhtsvhFtlrOSkMFEmhpmT2asIn1zDX6rrosW6G7VdcY
+         UfgE63yWQi0X38IOc6imCP4I/k0PZBbzyl2fEOZUv6qE/5RhoRPlcMRNzJ7l8qwSm2J6
+         Uubdl7tjwei3usbzzmffQyGStzq7/GOi83Qq7vtw8RgCKhQs4eUvP1LRPT61mAq9pHHM
+         PBVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+5c/WgZHdCy2oUygsf8Vt6i9S6K2W0JMjMSgHf0dYXs=;
-        b=ugYmhFlX4NCPqL0Y8uMPAyvz+4N1knY+Ww7zAnf/F3DH8M4l9KBiRVAkjWH54YBj2P
-         EBDni7JQDsjT9zYzv5M54q45CeY2F48xYy4nZaDxLz16BK2U7rLJrAhIlKpv3CmuwU1g
-         7CzulkakG6C5FJbFyY2zocsU/hJi76P7UEcGzEZggoKGQSHA1ViCWbrKYEehAkU9PKqX
-         qFak2gPfkCjWgvYJTNEpIZj0uwcp2Hc68m8djx0XkagSp3Yy1PPLFbHQpgl6TBJUoFOn
-         5nXt8sGjYUf04Fvn3F9A3ELPSYJd2W+5SsZa4vKXTvBIMdnIDzPBee1mGUHuceGnfrSs
-         vQDA==
-X-Gm-Message-State: ANoB5pl1KUxRg1RuzvYMZr/1gSTT8m9GPLR5hdG8qSUDrMqsS2PgOSng
-        bEzKTyI+It6VXYyRQaTovqss+40xtMmG5g==
-X-Google-Smtp-Source: AA0mqf4TVghu32zAXuAxJtx8ec0wyX5z3dK5ChtP5QvXDrWGPXWj86XM+88bqPtWlc0WVe03G4DmOw==
-X-Received: by 2002:a17:902:dac2:b0:189:7d5:26ea with SMTP id q2-20020a170902dac200b0018907d526eamr1473704plx.145.1668812251189;
-        Fri, 18 Nov 2022 14:57:31 -0800 (PST)
+        bh=7xu/k0uOmb9bpaVvCTmNaThIKAzwj+vYINShVjXuoGI=;
+        b=v+Am1x5OeUzKvSQDwS7eY9Fs11CWx9mRqA0T/iptlrnZdZ/PuNNWVh84IMsW8iGVPU
+         ISmE6vPCNHVc0v8qdycbXkB5RW2CTHGl2vEH/Dz9kCKxTSVc2JJMIRWRdHh/Tqpg579A
+         voquP2NCWA9mqyptyOgkCg2XitTuYsVE66H5QkAYuqC0EXNen6kq9KqdID60PbBsipL4
+         jYHEYP3rhANEGMjvmGSxdRPywZAaPOkNFlvQrxMiEYLTMUmXqL9Yd0RTnKDLG0gLwiBC
+         gyPu5b0ign6m3tMZM44IgK0VLqaVq6G5DjSLX7B9F8K+COcbe3RXGJuuoODQJX2+IU68
+         L1uA==
+X-Gm-Message-State: ANoB5pnAWUGVmtb3IKlE6Y3DsXV3nVnI5BjYQnrJUzQKusHT879P6ECv
+        L1uUJ2tf0I2jodSItD3xzA/Zv6QVt1KTCQ==
+X-Google-Smtp-Source: AA0mqf6RxD5ZFl2ixcQF8uzOfMS3KdbZEmH5edZIHp9XaBQWwFGPCYYFkncPNyd+YyEanNsEaoPAaQ==
+X-Received: by 2002:a17:90a:4fc1:b0:213:16b5:f45e with SMTP id q59-20020a17090a4fc100b0021316b5f45emr15552016pjh.170.1668812252524;
+        Fri, 18 Nov 2022 14:57:32 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.30
+        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 14:57:30 -0800 (PST)
+        Fri, 18 Nov 2022 14:57:32 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         mst@redhat.com, jasowang@redhat.com,
         virtualization@lists.linux-foundation.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [RFC PATCH net-next 14/19] pds_vdpa: Add new PCI VF device for PDS vDPA services
-Date:   Fri, 18 Nov 2022 14:56:51 -0800
-Message-Id: <20221118225656.48309-15-snelson@pensando.io>
+Subject: [RFC PATCH net-next 15/19] pds_vdpa: virtio bar setup for vdpa
+Date:   Fri, 18 Nov 2022 14:56:52 -0800
+Message-Id: <20221118225656.48309-16-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221118225656.48309-1-snelson@pensando.io>
 References: <20221118225656.48309-1-snelson@pensando.io>
@@ -67,561 +67,371 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the initial PCI driver framework for the new pds_vdpa VF
-device driver, an auxiliary_bus client of the pds_core driver.
-This does the very basics of registering for the new PCI
-device 1dd8:100b, setting up debugfs entries, and registering
-with devlink.
+The PDS vDPA device has a virtio BAR for describing itself, and
+the pds_vdpa driver needs to access it.  Here we copy liberally
+from the existing drivers/virtio/virtio_pci_modern_dev.c as it
+has what we need, but we need to modify it so that it can work
+with our device id and so we can use our own DMA mask.
 
-The new PCI device id has not made it to the official PCI ID Repository
-yet, but will soon be registered there.
+We suspect there is room for discussion here about making the
+existing code a little more flexible, but we thought we'd at
+least start the discussion here.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/vdpa/pds/Makefile       |   7 +
- drivers/vdpa/pds/debugfs.c      |  44 +++++++
- drivers/vdpa/pds/debugfs.h      |  22 ++++
- drivers/vdpa/pds/pci_drv.c      | 143 +++++++++++++++++++++
- drivers/vdpa/pds/pci_drv.h      |  46 +++++++
- include/linux/pds/pds_core_if.h |   1 +
- include/linux/pds/pds_vdpa.h    | 219 ++++++++++++++++++++++++++++++++
- 7 files changed, 482 insertions(+)
- create mode 100644 drivers/vdpa/pds/Makefile
- create mode 100644 drivers/vdpa/pds/debugfs.c
- create mode 100644 drivers/vdpa/pds/debugfs.h
- create mode 100644 drivers/vdpa/pds/pci_drv.c
- create mode 100644 drivers/vdpa/pds/pci_drv.h
- create mode 100644 include/linux/pds/pds_vdpa.h
+ drivers/vdpa/pds/Makefile     |   3 +-
+ drivers/vdpa/pds/pci_drv.c    |  10 ++
+ drivers/vdpa/pds/pci_drv.h    |   2 +
+ drivers/vdpa/pds/virtio_pci.c | 283 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 297 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/vdpa/pds/virtio_pci.c
 
 diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
-new file mode 100644
-index 000000000000..3ba28a875574
---- /dev/null
+index 3ba28a875574..b8376ab165bc 100644
+--- a/drivers/vdpa/pds/Makefile
 +++ b/drivers/vdpa/pds/Makefile
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright(c) 2022 Pensando Systems, Inc
-+
-+obj-$(CONFIG_PDS_VDPA) := pds_vdpa.o
-+
-+pds_vdpa-y := pci_drv.o	\
-+	      debugfs.o
-diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
-new file mode 100644
-index 000000000000..f5b6654ae89b
---- /dev/null
-+++ b/drivers/vdpa/pds/debugfs.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(c) 2022 Pensando Systems, Inc */
-+
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/types.h>
-+
-+#include <linux/pds/pds_core_if.h>
-+#include <linux/pds/pds_vdpa.h>
-+
-+#include "pci_drv.h"
-+#include "debugfs.h"
-+
-+#ifdef CONFIG_DEBUG_FS
-+
-+static struct dentry *dbfs_dir;
-+
-+void
-+pds_vdpa_debugfs_create(void)
-+{
-+	dbfs_dir = debugfs_create_dir(PDS_VDPA_DRV_NAME, NULL);
-+}
-+
-+void
-+pds_vdpa_debugfs_destroy(void)
-+{
-+	debugfs_remove_recursive(dbfs_dir);
-+	dbfs_dir = NULL;
-+}
-+
-+void
-+pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_pci_device *vdpa_pdev)
-+{
-+	vdpa_pdev->dentry = debugfs_create_dir(pci_name(vdpa_pdev->pdev), dbfs_dir);
-+}
-+
-+void
-+pds_vdpa_debugfs_del_pcidev(struct pds_vdpa_pci_device *vdpa_pdev)
-+{
-+	debugfs_remove_recursive(vdpa_pdev->dentry);
-+	vdpa_pdev->dentry = NULL;
-+}
-+
-+#endif /* CONFIG_DEBUG_FS */
-diff --git a/drivers/vdpa/pds/debugfs.h b/drivers/vdpa/pds/debugfs.h
-new file mode 100644
-index 000000000000..ac31ab47746b
---- /dev/null
-+++ b/drivers/vdpa/pds/debugfs.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright(c) 2022 Pensando Systems, Inc */
-+
-+#ifndef _PDS_VDPA_DEBUGFS_H_
-+#define _PDS_VDPA_DEBUGFS_H_
-+
-+#include <linux/debugfs.h>
-+
-+#ifdef CONFIG_DEBUG_FS
-+
-+void pds_vdpa_debugfs_create(void);
-+void pds_vdpa_debugfs_destroy(void);
-+void pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_pci_device *vdpa_pdev);
-+void pds_vdpa_debugfs_del_pcidev(struct pds_vdpa_pci_device *vdpa_pdev);
-+#else
-+static inline void pds_vdpa_debugfs_create(void) { }
-+static inline void pds_vdpa_debugfs_destroy(void) { }
-+static inline void pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_pci_device *vdpa_pdev) { }
-+static inline void pds_vdpa_debugfs_del_pcidev(struct pds_vdpa_pci_device *vdpa_pdev) { }
-+#endif
-+
-+#endif /* _PDS_VDPA_DEBUGFS_H_ */
+@@ -4,4 +4,5 @@
+ obj-$(CONFIG_PDS_VDPA) := pds_vdpa.o
+ 
+ pds_vdpa-y := pci_drv.o	\
+-	      debugfs.o
++	      debugfs.o \
++	      virtio_pci.o
 diff --git a/drivers/vdpa/pds/pci_drv.c b/drivers/vdpa/pds/pci_drv.c
-new file mode 100644
-index 000000000000..369e11153f21
---- /dev/null
+index 369e11153f21..10491e22778c 100644
+--- a/drivers/vdpa/pds/pci_drv.c
 +++ b/drivers/vdpa/pds/pci_drv.c
-@@ -0,0 +1,143 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(c) 2022 Pensando Systems, Inc */
-+
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/aer.h>
-+#include <linux/types.h>
-+#include <linux/vdpa.h>
-+
-+#include <linux/pds/pds_core_if.h>
-+#include <linux/pds/pds_vdpa.h>
-+
-+#include "pci_drv.h"
-+#include "debugfs.h"
-+
-+static void
-+pds_vdpa_dma_action(void *data)
-+{
-+	pci_free_irq_vectors((struct pci_dev *)data);
-+}
-+
-+static int
-+pds_vdpa_pci_probe(struct pci_dev *pdev,
-+		   const struct pci_device_id *id)
-+{
-+	struct pds_vdpa_pci_device *vdpa_pdev;
-+	struct device *dev = &pdev->dev;
-+	int err;
-+
-+	vdpa_pdev = kzalloc(sizeof(*vdpa_pdev), GFP_KERNEL);
-+	if (!vdpa_pdev)
-+		return -ENOMEM;
-+	pci_set_drvdata(pdev, vdpa_pdev);
-+
-+	vdpa_pdev->pdev = pdev;
-+	vdpa_pdev->vf_id = pci_iov_vf_id(pdev);
-+	vdpa_pdev->pci_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
-+
-+	/* Query system for DMA addressing limitation for the device. */
-+	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(PDS_CORE_ADDR_LEN));
+@@ -44,6 +44,14 @@ pds_vdpa_pci_probe(struct pci_dev *pdev,
+ 		goto err_out_free_mem;
+ 	}
+ 
++	vdpa_pdev->vd_mdev.pci_dev = pdev;
++	err = pds_vdpa_probe_virtio(&vdpa_pdev->vd_mdev);
 +	if (err) {
-+		dev_err(dev, "Unable to obtain 64-bit DMA for consistent allocations, aborting. %pe\n",
++		dev_err(dev, "Unable to probe for virtio configuration: %pe\n",
 +			ERR_PTR(err));
 +		goto err_out_free_mem;
 +	}
 +
-+	pci_enable_pcie_error_reporting(pdev);
-+
-+	/* Use devres management */
-+	err = pcim_enable_device(pdev);
-+	if (err) {
-+		dev_err(dev, "Cannot enable PCI device: %pe\n", ERR_PTR(err));
-+		goto err_out_free_mem;
-+	}
-+
-+	err = devm_add_action_or_reset(dev, pds_vdpa_dma_action, pdev);
-+	if (err) {
-+		dev_err(dev, "Failed adding devres for freeing irq vectors: %pe\n",
-+			ERR_PTR(err));
-+		goto err_out_pci_release_device;
-+	}
-+
-+	pci_set_master(pdev);
-+
-+	pds_vdpa_debugfs_add_pcidev(vdpa_pdev);
-+
-+	dev_info(dev, "%s: PF %#04x VF %#04x (%d) vf_id %d domain %d vdpa_aux %p vdpa_pdev %p\n",
-+		 __func__, pci_dev_id(vdpa_pdev->pdev->physfn),
-+		 vdpa_pdev->pci_id, vdpa_pdev->pci_id, vdpa_pdev->vf_id,
-+		 pci_domain_nr(pdev->bus), vdpa_pdev->vdpa_aux, vdpa_pdev);
-+
-+	return 0;
-+
-+err_out_pci_release_device:
-+	pci_disable_device(pdev);
-+err_out_free_mem:
-+	pci_disable_pcie_error_reporting(pdev);
-+	kfree(vdpa_pdev);
-+	return err;
-+}
-+
-+static void
-+pds_vdpa_pci_remove(struct pci_dev *pdev)
-+{
-+	struct pds_vdpa_pci_device *vdpa_pdev = pci_get_drvdata(pdev);
-+
-+	pds_vdpa_debugfs_del_pcidev(vdpa_pdev);
-+	pci_clear_master(pdev);
-+	pci_disable_pcie_error_reporting(pdev);
-+	pci_disable_device(pdev);
-+	kfree(vdpa_pdev);
-+
-+	dev_info(&pdev->dev, "Removed\n");
-+}
-+
-+static const struct pci_device_id
-+pds_vdpa_pci_table[] = {
-+	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_VDPA_VF) },
-+	{ 0, }
-+};
-+MODULE_DEVICE_TABLE(pci, pds_vdpa_pci_table);
-+
-+static struct pci_driver
-+pds_vdpa_pci_driver = {
-+	.name = PDS_VDPA_DRV_NAME,
-+	.id_table = pds_vdpa_pci_table,
-+	.probe = pds_vdpa_pci_probe,
-+	.remove = pds_vdpa_pci_remove
-+};
-+
-+static void __exit
-+pds_vdpa_pci_cleanup(void)
-+{
-+	pci_unregister_driver(&pds_vdpa_pci_driver);
-+
-+	pds_vdpa_debugfs_destroy();
-+}
-+module_exit(pds_vdpa_pci_cleanup);
-+
-+static int __init
-+pds_vdpa_pci_init(void)
-+{
-+	int err;
-+
-+	pds_vdpa_debugfs_create();
-+
-+	err = pci_register_driver(&pds_vdpa_pci_driver);
-+	if (err) {
-+		pr_err("%s: pci driver register failed: %pe\n", __func__, ERR_PTR(err));
-+		goto err_pci;
-+	}
-+
-+	return 0;
-+
-+err_pci:
-+	pds_vdpa_debugfs_destroy();
-+	return err;
-+}
-+module_init(pds_vdpa_pci_init);
-+
-+MODULE_DESCRIPTION(PDS_VDPA_DRV_DESCRIPTION);
-+MODULE_AUTHOR("Pensando Systems, Inc");
-+MODULE_LICENSE("GPL");
+ 	pci_enable_pcie_error_reporting(pdev);
+ 
+ 	/* Use devres management */
+@@ -74,6 +82,7 @@ pds_vdpa_pci_probe(struct pci_dev *pdev,
+ err_out_pci_release_device:
+ 	pci_disable_device(pdev);
+ err_out_free_mem:
++	pds_vdpa_remove_virtio(&vdpa_pdev->vd_mdev);
+ 	pci_disable_pcie_error_reporting(pdev);
+ 	kfree(vdpa_pdev);
+ 	return err;
+@@ -88,6 +97,7 @@ pds_vdpa_pci_remove(struct pci_dev *pdev)
+ 	pci_clear_master(pdev);
+ 	pci_disable_pcie_error_reporting(pdev);
+ 	pci_disable_device(pdev);
++	pds_vdpa_remove_virtio(&vdpa_pdev->vd_mdev);
+ 	kfree(vdpa_pdev);
+ 
+ 	dev_info(&pdev->dev, "Removed\n");
 diff --git a/drivers/vdpa/pds/pci_drv.h b/drivers/vdpa/pds/pci_drv.h
-new file mode 100644
-index 000000000000..747809e0df9e
---- /dev/null
+index 747809e0df9e..15f3b34fafa9 100644
+--- a/drivers/vdpa/pds/pci_drv.h
 +++ b/drivers/vdpa/pds/pci_drv.h
-@@ -0,0 +1,46 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright(c) 2022 Pensando Systems, Inc */
-+
-+#ifndef _PCI_DRV_H
-+#define _PCI_DRV_H
-+
-+#include <linux/pci.h>
-+#include <linux/virtio_pci_modern.h>
-+
-+#define PDS_VDPA_DRV_NAME           "pds_vdpa"
-+#define PDS_VDPA_DRV_DESCRIPTION    "Pensando vDPA VF Device Driver"
-+
-+#define PDS_VDPA_BAR_BASE	0
-+#define PDS_VDPA_BAR_INTR	2
-+#define PDS_VDPA_BAR_DBELL	4
-+
-+struct pds_dev_bar {
-+	int           index;
-+	void __iomem  *vaddr;
-+	phys_addr_t   pa;
-+	unsigned long len;
-+};
-+
-+struct pds_vdpa_intr_info {
-+	int index;
-+	int irq;
-+	int qid;
-+	char name[32];
-+};
-+
-+struct pds_vdpa_pci_device {
-+	struct pci_dev *pdev;
-+	struct pds_vdpa_aux *vdpa_aux;
-+
-+	int vf_id;
-+	int pci_id;
-+
-+	int nintrs;
-+	struct pds_vdpa_intr_info *intrs;
-+
-+	struct dentry *dentry;
-+
-+	struct virtio_pci_modern_device vd_mdev;
-+};
-+
-+#endif /* _PCI_DRV_H */
-diff --git a/include/linux/pds/pds_core_if.h b/include/linux/pds/pds_core_if.h
-index 6333ec351e14..6e92697657e4 100644
---- a/include/linux/pds/pds_core_if.h
-+++ b/include/linux/pds/pds_core_if.h
-@@ -8,6 +8,7 @@
+@@ -43,4 +43,6 @@ struct pds_vdpa_pci_device {
+ 	struct virtio_pci_modern_device vd_mdev;
+ };
  
- #define PCI_VENDOR_ID_PENSANDO			0x1dd8
- #define PCI_DEVICE_ID_PENSANDO_CORE_PF		0x100c
-+#define PCI_DEVICE_ID_PENSANDO_VDPA_VF          0x100b
- 
- #define PDS_CORE_BARS_MAX			4
- #define PDS_CORE_PCI_BAR_DBELL			1
-diff --git a/include/linux/pds/pds_vdpa.h b/include/linux/pds/pds_vdpa.h
++int pds_vdpa_probe_virtio(struct virtio_pci_modern_device *mdev);
++void pds_vdpa_remove_virtio(struct virtio_pci_modern_device *mdev);
+ #endif /* _PCI_DRV_H */
+diff --git a/drivers/vdpa/pds/virtio_pci.c b/drivers/vdpa/pds/virtio_pci.c
 new file mode 100644
-index 000000000000..7ecef890f175
+index 000000000000..0f4ac9467199
 --- /dev/null
-+++ b/include/linux/pds/pds_vdpa.h
-@@ -0,0 +1,219 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright(c) 2022 Pensando Systems, Inc */
-+
-+#ifndef _PDS_VDPA_IF_H_
-+#define _PDS_VDPA_IF_H_
-+
-+#include <linux/pds/pds_common.h>
-+
-+#define PDS_DEV_TYPE_VDPA_STR	"vDPA"
-+#define PDS_VDPA_DEV_NAME	PDS_CORE_DRV_NAME "." PDS_DEV_TYPE_VDPA_STR
++++ b/drivers/vdpa/pds/virtio_pci.c
+@@ -0,0 +1,283 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
 +
 +/*
-+ * enum pds_vdpa_cmd_opcode - vDPA Device commands
++ * adapted from drivers/virtio/virtio_pci_modern_dev.c, v6.0-rc1
 + */
-+enum pds_vdpa_cmd_opcode {
-+	PDS_VDPA_CMD_INIT		= 48,
-+	PDS_VDPA_CMD_IDENT		= 49,
-+	PDS_VDPA_CMD_RESET		= 51,
-+	PDS_VDPA_CMD_VQ_RESET		= 52,
-+	PDS_VDPA_CMD_VQ_INIT		= 53,
-+	PDS_VDPA_CMD_STATUS_UPDATE	= 54,
-+	PDS_VDPA_CMD_SET_FEATURES	= 55,
-+	PDS_VDPA_CMD_SET_ATTR		= 56,
-+};
 +
-+/**
-+ * struct pds_vdpa_cmd - generic command
-+ * @opcode:	Opcode
-+ * @vdpa_index:	Index for vdpa subdevice
-+ * @vf_id:	VF id
-+ */
-+struct pds_vdpa_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+};
++#include <linux/virtio_pci_modern.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/delay.h>
 +
-+/**
-+ * struct pds_vdpa_comp - generic command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:	Word boundary padding
-+ * @color:	Color bit
-+ */
-+struct pds_vdpa_comp {
-+	u8 status;
-+	u8 rsvd[14];
-+	u8 color;
-+};
++#include "pci_drv.h"
 +
-+/**
-+ * struct pds_vdpa_init_cmd - INIT command
-+ * @opcode:	Opcode PDS_VDPA_CMD_INIT
-+ * @vdpa_index: Index for vdpa subdevice
-+ * @vf_id:	VF id
-+ * @len:	length of config info DMA space
-+ * @config_pa:	address for DMA of virtio_net_config struct
-+ */
-+struct pds_vdpa_init_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+	__le32 len;
-+	__le64 config_pa;
-+};
-+
-+/**
-+ * struct pds_vdpa_ident - vDPA identification data
-+ * @hw_features:	vDPA features supported by device
-+ * @max_vqs:		max queues available (2 queues for a single queuepair)
-+ * @max_qlen:		log(2) of maximum number of descriptors
-+ * @min_qlen:		log(2) of minimum number of descriptors
++/*
++ * pds_vdpa_map_capability - map a part of virtio pci capability
++ * @mdev: the modern virtio-pci device
++ * @off: offset of the capability
++ * @minlen: minimal length of the capability
++ * @align: align requirement
++ * @start: start from the capability
++ * @size: map size
++ * @len: the length that is actually mapped
++ * @pa: physical address of the capability
 + *
-+ * This struct is used in a DMA block that is set up for the PDS_VDPA_CMD_IDENT
-+ * transaction.  Set up the DMA block and send the address in the IDENT cmd
-+ * data, the DSC will write the ident information, then we can remove the DMA
-+ * block after reading the answer.  If the completion status is 0, then there
-+ * is valid information, else there was an error and the data should be invalid.
++ * Returns the io address of for the part of the capability
 + */
-+struct pds_vdpa_ident {
-+	__le64 hw_features;
-+	__le16 max_vqs;
-+	__le16 max_qlen;
-+	__le16 min_qlen;
-+};
++static void __iomem *
++pds_vdpa_map_capability(struct virtio_pci_modern_device *mdev, int off,
++			 size_t minlen, u32 align, u32 start, u32 size,
++			 size_t *len, resource_size_t *pa)
++{
++	struct pci_dev *dev = mdev->pci_dev;
++	u8 bar;
++	u32 offset, length;
++	void __iomem *p;
++
++	pci_read_config_byte(dev, off + offsetof(struct virtio_pci_cap,
++						 bar),
++			     &bar);
++	pci_read_config_dword(dev, off + offsetof(struct virtio_pci_cap, offset),
++			     &offset);
++	pci_read_config_dword(dev, off + offsetof(struct virtio_pci_cap, length),
++			      &length);
++
++	/* Check if the BAR may have changed since we requested the region. */
++	if (bar >= PCI_STD_NUM_BARS || !(mdev->modern_bars & (1 << bar))) {
++		dev_err(&dev->dev,
++			"virtio_pci: bar unexpectedly changed to %u\n", bar);
++		return NULL;
++	}
++
++	if (length <= start) {
++		dev_err(&dev->dev,
++			"virtio_pci: bad capability len %u (>%u expected)\n",
++			length, start);
++		return NULL;
++	}
++
++	if (length - start < minlen) {
++		dev_err(&dev->dev,
++			"virtio_pci: bad capability len %u (>=%zu expected)\n",
++			length, minlen);
++		return NULL;
++	}
++
++	length -= start;
++
++	if (start + offset < offset) {
++		dev_err(&dev->dev,
++			"virtio_pci: map wrap-around %u+%u\n",
++			start, offset);
++		return NULL;
++	}
++
++	offset += start;
++
++	if (offset & (align - 1)) {
++		dev_err(&dev->dev,
++			"virtio_pci: offset %u not aligned to %u\n",
++			offset, align);
++		return NULL;
++	}
++
++	if (length > size)
++		length = size;
++
++	if (len)
++		*len = length;
++
++	if (minlen + offset < minlen ||
++	    minlen + offset > pci_resource_len(dev, bar)) {
++		dev_err(&dev->dev,
++			"virtio_pci: map virtio %zu@%u out of range on bar %i length %lu\n",
++			minlen, offset,
++			bar, (unsigned long)pci_resource_len(dev, bar));
++		return NULL;
++	}
++
++	p = pci_iomap_range(dev, bar, offset, length);
++	if (!p)
++		dev_err(&dev->dev,
++			"virtio_pci: unable to map virtio %u@%u on bar %i\n",
++			length, offset, bar);
++	else if (pa)
++		*pa = pci_resource_start(dev, bar) + offset;
++
++	return p;
++}
 +
 +/**
-+ * struct pds_vdpa_ident_cmd - IDENT command
-+ * @opcode:	Opcode PDS_VDPA_CMD_IDENT
-+ * @rsvd:       Word boundary padding
-+ * @vf_id:	VF id
-+ * @len:	length of ident info DMA space
-+ * @ident_pa:	address for DMA of ident info (struct pds_vdpa_ident)
-+ *			only used for this transaction, then forgotten by DSC
++ * virtio_pci_find_capability - walk capabilities to find device info.
++ * @dev: the pci device
++ * @cfg_type: the VIRTIO_PCI_CAP_* value we seek
++ * @ioresource_types: IORESOURCE_MEM and/or IORESOURCE_IO.
++ * @bars: the bitmask of BARs
++ *
++ * Returns offset of the capability, or 0.
 + */
-+struct pds_vdpa_ident_cmd {
-+	u8     opcode;
-+	u8     rsvd;
-+	__le16 vf_id;
-+	__le32 len;
-+	__le64 ident_pa;
-+};
++static inline int virtio_pci_find_capability(struct pci_dev *dev, u8 cfg_type,
++					     u32 ioresource_types, int *bars)
++{
++	int pos;
 +
-+/**
-+ * struct pds_vdpa_status_cmd - STATUS_UPDATE command
-+ * @opcode:	Opcode PDS_VDPA_CMD_STATUS_UPDATE
-+ * @vdpa_index: Index for vdpa subdevice
-+ * @vf_id:	VF id
-+ * @status:	new status bits
++	for (pos = pci_find_capability(dev, PCI_CAP_ID_VNDR);
++	     pos > 0;
++	     pos = pci_find_next_capability(dev, pos, PCI_CAP_ID_VNDR)) {
++		u8 type, bar;
++
++		pci_read_config_byte(dev, pos + offsetof(struct virtio_pci_cap,
++							 cfg_type),
++				     &type);
++		pci_read_config_byte(dev, pos + offsetof(struct virtio_pci_cap,
++							 bar),
++				     &bar);
++
++		/* Ignore structures with reserved BAR values */
++		if (bar >= PCI_STD_NUM_BARS)
++			continue;
++
++		if (type == cfg_type) {
++			if (pci_resource_len(dev, bar) &&
++			    pci_resource_flags(dev, bar) & ioresource_types) {
++				*bars |= (1 << bar);
++				return pos;
++			}
++		}
++	}
++	return 0;
++}
++
++/*
++ * pds_vdpa_probe_virtio: probe the modern virtio pci device, note that the
++ * caller is required to enable PCI device before calling this function.
++ * @mdev: the modern virtio-pci device
++ *
++ * Return 0 on succeed otherwise fail
 + */
-+struct pds_vdpa_status_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+	u8     status;
-+};
++int pds_vdpa_probe_virtio(struct virtio_pci_modern_device *mdev)
++{
++	struct pci_dev *pci_dev = mdev->pci_dev;
++	int err, common, isr, notify, device;
++	u32 notify_length;
++	u32 notify_offset;
 +
-+/**
-+ * enum pds_vdpa_attr - List of VDPA device attributes
-+ * @PDS_VDPA_ATTR_MAC:          MAC address
-+ * @PDS_VDPA_ATTR_MAX_VQ_PAIRS: Max virtqueue pairs
-+ */
-+enum pds_vdpa_attr {
-+	PDS_VDPA_ATTR_MAC          = 1,
-+	PDS_VDPA_ATTR_MAX_VQ_PAIRS = 2,
-+};
++	/* check for a common config: if not, use legacy mode (bar 0). */
++	common = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_COMMON_CFG,
++					    IORESOURCE_IO | IORESOURCE_MEM,
++					    &mdev->modern_bars);
++	if (!common) {
++		dev_info(&pci_dev->dev,
++			 "virtio_pci: missing common config\n");
++		return -ENODEV;
++	}
 +
-+/**
-+ * struct pds_vdpa_setattr_cmd - SET_ATTR command
-+ * @opcode:		Opcode PDS_VDPA_CMD_SET_ATTR
-+ * @vdpa_index:		Index for vdpa subdevice
-+ * @vf_id:		VF id
-+ * @attr:		attribute to be changed (enum pds_vdpa_attr)
-+ * @pad:		Word boundary padding
-+ * @mac:		new mac address to be assigned as vdpa device address
-+ * @max_vq_pairs:	new limit of virtqueue pairs
-+ */
-+struct pds_vdpa_setattr_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+	u8     attr;
-+	u8     pad[3];
-+	union {
-+		u8 mac[6];
-+		__le16 max_vq_pairs;
-+	} __packed;
-+};
++	/* If common is there, these should be too... */
++	isr = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_ISR_CFG,
++					 IORESOURCE_IO | IORESOURCE_MEM,
++					 &mdev->modern_bars);
++	notify = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_NOTIFY_CFG,
++					    IORESOURCE_IO | IORESOURCE_MEM,
++					    &mdev->modern_bars);
++	if (!isr || !notify) {
++		dev_err(&pci_dev->dev,
++			"virtio_pci: missing capabilities %i/%i/%i\n",
++			common, isr, notify);
++		return -EINVAL;
++	}
 +
-+/**
-+ * struct pds_vdpa_vq_init_cmd - queue init command
-+ * @opcode: Opcode PDS_VDPA_CMD_VQ_INIT
-+ * @vdpa_index:	Index for vdpa subdevice
-+ * @vf_id:	VF id
-+ * @qid:	Queue id (bit0 clear = rx, bit0 set = tx, qid=N is ctrlq)
-+ * @len:	log(2) of max descriptor count
-+ * @desc_addr:	DMA address of descriptor area
-+ * @avail_addr:	DMA address of available descriptors (aka driver area)
-+ * @used_addr:	DMA address of used descriptors (aka device area)
-+ * @intr_index:	interrupt index
-+ */
-+struct pds_vdpa_vq_init_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+	__le16 qid;
-+	__le16 len;
-+	__le64 desc_addr;
-+	__le64 avail_addr;
-+	__le64 used_addr;
-+	__le16 intr_index;
-+};
++	/* Device capability is only mandatory for devices that have
++	 * device-specific configuration.
++	 */
++	device = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_DEVICE_CFG,
++					    IORESOURCE_IO | IORESOURCE_MEM,
++					    &mdev->modern_bars);
 +
-+/**
-+ * struct pds_vdpa_vq_init_comp - queue init completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @hw_qtype:	HW queue type, used in doorbell selection
-+ * @hw_qindex:	HW queue index, used in doorbell selection
-+ * @rsvd:	Word boundary padding
-+ * @color:	Color bit
-+ */
-+struct pds_vdpa_vq_init_comp {
-+	u8     status;
-+	u8     hw_qtype;
-+	__le16 hw_qindex;
-+	u8     rsvd[11];
-+	u8     color;
-+};
++	err = pci_request_selected_regions(pci_dev, mdev->modern_bars,
++					   "virtio-pci-modern");
++	if (err)
++		return err;
 +
-+/**
-+ * struct pds_vdpa_vq_reset_cmd - queue reset command
-+ * @opcode:	Opcode PDS_VDPA_CMD_VQ_RESET
-+ * @vdpa_index:	Index for vdpa subdevice
-+ * @vf_id:	VF id
-+ * @qid:	Queue id
-+ */
-+struct pds_vdpa_vq_reset_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+	__le16 qid;
-+};
++	err = -EINVAL;
++	mdev->common = pds_vdpa_map_capability(mdev, common,
++				      sizeof(struct virtio_pci_common_cfg), 4,
++				      0, sizeof(struct virtio_pci_common_cfg),
++				      NULL, NULL);
++	if (!mdev->common)
++		goto err_map_common;
++	mdev->isr = pds_vdpa_map_capability(mdev, isr, sizeof(u8), 1,
++					     0, 1,
++					     NULL, NULL);
++	if (!mdev->isr)
++		goto err_map_isr;
 +
-+/**
-+ * struct pds_vdpa_set_features_cmd - set hw features
-+ * @opcode: Opcode PDS_VDPA_CMD_SET_FEATURES
-+ * @vdpa_index:	Index for vdpa subdevice
-+ * @vf_id:	VF id
-+ * @rsvd:       Word boundary padding
-+ * @features:	Feature bit mask
-+ */
-+struct pds_vdpa_set_features_cmd {
-+	u8     opcode;
-+	u8     vdpa_index;
-+	__le16 vf_id;
-+	__le32 rsvd;
-+	__le64 features;
-+};
++	/* Read notify_off_multiplier from config space. */
++	pci_read_config_dword(pci_dev,
++			      notify + offsetof(struct virtio_pci_notify_cap,
++						notify_off_multiplier),
++			      &mdev->notify_offset_multiplier);
++	/* Read notify length and offset from config space. */
++	pci_read_config_dword(pci_dev,
++			      notify + offsetof(struct virtio_pci_notify_cap,
++						cap.length),
++			      &notify_length);
 +
-+#endif /* _PDS_VDPA_IF_H_ */
++	pci_read_config_dword(pci_dev,
++			      notify + offsetof(struct virtio_pci_notify_cap,
++						cap.offset),
++			      &notify_offset);
++
++	/* We don't know how many VQs we'll map, ahead of the time.
++	 * If notify length is small, map it all now.
++	 * Otherwise, map each VQ individually later.
++	 */
++	if ((u64)notify_length + (notify_offset % PAGE_SIZE) <= PAGE_SIZE) {
++		mdev->notify_base = pds_vdpa_map_capability(mdev, notify,
++							     2, 2,
++							     0, notify_length,
++							     &mdev->notify_len,
++							     &mdev->notify_pa);
++		if (!mdev->notify_base)
++			goto err_map_notify;
++	} else {
++		mdev->notify_map_cap = notify;
++	}
++
++	/* Again, we don't know how much we should map, but PAGE_SIZE
++	 * is more than enough for all existing devices.
++	 */
++	if (device) {
++		mdev->device = pds_vdpa_map_capability(mdev, device, 0, 4,
++							0, PAGE_SIZE,
++							&mdev->device_len,
++							NULL);
++		if (!mdev->device)
++			goto err_map_device;
++	}
++
++	return 0;
++
++err_map_device:
++	if (mdev->notify_base)
++		pci_iounmap(pci_dev, mdev->notify_base);
++err_map_notify:
++	pci_iounmap(pci_dev, mdev->isr);
++err_map_isr:
++	pci_iounmap(pci_dev, mdev->common);
++err_map_common:
++	pci_release_selected_regions(pci_dev, mdev->modern_bars);
++	return err;
++}
++
++void pds_vdpa_remove_virtio(struct virtio_pci_modern_device *mdev)
++{
++	struct pci_dev *pci_dev = mdev->pci_dev;
++
++	if (mdev->device)
++		pci_iounmap(pci_dev, mdev->device);
++	if (mdev->notify_base)
++		pci_iounmap(pci_dev, mdev->notify_base);
++	pci_iounmap(pci_dev, mdev->isr);
++	pci_iounmap(pci_dev, mdev->common);
++	pci_release_selected_regions(pci_dev, mdev->modern_bars);
++}
 -- 
 2.17.1
 
