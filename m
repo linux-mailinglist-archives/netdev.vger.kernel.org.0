@@ -2,118 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A8C62FF2F
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 22:11:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB5762FF65
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 22:33:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiKRVLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 16:11:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
+        id S229920AbiKRVdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 16:33:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiKRVLu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 16:11:50 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102EE7AF6B
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 13:11:50 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id v4-20020a17090a088400b00212cb0ed97eso6183282pjc.5
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 13:11:50 -0800 (PST)
+        with ESMTP id S229802AbiKRVdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 16:33:07 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0E5A3153
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 13:33:06 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id x18so4373735qki.4
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 13:33:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HS164PT1thWPX3+gJIUevbDgvzJj6XIx86U2ombNC6E=;
-        b=V/10M61BAwjqfgwtW4m6+OLQQQVNW5qdkveInE2+NDix/ZB0ARQlpjaAePjf5krNjS
-         MfLKsZzwmVtauIFxprl09NW9We65OAoxeJWj7HCzZ/aVDrFkBYTHh1dkZ6nuM9dC16uU
-         ucPcJeE0B3y0t2RAv5Of1RObH4YoSyPsD1+cQ=
+        bh=geoky24w5/KGWKhCFuccd7Gsd2OeCOkIgFwrlUWisHc=;
+        b=pkh9DRMARKxHVveuy3uYyLl9VjpmpZeqnDsboz4WkWaxfZXdxhIGfVSE/CPlgeDyz5
+         4pVaG1wFEYFSoOc2KYabY/S+9E1y0DKWAPs2KHRe4d73WxkYj6cTrT6ByjX8ctdqpq7h
+         DqmAHNwfLwpjYDGU54RCT33FGPRQNRYVD1hfVZ1o3u4Mjn73lXFxsBAwlSLEf014xYQv
+         wTQ64VQFDWRUZCPYHOxZiCrgZBYeitTcicR0iEU8HyTuMu9Pap+igPE5zBg9F4XTqPQh
+         H9PAQaghecM/UANivCzsl0MVt4GJUJh7ASBGo7zm2p1vS8eLovwUwiSXuAEEbEDCMpuz
+         Em8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HS164PT1thWPX3+gJIUevbDgvzJj6XIx86U2ombNC6E=;
-        b=1ljlGrD4oMrjs2migZ3/d68JaZtDv8IcfKvQDi/YJOlWz2dxTGReOntERNiWJkpV0V
-         KjrEV34HWv+8HNUCSOjBzkT947LyvZvH10+qF0gDGVqPG2XytjijAZ5Invj0LZHalfh4
-         XNEIJgF1wAlAgaYHhDLaKWTUTgBeXMnZfphM/Oe+QEz2ATKzaWo0ltN+y3DCKItgKQmY
-         7XjlcBISL8x0aQXpdoG0/dmU4y00JaO4mCFxDRRQCoegLLRhMd7WbrZvMvqwDr8BBA4a
-         iMsoLpMhkdCVN9siow/wNCDK7V9+jVyWM3dmc0MQInG04FW3/4d8ZlLmzQp9bAwR6Fa8
-         9lpg==
-X-Gm-Message-State: ANoB5pk2uoHvC/x/i82o/Wz1rx6BP9IwJdeL0d+OwL/B1JUhImK0pPn9
-        F/jjLzx5wXLrUINgVn502IqvnQ==
-X-Google-Smtp-Source: AA0mqf4/MwFX1Iqiu6FlU+9aTkJHZtAuq3pA/aTFngJdcgaTXnpd6zMAORQYE38fec5SPq+7DuJKbA==
-X-Received: by 2002:a17:902:e385:b0:178:7040:9917 with SMTP id g5-20020a170902e38500b0017870409917mr1179204ple.109.1668805909571;
-        Fri, 18 Nov 2022 13:11:49 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c6-20020a170902d48600b001782aab6318sm4262797plg.68.2022.11.18.13.11.49
+        bh=geoky24w5/KGWKhCFuccd7Gsd2OeCOkIgFwrlUWisHc=;
+        b=6ZUQEk9wKpUB01Fq1ReVoNFm0p77owa1JcpWto2SuJ1Ihemll4JivbJw+8oH5DulUj
+         Ks7Bdft53uoZBWe7XyTHFeXflvprn1Hr/OZSP2WgiFC7iLFgOxxxdq8V99mcrziWmJp3
+         obz3taupP3cB3JQqnTTKemBCJUpAiZmBsnR+oqMi3OLbTLJrkuD5mvWK3WIBUvakQnFI
+         K0Yg4Y9Dp+6mLO35J+Cqqw1lFxs5ia0n79CGazvgNfFjOH8hM3t7UHU/0w3CwWVfmbSI
+         PBG/3KHb9Kj78cDpPWVO7pvImUcb03Pu6i145AjwvGmZ4rqpP/D7S0NUuAcRXL2UUOmS
+         hkqQ==
+X-Gm-Message-State: ANoB5pm+FpG4oX96K8X+vqZF5m4EqWxrZSX/Hm7JqwIC2yekKv1eJSjb
+        MzI8ypn1YgKf5yDhcBDxSRfu7psvfAE=
+X-Google-Smtp-Source: AA0mqf63J4GjV8qUULnJDGwIBRzMS3qmuhr5s7QIhA1gD94f8FbnBaW82RKTqy2FxiMLovPjh3wnaw==
+X-Received: by 2002:a05:620a:3706:b0:6e2:5472:345e with SMTP id de6-20020a05620a370600b006e25472345emr7678637qkb.391.1668807185717;
+        Fri, 18 Nov 2022 13:33:05 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id br34-20020a05620a462200b006faa2c0100bsm3136326qkb.110.2022.11.18.13.33.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 13:11:49 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Christian Lamparter <chunkeey@googlemail.com>
-Cc:     Kees Cook <keescook@chromium.org>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Fri, 18 Nov 2022 13:33:05 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] carl9170: Replace zero-length array of trailing structs with flex-array
-Date:   Fri, 18 Nov 2022 13:11:47 -0800
-Message-Id: <20221118211146.never.395-kees@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net] net: sched: allow act_ct to be built without NF_NAT
+Date:   Fri, 18 Nov 2022 16:33:03 -0500
+Message-Id: <b6386f28d1ba34721795fb776a91cbdabb203447.1668807183.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1483; h=from:subject:message-id; bh=9oKJHA3pSUUlk2XRtoon41DyXm9EC5lRgSnJeNNG7Nk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjd/USLIkMsbwjhdEbLcOY3U5QPGKPBFNJ6YbZMJoZ 0ZDGQQyJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY3f1EgAKCRCJcvTf3G3AJpHOD/ wKY0GQZ2A8TAEq1UQ7FG9SLArIMDJDDT3g0EpAw5ve8vW+sMh1nv5jJPGd8MQerkzsujTsSPrh2G0c iPQbn+HlI6aQaDOuiuSEdMKJGqqOc/1WP87GGY3OOXa5shhaD6q8AQkfHE6oyrEuK33xeOmJVICKgY Av32wZ2kSTKy2HDZi+GdBlSzpoqkUFdB9AcQgajJ2V+ZbLWqvvWgQCUoU74qjujZDjsXqYuZJcBYdl CdsXdbJ7sYziQAXJB4p8ssHBg1rEfjeVaCx1066DHscGXgYa/if5SgIsCF5IE9pDxAKsUUEOGTYQPc ZsR+njBItdiDY8DYJSUCrstNR6hEmyJpA0u4cUsgH2uakYnt8hL43yIF4DTsNOpTqWDWUpoZpN14dh O4EHhbIrbHblUcz5TeFZgsg22MghgJlJMpsvW11AbpPtSH5rIwy5r7djol/fdNUeybVldBD5ZKVXCj 38UdKomgY//3Q+0O0D0SRKiTDgz3BJSRXrBAjSlu87cdhpNwXUvqoDeYsEcHi09tMwV8+46jUCZsEg SbDJFy4ZTezHATrffDLbWweDBK+LQo2UkP+WZVkah2C5E/Lj9wTIsoY1SXjbp1Bfv1U84zLoXOdpx8 fUksnNUWfZKOxTivJKSp1hVpry3W82obZcOz5rsCc6xdn67sycGb5AKyWgHw==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero-length arrays are deprecated[1] and are being replaced with
-flexible array members in support of the ongoing efforts to tighten the
-FORTIFY_SOURCE routines on memcpy(), correctly instrument array indexing
-with UBSAN_BOUNDS, and to globally enable -fstrict-flex-arrays=3.
+In commit f11fe1dae1c4 ("net/sched: Make NET_ACT_CT depends on NF_NAT"),
+it fixed the build failure when NF_NAT is m and NET_ACT_CT is y by
+adding depends on NF_NAT for NET_ACT_CT. However, it would also cause
+NET_ACT_CT cannot be built without NF_NAT, which is not expected. This
+patch fixes it by changing to use "(!NF_NAT || NF_NAT)" as the depend.
 
-Replace zero-length array with flexible-array member.
-
-This results in no differences in binary output.
-
-[1] https://github.com/KSPP/linux/issues/78
-
-Cc: Christian Lamparter <chunkeey@googlemail.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Fixes: f11fe1dae1c4 ("net/sched: Make NET_ACT_CT depends on NF_NAT")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/wireless/ath/carl9170/fwcmd.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/sched/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/carl9170/fwcmd.h b/drivers/net/wireless/ath/carl9170/fwcmd.h
-index 4a500095555c..ff4b3b50250c 100644
---- a/drivers/net/wireless/ath/carl9170/fwcmd.h
-+++ b/drivers/net/wireless/ath/carl9170/fwcmd.h
-@@ -118,10 +118,10 @@ struct carl9170_reg_list {
- } __packed;
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index 1e8ab4749c6c..4662a6ce8a7e 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -976,7 +976,7 @@ config NET_ACT_TUNNEL_KEY
  
- struct carl9170_write_reg {
--	struct {
-+	DECLARE_FLEX_ARRAY(struct {
- 		__le32		addr;
- 		__le32		val;
--	} regs[0] __packed;
-+	} __packed, regs);
- } __packed;
+ config NET_ACT_CT
+ 	tristate "connection tracking tc action"
+-	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT && NF_FLOW_TABLE
++	depends on NET_CLS_ACT && NF_CONNTRACK && (!NF_NAT || NF_NAT) && NF_FLOW_TABLE
+ 	help
+ 	  Say Y here to allow sending the packets to conntrack module.
  
- struct carl9170_write_reg_byte {
 -- 
-2.34.1
+2.31.1
 
