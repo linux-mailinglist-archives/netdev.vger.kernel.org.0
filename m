@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2FB762EDB3
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 07:36:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9F162EDB4
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 07:36:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241120AbiKRGf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 01:35:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
+        id S241009AbiKRGgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 01:36:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241009AbiKRGfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 01:35:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532B174CD5
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 22:35:50 -0800 (PST)
+        with ESMTP id S240700AbiKRGf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 01:35:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EB898279
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 22:35:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0A42B8229C
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:35:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E74C433C1;
-        Fri, 18 Nov 2022 06:35:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F28AB822A5
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:35:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63791C433C1;
+        Fri, 18 Nov 2022 06:35:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668753347;
-        bh=9tCTtXs76v/GZvuTuuScTFdMZC4fvPZTd/sX7KDjTyw=;
+        s=k20201202; t=1668753351;
+        bh=jqKDySuwsef5aF9XrBVOEIwG8N8/BWc1llip0fwIOl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dy1RfkUInkh189EiCHATD229BB7tQRkYX5EdUg4P7lZsjNfZExpQp1ZRPnf8zXXEk
-         Gp/XVnNRpcHHrMRkG4d7bsBqJe52K97ecFYmju1T8y4eeN/sV6cHLJEWRgJ4T/NAPW
-         gVd0LFpzkhpkKmkDEdOS1pPHye3Syx1O8aoVnJBEdrjo2tWboQ4xpibJEJzlQKO793
-         1/UV9HbOasf4yErGjQs58BCe6ZeKUsAgzSrNtpw5sBa7GwSOd/TW428fgAZiulMPMT
-         XUW++UuTVfAl6YjchprhWMjXxGuWDpHVGmroTq1tA+V5go2jCJx6pXlbBU2x/JtR09
-         3UmvhCudh8XJw==
+        b=e3wGSzevoX+E3QLdiVxcEnFJTkVJh2Dis6h9udKO0eb6s7EXoPVOAGbwINi9vYk8o
+         m2lWEBh1U4c2nVVVfcwSLmxFq04RaoswbGiAZiESozV6XeOfFQNBEgIJgwjGwdYaMx
+         EnGzNChLmnwU66VWV7GNWCZPVc3u2KNUcclaue7cRZOp0IDS6cSAlYi3Lqvp1ftpai
+         t+ZvRoI+/fJHvk2Lkbl4pJJlZsYLBUx+cACMU4WBH7kcSyC1zk4rE3QC9ZqqFDfudq
+         56MraV0KduO4oWoFTCj/bXwLhBCOlMR9FFkP8zdciW+Ws0X9nEpDUZ00HlanJ3w3Nc
+         4BZlb6WijofTg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -38,10 +38,11 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Bharat Bhushan <bbhushan2@marvell.com>
-Subject: [PATCH xfrm-next v8 4/8] xfrm: add TX datapath support for IPsec packet offload mode
-Date:   Fri, 18 Nov 2022 08:35:24 +0200
-Message-Id: <d4836b34691ca05c0c04ea3689296858e5dc523e.1668753030.git.leonro@nvidia.com>
+        Bharat Bhushan <bbhushan2@marvell.com>,
+        Raed Salem <raeds@nvidia.com>
+Subject: [PATCH xfrm-next v8 5/8] xfrm: add RX datapath protection for IPsec packet offload mode
+Date:   Fri, 18 Nov 2022 08:35:25 +0200
+Message-Id: <ed3769a157979165c2eabd00f449b5d7173fb2ce.1668753030.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1668753030.git.leonro@nvidia.com>
 References: <cover.1668753030.git.leonro@nvidia.com>
@@ -58,129 +59,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-In IPsec packet mode, the device is going to encrypt and encapsulate
-packets that are associated with offloaded policy. After successful
-policy lookup to indicate if packets should be offloaded or not,
-the stack forwards packets to the device to do the magic.
+Traffic received by device with enabled IPsec packet offload should
+be forwarded to the stack only after decryption, packet headers and
+trailers removed.
 
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+Such packets are expected to be seen as normal (non-XFRM) ones, while
+not-supported packets should be dropped by the HW.
+
+Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/xfrm/xfrm_device.c | 15 +++++++++++++--
- net/xfrm/xfrm_output.c | 12 +++++++++++-
- net/xfrm/xfrm_policy.c | 21 ++++++++++++++++++++-
- 3 files changed, 44 insertions(+), 4 deletions(-)
+ include/net/xfrm.h | 55 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 32 insertions(+), 23 deletions(-)
 
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 8e18abc5016f..6affb3d1e204 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -120,6 +120,16 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
- 	if (xo->flags & XFRM_GRO || x->xso.dir == XFRM_DEV_OFFLOAD_IN)
- 		return skb;
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index e9c0cc245623..00ce7a68bf3c 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1102,6 +1102,29 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
+ 	return !0;
+ }
  
-+	/* The packet was sent to HW IPsec packet offload engine,
-+	 * but to wrong device. Drop the packet, so it won't skip
-+	 * XFRM stack.
-+	 */
-+	if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET && x->xso.dev != dev) {
-+		kfree_skb(skb);
-+		dev_core_stats_tx_dropped_inc(dev);
++#ifdef CONFIG_XFRM
++static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
++{
++	struct sec_path *sp = skb_sec_path(skb);
++
++	return sp->xvec[sp->len - 1];
++}
++#endif
++
++static inline struct xfrm_offload *xfrm_offload(struct sk_buff *skb)
++{
++#ifdef CONFIG_XFRM
++	struct sec_path *sp = skb_sec_path(skb);
++
++	if (!sp || !sp->olen || sp->len != sp->olen)
 +		return NULL;
++
++	return &sp->ovec[sp->olen - 1];
++#else
++	return NULL;
++#endif
++}
++
+ #ifdef CONFIG_XFRM
+ int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
+ 			unsigned short family);
+@@ -1133,10 +1156,19 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 	int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
++	struct xfrm_offload *xo = xfrm_offload(skb);
++	struct xfrm_state *x;
+ 
+ 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
+ 		return __xfrm_policy_check(sk, ndir, skb, family);
+ 
++	if (xo) {
++		x = xfrm_input_state(skb);
++		if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
++			return (xo->flags & CRYPTO_DONE) &&
++			       (xo->status & CRYPTO_SUCCESS);
 +	}
 +
- 	/* This skb was already validated on the upper/virtual dev */
- 	if ((x->xso.dev != dev) && (x->xso.real_dev == dev))
- 		return skb;
-@@ -385,8 +395,9 @@ bool xfrm_dev_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
- 	if (!x->type_offload || x->encap)
- 		return false;
+ 	return __xfrm_check_nopolicy(net, skb, dir) ||
+ 	       __xfrm_check_dev_nopolicy(skb, dir, family) ||
+ 	       __xfrm_policy_check(sk, ndir, skb, family);
+@@ -1870,29 +1902,6 @@ static inline void xfrm_states_delete(struct xfrm_state **states, int n)
+ }
+ #endif
  
--	if ((!dev || (dev == xfrm_dst_path(dst)->dev)) &&
--	    (!xdst->child->xfrm)) {
-+	if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET ||
-+	    ((!dev || (dev == xfrm_dst_path(dst)->dev)) &&
-+	     !xdst->child->xfrm)) {
- 		mtu = xfrm_state_mtu(x, xdst->child_mtu_cached);
- 		if (skb->len <= mtu)
- 			goto ok;
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 9a5e79a38c67..ce9e360a96e2 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -494,7 +494,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
- 	struct xfrm_state *x = dst->xfrm;
- 	struct net *net = xs_net(x);
+-#ifdef CONFIG_XFRM
+-static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
+-{
+-	struct sec_path *sp = skb_sec_path(skb);
+-
+-	return sp->xvec[sp->len - 1];
+-}
+-#endif
+-
+-static inline struct xfrm_offload *xfrm_offload(struct sk_buff *skb)
+-{
+-#ifdef CONFIG_XFRM
+-	struct sec_path *sp = skb_sec_path(skb);
+-
+-	if (!sp || !sp->olen || sp->len != sp->olen)
+-		return NULL;
+-
+-	return &sp->ovec[sp->olen - 1];
+-#else
+-	return NULL;
+-#endif
+-}
+-
+ void __init xfrm_dev_init(void);
  
--	if (err <= 0)
-+	if (err <= 0 || x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
- 		goto resume;
- 
- 	do {
-@@ -718,6 +718,16 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
- 		break;
- 	}
- 
-+	if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET) {
-+		if (!xfrm_dev_offload_ok(skb, x)) {
-+			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTERROR);
-+			kfree_skb(skb);
-+			return -EHOSTUNREACH;
-+		}
-+
-+		return xfrm_output_resume(sk, skb, 0);
-+	}
-+
- 	secpath_reset(skb);
- 
- 	if (xfrm_dev_offload_ok(skb, x)) {
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 07f43729ac4e..06226942a152 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2619,6 +2619,7 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
- 	int tos;
- 	int family = policy->selector.family;
- 	xfrm_address_t saddr, daddr;
-+	struct dst_entry *dst1;
- 
- 	xfrm_flowi_addr_get(fl, &saddr, &daddr, family);
- 
-@@ -2628,7 +2629,8 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
- 
- 	for (; i < nx; i++) {
- 		struct xfrm_dst *xdst = xfrm_alloc_dst(net, family);
--		struct dst_entry *dst1 = &xdst->u.dst;
-+
-+		dst1 = &xdst->u.dst;
- 
- 		err = PTR_ERR(xdst);
- 		if (IS_ERR(xdst)) {
-@@ -2708,6 +2710,23 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
- 	if (!dev)
- 		goto free_dst;
- 
-+	dst1 = &xdst0->u.dst;
-+	/* Packet offload: both policy and SA should be offloaded */
-+	if ((policy->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
-+	     dst1->xfrm->xso.type != XFRM_DEV_OFFLOAD_PACKET) ||
-+	    (policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET &&
-+	     dst1->xfrm->xso.type == XFRM_DEV_OFFLOAD_PACKET)) {
-+		err = -EINVAL;
-+		goto free_dst;
-+	}
-+
-+	/* Packet offload: both policy and SA should have same device */
-+	if (policy->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
-+	    policy->xdo.dev != dst1->xfrm->xso.dev) {
-+		err = -EINVAL;
-+		goto free_dst;
-+	}
-+
- 	xfrm_init_path(xdst0, dst, nfheader_len);
- 	xfrm_init_pmtu(bundle, nx);
- 
+ #ifdef CONFIG_XFRM_OFFLOAD
 -- 
 2.38.1
 
