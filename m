@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 608D262E9F9
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 536A962E9FB
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239374AbiKRACh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 19:02:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        id S235031AbiKRACn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 19:02:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235041AbiKRACQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:02:16 -0500
+        with ESMTP id S235074AbiKRACW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:02:22 -0500
 Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80055.outbound.protection.outlook.com [40.107.8.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7989382210
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 16:02:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE97385ED6
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 16:02:13 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=INNbVLgvhqpv8+6mJ2bj/1ZFJBZPO/ySPR7dVGYh+CJVWjhoWj9rSAqjWeO9+14MkYQtqIeXd0nlaKwCMku4kpeYGnvJJxF/ZY0KjPfzR+VZiQ9wQbpicKGRHf9/HuYoPqb/AsdZ+omtc7xr4HEBGFXL3+WWeVJmTHgsqfpLG7NV373+skwnOPEGAJVUhPaCzcEjxzQ52LktDJOTpFMGVoi8HUHCWloPkNuk6vFJESYI4Q9QMfWILQmgXcxYnCvrPfZrWd9sHNA8uFpQWvkd2uJ+964yDbVtJyTT9hTg3iu73ZumWqsPAsIap7J2pRquBNtrD6MF/W/o4la0C1NmVg==
+ b=kpLS6nKN0/mLULuh4ZVpX7EyAH2Lx/JcnQJwZVSrbUXmfz/pHApHy2tB/x4ariUbodhwWdlv7GAKDkvRjl5Aehl+53YjeohNy67kKzE1fy4a92UTk+9g39spAs+8RT+eoHuj/ChbgQYpIq0sesIpqRp5fVQW+XbKKd1PRZnwaidHj82T2jU26hxnQ1nv9m64xgBsjpJLEh4o1tCWksgyIQh0OzEKKvoVGZ0xs3zx0umsqALw0UWmTgfQLIF6/FuKEE2Fp6OzuUepnWZAx6eEwKBdn4Mrn+qeZNqIa+stRZixyrZb9gaI3pTVMOWOrdLLmwu701EU+AkiKwa/yLG5Yw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d98lzkpGhp0QenrHW8ucPX1119el6MMPyrH9jsJC284=;
- b=Z9WJGZqgcMu17hqf8VpRRs1U6xTLrXBqh+gqLA+WxMEHxbwCCSjaQUq3vlqucLb/aj9HAMa8WdJBKG3SA2NFNlTus6FLzWrgvuoJONriJche5xVo85qCIp4v3MIya8ObQW3BRolIfXcVZJH5MCdI+CH653ScNqTQ+E3zMDVyJj7v2fNdEiqYlU5YYsVIpBh7sODLKdJft+Ip5UU7ead4HJHkAO67jC0vS0g1Ff0cmKhMNDzW+SU86Gb9GZ2lTABStVVIyuMcgWufzWIwDepBnhyHvCksRR4VIqRXG7PjFNsy+8iVC320yaeLZoBUj0Rb3lOC50RupqMnVAHbnMrmjA==
+ bh=bNELLzRNlgEkIiH2tAt7ZyTWCW71XVxUZU5dY+ux7z4=;
+ b=XPegmth1W0EI8+dA7FkZht2C6X11dUBobONpasv4Tk4oAPsCHZfp0yjCUBy0NP4HP7MzNP8uB2b+c4HKN17SpdUYeWcyGWC6pJ4igU3hUsHyNj8Hb7v6qQQbuGUMejyPnu4Qje+PuWscg/zGAcY6VfGeU80TZB4qvz3dj2LuL0Zn0uQsBliwnne+5hYgU/bH3Yfed0tnVAmPVQ0E6sSWj4gqqiyc5bjKsBTowJSyuEcUIvaZ8xvYyAQVVjqqvSfWQWyfXPcNT1ThUe43G1gpykYO9u/3kHGLPC54D7dQg9hNT+8ZOo6D6JX0H0JpR9VZKC/t5Je/PgB46L4eVCFIMg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d98lzkpGhp0QenrHW8ucPX1119el6MMPyrH9jsJC284=;
- b=MLpC1C5EVpGMzD5qKpJAgY1u+xHRrxXkRbFgPFpYit/KhSzPmHHQI8OTdS65mr4P4WW04tvft9ryjbcfwEFyZB6joZamyHE5ON0RU6xovgcCTuqdOGXs2UtFgtTxpf+gDQxC8nLH02ZOMKlF/hDyZBaMBfSb2B/oQ7OKD5rokCU=
+ bh=bNELLzRNlgEkIiH2tAt7ZyTWCW71XVxUZU5dY+ux7z4=;
+ b=SuCiElQK8c0ZIliPRqJeyBcWUc3F8fC5Nfab3q7RcarK2Zom106kOtlBKfbiMXUAjpAWeHOgXzDAWoN0KmlKRSpkz8PD1Xsb1ceC7jNO98Lppf4pUGwC6RVFKcoIAWrXfytqzAdXFNhIZozm/XBd5NBDPJm1wj/anLv30TPYtbg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB8542.eurprd04.prod.outlook.com (2603:10a6:102:215::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 18 Nov
- 2022 00:02:10 +0000
+ 2022 00:02:12 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.018; Fri, 18 Nov 2022
- 00:02:10 +0000
+ 00:02:11 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -64,9 +64,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Colin Foster <colin.foster@in-advantage.com>,
         Marek Behun <marek.behun@nic.cz>
-Subject: [PATCH v4 net-next 4/8] net: phylink: add option to sync in-band autoneg setting between PCS and PHY
-Date:   Fri, 18 Nov 2022 02:01:20 +0200
-Message-Id: <20221118000124.2754581-5-vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 5/8] net: phylink: explicitly configure in-band autoneg for on-board PHYs
+Date:   Fri, 18 Nov 2022 02:01:21 +0200
+Message-Id: <20221118000124.2754581-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
 References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
@@ -77,52 +77,52 @@ X-ClientProxiedBy: BEXP281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8542:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4dea0ee1-eacf-4aa6-4cc2-08dac8f82350
+X-MS-Office365-Filtering-Correlation-Id: 21470a44-bbfe-4cf7-4d52-08dac8f8247a
 X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NzfYNySVAD5lY8Hgax3z7e57DWvJovkFpbg2DTA8QozTfVQHizXzjUJBAukz0n3q782ok84C30socka2WStUh0yTasbe23sXUXRNsecAKnIQV9L8uZiyPK/NUu5LYyeHbuPvZnfcQvv2vzzhZYlmMYHwfrSiXYgyp+LYKc+lo3LkyGngFNjHZ8BFdbJmh2pO7YP7WbHdrC8QjYcaOztAHkF3iUt4F119USeMzDbBbQ3JgXf+mvk+xYkv6W7jwmhcOdm9Z9Fvn6BEkMU7UUFBBHumrV+DxmGFDLZEVD1c3hoNeTLnrcb9YJlhCrqvs8I1PjQVSu/nsD4ZicBeyq4N685ABC7F6fERprZTqqCt6e5S8flVSle7ZNuYj4fIraMK2YmVpqFz1YjZJ4eI9d4IwsieQNhYZ9aXgS1W3TrNBsACUPU+WTUghj12t2r1XGiXWFdtBIbq6dWVHuhZ4UQdthyUSg8UemyrrYlMjciRHIET+Gn/7agNNZk1NyV1YGubatIWH9zAuzbcXGoz5x9C/TX0ZwDYXy3bEqQogS3TaMBG5HIIpBEXPMuNxP2JWDb0dbeJlzaCh9P8GML2c6ZXplrsCBuHEAHUKKkAEkh2Ur5OIlOktztWxYvQdh3c5IQ3sdw/Y9GIDO+xqXXiD5xgAFrbOtDsxPmzj0tK81zCH0uJzKEbmNTCMqbw0N11Km2STIM+KOsAeH6FrGN2n0FRIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(451199015)(478600001)(26005)(41300700001)(6506007)(6666004)(36756003)(8676002)(52116002)(6486002)(4326008)(38100700002)(44832011)(7416002)(8936002)(2616005)(66946007)(66556008)(38350700002)(6512007)(66476007)(186003)(316002)(1076003)(2906002)(54906003)(6916009)(86362001)(5660300002)(83380400001)(21314003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: SPO0cxaKeN9wiFiJVmXmWas7mr+kOqabKmPyoTi+16o9u/4r/4W4ExUKzYZiAT4VXstUnt8EpE9bjoyrxJ4e+6z/E2vPffnVitHgZyGkdeBFb28l3TBgd4J9j029fpBnAkY0qKUSDmiBR/zXVhq6MMfFpfKpE6D5ujlxyFO1lYLubQcJYKxKSLffsxwjT6FAzwkEDbe+oxmjmxGzej5UPonbNjo6t8XvdAoL1Idr6sLa/9iPlPaDMjCqLDKuxLOTcy2QxHAXNUcM3cVqDXJaTq1XMtK4cy67u8QtCA6q7pU5wPumO2ZYLxlRkrUV0hb7avA4jz4OdA9Xh8DS+AshgGnZC1oXCK5SPYsxeSp6L/lYFEBpIXJ7xqU7JCxevLVBr7oNkOpvw1k3SI3AXsCcTyvPYpwPFYhPqmGaPxteCyLcnpdvwIK0LVZJNugWJN6QNftaK2/+ptwb3gmY4zh0jRADfdXqbYXDHEkmMOe3wnd00Wy/PX82F89N5vMfyP154LeKY3borZBEz0dA6wJdmU1evib0s5oH7RkeRpYMSPtguBPhpr5Tj+GFDtJcSbDF9U4yCJu4OG/TRzKJ/y2P966L/rxhbmjPsfPJ+VTGp+b51QrgCJ694rPqVR8GYqV2SbgLMSQVNe8qHK7dqF9fNXhoJv4Y6zs6lGoNc9Tu2iuPg+sQy2nlMkJRlu5NbBrf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(451199015)(478600001)(26005)(41300700001)(6506007)(6666004)(36756003)(8676002)(52116002)(6486002)(4326008)(38100700002)(44832011)(7416002)(8936002)(2616005)(66946007)(66556008)(38350700002)(6512007)(66476007)(186003)(316002)(1076003)(2906002)(54906003)(6916009)(86362001)(5660300002)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3L0gIIBHRYPor5pmgyKnRHJIzyqHzxBncjv9p4Fw+53J1aOhHm1JN27I9zJF?=
- =?us-ascii?Q?2nU4MVkHFJgl7uGRWRnLMttQpxJRYsf8fl5XOlhvbSqddPvT9pizOfCyORvX?=
- =?us-ascii?Q?93HSZsIgN9qrMnjXBL/NHoU8UTFprj886HvrrxmlKIftFEHg3QqGAITN7+7o?=
- =?us-ascii?Q?0I6WDZpgnrQPsPbyrpj80taMQNqEURuufOjUkU4CzTlA++e3uxc71kPcAh4I?=
- =?us-ascii?Q?SBWYmDLI1J8fsy+D5h6CZCfqnmFzgDIVKsvpN4YnKJZfVH3NwxZBTO5DEPra?=
- =?us-ascii?Q?NfcgN+mj434zijASNm247xfCx0lRj1yln+lmfJ+LUEtHo+t23YZ2BzMJHhKK?=
- =?us-ascii?Q?X+m/f+qj/qaqiXlPHw035KMEi+sB0YzAq/LQBPhBSM/8PiFLqB0ixmNEmQXU?=
- =?us-ascii?Q?DWrbWlqmcTlWEBErH/lfi8AHO/Eq+Oc760JfJq5/LwRDJmaYMBdHkSUiviI9?=
- =?us-ascii?Q?UB6XejocSFCCiRGVDErgpLxOmAqArCPH1vD+xfwwzjb3/xV8iDjR3lPgXNyO?=
- =?us-ascii?Q?PT+k1/UhaC551+W3HcCeKe0R7Q8D+wTygjpniFuMDeEXzFqYEiKlHFm556Pa?=
- =?us-ascii?Q?5qbOcVQNL/e/MigOXDR03EaEr139FY7cV4lceGkxizCMsPQc31t03P0f7Ddx?=
- =?us-ascii?Q?s29V1yU9vYwHNUqLgNaV+DxVyoKIpbhPUl4vuT7GCVwfvS70w9K8L0ZO/SG7?=
- =?us-ascii?Q?pomquF2htsOBnm9z4PD/yNBTvIcC6sHbtdgOnUI7BQmzJCutLmRXzwsz9mWp?=
- =?us-ascii?Q?BNOIU9x7uWVf7ShRn87DaHgRm5jepaa9Xc4gYqXFZnqLvXHwuRZoBYCzzyZI?=
- =?us-ascii?Q?3y61Jw2AWlKDTjTmuzuW+RX7aFi684K09V6NSWME3SJMH+ysf1vJX/XxyZLa?=
- =?us-ascii?Q?Mov70LHk8H/MjjJq3pmMC4rcxDXUDCdq6MzSzIC//Q+1nVZDdZerCq0lemI2?=
- =?us-ascii?Q?W1snuood7oGQZS+0wm5D4Ux9d4odTQ93MxRxoz1AxVxDC3PO7ImfxWxeym66?=
- =?us-ascii?Q?KBaUMON4eOltldGOM+ODxhKRh1kXdEw+HWIYn06VxtMMgpUOb/zFqmCa7MFw?=
- =?us-ascii?Q?WU80HcInyLS4eudtX4kfK+LJSKQKtyDUqggS+n3FmdeLp05V+NwLvIsaaqgn?=
- =?us-ascii?Q?DzxXgRIh03O3/eOPacSxa26/zJtjGfZVEjDGoUTuXHwSVNAcQh93JeOsUqZ8?=
- =?us-ascii?Q?xl4nQcNorpRFylxTkfz+Vylq1K3ADn25chhjrq9COudeK2A1n+Gax5VSg3g5?=
- =?us-ascii?Q?qA+HGXWLrR3i0BlHQuTv3CTG886xvHKrogqa/+qFS9xQOar9/BCIpeVYLX1J?=
- =?us-ascii?Q?7YYolDu/x5yIUA1qjKNPhDxOphic04n/R99eI7B3f9ToWGetTY3xD/MNIRcD?=
- =?us-ascii?Q?y2+nVpVKYjTPdEIRrGNSVhUk5O/DBxj2p821ob/96Tm04A7MQUQlfvdkqoa/?=
- =?us-ascii?Q?39nzhQasYwpayQiN4sdpJAhjZ+Q0RxQ0nyd8FWcTdRIdYzmah/YRB5IvASFp?=
- =?us-ascii?Q?wpPJju8PUKWDGSgkWt0zPYxLOLoO1ocP5eEqxbo0PLa31sbm6tqF+XbVCnUK?=
- =?us-ascii?Q?BcrpDWUic9g7uC69I3+fESQE+RFMvc6zyl41wXXdTlT1g7ysvOpzYKEwO2Go?=
- =?us-ascii?Q?VA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KJKSj4tZBa0kAYEzHtU6WaCZGKLg/43/YtDgtOrLBwM21qjknjIu3vgyZrlW?=
+ =?us-ascii?Q?RdxPNUTFyDqahgR9yxW9e62YRfmpggHSVJ9jug1jsceqluFRKyy2JqGeFhSo?=
+ =?us-ascii?Q?Dgyhqii4vgcJSHeC+TydvBkUd31+RZg9kkiVLtYTmouIqYhkmvGRR6TWvtwN?=
+ =?us-ascii?Q?1a13QTVf35WujvgsoOkOionpQm5+UF05E+6LLspGsj1Jrs5s34PCVM2PNL3B?=
+ =?us-ascii?Q?upw6T+EKw2988odwQxm2mjyIl08gQShGdLsSuzEBzzmvhTfjKe0+2Y3Wg0EZ?=
+ =?us-ascii?Q?JJ5+e36LTDp/OJNRt24JIFtxptW075jHQvXxAgqo5eAPVZ7xvZrtMSEMs7Fd?=
+ =?us-ascii?Q?6m4ApR1Z01w8gimupYixu8fDwrK3KuGu+ltHliC8WXLjyw30gJgD30GeWZyU?=
+ =?us-ascii?Q?zpwtA0hPXyzK8ZZvhJRw5QvbfyOoAGbYnrlgmxdB0hJYclm6lXNq78ud8A/q?=
+ =?us-ascii?Q?5s/8Ky/Snj/d1z5Erioy71fxFQo8b/CjHQtiSokAUqVXRj3VnDLIvDbdcZyb?=
+ =?us-ascii?Q?ojXrplkGyqdqjThWqMd7NKRStkyxrDQN7Q8BGj4baCv6yn6WLRrgT0OA0Fm/?=
+ =?us-ascii?Q?TcsWQH1/9S0EG1XneGb6f80jP9VYyWBnlcOO2CqJgsROLnPIlC8v72OvhsPW?=
+ =?us-ascii?Q?e2jbh1akzFCiHiL9rpi1wiEr9xu3oYFTLXnoPr0Sy55GCjunbyCtvtikN51k?=
+ =?us-ascii?Q?NSMjQ3RndWBnGWyuUjqB/71su15JC7n4Nt2BVn8FKxPkmCPzjUizoK7yYPs3?=
+ =?us-ascii?Q?MkYiCKdvfYp7dN2rQShhJpQ3MOT9bMiBZvV4JW/18/Gao0fLAJIA3kwS/tsW?=
+ =?us-ascii?Q?I2qnholQUVsN20hFnTP9CCqNYItWlPTjANK9+Avw06C0iZ9f9GkogFGQvGuH?=
+ =?us-ascii?Q?sXxn+kYJIIwkzQh5F+MFd17wXetlvq15i0JrhVmUr7mE/uLV5iGRHdkv4A6I?=
+ =?us-ascii?Q?bjqEjMpzLvTl6bLB9OiZe03zxyfbI0Mq+yW0LEVkcPMNPSUs1YO03rN3ZDKL?=
+ =?us-ascii?Q?tLWFub73jg53FPuTdOhkDLXimE3jQ/okBP7oreezNLBoHOV89AsrL5rhfTyQ?=
+ =?us-ascii?Q?vmn27eSN0P0BSPYY+da4rcShsYXTl5oy60xo96sUy7IzoqqV1mO/08JD8pOx?=
+ =?us-ascii?Q?S3DUCwvFalc53N7fKB1pbJsIPHb6SuE5ptaRJ0gZRO2NZeRGJe2HCMP45MYj?=
+ =?us-ascii?Q?qAuW7h/tzfVbRHO1Xt8JDKq+7op65uwcKl9NBoj7VcdVmFI3MrgW96PLa1VO?=
+ =?us-ascii?Q?oP3S4X4Ti+fs8fdCRFTb2SJ9FPxIPOhIsB8fWAR5vcIYG7ki2A5wExu2M/Yr?=
+ =?us-ascii?Q?kywouNipP6UwmgQP3g98ffB6xL1na8pnLzzQae6uoP5/rqH59gg4oeG+PxJd?=
+ =?us-ascii?Q?hIpvVsDVkJPTvrN4lZc0VI6jxd3vMsPWNqxQ2aLwQ8jcWlwi4RjpQUKme/7l?=
+ =?us-ascii?Q?auiGZnM8nPb4WWyg7xN6q4iKUsm75OQMCJhwL+6PFBbMCjuUL2bZulrE0HVv?=
+ =?us-ascii?Q?jSaNcIodrdZg5QiwGAIKYviwPc78HmJPNVcIonIzEqf5beY0Z96wDfNCjuS7?=
+ =?us-ascii?Q?dnGzQyjY7FS26DCVbd49SlXLVmnz3wzmn5D7uA7A7VEcM3ceTKg/wbXM5Cyq?=
+ =?us-ascii?Q?Bw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4dea0ee1-eacf-4aa6-4cc2-08dac8f82350
+X-MS-Exchange-CrossTenant-Network-Message-Id: 21470a44-bbfe-4cf7-4d52-08dac8f8247a
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 00:02:09.8599
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 00:02:11.8442
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Rz7Owsnw+Ol7prAuii3SbiEYfTmi5PaHUJxBj9AzBR2s+cjpfAWMQeR0d5bZ9QjHJQgtparPGQWvW9g6HyT4Yg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: kNMqmgrs3fiGVp/eOwZDcR9RWnUPfnpjRWsou5lqUH5th9sVu7jE0jLjCXIS67Czrv3wVEhyY2vlxZIAswplvw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8542
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -134,185 +134,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the case of an on-board PHY (not on SFP module), phylink parses the
-'managed = "in-band-status"' property (which may or may not be present
-in addition to the 'phy-handle' property), and based on this, selects
-pl->cfg_link_an_mode to be MLO_AN_PHY or MLO_AN_INBAND.
+Currently Linux has no control over whether a MAC-to-PHY interface uses
+in-band signaling or not, even though phylink has the
+	managed = "in-band-status";
+property which denotes that the MAC expects in-band signaling to be used.
 
-Drivers which make use of phylink can use MLO_AN_PHY as an indication to
-disable in-band autoneg when connected to an on-board PHY, and
-MLO_AN_INBAND to enable it. That's what most of the drivers seem to do,
-except macb_mac_config() which seems to always force in-band autoneg
-except for MLO_AN_FIXED.
+The problem is that if the in-band signaling is configurable in both the
+PHY and the MAC, there is a risk that they are out of sync unless
+phylink manages them both (setting in PHY may have come from out-of-reset
+value, or from bootloader configuration). Most in-band autoneg state
+machines follow IEEE 802.3 clause 37, which means that they will not
+change the operating mode of the SERDES lane from control to data mode
+unless in-band AN completed successfully. Therefore traffic will not
+work.
 
-If one assumes purely Clause 37 compatible state machines in the
-PHY-side PCS and in the MAC-side PCS, then in-band autoneg needs to be
-enabled in both places, or disabled in both places, to establish a
-successful system-side link. The exception seems to be mvneta, which has
-a hardware-based fallback on no-inband when inband autoneg was enabled
-but failed. Nonetheless, this is not a generally available feature.
+To ensure that systems operate under full control of this particular
+setting and not depend on what some other entity has done, let's
+introduce a new PHY driver method for configuring in-band autoneg.
 
-While in the case of an SFP module, in-band autoneg is genuinely useful
-in passing the link information through the Ethernet channel when we
-lack an I2C/MDIO side channel, in the case of on-board PHYs it is
-perhaps less so. Nonetheless, settings must be in sync for a functional
-link.
+The first user will be phylink; the main PHY library does not call
+phy_config_inband_autoneg(), because it does not know what to configure
+it to. Presumably, individual non-phylink drivers can also call
+phy_config_inband_autoneg() individually.
 
-There is currently a lack of information within the kernel as to whether
-in-band autoneg should be used between a certain MAC and PHY. We rely on
-the fwnode specification for this.
-
-Most of the platforms are seemingly okay with the status quo, but there
-are 2 real life scenarios where it has limitations:
-
-- A driver recently converted from phylib to phylink. The device trees
-  in circulation will not have the 'managed' property (since it's
-  phylink specific), but some PHYs will require in-band autoneg enabled
-  in the MAC-side PCS to work with them.
-
-- The PHY in-band autoneg setting is not really fixed but configurable,
-  and therefore, the property should not really belong to device tree.
-  Matters are made worse when PHY drivers in bootloaders (U-Boot) also
-  enable/disable this setting, and this can cause what is specified in
-  the device tree to be out of sync with reality. Linux PHY drivers do
-  not currently configure in-band autoneg according to the 'managed'
-  property of the attached MAC.
-
-This change introduces a new opt-in feature called sync_an_inband which
-may override the in-band autoneg setting passed to phylink callbacks,
-but not to 'true' as ovr_an_inband does, but rather to what the PHY
-reports as supported (with a fallback to what was in the device tree, if
-the PHY driver reports nothing).
-
-It's quite possible that one more call to phylink_sync_inband_aneg() is
-needed when the PHY changes its pl->phy_state.interface and this results
-in a change to pl->link_config.interface. This is the
-phylink_major_config() code path, and if the PHY has different in-band
-autoneg requirements for the new SERDES protocol, we are currently not
-informed about those. Unfortunately I don't have access to any board
-which supports SERDES protocol change of an on-board PHY, and I don't
-know without testing where that extra sync call should be put, so I
-haven't put it anywhere.
+To avoid regressions with board device trees which may rely on fragile
+mechanisms, gate the phy_config_inband_autoneg() call with the
+bool sync_an_inband opt-in. Also skip doing it for PHYs on SFP modules.
+I don't see a need for those, so don't risk making a change there.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v3->v4:
-- split the on-board PHY part out of previous patch 2/6 which combines them
-- phylink_fixup_inband_aneg() renamed to phylink_sync_an_inband()
+- s/inband_aneg/an_inband/
+- clearer comments, added kerneldocs
 - opt-in via phylink_config :: sync_an_inband
-- look at pl->link_config.interface rather than pl->link_interface
-- clearer comments, add kerneldocs
 
- drivers/net/phy/phylink.c | 49 +++++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  7 ++++++
- 2 files changed, 56 insertions(+)
+ drivers/net/phy/phy.c     | 26 ++++++++++++++++++++++++++
+ drivers/net/phy/phylink.c | 12 ++++++++++++
+ include/linux/phy.h       | 10 ++++++++++
+ 3 files changed, 48 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index bf2a5ebfc4f4..598f5feb661e 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -156,6 +156,45 @@ static const char *phylink_an_mode_str(unsigned int mode)
- 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 2abbacf2c7cb..37cdd9afd7e1 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -758,6 +758,32 @@ int phy_validate_an_inband(struct phy_device *phydev,
  }
+ EXPORT_SYMBOL_GPL(phy_validate_an_inband);
  
 +/**
-+ * phylink_sync_an_inband() - Sync in-band autoneg between PCS and PHY
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ * @phy: a pointer to a &struct phy_device
++ * phy_config_an_inband - modify in-band autoneg setting
++ * @phydev: the phy_device struct
++ * @interface: the MAC-side interface type
++ * @enabled: selects whether in-band autoneg is used or not
 + *
-+ * Query the in-band autoneg capability of an on-board PHY in an attempt to
-+ * sync the PCS-side link autoneg mode with the PHY autoneg mode. Set the
-+ * current link autoneg mode to the mode configured through the fwnode if the
-+ * PHY supports it or if its capabilities are unknown, or to an alternative
-+ * mode that the PHY can operate in.
++ * Configures the PHY to enable or disable in-band autoneg for the given
++ * interface type. @enabled can be passed as true only if the bit mask returned
++ * by @phy_validate_an_inband() contains @PHY_AN_INBAND_ON, and false only if
++ * it contains @PHY_AN_INBAND_OFF.
++ *
++ * Returns 0 on success, negative error otherwise.
 + */
-+static void phylink_sync_an_inband(struct phylink *pl, struct phy_device *phy)
++int phy_config_an_inband(struct phy_device *phydev, phy_interface_t interface,
++			 bool enabled)
 +{
-+	unsigned int mode = pl->cfg_link_an_mode;
-+	int ret;
++	if (!phydev->drv)
++		return -EIO;
 +
-+	if (!pl->config->sync_an_inband)
-+		return;
++	if (!phydev->drv->config_an_inband)
++		return -EOPNOTSUPP;
 +
-+	ret = phy_validate_an_inband(phy, pl->link_config.interface);
-+	if (ret == PHY_AN_INBAND_UNKNOWN) {
-+		phylink_dbg(pl,
-+			    "PHY driver does not report in-band autoneg capability, assuming %s\n",
-+			    phylink_autoneg_inband(mode) ? "true" : "false");
-+	} else if (phylink_autoneg_inband(mode) && !(ret & PHY_AN_INBAND_ON)) {
-+		phylink_err(pl,
-+			    "Requested in-band autoneg but driver does not support this, disabling it.\n");
-+
-+		mode = MLO_AN_PHY;
-+	} else if (!phylink_autoneg_inband(mode) && !(ret & PHY_AN_INBAND_OFF)) {
-+		phylink_dbg(pl,
-+			    "PHY driver requests in-band autoneg, force-enabling it.\n");
-+
-+		mode = MLO_AN_INBAND;
-+	}
-+
-+	pl->cur_link_an_mode = mode;
++	return phydev->drv->config_an_inband(phydev, interface, enabled);
 +}
++EXPORT_SYMBOL_GPL(phy_config_an_inband);
 +
  /**
-  * phylink_interface_max_speed() - get the maximum speed of a phy interface
-  * @interface: phy interface mode defined by &typedef phy_interface_t
-@@ -1475,6 +1514,12 @@ struct phylink *phylink_create(struct phylink_config *config,
- 	struct phylink *pl;
- 	int ret;
+  * _phy_start_aneg - start auto-negotiation for this PHY device
+  * @phydev: the phy_device struct
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 598f5feb661e..ca3facc4f1a7 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1691,6 +1691,18 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 		return ret;
+ 	}
  
-+	if (config->ovr_an_inband && config->sync_an_inband) {
-+		dev_err(config->dev,
-+			"phylink: error: ovr_an_inband and sync_an_inband cannot be used simultaneously\n");
-+		return ERR_PTR(-EINVAL);
++	if (pl->config->sync_an_inband && !phy_on_sfp(phy)) {
++		bool use_inband = phylink_autoneg_inband(pl->cur_link_an_mode);
++
++		ret = phy_config_an_inband(phy, interface, use_inband);
++		if (ret && ret != -EOPNOTSUPP) {
++			phylink_err(pl,
++				    "failed to configure PHY in-band autoneg: %pe\n",
++				    ERR_PTR(ret));
++			return ret;
++		}
 +	}
 +
- 	if (mac_ops->mac_select_pcs &&
- 	    mac_ops->mac_select_pcs(config, PHY_INTERFACE_MODE_NA) !=
- 	      ERR_PTR(-EOPNOTSUPP))
-@@ -1725,6 +1770,8 @@ int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
- 		pl->link_config.interface = pl->link_interface;
- 	}
+ 	phy->phylink = pl;
+ 	phy->phy_link_change = phylink_phy_change;
  
-+	phylink_sync_an_inband(pl, phy);
-+
- 	ret = phylink_attach_phy(pl, phy, pl->link_interface);
- 	if (ret < 0)
- 		return ret;
-@@ -1800,6 +1847,8 @@ int phylink_fwnode_phy_connect(struct phylink *pl,
- 		pl->link_config.interface = pl->link_interface;
- 	}
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 56a431d88dd9..6f8d5765cf0c 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -860,6 +860,14 @@ struct phy_driver {
+ 	int (*validate_an_inband)(struct phy_device *phydev,
+ 				  phy_interface_t interface);
  
-+	phylink_sync_an_inband(pl, phy_dev);
++	/**
++	 * @config_an_inband: Enable or disable in-band auto-negotiation for
++	 * the system-side interface if the PHY operates in a mode that
++	 * requires it: (Q)SGMII, USXGMII, 1000Base-X, etc.
++	 */
++	int (*config_an_inband)(struct phy_device *phydev,
++				phy_interface_t interface, bool enabled);
 +
- 	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
- 				pl->link_interface);
- 	if (ret) {
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index c492c26202b5..d4b931bdfdfe 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -124,6 +124,12 @@ enum phylink_op_type {
-  *		      if MAC link is at %MLO_AN_FIXED mode.
-  * @mac_managed_pm: if true, indicate the MAC driver is responsible for PHY PM.
-  * @ovr_an_inband: if true, override PCS to MLO_AN_INBAND
-+ * @sync_an_inband: if true, select between %MLO_AN_INBAND and %MLO_AN_PHY
-+ *		    according to the capability of the attached on-board PHY
-+ *		    (if both modes are supported, the mode deduced from the
-+ *		    fwnode specification is used). With PHYs on SFP modules,
-+ *		    the automatic selection takes place regardless of this
-+ *		    setting. Mutually exclusive with &ovr_an_inband.
-  * @get_fixed_state: callback to execute to determine the fixed link state,
-  *		     if MAC link is at %MLO_AN_FIXED mode.
-  * @supported_interfaces: bitmap describing which PHY_INTERFACE_MODE_xxx
-@@ -137,6 +143,7 @@ struct phylink_config {
- 	bool poll_fixed_state;
- 	bool mac_managed_pm;
- 	bool ovr_an_inband;
-+	bool sync_an_inband;
- 	void (*get_fixed_state)(struct phylink_config *config,
- 				struct phylink_link_state *state);
- 	DECLARE_PHY_INTERFACE_MASK(supported_interfaces);
+ 	/** @aneg_done: Determines the auto negotiation result */
+ 	int (*aneg_done)(struct phy_device *phydev);
+ 
+@@ -1557,6 +1565,8 @@ int phy_start_aneg(struct phy_device *phydev);
+ int phy_aneg_done(struct phy_device *phydev);
+ int phy_validate_an_inband(struct phy_device *phydev,
+ 			   phy_interface_t interface);
++int phy_config_an_inband(struct phy_device *phydev, phy_interface_t interface,
++			 bool enabled);
+ int phy_speed_down(struct phy_device *phydev, bool sync);
+ int phy_speed_up(struct phy_device *phydev);
+ 
 -- 
 2.34.1
 
