@@ -2,67 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E51B562EA38
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:27:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB1362EA3B
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:27:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233619AbiKRA1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 19:27:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
+        id S239771AbiKRA1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 19:27:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiKRA1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:27:15 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748CD6BDC4;
-        Thu, 17 Nov 2022 16:27:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AFV+7ApdCBOIGMsVLFPQM1I3SArzUFkwUjMk4P2eK8w=; b=X6077zp2pInx/2693TTYUli8jc
-        K1IozKW9lf//AlSauzYixSYibR+yER5K2jUKT2bTBxo/z/UjY4j+bvuYpepGqSpbnHxVQpu3OvnVb
-        co/aL/GMA5ywbNuKLFioh+8JWZwAE3MqHB1+Nyq4vlI4oUd/oN3/LtBXudyoi5eHBoIs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ovpDr-002kI9-Lp; Fri, 18 Nov 2022 01:27:11 +0100
-Date:   Fri, 18 Nov 2022 01:27:11 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH 0/3] add dt configuration for dp83867 led modes
-Message-ID: <Y3bRX1N0Rp7EDJkS@lunn.ch>
-References: <20221118001548.635752-1-tharvey@gateworks.com>
+        with ESMTP id S240368AbiKRA1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:27:31 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB56D70A1E;
+        Thu, 17 Nov 2022 16:27:30 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.96,172,1665414000"; 
+   d="scan'208";a="143045663"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 18 Nov 2022 09:27:30 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E57B7400CF07;
+        Fri, 18 Nov 2022 09:27:29 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Dan Carpenter <error27@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Saeed Mahameed <saeed@kernel.org>
+Subject: [PATCH v2 net-next] net: ethernet: renesas: rswitch: Fix MAC address info
+Date:   Fri, 18 Nov 2022 09:27:24 +0900
+Message-Id: <20221118002724.996108-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221118001548.635752-1-tharvey@gateworks.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 04:15:45PM -0800, Tim Harvey wrote:
-> This series adds a dt-prop ti,led-modes to configure dp83867 PHY led
-> modes, adds the code to implement it, and updates some board dt files
-> to use the new property.
+Smatch detected the following warning.
 
-Sorry, but NACK.
+    drivers/net/ethernet/renesas/rswitch.c:1717 rswitch_init() warn:
+    '%pM' cannot be followed by 'n'
 
-We need PHY leds to be controlled via /sys/class/leds. Everybody keeps
-trying to add there own way to configure these things, rather than
-have just one uniform way which all PHYs share.
+The 'n' should be '\n'.
 
-     Andrew
+Reported-by: Dan Carpenter <error27@gmail.com>
+Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+---
+Changes from v1:
+ https://lore.kernel.org/all/20221115235519.679115-1-yoshihiro.shimoda.uh@renesas.com/
+ - Add Reviewed-by tag.
+
+ drivers/net/ethernet/renesas/rswitch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+index f3d27aef1286..51ce5c26631b 100644
+--- a/drivers/net/ethernet/renesas/rswitch.c
++++ b/drivers/net/ethernet/renesas/rswitch.c
+@@ -1714,7 +1714,7 @@ static int rswitch_init(struct rswitch_private *priv)
+ 	}
+ 
+ 	for (i = 0; i < RSWITCH_NUM_PORTS; i++)
+-		netdev_info(priv->rdev[i]->ndev, "MAC address %pMn",
++		netdev_info(priv->rdev[i]->ndev, "MAC address %pM\n",
+ 			    priv->rdev[i]->ndev->dev_addr);
+ 
+ 	return 0;
+-- 
+2.25.1
+
