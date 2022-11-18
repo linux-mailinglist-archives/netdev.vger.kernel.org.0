@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 815BF62ED1E
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 06:18:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6231162ED27
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 06:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240368AbiKRFSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 00:18:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
+        id S240796AbiKRFUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 00:20:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235088AbiKRFSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 00:18:46 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EE151300
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 21:18:44 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id j20-20020a056e02219400b00300a22a7fe0so2704219ila.3
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 21:18:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=iLs1sxjOYBo2QST7SZBpOYOlWZyNAL1AT8/a4qqXn94=;
-        b=6IBU2ksxl5B4aImfgzLOR+mJTt3DvsUulEe2Nd1TTGCF/+2GcDNAol4Z8Wga0TZ7xU
-         l6dDwmmv+OFPI9lo76ioifuqHRN7eOnFNWtpnNgBKKtNiDSiRxXydaTtf1fHfytsysXe
-         DJ1jY7hUmNS8M2RI90BiL4q2kUtPxazc6ZmFa/6k9eJegftk5zzO/2EAZk1c3b8+RAtl
-         Wz1JPy88ODmFqGgUAEx2mTYSlN/2TVjkSm5w9dwW6l1tHBCrL2U/s1z5/5sXKtDOEXJg
-         wQahts6uHmijKCMMFC1Q/GxVaVmbRzhEhsahnI/DI4EkUiNW+rsG4SWEmPkrx2wFrkfO
-         6HNg==
-X-Gm-Message-State: ANoB5pnIDXYlAeS9m84MetbK9roltOOcwQawBZq8o3+IkUHL7lbGmdIM
-        +Ix72yHxHVxZfnJAyV6NYRwEmPZHG3pLKAq0KmlaAzIBcbRH
-X-Google-Smtp-Source: AA0mqf5KekID4vpEbdLvNd9uzzkJO+Lj0mCW4P/N/kiep5eM0wrOY36t0LoxFBQyMxAPI54sDSkYWDuaP/CqSSndZj024ML3Nwta
+        with ESMTP id S240580AbiKRFUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 00:20:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE9E6E561;
+        Thu, 17 Nov 2022 21:20:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0C26B82293;
+        Fri, 18 Nov 2022 05:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 722FEC433D6;
+        Fri, 18 Nov 2022 05:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668748816;
+        bh=mP4/veKAzM1jDiDRDAX0XkfzBPnPYLCw1dOUugeWDpo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=D9hxhMiTpI+iOriuyaRd2KaxvFboIuSITuHxF1yFXmNRafc3Dv/ztCi2ztajLuGw5
+         HXmWw1tzBEb+n8xdtZxJxI5kl6eJmaz2not8fz0lg9yYBUfvcJ8PGiKw1B+M1CaxXW
+         NO/5lTEKe2OIuclx7KiF28DZ2VAuA2OjquGtBIsBO44293DjETrmqft6P1IRGCjH01
+         ZQZLIWqcSCY7ZOvbyGRFUCJYLSl6G//DrPoDBoQVTaYgDD+9cJYvdn6OlphH8eiYBU
+         EP48TacITqzHT+bh2/idsFZ72zlN1kjNoEzAGrz16l2f6TQWoaX8g6HdaobCDVnwdH
+         N0gLmGA3Y6Png==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4D480E270D5;
+        Fri, 18 Nov 2022 05:20:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a5e:aa06:0:b0:6bc:614c:63c2 with SMTP id
- s6-20020a5eaa06000000b006bc614c63c2mr2774824ioe.21.1668748723984; Thu, 17 Nov
- 2022 21:18:43 -0800 (PST)
-Date:   Thu, 17 Nov 2022 21:18:43 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e99e2705edb7d6cf@google.com>
-Subject: [syzbot] memory leak in sctp_sched_prio_set
-From:   syzbot <syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 1/5] dt-bindings: net: ipq4019-mdio: document IPQ6018
+ compatible
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166874881630.4500.14407842263163608974.git-patchwork-notify@kernel.org>
+Date:   Fri, 18 Nov 2022 05:20:16 +0000
+References: <20221114194734.3287854-1-robimarko@gmail.com>
+In-Reply-To: <20221114194734.3287854-1-robimarko@gmail.com>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello:
 
-syzbot found the following issue on:
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-HEAD commit:    b2d229d4ddb1 Linux 5.18-rc3
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17e439b8f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2197cd22d3971cc5
-dashboard link: https://syzkaller.appspot.com/bug?extid=29c402e56c4760763cc0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17daf0af700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ae4d5cf00000
+On Mon, 14 Nov 2022 20:47:30 +0100 you wrote:
+> Document IPQ6018 compatible that is already being used in the DTS along
+> with the fallback IPQ4019 compatible as driver itself only gets probed
+> on IPQ4019 and IPQ5018 compatibles.
+> 
+> This is also required in order to specify which platform require clock to
+> be defined and validate it in schema.
+> 
+> [...]
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
+Here is the summary with links:
+  - [v2,1/5] dt-bindings: net: ipq4019-mdio: document IPQ6018 compatible
+    https://git.kernel.org/netdev/net-next/c/cbe5f7c0fbcd
+  - [v2,2/5] dt-bindings: net: ipq4019-mdio: add IPQ8074 compatible
+    https://git.kernel.org/netdev/net-next/c/05c1cbb96f3d
+  - [v2,3/5] dt-bindings: net: ipq4019-mdio: require and validate clocks
+    https://git.kernel.org/netdev/net-next/c/e50c50367d98
+  - [v2,4/5] dt-bindings: net: ipq4019-mdio: document required clock-names
+    https://git.kernel.org/netdev/net-next/c/4a8c14384fa9
+  - [v2,5/5] arm64: dts: qcom: ipq8074: add SoC specific compatible to MDIO
+    (no matching commit)
 
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff88810b472a00 (size 64):
-  comm "syz-executor206", pid 3601, jiffies 4294944661 (age 12.290s)
-  hex dump (first 32 bytes):
-    00 2a 47 0b 81 88 ff ff 00 2a 47 0b 81 88 ff ff  .*G......*G.....
-    10 2a 47 0b 81 88 ff ff 10 2a 47 0b 81 88 ff ff  .*G......*G.....
-  backtrace:
-    [<ffffffff83fa1634>] kmalloc include/linux/slab.h:581 [inline]
-    [<ffffffff83fa1634>] sctp_sched_prio_new_head net/sctp/stream_sched_prio.c:33 [inline]
-    [<ffffffff83fa1634>] sctp_sched_prio_get_head net/sctp/stream_sched_prio.c:77 [inline]
-    [<ffffffff83fa1634>] sctp_sched_prio_set+0x2c4/0x370 net/sctp/stream_sched_prio.c:159
-    [<ffffffff83f9b6a6>] sctp_stream_init_ext+0x86/0xf0 net/sctp/stream.c:176
-    [<ffffffff83f86e0e>] sctp_sendmsg_to_asoc+0xc8e/0xdb0 net/sctp/socket.c:1807
-    [<ffffffff83f8f77f>] sctp_sendmsg+0x99f/0x1030 net/sctp/socket.c:2027
-    [<ffffffff83b7a315>] inet_sendmsg+0x45/0x70 net/ipv4/af_inet.c:819
-    [<ffffffff837cb3e6>] sock_sendmsg_nosec net/socket.c:705 [inline]
-    [<ffffffff837cb3e6>] sock_sendmsg+0x56/0x80 net/socket.c:725
-    [<ffffffff837ce38c>] __sys_sendto+0x15c/0x200 net/socket.c:2040
-    [<ffffffff837ce456>] __do_sys_sendto net/socket.c:2052 [inline]
-    [<ffffffff837ce456>] __se_sys_sendto net/socket.c:2048 [inline]
-    [<ffffffff837ce456>] __x64_sys_sendto+0x26/0x30 net/socket.c:2048
-    [<ffffffff8451da45>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff8451da45>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
