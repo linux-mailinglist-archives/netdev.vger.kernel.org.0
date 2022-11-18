@@ -2,185 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A33D162FEF5
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 21:45:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E93B62FF0C
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 21:59:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229743AbiKRUp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 15:45:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
+        id S229660AbiKRU7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 15:59:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiKRUpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 15:45:53 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036475CD18
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 12:45:52 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id i12so7241372wrb.0
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 12:45:51 -0800 (PST)
+        with ESMTP id S229555AbiKRU7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 15:59:08 -0500
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D4C7AF55;
+        Fri, 18 Nov 2022 12:59:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KAf352wdSqOpW5AzJIAhyU8udiRoXrlpFYzTDddMfHs=;
-        b=S438lcvERjqClwtVzY2QS9BN7N5E780jOgt+CL9jQaCjx4zzrwJiEGr5GiT0bUuDxW
-         a9CLQxbRgiDwPr03LAkqmBf0yOZPxda3A8/uQ4s6nY0kGhcbQ92W3yfkSIgnmYkFqTSK
-         ntBswz0drpJn/UApzRC6lZ0+xBhX3nCmOakuidHSoLYQja95vdbMNkCjW6eFUZ/jg2bu
-         EGwgdLZGLpo5pU+tZguPn2+apQaiq6bX5u31Mm8ocMAC6s7JUXVYFsZ8ysyASVNEvIOP
-         rM7nkdtTl04gP8dZbAVYqOs3iJ1lddcE4tql3GHkjwG1qdf8lpBFrhQpwytybeNvI5Yk
-         9lTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KAf352wdSqOpW5AzJIAhyU8udiRoXrlpFYzTDddMfHs=;
-        b=NFNSAbnATTT0oK/vumfWC/KhWc9ZwXWGwkecHlBXQq9nwPJefweC7NQUPOpme5+vGs
-         Wm+jhcngBXV1YodrwtepkoSAfLNEBEQlCWkwqxc9KGGdn33oyv4Y5Ku4Jt/WrOeRZtuq
-         P+P6jh9PjPLq/ZbevpTUecdXfELwh/LbHxy3mb4U+Mrtx+F3p585GqXxujlyUEO0TcJ3
-         e5vZn9Tc9vPWxig0TDkbd5bM8FVn2v7A5Jt2tOnk5jTSCTZ+nxaNpWWHtZ3uNGCEWFZf
-         FcBZ618iX2ALQ9eMG6eel6ktlTgM0oKRFUj6GcSIHs4BrRdITk/Z9pKYM8OB7D1CFu9V
-         tYuw==
-X-Gm-Message-State: ANoB5pljWFq6gxKKaLofRTEMqa4aPZ5Wdn82Kxi36NiGiEDtQilr5vM2
-        4EvK9VvVRyctm92lTDksomvB3SvlnUs=
-X-Google-Smtp-Source: AA0mqf6f1Zssjgjxn3jTVgKGODbnYpoodvIXxLZ43j0M+MH+Bd/tx5u8pd9VRWZaqep1O8mcyX+XGQ==
-X-Received: by 2002:adf:f011:0:b0:241:c78c:3671 with SMTP id j17-20020adff011000000b00241c78c3671mr840601wro.129.1668804350155;
-        Fri, 18 Nov 2022 12:45:50 -0800 (PST)
-Received: from suse.localnet (host-79-26-100-208.retail.telecomitalia.it. [79.26.100.208])
-        by smtp.gmail.com with ESMTPSA id e9-20020a5d5949000000b0022e344a63c7sm4301510wri.92.2022.11.18.12.45.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 12:45:49 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     netdev@vger.kernel.org,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Subject: Re: [PATCH net-next 5/5] sunvnet: Use kmap_local_page() instead of kmap_atomic()
-Date:   Fri, 18 Nov 2022 21:45:48 +0100
-Message-ID: <2784595.88bMQJbFj6@suse>
-In-Reply-To: <2373606.NG923GbCHz@suse>
-References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com> <20221117222557.2196195-6-anirudh.venkataramanan@intel.com> <2373606.NG923GbCHz@suse>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1668805146; x=1700341146;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Rx+Xgcverf9e0wGI/df3HJY52L2aHlY+tR23Q/NZi8U=;
+  b=LM3vks3Xz10ZN3ytb5FbmiVwjnR7FA1bvqR/ycsn+57Cc3IqC0OPBTCt
+   sqQltjUKTHVXgNJK95sKCO+lUYri1hFWoN/wupHox2BhMdncsOgheSc+m
+   TzYgn6i2shJUeT/nVKgZfLuDUPddrygpRtOU7MbPwaX+dzJYu/5++mi0P
+   E=;
+X-IronPort-AV: E=Sophos;i="5.96,175,1665446400"; 
+   d="scan'208";a="1075305395"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-96feee09.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 20:58:59 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-m6i4x-96feee09.us-east-1.amazon.com (Postfix) with ESMTPS id 1CCE741B23;
+        Fri, 18 Nov 2022 20:58:53 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Fri, 18 Nov 2022 20:58:52 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.161.14) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Fri, 18 Nov 2022 20:58:49 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+CC:     Arnaldo Carvalho de Melo <acme@mandriva.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        "Mat Martineau" <mathew.j.martineau@linux.intel.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        "Kuniyuki Iwashima" <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <dccp@vger.kernel.org>
+Subject: [PATCH v3 net 0/4] dccp/tcp: Fix bhash2 issues related to WARN_ON() in inet_csk_get_port().
+Date:   Fri, 18 Nov 2022 12:58:35 -0800
+Message-ID: <20221118205839.14312-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.14]
+X-ClientProxiedBy: EX13D29UWA003.ant.amazon.com (10.43.160.253) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On venerd=EC 18 novembre 2022 10:11:12 CET Fabio M. De Francesco wrote:
-> On gioved=EC 17 novembre 2022 23:25:57 CET Anirudh Venkataramanan wrote:
-> > kmap_atomic() is being deprecated in favor of kmap_local_page().
-> > Replace kmap_atomic() and kunmap_atomic() with kmap_local_page()
-> > and kunmap_local() respectively.
-> >=20
-> > Note that kmap_atomic() disables preemption and page-fault processing,
-> > but kmap_local_page() doesn't. Converting the former to the latter is s=
-afe
-> > only if there isn't an implicit dependency on preemption and page-fault
-> > handling being disabled, which does appear to be the case here.
-> >=20
-> > Also note that the page being mapped is not allocated by the driver, an=
-d=20
-so
-> > the driver doesn't know if the page is in normal memory. This is the=20
-reason
-> > kmap_local_page() is used as opposed to page_address().
-> >=20
-> > I don't have hardware, so this change has only been compile tested.
-> >=20
-> > Cc: Ira Weiny <ira.weiny@intel.com>
-> > Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-> > ---
-> >=20
-> >  drivers/net/ethernet/sun/sunvnet_common.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/sun/sunvnet_common.c
-> > b/drivers/net/ethernet/sun/sunvnet_common.c index 80fde5f..a6211b9 1006=
-44
-> > --- a/drivers/net/ethernet/sun/sunvnet_common.c
-> > +++ b/drivers/net/ethernet/sun/sunvnet_common.c
-> > @@ -1085,13 +1085,13 @@ static inline int vnet_skb_map(struct ldc_chann=
-el
->=20
-> *lp,
->=20
-> > struct sk_buff *skb, u8 *vaddr;
-> >=20
-> >  		if (nc < ncookies) {
-> >=20
-> > -			vaddr =3D kmap_atomic(skb_frag_page(f));
-> > +			vaddr =3D kmap_local_page(skb_frag_page(f));
-> >=20
-> >  			blen =3D skb_frag_size(f);
-> >  			blen +=3D 8 - (blen & 7);
-> >  			err =3D ldc_map_single(lp, vaddr +
->=20
-> skb_frag_off(f),
->=20
-> >  					     blen, cookies + nc,
->=20
-> ncookies - nc,
->=20
-> >  					     map_perm);
-> >=20
-> > -			kunmap_atomic(vaddr);
-> > +			kunmap_local(vaddr);
-> >=20
-> >  		} else {
-> >  	=09
-> >  			err =3D -EMSGSIZE;
-> >  	=09
-> >  		}
-> >=20
-> > --
-> > 2.37.2
->=20
-> Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
->=20
-> Thanks,
->=20
-> Fabio
+syzkaller was hitting a WARN_ON() in inet_csk_get_port() in the 4th patch,
+which was because we forgot to fix up bhash2 bucket when connect() for a
+socket bound to a wildcard address fails in __inet_stream_connect().
 
-Now that we are at 5/5 again. I'd like to point again to what worries me:
+There was a similar report [0], but its repro does not fire the WARN_ON() due
+to inconsistent error handling.
 
-"Converting the former to the latter is safe only if there isn't an implici=
-t=20
-dependency on preemption and page-fault handling being disabled, ...".
+When connect() for a socket bound to a wildcard address fails, saddr may or
+may not be reset depending on where the failure happens.  When we fail in
+__inet_stream_connect(), sk->sk_prot->disconnect() resets saddr.  OTOH, in
+(dccp|tcp)_v[46]_connect(), if we fail after inet_hash6?_connect(), we
+forget to reset saddr.
 
-If I was able to convey my thoughts this is what you should get from my lon=
-g=20
-email:=20
+We fix this inconsistent error handling in the 1st patch, and then we'll
+fix the bhash2 WARN_ON() issue.
 
-"Converting the former to the latter is _always_ safe if there isn't an=20
-implicit dependency on preemption and page-fault handling being disabled an=
-d=20
-also when the above-mentioned implicit dependency is present, but in the=20
-latter case only if calling pagefault_disable() and/or preempt_disable() wi=
-th=20
-kmap_local_page(). These disables are not required here because...".
+Note that there is still an issue in that we reset saddr without checking
+if there are conflicting sockets in bhash and bhash2, but this should be
+another series.
 
-As you demonstrated none of your nine patches need any explicit disable alo=
-ng=20
-with kmap_local_page().
+See [1][2] for the previous discussion.
 
-Do my two emails make any sense to you?
-However, your patches are good. If you decide to make them perfect use thos=
-e=20
-helpers we've been talking about.
+[0]: https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+[1]: https://lore.kernel.org/netdev/20221029001249.86337-1-kuniyu@amazon.com/
+[2]: https://lore.kernel.org/netdev/20221103172419.20977-1-kuniyu@amazon.com/
+[3]: https://lore.kernel.org/netdev/20221118081906.053d5231@kernel.org/T/#m00aafedb29ff0b55d5e67aef0252ef1baaf4b6ee
 
-Again thanks,
+Changes:
+  v3:
+    * Patch 3
+      * Update saddr under the bhash's lock
+      * Correct Fixes tag
+      * Change #ifdef in inet_update_saddr() along the recent
+        discussion [3]
 
-=46abio
+  v2: https://lore.kernel.org/netdev/20221116222805.64734-1-kuniyu@amazon.com/
+    * Add patch 2-4
+
+  v1: [2]
 
 
-=46abio
+Kuniyuki Iwashima (4):
+  dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
+  dccp/tcp: Remove NULL check for prev_saddr in
+    inet_bhash2_update_saddr().
+  dccp/tcp: Update saddr under bhash's lock.
+  dccp/tcp: Fixup bhash2 bucket when connect() fails.
 
+ include/net/inet_hashtables.h |  3 +-
+ net/dccp/ipv4.c               | 23 ++-------
+ net/dccp/ipv6.c               | 24 ++-------
+ net/dccp/proto.c              |  3 +-
+ net/ipv4/af_inet.c            | 11 +----
+ net/ipv4/inet_hashtables.c    | 91 +++++++++++++++++++++++++++++------
+ net/ipv4/tcp.c                |  3 +-
+ net/ipv4/tcp_ipv4.c           | 21 ++------
+ net/ipv6/tcp_ipv6.c           | 20 ++------
+ 9 files changed, 101 insertions(+), 98 deletions(-)
 
+-- 
+2.30.2
 
