@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D3062F3E6
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 12:40:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3170562F406
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 12:50:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241219AbiKRLko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 06:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
+        id S235239AbiKRLux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 06:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235328AbiKRLkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 06:40:43 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B40D91534
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:40:41 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id z139-20020a6bc991000000b006dac0d359edso2434365iof.2
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:40:41 -0800 (PST)
+        with ESMTP id S235182AbiKRLuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 06:50:52 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3575B922F5
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:50:48 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id k3-20020a92c243000000b0030201475a6bso3150062ilo.9
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:50:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=t3yguII6knaKUcip+42pEQJBXF45AFcWcXVP/LRNy6s=;
-        b=VsS2CDvr8zSqZl/xaluJmLePeqanBQ/ozhG3Lo9ItWE1S+KCgaqnKZMkc9UCq2xj8H
-         PTC08lAqKtunI0OGAVNlqsLL00kMYDPcuF5OXaq68OmV3NyXMwJO4S+Y+Y67nRDk+xLw
-         Q4wY/+vZonReVPd/pB2QKna1M/L9p61dq39jhu79e0pHewJ4uE9oLBVPqQXQj6Lc8Oof
-         zpnouMsN/DlHI51nuYluOt728uJH5/oLZmwri1LtSR8JVW+9rRK/Ab9u5uKQ4yb8aJzF
-         C7MvVfdTeY+OfAsKATXQ1irL8SQLcLwmDWNIUGcMpz9i0NOCju/wkQ712g3ikOhsu/8Y
-         1Rvg==
-X-Gm-Message-State: ANoB5pnCDuUv3uLpJfE0c1D/fhuyLRPTxdOSO3GLMfR5U5vfI9ZCML5W
-        WaknFmM3UROsjAzsRYXX/pj6VfEyB8yPnm3iQkS6AWL7qe38
-X-Google-Smtp-Source: AA0mqf6TLJ+VgbffJPFQ+hgBPFsQNVzpJ+C3V/fPwGfmUNJ+8X+uQ5hDZFLaml3ThateogQW4ID2fWQL3Tf9mw80E8AgIkE0AzR1
+        bh=O8R1Gfq5Fl8LwQMCqabLpPUSSLaHyEz1st1n5T0M71Q=;
+        b=jpPFnOJKjJDaGGAL8xWXELyIrh3W0pl+tFQKmLoU4QfKRNU220A6BQITwGaS/lHGwp
+         YvQ2y+Msr9rcBJ1rlcPjWWIqK1SNPC6DWEzEWtyxXpHQu1G5bbSqGJeI8abh/+bitGC4
+         9OiDmWoQZVbIEnW/tZtI+HTjCaq7AzOHX7CXaPUve5Lc9MwF9yom4zpCkzJ3ByVCMc9w
+         SFo+nOWi8y3X6e6Hyjv5f+eoPOXD0rjwlUyZ2fMB1KTGmoUk8o+ac+FuMXel6N6f1JxP
+         PQzz74p9UtfOWOwxz263NGgzUY7c+YSN14DCuHYvt6FHmu8C4BxTSwVqhk4Svc1JCvFo
+         MjXw==
+X-Gm-Message-State: ANoB5pkKXRMrQ+uF24gDx+jOwFsFRylDCB0w+SHAhV+/UmqTGP9Y/EjG
+        9n9cVuckDbs83t+tJJQamqi0LQa4M0lE7ZcMn5riiGDr87+b
+X-Google-Smtp-Source: AA0mqf4RGzkXLsKamY623483tK8m6PTRRuSBapAkPe84hE8zj/n0j9csBqc4FSc4HfXalJiUd+3VzbJLtuSEfec9HGG6ldbsW5gh
 MIME-Version: 1.0
-X-Received: by 2002:a02:a317:0:b0:363:6ef6:a52c with SMTP id
- q23-20020a02a317000000b003636ef6a52cmr2884718jai.287.1668771640639; Fri, 18
- Nov 2022 03:40:40 -0800 (PST)
-Date:   Fri, 18 Nov 2022 03:40:40 -0800
+X-Received: by 2002:a02:6d5c:0:b0:375:2859:655c with SMTP id
+ e28-20020a026d5c000000b003752859655cmr2955441jaf.1.1668772247467; Fri, 18 Nov
+ 2022 03:50:47 -0800 (PST)
+Date:   Fri, 18 Nov 2022 03:50:47 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000da093705edbd2ca4@google.com>
-Subject: [syzbot] general protection fault in ax25_send_frame (2)
-From:   syzbot <syzbot+4643bc868f47ad276452@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jreuter@yaina.de,
-        kuba@kernel.org, linux-hams@vger.kernel.org,
+Message-ID: <000000000000057d3e05edbd51b9@google.com>
+Subject: [syzbot] WARNING in default_device_exit_batch (4)
+From:   syzbot <syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, ralf@linux-mips.org,
-        syzkaller-bugs@googlegroups.com
+        pabeni@redhat.com, roman.gushchin@linux.dev, shakeelb@google.com,
+        shaozhengchao@huawei.com, syzkaller-bugs@googlegroups.com,
+        vasily.averin@linux.dev
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -60,99 +60,51 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    0727a9a5fbc1 Documentation: mptcp: fix pm_type formatting
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=149755e8880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=58826a10ff282dbf
-dashboard link: https://syzkaller.appspot.com/bug?extid=4643bc868f47ad276452
+HEAD commit:    81ac25651a62 Merge tag 'nfsd-6.1-5' of git://git.kernel.or..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16b08501880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6f4e5e9899396248
+dashboard link: https://syzkaller.appspot.com/bug?extid=9dfc3f3348729cc82277
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
 Unfortunately, I don't have any reproducer for this issue yet.
 
 Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/27e66e05ee01/disk-0727a9a5.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/df24b686590e/vmlinux-0727a9a5.xz
+disk image: https://storage.googleapis.com/syzbot-assets/9604c2253fa1/disk-81ac2565.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/e1af57bc5afd/vmlinux-81ac2565.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/20049443b718/bzImage-81ac2565.xz
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4643bc868f47ad276452@syzkaller.appspotmail.com
+Reported-by: syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xdffffc000000006c: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000360-0x0000000000000367]
-CPU: 1 PID: 10715 Comm: syz-executor.3 Not tainted 6.0.0-rc4-syzkaller-00136-g0727a9a5fbc1 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-RIP: 0010:ax25_dev_ax25dev include/net/ax25.h:342 [inline]
-RIP: 0010:ax25_send_frame+0xe4/0x640 net/ax25/ax25_out.c:56
-Code: 00 48 85 c0 49 89 c4 0f 85 fb 03 00 00 e8 34 cb 2b f9 49 8d bd 60 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 b1 04 00 00 4d 8b ad 60 03 00 00 4d 85 ed 0f 84
-RSP: 0000:ffffc90004c77a00 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff88814a308008 RCX: 0000000000000100
-RDX: 000000000000006c RSI: ffffffff88503efc RDI: 0000000000000360
-RBP: ffffffff91561460 R08: 0000000000000001 R09: ffffffff908e4a9f
-R10: 0000000000000001 R11: 1ffffffff2020d9a R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000104 R15: 0000000000000000
-FS:  0000555556215400(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+bond3 (unregistering): Released all slaves
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 4036 at net/core/dev.c:10870 unregister_netdevice_many+0x1412/0x1930 net/core/dev.c:10870
+Modules linked in:
+CPU: 0 PID: 4036 Comm: kworker/u4:8 Not tainted 6.1.0-rc5-syzkaller-00103-g81ac25651a62 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Workqueue: netns cleanup_net
+RIP: 0010:unregister_netdevice_many+0x1412/0x1930 net/core/dev.c:10870
+Code: c2 1a 00 00 48 c7 c6 80 60 5b 8b 48 c7 c7 80 61 5b 8b c6 05 8e 50 86 06 01 e8 d7 2f f3 01 0f 0b e9 7a f9 ff ff e8 de 53 c8 f9 <0f> 0b e9 51 f9 ff ff e8 42 17 15 fa e9 b9 ed ff ff 4c 89 ef e8 95
+RSP: 0018:ffffc90005cd7a58 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 00000000738d3001 RCX: 0000000000000000
+RDX: ffff8880267cd7c0 RSI: ffffffff87b7c5a2 RDI: 0000000000000001
+RBP: ffff888060fb1600 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff888060fb1600 R14: ffff88807ad9c000 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2f328000 CR3: 0000000050a64000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+CR2: 000055ca93a63950 CR3: 000000007f17c000 CR4: 0000000000350ef0
 Call Trace:
  <TASK>
- rose_send_frame+0xcc/0x2f0 net/rose/rose_link.c:106
- rose_transmit_clear_request+0x1d5/0x290 net/rose/rose_link.c:255
- rose_rx_call_request+0x4c0/0x1bc0 net/rose/af_rose.c:1009
- rose_loopback_timer+0x19e/0x590 net/rose/rose_loopback.c:111
- call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
- invoke_softirq kernel/softirq.c:445 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x45/0xc0 arch/x86/kernel/apic/apic.c:1106
- asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0033:0x7fe1ccc37497
-Code: 75 37 b8 00 00 00 80 48 01 d0 48 3d ff ff ff 7e 0f 87 2a 02 00 00 44 89 c0 c1 e8 10 44 31 c0 83 f0 3d 8d 04 c0 89 c7 c1 ef 04 <31> f8 69 c0 2d eb d4 27 31 c5 c1 e8 0f 31 c5 80 3d e4 de 09 01 00
-RSP: 002b:00007fff5e3de460 EFLAGS: 00000a06
-RAX: 000000009127bfa1 RBX: 00007fe1ccd9c018 RCX: 0000001b2f320000
-RDX: ffffffff81e7790e RSI: 0000001b2f324438 RDI: 0000000009127bfa
-RBP: 0000000081e7790e R08: ffffffff81e77903 R09: 00000000ab355ea3
-R10: 00007fff5e3de630 R11: 0000000000000246 R12: 00007fe1ccd90000
-R13: 0000000000000001 R14: 00000000000165f4 R15: ffffffff81e7790e
+ default_device_exit_batch+0x44d/0x590 net/core/dev.c:11341
+ ops_exit_list+0x125/0x170 net/core/net_namespace.c:174
+ cleanup_net+0x4ee/0xb00 net/core/net_namespace.c:601
+ process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2436
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
  </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:ax25_dev_ax25dev include/net/ax25.h:342 [inline]
-RIP: 0010:ax25_send_frame+0xe4/0x640 net/ax25/ax25_out.c:56
-Code: 00 48 85 c0 49 89 c4 0f 85 fb 03 00 00 e8 34 cb 2b f9 49 8d bd 60 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 b1 04 00 00 4d 8b ad 60 03 00 00 4d 85 ed 0f 84
-RSP: 0000:ffffc90004c77a00 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff88814a308008 RCX: 0000000000000100
-RDX: 000000000000006c RSI: ffffffff88503efc RDI: 0000000000000360
-RBP: ffffffff91561460 R08: 0000000000000001 R09: ffffffff908e4a9f
-R10: 0000000000000001 R11: 1ffffffff2020d9a R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000104 R15: 0000000000000000
-FS:  0000555556215400(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2f328000 CR3: 0000000050a64000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	00 48 85             	add    %cl,-0x7b(%rax)
-   3:	c0 49 89 c4          	rorb   $0xc4,-0x77(%rcx)
-   7:	0f 85 fb 03 00 00    	jne    0x408
-   d:	e8 34 cb 2b f9       	callq  0xf92bcb46
-  12:	49 8d bd 60 03 00 00 	lea    0x360(%r13),%rdi
-  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  20:	fc ff df
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 b1 04 00 00    	jne    0x4e5
-  34:	4d 8b ad 60 03 00 00 	mov    0x360(%r13),%r13
-  3b:	4d 85 ed             	test   %r13,%r13
-  3e:	0f                   	.byte 0xf
-  3f:	84                   	.byte 0x84
 
 
 ---
