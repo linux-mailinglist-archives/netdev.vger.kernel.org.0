@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C8046302BA
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C566302BB
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbiKRXOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 18:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
+        id S229601AbiKRXOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 18:14:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235221AbiKRXNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:39 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848EEC68B2
+        with ESMTP id S235361AbiKRXNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:45 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8497FCC165
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:57 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id a22-20020a17090a6d9600b0021896eb5554so615636pjk.1
+Received: by mail-pg1-x52b.google.com with SMTP id 130so6211811pgc.5
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=mVwATHQ4/uKDOkIljrTgg644UPyKDTdeBO2KcWGKqXE=;
-        b=ZTQ1RETjYka2RmMHdToHP3BSrMCgeaSIoOhKRTlYAC0pz415DCNQv3Mw4+3sUDnGA/
-         8o6MH6kOmUNDRzI8gVLLGl6Gy3QYQGcA0zvQa584IDpAnnNd+6uoitjxbyBvptKm6OBA
-         ixRjWbY9oWJ3KoHGthiSvKxD11pXFvJYUxP+L6A/IQYRirHCWUP8pgSHcAnTRA6ytZkm
-         h+KJHqj2STnjnFIiiuHzdjlksjc5kx9kbX4TJhXgMu7W0QsAq9gHr9BgpuIV7f/oH9o8
-         oDu9tkLg70Mi7IWn/JH0yTpVnICyk9yN6fdl+3opqPHqQpMd6kxakOqAGisAHAiAmFJw
-         DvBQ==
+        bh=ycCau+ERnFNtdV8h6bYOgIHnoYWi+KmCz0bZPVMNHlc=;
+        b=CS3X2tE6sxkjsnKlCEFn1d/MBASMXqux9SD2PeDi6FP3L/THACuSGREwB6U/Hp+Jch
+         teXKxdONxi9eY0YY5pjrvq7HX6ezMQqS9iqUNEbrEm0HTkrJiOwATv4oj0M+DjP7Pxkr
+         OLZEz17FvrpOisFIaiabzr63orrX5NY6e+fEUEEOyOHwgSjtddPDlViddSCvBUST0RJn
+         c6+uuth1Sx9UKRxeLn2iR61eBJz49tDVJ/lTP0Oam9+BDIltlyq8EQEZ/bDG3TJkBWS0
+         jq4Mnrcz2Jh64yVh4SEgm+avBQ3z+hdltSiqOJerUWi/KcG5LJVXYQ4npmozaWIcwR7b
+         tPfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mVwATHQ4/uKDOkIljrTgg644UPyKDTdeBO2KcWGKqXE=;
-        b=Wo4PY2pJRxIQPFHjNXCPPUzwvgCRP20leYNQzkMFjxzaZE2NoN8bXECwnKqdCNk4ck
-         5Hyi0kiwxc2W6z15tDgPvGokN8T4M6zr/MXnKxZRYwOhgpx1k8zlRS+6zAlL5ECMPxGU
-         TZJQW3yhNqPlN5eipsOjcwD1VbL7fq/rxK2rTbo/xg3UWqmucVt6eHjsqS/idmGZUsL/
-         L4FMNpggszoxZeYLDEThU1Eam3E7ArIlatZu3uw5rDcXWfoO37D1SXK9wdr/PdI7fddk
-         Yq/FV5TvA4QgnQ633P9Zza8/Not0SKPsMDvcFVGQBlgGdwFsllujXtogJtaihWGgIK5o
-         k7AA==
-X-Gm-Message-State: ANoB5plSi03Fa6yH9xh2cWiRfFTpZ4hJw9qvTCQ//fnrMCO/+dlIL40o
-        LGMft8cmMf3+tdGYTEhwPr/bmAmLMFceBA==
-X-Google-Smtp-Source: AA0mqf5trh655O4U1gujKtF+92wiTMhaocwZpHkRe9oR4td4um8qMddmmTR4ey/r/aLlQsdK35slMw==
-X-Received: by 2002:a17:903:2112:b0:186:67b0:afab with SMTP id o18-20020a170903211200b0018667b0afabmr1706709ple.17.1668812248570;
-        Fri, 18 Nov 2022 14:57:28 -0800 (PST)
+        bh=ycCau+ERnFNtdV8h6bYOgIHnoYWi+KmCz0bZPVMNHlc=;
+        b=2abM0+IDzVNSJkUwnjFG8ewjXlcSla5VHHYefw8RqDJe4g9iLTBQHYB2kvpkR+gLI8
+         dmH7mj1pEYk9nbjOLEQwCsSAmdipUxZncZ9lh+7UE7Odng7WBHPiW1/V7Gsq5WVzBASx
+         1LP9m1OXM5SG5x+4HMr3z6rz69UrcIgXJfCa4LDDro1VIKMzyPpGNPgvjzoHjOb6qKmz
+         f0stZWt7iVAjpdUEbhDoIkRcHQiEwDoHnqV+mirIWUsNaUEDaj9qzhhVW9enF15HmYXc
+         956ChzzO116coZsJb740N8aw3WmK8erkYJCPO8968AJ7hHlNO7AgfT8gqsuIFtKUp5G8
+         UVjw==
+X-Gm-Message-State: ANoB5plSGacZvqOGPLFJNMqXzfdmiiHx/v0LzfXkHMiE2+cLlc3HF+c2
+        1KFyVkt+d/nbyjZEfFWfEtE5REty5JgrzA==
+X-Google-Smtp-Source: AA0mqf5wiqqPAt/Lh2oPa5F0oiOoEmZp5VqC6rC/G6s8QPZK0EWOHLOI0m6aNIu68RoM2SR4JtyO/A==
+X-Received: by 2002:a63:7353:0:b0:477:467e:357f with SMTP id d19-20020a637353000000b00477467e357fmr1197086pgn.263.1668812249873;
+        Fri, 18 Nov 2022 14:57:29 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.27
+        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 14:57:28 -0800 (PST)
+        Fri, 18 Nov 2022 14:57:29 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         mst@redhat.com, jasowang@redhat.com,
         virtualization@lists.linux-foundation.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [RFC PATCH net-next 12/19] pds_core: publish events to the clients
-Date:   Fri, 18 Nov 2022 14:56:49 -0800
-Message-Id: <20221118225656.48309-13-snelson@pensando.io>
+Subject: [RFC PATCH net-next 13/19] pds_core: Kconfig and pds_core.rst
+Date:   Fri, 18 Nov 2022 14:56:50 -0800
+Message-Id: <20221118225656.48309-14-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221118225656.48309-1-snelson@pensando.io>
 References: <20221118225656.48309-1-snelson@pensando.io>
@@ -67,170 +67,222 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the Core device gets an event from the device, or notices
-the device FW to be up or down, it needs to send those events
-on to the clients that have an event handler.
+Documentation and Kconfig hook for building the driver.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/pds_core/adminq.c   | 17 ++++++++
- .../net/ethernet/pensando/pds_core/auxbus.c   | 40 +++++++++++++++++++
- drivers/net/ethernet/pensando/pds_core/core.c | 15 +++++++
- drivers/net/ethernet/pensando/pds_core/core.h |  3 ++
- 4 files changed, 75 insertions(+)
+ .../ethernet/pensando/pds_core.rst            | 162 ++++++++++++++++++
+ MAINTAINERS                                   |   3 +-
+ drivers/net/ethernet/pensando/Kconfig         |  12 ++
+ 3 files changed, 176 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/pensando/pds_core.rst
 
-diff --git a/drivers/net/ethernet/pensando/pds_core/adminq.c b/drivers/net/ethernet/pensando/pds_core/adminq.c
-index ba9e84a7ca92..4d2d69ce81f4 100644
---- a/drivers/net/ethernet/pensando/pds_core/adminq.c
-+++ b/drivers/net/ethernet/pensando/pds_core/adminq.c
-@@ -34,11 +34,13 @@ static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
- 		case PDS_EVENT_LINK_CHANGE:
- 			dev_info(pdsc->dev, "NotifyQ LINK_CHANGE ecode %d eid %lld\n",
- 				 ecode, eid);
-+			pdsc_auxbus_publish(pdsc, PDSC_ALL_CLIENT_IDS, comp);
- 			break;
- 
- 		case PDS_EVENT_RESET:
- 			dev_info(pdsc->dev, "NotifyQ RESET ecode %d eid %lld\n",
- 				 ecode, eid);
-+			pdsc_auxbus_publish(pdsc, PDSC_ALL_CLIENT_IDS, comp);
- 			break;
- 
- 		case PDS_EVENT_XCVR:
-@@ -46,6 +48,21 @@ static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
- 				 ecode, eid);
- 			break;
- 
-+		case PDS_EVENT_CLIENT:
-+		{
-+			struct pds_core_client_event *ce;
-+			union pds_core_notifyq_comp *cc;
-+			u16 client_id;
+diff --git a/Documentation/networking/device_drivers/ethernet/pensando/pds_core.rst b/Documentation/networking/device_drivers/ethernet/pensando/pds_core.rst
+new file mode 100644
+index 000000000000..9c2c0c866e0a
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/pensando/pds_core.rst
+@@ -0,0 +1,162 @@
++.. SPDX-License-Identifier: GPL-2.0+
++.. note: can be edited and viewed with /usr/bin/formiko-vim
 +
-+			ce = (struct pds_core_client_event *)comp;
-+			cc = (union pds_core_notifyq_comp *)&ce->client_event;
-+			client_id = le16_to_cpu(ce->client_id);
-+			dev_info(pdsc->dev, "NotifyQ CLIENT %d ecode %d eid %lld cc->ecode %d\n",
-+				 client_id, ecode, eid, le16_to_cpu(cc->ecode));
-+			pdsc_auxbus_publish(pdsc, client_id, cc);
-+			break;
-+		}
++========================================================
++Linux Driver for the Pensando(R) DSC adapter family
++========================================================
 +
- 		default:
- 			dev_info(pdsc->dev, "NotifyQ ecode %d eid %lld\n",
- 				 ecode, eid);
-diff --git a/drivers/net/ethernet/pensando/pds_core/auxbus.c b/drivers/net/ethernet/pensando/pds_core/auxbus.c
-index 1fcfe8ae9971..53c1164565b8 100644
---- a/drivers/net/ethernet/pensando/pds_core/auxbus.c
-+++ b/drivers/net/ethernet/pensando/pds_core/auxbus.c
-@@ -205,6 +205,46 @@ static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *pdsc,
- 	return NULL;
- }
++Pensando Linux Core driver.
++Copyright(c) 2022 Pensando Systems, Inc
++
++Identifying the Adapter
++=======================
++
++To find if one or more Pensando PCI Core devices are installed on the
++host, check for the PCI devices::
++
++  # lspci -d 1dd8:100c
++  39:00.0 Processing accelerators: Pensando Systems Device 100c
++  3a:00.0 Processing accelerators: Pensando Systems Device 100c
++
++If such devices are listed as above, then the pds_core.ko driver should find
++and configure them for use.  There should be log entries in the kernel
++messages such as these::
++
++  $ dmesg | grep pds_core
++  pds_core 0000:b5:00.0: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
++  pds_core 0000:b5:00.0: FW: 1.51.0-73
++  pds_core 0000:b6:00.0: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
++  pds_core 0000:b5:00.0: FW: 1.51.0-73
++
++Driver and firmware version information can be gathered with devlink::
++
++  $ devlink dev info pci/0000:b5:00.0
++  pci/0000:b5:00.0:
++    driver pds_core
++    serial_number FLM18420073
++    versions:
++        fixed:
++          asic.id 0x0
++          asic.rev 0x0
++        running:
++          fw 1.51.0-73
++        stored:
++          fw.goldfw 1.15.9-C-22
++          fw.mainfwa 1.51.0-73
++          fw.mainfwb 1.51.0-57
++
++
++Info versions
++=============
++
++The ``pds_core`` driver reports the following versions
++
++.. list-table:: devlink info versions implemented
++   :widths: 5 5 90
++
++   * - Name
++     - Type
++     - Description
++   * - ``fw``
++     - running
++     - Version of firmware running on the device
++   * - ``fw.goldfw``
++     - stored
++     - Version of firmware stored in the goldfw slot
++   * - ``fw.mainfwa``
++     - stored
++     - Version of firmware stored in the mainfwa slot
++   * - ``fw.mainfwb``
++     - stored
++     - Version of firmware stored in the mainfwb slot
++   * - ``asic.id``
++     - fixed
++     - The ASIC type for this device
++   * - ``asic.rev``
++     - fixed
++     - The revision of the ASIC for this device
++
++
++Parameters
++==========
++
++The ``pds_core`` driver implements the following generic
++parameters for controlling the functionality to be made available
++as auxiliary_bus devices.
++
++.. list-table:: Generic parameters implemented
++   :widths: 5 5 8 82
++
++   * - Name
++     - Mode
++     - Type
++     - Description
++   * - ``enable_vnet``
++     - runtime
++     - Boolean
++     - Enables vDPA functionality through an auxiliary_bus device
++
++
++The ``pds_core`` driver also implements the following driver-specific
++parameters for similar uses, as well as for selecting the next boot firmware:
++
++.. list-table:: Driver-specific parameters implemented
++   :widths: 5 5 8 82
++
++   * - Name
++     - Mode
++     - Type
++     - Description
++   * - ``enable_lm``
++     - runtime
++     - Boolean
++     - Enables Live Migration functionality through an auxiliary_bus device
++   * - ``boot_fw``
++     - runtime
++     - String
++     - Selects the Firmware slot to use for the next DSC boot
++
++
++Firmware Management
++===================
++
++Using the ``devlink`` utility's ``flash`` command the DSC firmware can be
++updated.  The downloaded firmware will be loaded into either of mainfwa or
++mainfwb firmware slots, whichever is not currrently in use, and that slot
++will be then selected for the next boot.  The firmware currently in use can
++be found by inspecting the ``running`` firmware from the devlink dev info.
++
++The ``boot_fw`` parameter can inspect and select the firmware slot to be
++used in the next DSC boot up.  The mainfwa and mainfwb slots are used for
++for normal operations, and the goldfw slot should only be selected for
++recovery purposes if both the other slots have bad or corrupted firmware.
++
++
++Enabling the driver
++===================
++
++The driver is enabled via the standard kernel configuration system,
++using the make command::
++
++  make oldconfig/menuconfig/etc.
++
++The driver is located in the menu structure at:
++
++  -> Device Drivers
++    -> Network device support (NETDEVICES [=y])
++      -> Ethernet driver support
++        -> Pensando devices
++          -> Pensando Ethernet PDS_CORE Support
++
++Support
++=======
++
++For general Linux networking support, please use the netdev mailing
++list, which is monitored by Pensando personnel::
++
++  netdev@vger.kernel.org
++
++For more specific support needs, please use the Pensando driver support
++email::
++
++  drivers@pensando.io
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 14ee1c72d01a..a4f989fa8192 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16150,8 +16150,9 @@ M:	Shannon Nelson <snelson@pensando.io>
+ M:	drivers@pensando.io
+ L:	netdev@vger.kernel.org
+ S:	Supported
+-F:	Documentation/networking/device_drivers/ethernet/pensando/ionic.rst
++F:	Documentation/networking/device_drivers/ethernet/pensando/
+ F:	drivers/net/ethernet/pensando/
++F:	include/linux/pds/
  
-+static int pdsc_core_match(struct device *dev, const void *data)
-+{
-+	struct pds_auxiliary_dev *curr_padev;
-+	struct pdsc *curr_pdsc;
-+	const struct pdsc *pdsc;
-+
-+	/* Match the core device searching for its clients */
-+	curr_padev = container_of(dev, struct pds_auxiliary_dev, aux_dev.dev);
-+	curr_pdsc = (struct pdsc *)dev_get_drvdata(curr_padev->aux_dev.dev.parent);
-+	pdsc = data;
-+
-+	if (curr_pdsc == pdsc)
-+		return 1;
-+
-+	return 0;
-+}
-+
-+int pdsc_auxbus_publish(struct pdsc *pdsc, u16 client_id,
-+			union pds_core_notifyq_comp *event)
-+{
-+	struct pds_auxiliary_dev *padev;
-+	struct auxiliary_device *aux_dev;
-+
-+	/* Search aux bus for this core's devices */
-+	aux_dev = auxiliary_find_device(NULL, pdsc, pdsc_core_match);
-+	while (aux_dev) {
-+		padev = container_of(aux_dev, struct pds_auxiliary_dev, aux_dev);
-+		if ((padev->client_id == client_id ||
-+		     client_id == PDSC_ALL_CLIENT_IDS) &&
-+		    padev->event_handler)
-+			padev->event_handler(padev, event);
-+		put_device(&aux_dev->dev);
-+
-+		aux_dev = auxiliary_find_device(&aux_dev->dev,
-+						pdsc, pdsc_core_match);
-+	}
-+
-+	return 0;
-+}
-+
- int pdsc_auxbus_dev_add_vf(struct pdsc *pdsc, int vf_id)
- {
- 	struct pds_auxiliary_dev *padev;
-diff --git a/drivers/net/ethernet/pensando/pds_core/core.c b/drivers/net/ethernet/pensando/pds_core/core.c
-index 202f1a6b4605..d1ef6acd8dd0 100644
---- a/drivers/net/ethernet/pensando/pds_core/core.c
-+++ b/drivers/net/ethernet/pensando/pds_core/core.c
-@@ -532,6 +532,11 @@ void pdsc_stop(struct pdsc *pdsc)
+ PER-CPU MEMORY ALLOCATOR
+ M:	Dennis Zhou <dennis@kernel.org>
+diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
+index 3f7519e435b8..d9e8973d54f6 100644
+--- a/drivers/net/ethernet/pensando/Kconfig
++++ b/drivers/net/ethernet/pensando/Kconfig
+@@ -17,6 +17,18 @@ config NET_VENDOR_PENSANDO
  
- static void pdsc_fw_down(struct pdsc *pdsc)
- {
-+	union pds_core_notifyq_comp reset_event = {
-+		.reset.ecode = cpu_to_le16(PDS_EVENT_RESET),
-+		.reset.state = 0,
-+	};
+ if NET_VENDOR_PENSANDO
+ 
++config PDS_CORE
++	tristate "Pensando Data Systems Core Device Support"
++	depends on 64BIT && PCI
++	help
++	  This enables the support for the Pensando Core device family of
++	  adapters.  More specific information on this driver can be
++	  found in
++	  <file:Documentation/networking/device_drivers/ethernet/pensando/pds_core.rst>.
 +
- 	mutex_lock(&pdsc->config_lock);
- 
- 	if (test_and_set_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
-@@ -540,6 +545,9 @@ static void pdsc_fw_down(struct pdsc *pdsc)
- 		return;
- 	}
- 
-+	/* Notify clients of fw_down */
-+	pdsc_auxbus_publish(pdsc, PDSC_ALL_CLIENT_IDS, &reset_event);
++	  To compile this driver as a module, choose M here. The module
++	  will be called pds_core.
 +
- 	netif_device_detach(pdsc->netdev);
- 	pdsc_mask_interrupts(pdsc);
- 	pdsc_teardown(pdsc, PDSC_TEARDOWN_RECOVERY);
-@@ -549,6 +557,10 @@ static void pdsc_fw_down(struct pdsc *pdsc)
- 
- static void pdsc_fw_up(struct pdsc *pdsc)
- {
-+	union pds_core_notifyq_comp reset_event = {
-+		.reset.ecode = cpu_to_le16(PDS_EVENT_RESET),
-+		.reset.state = 1,
-+	};
- 	int err;
- 
- 	mutex_lock(&pdsc->config_lock);
-@@ -573,6 +585,9 @@ static void pdsc_fw_up(struct pdsc *pdsc)
- 
- 	pdsc_vf_attr_replay(pdsc);
- 
-+	/* Notify clients of fw_up */
-+	pdsc_auxbus_publish(pdsc, PDSC_ALL_CLIENT_IDS, &reset_event);
-+
- 	return;
- 
- err_out:
-diff --git a/drivers/net/ethernet/pensando/pds_core/core.h b/drivers/net/ethernet/pensando/pds_core/core.h
-index 3ab314217464..25f09f4f035d 100644
---- a/drivers/net/ethernet/pensando/pds_core/core.h
-+++ b/drivers/net/ethernet/pensando/pds_core/core.h
-@@ -321,6 +321,9 @@ int pdsc_start(struct pdsc *pdsc);
- void pdsc_stop(struct pdsc *pdsc);
- void pdsc_health_thread(struct work_struct *work);
- 
-+#define PDSC_ALL_CLIENT_IDS   0xffff
-+int pdsc_auxbus_publish(struct pdsc *pdsc, u16 client_id,
-+			union pds_core_notifyq_comp *event);
- int pdsc_auxbus_dev_add_vf(struct pdsc *pdsc, int vf_id);
- int pdsc_auxbus_dev_del_vf(struct pdsc *pdsc, int vf_id);
- 
+ config IONIC
+ 	tristate "Pensando Ethernet IONIC Support"
+ 	depends on 64BIT && PCI
 -- 
 2.17.1
 
