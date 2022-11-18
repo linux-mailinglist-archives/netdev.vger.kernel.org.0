@@ -2,154 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FC2F62F024
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 09:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1782962F0CD
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 10:16:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241440AbiKRIxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 03:53:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
+        id S241831AbiKRJQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 04:16:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240724AbiKRIxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 03:53:47 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB00F1FCF7
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 00:53:45 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id a14so8242703wru.5
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 00:53:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gZfjb461nfSkb95dgxGCMSdAVYV594goseCsH+IUcbo=;
-        b=fGdjyrRSKvXYZslJrpsPREHVs2Rq31UnhH3z7c+4mfBu/ZXW+4p6P8BQ728ynaK6TX
-         hA1A4K/Geh2KTdswzCBewZeIBP2HO4yMPOIySgnmurOxeNP78V4A9wNimhhSr3+yBZme
-         +2ErQh4qqZrJuJdCsm7JQL/uuGHl0jTUzhHP6OETsvtMJm8AqxQF+t5ulVNAC59KMlOS
-         T2MlRMTInctJ23kG6xjuq4VPdiyGqa+8QDJYu9xpqYnIT4BPMEX0KTQ7VYdKIXHxDErW
-         irq3l58PJuYFDGdlfwRuOTs3jAY7Ibm/evqeuclA7tZ6fkz1IBEY4cBTTfpIZt8144t8
-         z7rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gZfjb461nfSkb95dgxGCMSdAVYV594goseCsH+IUcbo=;
-        b=Vt/s7CBB8iF810zdv40MEzTyfFbi2LOEA/g7CI41uMR648Jm+RQOvpmkTnFvXXjhsU
-         jINKo6vjxRw5Nxt8PbJ/zEJfX9TeOO6V1EXfocK8w/Ky2Wi7w/1hpdCi6IYok0+EXeLx
-         4H0ZWNVqYptfHBNSrWPjDeT/I1EIWb2StJo2JoGBDSsGgsW3GtoXCsWSHwFH8RfmLweq
-         aidYlfHua5g21fAzGNVobWHtYLRILsNNz50rESHwytYJpom9MDmMzoIL4DJc1iJwtkCB
-         jrIg7nTUWjmfUomnooFYWUdKI/yIEOd0+as7TirQo/EABTJMGh64qWbe0C3DWueYPesC
-         PXtg==
-X-Gm-Message-State: ANoB5pk0eW7lGc5jVat2e37n3vdZkqu6PMyDHI8ehtQbXbHMFmF29fpk
-        yNWqA1PEJQaWLXpJyZw9BSu+x4MeELg=
-X-Google-Smtp-Source: AA0mqf6QcgP79ATjT13CReBvFx+IlrjlNidnGO/XfJRyGNmScwA7OKri5P+DMNehE/8tdA8xd0Z9lg==
-X-Received: by 2002:a05:6000:1042:b0:22e:3f37:fdc with SMTP id c2-20020a056000104200b0022e3f370fdcmr3572845wrx.665.1668761624009;
-        Fri, 18 Nov 2022 00:53:44 -0800 (PST)
-Received: from suse.localnet (host-79-26-100-208.retail.telecomitalia.it. [79.26.100.208])
-        by smtp.gmail.com with ESMTPSA id i6-20020a05600c354600b003cf894c05e4sm8466388wmq.22.2022.11.18.00.53.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 00:53:43 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     netdev@vger.kernel.org,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Subject: Re: [PATCH net-next 4/5] cassini: Use kmap_local_page() instead of kmap_atomic()
-Date:   Fri, 18 Nov 2022 09:53:42 +0100
-Message-ID: <2183897.Icojqenx9y@suse>
-In-Reply-To: <20221117222557.2196195-5-anirudh.venkataramanan@intel.com>
-References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com> <20221117222557.2196195-5-anirudh.venkataramanan@intel.com>
+        with ESMTP id S241873AbiKRJQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 04:16:19 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA0E920A3
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 01:16:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668762969; x=1700298969;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tFvAKQ1x7/ByRAvgJd7KASfpF+dPcyFIQ0DMGffkq2U=;
+  b=HHEA8WbN3Jb4E8pq+NJHGj2hYJy+0uNW3Sr5PLXlU9jyZqYoCHLn84Wo
+   MsaFDommlgZ9Q4590n8Z14BcKWEAj6rxIn33EdRmJE2wgLAOUn0y/1UOm
+   pHZP/zz3PhhZK7T7MbIqkEyU9eSjRNo6+m/skvDcpcXSMeDmL7gMdW63X
+   zNcRYgd8hQ2+Rhlx31FoviMe4gNeIncr94+s7EFLCgrbF2F5epnwgazsk
+   DEMNmLpqDPK0ZryvF4WovQ3BuKkMbYvaLC0S9PP0y9ofv7Lgelx2CyouU
+   W3GGGNpQ+wGNL6m5+JdgAYPQuNVcipI6vVUBEg+IBbH2ty4Ym3Jk6l45w
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="300632184"
+X-IronPort-AV: E=Sophos;i="5.96,173,1665471600"; 
+   d="scan'208";a="300632184"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 01:16:09 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="782582043"
+X-IronPort-AV: E=Sophos;i="5.96,173,1665471600"; 
+   d="scan'208";a="782582043"
+Received: from unknown (HELO paamrpdk12-S2600BPB.aw.intel.com) ([10.228.151.145])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 01:16:08 -0800
+From:   Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+To:     tirtha@gmail.com, magnus.karlsson@intel.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        maciej.fijalkowski@intel.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH intel-next v4] i40e: allow toggling loopback mode via ndo_set_features callback
+Date:   Fri, 18 Nov 2022 14:33:06 +0530
+Message-Id: <20221118090306.48022-1-tirthendu.sarkar@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On gioved=EC 17 novembre 2022 23:25:56 CET Anirudh Venkataramanan wrote:
-> kmap_atomic() is being deprecated in favor of kmap_local_page().
-> Replace kmap_atomic() and kunmap_atomic() with kmap_local_page() and
-> kunmap_local() respectively. cas_page_map() and cas_page_unmap() aren't
-> really useful anymore, so get rid of these as well.
->=20
-> Note that kmap_atomic() disables preemption and page-fault processing,
-> but kmap_local_page() doesn't. Converting the former to the latter is safe
-> only if there isn't an implicit dependency on preemption and page-fault
-> handling being disabled, which does appear to be the case here.
+Add support for NETIF_F_LOOPBACK. This feature can be set via:
+$ ethtool -K eth0 loopback <on|off>
 
-Same NIT: again, conversions would be possible with the addition of explici=
-t=20
-call(s) for disable page faults and preemption. As I said, I have no proble=
-ms=20
-with this inaccurate description. Please see 2/5, I don't think it should=20
-prevent the patch to be applied.
+This sets the MAC Tx->Rx loopback.
 
->=20
-> Also note that the page being mapped is not allocated by the driver,
-> and so the driver doesn't know if the page is in normal memory. This is t=
-he
-> reason kmap_local_page() is used as opposed to page_address().
->=20
-> I don't have hardware, so this change has only been compile tested.
->=20
-> Cc: Ira Weiny <ira.weiny@intel.com>
-> Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-> ---
->  drivers/net/ethernet/sun/cassini.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/sun/cassini.c
-> b/drivers/net/ethernet/sun/cassini.c index 2f66cfc..3e632b0 100644
-> --- a/drivers/net/ethernet/sun/cassini.c
-> +++ b/drivers/net/ethernet/sun/cassini.c
-> @@ -90,8 +90,6 @@
->  #include <linux/uaccess.h>
->  #include <linux/jiffies.h>
->=20
-> -#define cas_page_map(x)      kmap_atomic((x))
-> -#define cas_page_unmap(x)    kunmap_atomic((x))
->  #define CAS_NCPUS            num_online_cpus()
->=20
->  #define cas_skb_release(x)  netif_rx(x)
-> @@ -2788,11 +2786,11 @@ static inline int cas_xmit_tx_ringN(struct cas *c=
-p,
-> int ring, ctrl, 0);
->  			entry =3D TX_DESC_NEXT(ring, entry);
->=20
-> -			addr =3D cas_page_map(skb_frag_page(fragp));
-> +			addr =3D kmap_local_page(skb_frag_page(fragp));
->  			memcpy(tx_tiny_buf(cp, ring, entry),
->  			       addr + skb_frag_off(fragp) + len -=20
-tabort,
->  			       tabort);
-> -			cas_page_unmap(addr);
-> +			kunmap_local(addr);
+This feature is used for the xsk selftests, and might have other uses
+too.
 
-memcpy_from_page() would be better suited.
-Please remember to use memcpy_{from,to}_page() where they are better suited.
-However, they would not change the logic, so I'm OK with this change too.
+Changelog:
+    v3 -> v4:
+    - Removed unused %_LEGACY macros as suggested by Alexandr Lobakin.
+    - Modified checks for interface bringup and i40e_set_loopback().
+    - Propagating up return value from i40_set_loopback().
 
->  			mapping =3D tx_tiny_map(cp, ring, entry, tentry);
->  			len     =3D tabort;
->  		}
-> --
-> 2.37.2
+    v2 -> v3:
+     - Fixed loopback macros as per NVM version 6.01+.
+     - Renamed existing macros as *_LEGACY.
+     - Based on NVM verison appropriate macro is used for MAC loopback.
 
-Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+    v1 -> v2:
+     - Moved loopback to netdev's hardware features as suggested by
+       Alexandr Lobakin.
 
-=46eel free to forward my tag, if maintainers require the use of the above-
-mentioned helpers and ask for v2.
+Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+---
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  8 ++++--
+ drivers/net/ethernet/intel/i40e/i40e_common.c | 26 +++++++++++++++++
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 28 ++++++++++++++++++-
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |  3 ++
+ 4 files changed, 61 insertions(+), 4 deletions(-)
 
-Thanks,
-
-=46abio
-
-
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h b/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
+index 60f9e0a6aaca..085355e2acac 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
+@@ -1795,9 +1795,11 @@ I40E_CHECK_CMD_LENGTH(i40e_aqc_an_advt_reg);
+ /* Set Loopback mode (0x0618) */
+ struct i40e_aqc_set_lb_mode {
+ 	__le16	lb_mode;
+-#define I40E_AQ_LB_PHY_LOCAL	0x01
+-#define I40E_AQ_LB_PHY_REMOTE	0x02
+-#define I40E_AQ_LB_MAC_LOCAL	0x04
++#define I40E_LEGACY_LOOPBACK_NVM_VER	0x6000
++#define I40E_AQ_LB_MAC_LOCAL		0x01
++#define I40E_AQ_LB_PHY_LOCAL		0x05
++#define I40E_AQ_LB_PHY_REMOTE		0x06
++#define I40E_AQ_LB_MAC_LOCAL_LEGACY   	0x04
+ 	u8	reserved[14];
+ };
+ 
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
+index 4f01e2a6b6bb..8f764ff5c990 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_common.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
+@@ -1830,6 +1830,32 @@ i40e_status i40e_aq_set_phy_int_mask(struct i40e_hw *hw,
+ 	return status;
+ }
+ 
++/**
++ * i40e_aq_set_mac_loopback
++ * @hw: pointer to the HW struct
++ * @ena_lpbk: Enable or Disable loopback
++ * @cmd_details: pointer to command details structure or NULL
++ *
++ * Enable/disable loopback on a given port
++ */
++i40e_status i40e_aq_set_mac_loopback(struct i40e_hw *hw, bool ena_lpbk,
++				     struct i40e_asq_cmd_details *cmd_details)
++{
++	struct i40e_aq_desc desc;
++	struct i40e_aqc_set_lb_mode *cmd =
++		(struct i40e_aqc_set_lb_mode *)&desc.params.raw;
++
++	i40e_fill_default_direct_cmd_desc(&desc, i40e_aqc_opc_set_lb_modes);
++	if (ena_lpbk) {
++		if (hw->nvm.version <= I40E_LEGACY_LOOPBACK_NVM_VER)
++			cmd->lb_mode = cpu_to_le16(I40E_AQ_LB_MAC_LOCAL_LEGACY);
++		else
++			cmd->lb_mode = cpu_to_le16(I40E_AQ_LB_MAC_LOCAL);
++	}
++
++	return i40e_asq_send_command(hw, &desc, NULL, 0, cmd_details);
++}
++
+ /**
+  * i40e_aq_set_phy_debug
+  * @hw: pointer to the hw struct
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 4880b740fa6e..298fdd19900c 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -12920,6 +12920,29 @@ static void i40e_clear_rss_lut(struct i40e_vsi *vsi)
+ 	}
+ }
+ 
++/**
++ * i40e_set_loopback - turn on/off loopback mode on underlying PF
++ * @vsi: ptr to VSI
++ * @ena: flag to indicate the on/off setting
++ */
++static int i40e_set_loopback(struct i40e_vsi *vsi, bool ena)
++{
++	bool if_running = netif_running(vsi->netdev) &&
++			  !test_and_set_bit(__I40E_VSI_DOWN, vsi->state);
++	int ret;
++
++	if (if_running)
++		i40e_down(vsi);
++
++	ret = i40e_aq_set_mac_loopback(&vsi->back->hw, ena, NULL);
++	if (ret)
++		netdev_err(vsi->netdev, "Failed to toggle loopback state\n");
++	if (if_running)
++		i40e_up(vsi);
++
++	return ret;
++}
++
+ /**
+  * i40e_set_features - set the netdev feature flags
+  * @netdev: ptr to the netdev being adjusted
+@@ -12960,6 +12983,9 @@ static int i40e_set_features(struct net_device *netdev,
+ 	if (need_reset)
+ 		i40e_do_reset(pf, I40E_PF_RESET_FLAG, true);
+ 
++	if ((features ^ netdev->features) & NETIF_F_LOOPBACK)
++		return i40e_set_loopback(vsi, !!(features & NETIF_F_LOOPBACK));
++
+ 	return 0;
+ }
+ 
+@@ -13722,7 +13748,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+ 	if (!(pf->flags & I40E_FLAG_MFP_ENABLED))
+ 		hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
+ 
+-	netdev->hw_features |= hw_features;
++	netdev->hw_features |= hw_features | NETIF_F_LOOPBACK;
+ 
+ 	netdev->features |= hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_prototype.h b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+index ebdcde6f1aeb..9a71121420c3 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_prototype.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+@@ -105,6 +105,9 @@ enum i40e_status_code i40e_aq_set_phy_config(struct i40e_hw *hw,
+ 				struct i40e_asq_cmd_details *cmd_details);
+ enum i40e_status_code i40e_set_fc(struct i40e_hw *hw, u8 *aq_failures,
+ 				  bool atomic_reset);
++i40e_status i40e_aq_set_mac_loopback(struct i40e_hw *hw,
++				     bool ena_lpbk,
++				     struct i40e_asq_cmd_details *cmd_details);
+ i40e_status i40e_aq_set_phy_int_mask(struct i40e_hw *hw, u16 mask,
+ 				     struct i40e_asq_cmd_details *cmd_details);
+ i40e_status i40e_aq_clear_pxe_mode(struct i40e_hw *hw,
+-- 
+2.34.1
 
