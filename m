@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9010E62F7B9
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 15:35:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3241A62F7B4
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 15:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231534AbiKROff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 09:35:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33656 "EHLO
+        id S242527AbiKROf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 09:35:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242434AbiKROef (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 09:34:35 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365A68F3F7
+        with ESMTP id S242432AbiKROee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 09:34:34 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361CF8F3EF
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:33:45 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id j15so8860898wrq.3
+Received: by mail-wr1-x42f.google.com with SMTP id j15so8860997wrq.3
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:33:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=x+959Y5+XNaVCC9GiYukZyKg53qWkxIcg2rooGUoYxs=;
-        b=YSNhB9fk95FVP8eq+MinfzITNvsGPTw7J/BfOAnCA6MRKMZfnjmjw9p0/GKJYPgLgu
-         9Uf3MLZ6MeHhpyDqphm8PgmMbOmI9M/f+OzOpVjM43Nv9m86WVCmGrOj3l0tGB+1v4t9
-         E55zg742HdjX3I8Xez3VNhN0tPDng4BOl+fLOTvBMcL27QGtZ2ILefS8PazePVfQle8N
-         y5zWv0VxBqSYKmxV91YmcyduS6mo33+3c1BFDlnM3XuEmnbuSXpdI+vZHZN2DMvAYLH/
-         DOifHgLjWiXg9pIpOeFLg9R+b1hj6UykJ86b/75uNd67UTOdRulhaB7c80oFGVdcUp/y
-         +K2Q==
+        bh=xLXGft1LTrsRUm/stssOzl0Wu0Tv4L36SFUjpXRih0U=;
+        b=cCR5gQy562wvY7HQ1tfOAsEkzRhd5Q67vmDhpKmXdhgwcXETjvsGX1J4mU9pCcNhV4
+         c+Mc00TU+/VeylHvYs5E0MnIxYMkiSJ5qbqI+34tyGUSNO9RGoGb93KXrFmg4kBwz4sl
+         4thkPqltfrVF30zr5uUyfhZ7eAOr0grm4V84lVwTr2NqhKpjXEDdkOYMVqxrlfV6LeWY
+         RJ1wBOHq7O34tVSUCtLq/MQUgq/jAyVT9beK7sU6Uu43xH623nWYhGBDiDoYqdx/L9Nh
+         HoH408Wcb8xfa9OozfxyU92ujUElSLyXDP8Wg+ouxedfxijEjU3QB62Dt5KIYW7GDdkI
+         EwOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=x+959Y5+XNaVCC9GiYukZyKg53qWkxIcg2rooGUoYxs=;
-        b=xZdZXQ7YTEE7Vt7ojaXPNDRkBhpAr7f1v4E6yaohLYGbOR+dxLZtmqi3Bz2chI1dBB
-         IsL27Q+f2KrGirdb1D4Qmnf+IBFDWq6iuk7YM6K0WGfJR4bqL5Ac91JxdpUknAe5bsYk
-         /HTxSpoW5Cyo70+A7XF+whG6Swd+MZ3mncUjTZZMEIDcrqXLRfz8dLVwJvRUmBJ8TmL3
-         8N1MIsZaCbdMN3OFAonjWIjPc5+vpFkwYUyawmkXrkS0z6ksY2W7hprr0MhH4AiU8Ml7
-         bJu6J/Ts1IKw4x2qBgbITa311CjluN4KP7/DhplKw+Rj3W3MnoB7ooVYCCudvJcQeP7R
-         /QNA==
-X-Gm-Message-State: ANoB5pl7dlr6iQHU3E4ozC4p6FJmI5VBM9zeXuPidRxD4ji2d/2BBo+Z
-        zZNovXJ+tLZ7vbaS5pDs8by5WQ==
-X-Google-Smtp-Source: AA0mqf6kIg/NB07SkdVixNMP4pENqPKYVFH1VHQ4hmTwJX0k5brwWTGOjQC+G8oF6LOfXK+X71xZ2w==
-X-Received: by 2002:a05:6000:884:b0:241:b92c:6d73 with SMTP id ca4-20020a056000088400b00241b92c6d73mr3938192wrb.242.1668782024045;
-        Fri, 18 Nov 2022 06:33:44 -0800 (PST)
+        bh=xLXGft1LTrsRUm/stssOzl0Wu0Tv4L36SFUjpXRih0U=;
+        b=u5UKTjd69YFU0vFMPdi0uG/Ot2Xi/lmtRd8ryqFJu8khHn/cyHCxxw8h/8TzbT3FH0
+         9WbrVQB8WOVuJMU1r5lHNWzVFi74oMm/1SnNINoeVw0zPuCd6TmKz248DX4UE6hNLLku
+         UtT3M/dx3kA6xz0yxD/Ak4ajaH2JGjYa1V/oi8BUmtkjVTJwPBqn3vwAA89ju0442kdW
+         kq6uzEWp0ztcN8nR6qr6AOgApFTcE1eqNM+YmXcQm8MjSVQzx+DWNqcjjezr2CpEa67p
+         QyD5P4rkBQou0Hm2axrSl4eJfe0Eo2/Il/XmgjBrQiYqAd0F9nIJIjpYyiLIHxvmz+1w
+         BreA==
+X-Gm-Message-State: ANoB5pkUg/6tMMLdpZCbOp6tP9ELe8kL6uM+IN9o2uNaGWzZrESSBlsV
+        wcSfUvemFUlwS7sANY3XEixk7w==
+X-Google-Smtp-Source: AA0mqf5izo8CUrxyl+/5K7a0ETPX8fLNUL2jQN7f+Pa+tcQ6frMXmlBDMAAxi7obM1ilnXFV6/S1WQ==
+X-Received: by 2002:adf:b342:0:b0:236:62ce:3db with SMTP id k2-20020adfb342000000b0023662ce03dbmr4460768wrd.687.1668782025463;
+        Fri, 18 Nov 2022 06:33:45 -0800 (PST)
 Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
-        by smtp.gmail.com with ESMTPSA id j21-20020a05600c1c1500b003cfb7c02542sm5436726wms.11.2022.11.18.06.33.42
+        by smtp.gmail.com with ESMTPSA id j21-20020a05600c1c1500b003cfb7c02542sm5436726wms.11.2022.11.18.06.33.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 06:33:43 -0800 (PST)
+        Fri, 18 Nov 2022 06:33:45 -0800 (PST)
 From:   Neil Armstrong <neil.armstrong@linaro.org>
-Date:   Fri, 18 Nov 2022 15:33:35 +0100
-Subject: [PATCH 09/12] dt-bindings: phy: convert meson-gxl-usb2-phy.txt to dt-schema
+Date:   Fri, 18 Nov 2022 15:33:36 +0100
+Subject: [PATCH 10/12] dt-bindings: mmc: convert amlogic,meson-gx.txt to dt-schema
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20221117-b4-amlogic-bindings-convert-v1-9-3f025599b968@linaro.org>
+Message-Id: <20221117-b4-amlogic-bindings-convert-v1-10-3f025599b968@linaro.org>
 References: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
 In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
 To:     Jakub Kicinski <kuba@kernel.org>,
@@ -100,102 +100,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Amlogic Meson GXL USB2 PHY bindings to dt-schema.
+Convert the Amlogic SD / eMMC controller for S905/GXBB family SoCs
+to dt-schema.
 
 Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- .../bindings/phy/amlogic,meson-gxl-usb2-phy.yaml   | 56 ++++++++++++++++++++++
- .../devicetree/bindings/phy/meson-gxl-usb2-phy.txt | 21 --------
- 2 files changed, 56 insertions(+), 21 deletions(-)
+ .../bindings/mmc/amlogic,meson-gx-mmc.yaml         | 78 ++++++++++++++++++++++
+ .../devicetree/bindings/mmc/amlogic,meson-gx.txt   | 39 -----------
+ 2 files changed, 78 insertions(+), 39 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/amlogic,meson-gxl-usb2-phy.yaml b/Documentation/devicetree/bindings/phy/amlogic,meson-gxl-usb2-phy.yaml
+diff --git a/Documentation/devicetree/bindings/mmc/amlogic,meson-gx-mmc.yaml b/Documentation/devicetree/bindings/mmc/amlogic,meson-gx-mmc.yaml
 new file mode 100644
-index 000000000000..4dd287f1f400
+index 000000000000..c9545334fd99
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/amlogic,meson-gxl-usb2-phy.yaml
-@@ -0,0 +1,56 @@
++++ b/Documentation/devicetree/bindings/mmc/amlogic,meson-gx-mmc.yaml
+@@ -0,0 +1,78 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/phy/amlogic,meson-gxl-usb2-phy.yaml#
++$id: http://devicetree.org/schemas/mmc/amlogic,meson-gx-mmc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Amlogic Meson GXL USB2 PHY
++title: Amlogic SD / eMMC controller for S905/GXBB family SoCs
++
++description:
++  The MMC 5.1 compliant host controller on Amlogic provides the
++  interface for SD, eMMC and SDIO devices
 +
 +maintainers:
 +  - Neil Armstrong <neil.armstrong@linaro.org>
 +
++allOf:
++  - $ref: mmc-controller.yaml#
++
 +properties:
 +  compatible:
-+    const: amlogic,meson-gxl-usb2-phy
++    oneOf:
++      - enum:
++          - amlogic,meson-gx-mmc
++          - amlogic,meson-axg-mmc
++      - items:
++          - enum:
++              - amlogic,meson-gxbb-mmc
++              - amlogic,meson-gxl-mmc
++              - amlogic,meson-gxm-mmc
++          - const: amlogic,meson-gx-mmc
 +
 +  reg:
 +    maxItems: 1
 +
-+  clocks:
++  interrupts:
 +    maxItems: 1
++
++  clocks:
++    maxItems: 3
 +
 +  clock-names:
 +    items:
-+      - const: phy
++      - const: core
++      - const: clkin0
++      - const: clkin1
 +
 +  resets:
 +    maxItems: 1
 +
-+  reset-names:
-+    items:
-+      - const: phy
-+
-+  "#phy-cells":
-+    const: 0
-+
-+  phy-supply: true
++  amlogic,dram-access-quirk:
++    type: boolean
++    description:
++      set when controller's internal DMA engine cannot access the DRAM memory,
++      like on the G12A dedicated SDIO controller.
 +
 +required:
 +  - compatible
 +  - reg
-+  - "#phy-cells"
++  - interrupts
++  - clocks
++  - clock-names
++  - resets
 +
-+additionalProperties: false
++unevaluatedProperties: false
 +
 +examples:
 +  - |
-+    phy@78000 {
-+          compatible = "amlogic,meson-gxl-usb2-phy";
-+          reg = <0x78000 0x20>;
-+          clocks = <&xtal>;
-+          clock-names = "phy";
-+          resets = <&phy_reset>;
-+          reset-names = "phy";
-+          #phy-cells = <0>;
-+          phy-supply = <&usb2_supply>;
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    mmc@70000 {
++          compatible = "amlogic,meson-gx-mmc";
++          reg = <0x70000 0x2000>;
++          interrupts = <GIC_SPI 216 IRQ_TYPE_EDGE_RISING>;
++          clocks = <&clk_mmc>, <&xtal>, <&clk_div>;
++          clock-names = "core", "clkin0", "clkin1";
++          pinctrl-0 = <&emm_pins>;
++          resets = <&reset_mmc>;
 +    };
-diff --git a/Documentation/devicetree/bindings/phy/meson-gxl-usb2-phy.txt b/Documentation/devicetree/bindings/phy/meson-gxl-usb2-phy.txt
+diff --git a/Documentation/devicetree/bindings/mmc/amlogic,meson-gx.txt b/Documentation/devicetree/bindings/mmc/amlogic,meson-gx.txt
 deleted file mode 100644
-index b84a02ebffdf..000000000000
---- a/Documentation/devicetree/bindings/phy/meson-gxl-usb2-phy.txt
+index ccc5358db131..000000000000
+--- a/Documentation/devicetree/bindings/mmc/amlogic,meson-gx.txt
 +++ /dev/null
-@@ -1,21 +0,0 @@
--* Amlogic Meson GXL and GXM USB2 PHY binding
+@@ -1,39 +0,0 @@
+-Amlogic SD / eMMC controller for S905/GXBB family SoCs
+-
+-The MMC 5.1 compliant host controller on Amlogic provides the
+-interface for SD, eMMC and SDIO devices.
+-
+-This file documents the properties in addition to those available in
+-the MMC core bindings, documented by mmc.txt.
 -
 -Required properties:
--- compatible:	Should be "amlogic,meson-gxl-usb2-phy"
--- reg:		The base address and length of the registers
--- #phys-cells:	must be 0 (see phy-bindings.txt in this directory)
+-- compatible : contains one of:
+-  - "amlogic,meson-gx-mmc"
+-  - "amlogic,meson-gxbb-mmc"
+-  - "amlogic,meson-gxl-mmc"
+-  - "amlogic,meson-gxm-mmc"
+-  - "amlogic,meson-axg-mmc"
+-- clocks     : A list of phandle + clock-specifier pairs for the clocks listed in clock-names.
+-- clock-names: Should contain the following:
+-	"core" - Main peripheral bus clock
+-	"clkin0" - Parent clock of internal mux
+-	"clkin1" - Other parent clock of internal mux
+-  The driver has an internal mux clock which switches between clkin0 and clkin1 depending on the
+-  clock rate requested by the MMC core.
+-- resets     : phandle of the internal reset line
 -
 -Optional properties:
--- clocks:	a phandle to the clock of this PHY
--- clock-names:	must be "phy"
--- resets:	a phandle to the reset line of this PHY
--- reset-names:	must be "phy"
--- phy-supply:	see phy-bindings.txt in this directory
--
+-- amlogic,dram-access-quirk: set when controller's internal DMA engine cannot access the
+-  DRAM memory, like on the G12A dedicated SDIO controller.
 -
 -Example:
--	usb2_phy0: phy@78000 {
--		compatible = "amlogic,meson-gxl-usb2-phy";
--		#phy-cells = <0>;
--		reg = <0x0 0x78000 0x0 0x20>;
+-
+-	sd_emmc_a: mmc@70000 {
+-		compatible = "amlogic,meson-gxbb-mmc";
+-		reg = <0x0 0x70000 0x0 0x2000>;
+-		interrupts = < GIC_SPI 216 IRQ_TYPE_EDGE_RISING>;
+-		clocks = <&clkc CLKID_SD_EMMC_A>, <&xtal>, <&clkc CLKID_FCLK_DIV2>;
+-		clock-names = "core", "clkin0", "clkin1";
+-		pinctrl-0 = <&emmc_pins>;
+-		resets = <&reset RESET_SD_EMMC_A>;
 -	};
 
 -- 
