@@ -2,129 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B705A62FC46
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:16:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88D9762FC60
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242559AbiKRSQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 13:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        id S242632AbiKRSTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 13:19:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242565AbiKRSQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:16:09 -0500
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2076.outbound.protection.outlook.com [40.107.249.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEA98CFDB
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:16:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HhcADIE0dX0YGU9YiV0aTIkg+e3NjX81SaiE8msvOkofOfgbJxEwh6kQ2gQAKTwDuLOL9RCcLzb6pzcqu2ZJxloIsnUT8sDSW7AL7MG3abhcFWKlyr4NMDj+l7pLY2KL+l61Mm9AHc6DK/qQiiXWs9eK6+Ze4inxl5ORX4O7b00klOAWIsk2kF9EfeZSWzTWWkArDK7OjjaJ7PNbdE7xgHfPXXGlsNxlpdlk9je5tnFdpt9ssIACPEkVMRY1r00BLS61D0aXLknXTV7nAgLWn0+CnLNoa1aEwlDzMpyPnY7mxYAfuGu/45SSUFU1cx7ieJC+VmlstDmJoNCXIopOeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0dAW+qJ0f1UHCcnUhPgp/csucIdfgjI7/SiExP91bHo=;
- b=gI8TyzSWSCZUzDtecEnJ/18ZDNSOCGdNr4vt6OqSgujJtlcDCMDthUyIUdrvY1OYVSLmHekDG838WfAwjN3bhVF5XnBTg4R5SwdhZn+K6rCJxbY1CFgEIUxuHvonCgKt7+ZsEdTftTy2xNmFq2u0HUieug+4XYczoiQJ5mLz0Vcr6w+MfgDrR+HrOo8VMrzbk5vrt9LwtplcCqo6u22vHFDT++p4W0jgIcb+tY7RGr0HB37qjjeIdy9U2j2HSuILI2CbZJdfTTwpalmWvBJlzY9ZbMzF4wNdcn9nx3KRNyno8Y45YybrxtYbmlPwwk/Fo+ZtgegiTc4YS4L3jM9Yow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0dAW+qJ0f1UHCcnUhPgp/csucIdfgjI7/SiExP91bHo=;
- b=IXrrVkcy9cWj2SUgJowM2F751bykNBBLVSXZLenLkd32Nz9qxPp6WchXokBoruYMcmNWwpnCmSrrzM3y+tllf8bj6zDyERQkQcESiFDZBQf9QGq6F2DoQ+8mYtfU8U9mUyOJxvqPElGb4v8ZxT9VmOnb9IM2XhmNG7zGNFR1AYbXOYSnRRRkZyWpJD7YBtosIkX/oo7x2eV2wK2yhMjQT0WNZXC8P6AcOz+mc+14Jg22JpIjHjGY7gO7AQYMFCjkgrZxRzk4kNVThlFzcuuPuJIafMP5nouIOd3epRoGV8qWATgNHwfmCM+s/rHioJDFzGc3bYJSUHE40iIOq/iMdA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
- by PA4PR03MB8247.eurprd03.prod.outlook.com (2603:10a6:102:270::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.16; Fri, 18 Nov
- 2022 18:16:04 +0000
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::2b95:1fe4:5d8f:22fb]) by DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::2b95:1fe4:5d8f:22fb%6]) with mapi id 15.20.5813.019; Fri, 18 Nov 2022
- 18:16:04 +0000
-Message-ID: <78caaf5e-620b-6627-5333-6fcf80c72860@seco.com>
-Date:   Fri, 18 Nov 2022 13:16:00 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: status of rate adaptation
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Tim Harvey <tharvey@gateworks.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <CAJ+vNU3zeNqiGhjTKE8jRjDYR0D7f=iqPLB8phNyA2CWixy7JA@mail.gmail.com>
- <b37de72c-0b5d-7030-a411-6f150d86f2dd@seco.com>
- <2a1590b2-fa9a-f2bf-0ef7-97659244fa9b@seco.com>
- <CAJ+vNU2jc4NefB-kJ0LRtP=ppAXEgoqjofobjbazso7cT2w7PA@mail.gmail.com>
- <b7f31077-c72d-5cd4-30d7-e3e58bb63059@seco.com>
- <Y2+cgh4NBQq8EHoX@shell.armlinux.org.uk>
- <ea320070-a949-c737-22c4-14fd199fdc23@seco.com>
- <Y3JpJDvCdI21yb5v@shell.armlinux.org.uk>
-From:   Sean Anderson <sean.anderson@seco.com>
-In-Reply-To: <Y3JpJDvCdI21yb5v@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR10CA0017.namprd10.prod.outlook.com
- (2603:10b6:208:120::30) To DB9PR03MB8847.eurprd03.prod.outlook.com
- (2603:10a6:10:3dd::13)
+        with ESMTP id S242628AbiKRSTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:19:04 -0500
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F15C93728
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:18:57 -0800 (PST)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-13ae8117023so6846671fac.9
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:18:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=fNnwGanczIlOEoVy4OEmoR/dSYWkyWUH5BAq5Ob+Kiw=;
+        b=gJBrl3WZ97qVM3NI2LxOAIkcLzX+1KjC9HfQrZhs+yxO7EeHBYC0NOA8ndwqQIu9m9
+         MzsuBWsITSp9sLNXnWnwi8naaGOehc9PKEomLULvmyYR0LVTjOgvfoBOwExTadH5bycM
+         ED6yT1CxxGG5yT8Ihb9SmELwyOHU0P7PHFfQpSsH0rSJchYYT5rYPa/qoe7Eg6uKlboE
+         z1T6s7Qdp/DJm3NBAt4hXF16NjB7CW8aAB2kXkctLW1w+x96U0STNaBaAvjnai3NxfiS
+         gIIwlMz9ItIe8AN7iPP/Oa2bPTelXB6lihZ6sqBdThz6xN+JiEbNfe02mmxZjyp8+sBW
+         f0dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fNnwGanczIlOEoVy4OEmoR/dSYWkyWUH5BAq5Ob+Kiw=;
+        b=astsDPi5KQ3Y9kcWo364Ia+5qMtXvw5vR/0bvWixNiwISXqf6/JLPWofV17zJaa1Ej
+         V+ndPcQgzY74QHus9sL501MirQ/W2AfO7uMe7EkLdQolD2UrgO9O08BS+5Dqh/H4gfLu
+         H2vVp0qd7qH1H/kZCQ1oA8J18vFWKT6E+U2aRsEmfMqQ5/LH0+1jqH0MBcOhBUFnO+PB
+         aFDuubFk0IMFc0cQ1jZVgh1NImWbqNMGcrS7HfZ4AqblBZ2V4yY11ITIqvJJ+G2zkR7X
+         KTRVkLlVQHNjHpnQc7/FxPKz/Byy0zo7L9lU8Ep4EThlvXMTIFhgZEOXVndT5XVt4oNo
+         x1bg==
+X-Gm-Message-State: ANoB5plMoOMir+Ngkj/i/mU2xOO88rUXqhiD6QNjswTuDfG4jScjj4CA
+        b5XBJjnUaaPT4FO9BHA7M5k9ofR4h+gAEijLHjJoOg==
+X-Google-Smtp-Source: AA0mqf5Ar+kY1e8eGdghMnj0xIaR0R7Fv+/GgQjxHkmHfBRbquNZ+pOSQ6UBsy2yKGR7QhNo6JqfeLia+RddEIiT4II=
+X-Received: by 2002:a05:6870:9d95:b0:13b:a163:ca6 with SMTP id
+ pv21-20020a0568709d9500b0013ba1630ca6mr8143380oab.125.1668795535941; Fri, 18
+ Nov 2022 10:18:55 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|PA4PR03MB8247:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ae4f898-f036-44cc-903c-08dac990f470
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: R3lxdfGguWcCJA7z41Xmyd55uuUZ1IHQsMjInyT+uFKcptIWoKbXUPojYD9Vl9lYfrfEAvFYg49GiEFklZkjhYHpv8iZxsArgnjGqIQtu8ubPqI0W7iG8vrdpGf+IdUMVZmu/DPNUW/MnyrxE4gBbeZJQB3zpt3EI7fyS4jRWcXxD9QdpfnZJKz/qeNi48ctZf4olKJ32xAnyW+q6KmtI0DK8GoK4QcjMkSwEe6LJyTFe6EXhR11LHfqxiwQxol/P+/XSIQfnTRgWGopC6BCKpwB53HW2hPLtL6UPccfaS8gxBufQZYfi01UoD9XPlGUklj6hcJ2A1nwF9SWqKTfyiJDoEwqc8c+WlYUko5+aliD2SoQiPJQ5PjeKfyT2XGMyIyU6MR7Zoqf3HRA1EUZCJhFUfXcnxKtiVEr54MP1kKgoMfP37c6XNYkqwk/lI2QEmG72rbdZolDtbo+3zsrqxnBa4CSzqBowulTH/4L8vv1toBUhadmikSxOpdURBgRvSDfaXS3S2aZ36//BIttI2ySnom+QLcIigtekpx1Rtrkob+kL67zvH1UdwvWqTzFf1JxTq/ATudaDh50Nen8EfQHFUgliO7SjLMx8Uwe6wQELHCs4WKduxUwy9CqNlYKMia/95s+rdRM/Y8bowLYdR2YddiKTU2gvYeRoJGOx5Q4WKx0eSsTJYZngMbKKTugO+cpwFlxKsct9SH6r61f2FL+0pLwD2Mv1XZ6gWgaaqgJZ5Y8/jrRwvvyvl3RLLjse0avFB1Tgf0gcUQKG3qH5A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39850400004)(396003)(346002)(136003)(366004)(376002)(451199015)(66946007)(66899015)(83380400001)(6486002)(31686004)(5660300002)(478600001)(8936002)(66476007)(4326008)(8676002)(53546011)(66556008)(52116002)(44832011)(2906002)(6506007)(86362001)(31696002)(26005)(6512007)(54906003)(6666004)(3480700007)(38100700002)(41300700001)(2616005)(186003)(316002)(6916009)(38350700002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RUh6cFBWZXp5WGV2dVJsUEtjWktoWWNheGdmNWlnbk9GTnR6Z2graEJwZ2sz?=
- =?utf-8?B?YkxORTZGZFhiSXBvS3FDUlFTUkxNdzRHbzUxNlVNQ25Bb1RKeXpqK1FBSzdy?=
- =?utf-8?B?eFNYTzF0dC9lV0lyWGVVaU5CRDNUUGtmV2xPVTBDZEJpeTl1YzVKRUl6VXZz?=
- =?utf-8?B?NVNyUkdFdktkSDR6OHd4VEVUSEg4WVJJVmpuMjZaRmVVaU1pbFNYeURvbEVR?=
- =?utf-8?B?cmdPUi9sWUxrRUJ3d2RKZml1VDRlek5OaUlKQUpGTjR0Q2w0ZkdqbkNjOHBN?=
- =?utf-8?B?eDg1Z3g0M3lselRiOW40VkRBM09lVHZORWdZUkI5dFBRYkNldTdHUjdSQklE?=
- =?utf-8?B?RktIVHJVYytCa21iV0xITW9HTVhKYTlIM1g4ZG5oNk1TZGhscHZSbU1oQnZM?=
- =?utf-8?B?czBJblc2QUFEMXFOeVI2K3ZaVjBnVHV3Uy9lK1VxdEFoa2N4SngrKytRYzhX?=
- =?utf-8?B?NzdiZWVxZGpEZWgwK0RLb0IvczRzcGc4SlQwS21Ob25qbURlZ3RhWFBxTVJr?=
- =?utf-8?B?emVESVZGOGVZbEZFaHVZMFVzOGQ5SVE2YlBmNEVyMThScEdlZC9YaEZtc1di?=
- =?utf-8?B?aVBnS1R0WWd1bnFLaEIzYnVOc3Nmd204T2JnbDRrT2pxeFRVRXBJNlRQV0M3?=
- =?utf-8?B?MmdiOFpjTEhKYjA4aGk3UkxuV25GNll5ZjVqWFhUMU4xZ2RaMXhuU01MaFgr?=
- =?utf-8?B?aEpmc3BnaVRLam83cit3Y2VncUpVRG1KbEtPblFjUmg4T3JoTk5zRDArdGlj?=
- =?utf-8?B?eE16L2tEK3VwVm5mNE9IMEdHcjBGUDUyQW5CRU1Wc3RWbHJLMWltRnhDbzky?=
- =?utf-8?B?MHhNUWNTSzVNb3I5b254VHViSitkeVpwQStCZjZxeHdkUitVMzB6ZEpsTzFa?=
- =?utf-8?B?OTViWUg0NEptY3ZrZ1lDTGlRVU1wSzlhM2U1UGhEU2dIVU56MWVucXBXMmpa?=
- =?utf-8?B?NDE3SlZ5U3luVnJHYVdLekJoOER2YlJJK0FnYjlTWFhOcTNSalFTcG5WeSth?=
- =?utf-8?B?UXRZYktNUkpPZ1ZKSkFsN0hmajE1REtJSi9wUURTVlA1YjZhRlVmUXc4eXJW?=
- =?utf-8?B?TlgrRFR3WkFwQU5COTFRUjR3UDkyTG5TMlg3a1B0MW55dm84NXhNV3VYNE5R?=
- =?utf-8?B?T0pVcmhPS3ZxWkJrdWdHRnhlVldFaHo3bWlVd3JwOVVjQlg3SmZ3VUZ0K2Yw?=
- =?utf-8?B?UUxQTEMwdDlPQnpSa05YT2JiUFNMakQ4Sy9vYmpEaTB2a0lBMWl0T1hiTUZp?=
- =?utf-8?B?NHBaanA0T3BTWVprMmVKSjVBQVhxdzRCbHFsc1JsUFc5SnBnVktxSlE2bFdQ?=
- =?utf-8?B?cmxlTHdFcGpLdlQ1L0lCeXFqMndNOTNlOGFhRnlMdmdLK1ozQmt6ZlNHbDRL?=
- =?utf-8?B?T1NhS3NCdmk0VlVWTlFueWlRSVlNYWlHTTNQNkxwOFoyR0Nsckd0aTI2M09i?=
- =?utf-8?B?aGVmUHZoN29Rdmw2TTNJSDhGMnlOSnR0OEF5N2tGT2xJMG81N0N5a0lLQm5q?=
- =?utf-8?B?UGUrV0xxdktSc2JreVQ5SmVqZjc4MzlLdHd0VDN2SzNuQXZubEJuZlQ1K1Bj?=
- =?utf-8?B?K0tOYmQ3SWZWL2dMVmQxZjhyay9kOEVGN0ZYaW9SQXJjQ05jc2VxNHZWVkxp?=
- =?utf-8?B?Y2NXdmdwbjVQRnFNUDVHbUFxNU1zTmFuUXJLR252L2VyS0RMeGlkcFZHS2dq?=
- =?utf-8?B?bSt0aXhCVXZLRnRBaGZleFN4TDFCalp2QjJ1S2tIRU1IU0FtUnl1b0tkY0Ji?=
- =?utf-8?B?OWkreDV1R3k2aEJXbW02djVXVUhHc3d5RmRHdGhpNUhrTnplaGdveGR4dmJ4?=
- =?utf-8?B?djMxbmxTR1RLV3Z5dnZzeXptTElFMWRtZlBaamZnWkNhS0U3aHA2c1h4QjRu?=
- =?utf-8?B?MzVsWTZKT0FKZEhYb3ZyQ1J2RThYcEVFekxuaGRFUnFXSEZsMElCSWdydWhB?=
- =?utf-8?B?T1hrTVBDczIrWnRwbTNhMnBydVdGVEQ5aUpRWHEvVGFwUWd4Vk1wWTY0QTBk?=
- =?utf-8?B?Zm95YzlTdUM3Qkw1Q0IrdlJsWnVEbUNlU3FUV3FzUThKRkZnYldSZnp6WXpC?=
- =?utf-8?B?L1NGM29rRzA5UEtlOGpCTTREK0hSTUhhbXhlS1NzNDhaWHJwUU5Rd085Uzh6?=
- =?utf-8?B?S0t4OTdnaTdzVDM5Tk13SStRSHFDOWpNN29ya2R0VnNxL1lIaE95VTYvNnNi?=
- =?utf-8?B?Ync9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ae4f898-f036-44cc-903c-08dac990f470
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR03MB8847.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 18:16:04.1399
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F9WSJTVvET85HtoniLDyEBOBPQXVvIoX2A6GVxbfS65M+/jRYdeUrapikVHddiSEYFcHdEaOtc7nGJvbtTgiww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB8247
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <20221115030210.3159213-1-sdf@google.com> <20221115030210.3159213-7-sdf@google.com>
+ <e26f75dd-f52f-a69b-6754-54e1fe044a42@redhat.com>
+In-Reply-To: <e26f75dd-f52f-a69b-6754-54e1fe044a42@redhat.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 18 Nov 2022 10:18:44 -0800
+Message-ID: <CAKH8qBv8UtHZrgSGzVn3ZJSfkdv1H3kXGbakp9rCFdOABL=3BQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 06/11] xdp: Carry over xdp metadata into skb context
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     bpf@vger.kernel.org, brouer@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -132,165 +78,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/14/22 11:13, Russell King (Oracle) wrote:
-> On Mon, Nov 14, 2022 at 10:33:52AM -0500, Sean Anderson wrote:
->> On 11/12/22 08:15, Russell King (Oracle) wrote:
->> > On Fri, Nov 11, 2022 at 04:54:40PM -0500, Sean Anderson wrote:
->> >> > [    8.911932] mvpp2 f2000000.ethernet eth0: PHY
->> >> > [f212a600.mdio-mii:08] driver [Aquantia AQR113C] (irq=POLL)
->> >> > [    8.921577] mvpp2 f2000000.ethernet eth0: phy: 10gbase-r setting
->> >> > supported 00000000,00018000,000e706f advertising
->> >> > 00000000,00018000,000e706f
->> > 
->> >> > # ethtool eth0
->> >> > Settings for eth0:
->> >> >         Supported ports: [ ]
->> >> >         Supported link modes:   10baseT/Half 10baseT/Full
->> >> >                                 100baseT/Half 100baseT/Full
->> >> 
->> >> 10/100 half duplex aren't achievable with rate matching (and we avoid
->> >> turning them on), so they must be coming from somewhere else. I wonder
->> >> if this is because PHY_INTERFACE_MODE_SGMII is set in
->> >> supported_interfaces.
->> > 
->> > The reason is due to the way phylink_bringup_phy() works. This is
->> > being called with interface = 10GBASE-R, and the PHY is a C45 PHY,
->> > which means we call phy_get_rate_matching() with 
->> > PHY_INTERFACE_MODE_NA as we don't know whether the PHY will be
->> > switching its interface or not.
->> > 
->> > Looking at the Aquanta PHY driver, this will return that pause mode
->> > rate matching will be used, so config.rate_matching will be
->> > RATE_MATCH_PAUSE.
->> > 
->> > phylink_validate() will be called for PHY_INTERFACE_MODE_NA, which
->> > causes it to scan all supported interface modes (as again, we don't
->> > know which will be used by the PHY [*]) and the union of those
->> > results will be used.
->> > 
->> > So when we e.g. try SGMII mode, caps & mac_capabilities will allow
->> > the half duplex modes through.
->> > 
->> > Now for the bit marked with [*] - at this point, if rate matching is
->> > will be used, we in fact know which interface mode is going to be in
->> > operation, and it isn't going to change. So maybe we need this instead
->> > in phylink_bringup_phy():
->> > 
->> > -	if (phy->is_c45 &&
->> > +	config.rate_matching = phy_get_rate_matching(phy, interface);
->> > +	if (phy->is_c45 && config.rate_matching == RATE_MATCH_NONE &&
->> >             interface != PHY_INTERFACE_MODE_RXAUI &&
->> >             interface != PHY_INTERFACE_MODE_XAUI &&
->> >             interface != PHY_INTERFACE_MODE_USXGMII)
->> >                 config.interface = PHY_INTERFACE_MODE_NA;
->> >         else
->> >                 config.interface = interface;
->> > -	config.rate_matching = phy_get_rate_matching(phy, config.interface);
->> > 
->> >         ret = phylink_validate(pl, supported, &config);
->> > 
->> > ?
->> 
->> Yeah, that sounds reasonable. Actually, this was the logic I was
->> thinking of when I asked Tim to try USXGMII earlier. The funny thing is
->> that the comment above this implies that the link mode is never actually
->> (R)XAUI or USXGMII.
-> 
-> I think you're misunderstanding the comment...
-> 
-> If a clause 45 PHY is using USXGMII, then it is highly likely that the
-> PHY will not switch between different interface modes depending on the
-> media side negotiation.
-> 
-> If a clause 45 PHY is using RXAUI or XAUI, then I believe according to
-> the information available to me at the time, that there is no
-> possibility of different interface modes being used.
-> 
-> If any other interface type is specified (e.g. 10GBASE-R etc) then there
-> is the possibility that the PHY will be switching between different
-> interface modes, and we have no idea what so ever at this point what
-> modes the PHY will be making use of - so the best we can do is to
-> validate _all_ possible modes. This is what is done by setting the
-> interface mode to _NA.
-> 
-> Obviously, if we are using rate matching with a particular interface
-> mode (e.g. 10GBASE-R) then we know that we are only going to be using
-> 10GBASE-R, so we can validate just the single interface mode.
+On Fri, Nov 18, 2022 at 6:05 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+> On 15/11/2022 04.02, Stanislav Fomichev wrote:
+> > Implement new bpf_xdp_metadata_export_to_skb kfunc which
+> > prepares compatible xdp metadata for kernel consumption.
+> > This kfunc should be called prior to bpf_redirect
+> > or when XDP_PASS'ing the frame into the kernel (note, the drivers
+> > have to be updated to enable consuming XDP_PASS'ed metadata).
+> >
+> > veth driver is amended to consume this metadata when converting to skb.
+> >
+> > Internally, XDP_FLAGS_HAS_SKB_METADATA flag is used to indicate
+> > whether the frame has skb metadata. The metadata is currently
+> > stored prior to xdp->data_meta. bpf_xdp_adjust_meta refuses
+> > to work after a call to bpf_xdp_metadata_export_to_skb (can lift
+> > this requirement later on if needed, we'd have to memmove
+> > xdp_skb_metadata).
+> >
+>
+> I think it is wrong to refuses using metadata area (bpf_xdp_adjust_meta)
+> when the function bpf_xdp_metadata_export_to_skb() have been called.
+> In my design they were suppose to co-exist, and BPF-prog was expected to
+> access this directly themselves.
+>
+> With this current design, I think it is better to place the struct
+> xdp_skb_metadata (maybe call it xdp_skb_hints) after xdp_frame (in the
+> top of the frame).  This way we don't conflict with metadata and
+> headroom use-cases.  Plus, verifier will keep BPF-prog from accessing
+> this area directly (which seems to be one of the new design goals).
+>
+> By placing it after xdp_frame, I think it would be possible to let veth
+> unroll functions seamlessly access this info for XDP_REDIRECT'ed
+> xdp_frame's.
+>
+> WDYT?
 
-Ah, you're right, I was reading this backwards.
+Not everyone seems to be happy with exposing this xdp_skb_metadata via
+uapi though :-(
+So I'll drop this part in the v2 for now. But let's definitely keep
+talking about the future approach.
 
->> On another subject, if setting the SERDES mode field above fixes the
->> issue, then the Aquantia driver should be modified to set that field to
->> use a supported interface. Will host_interfaces work for this? It seems
->> to be set only when there's an SFP module.
-> 
-> The reason I didn't push host_interfaces upstream myself is that I was
-> unconvinced that it was the proper approach - and I still have my
-> reservations with it. This can only tell the PHY driver what the MAC
-> driver supports, and it means the PHY driver is then free to do its
-> own choosing of what group of interface modes it wants to use.
+Putting it after xdp_frame SGTM; with this we seem to avoid the need
+to memmove it on adjust_{head,meta}.
 
-Well, this is what we have already. The Aquantia phys are initialized by
-the firmware to use particular interface for a particular link speed.
-Rate adaptation may or may not be involved. If it picks an interface the
-MAC doesn't support, you're SOL (until you get a new firmware). Ideally,
-we'd be able to configure the phy to always select an interface the MAC
-supports.
+But going back to the uapi part, what if we add separate kfunc
+accessors for skb exported metadata?
 
-> However, think about what I've said above about phylink not having any
-> clue about what interface modes the PHY is going to be using - having
-> the PHY driver decide on its own which group of interface modes should
-> be used adds even more complexity in a completely different chunk of
-> code, one where driver authors are free to make whatever decisions
-> they deem (and we know that wildly different solutions will happen.)
-> 
-> I had been toying with the idea of doing this differently, and had
-> dropped most of the host_interfaces approach from my git tree, instead
-> having PHYs provide a bitmap of the interface modes they support and
-> having them initialise in their config_init function which interface
-> modes they're going to be making use of given their resulting
-> configuration. I never properly finished this though.
+To export:
+bpf_xdp_metadata_export_rx_timestamp_to_skb(ctx, rx_timestamp)
+bpf_xdp_metadata_export_rx_hash_to_skb(ctx, rx_hash)
+// ^^ these prepare xdp_skb_metadata after xdp_frame, but not expose
+it via uapi/af_xdp/etc
 
-That sounds like a good start.
+Then bpf_xdp_metadata_export_to_skb can be 'static inline' define in
+the headers:
 
->> That said, imagine if Tim was using a MAC without pause support, but
->> which supported SGMII and 10GBASE-R. Currently, we would just advertise
->> 10G modes. But 1G could be supported by switching the phy interface.
-> 
-> Note that we already have boards that make use of interface switching.
-> Macchiatobin has switched between 10GBASE-R, 5GBASE-R, 2500BASE-X and
-> SGMII depending on the negotiated media speed. In fact, that switching
-> is rather enforced by the 3310 PHY firmware.
-> 
-> We could force 10GBASE-R and enable rate matching, but then we get
-> into the problems that the 3310 on these boards does not have MACSEC
-> therefore can't send pause frames to the host MAC (and the host MAC
-> doesn't support pause frames - eek) and we have not come up with an
-> implementation for extending the IPG, although I believe mvpp2
-> hardware is capable of it.
+void bpf_xdp_metadata_export_to_skb(ctx)
+{
+  if (bpf_xdp_metadata_rx_timestamp_supported(ctx))
+    bpf_xdp_metadata_export_rx_timestamp_to_skb(ctx,
+bpf_xdp_metadata_rx_timestamp(ctx));
+  if (bpf_xdp_metadata_rx_hash_supported(ctx))
+    bpf_xdp_metadata_export_rx_hash_to_skb(ctx, bpf_xdp_metadata_rx_hash(ctx));
+}
 
-The DPAA hardware is as well. As I understand it, the 10GBASE-W standard
-specifies linear scaling of the IPG with the packet size, not A simple
-implementation could be to have MACs expose something like
+We can also do the accessors:
+u64 bpf_xdp_metadata_skb_rx_timestamp(ctx)
+u32 bpf_xdp_metadata_skb_rx_hash(ctx)
 
-	mac_rate_match_ipg_numerator,
-	mac_rate_match_ipg_denominator,
+Hopefully we can unroll at least these, since they are not part of the
+drivers, it should be easier to argue...
 
-With the intention that they'd do something like
-
-	numerator = SPEED_10000,
-	denominator = 9500,
-
-and then we could multiply the speed to adjust. We could also do
-something like
-
-	int mac_minimum_speed(int base_speed);
-
-But AIUI we are trying to move away from these sorts of things.
-
-FWIW I don't have any 10GBASE-W hardware.
-
---Sean
-
-> However, there's also the BCM84881 PHY which does the same dynamic
-> switching which we can't prevent (we don't know how to!)
+The only issue, it seems, is that if the final bpf program would like
+to export this metadata to af_xdp, it has to manually adj_meta and use
+bpf_xdp_metadata_skb_rx_xxx to prepare a custom layout. Not sure
+whether performance would suffer with this extra copy; but we can at
+least try and see..
