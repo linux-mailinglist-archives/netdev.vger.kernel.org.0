@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DA8B62E9FD
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:03:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75BC962E9FE
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239145AbiKRADE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 19:03:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        id S240437AbiKRADH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 19:03:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235184AbiKRACh (ORCPT
+        with ESMTP id S239809AbiKRACh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:02:37 -0500
 Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80055.outbound.protection.outlook.com [40.107.8.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A744B85EE6
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 16:02:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9FE85EF2
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 16:02:20 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ReiOQpDe+44764rpNyKicRhUNH48cRSGaeb2MWRlXLwqOyDe+xx+ISzThGXgKiiDD8O+DiZaLZPD69k/il7y7h9kUU8R1m8MW2E4tsF8IgIa/8odI7QcZTG+3v8076bk7sVBbtve1G5bZp/gjpKWUze1Ov79gLKtshPcLlZ10d9SkObGa8AZxifK4O9nGjDLJhR2sRALtG77rCAhGkLwrRQU/8ukgZa7tLC/g0TFX1QWa8sMYgBv6Mlb1z1dlEbHoxutbLfS6gv2i0FOc1+ZQWdE40UY3g7wGUL0u7YXn9Btx4j6MgLCioMQ5lcA+0bbQkh4ukqv7McYkAhcLYnlKg==
+ b=M23HgAjU8fBU9WxEH/yYXQJmDrBS/RUc6agMvy2rOjImhzM6LRVLUp/tCKnNF0+jaSbN54kS1uS1zv9bJTVkwmsiIsvzAL+/5BGc96HpZ3Cfhhh2dekeoyAAI4JFstAI6hDUGXFeaUgs9wJYNJ5n1oQ8iFcfu9Zs2Dkttrf8fQT3whSCcVMVLWchX0FbvCnjNEjlZxYSBVzG8Qblk58aHCzQrY4Jr3rg34X6p9QdBduKfdW10sUfNOGQBeHq0qUvZcjOrCNAmG7SLMM8bfWtfvoOu38RCmT5tysvrsw1CWVhtsIMYb/WQFuDsLdKrz96+G5TvIyFj+87U7yNVeZD6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D8PojE3JIbTS1j4f1EyOrFsVgSisa8C9hc4iU3XHaJU=;
- b=hSMuedZwadQRGRwJiioIJUy7dFBZD1Bo74nF0dZe0COHMR3BR8SKhDuIjAZ+5sfJKswhaLqhEnefSjQQ6jDbNOmI48kzyQuw7dvWpFWcriHqJogBV4x/gn0f7A5E8NEKyMkjKM9ZwMskRJ399NmV//KU+gC0C2aQjnglkp5OpAbiTkEqfqB65jLiVFGnsAKNDyFQk4lyrNvwPBfnCTjfQeYEfyauAZUGP+epI/hqgWqHcr+NKrIgTaN+LwIc9q8UIU0oFKrjupHwb5iJxy3RdgxTXL8c0S/30RMpOuDeiJNVe4BbqpoITwzg/BlLJPLGsI/Kak8X0t0T8NjJsfd8Ow==
+ bh=q+/1l92qO7xH2CsN9qdGpylmgxPKoDmzkxE6/s8Z2zo=;
+ b=X5+SNe/SWtRaz8/jRRzX1kGgQDHa2JrT9UxEhSdIwCfoy2YfEUyF34eRl1SemH5habFjP6T6QwTljnKWDQSrCR5oHOLtfolwRgCeVuU4Ixfnhb8qp1No1RV+d/18fu/pM84XGNOshXehIyBJJo0IdhrlbK3EN1Fxc8Gnqfhp57kr84gt9PZZyaJMOgjQNPPtOu/f08A5Gl3695pDuviDF/fcBvF/mY5lbxaMPIGtnyge7Vm1pdxQV8BunfqC5Gy6sa7b24nfFrf8UgGcbwR4zFeLUoeRC8+7oSAqMv6ymkk+uX/MLBsw64x5gmpiWrmBA2GeMCEJbAcm6sC6epHUew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D8PojE3JIbTS1j4f1EyOrFsVgSisa8C9hc4iU3XHaJU=;
- b=AlPhDEQ0iYcjvDSPb317jUMCjmqkDDmRp0Dksy5UoxeU3otTqwg0d4B7/2vv8OmwwFLEnv83PPI3EAM2ncowKih5ADrG9BpAYXjB1TddzZHbc+pA8k1BjRtn3jfthFCM2Amnvs0+CNiPd+UYYU8ZnU20/ymbY9l4degXadvE/oo=
+ bh=q+/1l92qO7xH2CsN9qdGpylmgxPKoDmzkxE6/s8Z2zo=;
+ b=Gz/RDYZDF9yHHtjw0FcGKltsYwefc9krfa6813jrIOQzyGXXZokH0w1EXxBGSVEMz42n2WXjb9TWSB02AIikmZ0424F3yfB4QW6zKCmoaUKlGPNsqLtP3jJT/klmyJrBDGfOQoe2rHoLi9x8nbWTeunFsmEZN9mxxPmo7bXP8hY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB8542.eurprd04.prod.outlook.com (2603:10a6:102:215::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 18 Nov
- 2022 00:02:15 +0000
+ 2022 00:02:17 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.018; Fri, 18 Nov 2022
- 00:02:15 +0000
+ 00:02:17 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -64,9 +64,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Colin Foster <colin.foster@in-advantage.com>,
         Marek Behun <marek.behun@nic.cz>
-Subject: [PATCH v4 net-next 7/8] net: phy: at803x: validate in-band autoneg for AT8031/AT8033
-Date:   Fri, 18 Nov 2022 02:01:23 +0200
-Message-Id: <20221118000124.2754581-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 8/8] net: opt MAC drivers which use Lynx PCS into phylink sync_an_inband
+Date:   Fri, 18 Nov 2022 02:01:24 +0200
+Message-Id: <20221118000124.2754581-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
 References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
@@ -77,52 +77,52 @@ X-ClientProxiedBy: BEXP281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8542:EE_
-X-MS-Office365-Filtering-Correlation-Id: 429a3131-95d5-4ba3-ec1e-08dac8f826cb
+X-MS-Office365-Filtering-Correlation-Id: ee5ca32e-06c9-4216-c5b7-08dac8f827ee
 X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XaIe4XypwfYrB+gUk4CrvfQPsx7H4m+2SS42sLpN2Tzn+MVQRe4mwsrdotN7JPPAz/wmVcKJgnzSg7XNDBVwLtncCsTE0cvhw1cyVg+P43yZ/SCjvP679EQa8lvAuuC+Y9Su+dHbiJt/4xoqjYR72YDKc89mX1cYY6kolZ/QA4xaQMwZ/3xKZe7xM/HMJ9RAKI3vnzIbOP8SYbSEZCDJ5mpc4hzKrYVWcGa+C0hP3Rs9RtjKqB7LXYCrEfO4SXWxr02kzhcSwfuP5Nu6iSu/wptcal9/ZxcxnGLiozKHERI9V9l7UmvzWTCNiIq9LlEvseomFMrT3SGWGvrLIMQ1CRyakLxvRKDxJLZFz3yIgo1iffyRKt4nDl6ebAYi8G8KDNwe4yQAruqK7bIXE7OkYMJoHn5Vb0CbsI1PirmcapGISnpxpnHEGkuvqkdJ8lwhSngx9qqeGaBO71gH+65X/lzVDDvafXlS+fViNnJcdCQLqyPjvyy7orsMcLjImvQLgrAhH0ZuAuxKlnFRv9zaYhikof0IqQC+K2bdYDFfG7/Y5U2YhSMw20UAUVPuXMk/Kwcz+Sd54o8Mtcr96/jwX3zMyTpoIQL9CVhi4XYCrlTfhWnaH+d1cdelPmNZvWq+3w+l5WI7XTHJ4BN2Q1i2ujQ1Wr8lGSYbCGgUtt97Fq0kvXGU7DdsaC6+fYWJVcJPEmTTCbvtkl188xEKj6KSV11AnpIc13kc8xDpIlBgbKc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(451199015)(478600001)(966005)(26005)(41300700001)(6506007)(6666004)(36756003)(8676002)(52116002)(6486002)(4326008)(38100700002)(44832011)(7416002)(8936002)(2616005)(66946007)(66556008)(38350700002)(15650500001)(6512007)(66476007)(186003)(316002)(1076003)(2906002)(54906003)(6916009)(86362001)(5660300002)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: P8qIiPHhP3vz8jqpKc2aEfVJtci1bb9h6hn2s4ld6rLrSUlk5UkDBJ/mTWTP+9HJlfwl1d+/Z08tm37lL1YQTHo2sw2oNkmCBZfpKSWUGnsNvemv2qdplRvfOq1csAVOPzQuCZqzCrFF1O6C8wQ+TSD2Ojav/jBRSqIYS2ODUUA056dUxceA7SogUm7rNx5Ua0AC+7L56MonvZzuKY/evcjijdvH0D93D4MhyihimquVRUPuprlDo7Xzb+7w133kYyziH0QgUA4iVFjnH2++VsvadrcgUqgH07R90ukcNd7+98Pkm89vtrx6CDspzM35tmb0y9xeHdtJoLTRdHCupCuFVcYIEXs2g2eilewX9EgjJR+CEr5aGxa7s8H/yv2MCB5LOmd2UkDRhDjHTaBw60Fn2E2krfpHEZc9kf44Q0Y1GKPwIJveznbnl2CFwluzNdX4KO1xuX+4Eo7kilDKXjtoIzuTOZ866P8DG/mu5+YOiFcLVi5rJ/1pO5DOKvYJ3XU1tGLmLZg3rQYp9Oj2VG+TKyyY1xsRADLL0LvlfONoaM6f1trF36gUDJErqsLrNZGbqu7hNasxcEWYopaQmjjwrX55D7ReAdIyV9r4K1kscaQogMAyukJwZ6uYTkIwyYbab9KBBzb8PmyIAeFkA9bsq14ASDOuqnDWbBSQVLcgUT2BXcGFvS9aWco+3XuY
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(451199015)(478600001)(26005)(41300700001)(6506007)(6666004)(36756003)(8676002)(52116002)(6486002)(4326008)(38100700002)(44832011)(7416002)(8936002)(2616005)(66946007)(66556008)(38350700002)(6512007)(66476007)(186003)(316002)(1076003)(2906002)(54906003)(6916009)(86362001)(5660300002)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?n+czTti1tdbncreoJ1K4hhgijUFZD7XCoVjJWNxCcSxh2Jin0U2U6IolQcVT?=
- =?us-ascii?Q?QltSq3v9gUxGOeDPRcxinjalxT0OdoJEQMwTxPCBR+iOIgMtwYT2FPScNcNc?=
- =?us-ascii?Q?Wc9SptGD65iehAXsBN4+oULF+fyhgzvF8PemkTJpUHO+pTeKfp3sOjBssw94?=
- =?us-ascii?Q?GNqryLNX0nb9c6Tq+tMrEChBpiVdrqPXcIMTDGYB6RmN+BrZ397GmhVnoRQY?=
- =?us-ascii?Q?sfh8JpIL2RmRalLvUyEKDvNPgTID2qkpI1/4aJD0FCMhmtXtj+XLS1vYN/RY?=
- =?us-ascii?Q?yg/MNulO9qqycG78SScFG/GpVMnkwKbqCKtHyh5UMvhvZ4DKvFgBcd4tTVgP?=
- =?us-ascii?Q?aqlPH25RTSq8NSUD/0nW8+/8ZezgnGaDUcpdR4mBe9Twwr+HkDqanAezk9L0?=
- =?us-ascii?Q?nll7ZTbPloZO6rbgxrKfSc0z2+FJbRHdLdCAm3CKFAaiDoj0lFZ/KUR0r+Zr?=
- =?us-ascii?Q?yGFbiI8Akj8Bptd/TbQTNRGX7OyqrLMXj/Ej235PU1jy+Aqte2LBQKK+XAjW?=
- =?us-ascii?Q?l27AAJWu1mtnQHJdpb9ixJVtLewRe0WfTfJPOadoeMFGpeVn9U76bfLgTDaJ?=
- =?us-ascii?Q?0ramj4KHDoT9lRC0Bd4Kt34o6zP1KFhTORBbazCKH+KRQRBJxSQLT8Id9ZVn?=
- =?us-ascii?Q?NQaF/aZQ/E32VDp5ckJDUZLupRYLEbCWXA9E/gOtq6N1rQ+85P9CNO82TBhR?=
- =?us-ascii?Q?f1Gp0M1pPxgRpJ4v1lPcsyvBCrNsvacfAAfgIgMwAFEgCy+vQPVvJiDBMxUm?=
- =?us-ascii?Q?DSOYMUaXyuK5NN8Kgr0gn645XxZEIoYwJP1XPAmr6T1lT6354SF/EoPR+Y97?=
- =?us-ascii?Q?2JXRVwubByFf658We5Q0ULer3y8qpY8M9DYBN8540c71otNmYa/gc2v/QFBu?=
- =?us-ascii?Q?eGe2Wa9/4Xxl7MZrIqU8ZkKuqRbbxOZl3OKUMbou+Pjf8NBPVswIU0i1LQyq?=
- =?us-ascii?Q?jsS+SXImN8KGUdWJWCnMfL9pvugha/ZJp0STCF9swBFfEb1L5DO71icp7Pzd?=
- =?us-ascii?Q?+CW+85w/hiE1Pa3Twc/dbYSuq6MWPH4Ycx0gMkyAlwobuVoFMjuUV5ZZLOmQ?=
- =?us-ascii?Q?j1kuoZRp4KtpkDyWzUjbdgaVb8UeaS5JN6q23a6n2Z6gmm1/48jVsEWsjMlv?=
- =?us-ascii?Q?1iHn7PSKr4XVwVvZUY3+0FvsLcuJYepg78Fuf3pq9G9qlgNFmSgdBpnackc+?=
- =?us-ascii?Q?E1x4+iDH1nFjU3YKCNeYsfW0MJno+YE0R09wvtjcz3HT4F2Zr+f7YwGCH02Q?=
- =?us-ascii?Q?CR2EcT79DYCTXp/BQ3a2+ZccLDeKMVY2UpvJJ0BHLPIJQv8AdEWQ5AxdVXs8?=
- =?us-ascii?Q?tzkMsYfm+NtIHLnOxiWhA2LeOV7+4WVmpe3xBUDGpviumcPGgGkBDfMaZqEN?=
- =?us-ascii?Q?s9u6xoeCfuBMDw5ZjfC+EDhCd0BiJJNojTD1fx0+fdc33I+LjvQ33fCweNih?=
- =?us-ascii?Q?zuNNIzd0VvaR0iGXws7hBKjd7xWNaR4FYILgc3Bsf0XFfZiaehyzdcRwmTzu?=
- =?us-ascii?Q?eBNq9lJTZUnJJ2fNq3oDz4VmZVQO6R51RLX7R7qPZpsoCI7lrvl0XXgnul+n?=
- =?us-ascii?Q?zQtdIX5dSc15RuQX1nj7bGNpss02GPXylix5MpIodv54ZhzBk+0glgxYMAB9?=
- =?us-ascii?Q?Pw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MQoz6hjb9Bvs7uy6QmONljFm3DX5HBEKNcB4BschxHLitCGSLrM4BI2AqUHl?=
+ =?us-ascii?Q?27POsztuK6PMVrW2VP5sQ+k3FJ+3c8TQGWLsp46vhXHGL0DsmByl8DR1kbwS?=
+ =?us-ascii?Q?pMsigme8y6rqWGDor5zQvAYSfyUSLUlcFxHTOW+2u6hitFJWgryt7qVIZSb4?=
+ =?us-ascii?Q?T+Z0nzO98UHKrSuJ/W1gUUs/9+Pcqhzn/9d7sXvHkRO9cOgKHn+Or7GjBfGW?=
+ =?us-ascii?Q?5gCbmGmHmK0pZ7avyO6BYnhoi+5wZlj4G/hbZ50QBxSrA9NqEbKd4eGDtM0g?=
+ =?us-ascii?Q?ClNZJIW2EW9ld8IhuVsOV04X7zLXDbw8xnhULjyXTEeCV/qbukxBNgsPEF5F?=
+ =?us-ascii?Q?ukxCqs/MbnoRTagps60q9DHyVgSkBmWXxZIfRoyT3Lliv5FCzOt86qvQ0mMu?=
+ =?us-ascii?Q?csGmL33cZMk1qNJKfrMTnNujKcmOvijgLgSqF9UZ+t/fY1kGacyFWZ720sjQ?=
+ =?us-ascii?Q?16NYAgV4ERjoLqsVcO+gJvpemfhWuDq6AiY1OW5DamT/iTUYAZtWlXY2tdOg?=
+ =?us-ascii?Q?/blk55peuBHnDJEQqtoh4xWujDqgEH4sjnZvV/16ciWZpsr7LoisRqqnccuY?=
+ =?us-ascii?Q?KC6U3hTYexE5vnS2NIvTmJjhO1skblXZ24vh39wNIt8veCxjqF3xSnTbkzvE?=
+ =?us-ascii?Q?yLbx9+WybsninehQd1wD2WmdcOtDB8NhzhqVcahjpRK8ZABVWrEA11ej9tHX?=
+ =?us-ascii?Q?scTtxAI3xTAryFgYqEvLenVIjBK9ZjX3DkMjghtcO19p0NEVWkV5wKq18ykk?=
+ =?us-ascii?Q?ZC+jLwKfliDuxBSoZ5UVF9umtrZlzNzmZAMJIdpTKwWpMXgaammz/7JkaESu?=
+ =?us-ascii?Q?eWjyVJve6um2YLjsntOY2Ey0Xe1nTXPKDeoTeJOu8b3qtmgARj2dzXHdsXOp?=
+ =?us-ascii?Q?XcTaYXdV/sx+3lu/AjzizFrZJ6ubvsxgLBQNgs3OvzzswH+OL5S4jsCYWWrh?=
+ =?us-ascii?Q?3do+6EWl7ximfrQERoU1H0i0grt6YlczX8FVsCAmDbBZjq2GrJRVaAmewQ5n?=
+ =?us-ascii?Q?SYAFbLzU4Tc1RQjv9MrhyuewSYe9tETPmxVCBe4w3Balx1+uiJ3kwAyD8CvF?=
+ =?us-ascii?Q?7uaCmawkLhGxxYo8FAQcs4zLkfsFMu00jVag95L5Dw25hzCHQ6PuI7jjvXXl?=
+ =?us-ascii?Q?hhwWUS5bQk5b42ltN2UPWipzCldY7pU93F6FWgEGPAryfGlfz/HkJvg6fKxo?=
+ =?us-ascii?Q?hy9t2w3Mz+YuC57X3rZpzhE99Xi4UuP1OIqsW3sfWh+rgF4ePYMBqMg+O0A6?=
+ =?us-ascii?Q?fGs0a27u2SmpaFkUZeT+avXjExqk7OkVgKK0TlryGb5bgzS4qOeNBRjxdVls?=
+ =?us-ascii?Q?ynYcDt3r/x26YsgCFBciJKbRMqaY80z2Xf0ZSWSqp9ZMZKHv+rvDLHfULqxB?=
+ =?us-ascii?Q?FUrciTQJ9L16LvBLOfiepEgo7177nNAYhQjlkss5tWkk+5eaQ9moTd8kTmab?=
+ =?us-ascii?Q?PGY3yXju3SRyGyqFreOudwZLu+0WE0odjuUkBhuANmOXjJ66oE3dUPf6wp4x?=
+ =?us-ascii?Q?n8b+xN6UCoNO6w4HRZzr4y16wRoIHwBGxijzo3bjFouV6MGTIZp3RiAUVPx4?=
+ =?us-ascii?Q?MwzhAtkNAo3nn+HTScNkUh44PIwmo2tlKB4GE8wJ/1pa9NlIL2tNd1TnAxpb?=
+ =?us-ascii?Q?Tw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 429a3131-95d5-4ba3-ec1e-08dac8f826cb
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee5ca32e-06c9-4216-c5b7-08dac8f827ee
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 00:02:15.6876
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 00:02:17.5625
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LWEM0mJZbHcILn3ViSezx+mgUK8HHPkqcw401NcpZLtF7b4R9YVY/FlS9fbgsnctCo7i1ZClyqOcnmE2wND4PQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: dtaYdTW9uDNNByRdbwOYiGxW0ibp08yzCpw5JHkLD+lAEqtj1NblX6kmzwsktf9a8lNHlFyC6LtT+D76ESAwlw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8542
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -134,74 +134,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow drivers which migrate from phylib to phylink and have old device
-tree blobs to work with the AR8031/AT8033 on-board PHY in the SGMII
-SERDES side mode.
+lynx_pcs_config_giga() enables "SGMII AN" only when used in the
+MLO_AN_INBAND mode. If it's connected to a PHY, it expects that the PHY
+has the in-band autoneg setting in sync with it.
 
-This would allow DT breakage like the one fixed by commit df392aefe96b
-("arm64: dts: fsl-ls1028a-kontron-sl28: specify in-band mode for ENETC")
-to be avoided in the future.
+To fulfill those expectations, set the sync_an_inband field in the
+phylink_config structure, to opt into the new phylink behavior which
+does the following to help with that:
 
-We know from experimentation with NXP SoCs that the PHY doesn't pass
-traffic if in-band autoneg is enabled but fails to complete. We also
-know that it is in principle possible to disable in-band autoneg in the
-PHY. This would require disabling autoneg in the fiber page, and then
-keeping the fiber and copper page speeds in sync, as explained by
-Michael Walle here:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210212172341.3489046-2-olteanv@gmail.com/
+(1) queries PHY driver to figure out a mode supported by both ends
+(2) configures in-band autoneg in the PHY to something supported by both
+    ends
 
-But since the PHY driver does not currently handle the complexity of
-keeping those speeds in sync, we can safely say that no MAC attached to
-the AT8031/AT8033 in SGMII mode has in-band autoneg disabled.
+The Lynx PCS is integrated in DPAA1 and DPAA2 SoCs, as well as in
+LS1028A (ENETC + Felix switch) and in the T1040 Seville switch.
 
-I have no motivation to add support for disabled in-band autoneg. I just
-need the driver to report that it requires this enabled, which will
-make phylink promote a MLO_AN_PHY connection to MLO_AN_INBAND. This is
-enough to keep everyone happy.
-
-These PHYs also support RGMII, and for that mode, we report that in-band
-AN is unknown, which means that phylink will not change the mode from
-the device tree. Since commit d73ffc08824d ("net: phylink: allow
-RGMII/RTBI in-band status"), RGMII in-band status is a thing, and I
-don't want to meddle with that unless I have a reason for it.
+It seems that the DPAA1 phylink conversion already took steps to prevent
+breakage with old DT blobs, by using ovr_an_inband. That is partially
+sufficient, partially insufficient (there is still no guarantee that PHY
+really has in-band AN enabled). Remove that logic and simply set
+sync_an_inband instead (setting both isn't allowed anyway).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v3->v4:
-- s/inband_aneg/an_inband/
-- drop unnecessary support for PHY_AN_INBAND_OFF
+v3->v4: patch is new
 
- drivers/net/phy/at803x.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/dsa/ocelot/felix.c                   |  2 ++
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c |  1 +
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c  |  1 +
+ drivers/net/ethernet/freescale/fman/fman_memac.c | 16 +---------------
+ 4 files changed, 5 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 349b7b1dbbf2..2ef6ac92fecb 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -1355,6 +1355,15 @@ static int at803x_config_aneg(struct phy_device *phydev)
- 	return __genphy_config_aneg(phydev, ret);
- }
- 
-+static int at803x_validate_an_inband(struct phy_device *phydev,
-+				     phy_interface_t interface)
-+{
-+	if (interface == PHY_INTERFACE_MODE_SGMII)
-+		return PHY_AN_INBAND_ON;
-+
-+	return PHY_AN_INBAND_UNKNOWN;
-+}
-+
- static int at803x_get_downshift(struct phy_device *phydev, u8 *d)
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 44e160f32067..6deff681c02d 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -1042,6 +1042,8 @@ static void felix_phylink_get_caps(struct dsa_switch *ds, int port,
  {
- 	int val;
-@@ -2076,6 +2085,7 @@ static struct phy_driver at803x_driver[] = {
- 	.set_tunable		= at803x_set_tunable,
- 	.cable_test_start	= at803x_cable_test_start,
- 	.cable_test_get_status	= at803x_cable_test_get_status,
-+	.validate_an_inband	= at803x_validate_an_inband,
- }, {
- 	/* Qualcomm Atheros AR8032 */
- 	PHY_ID_MATCH_EXACT(ATH8032_PHY_ID),
+ 	struct ocelot *ocelot = ds->priv;
+ 
++	config->sync_an_inband = true;
++
+ 	/* This driver does not make use of the speed, duplex, pause or the
+ 	 * advertisement in its mac_config, so it is safe to mark this driver
+ 	 * as non-legacy.
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index 51c9da8e1be2..61d31ffb5d97 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -406,6 +406,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 	memset(&mac->phylink_config, 0, sizeof(mac->phylink_config));
+ 	mac->phylink_config.dev = &net_dev->dev;
+ 	mac->phylink_config.type = PHYLINK_NETDEV;
++	mac->phylink_config.sync_an_inband = true;
+ 
+ 	mac->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+ 		MAC_10FD | MAC_100FD | MAC_1000FD | MAC_2500FD | MAC_5000FD |
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 9f6c4f5c0a6c..c0d4fff00987 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -1126,6 +1126,7 @@ static int enetc_phylink_create(struct enetc_ndev_priv *priv,
+ 
+ 	pf->phylink_config.dev = &priv->ndev->dev;
+ 	pf->phylink_config.type = PHYLINK_NETDEV;
++	pf->phylink_config.sync_an_inband = true;
+ 	pf->phylink_config.mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+ 		MAC_10 | MAC_100 | MAC_1000 | MAC_2500FD;
+ 
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+index 9349f841bd06..e4a707a7d7f4 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.c
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+@@ -1075,7 +1075,6 @@ int memac_initialization(struct mac_device *mac_dev,
+ 			 struct fman_mac_params *params)
+ {
+ 	int			 err;
+-	struct device_node      *fixed;
+ 	struct phylink_pcs	*pcs;
+ 	struct fman_mac		*memac;
+ 	unsigned long		 capabilities;
+@@ -1219,6 +1218,7 @@ int memac_initialization(struct mac_device *mac_dev,
+ 		capabilities &= ~(MAC_10HD | MAC_100HD);
+ 
+ 	mac_dev->phylink_config.mac_capabilities = capabilities;
++	mac_dev->phylink_config.sync_an_inband = true;
+ 
+ 	/* The T2080 and T4240 don't support half duplex RGMII. There is no
+ 	 * other way to identify these SoCs, so just use the machine
+@@ -1231,20 +1231,6 @@ int memac_initialization(struct mac_device *mac_dev,
+ 	    of_machine_is_compatible("fsl,T4240RDB"))
+ 		memac->rgmii_no_half_duplex = true;
+ 
+-	/* Most boards should use MLO_AN_INBAND, but existing boards don't have
+-	 * a managed property. Default to MLO_AN_INBAND if nothing else is
+-	 * specified. We need to be careful and not enable this if we have a
+-	 * fixed link or if we are using MII or RGMII, since those
+-	 * configurations modes don't use in-band autonegotiation.
+-	 */
+-	fixed = of_get_child_by_name(mac_node, "fixed-link");
+-	if (!fixed && !of_property_read_bool(mac_node, "fixed-link") &&
+-	    !of_property_read_bool(mac_node, "managed") &&
+-	    mac_dev->phy_if != PHY_INTERFACE_MODE_MII &&
+-	    !phy_interface_mode_is_rgmii(mac_dev->phy_if))
+-		mac_dev->phylink_config.ovr_an_inband = true;
+-	of_node_put(fixed);
+-
+ 	err = memac_init(mac_dev->fman_mac);
+ 	if (err < 0)
+ 		goto _return_fm_mac_free;
 -- 
 2.34.1
 
