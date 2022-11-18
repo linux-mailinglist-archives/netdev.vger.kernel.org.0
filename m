@@ -2,158 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D9762FC60
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:19:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE63862FCD6
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:33:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242632AbiKRSTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 13:19:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
+        id S235404AbiKRSdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 13:33:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242628AbiKRSTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:19:04 -0500
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F15C93728
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:18:57 -0800 (PST)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-13ae8117023so6846671fac.9
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:18:57 -0800 (PST)
+        with ESMTP id S235084AbiKRSdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:33:15 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26182DBA
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:33:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=fNnwGanczIlOEoVy4OEmoR/dSYWkyWUH5BAq5Ob+Kiw=;
-        b=gJBrl3WZ97qVM3NI2LxOAIkcLzX+1KjC9HfQrZhs+yxO7EeHBYC0NOA8ndwqQIu9m9
-         MzsuBWsITSp9sLNXnWnwi8naaGOehc9PKEomLULvmyYR0LVTjOgvfoBOwExTadH5bycM
-         ED6yT1CxxGG5yT8Ihb9SmELwyOHU0P7PHFfQpSsH0rSJchYYT5rYPa/qoe7Eg6uKlboE
-         z1T6s7Qdp/DJm3NBAt4hXF16NjB7CW8aAB2kXkctLW1w+x96U0STNaBaAvjnai3NxfiS
-         gIIwlMz9ItIe8AN7iPP/Oa2bPTelXB6lihZ6sqBdThz6xN+JiEbNfe02mmxZjyp8+sBW
-         f0dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fNnwGanczIlOEoVy4OEmoR/dSYWkyWUH5BAq5Ob+Kiw=;
-        b=astsDPi5KQ3Y9kcWo364Ia+5qMtXvw5vR/0bvWixNiwISXqf6/JLPWofV17zJaa1Ej
-         V+ndPcQgzY74QHus9sL501MirQ/W2AfO7uMe7EkLdQolD2UrgO9O08BS+5Dqh/H4gfLu
-         H2vVp0qd7qH1H/kZCQ1oA8J18vFWKT6E+U2aRsEmfMqQ5/LH0+1jqH0MBcOhBUFnO+PB
-         aFDuubFk0IMFc0cQ1jZVgh1NImWbqNMGcrS7HfZ4AqblBZ2V4yY11ITIqvJJ+G2zkR7X
-         KTRVkLlVQHNjHpnQc7/FxPKz/Byy0zo7L9lU8Ep4EThlvXMTIFhgZEOXVndT5XVt4oNo
-         x1bg==
-X-Gm-Message-State: ANoB5plMoOMir+Ngkj/i/mU2xOO88rUXqhiD6QNjswTuDfG4jScjj4CA
-        b5XBJjnUaaPT4FO9BHA7M5k9ofR4h+gAEijLHjJoOg==
-X-Google-Smtp-Source: AA0mqf5Ar+kY1e8eGdghMnj0xIaR0R7Fv+/GgQjxHkmHfBRbquNZ+pOSQ6UBsy2yKGR7QhNo6JqfeLia+RddEIiT4II=
-X-Received: by 2002:a05:6870:9d95:b0:13b:a163:ca6 with SMTP id
- pv21-20020a0568709d9500b0013ba1630ca6mr8143380oab.125.1668795535941; Fri, 18
- Nov 2022 10:18:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20221115030210.3159213-1-sdf@google.com> <20221115030210.3159213-7-sdf@google.com>
- <e26f75dd-f52f-a69b-6754-54e1fe044a42@redhat.com>
-In-Reply-To: <e26f75dd-f52f-a69b-6754-54e1fe044a42@redhat.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 18 Nov 2022 10:18:44 -0800
-Message-ID: <CAKH8qBv8UtHZrgSGzVn3ZJSfkdv1H3kXGbakp9rCFdOABL=3BQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 06/11] xdp: Carry over xdp metadata into skb context
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     bpf@vger.kernel.org, brouer@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1668796395; x=1700332395;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2xxkhtirLoiR/Yo67rwiv1iyOP8QuqPDWHmtYXr+4Eo=;
+  b=A1tCLzlXMeirSHEKV7p+DxBOTwIicH0wBkkBxWAQP4g2QzMtDcTZOjNK
+   UTY4bcg/vQ/7RGN+bRd7grNJlq6Pw1MhSYQx0Kc73dHLq0ivcC92zR3It
+   LS0bOe+gZjVKdu6ef3J6ItFIjSYbUBd68H/U1gjQD1OcaSWN5/ZxNwGoy
+   U=;
+X-IronPort-AV: E=Sophos;i="5.96,175,1665446400"; 
+   d="scan'208";a="264668879"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-d8e96288.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 18:25:23 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-m6i4x-d8e96288.us-east-1.amazon.com (Postfix) with ESMTPS id 336C58549C;
+        Fri, 18 Nov 2022 18:25:18 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Fri, 18 Nov 2022 18:25:18 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.160.223) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Fri, 18 Nov 2022 18:25:15 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+CC:     Christoph Paasch <cpaasch@apple.com>,
+        Florian Westphal <fw@strlen.de>,
+        Peter Krystad <peter.krystad@linux.intel.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <mptcp@lists.linux.dev>
+Subject: [PATCH v2 net-next] net: Return errno in sk->sk_prot->get_port().
+Date:   Fri, 18 Nov 2022 10:25:06 -0800
+Message-ID: <20221118182506.6226-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.223]
+X-ClientProxiedBy: EX13D29UWC002.ant.amazon.com (10.43.162.254) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 6:05 AM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
-> On 15/11/2022 04.02, Stanislav Fomichev wrote:
-> > Implement new bpf_xdp_metadata_export_to_skb kfunc which
-> > prepares compatible xdp metadata for kernel consumption.
-> > This kfunc should be called prior to bpf_redirect
-> > or when XDP_PASS'ing the frame into the kernel (note, the drivers
-> > have to be updated to enable consuming XDP_PASS'ed metadata).
-> >
-> > veth driver is amended to consume this metadata when converting to skb.
-> >
-> > Internally, XDP_FLAGS_HAS_SKB_METADATA flag is used to indicate
-> > whether the frame has skb metadata. The metadata is currently
-> > stored prior to xdp->data_meta. bpf_xdp_adjust_meta refuses
-> > to work after a call to bpf_xdp_metadata_export_to_skb (can lift
-> > this requirement later on if needed, we'd have to memmove
-> > xdp_skb_metadata).
-> >
->
-> I think it is wrong to refuses using metadata area (bpf_xdp_adjust_meta)
-> when the function bpf_xdp_metadata_export_to_skb() have been called.
-> In my design they were suppose to co-exist, and BPF-prog was expected to
-> access this directly themselves.
->
-> With this current design, I think it is better to place the struct
-> xdp_skb_metadata (maybe call it xdp_skb_hints) after xdp_frame (in the
-> top of the frame).  This way we don't conflict with metadata and
-> headroom use-cases.  Plus, verifier will keep BPF-prog from accessing
-> this area directly (which seems to be one of the new design goals).
->
-> By placing it after xdp_frame, I think it would be possible to let veth
-> unroll functions seamlessly access this info for XDP_REDIRECT'ed
-> xdp_frame's.
->
-> WDYT?
+We assume the correct errno is -EADDRINUSE when sk->sk_prot->get_port()
+fails, so some ->get_port() functions return just 1 on failure and the
+callers return -EADDRINUSE instead.
 
-Not everyone seems to be happy with exposing this xdp_skb_metadata via
-uapi though :-(
-So I'll drop this part in the v2 for now. But let's definitely keep
-talking about the future approach.
+However, mptcp_get_port() can return -EINVAL.  Let's not ignore the error.
 
-Putting it after xdp_frame SGTM; with this we seem to avoid the need
-to memmove it on adjust_{head,meta}.
+Note the only exception is inet_autobind(), all of whose callers return
+-EAGAIN instead.
 
-But going back to the uapi part, what if we add separate kfunc
-accessors for skb exported metadata?
+Fixes: cec37a6e41aa ("mptcp: Handle MP_CAPABLE options for outgoing connections")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+v2:
+  * Rebase and target net-next
 
-To export:
-bpf_xdp_metadata_export_rx_timestamp_to_skb(ctx, rx_timestamp)
-bpf_xdp_metadata_export_rx_hash_to_skb(ctx, rx_hash)
-// ^^ these prepare xdp_skb_metadata after xdp_frame, but not expose
-it via uapi/af_xdp/etc
+v1: https://lore.kernel.org/netdev/20221117184723.29318-1-kuniyu@amazon.com/
+---
+---
+ net/ipv4/af_inet.c              | 4 ++--
+ net/ipv4/inet_connection_sock.c | 7 ++++---
+ net/ipv4/ping.c                 | 2 +-
+ net/ipv4/udp.c                  | 2 +-
+ net/ipv6/af_inet6.c             | 4 ++--
+ 5 files changed, 10 insertions(+), 9 deletions(-)
 
-Then bpf_xdp_metadata_export_to_skb can be 'static inline' define in
-the headers:
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 378bcd777514..5b4d86701822 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -522,9 +522,9 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 	/* Make sure we are allowed to bind here. */
+ 	if (snum || !(inet->bind_address_no_port ||
+ 		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
+-		if (sk->sk_prot->get_port(sk, snum)) {
++		err = sk->sk_prot->get_port(sk, snum);
++		if (err) {
+ 			inet->inet_saddr = inet->inet_rcv_saddr = 0;
+-			err = -EADDRINUSE;
+ 			goto out_release_sock;
+ 		}
+ 		if (!(flags & BIND_FROM_BPF)) {
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 4e84ed21d16f..4a34bc7cb15e 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -471,11 +471,11 @@ int inet_csk_get_port(struct sock *sk, unsigned short snum)
+ 	bool reuse = sk->sk_reuse && sk->sk_state != TCP_LISTEN;
+ 	bool found_port = false, check_bind_conflict = true;
+ 	bool bhash_created = false, bhash2_created = false;
++	int ret = -EADDRINUSE, port = snum, l3mdev;
+ 	struct inet_bind_hashbucket *head, *head2;
+ 	struct inet_bind2_bucket *tb2 = NULL;
+ 	struct inet_bind_bucket *tb = NULL;
+ 	bool head2_lock_acquired = false;
+-	int ret = 1, port = snum, l3mdev;
+ 	struct net *net = sock_net(sk);
+ 
+ 	l3mdev = inet_sk_bound_l3mdev(sk);
+@@ -1186,7 +1186,7 @@ int inet_csk_listen_start(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct inet_sock *inet = inet_sk(sk);
+-	int err = -EADDRINUSE;
++	int err;
+ 
+ 	reqsk_queue_alloc(&icsk->icsk_accept_queue);
+ 
+@@ -1202,7 +1202,8 @@ int inet_csk_listen_start(struct sock *sk)
+ 	 * after validation is complete.
+ 	 */
+ 	inet_sk_state_store(sk, TCP_LISTEN);
+-	if (!sk->sk_prot->get_port(sk, inet->inet_num)) {
++	err = sk->sk_prot->get_port(sk, inet->inet_num);
++	if (!err) {
+ 		inet->inet_sport = htons(inet->inet_num);
+ 
+ 		sk_dst_reset(sk);
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index bde333b24837..bb9854c2b7a1 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -138,7 +138,7 @@ int ping_get_port(struct sock *sk, unsigned short ident)
+ 
+ fail:
+ 	spin_unlock(&ping_table.lock);
+-	return 1;
++	return -EADDRINUSE;
+ }
+ EXPORT_SYMBOL_GPL(ping_get_port);
+ 
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 1fb7d1ed1cb1..9592fe3e444a 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -240,7 +240,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
+ 	struct udp_table *udptable = udp_get_table_prot(sk);
+ 	struct udp_hslot *hslot, *hslot2;
+ 	struct net *net = sock_net(sk);
+-	int error = 1;
++	int error = -EADDRINUSE;
+ 
+ 	if (!snum) {
+ 		DECLARE_BITMAP(bitmap, PORTS_PER_CHAIN);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 68075295d587..fee9163382c2 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -410,10 +410,10 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 	/* Make sure we are allowed to bind here. */
+ 	if (snum || !(inet->bind_address_no_port ||
+ 		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
+-		if (sk->sk_prot->get_port(sk, snum)) {
++		err = sk->sk_prot->get_port(sk, snum);
++		if (err) {
+ 			sk->sk_ipv6only = saved_ipv6only;
+ 			inet_reset_saddr(sk);
+-			err = -EADDRINUSE;
+ 			goto out;
+ 		}
+ 		if (!(flags & BIND_FROM_BPF)) {
+-- 
+2.30.2
 
-void bpf_xdp_metadata_export_to_skb(ctx)
-{
-  if (bpf_xdp_metadata_rx_timestamp_supported(ctx))
-    bpf_xdp_metadata_export_rx_timestamp_to_skb(ctx,
-bpf_xdp_metadata_rx_timestamp(ctx));
-  if (bpf_xdp_metadata_rx_hash_supported(ctx))
-    bpf_xdp_metadata_export_rx_hash_to_skb(ctx, bpf_xdp_metadata_rx_hash(ctx));
-}
-
-We can also do the accessors:
-u64 bpf_xdp_metadata_skb_rx_timestamp(ctx)
-u32 bpf_xdp_metadata_skb_rx_hash(ctx)
-
-Hopefully we can unroll at least these, since they are not part of the
-drivers, it should be easier to argue...
-
-The only issue, it seems, is that if the final bpf program would like
-to export this metadata to af_xdp, it has to manually adj_meta and use
-bpf_xdp_metadata_skb_rx_xxx to prepare a custom layout. Not sure
-whether performance would suffer with this extra copy; but we can at
-least try and see..
