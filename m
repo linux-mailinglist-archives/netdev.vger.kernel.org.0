@@ -2,344 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA00662F0D5
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 10:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB08762F115
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 10:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241859AbiKRJQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 04:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34630 "EHLO
+        id S241907AbiKRJX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 04:23:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241858AbiKRJQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 04:16:29 -0500
-Received: from smtp-8fa8.mail.infomaniak.ch (smtp-8fa8.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fa8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BD063DF
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 01:16:27 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NDB3q1R4yzMq9pl;
-        Fri, 18 Nov 2022 10:16:23 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NDB3p4Gr5zMppFG;
-        Fri, 18 Nov 2022 10:16:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1668762983;
-        bh=WmJqtFGITHPNH6hvWB7131Vucaosx6JH+KXGbIiVYqA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=gqdfNSoZDyPuRAE6h1t81Ua6sjsWVWGYoewzjtWyJbmH0k0mcJQGvGHw/Yb+cgaU3
-         OfkW9dOHZkSG5nztgac0CtGxj6/2lxYJUKBH2yA5qjAUK9hy05Hq7JwpgZXMoU97ci
-         8JTUocetwgGRQqT1psWiARphh47FyMTv/Zm08bsY=
-Message-ID: <fb9a288a-aa86-9192-e6d7-d6678d740297@digikod.net>
-Date:   Fri, 18 Nov 2022 10:16:21 +0100
-MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH] landlock: Allow filesystem layout changes for domains
- without such rule type
+        with ESMTP id S241341AbiKRJXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 04:23:25 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2046.outbound.protection.outlook.com [40.107.237.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FF2270B;
+        Fri, 18 Nov 2022 01:23:24 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B5Uo5CGqKsfWjaH5T8YYsf8ufSy/qLGXonm+tuiuExaf8RuWXZyf80IMQeY5m/0b9q6JqhtyiXE4Q7gBpS+mR0J9eX7bItZmLcN9uhKZNye1+KCNmSeY2Y9D9LcYRbfDE8Ze09eRyzbLyzkHESww04BwqwyLteZ4e9u4hkvODWkT+thcsCZslH+PgTfHCrpA96jLdTNSGT351FA70M97G2RoL8Db/PoFFmphuEv+gO5M2pK+kA/fUfmADMYGSZKUo5jDtgfYJEvBp9soOkfsZqSpxvjQSJH086WkTy/oKHhJ/hHeiqHV2oCmRMHxQiik4a8vFu3xMSoPLqRiPKD3Xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+ZiiosEHrVr1ogifR8orN7Jgbvfj/zSGUsErfbUiP8k=;
+ b=PkzNw+go8V8b5Mgezs34lL1d+auNkz0E6WNLae8WjSPmWSWC++mkI3ll1imceyfFr/qS8LGF3/qNYRf4pvNI0fc970PGDm2F4hI5Z2nh7BU6Nx0X3A6GTZvY+SX7+2eeixdBUBI8uWb6IowdIw3BXOd1EjtmHSed90DNBiK4Q7SwKpf+qoB04GtAJzqnr9T+5N8tZzMi8ci8aatGgfbMoDgCHmUlHdrbfylAtgSep52Q+XLpUIo72vBSy95IuVJzggual0UCrNJYoS65U7mNbxKZfn1OqvvPN3RUXrOHR9aXRjP3OLIzcnROCe+MtbGYHo8BFglyBOGsp9OrtP2vSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ZiiosEHrVr1ogifR8orN7Jgbvfj/zSGUsErfbUiP8k=;
+ b=GewsYnBO/7YmWcMQTYUiXj+imI4tZER4QEsUvaW0V0qc+Gve1q0nf62eKs7mqP8TkeM5G5roLqOytxYAJE0tMv302Gg0/sI+DLfQgiOLu+PG94LRMKdbWp79JAqLpyJqIhuBgkzhjy9qLTXzj7UkAJY3pK/nOWwJFyBkYsnRCsaZuDth0e9AQav+qSFOQRcDk9Q1NJ3B6NtCVQMa514II9pJbyZKkhPLj++e3ebdXtNNYg8pSRDtXGHOU2Xv+rqZ+XQxdpqXh8ZugYKsrT4X1G7Ij/uCPplel+BinOjQ/lsn7diU5cGX3ZcC/XnUf2KF5CMTN/LWYDAU5J9MJF+joQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ CY8PR12MB7339.namprd12.prod.outlook.com (2603:10b6:930:51::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5813.20; Fri, 18 Nov 2022 09:23:19 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::8edd:6269:6f31:779e]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::8edd:6269:6f31:779e%5]) with mapi id 15.20.5813.020; Fri, 18 Nov 2022
+ 09:23:19 +0000
+Message-ID: <fb2d6c81-7c89-dd8f-5e95-b4f5dd654c42@nvidia.com>
+Date:   Fri, 18 Nov 2022 09:23:06 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v4 RESEND] stmmac: tegra: Add MGBE support
 Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     artem.kuzin@huawei.com, gnoack3000@gmail.com,
-        willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-References: <5c6c99f7-4218-1f79-477e-5d943c9809fd@digikod.net>
- <20221117185509.702361-1-mic@digikod.net>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20221117185509.702361-1-mic@digikod.net>
+To:     Bhadram Varka <vbhadram@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Revanth Kumar Uppala <ruppala@nvidia.com>
+Cc:     "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20220923114922.864552-1-thierry.reding@gmail.com>
+ <1b50703c-9de0-3331-0517-2691b7005489@gmail.com>
+ <LV2PR12MB5727354F4A1EDE7B08FBC5A5AF229@LV2PR12MB5727.namprd12.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+In-Reply-To: <LV2PR12MB5727354F4A1EDE7B08FBC5A5AF229@LV2PR12MB5727.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0381.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18f::8) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO6PR12MB5444:EE_|CY8PR12MB7339:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0c6088ce-ecde-4865-5919-08dac946880c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QRvUb+tohtExQzUGkiAD1jI+JpzNu5fKoXE6XqaEZOHZ+AsCfDpQzX6BfLil0ulJxgcdowiC2twVDhgbeOn/c1EzmTNt1in2OWteS2BfTgHOQem5bEe+J+C+A3D9PtlDUrVYW82WC0s1bsZjwbxnjHHPCK4m7/UAEpYiMaf27nubkMGaw+3IJRS3+BssADJw5a+xKcZ2y3+1VxlyRsziIh41/SJlFIM1MblxUTwMTEgG4WJMdKtNjGBYursEYwwu3/Kqf6rWSR/0fbMwRZI+4RGx7dux0GThaVzFXtDO50+QAlcRq5ZMh7XsiqGTD9xoTxHkX/b5u9YwdOdp/aXyRep7LKA1+sf9qCopP1kZ6d4f1MQGFNeXYFA8hjbNNMK40eKMIIfoUHYc78j9m2S88r5gorXXHFgsS8F91WlQ0Azuk6B8BtpmTTGlrUiRTQqHQTGfCHEGogksVtGDVOKXzTnC9qQNTyfCM+AKQmAunb5QxDNkOiy7rB3uOI6qHktwrEyws/hbe7gkWZBTkuMgVfYZRD8zAYVy+SkWUaTX9OXPnTZD4lGdHZfAvYb1+L+X5vHfm0p/H3AiuI2WNk2LFE59/S/fK52exTT3D6FGObDXPv1svDNdBSZ//1g21VLSTl1pXrn4PlIZiYGuP+2NxweH1dL7MMfpzam8CCM+SPaovAo12oYeJwR5IkVXf7TPhq7zXNNl6qQbQjTSpdvhTdrNQS8HbEhrbp2CXMb6UBBNole+yYpAVTYm/KAKuH1u12TreER4OnQzxjRVpvgGoY7Wq6bMz3DMAIh5U/B3hqph6VWtdWt7MKSppm4qaSn9iCkMTN2EqmMPD8eJXt0XPQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(396003)(376002)(39860400002)(136003)(451199015)(31686004)(86362001)(36756003)(31696002)(38100700002)(316002)(921005)(6636002)(54906003)(6506007)(53546011)(6486002)(966005)(478600001)(6666004)(2616005)(110136005)(41300700001)(2906002)(7416002)(5660300002)(8936002)(186003)(66946007)(66556008)(8676002)(6512007)(66476007)(4326008)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dG5DdTRaN0xJREZFMVROK1lkUTRmazcrWTI4S0J5NHovS1FPbkxOZUJ6K1ZP?=
+ =?utf-8?B?a2dNd0ZNR1BJZHBPRzVjUEIyQk9WdzlFczM4azBiU1FvWlRqb1hmMGN2dEhn?=
+ =?utf-8?B?MWFKMFdhOWQrNDllOXF3VS9WdVBJaHhNaGlHYTQ0Q3d4Rm9nbVV1S3oxTHRH?=
+ =?utf-8?B?UG1nTS85MWhZdG5iRFBnanlpMnFTNDVSSjZ6WDRiYytwZXZCWVJoNDhsRlEy?=
+ =?utf-8?B?S3Bkcml1cXUzZCtONUVrY2UwY3E4eGxMamgvU1dhOGl1U0RhUW1rdzc1M3lI?=
+ =?utf-8?B?NmVNRnRuRVNsa01TZ21XUDlROUU4Y1A5TU1QQUlDZHdzOUJ1Vk5OM2l3RTBs?=
+ =?utf-8?B?endyTUJNSmFSUXJLa0Y3OXNWQldWMElQVWxkR3NwUTdkZVo5ZGhmWkFlS1o4?=
+ =?utf-8?B?RzJDWWd3bHZsUm0xNjlHbHQxSDNwVVdlRUYyK2tWOWJnUjRJaFhZTUJLVXo4?=
+ =?utf-8?B?ZmZTcDBySUxWQ2FDS1hGZ3FncjMxOTFMYnh6aG9GL3RHeUFTWG5oaG5VbTlB?=
+ =?utf-8?B?TVhlNEV4Q1FwZWk5UkIvT0UyWWlLVXpXZG9GL3ViMUQxNUd2S2U4RUlMb2xQ?=
+ =?utf-8?B?SWV0YkFpemY3RitPY1NZeVcxQ3NHdm4zWXlzKzBVV0ZDUm5FcHA0TlQ5cG5o?=
+ =?utf-8?B?dmRHRDZmWGplaTRGSk8yMGNicDd3TWQ0MFpDS09nY2dyR2pJZ3ZvSDNaUUE5?=
+ =?utf-8?B?WEwxc1o0KzlDT3JRNDBDL3VqS3RvWDNTUzhITHNLOWg1WFFiZEQzeXN5aXpm?=
+ =?utf-8?B?QmtvZ2dUWHFVNjc3TmtGaFZVZjFRQmcweHNsa1NtaDEydng5VXU4VnNLUjhU?=
+ =?utf-8?B?eGxFYXN5eUs1bkI0SmxGR2tGNklCUHhCTlFYd2J1cG4rM3lKYkpnRlZUcmEv?=
+ =?utf-8?B?dERhck5iS3JZRWI5YmQ2ZlEvZDJ3QTAxaWhSSlpYaUwrN3RDajNRNHUxWXVQ?=
+ =?utf-8?B?Y1lFOUt3ZGNlMVRRUVRTMkhSNUtkeklFcUppU2pYaVNaQzZNQWE2eGJPaTBo?=
+ =?utf-8?B?d3VUR0JOQlJwK2p0MlBHYmtNYjVMOFYyWDJqaHA0aFJGY1VZdGdtTksrYitu?=
+ =?utf-8?B?THVtSGlhYkozcDUyYkFCbFFuYmJFQnVRaUcyUUxiTW5RVmVHdTk3clJ2WEJw?=
+ =?utf-8?B?S0U4ZW8wU2MycENYMW5HVE9xODFpcC9td3VvV1RxbDBMdXk3TDhhdUdQVTVR?=
+ =?utf-8?B?aFgvNlMyV2VzK1NTbG55K3A2eEJmb2ZVOUlBN2xhQnE4V3dvRHFMVXZENWp2?=
+ =?utf-8?B?NXh2L1hnN2RmS1ZXTWJFWEVKMlQ5cGt3WXkydXFROStsWjdsWCtIblpBSlNJ?=
+ =?utf-8?B?SnZ5dWt4QWVLUUN6d002TXk3Vm1BZzlWUnFjcXdQMmdIWkhyT2ZWUlpYbndN?=
+ =?utf-8?B?QUliejQyVHZTa2pRUUhHd1E0dmJpUjBGWjNGcDdQZHUwYlE4aklKaUw0STF3?=
+ =?utf-8?B?U25OTHF4NkhnSVl3ZEYwUXZ5bFJ5TmRuWWp3NnlJOXNBeHM2cy8vdjZyeXlP?=
+ =?utf-8?B?WGdwbHR3NnNUVTdLbmF4OEhwL0l1OXEwa2JTOXBMTnIxNXlGWkdkUmVPdnMy?=
+ =?utf-8?B?R09JMWxwa3Rjd3ZpK3RnVlVhYklrN3FvVmZ3OC90SVVIWDlVLzVzSWJITTR3?=
+ =?utf-8?B?cldnbDhaM3FiOU9NT1pJVXI4cGN0TFptNlRuazlwSSs0aHkzNndieTRqb2Er?=
+ =?utf-8?B?NFkyNHRuRGlOWGhvNmF5b2RPVUt6V3lKZFNOQmVJUlJocS84bUhaRkEyNEpS?=
+ =?utf-8?B?V1UrMlo0WVJIMW1kOW55a1BoSUhIVjgxWS9RVXJIeWQ0Q2hWWkFobFp1d2ow?=
+ =?utf-8?B?ajN1bUIybXZHWE1HdzlvSjRZUkVhSUw5WHZ4QWQ2MStJcjVaWDU4UWJHcFRZ?=
+ =?utf-8?B?amZDQkhZZzhxdFdPNEFJcENSdm1qU0JQeHlrR2YvY3NrLzJ6cGlVWFhEQVIw?=
+ =?utf-8?B?RjRVSDBBbWYzQ1pWL3NPTzNYeHV5ZXJIdm1nNUxaWWE0dCt2c3NmVzRPZE1D?=
+ =?utf-8?B?TFp2dmFwbnFncGFiSTM0d3A1ZWRnT2RPbHNQaXFnQ0Rwdi9JWVlxMWZYU1o2?=
+ =?utf-8?B?aUVsN1Q4ZUl3Wk9JUmlIamdWUU9DV0hTSUZGcGlJVGkzbW9HbDVCc2RQRHhu?=
+ =?utf-8?B?SUVpUlpSZTZOOThmNDVLbGlMQXVkOXVkWU5uQkhTVlZYY2krTGVJNVFLZE8r?=
+ =?utf-8?B?M2UzejAxanVINFVzcFIxcFlPZ08zQWtCRDR1dk4vdk5hQkUrclBxWWUvSGtL?=
+ =?utf-8?B?bWV4Zjd2VWNlOEhQMnZ3T2FRaW1BPT0=?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c6088ce-ecde-4865-5919-08dac946880c
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 09:23:19.6875
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vXcoZ2pvidC2Mb/SG/AMpSemSdJnRB69hklBfQ3k/7K3BwIXZV09H/xMsSc8QvajOJGNpzLHf8XJmbJJhdYMMg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7339
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Konstantin, this patch should apply cleanly just after "01/12 landlock: 
-Make ruleset's access masks more generic". You can easily get this patch 
-with https://git.kernel.org/pub/scm/utils/b4/b4.git/
-Some adjustments are needed for the following patches. Feel free to 
-review this patch.
+Hi Florian,
+
+On 12/10/2022 05:56, Bhadram Varka wrote:
+
+...
+
+>> You should be modeling this as a proper PCS driver and have a 'pcs-handle'
+>> property pointing to it in your Device Tree.
+>>
+>> The configuration you are doing here is probably working the first time you
+>> bring-up the network device but I doubt it works across system
+>> suspend/resume states where power to the GMAC and PCS is lost, it also
+>> begs the question of which mediums this was tested with and whether
+>> dynamic switching of speeds and so on is working?
+>> --
+> 
+> For Tegra234, there is UPHY lanes control logic inside XPCS IP which is memory-mapped IP (not part of the MAC IP).
+> mgbe_uphy_lane_bringup performs UPHY lane bring up here. Here MGBE/XPCS works in XFI mode.
+> 
+> Agree that lane bring down logic is not present interface down/suspend paths. Will update the changes accordingly.
+> One more thing is that UPHY lane bring should happen only after the line side link is up. This also will make the changes.
+> Please let me know if I miss anything here.
 
 
-On 17/11/2022 19:55, Mickaël Salaün wrote:
-> Allow mount point and root directory changes when there is no filesystem
-> rule tied to the current Landlock domain.  This doesn't change anything
-> for now because a domain must have at least a (filesystem) rule, but
-> this will change when other rule types will come.  For instance, a
-> domain only restricting the network should have no impact on filesystem
-> restrictions.
-> 
-> Add a new get_current_fs_domain() helper to quickly check filesystem
-> rule existence for all filesystem LSM hooks.
-> 
-> Remove unnecessary inlining.
-> 
-> Signed-off-by: Mickaël Salaün <mic@digikod.net>
-> ---
->   security/landlock/fs.c       | 73 ++++++++++++++++++------------------
->   security/landlock/ruleset.h  | 25 +++++++++++-
->   security/landlock/syscalls.c |  6 +--
->   3 files changed, 62 insertions(+), 42 deletions(-)
-> 
-> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-> index 0d57c6479d29..0ae54a639e16 100644
-> --- a/security/landlock/fs.c
-> +++ b/security/landlock/fs.c
-> @@ -150,16 +150,6 @@ static struct landlock_object *get_inode_object(struct inode *const inode)
->   	LANDLOCK_ACCESS_FS_TRUNCATE)
->   /* clang-format on */
->   
-> -/*
-> - * All access rights that are denied by default whether they are handled or not
-> - * by a ruleset/layer.  This must be ORed with all ruleset->fs_access_masks[]
-> - * entries when we need to get the absolute handled access masks.
-> - */
-> -/* clang-format off */
-> -#define ACCESS_INITIALLY_DENIED ( \
-> -	LANDLOCK_ACCESS_FS_REFER)
-> -/* clang-format on */
-> -
->   /*
->    * @path: Should have been checked by get_path_from_fd().
->    */
-> @@ -179,8 +169,7 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->   
->   	/* Transforms relative access rights to absolute ones. */
->   	access_rights |= LANDLOCK_MASK_ACCESS_FS &
-> -			 ~(landlock_get_fs_access_mask(ruleset, 0) |
-> -			   ACCESS_INITIALLY_DENIED);
-> +			 ~landlock_get_fs_access_mask(ruleset, 0);
->   	object = get_inode_object(d_backing_inode(path->dentry));
->   	if (IS_ERR(object))
->   		return PTR_ERR(object);
-> @@ -287,14 +276,15 @@ static inline bool is_nouser_or_private(const struct dentry *dentry)
->   		unlikely(IS_PRIVATE(d_backing_inode(dentry))));
->   }
->   
-> -static inline access_mask_t
-> -get_handled_accesses(const struct landlock_ruleset *const domain)
-> +static access_mask_t
-> +get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
->   {
-> -	access_mask_t access_dom = ACCESS_INITIALLY_DENIED;
-> +	access_mask_t access_dom = 0;
->   	size_t layer_level;
->   
->   	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
-> -		access_dom |= landlock_get_fs_access_mask(domain, layer_level);
-> +		access_dom |=
-> +			landlock_get_raw_fs_access_mask(domain, layer_level);
->   	return access_dom & LANDLOCK_MASK_ACCESS_FS;
->   }
->   
-> @@ -331,13 +321,8 @@ init_layer_masks(const struct landlock_ruleset *const domain,
->   
->   		for_each_set_bit(access_bit, &access_req,
->   				 ARRAY_SIZE(*layer_masks)) {
-> -			/*
-> -			 * Artificially handles all initially denied by default
-> -			 * access rights.
-> -			 */
->   			if (BIT_ULL(access_bit) &
-> -			    (landlock_get_fs_access_mask(domain, layer_level) |
-> -			     ACCESS_INITIALLY_DENIED)) {
-> +			    landlock_get_fs_access_mask(domain, layer_level)) {
->   				(*layer_masks)[access_bit] |=
->   					BIT_ULL(layer_level);
->   				handled_accesses |= BIT_ULL(access_bit);
-> @@ -347,6 +332,24 @@ init_layer_masks(const struct landlock_ruleset *const domain,
->   	return handled_accesses;
->   }
->   
-> +static access_mask_t
-> +get_handled_fs_accesses(const struct landlock_ruleset *const domain)
-> +{
-> +	/* Handles all initially denied by default access rights. */
-> +	return get_raw_handled_fs_accesses(domain) | ACCESS_FS_INITIALLY_DENIED;
-> +}
-> +
-> +static const struct landlock_ruleset *get_current_fs_domain(void)
-> +{
-> +	const struct landlock_ruleset *const dom =
-> +		landlock_get_current_domain();
-> +
-> +	if (!dom || !get_raw_handled_fs_accesses(dom))
-> +		return NULL;
-> +
-> +	return dom;
-> +}
-> +
->   /*
->    * Check that a destination file hierarchy has more restrictions than a source
->    * file hierarchy.  This is only used for link and rename actions.
-> @@ -519,7 +522,7 @@ static bool is_access_to_paths_allowed(
->   		 * a superset of the meaningful requested accesses).
->   		 */
->   		access_masked_parent1 = access_masked_parent2 =
-> -			get_handled_accesses(domain);
-> +			get_handled_fs_accesses(domain);
->   		is_dom_check = true;
->   	} else {
->   		if (WARN_ON_ONCE(dentry_child1 || dentry_child2))
-> @@ -648,11 +651,10 @@ static inline int check_access_path(const struct landlock_ruleset *const domain,
->   	return -EACCES;
->   }
->   
-> -static inline int current_check_access_path(const struct path *const path,
-> +static int current_check_access_path(const struct path *const path,
->   					    const access_mask_t access_request)
->   {
-> -	const struct landlock_ruleset *const dom =
-> -		landlock_get_current_domain();
-> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
->   
->   	if (!dom)
->   		return 0;
-> @@ -815,8 +817,7 @@ static int current_check_refer_path(struct dentry *const old_dentry,
->   				    struct dentry *const new_dentry,
->   				    const bool removable, const bool exchange)
->   {
-> -	const struct landlock_ruleset *const dom =
-> -		landlock_get_current_domain();
-> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
->   	bool allow_parent1, allow_parent2;
->   	access_mask_t access_request_parent1, access_request_parent2;
->   	struct path mnt_dir;
-> @@ -1050,7 +1051,7 @@ static int hook_sb_mount(const char *const dev_name,
->   			 const struct path *const path, const char *const type,
->   			 const unsigned long flags, void *const data)
->   {
-> -	if (!landlock_get_current_domain())
-> +	if (!get_current_fs_domain())
->   		return 0;
->   	return -EPERM;
->   }
-> @@ -1058,7 +1059,7 @@ static int hook_sb_mount(const char *const dev_name,
->   static int hook_move_mount(const struct path *const from_path,
->   			   const struct path *const to_path)
->   {
-> -	if (!landlock_get_current_domain())
-> +	if (!get_current_fs_domain())
->   		return 0;
->   	return -EPERM;
->   }
-> @@ -1069,14 +1070,14 @@ static int hook_move_mount(const struct path *const from_path,
->    */
->   static int hook_sb_umount(struct vfsmount *const mnt, const int flags)
->   {
-> -	if (!landlock_get_current_domain())
-> +	if (!get_current_fs_domain())
->   		return 0;
->   	return -EPERM;
->   }
->   
->   static int hook_sb_remount(struct super_block *const sb, void *const mnt_opts)
->   {
-> -	if (!landlock_get_current_domain())
-> +	if (!get_current_fs_domain())
->   		return 0;
->   	return -EPERM;
->   }
-> @@ -1092,7 +1093,7 @@ static int hook_sb_remount(struct super_block *const sb, void *const mnt_opts)
->   static int hook_sb_pivotroot(const struct path *const old_path,
->   			     const struct path *const new_path)
->   {
-> -	if (!landlock_get_current_domain())
-> +	if (!get_current_fs_domain())
->   		return 0;
->   	return -EPERM;
->   }
-> @@ -1128,8 +1129,7 @@ static int hook_path_mknod(const struct path *const dir,
->   			   struct dentry *const dentry, const umode_t mode,
->   			   const unsigned int dev)
->   {
-> -	const struct landlock_ruleset *const dom =
-> -		landlock_get_current_domain();
-> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
->   
->   	if (!dom)
->   		return 0;
-> @@ -1208,8 +1208,7 @@ static int hook_file_open(struct file *const file)
->   	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
->   	access_mask_t open_access_request, full_access_request, allowed_access;
->   	const access_mask_t optional_access = LANDLOCK_ACCESS_FS_TRUNCATE;
-> -	const struct landlock_ruleset *const dom =
-> -		landlock_get_current_domain();
-> +	const struct landlock_ruleset *const dom = get_current_fs_domain();
->   
->   	if (!dom)
->   		return 0;
-> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
-> index f2ad932d396c..ca46393ef3bb 100644
-> --- a/security/landlock/ruleset.h
-> +++ b/security/landlock/ruleset.h
-> @@ -15,10 +15,21 @@
->   #include <linux/rbtree.h>
->   #include <linux/refcount.h>
->   #include <linux/workqueue.h>
-> +#include <uapi/linux/landlock.h>
->   
->   #include "limits.h"
->   #include "object.h"
->   
-> +/*
-> + * All access rights that are denied by default whether they are handled or not
-> + * by a ruleset/layer.  This must be ORed with all ruleset->access_masks[]
-> + * entries when we need to get the absolute handled access masks.
-> + */
-> +/* clang-format off */
-> +#define ACCESS_FS_INITIALLY_DENIED ( \
-> +	LANDLOCK_ACCESS_FS_REFER)
-> +/* clang-format on */
-> +
->   typedef u16 access_mask_t;
->   /* Makes sure all filesystem access rights can be stored. */
->   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
-> @@ -197,11 +208,21 @@ landlock_add_fs_access_mask(struct landlock_ruleset *const ruleset,
->   }
->   
->   static inline access_mask_t
-> -landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
-> -			    const u16 layer_level)
-> +landlock_get_raw_fs_access_mask(const struct landlock_ruleset *const ruleset,
-> +				const u16 layer_level)
->   {
->   	return (ruleset->access_masks[layer_level] >>
->   		LANDLOCK_SHIFT_ACCESS_FS) &
->   	       LANDLOCK_MASK_ACCESS_FS;
->   }
-> +
-> +static inline access_mask_t
-> +landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
-> +			    const u16 layer_level)
-> +{
-> +	/* Handles all initially denied by default access rights. */
-> +	return landlock_get_raw_fs_access_mask(ruleset, layer_level) |
-> +	       ACCESS_FS_INITIALLY_DENIED;
-> +}
-> +
->   #endif /* _SECURITY_LANDLOCK_RULESET_H */
-> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-> index 71aca7f990bc..d35cd5d304db 100644
-> --- a/security/landlock/syscalls.c
-> +++ b/security/landlock/syscalls.c
-> @@ -310,6 +310,7 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
->   	struct path path;
->   	struct landlock_ruleset *ruleset;
->   	int res, err;
-> +	access_mask_t mask;
->   
->   	if (!landlock_initialized)
->   		return -EOPNOTSUPP;
-> @@ -348,9 +349,8 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
->   	 * Checks that allowed_access matches the @ruleset constraints
->   	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
->   	 */
-> -	if ((path_beneath_attr.allowed_access |
-> -	     landlock_get_fs_access_mask(ruleset, 0)) !=
-> -	    landlock_get_fs_access_mask(ruleset, 0)) {
-> +	mask = landlock_get_raw_fs_access_mask(ruleset, 0);
-> +	if ((path_beneath_attr.allowed_access | mask) != mask) {
->   		err = -EINVAL;
->   		goto out_put_ruleset;
->   	}
+An updated version of this has now been posted [0]. It should have been 
+marked as 'V5'. We have tested suspend/resume and verified that it is 
+working. We are hoping to get this into Linux v6.2 if not too late. Let 
+me know if you have any concerns.
+
+Thanks
+Jon
+
+[0] 
+https://lore.kernel.org/linux-tegra/20221118075744.49442-1-ruppala@nvidia.com/T/#t
+
+-- 
+nvpublic
