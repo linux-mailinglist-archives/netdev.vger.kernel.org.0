@@ -2,138 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78FE462FBA2
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 18:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40B0F62FBA6
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 18:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240803AbiKRRaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 12:30:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S241869AbiKRRbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 12:31:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235505AbiKRRaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 12:30:19 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183F5186EC;
-        Fri, 18 Nov 2022 09:30:18 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id x2so8119728edd.2;
-        Fri, 18 Nov 2022 09:30:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0uivhCS3hrzrIPQvwJTsradHbw3Nzt6+m34AyTOhZQ0=;
-        b=WX7zKRuKRu2BJakMMuR/zGmp9zUQNzAVK093+VPSLJcTwOpqrVjcxeYdvO4IOuD0n/
-         DZdha0KAeGLVfXl5fj1sb+BWGMHu2hLV1oiKiw6FP+cVfQTuutwQlg8T5OA9P8e45CI+
-         /x2xZG7PneaCh+aYjyFMWND/bJpKeHKVXexZBjp7CchfS42FcbOvPY8frPoKMLwz5wNp
-         9IeWJZWlr4qCmPhOG1oPqWnVfreRmp6gyJOqPrQGDKOH07MNuywofJA9uDANhVzGqYWF
-         vOnEpo2KsNZGi2XsBDtWJMbgg8CtzVcprw1+KpaWHkkWwC5ktDUZvjx/9rD5of1xIEY3
-         yGkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0uivhCS3hrzrIPQvwJTsradHbw3Nzt6+m34AyTOhZQ0=;
-        b=QLLMbNcwJmOA/v53ibyzvf7ALZWghXJOFjh6eqrgd5SZcGT+hEssd8NmI25ISQpKxS
-         68sCzhrhuxjvpqm/qn6Q7gGqXNlsFeki6l8rdHNWz7rrCSG0O8aFxBlh5DixKGahMJh3
-         egbjxL+toV7P/6tMwsgreMDV12aEkz1GMi5Xl8vEeG59cg4gRpkAotP6xAAwYp3b00xX
-         zAqyUy4xdFHNJtTjBM0a9HVBpknaR11UBaRy/UjkxKUZi7bMRIJPhhLXXG/YSd8jz5y3
-         PRXeq/C7YNhi/ZUjjfI5My0LYrDllkmYwfeWwrGGITZfn5cFg5i2hyr9CerkZwDX8sDb
-         S73Q==
-X-Gm-Message-State: ANoB5plMHCkB269UzN8/4x1F1eVOfMuo9vZTvvEMlPt7ZLtf+Hjl+xWp
-        S5+oNV59LVOGS9qt1ax6W3Y=
-X-Google-Smtp-Source: AA0mqf4W6/CxKfx1yfXcZgmwCURxQtfhGb9oF9kd/Uh28WiW657srpHdzxcz69JITqkdaT01rwBfiA==
-X-Received: by 2002:a05:6402:550b:b0:45f:9526:e35a with SMTP id fi11-20020a056402550b00b0045f9526e35amr7138693edb.256.1668792616538;
-        Fri, 18 Nov 2022 09:30:16 -0800 (PST)
-Received: from skbuf ([188.27.185.168])
-        by smtp.gmail.com with ESMTPSA id mh23-20020a170906eb9700b007af105a87cbsm1920348ejb.152.2022.11.18.09.30.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 09:30:16 -0800 (PST)
-Date:   Fri, 18 Nov 2022 19:30:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] phy: aquantia: Configure SERDES mode by default
-Message-ID: <20221118173014.4i7fccrgcqr6dkp4@skbuf>
-References: <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221115223732.ctvzjbpeaxulnm5l@skbuf>
- <3771f5be-3deb-06f9-d0a0-c3139d098bf0@seco.com>
- <20221115230207.2e77pifwruzkexbr@skbuf>
- <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
- <20221118164914.6k3gofemf5tu2gfn@skbuf>
- <1015dfec-542d-8222-6c4e-0cf9d5ee7e5a@seco.com>
+        with ESMTP id S241312AbiKRRbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 12:31:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C372186EC
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 09:31:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5522626B5
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 17:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C293C433D6;
+        Fri, 18 Nov 2022 17:31:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668792678;
+        bh=YUMZTiR2BSL9KNrQOfhCVO4wu38lNiw1qRPb9aJ4w5k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S7W2K0H3db6yLqd5Fj/Fe6kvQxS7GPM4bpm1kes5aaUN77/gflTLQ4HmtGueNPySE
+         29XksfPom5VQWikAzvNT4MgjYPPUNZrvPZJWiP8MVSfvYzatiBOKktK7GD4mX8KPHx
+         I4Gv6XQNQDHkBbu48KDIKZnLXHEV40dvoAGFz1sORcpN6va1V9HfGBaUEKy693TjsQ
+         ijHpnpu0fkEvUgLWIgJt0EeoUofNV/LZwQnDi6eGi4kvXvI4T8I60EXQ07JP1bl/aX
+         RvnDaV5sRZhqt4/Q+h2U8qdhquxC6XZfgjD2aWdN73xfB1I+41i6zxOMpUYs3kbznp
+         B1NqZzxhrC1gg==
+Date:   Fri, 18 Nov 2022 19:31:13 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
+        "Drewek, Wojciech" <wojciech.drewek@intel.com>,
+        "Czapnik, Lukasz" <lukasz.czapnik@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Kitszel, Przemyslaw" <przemyslaw.kitszel@intel.com>,
+        "Raczynski, Piotr" <piotr.raczynski@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Kaliszczuk, Leszek" <leszek.kaliszczuk@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH net-next 00/13] resource management using devlink reload
+Message-ID: <Y3fBYXclZbNsiE1J@unreal>
+References: <Y3R9iAMtkk8zGyaC@unreal>
+ <Y3TR1At4In5Q98OG@localhost.localdomain>
+ <Y3UlD499Yxj77vh3@unreal>
+ <Y3YWkT/lMmYU5T+3@localhost.localdomain>
+ <Y3Ye4kwmtPrl33VW@unreal>
+ <Y3Y5phsWzatdnwok@localhost.localdomain>
+ <Y3ZxqAq3bR7jYc3H@unreal>
+ <20221117193618.2cd47268@kernel.org>
+ <Y3ckRWtAtZU1BdXm@unreal>
+ <MWHPR11MB002998FAA385731E21E20868E9099@MWHPR11MB0029.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1015dfec-542d-8222-6c4e-0cf9d5ee7e5a@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <MWHPR11MB002998FAA385731E21E20868E9099@MWHPR11MB0029.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 12:11:30PM -0500, Sean Anderson wrote:
-> >> - We can check all the registers to ensure we are actually going to rate
-> >>   adapt. If we aren't, we tell phylink we don't support it. This is the
-> >>   least risky, but we can end up not bringing up the link even in
-> >>   circumstances where we could if we configured things properly. And we
-> >>   generally know the right way to configure things.
+On Fri, Nov 18, 2022 at 02:23:50PM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [PATCH net-next 00/13] resource management using devlink reload
 > > 
-> > Like when?
-> 
-> Well, like whenever the phy says "Please do XFI/2" or some other mode we
-> don't have a phy interface mode for. We will never be able to tell the MAC
-> "Please do XFI/2" (until we add an interface mode for it), so that's
-> obviously wrong.
-
-Add an interface mode for it then... But note that I have absolutely no
-clue what XFI/2 is. Apparently Aquantia doesn't want NXP to know....
-
-> >> - Add a configuration option (devicetree? ethtool?) on which option
-> >>   above to pick. This is probably what we will want to do in the long
-> >>   term, but I feel like we have enough information to determine the
-> >>   right thing to do most of the time (without needing manual
-> >>   intervention).
+> > On Thu, Nov 17, 2022 at 07:36:18PM -0800, Jakub Kicinski wrote:
+> > > On Thu, 17 Nov 2022 19:38:48 +0200 Leon Romanovsky wrote:
+> > > > I don't think that management of PCI specific parameters in devlink
+> > > > is right idea. PCI has his own subsystem with rules and assumptions,
+> > > > netdev shouldn't mangle them.
+> > >
+> > > Not netdev, devlink, which covers netdev, RDMA and others.
 > > 
-> > Not sure I see the need, when long-term there is no volunteer to make
-> > the Linux driver bring Aquantia PHYs to a known state regardless of
-> > vendor provisioning. Until then, there is just no reason to even attempt
-> > this.
+> > devlink is located in net/*, it is netdev.
+> > Regarding RDMA, it is not fully accurate. We use devlink to convey information to
+> > FW through pci device located in netdev. Some of such parameters are RDMA
+> > related. However, we don't configure RDMA properties through devlink, there is a
+> > special tool for that (rdmatool).
 > 
-> I mean a config for option 1 vs 2 above.
+> rdmatool though is usable only once the rdma driver probe() completes and the ib_device is registered.
+> And cannot be used for any configurations at driver init time.
 
-How would this interact with Marek's proposal for phy-mode to be an
-array, and some middle entity (phylink?) selects the SERDES protocol and
-rate matching algorithm to use for each medium side link speed?
-https://patchwork.kernel.org/project/netdevbpf/cover/20211123164027.15618-1-kabel@kernel.org/
+Like I said, we use devlink to configure FW and "core" device to which
+ib_device is connected. We don't configure RDMA specific properties, but
+only device specific ones.
 
-> > Until you look at the procedure in the NXP SDK and see that things are a
-> > bit more complicated to get right, like put the PHY in low power mode,
-> > sleep for a while. I think a large part of that was determined experimentally,
-> > out of laziness to change PHY firmware on some riser cards more than anything.
-> > We still expect the production boards to have a good firmware, and Linux
-> > to read what that does and adapt accordingly.
 > 
-> Alas, if only Marvell put stuff like this in a manual... All I have is a spec
-> sheet and the register reference, and my company has an NDA...
+> Don't we already have PCI specific parameters managed through devlink today?
+> 
+> https://docs.kernel.org/networking/devlink/devlink-params.html
+> enable_sriov
+> ignore_ari
+> msix_vec_per_pf_max
+> msix_vec_per_pf_min
+> 
+> How are these in a different bracket from what Michal is trying to do? Or were these ones a bad idea in hindsight?
 
-Can't help with much more than providing this hint, sorry. All I can say
-is that SERDES protocol override from Linux is possible with care, at
-least on some systems. But it may be riddled with landmines.
+Yes as it doesn't belong to net/* and it exists there just because of
+one reason: ability to write to FW of specific device.
 
-> We aren't even using this phy on our board, so I am fine disabling rate adaptation
-> for funky firmwares.
+At least for ARI, I don't see that bnxt driver masked ARI Extended Capability
+and informed PCI subsystem about it, so PCI core will recreate device.
 
-Disabling rate adaptation is one thing. But there's also the unresolved
-XFI/2 issue?
+Thanks
