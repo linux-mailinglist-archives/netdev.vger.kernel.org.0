@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8199B62F76C
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 15:33:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2100B62F774
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 15:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242408AbiKROdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 09:33:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        id S242420AbiKROds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 09:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241423AbiKROdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 09:33:35 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57292F388
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:33:33 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id j15so8859971wrq.3
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:33:33 -0800 (PST)
+        with ESMTP id S242396AbiKROdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 09:33:36 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F584091E
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:33:35 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id k8so9596185wrh.1
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:33:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Y27Dxuej0JJOzYqREuZ7buGqEQSIRreRsNAzFXY30l0=;
-        b=or9xiwYvnOBoUw+/IBUWQko0HRB0n/YeH7CUxy44N4SxiFrHZnEJKIE2DPEbYWoUXk
-         ZZmCWNBh5KbAvGw90Y4UgrJcZc+UlXC2CPjxHgm0FkkqNmtWFEDa7u6qtTGVTpTnPfA9
-         ubG0wkELzgV2gRQCCool5kNX4GooCiy4HVWdtyXmtdcVUeXyXNYeQxIwiSIsIhxJRk9i
-         KZKoHyK25p+bVfA4TvjcWIxqNg3os2kNiaLU6I6sE27++JX5UWb7yU/HnZLEaJrP3a1w
-         I22lUfa6AUCe5UEAzemXMt83a7n/HSnGusArdBOYRU5BluvmOoDBpuBG4wiU2n3oF11M
-         RGFg==
+        bh=zKzOLVyKNwFrjuNCS8GNwd0mJ3pltY/11JAUpUYsKu4=;
+        b=VrwwJ6pVVCSXSYl73u/i+VNOFTu7Fk8Hr4HsIlkX4lmnzxNiNnPWpdBPMJtJ1/t6VV
+         vHYxvLGDPW0JqxcSC9kf5DEHRW6Xhrcm/pQP82PR9cGk64F7gv6Wkj0lDCRfsZMFv4et
+         kd5Hb6eEip8QfoWAZ7AK0KaDjPhyStZY5WvQ4k1vdeUu/9OFbmHkuFDVDfepBn2YEPfH
+         PN7NrbyAXadbFZD5lL1jlK8xoMVGcbBtuXSkRtbGexExID9lyk55cgaYLEukfCWKLLIO
+         j5UfYO+koPf3KwCYJrUJE1b9AFBZcCphGd3B2oqV90YDxURPmEYtQYOdtOAF9k9N5J97
+         nQYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Y27Dxuej0JJOzYqREuZ7buGqEQSIRreRsNAzFXY30l0=;
-        b=wxAFAAoGhNg3fp4K4rEfsDzgmapaaCpy7mcEJ5aqs4zUcXiXFJnf5WQ5tHWFWWG0wF
-         V78PnvxFjWct1AgK4RDmo/Iz7fbqJ1DuuB3pwvOl7sueyh8rC00oc5BKu/o5j/7LHLf2
-         yxjRc5zvL5Jbc89i4g+tgJCNecTFf9jFRWViCZP2L59IaSxsPRLOunnUHCFHa9DfNJ1m
-         Gvm6N0Vyo3mzr1w9AFNxKGt3TWAOdNtBkFiSoc7EcshKKdyr5ovuYl8vVvVCs5MgZ4xp
-         i/gC0L6Ap7Hsdy5dPDkhNJJV8LqBDPFRAeaagXFh9CM3N3E3V8/IsG8F9aytSvJqBp1B
-         QvRg==
-X-Gm-Message-State: ANoB5plAb/z2SlwJn3PobkWWmgBXUXJ6DH0H1TInyLQO4IzXuyOCnZsu
-        Km3eH1nxJrA21Q33ObF3V+s9HA==
-X-Google-Smtp-Source: AA0mqf7812T75JmU1RK3dUswEj+nSB6pF/2V/PIu/zIN4QQtJ/ZBP39Rfn1JU4+7LgOWa59FP8nB0w==
-X-Received: by 2002:a5d:56c2:0:b0:241:94bc:2796 with SMTP id m2-20020a5d56c2000000b0024194bc2796mr4281152wrw.184.1668782012260;
-        Fri, 18 Nov 2022 06:33:32 -0800 (PST)
+        bh=zKzOLVyKNwFrjuNCS8GNwd0mJ3pltY/11JAUpUYsKu4=;
+        b=zNVBCxeQQKWHzJyVzOKSOpcepXbuBvQWvybHrUk37tyqIuckLMYxgETTXHtymnJsY8
+         hUUIMPY1m+SjYk/M6OdoABcxMvj2VFT+NyhvfrWAgx3HvcOqd2yCBA2xRInT5sdPt1dO
+         PqM9MeIhdeKnIuanX2FnAecP+q1qO1dC+jCbodVAnwHdLJk9xMbacyAE+MnB31cxX/H1
+         e1/b7lbp36mp8r88+io152Gb+D0oFLwOe/ZyywsTIhkxVa0hvO2iU+SIhDh5CfmQTBlq
+         9KARmfjxsOBcvKiUFP2tQezTKdwgL8hjiJGSGCkUaEdJvBAuXUNzfXxKQ0bezgqd95wo
+         9FGg==
+X-Gm-Message-State: ANoB5plQLOek9bC9Ja7+hBkpU1IdHxbJUPTd4UHWHb4N66LC4/3OIxVi
+        hZ+UFBtJGBCWeJduo80gnXhwPA==
+X-Google-Smtp-Source: AA0mqf5Et4RmmNDbZPxACYC8haUsvzN2TZBWBT48s+4VDkDl/qsiI96omDOcIbRneDN0JgV6M5tTjA==
+X-Received: by 2002:adf:e490:0:b0:236:76ab:3e01 with SMTP id i16-20020adfe490000000b0023676ab3e01mr4248041wrm.107.1668782013657;
+        Fri, 18 Nov 2022 06:33:33 -0800 (PST)
 Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
-        by smtp.gmail.com with ESMTPSA id j21-20020a05600c1c1500b003cfb7c02542sm5436726wms.11.2022.11.18.06.33.30
+        by smtp.gmail.com with ESMTPSA id j21-20020a05600c1c1500b003cfb7c02542sm5436726wms.11.2022.11.18.06.33.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 06:33:31 -0800 (PST)
+        Fri, 18 Nov 2022 06:33:33 -0800 (PST)
 From:   Neil Armstrong <neil.armstrong@linaro.org>
-Date:   Fri, 18 Nov 2022 15:33:27 +0100
-Subject: [PATCH 01/12] dt-bindings: firmware: convert meson_sm.txt to dt-schema
+Date:   Fri, 18 Nov 2022 15:33:28 +0100
+Subject: [PATCH 02/12] dt-bindings: nvmem: convert amlogic-efuse.txt to dt-schema
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20221117-b4-amlogic-bindings-convert-v1-1-3f025599b968@linaro.org>
+Message-Id: <20221117-b4-amlogic-bindings-convert-v1-2-3f025599b968@linaro.org>
 References: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
 In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
 To:     Jakub Kicinski <kuba@kernel.org>,
@@ -99,76 +99,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Amlogic Secure Monitor bindings to dt-schema.
+Convert the  Amlogic Meson GX eFuse bindings to dt-schema.
 
 Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- .../bindings/firmware/amlogic,meson-gxbb-sm.yaml   | 36 ++++++++++++++++++++++
- .../bindings/firmware/meson/meson_sm.txt           | 15 ---------
- 2 files changed, 36 insertions(+), 15 deletions(-)
+ .../bindings/nvmem/amlogic,meson-gxbb-efuse.yaml   | 52 ++++++++++++++++++++++
+ .../devicetree/bindings/nvmem/amlogic-efuse.txt    | 48 --------------------
+ 2 files changed, 52 insertions(+), 48 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/firmware/amlogic,meson-gxbb-sm.yaml b/Documentation/devicetree/bindings/firmware/amlogic,meson-gxbb-sm.yaml
+diff --git a/Documentation/devicetree/bindings/nvmem/amlogic,meson-gxbb-efuse.yaml b/Documentation/devicetree/bindings/nvmem/amlogic,meson-gxbb-efuse.yaml
 new file mode 100644
-index 000000000000..33d1408610cf
+index 000000000000..1d88f7eee840
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/firmware/amlogic,meson-gxbb-sm.yaml
-@@ -0,0 +1,36 @@
++++ b/Documentation/devicetree/bindings/nvmem/amlogic,meson-gxbb-efuse.yaml
+@@ -0,0 +1,52 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/firmware/amlogic,meson-gxbb-sm.yaml#
++$id: http://devicetree.org/schemas/nvmem/amlogic,meson-gxbb-efuse.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Amlogic Secure Monitor (SM)
-+
-+description:
-+  In the Amlogic SoCs the Secure Monitor code is used to provide access to the
-+  NVMEM, enable JTAG, set USB boot, etc...
++title: Amlogic Meson GX eFuse
 +
 +maintainers:
 +  - Neil Armstrong <neil.armstrong@linaro.org>
 +
++allOf:
++  - $ref: nvmem.yaml#
++
 +properties:
 +  compatible:
-+    const: amlogic,meson-gxbb-sm
++    const: amlogic,meson-gxbb-efuse
 +
-+patternProperties:
-+  "power-controller":
-+    type: object
-+    $ref: /schemas/power/amlogic,meson-sec-pwrc.yaml#
++  clocks:
++    maxItems: 1
++
++  secure-monitor:
++    description: phandle to the secure-monitor node
 +
 +required:
 +  - compatible
++  - clocks
++  - secure-monitor
 +
-+additionalProperties: false
++unevaluatedProperties: false
 +
 +examples:
 +  - |
-+    firmware {
-+        secure-monitor {
-+            compatible = "amlogic,meson-gxbb-sm";
++    efuse: efuse {
++        compatible = "amlogic,meson-gxbb-efuse";
++        clocks = <&clk_efuse>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        secure-monitor = <&sm>;
++
++        sn: sn@14 {
++            reg = <0x14 0x10>;
++        };
++
++        eth_mac: mac@34 {
++            reg = <0x34 0x10>;
++        };
++
++        bid: bid@46 {
++            reg = <0x46 0x30>;
 +        };
 +    };
-diff --git a/Documentation/devicetree/bindings/firmware/meson/meson_sm.txt b/Documentation/devicetree/bindings/firmware/meson/meson_sm.txt
+diff --git a/Documentation/devicetree/bindings/nvmem/amlogic-efuse.txt b/Documentation/devicetree/bindings/nvmem/amlogic-efuse.txt
 deleted file mode 100644
-index c248cd44f727..000000000000
---- a/Documentation/devicetree/bindings/firmware/meson/meson_sm.txt
+index f7b3ed74db54..000000000000
+--- a/Documentation/devicetree/bindings/nvmem/amlogic-efuse.txt
 +++ /dev/null
-@@ -1,15 +0,0 @@
--* Amlogic Secure Monitor
+@@ -1,48 +0,0 @@
+-= Amlogic Meson GX eFuse device tree bindings =
 -
--In the Amlogic SoCs the Secure Monitor code is used to provide access to the
--NVMEM, enable JTAG, set USB boot, etc...
+-Required properties:
+-- compatible: should be "amlogic,meson-gxbb-efuse"
+-- clocks: phandle to the efuse peripheral clock provided by the
+-	  clock controller.
+-- secure-monitor: phandle to the secure-monitor node
 -
--Required properties for the secure monitor node:
--- compatible: Should be "amlogic,meson-gxbb-sm"
+-= Data cells =
+-Are child nodes of eFuse, bindings of which as described in
+-bindings/nvmem/nvmem.txt
 -
 -Example:
 -
--	firmware {
--		sm: secure-monitor {
--			compatible = "amlogic,meson-gxbb-sm";
+-	efuse: efuse {
+-		compatible = "amlogic,meson-gxbb-efuse";
+-		clocks = <&clkc CLKID_EFUSE>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		secure-monitor = <&sm>;
+-
+-		sn: sn@14 {
+-			reg = <0x14 0x10>;
 -		};
+-
+-		eth_mac: eth_mac@34 {
+-			reg = <0x34 0x10>;
+-		};
+-
+-		bid: bid@46 {
+-			reg = <0x46 0x30>;
+-		};
+-	};
+-
+-	sm: secure-monitor {
+-		compatible = "amlogic,meson-gxbb-sm";
+-	};
+-
+-= Data consumers =
+-Are device nodes which consume nvmem data cells.
+-
+-For example:
+-
+-	eth_mac {
+-		...
+-		nvmem-cells = <&eth_mac>;
+-		nvmem-cell-names = "eth_mac";
 -	};
 
 -- 
