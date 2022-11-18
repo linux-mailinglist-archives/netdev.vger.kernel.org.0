@@ -2,221 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A81A62F9A5
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 16:45:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3332C62F9C4
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 16:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242111AbiKRPpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 10:45:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
+        id S235278AbiKRP4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 10:56:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241407AbiKRPp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 10:45:28 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14BA7CBA4;
-        Fri, 18 Nov 2022 07:45:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1668786325; x=1700322325;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QnYDsjDsDb4h9i3C9BaDBaDNlmHvoV9jV+GgiCQ7Q+A=;
-  b=oY7MI3zRGbx1fp7mzpPwQ7nFry+hg4UcoN/X96vkxJuej9B71hLpgFy4
-   KVRxNOlYaoKezLQNmwnJdM5OUH0tUR42DhhWTOvaK5pem0p2LjT6UdEDu
-   TAh3IPWrorvOyHlJpaO1pZW51rXdN8EpeH5E3xpMwRHvpbEFwEBsVie4Z
-   wAyAcEamb1F2XygPE4vBzhZzQZJVu6ZEkNXDksBN1tcEar2+xy7iWjsHf
-   CrZc+EVBvaurC41YCyBBsqy0bHLen2LwBfcFKHU8bB1Hcwj9UR1TjDoCp
-   ytxeoSqtSx/ttTEmHOR4TSnHRtxkcM5/MiuSTNX6pdRgxRRlVMBh6cMgZ
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,174,1665471600"; 
-   d="scan'208";a="124098261"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Nov 2022 08:45:23 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 18 Nov 2022 08:45:19 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Fri, 18 Nov 2022 08:45:19 -0700
-Date:   Fri, 18 Nov 2022 16:50:08 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next v2 4/5] net: lan966x: Add support for XDP_TX
-Message-ID: <20221118155008.illvc66lrlm4orrx@soft-dev3-1>
-References: <20221115214456.1456856-1-horatiu.vultur@microchip.com>
- <20221115214456.1456856-5-horatiu.vultur@microchip.com>
- <20221116153418.3389630-1-alexandr.lobakin@intel.com>
- <20221116205557.2syftn3jqx357myg@soft-dev3-1>
- <20221117153116.3447130-1-alexandr.lobakin@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234447AbiKRP4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 10:56:22 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140085.outbound.protection.outlook.com [40.107.14.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236967D50A
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 07:56:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JVzZRlA2J0dafvMr+58Ff7nB3QC9sJoZixr4Obt5lrw7MsaH/4Vy/VGzzGSNCEhmm5HWafTTzPvZsCeCbyHz8J4TL1Xpdp2DBBdqa7Hf2KNClf0J29vpNJKiN1CO1dxhF2T0Al2FxlOv2Z2WIYwpMMAXVkM9pzA49v5v/Qg9Udsn+7YCA5B+QsMayo3H/91Gx+Q90yG4y0in0Bpq3mMtu5UJeJWBfAlf0T57CDeSucafwqCo9xd85M8W6yjs9o9PNm96CBnKbhoMyhVhou/6YX1SHPUlVwf+yoLBeqafQhhPvQNvzJgmz5Sam1foajnSGC/0y93IWd2Zq3RX5ZFJIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nZSjXpGnns8RoueOzVepDIC+dINf6iDwR9Yr3VnO4xo=;
+ b=JsyG1Uuahvm20gT4DXjOhv4W50JhvWmL79WOdquxcf3QBjQj2mILXRUg95vkkZRQEU7ISIXvvgWecobU6ckjI6f0KSdDBN3ti9TG/+5izIF+u1t5nPSWH0EYHaetG6spx1DBrNc06AuOEen/MtzQLp0Y0gvWJYWECiueG2Fc9oRHGn4YT4jGRx8CijPYWMHSGYI/MNqPnUKYCl4he6wciiYivUW+hch8y+o9FjjTyf088H9+L6jLybblJ7NTZLv+0bxTYRqPipFpJumZNIuq0/5g3WhU2gjrHjza3FImRp4apv/RwwHcGOQxdd41YdMfK+qKXuwm924P8CAB3jc5KQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nZSjXpGnns8RoueOzVepDIC+dINf6iDwR9Yr3VnO4xo=;
+ b=MX6MSTD5rzxKLhWzbFXUFLEIzY9muPRPO+UuobLOPlE30ZS2v5S57U6YkbxL95iZdP81sE7Z9VeTaSeCJ53BmtY/K2TTv4L10lkqq7jUaZAFrnEVCz40zVpufrW8ZDLZ5CIvZZHLkXy35q6TvjQkgD+fAu0p0n9uYD1jUj/naTs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
+ by AS1PR04MB9455.eurprd04.prod.outlook.com (2603:10a6:20b:4d8::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Fri, 18 Nov
+ 2022 15:56:18 +0000
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::2101:60dc:1fd1:425c]) by AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::2101:60dc:1fd1:425c%6]) with mapi id 15.20.5813.020; Fri, 18 Nov 2022
+ 15:56:18 +0000
+Date:   Fri, 18 Nov 2022 17:56:14 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>
+Subject: Re: [PATCH v4 net-next 2/8] net: phylink: introduce generic method
+ to query PHY in-band autoneg capability
+Message-ID: <20221118155614.uswrmo65ap4i3hih@skbuf>
+References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
+ <20221118000124.2754581-3-vladimir.oltean@nxp.com>
+ <4a039a07-ab73-efa3-96d5-d109438f4575@seco.com>
+ <20221118154241.w52x6dhg6tydqlfm@skbuf>
+ <0e921aaa-6e71-ba16-faf7-70a4bac5be23@seco.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221117153116.3447130-1-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <0e921aaa-6e71-ba16-faf7-70a4bac5be23@seco.com>
+X-ClientProxiedBy: AS4P189CA0033.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5dd::6) To AM0PR04MB5121.eurprd04.prod.outlook.com
+ (2603:10a6:208:c1::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB5121:EE_|AS1PR04MB9455:EE_
+X-MS-Office365-Filtering-Correlation-Id: 076e29a2-bc4d-40d9-ef6b-08dac97d6d86
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gfhQNplo4lW51Jzdjc0oNduwUCSehkBBS/U9jan9PG4pcpd0CHSQ0pQXBXsneNCTUG6gRMTTwKR8sB5GIehvJXOcer8URX/yTAmEGSChUexS+yiK80kNH+HRm+/zu2DQuOwldzPjr3BwzsAa3nORZ6T2cIPbMJlpFPbN0+UNYo9XFyuwn0UrJbEeXoF8ZxnS0NDi6HHNUfELV8qeR45ZrWR83kIE/zn1zxXMLQvr8vTokpPpLtoFfIzckS2en6/i5Wa5VGKuwIMaXx3xyJ7sjxTEfczhexbz/KpzQDdn0l2QcqyoVFQ4gPxllkiJaPxNEYBSMNuI7IUPa0Q2PuO6zPx5Hssfe0tGXfRISuB5H78rjaf5kz+EbnTmv5nESWla4Ug4aeBW00HPKL8Q7HQrt4X2ldrdhxtdHOIKFeZUVobXXfg1S3f9O7Avmpp/hgFh+8rv+i7otwlJhEhKSXn28qj/HOK751vFHfYj0cBKu9ZNvpSsx7dV0CHv00A01EWveM+V/4Z+I/zP+IYKv1U0a+tzft44lEv7Qgs2hok0c6k8NAMHyPcASJdEUS0eqcNDyqo5q0rVsb1Q8j7mhAQP+AooUJEz6wogFUUd2ddWfUI85hGKK2DDBi9lEfztbL/cdBDxddJDisK4CaXsN+Gf2OLSxTQTcJ8s2MTkO2a76e6z9i7sJRsPIxZ2+tjaEJR0
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(366004)(136003)(376002)(39860400002)(396003)(346002)(451199015)(86362001)(38100700002)(316002)(6512007)(44832011)(41300700001)(8936002)(66556008)(4326008)(4744005)(5660300002)(7416002)(83380400001)(1076003)(26005)(186003)(9686003)(2906002)(8676002)(66946007)(66476007)(6486002)(6916009)(478600001)(6666004)(54906003)(33716001)(6506007)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ETuwxIJb+XsaQyN+EFniRhwnC4ay7D+wfdWQhQi3e7ug/tTN8U10HZWHYRbF?=
+ =?us-ascii?Q?vWjsJEfLL5fh5F8HKBscb4XNj2i5Mb44olGz2h3RaJtFBC3TUqMiwx+OFBn4?=
+ =?us-ascii?Q?LpXgvsSBhAcsAHBSfrp/Buy4LZ7Ei6D8jNiuwKoHdAh06SyX3bC28t8pUDV5?=
+ =?us-ascii?Q?riy8e9f/gamu8VHrXp0ghIZw+l7tM3QwTmGtzubafDfQSSLQOKsRTaeipAH8?=
+ =?us-ascii?Q?AwPgT/kSVYjHdhpJj63nsonv1e4fezY33k99VpjjyIvNoGp7gfpaie6/SM6T?=
+ =?us-ascii?Q?KlK0W19jS7JdTf6LMmIwsCK9r7ftvfoLhzxYx5t+LiwGqZt3Qmx5hIaz3tDQ?=
+ =?us-ascii?Q?iYFajgYg8ynGc/usMEx9kn8ULl9Hbr8RsF8ZLoBJEoweVtPyMCT6t0YFyGla?=
+ =?us-ascii?Q?nlGT3s+CAD2S7O1wqNazQN8/VSjhvRqoKY5vTLlLqrt5Pt4jGSS0uDJVrgR1?=
+ =?us-ascii?Q?le3FBuDgjzVgCoA6QhHbloTd1ebRXUya87z2oeJgXMYNgL1Z/ZVALM6Idpwd?=
+ =?us-ascii?Q?7my48wMNQhSHC0y6oz4Ug22rcMwC/mJH/l3xLVTPsJAlMh82f1YiOLYUfKz6?=
+ =?us-ascii?Q?8e2e8d2Ad5aif5wh0O/HyRCyBxGLScsJXTOkkf8rwCEtow4hSRXZ3szmG077?=
+ =?us-ascii?Q?gNctPx/ViZW9I2qSUSQEfttlrdW2CLbTGouEOyhMX0MFy0WFqcQfgFpTU0Fe?=
+ =?us-ascii?Q?pDWy79WbuRzpM1nA1A8fQ3EHqpbQjPGH1NEudNHY4MS6SF2tXDv8qmKpzsYe?=
+ =?us-ascii?Q?7WyAcwF2lC+f4J3gQv+R5rVYDWBa1g5XojFckOrv0XARn4iZ+u0MrL9GxP1G?=
+ =?us-ascii?Q?MOrLeA2nLKNg07e97Ad3jljtV7jQkJcL+4tmK9w/9LWvxw3lEwZ6M/1tLSSL?=
+ =?us-ascii?Q?7/1/PfSqxVgV69MgHKfFibf9ggZB58nrb3Y8p1/252S0MHHqG+8f8Jxb04/5?=
+ =?us-ascii?Q?1EinlkPTrBy+mHtLTtYXvOp5xGqrtQcZwuDhqwmwMPb8O3ztAqsdfiKJe1on?=
+ =?us-ascii?Q?qkfO93LPOfNg1kE+0nKR3CUwdX4/cmgFhWmbdgOsy/aTGsjQPdykw8hgFswA?=
+ =?us-ascii?Q?B4SjUkdaFEY4TxuH26/TQCQuYHLekgIta7SRSHpsjRVlyyCMbjx8yebEPogF?=
+ =?us-ascii?Q?SSSsN9S3DBK9EG62Qp4487gkYafgXi7rvvoD7DG7Zwf9OmxDcZ8bJNmYdCaN?=
+ =?us-ascii?Q?o27lzjuNWTQnC13r1FpS1lfTI6RWeUlsMiHGR0ws1lYEA+qKwtwhDUJj67cP?=
+ =?us-ascii?Q?oFYanP9Wbb1LXdDsuhU3TXZ3aLN8e3hNqUOJXiPLSE49+4RbknVzkle3ZWqw?=
+ =?us-ascii?Q?33DpzJDd0PWXCsb8o7lUMxRhNgTk7/vuZhflXkzmGg+wpefkAcZiXo1e6Uqk?=
+ =?us-ascii?Q?MEYdtN9JwT9ZG+7zFFFbmLvnERX7/064yb4zM66Csf0iCBhbRrd77rXt7Wa8?=
+ =?us-ascii?Q?eBxjecoqqOqYor/agMre+zRA3JpZ6nMK7wwULKq1+JQMOBDG6b/Bvk3wWoy1?=
+ =?us-ascii?Q?+UIuulY1q82sIoqEPJXyGRsL1xFZKoYEJEqG/KerEZsN2LVHt3sst4jCl5P/?=
+ =?us-ascii?Q?4bfqAopvcNFeTYvLJpKS4uOG3I+2QSK4ejNJgq3mmL+9FD2qgnv9Zn77sEsi?=
+ =?us-ascii?Q?8A=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 076e29a2-bc4d-40d9-ef6b-08dac97d6d86
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 15:56:18.3094
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TSOnVP37aah9qyvZecdQ5NL4R26tcfNwrK5H8D7GyoWk4BenUs1Ow5Bgq4LczUN9YiVQKYKF67fsbB1gIQBiyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9455
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/17/2022 16:31, Alexander Lobakin wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Fri, Nov 18, 2022 at 10:49:30AM -0500, Sean Anderson wrote:
+> If we have the opportunity, we should try to make invalid return codes
+> inexpressible. If we remove the extra bit, then all the combinations we
+> would like to have:
 > 
-> From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> Date: Wed, 16 Nov 2022 21:55:57 +0100
+> - I don't know what I support
+> - In-band must be enabled
+> - In-band must be disabled
+> - I can support either
 > 
-> > The 11/16/2022 16:34, Alexander Lobakin wrote:
-> > >
-> > > From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > > Date: Tue, 15 Nov 2022 22:44:55 +0100
-> >
-> > Hi Olek,
-> 
-> Hi!
-> 
-> > > For %XDP_REDIRECT, as you don't know the source of the XDP frame,
-> >
-> > Why I don't know the source?
-> > Will it not be from an RX page that is allocated by Page Pool?
-> 
-> Imagine some NIC which does not use Page Pool, for example, it does
-> its own page allocation / splitting / recycling techniques, gets
-> %XDP_REDIRECT when running XDP prog on Rx. devmap says it must
-> redirect the frame to your NIC.
-> Then, your ::ndo_xdp_xmit() will be run on a frame/page not
-> belonging to any Page Pool.
-> The example can be any of Intel drivers (there are plans to switch
-> at least i40e and ice to Page Pool, but they're always deeply in
-> the backlogs (clownface)).
+> are exactly the combinations supported by the underlying data.
 
-Silly me, I was always thinking and trying only from one port of lan966x
-to another port of lan966x. Of course it can come from other NICs.
+So the change request is to make the enum look like this?
 
-> 
-> >
-> > > you need to unmap it (as it was previously mapped in
-> > > ::ndo_xdp_xmit()), plus call xdp_return_frame{,_bulk} to free the
-> > > XDP frame. Note that _rx_napi() variant is not applicable here.
-> > >
-> > > That description might be confusing, so you can take a look at the
-> > > already existing code[0] to get the idea. I think this piece shows
-> > > the expected logics rather well.
-> >
-> > I think you forgot to write the link to the code.
-> > I looked also at different drivers but I didn't figure it out why the
-> > frame needed to be mapped and where is happening that.
-> 
-> Ooof, really. Pls look at the end of this reply :D
-> On ::ndo_xdp_xmit(), as I explained above, you can receive a frame
-> from any driver or BPF core code (such as cpumap), and BPF prog
-> there could be run on buffer of any kind: Page Pool page, just a
-> page, a kmalloc() chunk and so on.
-> 
-> So, in the code[0], you can see the following set of operations:
-> 
-> * DMA unmap in all cases excluding frame coming from %XDP_TX (then
->   it was only synced);
-> * updating statistics and freeing skb for skb cases;
-> * xdp_return_frame_rx_napi() for %XDP_TX cases;
-> * xdp_return_frame_bulk() for ::ndo_xdp_xmit() cases.
-
-Thanks for a detail explanation and for the link :D
-I will update all this in the next version.
-
-> 
-> > > +       ifh = page_address(page) + XDP_PACKET_HEADROOM;
-> > > +       memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
-> > > +       lan966x_ifh_set_bypass(ifh, 1);
-> > > +       lan966x_ifh_set_port(ifh, BIT_ULL(port->chip_port));
-> > > +
-> > > +       dma_addr = page_pool_get_dma_addr(page);
-> > > +       dma_sync_single_for_device(lan966x->dev, dma_addr + XDP_PACKET_HEADROOM,
-> > > +                                  xdpf->len + IFH_LEN_BYTES,
-> > > +                                  DMA_TO_DEVICE);
-> > >
-> > > Also not correct. This page was mapped with %DMA_FROM_DEVICE in the
-> > > Rx code, now you sync it for the opposite.
-> > > Most drivers in case of XDP enabled create Page Pools with ::dma_dir
-> > > set to %DMA_BIDIRECTIONAL. Now you would need only to sync it here
-> > > with the same direction (bidir) and that's it.
-> >
-> > That is a really good catch!
-> > I was wondering why the things were working when I tested this. Because
-> > definitely, I can see the right behaviour.
-> 
-> The reasons can be:
-> 
-> 1) your platform might have a DMA coherence engine, so that all
->    those DMA sync calls are no-ops;
-> 2) on your platform, DMA writeback (TO_DEVICE) and DMA invalidate
->    (FROM_DEVICE) invoke the same operation/instruction. Some
->    hardware is designed that way, that any DMA sync is in fact a
->    bidir synchronization;
-> 3) if there were no frame modification from the kernel, e.g. you
->    received it and immediately sent, cache was not polluted with
->    some pending modifications, so there was no work for writeback;
-> 4) probably something else I might've missed.
-> 
-> >
-> > >
-> > > +
-> > > +       /* Setup next dcb */
-> > > +       lan966x_fdma_tx_setup_dcb(tx, next_to_use, xdpf->len + IFH_LEN_BYTES,
-> > > +                                 dma_addr + XDP_PACKET_HEADROOM);
-> > > +
-> > > +       /* Fill up the buffer */
-> > > +       next_dcb_buf = &tx->dcbs_buf[next_to_use];
-> > > +       next_dcb_buf->skb = NULL;
-> > > +       next_dcb_buf->page = page;
-> > > +       next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
-> > > +       next_dcb_buf->dma_addr = dma_addr;
-> > > +       next_dcb_buf->used = true;
-> > > +       next_dcb_buf->ptp = false;
-> > > +       next_dcb_buf->dev = port->dev;
-> > > +
-> > > +       /* Start the transmission */
-> > > +       lan966x_fdma_tx_start(tx, next_to_use);
-> > > +
-> > > +out:
-> > > +       spin_unlock(&lan966x->tx_lock);
-> > > +
-> > > +       return ret;
-> > > +}
-> > > +
-> > >  int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
-> > >  {
-> > >         struct lan966x_port *port = netdev_priv(dev);
-> > > @@ -709,6 +776,7 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
-> > >         /* Fill up the buffer */
-> > >         next_dcb_buf = &tx->dcbs_buf[next_to_use];
-> > >         next_dcb_buf->skb = skb;
-> > > +       next_dcb_buf->page = NULL;
-> > >         next_dcb_buf->len = skb->len;
-> > >         next_dcb_buf->dma_addr = dma_addr;
-> > >         next_dcb_buf->used = true;
-> > >
-> > > [...]
-> > >
-> > > --
-> > > 2.38.0
-> > >
-> > > Thanks,
-> > > Olek
-> >
-> > --
-> > /Horatiu
-> 
-> [0] https://elixir.bootlin.com/linux/v6.1-rc5/source/drivers/net/ethernet/marvell/mvneta.c#L1882
-> 
-> Thanks,
-> Olek
-
--- 
-/Horatiu
+enum phy_an_inband {
+	PHY_AN_INBAND_UNKNOWN		= 0,
+	PHY_AN_INBAND_OFF		= BIT(0),
+	PHY_AN_INBAND_ON		= BIT(1),
+};
