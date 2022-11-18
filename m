@@ -2,66 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E22262EC62
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 04:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 956EC62EC66
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 04:39:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240594AbiKRDgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 22:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
+        id S235134AbiKRDjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 22:39:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiKRDgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 22:36:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7847562070
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 19:36:21 -0800 (PST)
+        with ESMTP id S234922AbiKRDjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 22:39:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DFC5131E
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 19:39:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 126EE6229D
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7352AC433C1;
-        Fri, 18 Nov 2022 03:36:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 36868CE1FCE
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:39:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5972C433C1;
+        Fri, 18 Nov 2022 03:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668742580;
-        bh=K5aDIe2SlBtdw1FEkWSbLjXw0euK3i24cnforADV39A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aAaps6knSbkcdj6Nyouj1Mz46EOtiuVFbb0GTuc3XTJvS3EFQeW6rcVG/xgUlS6UI
-         kMz4nYDnGFhsfeQkzBmPHaYr/T01bY8/1MkLZzBYmNShJghgJcL2mMbRceGpkvxrRW
-         ZIHZnsYOk7D0d2TVinkhZqfHM4EZHm6MAskCeNEHfHR0QYuRQqWWr5Mf8Z3sfM46Vx
-         I7FuvR61SoikI5SMrBG1RvotdL6cTSZvuazjiPj7u1Sys1uVC5BKgr/D9Vnhv7AXbG
-         wc5xZyDjeRNh9kNf5+pdLdgFXkfi2xAsJXVpyxeinzXC7jeJhqXQ5dEfmtM55/aGxL
-         sgE5+osQjF+Tw==
-Date:   Thu, 17 Nov 2022 19:36:18 -0800
+        s=k20201202; t=1668742747;
+        bh=b5Ciezt8/hFEbDXdb8acMLPYQDDy/7lEA3tkZKMdX6w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FpA9tixOUEdwKECfANNO1oO5psY3Tvy5RB3aGnSKSSlUp/n/Jb53jmCQMYIFidDN8
+         MRIz7aw7DD5AyDU1VMDRMTleOsi3zOGjtw4jDFayfrnjN94QEdZmjlTtClACm1Y9Nc
+         d68qWdWmCGMvdZ6XPBaMitLNoPQUpE1gXaWwSJumrVLkiSi3sQAmCbpRrsm/kflT+M
+         2cK9h9djnhwss8Ow7heQRCzLM4TEvHJQq2F4MTCE4XZs49jBuA7pa9nWdGMfqbApXV
+         +cxXD3PhNR/4weFJDOFBYra7s+Udlw6E0HVaReAUIkxvIW3TptWT7hKvRyRPiPgPw0
+         Z5GlG8Prs1uqw==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, intel-wired-lan@lists.osuosl.org,
-        jiri@nvidia.com, anthony.l.nguyen@intel.com,
-        alexandr.lobakin@intel.com, wojciech.drewek@intel.com,
-        lukasz.czapnik@intel.com, shiraz.saleem@intel.com,
-        jesse.brandeburg@intel.com, mustafa.ismail@intel.com,
-        przemyslaw.kitszel@intel.com, piotr.raczynski@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        leszek.kaliszczuk@intel.com, Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH net-next 00/13] resource management using devlink reload
-Message-ID: <20221117193618.2cd47268@kernel.org>
-In-Reply-To: <Y3ZxqAq3bR7jYc3H@unreal>
-References: <Y3OCHLiCzOUKLlHa@unreal>
-        <Y3OcAJBfzgggVll9@localhost.localdomain>
-        <Y3PS9e9MJEZo++z5@unreal>
-        <be2954f2-e09c-d2ef-c84a-67b8e6fc3967@intel.com>
-        <Y3R9iAMtkk8zGyaC@unreal>
-        <Y3TR1At4In5Q98OG@localhost.localdomain>
-        <Y3UlD499Yxj77vh3@unreal>
-        <Y3YWkT/lMmYU5T+3@localhost.localdomain>
-        <Y3Ye4kwmtPrl33VW@unreal>
-        <Y3Y5phsWzatdnwok@localhost.localdomain>
-        <Y3ZxqAq3bR7jYc3H@unreal>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>, nathan@kernel.org,
+        ndesaulniers@google.com, trix@redhat.com, llvm@lists.linux.dev
+Subject: [PATCH net-next] netlink: remove the flex array from struct nlmsghdr
+Date:   Thu, 17 Nov 2022 19:39:03 -0800
+Message-Id: <20221118033903.1651026-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -71,20 +52,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Nov 2022 19:38:48 +0200 Leon Romanovsky wrote:
-> I don't think that management of PCI specific parameters in devlink is
-> right idea. PCI has his own subsystem with rules and assumptions, netdev
-> shouldn't mangle them.
+I've added a flex array to struct nlmsghdr in
+commit 738136a0e375 ("netlink: split up copies in the ack construction")
+to allow accessing the data easily. It leads to warnings with clang,
+if user space wraps this structure into another struct and the flex
+array is not at the end of the container.
 
-Not netdev, devlink, which covers netdev, RDMA and others.
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/all/20221114023927.GA685@u2004-local/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: nathan@kernel.org
+CC: ndesaulniers@google.com
+CC: trix@redhat.com
+CC: llvm@lists.linux.dev
+---
+ include/uapi/linux/netlink.h | 2 --
+ net/netlink/af_netlink.c     | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-> In MSI-X case, this even more troublesome as users
-> sees these values through lspci without driver attached to it.
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index 5da0da59bf01..e2ae82e3f9f7 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -48,7 +48,6 @@ struct sockaddr_nl {
+  * @nlmsg_flags: Additional flags
+  * @nlmsg_seq:   Sequence number
+  * @nlmsg_pid:   Sending process port ID
+- * @nlmsg_data:  Message payload
+  */
+ struct nlmsghdr {
+ 	__u32		nlmsg_len;
+@@ -56,7 +55,6 @@ struct nlmsghdr {
+ 	__u16		nlmsg_flags;
+ 	__u32		nlmsg_seq;
+ 	__u32		nlmsg_pid;
+-	__u8		nlmsg_data[];
+ };
+ 
+ /* Flags values */
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 9ebdf3262015..d73091f6bb0f 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2514,7 +2514,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 		if (!nlmsg_append(skb, nlmsg_len(nlh)))
+ 			goto err_bad_put;
+ 
+-		memcpy(errmsg->msg.nlmsg_data, nlh->nlmsg_data,
++		memcpy(nlmsg_data(&errmsg->msg), nlmsg_data(nlh),
+ 		       nlmsg_len(nlh));
+ 	}
+ 
+-- 
+2.38.1
 
-I'm no PCI expert either but FWIW to me the patch set seems reasonable.
-Whether management FW policies are configured via core PCI sysfs or
-subsystem-specific-ish APIs is a toss up. Adding Bjorn and please CC him
-on the next rev.
-
-Link to the series:
-https://lore.kernel.org/all/20221114125755.13659-1-michal.swiatkowski@linux.intel.com/
