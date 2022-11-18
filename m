@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E69816302B6
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B91DE6302B7
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbiKRXOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 18:14:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
+        id S235198AbiKRXOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 18:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiKRXNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:18 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1F0C689F
+        with ESMTP id S235149AbiKRXNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:36 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8321ECC153
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:53 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id p21so5809767plr.7
+Received: by mail-pl1-x62a.google.com with SMTP id p21so5809804plr.7
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=mYArZryzXG67A04meeckOSQ9eOWR6m+7bzxEQve3AkE=;
-        b=r0gJXYtkkH5bz4HeUAR2FRim59BVBjX2t72s7dgkHM8oBglw3C3fl54wYPMLnvyoIo
-         Ge+WMQuJPKO5GbLqOH9rmffBJxyXLmR/aw4Zc6qRM9jUr9y0psCnnFT35xDV6b74j2NT
-         qhegCMk641KdZV5L4PIXkSkcsuHgm3WG7dum55Zia80JMcl/bUKBP8uWf898lwAY3WBa
-         9AvqR6fkU8Vt7A4j0qoMLIoPG18wjrRrQnz5IvPLtcZuCsGG/1lbvQrbuYvLgUSxtuEp
-         hrtQbAaNXknf7MIV4JAoRr9XdcqAaoMIYbxPAQSPneuFaPZtlQByPQUjn2BWoAC9X35q
-         6qdw==
+        bh=G63oU9Cwrei/CJINGPHYmEvgtjsM6IAxrw6T7jYGLyA=;
+        b=eLfXqccnYD6lApmHtQzZQAsjmjCkzuaSVeWVJ0gCpPkg1cF9G7u+RdaUCoK3MlP5K1
+         rXbppfLGFRzknxDPmgicr0qImXF6/6WDhtMI/QJ+rd4DXnH+E45Dv1iMkY4km0b2Du6C
+         BBbJs9GBCUpqlDRs/5JLUYtDlS3C6nIdGYpOUN0pqvY1SDKU4DOA1rQjpnw0OQYF3QMI
+         XsU4OC5JQblBGyp4AS7nVKfYgedy/s4Gp65nv8WG71aU8PNSYL8WX/ChnDBq3FdxCizD
+         ynMRs0q77z2h9clkmzR0C9QQ8sy9W7flmrzEsTCEzsHnyYGrK3n6Q28ezXZQ95SimRs1
+         DaKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mYArZryzXG67A04meeckOSQ9eOWR6m+7bzxEQve3AkE=;
-        b=xlFbl3b/zJEMXrgYUoUVnoojsUgZ+xOG4MVk2D9aaaBWr1IqBKNicb8qaTvOMosGW/
-         TPJZMhcgfQWttTuc3BC0kcuVaj+fL+irmNrRbmrEj0SqcUsQvECTKt6lsAoBDVOT1lsV
-         YuI/HqlTAbaAkyGav+GlbdcW6XGNY8FzTfK1XMzyUF2KODpH+jJIsdqRQ2Nhtn6Pl8hR
-         pZ9TD6PhOJa/oLXHlpTpNZcttiwpr0/tdYcu4Rh7/ZEjCr1TaXPb1INsEF37o5kpjK1E
-         bnvCdqGVwAad6elPywwWTxPyih8uLg8vrl7u9cZVp6Cpde3mVHQ/cweCOSmz3ByRiW+U
-         9l0A==
-X-Gm-Message-State: ANoB5pmaME0Fk3biJKuQVf9x+m/erxzByyPqO3pvFqnsAhqPm6wCWc9n
-        s2CDUkAAGZ3JQ4skg21aQ4+9hCDyZS5Srg==
-X-Google-Smtp-Source: AA0mqf7PZ8N+SPwc6ta8M90xhjh54jWW8IGJ8CBeU7JEoBuowEYFwf8eQjBJuT6yewrei2ZLn6DMtg==
-X-Received: by 2002:a17:903:2342:b0:185:3d08:968b with SMTP id c2-20020a170903234200b001853d08968bmr1622277plh.49.1668812245833;
-        Fri, 18 Nov 2022 14:57:25 -0800 (PST)
+        bh=G63oU9Cwrei/CJINGPHYmEvgtjsM6IAxrw6T7jYGLyA=;
+        b=gbHrTsdfUBeqkzcBrue5czMA8uG7lVdWJCNVBCFsLqWaRkbKo8B2uaL1IgHWoNEaPi
+         qfchi5QHYxLAW1LWK82RvAwWO76Sha1YBPSVbVzXiNzWtgu8eEDt0rqm7ZeuWIQ6QY6V
+         70lTVHmW+fWnqodWecd1y9xUxPaZFMPP2gMdppA5nFEX0bP3VWANODztuBbZVvVd3TEv
+         NM/kz0VL+QUxzLDRv5k6GMrzBwIUbrPOxur3Oty+71SHgivN8+ZjMID+xBPc3G6AH+OV
+         TllUFGqkwaZim5fZDC4q8GX1MLiVEevwpWPiNtcEdLWQ4kVqCDfavZBpJA6eZ4dRtmC+
+         WYgg==
+X-Gm-Message-State: ANoB5pkkp1FF4ByHZE1v7epyzp0qIQZjLXVAtQiFvVIjmZvOOcitsbuc
+        Dc8IdiyLRLdhq42AwViB9/hInhBYNJ1oSQ==
+X-Google-Smtp-Source: AA0mqf4F2pbVPJNEjo/AJgG6KUWgVhjc3wVW4toXY/CGwOkxQ11w7rQpC2kHKzh4/xbrFS2H/2j8ow==
+X-Received: by 2002:a17:90b:3c0a:b0:212:510b:5851 with SMTP id pb10-20020a17090b3c0a00b00212510b5851mr9718618pjb.57.1668812247157;
+        Fri, 18 Nov 2022 14:57:27 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.24
+        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 14:57:25 -0800 (PST)
+        Fri, 18 Nov 2022 14:57:26 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         mst@redhat.com, jasowang@redhat.com,
         virtualization@lists.linux-foundation.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [RFC PATCH net-next 10/19] pds_core: devlink params for enabling VIF support
-Date:   Fri, 18 Nov 2022 14:56:47 -0800
-Message-Id: <20221118225656.48309-11-snelson@pensando.io>
+Subject: [RFC PATCH net-next 11/19] pds_core: add the aux client API
+Date:   Fri, 18 Nov 2022 14:56:48 -0800
+Message-Id: <20221118225656.48309-12-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221118225656.48309-1-snelson@pensando.io>
 References: <20221118225656.48309-1-snelson@pensando.io>
@@ -67,146 +67,260 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have the code to start and stop the VFs and
-set up the auxiliary_bus devices, let's add the devlink
-parameter switches so the user can enable the features.
+Add the client API operations for registering, unregistering,
+and running adminq commands.  We expect to add additional
+operations for other clients, including requesting additional
+private adminqs and IRQs, but don't have the need yet,
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/pds_core/devlink.c  | 99 +++++++++++++++++++
- 1 file changed, 99 insertions(+)
+ .../net/ethernet/pensando/pds_core/auxbus.c   | 144 +++++++++++++++++-
+ include/linux/pds/pds_auxbus.h                |  51 +++++++
+ 2 files changed, 193 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/pds_core/devlink.c b/drivers/net/ethernet/pensando/pds_core/devlink.c
-index 0568e8b7391c..2d09643b9add 100644
---- a/drivers/net/ethernet/pensando/pds_core/devlink.c
-+++ b/drivers/net/ethernet/pensando/pds_core/devlink.c
-@@ -8,6 +8,75 @@
+diff --git a/drivers/net/ethernet/pensando/pds_core/auxbus.c b/drivers/net/ethernet/pensando/pds_core/auxbus.c
+index 9b67cb4006d9..1fcfe8ae9971 100644
+--- a/drivers/net/ethernet/pensando/pds_core/auxbus.c
++++ b/drivers/net/ethernet/pensando/pds_core/auxbus.c
+@@ -11,6 +11,144 @@
+ #include <linux/pds/pds_adminq.h>
+ #include <linux/pds/pds_auxbus.h>
  
- #include "core.h"
- 
-+static struct pdsc_viftype *pdsc_dl_find_viftype_by_id(struct pdsc *pdsc,
-+						       enum devlink_param_type dl_id)
++/**
++ * pds_client_register - Register the client with the device
++ * @padev:  ptr to the client device info
++ * @padrv:  ptr to the client driver info
++ *
++ * Register the client with the core and with the DSC.  The core
++ * will fill in the client padev->client_id for use in calls
++ * to the DSC AdminQ
++ */
++static int pds_client_register(struct pds_auxiliary_dev *padev,
++			       struct pds_auxiliary_drv *padrv)
 +{
-+	int vt;
++	union pds_core_adminq_comp comp = { 0 };
++	union pds_core_adminq_cmd cmd = { 0 };
++	struct device *dev;
++	struct pdsc *pdsc;
++	int err;
++	u16 ci;
 +
-+	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++) {
-+		if (pdsc->viftype_status[vt].dl_id == dl_id)
-+			return &pdsc->viftype_status[vt];
++	pdsc = (struct pdsc *)dev_get_drvdata(padev->aux_dev.dev.parent);
++	dev = pdsc->dev;
++
++	if (pdsc->state)
++		return -ENXIO;
++
++	cmd.client_reg.opcode = PDS_AQ_CMD_CLIENT_REG;
++	strscpy(cmd.client_reg.devname, dev_name(&padev->aux_dev.dev),
++		sizeof(cmd.client_reg.devname));
++
++	err = pdsc_adminq_post(pdsc, &pdsc->adminqcq, &cmd, &comp, false);
++	if (err) {
++		dev_info(dev, "register dev_name %s with DSC failed, status %d: %pe\n",
++			 dev_name(&padev->aux_dev.dev), comp.status, ERR_PTR(err));
++		return err;
 +	}
 +
-+	return NULL;
-+}
++	ci = le16_to_cpu(comp.client_reg.client_id);
++	if (!ci) {
++		dev_err(dev, "%s: device returned null client_id\n", __func__);
++		return -EIO;
++	}
 +
-+static int pdsc_dl_enable_get(struct devlink *dl, u32 id,
-+			      struct devlink_param_gset_ctx *ctx)
-+{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	struct pdsc_viftype *vt_entry;
-+
-+	vt_entry = pdsc_dl_find_viftype_by_id(pdsc, id);
-+	if (!vt_entry)
-+		return -ENOENT;
-+
-+	ctx->val.vbool = vt_entry->enabled;
++	padev->client_id = ci;
++	padev->event_handler = padrv->event_handler;
 +
 +	return 0;
 +}
 +
-+static int pdsc_dl_enable_set(struct devlink *dl, u32 id,
-+			      struct devlink_param_gset_ctx *ctx)
++/**
++ * pds_client_unregister - Disconnect the client from the device
++ * @padev:  ptr to the client device info
++ *
++ * Disconnect the client from the core and with the DSC.
++ */
++static int pds_client_unregister(struct pds_auxiliary_dev *padev)
 +{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	struct pdsc_viftype *vt_entry;
-+	int err = 0;
-+	int vf;
++	union pds_core_adminq_comp comp = { 0 };
++	union pds_core_adminq_cmd cmd = { 0 };
++	struct device *dev;
++	struct pdsc *pdsc;
++	int err;
 +
-+	vt_entry = pdsc_dl_find_viftype_by_id(pdsc, id);
-+	if (!vt_entry || !vt_entry->supported)
-+		return -EOPNOTSUPP;
++	pdsc = (struct pdsc *)dev_get_drvdata(padev->aux_dev.dev.parent);
++	dev = pdsc->dev;
 +
-+	if (vt_entry->enabled == ctx->val.vbool)
-+		return 0;
++	if (pdsc->state)
++		return -ENXIO;
 +
-+	vt_entry->enabled = ctx->val.vbool;
-+	for (vf = 0; vf < pdsc->num_vfs; vf++) {
-+		err = ctx->val.vbool ? pdsc_auxbus_dev_add_vf(pdsc, vf) :
-+				       pdsc_auxbus_dev_del_vf(pdsc, vf);
-+	}
++	cmd.client_unreg.opcode = PDS_AQ_CMD_CLIENT_UNREG;
++	cmd.client_unreg.client_id = cpu_to_le16(padev->client_id);
++
++	err = pdsc_adminq_post(pdsc, &pdsc->adminqcq, &cmd, &comp, false);
++	if (err)
++		dev_info(dev, "unregister dev_name %s failed, status %d: %pe\n",
++			 dev_name(&padev->aux_dev.dev), comp.status, ERR_PTR(err));
++
++	padev->client_id = 0;
 +
 +	return err;
 +}
 +
-+static int pdsc_dl_enable_validate(struct devlink *dl, u32 id,
-+				   union devlink_param_value val,
-+				   struct netlink_ext_ack *extack)
++/**
++ * pds_client_adminq_cmd - Process an adminq request for the client
++ * @padev:   ptr to the client device
++ * @req:     ptr to buffer with request
++ * @req_len: length of actual struct used for request
++ * @resp:    ptr to buffer where answer is to be copied
++ * @flags:   optional flags from pds_core_adminq_flags
++ *
++ * Return: 0 on success, or
++ *         negative for error
++ *
++ * Client sends pointers to request and response buffers
++ * Core copies request data into pds_core_client_request_cmd
++ * Core sets other fields as needed
++ * Core posts to AdminQ
++ * Core copies completion data into response buffer
++ */
++static int pds_client_adminq_cmd(struct pds_auxiliary_dev *padev,
++				 union pds_core_adminq_cmd *req,
++				 size_t req_len,
++				 union pds_core_adminq_comp *resp,
++				 u64 flags)
 +{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	struct pdsc_viftype *vt_entry;
++	union pds_core_adminq_cmd cmd = { 0 };
++	struct device *dev;
++	struct pdsc *pdsc;
++	size_t cp_len;
++	int err;
 +
-+	vt_entry = pdsc_dl_find_viftype_by_id(pdsc, id);
-+	if (!vt_entry || !vt_entry->supported)
-+		return -EOPNOTSUPP;
++	pdsc = (struct pdsc *)dev_get_drvdata(padev->aux_dev.dev.parent);
++	dev = pdsc->dev;
 +
-+	if (!pdsc->viftype_status[vt_entry->vif_id].supported)
-+		return -ENODEV;
++	dev_dbg(dev, "%s: %s opcode %d\n",
++		__func__, dev_name(&padev->aux_dev.dev), req->opcode);
 +
-+	return 0;
++	if (pdsc->state)
++		return -ENXIO;
++
++	/* Wrap the client's request */
++	cmd.client_request.opcode = PDS_AQ_CMD_CLIENT_CMD;
++	cmd.client_request.client_id = cpu_to_le16(padev->client_id);
++	cp_len = min_t(size_t, req_len, sizeof(cmd.client_request.client_cmd));
++	memcpy(cmd.client_request.client_cmd, req, cp_len);
++
++	err = pdsc_adminq_post(pdsc, &pdsc->adminqcq, &cmd, resp, !!(flags & PDS_AQ_FLAG_FASTPOLL));
++	if (err && err != -EAGAIN)
++		dev_info(dev, "client admin cmd failed: %pe\n", ERR_PTR(err));
++
++	return err;
 +}
 +
- static char *slot_labels[] = { "fw.gold", "fw.mainfwa", "fw.mainfwb" };
++static struct pds_core_ops pds_core_ops = {
++	.register_client = pds_client_register,
++	.unregister_client = pds_client_unregister,
++	.adminq_cmd = pds_client_adminq_cmd,
++};
++
+ static void pdsc_auxbus_dev_release(struct device *dev)
+ {
+ 	struct pds_auxiliary_dev *padev =
+@@ -21,7 +159,8 @@ static void pdsc_auxbus_dev_release(struct device *dev)
  
- static int pdsc_dl_fw_boot_get(struct devlink *dl, u32 id,
-@@ -84,6 +153,18 @@ static int pdsc_dl_fw_boot_validate(struct devlink *dl, u32 id,
- }
+ static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *pdsc,
+ 							  char *name, u32 id,
+-							  struct pci_dev *client_dev)
++							  struct pci_dev *client_dev,
++							  struct pds_core_ops *ops)
+ {
+ 	struct auxiliary_device *aux_dev;
+ 	struct pds_auxiliary_dev *padev;
+@@ -31,6 +170,7 @@ static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *pdsc,
+ 	if (!padev)
+ 		return NULL;
  
- static const struct devlink_param pdsc_dl_params[] = {
-+	DEVLINK_PARAM_GENERIC(ENABLE_VNET,
-+			      BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			      pdsc_dl_enable_get,
-+			      pdsc_dl_enable_set,
-+			      pdsc_dl_enable_validate),
-+	DEVLINK_PARAM_DRIVER(PDSC_DEVLINK_PARAM_ID_LM,
-+			     "enable_lm",
-+			     DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     pdsc_dl_enable_get,
-+			     pdsc_dl_enable_set,
-+			     pdsc_dl_enable_validate),
- 	DEVLINK_PARAM_DRIVER(PDSC_DEVLINK_PARAM_ID_FW_BOOT,
- 			     "boot_fw",
- 			     DEVLINK_PARAM_TYPE_STRING,
-@@ -93,6 +174,23 @@ static const struct devlink_param pdsc_dl_params[] = {
- 			     pdsc_dl_fw_boot_validate),
++	padev->ops = ops;
+ 	padev->pcidev = client_dev;
+ 
+ 	aux_dev = &padev->aux_dev;
+@@ -99,7 +239,7 @@ int pdsc_auxbus_dev_add_vf(struct pdsc *pdsc, int vf_id)
+ 		id = PCI_DEVID(pdsc->pdev->bus->number,
+ 			       pci_iov_virtfn_devfn(pdsc->pdev, vf_id));
+ 		padev = pdsc_auxbus_dev_register(pdsc, pdsc->viftype_status[vt].name, id,
+-						 pdsc->pdev);
++						 pdsc->pdev, &pds_core_ops);
+ 		pdsc->vfs[vf_id].padev = padev;
+ 
+ 		/* We only support a single type per VF, so jump out here */
+diff --git a/include/linux/pds/pds_auxbus.h b/include/linux/pds/pds_auxbus.h
+index 7ad66d726b01..ac121b44c71a 100644
+--- a/include/linux/pds/pds_auxbus.h
++++ b/include/linux/pds/pds_auxbus.h
+@@ -27,6 +27,7 @@ struct pds_auxiliary_drv {
+ 
+ struct pds_auxiliary_dev {
+ 	struct auxiliary_device aux_dev;
++	struct pds_core_ops *ops;
+ 	struct pci_dev *pcidev;
+ 	u32 id;
+ 	u16 client_id;
+@@ -34,4 +35,54 @@ struct pds_auxiliary_dev {
+ 			      union pds_core_notifyq_comp *event);
+ 	void *priv;
  };
- 
-+static void pdsc_dl_set_params_init_values(struct devlink *dl)
-+{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	union devlink_param_value value;
-+	int vt;
 +
-+	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++) {
-+		if (!pdsc->viftype_status[vt].dl_id)
-+			continue;
++struct pds_fw_state {
++	unsigned long last_fw_time;
++	u32 fw_heartbeat;
++	u8  fw_status;
++};
 +
-+		value.vbool = pdsc->viftype_status[vt].enabled;
-+		devlink_param_driverinit_value_set(dl,
-+						   pdsc->viftype_status[vt].dl_id,
-+						   value);
-+	}
-+}
++/*
++ *   ptrs to functions to be used by the client for core services
++ */
++struct pds_core_ops {
 +
- static int pdsc_dl_flash_update(struct devlink *dl,
- 				struct devlink_flash_update_params *params,
- 				struct netlink_ext_ack *extack)
-@@ -195,6 +293,7 @@ int pdsc_dl_register(struct pdsc *pdsc)
- 				      ARRAY_SIZE(pdsc_dl_params));
- 	if (err)
- 		return err;
-+	pdsc_dl_set_params_init_values(dl);
- 
- 	devlink_register(dl);
- 
++	/* .register() - register the client with the device
++	 * padev:  ptr to the client device info
++	 * padrv:  ptr to the client driver info
++	 * Register the client with the core and with the DSC.  The core
++	 * will fill in the client padrv->client_id for use in calls
++	 * to the DSC AdminQ
++	 */
++	int (*register_client)(struct pds_auxiliary_dev *padev,
++			       struct pds_auxiliary_drv *padrv);
++
++	/* .unregister() - disconnect the client from the device
++	 * padev:  ptr to the client device info
++	 * Disconnect the client from the core and with the DSC.
++	 */
++	int (*unregister_client)(struct pds_auxiliary_dev *padev);
++
++	/* .adminq_cmd() - process an adminq request for the client
++	 * padev:  ptr to the client device
++	 * req:     ptr to buffer with request
++	 * req_len: length of actual struct used for request
++	 * resp:    ptr to buffer where answer is to be copied
++	 * flags:   optional flags defined by enum pds_core_adminq_flags
++	 *	    and used for more flexible adminq behvior
++	 *
++	 * returns 0 on success, or
++	 *         negative for error
++	 * Client sends pointers to request and response buffers
++	 * Core copies request data into pds_core_client_request_cmd
++	 * Core sets other fields as needed
++	 * Core posts to AdminQ
++	 * Core copies completion data into response buffer
++	 */
++	int (*adminq_cmd)(struct pds_auxiliary_dev *padev,
++			  union pds_core_adminq_cmd *req,
++			  size_t req_len,
++			  union pds_core_adminq_comp *resp,
++			  u64 flags);
++};
+ #endif /* _PDSC_AUXBUS_H_ */
 -- 
 2.17.1
 
