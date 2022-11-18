@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9F162EDB4
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 07:36:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01F7062EDBA
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 07:36:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241009AbiKRGgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 01:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S241175AbiKRGgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 01:36:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240700AbiKRGf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 01:35:57 -0500
+        with ESMTP id S241132AbiKRGgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 01:36:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EB898279
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 22:35:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D27C9827A
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 22:36:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F28AB822A5
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63791C433C1;
-        Fri, 18 Nov 2022 06:35:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A570B822A1
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 06:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C983C433D6;
+        Fri, 18 Nov 2022 06:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668753351;
-        bh=jqKDySuwsef5aF9XrBVOEIwG8N8/BWc1llip0fwIOl4=;
+        s=k20201202; t=1668753368;
+        bh=XNOmn8DDx5XZ8GQ1zq+LwxDYC7wI5l8l6bB1pijnXmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e3wGSzevoX+E3QLdiVxcEnFJTkVJh2Dis6h9udKO0eb6s7EXoPVOAGbwINi9vYk8o
-         m2lWEBh1U4c2nVVVfcwSLmxFq04RaoswbGiAZiESozV6XeOfFQNBEgIJgwjGwdYaMx
-         EnGzNChLmnwU66VWV7GNWCZPVc3u2KNUcclaue7cRZOp0IDS6cSAlYi3Lqvp1ftpai
-         t+ZvRoI+/fJHvk2Lkbl4pJJlZsYLBUx+cACMU4WBH7kcSyC1zk4rE3QC9ZqqFDfudq
-         56MraV0KduO4oWoFTCj/bXwLhBCOlMR9FFkP8zdciW+Ws0X9nEpDUZ00HlanJ3w3Nc
-         4BZlb6WijofTg==
+        b=F1/H9HV6GmmsASNalHBSXTBuKH3Y7NP3a5NvG21lGXXmpDgDuG9mV+ln/WE66eWon
+         bwm6nu44YAeXVcJEN3kSZeF19FlDCOEwDJjwYJe7zobsNXLzyIOei1PLFVcXekkoVe
+         w0EQlmMZ8dOmbpNrz2UMWjENKSjIOjw2xmH4zec+I/U24nodeznJA3S427It+mafUN
+         V1EybKpp5k753a2PSf+WYM6f3Q1VjOVuPxwBbd2MuBobk+qwK5XRgeX9IPCmeziNe5
+         lNJ+vhp/9xUazIMNT3o9+LVq9nu2k8iQKlgvRIMR9kGT+3ZXKxhFYuqzT+qNbm8E+Z
+         8QhIveG2YWStw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -38,11 +38,10 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Bharat Bhushan <bbhushan2@marvell.com>,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH xfrm-next v8 5/8] xfrm: add RX datapath protection for IPsec packet offload mode
-Date:   Fri, 18 Nov 2022 08:35:25 +0200
-Message-Id: <ed3769a157979165c2eabd00f449b5d7173fb2ce.1668753030.git.leonro@nvidia.com>
+        Bharat Bhushan <bbhushan2@marvell.com>
+Subject: [PATCH xfrm-next v8 6/8] xfrm: speed-up lookup of HW policies
+Date:   Fri, 18 Nov 2022 08:35:26 +0200
+Message-Id: <bcbebce71dd031568d7494e8283054f26a96f75a.1668753030.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1668753030.git.leonro@nvidia.com>
 References: <cover.1668753030.git.leonro@nvidia.com>
@@ -59,103 +58,239 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Traffic received by device with enabled IPsec packet offload should
-be forwarded to the stack only after decryption, packet headers and
-trailers removed.
+Devices that implement IPsec packet offload mode should offload SA and
+policies too. In RX path, it causes to the situation that HW will always
+have higher priority over any SW policies.
 
-Such packets are expected to be seen as normal (non-XFRM) ones, while
-not-supported packets should be dropped by the HW.
+It means that we don't need to perform any search of inexact policies
+and/or priority checks if HW policy was discovered. In such situation,
+the HW will catch the packets anyway and HW can still implement inexact
+lookups.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
+In case specific policy is not found, we will continue with packet lookup and
+check for existence of HW policies in inexact list.
+
+HW policies are added to the head of SPD to ensure fast lookup, as XFRM
+iterates over all policies in the loop.
+
+The same solution of adding HW SAs at the begging of the list is applied
+to SA database too. However, we don't need to change lookups as they are
+sorted by insertion order and not priority.
+
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/net/xfrm.h | 55 +++++++++++++++++++++++++++-------------------
- 1 file changed, 32 insertions(+), 23 deletions(-)
+ net/xfrm/xfrm_policy.c | 16 ++++++----
+ net/xfrm/xfrm_state.c  | 66 ++++++++++++++++++++++++++++++++----------
+ 2 files changed, 62 insertions(+), 20 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index e9c0cc245623..00ce7a68bf3c 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1102,6 +1102,29 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
- 	return !0;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 06226942a152..93a4a9149f8c 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -536,7 +536,7 @@ static void xfrm_dst_hash_transfer(struct net *net,
+ 		__get_hash_thresh(net, pol->family, dir, &dbits, &sbits);
+ 		h = __addr_hash(&pol->selector.daddr, &pol->selector.saddr,
+ 				pol->family, nhashmask, dbits, sbits);
+-		if (!entry0) {
++		if (!entry0 || pol->xdo.type == XFRM_DEV_OFFLOAD_PACKET) {
+ 			hlist_del_rcu(&pol->bydst);
+ 			hlist_add_head_rcu(&pol->bydst, ndsttable + h);
+ 			h0 = h;
+@@ -867,7 +867,7 @@ static void xfrm_policy_inexact_list_reinsert(struct net *net,
+ 				break;
+ 		}
+ 
+-		if (newpos)
++		if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
+ 			hlist_add_behind_rcu(&policy->bydst, newpos);
+ 		else
+ 			hlist_add_head_rcu(&policy->bydst, &n->hhead);
+@@ -1348,7 +1348,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
+ 			else
+ 				break;
+ 		}
+-		if (newpos)
++		if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
+ 			hlist_add_behind_rcu(&policy->bydst, newpos);
+ 		else
+ 			hlist_add_head_rcu(&policy->bydst, chain);
+@@ -1525,7 +1525,7 @@ static void xfrm_policy_insert_inexact_list(struct hlist_head *chain,
+ 			break;
+ 	}
+ 
+-	if (newpos)
++	if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
+ 		hlist_add_behind_rcu(&policy->bydst_inexact_list, newpos);
+ 	else
+ 		hlist_add_head_rcu(&policy->bydst_inexact_list, chain);
+@@ -1562,9 +1562,12 @@ static struct xfrm_policy *xfrm_policy_insert_list(struct hlist_head *chain,
+ 			break;
+ 	}
+ 
+-	if (newpos)
++	if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
+ 		hlist_add_behind_rcu(&policy->bydst, &newpos->bydst);
+ 	else
++		/* Packet offload policies enter to the head
++		 * to speed-up lookups.
++		 */
+ 		hlist_add_head_rcu(&policy->bydst, chain);
+ 
+ 	return delpol;
+@@ -2181,6 +2184,9 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
+ 			break;
+ 		}
+ 	}
++	if (ret && ret->xdo.type == XFRM_DEV_OFFLOAD_PACKET)
++		goto skip_inexact;
++
+ 	bin = xfrm_policy_inexact_lookup_rcu(net, type, family, dir, if_id);
+ 	if (!bin || !xfrm_policy_find_inexact_candidates(&cand, bin, saddr,
+ 							 daddr))
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 3d2fe7712ac5..cfc8c72b173d 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -84,6 +84,25 @@ static unsigned int xfrm_seq_hash(struct net *net, u32 seq)
+ 	return __xfrm_seq_hash(seq, net->xfrm.state_hmask);
  }
  
-+#ifdef CONFIG_XFRM
-+static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
-+{
-+	struct sec_path *sp = skb_sec_path(skb);
-+
-+	return sp->xvec[sp->len - 1];
-+}
-+#endif
-+
-+static inline struct xfrm_offload *xfrm_offload(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_XFRM
-+	struct sec_path *sp = skb_sec_path(skb);
-+
-+	if (!sp || !sp->olen || sp->len != sp->olen)
-+		return NULL;
-+
-+	return &sp->ovec[sp->olen - 1];
-+#else
-+	return NULL;
-+#endif
-+}
-+
- #ifdef CONFIG_XFRM
- int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
- 			unsigned short family);
-@@ -1133,10 +1156,19 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- {
- 	struct net *net = dev_net(skb->dev);
- 	int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
-+	struct xfrm_offload *xo = xfrm_offload(skb);
-+	struct xfrm_state *x;
- 
- 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
- 		return __xfrm_policy_check(sk, ndir, skb, family);
- 
-+	if (xo) {
-+		x = xfrm_input_state(skb);
-+		if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
-+			return (xo->flags & CRYPTO_DONE) &&
-+			       (xo->status & CRYPTO_SUCCESS);
++#define XFRM_STATE_INSERT(by, _n, _h, _type)                               \
++	{                                                                  \
++		struct xfrm_state *_x = NULL;                              \
++									   \
++		if (_type != XFRM_DEV_OFFLOAD_PACKET) {                    \
++			hlist_for_each_entry_rcu(_x, _h, by) {             \
++				if (_x->xso.type == XFRM_DEV_OFFLOAD_PACKET) \
++					continue;                          \
++				break;                                     \
++			}                                                  \
++		}                                                          \
++									   \
++		if (!_x || _x->xso.type == XFRM_DEV_OFFLOAD_PACKET)        \
++			/* SAD is empty or consist from HW SAs only */     \
++			hlist_add_head_rcu(_n, _h);                        \
++		else                                                       \
++			hlist_add_before_rcu(_n, &_x->by);                 \
 +	}
 +
- 	return __xfrm_check_nopolicy(net, skb, dir) ||
- 	       __xfrm_check_dev_nopolicy(skb, dir, family) ||
- 	       __xfrm_policy_check(sk, ndir, skb, family);
-@@ -1870,29 +1902,6 @@ static inline void xfrm_states_delete(struct xfrm_state **states, int n)
+ static void xfrm_hash_transfer(struct hlist_head *list,
+ 			       struct hlist_head *ndsttable,
+ 			       struct hlist_head *nsrctable,
+@@ -100,23 +119,25 @@ static void xfrm_hash_transfer(struct hlist_head *list,
+ 		h = __xfrm_dst_hash(&x->id.daddr, &x->props.saddr,
+ 				    x->props.reqid, x->props.family,
+ 				    nhashmask);
+-		hlist_add_head_rcu(&x->bydst, ndsttable + h);
++		XFRM_STATE_INSERT(bydst, &x->bydst, ndsttable + h, x->xso.type);
+ 
+ 		h = __xfrm_src_hash(&x->id.daddr, &x->props.saddr,
+ 				    x->props.family,
+ 				    nhashmask);
+-		hlist_add_head_rcu(&x->bysrc, nsrctable + h);
++		XFRM_STATE_INSERT(bysrc, &x->bysrc, nsrctable + h, x->xso.type);
+ 
+ 		if (x->id.spi) {
+ 			h = __xfrm_spi_hash(&x->id.daddr, x->id.spi,
+ 					    x->id.proto, x->props.family,
+ 					    nhashmask);
+-			hlist_add_head_rcu(&x->byspi, nspitable + h);
++			XFRM_STATE_INSERT(byspi, &x->byspi, nspitable + h,
++					  x->xso.type);
+ 		}
+ 
+ 		if (x->km.seq) {
+ 			h = __xfrm_seq_hash(x->km.seq, nhashmask);
+-			hlist_add_head_rcu(&x->byseq, nseqtable + h);
++			XFRM_STATE_INSERT(byseq, &x->byseq, nseqtable + h,
++					  x->xso.type);
+ 		}
+ 	}
  }
- #endif
+@@ -1166,16 +1187,24 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+ 			spin_lock_bh(&net->xfrm.xfrm_state_lock);
+ 			x->km.state = XFRM_STATE_ACQ;
+ 			list_add(&x->km.all, &net->xfrm.state_all);
+-			hlist_add_head_rcu(&x->bydst, net->xfrm.state_bydst + h);
++			XFRM_STATE_INSERT(bydst, &x->bydst,
++					  net->xfrm.state_bydst + h,
++					  x->xso.type);
+ 			h = xfrm_src_hash(net, daddr, saddr, encap_family);
+-			hlist_add_head_rcu(&x->bysrc, net->xfrm.state_bysrc + h);
++			XFRM_STATE_INSERT(bysrc, &x->bysrc,
++					  net->xfrm.state_bysrc + h,
++					  x->xso.type);
+ 			if (x->id.spi) {
+ 				h = xfrm_spi_hash(net, &x->id.daddr, x->id.spi, x->id.proto, encap_family);
+-				hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
++				XFRM_STATE_INSERT(byspi, &x->byspi,
++						  net->xfrm.state_byspi + h,
++						  x->xso.type);
+ 			}
+ 			if (x->km.seq) {
+ 				h = xfrm_seq_hash(net, x->km.seq);
+-				hlist_add_head_rcu(&x->byseq, net->xfrm.state_byseq + h);
++				XFRM_STATE_INSERT(byseq, &x->byseq,
++						  net->xfrm.state_byseq + h,
++						  x->xso.type);
+ 			}
+ 			x->lft.hard_add_expires_seconds = net->xfrm.sysctl_acq_expires;
+ 			hrtimer_start(&x->mtimer,
+@@ -1280,22 +1309,26 @@ static void __xfrm_state_insert(struct xfrm_state *x)
  
--#ifdef CONFIG_XFRM
--static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
--{
--	struct sec_path *sp = skb_sec_path(skb);
--
--	return sp->xvec[sp->len - 1];
--}
--#endif
--
--static inline struct xfrm_offload *xfrm_offload(struct sk_buff *skb)
--{
--#ifdef CONFIG_XFRM
--	struct sec_path *sp = skb_sec_path(skb);
--
--	if (!sp || !sp->olen || sp->len != sp->olen)
--		return NULL;
--
--	return &sp->ovec[sp->olen - 1];
--#else
--	return NULL;
--#endif
--}
--
- void __init xfrm_dev_init(void);
+ 	h = xfrm_dst_hash(net, &x->id.daddr, &x->props.saddr,
+ 			  x->props.reqid, x->props.family);
+-	hlist_add_head_rcu(&x->bydst, net->xfrm.state_bydst + h);
++	XFRM_STATE_INSERT(bydst, &x->bydst, net->xfrm.state_bydst + h,
++			  x->xso.type);
  
- #ifdef CONFIG_XFRM_OFFLOAD
+ 	h = xfrm_src_hash(net, &x->id.daddr, &x->props.saddr, x->props.family);
+-	hlist_add_head_rcu(&x->bysrc, net->xfrm.state_bysrc + h);
++	XFRM_STATE_INSERT(bysrc, &x->bysrc, net->xfrm.state_bysrc + h,
++			  x->xso.type);
+ 
+ 	if (x->id.spi) {
+ 		h = xfrm_spi_hash(net, &x->id.daddr, x->id.spi, x->id.proto,
+ 				  x->props.family);
+ 
+-		hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
++		XFRM_STATE_INSERT(byspi, &x->byspi, net->xfrm.state_byspi + h,
++				  x->xso.type);
+ 	}
+ 
+ 	if (x->km.seq) {
+ 		h = xfrm_seq_hash(net, x->km.seq);
+ 
+-		hlist_add_head_rcu(&x->byseq, net->xfrm.state_byseq + h);
++		XFRM_STATE_INSERT(byseq, &x->byseq, net->xfrm.state_byseq + h,
++				  x->xso.type);
+ 	}
+ 
+ 	hrtimer_start(&x->mtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
+@@ -1409,9 +1442,11 @@ static struct xfrm_state *__find_acq_core(struct net *net,
+ 			      ktime_set(net->xfrm.sysctl_acq_expires, 0),
+ 			      HRTIMER_MODE_REL_SOFT);
+ 		list_add(&x->km.all, &net->xfrm.state_all);
+-		hlist_add_head_rcu(&x->bydst, net->xfrm.state_bydst + h);
++		XFRM_STATE_INSERT(bydst, &x->bydst, net->xfrm.state_bydst + h,
++				  x->xso.type);
+ 		h = xfrm_src_hash(net, daddr, saddr, family);
+-		hlist_add_head_rcu(&x->bysrc, net->xfrm.state_bysrc + h);
++		XFRM_STATE_INSERT(bysrc, &x->bysrc, net->xfrm.state_bysrc + h,
++				  x->xso.type);
+ 
+ 		net->xfrm.state_num++;
+ 
+@@ -2085,7 +2120,8 @@ int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
+ 		spin_lock_bh(&net->xfrm.xfrm_state_lock);
+ 		x->id.spi = newspi;
+ 		h = xfrm_spi_hash(net, &x->id.daddr, x->id.spi, x->id.proto, x->props.family);
+-		hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
++		XFRM_STATE_INSERT(byspi, &x->byspi, net->xfrm.state_byspi + h,
++				  x->xso.type);
+ 		spin_unlock_bh(&net->xfrm.xfrm_state_lock);
+ 
+ 		err = 0;
 -- 
 2.38.1
 
