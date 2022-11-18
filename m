@@ -2,83 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F5E762FD74
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:59:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E516962FD7A
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:59:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242507AbiKRS7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 13:59:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        id S242705AbiKRS7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 13:59:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242029AbiKRS6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:58:01 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FDADF26;
-        Fri, 18 Nov 2022 10:57:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=U/nlGv1M4b5GNo9zHM3JahGEYmRaE9UM6k5mmYcVw1U=; b=o/i42WV/0cJwm7QRV4143fwvcT
-        MlrfHmJMnUmQE7nygOK8l7l9xZ508s5bYIs/ktdKSCEpOq5sq0vTFT/9rnZSTHL8llDOYQulEFu6p
-        56K4etOrjz+hgBC+l7v1B+MB05qrkNNfBvtfoqGvOgdYWM8Phf01dLGvXiHvWrr74Rz0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ow6Xq-002pVA-G4; Fri, 18 Nov 2022 19:56:58 +0100
-Date:   Fri, 18 Nov 2022 19:56:58 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] phy: aquantia: Configure SERDES mode by default
-Message-ID: <Y3fVej+tsB8FP2kf@lunn.ch>
-References: <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221115223732.ctvzjbpeaxulnm5l@skbuf>
- <3771f5be-3deb-06f9-d0a0-c3139d098bf0@seco.com>
- <20221115230207.2e77pifwruzkexbr@skbuf>
- <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
- <Y3bLlUk1wxzAqKmj@lunn.ch>
- <20221118171643.vu6uxbnmog4sna65@skbuf>
+        with ESMTP id S241525AbiKRS54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:57:56 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D15BBE2B;
+        Fri, 18 Nov 2022 10:57:37 -0800 (PST)
+Message-ID: <e126b2cd-b8c7-5b04-324e-1bae06d7c22e@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1668797855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uNh0y1dEP2ClIUC9F0BcoG+zdwd/Pp1A2lLbHHBONYs=;
+        b=nJH/ClVRyVOKtHU0UzqcCeq0mjmesLoZ1bcu462aRcCrZ7KYinnLcmqjWTVa4d4JoGXbg9
+        m/jxO7x+2O6l43TUjqHMp8fjiW+zSpSxFaIlyC5CvKqR0xIdnWsJ8OnFSBnTJex2d1NEwO
+        A9sBcWSlY2hK568cKHN+Sd4xfvysNT0=
+Date:   Fri, 18 Nov 2022 10:57:31 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221118171643.vu6uxbnmog4sna65@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH v2 2/2] selftests/net: fix opening object file failed
+Content-Language: en-US
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, andrii@kernel.org,
+        mykolal@fb.com, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <1668507800-45450-1-git-send-email-wangyufen@huawei.com>
+ <1668507800-45450-3-git-send-email-wangyufen@huawei.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <1668507800-45450-3-git-send-email-wangyufen@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> What might be an even bigger offence than giving different provisioning
-> to different customers is giving different documentation to different
-> customers. In the Aquantia Register Specification for Gen4 PHYs given
-> to NXP, the SerDes mode field in register 1E.31C cannot even _take_ the
-> value of 6. They're all documented only from 0 to 5. I only learned that
-> 6 (XFI/2) was a thing from the discussion between Sean and Tim.
+On 11/15/22 2:23 AM, Wang Yufen wrote:
+> The program file used in the udpgro_frglist testcase is "../bpf/nat6to4.o",
+> but the actual nat6to4.o file is in "bpf/" not "../bpf".
+> The following error occurs:
+>    Error opening object ../bpf/nat6to4.o: No such file or directory
+>    Cannot initialize ELF context!
+>    Unable to load program
+> 
+> In addition, all the kernel bpf source files are centred under the
+> subdir "progs" after commit bd4aed0ee73c ("selftests: bpf: centre
+> kernel bpf objects under new subdir "progs""). So mv nat6to4.c to
+> "../bpf/progs" and use "../bpf/nat6to4.bpf.o". And also move the
+> test program to selftests/bpf.
+> 
+> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> ---
+>   tools/testing/selftests/bpf/Makefile               |   7 +-
+>   tools/testing/selftests/bpf/in_netns.sh            |  23 +
+>   .../testing/selftests/bpf/progs/nat6to4_egress4.c  | 184 ++++++
+>   .../testing/selftests/bpf/progs/nat6to4_ingress6.c | 149 +++++
+>   tools/testing/selftests/bpf/test_udpgro_frglist.sh | 110 ++++
 
-At some point we just have to declare the hardware unsupportable in
-mainline, too many landmines. We simply stop any further development
-on it. If it works for you, great. Otherwise use the vendor crap
-driver and complain loudly to the vendor.
+Love to have more tests in the BPF CI which is run continuously: eg: 
+https://github.com/kernel-patches/bpf/actions/runs/3491826279/jobs/5845219757
 
-The way out could be Marvell puts firmware in linux-firmware with no
-provisioning, or a known provisioning. We load that firmware at probe
-time, and we only support that.
+However, script like this does not get run in CI. test_progs has a more 
+consistent error output and ensures some environment cleanup before running the 
+next test.  Please take some effort to adapt this test to the bpf/test_progs.c 
+framework which had already been suggested in the previous revision.
 
-But do Marvell actually care about mainline? I guess not.
+Try to run ./test_progs under the bpf selftests directory.  There are existing 
+examples to setup/switch net ns and test_progs has logic in place to ensure the 
+netns is restored before running the next selftest.  eg. take a look at 
+bpf/prog_tests/{test_tunnel,tc_redirect}.c.
 
-Microchip seem like the better vendor if you care about mainline.
-Open datasheets, engagement with the community, etc.
 
-    Andrew
+>   tools/testing/selftests/bpf/udpgso_bench_rx.c      | 409 ++++++++++++
+>   tools/testing/selftests/bpf/udpgso_bench_tx.c      | 712 +++++++++++++++++++++
+
+hmmm, it is a copy? Does it need all the bench marking feature (e.g. all the cmd 
+args)?  If not, please simply because I expect the test_udpgro_frglist.sh, 
+udpgso_bench_rx.c, and udpgso_bench_tx.c will become one file 
+'selftests/bpf/prog_tests/udpgrp_frglish.c' which loads the bpf prog and 
+generates traffic to exercise the bpf prog.
+
+Please tag it with bpf-next in the next spin which Saeed has also mentioned in 
+another thread.
+
+>   tools/testing/selftests/net/Makefile               |   2 -
+>   tools/testing/selftests/net/bpf/Makefile           |  14 -
+>   tools/testing/selftests/net/bpf/nat6to4.c          | 285 ---------
+>   tools/testing/selftests/net/udpgro_frglist.sh      | 103 ---
+>   11 files changed, 1592 insertions(+), 406 deletions(-)
+>   create mode 100755 tools/testing/selftests/bpf/in_netns.sh
+>   create mode 100644 tools/testing/selftests/bpf/progs/nat6to4_egress4.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/nat6to4_ingress6.c
+>   create mode 100755 tools/testing/selftests/bpf/test_udpgro_frglist.sh
+>   create mode 100644 tools/testing/selftests/bpf/udpgso_bench_rx.c
+>   create mode 100644 tools/testing/selftests/bpf/udpgso_bench_tx.c
+>   delete mode 100644 tools/testing/selftests/net/bpf/Makefile
+>   delete mode 100644 tools/testing/selftests/net/bpf/nat6to4.c
+>   delete mode 100755 tools/testing/selftests/net/udpgro_frglist.sh
 
