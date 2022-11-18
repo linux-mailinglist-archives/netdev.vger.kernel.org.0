@@ -2,83 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7484762F359
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 12:09:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6879762F36E
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 12:16:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241862AbiKRLJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 06:09:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
+        id S241644AbiKRLQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 06:16:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241712AbiKRLJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 06:09:15 -0500
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58C78C49E
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:09:14 -0800 (PST)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3691e040abaso46154127b3.9
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:09:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=w1OFCJVJXs+H4Yp4AIq7xc52tiltb20f2ctRYUcHABo=;
-        b=iwmO9YsNvZMud07oTY5EGraYNiCB2NAe36KBGkPBDNkfSHe9TzdVessF+TA592WA6K
-         OuKcZxD3Yt3T7Fr+j2eOxw9up9CZEYsO30Av92cdrjcRPee5joXGG13DxzZo+ifBBCEA
-         kdG8aIZskH3fUhBmF1kxwaeebR5UEhlKA8SfhrJUsxJEP+jqaA2ZvSBRmVZahDLhzr51
-         wSsc2cy16XB6hnwGoiTHiR0pIMqF3gNShA0AUe/sZmMWn1O9DM6+x50EYyNQZFEu2qC1
-         vYCRNrzqsv7wH3hTJJi6OUPxVHYAfjneFCCODmoIReWErh9DaSrA6kx3vHw7Qay/5li7
-         DYWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=w1OFCJVJXs+H4Yp4AIq7xc52tiltb20f2ctRYUcHABo=;
-        b=EzuTAYhquZd/U4YPnQVs97SVOmQWPlSfzgspkiO1tyB30tDKiixrT5Pl+//UJJGWLl
-         ukH8tIRuKt/H24zJkM9WLXRwJm3Ha+LhFThv6HE8mWDaGCRTSttvkkeCaqw0i8Ay6HYx
-         2+kInyfVeqpGn6V7M4f1nak5nTbMN7n6TLgRBXotnbw+TYhvcSNbeR2mFkR20fTXtltS
-         BtCQZLZ3AVpsSn8VJoHguk89cNqnJShrTF+xWS3QvxxexK+g1BSDqT7m93IbkBtKxEjh
-         lS9XTHCoI2TVDXEqaanHXg2ybI9aPXP5oVFW0n5YjyAAKTLq3h+uR2zlaWlOA02WtHQc
-         aFNw==
-X-Gm-Message-State: ANoB5pm5bV6Go1DOZENQ6gWMHH3I2e93SNGdGvwrbMaBvpqaHjJ8CuIb
-        jyk0/fedmsAA1LzYsrUNshfkczisczTk2tzQm2/OysnrNA0=
-X-Google-Smtp-Source: AA0mqf7wzDvZGM1UZn9CwEK+kM8wKPG5w1NOMfceUqF81CTUPhc5YKuWfnLX5w4hmjpzCGHYFoqyijQPfofjTqqoanY=
-X-Received: by 2002:a81:5f04:0:b0:393:ab0b:5a31 with SMTP id
- t4-20020a815f04000000b00393ab0b5a31mr3908051ywb.55.1668769753653; Fri, 18 Nov
- 2022 03:09:13 -0800 (PST)
+        with ESMTP id S235188AbiKRLQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 06:16:49 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EBD064555;
+        Fri, 18 Nov 2022 03:16:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jCwiJcjbg7ZTiA+/f8xyS0h637tVnp9E3xI0ct+Ox54=; b=rdf+XtnYZnsMspk9kS+ZyEh0AS
+        RGUkEV072p31F9GFMBGTOEe6ALTWGCIK0JuPu8PhAeIZYMrFcpz3qqdzROztEjXfNAYJRkb8eRWYT
+        e22+XnXqBxBLbZoRze7we+h03xg21hlr+/NqlLOxV+Pa9c7DvOfTekCmZGtv7bWPCyrjT29aJmVg0
+        QDnmZIG0yUbnvkZiHay1w8+4kEQWnpircZoR9Z6WUXU6VMSmBMRWGOAF9ySxbZo/6YdSYAAQxY1P1
+        HCMUwICYV899eA97K58YX8q/NqeWF63YQcgk19VPhMWWxqjeGV+6tGOlZwwYTHahBOG/W+0sWxnvO
+        OxOBw7Sg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35326)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ovzMG-0005cX-UB; Fri, 18 Nov 2022 11:16:32 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ovzMA-0007iy-Ra; Fri, 18 Nov 2022 11:16:26 +0000
+Date:   Fri, 18 Nov 2022 11:16:26 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     "Goh, Wei Sheng" <wei.sheng.goh@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        Ahmad Tarmizi Noor Azura <noor.azura.ahmad.tarmizi@intel.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>
+Subject: Re: [PATCH net] net: stmmac: Set MAC's flow control register to
+ reflect current settings
+Message-ID: <Y3dpikbzUJAazMTD@shell.armlinux.org.uk>
+References: <20221118072051.31313-1-wei.sheng.goh@intel.com>
 MIME-Version: 1.0
-References: <20221114191619.124659-1-jakub@cloudflare.com> <166860541774.25745.4396978792984957790.git-patchwork-notify@kernel.org>
- <CANn89iLQUZnyGNCn2GpW31FXpE_Lt7a5Urr21RqzfAE4sYxs+w@mail.gmail.com>
- <CANn89i+8r6rvBZeVG7u01vJ4rYO5cqe+jfSFvYDvdUHyzb5HaQ@mail.gmail.com>
- <87wn7t29ac.fsf@cloudflare.com> <CANn89i+iRoHnJ=+MFB5N3c36t5AeeDpd7aHqheBdgKjhNH17qA@mail.gmail.com>
- <877czsplx3.fsf@cloudflare.com>
-In-Reply-To: <877czsplx3.fsf@cloudflare.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 18 Nov 2022 03:09:02 -0800
-Message-ID: <CANn89iKZcq1Y81OH=qsVWbgpkW=gKC-jwRo4PC05PBcPpo55fQ@mail.gmail.com>
-Subject: Re: [PATCH net v4] l2tp: Serialize access to sk_user_data with sk_callback_lock
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        tparkin@katalix.com, g1042620637@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221118072051.31313-1-wei.sheng.goh@intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 3:00 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On Fri, Nov 18, 2022 at 03:20:51PM +0800, Goh, Wei Sheng wrote:
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 8273e6a175c8..ab7f48f32f5b 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1061,8 +1061,16 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+>  		ctrl |= priv->hw->link.duplex;
+>  
+>  	/* Flow Control operation */
+> -	if (tx_pause && rx_pause)
+> -		stmmac_mac_flow_ctrl(priv, duplex);
+> +	if (rx_pause && tx_pause)
+> +		priv->flow_ctrl = FLOW_AUTO;
+> +	else if (rx_pause && !tx_pause)
+> +		priv->flow_ctrl = FLOW_RX;
+> +	else if (!rx_pause && tx_pause)
+> +		priv->flow_ctrl = FLOW_TX;
+> +	else if (!rx_pause && !tx_pause)
+> +		priv->flow_ctrl = FLOW_OFF;
 
->
-> Sorry, I don't have anything yet. I have reserved time to work on it
-> this afternoon (I'm in the CET timezone).
->
-> Alternatively, I can send a revert right away and come back with fixed
-> patch once I have that, if you prefer.
+Since "if (!rx_pause && !tx_pause)" will always be true at this point,
+you can eliminate this needless last condition, which will make the code
+a little more readable.
 
-No worries, this can wait for a fix, thanks.
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
