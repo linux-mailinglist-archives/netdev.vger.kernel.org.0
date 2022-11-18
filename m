@@ -2,108 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9526C62E9D4
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 00:47:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DFD62E9F5
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:02:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiKQXrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 18:47:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        id S234739AbiKRACH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 19:02:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233679AbiKQXrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 18:47:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADA3A451
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:46:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1668728813;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=t4amhDHKsYSMHWw3ZB+fT/YBGFiZSg1p/vLZ6sF81EM=;
-        b=JT9tTRqoliJZ5A6VTL+saUo7rvl+3jylEkd2Ptr3jBOgmkgp2pZG/6FAcWA/quQ3JV/054
-        wZjjh/sTmNJm8mNOwQbycFD5d05g92owYjmfeKCmiFt7TTGvN5zybxhkKfNmUNaumQberm
-        Ub0EuuJErFPgDfI5bscGzufTVwqiNA0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-571-n-pQsnT7NjOvfg7k2p27Cg-1; Thu, 17 Nov 2022 18:46:51 -0500
-X-MC-Unique: n-pQsnT7NjOvfg7k2p27Cg-1
-Received: by mail-ed1-f71.google.com with SMTP id g14-20020a056402090e00b0046790cd9082so2058287edz.21
-        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 15:46:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=t4amhDHKsYSMHWw3ZB+fT/YBGFiZSg1p/vLZ6sF81EM=;
-        b=OJSxItCv4jIgncDulD+jKtBtFRkC+w2x/A7t+DO7OK+YfTZWMtOUb+W7PZgMktct+T
-         J17mJj/JqyaBEu/hfTQa8RDXSY68JRs+8TZEsohgMEYDtoQrHMiBubNrhW/flih3XKvo
-         OMIsvZt0uo6cuvHYR2Ydi/FMxodIcYAO9krngCKD32RtE+qrLdg5JptSLSJ9Fd3cT6KW
-         SO2B+/4SIQHPSW2N2CqIXQQUDcHbAJaU2dxuJJ2Z1/FNw5kGFB1C0E2VTy17MQMKzTJL
-         wvHKWScwLuGHzlo9qI6xxXHu6Q02A8BcrFgrskSOTdGkfH17GNg+pgBt/djz/dFFYMt+
-         xO/A==
-X-Gm-Message-State: ANoB5pnH0JezG1qPSGMMoRtH9fnPU/joedsVKyECOhkblGqcCnmH7jUX
-        54GfpolnCerj1RVdjgp5BuHOMAUIIw22oJ+SpNsVPIXyx0YijBTCIJq4DUtidIIgXVyTtEKZzl3
-        Z0R/jVAzAXqSoUs1j
-X-Received: by 2002:a17:906:791:b0:7ad:14f8:7583 with SMTP id l17-20020a170906079100b007ad14f87583mr4074848ejc.185.1668728810208;
-        Thu, 17 Nov 2022 15:46:50 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5xbcfwM/CIQaQKBLzuqeKKGNTHSR6fYH18SUafOXx+saLrIDVlD+zoA8TAuKC4YfWcmovUKg==
-X-Received: by 2002:a17:906:791:b0:7ad:14f8:7583 with SMTP id l17-20020a170906079100b007ad14f87583mr4074814ejc.185.1668728809728;
-        Thu, 17 Nov 2022 15:46:49 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id v10-20020a170906292a00b007ad96726c42sm959726ejd.91.2022.11.17.15.46.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 15:46:48 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id ED9B37A701D; Fri, 18 Nov 2022 00:46:46 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, David Ahern <dsahern@gmail.com>,
+        with ESMTP id S234918AbiKRACF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:02:05 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2046.outbound.protection.outlook.com [40.107.21.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05AC742F2
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 16:02:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xty9FfcMtmrybwMh38kSR/VdE9sWsWrXuOm+la0vzDaaH0LcTCmSko85+4xB7oUKPB3rE9F2kuYZNPimQ84pU/zTJ2gJhFZ9OF5EEyzbTG8qkXL6B74i4KOGIA/967qGKanOphXa421hZYs96OwuzlooZpZWgLhsXD6s0akOugw17IXH5wsnm7eDk4gy6+LWIuotBx53TKrk89gY+YTHKY2UR9M9pNPBytaixFVqLysVZGfBRaIR4CTOksu34qq/3WcxlN5IC8edgALBwc1p36IWpSxN/RYgT/PGSwXt9uwC0wkAS2Kh7/8LTqarJJMlbPBEU0XeEWoFfWl/r/ljVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+CfdXhByadzkG+YuICVWoIpYDnuJ0x/h0W15q7YWd1E=;
+ b=GJuy9qhlAosDOuEdtYVkVBa94LsAiEdvgwWRbZyF0vy2UTBolcnfQnvjNY1ofzSP71K2p6o05X9wd8Ka3yAPQ2rrs9OOmKfVU45yu5H3yvk7RS0vSe5axHhBJshRDKGzrkoeD05WXysJLi6AEDBtfP2b912rgO6Hf/sPS1VFE1Z9PwR/fe/8jx8+uSc/tu5ERtszNOK0NmYGO5IdeMWDAQPoP7fUK/AA8Q9MTcjJHyJFY7QiIij4imbNZp05v90liWbIgTViXGZvM/177fTXBM8OLNnllYUmMx452S7sJJ1ZYZ3yLtPWXoCm6c18/Ghf/E+m9n7XU7s1LwVYfeoS6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+CfdXhByadzkG+YuICVWoIpYDnuJ0x/h0W15q7YWd1E=;
+ b=O8dF9Ulzp3McNW+DBL/GpUH3fzF6Wj4fiBPGDex3/w8o6xBZHmORu3w682p4L0u36Dd8kFx9Efnq7rTAYz4yb+d9N50eOzKswKQZJ5eRhoNyDxX2RvF/UNFXQ+xNqzaGoKDVVHMD7G/MR3cDkUf/YQWCBC13/kw5IJEEJPt7+Zo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8542.eurprd04.prod.outlook.com (2603:10a6:102:215::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 18 Nov
+ 2022 00:02:02 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5813.018; Fri, 18 Nov 2022
+ 00:02:02 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next 05/11] veth: Support rx
- timestamp metadata for xdp
-In-Reply-To: <CAKH8qBsPinmCO0Ny1hva7kp4+C7XFdxZLPBYEHXQWDjJ5SSoYw@mail.gmail.com>
-References: <20221115030210.3159213-1-sdf@google.com>
- <20221115030210.3159213-6-sdf@google.com> <87h6z0i449.fsf@toke.dk>
- <CAKH8qBsEGD3L0XAVzVHcTW6k_RhEt74pfXrPLANuznSAJw7bEg@mail.gmail.com>
- <8735ajet05.fsf@toke.dk>
- <CAKH8qBsg4aoFuiajuXmRN3VPKYVJZ-Z5wGzBy9pH3pV5RKCDzQ@mail.gmail.com>
- <6374854883b22_5d64b208e3@john.notmuch>
- <34f89a95-a79e-751c-fdd2-93889420bf96@linux.dev> <878rkbjjnp.fsf@toke.dk>
- <6375340a6c284_66f16208aa@john.notmuch>
- <CAKH8qBs1rYXf0GGto9hPz-ELLZ9c692cFnKC9JLwAq5b7JRK-A@mail.gmail.com>
- <637576962dada_8cd03208b0@john.notmuch>
- <CAKH8qBtOATGBMPkgdE0jZ+76AWMsUWau360u562bB=cGYq+gdQ@mail.gmail.com>
- <CAADnVQKTXuBvP_2O6coswXL7MSvqVo1d+qXLabeOikcbcbAKPQ@mail.gmail.com>
- <CAKH8qBvTdnyRYT+ocNS_ZmOfoN+nBEJ5jcBcKcqZ1hx0a5WrSw@mail.gmail.com>
- <87wn7t4y0g.fsf@toke.dk>
- <CAADnVQJMvPjXCtKNH+WCryPmukgbWTrJyHqxrnO=2YraZEukPg@mail.gmail.com>
- <CAKH8qBsPinmCO0Ny1hva7kp4+C7XFdxZLPBYEHXQWDjJ5SSoYw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 18 Nov 2022 00:46:46 +0100
-Message-ID: <874juxywih.fsf@toke.dk>
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>
+Subject: [PATCH v4 net-next 0/8] Let phylink manage in-band AN for the PHY
+Date:   Fri, 18 Nov 2022 02:01:16 +0200
+Message-Id: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BEXP281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::16)
+ To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8542:EE_
+X-MS-Office365-Filtering-Correlation-Id: 130696b6-98f6-460d-5d0f-08dac8f81ebb
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bq5CHBItybJ9QYu599L7Ka3sVhRqhQm9I5xlUWCTqbJcLEdfokEFs6TssoqPx/tIH0MVkBiyFwr1t9E4BwUgwgaE5OKjhznbiAswOupUQcxbC/6PElCAFH+txkm56JoD8hrmBQxysku/994YxRZfL/SzvLTgVIW7ReyQ99wqbZaawyyAlB4AzmusA4fCbnqHdD6N7eEXdwiETrEXYuZ4QmCXES6zUQ8V58hHVlJg0BcESYSrCdIKbp4KWaac6xP4kAt+rsKRDovjwB6IY0BSU4L1OvEdba+ValUvgIDFhwlgNBwFQpJZlyeEXYHHvC8kvbbhAFjS7CxV3URg41DVD/qHBlpygLfkjMT5w5wxJD8aFgzROFGbUw4m8BRZPgkzYhmzbGQjfpgY0jtcews61pIHwczlYRr3IAeMw+G0RyWLpFcw0pbhA/avc6eZEdUbkmT/6rTXF68XFDPaFqY2Ape3aOIREVXcAUwl9JwqHb5yloFh6Mhe12q6tFmHao9MjKN4FXhd7UEcwA3N4P1cPd0Cv7mK/E7wWqUROqXE3vPZP2WQQqYYUQvQy3GSzdZgHgDx+TSvT/QqdYev+vsQjBMFNnbdZlX9W6gtUQbVvpJngCNTb5dxmeaXpCqXlwFNL/gjX6y91TO2nt1VI1nSLeDw/eVfqrZfRJ8RhT0izLKbu7gZTNS56d8fa4/pTvSVSET2Xyra1aeneBJbYj+lJCeAqAF6OCWSlk+RPGUZzMfDla1I5zsOfV2sxGecMSh59hGsXY1dLcLfbsM41ictmw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(451199015)(478600001)(966005)(26005)(41300700001)(6506007)(6666004)(36756003)(8676002)(52116002)(6486002)(4326008)(38100700002)(44832011)(7416002)(8936002)(2616005)(66946007)(66556008)(38350700002)(6512007)(66476007)(186003)(316002)(1076003)(2906002)(54906003)(6916009)(86362001)(5660300002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YfzKNt5tOTxEvzd/cSaM/+kEiNg1126AqjvkBlNKVyaUNHOzDRSDVc083vnh?=
+ =?us-ascii?Q?F0Y48+VTRVe/vQiOfLgIk7omUxI/ps0mutNpcJm8V4Oomiw/6Ssib8a1U9hX?=
+ =?us-ascii?Q?uLm/MPvsgfegKnRQfDW3LOfEzQuxqeFTWisqdm25vOmlHOmn0FzHUQAXLKrz?=
+ =?us-ascii?Q?4ZToW5PT+q330qwiunlTKaqOT8bvfauS0SJt4Nipk8iEtnoCbuMO+7sIp0Eo?=
+ =?us-ascii?Q?FRMjqs6OOzIRCEHOILZ+m6aUDx7jMmIH7f5SdEig/BiOHM7MpYypeuEKIgjp?=
+ =?us-ascii?Q?p1CCRuGpaUVMv6n/j5YZxYd2ntbjTVHbGkbuVRXnV/xU46oVxxwzbVy1U/oZ?=
+ =?us-ascii?Q?3gHrpAOkr7c5osJuNdtw8TQ8szA77u+oLk/bhPR8Pp0Gkjw000RXLpNjeuAU?=
+ =?us-ascii?Q?bpdfze0MffBNmyaA076AfUnNx+lkA62iwsxtgZkBCCdTaIY/A77er753VmuW?=
+ =?us-ascii?Q?z/cbZy+mjVm2SxaouwM/KevRfoeWUJ2PngqKyslWutCoHfJl9RJSs4QwtDj6?=
+ =?us-ascii?Q?2clq8czpWmrR+C/ws4U6MXsiH7MdudZF+GQ8MloZUNSLqoQuovw0lzn0ozTR?=
+ =?us-ascii?Q?rfOqNC70ttqYBlDUf/4ClQwKuwf0nzAb72MmvmZvsVgVTjOzNMM3LegQ+suO?=
+ =?us-ascii?Q?jlkt4tCEQFUp78K7cXSDzOcw3D0fMiQh2BXmb9LQ328Mw2jgDTVPjtbNxnje?=
+ =?us-ascii?Q?eFreLMBxWL0UbQ7a8Ta1h6x/Hne+akJzBGcYXnm/aeSaYHhyIk4zyR6WgmLW?=
+ =?us-ascii?Q?1v48CLXVLT0hO1uC5G1ggIhsqGFeTjKVVOoeKCLKg/LjVQE5Xj9Thk8C6yC2?=
+ =?us-ascii?Q?gQOKVwmHy+0JJ8N4FlZNV5/LNmhA59nQgXHZY/p6//ih6/cevwi/LGMvRZ4j?=
+ =?us-ascii?Q?mWgzihOjqwcBw7sdMg3vUA/v5ucB+L0EQ9NvRHdwEZhONnghCa83bqCe6oPM?=
+ =?us-ascii?Q?hJLpR9ebT0HDyy8bOWq6w6b5NkKiWt7cMvo+Gw9ZbhGEBjtYQXyEwbUllZZD?=
+ =?us-ascii?Q?eUJTzvWHQhqSGZGclTi9BZn3s1ZTLkLnG8ytxkacEZWc4zwL8nLP4tOCnHM1?=
+ =?us-ascii?Q?UehUnqWUaUnslMfZXRGn6xjprkiiHMHh2A1NGuyMx4PgcCneOotuHUagF7jj?=
+ =?us-ascii?Q?f3Ap5hB9NqST5AesVS3/pSlIc/lkTDjoiFcs2QJbyJ8okPKQnGJXM9G5lrz6?=
+ =?us-ascii?Q?g3yKBbaQQpuHCZNsU3V3gXTDrtbsduWDigRZz2rc6r03Wk6WyvxH/nvq3vna?=
+ =?us-ascii?Q?FLvMabYXL0AWRaqiWS5/OyMnF6IgWlotUcUbFLxBqg93KCvKVfUWuw5JLiAJ?=
+ =?us-ascii?Q?AI5oTjZCPvk+SUvEGHZY1hs8QsEUK1jEgNIKoqPeq13ZnaoddHT0Ow2FLhhk?=
+ =?us-ascii?Q?AY2ITjWDT7HGZOxrZzljoWQ5pjO08OhM/f/aTuhYwF17rUKMuPj6Q3CNzLNI?=
+ =?us-ascii?Q?7j5olimC4ZOWMbVLrK0OMlREzldR8VN4psJJAVXkxYniOWVyVA8LDHugzFMS?=
+ =?us-ascii?Q?1tlB3VoQYwUfY1yETWa0gJMZRe+lz5b5F+gw+KWVmeRP5TKE5eNMWgJMidKo?=
+ =?us-ascii?Q?RZttGBVVL5pER57YbFDSG7z6r6N2NAVaWgXYYaNFUf/0QqWo3x9OXYPxl+9/?=
+ =?us-ascii?Q?MA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 130696b6-98f6-460d-5d0f-08dac8f81ebb
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2022 00:02:02.2198
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 12fYK2tCWRMxMIu40LLQ9t0AZXA28X7wILjLCTS1m59zyvjnD2cCCKn5AbCAvVJvgiFRLcSGoOVIIIZ9wMU8JQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8542
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -111,173 +132,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev <sdf@google.com> writes:
+Problem statement
+~~~~~~~~~~~~~~~~~
 
-> On Thu, Nov 17, 2022 at 8:59 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
->>
->> On Thu, Nov 17, 2022 at 3:32 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
->> >
->> > Stanislav Fomichev <sdf@google.com> writes:
->> >
->> > >> > Doesn't look like the descriptors are as nice as you're trying to
->> > >> > paint them (with clear hash/csum fields) :-) So not sure how much
->> > >> > CO-RE would help.
->> > >> > At least looking at mlx4 rx_csum, the driver consults three diffe=
-rent
->> > >> > sets of flags to figure out the hash_type. Or am I just unlucky w=
-ith
->> > >> > mlx4?
->> > >>
->> > >> Which part are you talking about ?
->> > >>         hw_checksum =3D csum_unfold((__force __sum16)cqe->checksum);
->> > >> is trivial enough for bpf prog to do if it has access to 'cqe' poin=
-ter
->> > >> which is what John is proposing (I think).
->> > >
->> > > I'm talking about mlx4_en_process_rx_cq, the caller of that check_cs=
-um.
->> > > In particular: if (likely(dev->features & NETIF_F_RXCSUM)) branch
->> > > I'm assuming we want to have hash_type available to the progs?
->> >
->> > I agree we should expose the hash_type, but that doesn't actually look
->> > to be that complicated, see below.
->> >
->> > > But also, check_csum handles other corner cases:
->> > > - short_frame: we simply force all those small frames to skip checks=
-um complete
->> > > - get_fixed_ipv6_csum: In IPv6 packets, hw_checksum lacks 6 bytes fr=
-om
->> > > IPv6 header
->> > > - get_fixed_ipv4_csum: Although the stack expects checksum which
->> > > doesn't include the pseudo header, the HW adds it
->> > >
->> > > So it doesn't look like we can just unconditionally use cqe->checksu=
-m?
->> > > The driver does a lot of massaging around that field to make it
->> > > palatable.
->> >
->> > Poking around a bit in the other drivers, AFAICT it's only a subset of
->> > drivers that support CSUM_COMPLETE at all; for instance, the Intel
->> > drivers just set CHECKSUM_UNNECESSARY for TCP/UDP/SCTP. I think the
->> > CHECKSUM_UNNECESSARY is actually the most important bit we'd want to
->> > propagate?
->> >
->> > AFAICT, the drivers actually implementing CHECKSUM_COMPLETE need access
->> > to other data structures than the rx descriptor to determine the status
->> > of the checksum (mlx4 looks at priv->flags, mlx5 checks rq->state), so
->> > just exposing the rx descriptor to BPF as John is suggesting does not
->> > actually give the XDP program enough information to act on the checksum
->> > field on its own. We could still have a separate kfunc to just expose
->> > the hw checksum value (see below), but I think it probably needs to be
->> > paired with other kfuncs to be useful.
->> >
->> > Looking at the mlx4 code, I think the following mapping to kfuncs (in
->> > pseudo-C) would give the flexibility for XDP to access all the bits it
->> > needs, while inlining everything except getting the full checksum for
->> > non-TCP/UDP traffic. An (admittedly cursory) glance at some of the oth=
-er
->> > drivers (mlx5, ice, i40e) indicates that this would work for those
->> > drivers as well.
->> >
->> >
->> > bpf_xdp_metadata_rx_hash_supported() {
->> >   return dev->features & NETIF_F_RXHASH;
->> > }
->> >
->> > bpf_xdp_metadata_rx_hash() {
->> >   return be32_to_cpu(cqe->immed_rss_invalid);
->> > }
->> >
->> > bpf_xdp_metdata_rx_hash_type() {
->> >   if (likely(dev->features & NETIF_F_RXCSUM) &&
->> >       (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_TCP | MLX4_CQE_STATUS=
-_UDP)) &&
->> >         (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_IPOK)) &&
->> >           cqe->checksum =3D=3D cpu_to_be16(0xffff))
->> >      return PKT_HASH_TYPE_L4;
->> >
->> >    return PKT_HASH_TYPE_L3;
->> > }
->> >
->> > bpf_xdp_metadata_rx_csum_supported() {
->> >   return dev->features & NETIF_F_RXCSUM;
->> > }
->> >
->> > bpf_xdp_metadata_rx_csum_level() {
->> >         if ((cqe->status & cpu_to_be16(MLX4_CQE_STATUS_TCP |
->> >                                        MLX4_CQE_STATUS_UDP)) &&
->> >             (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_IPOK)) &&
->> >             cqe->checksum =3D=3D cpu_to_be16(0xffff))
->> >             return CHECKSUM_UNNECESSARY;
->> >
->> >         if (!(priv->flags & MLX4_EN_FLAG_RX_CSUM_NON_TCP_UDP &&
->> >               (cqe->status & cpu_to_be16(MLX4_CQE_STATUS_IP_ANY))) &&
->> >               !short_frame(len))
->> >             return CHECKSUM_COMPLETE; /* we could also omit this case =
-entirely */
->> >
->> >         return CHECKSUM_NONE;
->> > }
->> >
->> > /* this one could be called by the metadata_to_skb code */
->> > bpf_xdp_metadata_rx_csum_full() {
->> >   return check_csum() /* BPF_CALL this after refactoring so it is skb-=
-agnostic */
->> > }
->> >
->> > /* this one would be for people like John who want to re-implement
->> >  * check_csum() themselves */
->> > bpf_xdp_metdata_rx_csum_raw() {
->> >   return cqe->checksum;
->> > }
->>
->> Are you proposing a bunch of per-driver kfuncs that bpf prog will call.
->> If so that works, but bpf prog needs to pass dev and cqe pointers
->> into these kfuncs, so they need to be exposed to the prog somehow.
->> Probably through xdp_md ?
+The on-board SERDES link between an NXP (Lynx) PCS and a PHY may not
+work, depending on whether U-Boot networking was used on that port or not.
 
-No, I didn't mean we should call per-driver kfuncs; the examples above
-were meant to be examples of what the mlx4 driver would unrolls those
-kfuncs to. Sorry that that wasn't clear.
+There is no mechanism in Linux (with phylib/phylink, at least) to ensure
+that the MAC driver and the PHY driver have synchronized settings for
+in-band autoneg. It all depends on the 'managed = "in-band-status"'
+device tree property, which does not reflect a stable and unchanging
+reality, and furthermore, some (older) device trees may have this
+property missing when they shouldn't.
 
-> So far I'm doing:
->
-> struct mlx4_xdp_buff {
->   struct xdp_buff xdp;
->   struct mlx4_cqe *cqe;
->   struct mlx4_en_dev *mdev;
-> }
->
-> And then the kfuncs get ctx (aka xdp_buff) as a sole argument and can
-> find cqe/mdev via container_of.
->
-> If we really need these to be exposed to the program, can we use
-> Yonghong's approach from [0]?
+Proposed solution
+~~~~~~~~~~~~~~~~~
 
-I don't think we should expose them to the BPF program; I like your
-approach of stuffing them next to the CTX pointer and de-referencing
-that. This makes it up to the driver which extra objects it needs, and
-the caller doesn't have to know/care.
+Extend the phy_device API with 2 new methods:
+- phy_validate_an_inband()
+- phy_config_an_inband()
 
-I'm not vehemently opposed to *also* having the rx-desc pointer directly
-accessible (in which case Yonghong's kfunc approach is probably fine).
-However, as mentioned in my previous email, I doubt how useful that
-descriptor itself will be...
+Extend phylink with an opt-in bool sync_an_inband which makes sure that
+the configured "unsigned int mode" (MLO_AN_PHY/MLO_AN_INBAND) is both
+supported by the PHY, and actually applied to the PHY.
 
->> This way we can have both: bpf prog reading cqe fields directly
->> and using kfuncs to access things.
->> Inlining of kfuncs should be done generically.
->> It's not a driver job to convert native asm into bpf asm.
->
-> Ack. I can replace the unrolling with something that just resolves
-> "generic" kfuncs to the per-driver implementation maybe? That would at
-> least avoid netdev->ndo_kfunc_xxx indirect calls at runtime..
+Make NXP drivers which use phylink and the Lynx PCS driver opt into the
+new behavior. Other drivers can trivially do this as well, by setting
+struct phylink_config :: sync_an_inband to true.
 
-As stated above, I think we should keep the unrolling. If we end up with
-an actual CALL instruction for every piece of metadata that's going to
-suck performance-wise; unrolling is how we keep this fast enough! :)
+Compared to other solutions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--Toke
+Sean Anderson, in commit 5d93cfcf7360 ("net: dpaa: Convert to phylink"),
+sets phylink_config :: ovr_an_inband to true. This doesn't quite solve
+all problems, because we don't *know* that the PHY is set for in-band
+autoneg. For example with the VSC8514, it all depends on what the
+bootloader has/has not done. This solution eliminates the bootloader
+dependency by actually programming in-band autoneg in the VSC8514 PHY.
+
+Change log
+~~~~~~~~~~
+
+Changes in v4:
+Make all new behavior opt-in.
+Fix bug when Generic PHY driver is used.
+Dropped support for PHY_AN_INBAND_OFF in at803x.
+
+Changes in v3:
+Added patch for the Atheros PHY family.
+v3 at:
+https://patchwork.kernel.org/project/netdevbpf/cover/20210922181446.2677089-1-vladimir.oltean@nxp.com/
+
+Changes in v2:
+Incorporated feedback from Russell, which was to consider PHYs on SFP
+modules too, and unify phylink's detection of PHYs with broken in-band
+autoneg with the newly introduced PHY driver methods.
+v2 at:
+https://patchwork.kernel.org/project/netdevbpf/cover/20210212172341.3489046-1-olteanv@gmail.com/
+
+Vladimir Oltean (8):
+  net: phylink: let phylink_sfp_config_phy() determine the MLO_AN_* mode
+    to use
+  net: phylink: introduce generic method to query PHY in-band autoneg
+    capability
+  net: phy: bcm84881: move the in-band capability check where it belongs
+  net: phylink: add option to sync in-band autoneg setting between PCS
+    and PHY
+  net: phylink: explicitly configure in-band autoneg for on-board PHYs
+  net: phy: mscc: configure in-band auto-negotiation for VSC8514
+  net: phy: at803x: validate in-band autoneg for AT8031/AT8033
+  net: opt MAC drivers which use Lynx PCS into phylink sync_an_inband
+
+ drivers/net/dsa/ocelot/felix.c                |  2 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  1 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |  1 +
+ .../net/ethernet/freescale/fman/fman_memac.c  | 16 +--
+ drivers/net/phy/at803x.c                      | 10 ++
+ drivers/net/phy/bcm84881.c                    | 10 ++
+ drivers/net/phy/mscc/mscc.h                   |  2 +
+ drivers/net/phy/mscc/mscc_main.c              | 21 ++++
+ drivers/net/phy/phy.c                         | 51 ++++++++++
+ drivers/net/phy/phylink.c                     | 97 +++++++++++++++----
+ include/linux/phy.h                           | 27 ++++++
+ include/linux/phylink.h                       |  7 ++
+ 12 files changed, 212 insertions(+), 33 deletions(-)
+
+-- 
+2.34.1
 
