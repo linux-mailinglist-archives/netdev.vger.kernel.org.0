@@ -2,54 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8675E62F9F4
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:12:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9C2662F9F8
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:13:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235371AbiKRQMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 11:12:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        id S235310AbiKRQNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 11:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235220AbiKRQMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:12:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B36154B2C;
-        Fri, 18 Nov 2022 08:12:05 -0800 (PST)
+        with ESMTP id S235220AbiKRQNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:13:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9548EB40
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:13:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA41E62619;
-        Fri, 18 Nov 2022 16:12:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64E71C433D6;
-        Fri, 18 Nov 2022 16:11:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3FA7B822B5
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 16:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B11C433D6;
+        Fri, 18 Nov 2022 16:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668787924;
-        bh=1GQqeEHD0YLC4JQ4FJH13FF+QYcVbrQm05cErcgbJnk=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=o5ILzd3YUo3qEJRVWh3xdktoDglWM/HW8q2l6PCwqzbHdZ528YTz4v2p9XpT+1+jq
-         SRYC54KH9iqxISohUZn8cDpnxr9vtm9lFdY2xC31HtFK/BXneAP2s57xnoKpJn9xnm
-         jlXP8/kVlFEEryFjhhz0/x0c2JEbLubGeMt33ziiw23etT7MZ5f52l3u/BUAAZidBx
-         fZkvj5MzZ2Z4mNK9hb9aHZT3H/++7a2gU6UbZ5Lx2P+lw4vFtrrkcL2lP5dppk1ISg
-         vQbdUVyDPhvGwY6oHBD49ShZgM/y6DOzhdwzkr6YQQ+kL2hNbU+nZzJSNg3MwpY27r
-         JeOOI+kGqCeRA==
-From:   Mark Brown <broonie@kernel.org>
-To:     krzysztof.kozlowski+dt@linaro.org, davem@davemloft.net,
-        samuel@sholland.org, lgirdwood@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, calvin.johnson@oss.nxp.com, kuba@kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>, pabeni@redhat.com,
-        andrew@lunn.ch, jernej.skrabec@gmail.com, wens@csie.org,
-        robh+dt@kernel.org, edumazet@google.com
-Cc:     devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        linux-sunxi@googlegroups.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20221115073603.3425396-1-clabbe@baylibre.com>
-References: <20221115073603.3425396-1-clabbe@baylibre.com>
-Subject: Re: (subset) [PATCH v4 0/3] arm64: add ethernet to orange pi 3
-Message-Id: <166878791907.1056942.1081365322638542611.b4-ty@kernel.org>
-Date:   Fri, 18 Nov 2022 16:11:59 +0000
+        s=k20201202; t=1668787990;
+        bh=HYQNSsW4OjffkrCSs6/kkl6U/OZ7sgTf3kvKEGvqv+4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BX7/KPTaEDyo74CPOs7IzlYQYgaxjDi1B+EDe61GU6luRW8LcMRucwxxnUKc9hnm1
+         bZNsQovgPG/valD614WtIKeQSzWkeKwVFz80WUls2h3zmPdq0oM9K+0mJ6gK8+fRAI
+         FnQFjNcu0+qgk1Vqwsazrj6kNQJpOuLc15SN7vpKOEGk/wmieDpncogJnmLmq9bZUs
+         GgnkiwhSa0dJY4elSPsJUuwUppqkUU0a9jslJv9Y4C+jfJUHK/5ywPMBC5Jed3B9up
+         SNrXL0o3C5i/Kwoj3evfvcoevtpngUeDF0jSAegr5qiEleKXw8XF8dS3pEvTkh6RfO
+         hW5cwzrZEVFLw==
+Date:   Fri, 18 Nov 2022 08:13:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [Need Help] tls selftest failed
+Message-ID: <20221118081309.75cd2ae0@kernel.org>
+In-Reply-To: <Y3c9zMbKsR+tcLHk@Laptop-X1>
+References: <Y3c9zMbKsR+tcLHk@Laptop-X1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.11.0-dev-8af31
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,42 +51,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Nov 2022 07:36:00 +0000, Corentin Labbe wrote:
-> 2 sunxi board still does not have ethernet working, orangepi 1+ and
-> orangepi 3.
-> This is due to the fact thoses boards have a PHY which need 2 regulators.
+On Fri, 18 Nov 2022 16:09:48 +0800 Hangbin Liu wrote:
+> Hi Jakub,
 > 
-> A first attempt by Ondřej Jirman was made to support them was made by adding support in
-> stmmac driver:
-> https://lore.kernel.org/lkml/20190820145343.29108-6-megous@megous.com/
-> Proposal rejected, since regulators need to be handled by the PHY core.
-> 
-> [...]
+> The RedHat CKI got failures when run the net/tls selftest on net-next 6.1.0-rc4
+> and mainline 6.1.0-rc5 kernel. Here is an example failure[1] with mainline
+> 6.1.0-rc5 kernel[2]. The config link is here[3]. Would you please help
+> check if there is issue with the test? Please tell me if you can't
+> access the URLs, then I will attach the config file.
 
-Applied to
-
-   broonie/regulator.git for-next
-
-Thanks!
-
-[1/3] regulator: Add of_regulator_bulk_get_all
-      commit: 27b9ecc7a9ba1d0014779bfe5a6dbf630899c6e7
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+Hm, looks like a config problem. CRYPTO_SM4 is not enabled in the
+config, even tho it's listed in tools/testing/selftests/net/config. 
+Maybe it's not the right symbol to list in the test, or there is
+a dependency we missed?
