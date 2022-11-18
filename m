@@ -2,91 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 750C062FCE9
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:43:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0407862FCF2
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 19:46:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242468AbiKRSnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 13:43:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
+        id S242557AbiKRSqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 13:46:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234391AbiKRSnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:43:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16F367128;
-        Fri, 18 Nov 2022 10:43:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79B53B824DF;
-        Fri, 18 Nov 2022 18:43:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34999C433D6;
-        Fri, 18 Nov 2022 18:43:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668796992;
-        bh=sMpUopAbCSWGE9RE/G4d9fB88a/c8/HACDUhgT+zK7E=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=kG9zCeMD6VdL17c1FAOVohHkO+0INJfwq65HqZCzszrCo29EdUEOmxwbALs8iQ2YF
-         6+AaS7NHF1DmtwdRNxh48dp2w7GVcdWXY4GSlWYM8hWShBv8Gt3Zm2a6m3kJJEqmid
-         r/mhx6PmBPAEMyCPA+1wzrSy6HRbwnQH92VCuU3XxYhXisQv1P9PG2bRfYVF2RDPOb
-         fyUIsuJb1uSAkfNX6KQpGZS0H282M1LxQAN6ZZ0XvCrxYqog9miKyXz32UOgC/uZoo
-         auxhaoqj5BJQk06bHPRRHrykjFFwRJmG9Fju9CKweCOTrdxouSW5ojKj7anw1r8efS
-         p/hYs9mFtUkFg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH wireless] brcmfmac: fix potential memory leak in brcmf_netdev_start_xmit()
-References: <1668657281-28480-1-git-send-email-zhangchangzhong@huawei.com>
-        <87bkp5sxj2.fsf@kernel.org>
-        <05b2af86-2354-74b0-27b6-7c20be7d035d@huawei.com>
-Date:   Fri, 18 Nov 2022 20:43:07 +0200
-In-Reply-To: <05b2af86-2354-74b0-27b6-7c20be7d035d@huawei.com> (Zhang
-        Changzhong's message of "Thu, 17 Nov 2022 19:04:32 +0800")
-Message-ID: <87edu09k90.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S235453AbiKRSqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 13:46:15 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EA1617B
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 10:46:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668797174; x=1700333174;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NLcIs5XItOiEJ9H5WtVJylx2BC7kGSi6m5yYiqOJlQc=;
+  b=lPbuHDeCp8kl46U6mR8rYLIddMQZYumruQqwwqQDYhdgtrGyvBWa+LRr
+   U56o468nHmuE4NJtEXn38Y7CywvR1w1sO2b1y/CAzwSz0Y7/FJORtJ87b
+   rn4tsdjuDp2Pj4kvOzpJBa/QCvlkxmGBZbPzQx9jkrp3VlQZ9W1CBBEcm
+   xPX0xBfZOIkzW7Cso1XngGecb7dG/MxMsZvlLNbSqFfwtoJFV/888kPy3
+   117WAjnRHYyCeJRK67EwbH/c49ahoUI36nTL8tu93s8cdMupORlopnPCD
+   fPpInvbtv07MnM/Q45Evca4N8Vwfaxs0zblU4iTXcfdE88qV9IPdxuXdw
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="375342839"
+X-IronPort-AV: E=Sophos;i="5.96,175,1665471600"; 
+   d="scan'208";a="375342839"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 10:46:14 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="746102224"
+X-IronPort-AV: E=Sophos;i="5.96,175,1665471600"; 
+   d="scan'208";a="746102224"
+Received: from mjenkins-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.47.242])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 10:46:13 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/2] mptcp: More specific netlink command errors
+Date:   Fri, 18 Nov 2022 10:46:06 -0800
+Message-Id: <20221118184608.187932-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zhang Changzhong <zhangchangzhong@huawei.com> writes:
+This series makes the error reporting for the MPTCP_PM_CMD_ADD_ADDR netlink
+command more specific, since there are multiple reasons the command could
+fail.
 
-> On 2022/11/17 18:09, Kalle Valo wrote:
->> Zhang Changzhong <zhangchangzhong@huawei.com> writes:
->> 
->>> The brcmf_netdev_start_xmit() returns NETDEV_TX_OK without freeing skb
->>> in case of pskb_expand_head() fails, add dev_kfree_skb() to fix it.
->>>
->>> Fixes: 270a6c1f65fe ("brcmfmac: rework headroom check in .start_xmit()")
->>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
->> 
->> I assume you have not tested this on a real device? Then it would be
->> really important to add "Compile tested only" to the commit log so that
->> we know it's untested.
->> 
->
-> OK, I'll add "Compile tested only" to the next version and other untested
-> patches.
+Note that patch 2 adds a GENL_SET_ERR_MSG_FMT() macro to genetlink.h,
+which is outside the MPTCP subsystem.
 
-Thanks. I wish it would become common to use that "Compile tested only".
 
+Patch 1 refactors in-kernel listening socket and endpoint creation to
+simplify the second patch.
+
+Patch 2 updates the error values returned by the in-kernel path manager
+when it fails to create a local endpoint.
+
+
+Paolo Abeni (2):
+  mptcp: deduplicate error paths on endpoint creation
+  mptcp: more detailed error reporting on endpoint creation
+
+ include/net/genetlink.h |  3 +++
+ net/mptcp/pm_netlink.c  | 59 ++++++++++++++++++-----------------------
+ 2 files changed, 29 insertions(+), 33 deletions(-)
+
+
+base-commit: ab0377803dafc58f1e22296708c1c28e309414d6
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.38.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
