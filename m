@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1436302BC
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DD16302C3
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 00:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235361AbiKRXOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 18:14:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
+        id S235446AbiKRXPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 18:15:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235368AbiKRXNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:45 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32670C68BD
+        with ESMTP id S231435AbiKRXNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 18:13:46 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754AFC68AA
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:59 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id 140so6225315pfz.6
+Received: by mail-pj1-x1033.google.com with SMTP id b11so5733678pjp.2
         for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:57:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=iF04UX7VgnsmeL+hUATwcZsl2GZfxA64/NL4j+Vyp94=;
-        b=WCHS5MILH/Q3GtzP0gxlKhGK8erRQaiOKtcGIqSRfWXvcGfoHrTo06zCeT5GxmB+Su
-         P5rHyGs8HtOT/H7Q28s57QBLcZI0gtMyz7z9AVPDhf45RdpQB4HG8kQX5bUAVah2Ou3/
-         vS3yOT7FYvGf2WwZ2uM55AGuYqok22A7xEENlitXvpqUYYsaw8wpIWA4JzCm0MLLfQh8
-         87UUEsLm4m5kQLdm7u50xpieeUNL6/ybEv/ldm//XL9eoSNvxdhC4t3cmaSci7Wyz6Oj
-         KWzYlLuzZbVe0SEV7p/P4Mb6p4mVdLegENA3d6MWFC5B3hsXSNTLZBvftNdbMgE+jMFH
-         fdsg==
+        bh=RdcpDY5aqslOYqFJ06sUwegPY2/JzZgBm4aj1WYTEJo=;
+        b=RpjogYL+Ii6F3F35dmD6fUDRXo1/kPZKk/VoVLntfay3nNrXkN1DGbhYgKvHMZxLG5
+         QcAz1DVoAL/FLd4skyvobcjt833Lb+CyBTu9a+gwL0/xeg8CUFpB7p8Z5t2Wr3+SHbrZ
+         1s+ei4WluoEeR93j9Dn/DTwgJYJku3b5miUVx6Zi9/g/6o9jfPQP/2GUsMyWne8Sychf
+         BBUGfanehrXGtSP1Qfkswj/qwxMBQoDSMkhgv9CnpsRrhJARWf/A11geJmIyCwPaeIuf
+         pin+h5zChzWuBAvHXdbCybMjx26tWcazxxhjowv0mhO6YDrzs2MrW9km6RhkwHOuSKji
+         mNPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iF04UX7VgnsmeL+hUATwcZsl2GZfxA64/NL4j+Vyp94=;
-        b=l/Kvfsy2AhTh6/T5mq6of7Vy3Ekr+28CA/KrX6adD715zS704KEKe/+3cJbNCANWVe
-         IYs+HOIgx5HVPhzgtNtKKxhXig6Nu1RhZ+9+0CmoHKnjR1j5yTZPcT32wTnsaDPgdA5c
-         qct7yLmMQ6x6uzylm3PHNTFmFLAUkUHkMCmVwc4G/FgvnUZ7cgSH0k/fQkjTbJ6BpGRz
-         CT08+O5Sw7U2RuH/iMJ0fbPzoi1MjKarAIy5lMtXxJVDP/hXJCeSNbsKQ1/DyFOsht8E
-         vqUHJmOIjDA16fN7QdPUGxdgKJnOuEvRhU7x6WZOk8ci1ecvAR7YKYLVerlChnYp5S+6
-         GLMw==
-X-Gm-Message-State: ANoB5pnAJLiZEDu0NQZ3YRZZKtpyo+hhrYXI3PnUoAH8HaJxONTrGXR4
-        G+31lLR6qGvOK6APhavNMx4ql3n07YqwKw==
-X-Google-Smtp-Source: AA0mqf7OtxkYCB+njkmk0JxO2ynJT3RTcXT2Wym4QENg5Xa/EEyUJYJnsEUlNJBgwlDjCHEDC0xQdw==
-X-Received: by 2002:a63:1965:0:b0:464:a9a6:5717 with SMTP id 37-20020a631965000000b00464a9a65717mr8199147pgz.584.1668812253919;
-        Fri, 18 Nov 2022 14:57:33 -0800 (PST)
+        bh=RdcpDY5aqslOYqFJ06sUwegPY2/JzZgBm4aj1WYTEJo=;
+        b=iSV42VgKyQv+eoQUKdfImOQRYMLa22TSIjG6uHPxYo93+SlnSsh4KR9b6Ohu9lWeTn
+         q33mZbIjem6UyhFWNQRcEYArPrbBGRgh3Z3mz7qGtrDL1RK479HeBizDq7RZhxAVvYjO
+         RxJ3Akg68xtUNHavGn3otHMZcBmW2XwfFKj76yZ5DXieZz+vIySNWADWKXMmDX9UJZWv
+         EcJZ0rkOi0nmR+TuCXPUaB1mb0TbIPFDpTLLofRsI8KOxsCTUxeRTOz6pGSVBNz7qudZ
+         o2cOFJKQ7PnVB+K+HQWqhAETodWt5TuaUG3hT+6NqniFfzXm11I4gR/CdIRUzJfzPvhN
+         iklg==
+X-Gm-Message-State: ANoB5plLDaLmXbEtKTk09M63V6GcXYl8NY/cxa1F7K39hS+8ZDHUdfFT
+        T+QoSoV8/jLLlb3h2q7paXIBWmvCymdZcA==
+X-Google-Smtp-Source: AA0mqf4FLBCJdqiEZkShRHzaiMO4llnGBzuxxpWzX4vaR7Hps/C1cGLPZ6FSIvJuAWqtJYkVnqhIIg==
+X-Received: by 2002:a17:903:3292:b0:188:ec14:e3a3 with SMTP id jh18-20020a170903329200b00188ec14e3a3mr1418588plb.154.1668812255263;
+        Fri, 18 Nov 2022 14:57:35 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.32
+        by smtp.gmail.com with ESMTPSA id k89-20020a17090a3ee200b002005fcd2cb4sm6004818pjc.2.2022.11.18.14.57.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 14:57:33 -0800 (PST)
+        Fri, 18 Nov 2022 14:57:34 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         mst@redhat.com, jasowang@redhat.com,
         virtualization@lists.linux-foundation.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [RFC PATCH net-next 16/19] pds_vdpa: add auxiliary driver
-Date:   Fri, 18 Nov 2022 14:56:53 -0800
-Message-Id: <20221118225656.48309-17-snelson@pensando.io>
+Subject: [RFC PATCH net-next 17/19] pds_vdpa: add vdpa config client commands
+Date:   Fri, 18 Nov 2022 14:56:54 -0800
+Message-Id: <20221118225656.48309-18-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221118225656.48309-1-snelson@pensando.io>
 References: <20221118225656.48309-1-snelson@pensando.io>
@@ -67,50 +67,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The auxiliary_bus driver is registered after the PCI driver
-is loaded, and when the pds_core has created a device for
-it, after the VF has been enabled, this driver gets probed.
-It then registers itself with the DSC through the pds_core in
-order to start the firmware services for this device.
+These are the adminq commands that will be needed for
+setting up and using the vDPA device.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/vdpa/pds/Makefile  |   3 +-
- drivers/vdpa/pds/aux_drv.c | 123 +++++++++++++++++++++++++++++++++++++
- drivers/vdpa/pds/aux_drv.h |  28 +++++++++
- drivers/vdpa/pds/debugfs.c |  23 +++++++
- drivers/vdpa/pds/debugfs.h |   2 +
- drivers/vdpa/pds/pci_drv.c |  19 ++++++
- drivers/vdpa/pds/pci_drv.h |   1 +
- 7 files changed, 198 insertions(+), 1 deletion(-)
- create mode 100644 drivers/vdpa/pds/aux_drv.c
- create mode 100644 drivers/vdpa/pds/aux_drv.h
+ drivers/vdpa/pds/Makefile   |   1 +
+ drivers/vdpa/pds/cmds.c     | 266 ++++++++++++++++++++++++++++++++++++
+ drivers/vdpa/pds/cmds.h     |  17 +++
+ drivers/vdpa/pds/vdpa_dev.h |  60 ++++++++
+ 4 files changed, 344 insertions(+)
+ create mode 100644 drivers/vdpa/pds/cmds.c
+ create mode 100644 drivers/vdpa/pds/cmds.h
+ create mode 100644 drivers/vdpa/pds/vdpa_dev.h
 
 diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
-index b8376ab165bc..82ee258f6122 100644
+index 82ee258f6122..fafd356ddf86 100644
 --- a/drivers/vdpa/pds/Makefile
 +++ b/drivers/vdpa/pds/Makefile
-@@ -3,6 +3,7 @@
- 
+@@ -4,6 +4,7 @@
  obj-$(CONFIG_PDS_VDPA) := pds_vdpa.o
  
--pds_vdpa-y := pci_drv.o	\
-+pds_vdpa-y := aux_drv.o \
-+	      pci_drv.o	\
+ pds_vdpa-y := aux_drv.o \
++	      cmds.o \
+ 	      pci_drv.o	\
  	      debugfs.o \
  	      virtio_pci.o
-diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
+diff --git a/drivers/vdpa/pds/cmds.c b/drivers/vdpa/pds/cmds.c
 new file mode 100644
-index 000000000000..aef3c984dc90
+index 000000000000..2428ecdcf671
 --- /dev/null
-+++ b/drivers/vdpa/pds/aux_drv.c
-@@ -0,0 +1,123 @@
++++ b/drivers/vdpa/pds/cmds.c
+@@ -0,0 +1,266 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/* Copyright(c) 2022 Pensando Systems, Inc */
 +
-+#include <linux/auxiliary_bus.h>
 +#include <linux/interrupt.h>
++#include <linux/pci.h>
 +#include <linux/io.h>
++#include <linux/types.h>
 +#include <linux/vdpa.h>
 +
 +#include <linux/pds/pds_core_if.h>
@@ -118,277 +113,347 @@ index 000000000000..aef3c984dc90
 +#include <linux/pds/pds_auxbus.h>
 +#include <linux/pds/pds_vdpa.h>
 +
++#include "vdpa_dev.h"
 +#include "aux_drv.h"
 +#include "pci_drv.h"
-+#include "debugfs.h"
-+
-+static const
-+struct auxiliary_device_id pds_vdpa_aux_id_table[] = {
-+	{ .name = PDS_VDPA_DEV_NAME, },
-+	{},
-+};
++#include "cmds.h"
 +
 +static void
-+pds_vdpa_aux_notify_handler(struct pds_auxiliary_dev *padev,
-+			    union pds_core_notifyq_comp *event)
++pds_vdpa_check_needs_reset(struct pds_vdpa_device *pdsv, int err)
 +{
-+	struct device *dev = &padev->aux_dev.dev;
-+	u16 ecode = le16_to_cpu(event->ecode);
-+
-+	dev_info(dev, "%s: event code %d\n", __func__, ecode);
++	if (err == -ENXIO)
++		pdsv->hw.status |= VIRTIO_CONFIG_S_NEEDS_RESET;
 +}
 +
-+static int
-+pds_vdpa_aux_probe(struct auxiliary_device *aux_dev,
-+		   const struct auxiliary_device_id *id)
-+
++int
++pds_vdpa_init_hw(struct pds_vdpa_device *pdsv)
 +{
-+	struct pds_auxiliary_dev *padev =
-+		container_of(aux_dev, struct pds_auxiliary_dev, aux_dev);
-+	struct device *dev = &aux_dev->dev;
-+	struct pds_vdpa_aux *vdpa_aux;
-+	struct pci_dev *pdev;
-+	struct pci_bus *bus;
-+	int busnr;
-+	u16 devfn;
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_init_cmd init_cmd = {
++		.opcode = PDS_VDPA_CMD_INIT,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.len = cpu_to_le32(sizeof(pdsv->vn_config)),
++		.config_pa = cpu_to_le64(pdsv->vn_config_pa),
++	};
++	struct pds_vdpa_comp init_comp = {0};
 +	int err;
 +
-+	vdpa_aux = kzalloc(sizeof(*vdpa_aux), GFP_KERNEL);
-+	if (!vdpa_aux)
-+		return -ENOMEM;
-+
-+	vdpa_aux->padev = padev;
-+	auxiliary_set_drvdata(aux_dev, vdpa_aux);
-+
-+	/* Find our VF PCI device */
-+	busnr = PCI_BUS_NUM(padev->id);
-+	devfn = padev->id & 0xff;
-+	bus = pci_find_bus(0, busnr);
-+	pdev = pci_get_slot(bus, devfn);
-+
-+	vdpa_aux->vdpa_vf = pci_get_drvdata(pdev);
-+	vdpa_aux->vdpa_vf->vdpa_aux = vdpa_aux;
-+	pdev = vdpa_aux->vdpa_vf->pdev;
-+	if (!pds_vdpa_is_vdpa_pci_driver(pdev)) {
-+		dev_err(&pdev->dev, "%s: PCI driver is not pds_vdpa_pci_driver\n", __func__);
-+		err = -EINVAL;
-+		goto err_invalid_driver;
-+	}
-+
-+	dev_info(dev, "%s: id %#04x busnr %#x devfn %#x bus %p vdpa_vf %p\n",
-+		 __func__, padev->id, busnr, devfn, bus, vdpa_aux->vdpa_vf);
-+
-+	/* Register our PDS client with the pds_core */
-+	vdpa_aux->padrv.event_handler = pds_vdpa_aux_notify_handler;
-+	err = padev->ops->register_client(padev, &vdpa_aux->padrv);
++	/* Initialize the vdpa/virtio device */
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&init_cmd,
++				     sizeof(init_cmd),
++				     (union pds_core_adminq_comp *)&init_comp,
++				     0);
 +	if (err) {
-+		dev_err(dev, "%s: Failed to register as client: %pe\n",
-+			__func__, ERR_PTR(err));
-+		goto err_register_client;
++		dev_err(dev, "Failed to init hw, status %d: %pe\n",
++			init_comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
 +	}
-+
-+	pds_vdpa_debugfs_add_ident(vdpa_aux);
-+
-+	return 0;
-+
-+err_register_client:
-+	auxiliary_set_drvdata(aux_dev, NULL);
-+err_invalid_driver:
-+	kfree(vdpa_aux);
 +
 +	return err;
 +}
 +
-+static void
-+pds_vdpa_aux_remove(struct auxiliary_device *aux_dev)
++int
++pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv)
 +{
-+	struct pds_vdpa_aux *vdpa_aux = auxiliary_get_drvdata(aux_dev);
-+	struct device *dev = &aux_dev->dev;
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_RESET,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++	};
++	struct pds_vdpa_comp comp = {0};
++	int err;
 +
-+	vdpa_aux->padev->ops->unregister_client(vdpa_aux->padev);
-+	if (vdpa_aux->vdpa_vf)
-+		pci_dev_put(vdpa_aux->vdpa_vf->pdev);
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to reset hw, status %d: %pe\n",
++			comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	}
 +
-+	kfree(vdpa_aux);
-+	auxiliary_set_drvdata(aux_dev, NULL);
-+
-+	dev_info(dev, "Removed\n");
++	return err;
 +}
 +
-+static struct auxiliary_driver
-+pds_vdpa_aux_driver = {
-+	.name = PDS_DEV_TYPE_VDPA_STR,
-+	.probe = pds_vdpa_aux_probe,
-+	.remove = pds_vdpa_aux_remove,
-+	.id_table = pds_vdpa_aux_id_table,
-+};
-+
-+struct auxiliary_driver *
-+pds_vdpa_aux_driver_info(void)
++int
++pds_vdpa_cmd_set_status(struct pds_vdpa_device *pdsv, u8 status)
 +{
-+	return &pds_vdpa_aux_driver;
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_status_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_STATUS_UPDATE,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.status = status
++	};
++	struct pds_vdpa_comp comp = {0};
++	int err;
++
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to set status update %#x, status %d: %pe\n",
++			status, comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	}
++
++	return err;
 +}
-diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
++
++int
++pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac)
++{
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_setattr_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_SET_ATTR,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.attr = PDS_VDPA_ATTR_MAC,
++	};
++	struct pds_vdpa_comp comp = {0};
++	int err;
++
++	ether_addr_copy(cmd.mac, mac);
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to set mac address %pM, status %d: %pe\n",
++			mac, comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	}
++
++	return err;
++}
++
++int
++pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_vqp)
++{
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_setattr_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_SET_ATTR,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.attr = PDS_VDPA_ATTR_MAX_VQ_PAIRS,
++		.max_vq_pairs = cpu_to_le16(max_vqp),
++	};
++	struct pds_vdpa_comp comp = {0};
++	int err;
++
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to set max vq pairs %u, status %d: %pe\n",
++			max_vqp, comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	}
++
++	return err;
++}
++
++int
++pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid,
++		     struct pds_vdpa_vq_info *vq_info)
++{
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_vq_init_comp comp = {0};
++	struct pds_vdpa_vq_init_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_VQ_INIT,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.qid = cpu_to_le16(qid),
++		.len = cpu_to_le16(ilog2(vq_info->q_len)),
++		.desc_addr = cpu_to_le64(vq_info->desc_addr),
++		.avail_addr = cpu_to_le64(vq_info->avail_addr),
++		.used_addr = cpu_to_le64(vq_info->used_addr),
++		.intr_index = cpu_to_le16(vq_info->intr_index),
++	};
++	int err;
++
++	dev_dbg(dev, "%s: qid %d len %d desc_addr %#llx avail_addr %#llx used_addr %#llx intr_index %d\n",
++		 __func__, qid, ilog2(vq_info->q_len),
++		 vq_info->desc_addr, vq_info->avail_addr,
++		 vq_info->used_addr, vq_info->intr_index);
++
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to init vq %d, status %d: %pe\n",
++			qid, comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	} else {
++		vq_info->hw_qtype = comp.hw_qtype;
++		vq_info->hw_qindex = le16_to_cpu(comp.hw_qindex);
++	}
++
++	return err;
++}
++
++int
++pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid)
++{
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_vq_reset_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_VQ_RESET,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.qid = cpu_to_le16(qid),
++	};
++	struct pds_vdpa_comp comp = {0};
++	int err;
++
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to reset vq %d, status %d: %pe\n",
++			qid, comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	}
++
++	return err;
++}
++
++int
++pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features)
++{
++	struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
++	struct device *dev = &padev->aux_dev.dev;
++	struct pds_vdpa_set_features_cmd cmd = {
++		.opcode = PDS_VDPA_CMD_SET_FEATURES,
++		.vdpa_index = pdsv->hw.vdpa_index,
++		.vf_id = cpu_to_le16(pdsv->vdpa_aux->vdpa_vf->vf_id),
++		.features = cpu_to_le64(features),
++	};
++	struct pds_vdpa_comp comp = {0};
++	int err;
++
++	err = padev->ops->adminq_cmd(padev,
++				     (union pds_core_adminq_cmd *)&cmd,
++				     sizeof(cmd),
++				     (union pds_core_adminq_comp *)&comp,
++				     0);
++	if (err) {
++		dev_err(dev, "Failed to set features %#llx, status %d: %pe\n",
++			features, comp.status, ERR_PTR(err));
++		pds_vdpa_check_needs_reset(pdsv, err);
++	}
++
++	return err;
++}
+diff --git a/drivers/vdpa/pds/cmds.h b/drivers/vdpa/pds/cmds.h
 new file mode 100644
-index 000000000000..a6bd644fb957
+index 000000000000..88ecc9b33646
 --- /dev/null
-+++ b/drivers/vdpa/pds/aux_drv.h
-@@ -0,0 +1,28 @@
++++ b/drivers/vdpa/pds/cmds.h
+@@ -0,0 +1,17 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/* Copyright(c) 2022 Pensando Systems, Inc */
 +
-+#ifndef _AUX_DRV_H_
-+#define _AUX_DRV_H_
++#ifndef _VDPA_CMDS_H_
++#define _VDPA_CMDS_H_
 +
-+#include <linux/auxiliary_bus.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
++int pds_vdpa_init_hw(struct pds_vdpa_device *pdsv);
 +
-+struct pds_vdpa_pci_device;
++int pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv);
++int pds_vdpa_cmd_set_status(struct pds_vdpa_device *pdsv, u8 status);
++int pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac);
++int pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_vqp);
++int pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid,
++			 struct pds_vdpa_vq_info *vq_info);
++int pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid);
++int pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features);
++#endif /* _VDPA_CMDS_H_ */
+diff --git a/drivers/vdpa/pds/vdpa_dev.h b/drivers/vdpa/pds/vdpa_dev.h
+new file mode 100644
+index 000000000000..ac881687dc3e
+--- /dev/null
++++ b/drivers/vdpa/pds/vdpa_dev.h
+@@ -0,0 +1,60 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright(c) 2022 Pensando Systems, Inc */
 +
-+struct pds_vdpa_aux {
-+	struct pds_auxiliary_dev *padev;
-+	struct pds_auxiliary_drv padrv;
++#ifndef _VDPA_DEV_H_
++#define _VDPA_DEV_H_
 +
-+	struct pds_vdpa_pci_device *vdpa_vf;
-+	struct vdpa_mgmt_dev vdpa_mdev;
++#include <linux/pci.h>
++#include <linux/vdpa.h>
++
++
++struct pds_vdpa_aux;
++
++struct pds_vdpa_vq_info {
++	bool ready;
++	u64 desc_addr;
++	u64 avail_addr;
++	u64 used_addr;
++	u32 q_len;
++	u16 qid;
++
++	void __iomem *notify;
++	dma_addr_t notify_pa;
++
++	u64 doorbell;
++	u16 avail_idx;
++	u16 used_idx;
++	int intr_index;
++
++	u8 hw_qtype;
++	u16 hw_qindex;
++
++	struct vdpa_callback event_cb;
 +	struct pds_vdpa_device *pdsv;
-+
-+	struct pds_vdpa_ident ident;
-+	bool local_mac_bit;
 +};
 +
-+struct auxiliary_driver *
-+pds_vdpa_aux_driver_info(void);
++#define PDS_VDPA_MAX_QUEUES	65
++#define PDS_VDPA_MAX_QLEN	32768
++struct pds_vdpa_hw {
++	struct pds_vdpa_vq_info vqs[PDS_VDPA_MAX_QUEUES];
++	u64 req_features;		/* features requested by vdpa */
++	u64 actual_features;		/* features negotiated and in use */
++	u8 vdpa_index;			/* rsvd for future subdevice use */
++	u8 num_vqs;			/* num vqs in use */
++	u16 status;			/* vdpa status */
++	struct vdpa_callback config_cb;
++};
 +
-+#endif /* _AUX_DRV_H_ */
-diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
-index f5b6654ae89b..f766412209df 100644
---- a/drivers/vdpa/pds/debugfs.c
-+++ b/drivers/vdpa/pds/debugfs.c
-@@ -4,10 +4,14 @@
- #include <linux/module.h>
- #include <linux/pci.h>
- #include <linux/types.h>
-+#include <linux/vdpa.h>
- 
- #include <linux/pds/pds_core_if.h>
-+#include <linux/pds/pds_adminq.h>
-+#include <linux/pds/pds_auxbus.h>
- #include <linux/pds/pds_vdpa.h>
- 
-+#include "aux_drv.h"
- #include "pci_drv.h"
- #include "debugfs.h"
- 
-@@ -41,4 +45,23 @@ pds_vdpa_debugfs_del_pcidev(struct pds_vdpa_pci_device *vdpa_pdev)
- 	vdpa_pdev->dentry = NULL;
- }
- 
-+static int
-+identity_show(struct seq_file *seq, void *v)
-+{
-+	struct pds_vdpa_aux *vdpa_aux = seq->private;
++struct pds_vdpa_device {
++	struct vdpa_device vdpa_dev;
++	struct pds_vdpa_aux *vdpa_aux;
++	struct pds_vdpa_hw hw;
 +
-+	seq_printf(seq, "aux_dev:            %s\n",
-+		   dev_name(&vdpa_aux->padev->aux_dev.dev));
++	struct virtio_net_config vn_config;
++	dma_addr_t vn_config_pa;
++	struct dentry *dentry;
++};
 +
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(identity);
++int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);
 +
-+void
-+pds_vdpa_debugfs_add_ident(struct pds_vdpa_aux *vdpa_aux)
-+{
-+	debugfs_create_file("identity", 0400, vdpa_aux->vdpa_vf->dentry,
-+			    vdpa_aux, &identity_fops);
-+}
-+
- #endif /* CONFIG_DEBUG_FS */
-diff --git a/drivers/vdpa/pds/debugfs.h b/drivers/vdpa/pds/debugfs.h
-index ac31ab47746b..939a4c248aac 100644
---- a/drivers/vdpa/pds/debugfs.h
-+++ b/drivers/vdpa/pds/debugfs.h
-@@ -12,11 +12,13 @@ void pds_vdpa_debugfs_create(void);
- void pds_vdpa_debugfs_destroy(void);
- void pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_pci_device *vdpa_pdev);
- void pds_vdpa_debugfs_del_pcidev(struct pds_vdpa_pci_device *vdpa_pdev);
-+void pds_vdpa_debugfs_add_ident(struct pds_vdpa_aux *vdpa_aux);
- #else
- static inline void pds_vdpa_debugfs_create(void) { }
- static inline void pds_vdpa_debugfs_destroy(void) { }
- static inline void pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_pci_device *vdpa_pdev) { }
- static inline void pds_vdpa_debugfs_del_pcidev(struct pds_vdpa_pci_device *vdpa_pdev) { }
-+static inline void pds_vdpa_debugfs_add_ident(struct pds_vdpa_aux *vdpa_aux) { }
- #endif
- 
- #endif /* _PDS_VDPA_DEBUGFS_H_ */
-diff --git a/drivers/vdpa/pds/pci_drv.c b/drivers/vdpa/pds/pci_drv.c
-index 10491e22778c..54a73ae023f9 100644
---- a/drivers/vdpa/pds/pci_drv.c
-+++ b/drivers/vdpa/pds/pci_drv.c
-@@ -6,11 +6,15 @@
- #include <linux/aer.h>
- #include <linux/types.h>
- #include <linux/vdpa.h>
-+#include <linux/auxiliary_bus.h>
- 
- #include <linux/pds/pds_core_if.h>
-+#include <linux/pds/pds_adminq.h>
-+#include <linux/pds/pds_auxbus.h>
- #include <linux/pds/pds_vdpa.h>
- 
- #include "pci_drv.h"
-+#include "aux_drv.h"
- #include "debugfs.h"
- 
- static void
-@@ -118,9 +122,16 @@ pds_vdpa_pci_driver = {
- 	.remove = pds_vdpa_pci_remove
- };
- 
-+bool
-+pds_vdpa_is_vdpa_pci_driver(struct pci_dev *pdev)
-+{
-+	return (to_pci_driver(pdev->dev.driver) == &pds_vdpa_pci_driver);
-+}
-+
- static void __exit
- pds_vdpa_pci_cleanup(void)
- {
-+	auxiliary_driver_unregister(pds_vdpa_aux_driver_info());
- 	pci_unregister_driver(&pds_vdpa_pci_driver);
- 
- 	pds_vdpa_debugfs_destroy();
-@@ -140,8 +151,16 @@ pds_vdpa_pci_init(void)
- 		goto err_pci;
- 	}
- 
-+	err = auxiliary_driver_register(pds_vdpa_aux_driver_info());
-+	if (err) {
-+		pr_err("%s: aux driver register failed: %pe\n", __func__, ERR_PTR(err));
-+		goto err_aux;
-+	}
-+
- 	return 0;
- 
-+err_aux:
-+	pci_unregister_driver(&pds_vdpa_pci_driver);
- err_pci:
- 	pds_vdpa_debugfs_destroy();
- 	return err;
-diff --git a/drivers/vdpa/pds/pci_drv.h b/drivers/vdpa/pds/pci_drv.h
-index 15f3b34fafa9..97ba75a7ce50 100644
---- a/drivers/vdpa/pds/pci_drv.h
-+++ b/drivers/vdpa/pds/pci_drv.h
-@@ -43,6 +43,7 @@ struct pds_vdpa_pci_device {
- 	struct virtio_pci_modern_device vd_mdev;
- };
- 
-+bool pds_vdpa_is_vdpa_pci_driver(struct pci_dev *pdev);
- int pds_vdpa_probe_virtio(struct virtio_pci_modern_device *mdev);
- void pds_vdpa_remove_virtio(struct virtio_pci_modern_device *mdev);
- #endif /* _PCI_DRV_H */
++#endif /* _VDPA_DEV_H_ */
 -- 
 2.17.1
 
