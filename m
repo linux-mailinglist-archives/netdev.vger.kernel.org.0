@@ -2,153 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E6162F9D6
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A846C62F955
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 16:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241780AbiKRQAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 11:00:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
+        id S242285AbiKRPeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 10:34:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241628AbiKRQAJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:00:09 -0500
-X-Greylist: delayed 2752 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Nov 2022 08:00:07 PST
-Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3400A8CFDC
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:00:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
-        s=20190804; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-        In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=PYQLBryNBg2V98bbiL4e5M8gxG2GeWbeLo/CFoncenc=; b=Uvm3QR9uY6MNvHIwv4bkERMGk7
-        Z/DfjHBIRgLeuVa7KXDB1VwttGKa9DT8JDsvWd0lbqMEPlz7C1cgYHvKTBthnFenPvJVunBKHBB5a
-        0BZ6dGOtT9mg9k6LTNK7DrLVuD2Mb+C6/MFISaouSrhB2++qfXu9QmpvRV+a8zBUT62K/DBq852YK
-        +/C266DYZT+gIW45CsnB5b0oknfj2LxYc0PtMlfbwf9byFSZrespOc1aBLjnuWKiocfBlZ33Wjz5p
-        Xt0hxBH2BanVBi+qYak7zzj7N7QgFJ6cb6LuDMDO2V9GsBfMiDiRHEhGgqOZ7BaOoNcTzbL8aAsVp
-        0UVHdKMg==;
-Received: from [145.224.93.132] (helo=javelin)
-        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lynxis@fe80.eu>)
-        id 1ow33k-001vrc-1i; Fri, 18 Nov 2022 15:13:40 +0000
-Date:   Fri, 18 Nov 2022 15:13:31 +0000
-From:   Alexander 'lynxis' Couzens <lynxis@fe80.eu>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 4/6] net: ethernet: mtk_eth_soc: implement
- multi-queue support for per-port queues
-Message-ID: <20221118151331.4694574f@javelin>
-In-Reply-To: <20221116080734.44013-5-nbd@nbd.name>
-References: <20221116080734.44013-1-nbd@nbd.name>
-        <20221116080734.44013-5-nbd@nbd.name>
+        with ESMTP id S242302AbiKRPd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 10:33:57 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C7527153;
+        Fri, 18 Nov 2022 07:33:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1668785634; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H99gifSUAX63SHB4wCOwUdzC9A4Qilfu6shSvTJT/Do=;
+        b=GCiLfoGCsrJV1b8eakZkdc7V+eN/S88H24/XYoaqACaFIbKl+QvmUfkTvecq+5zc1vYnHp
+        1UQJ2nBjiJRoc5sWCyiys+8cMAWuYq/IZIRPZIR8W+jGDjOfgDALYZa7TV/YO/H/EV8ve8
+        28qttYGe/6cZzWvE+o2a5FEuKSiunHc=
+Date:   Fri, 18 Nov 2022 15:33:44 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 1/3] net: davicom: dm9000: switch to using gpiod API
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-Id: <88VJLR.GYSEKGBPLGZC1@crapouillou.net>
+In-Reply-To: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
+References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Felix,
+Hi Dmitry,
 
-On Wed, 16 Nov 2022 09:07:32 +0100
-Felix Fietkau <nbd@nbd.name> wrote:
-
-> @@ -614,6 +618,75 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
->  	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
->  }
->  
-> +static void mtk_set_queue_speed(struct mtk_eth *eth, unsigned int idx,
-> +				int speed)
-> +{
-> +	const struct mtk_soc_data *soc = eth->soc;
-> +	u32 ofs, val;
-> +
-> +	if (!MTK_HAS_CAPS(soc->caps, MTK_QDMA))
-> +		return;
-> +
-> +	val = MTK_QTX_SCH_MIN_RATE_EN |
-> +	      /* minimum: 10 Mbps */
-> +	      FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
-> +	      FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 4) |
-> +	      MTK_QTX_SCH_LEAKY_BUCKET_SIZE;
-> +	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
-> +		val |= MTK_QTX_SCH_LEAKY_BUCKET_EN;
-> +
-> +	if (IS_ENABLED(CONFIG_SOC_MT7621)) {
-> +		switch (speed) {
-> +		case SPEED_10:
-> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 103) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 2) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
-> +			break;
-> +		case SPEED_100:
-> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 103) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 3);
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
-> +			break;
-> +		case SPEED_1000:
-> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 105) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 4) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +	} else {
-> +		switch (speed) {
-> +		case SPEED_10:
-> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 1) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 4) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
-> +			break;
-> +		case SPEED_100:
-> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 1) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5);
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
-> +			break;
-> +		case SPEED_1000:
-> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 10) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5) |
-> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
-> +			break;
-> +		default:
-> +			break;
-> +		}
+Le mar. 6 sept. 2022 =E0 13:49:20 -0700, Dmitry Torokhov=20
+<dmitry.torokhov@gmail.com> a =E9crit :
+> This patch switches the driver away from legacy gpio/of_gpio API to
+> gpiod API, and removes use of of_get_named_gpio_flags() which I want=20
+> to
+> make private to gpiolib.
+>=20
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+>  drivers/net/ethernet/davicom/dm9000.c | 26 ++++++++++++++------------
+>  1 file changed, 14 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/davicom/dm9000.c=20
+> b/drivers/net/ethernet/davicom/dm9000.c
+> index 77229e53b04e..c85a6ebd79fc 100644
+> --- a/drivers/net/ethernet/davicom/dm9000.c
+> +++ b/drivers/net/ethernet/davicom/dm9000.c
+> @@ -28,8 +28,7 @@
+>  #include <linux/irq.h>
+>  #include <linux/slab.h>
+>  #include <linux/regulator/consumer.h>
+> -#include <linux/gpio.h>
+> -#include <linux/of_gpio.h>
+> +#include <linux/gpio/consumer.h>
+>=20
+>  #include <asm/delay.h>
+>  #include <asm/irq.h>
+> @@ -1421,8 +1420,7 @@ dm9000_probe(struct platform_device *pdev)
+>  	int iosize;
+>  	int i;
+>  	u32 id_val;
+> -	int reset_gpios;
+> -	enum of_gpio_flags flags;
+> +	struct gpio_desc *reset_gpio;
+>  	struct regulator *power;
+>  	bool inv_mac_addr =3D false;
+>  	u8 addr[ETH_ALEN];
+> @@ -1442,20 +1440,24 @@ dm9000_probe(struct platform_device *pdev)
+>  		dev_dbg(dev, "regulator enabled\n");
+>  	}
+>=20
+> -	reset_gpios =3D of_get_named_gpio_flags(dev->of_node, "reset-gpios",=20
+> 0,
+> -					      &flags);
+> -	if (gpio_is_valid(reset_gpios)) {
+> -		ret =3D devm_gpio_request_one(dev, reset_gpios, flags,
+> -					    "dm9000_reset");
+> +	reset_gpio =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+> +	ret =3D PTR_ERR_OR_ZERO(reset_gpio);
+> +	if (ret) {
+> +		dev_err(dev, "failed to request reset gpio: %d\n", ret);
+> +		goto out_regulator_disable;
 > +	}
 > +
-> +	ofs = MTK_QTX_OFFSET * idx;
-> +	mtk_w32(eth, val, soc->reg_map->qdma.qtx_sch + ofs);
-> +}
-> +
->  static void mtk_mac_link_up(struct phylink_config *config,
->  			    struct phy_device *phy,
->  			    unsigned int mode, phy_interface_t interface,
-> @@ -639,6 +712,8 @@ static void mtk_mac_link_up(struct phylink_config *config,
+> +	if (reset_gpio) {
+> +		ret =3D gpiod_set_consumer_name(reset_gpio, "dm9000_reset");
+>  		if (ret) {
+> -			dev_err(dev, "failed to request reset gpio %d: %d\n",
+> -				reset_gpios, ret);
+> +			dev_err(dev, "failed to set reset gpio name: %d\n",
+> +				ret);
+>  			goto out_regulator_disable;
+>  		}
+>=20
+>  		/* According to manual PWRST# Low Period Min 1ms */
+>  		msleep(2);
+> -		gpio_set_value(reset_gpios, 1);
+> +		gpiod_set_value_cansleep(reset_gpio, 0);
+
+Why is that 1 magically turned into a 0?
+
+On my CI20 board I can't get the DM9000 chip to probe correctly with=20
+this patch (it fails to read the ID).
+If I revert this patch then everything works fine.
+
+Cheers,
+-Paul
+
+>  		/* Needs 3ms to read eeprom when PWRST is deasserted */
+>  		msleep(4);
+>  	}
+> --
+> 2.37.2.789.g6183377224-goog
+>=20
 
 
-What's happening to 2.5Gbit ports (e.g. on mt7622)? Should be SPEED_2500 also in the switch/case?
-E.g. a direct connected 2.5Gbit phy to GMAC0.
-Or a mt7622 GMAC0 to mt7531 port 6 and a 2.5Gbit phy to port 5.
