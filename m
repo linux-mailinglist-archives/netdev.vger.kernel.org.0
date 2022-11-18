@@ -2,141 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BA062EF1F
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 09:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AB3262EE82
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 08:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbiKRIXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 03:23:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
+        id S241232AbiKRHgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 02:36:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233442AbiKRIXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 03:23:37 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD5FDF3E
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 00:23:35 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id i186-20020a1c3bc3000000b003cfe29a5733so6975001wma.3
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 00:23:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PI3PpC+s1GjgrJxChzGspCtUYSuG0huNKOwO1QvgNa8=;
-        b=m76D0gDJ3D1q8SAnWo74V/Osu4+ALn4vxBk+v2xMrkirrARHJrm4gRrP/r8MwYbBBP
-         IdHTBtcp5M2PyBIG6ZoFdv2KuI6xFeC1uvAQSwfLqeXTnYUQsy8rsaQMOluEVx6/PZKZ
-         BvAQCgoQ/tr0RTMcSa+4GZ6rnoxWEyCQyk2yIRxFXL0Cv9HvGAA5eI8XyUPhsukTQVxZ
-         ExtDmw8JpwAZkr4GRFr/DmMdou19QkRoG/xN42yfxQJTmJQg5vG+Y+LSHcIMj2iCOmQ5
-         1JeBpI6KVpgWcpj2D2O3gXluJxIKSj14Yl3LMEwL3AJL+XPPepx+hqMucXjGqrfX7ZED
-         HC/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PI3PpC+s1GjgrJxChzGspCtUYSuG0huNKOwO1QvgNa8=;
-        b=6QsOygGk7VlDgxFnOcbjp5T4HABbjs+LndM0zsSJIxlKyscr5dpEnnDGtjLfbjHmp/
-         HNQK7FBFPl7drkf0sC9de39AJ9LV4OpvmuUxe+n9Vykmif7xdLBh72vuMna7Z35zMkR9
-         Kc/pdppLLB5tKhpVnc4azaLqzJ/xznGvspNEyiOId360nhpURgOLJE1dntFvkyMFIcxo
-         nAC0lfDUMfALztSRWERZuZzPF1sN+2KtjGNTYBT7p+ncljSjgUREBn4Kerp6ytMZ3+qt
-         qKFryTqX/91gMLBQfq9l6t/lM8L7yyhs6A8OTYm1FU0op/m+KPEZSzxyJUDw4+6txhNQ
-         aJXw==
-X-Gm-Message-State: ANoB5pnVRaDjSdfl2GZUAwSXfP868S/3DYfhtCpJniWlg1w5SjC/hB2V
-        hrZwy9jyopzsO2F5dy0d6dtzau0xFEE=
-X-Google-Smtp-Source: AA0mqf4V9Qb3EQ78QwRCEXZSn9os9GyuC8ZN3bJ3qLPZ0YxPRnQJknpP57CyUnBRGXBvyd02QFd7mA==
-X-Received: by 2002:a1c:7409:0:b0:3cf:713a:c947 with SMTP id p9-20020a1c7409000000b003cf713ac947mr4226284wmc.40.1668759813345;
-        Fri, 18 Nov 2022 00:23:33 -0800 (PST)
-Received: from suse.localnet (host-79-26-100-208.retail.telecomitalia.it. [79.26.100.208])
-        by smtp.gmail.com with ESMTPSA id z2-20020a1c4c02000000b003cfe1376f68sm3723160wmf.9.2022.11.18.00.23.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 00:23:32 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     netdev@vger.kernel.org,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 2/5] sfc: Use kmap_local_page() instead of kmap_atomic()
-Date:   Fri, 18 Nov 2022 09:23:31 +0100
-Message-ID: <8192948.T7Z3S40VBb@suse>
-In-Reply-To: <20221117222557.2196195-3-anirudh.venkataramanan@intel.com>
-References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com> <20221117222557.2196195-3-anirudh.venkataramanan@intel.com>
+        with ESMTP id S240978AbiKRHgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 02:36:50 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7DE85A3E;
+        Thu, 17 Nov 2022 23:36:48 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4ND7rD0tlDzHvsl;
+        Fri, 18 Nov 2022 15:36:12 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 18 Nov 2022 15:36:44 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 18 Nov
+ 2022 15:36:43 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH] NFC: nci: fix memory leak in nci_rx_data_packet()
+Date:   Fri, 18 Nov 2022 16:24:19 +0800
+Message-ID: <20221118082419.239475-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On gioved=EC 17 novembre 2022 23:25:54 CET Anirudh Venkataramanan wrote:
-> kmap_atomic() is being deprecated in favor of kmap_local_page().
-> Replace kmap_atomic() and kunmap_atomic() with kmap_local_page()
-> and kunmap_local() respectively.
->=20
-> Note that kmap_atomic() disables preemption and page-fault processing, but
-> kmap_local_page() doesn't. Converting the former to the latter is safe on=
-ly
-> if there isn't an implicit dependency on preemption and page-fault handli=
-ng
-> being disabled, which does appear to be the case here.
+Syzbot reported a memory leak about skb:
 
-NIT: It is always possible to disable explicitly along with the conversion.
-However, you are noticing that we don't need to do it.
+unreferenced object 0xffff88810e144e00 (size 240):
+  comm "syz-executor284", pid 3701, jiffies 4294952403 (age 12.620s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff83ab79a9>] __alloc_skb+0x1f9/0x270 net/core/skbuff.c:497
+    [<ffffffff82a5cf64>] alloc_skb include/linux/skbuff.h:1267 [inline]
+    [<ffffffff82a5cf64>] virtual_ncidev_write+0x24/0xe0 drivers/nfc/virtual_ncidev.c:116
+    [<ffffffff815f6503>] do_loop_readv_writev fs/read_write.c:759 [inline]
+    [<ffffffff815f6503>] do_loop_readv_writev fs/read_write.c:743 [inline]
+    [<ffffffff815f6503>] do_iter_write+0x253/0x300 fs/read_write.c:863
+    [<ffffffff815f66ed>] vfs_writev+0xdd/0x240 fs/read_write.c:934
+    [<ffffffff815f68f6>] do_writev+0xa6/0x1c0 fs/read_write.c:977
+    [<ffffffff848802d5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff848802d5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84a00087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-I'm noticing the same wording in other of your patches, but there are no=20
-problems with them.=20
+In nci_rx_data_packet(), if we don't get a valid conn_info, we will return
+directly but forget to release the skb.
 
->=20
-> Also note that the page being mapped is not allocated by the driver, and =
-so
-> the driver doesn't know if the page is in normal memory. This is the reas=
-on
-> kmap_local_page() is used as opposed to page_address().
->=20
-> I don't have hardware, so this change has only been compile tested.
->=20
-> Cc: Ira Weiny <ira.weiny@intel.com>
-> Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> Cc: Edward Cree <ecree.xilinx@gmail.com>
-> Cc: Martin Habets <habetsm.xilinx@gmail.com>
-> Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-> ---
->  drivers/net/ethernet/sfc/tx.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
-> index c5f88f7..4ed4082 100644
-> --- a/drivers/net/ethernet/sfc/tx.c
-> +++ b/drivers/net/ethernet/sfc/tx.c
-> @@ -207,11 +207,11 @@ static void efx_skb_copy_bits_to_pio(struct efx_nic
-> *efx, struct sk_buff *skb, skb_frag_t *f =3D &skb_shinfo(skb)->frags[i];
->  		u8 *vaddr;
->=20
-> -		vaddr =3D kmap_atomic(skb_frag_page(f));
-> +		vaddr =3D kmap_local_page(skb_frag_page(f));
->=20
->  		efx_memcpy_toio_aligned_cb(efx, piobuf, vaddr +=20
-skb_frag_off(f),
->  					   skb_frag_size(f),=20
-copy_buf);
-> -		kunmap_atomic(vaddr);
-> +		kunmap_local(vaddr);
->  	}
->=20
->  	EFX_WARN_ON_ONCE_PARANOID(skb_shinfo(skb)->frag_list);
-> --
-> 2.37.2
+Reported-by: syzbot+cdb9a427d1bc08815104@syzkaller.appspotmail.com
+Fixes: 4aeee6871e8c ("NFC: nci: Add dynamic logical connections support")
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ net/nfc/nci/data.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-
-Thanks,
-
-=46abio
-
+diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
+index aa5e712adf07..3d36ea5701f0 100644
+--- a/net/nfc/nci/data.c
++++ b/net/nfc/nci/data.c
+@@ -279,8 +279,10 @@ void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb)
+ 		 nci_plen(skb->data));
+ 
+ 	conn_info = nci_get_conn_info_by_conn_id(ndev, nci_conn_id(skb->data));
+-	if (!conn_info)
++	if (!conn_info) {
++		kfree_skb(skb);
+ 		return;
++	}
+ 
+ 	/* strip the nci data header */
+ 	skb_pull(skb, NCI_DATA_HDR_SIZE);
+-- 
+2.25.1
 
