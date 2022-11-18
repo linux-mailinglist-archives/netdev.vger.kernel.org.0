@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C5262EA11
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:07:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BCB262EA85
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:44:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240332AbiKRAHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 19:07:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        id S240736AbiKRAo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 19:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbiKRAHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:07:43 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02584D94;
-        Thu, 17 Nov 2022 16:07:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wv0rvg+qGKsAcuFlpcEuCbIUu5ZxBnWHri6DHVe34qM=; b=eJpO91RR72W5+FtReIbXj9YpnF
-        UgtpfDtz73IFT43IR566O3HGWcpc1IAtBKPeRKMfyNoAr4+c/foJCODDoijtPztc7lWW8z6Y7odrA
-        KyKEkvMb+1cMD+oi95YAvMEJWY+Xj39t5LMghRPcpOef96VANYI9IASt5OItnjdn1Mfs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ovouw-002kA8-Id; Fri, 18 Nov 2022 01:07:38 +0100
-Date:   Fri, 18 Nov 2022 01:07:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Chiu <andy.chiu@sifive.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
-        radhey.shyam.pandey@xilinx.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        robh+dt@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        greentime.hu@sifive.com
-Subject: Re: [PATCH v5 net-next 3/3] net: axienet: set mdio clock according
- to bus-frequency
-Message-ID: <Y3bMyjEWk73oabnA@lunn.ch>
-References: <20221117154014.1418834-1-andy.chiu@sifive.com>
- <20221117154014.1418834-4-andy.chiu@sifive.com>
+        with ESMTP id S240667AbiKRAoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:44:17 -0500
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0302974CEF
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 16:44:16 -0800 (PST)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1ovp2s-000nxs-OE; Fri, 18 Nov 2022 00:15:50 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH 0/3] add dt configuration for dp83867 led modes
+Date:   Thu, 17 Nov 2022 16:15:45 -0800
+Message-Id: <20221118001548.635752-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221117154014.1418834-4-andy.chiu@sifive.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 11:40:14PM +0800, Andy Chiu wrote:
-> Some FPGA platforms have 80KHz MDIO bus frequency constraint when
-> connecting Ethernet to its on-board external Marvell PHY. Thus, we may
-> have to set MDIO clock according to the DT. Otherwise, use the default
-> 2.5 MHz, as specified by 802.3, if the entry is not present.
-> 
-> Also, change MAX_MDIO_FREQ to DEFAULT_MDIO_FREQ because we may actually
-> set MDIO bus frequency higher than 2.5MHz if undelying devices support
-> it. And properly disable the mdio bus clock in error path.
-> 
-> Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+This series adds a dt-prop ti,led-modes to configure dp83867 PHY led
+modes, adds the code to implement it, and updates some board dt files
+to use the new property.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Tim Harvey (3):
+  dt-bindings: net: phy: dp83867: add LED mode property
+  net: phy: dp83867: add LED mode configuration via dt
+  arm64: dts: imx8m*-venice: add dp83867 PHY LED mode configuration
 
-    Andrew
+ .../devicetree/bindings/net/ti,dp83867.yaml   |  6 ++++
+ .../dts/freescale/imx8mm-venice-gw700x.dtsi   |  6 ++++
+ .../dts/freescale/imx8mm-venice-gw7902.dts    |  6 ++++
+ .../dts/freescale/imx8mn-venice-gw7902.dts    |  6 ++++
+ drivers/net/phy/dp83867.c                     | 32 +++++++++++++++++--
+ include/dt-bindings/net/ti-dp83867.h          | 16 ++++++++++
+ 6 files changed, 70 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
