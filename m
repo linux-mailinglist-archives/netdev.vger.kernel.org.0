@@ -2,157 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FA0262FAB7
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:47:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E2962FABE
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242223AbiKRQrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 11:47:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
+        id S235358AbiKRQtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 11:49:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242011AbiKRQrS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:47:18 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39A41EEE6
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:47:16 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id p8so9070212lfu.11
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:47:16 -0800 (PST)
+        with ESMTP id S233401AbiKRQtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:49:20 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B968810B52;
+        Fri, 18 Nov 2022 08:49:18 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id t25so14404143ejb.8;
+        Fri, 18 Nov 2022 08:49:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JjS4gImtGAJJbWB/0EDokdPSqW8A0zuYR+TtXk+h7bA=;
-        b=kDciKdVGHdmiJlolrTF6PbQo6D/1op1CjAitUOm47eVwIp7q548L2ZgzwK/JRH9H9O
-         OACMJe6gV1S5iJy+Y3XmYIrM/4lFBav6Qjr0Nam47w2I3MN7RarUKS5ZhpPE1zHO6JWn
-         576QQkfZaQBkIpZZBdoL788i3/OUPIGmtG8dFq1+SVDBpPLJ8OBiZHMAw4WLOYbyQnFu
-         f13d2BBVSQZUTgzXg3ac6cDQJgUVVnGZInsmPH4WQwdEG54ufYeWBkK/pU5wMkvArKUF
-         ReR2F6BHOYDKcWMclEOGGT3rWIxXgYZHKf2C2e16VU5kFHmNW57/ZMxy+Qfzc+qCpc89
-         eANg==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3ISq3CC3wQQoH9QZGauiQqCQOpxu3L8pBDT4KpuCruk=;
+        b=UoRHeVlmQxb12jSRsPoXtHs9FO+NdTRv3weDmoPQn+v5WqAYqEpPd09jKbHMXf5yLN
+         M1LP2eMqJGqndro/5BCCfBb/EmUZrNH99Wy9jnJ0EEcXlyHe6S5oEtZojQHWT1jv42j2
+         TH5cBKjv+nfHTlNEV2U9X3hh962LQkIWxgSefetcOO/V1VZwgqyvOgeFoyKV2TZx0Ayi
+         AmDYtr18go6lLs8te0j5f4nnwOjwVzRYwaPyGi0xfUCBZ1xOTJosHxMF0E48+3kxVxBF
+         Ot8/PDYRg9E97ZH8D2EXzP3um+wzvOkmOkaVMxijClMjHAsoy5FpTeqNWST01ICDJJsM
+         DgIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=JjS4gImtGAJJbWB/0EDokdPSqW8A0zuYR+TtXk+h7bA=;
-        b=7aUcx0w4S6mUpJ5DajHav5aTaeLTVXGNcUadpfyUMuN1nkubfy2T7V55Uxs5qOOPLH
-         teWwFNB2zz5ti5evFhDDYdXn05vXSnb9EwpqilpPFgW4xkitRypNcom0F5l/dslx4f0V
-         t5zH6eF63TDh6zTAodhP6vyjVKfnY+VAhNVRjOpNPjonOrjCGeUU6OxQTMOmX28mSVC3
-         +afYvngaHWtJ+iZ9hTP+Hy7Jw5bR8IUlsw/ll44u3nfyZ+SqDVwz49JiwhAivX5ongMl
-         YVvGd0snYxx9O7zFDDKhgH5QPrvmTxz4P5LZqZTho4X/CxyPETqVJ0r5wthVpgLocWtF
-         xB2Q==
-X-Gm-Message-State: ANoB5pmlt2tcZKi0rtK+lft9uJ+m0qX5WPC1zD0ae4HYH/Ya7PS1jz2y
-        eaKW9pHRc5N+cbt951wdqapEWQ==
-X-Google-Smtp-Source: AA0mqf64S2QnERSJTTT5QfDNrtKoGh+bzu+VoYTnFpf/BrzC3hbdxo8BS7xLLf52YaQigOAu/EHglg==
-X-Received: by 2002:ac2:4e0a:0:b0:4a2:2aab:5460 with SMTP id e10-20020ac24e0a000000b004a22aab5460mr2546386lfr.62.1668790035078;
-        Fri, 18 Nov 2022 08:47:15 -0800 (PST)
-Received: from [192.168.31.208] ([194.29.137.22])
-        by smtp.gmail.com with ESMTPSA id v20-20020a2e9614000000b0026dced9840dsm693266ljh.61.2022.11.18.08.47.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Nov 2022 08:47:14 -0800 (PST)
-Message-ID: <4592f87a-bb61-1c28-13f0-d041a6e7d3bf@linaro.org>
-Date:   Fri, 18 Nov 2022 17:47:12 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-To:     Kalle Valo <kvalo@kernel.org>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Hector Martin <marcan@marcan.st>,
-        "~postmarketos/upstreaming@lists.sr.ht" 
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        "martin.botka@somainline.org" <martin.botka@somainline.org>,
-        "angelogioacchino.delregno@somainline.org" 
-        <angelogioacchino.delregno@somainline.org>,
-        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
-        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3ISq3CC3wQQoH9QZGauiQqCQOpxu3L8pBDT4KpuCruk=;
+        b=ok4Pcg7grce34kAmYvzQzOILu4EeereeY0F2AtICWC5/J+w1Ur8NdYGObTYnzX3r3G
+         XUzYoFvcueTQu1PB2tHNe3JzW79g1FWotkRZFi5rEwQ/HkpqcEOCI6ZHq9wRpb3VfcpX
+         1+x6tDV19QtziblP7SR7zKSxvKDa9t2mMeCN3QSZM46BYeAovAWFwW3ptK32n+vxnEs4
+         tisWR4kPJ1qZie8QK8ibQ/fMmneVdLHxG6erlQSFV3nPMPjz2Izd9NJADs+AfwRytq3v
+         tXWdn7/0QZV6xzHr78gPp+9LtZtcdi8Rr29cFhw5/0gNFzC/5655KOCy428wLFX757uK
+         ZL1g==
+X-Gm-Message-State: ANoB5pn//QkZLN37CmoYkOLbvXdv6IXfyxfWZidlGGRyFYhXYtcrqxw1
+        W8d7a5+2CzUXWERTLyoG4ms=
+X-Google-Smtp-Source: AA0mqf7rPZO2ztC9aPlixHNN/gqYG6ZoOOJoIct1C7n0qVYan2n63dUFchn6RYToPXCqHr9wgWotkw==
+X-Received: by 2002:a17:906:95c3:b0:78e:975:5e8 with SMTP id n3-20020a17090695c300b0078e097505e8mr6730438ejy.82.1668790157050;
+        Fri, 18 Nov 2022 08:49:17 -0800 (PST)
+Received: from skbuf ([188.27.185.168])
+        by smtp.gmail.com with ESMTPSA id s19-20020aa7cb13000000b0045cf4f72b04sm1984317edt.94.2022.11.18.08.49.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Nov 2022 08:49:16 -0800 (PST)
+Date:   Fri, 18 Nov 2022 18:49:14 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
-        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Soon Tak Lee <soontak.lee@cypress.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
- <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
- <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
- <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
- <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
- <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
- <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <87sfke32pc.fsf@kernel.org>
-From:   Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <87sfke32pc.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tim Harvey <tharvey@gateworks.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] phy: aquantia: Configure SERDES mode by default
+Message-ID: <20221118164914.6k3gofemf5tu2gfn@skbuf>
+References: <20221114210740.3332937-1-sean.anderson@seco.com>
+ <20221114210740.3332937-1-sean.anderson@seco.com>
+ <20221115223732.ctvzjbpeaxulnm5l@skbuf>
+ <3771f5be-3deb-06f9-d0a0-c3139d098bf0@seco.com>
+ <20221115230207.2e77pifwruzkexbr@skbuf>
+ <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 26/09/2022 11:27, Kalle Valo wrote:
-> Alvin Šipraga <ALSI@bang-olufsen.dk> writes:
+On Thu, Nov 17, 2022 at 06:40:02PM -0500, Sean Anderson wrote:
+> > Even if the change works, why would it be a good idea to overwrite some
+> > random registers which are supposed to be configured correctly by the
+> > firmware provided for the board?
 > 
->> On Thu, Sep 22, 2022 at 03:02:12PM +0200, Linus Walleij wrote:
->>> On Thu, Sep 22, 2022 at 12:21 PM Konrad Dybcio
->>> <konrad.dybcio@somainline.org> wrote:
->>>
->>>> Also worth noting is the 'somc' bit, meaning there are probably *some* SONY
->>>> customizations, but that's also just a guess.
->>>
->>> What I have seen from BRCM customizations on Samsung phones is that
->>> the per-device customization of firmware seems to involve the set-up of
->>> some GPIO and power management pins. For example if integrated with
->>> an SoC that has autonomous system resume, or if some GPIO line has
->>> to be pulled to enable an external regulator or PA.
->>
->> At least with Infineon (formerly Cypress), as a customer you might get a
->> private firmware and this will be maintained internally by them on a
->> separate customer branch. Any subsequent bugfixes or feature requests
->> will usually be applied to that customer branch and a new firmware built
->> from it. I think their internal "mainline" branch might get merged into
->> the customer branches from time to time, but this seems to be done on an
->> ad-hoc basis. This is our experience at least.
->>
->> I would also point out that the BCM4359 is equivalent to the
->> CYW88359/CYW89359 chipset, which we are using in some of our
->> products. Note that this is a Cypress chipset (identifiable by the
->> Version: ... (... CY) tag in the version string). But the FW Konrad is
->> linking appears to be for a Broadcom chipset.
->>
->> FYI, here's a publicly available set of firmware files for the '4359:
->>
->> https://github.com/NXP/imx-firmware/tree/master/cyw-wifi-bt/1FD_CYW4359
->>
->> Anyway, I would second Hector's suggestion and make this a separate FW.
+> They're not random registers. They happen to be exactly the same registers
+> we use to determine if rate adaptation is enabled.
+
+As far as I'm concerned, this is just poking in places where there is no
+guarantee that the end result will be a known state.
+
+FWIW, for internal testing of multiple SERDES modes all with the same
+Aquantia firmware, the NXP SDK also has a quick-and-dirty patch to
+change the SERDES protocol on the Aquantia PHY based on device tree:
+https://source.codeaurora.org/external/qoriq/qoriq-components/linux/tree/drivers/net/phy/aquantia_main.c?h=lf-5.15.y#n288
+
+but we decided to not upstream such a thing, specifically because
+it might react in exotic ways with firmware images shipped by Aquantia
+to some of their other customers. I don't work for Aquantia, I am not a
+fan of their model of customizing firmware for everyone, and I don't
+want to have to support the ensuing breakage, I wouldn't have time for
+basically anything else. If you do, I'm not going to stop you. Just be
+prepared to help me too ;)
+
+> > If the Linux fixup works for one board
+> > with one firmware, how do we know it also works for another board with
+> > the same PHY, but different firmware?
 > 
-> I also recommend having a separate firmware filename. Like Hector said,
-> it's easy to have a symlink in userspace if same binary can be used.
-So, I dusted off this patch and tried to change the fw name, only to 
-discover that the BRCM_PCIE_43596_DEVICE_ID is equal to 
-CY_PCIE_89459_DEVICE_ID, (which btw uses 4355/89459 fw), but then it 
-makes the driver expect 4359/9 based on rev matching, so... the 43596 
-chip ID may be a lie? Or at least for the one used in my particular 
-device? I'm beyond confused now..
+> How do we know if a fix on one board for any hardware works on another board?
 
-I can think of a couple of hacky ways to force use of 43596 fw, but I 
-don't think any would be really upstreamable..
+If both boards start from the same state X and make the same transition
+T, they end in the same state Y, no? Aquantia PHYs don't all start from
+the same state. Not sure what you'd like me to say.
 
-Any thoughts?
+> Well, part of my goal in sending out this patch is to get some feedback
+> on the right thing to do here. As I see it, there are three ways of
+> configuring this phy:
+> 
+> - Always rate adapt to whatever the initial phy interface mode is
+> - Switch phy interfaces depending on the link speed
+> - Do whatever the firmware sets up
 
-Konrad
+"Do whatever the firmware sets up", which means either bullet 1, or
+bullet 2, or a combination of both (unlikely but AFAIU possible).
+
+> 
+> On my system, the last option happens to be the same as the first.
+> However, on Tim's system it's not. I had originally considered doing
+> this kind of configuration in my initial rate adaptation patch. However,
+> I deferred it since nothing needed to be configured for me.
+> 
+> The problem here is that if we advertise like we are in the first mode,
+> but we are not actually, then we can end up negotiating a link mode
+> which we don't support.
+
+I didn't quite understand in your patch set why there exists a
+phydev->rate_matching as well as a phy_get_rate_matching() procedure.
+It seems like that's at the root of all issues here? Couldn't
+phy_get_rate_matching() be made to look at the hardware registers for
+the given interface?
+
+> I think there are a few ways to address this:
+> 
+> - Always enable rate adaptation, since that's what we tell phylink we
+>   do. This is what this patch does. It's a bit risky (since it departs
+>   from "do whatever the firmware does"). It's also a bit rigid (what if 
+
+I think the mistake is that we tell phylink we support rate matching
+when the firmware provisioning doesn't agree.
+
+> - We can check all the registers to ensure we are actually going to rate
+>   adapt. If we aren't, we tell phylink we don't support it. This is the
+>   least risky, but we can end up not bringing up the link even in
+>   circumstances where we could if we configured things properly. And we
+>   generally know the right way to configure things.
+
+Like when?
+
+> - Add a configuration option (devicetree? ethtool?) on which option
+>   above to pick. This is probably what we will want to do in the long
+>   term, but I feel like we have enough information to determine the
+>   right thing to do most of the time (without needing manual
+>   intervention).
+
+Not sure I see the need, when long-term there is no volunteer to make
+the Linux driver bring Aquantia PHYs to a known state regardless of
+vendor provisioning. Until then, there is just no reason to even attempt
+this.
+
+> > As long as the Aquantia PHY driver doesn't contain all the necessary
+> > steps for bringing the PHY up from a clean slate, but works on top of
+> > what the firmware has done, changes like this make me very uncomfortable
+> > to add any PHY ID to the Aquantia driver. I'd rather leave them with the
+> > Generic C45 driver, even if that means I'll lose interrupt support, rate
+> > matching and things like that.
+> 
+> I think these registers should be viewed as configuration for the phy as
+> a whole, rather than as guts which should be configure by firmware. At
+> least for the fields we're working with, it seems clear to me what's
+> going on.
+
+Until you look at the procedure in the NXP SDK and see that things are a
+bit more complicated to get right, like put the PHY in low power mode,
+sleep for a while. I think a large part of that was determined experimentally,
+out of laziness to change PHY firmware on some riser cards more than anything.
+We still expect the production boards to have a good firmware, and Linux
+to read what that does and adapt accordingly.
