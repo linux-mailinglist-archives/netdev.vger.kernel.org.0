@@ -2,405 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05AEF62EA9E
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 01:56:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E6662EAB3
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 02:05:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240769AbiKRA4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 19:56:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        id S240828AbiKRBFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 20:05:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233894AbiKRA4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 19:56:13 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C6F85EE5;
-        Thu, 17 Nov 2022 16:56:11 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id n12so9305675eja.11;
-        Thu, 17 Nov 2022 16:56:11 -0800 (PST)
+        with ESMTP id S240803AbiKRBFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 20:05:46 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C843F047
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 17:05:45 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id l127so3822431oia.8
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 17:05:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=C9Cp/pdx1mSwIwBR/zDeu0tKQUbnxAQr0nZWkEreeLg=;
-        b=LQY+9FOK4g90KK8JN2inWsSv5DLytzKK0s9yoCDLU9c8yOyq4qcf4egDVg9xuCkcMm
-         HHS7Bk54O0bbODj/qmNxoroKCnnvgPtZUHgnRLYzZYZLu3uPpRWJA2u1HdCK4xXQCk5U
-         YsiduLBWP87VhWqlb6w2Dif6gZoag/Ne6ddDWtsTIz+pjkYaCCUt3Uz11F68R5m9WI03
-         PCEvEjP/t2+kmc6h2bPcJLhiI+1X4qFXPiQ71sXeQV6g6vOHClLfPlhUU+lRA4W8lOeg
-         Whc9sO2qIflare1/7Kd0p/abIroG23NCglf+5px+q0XOmOcKW5EWnJwUE7RkV4l7joEP
-         1Sew==
+        d=joelfernandes.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qoVVDHJ7JC6OIOtIhxXSR2WeCvXYp7Wgi4VTV2SicSE=;
+        b=Zrg+Iy0eUU6RPkdO5ZUu1THHQkTILr2YYgYLNkKEGPv+E81vPRn22lxUzAWsaIhmjU
+         jj7UU2gpgYaf/WeaweeoJLJ2Coj6amH+EWLe+TrWbQ+MHt9sZzfY0rC1QMo9FlYxi14V
+         pMT8+PL1inoKr87Y3V3HzWh54JBiIUg7i9lro=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=C9Cp/pdx1mSwIwBR/zDeu0tKQUbnxAQr0nZWkEreeLg=;
-        b=3mtkuNJXbH7F/UTS7ZpXZEq7vHq2atTdB6avc+vMnaO9vf6pfmnNwN4SxbAzYiHzfq
-         BPxh/ph5S8za+SYGsr8xCVdQPwQIOAwf9wfLZZhZ4wHkywiuPQST4IMcbb8t21gap8+9
-         doVmQmkisEajqKbcce7UB+CoMxOpyBarBQVFjy65euWmwT11HJxrvwgo/LGOP9k72yVA
-         PuDidDV7S018Nj47wTrnxdi6v2rllQCCLbYZX4RxWIjUogGGTiidEBT2zvJTpjtii5ic
-         6JRpErZYbxTBCytM5MDJO3uIdI2MCNE1qwpNgcBAJFRgoZsiVZIIxW4vJTDQiP0ACp6I
-         jAhA==
-X-Gm-Message-State: ANoB5pmK/JXSRbJp1JJ8x1Aupjr2TvcBTwPRDLWALJ9zWPNjUu7SjqGc
-        ++w4yKmcdkvoVJuOhZi6hAMDGYEbkY8nEfxXb3M=
-X-Google-Smtp-Source: AA0mqf7IpclMXQ4T47NdHLzh7PocC2UcxvS/p6KZNsX3PWwnoj2jH0Oo/XzGe31EpbIJLY4sVU9gIqPfyl8ttpYVNSY=
-X-Received: by 2002:a17:906:b14b:b0:78d:cede:91f4 with SMTP id
- bt11-20020a170906b14b00b0078dcede91f4mr4038058ejb.764.1668732970265; Thu, 17
- Nov 2022 16:56:10 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qoVVDHJ7JC6OIOtIhxXSR2WeCvXYp7Wgi4VTV2SicSE=;
+        b=btdxX2JgXNWvR+G4EwEcKspnfbqPGRNu78OaE8r0qBfwYAhcff+M945OqN8cqo2biE
+         Jh8nkAyVbUqZoqh2ffsvrexF5owbRWoVYj8NdwV/27j1sJOIqgr63LybUHi/QKfFr4ED
+         Gkm0ozbQIb2uV14PQh36jYezKqfMlmups78elnFD6qGtOVjua1pPdtY4oom+sluBRacu
+         b8SOq6eIR73nXiWFb/pCjj082ULi0ibd+2X0AsxwTmtDejfe6nagFH2m0rZoxmjaOZ0S
+         TIqXPbF/y+Xg8h4qvIb8p2XRmFxukpRgaPDsy0ObWcVdXcYeXMTpT7uIOH6ir5rvo5Ql
+         pj2w==
+X-Gm-Message-State: ANoB5pkA/dJ7Fpf2kONUVALeEYv/P1YU0vPelTXrSEOY3C45crDDHeqt
+        zolYKpg4mj2KVqaLA3pm1Q3JzdJw/y9PE/5pHWbIVA==
+X-Google-Smtp-Source: AA0mqf4VwOu5m61xDXA24VL+oIELade9BH7j9pngi8veRZkCJWpfluPJdMUlnd+Zgziaj9PiBUtlZKJLvIqAhdq2tXg=
+X-Received: by 2002:a05:6808:1a09:b0:354:4a36:aa32 with SMTP id
+ bk9-20020a0568081a0900b003544a36aa32mr5258680oib.15.1668733544386; Thu, 17
+ Nov 2022 17:05:44 -0800 (PST)
 MIME-Version: 1.0
-References: <CAJnrk1Y=qBAYsJJRgL1_Vx8Cb+tvS9PKEiFpYXPmc1b3tFL2nQ@mail.gmail.com>
- <20221118000601.47966-1-kuniyu@amazon.com>
-In-Reply-To: <20221118000601.47966-1-kuniyu@amazon.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Thu, 17 Nov 2022 16:55:59 -0800
-Message-ID: <CAJnrk1YJiFpj9RsQ8Wz0V-7nQA8c8gBm=5Y1GhNp+oc15u-bnQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net 3/4] dccp/tcp: Don't update saddr before unlinking
- sk from the old bucket
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     acme@mandriva.com, davem@davemloft.net, dccp@vger.kernel.org,
-        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
-        kuni1840@gmail.com, martin.lau@kernel.org,
-        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, pengfei.xu@intel.com,
-        stephen@networkplumber.org, william.xuanziyang@huawei.com,
-        yoshfuji@linux-ipv6.org
+References: <20221117192949.GD4001@paulmck-ThinkPad-P17-Gen-1>
+ <CC3744B1-20A7-4628-873A-2551938009D4@joelfernandes.org> <CANn89i+T8OUgW9TEvMU277GGH3yLEzBM2Dt8szPDyzx4dYD11w@mail.gmail.com>
+In-Reply-To: <CANn89i+T8OUgW9TEvMU277GGH3yLEzBM2Dt8szPDyzx4dYD11w@mail.gmail.com>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Fri, 18 Nov 2022 01:05:33 +0000
+Message-ID: <CAEXW_YRNUBxXb27rx+XPWDRsT5YDfJG56cZr9Q8k2uXAAbE0mQ@mail.gmail.com>
+Subject: Re: [PATCH rcu/dev 3/3] net: Use call_rcu_flush() for dst_destroy_rcu
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     paulmck@kernel.org, linux-kernel@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, rcu@vger.kernel.org,
+        rostedt@goodmis.org, fweisbec@gmail.com, jiejiang@google.com,
+        Thomas Glexiner <tglx@linutronix.de>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 4:06 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Thu, Nov 17, 2022 at 9:29 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> From:   Joanne Koong <joannelkoong@gmail.com>
-> Date:   Thu, 17 Nov 2022 13:32:18 -0800
-> > On Wed, Nov 16, 2022 at 2:29 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > >
-> > > Currently, we update saddr before calling inet_bhash2_update_saddr(), so
-> > > another thread iterating over the bhash2 bucket might see an inconsistent
->
-> Sorry this should be just bhash       ^^^ here.
->
-> > > address.
-> > >
-> > > Let's update saddr after unlinking sk from the old bhash2 bucket.
+> On Thu, Nov 17, 2022 at 1:16 PM Joel Fernandes <joel@joelfernandes.org> w=
+rote:
 > >
-> > I'm not sure whether this patch is necessary and I'm curious to hear
-> > your thoughts. There's no adverse effect that comes from updating the
-> > sk's saddr before calling inet_bhash2_update_saddr() in the current
-> > code. Another thread can be iterating over the bhash2 bucket, but it
-> > has no effect whether they see this new address or not (eg when they
-> > are iterating through the bucket they are trying to check for bind
-> > conflicts on another socket, and the sk having the new address doesn't
-> > affect this). What are your thoughts?
+> >
+> >
+> > > On Nov 17, 2022, at 2:29 PM, Paul E. McKenney <paulmck@kernel.org> wr=
+ote:
+> > >
+> > > =EF=BB=BFOn Thu, Nov 17, 2022 at 05:40:40PM +0000, Joel Fernandes wro=
+te:
+> > >>> On Thu, Nov 17, 2022 at 5:38 PM Joel Fernandes <joel@joelfernandes.=
+org> wrote:
+> > >>>
+> > >>> On Thu, Nov 17, 2022 at 5:17 PM Eric Dumazet <edumazet@google.com> =
+wrote:
+> > >>>>
+> > >>>> On Thu, Nov 17, 2022 at 7:58 AM Joel Fernandes <joel@joelfernandes=
+.org> wrote:
+> > >>>>>
+> > >>>>> Hello Eric,
+> > >>>>>
+> > >>>>> On Wed, Nov 16, 2022 at 07:44:41PM -0800, Eric Dumazet wrote:
+> > >>>>>> On Wed, Nov 16, 2022 at 7:16 PM Joel Fernandes (Google)
+> > >>>>>> <joel@joelfernandes.org> wrote:
+> > >>>>>>>
+> > >>>>>>> In a networking test on ChromeOS, we find that using the new CO=
+NFIG_RCU_LAZY
+> > >>>>>>> causes a networking test to fail in the teardown phase.
+> > >>>>>>>
+> > >>>>>>> The failure happens during: ip netns del <name>
+> > >>>>>>
+> > >>>>>> And ? What happens then next ?
+> > >>>>>
+> > >>>>> The test is doing the 'ip netns del <name>' and then polling for =
+the
+> > >>>>> disappearance of a network interface name for upto 5 seconds. I b=
+elieve it is
+> > >>>>> using netlink to get a table of interfaces. That polling is timin=
+g out.
+> > >>>>>
+> > >>>>> Here is some more details from the test's owner (copy pasting fro=
+m another
+> > >>>>> bug report):
+> > >>>>> In the cleanup, we remove the netns, and thus will cause the veth=
+ pair being
+> > >>>>> removed automatically, so we use a poll to check that if the veth=
+ in the root
+> > >>>>> netns still exists to know whether the cleanup is done.
+> > >>>>>
+> > >>>>> Here is a public link to the code that is failing (its in golang)=
+:
+> > >>>>> https://source.chromium.org/chromiumos/chromiumos/codesearch/+/ma=
+in:src/platform/tast-tests/src/chromiumos/tast/local/network/virtualnet/env=
+/env.go;drc=3D6c2841d6cc3eadd23e07912ec331943ee33d7de8;l=3D161
+> > >>>>>
+> > >>>>> Here is a public link to the line of code in the actual test lead=
+ing up to the above
+> > >>>>> path (this is the test that is run:
+> > >>>>> network.RoutingFallthrough.ipv4_only_primary) :
+> > >>>>> https://source.chromium.org/chromiumos/chromiumos/codesearch/+/ma=
+in:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/network/r=
+outing_fallthrough.go;drc=3D8fbf2c53960bc8917a6a01fda5405cad7c17201e;l=3D52
+> > >>>>>
+> > >>>>>>> Using ftrace, I found the callbacks it was queuing which this s=
+eries fixes. Use
+> > >>>>>>> call_rcu_flush() to revert to the old behavior. With that, the =
+test passes.
+> > >>>>>>
+> > >>>>>> What is this test about ? What barrier was used to make it not f=
+laky ?
+> > >>>>>
+> > >>>>> I provided the links above, let me know if you have any questions=
+.
+> > >>>>>
+> > >>>>>> Was it depending on some undocumented RCU behavior ?
+> > >>>>>
+> > >>>>> This is a new RCU feature posted here for significant power-savin=
+gs on
+> > >>>>> battery-powered devices:
+> > >>>>> https://lore.kernel.org/rcu/20221017140726.GG5600@paulmck-ThinkPa=
+d-P17-Gen-1/T/#m7a54809b8903b41538850194d67eb34f203c752a
+> > >>>>>
+> > >>>>> There is also an LPC presentation about the same, I can dig the l=
+ink if you
+> > >>>>> are interested.
+> > >>>>>
+> > >>>>>> Maybe adding a sysctl to force the flush would be better for fun=
+ctional tests ?
+> > >>>>>>
+> > >>>>>> I would rather change the test(s), than adding call_rcu_flush(),
+> > >>>>>> adding merge conflicts to future backports.
+> > >>>>>
+> > >>>>> I am not too sure about that, I think a user might expect the net=
+work
+> > >>>>> interface to disappear from the networking tables quickly enough =
+without
+> > >>>>> dealing with barriers or kernel iternals. However, I added the au=
+thors of the
+> > >>>>> test to this email in the hopes he can provide is point of views =
+as well.
+> > >>>>>
+> > >>>>> The general approach we are taking with this sort of thing is to =
+use
+> > >>>>> call_rcu_flush() which is basically the same as call_rcu() for sy=
+stems with
+> > >>>>> CALL_RCU_LAZY=3Dn. You can see some examples of that in the patch=
+ series link
+> > >>>>> above. Just to note, CALL_RCU_LAZY depends on CONFIG_RCU_NOCB_CPU=
+ so its only
+> > >>>>> Android and ChromeOS that are using it. I am adding Jie to share =
+any input,
+> > >>>>> he is from the networking team and knows this test well.
+> > >>>>>
+> > >>>>>
+> > >>>>
+> > >>>> I do not know what is this RCU_LAZY thing, but IMO this should be =
+opt-in
+> > >>>
+> > >>> You should read the links I sent you. We did already try opt-in,
+> > >>> Thomas Gleixner made a point at LPC that we should not add new APIs
+> > >>> for this purpose and confuse kernel developers.
+> > >>>
+> > >>>> For instance, only kfree_rcu() should use it.
+> > >>>
+> > >>> No. Most of the call_rcu() usages are for freeing memory, so the
+> > >>> consensus is we should apply this as opt out and fix issues along t=
+he
+> > >>> way. We already did a lot of research/diligence on seeing which use=
+rs
+> > >>> need conversion.
+> > >>>
+> > >>>> We can not review hundreds of call_rcu() call sites and decide if
+> > >>>> adding arbitrary delays cou hurt .
+> > >>>
+> > >>> That work has already been done as much as possible, please read th=
+e
+> > >>> links I sent.
+> > >>
+> > >> Also just to add, this test is a bit weird / corner case, as in anyo=
+ne
+> > >> expecting a quick response from call_rcu() is broken by design.
+> > >> However, for these callbacks, it does not matter much which API they
+> > >> use as they are quite infrequent for power savings.
+> > >
+> > > The "broken by design" is a bit strong.  Some of those call_rcu()
+> > > invocations have been around for the better part of 20 years, after a=
+ll.
+> > >
+> > > That aside, I do hope that we can arrive at something that will enhan=
+ce
+> > > battery lifetime while avoiding unnecessary disruption.  But we are
+> > > unlikely to be able to completely avoid disruption.  As this email
+> > > thread illustrates.  ;-)
+> >
+> > Another approach, with these 3 patches could be to keep the call_rcu() =
+but add an rcu_barrier() after them. I think people running ip del netns sh=
+ould not have to wait for their RCU cb to take too long to run and remove u=
+ser visible state. But I would need suggestions from networking experts whi=
+ch CBs of these 3, to do this for. Or for all of them.
+> >
+> > Alternatively, we can also patch just the test with a new knob that doe=
+s rcu_barrier. But I dislike that as it does not fix it for all users. Prob=
+ably the ip utilities will also need a patch then.
+> >
 >
-> You are right, it seems I was confused.
+> Normally we have an rcu_barrier() in netns dismantle path already at a
+> strategic location ( in cleanup_net() )
 >
-> I was thinking that lockless change of saddr could result in data race;
-> another process iterating over bhash might see a corrupted address.
+> Maybe the issue here is that some particular layers need another one.
+> Or we need to release a blocking reference before the call_rcu().
+> Some call_rcu() usages might not be optimal in this respect.
 >
-> So, we need to acquire the bhash lock before updating saddr, and then
-> related code should be in inet_bhash2_update_saddr().
->
-> But I seem to have forgot to add the lock part... :p
+> We should not add an rcu_barrier() after a call_rcu(), we prefer
+> factoring these expensive operations.
 
-No worries! :) Is acquiring the bhash lock necessary before updating
-saddr? I think the worst case scenario (which would only happen very
-rarely) is that there is another process iterating over bhash, that
-process tries to access the address the exact time the address is
-being updated in this function, causing the other process to see the
-corrupted address, that corrupted address matches that other process's
-socket address, thus causing that other process to reject the bind
-request.
+Sounds good! The dst_destroy_rcu() function appears complex to break
+down (similar to how you suggested in 2/3). The dst->ops->destroy()
+can decrement refcounts and so forth. We could audit all such dst->ops
+users, but I wonder if it is safer to use call_rcu_flush() for this
+patch.
 
-It doesn't seem like that is a big deal, in the rare event where that
-would happen. In my opinion, it's not worth solving for by making the
-common case slower by grabbing the bhash lock.
+Thanks,
 
-What are your thoughts?
-
->
->
-> > > Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > ---
-> > >  include/net/inet_hashtables.h |  2 +-
-> > >  net/dccp/ipv4.c               | 22 ++++------------------
-> > >  net/dccp/ipv6.c               | 23 ++++-------------------
-> > >  net/ipv4/af_inet.c            | 11 +----------
-> > >  net/ipv4/inet_hashtables.c    | 31 ++++++++++++++++++++++++++++---
-> > >  net/ipv4/tcp_ipv4.c           | 20 ++++----------------
-> > >  net/ipv6/tcp_ipv6.c           | 19 +++----------------
-> > >  7 files changed, 45 insertions(+), 83 deletions(-)
-> > >
-> > > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > > index 3af1e927247d..ba06e8b52264 100644
-> > > --- a/include/net/inet_hashtables.h
-> > > +++ b/include/net/inet_hashtables.h
-> > > @@ -281,7 +281,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
-> > >   * sk_v6_rcv_saddr (ipv6) changes after it has been binded. The socket's
-> > >   * rcv_saddr field should already have been updated when this is called.
-> > >   */
-> > > -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk);
-> > > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
-> > >
-> > >  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
-> > >                     struct inet_bind2_bucket *tb2, unsigned short port);
-> > > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > > index 40640c26680e..95e376e3b911 100644
-> > > --- a/net/dccp/ipv4.c
-> > > +++ b/net/dccp/ipv4.c
-> > > @@ -45,11 +45,10 @@ static unsigned int dccp_v4_pernet_id __read_mostly;
-> > >  int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >  {
-> > >         const struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
-> > > -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
-> > > -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
-> > >         struct inet_sock *inet = inet_sk(sk);
-> > >         struct dccp_sock *dp = dccp_sk(sk);
-> > >         __be16 orig_sport, orig_dport;
-> > > +       __be32 daddr, nexthop;
-> > >         struct flowi4 *fl4;
-> > >         struct rtable *rt;
-> > >         int err;
-> > > @@ -91,26 +90,13 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >                 daddr = fl4->daddr;
-> > >
-> > >         if (inet->inet_saddr == 0) {
-> > > -               if (inet_csk(sk)->icsk_bind2_hash) {
-> > > -                       prev_addr_hashbucket =
-> > > -                               inet_bhashfn_portaddr(&dccp_hashinfo, sk,
-> > > -                                                     sock_net(sk),
-> > > -                                                     inet->inet_num);
-> > > -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
-> > > -               }
-> > > -               inet->inet_saddr = fl4->saddr;
-> > > -       }
-> > > -
-> > > -       sk_rcv_saddr_set(sk, inet->inet_saddr);
-> > > -
-> > > -       if (prev_addr_hashbucket) {
-> > > -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
-> > > +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
-> > >                 if (err) {
-> > > -                       inet->inet_saddr = 0;
-> > > -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
-> > >                         ip_rt_put(rt);
-> > >                         return err;
-> > >                 }
-> > > +       } else {
-> > > +               sk_rcv_saddr_set(sk, inet->inet_saddr);
-> > >         }
-> > >
-> > >         inet->inet_dport = usin->sin_port;
-> > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > > index 626166cb6d7e..94c101ed57a9 100644
-> > > --- a/net/dccp/ipv6.c
-> > > +++ b/net/dccp/ipv6.c
-> > > @@ -934,26 +934,11 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > >         }
-> > >
-> > >         if (saddr == NULL) {
-> > > -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
-> > > -               struct in6_addr prev_v6_rcv_saddr;
-> > > -
-> > > -               if (icsk->icsk_bind2_hash) {
-> > > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(&dccp_hashinfo,
-> > > -                                                                    sk, sock_net(sk),
-> > > -                                                                    inet->inet_num);
-> > > -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
-> > > -               }
-> > > -
-> > >                 saddr = &fl6.saddr;
-> > > -               sk->sk_v6_rcv_saddr = *saddr;
-> > > -
-> > > -               if (prev_addr_hashbucket) {
-> > > -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
-> > > -                       if (err) {
-> > > -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
-> > > -                               goto failure;
-> > > -                       }
-> > > -               }
-> > > +
-> > > +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
-> > > +               if (err)
-> > > +                       goto failure;
-> > >         }
-> > >
-> > >         /* set the source address */
-> > > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> > > index 4728087c42a5..0da679411330 100644
-> > > --- a/net/ipv4/af_inet.c
-> > > +++ b/net/ipv4/af_inet.c
-> > > @@ -1230,7 +1230,6 @@ EXPORT_SYMBOL(inet_unregister_protosw);
-> > >
-> > >  static int inet_sk_reselect_saddr(struct sock *sk)
-> > >  {
-> > > -       struct inet_bind_hashbucket *prev_addr_hashbucket;
-> > >         struct inet_sock *inet = inet_sk(sk);
-> > >         __be32 old_saddr = inet->inet_saddr;
-> > >         __be32 daddr = inet->inet_daddr;
-> > > @@ -1260,16 +1259,8 @@ static int inet_sk_reselect_saddr(struct sock *sk)
-> > >                 return 0;
-> > >         }
-> > >
-> > > -       prev_addr_hashbucket =
-> > > -               inet_bhashfn_portaddr(tcp_or_dccp_get_hashinfo(sk), sk,
-> > > -                                     sock_net(sk), inet->inet_num);
-> > > -
-> > > -       inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
-> > > -
-> > > -       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
-> > > +       err = inet_bhash2_update_saddr(sk, &new_saddr, AF_INET);
-> > >         if (err) {
-> > > -               inet->inet_saddr = old_saddr;
-> > > -               inet->inet_rcv_saddr = old_saddr;
-> > >                 ip_rt_put(rt);
-> > >                 return err;
-> > >         }
-> > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > > index d745f962745e..dcb6bc918966 100644
-> > > --- a/net/ipv4/inet_hashtables.c
-> > > +++ b/net/ipv4/inet_hashtables.c
-> > > @@ -858,7 +858,20 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
-> > >         return &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
-> > >  }
-> > >
-> > > -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk)
-> > > +static void inet_update_saddr(struct sock *sk, void *saddr, int family)
-> > > +{
-> > > +#if IS_ENABLED(CONFIG_IPV6)
-> > > +       if (family == AF_INET6) {
-> > > +               sk->sk_v6_rcv_saddr = *(struct in6_addr *)saddr;
-> > > +       } else
-> > > +#endif
-> > > +       {
-> > > +               inet_sk(sk)->inet_saddr = *(__be32 *)saddr;
-> > > +               sk_rcv_saddr_set(sk, inet_sk(sk)->inet_saddr);
-> > > +       }
-> > > +}
-> > > +
-> > > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > >  {
-> > >         struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
-> > >         struct inet_bind2_bucket *tb2, *new_tb2;
-> > > @@ -867,6 +880,12 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
-> > >         int port = inet_sk(sk)->inet_num;
-> > >         struct net *net = sock_net(sk);
-> > >
-> > > +       if (!inet_csk(sk)->icsk_bind2_hash) {
-> > > +               /* Not bind()ed before. */
-> > > +               inet_update_saddr(sk, saddr, family);
-> > > +               return 0;
-> > > +       }
-> > > +
-> > >         /* Allocate a bind2 bucket ahead of time to avoid permanently putting
-> > >          * the bhash2 table in an inconsistent state if a new tb2 bucket
-> > >          * allocation fails.
-> > > @@ -875,12 +894,18 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
-> > >         if (!new_tb2)
-> > >                 return -ENOMEM;
-> > >
-> > > +       /* Unlink first not to show the wrong address for other threads. */
-> > >         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
-> > >
-> > > -       spin_lock_bh(&prev_saddr->lock);
-> > > +       spin_lock_bh(&head2->lock);
-> > >         __sk_del_bind2_node(sk);
-> > >         inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
-> > > -       spin_unlock_bh(&prev_saddr->lock);
-> > > +       spin_unlock_bh(&head2->lock);
-> > > +
-> > > +       inet_update_saddr(sk, saddr, family);
-> > > +
-> > > +       /* Update bhash2 bucket. */
-> > > +       head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
-> > >
-> > >         spin_lock_bh(&head2->lock);
-> > >         tb2 = inet_bind2_bucket_find(head2, net, port, l3mdev, sk);
-> > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > > index 6a3a732b584d..23dd7e9df2d5 100644
-> > > --- a/net/ipv4/tcp_ipv4.c
-> > > +++ b/net/ipv4/tcp_ipv4.c
-> > > @@ -199,15 +199,14 @@ static int tcp_v4_pre_connect(struct sock *sk, struct sockaddr *uaddr,
-> > >  /* This will initiate an outgoing connection. */
-> > >  int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >  {
-> > > -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
-> > >         struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
-> > >         struct inet_timewait_death_row *tcp_death_row;
-> > > -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
-> > >         struct inet_sock *inet = inet_sk(sk);
-> > >         struct tcp_sock *tp = tcp_sk(sk);
-> > >         struct ip_options_rcu *inet_opt;
-> > >         struct net *net = sock_net(sk);
-> > >         __be16 orig_sport, orig_dport;
-> > > +       __be32 daddr, nexthop;
-> > >         struct flowi4 *fl4;
-> > >         struct rtable *rt;
-> > >         int err;
-> > > @@ -251,24 +250,13 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
-> > >
-> > >         if (!inet->inet_saddr) {
-> > > -               if (inet_csk(sk)->icsk_bind2_hash) {
-> > > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
-> > > -                                                                    sk, net, inet->inet_num);
-> > > -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
-> > > -               }
-> > > -               inet->inet_saddr = fl4->saddr;
-> > > -       }
-> > > -
-> > > -       sk_rcv_saddr_set(sk, inet->inet_saddr);
-> > > -
-> > > -       if (prev_addr_hashbucket) {
-> > > -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
-> > > +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
-> > >                 if (err) {
-> > > -                       inet->inet_saddr = 0;
-> > > -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
-> > >                         ip_rt_put(rt);
-> > >                         return err;
-> > >                 }
-> > > +       } else {
-> > > +               sk_rcv_saddr_set(sk, inet->inet_saddr);
-> > >         }
-> > >
-> > >         if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
-> > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > > index 81b396e5cf79..2f3ca3190d26 100644
-> > > --- a/net/ipv6/tcp_ipv6.c
-> > > +++ b/net/ipv6/tcp_ipv6.c
-> > > @@ -292,24 +292,11 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > >         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
-> > >
-> > >         if (!saddr) {
-> > > -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
-> > > -               struct in6_addr prev_v6_rcv_saddr;
-> > > -
-> > > -               if (icsk->icsk_bind2_hash) {
-> > > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
-> > > -                                                                    sk, net, inet->inet_num);
-> > > -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
-> > > -               }
-> > >                 saddr = &fl6.saddr;
-> > > -               sk->sk_v6_rcv_saddr = *saddr;
-> > >
-> > > -               if (prev_addr_hashbucket) {
-> > > -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
-> > > -                       if (err) {
-> > > -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
-> > > -                               goto failure;
-> > > -                       }
-> > > -               }
-> > > +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
-> > > +               if (err)
-> > > +                       goto failure;
-> > >         }
-> > >
-> > >         /* set the source address */
-> > > --
-> > > 2.30.2
+ - Joel
