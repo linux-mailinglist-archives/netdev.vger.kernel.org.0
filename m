@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9963D62F693
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 14:51:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A94F262F6A8
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 14:57:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235229AbiKRNvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 08:51:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        id S235359AbiKRN5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 08:57:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiKRNvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 08:51:43 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC431BE96;
-        Fri, 18 Nov 2022 05:51:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=BI9SdldArhmncLFH70O4J/hpnFzVxZH3XrA9hQ5k3Aw=; b=ysDnTCowTe79OLtvxyo5sxMCMs
-        pEjYhuFonAHzBB441fpc8CyzHnnZhAaWxMpdcKlSJGDgzOHozSJXTpIWOZpkm7ER6JdDnLm5merqK
-        NmetfTIxoJOe9J0zprtyO8JCp+khsHUuwSRYgGlz3L1HYMjCIYtaMndxzqRib5CDPhz4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ow1mH-002nbf-7w; Fri, 18 Nov 2022 14:51:33 +0100
-Date:   Fri, 18 Nov 2022 14:51:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 0/2] mv88e6xxx: Add MAB offload support
-Message-ID: <Y3eN5cdYxPMSJzHL@lunn.ch>
-References: <20221115111034.z5bggxqhdf7kbw64@skbuf>
- <0cd30d4517d548f35042a535fd994831@kapio-technology.com>
- <20221115122237.jfa5aqv6hauqid6l@skbuf>
- <fb1707b55bd8629770e77969affaa2f9@kapio-technology.com>
- <20221115145650.gs7crhkidbq5ko6v@skbuf>
- <f229503b98d772c936f1fc8ca826a14f@kapio-technology.com>
- <20221115161846.2st2kjxylfvlncib@skbuf>
- <e05f69915a2522fc1e9854194afcc87b@kapio-technology.com>
- <20221116102406.gg6h7gvkx55f2ojj@skbuf>
- <54b489e65712e50e5ee67b746c0fec74@kapio-technology.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54b489e65712e50e5ee67b746c0fec74@kapio-technology.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234213AbiKRN5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 08:57:40 -0500
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DEFB855
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 05:57:38 -0800 (PST)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 3CCC6C020; Fri, 18 Nov 2022 14:57:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1668779863; bh=VQvQZFr5XOX6mVpYtpRmE/S6SSj33Skt2C2fmAo2mBQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tUX5eVOb6vWixrgLrzthqJdSROlGDJJHiq5JNnNKuIRg1kSPNlE2d/fiebmFFfktS
+         VEoiGy13q5Hxgl5cV6GNcfnc4KRkO657R9fR9mHUIBth5qGIa21z71ma8+6dsyzv9N
+         eaGnGsary/JAwbdqCMynKIUfccfUDIfAPpNccBe/TSOk6SGaweuFBjI8Lm000seVuq
+         LVwZxcT25LBSQZ1S6x/58BzNusmICIVyP347N+siiuVYp2GZ4Pa+6dJILn1t8IPoZq
+         e/w6QotVeDLx32oi/7MnNvUBX9gGn2CmTqbef1TdLzoJS0Qi8mLnskdSyMDlRmkOYJ
+         CI73+Qc/S6H+Q==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id C497BC009;
+        Fri, 18 Nov 2022 14:57:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1668779861; bh=VQvQZFr5XOX6mVpYtpRmE/S6SSj33Skt2C2fmAo2mBQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U0LzaW2K7atMmeU+JVE/GaCTSmjVg0tRzfZjuQQAxIVbWiDYB+3woQGkNMel+hitr
+         3rTD0J3FpbYf4pN0Brco4XxROR1WC8rVFCw6jNBO/r4Y28sX1FAxdbpUg/5jqeNZ+F
+         IuLWY+6c0OAZowNPAE/CdJNE0rGh2wTMDj4y8C5EGiDGCIdL9lcz4gotMEgVQhkC7q
+         zcy9sfMmlMqaV932sCfZI/fnXWVEBXULvmYsrA0kPPGnoXoP1jqhD65SRKqIniEVrX
+         2m+4vMWDDyLK4AeTxQ5HCB7FqLdtYgA6dDUT1siYm62YKw+qaZZrM2/1UFX446Cv5+
+         vyUpPpGGZwalQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 5888f87b;
+        Fri, 18 Nov 2022 13:57:30 +0000 (UTC)
+Date:   Fri, 18 Nov 2022 22:57:14 +0900
+From:   asmadeus@codewreck.org
+To:     "Guozihua (Scott)" <guozihua@huawei.com>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>, ericvh@gmail.com,
+        lucho@ionkov.net, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3 v2] 9p: Fix write overflow in p9_read_work
+Message-ID: <Y3ePOhpctTf7Buf8@codewreck.org>
+References: <20221117091159.31533-1-guozihua@huawei.com>
+ <3918617.6eBe0Ihrjo@silver>
+ <Y3cRJsRFCZaKrzhe@codewreck.org>
+ <a6aec93a-1166-1d8a-48de-767bc1eb2214@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a6aec93a-1166-1d8a-48de-767bc1eb2214@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Would it not be appropriate to have a define that specifies the
-> value instead of the same value two places as it is now?
+Guozihua (Scott) wrote on Fri, Nov 18, 2022 at 06:18:16PM +0800:
+> I retried the repro on your branch, the issue does not reproduce. What
+> a good pair of eyes :)！
 
-Yes.
+Thanks!
+By the way the original check also compared size to msize directly,
+without an offset for headers, so with hindsight it looks clear enough
+that the size is the full size including the header.
 
-> And in so case, what would be an appropriate name?
+I'm not sure why I convinced myself it didn't...
 
-MV88E6XXX_WAIT_TIMEOUT_MS ?
-
-	  Andrew
+Anyway, this made me check other places where we might fail at this and
+I've a couple more patches; please review if you have time.
+I'll send them all to Linus next week...
+-- 
+Dominique
