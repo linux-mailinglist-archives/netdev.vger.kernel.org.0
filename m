@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A5762EC8C
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 04:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4240962EC95
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 04:57:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240660AbiKRD4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Nov 2022 22:56:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49832 "EHLO
+        id S240679AbiKRD5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Nov 2022 22:57:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234710AbiKRD4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 22:56:15 -0500
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F91F769DF;
-        Thu, 17 Nov 2022 19:56:14 -0800 (PST)
-Received: by mail-ot1-f53.google.com with SMTP id a13-20020a9d6e8d000000b00668d65fc44fso2372382otr.9;
-        Thu, 17 Nov 2022 19:56:14 -0800 (PST)
+        with ESMTP id S240810AbiKRD47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Nov 2022 22:56:59 -0500
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D5291C04
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 19:56:51 -0800 (PST)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-369426664f9so38257007b3.12
+        for <netdev@vger.kernel.org>; Thu, 17 Nov 2022 19:56:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=SsiMsAzDlSLJwzmRWqJ5h3ckG3cOmcb5jkuz+Jp1qRQ=;
+        b=L77aU4khxl6eRuvJsseXrktXsgPma8Gg950JxipNomcV73sYlvCIrR4oP2ctCYZ+bX
+         V4pFTO5sOt8LIeXmOz2vk1up7yfhRt4n8C3eJSF0Clops+5vX6Ix5ElCfHJji68LoOFq
+         jg6pHas/4s42mOYnMs2S6I2PPc4g9LxIrMy+q8uay//e5NGcey88oclpbMMLtdo4AA3b
+         /M5w1MIqCPOY54yVB+Br20A/bEnqKk3Yvp2lb2eWdwZCWmmxH3fvLLxDPAx6WwmxaYl4
+         3PWP+PBzsUfIPdzbINwG0WIPljMexrYh8ZaDapohTgUpLk84Qf9sGs0ImRpRLtCsarrw
+         5Ajw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=UDtkEcqJzRTlxRyWyaNAn8GW0a2TWAtw/oLy5nd7MPY=;
-        b=h9323HtHugQs0pRnsjLGIEuTVqzGjcyU7d+t9cqIRv8s5rqFk2XOWkd/67v2kt/B32
-         zEU2anhupPj0SPgvC2SX4KkD8CoCne9aejAn8NX3dLhvrcPMjQh+ZN/xsMiRkpUTfS+C
-         QKLrBW8081hBJ5cBvdamUnurGTdkx5Fym0QkU4oXPUSuC5Ec9CrPXRm49jRDUCcAJ58O
-         MpGBi1h+5DhrGm+IIB0aZVDgMRc9V+DiRrutmQyQ4S0NVM7qWA+fZvUJkUP6j/rSR14I
-         2I4+i4YvDLr94Rvp7HqaYibhAXaqvigzL7qcLJilMWt5HH0M7vyWQfw33u+DTLDJDgVU
-         UJPg==
-X-Gm-Message-State: ANoB5pmUbv6wKsBTxRYBgRwanOOqqQ6erevYeiAj4YRv3EZh6rzAf2Zk
-        +p1UO895Z4hVIb16stdT+WQa2DJRaw==
-X-Google-Smtp-Source: AA0mqf4K0OJhLHjSGO9nbwPqE6UHdxRHKO1nslXWP9nd6zrfrLKem9/vCQ31DFM8mojDprSrx8p/lg==
-X-Received: by 2002:a05:6830:cd:b0:66c:75f9:29fa with SMTP id x13-20020a05683000cd00b0066c75f929famr3015262oto.221.1668743773464;
-        Thu, 17 Nov 2022 19:56:13 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id j2-20020a4ad182000000b0049f3f5afcbasm1027043oor.13.2022.11.17.19.56.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Nov 2022 19:56:12 -0800 (PST)
-Received: (nullmailer pid 397828 invoked by uid 1000);
-        Fri, 18 Nov 2022 03:56:14 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SsiMsAzDlSLJwzmRWqJ5h3ckG3cOmcb5jkuz+Jp1qRQ=;
+        b=T5Z+iqAzNYTU78CuV1S444nz8U6WTcIwUievnESaKmZUDU5ngEn9Ik1q4OgWQkF8va
+         /9GvgkgFACqCuDPD78ztnsfU9OlXVTBl+YSlTjG/6CcwryuQ1jRNVLgxcNPvxxda2YWX
+         bAaR61agLaHqlluLWpZMApuojF8uKdXstvdehXaJsOWGD01IEachmXIVjT9dP0jFWPDY
+         L0HBLeRB4q2DX4sw8KC2xS1WXFd1dHAK8JA45fK7sGHsO7JtIn9HcxagMsWSTrIOxve9
+         hpB+dxuizKuw33v2VPTveZYpVmTRTaoSBgBBvCJiO7qo6snIBvSr/xap7V1cu6pbGNnP
+         RB/A==
+X-Gm-Message-State: ANoB5plxnpHfuXnv2lmyZM4nUuil6LXqxxDu+D3U4iyo8WTRX734vWkQ
+        Y7CZM9ZgnsXeO9tYs0JXnBuT2DD+MoQAojeiEsu0aST5N3U=
+X-Google-Smtp-Source: AA0mqf7FUXpAsITkNYmHLHxvauYBrwdV+xmHnXooqkZwlQNRO6RU746eEMqSWlg8PM8AmsZbM2aVYUMhl2R93v9I62Q=
+X-Received: by 2002:a81:5f04:0:b0:393:ab0b:5a31 with SMTP id
+ t4-20020a815f04000000b00393ab0b5a31mr2885085ywb.55.1668743810364; Thu, 17 Nov
+ 2022 19:56:50 -0800 (PST)
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>
-In-Reply-To: <20221118001548.635752-2-tharvey@gateworks.com>
-References: <20221118001548.635752-1-tharvey@gateworks.com>
- <20221118001548.635752-2-tharvey@gateworks.com>
-Message-Id: <166874355648.392544.11627332745396006042.robh@kernel.org>
-Subject: Re: [PATCH 1/3] dt-bindings: net: phy: dp83867: add LED mode property
-Date:   Thu, 17 Nov 2022 21:56:14 -0600
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+References: <20221118034353.1736727-1-liuhangbin@gmail.com>
+In-Reply-To: <20221118034353.1736727-1-liuhangbin@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 17 Nov 2022 19:56:39 -0800
+Message-ID: <CANn89iKK_Y6q5yE_z9tXzNk8GNHVQZ_5zRtwK_pNRDYC5+p14Q@mail.gmail.com>
+Subject: Re: [PATCHv4 net] bonding: fix ICMPv6 header handling when receiving
+ IPv6 messages
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Tom Herbert <tom@herbertland.com>, Liang Li <liali@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,37 +74,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu, 17 Nov 2022 16:15:46 -0800, Tim Harvey wrote:
-> Add description for new property ti,led-modes in binding file.
-> 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+On Thu, Nov 17, 2022 at 7:44 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> Currently, we get icmp6hdr via function icmp6_hdr(), which needs the skb
+> transport header to be set first. But there is no rule to ask driver set
+> transport header before netif_receive_skb() and bond_handle_frame(). So
+> we will not able to get correct icmp6hdr on some drivers.
+>
+> Fix this by using skb_header_pointer to get the IPv6 and ICMPV6 headers.
+>
+> Reported-by: Liang Li <liali@redhat.com>
+> Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
+> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 > ---
->  .../devicetree/bindings/net/ti,dp83867.yaml      |  6 ++++++
->  include/dt-bindings/net/ti-dp83867.h             | 16 ++++++++++++++++
->  2 files changed, 22 insertions(+)
-> 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/net/ti,dp83867.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/net/schemas/types.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20221118001548.635752-2-tharvey@gateworks.com
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command.
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
