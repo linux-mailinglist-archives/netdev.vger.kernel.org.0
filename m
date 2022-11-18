@@ -2,122 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8808062F905
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 16:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E6162F9D6
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242348AbiKRPNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 10:13:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
+        id S241780AbiKRQAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 11:00:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242244AbiKRPND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 10:13:03 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8102D3120A;
-        Fri, 18 Nov 2022 07:13:02 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id j15so9031841wrq.3;
-        Fri, 18 Nov 2022 07:13:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RBu6ZO+1FiLFyP3QbWuC4gA1lMk94ckwWc0IZKeuNxM=;
-        b=IlNQILsvhOTrBMZRldCQgd/g0Ibcf7lIYqkJKKHGSOuuytLtPYQar7KOrf/E9czZgB
-         ssNm0c5jB488Aqe2gZcke4eU7FzNWEjoh0OjtqfNKYorVbwGMzsn3D3b5t4ITMGvy0A2
-         pctA04IRg9BRvVqMWQ3oHRucyx/MvjarjwLgcRRUgkntwHA+yuytezYWzsp+fEV7CqGn
-         UsCHqqzYqc6dENW7wS+ItttjEg4V504jutac/qejkSFTAdUFmhMqVEPLZVoG/3JES3US
-         NLwa9PEWVt7hj0MY6HaW9W28+kZbZxvEQB1pEg2vdthIZ/izZk0smlOePekPUdlJplC/
-         DLNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RBu6ZO+1FiLFyP3QbWuC4gA1lMk94ckwWc0IZKeuNxM=;
-        b=itON++eGWIXwghyOP4ukyzO9bJ+5amESWRZS6dHxLxf2fCy1K1fXvJ7tKiY+oaTukW
-         +HqS8Q+hVKPvsYE1CiQz9yTf1sbNuI+5fZwUiPJfJJYYeD7YdD1j6u6gWZB3tfG0auXO
-         WqOtBfVMRgp0HeAFs1PJ90oXOA/Pfl2RAGDUbDez6Vu+j/MnJNTHsx/VVK65YTzLXkqw
-         rC+ypeZY9bBWqi9ZqyFFspVmyZC7KOjAb47f30hr4g2bFtQpE5hBDOIfMVw0gAX0uchL
-         Hw0Xy4ZPgeQKugDxfNYAQZ8xFrE40VKed+8UD2kWA/GpLIcJM/pgc86LwYfFk0QQjLv3
-         OnFQ==
-X-Gm-Message-State: ANoB5pmbS8nLJffFf2YOcpDx/TJXmkCmWvv3FpBX5rblqCly7KcYHt8z
-        YvaTv6xE9YRjKobgfE0OWdk=
-X-Google-Smtp-Source: AA0mqf47gtjGxXnD6K/2zYyQqGHg8iCiEhbq37b6wmEosMtfiHwlnpqPm0VXzSNtZc5icFffJy6KXQ==
-X-Received: by 2002:a5d:6551:0:b0:236:8fa1:47cf with SMTP id z17-20020a5d6551000000b002368fa147cfmr4815179wrv.50.1668784381085;
-        Fri, 18 Nov 2022 07:13:01 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id c2-20020a05600c0a4200b003cfd4cf0761sm10266842wmq.1.2022.11.18.07.12.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 07:13:00 -0800 (PST)
-Date:   Fri, 18 Nov 2022 18:12:52 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S241628AbiKRQAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:00:09 -0500
+X-Greylist: delayed 2752 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Nov 2022 08:00:07 PST
+Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3400A8CFDC
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:00:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
+        s=20190804; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+        In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=PYQLBryNBg2V98bbiL4e5M8gxG2GeWbeLo/CFoncenc=; b=Uvm3QR9uY6MNvHIwv4bkERMGk7
+        Z/DfjHBIRgLeuVa7KXDB1VwttGKa9DT8JDsvWd0lbqMEPlz7C1cgYHvKTBthnFenPvJVunBKHBB5a
+        0BZ6dGOtT9mg9k6LTNK7DrLVuD2Mb+C6/MFISaouSrhB2++qfXu9QmpvRV+a8zBUT62K/DBq852YK
+        +/C266DYZT+gIW45CsnB5b0oknfj2LxYc0PtMlfbwf9byFSZrespOc1aBLjnuWKiocfBlZ33Wjz5p
+        Xt0hxBH2BanVBi+qYak7zzj7N7QgFJ6cb6LuDMDO2V9GsBfMiDiRHEhGgqOZ7BaOoNcTzbL8aAsVp
+        0UVHdKMg==;
+Received: from [145.224.93.132] (helo=javelin)
+        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <lynxis@fe80.eu>)
+        id 1ow33k-001vrc-1i; Fri, 18 Nov 2022 15:13:40 +0000
+Date:   Fri, 18 Nov 2022 15:13:31 +0000
+From:   Alexander 'lynxis' Couzens <lynxis@fe80.eu>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Casper Andersson <casper.casan@gmail.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: microchip: sparx5: fix uninitialized variables
-Message-ID: <Y3eg9Ml/LmLR3L3C@kili>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 4/6] net: ethernet: mtk_eth_soc: implement
+ multi-queue support for per-port queues
+Message-ID: <20221118151331.4694574f@javelin>
+In-Reply-To: <20221116080734.44013-5-nbd@nbd.name>
+References: <20221116080734.44013-1-nbd@nbd.name>
+        <20221116080734.44013-5-nbd@nbd.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Smatch complains that "err" can be uninitialized on these paths.  Also
-it's just nicer to "return 0;" instead of "return err;"
+Hi Felix,
 
-Fixes: 3a344f99bb55 ("net: microchip: sparx5: Add support for TC flower ARP dissector")
-Signed-off-by: Dan Carpenter <error27@gmail.com>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+On Wed, 16 Nov 2022 09:07:32 +0100
+Felix Fietkau <nbd@nbd.name> wrote:
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index a48baeacc1d2..aab7507cf568 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -341,7 +341,7 @@ sparx5_tc_flower_handler_vlan_usage(struct sparx5_tc_flower_parse_usage *st)
- 
- 	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_VLAN);
- 
--	return err;
-+	return 0;
- out:
- 	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "vlan parse error");
- 	return err;
-@@ -452,8 +452,10 @@ sparx5_tc_flower_handler_arp_usage(struct sparx5_tc_flower_parse_usage *st)
- 
- 	/* The IS2 ARP keyset does not support ARP hardware addresses */
- 	if (!is_zero_ether_addr(mt.mask->sha) ||
--	    !is_zero_ether_addr(mt.mask->tha))
-+	    !is_zero_ether_addr(mt.mask->tha)) {
-+		err = -EINVAL;
- 		goto out;
-+	}
- 
- 	if (mt.mask->sip) {
- 		ipval = be32_to_cpu((__force __be32)mt.key->sip);
-@@ -477,7 +479,7 @@ sparx5_tc_flower_handler_arp_usage(struct sparx5_tc_flower_parse_usage *st)
- 
- 	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_ARP);
- 
--	return err;
-+	return 0;
- 
- out:
- 	NL_SET_ERR_MSG_MOD(st->fco->common.extack, "arp parse error");
--- 
-2.35.1
+> @@ -614,6 +618,75 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
+>  	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
+>  }
+>  
+> +static void mtk_set_queue_speed(struct mtk_eth *eth, unsigned int idx,
+> +				int speed)
+> +{
+> +	const struct mtk_soc_data *soc = eth->soc;
+> +	u32 ofs, val;
+> +
+> +	if (!MTK_HAS_CAPS(soc->caps, MTK_QDMA))
+> +		return;
+> +
+> +	val = MTK_QTX_SCH_MIN_RATE_EN |
+> +	      /* minimum: 10 Mbps */
+> +	      FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
+> +	      FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 4) |
+> +	      MTK_QTX_SCH_LEAKY_BUCKET_SIZE;
+> +	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
+> +		val |= MTK_QTX_SCH_LEAKY_BUCKET_EN;
+> +
+> +	if (IS_ENABLED(CONFIG_SOC_MT7621)) {
+> +		switch (speed) {
+> +		case SPEED_10:
+> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 103) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 2) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
+> +			break;
+> +		case SPEED_100:
+> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 103) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 3);
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
+> +			break;
+> +		case SPEED_1000:
+> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 105) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 4) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +	} else {
+> +		switch (speed) {
+> +		case SPEED_10:
+> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 1) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 4) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
+> +			break;
+> +		case SPEED_100:
+> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 1) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5);
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 1);
+> +			break;
+> +		case SPEED_1000:
+> +			val |= MTK_QTX_SCH_MAX_RATE_EN |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 10) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5) |
+> +			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +	}
+> +
+> +	ofs = MTK_QTX_OFFSET * idx;
+> +	mtk_w32(eth, val, soc->reg_map->qdma.qtx_sch + ofs);
+> +}
+> +
+>  static void mtk_mac_link_up(struct phylink_config *config,
+>  			    struct phy_device *phy,
+>  			    unsigned int mode, phy_interface_t interface,
+> @@ -639,6 +712,8 @@ static void mtk_mac_link_up(struct phylink_config *config,
 
+
+What's happening to 2.5Gbit ports (e.g. on mt7622)? Should be SPEED_2500 also in the switch/case?
+E.g. a direct connected 2.5Gbit phy to GMAC0.
+Or a mt7622 GMAC0 to mt7531 port 6 and a 2.5Gbit phy to port 5.
