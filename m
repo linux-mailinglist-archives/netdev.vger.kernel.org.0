@@ -2,115 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3170562F406
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 12:50:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE5462F40B
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 12:52:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235239AbiKRLux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 06:50:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
+        id S241181AbiKRLwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 06:52:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235182AbiKRLuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 06:50:52 -0500
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3575B922F5
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:50:48 -0800 (PST)
-Received: by mail-il1-f199.google.com with SMTP id k3-20020a92c243000000b0030201475a6bso3150062ilo.9
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:50:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=O8R1Gfq5Fl8LwQMCqabLpPUSSLaHyEz1st1n5T0M71Q=;
-        b=jpPFnOJKjJDaGGAL8xWXELyIrh3W0pl+tFQKmLoU4QfKRNU220A6BQITwGaS/lHGwp
-         YvQ2y+Msr9rcBJ1rlcPjWWIqK1SNPC6DWEzEWtyxXpHQu1G5bbSqGJeI8abh/+bitGC4
-         9OiDmWoQZVbIEnW/tZtI+HTjCaq7AzOHX7CXaPUve5Lc9MwF9yom4zpCkzJ3ByVCMc9w
-         SFo+nOWi8y3X6e6Hyjv5f+eoPOXD0rjwlUyZ2fMB1KTGmoUk8o+ac+FuMXel6N6f1JxP
-         PQzz74p9UtfOWOwxz263NGgzUY7c+YSN14DCuHYvt6FHmu8C4BxTSwVqhk4Svc1JCvFo
-         MjXw==
-X-Gm-Message-State: ANoB5pkKXRMrQ+uF24gDx+jOwFsFRylDCB0w+SHAhV+/UmqTGP9Y/EjG
-        9n9cVuckDbs83t+tJJQamqi0LQa4M0lE7ZcMn5riiGDr87+b
-X-Google-Smtp-Source: AA0mqf4RGzkXLsKamY623483tK8m6PTRRuSBapAkPe84hE8zj/n0j9csBqc4FSc4HfXalJiUd+3VzbJLtuSEfec9HGG6ldbsW5gh
+        with ESMTP id S230523AbiKRLwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 06:52:49 -0500
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12BB922EE
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 03:52:47 -0800 (PST)
+Received: from fsav411.sakura.ne.jp (fsav411.sakura.ne.jp [133.242.250.110])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2AIBpLhq014927;
+        Fri, 18 Nov 2022 20:51:21 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav411.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp);
+ Fri, 18 Nov 2022 20:51:21 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2AIBpEwV014896
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 18 Nov 2022 20:51:20 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <c64284f4-2c2a-ecb9-a08e-9e49d49c720b@I-love.SAKURA.ne.jp>
+Date:   Fri, 18 Nov 2022 20:51:13 +0900
 MIME-Version: 1.0
-X-Received: by 2002:a02:6d5c:0:b0:375:2859:655c with SMTP id
- e28-20020a026d5c000000b003752859655cmr2955441jaf.1.1668772247467; Fri, 18 Nov
- 2022 03:50:47 -0800 (PST)
-Date:   Fri, 18 Nov 2022 03:50:47 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000057d3e05edbd51b9@google.com>
-Subject: [syzbot] WARNING in default_device_exit_batch (4)
-From:   syzbot <syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, roman.gushchin@linux.dev, shakeelb@google.com,
-        shaozhengchao@huawei.com, syzkaller-bugs@googlegroups.com,
-        vasily.averin@linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: [PATCH 6.1-rc6] l2tp: call udp_tunnel_encap_enable() and
+ sock_release() without sk_callback_lock
+Content-Language: en-US
+To:     "David S. Miller\"" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Tom Parkin <tparkin@katalix.com>
+References: <0000000000004e78ec05eda79749@google.com>
+ <00000000000011ec5105edb50386@google.com>
+Cc:     syzbot <syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com>,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Haowei Yan <g1042620637@gmail.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <00000000000011ec5105edb50386@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+syzbot is reporting sleep in atomic context at l2tp_tunnel_register() [1],
+for commit b68777d54fac ("l2tp: Serialize access to sk_user_data with
+sk_callback_lock") missed that udp_tunnel_encap_enable() from
+setup_udp_tunnel_sock() might sleep.
 
-syzbot found the following issue on:
+Since we don't want to drop sk->sk_callback_lock inside
+setup_udp_tunnel_sock() right before calling udp_tunnel_encap_enable(),
+introduce a variant which does not call udp_tunnel_encap_enable(). And
+call udp_tunnel_encap_enable() after dropping sk->sk_callback_lock.
 
-HEAD commit:    81ac25651a62 Merge tag 'nfsd-6.1-5' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16b08501880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6f4e5e9899396248
-dashboard link: https://syzkaller.appspot.com/bug?extid=9dfc3f3348729cc82277
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Also, drop sk->sk_callback_lock before calling sock_release() in order to
+avoid circular locking dependency problem.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/9604c2253fa1/disk-81ac2565.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/e1af57bc5afd/vmlinux-81ac2565.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/20049443b718/bzImage-81ac2565.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
-
-bond3 (unregistering): Released all slaves
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 4036 at net/core/dev.c:10870 unregister_netdevice_many+0x1412/0x1930 net/core/dev.c:10870
-Modules linked in:
-CPU: 0 PID: 4036 Comm: kworker/u4:8 Not tainted 6.1.0-rc5-syzkaller-00103-g81ac25651a62 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-Workqueue: netns cleanup_net
-RIP: 0010:unregister_netdevice_many+0x1412/0x1930 net/core/dev.c:10870
-Code: c2 1a 00 00 48 c7 c6 80 60 5b 8b 48 c7 c7 80 61 5b 8b c6 05 8e 50 86 06 01 e8 d7 2f f3 01 0f 0b e9 7a f9 ff ff e8 de 53 c8 f9 <0f> 0b e9 51 f9 ff ff e8 42 17 15 fa e9 b9 ed ff ff 4c 89 ef e8 95
-RSP: 0018:ffffc90005cd7a58 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 00000000738d3001 RCX: 0000000000000000
-RDX: ffff8880267cd7c0 RSI: ffffffff87b7c5a2 RDI: 0000000000000001
-RBP: ffff888060fb1600 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff888060fb1600 R14: ffff88807ad9c000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055ca93a63950 CR3: 000000007f17c000 CR4: 0000000000350ef0
-Call Trace:
- <TASK>
- default_device_exit_batch+0x44d/0x590 net/core/dev.c:11341
- ops_exit_list+0x125/0x170 net/core/net_namespace.c:174
- cleanup_net+0x4ee/0xb00 net/core/net_namespace.c:601
- process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
- worker_thread+0x669/0x1090 kernel/workqueue.c:2436
- kthread+0x2e8/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-
-
+Link: https://syzkaller.appspot.com/bug?extid=703d9e154b3b58277261 [1]
+Reported-by: syzbot <syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: b68777d54fac ("l2tp: Serialize access to sk_user_data with sk_callback_lock")
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+F.Y.I. Below is the lockdep message:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ ======================================================
+ WARNING: possible circular locking dependency detected
+ 6.1.0-rc5+ #2 Not tainted
+ ------------------------------------------------------
+ a.out/2794 is trying to acquire lock:
+ ffff8c628878bdf0 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: sk_common_release+0x19/0xe0
+
+ but task is already holding lock:
+ ffff8c628878c078 (k-clock-AF_INET){+++.}-{2:2}, at: l2tp_tunnel_register+0x64/0x5e0 [l2tp_core]
+
+ which lock already depends on the new lock.
+
+
+ the existing dependency chain (in reverse order) is:
+
+ -> #2 (k-clock-AF_INET){+++.}-{2:2}:
+        lock_acquire+0xc7/0x2e0
+        _raw_read_lock_bh+0x3d/0x80
+        sock_i_uid+0x19/0x40
+        udp_lib_lport_inuse+0x2c/0x120
+        udp_lib_get_port+0xf8/0x570
+        udp_v4_get_port+0xbb/0xc0
+        __inet_bind+0x10e/0x240
+        inet_bind+0x2b/0x40
+        kernel_bind+0xb/0x10
+        udp_sock_create4+0x97/0x160 [udp_tunnel]
+        l2tp_tunnel_sock_create+0x316/0x330 [l2tp_core]
+        l2tp_tunnel_register+0x394/0x5e0 [l2tp_core]
+        l2tp_nl_cmd_tunnel_create+0xe8/0x200 [l2tp_netlink]
+        genl_family_rcv_msg_doit.isra.17+0x102/0x140
+        genl_rcv_msg+0x112/0x270
+        netlink_rcv_skb+0x4f/0x100
+        genl_rcv+0x23/0x40
+        netlink_unicast+0x1a5/0x280
+        netlink_sendmsg+0x22f/0x490
+        sock_sendmsg+0x2e/0x40
+        ____sys_sendmsg+0x1e9/0x210
+        ___sys_sendmsg+0x77/0xb0
+        __sys_sendmsg+0x60/0xb0
+        __x64_sys_sendmsg+0x1a/0x20
+        do_syscall_64+0x34/0x80
+        entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+ -> #1 (&table->hash[i].lock){+...}-{2:2}:
+        lock_acquire+0xc7/0x2e0
+        _raw_spin_lock_bh+0x31/0x40
+        udp_lib_get_port+0xda/0x570
+        udp_v4_get_port+0xbb/0xc0
+        __inet_bind+0x10e/0x240
+        inet_bind+0x2b/0x40
+        kernel_bind+0xb/0x10
+        udp_sock_create4+0x97/0x160 [udp_tunnel]
+        l2tp_tunnel_sock_create+0x316/0x330 [l2tp_core]
+        l2tp_tunnel_register+0x394/0x5e0 [l2tp_core]
+        l2tp_nl_cmd_tunnel_create+0xe8/0x200 [l2tp_netlink]
+        genl_family_rcv_msg_doit.isra.17+0x102/0x140
+        genl_rcv_msg+0x112/0x270
+        netlink_rcv_skb+0x4f/0x100
+        genl_rcv+0x23/0x40
+        netlink_unicast+0x1a5/0x280
+        netlink_sendmsg+0x22f/0x490
+        sock_sendmsg+0x2e/0x40
+        ____sys_sendmsg+0x1e9/0x210
+        ___sys_sendmsg+0x77/0xb0
+        __sys_sendmsg+0x60/0xb0
+        __x64_sys_sendmsg+0x1a/0x20
+        do_syscall_64+0x34/0x80
+        entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+ -> #0 (k-sk_lock-AF_INET){+.+.}-{0:0}:
+        check_prevs_add+0x16a/0x1070
+        __lock_acquire+0x11bd/0x1670
+        lock_acquire+0xc7/0x2e0
+        udp_destroy_sock+0x2d/0xd0
+        sk_common_release+0x19/0xe0
+        udp_lib_close+0x9/0x10
+        inet_release+0x2e/0x60
+        __sock_release+0x7e/0xa0
+        sock_release+0xb/0x10
+        l2tp_tunnel_register+0x3f1/0x5e0 [l2tp_core]
+        l2tp_nl_cmd_tunnel_create+0xe8/0x200 [l2tp_netlink]
+        genl_family_rcv_msg_doit.isra.17+0x102/0x140
+        genl_rcv_msg+0x112/0x270
+        netlink_rcv_skb+0x4f/0x100
+        genl_rcv+0x23/0x40
+        netlink_unicast+0x1a5/0x280
+        netlink_sendmsg+0x22f/0x490
+        sock_sendmsg+0x2e/0x40
+        ____sys_sendmsg+0x1e9/0x210
+        ___sys_sendmsg+0x77/0xb0
+        __sys_sendmsg+0x60/0xb0
+        __x64_sys_sendmsg+0x1a/0x20
+        do_syscall_64+0x34/0x80
+        entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+ other info that might help us debug this:
+
+ Chain exists of:
+   k-sk_lock-AF_INET --> &table->hash[i].lock --> k-clock-AF_INET
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(k-clock-AF_INET);
+                                lock(&table->hash[i].lock);
+                                lock(k-clock-AF_INET);
+   lock(k-sk_lock-AF_INET);
+
+  *** DEADLOCK ***
+
+ 3 locks held by a.out/2794:
+  #0: ffffffffb466fc30 (cb_lock){++++}-{3:3}, at: genl_rcv+0x14/0x40
+  #1: ffffffffb466fcc8 (genl_mutex){+.+.}-{3:3}, at: genl_rcv_msg+0x14d/0x270
+  #2: ffff8c628878c078 (k-clock-AF_INET){+++.}-{2:2}, at: l2tp_tunnel_register+0x64/0x5e0 [l2tp_core]
+
+ include/net/udp_tunnel.h   |  2 ++
+ net/ipv4/udp_tunnel_core.c | 10 ++++++++--
+ net/l2tp/l2tp_core.c       | 10 +++++-----
+ 3 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
+index 72394f441dad..a84fa57bc750 100644
+--- a/include/net/udp_tunnel.h
++++ b/include/net/udp_tunnel.h
+@@ -92,6 +92,8 @@ struct udp_tunnel_sock_cfg {
+ /* Setup the given (UDP) sock to receive UDP encapsulated packets */
+ void setup_udp_tunnel_sock(struct net *net, struct socket *sock,
+ 			   struct udp_tunnel_sock_cfg *sock_cfg);
++void setup_udp_tunnel_sock_no_enable(struct net *net, struct socket *sock,
++				     struct udp_tunnel_sock_cfg *sock_cfg);
+ 
+ /* -- List of parsable UDP tunnel types --
+  *
+diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
+index 8242c8947340..dff825664000 100644
+--- a/net/ipv4/udp_tunnel_core.c
++++ b/net/ipv4/udp_tunnel_core.c
+@@ -57,8 +57,8 @@ int udp_sock_create4(struct net *net, struct udp_port_cfg *cfg,
+ }
+ EXPORT_SYMBOL(udp_sock_create4);
+ 
+-void setup_udp_tunnel_sock(struct net *net, struct socket *sock,
+-			   struct udp_tunnel_sock_cfg *cfg)
++void setup_udp_tunnel_sock_no_enable(struct net *net, struct socket *sock,
++				     struct udp_tunnel_sock_cfg *cfg)
+ {
+ 	struct sock *sk = sock->sk;
+ 
+@@ -77,7 +77,13 @@ void setup_udp_tunnel_sock(struct net *net, struct socket *sock,
+ 	udp_sk(sk)->encap_destroy = cfg->encap_destroy;
+ 	udp_sk(sk)->gro_receive = cfg->gro_receive;
+ 	udp_sk(sk)->gro_complete = cfg->gro_complete;
++}
++EXPORT_SYMBOL_GPL(setup_udp_tunnel_sock_no_enable);
+ 
++void setup_udp_tunnel_sock(struct net *net, struct socket *sock,
++			   struct udp_tunnel_sock_cfg *cfg)
++{
++	setup_udp_tunnel_sock_no_enable(net, sock, cfg);
+ 	udp_tunnel_encap_enable(sock);
+ }
+ EXPORT_SYMBOL_GPL(setup_udp_tunnel_sock);
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 754fdda8a5f5..a4f611196c83 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1506,7 +1506,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 			.encap_destroy = l2tp_udp_encap_destroy,
+ 		};
+ 
+-		setup_udp_tunnel_sock(net, sock, &udp_cfg);
++		setup_udp_tunnel_sock_no_enable(net, sock, &udp_cfg);
+ 	} else {
+ 		rcu_assign_sk_user_data(sk, tunnel);
+ 	}
+@@ -1519,19 +1519,19 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 
+ 	trace_register_tunnel(tunnel);
+ 
++	write_unlock(&sk->sk_callback_lock);
++	if (tunnel->encap == L2TP_ENCAPTYPE_UDP)
++		udp_tunnel_encap_enable(sock);
+ 	if (tunnel->fd >= 0)
+ 		sockfd_put(sock);
+-
+-	write_unlock(&sk->sk_callback_lock);
+ 	return 0;
+ 
+ err_sock:
++	write_unlock(&sk->sk_callback_lock);
+ 	if (tunnel->fd < 0)
+ 		sock_release(sock);
+ 	else
+ 		sockfd_put(sock);
+-
+-	write_unlock(&sk->sk_callback_lock);
+ err:
+ 	return ret;
+ }
+-- 
+2.18.4
+
+
