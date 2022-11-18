@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55BEE62FB6D
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 18:17:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78FE462FBA2
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 18:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242537AbiKRRRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 12:17:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        id S240803AbiKRRaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 12:30:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234867AbiKRRQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 12:16:49 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D6913D4A;
-        Fri, 18 Nov 2022 09:16:48 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id bj12so14518056ejb.13;
-        Fri, 18 Nov 2022 09:16:47 -0800 (PST)
+        with ESMTP id S235505AbiKRRaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 12:30:19 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183F5186EC;
+        Fri, 18 Nov 2022 09:30:18 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id x2so8119728edd.2;
+        Fri, 18 Nov 2022 09:30:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=f50cXlhSl5OKrL1veymKT19+b2RPjsREkRB5uQP4LcA=;
-        b=QWjssaTSe3zToxs7F5fKzajzmgz8VhcvKDm0hRrHuwiXrD1YwxCIGmQUFznFn6cWdc
-         LAWbgCMKKLIkUlcG4y4d9y6zpjXISYczomA9Srn7ihvFeBiBmHeO3rpJf9oRGLQoxDtS
-         2NSKw+j7omgw+IA6KOZpuvr3wJyKxyO5OcOyOg9yCzzrggw6hXGH3Y4jhWwd/hnviHYY
-         ppCxqMujBu5zZsAaDL2GxX2Mphe3S6m1eDvxiQdbUjwECdbParRgy+H1o5TcYa3oPZdD
-         KYxRJiES2RE3FwiD2bxPHDsLCojI6qRKiPcMqc7YzA1cwKwW8egTGq6ISxcRWlv8PlW2
-         FJ3g==
+        bh=0uivhCS3hrzrIPQvwJTsradHbw3Nzt6+m34AyTOhZQ0=;
+        b=WX7zKRuKRu2BJakMMuR/zGmp9zUQNzAVK093+VPSLJcTwOpqrVjcxeYdvO4IOuD0n/
+         DZdha0KAeGLVfXl5fj1sb+BWGMHu2hLV1oiKiw6FP+cVfQTuutwQlg8T5OA9P8e45CI+
+         /x2xZG7PneaCh+aYjyFMWND/bJpKeHKVXexZBjp7CchfS42FcbOvPY8frPoKMLwz5wNp
+         9IeWJZWlr4qCmPhOG1oPqWnVfreRmp6gyJOqPrQGDKOH07MNuywofJA9uDANhVzGqYWF
+         vOnEpo2KsNZGi2XsBDtWJMbgg8CtzVcprw1+KpaWHkkWwC5ktDUZvjx/9rD5of1xIEY3
+         yGkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=f50cXlhSl5OKrL1veymKT19+b2RPjsREkRB5uQP4LcA=;
-        b=1H9qnhq976MHBJuOZU8z2pp6Ddbll9+leiF+BnEuTritrfjJ/D1mQvsfMhteaThyXK
-         4SdxBOP82IV/HzcZhvFzFVBqKlKWrtm1tQj42hUaKFAWTWEAX6/WoVp+eg/W+/Gpxfvk
-         7ASsynRLHiqlMnCxtvVrEbc+ThlzVd5/PTi5n+uuae1CW9YWb+n2bhrrl4j6gTk3Lc32
-         l074qPXiKO39kqZ9iyLDpYVSImw5WbI7mOPUM6+aCF3B/PmvAD0zl0g7xVsZuQhKOutr
-         jqLyw18QVpiRwgOiitjmQ+1SufhLow2yo9xmEFLydM/wFxF1enwzB9Rrf8Kr9i7coXeV
-         uGXQ==
-X-Gm-Message-State: ANoB5pnLMkh1tqfgl64LUWEswzVeTUfouTFEEYTxg5hcLq9c4ChYVAUV
-        PnlNYRUkMVywpzH9/u5wQmE=
-X-Google-Smtp-Source: AA0mqf55zNNnFg4E/G89nnnEUNEODkzsqNbeeOGil51xumuQsyZ9Cr4hsH00FdIYZW/GQxpu7lr2eg==
-X-Received: by 2002:a17:906:f88:b0:78d:ff14:63f9 with SMTP id q8-20020a1709060f8800b0078dff1463f9mr6677725ejj.516.1668791806361;
-        Fri, 18 Nov 2022 09:16:46 -0800 (PST)
+        bh=0uivhCS3hrzrIPQvwJTsradHbw3Nzt6+m34AyTOhZQ0=;
+        b=QLLMbNcwJmOA/v53ibyzvf7ALZWghXJOFjh6eqrgd5SZcGT+hEssd8NmI25ISQpKxS
+         68sCzhrhuxjvpqm/qn6Q7gGqXNlsFeki6l8rdHNWz7rrCSG0O8aFxBlh5DixKGahMJh3
+         egbjxL+toV7P/6tMwsgreMDV12aEkz1GMi5Xl8vEeG59cg4gRpkAotP6xAAwYp3b00xX
+         zAqyUy4xdFHNJtTjBM0a9HVBpknaR11UBaRy/UjkxKUZi7bMRIJPhhLXXG/YSd8jz5y3
+         PRXeq/C7YNhi/ZUjjfI5My0LYrDllkmYwfeWwrGGITZfn5cFg5i2hyr9CerkZwDX8sDb
+         S73Q==
+X-Gm-Message-State: ANoB5plMHCkB269UzN8/4x1F1eVOfMuo9vZTvvEMlPt7ZLtf+Hjl+xWp
+        S5+oNV59LVOGS9qt1ax6W3Y=
+X-Google-Smtp-Source: AA0mqf4W6/CxKfx1yfXcZgmwCURxQtfhGb9oF9kd/Uh28WiW657srpHdzxcz69JITqkdaT01rwBfiA==
+X-Received: by 2002:a05:6402:550b:b0:45f:9526:e35a with SMTP id fi11-20020a056402550b00b0045f9526e35amr7138693edb.256.1668792616538;
+        Fri, 18 Nov 2022 09:30:16 -0800 (PST)
 Received: from skbuf ([188.27.185.168])
-        by smtp.gmail.com with ESMTPSA id r9-20020a1709060d4900b007ae243c3f05sm1900342ejh.189.2022.11.18.09.16.45
+        by smtp.gmail.com with ESMTPSA id mh23-20020a170906eb9700b007af105a87cbsm1920348ejb.152.2022.11.18.09.30.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 09:16:46 -0800 (PST)
-Date:   Fri, 18 Nov 2022 19:16:43 +0200
+        Fri, 18 Nov 2022 09:30:16 -0800 (PST)
+Date:   Fri, 18 Nov 2022 19:30:14 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
@@ -60,18 +60,19 @@ Cc:     Sean Anderson <sean.anderson@seco.com>,
         linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>
 Subject: Re: [PATCH] phy: aquantia: Configure SERDES mode by default
-Message-ID: <20221118171643.vu6uxbnmog4sna65@skbuf>
+Message-ID: <20221118173014.4i7fccrgcqr6dkp4@skbuf>
 References: <20221114210740.3332937-1-sean.anderson@seco.com>
  <20221114210740.3332937-1-sean.anderson@seco.com>
  <20221115223732.ctvzjbpeaxulnm5l@skbuf>
  <3771f5be-3deb-06f9-d0a0-c3139d098bf0@seco.com>
  <20221115230207.2e77pifwruzkexbr@skbuf>
  <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
- <Y3bLlUk1wxzAqKmj@lunn.ch>
+ <20221118164914.6k3gofemf5tu2gfn@skbuf>
+ <1015dfec-542d-8222-6c4e-0cf9d5ee7e5a@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y3bLlUk1wxzAqKmj@lunn.ch>
+In-Reply-To: <1015dfec-542d-8222-6c4e-0cf9d5ee7e5a@seco.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -82,37 +83,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 01:02:29AM +0100, Andrew Lunn wrote:
-> > Well, part of my goal in sending out this patch is to get some feedback
-> > on the right thing to do here. As I see it, there are three ways of
-> > configuring this phy:
+On Fri, Nov 18, 2022 at 12:11:30PM -0500, Sean Anderson wrote:
+> >> - We can check all the registers to ensure we are actually going to rate
+> >>   adapt. If we aren't, we tell phylink we don't support it. This is the
+> >>   least risky, but we can end up not bringing up the link even in
+> >>   circumstances where we could if we configured things properly. And we
+> >>   generally know the right way to configure things.
 > > 
-> > - Always rate adapt to whatever the initial phy interface mode is
-> > - Switch phy interfaces depending on the link speed
-> > - Do whatever the firmware sets up
+> > Like when?
 > 
-> My understanding of the aQuantia firmware is that it is split into two
-> parts. The first is the actual firmware that runs on the PHY. The
-> second is provisioning, which seems to be a bunch of instructions to
-> put value X in register Y. It seems like aQuantia, now Marvell, give
-> different provisioning to different customers.
-> 
-> What this means is, you cannot really trust any register contains what
-> you want, that your devices does the same as somebody elses' device in
-> its reset state.
-> 
-> So i would say, "Do whatever the firmware sets up" is the worst
-> choice. Assume nothing, set every register which is important to the
-> correct value.
+> Well, like whenever the phy says "Please do XFI/2" or some other mode we
+> don't have a phy interface mode for. We will never be able to tell the MAC
+> "Please do XFI/2" (until we add an interface mode for it), so that's
+> obviously wrong.
 
-If "do whatever the firmware sets up" is the worst choice, it means you
-think it's worse than "doing whatever the firmware sets up, except a few
-fixups here and there which worked on my board". Whereas I think _that's_
-actually even worse.
+Add an interface mode for it then... But note that I have absolutely no
+clue what XFI/2 is. Apparently Aquantia doesn't want NXP to know....
 
-What might be an even bigger offence than giving different provisioning
-to different customers is giving different documentation to different
-customers. In the Aquantia Register Specification for Gen4 PHYs given
-to NXP, the SerDes mode field in register 1E.31C cannot even _take_ the
-value of 6. They're all documented only from 0 to 5. I only learned that
-6 (XFI/2) was a thing from the discussion between Sean and Tim.
+> >> - Add a configuration option (devicetree? ethtool?) on which option
+> >>   above to pick. This is probably what we will want to do in the long
+> >>   term, but I feel like we have enough information to determine the
+> >>   right thing to do most of the time (without needing manual
+> >>   intervention).
+> > 
+> > Not sure I see the need, when long-term there is no volunteer to make
+> > the Linux driver bring Aquantia PHYs to a known state regardless of
+> > vendor provisioning. Until then, there is just no reason to even attempt
+> > this.
+> 
+> I mean a config for option 1 vs 2 above.
+
+How would this interact with Marek's proposal for phy-mode to be an
+array, and some middle entity (phylink?) selects the SERDES protocol and
+rate matching algorithm to use for each medium side link speed?
+https://patchwork.kernel.org/project/netdevbpf/cover/20211123164027.15618-1-kabel@kernel.org/
+
+> > Until you look at the procedure in the NXP SDK and see that things are a
+> > bit more complicated to get right, like put the PHY in low power mode,
+> > sleep for a while. I think a large part of that was determined experimentally,
+> > out of laziness to change PHY firmware on some riser cards more than anything.
+> > We still expect the production boards to have a good firmware, and Linux
+> > to read what that does and adapt accordingly.
+> 
+> Alas, if only Marvell put stuff like this in a manual... All I have is a spec
+> sheet and the register reference, and my company has an NDA...
+
+Can't help with much more than providing this hint, sorry. All I can say
+is that SERDES protocol override from Linux is possible with care, at
+least on some systems. But it may be riddled with landmines.
+
+> We aren't even using this phy on our board, so I am fine disabling rate adaptation
+> for funky firmwares.
+
+Disabling rate adaptation is one thing. But there's also the unresolved
+XFI/2 issue?
