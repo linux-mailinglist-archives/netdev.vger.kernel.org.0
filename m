@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E93B62FF0C
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 21:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9471D62FF0E
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 21:59:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiKRU7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 15:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
+        id S229949AbiKRU71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 15:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiKRU7I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 15:59:08 -0500
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D4C7AF55;
-        Fri, 18 Nov 2022 12:59:06 -0800 (PST)
+        with ESMTP id S229943AbiKRU7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 15:59:22 -0500
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6BF7AF6C;
+        Fri, 18 Nov 2022 12:59:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1668805146; x=1700341146;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Rx+Xgcverf9e0wGI/df3HJY52L2aHlY+tR23Q/NZi8U=;
-  b=LM3vks3Xz10ZN3ytb5FbmiVwjnR7FA1bvqR/ycsn+57Cc3IqC0OPBTCt
-   sqQltjUKTHVXgNJK95sKCO+lUYri1hFWoN/wupHox2BhMdncsOgheSc+m
-   TzYgn6i2shJUeT/nVKgZfLuDUPddrygpRtOU7MbPwaX+dzJYu/5++mi0P
-   E=;
+  t=1668805161; x=1700341161;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fHU4oCwiZi6NhVXqGdw4VPHFXrT+wCfY0lTdl3V78NI=;
+  b=BZEtztr6EArUIv5x0mxIbrtoUvza4NXHT9WLtB88f+JL0Yj4d2JyTK1c
+   eFeMZ9Qk1JScfgCGAV5yxwke620lyzUzScr/lGFqRULxvT2vbbvhlVMI0
+   OdUqGcOrzUfPJ1V7r6Cacnk/OgrLCse4vXewmK2RuKzvdmr2c3ihZc8WR
+   4=;
 X-IronPort-AV: E=Sophos;i="5.96,175,1665446400"; 
-   d="scan'208";a="1075305395"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-96feee09.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 20:58:59 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-m6i4x-96feee09.us-east-1.amazon.com (Postfix) with ESMTPS id 1CCE741B23;
-        Fri, 18 Nov 2022 20:58:53 +0000 (UTC)
+   d="scan'208";a="152468030"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 20:59:19 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com (Postfix) with ESMTPS id 955DC418CC;
+        Fri, 18 Nov 2022 20:59:18 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Fri, 18 Nov 2022 20:58:52 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.161.14) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Fri, 18 Nov 2022 20:59:17 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.160.223) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Fri, 18 Nov 2022 20:58:49 +0000
+ Fri, 18 Nov 2022 20:59:14 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -55,15 +55,17 @@ CC:     Arnaldo Carvalho de Melo <acme@mandriva.com>,
         "Kuniyuki Iwashima" <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <dccp@vger.kernel.org>
-Subject: [PATCH v3 net 0/4] dccp/tcp: Fix bhash2 issues related to WARN_ON() in inet_csk_get_port().
-Date:   Fri, 18 Nov 2022 12:58:35 -0800
-Message-ID: <20221118205839.14312-1-kuniyu@amazon.com>
+Subject: [PATCH v3 net 1/4] dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
+Date:   Fri, 18 Nov 2022 12:58:36 -0800
+Message-ID: <20221118205839.14312-2-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221118205839.14312-1-kuniyu@amazon.com>
+References: <20221118205839.14312-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.161.14]
-X-ClientProxiedBy: EX13D29UWA003.ant.amazon.com (10.43.160.253) To
+X-Originating-IP: [10.43.160.223]
+X-ClientProxiedBy: EX13P01UWA004.ant.amazon.com (10.43.160.127) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
@@ -75,65 +77,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzkaller was hitting a WARN_ON() in inet_csk_get_port() in the 4th patch,
-which was because we forgot to fix up bhash2 bucket when connect() for a
-socket bound to a wildcard address fails in __inet_stream_connect().
+When connect() is called on a socket bound to the wildcard address,
+we change the socket's saddr to a local address.  If the socket
+fails to connect() to the destination, we have to reset the saddr.
 
-There was a similar report [0], but its repro does not fire the WARN_ON() due
-to inconsistent error handling.
+However, when an error occurs after inet_hash6?_connect() in
+(dccp|tcp)_v[46]_conect(), we forget to reset saddr and leave
+the socket bound to the address.
 
-When connect() for a socket bound to a wildcard address fails, saddr may or
-may not be reset depending on where the failure happens.  When we fail in
-__inet_stream_connect(), sk->sk_prot->disconnect() resets saddr.  OTOH, in
-(dccp|tcp)_v[46]_connect(), if we fail after inet_hash6?_connect(), we
-forget to reset saddr.
+From the user's point of view, whether saddr is reset or not varies
+with errno.  Let's fix this inconsistent behaviour.
 
-We fix this inconsistent error handling in the 1st patch, and then we'll
-fix the bhash2 WARN_ON() issue.
+Note that after this patch, the repro [0] will trigger the WARN_ON()
+in inet_csk_get_port() again, but this patch is not buggy and rather
+fixes a bug papering over the bhash2's bug for which we need another
+fix.
 
-Note that there is still an issue in that we reset saddr without checking
-if there are conflicting sockets in bhash and bhash2, but this should be
-another series.
+For the record, the repro causes -EADDRNOTAVAIL in inet_hash6_connect()
+by this sequence:
 
-See [1][2] for the previous discussion.
+  s1 = socket()
+  s1.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+  s1.bind(('127.0.0.1', 10000))
+  s1.sendto(b'hello', MSG_FASTOPEN, (('127.0.0.1', 10000)))
+  # or s1.connect(('127.0.0.1', 10000))
 
-[0]: https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
-[1]: https://lore.kernel.org/netdev/20221029001249.86337-1-kuniyu@amazon.com/
-[2]: https://lore.kernel.org/netdev/20221103172419.20977-1-kuniyu@amazon.com/
-[3]: https://lore.kernel.org/netdev/20221118081906.053d5231@kernel.org/T/#m00aafedb29ff0b55d5e67aef0252ef1baaf4b6ee
+  s2 = socket()
+  s2.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+  s2.bind(('0.0.0.0', 10000))
+  s2.connect(('127.0.0.1', 10000))  # -EADDRNOTAVAIL
 
-Changes:
-  v3:
-    * Patch 3
-      * Update saddr under the bhash's lock
-      * Correct Fixes tag
-      * Change #ifdef in inet_update_saddr() along the recent
-        discussion [3]
+  s2.listen(32)  # WARN_ON(inet_csk(sk)->icsk_bind2_hash != tb2);
 
-  v2: https://lore.kernel.org/netdev/20221116222805.64734-1-kuniyu@amazon.com/
-    * Add patch 2-4
+[0]: https://syzkaller.appspot.com/bug?extid=015d756bbd1f8b5c8f09
 
-  v1: [2]
+Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
+Fixes: 7c657876b63c ("[DCCP]: Initial implementation")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Acked-by: Joanne Koong <joannelkoong@gmail.com>
+---
+ net/dccp/ipv4.c     | 2 ++
+ net/dccp/ipv6.c     | 2 ++
+ net/ipv4/tcp_ipv4.c | 2 ++
+ net/ipv6/tcp_ipv6.c | 2 ++
+ 4 files changed, 8 insertions(+)
 
-
-Kuniyuki Iwashima (4):
-  dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
-  dccp/tcp: Remove NULL check for prev_saddr in
-    inet_bhash2_update_saddr().
-  dccp/tcp: Update saddr under bhash's lock.
-  dccp/tcp: Fixup bhash2 bucket when connect() fails.
-
- include/net/inet_hashtables.h |  3 +-
- net/dccp/ipv4.c               | 23 ++-------
- net/dccp/ipv6.c               | 24 ++-------
- net/dccp/proto.c              |  3 +-
- net/ipv4/af_inet.c            | 11 +----
- net/ipv4/inet_hashtables.c    | 91 +++++++++++++++++++++++++++++------
- net/ipv4/tcp.c                |  3 +-
- net/ipv4/tcp_ipv4.c           | 21 ++------
- net/ipv6/tcp_ipv6.c           | 20 ++------
- 9 files changed, 101 insertions(+), 98 deletions(-)
-
+diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+index 713b7b8dad7e..40640c26680e 100644
+--- a/net/dccp/ipv4.c
++++ b/net/dccp/ipv4.c
+@@ -157,6 +157,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 	 * This unhashes the socket and releases the local port, if necessary.
+ 	 */
+ 	dccp_set_state(sk, DCCP_CLOSED);
++	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
++		inet_reset_saddr(sk);
+ 	ip_rt_put(rt);
+ 	sk->sk_route_caps = 0;
+ 	inet->inet_dport = 0;
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index e57b43006074..626166cb6d7e 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -985,6 +985,8 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 
+ late_failure:
+ 	dccp_set_state(sk, DCCP_CLOSED);
++	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
++		inet_reset_saddr(sk);
+ 	__sk_dst_reset(sk);
+ failure:
+ 	inet->inet_dport = 0;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 87d440f47a70..6a3a732b584d 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -343,6 +343,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 	 * if necessary.
+ 	 */
+ 	tcp_set_state(sk, TCP_CLOSE);
++	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
++		inet_reset_saddr(sk);
+ 	ip_rt_put(rt);
+ 	sk->sk_route_caps = 0;
+ 	inet->inet_dport = 0;
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 2a3f9296df1e..81b396e5cf79 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -359,6 +359,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 
+ late_failure:
+ 	tcp_set_state(sk, TCP_CLOSE);
++	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
++		inet_reset_saddr(sk);
+ failure:
+ 	inet->inet_dport = 0;
+ 	sk->sk_route_caps = 0;
 -- 
 2.30.2
 
