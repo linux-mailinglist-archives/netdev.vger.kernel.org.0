@@ -2,150 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CED3630000
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 23:24:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE1E630002
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 23:25:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbiKRWYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 17:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        id S229635AbiKRWZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 17:25:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiKRWYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 17:24:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30003205A;
-        Fri, 18 Nov 2022 14:23:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F8BD627B8;
-        Fri, 18 Nov 2022 22:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAAE5C433D6;
-        Fri, 18 Nov 2022 22:23:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668810229;
-        bh=saD4ekaR7aTv0tgNKWhed7zpzPCX3G62radVkykS1Us=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Nrr9/LDlLu0c7qtlU9AyNxbP/NzttRuFpt0JOV0n8IDqKQDrgVZIDsW94d1ys3hRZ
-         M3m0hZIBRA8X4OGed/P5VUQvNUWqYs1I2PBy95NlmAriDnLF44f1sJ6BX6eEIGgXZj
-         RmrQ3i0CBnGwoETXl2cU4pKP0cmpovPjpAbaUlOF+tWr0Pi277cVaVSbJGmJAt4x6a
-         vZ4doG6op8I6glx03SoNDGtQIqJaDw510Du6TFJmGk5DSZRK7c7h9OHkm5zqCm5Ns6
-         eLs2P7iq3udRnLyPtFd1WeGekKPPNv+KW3R+GlkAZKlmorfAoU2seVBLMi944ErsgD
-         gGRXJunwDodwA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 991EB5C0F9C; Fri, 18 Nov 2022 14:23:48 -0800 (PST)
-Date:   Fri, 18 Nov 2022 14:23:48 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, rcu@vger.kernel.org,
-        rostedt@goodmis.org, fweisbec@gmail.com
-Subject: Re: [PATCH v2 2/2] net: devinet: Reduce refcount before grace period
-Message-ID: <20221118222348.GQ4001@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20221118191909.1756624-1-joel@joelfernandes.org>
- <20221118191909.1756624-2-joel@joelfernandes.org>
+        with ESMTP id S230299AbiKRWYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 17:24:44 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A1E23BD0
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 14:24:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668810283; x=1700346283;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=dkYMcSk6bhf+Uon07eLUjp1VcVopdvFCOSN5/g1AflE=;
+  b=eQaXJDSxZbsHs6oRnFfggGyrqKfdRnl6Xb23HRWA6NbDjhkxb2/7TSmE
+   h2zkD1WbZksy+k5riXGIjSHutFhDFgpjKgTeu+Rwyq8Wd4ybmCkLStfUH
+   sy/18Vobjjn9rGz93GdHSvqYlqFSiy70JINU7wLAqOZrvBn+EdVL6VnCF
+   u5RtBouVn+wIOJcaleN8RI/Bs7K/CCK4+izP4FjmbjUKRfKLMNKVj+mZh
+   d5bYrkI4aMEmpxtf6tdWNbt3D3TS8DWnB+WvGnUR1bFUVuvhjUnpvC24B
+   qVfddaMAwLDV0vUkIdpb+ABJvo/lvy9JlUpMaeczWp8Jm0pVeKll89kya
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="375394910"
+X-IronPort-AV: E=Sophos;i="5.96,175,1665471600"; 
+   d="scan'208";a="375394910"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 14:24:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="634580303"
+X-IronPort-AV: E=Sophos;i="5.96,175,1665471600"; 
+   d="scan'208";a="634580303"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga007.jf.intel.com with ESMTP; 18 Nov 2022 14:24:42 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates 2022-11-18 (iavf)
+Date:   Fri, 18 Nov 2022 14:24:35 -0800
+Message-Id: <20221118222439.1565245-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221118191909.1756624-2-joel@joelfernandes.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 07:19:09PM +0000, Joel Fernandes (Google) wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Currently, the inetdev_destroy() function waits for an RCU grace period
-> before decrementing the refcount and freeing memory. This causes a delay
-> with a new RCU configuration that tries to save power, which results in the
-> network interface disappearing later than expected. The resulting delay
-> causes test failures on ChromeOS.
-> 
-> Refactor the code such that the refcount is freed before the grace period
-> and memory is freed after. With this a ChromeOS network test passes that
-> does 'ip netns del' and polls for an interface disappearing, now passes.
-> 
-> Reported-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+This series contains updates to iavf driver only.
 
-Queued and pushed, thank you both!
+Ivan Vecera resolves issues related to reset by adding back call to
+netif_tx_stop_all_queues() and adding calls to dev_close() to ensure
+device is properly closed during reset.
 
-This patch can go as-is based on Eric's Signed-off-by, but the first
-one of course needs at least an ack.
+Stefan Assmann removes waiting for setting of MAC address as this breaks
+ARP.
 
-							Thanx, Paul
+Slawomir adds setting of __IAVF_IN_REMOVE_TASK bit to prevent deadlock
+between remove and shutdown.
 
-> ---
->  net/ipv4/devinet.c | 19 ++++++++++---------
->  1 file changed, 10 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-> index e8b9a9202fec..b0acf6e19aed 100644
-> --- a/net/ipv4/devinet.c
-> +++ b/net/ipv4/devinet.c
-> @@ -234,13 +234,20 @@ static void inet_free_ifa(struct in_ifaddr *ifa)
->  	call_rcu(&ifa->rcu_head, inet_rcu_free_ifa);
->  }
->  
-> +static void in_dev_free_rcu(struct rcu_head *head)
-> +{
-> +	struct in_device *idev = container_of(head, struct in_device, rcu_head);
-> +
-> +	kfree(rcu_dereference_protected(idev->mc_hash, 1));
-> +	kfree(idev);
-> +}
-> +
->  void in_dev_finish_destroy(struct in_device *idev)
->  {
->  	struct net_device *dev = idev->dev;
->  
->  	WARN_ON(idev->ifa_list);
->  	WARN_ON(idev->mc_list);
-> -	kfree(rcu_dereference_protected(idev->mc_hash, 1));
->  #ifdef NET_REFCNT_DEBUG
->  	pr_debug("%s: %p=%s\n", __func__, idev, dev ? dev->name : "NIL");
->  #endif
-> @@ -248,7 +255,7 @@ void in_dev_finish_destroy(struct in_device *idev)
->  	if (!idev->dead)
->  		pr_err("Freeing alive in_device %p\n", idev);
->  	else
-> -		kfree(idev);
-> +		call_rcu(&idev->rcu_head, in_dev_free_rcu);
->  }
->  EXPORT_SYMBOL(in_dev_finish_destroy);
->  
-> @@ -298,12 +305,6 @@ static struct in_device *inetdev_init(struct net_device *dev)
->  	goto out;
->  }
->  
-> -static void in_dev_rcu_put(struct rcu_head *head)
-> -{
-> -	struct in_device *idev = container_of(head, struct in_device, rcu_head);
-> -	in_dev_put(idev);
-> -}
-> -
->  static void inetdev_destroy(struct in_device *in_dev)
->  {
->  	struct net_device *dev;
-> @@ -328,7 +329,7 @@ static void inetdev_destroy(struct in_device *in_dev)
->  	neigh_parms_release(&arp_tbl, in_dev->arp_parms);
->  	arp_ifdown(dev);
->  
-> -	call_rcu(&in_dev->rcu_head, in_dev_rcu_put);
-> +	in_dev_put(in_dev);
->  }
->  
->  int inet_addr_onlink(struct in_device *in_dev, __be32 a, __be32 b)
-> -- 
-> 2.38.1.584.g0f3c55d4c2-goog
-> 
+The following are changes since commit 2360f9b8c4e81d242d4cbf99d630a2fffa681fab:
+  net: pch_gbe: fix potential memleak in pch_gbe_tx_queue()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Ivan Vecera (2):
+  iavf: Fix a crash during reset task
+  iavf: Do not restart Tx queues after reset task failure
+
+Slawomir Laba (1):
+  iavf: Fix race condition between iavf_shutdown and iavf_remove
+
+Stefan Assmann (1):
+  iavf: remove INITIAL_MAC_SET to allow gARP to work properly
+
+ drivers/net/ethernet/intel/iavf/iavf.h      |  1 -
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 41 ++++++++++++---------
+ 2 files changed, 23 insertions(+), 19 deletions(-)
+
+-- 
+2.35.1
+
