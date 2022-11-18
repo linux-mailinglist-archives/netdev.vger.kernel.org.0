@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A846C62F955
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 16:34:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7FF62F95A
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 16:35:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242285AbiKRPeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 10:34:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        id S234995AbiKRPfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 10:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242302AbiKRPd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 10:33:57 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C7527153;
-        Fri, 18 Nov 2022 07:33:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1668785634; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H99gifSUAX63SHB4wCOwUdzC9A4Qilfu6shSvTJT/Do=;
-        b=GCiLfoGCsrJV1b8eakZkdc7V+eN/S88H24/XYoaqACaFIbKl+QvmUfkTvecq+5zc1vYnHp
-        1UQJ2nBjiJRoc5sWCyiys+8cMAWuYq/IZIRPZIR8W+jGDjOfgDALYZa7TV/YO/H/EV8ve8
-        28qttYGe/6cZzWvE+o2a5FEuKSiunHc=
-Date:   Fri, 18 Nov 2022 15:33:44 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 1/3] net: davicom: dm9000: switch to using gpiod API
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <88VJLR.GYSEKGBPLGZC1@crapouillou.net>
-In-Reply-To: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
-References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
+        with ESMTP id S242329AbiKRPfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 10:35:04 -0500
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1A15A6C1
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 07:35:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=bSbtRZDIbn7lpwTb3ByCDbonLiBkZuojB4K05t2aq+8=; b=NmX/pcV4HIEtqg5X46qyiebYsA
+        qLHyV6mDFWgNf3HB9J9pxPfq3SWUby1dKPuwkzyX7fhTi4kI++RTba/jpr0pTMHJybdmyn65AZW3f
+        8KZgdv/xLRKatAX8Xhg+keIoA4U4HiXUXv4rqhWj2lystoJFV0ZkxJ2UyvGlc5HiUxSHz72TpYlso
+        n20Fcb/jGZmAC1b3ySUi3eWXoSlyA/m+vSkpBMLozNihdjfZcT0W0t0ABs8tQwiwOVQp+v+eUICfq
+        kPetRM2p+9hKZGxmlU8cDhIyXgaU94t0M8CWEvCzrn1McNQ6AWxkBKKfiERAbsYEGTbAU6xacbBkD
+        wEWh/BoA2qSY6GondTfa7vKrFnni2uh9U7G/YppqeMGIO+zu+4N4MJn7Tca5kmkv2h5lg8sVQxCC3
+        jfN3OJrfIbe1yirE+92Gl7tfJeRFpf+CwODIFLwzHzF2pGXVYkQGhdxOgtPbR6pz9VeOnkrXPnbQb
+        sN7Yy6NQVvxo8wHPWUdwfsUZdyYdmm66dEiBVaQo0GclS2xQ5t+V8hmmHI2unVs/GKbPeVNWdJVlM
+        1PKXLSH+bYshsHqLB4gQLcfD5Ylyihi4GYGMBdwCSfSa1m2JEjxEy7Xg02eRVdiSlNQqL64dXatb5
+        J3mvlyvCTMmSxZvsulbnEoviz5XArdHDUuxdGCBMw=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     "Guozihua (Scott)" <guozihua@huawei.com>, asmadeus@codewreck.org
+Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3 v2] 9p: Fix write overflow in p9_read_work
+Date:   Fri, 18 Nov 2022 16:34:35 +0100
+Message-ID: <3743363.vbEDF3eA3V@silver>
+In-Reply-To: <Y3ePOhpctTf7Buf8@codewreck.org>
+References: <20221117091159.31533-1-guozihua@huawei.com>
+ <a6aec93a-1166-1d8a-48de-767bc1eb2214@huawei.com>
+ <Y3ePOhpctTf7Buf8@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,91 +52,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+On Friday, November 18, 2022 2:57:14 PM CET asmadeus@codewreck.org wrote:
+> Guozihua (Scott) wrote on Fri, Nov 18, 2022 at 06:18:16PM +0800:
+> > I retried the repro on your branch, the issue does not reproduce. What
+> > a good pair of eyes :)=EF=BC=81
+>=20
+> Thanks!
+> By the way the original check also compared size to msize directly,
+> without an offset for headers, so with hindsight it looks clear enough
+> that the size is the full size including the header.
+>=20
+> I'm not sure why I convinced myself it didn't...
+>=20
+> Anyway, this made me check other places where we might fail at this and
+> I've a couple more patches; please review if you have time.
+> I'll send them all to Linus next week...
+>=20
 
-Le mar. 6 sept. 2022 =E0 13:49:20 -0700, Dmitry Torokhov=20
-<dmitry.torokhov@gmail.com> a =E9crit :
-> This patch switches the driver away from legacy gpio/of_gpio API to
-> gpiod API, and removes use of of_get_named_gpio_flags() which I want=20
-> to
-> make private to gpiolib.
->=20
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> ---
->  drivers/net/ethernet/davicom/dm9000.c | 26 ++++++++++++++------------
->  1 file changed, 14 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/davicom/dm9000.c=20
-> b/drivers/net/ethernet/davicom/dm9000.c
-> index 77229e53b04e..c85a6ebd79fc 100644
-> --- a/drivers/net/ethernet/davicom/dm9000.c
-> +++ b/drivers/net/ethernet/davicom/dm9000.c
-> @@ -28,8 +28,7 @@
->  #include <linux/irq.h>
->  #include <linux/slab.h>
->  #include <linux/regulator/consumer.h>
-> -#include <linux/gpio.h>
-> -#include <linux/of_gpio.h>
-> +#include <linux/gpio/consumer.h>
->=20
->  #include <asm/delay.h>
->  #include <asm/irq.h>
-> @@ -1421,8 +1420,7 @@ dm9000_probe(struct platform_device *pdev)
->  	int iosize;
->  	int i;
->  	u32 id_val;
-> -	int reset_gpios;
-> -	enum of_gpio_flags flags;
-> +	struct gpio_desc *reset_gpio;
->  	struct regulator *power;
->  	bool inv_mac_addr =3D false;
->  	u8 addr[ETH_ALEN];
-> @@ -1442,20 +1440,24 @@ dm9000_probe(struct platform_device *pdev)
->  		dev_dbg(dev, "regulator enabled\n");
->  	}
->=20
-> -	reset_gpios =3D of_get_named_gpio_flags(dev->of_node, "reset-gpios",=20
-> 0,
-> -					      &flags);
-> -	if (gpio_is_valid(reset_gpios)) {
-> -		ret =3D devm_gpio_request_one(dev, reset_gpios, flags,
-> -					    "dm9000_reset");
-> +	reset_gpio =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-> +	ret =3D PTR_ERR_OR_ZERO(reset_gpio);
-> +	if (ret) {
-> +		dev_err(dev, "failed to request reset gpio: %d\n", ret);
-> +		goto out_regulator_disable;
-> +	}
-> +
-> +	if (reset_gpio) {
-> +		ret =3D gpiod_set_consumer_name(reset_gpio, "dm9000_reset");
->  		if (ret) {
-> -			dev_err(dev, "failed to request reset gpio %d: %d\n",
-> -				reset_gpios, ret);
-> +			dev_err(dev, "failed to set reset gpio name: %d\n",
-> +				ret);
->  			goto out_regulator_disable;
->  		}
->=20
->  		/* According to manual PWRST# Low Period Min 1ms */
->  		msleep(2);
-> -		gpio_set_value(reset_gpios, 1);
-> +		gpiod_set_value_cansleep(reset_gpio, 0);
+Aah, the offset is already incremented before that block is entered:
 
-Why is that 1 magically turned into a 0?
+303	err =3D p9_fd_read(m->client, m->rc.sdata + m->rc.offset,
+304			 m->rc.capacity - m->rc.offset);
+=2E..
+312	m->rc.offset +=3D err;
+313
+314	/* header read in */
+315	if ((!m->rreq) && (m->rc.offset =3D=3D m->rc.capacity)) {
 
-On my CI20 board I can't get the DM9000 chip to probe correctly with=20
-this patch (it fails to read the ID).
-If I revert this patch then everything works fine.
+And the data is then copied to m->rreq->rc.sdata without any offset. So yes,
+there should be no `offset` in the check.
 
-Cheers,
--Paul
-
->  		/* Needs 3ms to read eeprom when PWRST is deasserted */
->  		msleep(4);
->  	}
-> --
-> 2.37.2.789.g6183377224-goog
->=20
+Best regards,
+Christian Schoenebeck
 
 
