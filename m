@@ -2,76 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11AFF62FAE2
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:55:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1EF162FB45
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 18:11:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242386AbiKRQzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 11:55:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
+        id S235414AbiKRRLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 12:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242371AbiKRQzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:55:00 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C60774CDB
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:55:00 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id x21so7458578ljg.10
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:55:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DLuxvrtTwLpjQCdZkBOlAPtT4PuOt7o3XUb4SWGRYeY=;
-        b=YbB0A+CRUD6S2MD68gsYt8H9kf2O/MCqLKzMGFmT0nqheeGKbQ+Qzdo8K08msmUr11
-         6CWuKCdqLM/3h/OqS9w+mEXbK9Zkbq4rgM2XAutuWvXGZ6IKR16FRaMWHq2ch4xkP9PQ
-         Hr1d27XN8TzbnQ5u0MPPo+MU+l3SR3J5V5o/zz8w4+BCwaZioiR4mF65EBVaSJVfcBe+
-         asRGlU9om/KULxblcKmPdeSlR6pHSii/qau7pfMcOqrBtYWxRhsd6DnnokBDuv3AZvYz
-         ZmC67/jbHQH123XtggLelRQFHwpt9NrpFDblWOeDhkV5GUkr1zASfYb2GgbL3WZWgtUZ
-         l11w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DLuxvrtTwLpjQCdZkBOlAPtT4PuOt7o3XUb4SWGRYeY=;
-        b=URF+MUs/riY0jUCLY3bgmXHMHL26OtOLsXNgdIZb3c0DKgflEZE9QvFu2EY6XnwZng
-         ciWINjnEjvDTMbaRcDV+4VCOkCj3Z61Dubiw207svlMHhD8bBTIQ4a5du/lZ3A1BEy8e
-         M6RqtJrplwq34VFRhDTHDaXR+qSBzDD1Igqkhdig4HnC8EDfZuw1hCz2paxIiWk3bAp2
-         9s1vbbCC7ATvhCKggDa+LRnXUpK0N/m+PhbEr+1HeRy7PiRKrzV082a3KGafP33N9tnK
-         OjPnsVTZIZtl9xQpkYHmjqcIFIXca1riRR/1f+eUMtJM3+db3cX9TZ9cu9RzRnOjU/cu
-         IhmA==
-X-Gm-Message-State: ANoB5plh4bkkQ57ZOffR+vuzb/c6T4kkrDgDHgOnDSqGuWtLkiGlbcOM
-        z2vwupMzncJVa9Ficd3bGoR2MdgLC/xUhFAwq3Q=
-X-Google-Smtp-Source: AA0mqf50W0i+xc4j1SC6RfI+4BNLEmlZx4mHGckqR2mx77CT7RnclO8i+RtEwS0ZSyYdpG1F0mS/URjAbJTIEJSyTcE=
-X-Received: by 2002:a2e:a552:0:b0:278:eef5:8d13 with SMTP id
- e18-20020a2ea552000000b00278eef58d13mr2782995ljn.56.1668790498359; Fri, 18
- Nov 2022 08:54:58 -0800 (PST)
+        with ESMTP id S235475AbiKRRLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 12:11:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674B38C791;
+        Fri, 18 Nov 2022 09:11:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F418B6265E;
+        Fri, 18 Nov 2022 17:11:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B74C433C1;
+        Fri, 18 Nov 2022 17:11:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668791493;
+        bh=KWwzNSV7Rl2am6gtz8aTkwn6BkiBMh1VJdUCRx5KM8o=;
+        h=Date:From:To:Subject:References:In-Reply-To:From;
+        b=ekpjulwdwM3mjoP/FGVfzRoKGn00Lpr71FAhMqFMUJbmfNIXK6+cdo+Sr5y5dV1Xa
+         JLhEKb9VJcy/rgwJgyXrTfOzIz1oo5ctjPaC6HxvCOFqJHQVuuBXczre9bGwFAcipf
+         eGiKfxeUyWBvWD6F10SiflHcSxutSckgKFY8sa6u9Q1HhvQptGqFyyvdCnnRvs5mT2
+         VZitUA/c1BkXTA5VjDGrrn/DiZZM9qvY80m8B5VSmKdGVuOqhlXt29Z0x5jGsffsue
+         AJ987t/tbic3eF8oiewCB/Entv9JHlDhPm3ErFXiBb1a83yAJfPDzfoNqJLB9vw1aZ
+         l1S+AECybhcCA==
+Date:   Fri, 18 Nov 2022 19:11:28 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] sfc: fix potential memleak in
+ __ef100_hard_start_xmit()
+Message-ID: <Y3e8wEZme3OpMZKV@unreal>
+References: <1668671409-10909-1-git-send-email-zhangchangzhong@huawei.com>
+ <Y3YctdnKDDvikQcl@unreal>
+ <efedaa0e-33ce-24c6-bb9d-8f9b5c4a1c38@huawei.com>
+ <Y3YxlxPIiw43QiKE@unreal>
+ <Y3dNP6iEj2YyEwqJ@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6520:4d0e:b0:22a:5eec:87ab with HTTP; Fri, 18 Nov 2022
- 08:54:57 -0800 (PST)
-Reply-To: thajxoa@gmail.com
-From:   Thaj Xoa <illiasouamadou27@gmail.com>
-Date:   Fri, 18 Nov 2022 16:54:57 +0000
-Message-ID: <CAD1uFOckBb6ug0NR48vvZXjMpaS4d9xn1SdtX+MEd0yC+kbg4Q@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3dNP6iEj2YyEwqJ@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear Friend,
+On Fri, Nov 18, 2022 at 09:15:43AM +0000, Martin Habets wrote:
+> On Thu, Nov 17, 2022 at 03:05:27PM +0200, Leon Romanovsky wrote:
+> > On Thu, Nov 17, 2022 at 08:41:52PM +0800, Zhang Changzhong wrote:
+> > > 
+> > > 
+> > > On 2022/11/17 19:36, Leon Romanovsky wrote:
+> > > > On Thu, Nov 17, 2022 at 03:50:09PM +0800, Zhang Changzhong wrote:
+> > > >> The __ef100_hard_start_xmit() returns NETDEV_TX_OK without freeing skb
+> > > >> in error handling case, add dev_kfree_skb_any() to fix it.
+> > > >>
+> > > >> Fixes: 51b35a454efd ("sfc: skeleton EF100 PF driver")
+> > > >> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> > > >> ---
+> > > >>  drivers/net/ethernet/sfc/ef100_netdev.c | 1 +
+> > > >>  1 file changed, 1 insertion(+)
+> > > >>
+> > > >> diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
+> > > >> index 88fa295..ddcc325 100644
+> > > >> --- a/drivers/net/ethernet/sfc/ef100_netdev.c
+> > > >> +++ b/drivers/net/ethernet/sfc/ef100_netdev.c
+> > > >> @@ -218,6 +218,7 @@ netdev_tx_t __ef100_hard_start_xmit(struct sk_buff *skb,
+> > > >>  		   skb->len, skb->data_len, channel->channel);
+> > > >>  	if (!efx->n_channels || !efx->n_tx_channels || !channel) {
+> > > >>  		netif_stop_queue(net_dev);
+> > > >> +		dev_kfree_skb_any(skb);
+> > > >>  		goto err;
+> > > >>  	}
+> > > > 
+> > > > ef100 doesn't release in __ef100_enqueue_skb() either. SKB shouldn't be
+> > > > NULL or ERR at this stage.
+> > > 
+> > > SKB shouldn't be NULL or ERR, so it can be freed. But this code looks weird.
+> > 
+> > Please take a look __ef100_enqueue_skb() and see if it frees SKB on
+> > error or not. If not, please fix it.
+> 
+> That function looks ok to me, but I appreciate the extra eyes on it.
 
-I have an important message for you.
+__ef100_enqueue_skb() has the following check in error path:
 
-Sincerely,
+  498 err:
+  499         efx_enqueue_unwind(tx_queue, old_insert_count);
+  500         if (!IS_ERR_OR_NULL(skb))
+  501                 dev_kfree_skb_any(skb);
+  502
 
-Mr thaj xoa
-Deputy Financial State Securities Commission (SSC)
-Hanoi-Vietnam
+The issue is that skb is never error or null here and this "if" is
+actually always true and can be deleted.
+
+Thanks
