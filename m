@@ -2,189 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E2962FABE
-	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF0D62FAE0
+	for <lists+netdev@lfdr.de>; Fri, 18 Nov 2022 17:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235358AbiKRQtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 11:49:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
+        id S242362AbiKRQy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 11:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiKRQtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:49:20 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B968810B52;
-        Fri, 18 Nov 2022 08:49:18 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id t25so14404143ejb.8;
-        Fri, 18 Nov 2022 08:49:18 -0800 (PST)
+        with ESMTP id S242282AbiKRQy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 11:54:57 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BFF725DE
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:54:56 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id y203so5406720pfb.4
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 08:54:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3ISq3CC3wQQoH9QZGauiQqCQOpxu3L8pBDT4KpuCruk=;
-        b=UoRHeVlmQxb12jSRsPoXtHs9FO+NdTRv3weDmoPQn+v5WqAYqEpPd09jKbHMXf5yLN
-         M1LP2eMqJGqndro/5BCCfBb/EmUZrNH99Wy9jnJ0EEcXlyHe6S5oEtZojQHWT1jv42j2
-         TH5cBKjv+nfHTlNEV2U9X3hh962LQkIWxgSefetcOO/V1VZwgqyvOgeFoyKV2TZx0Ayi
-         AmDYtr18go6lLs8te0j5f4nnwOjwVzRYwaPyGi0xfUCBZ1xOTJosHxMF0E48+3kxVxBF
-         Ot8/PDYRg9E97ZH8D2EXzP3um+wzvOkmOkaVMxijClMjHAsoy5FpTeqNWST01ICDJJsM
-         DgIA==
+        d=chromium.org; s=google;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qkJ6eq/fIahCF8o8UiVfnfFhlL7awmXBJQtRWOpGmqU=;
+        b=UogA1CMJuDCS5kW93n44fMAJHDPCoXm/kKTw86eNm8lbL18uCLPvJ8jJQvRyaBwV0J
+         zshx3ls6pm30x5NULXL6Q1ZA+b+N2IWs6NECGAVbA0AHECidbuzdgxX/N6kVG1BHqHPo
+         OKRH2/o0DU7FlwYadK4GvZBUV4OycoXpPrhcs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3ISq3CC3wQQoH9QZGauiQqCQOpxu3L8pBDT4KpuCruk=;
-        b=ok4Pcg7grce34kAmYvzQzOILu4EeereeY0F2AtICWC5/J+w1Ur8NdYGObTYnzX3r3G
-         XUzYoFvcueTQu1PB2tHNe3JzW79g1FWotkRZFi5rEwQ/HkpqcEOCI6ZHq9wRpb3VfcpX
-         1+x6tDV19QtziblP7SR7zKSxvKDa9t2mMeCN3QSZM46BYeAovAWFwW3ptK32n+vxnEs4
-         tisWR4kPJ1qZie8QK8ibQ/fMmneVdLHxG6erlQSFV3nPMPjz2Izd9NJADs+AfwRytq3v
-         tXWdn7/0QZV6xzHr78gPp+9LtZtcdi8Rr29cFhw5/0gNFzC/5655KOCy428wLFX757uK
-         ZL1g==
-X-Gm-Message-State: ANoB5pn//QkZLN37CmoYkOLbvXdv6IXfyxfWZidlGGRyFYhXYtcrqxw1
-        W8d7a5+2CzUXWERTLyoG4ms=
-X-Google-Smtp-Source: AA0mqf7rPZO2ztC9aPlixHNN/gqYG6ZoOOJoIct1C7n0qVYan2n63dUFchn6RYToPXCqHr9wgWotkw==
-X-Received: by 2002:a17:906:95c3:b0:78e:975:5e8 with SMTP id n3-20020a17090695c300b0078e097505e8mr6730438ejy.82.1668790157050;
-        Fri, 18 Nov 2022 08:49:17 -0800 (PST)
-Received: from skbuf ([188.27.185.168])
-        by smtp.gmail.com with ESMTPSA id s19-20020aa7cb13000000b0045cf4f72b04sm1984317edt.94.2022.11.18.08.49.15
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qkJ6eq/fIahCF8o8UiVfnfFhlL7awmXBJQtRWOpGmqU=;
+        b=3HEV5yCO0EkwFdWKngk7YP+s9graTAmXeWFVNqLzvnBNPzKMFmQHAY6dn6Tux/QwxY
+         PAbfEPm3gGFs8F5Xrf8NRRbP6ykYh5pg9pLZ/rm/ctLm9B06vP9JzvpINqydSY1k06Xj
+         RcjRyL/6mh3gGDYI5zoquz2xr7WhaKhW7P148lQzZYLzQWDSQB6Z/Ag46adNneNwv3hO
+         T8m9+pD/1mvpQeIZvFJeyuJT8jLFbSCf8/Wlyifq/J8eRaJx1aqOtq3mFtaSSixin9LY
+         qpbhZ5l8EqGmSQxl1Y/HlKsa6tNAZtOYPYkkGxvmvXag90IJb1dqEJ7ETtFY16LMkP//
+         3teQ==
+X-Gm-Message-State: ANoB5pkqwNo3UV+ZMivEDJcl6Q1jI2qzPubt9gwjmM61ZwMHp39G+pqR
+        4VbkhX5KHxZwLwxk4+XDjh8bsw==
+X-Google-Smtp-Source: AA0mqf4TdqgLeKRagwwALD8Gxu+PQC0hD+r1aGZbWUB3kl2trIcaAzvMBP0naIGIsuzPtEcUTtpH4Q==
+X-Received: by 2002:a63:1c66:0:b0:476:c782:e5d1 with SMTP id c38-20020a631c66000000b00476c782e5d1mr7298165pgm.261.1668790496027;
+        Fri, 18 Nov 2022 08:54:56 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id f7-20020a625107000000b0056b818142a2sm3391659pfb.109.2022.11.18.08.54.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 08:49:16 -0800 (PST)
-Date:   Fri, 18 Nov 2022 18:49:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Fri, 18 Nov 2022 08:54:55 -0800 (PST)
+From:   coverity-bot <keescook@chromium.org>
+X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
+Date:   Fri, 18 Nov 2022 08:54:54 -0800
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Haim Dreyfuss <haim.dreyfuss@intel.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Petr Stourac <pstourac@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] phy: aquantia: Configure SERDES mode by default
-Message-ID: <20221118164914.6k3gofemf5tu2gfn@skbuf>
-References: <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221114210740.3332937-1-sean.anderson@seco.com>
- <20221115223732.ctvzjbpeaxulnm5l@skbuf>
- <3771f5be-3deb-06f9-d0a0-c3139d098bf0@seco.com>
- <20221115230207.2e77pifwruzkexbr@skbuf>
- <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
+        Nathan Errera <nathan.errera@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Shaul Triebitz <shaul.triebitz@intel.com>,
+        netdev@vger.kernel.org,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Abhishek Naik <abhishek.naik@intel.com>,
+        Jose Ignacio Tornos Martinez <jtornosm@redhat.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org,
+        Sriram R <quic_srirrama@quicinc.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Mike Golant <michael.golant@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Coverity: iwl_mvm_sec_key_add(): Memory - corruptions
+Message-ID: <202211180854.CD96D54D36@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <219dc20d-fd2b-16cc-8b96-efdec5f783c9@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 06:40:02PM -0500, Sean Anderson wrote:
-> > Even if the change works, why would it be a good idea to overwrite some
-> > random registers which are supposed to be configured correctly by the
-> > firmware provided for the board?
-> 
-> They're not random registers. They happen to be exactly the same registers
-> we use to determine if rate adaptation is enabled.
+Hello!
 
-As far as I'm concerned, this is just poking in places where there is no
-guarantee that the end result will be a known state.
+This is an experimental semi-automated report about issues detected by
+Coverity from a scan of next-20221118 as part of the linux-next scan project:
+https://scan.coverity.com/projects/linux-next-weekly-scan
 
-FWIW, for internal testing of multiple SERDES modes all with the same
-Aquantia firmware, the NXP SDK also has a quick-and-dirty patch to
-change the SERDES protocol on the Aquantia PHY based on device tree:
-https://source.codeaurora.org/external/qoriq/qoriq-components/linux/tree/drivers/net/phy/aquantia_main.c?h=lf-5.15.y#n288
+You're getting this email because you were associated with the identified
+lines of code (noted below) that were touched by commits:
 
-but we decided to not upstream such a thing, specifically because
-it might react in exotic ways with firmware images shipped by Aquantia
-to some of their other customers. I don't work for Aquantia, I am not a
-fan of their model of customizing firmware for everyone, and I don't
-want to have to support the ensuing breakage, I wouldn't have time for
-basically anything else. If you do, I'm not going to stop you. Just be
-prepared to help me too ;)
+  Thu Nov 10 13:26:51 2022 +0200
+    5c75a208c244 ("wifi: iwlwifi: mvm: support new key API")
 
-> > If the Linux fixup works for one board
-> > with one firmware, how do we know it also works for another board with
-> > the same PHY, but different firmware?
-> 
-> How do we know if a fix on one board for any hardware works on another board?
+Coverity reported the following:
 
-If both boards start from the same state X and make the same transition
-T, they end in the same state Y, no? Aquantia PHYs don't all start from
-the same state. Not sure what you'd like me to say.
+*** CID 1527370:  Memory - corruptions  (OVERRUN)
+drivers/net/wireless/intel/iwlwifi/mvm/mld-key.c:123 in iwl_mvm_sec_key_add()
+117
+118     	if (WARN_ON(keyconf->keylen > sizeof(cmd.u.add.key)))
+119     		return -EINVAL;
+120
+121     	if (keyconf->cipher == WLAN_CIPHER_SUITE_WEP40 ||
+122     	    keyconf->cipher == WLAN_CIPHER_SUITE_WEP104)
+vvv     CID 1527370:  Memory - corruptions  (OVERRUN)
+vvv     Overrunning buffer pointed to by "cmd.u.add.key + 3" of 32 bytes by passing it to a function which accesses it at byte offset 34 using argument "keyconf->keylen" (which evaluates to 32). [Note: The source code implementation of the function has been overridden by a builtin model.]
+123     		memcpy(cmd.u.add.key + IWL_SEC_WEP_KEY_OFFSET, keyconf->key,
+124     		       keyconf->keylen);
+125     	else
+126     		memcpy(cmd.u.add.key, keyconf->key, keyconf->keylen);
+127
+128     	if (keyconf->cipher == WLAN_CIPHER_SUITE_TKIP) {
 
-> Well, part of my goal in sending out this patch is to get some feedback
-> on the right thing to do here. As I see it, there are three ways of
-> configuring this phy:
-> 
-> - Always rate adapt to whatever the initial phy interface mode is
-> - Switch phy interfaces depending on the link speed
-> - Do whatever the firmware sets up
+If this is a false positive, please let us know so we can mark it as
+such, or teach the Coverity rules to be smarter. If not, please make
+sure fixes get into linux-next. :) For patches fixing this, please
+include these lines (but double-check the "Fixes" first):
 
-"Do whatever the firmware sets up", which means either bullet 1, or
-bullet 2, or a combination of both (unlikely but AFAIU possible).
+Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
+Addresses-Coverity-ID: 1527370 ("Memory - corruptions")
+Fixes: 5c75a208c244 ("wifi: iwlwifi: mvm: support new key API")
 
-> 
-> On my system, the last option happens to be the same as the first.
-> However, on Tim's system it's not. I had originally considered doing
-> this kind of configuration in my initial rate adaptation patch. However,
-> I deferred it since nothing needed to be configured for me.
-> 
-> The problem here is that if we advertise like we are in the first mode,
-> but we are not actually, then we can end up negotiating a link mode
-> which we don't support.
+keyconf->keylen is only bounds-checked against sizeof(cmd.u.add.key),
+but the memcpy() is starting a write at key + 3.
 
-I didn't quite understand in your patch set why there exists a
-phydev->rate_matching as well as a phy_get_rate_matching() procedure.
-It seems like that's at the root of all issues here? Couldn't
-phy_get_rate_matching() be made to look at the hardware registers for
-the given interface?
+Thanks for your attention!
 
-> I think there are a few ways to address this:
-> 
-> - Always enable rate adaptation, since that's what we tell phylink we
->   do. This is what this patch does. It's a bit risky (since it departs
->   from "do whatever the firmware does"). It's also a bit rigid (what if 
-
-I think the mistake is that we tell phylink we support rate matching
-when the firmware provisioning doesn't agree.
-
-> - We can check all the registers to ensure we are actually going to rate
->   adapt. If we aren't, we tell phylink we don't support it. This is the
->   least risky, but we can end up not bringing up the link even in
->   circumstances where we could if we configured things properly. And we
->   generally know the right way to configure things.
-
-Like when?
-
-> - Add a configuration option (devicetree? ethtool?) on which option
->   above to pick. This is probably what we will want to do in the long
->   term, but I feel like we have enough information to determine the
->   right thing to do most of the time (without needing manual
->   intervention).
-
-Not sure I see the need, when long-term there is no volunteer to make
-the Linux driver bring Aquantia PHYs to a known state regardless of
-vendor provisioning. Until then, there is just no reason to even attempt
-this.
-
-> > As long as the Aquantia PHY driver doesn't contain all the necessary
-> > steps for bringing the PHY up from a clean slate, but works on top of
-> > what the firmware has done, changes like this make me very uncomfortable
-> > to add any PHY ID to the Aquantia driver. I'd rather leave them with the
-> > Generic C45 driver, even if that means I'll lose interrupt support, rate
-> > matching and things like that.
-> 
-> I think these registers should be viewed as configuration for the phy as
-> a whole, rather than as guts which should be configure by firmware. At
-> least for the fields we're working with, it seems clear to me what's
-> going on.
-
-Until you look at the procedure in the NXP SDK and see that things are a
-bit more complicated to get right, like put the PHY in low power mode,
-sleep for a while. I think a large part of that was determined experimentally,
-out of laziness to change PHY firmware on some riser cards more than anything.
-We still expect the production boards to have a good firmware, and Linux
-to read what that does and adapt accordingly.
+-- 
+Coverity-bot
