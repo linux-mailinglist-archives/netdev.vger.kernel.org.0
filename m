@@ -2,61 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DE3630B07
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 04:18:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23717630B0A
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 04:20:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbiKSDSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 22:18:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S232329AbiKSDUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 22:20:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230271AbiKSDSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 22:18:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECBB5CD2C;
-        Fri, 18 Nov 2022 19:18:14 -0800 (PST)
+        with ESMTP id S230271AbiKSDUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 22:20:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526E22A953
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 19:20:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E03B4B8265A;
-        Sat, 19 Nov 2022 03:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913CAC433C1;
-        Sat, 19 Nov 2022 03:18:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA41062530
+        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 03:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 39580C433C1;
+        Sat, 19 Nov 2022 03:20:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668827891;
-        bh=Skx/V/hHZ/xZPl7pWfc2hBThZcNpW83cxRVyzlPkisk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QFd7ysay0SxnX6WGed+t2yDLqWHbqa9tdwrPa8FA/cqYm4gcCXJqOgDGmZFGRltqv
-         Eet7LgnNzONIfphzorvLMC3Lp5s3YxT4dPv/REGVAlElyykHE4ZQKTp0/1KHEDmoqJ
-         vEm+sgGP4qumzeJfXmoh3/B9es6W6/W/K83KTM/2DJ/GWXUc8kBF4duY4fYE9zwnV7
-         od6sT58U7ap8z7VWmvZAttiKOGcuVB2Ts/oMCiDhDjviqbzXyuk+6bG0S51SMk5jwO
-         wC4A9p/7/YL1D8QqwFyY6Qs02CzDZgoYw/3cv/DsZrADRu58Cm4KVlNjtBlat4j5BQ
-         ir/GcYp77BjUg==
-Date:   Fri, 18 Nov 2022 19:18:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jason Baron <jbaron@akamai.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v4 3/5] net/tcp: Disable TCP-MD5 static key on
- tcp_md5sig_info destruction
-Message-ID: <20221118191809.0174f4da@kernel.org>
-In-Reply-To: <20221115211905.1685426-4-dima@arista.com>
-References: <20221115211905.1685426-1-dima@arista.com>
-        <20221115211905.1685426-4-dima@arista.com>
+        s=k20201202; t=1668828016;
+        bh=WrNWq66A33NIxRY7jVhtSQulqMyrS/rO1WpQZ4OedTQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=BE/2dQ7BIpU5chOtEoTkcxHEE3W4ZwuFOEybmIxiXMKbVwFa/k/Z6iwjdzEptNiZN
+         mUi0OyMxXM06WPYt2fLmEhBagkclI8Nnbj9FRpPAAYMZ9vY30sxweltSvlAfOw5oCn
+         483yPDzGQ3G9xp6OQ4eWhdwPyJ7VVy/WcT4nWnvA9SN4hHfpFwwNBOaiT074+rGxTq
+         uKqwH62R5qnyNJzmtGduPcnXIjjuBTa+gCP7JQXcUCaQ+V2p4y/qvTlLgr+Gz3yACk
+         aR/z0svanYH8wdbkCIUIY5qc8E876Rf2n3FffRvDt3JxAuRCFMX6cOgzK4eA/4YcOo
+         F+M3zuvfQnLhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 24D95C395F3;
+        Sat, 19 Nov 2022 03:20:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] netlink: remove the flex array from struct nlmsghdr
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166882801614.12875.6125141397212888728.git-patchwork-notify@kernel.org>
+Date:   Sat, 19 Nov 2022 03:20:16 +0000
+References: <20221118033903.1651026-1-kuba@kernel.org>
+In-Reply-To: <20221118033903.1651026-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, keescook@chromium.org, nathan@kernel.org,
+        ndesaulniers@google.com, trix@redhat.com, llvm@lists.linux.dev
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -66,18 +56,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Nov 2022 21:19:03 +0000 Dmitry Safonov wrote:
-> +	if (!rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk))) {
-> +		if (tcp_md5sig_info_add(sk, sk_gfp_mask(sk, GFP_ATOMIC)))
-> +			return -ENOMEM;
-> +
-> +		if (!static_key_fast_inc_not_negative(&tcp_md5_needed.key.key)) {
-> +			struct tcp_md5sig_info *md5sig = tp->md5sig_info;
+Hello:
 
-I don't think sparse will be able to deduce that ->md5sig_info access
-is safe here, so could you wrap it up as well? Maybe it wouldn't be 
-the worst move to provide a sk_rcu_dereference() or rcu_dereference_sk()
-or some such wrapper.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-More importantly tho - was the merging part for this patches discussed?
-They don't apply to net-next.
+On Thu, 17 Nov 2022 19:39:03 -0800 you wrote:
+> I've added a flex array to struct nlmsghdr in
+> commit 738136a0e375 ("netlink: split up copies in the ack construction")
+> to allow accessing the data easily. It leads to warnings with clang,
+> if user space wraps this structure into another struct and the flex
+> array is not at the end of the container.
+> 
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Link: https://lore.kernel.org/all/20221114023927.GA685@u2004-local/
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] netlink: remove the flex array from struct nlmsghdr
+    https://git.kernel.org/netdev/net-next/c/c73a72f4cbb4
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
