@@ -2,190 +2,520 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF7263088C
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 02:42:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E00C0630891
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 02:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbiKSBmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 20:42:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
+        id S232985AbiKSBnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 20:43:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiKSBmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 20:42:38 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2195A46F
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 16:47:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668818855; x=1700354855;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=TUtb7r3qyGgQWxB4PKSFQbj4CB5ngmribYWmqdiAezk=;
-  b=bAGC3UnSUvLDuUmRusyA5YuF3SFtgV8gh5hTCs2GZjBmVUuWQElN7vyN
-   tMsfZbjg4f7ZNx+jFmhyq5tFJBKexrgPG4dzT36TTm4u0HEo5txoK8PDe
-   CH07aoABP9/VHMRfMYNSLiCryp+YRJOtKD1m0UewCV2/woVONxma6RhHn
-   kwsC9h5zkUY7kkVosd7s2tsPiMNaL1Br3Z+NF+qtLCIhC6JBhQGFVlvms
-   j5vqVi3TJybQj/Ml5T68pg3vqv9GHRjcXczMFQ2NlL2ghHcwmrctZCkZ/
-   qfUKjY2EkiBT5ThmTZwZ5BK3hJh2din8PGmav6ICC/GsJKAefvIrlmRyn
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="292982676"
-X-IronPort-AV: E=Sophos;i="5.96,175,1665471600"; 
-   d="scan'208";a="292982676"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 16:47:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="673390491"
-X-IronPort-AV: E=Sophos;i="5.96,175,1665471600"; 
-   d="scan'208";a="673390491"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga001.jf.intel.com with ESMTP; 18 Nov 2022 16:47:35 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 18 Nov 2022 16:47:35 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Fri, 18 Nov 2022 16:47:35 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.49) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Fri, 18 Nov 2022 16:47:34 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gQu2eScWqWzGXYquAR0xIg9zOEs9ZJTKDInKXrOo78XOwFS3DOKARZBzcEhaczdhMQOqd4en5iQISSQ3SJA2whutSnZqV8HQjW4yXDqwc+pZkTR+gVKfB1e3xrSUaBI7SF99Tq09g1W/ihITFnj6t+iVtZInBrQBDbiETEXVCH6MGszWobTEBGrejXpqA76cAKBuCvZfs220Sg1bdm8vznR5Zhkd6cNIsxZLDqsaLU5rFjxt8fnn1sRWcZzkJWTDssSseYel+BaE6qWbSsOy3r555xcPGr5+D/0oDXXpObW129skI18jWoTu3zsBrZG2tycrTD8ZBC1kt4jOFVA2RA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zDgBM8q3aQEB+2lK691TUffhDjjnzpb89Rh49SbeCr0=;
- b=cUnD6jrG0cVSObx1LEckJsbBJSl5D8xGOYUpmt3KzPeqdV2cWpuv0mzm7x2dsFU+r2emOIZV+4Musa8jvBcO7C9neJytbm6WCuO24sVEpqqpkF2aCAUeQRxgsbvp4iqjGShZlBOGwD8wN6FEZb1yNleIuhK9WpOePRnD/qoVeOIhcS//ta+kq4IoIW9ubhW7qerYHL3jA1C57TEXxYVhWup2JwCal65JPPiWaqTfO6DqFSo+U3gHsROJfhsR3D2SW0vERfJn3o996t8MVUxUZWvBv4a00kIlNkZjp5LwGeK1v9zT4Bmhf7nQrFPmcosEqVqHzWGNJqIt7j4bzsHWZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
- by LV2PR11MB6047.namprd11.prod.outlook.com (2603:10b6:408:179::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.9; Sat, 19 Nov
- 2022 00:47:32 +0000
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::a123:7731:5185:ade9]) by MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::a123:7731:5185:ade9%8]) with mapi id 15.20.5834.009; Sat, 19 Nov 2022
- 00:47:32 +0000
-Message-ID: <015d1dd2-de6b-3922-2c44-f54bf475f8c3@intel.com>
-Date:   Fri, 18 Nov 2022 16:47:28 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH net-next 5/5] sunvnet: Use kmap_local_page() instead of
- kmap_atomic()
-Content-Language: en-US
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        <netdev@vger.kernel.org>
-CC:     Ira Weiny <ira.weiny@intel.com>
-References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
- <20221117222557.2196195-6-anirudh.venkataramanan@intel.com>
- <2373606.NG923GbCHz@suse> <2784595.88bMQJbFj6@suse>
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-In-Reply-To: <2784595.88bMQJbFj6@suse>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BYAPR01CA0005.prod.exchangelabs.com (2603:10b6:a02:80::18)
- To MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
+        with ESMTP id S232437AbiKSBmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 20:42:45 -0500
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710A7CD94E;
+        Fri, 18 Nov 2022 16:49:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1668818978; x=1700354978;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jToRV35Q5SUl9TJr5+ua+CQwBIOSt9sdpJtFVnN0r78=;
+  b=L9f48l78LeIhUD7jEBNW+kEsiuNBSQ9xJcc30BSL8D9hTLY17e5C9M/E
+   r1ssXPgR1HzrI508XrPBZhi3i68pC5bADQj5NYstmIrYl8mfzBFxs3Y5D
+   4xg4XJuimYPX+cJNnCEU4jlG6bnHC0BZEwa2Oxd/Q3FTCy267Z/QKJ/Ds
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.96,175,1665446400"; 
+   d="scan'208";a="268441959"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2022 00:49:36 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id D89A7820B1;
+        Sat, 19 Nov 2022 00:49:31 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Sat, 19 Nov 2022 00:49:30 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.160.223) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Sat, 19 Nov 2022 00:49:27 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <joannelkoong@gmail.com>
+CC:     <acme@mandriva.com>, <davem@davemloft.net>, <dccp@vger.kernel.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>, <martin.lau@kernel.org>,
+        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <pengfei.xu@intel.com>,
+        <stephen@networkplumber.org>, <william.xuanziyang@huawei.com>,
+        <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v3 net 3/4] dccp/tcp: Update saddr under bhash's lock.
+Date:   Fri, 18 Nov 2022 16:49:20 -0800
+Message-ID: <20221119004920.27975-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAJnrk1aYK6TioDBnGhKuxajOzm-Df+MiUd+O3hDbnup83GwNWw@mail.gmail.com>
+References: <CAJnrk1aYK6TioDBnGhKuxajOzm-Df+MiUd+O3hDbnup83GwNWw@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|LV2PR11MB6047:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6ad9db28-11e8-4bdb-dc69-08dac9c7a3bb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HLW6OBGILjR5Ke0Z/QjKHSQaxQRNoFuUISdKYiEv60Qg472hS749Im43Pd6fL77EzOzgIEc4ooLtshLWb5O3wSFp6gT+B7gXIPA8TerUewnqpH9999SJL3fU3nDR9Ur7g52K0x9HTXtVsJchpELds2NC7W/7b/mU0rrcJYEJYGS2r1BK16GZLxutetIDA6UHt+SA+0vEdbpRomgNPLFB73JTKzOonTYDpzX5aRCoc7xI9FwHeCog4i5VzHwMamKxaMfVCUpu9ewbJeaeHTDoHl7BkrTLIvfIj2M2GZ66xnSN/5HEfNzBZFJyym2+2JIhdQrVbR46k1tVevUuGfo9Co6jLmJSFAh7AdYq9Y439t9HDH1ucLFHN/Sc8z2KJi1ZIqfjGM3ydipSHMmfczE8cmY8AN3gBs7YERwbA3hkDAsVaTEscXGjmOYP/fepjkZ8ytWJPb5UIUNpLiVdDpqO4kLlj0I62WKfJhjXYkJwM/DhBtduL81+QnlNAUGrVXMlbreJrizgm3m1FcEoXGmClLC8NUjq0HMGLdZSSBoZ98jhqW+Vmd933pDCr6oRuzo+eL6R7o1z1xv2wwgMn8uADEP+h6j9JsrUeu7WnWyBvqu0sxNskm7y6kLrTVuuMNIRRRJf2Kc+A5wdpaUCEZdPiPOOVOzWWlWSd2t9NCGok43f+GHNpfeE8EonNXwwHKhCqpb/FaKSjhlq0zJNL/TSFqIsfE31eyGGNgxzRb0+6BU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(39860400002)(376002)(346002)(136003)(396003)(451199015)(82960400001)(186003)(2616005)(107886003)(53546011)(6666004)(6512007)(6506007)(26005)(478600001)(6486002)(316002)(4326008)(8676002)(5660300002)(41300700001)(66476007)(8936002)(44832011)(66556008)(66946007)(2906002)(83380400001)(86362001)(36756003)(31696002)(38100700002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QTJ5WVJEcG5SSzc4TTRlZmR4TXd1Q3d5dHNkTTE5WmNEdlBXKy9oNnQxZTJF?=
- =?utf-8?B?c25YMlE2V2ZEaDVQMWFGVGVQSGFOUHlFaFgrNzIwU0lEdjBFaEFlN1BNYzh5?=
- =?utf-8?B?cEVVd2Z2bDdDMnM5OE16azFIWVpWNzhaeFFLYWIxVSt2SnNSZjdWMXlvL2Nr?=
- =?utf-8?B?Y2dKT25wbVlVQytMeDJ2SlluNDNwMXJkam04OFhWSGI3Zjg4b1Z0SThmeS9a?=
- =?utf-8?B?b3ZLUkNEM0Q3aXVhN1pRaVZUUkdGYzVkb2NHNVBta2poelJGNHdjd3lhRTlM?=
- =?utf-8?B?RWZITVJvaTRkbHlLYzltQ3crMzVLSndHVVJqdXNhNWlqQmhTd2hEdUFoY3d5?=
- =?utf-8?B?Q2RPbXR6N3hNUEEzVWdyb0UrbFFGNitDK2Z2RFZBSGUreGFOY3N2VGdVRVZk?=
- =?utf-8?B?ZGgrY0dWMEQ5VDVOSzhCWGQyYWVkMmJwN2tzQXpZd1hTUVhQUDEvQ1V3N20v?=
- =?utf-8?B?QmpDRHovcDk2T3c3ak1iNjhNcldNZEpUV2plRDJlSEdkZWRFUkpZWEhXWm5s?=
- =?utf-8?B?blpsQ0ZBZmxvbkpxNlgzNHVFejlhWHVEeXdHdFZEdEo3d1Ivb3F0V05XOVZZ?=
- =?utf-8?B?NkxidDFlK3dRbzVjSmFBdnI5VjVNNFhkd05vMkx4RVNocDh3NVhDV1hUM28v?=
- =?utf-8?B?VVA3ZXkyNXJ6cGlpektCLzF6UnR1VHN3S2NBcHVGNkdjSDAzNnZzbGRXUXRq?=
- =?utf-8?B?ekpkZ2JtNEpxdGZFOEFUWnpMQjVrVDBMdDlXa3I5ZHljd2tEMlpFSzMxNXh2?=
- =?utf-8?B?VjVrSE1Ka1kzN2cvWU1QRFp3UW5rc3RndU9BTGJxdXY4cDQyUi9OL2hVVWFq?=
- =?utf-8?B?WnFuYlFJYnB1eUdyZzFBWXdQZ1MzN2xwcnFXRVJNRUNtZjB3WGcvdExuTVRY?=
- =?utf-8?B?NElUbEtzTVJFTTVzVTZlS3ZwM1Q5eWdCTkpELzdYREVWVzhXcGZaSGh5NEhR?=
- =?utf-8?B?Q1V1Y3hNSmdvZGV5VWNMR0pIcmUyaWt1aUNMcUkyREVCZFBTaGtBY0wvYUVq?=
- =?utf-8?B?MGkwcDNaVkk0R3Z5VFUxWUE5TStjaHNtSmdCOFVZTVVhSWJpZFkySVV3K2R1?=
- =?utf-8?B?ZkVuZEpZTWNNZUZGREV1eit4K3R3QTVIRXlqMzErdDhNUjBhNDh2MWVKWTVM?=
- =?utf-8?B?R2ZSZ240MzBFdXFTOWZvTzBNcE5FVFo5aUltRXNySnp5cVZIZENzc3E5bHMw?=
- =?utf-8?B?K25qYUp6NXVrTG1Ud3JtTHFJRTVoY3dXNUZwdDBzQTRHTWd5aEQ2aHdrQTY1?=
- =?utf-8?B?eEtjM3ozMEtUbFJLcXN1b3k0VkhqUkE1bGNCdGVXRCtHdXVmZUt3bGlES3dB?=
- =?utf-8?B?UHdnU3p5Z29EVWlGUmlWUG1CSkVUVkc4SnZ0OERkNGc3cndwM2trWU5FcGd6?=
- =?utf-8?B?Wi9qd1prWDVQbERLZjBNMmpuK2U1cjJQcXNjbzFXbXdmaEtpSHZJeGNBRWtU?=
- =?utf-8?B?OWM3eDdUTlpIZmdtTW9JcWVYNmR0ZnYycTN3MU9kUTZMdytiTXBZOStiNGVJ?=
- =?utf-8?B?SjU4N1FKTmVzMmkvNFFwTWlwYWhzMjVUd0l2ZjBEdWpSVDdzVjAzcVdNaTk5?=
- =?utf-8?B?SmJzcjkvbkZJTDNKRXFxZU16UFN1Z3hnYVpWY0lPcG9kYnZVbzAvaVlaYW9K?=
- =?utf-8?B?OEpUamdwSEtiZFZhVWVoSmVrQ2lTdzRIcUNudlVVVllmNys1L095alRlRVlN?=
- =?utf-8?B?VmpTZERkelhDUWNRODUvL0lqaUZPaWJCOU9USVMzT3VhRUdVc0hEdDRCbXE2?=
- =?utf-8?B?dGMrTlBzZHRlTTJnVFgzSUtPSnpxQmc0RDJUZGJaNlhYNVlrWDkybmhPbWgy?=
- =?utf-8?B?dTh2K2psdGRCdnNjOTUvVFlWUThSZGRiWWtsb3FwVE9BY1RkRnRJa2M1WFRQ?=
- =?utf-8?B?UUJiZm4rQmQyN3lnRTd5Uk53ajE4TjdlRllaZmhxNEp4R3hCOVo1KzFWZDdo?=
- =?utf-8?B?NTVWa0NON2lkUnBtSUoxeHl3OFc3b1dQVGhqYnpzbnZrVmVVMUcrMmRrSzBP?=
- =?utf-8?B?WG0xUUx0aDZMdWpxRFhVVFdNcXk4VzJsZVYxM0JWd3MreUN5QzdBQ1BTZGJx?=
- =?utf-8?B?UGRSSldUT3FrbVd0cWdvWW13ODNvS0wrU1FTcUpTQSsxZkVqU0NyRWluSE5R?=
- =?utf-8?B?dktNRjR2Rmt6T2ViK293Um94YXpzMkp0a25UdGxjVFdNWXl1MHdlNWJMdXJH?=
- =?utf-8?Q?907AmWrBQMmKzGT3QzR/UW8=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ad9db28-11e8-4bdb-dc69-08dac9c7a3bb
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Nov 2022 00:47:32.5123
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FS1S8xbjhPMkmx2kS3gqsVTkznWurEPrEKFYEb809+hFxkBFFR82VANLgI6lb2Q2gAGUc0n5is/O8uPWG3pX4hykRJwIvRtPEyDO7mxKJUTlguc+hAJyusuioz498Zqs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR11MB6047
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.223]
+X-ClientProxiedBy: EX13D45UWA002.ant.amazon.com (10.43.160.38) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/2022 12:45 PM, Fabio M. De Francesco wrote:
-> On venerdì 18 novembre 2022 10:11:12 CET Fabio M. De Francesco wrote:
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Fri, 18 Nov 2022 15:20:20 -0800
+> On Fri, Nov 18, 2022 at 1:00 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > When we call connect() for a socket bound to a wildcard address, we update
+> > saddr locklessly.  However, it could result in a data race; another thread
+> > iterating over bhash might see a corrupted address.
+> >
+> > Let's update saddr under the bhash bucket's lock.
 > 
-> Now that we are at 5/5 again. I'd like to point again to what worries me:
+> Thanks for the quick turnaround!
 > 
-> "Converting the former to the latter is safe only if there isn't an implicit
-> dependency on preemption and page-fault handling being disabled, ...".
+> >
+> > Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
+> > Fixes: 7c657876b63c ("[DCCP]: Initial implementation")
+> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> >  include/net/inet_hashtables.h |  2 +-
+> >  net/dccp/ipv4.c               | 22 +++-----------
+> >  net/dccp/ipv6.c               | 23 +++------------
+> >  net/ipv4/af_inet.c            | 11 +------
+> >  net/ipv4/inet_hashtables.c    | 55 +++++++++++++++++++++++++++++------
+> >  net/ipv4/tcp_ipv4.c           | 20 +++----------
+> >  net/ipv6/tcp_ipv6.c           | 19 ++----------
+> >  7 files changed, 63 insertions(+), 89 deletions(-)
+> >
+> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> > index 3af1e927247d..ba06e8b52264 100644
+> > --- a/include/net/inet_hashtables.h
+> > +++ b/include/net/inet_hashtables.h
+> > @@ -281,7 +281,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+> >   * sk_v6_rcv_saddr (ipv6) changes after it has been binded. The socket's
+> >   * rcv_saddr field should already have been updated when this is called.
+> >   */
+> > -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk);
+> > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
+> >
+> >  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+> >                     struct inet_bind2_bucket *tb2, unsigned short port);
+> > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+> > index 40640c26680e..95e376e3b911 100644
+> > --- a/net/dccp/ipv4.c
+> > +++ b/net/dccp/ipv4.c
+> > @@ -45,11 +45,10 @@ static unsigned int dccp_v4_pernet_id __read_mostly;
+> >  int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >  {
+> >         const struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+> > -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
+> >         struct inet_sock *inet = inet_sk(sk);
+> >         struct dccp_sock *dp = dccp_sk(sk);
+> >         __be16 orig_sport, orig_dport;
+> > +       __be32 daddr, nexthop;
+> >         struct flowi4 *fl4;
+> >         struct rtable *rt;
+> >         int err;
+> > @@ -91,26 +90,13 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >                 daddr = fl4->daddr;
+> >
+> >         if (inet->inet_saddr == 0) {
+> > -               if (inet_csk(sk)->icsk_bind2_hash) {
+> > -                       prev_addr_hashbucket =
+> > -                               inet_bhashfn_portaddr(&dccp_hashinfo, sk,
+> > -                                                     sock_net(sk),
+> > -                                                     inet->inet_num);
+> > -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
+> > -               }
+> > -               inet->inet_saddr = fl4->saddr;
+> > -       }
+> > -
+> > -       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> > -
+> > -       if (prev_addr_hashbucket) {
+> > -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
+> >                 if (err) {
+> > -                       inet->inet_saddr = 0;
+> > -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
+> >                         ip_rt_put(rt);
+> >                         return err;
+> >                 }
+> > +       } else {
+> > +               sk_rcv_saddr_set(sk, inet->inet_saddr);
+> >         }
+> >
+> >         inet->inet_dport = usin->sin_port;
+> > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> > index 626166cb6d7e..94c101ed57a9 100644
+> > --- a/net/dccp/ipv6.c
+> > +++ b/net/dccp/ipv6.c
+> > @@ -934,26 +934,11 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >         }
+> >
+> >         if (saddr == NULL) {
+> > -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > -               struct in6_addr prev_v6_rcv_saddr;
+> > -
+> > -               if (icsk->icsk_bind2_hash) {
+> > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(&dccp_hashinfo,
+> > -                                                                    sk, sock_net(sk),
+> > -                                                                    inet->inet_num);
+> > -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+> > -               }
+> > -
+> >                 saddr = &fl6.saddr;
+> > -               sk->sk_v6_rcv_saddr = *saddr;
+> > -
+> > -               if (prev_addr_hashbucket) {
+> > -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > -                       if (err) {
+> > -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
+> > -                               goto failure;
+> > -                       }
+> > -               }
+> > +
+> > +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
+> > +               if (err)
+> > +                       goto failure;
+> >         }
+> >
+> >         /* set the source address */
+> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> > index 4728087c42a5..0da679411330 100644
+> > --- a/net/ipv4/af_inet.c
+> > +++ b/net/ipv4/af_inet.c
+> > @@ -1230,7 +1230,6 @@ EXPORT_SYMBOL(inet_unregister_protosw);
+> >
+> >  static int inet_sk_reselect_saddr(struct sock *sk)
+> >  {
+> > -       struct inet_bind_hashbucket *prev_addr_hashbucket;
+> >         struct inet_sock *inet = inet_sk(sk);
+> >         __be32 old_saddr = inet->inet_saddr;
+> >         __be32 daddr = inet->inet_daddr;
+> > @@ -1260,16 +1259,8 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+> >                 return 0;
+> >         }
+> >
+> > -       prev_addr_hashbucket =
+> > -               inet_bhashfn_portaddr(tcp_or_dccp_get_hashinfo(sk), sk,
+> > -                                     sock_net(sk), inet->inet_num);
+> > -
+> > -       inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
+> > -
+> > -       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > +       err = inet_bhash2_update_saddr(sk, &new_saddr, AF_INET);
+> >         if (err) {
+> > -               inet->inet_saddr = old_saddr;
+> > -               inet->inet_rcv_saddr = old_saddr;
+> >                 ip_rt_put(rt);
+> >                 return err;
+> >         }
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index d745f962745e..fce0bd62d6b5 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -858,31 +858,65 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+> >         return &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
+> >  }
+> >
+> > -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk)
+> > +static void inet_update_saddr(struct sock *sk, void *saddr, int family)
+> > +{
+> > +       if (family == AF_INET) {
+> > +               inet_sk(sk)->inet_saddr = *(__be32 *)saddr;
+> > +               sk_rcv_saddr_set(sk, inet_sk(sk)->inet_saddr);
+> > +       }
+> > +#if IS_ENABLED(CONFIG_IPV6)
+> > +       else {
+> > +               sk->sk_v6_rcv_saddr = *(struct in6_addr *)saddr;
+> > +       }
+> > +#endif
+> > +}
+> > +
+> > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
+> >  {
+> >         struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+> > +       struct inet_bind_hashbucket *head, *head2;
+> >         struct inet_bind2_bucket *tb2, *new_tb2;
+> >         int l3mdev = inet_sk_bound_l3mdev(sk);
+> > -       struct inet_bind_hashbucket *head2;
+> >         int port = inet_sk(sk)->inet_num;
+> >         struct net *net = sock_net(sk);
+> > +       int bhash, err = 0;
+> > +
+> > +       if (!inet_csk(sk)->icsk_bind2_hash) {
+> > +               /* Not bind()ed before. */
+> > +               inet_update_saddr(sk, saddr, family);
+> > +               goto out;
+> > +       }
 > 
-> If I was able to convey my thoughts this is what you should get from my long
-> email:
+> I think it would be cleaner if this logic were outside
+> bhash2_update_saddr(), since this mutates the sk's address when the
+> socket hasn't been previously bound to bhash2. I think something like
+> this would be clearer:
 > 
-> "Converting the former to the latter is _always_ safe if there isn't an
-> implicit dependency on preemption and page-fault handling being disabled and
-> also when the above-mentioned implicit dependency is present, but in the
-> latter case only if calling pagefault_disable() and/or preempt_disable() with
-> kmap_local_page(). These disables are not required here because...".
+> static int inet_update_saddr(struct sock *sk, void *saddr, int family)
+> {
+>     if (!inet_csk(sk)->icsk_bind2_hash) {
+>       update_sk_saddr(sk, saddr, family)
+>       return 0;
+>     }
+>     return inet_bhash2_update_saddr(sk, saddr, family);
+> }
 > 
-> As you demonstrated none of your nine patches need any explicit disable along
-> with kmap_local_page().
+> and then from dccp/tcp_ipv4/6_connect(), we just call
+> inet_update_saddr(). This also "moves" the lower-level implementation
+> details (eg underlying bind tables) to inet_hashtables.c, instead of
+> it being mentioned in the higher dccp_tcp_ipv4/6 layers.
 > 
-> Do my two emails make any sense to you?
-> However, your patches are good. If you decide to make them perfect use those
-> helpers we've been talking about.
+> What are your thoughts?
 
-Hi Fabio,
+Hmm..  There are other users of inet_reset_saddr().  If we hide the
+details of reset & bhash2 logic too, we need a cleanup patch below.
 
-I'll be posting v2 next week. I've incorporated feedback from our 
-discussion, and hopefully the things I've added make sense. If not, 
-let's continue talking.
+So, I'll keep this part as is in the next spin.  If needed, I can
+post a followup for net-next.
 
-Ani
+And I noticed UDP has the same problem, this will be another series.
+
+Thank you!
+
+---8<---
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 95a18c029d5b..6ac7d5b8cbed 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -277,6 +277,7 @@ inet_bhashfn_portaddr(const struct inet_hashinfo *hinfo, const struct sock *sk,
+ struct inet_bind_hashbucket *
+ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, int port);
+ 
++void inet_reset_saddr(struct sock *sk);
+ int inet_update_saddr(struct sock *sk, void *saddr, int family);
+ 
+ void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 144bdfbb25af..43939a235398 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -632,7 +632,7 @@ static inline void ip_ipgre_mc_map(__be32 naddr, const unsigned char *broadcast,
+ #include <linux/ipv6.h>
+ #endif
+ 
+-static __inline__ void inet_reset_saddr(struct sock *sk)
++static __inline__ void __inet_reset_saddr(struct sock *sk)
+ {
+ 	inet_sk(sk)->inet_rcv_saddr = inet_sk(sk)->inet_saddr = 0;
+ #if IS_ENABLED(CONFIG_IPV6)
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index b0ababa74c02..4171077b127c 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -941,6 +941,12 @@ int inet_update_saddr(struct sock *sk, void *saddr, int family)
+ }
+ EXPORT_SYMBOL_GPL(inet_update_saddr);
+ 
++void inet_reset_saddr(struct sock *sk)
++{
++	__inet_reset_saddr(sk);
++}
++EXPORT_SYMBOL_GPL(inet_reset_saddr);
++
+ /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
+  * Note that we use 32bit integers (vs RFC 'short integers')
+  * because 2^16 is not a multiple of num_ephemeral and this
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 6a320a614e54..a3c64866207d 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1971,7 +1971,7 @@ int __udp_disconnect(struct sock *sk, int flags)
+ 	sock_rps_reset_rxhash(sk);
+ 	sk->sk_bound_dev_if = 0;
+ 	if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK)) {
+-		inet_reset_saddr(sk);
++		__inet_reset_saddr(sk);
+ 		if (sk->sk_prot->rehash &&
+ 		    (sk->sk_userlocks & SOCK_BINDPORT_LOCK))
+ 			sk->sk_prot->rehash(sk);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 024191004982..fea2de97ba54 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -411,7 +411,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
+ 		if (sk->sk_prot->get_port(sk, snum)) {
+ 			sk->sk_ipv6only = saved_ipv6only;
+-			inet_reset_saddr(sk);
++			__inet_reset_saddr(sk);
+ 			err = -EADDRINUSE;
+ 			goto out;
+ 		}
+@@ -419,7 +419,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 			err = BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk);
+ 			if (err) {
+ 				sk->sk_ipv6only = saved_ipv6only;
+-				inet_reset_saddr(sk);
++				__inet_reset_saddr(sk);
+ 				if (sk->sk_prot->put_port)
+ 					sk->sk_prot->put_port(sk);
+ 				goto out;
+
+---8<---
+
+
+> 
+> > +
+> > +       bhash = inet_bhashfn(net, port, hinfo->bhash_size);
+> > +       head = &hinfo->bhash[bhash];
+> > +
+> > +       /* If we change saddr locklessly, another thread
+> > +        * iterating over bhash might see corrupted address.
+> > +        */
+> > +       spin_lock_bh(&head->lock);
+> 
+> I don't think we should be acquiring the bhash lock here. I think we
+> only need to acquire it right before we mutate the saddr, and we can
+> release it right after.
+> 
+> >
+> >         /* Allocate a bind2 bucket ahead of time to avoid permanently putting
+> >          * the bhash2 table in an inconsistent state if a new tb2 bucket
+> >          * allocation fails.
+> >          */
+> >         new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
+> > -       if (!new_tb2)
+> > -               return -ENOMEM;
+> > +       if (!new_tb2) {
+> > +               err = -ENOMEM;
+> > +               goto unlock;
+> > +       }
+> >
+> >         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+> >
+> > -       spin_lock_bh(&prev_saddr->lock);
+> > +       spin_lock(&head2->lock);
+> >         __sk_del_bind2_node(sk);
+> >         inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
+> > -       spin_unlock_bh(&prev_saddr->lock);
+> > +       spin_unlock(&head2->lock);
+> > +
+> > +       inet_update_saddr(sk, saddr, family);
+> >
+> > -       spin_lock_bh(&head2->lock);
+> > +       head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+> > +
+> > +       spin_lock(&head2->lock);
+> >         tb2 = inet_bind2_bucket_find(head2, net, port, l3mdev, sk);
+> >         if (!tb2) {
+> >                 tb2 = new_tb2;
+> > @@ -890,12 +924,15 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
+> >         }
+> >         sk_add_bind2_node(sk, &tb2->owners);
+> >         inet_csk(sk)->icsk_bind2_hash = tb2;
+> > -       spin_unlock_bh(&head2->lock);
+> > +       spin_unlock(&head2->lock);
+> >
+> >         if (tb2 != new_tb2)
+> >                 kmem_cache_free(hinfo->bind2_bucket_cachep, new_tb2);
+> >
+> > -       return 0;
+> > +unlock:
+> > +       spin_unlock_bh(&head->lock);
+> > +out:
+> > +       return err;
+> >  }
+> >  EXPORT_SYMBOL_GPL(inet_bhash2_update_saddr);
+> >
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index 6a3a732b584d..23dd7e9df2d5 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -199,15 +199,14 @@ static int tcp_v4_pre_connect(struct sock *sk, struct sockaddr *uaddr,
+> >  /* This will initiate an outgoing connection. */
+> >  int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >  {
+> > -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> >         struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+> >         struct inet_timewait_death_row *tcp_death_row;
+> > -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
+> >         struct inet_sock *inet = inet_sk(sk);
+> >         struct tcp_sock *tp = tcp_sk(sk);
+> >         struct ip_options_rcu *inet_opt;
+> >         struct net *net = sock_net(sk);
+> >         __be16 orig_sport, orig_dport;
+> > +       __be32 daddr, nexthop;
+> >         struct flowi4 *fl4;
+> >         struct rtable *rt;
+> >         int err;
+> > @@ -251,24 +250,13 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
+> >
+> >         if (!inet->inet_saddr) {
+> > -               if (inet_csk(sk)->icsk_bind2_hash) {
+> > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
+> > -                                                                    sk, net, inet->inet_num);
+> > -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
+> > -               }
+> > -               inet->inet_saddr = fl4->saddr;
+> > -       }
+> > -
+> > -       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> > -
+> > -       if (prev_addr_hashbucket) {
+> > -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
+> >                 if (err) {
+> > -                       inet->inet_saddr = 0;
+> > -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
+> >                         ip_rt_put(rt);
+> >                         return err;
+> >                 }
+> > +       } else {
+> > +               sk_rcv_saddr_set(sk, inet->inet_saddr);
+> >         }
+> >
+> >         if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
+> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > index 81b396e5cf79..2f3ca3190d26 100644
+> > --- a/net/ipv6/tcp_ipv6.c
+> > +++ b/net/ipv6/tcp_ipv6.c
+> > @@ -292,24 +292,11 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
+> >
+> >         if (!saddr) {
+> > -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > -               struct in6_addr prev_v6_rcv_saddr;
+> > -
+> > -               if (icsk->icsk_bind2_hash) {
+> > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
+> > -                                                                    sk, net, inet->inet_num);
+> > -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+> > -               }
+> >                 saddr = &fl6.saddr;
+> > -               sk->sk_v6_rcv_saddr = *saddr;
+> >
+> > -               if (prev_addr_hashbucket) {
+> > -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > -                       if (err) {
+> > -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
+> > -                               goto failure;
+> > -                       }
+> > -               }
+> > +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
+> > +               if (err)
+> > +                       goto failure;
+> >         }
+> >
+> >         /* set the source address */
+> > --
+> > 2.30.2
