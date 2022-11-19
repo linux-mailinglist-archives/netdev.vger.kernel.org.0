@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 622B3630A88
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:27:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44592630AA3
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231596AbiKSC1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 21:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
+        id S236119AbiKSC3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 21:29:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235937AbiKSC0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:26:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8338483E;
-        Fri, 18 Nov 2022 18:16:16 -0800 (PST)
+        with ESMTP id S235127AbiKSC2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:28:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A16C8448;
+        Fri, 18 Nov 2022 18:16:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AC126280C;
-        Sat, 19 Nov 2022 02:16:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF01C433D7;
-        Sat, 19 Nov 2022 02:16:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C64F2B82670;
+        Sat, 19 Nov 2022 02:16:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BAB3C433C1;
+        Sat, 19 Nov 2022 02:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668824175;
-        bh=+erf4JSvlN1dv6enXI2Pe9KxqxehNWpH2vefNq7EfqQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iMax/wr35D/71+nQJm2OpOfW3tpQRLI/LNOuT/ajAM3HIlY+3f7FQMq9s1LwgIxml
-         vc3tHe6GcabcnAvxE4AZwxMsfHkNoDU6lrat0XHMiJBk7RTqExhlEHygImS/PXK70v
-         S8qM9ABlYH2A1HKiC/x9EMBuiRZWTxQ0ON97to+WenIcDDHL9tsfPywMku64oUazah
-         u4u8lz9Pq9fSEoZw3TqlglHO57QJQNIsVe6Ua1Ajo2nEc6TkZK9WAtnt0RN25/9irG
-         Oy2ZmRGRMr/KQD41qFtFeTPLAWjV2RoUOP0s/S4VhNqA91A9X2X9wN9J/Sgw73UCLL
-         qgKNCfAwjLtAQ==
+        s=k20201202; t=1668824193;
+        bh=cjTrgrVFzgMJe4GU+Tpzl4DHiEKRkV7BwTp/DWRcKYw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=s17+C8Wcg5p1H8RUb6wv367GaafP9b2M/kHjWdf5RpOeeqMvpnO/YTfsSINkWooxX
+         SRuXZZDxiv0MYY+HYcGjuAQH8bNpi0AE+f926znQAO2NrC2fV8/zbgBrGJzWOa2IDF
+         jegevbwLXH85ols6/GGTy57f8US0AJJiDcLQUF8NwYTA9XxzLolb0UxfVFP8Sb4BOZ
+         yKfmYO7V4LwWNCcmosVvQo/0zQvWF4fxGRUiaCASXDQUyL8WelKapQHhfMRQZoQG8q
+         Ddq4B7rlabSlcHMWJFEs4FVTG4mQEVm/6T845woZc1A0RI0HbliZ5xuswbkcx0EcUG
+         DoTNxJS4FE17g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicolas Cavallari <nicolas.cavallari@green-communications.fr>,
+Cc:     Jonas Jelonek <jelonek.jonas@gmail.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 3/8] wifi: mac80211: Fix ack frame idr leak when mesh has no route
-Date:   Fri, 18 Nov 2022 21:16:04 -0500
-Message-Id: <20221119021610.1775469-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 1/6] wifi: mac80211_hwsim: fix debugfs attribute ps with rc table support
+Date:   Fri, 18 Nov 2022 21:16:25 -0500
+Message-Id: <20221119021630.1775586-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221119021610.1775469-1-sashal@kernel.org>
-References: <20221119021610.1775469-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,40 +56,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+From: Jonas Jelonek <jelonek.jonas@gmail.com>
 
-[ Upstream commit 39e7b5de9853bd92ddbfa4b14165babacd7da0ba ]
+[ Upstream commit 69188df5f6e4cecc6b76b958979ba363cd5240e8 ]
 
-When trying to transmit an data frame with tx_status to a destination
-that have no route in the mesh, then it is dropped without recrediting
-the ack_status_frames idr.
+Fixes a warning that occurs when rc table support is enabled
+(IEEE80211_HW_SUPPORTS_RC_TABLE) in mac80211_hwsim and the PS mode
+is changed via the exported debugfs attribute.
 
-Once it is exhausted, wpa_supplicant starts failing to do SAE with
-NL80211_CMD_FRAME and logs "nl80211: Frame command failed".
+When the PS mode is changed, a packet is broadcasted via
+hwsim_send_nullfunc by creating and transmitting a plain skb with only
+header initialized. The ieee80211 rate array in the control buffer is
+zero-initialized. When ratetbl support is enabled, ieee80211_get_tx_rates
+is called for the skb with sta parameter set to NULL and thus no
+ratetbl can be used. The final rate array then looks like
+[-1,0; 0,0; 0,0; 0,0] which causes the warning in ieee80211_get_tx_rate.
 
-Use ieee80211_free_txskb() instead of kfree_skb() to fix it.
+The issue is fixed by setting the count of the first rate with idx '0'
+to 1 and hence ieee80211_get_tx_rates won't overwrite it with idx '-1'.
 
-Signed-off-by: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
-Link: https://lore.kernel.org/r/20221027140133.1504-1-nicolas.cavallari@green-communications.fr
+Signed-off-by: Jonas Jelonek <jelonek.jonas@gmail.com>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mesh_pathtbl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mac80211_hwsim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/mac80211/mesh_pathtbl.c b/net/mac80211/mesh_pathtbl.c
-index 06b44c3c831a..71ebdc85755c 100644
---- a/net/mac80211/mesh_pathtbl.c
-+++ b/net/mac80211/mesh_pathtbl.c
-@@ -731,7 +731,7 @@ int mesh_path_send_to_gates(struct mesh_path *mpath)
- void mesh_path_discard_frame(struct ieee80211_sub_if_data *sdata,
- 			     struct sk_buff *skb)
- {
--	kfree_skb(skb);
-+	ieee80211_free_txskb(&sdata->local->hw, skb);
- 	sdata->u.mesh.mshstats.dropped_frames_no_route++;
- }
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 55cca2ffa392..d3905e70b1e9 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -670,6 +670,7 @@ static void hwsim_send_nullfunc(struct mac80211_hwsim_data *data, u8 *mac,
+ 	struct hwsim_vif_priv *vp = (void *)vif->drv_priv;
+ 	struct sk_buff *skb;
+ 	struct ieee80211_hdr *hdr;
++	struct ieee80211_tx_info *cb;
  
+ 	if (!vp->assoc)
+ 		return;
+@@ -690,6 +691,10 @@ static void hwsim_send_nullfunc(struct mac80211_hwsim_data *data, u8 *mac,
+ 	memcpy(hdr->addr2, mac, ETH_ALEN);
+ 	memcpy(hdr->addr3, vp->bssid, ETH_ALEN);
+ 
++	cb = IEEE80211_SKB_CB(skb);
++	cb->control.rates[0].count = 1;
++	cb->control.rates[1].idx = -1;
++
+ 	rcu_read_lock();
+ 	mac80211_hwsim_tx_frame(data->hw, skb,
+ 				rcu_dereference(vif->chanctx_conf)->def.chan);
 -- 
 2.35.1
 
