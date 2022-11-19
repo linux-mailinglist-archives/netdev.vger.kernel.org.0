@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33DFB63104D
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 19:37:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D84C6631058
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 19:56:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbiKSShT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 13:37:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
+        id S231843AbiKSS4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 13:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230398AbiKSShL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 13:37:11 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE51140B5;
-        Sat, 19 Nov 2022 10:37:03 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id d7so5615264qkk.3;
-        Sat, 19 Nov 2022 10:37:03 -0800 (PST)
+        with ESMTP id S230398AbiKSS4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 13:56:40 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FF31A054
+        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 10:56:38 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id x18so5642183qki.4
+        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 10:56:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=erHGU1CnK47F8AJ7fpnd0e87oDzUNmIZBwVyU7/DHk4=;
-        b=ZSMIS55kAaZEvbinqdynt4bnEYN7BPjagw+qAUakJAorgTxjJw4JN+q6B+T/Wbl+rT
-         /Qw9GJXtoFxCToW38xrvBdkumJm0WFIShm+OJRranE0Ofnz5ttPVXSJCtCXlIZdtqEKW
-         ypaaY9SipQZGLwhAMZXHlyTkt6HBky0vyC80FIOi6UnzdpBctWAL0pvAKiJip+MkPMSM
-         UI1I9qjYjZrNpActA5ExXwedLowp2u6OGlDr7rjfuoumlOTfNXap28ZOdpho1wnnA1T2
-         uiGmY9mo+7GAIoSjHScW7UzCJMBKbXvZDalQ4zKcFUDWQY2b2Nw795DTY30IKta20QP4
-         H5wg==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=lfqMHP4N4jDBBUj7vqsn/k/WGRg7Jebw1pd3PMp1kug=;
+        b=p7kHqBu+xw60h0wLkzws5Dk2mFyLpwUOSiLwPOciucIOS2fGpMLLTz2VpukKSFnEWo
+         rs1PI/vTuzizXZux5FHbY9d4wUGDMZCCjdeuV5DspBF1EsK1qS6JejUPhEfHA9msctcJ
+         1WT9Z8kQe2IsSWZZprV2GNZiDWCBOkbu4hKPVZovjZNAiVddbxMz58/iEFxMAF2C66PR
+         MX7Ur1cOxwgACr0LmiPsbj6h8B9+f4+nmY65UiWQgM6Yc+yTlWveFsITl7wk5pHnYMmL
+         2szeLdBof7910dmAPC1Rn4ECVgk2vSqRukyQScV2k+enINJEauBMMEJJoErvgZif2a+D
+         qwKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=erHGU1CnK47F8AJ7fpnd0e87oDzUNmIZBwVyU7/DHk4=;
-        b=xaRCKRLHZ7tNV+XG9zq5vubTzX5JMvOf7L7+TEt7nm77HUTXUssznqDiLntcwRjXn7
-         1X6KQN5qA1KUtF0OGhxjLeWlaW22f82zQmkFNOcF7SfkJo1/49CQGrXv+I2dPEtMyDDc
-         wo/gtiy606oaBaqmqNhPA1t6+MOM3M0nUA1X2zMRQ69HPCoUllq5Iu14QmbFneczRIq1
-         o50gLUtwCd/pp/py/lbSHzZEv54BTQemB4rjcRSXyFu8iusIJ6VhUOA0nrzNsTlQeplO
-         3AH/4vImlsLIJTMUUAyrap1ikd3BeCAlWuX/SMr+U2aZ6aBdVDxsLx6t5PL2fv5p3nT1
-         D23A==
-X-Gm-Message-State: ANoB5pnYwKattz3jkdoMZeWBApB0iaOsKDZDygjuY5ub4OR/g+/GteVN
-        1ms/1nXIxV7W6tUgcz8U4Z4=
-X-Google-Smtp-Source: AA0mqf54h2kVYFjSfj2RQZr3U3bSm8SOkIVfBI0IRqOqiExwIKse3VEW/MhMTfVPyQ+JCSORVDbHGw==
-X-Received: by 2002:a37:c402:0:b0:6ee:e139:596c with SMTP id d2-20020a37c402000000b006eee139596cmr10820379qki.606.1668883022106;
-        Sat, 19 Nov 2022 10:37:02 -0800 (PST)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lfqMHP4N4jDBBUj7vqsn/k/WGRg7Jebw1pd3PMp1kug=;
+        b=yRDMrQ4UuvDcgqZ7SeqY+saQoCPSwX/lU1OUtnAkJQfwmfoG/3GoQV4pNGWC8I80V4
+         ZxIVP5hOhYk4Mq6/Bw1lZPyv3zuBGrl7SMuXhaQPntkRzm2nl7WNNqZteJtsOBr6OAD1
+         GzaTD0WOFILNtop1KuZsd9WXQnlBAi8mSvqDsKhn1hLLCuQ+iepMDHsxzmG4B761LniS
+         b33q/vT7Aalp+Ytd7E2UNgLAB1CLzFW6rSfC7KiS/EZxbcB17t8+bLelraDxXQbUCdl5
+         MZEs5RRbr9PUwHYHQ1D1HBVN0FFRDPf3PLY2Yu+6Lrz6VjhCCZg+RcUKw8hPjCm4aGr0
+         zrjw==
+X-Gm-Message-State: ANoB5pn6tWa3Bq6G1w2YupeTFzYIbrj7Mq0gwkNo1mtMNkNJhoqXeCbB
+        G29I66SG8jRVJIltYVN1CPxM/t9R31U=
+X-Google-Smtp-Source: AA0mqf4jP+eaRGCBT4UsmZR0mpFUkJVeUquU6t+ZdHWRDZ3xh2u4Slf0XnUh1Ot8w03Yr7nk/EC/yw==
+X-Received: by 2002:a37:e212:0:b0:6cd:f16e:320a with SMTP id g18-20020a37e212000000b006cdf16e320amr10803701qki.495.1668884197943;
+        Sat, 19 Nov 2022 10:56:37 -0800 (PST)
 Received: from localhost ([2600:1700:65a0:ab60:82fe:d8bd:30c3:4cf8])
-        by smtp.gmail.com with ESMTPSA id bl3-20020a05620a1a8300b006fae7e6204bsm5098124qkb.108.2022.11.19.10.37.00
+        by smtp.gmail.com with ESMTPSA id i10-20020a05620a404a00b006bb8b5b79efsm5132195qko.129.2022.11.19.10.56.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Nov 2022 10:37:01 -0800 (PST)
-Date:   Sat, 19 Nov 2022 10:37:00 -0800
+        Sat, 19 Nov 2022 10:56:37 -0800 (PST)
+Date:   Sat, 19 Nov 2022 10:56:36 -0800
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Cong Wang <cong.wang@bytedance.com>, sdf@google.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [Patch bpf] sock_map: convert cancel_work_sync() to cancel_work()
-Message-ID: <Y3kiTNKPawbxsgZh@pop-os.localdomain>
-References: <20221018020258.197333-1-xiyou.wangcong@gmail.com>
- <Y07sxzoS/s6ZBhEx@google.com>
- <87eduxfiik.fsf@cloudflare.com>
- <Y1wqe2ybxxCtIhvL@pop-os.localdomain>
- <87bkprprxf.fsf@cloudflare.com>
- <63617b2434725_2eb7208e1@john.notmuch>
- <87a6574yz0.fsf@cloudflare.com>
- <63643449b978a_204d620851@john.notmuch>
+To:     Christian =?iso-8859-1?Q?P=F6ssinger?= <christian@poessinger.com>
+Cc:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: Re: iproute2/tc invalid JSON in v6.0.0-42-g49c63bc7 for "tc filter"
+Message-ID: <Y3km5AE81dRxkWan@pop-os.localdomain>
+References: <e1fa5169db254301bc3b5b766c2df76a@poessinger.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <63643449b978a_204d620851@john.notmuch>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e1fa5169db254301bc3b5b766c2df76a@poessinger.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,160 +71,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 03, 2022 at 02:36:09PM -0700, John Fastabend wrote:
-> Jakub Sitnicki wrote:
-> > On Tue, Nov 01, 2022 at 01:01 PM -07, John Fastabend wrote:
-> > > Jakub Sitnicki wrote:
-> > >> On Fri, Oct 28, 2022 at 12:16 PM -07, Cong Wang wrote:
-> > >> > On Mon, Oct 24, 2022 at 03:33:13PM +0200, Jakub Sitnicki wrote:
-> > >> >> On Tue, Oct 18, 2022 at 11:13 AM -07, sdf@google.com wrote:
-> > >> >> > On 10/17, Cong Wang wrote:
-> > >> >> >> From: Cong Wang <cong.wang@bytedance.com>
-> > >> >> >
-> > >> >> >> Technically we don't need lock the sock in the psock work, but we
-> > >> >> >> need to prevent this work running in parallel with sock_map_close().
-> > >> >> >
-> > >> >> >> With this, we no longer need to wait for the psock->work synchronously,
-> > >> >> >> because when we reach here, either this work is still pending, or
-> > >> >> >> blocking on the lock_sock(), or it is completed. We only need to cancel
-> > >> >> >> the first case asynchronously, and we need to bail out the second case
-> > >> >> >> quickly by checking SK_PSOCK_TX_ENABLED bit.
-> > >> >> >
-> > >> >> >> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
-> > >> >> >> Reported-by: Stanislav Fomichev <sdf@google.com>
-> > >> >> >> Cc: John Fastabend <john.fastabend@gmail.com>
-> > >> >> >> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > >> >> >> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > >> >> >
-> > >> >> > This seems to remove the splat for me:
-> > >> >> >
-> > >> >> > Tested-by: Stanislav Fomichev <sdf@google.com>
-> > >> >> >
-> > >> >> > The patch looks good, but I'll leave the review to Jakub/John.
-> > >> >> 
-> > >> >> I can't poke any holes in it either.
-> > >> >> 
-> > >> >> However, it is harder for me to follow than the initial idea [1].
-> > >> >> So I'm wondering if there was anything wrong with it?
-> > >> >
-> > >> > It caused a warning in sk_stream_kill_queues() when I actually tested
-> > >> > it (after posting).
-> > >> 
-> > >> We must have seen the same warnings. They seemed unrelated so I went
-> > >> digging. We have a fix for these [1]. They were present since 5.18-rc1.
-> > >> 
-> > >> >> This seems like a step back when comes to simplifying locking in
-> > >> >> sk_psock_backlog() that was done in 799aa7f98d53.
-> > >> >
-> > >> > Kinda, but it is still true that this sock lock is not for sk_socket
-> > >> > (merely for closing this race condition).
-> > >> 
-> > >> I really think the initial idea [2] is much nicer. I can turn it into a
-> > >> patch, if you are short on time.
-> > >> 
-> > >> With [1] and [2] applied, the dead lock and memory accounting warnings
-> > >> are gone, when running `test_sockmap`.
-> > >> 
-> > >> Thanks,
-> > >> Jakub
-> > >> 
-> > >> [1] https://lore.kernel.org/netdev/1667000674-13237-1-git-send-email-wangyufen@huawei.com/
-> > >> [2] https://lore.kernel.org/netdev/Y0xJUc%2FLRu8K%2FAf8@pop-os.localdomain/
-> > >
-> > > Cong, what do you think? I tend to agree [2] looks nicer to me.
-> > >
-> > > @Jakub,
-> > >
-> > > Also I think we could simply drop the proposed cancel_work_sync in
-> > > sock_map_close()?
-> > >
-> > >  }
-> > > @@ -1619,9 +1619,10 @@ void sock_map_close(struct sock *sk, long timeout)
-> > >  	saved_close = psock->saved_close;
-> > >  	sock_map_remove_links(sk, psock);
-> > >  	rcu_read_unlock();
-> > > -	sk_psock_stop(psock, true);
-> > > -	sk_psock_put(sk, psock);
-> > > +	sk_psock_stop(psock);
-> > >  	release_sock(sk);
-> > > +	cancel_work_sync(&psock->work);
-> > > +	sk_psock_put(sk, psock);
-> > >  	saved_close(sk, timeout);
-> > >  }
-> > >
-> > > The sk_psock_put is going to cancel the work before destroying the psock,
-> > >
-> > >  sk_psock_put()
-> > >    sk_psock_drop()
-> > >      queue_rcu_work(system_wq, psock->rwork)
-> > >
-> > > and then in callback we
-> > >
-> > >   sk_psock_destroy()
-> > >     cancel_work_synbc(psock->work)
-> > >
-> > > although it might be nice to have the work cancelled earlier rather than
-> > > latter maybe.
-> > 
-> > Good point.
-> > 
-> > I kinda like the property that once close() returns we know there is no
-> > deferred work running for the socket.
-> > 
-> > I find the APIs where a deferred cleanup happens sometimes harder to
-> > write tests for.
-> > 
-> > But I don't really have a strong opinion here.
+On Wed, Nov 16, 2022 at 05:46:09PM +0000, Christian Pössinger wrote:
+> Dear Maintainers,
 > 
-> I don't either and Cong left it so I'm good with that.
+> using revision v6.0.0-42-g49c63bc7 I noticed an invalid JSON output when invoking tc -json filter.
+> 
+> To reproduce the issue:
+> 
+> $ tc qdisc add dev eth1 handle ffff: ingress
+> $ tc filter add dev eth1 parent ffff: prio 20 protocol all u32 match ip dport 22 \
+>     0xffff action police conform-exceed drop/ok rate 100000 burst 15k flowid ffff:1
+> 
+> $ tc filter add dev eth1 parent ffff: prio 255 protocol all basic action police \
+>     conform-exceed drop/ok rate 100000 burst 15k flowid ffff:3
+> 
+> 
+> $ tc -detail -json filter show dev eth1 ingress
+> [{"parent":"ffff:","protocol":"all","pref":20,"kind":"u32","chain":0},{"parent":"ffff:","protocol":"all","pref":20,"kind":"u32","chain":0,
+> "options":{"fh":"800:","ht_divisor":1}},{"parent":"ffff:","protocol":"all","pref":20,"kind":"u32","chain":0,"options":{"fh":"800::800",
+> "order":2048,"key_ht":"800","bkt":"0","flowid":"ffff:1","not_in_hw":true,"match":{"value":"16","mask":"ffff","offmask":"","off":20},
+> "actions":[{"order":1,"kind":"police","index":1,"control_action":{"type":"drop"},"overhead":0,"linklayer":"ethernet","ref":1,"bind":1}]}},
+> {"parent":"ffff:","protocol":"all","pref":255,"kind":"basic","chain":0},{"parent":"ffff:","protocol":"all","pref":255,"kind":"basic","chain":0,
+> "options":{handle 0x1 flowid ffff:3 "actions":[{"order":1,"kind":"police","index":2,"control_action":{"type":"drop"},"overhead":0,"linklayer":"ethernet","ref":1,"bind":1}]}}]
+> 
+> 
+> >>> json.loads(tmp)
+> Traceback (most recent call last):
+>   File "<stdin>", line 1, in <module>
+>   File "/usr/lib/python3.9/json/__init__.py", line 346, in loads
+>     return _default_decoder.decode(s)
+>   File "/usr/lib/python3.9/json/decoder.py", line 337, in decode
+>     obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+>   File "/usr/lib/python3.9/json/decoder.py", line 353, in raw_decode
+>     obj, end = self.scan_once(s, idx)
+> json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 698 (char 697)
+> 
+> This actually contains invalid JSON here
+> 
+> ... "options":{handle 0x1 flowid ffff:3 "actions":[{"order" ...
+> 
+> It should actually read:
+> 
+> ... "options":{"handle":"0x1","flowid":"ffff:3","actions":[{"order" ...
+> 
+> If you can point me to the location which could be responsible for this issue, I am happy to submit a fix to the net tree.
 
-It has been there because of the infamous warnings triggered in
-sk_stream_kill_queues(). We have to wait for flying packets, but this
-_may_ be changed after we switch to tcp_read_skb() where we call
-skb_set_owner_sk_safe().
-
-
-> 
-> Reviewing backlog logic though I think there is another bug there, but
-> I haven't been able to trigger it in any of our tests.
-> 
-> The sk_psock_backlog() logic is,
-> 
->  sk_psock_backlog(struct work_struct *work)
->    mutex_lock()
->    while (skb = ...)
->    ...
->    do {
->      ret = sk_psock_handle_skb()
->      if (ret <= 0) {
->        if (ret == -EAGAIN) {
->            sk_psock_skb_state()
->            goto  end;
->        } 
->       ...
->    } while (len);
->    ...
->   end:
->    mutex_unlock()
-> 
-> what I'm not seeing is if we get an EAGAIN through sk_psock_handle_skb
-> how do we schedule the backlog again. For egress we would set the
-> SOCK_NOSPACE bit and then get a write space available callback which
-> would do the schedule(). The ingress side could fail with EAGAIN
-> through the alloc_sk_msg(GFP_ATOMIC) call. This is just a kzalloc,
-> 
->    sk_psock_handle_skb()
->     sk_psock_skb_ingress()
->      sk_psock_skb_ingress_self()
->        msg = alloc_sk_msg()
->                kzalloc()          <- this can return NULL
->        if (!msg)
->           return -EAGAIN          <- could we stall now
-
-Returning EAGAIN here makes little sense to me, it should be ENOMEM and
-is not worth retrying.
-
-For other EAGAIN cases, why not just reschedule this work since state is
-already saved in sk_psock_work_state?
+Please take a look at tc/f_basic.c, I don't see it supports JSON as it
+still uses fprintf() to print those fields. It should be converted to
+print_hex() etc..
 
 Thanks.
