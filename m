@@ -2,56 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDC00630C8F
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 07:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE68630C98
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 07:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231954AbiKSGlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 01:41:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
+        id S232388AbiKSGns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 01:43:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231300AbiKSGlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 01:41:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE6BA13CA;
-        Fri, 18 Nov 2022 22:41:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55EBA60A73;
-        Sat, 19 Nov 2022 06:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ACF8C433D6;
-        Sat, 19 Nov 2022 06:41:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668840066;
-        bh=ZeqWS3qlxBPkQlLxIdswf7hLuV3mbyIpTRc3e2a1flE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=PVN7pS/StHDC8nqh91wKoPK4gJL2fVkFtwNv/G2XVFvKaVCGVmI3gC+PgkUcIo/Fm
-         MU7LL0eL51JvmxhLy/KTMyF+Fvi9WYCNJyql22Bp+KmCI77upsvWri+TTlhxSoIKBp
-         DJIhOGjszVvFO9Lc/LlPwgJsg/pMvUJtBo2cuNUBKjS4xavooRBPxQ2LuTOd+J8GeM
-         RQkovpx6aX/psuZq8emOysPjFClkKfTbK0qZz9fijAy8Dp7mt+/1REP9P+JO7Ki0p5
-         iK3Oc865hrybBYcfzFBHc8eg3FCgwuVY6ZDVMV6MTYzuaInP12Or3Ogj8qONtQpodt
-         hUZOIq6U2pkmQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2] p54: Replace zero-length array of trailing structs with flex-array
-References: <20221118234240.gonna.369-kees@kernel.org>
-Date:   Sat, 19 Nov 2022 08:41:02 +0200
-In-Reply-To: <20221118234240.gonna.369-kees@kernel.org> (Kees Cook's message
-        of "Fri, 18 Nov 2022 15:42:44 -0800")
-Message-ID: <87zgcnphtt.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S232440AbiKSGnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 01:43:42 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE970DDF
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 22:43:37 -0800 (PST)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NDkXc3LvszqSMh;
+        Sat, 19 Nov 2022 14:39:44 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 19 Nov 2022 14:43:35 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 19 Nov
+ 2022 14:43:34 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+Subject: [PATCH net resend] ixgbe: fix pci device refcount leak
+Date:   Sat, 19 Nov 2022 14:41:55 +0800
+Message-ID: <20221119064155.1395173-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,35 +49,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+As comment of pci_get_domain_bus_and_slot() says, it returns
+a pci device with refcount increment, when finish using it,
+the caller must decrement the reference count by calling
+pci_dev_put().
 
-> Zero-length arrays are deprecated[1] and are being replaced with
-> flexible array members in support of the ongoing efforts to tighten the
-> FORTIFY_SOURCE routines on memcpy(), correctly instrument array indexing
-> with UBSAN_BOUNDS, and to globally enable -fstrict-flex-arrays=3.
->
-> Replace zero-length array with flexible-array member.
->
-> This results in no differences in binary output (most especially because
-> struct pda_antenna_gain is unused). The struct is kept for future
-> reference.
->
-> [1] https://github.com/KSPP/linux/issues/78
->
-> Cc: Christian Lamparter <chunkeey@googlemail.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+In ixgbe_get_first_secondary_devfn() and ixgbe_x550em_a_has_mii(),
+pci_dev_put() is called to avoid leak.
 
-I'll add "wifi:".
+Fixes: 8fa10ef01260 ("ixgbe: register a mdiobus")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+Cc all pepole in the maintainer list.
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
+index 24aa97f993ca..ed0d6a8f239c 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
+@@ -855,9 +855,11 @@ static struct pci_dev *ixgbe_get_first_secondary_devfn(unsigned int devfn)
+ 	rp_pdev = pci_get_domain_bus_and_slot(0, 0, devfn);
+ 	if (rp_pdev && rp_pdev->subordinate) {
+ 		bus = rp_pdev->subordinate->number;
++		pci_dev_put(rp_pdev);
+ 		return pci_get_domain_bus_and_slot(0, bus, 0);
+ 	}
+ 
++	pci_dev_put(rp_pdev);
+ 	return NULL;
+ }
+ 
+@@ -882,6 +884,7 @@ static bool ixgbe_x550em_a_has_mii(struct ixgbe_hw *hw)
+ 	 * of those two root ports
+ 	 */
+ 	func0_pdev = ixgbe_get_first_secondary_devfn(PCI_DEVFN(0x16, 0));
++	pci_dev_put(func0_pdev);
+ 	if (func0_pdev) {
+ 		if (func0_pdev == pdev)
+ 			return true;
+@@ -889,6 +892,7 @@ static bool ixgbe_x550em_a_has_mii(struct ixgbe_hw *hw)
+ 			return false;
+ 	}
+ 	func0_pdev = ixgbe_get_first_secondary_devfn(PCI_DEVFN(0x17, 0));
++	pci_dev_put(func0_pdev);
+ 	if (func0_pdev == pdev)
+ 		return true;
+ 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
