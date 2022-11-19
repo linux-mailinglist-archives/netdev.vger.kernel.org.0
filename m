@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF1CD630C88
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 07:39:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDC00630C8F
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 07:41:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbiKSGjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 01:39:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
+        id S231954AbiKSGlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 01:41:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiKSGjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 01:39:18 -0500
+        with ESMTP id S231300AbiKSGlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 01:41:09 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3691B31EF8;
-        Fri, 18 Nov 2022 22:39:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE6BA13CA;
+        Fri, 18 Nov 2022 22:41:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9FCB60A6E;
-        Sat, 19 Nov 2022 06:39:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19EF3C433C1;
-        Sat, 19 Nov 2022 06:39:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55EBA60A73;
+        Sat, 19 Nov 2022 06:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ACF8C433D6;
+        Sat, 19 Nov 2022 06:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668839957;
-        bh=0ZYQtq1F3G/XBZWSJnxz7MelVEcYtwYDFTPJ7e6klDk=;
+        s=k20201202; t=1668840066;
+        bh=ZeqWS3qlxBPkQlLxIdswf7hLuV3mbyIpTRc3e2a1flE=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=b2ewwj12u+8qQ9la7a3VkF3YX9TT/oaO1OzVym4OxAOctVF9H92uNbnTz/pC5N7NO
-         32nan4aq2ko3K4ND6uy23SWIMiGyZ6KLI5TIRfK2OIKAYSYqup4ya3HpdPtEzEnZuo
-         VDFloO/Ol/kOo8IQ7hjvdfQFVi7cxHuuDjwiSgPqHMSctEpoSNA9Vn16dgdewcg+0I
-         86YugInfEqONPevJZgh3wV3N3em8/En8girb8Wl9vRsvUtHRkCYSY0Izv7YeHC5b7A
-         tFqqRLuIeqTm3GaM8jemhAWSBAvqh+nX9hPxBrAGqXqAMjRNEmN4JXT9+hVgFsE3jt
-         aoUXPhyxfiE3A==
+        b=PVN7pS/StHDC8nqh91wKoPK4gJL2fVkFtwNv/G2XVFvKaVCGVmI3gC+PgkUcIo/Fm
+         MU7LL0eL51JvmxhLy/KTMyF+Fvi9WYCNJyql22Bp+KmCI77upsvWri+TTlhxSoIKBp
+         DJIhOGjszVvFO9Lc/LlPwgJsg/pMvUJtBo2cuNUBKjS4xavooRBPxQ2LuTOd+J8GeM
+         RQkovpx6aX/psuZq8emOysPjFClkKfTbK0qZz9fijAy8Dp7mt+/1REP9P+JO7Ki0p5
+         iK3Oc865hrybBYcfzFBHc8eg3FCgwuVY6ZDVMV6MTYzuaInP12Or3Ogj8qONtQpodt
+         hUZOIq6U2pkmQ==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Christian Lamparter <chunkeey@googlemail.com>,
@@ -41,12 +41,12 @@ Cc:     Christian Lamparter <chunkeey@googlemail.com>,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] carl9170: Replace zero-length array of trailing structs with flex-array
-References: <20221118211146.never.395-kees@kernel.org>
-Date:   Sat, 19 Nov 2022 08:39:11 +0200
-In-Reply-To: <20221118211146.never.395-kees@kernel.org> (Kees Cook's message
-        of "Fri, 18 Nov 2022 13:11:47 -0800")
-Message-ID: <877czrqwhc.fsf@kernel.org>
+Subject: Re: [PATCH v2] p54: Replace zero-length array of trailing structs with flex-array
+References: <20221118234240.gonna.369-kees@kernel.org>
+Date:   Sat, 19 Nov 2022 08:41:02 +0200
+In-Reply-To: <20221118234240.gonna.369-kees@kernel.org> (Kees Cook's message
+        of "Fri, 18 Nov 2022 15:42:44 -0800")
+Message-ID: <87zgcnphtt.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -68,7 +68,9 @@ Kees Cook <keescook@chromium.org> writes:
 >
 > Replace zero-length array with flexible-array member.
 >
-> This results in no differences in binary output.
+> This results in no differences in binary output (most especially because
+> struct pda_antenna_gain is unused). The struct is kept for future
+> reference.
 >
 > [1] https://github.com/KSPP/linux/issues/78
 >
@@ -83,8 +85,7 @@ Kees Cook <keescook@chromium.org> writes:
 > Cc: netdev@vger.kernel.org
 > Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Nowadays we include "wifi:" in the subject, but I can add that. But
-please use this in the future for all wireless patches.
+I'll add "wifi:".
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
