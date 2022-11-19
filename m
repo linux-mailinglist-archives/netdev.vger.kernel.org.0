@@ -2,65 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22031631048
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 19:32:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33DFB63104D
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 19:37:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234258AbiKSSbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 13:31:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46284 "EHLO
+        id S231351AbiKSShT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 13:37:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiKSSbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 13:31:52 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A6510FCC
-        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 10:31:50 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id p81so1580594yba.4
-        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 10:31:50 -0800 (PST)
+        with ESMTP id S230398AbiKSShL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 13:37:11 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE51140B5;
+        Sat, 19 Nov 2022 10:37:03 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id d7so5615264qkk.3;
+        Sat, 19 Nov 2022 10:37:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=IWUt2aOgdPhBZTsItNj8gJnhW81NAJJXG1h3QcsUyVE=;
-        b=N5WlWPU9BX7vv2x+RIeDT7v+Yo6NfOHsEcFInqqwnwM+vXNh1t48AH2NKhoIEAsHfj
-         nu7eoa01HyWaZrBVpGucrPKrPT9jHfiO45IMktrrgyVIE6uUAJYM/V+xXCCYfBXFGzBU
-         hpVsxZ97aIQM0rgxTG0GSHwU9ETx5krWvU4e7rcFxTNh0AGncNmTs43NMT6GfQPVuE/Z
-         viZwb1loHDTQ4r96X/FoUBjQGplcFLRJKUp2nq9h1IXC6VQnM597jY2Cgsd+ZMMJadfq
-         iL0yP/hSvfnAnuH7WcVhstDTbF85ueWn2dmfHkqag8s9etQsUHbP41rsHFjgZ2hcI01F
-         8Imw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=erHGU1CnK47F8AJ7fpnd0e87oDzUNmIZBwVyU7/DHk4=;
+        b=ZSMIS55kAaZEvbinqdynt4bnEYN7BPjagw+qAUakJAorgTxjJw4JN+q6B+T/Wbl+rT
+         /Qw9GJXtoFxCToW38xrvBdkumJm0WFIShm+OJRranE0Ofnz5ttPVXSJCtCXlIZdtqEKW
+         ypaaY9SipQZGLwhAMZXHlyTkt6HBky0vyC80FIOi6UnzdpBctWAL0pvAKiJip+MkPMSM
+         UI1I9qjYjZrNpActA5ExXwedLowp2u6OGlDr7rjfuoumlOTfNXap28ZOdpho1wnnA1T2
+         uiGmY9mo+7GAIoSjHScW7UzCJMBKbXvZDalQ4zKcFUDWQY2b2Nw795DTY30IKta20QP4
+         H5wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IWUt2aOgdPhBZTsItNj8gJnhW81NAJJXG1h3QcsUyVE=;
-        b=bxxSXOwpEHiwbhqqUsH5fB5C3Mz1qwisotaNywuS+15bxHUQoGTmdPSxr1DDharQ3q
-         U9RNNU1udWRaf9p1eYZrObDCZiIIvKOraTDcFB2Ul8MQ+tfP/pS0jvXtMpAEETCcyl+B
-         PtYu+lsKvRXEm9Q+njOOWyWT4Dyk6ZXZu8uDu5VEGcNbs5pl+DOzVQOsZubtmcY2mr3v
-         YPw/BMvkN6S7CBox2OCcGE/qQkGvHjuMBH6PSRG+OpeHZTRzFCicz+FIYEGliVXjIf0a
-         kF0EZpL3ahgmUPWA1/18LEnQZDOnnhw9Uo9iqNYHO1M7ZtsLy6i+3q5BOu9mKSczFi4P
-         ahhg==
-X-Gm-Message-State: ANoB5pmaaSo2lkT67TBAbenlxCKbTP+FwfuHhYT9OqKLFX/O8QUM64rv
-        3s3o4uZ5W5T7ih0n+huyvQvuWILENHflbmFC6etRuA==
-X-Google-Smtp-Source: AA0mqf7himSJWw2WH+wJoCMfe17olO+sSx8RKZ0+K0aeWJ/y8rTVj0vpiFQTaypQ3cIKsKZahKKAd3CgnlkJxRnsI7Q=
-X-Received: by 2002:a25:348c:0:b0:6cb:ec87:a425 with SMTP id
- b134-20020a25348c000000b006cbec87a425mr10439320yba.387.1668882709536; Sat, 19
- Nov 2022 10:31:49 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=erHGU1CnK47F8AJ7fpnd0e87oDzUNmIZBwVyU7/DHk4=;
+        b=xaRCKRLHZ7tNV+XG9zq5vubTzX5JMvOf7L7+TEt7nm77HUTXUssznqDiLntcwRjXn7
+         1X6KQN5qA1KUtF0OGhxjLeWlaW22f82zQmkFNOcF7SfkJo1/49CQGrXv+I2dPEtMyDDc
+         wo/gtiy606oaBaqmqNhPA1t6+MOM3M0nUA1X2zMRQ69HPCoUllq5Iu14QmbFneczRIq1
+         o50gLUtwCd/pp/py/lbSHzZEv54BTQemB4rjcRSXyFu8iusIJ6VhUOA0nrzNsTlQeplO
+         3AH/4vImlsLIJTMUUAyrap1ikd3BeCAlWuX/SMr+U2aZ6aBdVDxsLx6t5PL2fv5p3nT1
+         D23A==
+X-Gm-Message-State: ANoB5pnYwKattz3jkdoMZeWBApB0iaOsKDZDygjuY5ub4OR/g+/GteVN
+        1ms/1nXIxV7W6tUgcz8U4Z4=
+X-Google-Smtp-Source: AA0mqf54h2kVYFjSfj2RQZr3U3bSm8SOkIVfBI0IRqOqiExwIKse3VEW/MhMTfVPyQ+JCSORVDbHGw==
+X-Received: by 2002:a37:c402:0:b0:6ee:e139:596c with SMTP id d2-20020a37c402000000b006eee139596cmr10820379qki.606.1668883022106;
+        Sat, 19 Nov 2022 10:37:02 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:82fe:d8bd:30c3:4cf8])
+        by smtp.gmail.com with ESMTPSA id bl3-20020a05620a1a8300b006fae7e6204bsm5098124qkb.108.2022.11.19.10.37.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Nov 2022 10:37:01 -0800 (PST)
+Date:   Sat, 19 Nov 2022 10:37:00 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Cong Wang <cong.wang@bytedance.com>, sdf@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [Patch bpf] sock_map: convert cancel_work_sync() to cancel_work()
+Message-ID: <Y3kiTNKPawbxsgZh@pop-os.localdomain>
+References: <20221018020258.197333-1-xiyou.wangcong@gmail.com>
+ <Y07sxzoS/s6ZBhEx@google.com>
+ <87eduxfiik.fsf@cloudflare.com>
+ <Y1wqe2ybxxCtIhvL@pop-os.localdomain>
+ <87bkprprxf.fsf@cloudflare.com>
+ <63617b2434725_2eb7208e1@john.notmuch>
+ <87a6574yz0.fsf@cloudflare.com>
+ <63643449b978a_204d620851@john.notmuch>
 MIME-Version: 1.0
-References: <20221119075615.723290-1-syoshida@redhat.com>
-In-Reply-To: <20221119075615.723290-1-syoshida@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 19 Nov 2022 10:31:38 -0800
-Message-ID: <CANn89iJaCRMb-vSrBOV_zbjxq8Gpg7K3d031AECmEqSN-XWpkA@mail.gmail.com>
-Subject: Re: [PATCH] net: tun: Fix use-after-free in tun_detach()
-To:     Shigeru Yoshida <syoshida@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63643449b978a_204d620851@john.notmuch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,87 +78,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 11:56 PM Shigeru Yoshida <syoshida@redhat.com> wrote:
->
-> syzbot reported use-after-free in tun_detach() [1].  This causes call
-> trace like below:
->
-> ==================================================================
-> BUG: KASAN: use-after-free in notifier_call_chain+0x1da/0x1e0
-> ...
-> Call Trace:
+On Thu, Nov 03, 2022 at 02:36:09PM -0700, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+> > On Tue, Nov 01, 2022 at 01:01 PM -07, John Fastabend wrote:
+> > > Jakub Sitnicki wrote:
+> > >> On Fri, Oct 28, 2022 at 12:16 PM -07, Cong Wang wrote:
+> > >> > On Mon, Oct 24, 2022 at 03:33:13PM +0200, Jakub Sitnicki wrote:
+> > >> >> On Tue, Oct 18, 2022 at 11:13 AM -07, sdf@google.com wrote:
+> > >> >> > On 10/17, Cong Wang wrote:
+> > >> >> >> From: Cong Wang <cong.wang@bytedance.com>
+> > >> >> >
+> > >> >> >> Technically we don't need lock the sock in the psock work, but we
+> > >> >> >> need to prevent this work running in parallel with sock_map_close().
+> > >> >> >
+> > >> >> >> With this, we no longer need to wait for the psock->work synchronously,
+> > >> >> >> because when we reach here, either this work is still pending, or
+> > >> >> >> blocking on the lock_sock(), or it is completed. We only need to cancel
+> > >> >> >> the first case asynchronously, and we need to bail out the second case
+> > >> >> >> quickly by checking SK_PSOCK_TX_ENABLED bit.
+> > >> >> >
+> > >> >> >> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+> > >> >> >> Reported-by: Stanislav Fomichev <sdf@google.com>
+> > >> >> >> Cc: John Fastabend <john.fastabend@gmail.com>
+> > >> >> >> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > >> >> >> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > >> >> >
+> > >> >> > This seems to remove the splat for me:
+> > >> >> >
+> > >> >> > Tested-by: Stanislav Fomichev <sdf@google.com>
+> > >> >> >
+> > >> >> > The patch looks good, but I'll leave the review to Jakub/John.
+> > >> >> 
+> > >> >> I can't poke any holes in it either.
+> > >> >> 
+> > >> >> However, it is harder for me to follow than the initial idea [1].
+> > >> >> So I'm wondering if there was anything wrong with it?
+> > >> >
+> > >> > It caused a warning in sk_stream_kill_queues() when I actually tested
+> > >> > it (after posting).
+> > >> 
+> > >> We must have seen the same warnings. They seemed unrelated so I went
+> > >> digging. We have a fix for these [1]. They were present since 5.18-rc1.
+> > >> 
+> > >> >> This seems like a step back when comes to simplifying locking in
+> > >> >> sk_psock_backlog() that was done in 799aa7f98d53.
+> > >> >
+> > >> > Kinda, but it is still true that this sock lock is not for sk_socket
+> > >> > (merely for closing this race condition).
+> > >> 
+> > >> I really think the initial idea [2] is much nicer. I can turn it into a
+> > >> patch, if you are short on time.
+> > >> 
+> > >> With [1] and [2] applied, the dead lock and memory accounting warnings
+> > >> are gone, when running `test_sockmap`.
+> > >> 
+> > >> Thanks,
+> > >> Jakub
+> > >> 
+> > >> [1] https://lore.kernel.org/netdev/1667000674-13237-1-git-send-email-wangyufen@huawei.com/
+> > >> [2] https://lore.kernel.org/netdev/Y0xJUc%2FLRu8K%2FAf8@pop-os.localdomain/
+> > >
+> > > Cong, what do you think? I tend to agree [2] looks nicer to me.
+> > >
+> > > @Jakub,
+> > >
+> > > Also I think we could simply drop the proposed cancel_work_sync in
+> > > sock_map_close()?
+> > >
+> > >  }
+> > > @@ -1619,9 +1619,10 @@ void sock_map_close(struct sock *sk, long timeout)
+> > >  	saved_close = psock->saved_close;
+> > >  	sock_map_remove_links(sk, psock);
+> > >  	rcu_read_unlock();
+> > > -	sk_psock_stop(psock, true);
+> > > -	sk_psock_put(sk, psock);
+> > > +	sk_psock_stop(psock);
+> > >  	release_sock(sk);
+> > > +	cancel_work_sync(&psock->work);
+> > > +	sk_psock_put(sk, psock);
+> > >  	saved_close(sk, timeout);
+> > >  }
+> > >
+> > > The sk_psock_put is going to cancel the work before destroying the psock,
+> > >
+> > >  sk_psock_put()
+> > >    sk_psock_drop()
+> > >      queue_rcu_work(system_wq, psock->rwork)
+> > >
+> > > and then in callback we
+> > >
+> > >   sk_psock_destroy()
+> > >     cancel_work_synbc(psock->work)
+> > >
+> > > although it might be nice to have the work cancelled earlier rather than
+> > > latter maybe.
+> > 
+> > Good point.
+> > 
+> > I kinda like the property that once close() returns we know there is no
+> > deferred work running for the socket.
+> > 
+> > I find the APIs where a deferred cleanup happens sometimes harder to
+> > write tests for.
+> > 
+> > But I don't really have a strong opinion here.
+> 
+> I don't either and Cong left it so I'm good with that.
 
-Please include a symbolic stack trace, I think syzbot has them.
+It has been there because of the infamous warnings triggered in
+sk_stream_kill_queues(). We have to wait for flying packets, but this
+_may_ be changed after we switch to tcp_read_skb() where we call
+skb_set_owner_sk_safe().
 
->  <TASK>
->  dump_stack_lvl+0x100/0x178
->  print_report+0x167/0x470
->  ? __virt_addr_valid+0x5e/0x2d0
->  ? __phys_addr+0xc6/0x140
->  ? notifier_call_chain+0x1da/0x1e0
->  ? notifier_call_chain+0x1da/0x1e0
->  kasan_report+0xbf/0x1e0
->  ? notifier_call_chain+0x1da/0x1e0
->  notifier_call_chain+0x1da/0x1e0
->  call_netdevice_notifiers_info+0x83/0x130
->  netdev_run_todo+0xc33/0x11b0
->  ? generic_xdp_install+0x490/0x490
->  ? __tun_detach+0x1500/0x1500
->  tun_chr_close+0xe2/0x190
->  __fput+0x26a/0xa40
->  task_work_run+0x14d/0x240
->  ? task_work_cancel+0x30/0x30
->  do_exit+0xb31/0x2a40
->  ? reacquire_held_locks+0x4a0/0x4a0
->  ? do_raw_spin_lock+0x12e/0x2b0
->  ? mm_update_next_owner+0x7c0/0x7c0
->  ? rwlock_bug.part.0+0x90/0x90
->  ? lockdep_hardirqs_on_prepare+0x17f/0x410
->  do_group_exit+0xd4/0x2a0
->  __x64_sys_exit_group+0x3e/0x50
->  do_syscall_64+0x38/0xb0
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
->
-> The cause of the issue is that sock_put() from __tun_detach() drops
-> last reference count for struct net, and then notifier_call_chain()
-> from netdev_state_change() accesses that struct net.
->
-> This patch fixes the issue by calling sock_put() from tun_detach()
-> after all necessary accesses for the struct net has done.
->
-> Link: https://syzkaller.appspot.com/bug?id=96eb7f1ce75ef933697f24eeab928c4a716edefe [1]
-> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
 
-Please add a Fixes: tag, once you identified which commit added this bug.
+> 
+> Reviewing backlog logic though I think there is another bug there, but
+> I haven't been able to trigger it in any of our tests.
+> 
+> The sk_psock_backlog() logic is,
+> 
+>  sk_psock_backlog(struct work_struct *work)
+>    mutex_lock()
+>    while (skb = ...)
+>    ...
+>    do {
+>      ret = sk_psock_handle_skb()
+>      if (ret <= 0) {
+>        if (ret == -EAGAIN) {
+>            sk_psock_skb_state()
+>            goto  end;
+>        } 
+>       ...
+>    } while (len);
+>    ...
+>   end:
+>    mutex_unlock()
+> 
+> what I'm not seeing is if we get an EAGAIN through sk_psock_handle_skb
+> how do we schedule the backlog again. For egress we would set the
+> SOCK_NOSPACE bit and then get a write space available callback which
+> would do the schedule(). The ingress side could fail with EAGAIN
+> through the alloc_sk_msg(GFP_ATOMIC) call. This is just a kzalloc,
+> 
+>    sk_psock_handle_skb()
+>     sk_psock_skb_ingress()
+>      sk_psock_skb_ingress_self()
+>        msg = alloc_sk_msg()
+>                kzalloc()          <- this can return NULL
+>        if (!msg)
+>           return -EAGAIN          <- could we stall now
 
-> ---
->  drivers/net/tun.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index 7a3ab3427369..ce9fcf4c8ef4 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -686,7 +686,6 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
->                 if (tun)
->                         xdp_rxq_info_unreg(&tfile->xdp_rxq);
->                 ptr_ring_cleanup(&tfile->tx_ring, tun_ptr_free);
-> -               sock_put(&tfile->sk);
->         }
->  }
->
-> @@ -702,6 +701,11 @@ static void tun_detach(struct tun_file *tfile, bool clean)
->         if (dev)
->                 netdev_state_change(dev);
->         rtnl_unlock();
-> +
-> +       if (clean) {
-> +               synchronize_rcu();
-> +               sock_put(&tfile->sk);
-> +       }
->  }
->
->  static void tun_detach_all(struct net_device *dev)
-> --
-> 2.38.1
->
+Returning EAGAIN here makes little sense to me, it should be ENOMEM and
+is not worth retrying.
+
+For other EAGAIN cases, why not just reschedule this work since state is
+already saved in sk_psock_work_state?
+
+Thanks.
