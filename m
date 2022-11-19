@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 740D9630937
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:12:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0626463093B
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232235AbiKSCMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 21:12:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        id S233803AbiKSCMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 21:12:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232430AbiKSCMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:12:02 -0500
+        with ESMTP id S232568AbiKSCMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:12:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B518D61779;
-        Fri, 18 Nov 2022 18:11:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244405E3E1;
+        Fri, 18 Nov 2022 18:11:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DD2A62830;
-        Sat, 19 Nov 2022 02:11:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19FB2C433C1;
-        Sat, 19 Nov 2022 02:11:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B37A162838;
+        Sat, 19 Nov 2022 02:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06D39C433D7;
+        Sat, 19 Nov 2022 02:11:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668823903;
-        bh=nFt8JEEHI+k2b21q76zXPDHyHwzW11eYTsukq5CTxcc=;
+        s=k20201202; t=1668823905;
+        bh=S+z5YfB3i4OEKPPY2KBWgFeIQbit3Q3Tk4lqP7UErRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DIKCcCWhPxObu/4VWIYYgegGZvH0BZ4M5DdqM+4JpMyn1j4aFFvUCOvfWvyLA1buP
-         Q0b1xYKedy49Ie6J/tI22cf7yZH9BZlDrf3QCu5BGJ2le71z1tBSwoTWE/WJmioqSv
-         5YIC0VcvnS2nBVa6MJVfCfxPeso14ux4zN04kC5FCQQ6AvEO2aIC/gd4/lOlcLjNjx
-         HFMUT6eXf9IKfvfqckgdHqDc6fCq6lv6NC5VRzSNivOgR2LK0DvUFFZcWOmSlKW7p6
-         u2hGPK0xEhAyY2zE5lUgncPR4ZkSdROOEyyphRI3gvy23u/zywCRubFFd4ukAGUFO8
-         J5nJ5cVj17eTQ==
+        b=HaZQWWNY9z7WuDdKBdFdLVYZOOFOiFV4P1myp2bIoWlJBYzAyTvvRUCD8S7d0kEsW
+         tZERMJ9wGKoVOHiXoQSrKMGo5y69uddgWONDWYtCS3JqhgIp2IBr1T/UtMvAEBWBc/
+         2SF0OyNUcWvoVxf4LKGaR4Jc4wlmqLNLMZplqymvjFT4ZsYy+ZtuF97X+o2i/YEg0n
+         DZUVBgfveAF+5HtmDXWkIPyA/tbgVhjJQrYaHpxmp/Ub67FguE2xd10IDgT1hjSTtS
+         fPbzKFTu/GcNx5TS8++oQ64CiLQK3/f0XerpYd28ERTPLfF/UIiVZbGEbuX5QGau9B
+         sH3ZVpFDkJ4hA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        songmuchun@bytedance.com, brauner@kernel.org,
-        Julia.Lawall@inria.fr, akpm@linux-foundation.org,
+Cc:     Nicolas Cavallari <nicolas.cavallari@green-communications.fr>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 07/44] wifi: airo: do not assign -1 to unsigned char
-Date:   Fri, 18 Nov 2022 21:10:47 -0500
-Message-Id: <20221119021124.1773699-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 08/44] wifi: mac80211: Fix ack frame idr leak when mesh has no route
+Date:   Fri, 18 Nov 2022 21:10:48 -0500
+Message-Id: <20221119021124.1773699-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221119021124.1773699-1-sashal@kernel.org>
 References: <20221119021124.1773699-1-sashal@kernel.org>
@@ -59,73 +58,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
 
-[ Upstream commit e6cb8769452e8236b52134e5cb4a18b8f5986932 ]
+[ Upstream commit 39e7b5de9853bd92ddbfa4b14165babacd7da0ba ]
 
-With char becoming unsigned by default, and with `char` alone being
-ambiguous and based on architecture, we get a warning when assigning the
-unchecked output of hex_to_bin() to that unsigned char. Mark `key` as a
-`u8`, which matches the struct's type, and then check each call to
-hex_to_bin() before casting.
+When trying to transmit an data frame with tx_status to a destination
+that have no route in the mesh, then it is dropped without recrediting
+the ack_status_frames idr.
 
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20221024162843.535921-1-Jason@zx2c4.com
+Once it is exhausted, wpa_supplicant starts failing to do SAE with
+NL80211_CMD_FRAME and logs "nl80211: Frame command failed".
+
+Use ieee80211_free_txskb() instead of kfree_skb() to fix it.
+
+Signed-off-by: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+Link: https://lore.kernel.org/r/20221027140133.1504-1-nicolas.cavallari@green-communications.fr
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/cisco/airo.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ net/mac80211/mesh_pathtbl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
-index 10daef81c355..fb2c35bd73bb 100644
---- a/drivers/net/wireless/cisco/airo.c
-+++ b/drivers/net/wireless/cisco/airo.c
-@@ -5232,7 +5232,7 @@ static int get_wep_tx_idx(struct airo_info *ai)
- 	return -1;
+diff --git a/net/mac80211/mesh_pathtbl.c b/net/mac80211/mesh_pathtbl.c
+index acc1c299f1ae..69d5e1ec6ede 100644
+--- a/net/mac80211/mesh_pathtbl.c
++++ b/net/mac80211/mesh_pathtbl.c
+@@ -710,7 +710,7 @@ int mesh_path_send_to_gates(struct mesh_path *mpath)
+ void mesh_path_discard_frame(struct ieee80211_sub_if_data *sdata,
+ 			     struct sk_buff *skb)
+ {
+-	kfree_skb(skb);
++	ieee80211_free_txskb(&sdata->local->hw, skb);
+ 	sdata->u.mesh.mshstats.dropped_frames_no_route++;
  }
  
--static int set_wep_key(struct airo_info *ai, u16 index, const char *key,
-+static int set_wep_key(struct airo_info *ai, u16 index, const u8 *key,
- 		       u16 keylen, int perm, int lock)
- {
- 	static const unsigned char macaddr[ETH_ALEN] = { 0x01, 0, 0, 0, 0, 0 };
-@@ -5283,7 +5283,7 @@ static void proc_wepkey_on_close(struct inode *inode, struct file *file)
- 	struct net_device *dev = pde_data(inode);
- 	struct airo_info *ai = dev->ml_priv;
- 	int i, rc;
--	char key[16];
-+	u8 key[16];
- 	u16 index = 0;
- 	int j = 0;
- 
-@@ -5311,12 +5311,22 @@ static void proc_wepkey_on_close(struct inode *inode, struct file *file)
- 	}
- 
- 	for (i = 0; i < 16*3 && data->wbuffer[i+j]; i++) {
-+		int val;
-+
-+		if (i % 3 == 2)
-+			continue;
-+
-+		val = hex_to_bin(data->wbuffer[i+j]);
-+		if (val < 0) {
-+			airo_print_err(ai->dev->name, "WebKey passed invalid key hex");
-+			return;
-+		}
- 		switch(i%3) {
- 		case 0:
--			key[i/3] = hex_to_bin(data->wbuffer[i+j])<<4;
-+			key[i/3] = (u8)val << 4;
- 			break;
- 		case 1:
--			key[i/3] |= hex_to_bin(data->wbuffer[i+j]);
-+			key[i/3] |= (u8)val;
- 			break;
- 		}
- 	}
 -- 
 2.35.1
 
