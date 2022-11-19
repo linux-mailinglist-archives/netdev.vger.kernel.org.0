@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBEF163094D
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:12:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2850630966
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231771AbiKSCMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 21:12:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
+        id S234335AbiKSCNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 21:13:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbiKSCMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:12:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064566DFF3;
-        Fri, 18 Nov 2022 18:11:51 -0800 (PST)
+        with ESMTP id S233808AbiKSCMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:12:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195F842F5C;
+        Fri, 18 Nov 2022 18:12:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6977B82675;
-        Sat, 19 Nov 2022 02:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 218F9C433D6;
-        Sat, 19 Nov 2022 02:11:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A909F62838;
+        Sat, 19 Nov 2022 02:12:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED90EC43141;
+        Sat, 19 Nov 2022 02:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668823908;
-        bh=MlbvOiMIzJGCXboIDtutu175+4WxBuENiY1GhJnkDZ8=;
+        s=k20201202; t=1668823920;
+        bh=OOD+tYPIH/bBvPYBFQJgUNo52ozICWFuGCxahjNu2OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wh2MdlZHjiBMPeR/gIIUiIJ4FZuwq2WGLD/ngAk4vb7E12EWPKEDvLjlvF+bkQLyX
-         cqrQfZM90kjWpNI16b68VVgkTTKSsjigVBiJ18qZy0R2YfSFY4NyKS7FyozNf+hhEM
-         e2zsgDMcklKVT0oJK2aamjTUL1rjDR7JsOTpv36l6UvNx7Gb2aAdgTIKwASmHAQkxX
-         q/8xCy9K2iVVyGDim038YMMJrN3pwIVCwTrxv3pq6q0FZZJfv866wzHn56UOqet+dF
-         +4tOAhFJJ7rXilkyfMKQzJWl4MZiwQEJdlO0W1yvxKnGlHQUaWmCSgqd9BpxKARi0S
-         ckByuHzek6dww==
+        b=Q1fzrxhjFsVlZfruvEJU3VyVyhwv5JnTPyaQqIJMZOUF/zryRZJqWKW2xTvBXFzOH
+         H82HwiLHlId+E+fJnFGgcCQFOnJqy7S7Cxyow7+ftnyeX6Jcio9KampmjIVtAKU4Ap
+         SR997jl4cfrQovFRi9aVExnOBFn1z/LT0rAXTd7MVbra5BYeeC91gMZ+3OFQpVZgQm
+         hb9HrM/lPp5sfvNWywfLdsOKig0QpX3DOI3TDnJoHnJb400xs3TSROviKRkbwgGUwb
+         /nqlx2rf/+rc6lO4UxmY26WUoUgSPqxA+2TxbDnLYWtIf2du97MS+hfCX4M/GcD7Xx
+         MYjeOuxQczq0Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Tyler J. Stachecki" <stachecki.tyler@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 10/44] wifi: ath11k: Fix QCN9074 firmware boot on x86
-Date:   Fri, 18 Nov 2022 21:10:50 -0500
-Message-Id: <20221119021124.1773699-10-sashal@kernel.org>
+Cc:     Adrien Thierry <athierry@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 16/44] selftests/net: give more time to udpgro bg processes to complete startup
+Date:   Fri, 18 Nov 2022 21:10:56 -0500
+Message-Id: <20221119021124.1773699-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221119021124.1773699-1-sashal@kernel.org>
 References: <20221119021124.1773699-1-sashal@kernel.org>
@@ -58,48 +57,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Tyler J. Stachecki" <stachecki.tyler@gmail.com>
+From: Adrien Thierry <athierry@redhat.com>
 
-[ Upstream commit 3a89b6dec9920026eaa90fe8457f4348d3388a98 ]
+[ Upstream commit cdb525ca92b196f8916102b62431aa0d9a644ff2 ]
 
-The 2.7.0 series of QCN9074's firmware requests 5 segments
-of memory instead of 3 (as in the 2.5.0 series).
+In some conditions, background processes in udpgro don't have enough
+time to set up the sockets. When foreground processes start, this
+results in the test failing with "./udpgso_bench_tx: sendmsg: Connection
+refused". For instance, this happens from time to time on a Qualcomm
+SA8540P SoC running CentOS Stream 9.
 
-The first segment (11M) is too large to be kalloc'd in one
-go on x86 and requires piecemeal 1MB allocations, as was
-the case with the prior public firmware (2.5.0, 15M).
+To fix this, increase the time given to background processes to
+complete the startup before foreground processes start.
 
-Since f6f92968e1e5, ath11k will break the memory requests,
-but only if there were fewer than 3 segments requested by
-the firmware. It seems that 5 segments works fine and
-allows QCN9074 to boot on x86 with firmware 2.7.0, so
-change things accordingly.
-
-Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
-Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.16
-
-Signed-off-by: Tyler J. Stachecki <stachecki.tyler@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20221022042728.43015-1-stachecki.tyler@gmail.com
+Signed-off-by: Adrien Thierry <athierry@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/qmi.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/udpgro.sh         | 4 ++--
+ tools/testing/selftests/net/udpgro_bench.sh   | 2 +-
+ tools/testing/selftests/net/udpgro_frglist.sh | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
-index 2ec56a34fa81..0909d53cefeb 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.h
-+++ b/drivers/net/wireless/ath/ath11k/qmi.h
-@@ -27,7 +27,7 @@
- #define ATH11K_QMI_WLANFW_MAX_NUM_MEM_SEG_V01	52
- #define ATH11K_QMI_CALDB_SIZE			0x480000
- #define ATH11K_QMI_BDF_EXT_STR_LENGTH		0x20
--#define ATH11K_QMI_FW_MEM_REQ_SEGMENT_CNT	3
-+#define ATH11K_QMI_FW_MEM_REQ_SEGMENT_CNT	5
+diff --git a/tools/testing/selftests/net/udpgro.sh b/tools/testing/selftests/net/udpgro.sh
+index ebbd0b282432..6a443ca3cd3a 100755
+--- a/tools/testing/selftests/net/udpgro.sh
++++ b/tools/testing/selftests/net/udpgro.sh
+@@ -50,7 +50,7 @@ run_one() {
+ 		echo "failed" &
  
- #define QMI_WLFW_REQUEST_MEM_IND_V01		0x0035
- #define QMI_WLFW_FW_MEM_READY_IND_V01		0x0037
+ 	# Hack: let bg programs complete the startup
+-	sleep 0.1
++	sleep 0.2
+ 	./udpgso_bench_tx ${tx_args}
+ 	ret=$?
+ 	wait $(jobs -p)
+@@ -117,7 +117,7 @@ run_one_2sock() {
+ 		echo "failed" &
+ 
+ 	# Hack: let bg programs complete the startup
+-	sleep 0.1
++	sleep 0.2
+ 	./udpgso_bench_tx ${tx_args} -p 12345
+ 	sleep 0.1
+ 	# first UDP GSO socket should be closed at this point
+diff --git a/tools/testing/selftests/net/udpgro_bench.sh b/tools/testing/selftests/net/udpgro_bench.sh
+index fad2d1a71cac..8a1109a545db 100755
+--- a/tools/testing/selftests/net/udpgro_bench.sh
++++ b/tools/testing/selftests/net/udpgro_bench.sh
+@@ -39,7 +39,7 @@ run_one() {
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -t ${rx_args} -r &
+ 
+ 	# Hack: let bg programs complete the startup
+-	sleep 0.1
++	sleep 0.2
+ 	./udpgso_bench_tx ${tx_args}
+ }
+ 
+diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+index 832c738cc3c2..7fe85ba51075 100755
+--- a/tools/testing/selftests/net/udpgro_frglist.sh
++++ b/tools/testing/selftests/net/udpgro_frglist.sh
+@@ -44,7 +44,7 @@ run_one() {
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
+ 
+ 	# Hack: let bg programs complete the startup
+-	sleep 0.1
++	sleep 0.2
+ 	./udpgso_bench_tx ${tx_args}
+ }
+ 
 -- 
 2.35.1
 
