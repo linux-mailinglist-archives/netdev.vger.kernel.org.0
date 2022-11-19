@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01F486311CA
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 00:08:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 993226311CD
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 00:08:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235192AbiKSXIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 18:08:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
+        id S235234AbiKSXIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 18:08:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235223AbiKSXId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 18:08:33 -0500
+        with ESMTP id S235257AbiKSXIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 18:08:49 -0500
 Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBAB218B;
-        Sat, 19 Nov 2022 15:08:31 -0800 (PST)
-Date:   Sat, 19 Nov 2022 23:08:17 +0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01151A229;
+        Sat, 19 Nov 2022 15:08:44 -0800 (PST)
+Date:   Sat, 19 Nov 2022 23:08:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail3; t=1668899309; x=1669158509;
-        bh=zn0V2DT6W2z01KImfq/5Gwy2BxeJtWHzr6gc3StE15M=;
+        s=protonmail3; t=1668899323; x=1669158523;
+        bh=6VdnaXou6NR0qAZ4WE3kmJZHL9lSgizWaAZ3d9S6Fq0=;
         h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
          Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
          Message-ID:BIMI-Selector;
-        b=jYf7O9jFrMZeXW86EsQISked7sIdxcuiotjHFn14vuvXN15oH9ckmhTKoHHHrGKQS
-         WvAioU9V+6jK57z4Mq64rCtQ+K9Wdh825pM/BqnKeUL0ICnc/hkml1iTi4Ux8d3Odr
-         zNmoiTTy8aQX2/6G6LXG71gUrts2nho+vGldh9kYWzDltOUnPeM4FR4YCjT0VqzdK6
-         0C68EUsI+/R45aOf+9HngV+zK7iGVzA+0C2Ya/ybkXF0neyLY1Ma+2lTbEPUJXEYBM
-         efAguDDev0xXZs+X+cuV2DBj1TjV7AWM805c3JOyqvWvA9U7zH9rupP/pjtFj5XhKL
-         lWeStGsiIStAw==
+        b=INXKOGkRr2fEvjSVnH7n1ELGTYSOahKgcJ1OEsqxDE12WVvYIATZ1d9ka42M9pldj
+         vlkF9bLkDrDpSVKsRgceOF9oregCmZmEgKdy02ovi9AJLizJjDjrV4PXbXh2KjRZeB
+         GxZKdTv7/ZNCfyKKWy2ynBIoTDaki2bxc3FGoE5b4R7DiuTQcG7dIwgbeD+NHp7ZV3
+         8bBbypXTZ45UqlAPmE59QGuLxOFpIIclsEbniBv4dRGCwbc7kwmt1BVNN+fFpTUCav
+         kGv+SbOKmyeJffXLU9ZxCaIzB+TmnZH/djqrpQVTNcnx79SZuj5dJIMv6OjmG08g/u
+         sqy8nmjZNGQVA==
 To:     linux-kbuild@vger.kernel.org
 From:   Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexander Lobakin <alobakin@pm.me>,
@@ -50,8 +50,8 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 11/18] platform/x86: int3472: fix object shared between several modules
-Message-ID: <20221119225650.1044591-12-alobakin@pm.me>
+Subject: [PATCH 12/18] mtd: tests: fix object shared between several modules
+Message-ID: <20221119225650.1044591-13-alobakin@pm.me>
 In-Reply-To: <20221119225650.1044591-1-alobakin@pm.me>
 References: <20221119225650.1044591-1-alobakin@pm.me>
 Feedback-ID: 22809121:user:proton
@@ -60,129 +60,238 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-common.o is linked to both intel_skl_int3472_{discrete,tps68470}:
+mtd_test.o is linked to 8(!) different test modules:
 
-> scripts/Makefile.build:252: ./drivers/platform/x86/intel/int3472/Makefile=
-:
-> common.o is added to multiple modules: intel_skl_int3472_discrete
-> intel_skl_int3472_tps68470
+> scripts/Makefile.build:252: ./drivers/mtd/tests/Makefile: mtd_test.o
+> is added to multiple modules: mtd_nandbiterrs mtd_oobtest mtd_pagetest
+> mtd_readtest mtd_speedtest mtd_stresstest mtd_subpagetest mtd_torturetest
 
-Although both drivers share one Kconfig option
-(CONFIG_INTEL_SKL_INT3472), it's better to not link one object file
-into several modules (and/or vmlinux).
+Although all of them share one Kconfig option
+(CONFIG_MTD_TESTS), it's better to not link one object file into
+several modules (and/or vmlinux).
 Under certain circumstances, such can lead to the situation fixed by
 commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects").
+In this particular case, there's also no need to duplicate the very
+same object code 8 times.
 
-Introduce the new module, intel_skl_int3472_common, to provide the
-functions from common.o to both discrete and tps68470 drivers. This
-adds only 3 exports and doesn't provide any changes to the actual
-code.
+Convert mtd_test.o to a standalone module which will export its
+functions to the rest.
 
-Fixes: a2f9fbc247ee ("platform/x86: int3472: Split into 2 drivers")
+Fixes: a995c792280d ("mtd: tests: rename sources in order to link a helper =
+object")
 Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- drivers/platform/x86/intel/int3472/Makefile   | 8 +++++---
- drivers/platform/x86/intel/int3472/common.c   | 8 ++++++++
- drivers/platform/x86/intel/int3472/discrete.c | 2 ++
- drivers/platform/x86/intel/int3472/tps68470.c | 2 ++
- 4 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/mtd/tests/Makefile      | 17 +++++++++--------
+ drivers/mtd/tests/mtd_test.c    |  9 +++++++++
+ drivers/mtd/tests/nandbiterrs.c |  2 ++
+ drivers/mtd/tests/oobtest.c     |  2 ++
+ drivers/mtd/tests/pagetest.c    |  2 ++
+ drivers/mtd/tests/readtest.c    |  2 ++
+ drivers/mtd/tests/speedtest.c   |  2 ++
+ drivers/mtd/tests/stresstest.c  |  2 ++
+ drivers/mtd/tests/subpagetest.c |  2 ++
+ drivers/mtd/tests/torturetest.c |  2 ++
+ 10 files changed, 34 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/platform/x86/intel/int3472/Makefile b/drivers/platform=
-/x86/intel/int3472/Makefile
-index cfec7784c5c9..53cc0e7db749 100644
---- a/drivers/platform/x86/intel/int3472/Makefile
-+++ b/drivers/platform/x86/intel/int3472/Makefile
-@@ -1,4 +1,6 @@
--obj-$(CONFIG_INTEL_SKL_INT3472)=09=09+=3D intel_skl_int3472_discrete.o \
-+obj-$(CONFIG_INTEL_SKL_INT3472)=09=09+=3D intel_skl_int3472_common.o \
-+=09=09=09=09=09   intel_skl_int3472_discrete.o \
- =09=09=09=09=09   intel_skl_int3472_tps68470.o
--intel_skl_int3472_discrete-y=09=09:=3D discrete.o clk_and_regulator.o comm=
-on.o
--intel_skl_int3472_tps68470-y=09=09:=3D tps68470.o tps68470_board_data.o co=
-mmon.o
-+intel_skl_int3472_common-y=09=09:=3D common.o
-+intel_skl_int3472_discrete-y=09=09:=3D discrete.o clk_and_regulator.o
-+intel_skl_int3472_tps68470-y=09=09:=3D tps68470.o tps68470_board_data.o
-diff --git a/drivers/platform/x86/intel/int3472/common.c b/drivers/platform=
-/x86/intel/int3472/common.c
-index 9db2bb0bbba4..bd573ff46610 100644
---- a/drivers/platform/x86/intel/int3472/common.c
-+++ b/drivers/platform/x86/intel/int3472/common.c
-@@ -2,6 +2,7 @@
- /* Author: Dan Scally <djrscally@gmail.com> */
+diff --git a/drivers/mtd/tests/Makefile b/drivers/mtd/tests/Makefile
+index 5de0378f90db..e3f86ed123ca 100644
+--- a/drivers/mtd/tests/Makefile
++++ b/drivers/mtd/tests/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_MTD_TESTS) +=3D mtd_test.o
+ obj-$(CONFIG_MTD_TESTS) +=3D mtd_oobtest.o
+ obj-$(CONFIG_MTD_TESTS) +=3D mtd_pagetest.o
+ obj-$(CONFIG_MTD_TESTS) +=3D mtd_readtest.o
+@@ -9,11 +10,11 @@ obj-$(CONFIG_MTD_TESTS) +=3D mtd_torturetest.o
+ obj-$(CONFIG_MTD_TESTS) +=3D mtd_nandecctest.o
+ obj-$(CONFIG_MTD_TESTS) +=3D mtd_nandbiterrs.o
 
- #include <linux/acpi.h>
-+#include <linux/module.h>
- #include <linux/slab.h>
+-mtd_oobtest-objs :=3D oobtest.o mtd_test.o
+-mtd_pagetest-objs :=3D pagetest.o mtd_test.o
+-mtd_readtest-objs :=3D readtest.o mtd_test.o
+-mtd_speedtest-objs :=3D speedtest.o mtd_test.o
+-mtd_stresstest-objs :=3D stresstest.o mtd_test.o
+-mtd_subpagetest-objs :=3D subpagetest.o mtd_test.o
+-mtd_torturetest-objs :=3D torturetest.o mtd_test.o
+-mtd_nandbiterrs-objs :=3D nandbiterrs.o mtd_test.o
++mtd_oobtest-objs :=3D oobtest.o
++mtd_pagetest-objs :=3D pagetest.o
++mtd_readtest-objs :=3D readtest.o
++mtd_speedtest-objs :=3D speedtest.o
++mtd_stresstest-objs :=3D stresstest.o
++mtd_subpagetest-objs :=3D subpagetest.o
++mtd_torturetest-objs :=3D torturetest.o
++mtd_nandbiterrs-objs :=3D nandbiterrs.o
+diff --git a/drivers/mtd/tests/mtd_test.c b/drivers/mtd/tests/mtd_test.c
+index c84250beffdc..93920a714315 100644
+--- a/drivers/mtd/tests/mtd_test.c
++++ b/drivers/mtd/tests/mtd_test.c
+@@ -25,6 +25,7 @@ int mtdtest_erase_eraseblock(struct mtd_info *mtd, unsign=
+ed int ebnum)
 
- #include "common.h"
-@@ -29,6 +30,7 @@ union acpi_object *skl_int3472_get_acpi_buffer(struct acp=
-i_device *adev, char *i
-
- =09return obj;
+ =09return 0;
  }
-+EXPORT_SYMBOL_NS_GPL(skl_int3472_get_acpi_buffer, INTEL_SKL_INT3472);
++EXPORT_SYMBOL_NS_GPL(mtdtest_erase_eraseblock, MTD_TESTS);
 
- int skl_int3472_fill_cldb(struct acpi_device *adev, struct int3472_cldb *c=
-ldb)
+ static int is_block_bad(struct mtd_info *mtd, unsigned int ebnum)
  {
-@@ -52,6 +54,7 @@ int skl_int3472_fill_cldb(struct acpi_device *adev, struc=
-t int3472_cldb *cldb)
- =09kfree(obj);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(skl_int3472_fill_cldb, INTEL_SKL_INT3472);
+@@ -57,6 +58,7 @@ int mtdtest_scan_for_bad_eraseblocks(struct mtd_info *mtd=
+, unsigned char *bbt,
 
- /* sensor_adev_ret may be NULL, name_ret must not be NULL */
- int skl_int3472_get_sensor_adev_and_name(struct device *dev,
-@@ -80,3 +83,8 @@ int skl_int3472_get_sensor_adev_and_name(struct device *d=
-ev,
-
- =09return ret;
+ =09return 0;
  }
-+EXPORT_SYMBOL_NS_GPL(skl_int3472_get_sensor_adev_and_name, INTEL_SKL_INT34=
-72);
++EXPORT_SYMBOL_NS_GPL(mtdtest_scan_for_bad_eraseblocks, MTD_TESTS);
+
+ int mtdtest_erase_good_eraseblocks(struct mtd_info *mtd, unsigned char *bb=
+t,
+ =09=09=09=09unsigned int eb, int ebcnt)
+@@ -75,6 +77,7 @@ int mtdtest_erase_good_eraseblocks(struct mtd_info *mtd, =
+unsigned char *bbt,
+
+ =09return 0;
+ }
++EXPORT_SYMBOL_NS_GPL(mtdtest_erase_good_eraseblocks, MTD_TESTS);
+
+ int mtdtest_read(struct mtd_info *mtd, loff_t addr, size_t size, void *buf=
+)
+ {
+@@ -92,6 +95,7 @@ int mtdtest_read(struct mtd_info *mtd, loff_t addr, size_=
+t size, void *buf)
+
+ =09return err;
+ }
++EXPORT_SYMBOL_NS_GPL(mtdtest_read, MTD_TESTS);
+
+ int mtdtest_write(struct mtd_info *mtd, loff_t addr, size_t size,
+ =09=09const void *buf)
+@@ -107,3 +111,8 @@ int mtdtest_write(struct mtd_info *mtd, loff_t addr, si=
+ze_t size,
+
+ =09return err;
+ }
++EXPORT_SYMBOL_NS_GPL(mtdtest_write, MTD_TESTS);
 +
-+MODULE_DESCRIPTION("Intel SkyLake INT3472 Common Module");
-+MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
++MODULE_DESCRIPTION("MTD test common module");
++MODULE_AUTHOR("Adrian Hunter");
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/platform/x86/intel/int3472/discrete.c b/drivers/platfo=
-rm/x86/intel/int3472/discrete.c
-index 974a132db651..a1f3b593cea6 100644
---- a/drivers/platform/x86/intel/int3472/discrete.c
-+++ b/drivers/platform/x86/intel/int3472/discrete.c
-@@ -414,6 +414,8 @@ static struct platform_driver int3472_discrete =3D {
- };
- module_platform_driver(int3472_discrete);
+diff --git a/drivers/mtd/tests/nandbiterrs.c b/drivers/mtd/tests/nandbiterr=
+s.c
+index 98d7508f95b1..acf44edfca53 100644
+--- a/drivers/mtd/tests/nandbiterrs.c
++++ b/drivers/mtd/tests/nandbiterrs.c
+@@ -414,6 +414,8 @@ static void __exit mtd_nandbiterrs_exit(void)
+ module_init(mtd_nandbiterrs_init);
+ module_exit(mtd_nandbiterrs_exit);
 
-+MODULE_IMPORT_NS(INTEL_SKL_INT3472);
++MODULE_IMPORT_NS(MTD_TESTS);
 +
- MODULE_DESCRIPTION("Intel SkyLake INT3472 ACPI Discrete Device Driver");
- MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/platform/x86/intel/int3472/tps68470.c b/drivers/platfo=
-rm/x86/intel/int3472/tps68470.c
-index 5b8d1a9620a5..3c983aa7731f 100644
---- a/drivers/platform/x86/intel/int3472/tps68470.c
-+++ b/drivers/platform/x86/intel/int3472/tps68470.c
-@@ -255,6 +255,8 @@ static struct i2c_driver int3472_tps68470 =3D {
- };
- module_i2c_driver(int3472_tps68470);
+ MODULE_DESCRIPTION("NAND bit error recovery test");
+ MODULE_AUTHOR("Iwo Mergler");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/oobtest.c b/drivers/mtd/tests/oobtest.c
+index 13fed398937e..da4efcdd59b2 100644
+--- a/drivers/mtd/tests/oobtest.c
++++ b/drivers/mtd/tests/oobtest.c
+@@ -728,6 +728,8 @@ static void __exit mtd_oobtest_exit(void)
+ }
+ module_exit(mtd_oobtest_exit);
 
-+MODULE_IMPORT_NS(INTEL_SKL_INT3472);
++MODULE_IMPORT_NS(MTD_TESTS);
 +
- MODULE_DESCRIPTION("Intel SkyLake INT3472 ACPI TPS68470 Device Driver");
- MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
- MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("Out-of-band test module");
+ MODULE_AUTHOR("Adrian Hunter");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/pagetest.c b/drivers/mtd/tests/pagetest.c
+index 8eb40b6e6dfa..ac2bcc76b402 100644
+--- a/drivers/mtd/tests/pagetest.c
++++ b/drivers/mtd/tests/pagetest.c
+@@ -456,6 +456,8 @@ static void __exit mtd_pagetest_exit(void)
+ }
+ module_exit(mtd_pagetest_exit);
+
++MODULE_IMPORT_NS(MTD_TESTS);
++
+ MODULE_DESCRIPTION("NAND page test");
+ MODULE_AUTHOR("Adrian Hunter");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/readtest.c b/drivers/mtd/tests/readtest.c
+index 99670ef91f2b..7e01dbc1e8ca 100644
+--- a/drivers/mtd/tests/readtest.c
++++ b/drivers/mtd/tests/readtest.c
+@@ -210,6 +210,8 @@ static void __exit mtd_readtest_exit(void)
+ }
+ module_exit(mtd_readtest_exit);
+
++MODULE_IMPORT_NS(MTD_TESTS);
++
+ MODULE_DESCRIPTION("Read test module");
+ MODULE_AUTHOR("Adrian Hunter");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/speedtest.c b/drivers/mtd/tests/speedtest.c
+index 075bce32caa5..58f3701d65f2 100644
+--- a/drivers/mtd/tests/speedtest.c
++++ b/drivers/mtd/tests/speedtest.c
+@@ -413,6 +413,8 @@ static void __exit mtd_speedtest_exit(void)
+ }
+ module_exit(mtd_speedtest_exit);
+
++MODULE_IMPORT_NS(MTD_TESTS);
++
+ MODULE_DESCRIPTION("Speed test module");
+ MODULE_AUTHOR("Adrian Hunter");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/stresstest.c b/drivers/mtd/tests/stresstest.=
+c
+index 75b6ddc5dc4d..341d7cc86d89 100644
+--- a/drivers/mtd/tests/stresstest.c
++++ b/drivers/mtd/tests/stresstest.c
+@@ -227,6 +227,8 @@ static void __exit mtd_stresstest_exit(void)
+ }
+ module_exit(mtd_stresstest_exit);
+
++MODULE_IMPORT_NS(MTD_TESTS);
++
+ MODULE_DESCRIPTION("Stress test module");
+ MODULE_AUTHOR("Adrian Hunter");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/subpagetest.c b/drivers/mtd/tests/subpagetes=
+t.c
+index 05250a080139..87ee2a5c518a 100644
+--- a/drivers/mtd/tests/subpagetest.c
++++ b/drivers/mtd/tests/subpagetest.c
+@@ -432,6 +432,8 @@ static void __exit mtd_subpagetest_exit(void)
+ }
+ module_exit(mtd_subpagetest_exit);
+
++MODULE_IMPORT_NS(MTD_TESTS);
++
+ MODULE_DESCRIPTION("Subpage test module");
+ MODULE_AUTHOR("Adrian Hunter");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mtd/tests/torturetest.c b/drivers/mtd/tests/torturetes=
+t.c
+index 841689b4d86d..2de770f18724 100644
+--- a/drivers/mtd/tests/torturetest.c
++++ b/drivers/mtd/tests/torturetest.c
+@@ -475,6 +475,8 @@ static int countdiffs(unsigned char *buf, unsigned char=
+ *check_buf,
+ =09return first;
+ }
+
++MODULE_IMPORT_NS(MTD_TESTS);
++
+ MODULE_DESCRIPTION("Eraseblock torturing module");
+ MODULE_AUTHOR("Artem Bityutskiy, Jarkko Lavinen, Adrian Hunter");
+ MODULE_LICENSE("GPL");
 --
 2.38.1
 
