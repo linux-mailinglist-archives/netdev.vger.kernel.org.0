@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 063746308C8
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 02:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 986E06308DA
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 02:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbiKSBwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 20:52:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
+        id S232972AbiKSBxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 20:53:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232754AbiKSBvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 20:51:47 -0500
+        with ESMTP id S233571AbiKSBw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 20:52:56 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560EB12638
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 17:31:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2578C622A
+        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 17:36:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 088CEB825BB
-        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 01:31:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A261C433D6;
-        Sat, 19 Nov 2022 01:31:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83FF9B825D8
+        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 01:36:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FCE2C433D7;
+        Sat, 19 Nov 2022 01:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668821488;
-        bh=/ko9OPNsEr86JhLmq1Hb4Jg4iZcZkp9aQZ23Tuc9AjE=;
+        s=k20201202; t=1668821789;
+        bh=zVWnxBXPG0silGy/2bUDb2Kl4rwIBN5cfMJbtnSCDSE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VCMoLgEv/VLrBXbXWaAsLdhWgTchgQPbvc7bAdA1I/wkwIHwF/V8TqzR6DO8jO9xd
-         EvV4AdYrsM0w/mNH5ba83PZSdh6ACRvHlJRGf0M5Enb1Fr0hydzwju+JzC9enZvl9O
-         nn3uZb/pukuWNDLc5QDvKi+vFCkcTaHamUrSQcD4s8I6W8fTDh2pt8cO1UZrNiofVr
-         ITbmzHHdrrWzCyl6Oetqxci8JJIwvOPpgcDIJ6z6OlofiXPtSGHh0R2lT2bZVKuoXW
-         xYiEM0kOJEHhVI1aVq/r5xnhTU76RJm+Xm9sSHJzKO/NDmd39rpxToV12hxg9QKKPY
-         Tekeur1P9kfuw==
-Date:   Fri, 18 Nov 2022 17:31:27 -0800
+        b=qK1dre2UNgV2JMIgq50Ufy/X6ufIje7xlbbZ5+Z41FILN1eTbbVU653YYARcodn4b
+         WeRavdEq46hSJNYC2aNqofv6j4v++YF8KtETYZiTgtlRuViOFjeYEdO9OhwcXykFCL
+         RHGmegY8WP/IqpxAv2H8bl1JaezcKfkxJSgofA8d+lak+B17gUGH1igTj+ToZ9qUgH
+         nihHJQYBPaKF4Xsu/7e24pwwfMN6oGmqQkHgppWakr9lzDeQR09M+9oElKiIO99XWa
+         Bj9ElRM3TxCL3mwj+QPJnA8TWzdHXtaYQWrwn92haKCqp+Zq4CP77XUelmVote8dNC
+         aoPE3CnLrSJ+A==
+Date:   Fri, 18 Nov 2022 17:36:28 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jacob Keller <jacob.e.keller@intel.com>
 Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 5/8] devlink: refactor
- region_read_snapshot_fill to use a callback function
-Message-ID: <20221118173127.2c4def01@kernel.org>
-In-Reply-To: <20221117220803.2773887-6-jacob.e.keller@intel.com>
+Subject: Re: [PATCH net-next 2/8] devlink: use min_t to calculate data_size
+Message-ID: <20221118173628.2a9d6e7b@kernel.org>
+In-Reply-To: <20221117220803.2773887-3-jacob.e.keller@intel.com>
 References: <20221117220803.2773887-1-jacob.e.keller@intel.com>
-        <20221117220803.2773887-6-jacob.e.keller@intel.com>
+        <20221117220803.2773887-3-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,7 +52,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Nov 2022 14:08:00 -0800 Jacob Keller wrote:
-> +			     struct __always_unused netlink_ext_ack *extack)
+On Thu, 17 Nov 2022 14:07:57 -0800 Jacob Keller wrote:
+> The calculation for the data_size in the devlink_nl_read_snapshot_fill
+> function uses an if statement that is better expressed using the min_t
+> macro.
+> 
+> Noticed-by: Jakub Kicinski <kuba@kernel.org>
 
-clang points out this is not a great placement for __always_unused
+I'm afraid that's not a real tag. You can just drop it, 
+I get sufficient credits.
+
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 96afc7013959..932476956d7e 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -6410,14 +6410,10 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
+>  	*new_offset = start_offset;
+>  
+>  	while (curr_offset < end_offset) {
+> -		u32 data_size;
+> +		u32 data_size = min_t(u32, end_offset - curr_offset,
+> +				      DEVLINK_REGION_READ_CHUNK_SIZE);
+
+nit: don't put multi-line statements on the declaration line if it's 
+not the only variable.
+
+>  		u8 *data;
+>  
+> -		if (end_offset - curr_offset < DEVLINK_REGION_READ_CHUNK_SIZE)
+> -			data_size = end_offset - curr_offset;
+> -		else
+> -			data_size = DEVLINK_REGION_READ_CHUNK_SIZE;
