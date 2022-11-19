@@ -2,112 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21184630C36
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 06:41:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF1CD630C88
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 07:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiKSFlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 00:41:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
+        id S231189AbiKSGjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 01:39:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiKSFlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 00:41:10 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2586C56565;
-        Fri, 18 Nov 2022 21:41:08 -0800 (PST)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NDjDW2V6fzRpGg;
-        Sat, 19 Nov 2022 13:40:43 +0800 (CST)
-Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 19 Nov 2022 13:41:07 +0800
-Received: from [10.67.109.54] (10.67.109.54) by kwepemm600005.china.huawei.com
- (7.193.23.191) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 19 Nov
- 2022 13:41:06 +0800
-Subject: Re: [PATCH net v2] net: mdio-ipq4019: fix possible invalid pointer
- dereference
-To:     Andrew Lunn <andrew@lunn.ch>
-References: <20221117090514.118296-1-tanghui20@huawei.com>
- <Y3Y94/My9Al4pw+h@lunn.ch> <6cad3105-0e70-d890-162b-513855885fde@huawei.com>
- <Y3eMMc7maaPCKUNS@lunn.ch>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <mw@semihalf.com>, <linux@armlinux.org.uk>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yusongping@huawei.com>
-From:   Hui Tang <tanghui20@huawei.com>
-Message-ID: <3cb5a576-8eb7-54fc-4f4b-9db360b6713d@huawei.com>
-Date:   Sat, 19 Nov 2022 13:41:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        with ESMTP id S229470AbiKSGjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 01:39:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3691B31EF8;
+        Fri, 18 Nov 2022 22:39:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9FCB60A6E;
+        Sat, 19 Nov 2022 06:39:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19EF3C433C1;
+        Sat, 19 Nov 2022 06:39:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668839957;
+        bh=0ZYQtq1F3G/XBZWSJnxz7MelVEcYtwYDFTPJ7e6klDk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=b2ewwj12u+8qQ9la7a3VkF3YX9TT/oaO1OzVym4OxAOctVF9H92uNbnTz/pC5N7NO
+         32nan4aq2ko3K4ND6uy23SWIMiGyZ6KLI5TIRfK2OIKAYSYqup4ya3HpdPtEzEnZuo
+         VDFloO/Ol/kOo8IQ7hjvdfQFVi7cxHuuDjwiSgPqHMSctEpoSNA9Vn16dgdewcg+0I
+         86YugInfEqONPevJZgh3wV3N3em8/En8girb8Wl9vRsvUtHRkCYSY0Izv7YeHC5b7A
+         tFqqRLuIeqTm3GaM8jemhAWSBAvqh+nX9hPxBrAGqXqAMjRNEmN4JXT9+hVgFsE3jt
+         aoUXPhyxfiE3A==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] carl9170: Replace zero-length array of trailing structs with flex-array
+References: <20221118211146.never.395-kees@kernel.org>
+Date:   Sat, 19 Nov 2022 08:39:11 +0200
+In-Reply-To: <20221118211146.never.395-kees@kernel.org> (Kees Cook's message
+        of "Fri, 18 Nov 2022 13:11:47 -0800")
+Message-ID: <877czrqwhc.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <Y3eMMc7maaPCKUNS@lunn.ch>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.109.54]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600005.china.huawei.com (7.193.23.191)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Kees Cook <keescook@chromium.org> writes:
 
-
-On 2022/11/18 21:44, Andrew Lunn wrote:
->> So, the code should be as follows, is that right?
->>
->> +	void __iomem *devm_ioremap_resource_optional(struct device *dev,
->> +                                    	     const struct resource *res)
->> +	{
->> +		void __iomem *base;
->> +
->> +		base = __devm_ioremap_resource(dev, res, DEVM_IOREMAP);
->> +		if (IS_ERR(base) && PTR_ERR(base) == -ENOMEM)
->> +			return NULL;
->> +
->> +		return base;
->> +	}
->>
->>
->> [...]
->> 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
->> -	if (res)
->> +	if (res) {
->> +		priv->eth_ldo_rdy = devm_ioremap_resource_optional(&pdev->dev, res)
->> +		if (IS_ERR(priv->eth_ldo_rdy))
->> +			return PTR_ERR(priv->eth_ldo_rdy);
->> +	}
->> [...]
+> Zero-length arrays are deprecated[1] and are being replaced with
+> flexible array members in support of the ongoing efforts to tighten the
+> FORTIFY_SOURCE routines on memcpy(), correctly instrument array indexing
+> with UBSAN_BOUNDS, and to globally enable -fstrict-flex-arrays=3.
 >
-> Yes, that is the basic concept.
+> Replace zero-length array with flexible-array member.
 >
-> The only thing i might change is the double meaning of -ENOMEM.
-> __devm_ioremap_resource() allocates memory, and if that memory
-> allocation fails, it returns -ENOMEM. If the resource does not exist,
-> it also returns -ENOMEM. So you cannot tell these two error conditions
-> apart. Most of the other get_foo() calls return -ENODEV if the
-> gpio/regulator/clock does not exist, so you can tell if you are out of
-> memory. But ioremap is specifically about memory so -ENOMEM actually
-> makes sense.
+> This results in no differences in binary output.
 >
-> If you are out of memory, it seems likely the problem is not going to
-> go away quickly, so the next allocation will also fail, and hopefully
-> the error handling will then work. So i don't think it is major
-> issue. So yes, go with the code above.
+> [1] https://github.com/KSPP/linux/issues/78
 >
+> Cc: Christian Lamparter <chunkeey@googlemail.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Hi, Andrew
+Nowadays we include "wifi:" in the subject, but I can add that. But
+please use this in the future for all wireless patches.
 
-My new patchset is ready, but I just found out that another patch has been
-applied to netdev/net.git. Can I solve the problem in present way? And I
-will add devm_ioremap_resource_optional() helper later to optimize related
-drivers. How about this?
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Thanks.
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
