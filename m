@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0DD0630A42
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:24:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5CEB630A6C
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 03:26:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235067AbiKSCYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Nov 2022 21:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
+        id S236016AbiKSC0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Nov 2022 21:26:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiKSCWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:22:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29CAC72D0;
-        Fri, 18 Nov 2022 18:15:23 -0800 (PST)
+        with ESMTP id S235694AbiKSCYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Nov 2022 21:24:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81C8C75A6;
+        Fri, 18 Nov 2022 18:15:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53DBE62841;
-        Sat, 19 Nov 2022 02:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D09EC43141;
-        Sat, 19 Nov 2022 02:15:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C6D1B82676;
+        Sat, 19 Nov 2022 02:15:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3101CC433C1;
+        Sat, 19 Nov 2022 02:15:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668824120;
-        bh=1UBLBsTenWnHkOJqx3f6bdHXzK3ohnLPjO9Q/7P4CC0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UaMLMpL+F+vws8I5st+YAdQBBwxm5WzSw0kWVktVPUbI4ODYqvrbyVNPjjKA9Eatv
-         u8q2/tFtwL97fYB6ZYr5qhJHb0lgEVKkFh8MgEZ5V06D0kFMMlHRjqK18aI4/LxUaM
-         6EFMDc7DxxG/SjCgef7Iwrg3MwPADOL5J6EuntQRx47dLR52PccHQ5j8cRKZ3/jmi9
-         Cm6lGgsRtLy/erLkfKKG8bGs+hH+TPWZ6b3S58RnFMyeaHM2vdi3XEMzew/75ZLqR9
-         RAyfrrPETNHTUnCfddtR2/PyHLk+9V0cxteuFm3fplefl19cYbUmzP6YY6A01c0uKw
-         NbF2IaISREiaQ==
+        s=k20201202; t=1668824146;
+        bh=Ozq4YijtQR1i493lILMjhtixt579srGVeKDDIqRh5xc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WOGch68keh07hPGHWq1Qe1c8qCBywtR1vKcVb0s8W3BWdTX3xDnnltViUHyXVwn6c
+         fjIO7cv8clyd7OnnODZ1toJznnTqH/9mexEkmkHxugG5TJwhisJkIvyaDQllpWC+fo
+         B5nE+1KiYpXLpVjq0Y/IXQXpXPnqWile0ZLKSzun96c2L/ripSDh8gOTxS7RuVbo2J
+         VMuhyGb5RTa+uUCF+/VFde5xCz9hf+WpEsBQ7HZo3UEavL7K3JDWl23q0KPcdGuc0P
+         0WPcEx8E7+OH/y4mN6St5gASkNhbfFPSOGSs/vIXx4b4IKZLO0BSSOrC7MHjf1vKeo
+         +3xKhphoVOM4Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/18] Revert "net: macsec: report real_dev features when HW offloading is enabled"
-Date:   Fri, 18 Nov 2022 21:14:50 -0500
-Message-Id: <20221119021459.1775052-9-sashal@kernel.org>
+Cc:     taozhang <taozhang@bestechnic.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 01/11] wifi: mac80211: fix memory free error when registering wiphy fail
+Date:   Fri, 18 Nov 2022 21:15:33 -0500
+Message-Id: <20221119021543.1775315-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221119021459.1775052-1-sashal@kernel.org>
-References: <20221119021459.1775052-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,111 +56,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: taozhang <taozhang@bestechnic.com>
 
-[ Upstream commit 8bcd560ae8784da57c610d857118c5d6576b1a8f ]
+[ Upstream commit 50b2e8711462409cd368c41067405aa446dfa2af ]
 
-This reverts commit c850240b6c4132574a00f2da439277ab94265b66.
+ieee80211_register_hw free the allocated cipher suites when
+registering wiphy fail, and ieee80211_free_hw will re-free it.
 
-That commit tried to improve the performance of macsec offload by
-taking advantage of some of the NIC's features, but in doing so, broke
-macsec offload when the lower device supports both macsec and ipsec
-offload, as the ipsec offload feature flags (mainly NETIF_F_HW_ESP)
-were copied from the real device. Since the macsec device doesn't
-provide xdo_* ops, the XFRM core rejects the registration of the new
-macsec device in xfrm_api_check.
+set wiphy_ciphers_allocated to false after freeing allocated
+cipher suites.
 
-Example perf trace when running
-  ip link add link eni1np1 type macsec port 4 offload mac
-
-    ip   737 [003]   795.477676: probe:xfrm_dev_event__REGISTER      name="macsec0" features=0x1c000080014869
-              xfrm_dev_event+0x3a
-              notifier_call_chain+0x47
-              register_netdevice+0x846
-              macsec_newlink+0x25a
-
-    ip   737 [003]   795.477687:   probe:xfrm_dev_event__return      ret=0x8002 (NOTIFY_BAD)
-             notifier_call_chain+0x47
-             register_netdevice+0x846
-             macsec_newlink+0x25a
-
-dev->features includes NETIF_F_HW_ESP (0x04000000000000), so
-xfrm_api_check returns NOTIFY_BAD because we don't have
-dev->xfrmdev_ops on the macsec device.
-
-We could probably propagate GSO and a few other features from the
-lower device, similar to macvlan. This will be done in a future patch.
-
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Reviewed-by: Antoine Tenart <atenart@kernel.org>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: taozhang <taozhang@bestechnic.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+ net/mac80211/main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index f84e3cc0d3ec..c20ebf44acfe 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -2648,11 +2648,6 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 	if (ret)
- 		goto rollback;
- 
--	/* Force features update, since they are different for SW MACSec and
--	 * HW offloading cases.
--	 */
--	netdev_update_features(dev);
--
- 	rtnl_unlock();
- 	return 0;
- 
-@@ -3420,16 +3415,9 @@ static netdev_tx_t macsec_start_xmit(struct sk_buff *skb,
- 	return ret;
+diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+index f215218a88c9..fa2ac02063cf 100644
+--- a/net/mac80211/main.c
++++ b/net/mac80211/main.c
+@@ -1315,8 +1315,10 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 	ieee80211_led_exit(local);
+ 	destroy_workqueue(local->workqueue);
+  fail_workqueue:
+-	if (local->wiphy_ciphers_allocated)
++	if (local->wiphy_ciphers_allocated) {
+ 		kfree(local->hw.wiphy->cipher_suites);
++		local->wiphy_ciphers_allocated = false;
++	}
+ 	kfree(local->int_scan_req);
+ 	return result;
  }
+@@ -1386,8 +1388,10 @@ void ieee80211_free_hw(struct ieee80211_hw *hw)
+ 	mutex_destroy(&local->iflist_mtx);
+ 	mutex_destroy(&local->mtx);
  
--#define SW_MACSEC_FEATURES \
-+#define MACSEC_FEATURES \
- 	(NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_FRAGLIST)
+-	if (local->wiphy_ciphers_allocated)
++	if (local->wiphy_ciphers_allocated) {
+ 		kfree(local->hw.wiphy->cipher_suites);
++		local->wiphy_ciphers_allocated = false;
++	}
  
--/* If h/w offloading is enabled, use real device features save for
-- *   VLAN_FEATURES - they require additional ops
-- *   HW_MACSEC - no reason to report it
-- */
--#define REAL_DEV_FEATURES(dev) \
--	((dev)->features & ~(NETIF_F_VLAN_FEATURES | NETIF_F_HW_MACSEC))
--
- static int macsec_dev_init(struct net_device *dev)
- {
- 	struct macsec_dev *macsec = macsec_priv(dev);
-@@ -3446,12 +3434,8 @@ static int macsec_dev_init(struct net_device *dev)
- 		return err;
- 	}
- 
--	if (macsec_is_offloaded(macsec)) {
--		dev->features = REAL_DEV_FEATURES(real_dev);
--	} else {
--		dev->features = real_dev->features & SW_MACSEC_FEATURES;
--		dev->features |= NETIF_F_LLTX | NETIF_F_GSO_SOFTWARE;
--	}
-+	dev->features = real_dev->features & MACSEC_FEATURES;
-+	dev->features |= NETIF_F_LLTX | NETIF_F_GSO_SOFTWARE;
- 
- 	dev->needed_headroom = real_dev->needed_headroom +
- 			       MACSEC_NEEDED_HEADROOM;
-@@ -3480,10 +3464,7 @@ static netdev_features_t macsec_fix_features(struct net_device *dev,
- 	struct macsec_dev *macsec = macsec_priv(dev);
- 	struct net_device *real_dev = macsec->real_dev;
- 
--	if (macsec_is_offloaded(macsec))
--		return REAL_DEV_FEATURES(real_dev);
--
--	features &= (real_dev->features & SW_MACSEC_FEATURES) |
-+	features &= (real_dev->features & MACSEC_FEATURES) |
- 		    NETIF_F_GSO_SOFTWARE | NETIF_F_SOFT_FEATURES;
- 	features |= NETIF_F_LLTX;
- 
+ 	idr_for_each(&local->ack_status_frames,
+ 		     ieee80211_free_ack_frame, NULL);
 -- 
 2.35.1
 
