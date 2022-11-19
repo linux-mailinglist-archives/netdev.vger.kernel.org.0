@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFAD96311C4
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 00:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8376311C7
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 00:08:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235103AbiKSXHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 18:07:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
+        id S235220AbiKSXIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 18:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235131AbiKSXHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 18:07:30 -0500
-Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F61C1A20F;
-        Sat, 19 Nov 2022 15:07:29 -0800 (PST)
-Date:   Sat, 19 Nov 2022 23:07:20 +0000
+        with ESMTP id S234794AbiKSXIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 18:08:02 -0500
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FA01A201;
+        Sat, 19 Nov 2022 15:08:01 -0800 (PST)
+Date:   Sat, 19 Nov 2022 23:07:49 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail3; t=1668899247; x=1669158447;
-        bh=z5EwErPNabx0KbW3NJbE+dQBJOp75EzBGrGloRwIuN0=;
+        s=protonmail3; t=1668899279; x=1669158479;
+        bh=Fcan82p+ax2WlxRBhBg1kgUsi97y6iC8yqz1mQgRMSY=;
         h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
          Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
          Message-ID:BIMI-Selector;
-        b=nnoaEEKY5ft1oKGOfAZPj+LAEtg0D88SpRKM9wyLs+0hxhqbcdiGAJ7IelxQcG0/o
-         WRoEXlQhmkqUKRIBTgjPvhSmZ26sZ28WmJRqLSmeR54HM93eIyAYzOvHVMt/tmvhUE
-         Na6l/4wOhJcaYbFeUAqQefkYnqnrsxMCSkfx/8QVumIrmb733uScTHej9O/4XZIppO
-         WpQNIxKne2gLnN0jKjRV0x8abu58slF+jRXfyFeBgbYNpngLaR+8gcpYCnU5BmJ5Pa
-         HmZqd26dqKxgGmnxvRF/4Khd53dRj3SriuvET/oDK8OO/uUSLb+vvyE3Ph1RdFvZrH
-         6TDBq0AsAfPxQ==
+        b=MNkyYydhsrau86fX56V/ZK0IxXawrURgWy6h6DRdkKSpYLJwCK1YZL/9DAmJTM+lO
+         IQXWEf2g+c4kQF71tJLMSO5LgZyl/xlqiATVfCsasAlVzcCh+dTLm41PCJPcGxdseh
+         jWCi3MnVIb6v9R0v8CVq4fNwngDa7ooqiwKXCN5LPwN7Q3eTSgVd7ey+MJeljrvm0W
+         vqjDmjmuQYhSKdl/mmOGDadnPOiPiYYJZE1XaBZMp6ARxL5Zmy4dWZV2CxUFra7ytO
+         aK0P4FOhW7fvZDKpw040ciFjvH5WX2pSU66dGl6EiVD0d0TwC8eMqgz5qFDGi7g9TG
+         rlEXU+EYqwu5w==
 To:     linux-kbuild@vger.kernel.org
 From:   Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexander Lobakin <alobakin@pm.me>,
@@ -50,8 +50,8 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 09/18] net: emac, cpsw: fix mixed module-builtin object (davinci_cpdma)
-Message-ID: <20221119225650.1044591-10-alobakin@pm.me>
+Subject: [PATCH 10/18] EDAC: i10nm, skx: fix mixed module-builtin object
+Message-ID: <20221119225650.1044591-11-alobakin@pm.me>
 In-Reply-To: <20221119225650.1044591-1-alobakin@pm.me>
 References: <20221119225650.1044591-1-alobakin@pm.me>
 Feedback-ID: 22809121:user:proton
@@ -67,391 +67,261 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+With CONFIG_EDAC_SKX=3Dm and CONFIG_EDAC_I10NM=3Dy (or vice versa),
+skx_common.o are linked to a module and also to vmlinux even though
+the expected CFLAGS are different between builtins and modules:
 
-CONFIG_TI_DAVINCI_EMAC, CONFIG_TI_CPSW and CONFIG_TI_CPSW_SWITCHDEV
-are all tristate. This means that davinci_cpdma.o can be linked to
-a module and also to vmlinux even though the expected CFLAGS are
-different between builtins and modules.
+> scripts/Makefile.build:252: ./drivers/edac/Makefile: skx_common.o
+> is added to multiple modules: i10nm_edac skx_edac
 
 This is the same situation as fixed by commit 637a642f5ca5 ("zstd:
 Fixing mixed module-builtin objects").
 
-Introduce the new module, ti_davinci_cpdma, to provide the common
-functions to these three modules.
+Introduce the new module, skx_edac_common, to provide the common
+functions to skx_edac and i10nm_edac. skx_adxl_{get,put}() loose
+their __init/__exit annotations in order to become exportable.
 
-[ alobakin: add exports ]
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Alexander Lobakin <alobakin@pm.me>
+Fixes: d4dc89d069aa ("EDAC, i10nm: Add a driver for Intel 10nm server proce=
+ssors")
+Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- drivers/net/ethernet/ti/Kconfig         |  6 +++++
- drivers/net/ethernet/ti/Makefile        |  8 +++---
- drivers/net/ethernet/ti/cpsw.c          |  2 ++
- drivers/net/ethernet/ti/cpsw_new.c      |  2 ++
- drivers/net/ethernet/ti/davinci_cpdma.c | 33 +++++++++++++++++++++++++
- drivers/net/ethernet/ti/davinci_emac.c  |  2 ++
- 6 files changed, 50 insertions(+), 3 deletions(-)
+ drivers/edac/Kconfig      | 11 +++++++----
+ drivers/edac/Makefile     |  7 +++++--
+ drivers/edac/i10nm_base.c |  2 ++
+ drivers/edac/skx_base.c   |  2 ++
+ drivers/edac/skx_common.c | 21 +++++++++++++++++++--
+ drivers/edac/skx_common.h |  4 ++--
+ 6 files changed, 37 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kcon=
-fig
-index fce06663e1e1..2ac0adf0c07d 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -17,9 +17,13 @@ config NET_VENDOR_TI
+diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+index 456602d373b7..c3d96d2a814b 100644
+--- a/drivers/edac/Kconfig
++++ b/drivers/edac/Kconfig
+@@ -236,12 +236,16 @@ config EDAC_SBRIDGE
+ =09  Support for error detection and correction the Intel
+ =09  Sandy Bridge, Ivy Bridge and Haswell Integrated Memory Controllers.
 
- if NET_VENDOR_TI
-
-+config TI_DAVINCI_CPDMA
++config EDAC_SKX_COMMON
 +=09tristate
++=09select ACPI_ADXL
++=09select DMI
 +
- config TI_DAVINCI_EMAC
- =09tristate "TI DaVinci EMAC Support"
- =09depends on ARM && ( ARCH_DAVINCI || ARCH_OMAP3 ) || COMPILE_TEST
-+=09select TI_DAVINCI_CPDMA
- =09select TI_DAVINCI_MDIO
- =09select PHYLIB
- =09select GENERIC_ALLOCATOR
-@@ -51,6 +55,7 @@ config TI_CPSW
- =09tristate "TI CPSW Switch Support"
- =09depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
- =09depends on TI_CPTS || !TI_CPTS
-+=09select TI_DAVINCI_CPDMA
- =09select TI_DAVINCI_MDIO
- =09select MFD_SYSCON
- =09select PAGE_POOL
-@@ -68,6 +73,7 @@ config TI_CPSW_SWITCHDEV
- =09depends on NET_SWITCHDEV
- =09depends on TI_CPTS || !TI_CPTS
- =09select PAGE_POOL
-+=09select TI_DAVINCI_CPDMA
- =09select TI_DAVINCI_MDIO
- =09select MFD_SYSCON
- =09select REGMAP
-diff --git a/drivers/net/ethernet/ti/Makefile b/drivers/net/ethernet/ti/Mak=
-efile
-index 75f761efbea7..28a741ed0ac8 100644
---- a/drivers/net/ethernet/ti/Makefile
-+++ b/drivers/net/ethernet/ti/Makefile
-@@ -9,15 +9,17 @@ obj-$(CONFIG_TI_CPSW_SWITCHDEV) +=3D cpsw-common.o
+ config EDAC_SKX
+ =09tristate "Intel Skylake server Integrated MC"
+ =09depends on PCI && X86_64 && X86_MCE_INTEL && PCI_MMCONFIG && ACPI
+ =09depends on ACPI_NFIT || !ACPI_NFIT # if ACPI_NFIT=3Dm, EDAC_SKX can't b=
+e y
+-=09select DMI
+-=09select ACPI_ADXL
++=09select EDAC_SKX_COMMON
+ =09help
+ =09  Support for error detection and correction the Intel
+ =09  Skylake server Integrated Memory Controllers. If your
+@@ -252,8 +256,7 @@ config EDAC_I10NM
+ =09tristate "Intel 10nm server Integrated MC"
+ =09depends on PCI && X86_64 && X86_MCE_INTEL && PCI_MMCONFIG && ACPI
+ =09depends on ACPI_NFIT || !ACPI_NFIT # if ACPI_NFIT=3Dm, EDAC_I10NM can't=
+ be y
+-=09select DMI
+-=09select ACPI_ADXL
++=09select EDAC_SKX_COMMON
+ =09help
+ =09  Support for error detection and correction the Intel
+ =09  10nm server Integrated Memory Controllers. If your
+diff --git a/drivers/edac/Makefile b/drivers/edac/Makefile
+index 2d1641a27a28..36e6e07d4048 100644
+--- a/drivers/edac/Makefile
++++ b/drivers/edac/Makefile
+@@ -54,10 +54,13 @@ obj-$(CONFIG_EDAC_MPC85XX)=09=09+=3D mpc85xx_edac_mod.o
+ layerscape_edac_mod-y=09=09=09:=3D fsl_ddr_edac.o layerscape_edac.o
+ obj-$(CONFIG_EDAC_LAYERSCAPE)=09=09+=3D layerscape_edac_mod.o
 
- obj-$(CONFIG_TLAN) +=3D tlan.o
- obj-$(CONFIG_CPMAC) +=3D cpmac.o
-+obj-$(CONFIG_TI_DAVINCI_CPDMA) +=3D ti_davinci_cpdma.o
-+ti_davinci_cpdma-y :=3D davinci_cpdma.o
- obj-$(CONFIG_TI_DAVINCI_EMAC) +=3D ti_davinci_emac.o
--ti_davinci_emac-y :=3D davinci_emac.o davinci_cpdma.o
-+ti_davinci_emac-y :=3D davinci_emac.o
- obj-$(CONFIG_TI_DAVINCI_MDIO) +=3D davinci_mdio.o
- obj-$(CONFIG_TI_CPSW_PHY_SEL) +=3D cpsw-phy-sel.o
- obj-$(CONFIG_TI_CPTS) +=3D cpts.o
- obj-$(CONFIG_TI_CPSW) +=3D ti_cpsw.o
--ti_cpsw-y :=3D cpsw.o davinci_cpdma.o cpsw_ale.o cpsw_priv.o cpsw_sl.o cps=
-w_ethtool.o
-+ti_cpsw-y :=3D cpsw.o cpsw_ale.o cpsw_priv.o cpsw_sl.o cpsw_ethtool.o
- obj-$(CONFIG_TI_CPSW_SWITCHDEV) +=3D ti_cpsw_new.o
--ti_cpsw_new-y :=3D cpsw_switchdev.o cpsw_new.o davinci_cpdma.o cpsw_ale.o =
-cpsw_sl.o cpsw_priv.o cpsw_ethtool.o
-+ti_cpsw_new-y :=3D cpsw_switchdev.o cpsw_new.o cpsw_ale.o cpsw_sl.o cpsw_p=
-riv.o cpsw_ethtool.o
-
- obj-$(CONFIG_TI_KEYSTONE_NETCP) +=3D keystone_netcp.o
- keystone_netcp-y :=3D netcp_core.o cpsw_ale.o
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.=
-c
-index 13c9c2d6b79b..b7ac61329b20 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -1796,6 +1796,8 @@ static struct platform_driver cpsw_driver =3D {
-
- module_platform_driver(cpsw_driver);
-
-+MODULE_IMPORT_NS(TI_DAVINCI_CPDMA);
+-skx_edac-y=09=09=09=09:=3D skx_common.o skx_base.o
++skx_edac_common-y=09=09=09:=3D skx_common.o
++obj-$(CONFIG_EDAC_SKX_COMMON)=09=09+=3D skx_edac_common.o
 +
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Cyril Chemparathy <cyril@ti.com>");
- MODULE_AUTHOR("Mugunthan V N <mugunthanvnm@ti.com>");
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/c=
-psw_new.c
-index 83596ec0c7cb..9ed398c04c04 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -2116,5 +2116,7 @@ static struct platform_driver cpsw_driver =3D {
++skx_edac-y=09=09=09=09:=3D skx_base.o
+ obj-$(CONFIG_EDAC_SKX)=09=09=09+=3D skx_edac.o
 
- module_platform_driver(cpsw_driver);
+-i10nm_edac-y=09=09=09=09:=3D skx_common.o i10nm_base.o
++i10nm_edac-y=09=09=09=09:=3D i10nm_base.o
+ obj-$(CONFIG_EDAC_I10NM)=09=09+=3D i10nm_edac.o
 
-+MODULE_IMPORT_NS(TI_DAVINCI_CPDMA);
+ obj-$(CONFIG_EDAC_CELL)=09=09=09+=3D cell_edac.o
+diff --git a/drivers/edac/i10nm_base.c b/drivers/edac/i10nm_base.c
+index a22ea053f8e1..949f665fd94c 100644
+--- a/drivers/edac/i10nm_base.c
++++ b/drivers/edac/i10nm_base.c
+@@ -900,5 +900,7 @@ MODULE_PARM_DESC(decoding_via_mca, "decoding_via_mca: 0=
+=3Doff(default), 1=3Denable")
+ module_param(retry_rd_err_log, int, 0444);
+ MODULE_PARM_DESC(retry_rd_err_log, "retry_rd_err_log: 0=3Doff(default), 1=
+=3Dbios(Linux doesn't reset any control bits, but just reports values.), 2=
+=3Dlinux(Linux tries to take control and resets mode bits, clear valid/UC b=
+its after reading.)");
+
++MODULE_IMPORT_NS(EDAC_SKX_COMMON);
 +
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("TI CPSW switchdev Ethernet driver");
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet=
-/ti/davinci_cpdma.c
-index d2eab5cd1e0c..32ba94626cda 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.c
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -531,6 +531,7 @@ struct cpdma_ctlr *cpdma_ctlr_create(struct cpdma_param=
-s *params)
- =09=09ctlr->num_chan =3D CPDMA_MAX_CHANNELS;
- =09return ctlr;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctlr_create, TI_DAVINCI_CPDMA);
+ MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("MC Driver for Intel 10nm server processors");
+diff --git a/drivers/edac/skx_base.c b/drivers/edac/skx_base.c
+index 7e2762f62eec..1656cd4cd0ed 100644
+--- a/drivers/edac/skx_base.c
++++ b/drivers/edac/skx_base.c
+@@ -751,6 +751,8 @@ module_exit(skx_exit);
+ module_param(edac_op_state, int, 0444);
+ MODULE_PARM_DESC(edac_op_state, "EDAC Error Reporting state: 0=3DPoll,1=3D=
+NMI");
 
- int cpdma_ctlr_start(struct cpdma_ctlr *ctlr)
++MODULE_IMPORT_NS(EDAC_SKX_COMMON);
++
+ MODULE_LICENSE("GPL v2");
+ MODULE_AUTHOR("Tony Luck");
+ MODULE_DESCRIPTION("MC Driver for Intel Skylake server processors");
+diff --git a/drivers/edac/skx_common.c b/drivers/edac/skx_common.c
+index f0f8e98f6efb..15a3fb1224ae 100644
+--- a/drivers/edac/skx_common.c
++++ b/drivers/edac/skx_common.c
+@@ -48,7 +48,7 @@ static u64 skx_tolm, skx_tohm;
+ static LIST_HEAD(dev_edac_list);
+ static bool skx_mem_cfg_2lm;
+
+-int __init skx_adxl_get(void)
++int skx_adxl_get(void)
  {
-@@ -591,6 +592,7 @@ int cpdma_ctlr_start(struct cpdma_ctlr *ctlr)
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
+ =09const char * const *names;
+ =09int i, j;
+@@ -110,12 +110,14 @@ int __init skx_adxl_get(void)
+
+ =09return -ENODEV;
+ }
++EXPORT_SYMBOL_NS_GPL(skx_adxl_get, EDAC_SKX_COMMON);
+
+-void __exit skx_adxl_put(void)
++void skx_adxl_put(void)
+ {
+ =09kfree(adxl_values);
+ =09kfree(adxl_msg);
+ }
++EXPORT_SYMBOL_NS_GPL(skx_adxl_put, EDAC_SKX_COMMON);
+
+ static bool skx_adxl_decode(struct decoded_addr *res, bool error_in_1st_le=
+vel_mem)
+ {
+@@ -187,12 +189,14 @@ void skx_set_mem_cfg(bool mem_cfg_2lm)
+ {
+ =09skx_mem_cfg_2lm =3D mem_cfg_2lm;
+ }
++EXPORT_SYMBOL_NS_GPL(skx_set_mem_cfg, EDAC_SKX_COMMON);
+
+ void skx_set_decode(skx_decode_f decode, skx_show_retry_log_f show_retry_l=
+og)
+ {
+ =09driver_decode =3D decode;
+ =09skx_show_retry_rd_err_log =3D show_retry_log;
+ }
++EXPORT_SYMBOL_NS_GPL(skx_set_decode, EDAC_SKX_COMMON);
+
+ int skx_get_src_id(struct skx_dev *d, int off, u8 *id)
+ {
+@@ -206,6 +210,7 @@ int skx_get_src_id(struct skx_dev *d, int off, u8 *id)
+ =09*id =3D GET_BITFIELD(reg, 12, 14);
  =09return 0;
  }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctlr_start, TI_DAVINCI_CPDMA);
++EXPORT_SYMBOL_NS_GPL(skx_get_src_id, EDAC_SKX_COMMON);
 
- int cpdma_ctlr_stop(struct cpdma_ctlr *ctlr)
+ int skx_get_node_id(struct skx_dev *d, u8 *id)
  {
-@@ -623,6 +625,7 @@ int cpdma_ctlr_stop(struct cpdma_ctlr *ctlr)
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
+@@ -219,6 +224,7 @@ int skx_get_node_id(struct skx_dev *d, u8 *id)
+ =09*id =3D GET_BITFIELD(reg, 0, 2);
  =09return 0;
  }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctlr_stop, TI_DAVINCI_CPDMA);
++EXPORT_SYMBOL_NS_GPL(skx_get_node_id, EDAC_SKX_COMMON);
 
- int cpdma_ctlr_destroy(struct cpdma_ctlr *ctlr)
+ static int get_width(u32 mtr)
  {
-@@ -640,6 +643,7 @@ int cpdma_ctlr_destroy(struct cpdma_ctlr *ctlr)
- =09cpdma_desc_pool_destroy(ctlr);
- =09return ret;
+@@ -284,6 +290,7 @@ int skx_get_all_bus_mappings(struct res_config *cfg, st=
+ruct list_head **list)
+ =09=09*list =3D &dev_edac_list;
+ =09return ndev;
  }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctlr_destroy, TI_DAVINCI_CPDMA);
++EXPORT_SYMBOL_NS_GPL(skx_get_all_bus_mappings, EDAC_SKX_COMMON);
 
- int cpdma_ctlr_int_ctrl(struct cpdma_ctlr *ctlr, bool enable)
+ int skx_get_hi_lo(unsigned int did, int off[], u64 *tolm, u64 *tohm)
  {
-@@ -660,21 +664,25 @@ int cpdma_ctlr_int_ctrl(struct cpdma_ctlr *ctlr, bool=
- enable)
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
- =09return 0;
+@@ -323,6 +330,7 @@ int skx_get_hi_lo(unsigned int did, int off[], u64 *tol=
+m, u64 *tohm)
+ =09pci_dev_put(pdev);
+ =09return -ENODEV;
  }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctlr_int_ctrl, TI_DAVINCI_CPDMA);
++EXPORT_SYMBOL_NS_GPL(skx_get_hi_lo, EDAC_SKX_COMMON);
 
- void cpdma_ctlr_eoi(struct cpdma_ctlr *ctlr, u32 value)
+ static int skx_get_dimm_attr(u32 reg, int lobit, int hibit, int add,
+ =09=09=09     int minval, int maxval, const char *name)
+@@ -394,6 +402,7 @@ int skx_get_dimm_info(u32 mtr, u32 mcmtr, u32 amap, str=
+uct dimm_info *dimm,
+
+ =09return 1;
+ }
++EXPORT_SYMBOL_NS_GPL(skx_get_dimm_info, EDAC_SKX_COMMON);
+
+ int skx_get_nvdimm_info(struct dimm_info *dimm, struct skx_imc *imc,
+ =09=09=09int chan, int dimmno, const char *mod_str)
+@@ -442,6 +451,7 @@ int skx_get_nvdimm_info(struct dimm_info *dimm, struct =
+skx_imc *imc,
+
+ =09return (size =3D=3D 0 || size =3D=3D ~0ull) ? 0 : 1;
+ }
++EXPORT_SYMBOL_NS_GPL(skx_get_nvdimm_info, EDAC_SKX_COMMON);
+
+ int skx_register_mci(struct skx_imc *imc, struct pci_dev *pdev,
+ =09=09     const char *ctl_name, const char *mod_str,
+@@ -512,6 +522,7 @@ int skx_register_mci(struct skx_imc *imc, struct pci_de=
+v *pdev,
+ =09imc->mci =3D NULL;
+ =09return rc;
+ }
++EXPORT_SYMBOL_NS_GPL(skx_register_mci, EDAC_SKX_COMMON);
+
+ static void skx_unregister_mci(struct skx_imc *imc)
  {
- =09dma_reg_write(ctlr, CPDMA_MACEOIVECTOR, value);
+@@ -694,6 +705,7 @@ int skx_mce_check_error(struct notifier_block *nb, unsi=
+gned long val,
+ =09mce->kflags |=3D MCE_HANDLED_EDAC;
+ =09return NOTIFY_DONE;
  }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctlr_eoi, TI_DAVINCI_CPDMA);
++EXPORT_SYMBOL_NS_GPL(skx_mce_check_error, EDAC_SKX_COMMON);
 
- u32 cpdma_ctrl_rxchs_state(struct cpdma_ctlr *ctlr)
+ void skx_remove(void)
  {
- =09return dma_reg_read(ctlr, CPDMA_RXINTSTATMASKED);
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctrl_rxchs_state, TI_DAVINCI_CPDMA);
-
- u32 cpdma_ctrl_txchs_state(struct cpdma_ctlr *ctlr)
- {
- =09return dma_reg_read(ctlr, CPDMA_TXINTSTATMASKED);
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_ctrl_txchs_state, TI_DAVINCI_CPDMA);
-
- static void cpdma_chan_set_descs(struct cpdma_ctlr *ctlr,
- =09=09=09=09 int rx, int desc_num,
-@@ -802,6 +810,7 @@ int cpdma_chan_set_weight(struct cpdma_chan *ch, int we=
-ight)
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_set_weight, TI_DAVINCI_CPDMA);
-
- /* cpdma_chan_get_min_rate - get minimum allowed rate for channel
-  * Should be called before cpdma_chan_set_rate.
-@@ -816,6 +825,7 @@ u32 cpdma_chan_get_min_rate(struct cpdma_ctlr *ctlr)
-
- =09return DIV_ROUND_UP(divident, divisor);
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_get_min_rate, TI_DAVINCI_CPDMA);
-
- /* cpdma_chan_set_rate - limits bandwidth for transmit channel.
-  * The bandwidth * limited channels have to be in order beginning from low=
-est.
-@@ -860,6 +870,7 @@ int cpdma_chan_set_rate(struct cpdma_chan *ch, u32 rate=
-)
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_set_rate, TI_DAVINCI_CPDMA);
-
- u32 cpdma_chan_get_rate(struct cpdma_chan *ch)
- {
-@@ -872,6 +883,7 @@ u32 cpdma_chan_get_rate(struct cpdma_chan *ch)
-
- =09return rate;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_get_rate, TI_DAVINCI_CPDMA);
-
- struct cpdma_chan *cpdma_chan_create(struct cpdma_ctlr *ctlr, int chan_num=
-,
- =09=09=09=09     cpdma_handler_fn handler, int rx_type)
-@@ -931,6 +943,7 @@ struct cpdma_chan *cpdma_chan_create(struct cpdma_ctlr =
-*ctlr, int chan_num,
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
- =09return chan;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_create, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_get_rx_buf_num(struct cpdma_chan *chan)
- {
-@@ -943,6 +956,7 @@ int cpdma_chan_get_rx_buf_num(struct cpdma_chan *chan)
-
- =09return desc_num;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_get_rx_buf_num, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_destroy(struct cpdma_chan *chan)
- {
-@@ -964,6 +978,7 @@ int cpdma_chan_destroy(struct cpdma_chan *chan)
- =09spin_unlock_irqrestore(&ctlr->lock, flags);
- =09return 0;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_destroy, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_get_stats(struct cpdma_chan *chan,
- =09=09=09 struct cpdma_chan_stats *stats)
-@@ -976,6 +991,7 @@ int cpdma_chan_get_stats(struct cpdma_chan *chan,
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return 0;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_get_stats, TI_DAVINCI_CPDMA);
-
- static void __cpdma_chan_submit(struct cpdma_chan *chan,
- =09=09=09=09struct cpdma_desc __iomem *desc)
-@@ -1100,6 +1116,7 @@ int cpdma_chan_idle_submit(struct cpdma_chan *chan, v=
-oid *token, void *data,
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_idle_submit, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_idle_submit_mapped(struct cpdma_chan *chan, void *token,
- =09=09=09=09  dma_addr_t data, int len, int directed)
-@@ -1125,6 +1142,7 @@ int cpdma_chan_idle_submit_mapped(struct cpdma_chan *=
-chan, void *token,
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_idle_submit_mapped, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
- =09=09      int len, int directed)
-@@ -1150,6 +1168,7 @@ int cpdma_chan_submit(struct cpdma_chan *chan, void *=
-token, void *data,
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_submit, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
- =09=09=09     dma_addr_t data, int len, int directed)
-@@ -1175,6 +1194,7 @@ int cpdma_chan_submit_mapped(struct cpdma_chan *chan,=
- void *token,
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_submit_mapped, TI_DAVINCI_CPDMA);
-
- bool cpdma_check_free_tx_desc(struct cpdma_chan *chan)
- {
-@@ -1189,6 +1209,7 @@ bool cpdma_check_free_tx_desc(struct cpdma_chan *chan=
-)
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return free_tx_desc;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_check_free_tx_desc, TI_DAVINCI_CPDMA);
-
- static void __cpdma_chan_free(struct cpdma_chan *chan,
- =09=09=09      struct cpdma_desc __iomem *desc,
-@@ -1289,6 +1310,7 @@ int cpdma_chan_process(struct cpdma_chan *chan, int q=
-uota)
+@@ -731,3 +743,8 @@ void skx_remove(void)
+ =09=09kfree(d);
  =09}
- =09return used;
  }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_process, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_start(struct cpdma_chan *chan)
- {
-@@ -1308,6 +1330,7 @@ int cpdma_chan_start(struct cpdma_chan *chan)
-
- =09return 0;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_start, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_stop(struct cpdma_chan *chan)
- {
-@@ -1370,6 +1393,7 @@ int cpdma_chan_stop(struct cpdma_chan *chan)
- =09spin_unlock_irqrestore(&chan->lock, flags);
- =09return 0;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_stop, TI_DAVINCI_CPDMA);
-
- int cpdma_chan_int_ctrl(struct cpdma_chan *chan, bool enable)
- {
-@@ -1387,6 +1411,7 @@ int cpdma_chan_int_ctrl(struct cpdma_chan *chan, bool=
- enable)
-
- =09return 0;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_chan_int_ctrl, TI_DAVINCI_CPDMA);
-
- int cpdma_control_get(struct cpdma_ctlr *ctlr, int control)
- {
-@@ -1399,6 +1424,7 @@ int cpdma_control_get(struct cpdma_ctlr *ctlr, int co=
-ntrol)
-
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_control_get, TI_DAVINCI_CPDMA);
-
- int cpdma_control_set(struct cpdma_ctlr *ctlr, int control, int value)
- {
-@@ -1411,16 +1437,19 @@ int cpdma_control_set(struct cpdma_ctlr *ctlr, int =
-control, int value)
-
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_control_set, TI_DAVINCI_CPDMA);
-
- int cpdma_get_num_rx_descs(struct cpdma_ctlr *ctlr)
- {
- =09return ctlr->num_rx_desc;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_get_num_rx_descs, TI_DAVINCI_CPDMA);
-
- int cpdma_get_num_tx_descs(struct cpdma_ctlr *ctlr)
- {
- =09return ctlr->num_tx_desc;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_get_num_tx_descs, TI_DAVINCI_CPDMA);
-
- int cpdma_set_num_rx_descs(struct cpdma_ctlr *ctlr, int num_rx_desc)
- {
-@@ -1442,3 +1471,7 @@ int cpdma_set_num_rx_descs(struct cpdma_ctlr *ctlr, i=
-nt num_rx_desc)
-
- =09return ret;
- }
-+EXPORT_SYMBOL_NS_GPL(cpdma_set_num_rx_descs, TI_DAVINCI_CPDMA);
++EXPORT_SYMBOL_NS_GPL(skx_remove, EDAC_SKX_COMMON);
 +
-+MODULE_DESCRIPTION("TI CPDMA driver");
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/=
-ti/davinci_emac.c
-index 2eb9d5a32588..897def12e6ec 100644
---- a/drivers/net/ethernet/ti/davinci_emac.c
-+++ b/drivers/net/ethernet/ti/davinci_emac.c
-@@ -2103,6 +2103,8 @@ static void __exit davinci_emac_exit(void)
- }
- module_exit(davinci_emac_exit);
++MODULE_AUTHOR("Tony Luck");
++MODULE_DESCRIPTION("MC Common Library for Intel server processors");
+diff --git a/drivers/edac/skx_common.h b/drivers/edac/skx_common.h
+index 0cbadd3d2cd3..c0c174c101d2 100644
+--- a/drivers/edac/skx_common.h
++++ b/drivers/edac/skx_common.h
+@@ -178,8 +178,8 @@ typedef int (*get_dimm_config_f)(struct mem_ctl_info *m=
+ci,
+ typedef bool (*skx_decode_f)(struct decoded_addr *res);
+ typedef void (*skx_show_retry_log_f)(struct decoded_addr *res, char *msg, =
+int len, bool scrub_err);
 
-+MODULE_IMPORT_NS(TI_DAVINCI_CPDMA);
-+
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("DaVinci EMAC Maintainer: Anant Gole <anantgole@ti.com>");
- MODULE_AUTHOR("DaVinci EMAC Maintainer: Chaithrika U S <chaithrika@ti.com>=
-");
+-int __init skx_adxl_get(void);
+-void __exit skx_adxl_put(void);
++int skx_adxl_get(void);
++void skx_adxl_put(void);
+ void skx_set_decode(skx_decode_f decode, skx_show_retry_log_f show_retry_l=
+og);
+ void skx_set_mem_cfg(bool mem_cfg_2lm);
+
 --
 2.38.1
 
