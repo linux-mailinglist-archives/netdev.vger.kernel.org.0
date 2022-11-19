@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1D4630CDE
-	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 08:10:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E434630CF4
+	for <lists+netdev@lfdr.de>; Sat, 19 Nov 2022 08:29:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232530AbiKSHKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 02:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
+        id S231207AbiKSH32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 02:29:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232698AbiKSHKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 02:10:11 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E169C97ECA
-        for <netdev@vger.kernel.org>; Fri, 18 Nov 2022 23:10:10 -0800 (PST)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NDlCB42YMzmW1Q;
-        Sat, 19 Nov 2022 15:09:42 +0800 (CST)
-Received: from cgs.huawei.com (10.244.148.83) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 19 Nov 2022 15:10:08 +0800
-From:   Gaosheng Cui <cuigaosheng1@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <thomas.lendacky@amd.com>,
-        <shayagr@amazon.com>, <cuigaosheng1@huawei.com>,
-        <wsa+renesas@sang-engineering.com>, <msink@permonline.ru>
-CC:     <netdev@vger.kernel.org>
-Subject: [PATCH net] net: ethernet: wiznet: w5300: free irq when alloc link_name failed in w5300_hw_probe()
-Date:   Sat, 19 Nov 2022 15:10:07 +0800
-Message-ID: <20221119071007.3858043-1-cuigaosheng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229500AbiKSH31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 02:29:27 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3DB78186;
+        Fri, 18 Nov 2022 23:29:25 -0800 (PST)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NDldG4QwxzHw0V;
+        Sat, 19 Nov 2022 15:28:50 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 19 Nov
+ 2022 15:29:23 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <tipc-discussion@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net] tipc: check skb_linearize() return value in tipc_disc_rcv()
+Date:   Sat, 19 Nov 2022 15:28:32 +0800
+Message-ID: <20221119072832.7896-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.244.148.83]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500012.china.huawei.com (7.221.188.12)
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -46,31 +45,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When alloc link_name failed in w5300_hw_probe(), irq has not been
-freed. Fix it.
+If skb_linearize() fails in tipc_disc_rcv(), we need to free the skb instead of
+handle it.
 
-Fixes: 9899b81e7ca5 ("Ethernet driver for the WIZnet W5300 chip")
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Fixes: 25b0b9c4e835 ("tipc: handle collisions of 32-bit node address hash values")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/wiznet/w5300.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/tipc/discover.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/wiznet/w5300.c b/drivers/net/ethernet/wiznet/w5300.c
-index b0958fe8111e..5571d4c365e9 100644
---- a/drivers/net/ethernet/wiznet/w5300.c
-+++ b/drivers/net/ethernet/wiznet/w5300.c
-@@ -572,8 +572,10 @@ static int w5300_hw_probe(struct platform_device *pdev)
- 	priv->link_gpio = data ? data->link_gpio : -EINVAL;
- 	if (gpio_is_valid(priv->link_gpio)) {
- 		char *link_name = devm_kzalloc(&pdev->dev, 16, GFP_KERNEL);
--		if (!link_name)
-+		if (!link_name) {
-+			free_irq(irq, ndev);
- 			return -ENOMEM;
-+		}
- 		snprintf(link_name, 16, "%s-link", name);
- 		priv->link_irq = gpio_to_irq(priv->link_gpio);
- 		if (request_any_context_irq(priv->link_irq, w5300_detect_link,
+diff --git a/net/tipc/discover.c b/net/tipc/discover.c
+index e8630707901e..e8dcdf267c0c 100644
+--- a/net/tipc/discover.c
++++ b/net/tipc/discover.c
+@@ -211,7 +211,10 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *skb,
+ 	u32 self;
+ 	int err;
+ 
+-	skb_linearize(skb);
++	if (skb_linearize(skb)) {
++		kfree_skb(skb);
++		return;
++	}
+ 	hdr = buf_msg(skb);
+ 
+ 	if (caps & TIPC_NODE_ID128)
 -- 
-2.25.1
+2.17.1
 
