@@ -2,110 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE61D631340
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE9C631343
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiKTJwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 04:52:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        id S229626AbiKTJyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 04:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiKTJwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:52:40 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE7612752
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:52:38 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id ft34so22506857ejc.12
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:52:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yoM1VQAq7h1PK02LIY6g7IAXTRa5gsCiiA/BW+WTdpc=;
-        b=AfEI2NF/BedyRtTllBFcKajF/GmCC/RYrLyQGJ+5Kw6Ymtz7d3pxBSNiF25ON2yoB+
-         Obj9iLh/YOSyJDzqH1rZiH9bqIzYKN52QWU8VAjQvI84di+4XGdm6ADBxCs/Y0lYWCLW
-         /Asr2AkRsbyEV2rbiZKNELO/glFIlWivfG0TdhOnCqemG/UDtFnVwuZgJp54vyZJx4k0
-         6gSw1WVad3/B6g2wM6F6s6P0/HQSjC9MAIUnG44ZtCXwkdt0CYwzXWLH8yOSVp7uQtp/
-         zNGUC0xspOB85fzFUhkmwWxPSjLUy/+xvNNSDOYgpbX4ipROsYIaU2KyAttfGgS4PGFJ
-         t8FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yoM1VQAq7h1PK02LIY6g7IAXTRa5gsCiiA/BW+WTdpc=;
-        b=I9GraE7iOsg2iGTF+eJi0AbWG4nCBy/4SC6LqsDuWfHQEgMzyAxQ9FWutvn3lVxZQc
-         P1qkC1YOqIYQbeVMINcUZeEDR8gEak57NQx7Qr53Gi+kgsgA3iiM71FMq9vbe0ZJb/k3
-         3V3/G7lK/wCv8vIylcw2uP5DOOPWzcHH4/nmACJl34hlYYNo5ABZlkQKfiE+75mAq66o
-         F6aXzM3FThokdHMQiqGcgSGOHg7dhTpe0gRdNFdSM4IY6y+Uvu1XL0DcKDmR3lwmOMp8
-         tRJnikfMZs+nMfg19UE/vRTs85sPi+ipf34KMau7Pc8UeLde0bwV/xwoEBnbWT5QylWb
-         SsLw==
-X-Gm-Message-State: ANoB5pk9KFH5Thl7zbozpY9Wef1XvG4uTxlixiXeZs2mGoe4h1gc8vRm
-        bcYCDcHpiH9esVbyz+txH8+seYcTjPhD9H0GOyo=
-X-Google-Smtp-Source: AA0mqf7T0Wdp8jYQHjjcUK5s+3X/Nu0tgegBbMiYh2m+lQI4x1UNv941RRLSjXpgZ8cR1d9RKRAIvZadJteofoMYCSk=
-X-Received: by 2002:a17:906:ce4a:b0:7ae:5ad1:e834 with SMTP id
- se10-20020a170906ce4a00b007ae5ad1e834mr11643438ejb.312.1668937957253; Sun, 20
- Nov 2022 01:52:37 -0800 (PST)
+        with ESMTP id S229517AbiKTJyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:54:14 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6746415A06;
+        Sun, 20 Nov 2022 01:54:13 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 2C9101883853;
+        Sun, 20 Nov 2022 09:54:12 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id E626A25002DE;
+        Sun, 20 Nov 2022 09:54:11 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id D69C691201E4; Sun, 20 Nov 2022 09:54:11 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-3-dnlplm@gmail.com>
- <20221110173222.3536589-1-alexandr.lobakin@intel.com> <CAGRyCJHmNgzVVnGunUh7wwKxYA7GzSvfgqPDAxL+-NcO2P+1wg@mail.gmail.com>
- <20221116162016.3392565-1-alexandr.lobakin@intel.com> <CAGRyCJHX9WMeHLBgh5jJj2mNJh3hqzAhHacVnLqP_CpoHQaTaw@mail.gmail.com>
- <87tu2unewg.fsf@miraculix.mork.no>
-In-Reply-To: <87tu2unewg.fsf@miraculix.mork.no>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Sun, 20 Nov 2022 10:52:26 +0100
-Message-ID: <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets aggregation
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+Date:   Sun, 20 Nov 2022 10:54:11 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 net-next 2/2] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20221115222312.lix6xpvddjbsmoac@skbuf>
+References: <20221112203748.68995-1-netdev@kapio-technology.com>
+ <20221112203748.68995-1-netdev@kapio-technology.com>
+ <20221112203748.68995-3-netdev@kapio-technology.com>
+ <20221112203748.68995-3-netdev@kapio-technology.com>
+ <20221115222312.lix6xpvddjbsmoac@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <7f2a4ef8d5d790c557b255f715e63ade@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il giorno dom 20 nov 2022 alle ore 10:39 Bj=C3=B8rn Mork <bjorn@mork.no> ha=
- scritto:
->
-> Daniele Palmas <dnlplm@gmail.com> writes:
->
-> > Ok, so rmnet would only take care of qmap rx packets deaggregation and
-> > qmi_wwan of the tx aggregation.
-> >
-> > At a conceptual level, implementing tx aggregation in qmi_wwan for
-> > passthrough mode could make sense, since the tx aggregation parameters
-> > belong to the physical device and are shared among the virtual rmnet
-> > netdevices, which can't have different aggr configurations if they
-> > belong to the same physical device.
-> >
-> > Bj=C3=B8rn, would this approach be ok for you?
->
-> Sounds good to me, if this can be done within the userspace API
-> restrictions we've been through.
->
-> I assume it's possible to make this Just Work(tm) in qmi_wwan
-> passthrough mode?  I do not think we want any solution where the user
-> will have to configure both qmi_wwan and rmnet to make things work
-> properly.
->
+On 2022-11-15 23:23, Vladimir Oltean wrote:
+> On Sat, Nov 12, 2022 at 09:37:48PM +0100, Hans J. Schultz wrote:
+>> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h 
+>> b/drivers/net/dsa/mv88e6xxx/chip.h
+>> index e693154cf803..3b951cd0e6f8 100644
+>> --- a/drivers/net/dsa/mv88e6xxx/chip.h
+>> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
+>> @@ -280,6 +280,10 @@ struct mv88e6xxx_port {
+>>  	unsigned int serdes_irq;
+>>  	char serdes_irq_name[64];
+>>  	struct devlink_region *region;
+>> +
+>> +	/* Locked port and MacAuth control flags */
+> 
+> Can you please be consistent and call MAB MAC Authentication Bypass?
+> I mean, "bypass" is the most important part of what goes on, and you
+> just omit it.
+> 
 
-Yes, I think so: the ethtool configurations would apply to the
-qmi_wwan netdevice so that nothing should be done on the rmnet side.
+I must admit that I consider 'MacAuth' and 'Mac Authentication Bypass' 
+to be
+completely equivalent terms, where the MAB terminology is what is coined 
+by
+Cisco. Afaik, there is no difference in the core functionality between 
+the two.
 
-Regards,
-Daniele
+I do see that Cisco has a more extended concept, when you consider 
+non-core
+functionality, as how the whole authorization decision process and the
+infrastructure that is involved works, and thus is very Cisco centered, 
+as I
+have had in my cover letter:
+
+"This feature is known as MAC-Auth or MAC Authentication Bypass
+(MAB) in Cisco terminology, where the full MAB concept involves
+additional Cisco infrastructure for authorization."
+
+I would have preferred the MacAuth terminology as I see it as more 
+generic
+and open, but 'mab' is short as a flag name... :D
