@@ -2,120 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B8663134D
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 11:21:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E005A631360
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 11:41:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbiKTKVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 05:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
+        id S229640AbiKTKlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 05:41:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiKTKVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 05:21:11 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2441C6D973;
-        Sun, 20 Nov 2022 02:21:10 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id D619218838C6;
-        Sun, 20 Nov 2022 10:21:08 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id C375125002DE;
-        Sun, 20 Nov 2022 10:21:08 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id B97969EC0020; Sun, 20 Nov 2022 10:21:08 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229518AbiKTKlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 05:41:01 -0500
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A93A776DD;
+        Sun, 20 Nov 2022 02:40:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=aXgL1
+        lM3sRYeyi04GakbtXwdv/WkYeER8Uv5v5dvzsc=; b=V9ZXqJJvq44eyTwmWcYMf
+        bv17EezQT6z4Pdh+v4xCo8/DINXeH9jl/QnZyHjcoi4oGN5u3Jfkc/VLnrCHX52Q
+        hzON8I7Q6e25QNkk7Y0xOHCgc/DNHW9GLiNC5QcmyVFFJJ09vc5D498BUn3M1uhB
+        a7RQqsIqAJEtI2Yr90M+SY=
+Received: from localhost.localdomain (unknown [36.112.3.106])
+        by smtp4 (Coremail) with SMTP id HNxpCgBHnueRA3pjuzJ6tA--.22005S4;
+        Sun, 20 Nov 2022 18:38:16 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        alsi@bang-olufsen.dk, rmk+kernel@armlinux.org.uk,
+        linus.walleij@linaro.org, marcan@marcan.st
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] net: brcmfmac: fix potential resource leak in brcmf_usb_probe_phase2()
+Date:   Sun, 20 Nov 2022 18:38:07 +0800
+Message-Id: <20221120103807.7588-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Date:   Sun, 20 Nov 2022 11:21:08 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 2/2] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <20221115222312.lix6xpvddjbsmoac@skbuf>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <20221112203748.68995-1-netdev@kapio-technology.com>
- <20221112203748.68995-3-netdev@kapio-technology.com>
- <20221112203748.68995-3-netdev@kapio-technology.com>
- <20221115222312.lix6xpvddjbsmoac@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <6c77f91d096e7b1eeaa73cd546eb6825@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgBHnueRA3pjuzJ6tA--.22005S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Jr1fGr4DKFW3JF4fXF43KFg_yoWkGwc_ZF
+        48uFnrJr1FqwnY934jvFya9rsYk3Wqq397GrsxtFWfZw48XFWUCrykZFs3Gw17GrsFqFn8
+        urnxJ3WUC3W0vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRE1xR3UUUUU==
+X-Originating-IP: [36.112.3.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiQxy-jFc7cQ3QaAAAsE
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 23:23, Vladimir Oltean wrote:
->> diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c 
->> b/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> index 8a874b6fc8e1..0a57f4e7dd46 100644
->> --- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> +++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
->> @@ -12,6 +12,7 @@
->> 
->>  #include "chip.h"
->>  #include "global1.h"
->> +#include "switchdev.h"
->> 
->>  /* Offset 0x01: ATU FID Register */
->> 
->> @@ -426,6 +427,8 @@ static irqreturn_t 
->> mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
->>  	if (err)
->>  		goto out;
->> 
->> +	mv88e6xxx_reg_unlock(chip);
->> +
-> 
-> I concur with Ido's suggestion to split up changes which are only
-> tangentially related as preparatory patches, with the motivation which
-> you explained over email as the commit message. Also, the current "out"
-> label needs to become something like "out_unlock", and a new "out"
-> created, for the error path jumps below, that don't have the register
-> lock held.
-> 
->>  	spid = entry.state;
->> 
->>  	if (val & MV88E6XXX_G1_ATU_OP_AGE_OUT_VIOLATION) {
->> @@ -446,6 +449,12 @@ static irqreturn_t 
->> mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
->>  				    "ATU miss violation for %pM portvec %x spid %d\n",
->>  				    entry.mac, entry.portvec, spid);
->>  		chip->ports[spid].atu_miss_violation++;
->> +
->> +		if (fid && chip->ports[spid].mab)
->> +			err = mv88e6xxx_handle_violation(chip, spid, &entry,
->> +							 fid, MV88E6XXX_G1_ATU_OP_MISS_VIOLATION);
-> 
-> The check for non-zero FID looks strange until one considers that FID 0
-> is MV88E6XXX_FID_STANDALONE. But then again, since only standalone 
-> ports
-> use FID 0 and standalone ports cannot have the MAB/locked feature 
-> enabled,
-> I consider the check to be redundant. We should know for sure that the
-> FID is non-zero.
-> 
+brcmf_usb_probe_phase2() allocates resource for dev with brcmf_alloc().
+The related resource should be released when the function gets some error.
+But when brcmf_attach() fails, relevant resource is not released, which
+will lead to resource leak.
 
-I have something like this, using 'mvls vtu' from 
-https://github.com/wkz/mdio-tools:
-  VID   FID  SID  P  Q  F  0  1  2  3  4  5  6  7  8  9  a
-    0     0    0  y  -  -  =  =  =  =  =  =  =  =  =  =  =
-    1     2    0  -  -  -  u  u  u  u  u  u  u  u  u  u  =
-4095     1    0  -  -  -  =  =  =  =  =  =  =  =  =  =  =
+Fix it by calling brcmf_free() when brcmf_attach() fails.
 
-as a vtu table. I don't remember exactly the consequences, but I am 
-quite sure that fid=0 gave
-incorrect handling, but there might be something that I have missed as 
-to other setups.
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+index 85e18fb9c497..5d8c12b2c4d7 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+@@ -1215,6 +1215,7 @@ static void brcmf_usb_probe_phase2(struct device *dev, int ret,
+ 	return;
+ error:
+ 	brcmf_dbg(TRACE, "failed: dev=%s, err=%d\n", dev_name(dev), ret);
++	brcmf_free(devinfo->dev);
+ 	complete(&devinfo->dev_init_done);
+ 	device_release_driver(dev);
+ }
+-- 
+2.25.1
 
