@@ -2,75 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E77B86313C5
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 12:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D83856313D5
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 12:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229499AbiKTLyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 06:54:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
+        id S229542AbiKTL6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 06:58:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiKTLyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 06:54:53 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002352980C
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 03:54:52 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id q83so10007832oib.10
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 03:54:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WIm6378Nh4ItLM2aDQbKBBMlM1ow1uuLRa5aF3FbeU4=;
-        b=XNPdoJcQLCJO0UML68lsD7ToSiK6MYfhKqz7Z8/NzCFWKergZibNkwt8XtKGVZdHa8
-         OMrXz1Zl77milh5R2ZYZLl4d4G20fNgzRNjydKYwLWy7L8tvt6wveQTKkD33ZnSvq0Hn
-         LhABrvH8nJgtKN3J9kg3EotGUTZuz5qLcuix3pY1F8g90pWpu/fiugBLNXJb6UYkOvTS
-         8Qb02rAHXyd1dC9nOVcRBThbZpiYpdd+Rh7rBL89l5yYhDJqRfS7pfKBuvJf6dGPb23/
-         vgMdYjlPuQQIubZa7vrmoJAXOojDmMFe3coy5C56s2ShlFeCOHrYE0F7CLt1MGi7e4aU
-         01mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WIm6378Nh4ItLM2aDQbKBBMlM1ow1uuLRa5aF3FbeU4=;
-        b=v3yCYQGeV3U7CUu30TtqXC2ekrikBHqbPsQIsoKTyvk0/GJGYnmF7wRvZI8Y7ByuS1
-         iafjn3GqXmfzj1dkaJ8dBgk80J7U6Z6eGre9Gan3YC8JuAxMs2es9xubajaKDemvCTOW
-         9vKi8RHDlyIHyZX8Fe1TS2SC5MCllNAqF012YKlLuNoxrW0i8FKeaAW2VjxCTaan83+w
-         TdIziq5W5wh/aVMyRwp3O9C8aaX+8lmzgiKgwP3MZEAxfRw9m8ldhltgTiVj9rEpHQ+9
-         W4wDrKawb7olz56DmPxLTsZI/ttNjdwnVoAIC0PyjS9LqkAnAHCN5JtvxXv/HsMY707X
-         +A8A==
-X-Gm-Message-State: ANoB5pn3AUxanqzhYvakdTZZcADfsPsWoMW0Zm0dQJzLs6I6zCed0pHY
-        1WJJFdSJ2d8OV7nPhV/zr3xvBefgcJp+ZDUIFXs=
-X-Google-Smtp-Source: AA0mqf5zkr+ILKvVsFs6b9RHcvfPKs2KtykzhCWtfZ+awMmYFqx6yLRFrOow2t6sTqk/bL0+fm94UQQhbqNKHyR5Ke4=
-X-Received: by 2002:aca:1112:0:b0:35a:6d81:204a with SMTP id
- 18-20020aca1112000000b0035a6d81204amr9605099oir.102.1668945292252; Sun, 20
- Nov 2022 03:54:52 -0800 (PST)
+        with ESMTP id S229478AbiKTL6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 06:58:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152F8BC06;
+        Sun, 20 Nov 2022 03:58:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C13ACB80AB3;
+        Sun, 20 Nov 2022 11:58:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB8BC433C1;
+        Sun, 20 Nov 2022 11:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668945529;
+        bh=wu6UtbK+Wpmizr3fSbUysxgCSn426hOUGl096imE0os=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FiV5AUWL4SwB7uH9NkXGSB/me6YN4W4qO8TGO6hdy1xr/cLhxzP4B1d4q1sQFmsLd
+         5Jxy3t/GwBr6ptwE8iIZjzlk4xkMQSbpKnoYcBp+k5m4cdoIP0GH/d7uXtkCq+uMtT
+         dHcMl7eXpq2wLhdlUrH9GrjAmjddKuLbrYRdhtybz8EwkIqwvM3AgLcF5mkO2Ng9rN
+         HFDzlpc3SJu4yPXoy1U0kY9EaARSFcs7jSD3Dy2XYmYalr226bmyKdYvicAb2gXMqF
+         pvmdU42RIuQamhVMKmeq/vNchOMJSJOy9swCKHci7i3gTaXi3vX/KrvsIAkpHCJtJ+
+         yNifHpNYmz2lQ==
+Date:   Sun, 20 Nov 2022 11:58:26 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/18] treewide: fix object files shared between several
+ modules
+Message-ID: <Y3oWYhw9VZOANneu@sirena.org.uk>
+References: <20221119225650.1044591-1-alobakin@pm.me>
 MIME-Version: 1.0
-Received: by 2002:a05:6358:3d45:b0:dd:3611:ca34 with HTTP; Sun, 20 Nov 2022
- 03:54:51 -0800 (PST)
-Reply-To: wijh555@gmail.com
-From:   "Prof. Do-Young Byun" <scsd7622@gmail.com>
-Date:   Sun, 20 Nov 2022 03:54:51 -0800
-Message-ID: <CACguRjJDmSTUvxCUvM2ZaQFC07ZMzkvGrsd8zaVgWWTTae3B=Q@mail.gmail.com>
-Subject: Very Urgent,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="P/X5vuacK0/qt+zb"
+Content-Disposition: inline
+In-Reply-To: <20221119225650.1044591-1-alobakin@pm.me>
+X-Cookie: Ego sum ens omnipotens.
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Greetings,
-We are privileged and delighted to reach you via email" And we are
-urgently waiting to hear from you. and again your number is not
-connecting.
 
-Best regards,
-Prof. Do-Young Byun
+--P/X5vuacK0/qt+zb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Sat, Nov 19, 2022 at 11:03:57PM +0000, Alexander Lobakin wrote:
+
+Your mails appear to be encrypted which isn't helping with
+review...
+
+--P/X5vuacK0/qt+zb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmN6FmEACgkQJNaLcl1U
+h9DxmQf+IpjM5cFY1oSzbvda89z7KyJRed4jurLLoAvNTr0Y6Tn86c3rwFjUYIQb
+z4rGziSVjTmPX4UgJK4zfWi03e8gJd8bUWr0mGg8qU0/1jl7RgqJz0fR+/E4iQLp
+z5CjBr5+WsyBMp1pJx/hu2rXt0xKZdT0ze6mNEEwFyumYLv51HC2DZ3ZB1zGEAe+
+EyeB/9nUz9xZXSCbFKZpgpdnDAH2+aextKNPD1d8mbAFXj+u+khwQNn/TZdf3agv
+o6tfgXuux2OUifA/78biY60QZ2oGGkcprOPBN0G/w2+ZeDbBjbkggqGV4yFVdZW3
+1/LYqdNc6yCzf5jclSwsLoeEM4yLZA==
+=Rb/i
+-----END PGP SIGNATURE-----
+
+--P/X5vuacK0/qt+zb--
