@@ -2,130 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE6C631207
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 01:17:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35EE3631208
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 01:31:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234079AbiKTARa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Nov 2022 19:17:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
+        id S229501AbiKTA13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Nov 2022 19:27:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233606AbiKTAR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 19:17:29 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE0713DCA
-        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 16:17:26 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id m7-20020a9d6447000000b0066da0504b5eso5339128otl.13
-        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 16:17:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XUPs0hYXxpkXDpCeoleV/+p5PmIn6PPnxUwAFD/HPjo=;
-        b=KNu2ekV9QV5hqtJvgJWHR8HbP3fiaToN04J0PmyWskLj7FdAME7LVWHUV22OZtohpO
-         Vzs5tFbWqS2i4S7/oof2frAFV2sONy8n9q80YAPZ0I2HEJq1u9M2txPaoJHJrLETJx6S
-         MuCUjz3+frMGKRzLpgrS0NyEqgTMMMtqU9shfDhd8allaFsZISlfqlFYVyGHpM/zLa0g
-         4xCJDxewnA9KLf5MPTH2ZAgbUGVkIiED54CBz+uH+FcCR3vdhgC2hrYcEdpm3D7ZCSdL
-         F2kOCdD1f8r6THZJuEHIQOC+aXATJMmLE3flcoZ5qm2rQzRR8edt5KMF9lpCG6IzgwVf
-         X/VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XUPs0hYXxpkXDpCeoleV/+p5PmIn6PPnxUwAFD/HPjo=;
-        b=Bmi+isvF88wK1OU4PGjN+M2pq4q+lgwqsvpN5T5j/MTg0/VAAdDce0hRPOjd+v8FQj
-         EuHmN8rfBVv6CS9frrWcQsvGvk9/fnTYF07uqOqQrPKPggGcZlOH80pZD7YP9n/HpWB5
-         RJB7MrXFay4tXzWSEU8JATfQymtrslwB2sYsX9G4MuTMfx2XRNfbabq0tOVw4MSmXyCe
-         0BfBHbt7zivh8KdzkQxmhKzWHoLlqOPSCmNzB63V50fIH5/h4kAPWwgZpv/pF2sxhmX+
-         dHwP3mTSWiqxIMUbp/Hcm9CEBp7xwb+PWuyzw6gGIaHWvgbQPE3E3Nl7q/q4BpGyFO7M
-         6bjA==
-X-Gm-Message-State: ANoB5pnjJowhqbjZcmhixlSYhH2O2pmOD9ocOmC6Xv4zMZCg/DFM2O2F
-        hUZpmFpWYmXp3NwY8FMQ/Bu2TnlUdnuRbBpGvng=
-X-Google-Smtp-Source: AA0mqf5AiTx+l4fWJglfkE4TdwCr/Uhk52JqS6E9vgcj+hsQoUFJ5eGgrPrkkSRvdsM0Gxvn+xzVYfSGgkEJ9xsKsBE=
-X-Received: by 2002:a9d:6b88:0:b0:66c:5797:5c11 with SMTP id
- b8-20020a9d6b88000000b0066c57975c11mr6817554otq.305.1668903446108; Sat, 19
- Nov 2022 16:17:26 -0800 (PST)
+        with ESMTP id S229448AbiKTA11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Nov 2022 19:27:27 -0500
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192AB1C3
+        for <netdev@vger.kernel.org>; Sat, 19 Nov 2022 16:27:25 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id E2AEB5C0097;
+        Sat, 19 Nov 2022 19:27:21 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sat, 19 Nov 2022 19:27:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        mendozajonas.com; h=cc:cc:content-transfer-encoding:content-type
+        :date:date:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1668904041; x=1668990441; bh=e/7GNaxrH8Nm27LKyActcw0R0
+        3UYnuC0GVXu6vYwVBM=; b=tc9bWcBfcVwRwSnMFyQF4DzPtq6AJFHGxF1UC5Ax7
+        lENVUw/s6Fd+wB186xVqy3TgMU0ItPzvCudyLjXC39xoMi1fTinOV85yEr3FOT8T
+        GvU57a1NOVHxopvDZ7ihh7+d5P+XaV7AS8W8NjqJM3SDZYYmVhH6sQJZornvhrw9
+        q7jmVb6Mp1w3F8Vsk6z2RacS2ytkWddhPYX+Ew/xHkRvuH0a8tso9iEnkfFOhEgg
+        rIKhqbZOjQ5Q13OgTjW+BGQaOxsK1k+/Ji5nQHv5cr5ezD5EHCPVriMWJEdeITef
+        X3KxAJlL/jFG1TXSyDfcgFhKnywApjtDI/bukBCnJwM+A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1668904041; x=
+        1668990441; bh=e/7GNaxrH8Nm27LKyActcw0R03UYnuC0GVXu6vYwVBM=; b=J
+        3WyYFOaCfjlpDwmOGK7rcl2JLWWYLFlFJ9AJYpl7s6SXHsbOMmKCSzw+JBSYfLBC
+        OFKT0CbyTQ/k8hcsfE9EdEQz/HqPfhcu5bYVOUEAUilIPNvO6wUewhypN9kKXXgu
+        do4T0nAQCn+zDw3XX01XJVLHBmKNtr7+bpMFJ+HGrjq1JpQvYAknDgAkRrBzzIO3
+        MOgr/j611c7lrdKovkTldbOukajk6r24qnfoMF766eAMP5ZMf909farAplqlez7R
+        gTixfoJzngaOBYTvArmSOGMNCApfJMKMuQta8jY+0R/gJyICFr1sdW2noPXRKoAQ
+        UloWS3vFssuS5w6ZSgRIA==
+X-ME-Sender: <xms:aXR5Y8tbJoqNs4JPtbLgP8CM6phIf1xQpWsi6_gClkLXBIWvWfWDRw>
+    <xme:aXR5Y5eT5zkTZjnyQPQ_86xouK1jtj1TxgY2gRa9OVzyTDfKiECGuK7zXReR1vxmi
+    7oOoWPCFRR1JKo1rg>
+X-ME-Received: <xmr:aXR5Y3zZx66L_QYDIOZKSthLkroUqsJrIJRhhXmJlwJm9u-u2RVIayqI8rbPublTBzDWQjIqOoPfH39sX39oJWthI5cQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheefgddvtdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefufggjfhfkgggtgfesthhqmhdttderjeenucfhrhhomhepufgrmhcu
+    ofgvnhguohiirgdqlfhonhgrshcuoehsrghmsehmvghnughoiigrjhhonhgrshdrtghomh
+    eqnecuggftrfgrthhtvghrnhepheduveffueeifeffheetkeefkeelvdfhheetjeeggeeg
+    tdfhvdekteelvefhleeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepshgrmhesmhgvnhguohiirghjohhnrghsrdgtohhm
+X-ME-Proxy: <xmx:aXR5Y_NtsEPhk9V5spCsivv9ScUmEEjuXisA2k4voo6RhjT06VxKBg>
+    <xmx:aXR5Y8_mLqdCsuEYuDqQWTqdoG91Wc3Taxobu0sCQ_MFrGdlBrYhvw>
+    <xmx:aXR5Y3XcEBzf4eZGvu190pQZQMWCgRCxj033-yUi1KexXAoqJ2v8Ig>
+    <xmx:aXR5Y6kkfjpqWeZtFegkX2gKLjIf7TfCAMlFGIZqdImALyo3R2I6Bg>
+Feedback-ID: iab794258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 19 Nov 2022 19:27:20 -0500 (EST)
+Date:   Sun, 20 Nov 2022 11:27:14 +1100
+From:   Sam Mendoza-Jonas <sam@mendozajonas.com>
+To:     Joel Stanley <joel@jms.id.au>, Networking <netdev@vger.kernel.org>
+CC:     Kees Cook <keescook@google.com>
+Subject: Re: warn in ncsi netlink code
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CACPK8Xdfi=OJKP0x0D1w87fQeFZ4A2DP2qzGCRcuVbpU-9=4sQ@mail.gmail.com>
+References: <CACPK8Xdfi=OJKP0x0D1w87fQeFZ4A2DP2qzGCRcuVbpU-9=4sQ@mail.gmail.com>
+Message-ID: <74BE39CB-E770-4526-9FCD-CC602178E26F@mendozajonas.com>
 MIME-Version: 1.0
-References: <Y3lYkqBhw1eK6dth@euler>
-In-Reply-To: <Y3lYkqBhw1eK6dth@euler>
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Date:   Sun, 20 Nov 2022 11:17:15 +1100
-Message-ID: <CAAvyFNg3=Dm00oMGwQnQPPeu0c8mEqM3ZvdK2xA5nFtpkitZRQ@mail.gmail.com>
-Subject: Re: Kernel build failure from d9282e48c6088
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yes, Geert sent a patch:
+On November 17, 2022 3:35:17 PM GMT+11:00, Joel Stanley <joel@jms=2Eid=2Eau=
+> wrote:
+>next-20221114 running on an ast2600 system produced this:
+>
+>[   44=2E627332] ------------[ cut here ]------------
+>[   44=2E632657] WARNING: CPU: 0 PID: 508 at net/ncsi/ncsi-cmd=2Ec:231
+>ncsi_cmd_handler_oem+0xbc/0xd0
+>[   44=2E642387] memcpy: detected field-spanning write (size 7) of
+>single field "&cmd->mfr_id" at net/ncsi/ncsi-cmd=2Ec:231 (size 4)
+>[   44=2E655131] CPU: 0 PID: 508 Comm: ncsi-netlink Not tainted
+>6=2E1=2E0-rc5-14066-gefbdad8553d8 #17
+>[   44=2E664577] Hardware name: Generic DT based system
+>[   44=2E664599]  unwind_backtrace from show_stack+0x18/0x1c
+>[   44=2E675801]  show_stack from dump_stack_lvl+0x40/0x4c
+>[   44=2E681458]  dump_stack_lvl from __warn+0xb8/0x12c
+>[   44=2E686814]  __warn from warn_slowpath_fmt+0x9c/0xd8
+>[   44=2E692370]  warn_slowpath_fmt from ncsi_cmd_handler_oem+0xbc/0xd0
+>[   44=2E699285]  ncsi_cmd_handler_oem from ncsi_xmit_cmd+0x160/0x29c
+>[   44=2E706002]  ncsi_xmit_cmd from ncsi_send_cmd_nl+0x13c/0x1dc
+>[   44=2E712337]  ncsi_send_cmd_nl from genl_rcv_msg+0x1d0/0x440
+>[   44=2E718579]  genl_rcv_msg from netlink_rcv_skb+0xc0/0x120
+>[   44=2E724623]  netlink_rcv_skb from genl_rcv+0x28/0x3c
+>[   44=2E730182]  genl_rcv from netlink_unicast+0x208/0x370
+>[   44=2E735934]  netlink_unicast from netlink_sendmsg+0x1e4/0x450
+>[   44=2E742365]  netlink_sendmsg from ____sys_sendmsg+0x23c/0x2b8
+>[   44=2E748799]  ____sys_sendmsg from ___sys_sendmsg+0x9c/0xd0
+>[   44=2E754941]  ___sys_sendmsg from sys_sendmsg+0x78/0xbc
+>[   44=2E760695]  sys_sendmsg from ret_fast_syscall+0x0/0x54
+>[   44=2E766544] Exception stack(0xb57b1fa8 to 0xb57b1ff0)
+>[   44=2E772191] 1fa0:                   0244f330 0244f1e0 00000003
+>7ee36a60 00000000 00000000
+>[   44=2E781328] 1fc0: 0244f330 0244f1e0 76f35c60 00000128 76f91550
+>0244f387 0244f387 00498e7c
+>[   44=2E790462] 1fe0: 76f35d34 7ee36a10 76f1b510 76bba140
+>[   44=2E796186] ---[ end trace 0000000000000000 ]---
+>
+>The relevant code:
+>
+>static int ncsi_cmd_handler_oem(struct sk_buff *skb,
+>                                struct ncsi_cmd_arg *nca)
+>{
+>        struct ncsi_cmd_oem_pkt *cmd;
+>        unsigned int len;
+>        int payload;
+>        /* NC-SI spec DSP_0222_1=2E2=2E0, section 8=2E2=2E2=2E2
+>         * requires payload to be padded with 0 to
+>         * 32-bit boundary before the checksum field=2E
+>         * Ensure the padding bytes are accounted for in
+>         * skb allocation
+>         */
+>
+>        payload =3D ALIGN(nca->payload, 4);
+>        len =3D sizeof(struct ncsi_cmd_pkt_hdr) + 4;
+>        len +=3D max(payload, padding_bytes);
+>
+>        cmd =3D skb_put_zero(skb, len);
+>        memcpy(&cmd->mfr_id, nca->data, nca->payload);
+>        ncsi_cmd_build_header(&cmd->cmd=2Ecommon, nca);
+>
+>        return 0;
+>}
+>
+>I think it's copying the command payload to the command packet,
+>starting at the offset of mfr_id:
+>
+>struct ncsi_cmd_oem_pkt {
+>        struct ncsi_cmd_pkt_hdr cmd;         /* Command header    */
+>        __be32                  mfr_id;      /* Manufacture ID    */
+>        unsigned char           data[];      /* OEM Payload Data  */
+>};
+>
+>But I'm not too sure=2E
+>
+>Cheers,
+>
+>Joel
 
-https://lore.kernel.org/netdev/d1ecf500f07e063d4e8e34f4045ddca55416c686.166=
-8507036.git.geert+renesas@glider.be/
 
-Jamie
+While it looks a little gross I'm pretty sure this is the intended behavio=
+r for the OEM commands=2E We'll need to massage that into something nicer=
+=2E
 
-On Sun, 20 Nov 2022 at 09:28, Colin Foster
-<colin.foster@in-advantage.com> wrote:
->
-> Just a heads up, commit d9282e48c6088 ("tcp: Add listening address to
-> SYN flood message") breaks if CONFIG_IPV6 isn't enabled.
->
-> A simple change from an if() to a macro and I'm on my merry way. Not
-> sure if you want anything more than that.
->
-> In file included from ./include/asm-generic/bug.h:22,
->                  from ./arch/arm/include/asm/bug.h:60,
->                  from ./include/linux/bug.h:5,
->                  from ./include/linux/mmdebug.h:5,
->                  from ./include/linux/mm.h:6,
->                  from net/ipv4/tcp_input.c:67:
-> net/ipv4/tcp_input.c: In function =E2=80=98tcp_syn_flood_action=E2=80=99:
-> ./include/net/sock.h:387:37: error: =E2=80=98const struct sock_common=E2=
-=80=99 has no member named =E2=80=98skc_v6_rcv_saddr=E2=80=99; did you mean=
- =E2=80=98skc_rcv_saddr=E2=80=99?
->   387 | #define sk_v6_rcv_saddr __sk_common.skc_v6_rcv_saddr
->       |                                     ^~~~~~~~~~~~~~~~
-> ./include/linux/printk.h:429:19: note: in definition of macro =E2=80=98pr=
-intk_index_wrap=E2=80=99
->   429 |   _p_func(_fmt, ##__VA_ARGS__);    \
->       |                   ^~~~~~~~~~~
-> ./include/linux/printk.h:530:2: note: in expansion of macro =E2=80=98prin=
-tk=E2=80=99
->   530 |  printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
->       |  ^~~~~~
-> ./include/linux/net.h:272:3: note: in expansion of macro =E2=80=98pr_info=
-=E2=80=99
->   272 |   function(__VA_ARGS__);    \
->       |   ^~~~~~~~
-> ./include/linux/net.h:288:2: note: in expansion of macro =E2=80=98net_rat=
-elimited_function=E2=80=99
->   288 |  net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
->       |  ^~~~~~~~~~~~~~~~~~~~~~~~
-> ./include/linux/net.h:288:43: note: in expansion of macro =E2=80=98sk_v6_=
-rcv_saddr=E2=80=99
->   288 |  net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
->       |                                           ^~~~~~~~~~~
-> net/ipv4/tcp_input.c:6847:4: note: in expansion of macro =E2=80=98net_inf=
-o_ratelimited=E2=80=99
->  6847 |    net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c=
-]:%u. %s.\n",
->       |    ^~~~~~~~~~~~~~~~~~~~
->   CC      net/ipv4/icmp.o
-> make[3]: *** [scripts/Makefile.build:250: net/ipv4/tcp_input.o] Error 1
-> make[3]: *** Waiting for unfinished jobs....
-> make[2]: *** [scripts/Makefile.build:500: net/ipv4] Error 2
-> make[1]: *** [scripts/Makefile.build:500: net] Error 2
-> make: *** [Makefile:1992: .] Error 2
->
+Thanks!
+Sam
+
