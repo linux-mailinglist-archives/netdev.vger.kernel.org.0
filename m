@@ -2,102 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A29FB631597
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 18:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F08ED6315D4
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 20:18:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbiKTRsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 12:48:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52374 "EHLO
+        id S229520AbiKTTRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 14:17:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiKTRsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 12:48:50 -0500
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A67C1FCD9
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 09:48:49 -0800 (PST)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AKHdBEW026195;
-        Sun, 20 Nov 2022 17:48:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=KTw8KufSe9ZhSbF0TKh+YET65hCSlBtpIEg/bZEEvCQ=;
- b=cJPTRW/XzBbjX9LDEl/ra2PquwBAwaxVxNWsL6B1yToompAwDODkAcoLdZKrj88ak3CK
- mkasD0rbVS2LOBF3+zzMuTqmkUd2x3ozq0CWIB0xBDOemnFm5DwmmcD73s7WflU0p/W+
- FA2qBqGaZ+KtrF6nYswQClEVIKPQMeidm5oYH7juymtd1hL42fqQg4GWOL33G7p9Dow5
- WNhBkPSJ48nqUI+W0Gy/7aGya9PFYS/d46EaNKm/TPH8o7Hj0tCRRu9/xy6zrsLiUN+L
- 6olrORnbhQQ/IAUsaJC3Pud8mr2O2ZtL/5q5QNDrp0UUHj7NK57LkNdOcgRFSBgYokUW eA== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3kxrtqak8e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 20 Nov 2022 17:48:36 +0000
-Received: from pps.filterd (NALASPPMTA04.qualcomm.com [127.0.0.1])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2AKHmZwR023545;
-        Sun, 20 Nov 2022 17:48:35 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 3kxr7kc3pu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 20 Nov 2022 17:48:35 +0000
-Received: from NALASPPMTA04.qualcomm.com (NALASPPMTA04.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2AKHmZV5023540;
-        Sun, 20 Nov 2022 17:48:35 GMT
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 2AKHmZrN023539
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 20 Nov 2022 17:48:35 +0000
-Received: from [10.110.3.170] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sun, 20 Nov
- 2022 09:48:34 -0800
-Message-ID: <80e0a215-4b63-3ff9-3c31-765dbba5e7bb@quicinc.com>
-Date:   Sun, 20 Nov 2022 10:48:33 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets
- aggregation
-To:     Daniele Palmas <dnlplm@gmail.com>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
-CC:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S229449AbiKTTRN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 14:17:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285DE2936F
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 11:17:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B77FB60CE8
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 19:17:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48621C433C1;
+        Sun, 20 Nov 2022 19:17:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668971832;
+        bh=arFcT+OFkB6aBvyQGTIbDpWjCrkvSV1A7o98ibXekdA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fU28F/CYVDysSpbmD+d5CpBfTn5TTjYTcAN7INYr/v94Y7sxW52IE4wWcaUwfoLSD
+         KaR9XRpl3yQOhfbNvwopzESW4bua9YiIgPkpqhsti6IchtnU5/WN9aFrKz0AL1g7TB
+         rCZvvDXvwhjATPJ1OjbaxpZRim67PprJyKsxepgQ6Ma1FvvOnDuoJGIi3DAKZnUc2y
+         K7dBCLry9eAfXUsQc75hg0hwRlMhqVx0hboW51bGEb7HCkFdM9Xytlx0XKP1brfY/6
+         X0BVnEb775NAUOp/O6Lj2IqUaXTQd0vN+9fyRiFlUTKDVLSPEWonykOodxWMrLdzgC
+         soPfy9cikJnGA==
+Date:   Sun, 20 Nov 2022 21:17:02 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <netdev@vger.kernel.org>
-References: <20221109180249.4721-1-dnlplm@gmail.com>
- <20221109180249.4721-3-dnlplm@gmail.com>
- <20221110173222.3536589-1-alexandr.lobakin@intel.com>
- <CAGRyCJHmNgzVVnGunUh7wwKxYA7GzSvfgqPDAxL+-NcO2P+1wg@mail.gmail.com>
- <20221116162016.3392565-1-alexandr.lobakin@intel.com>
- <CAGRyCJHX9WMeHLBgh5jJj2mNJh3hqzAhHacVnLqP_CpoHQaTaw@mail.gmail.com>
- <87tu2unewg.fsf@miraculix.mork.no>
- <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
-Content-Language: en-US
-From:   "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>
-In-Reply-To: <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 3I-GyevftgnvJZLof6Ve0vLcn_B50hwB
-X-Proofpoint-GUID: 3I-GyevftgnvJZLof6Ve0vLcn_B50hwB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-20_11,2022-11-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- malwarescore=0 bulkscore=0 phishscore=0 priorityscore=1501 impostorscore=0
- suspectscore=0 mlxlogscore=706 lowpriorityscore=0 adultscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211200151
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3p9LvAEQMAGeaCR@unreal>
+References: <cover.1667997522.git.leonro@nvidia.com>
+ <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
+ <20221117121243.GJ704954@gauss3.secunet.de>
+ <Y3YuVcj5uNRHS7Ek@unreal>
+ <20221118104907.GR704954@gauss3.secunet.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221118104907.GR704954@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -105,40 +58,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/20/2022 2:52 AM, Daniele Palmas wrote:
-> Il giorno dom 20 nov 2022 alle ore 10:39 Bjørn Mork <bjorn@mork.no> ha scritto:
->>
->> Daniele Palmas <dnlplm@gmail.com> writes:
->>
->>> Ok, so rmnet would only take care of qmap rx packets deaggregation and
->>> qmi_wwan of the tx aggregation.
->>>
->>> At a conceptual level, implementing tx aggregation in qmi_wwan for
->>> passthrough mode could make sense, since the tx aggregation parameters
->>> belong to the physical device and are shared among the virtual rmnet
->>> netdevices, which can't have different aggr configurations if they
->>> belong to the same physical device.
->>>
->>> Bjørn, would this approach be ok for you?
->>
->> Sounds good to me, if this can be done within the userspace API
->> restrictions we've been through.
->>
->> I assume it's possible to make this Just Work(tm) in qmi_wwan
->> passthrough mode?  I do not think we want any solution where the user
->> will have to configure both qmi_wwan and rmnet to make things work
->> properly.
->>
+On Fri, Nov 18, 2022 at 11:49:07AM +0100, Steffen Klassert wrote:
+> On Thu, Nov 17, 2022 at 02:51:33PM +0200, Leon Romanovsky wrote:
+> > On Thu, Nov 17, 2022 at 01:12:43PM +0100, Steffen Klassert wrote:
+> > > On Wed, Nov 09, 2022 at 02:54:34PM +0200, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > 
+> > > This does not work. A larval state will never have a x->xso.type set.
+> > 
+> > x->xso.type always exists. Default is 0, which is XFRM_DEV_OFFLOAD_UNSPECIFIED.
+> > It means this XFRM_STATE_INSERT() will behave exactly as hlist_add_head_rcu() before.
 > 
-> Yes, I think so: the ethtool configurations would apply to the
-> qmi_wwan netdevice so that nothing should be done on the rmnet side.
+> Sure it exists, and is always 0 here.
 > 
-> Regards,
-> Daniele
+> > 
+> > > So this raises the question how to handle acquires with this packet
+> > > offload. 
+> > 
+> > We handle acquires as SW policies and don't offload them.
+> 
+> We trigger acquires with states, not policies. The thing is,
+> we might match a HW policy but create a SW acquire state.
+> This will not match anymore as soon as the lookup is
+> implemented correctly.
 
-My only concern against this option is that we would now need to end up 
-implementing the same tx aggregation logic in the other physical device 
-drivers - mhi_netdev & ipa. Keeping this tx aggregation logic in rmnet 
-allows you to leverage it across all these various physical devices.
+For now, all such packets will be dropped as we have offlaoded
+policy but not SA.
+
+Like we said in one of our IPsec coffee hours, this flow will be
+supported later. Right now, it is not important.
+
+> 
+> > > You could place the type and offload device to the template,
+> > > but we also have to make sure not to mess too much with the non
+> > > offloaded codepath.
+> > > 
+> > > This is yet another corner case where the concept of doing policy and
+> > > state lookup in software for a HW offload does not work so well. I
+> > > fear this is not the last corner case that comes up once you put this
+> > > into a real network.
+> > > 
+> > 
+> > It is not different from any other kernel code, bugs will be fixed.
+> 
+> The thing that is different here is, that the concept is already
+> broken. We can't split the datapath to be partially handled in
+> SW and HW in any sane way, this becomes clearer and clearer.
+> 
+> The full protocol offload simply does not fit well into HW,
+> but we try to make it fit with a hammer. This is the problem
+> why I do not really like this, and is also the reason why this
+> is still not merged. We might be much better of by doing a
+> HW frindly redesign of the protocol and offload this then.
+> But, yes that takes time and will have issues too.
+
+When you say "protocol", what do you mean? Many users, who have
+deployed IPsec solutions, just want to have same look and feel
+but much faster.
+
+I truly believe that this packet offload fits SW model and the
+(small) amount of changes supports it. There are almost no changes
+to the stack to natively support this offload.
+
+As long as HW involved, you will never have solution without issues,
+and like you said even redesign "will have issues".
+
+Plus, we called it packet offload, better and redesigned version will
+be called something else. My patches which enhance XFRM to support more
+than type of offload are exactly for that.
+
+Thanks 
