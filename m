@@ -2,137 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A110963154F
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 18:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A29FB631597
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 18:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiKTRBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 12:01:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        id S229711AbiKTRsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 12:48:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiKTRBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 12:01:11 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82522B1AB
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 09:01:09 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id e68so11166238ybh.2
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 09:01:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lOkLFPOjI8VhVTiQMIbTQ6jeAEJNIIzSKfB293Gbxqg=;
-        b=hxirr2QCtloDLZv4UXEHFJkXv4q3Y5tRa5VDwrzFxJ75E2W0ydy/5wJ9dpB98b2OdX
-         6iv+7fRpvzobfVOqlUDOVkLs/oUtUsOIpQmBdXlorq6dlHVxaV44YTaGFjOFWSFpEwT8
-         AQwPGwB8nt5jqSbNb2h+aIsLIcvZlVikhS64gv7QUA46peD1FfTYvzQKpfoA8H0kXK4y
-         3zvYujgBYWfS7BGcIFgPbW7BqI2cJORJ212Lk+Y31CMvGUOeBasCLTdDY0SXJeETeOiP
-         WRgxXUsiFdKQ0EUrP/A1oVGlv6O4QKp9CdCImaA2590z8La28JIYY9ZpuzuzeetXsyfv
-         9m7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lOkLFPOjI8VhVTiQMIbTQ6jeAEJNIIzSKfB293Gbxqg=;
-        b=6iggB+lzZww7RkB6XlqRbYXwMlom/90JWAQopg2hLkQtm+FO/+BOz9FQSrA+1wYfMx
-         leU0xmjiuTmCX9wqyxKYOh68aNf8JKbST4A1Euskvd0v/DdnmVqq53EDMzAcoi05Nlav
-         wIkzUbrPYAyhZe88azC4KhsNiORNyiowvzHwbjvcCuUnThZWl+zqKP10QxnauCagg80Z
-         9Dw2QtyEAKZlMY/w4vLl0YaEAm7lB2u79ESYB9qeFo15iAEE/hJJbD5Ui0iB2eR80o3T
-         81IELhpugjHKG9IfwPgrE4A8Vl20E6W8bBEbDW6QBw0+HNB8YRAn1qL9p3UQuS6sWRSg
-         S5qw==
-X-Gm-Message-State: ANoB5plC7yfO66QHkX2d4W9TsSN/KRAu70+AKIb0Cg6Xji6wlT8qf1pr
-        78Toht+aW4cI7Lj98DYLgAmLuA31OLsOLvCJiIVJVg==
-X-Google-Smtp-Source: AA0mqf45WGIJ0A03DtuGZg4ltq+t6OmtuOIEKD5G54kdBnVrXCCBUsvo+EjpQEBeJ5stI8uzusXf4pgXoMHEaqiRbqE=
-X-Received: by 2002:a25:9c46:0:b0:6d7:8639:bade with SMTP id
- x6-20020a259c46000000b006d78639bademr13448332ybo.427.1668963666003; Sun, 20
- Nov 2022 09:01:06 -0800 (PST)
+        with ESMTP id S229597AbiKTRsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 12:48:50 -0500
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A67C1FCD9
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 09:48:49 -0800 (PST)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AKHdBEW026195;
+        Sun, 20 Nov 2022 17:48:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=KTw8KufSe9ZhSbF0TKh+YET65hCSlBtpIEg/bZEEvCQ=;
+ b=cJPTRW/XzBbjX9LDEl/ra2PquwBAwaxVxNWsL6B1yToompAwDODkAcoLdZKrj88ak3CK
+ mkasD0rbVS2LOBF3+zzMuTqmkUd2x3ozq0CWIB0xBDOemnFm5DwmmcD73s7WflU0p/W+
+ FA2qBqGaZ+KtrF6nYswQClEVIKPQMeidm5oYH7juymtd1hL42fqQg4GWOL33G7p9Dow5
+ WNhBkPSJ48nqUI+W0Gy/7aGya9PFYS/d46EaNKm/TPH8o7Hj0tCRRu9/xy6zrsLiUN+L
+ 6olrORnbhQQ/IAUsaJC3Pud8mr2O2ZtL/5q5QNDrp0UUHj7NK57LkNdOcgRFSBgYokUW eA== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3kxrtqak8e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 20 Nov 2022 17:48:36 +0000
+Received: from pps.filterd (NALASPPMTA04.qualcomm.com [127.0.0.1])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2AKHmZwR023545;
+        Sun, 20 Nov 2022 17:48:35 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 3kxr7kc3pu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 20 Nov 2022 17:48:35 +0000
+Received: from NALASPPMTA04.qualcomm.com (NALASPPMTA04.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2AKHmZV5023540;
+        Sun, 20 Nov 2022 17:48:35 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 2AKHmZrN023539
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 20 Nov 2022 17:48:35 +0000
+Received: from [10.110.3.170] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sun, 20 Nov
+ 2022 09:48:34 -0800
+Message-ID: <80e0a215-4b63-3ff9-3c31-765dbba5e7bb@quicinc.com>
+Date:   Sun, 20 Nov 2022 10:48:33 -0700
 MIME-Version: 1.0
-References: <20221018203258.2793282-1-edumazet@google.com> <162f9155-dfe3-9d78-c59f-f47f7dcf83f5@nvidia.com>
- <CANn89iKwN9tgrNTngYrqWdi_Ti0nb1-02iehJ=tL7oT5wOte2Q@mail.gmail.com>
- <20221103082751.353faa4d@kernel.org> <CANn89iJGcYDqiCHu25X7Eg=s2ypVNLfbNZMomcqvD-7f0SagMw@mail.gmail.com>
- <CAKErNvoCWWHrWGDT+rqKzGgzeaTexss=tNTm0+9Vr-TOH_8y=Q@mail.gmail.com>
- <CANn89iL2Jajn65L7YhqtjTAVMKNpkH0+-zJtQwFVcgrtJwxEWg@mail.gmail.com>
- <46dde206-53bf-8ba8-f964-6bcc22a303c7@nvidia.com> <15d10423-9f8b-668a-ba14-f9c15a3b3782@nvidia.com>
- <9f4c2ca9-bc6d-f2bf-6c03-e95affb55aae@nvidia.com> <CANn89iJkdQ9eBkwmWMcf7uKwB=cY8hbwo2Jqdtwo3mpjswAFHg@mail.gmail.com>
- <e1ccfefa-7910-ca96-9c7f-042df2265db6@nvidia.com>
-In-Reply-To: <e1ccfefa-7910-ca96-9c7f-042df2265db6@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 20 Nov 2022 09:00:54 -0800
-Message-ID: <CANn89iJSsFPBp5dYm3y6Jbbpuwbb9P+X3gmqk6zow0VWgx1Q-A@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: fix race condition in qdisc_graft()
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>, eric.dumazet@gmail.com,
-        syzbot <syzkaller@googlegroups.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maxtram95@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets
+ aggregation
+To:     Daniele Palmas <dnlplm@gmail.com>,
+        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
+CC:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <netdev@vger.kernel.org>
+References: <20221109180249.4721-1-dnlplm@gmail.com>
+ <20221109180249.4721-3-dnlplm@gmail.com>
+ <20221110173222.3536589-1-alexandr.lobakin@intel.com>
+ <CAGRyCJHmNgzVVnGunUh7wwKxYA7GzSvfgqPDAxL+-NcO2P+1wg@mail.gmail.com>
+ <20221116162016.3392565-1-alexandr.lobakin@intel.com>
+ <CAGRyCJHX9WMeHLBgh5jJj2mNJh3hqzAhHacVnLqP_CpoHQaTaw@mail.gmail.com>
+ <87tu2unewg.fsf@miraculix.mork.no>
+ <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
+Content-Language: en-US
+From:   "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>
+In-Reply-To: <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 3I-GyevftgnvJZLof6Ve0vLcn_B50hwB
+X-Proofpoint-GUID: 3I-GyevftgnvJZLof6Ve0vLcn_B50hwB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-20_11,2022-11-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
+ malwarescore=0 bulkscore=0 phishscore=0 priorityscore=1501 impostorscore=0
+ suspectscore=0 mlxlogscore=706 lowpriorityscore=0 adultscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2211200151
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 8:43 AM Gal Pressman <gal@nvidia.com> wrote:
->
-> On 20/11/2022 18:09, Eric Dumazet wrote:
-> > On Sat, Nov 19, 2022 at 11:42 PM Gal Pressman <gal@nvidia.com> wrote:
-> >> On 10/11/2022 11:08, Gal Pressman wrote:
-> >>> On 06/11/2022 10:07, Gal Pressman wrote:
-> >>>> It reproduces consistently:
-> >>>> ip link set dev eth2 up
-> >>>> ip addr add 194.237.173.123/16 dev eth2
-> >>>> tc qdisc add dev eth2 clsact
-> >>>> tc qdisc add dev eth2 root handle 1: htb default 1 offload
-> >>>> tc class add dev eth2 classid 1: parent root htb rate 18000mbit ceil
-> >>>> 22500.0mbit burst 450000kbit cburst 450000kbit
-> >>>> tc class add dev eth2 classid 1:3 parent 1: htb rate 3596mbit burst
-> >>>> 89900kbit cburst 89900kbit
-> >>>> tc qdisc delete dev eth2 clsact
-> >>>> tc qdisc delete dev eth2 root handle 1: htb default 1
-> >>>>
-> >>>> Please let me know if there's anything else you want me to check.
-> >>> Hi Eric, did you get a chance to take a look?
-> >> No response for quite a long time, Jakub, should I submit a revert?
-> > Sorry, I won't have time to look at this before maybe two weeks.
->
-> Thanks for the response, Eric.
->
-> > If you want to revert a patch which is correct, because some code
-> > assumes something wrong,
->
-> I am not convinced about the "code assumes something wrong" part, and
-> not sure what are the consequences of this WARN being triggered, are you?
->
-> > I will simply say this seems not good.
->
-> Arguable, it is not that clear that a fix that introduces another issue
-> is a good thing, particularly when we don't understand the severity of
-> the thing that got broken.
 
-The offload part has been put while assuming a certain (clearly wrong) behavior.
 
-RCU rules are quite the first thing we need to respect in the kernel.
+On 11/20/2022 2:52 AM, Daniele Palmas wrote:
+> Il giorno dom 20 nov 2022 alle ore 10:39 Bjørn Mork <bjorn@mork.no> ha scritto:
+>>
+>> Daniele Palmas <dnlplm@gmail.com> writes:
+>>
+>>> Ok, so rmnet would only take care of qmap rx packets deaggregation and
+>>> qmi_wwan of the tx aggregation.
+>>>
+>>> At a conceptual level, implementing tx aggregation in qmi_wwan for
+>>> passthrough mode could make sense, since the tx aggregation parameters
+>>> belong to the physical device and are shared among the virtual rmnet
+>>> netdevices, which can't have different aggr configurations if they
+>>> belong to the same physical device.
+>>>
+>>> Bjørn, would this approach be ok for you?
+>>
+>> Sounds good to me, if this can be done within the userspace API
+>> restrictions we've been through.
+>>
+>> I assume it's possible to make this Just Work(tm) in qmi_wwan
+>> passthrough mode?  I do not think we want any solution where the user
+>> will have to configure both qmi_wwan and rmnet to make things work
+>> properly.
+>>
+> 
+> Yes, I think so: the ethtool configurations would apply to the
+> qmi_wwan netdevice so that nothing should be done on the rmnet side.
+> 
+> Regards,
+> Daniele
 
-Simply put, when KASAN detects a bug, you can be pretty damn sure it
-is a real one.
-
->
-> Two weeks gets us to the end of -rc7, a bit too dangerous to my personal
-> taste, but I'm not the one making the calls.
-
-Agreed, please try to find someone at nvidia able to understand what Maxim
-was doing in commit ca49bfd90a9dde175d2929dc1544b54841e33804
-
-If something needs stronger rules than standard RCU ones, this should
-be articulated.
-
-As I said, I won't be able to work on this before ~2 weeks.
+My only concern against this option is that we would now need to end up 
+implementing the same tx aggregation logic in the other physical device 
+drivers - mhi_netdev & ipa. Keeping this tx aggregation logic in rmnet 
+allows you to leverage it across all these various physical devices.
