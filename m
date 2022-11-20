@@ -2,104 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D86E63175C
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 00:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52C09631770
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 00:51:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiKTXgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 18:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
+        id S229672AbiKTXvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 18:51:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiKTXgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 18:36:09 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA8C2B613;
-        Sun, 20 Nov 2022 15:36:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aI2jnEgK19wCHQqoMeLWDiWUB6RdVgk21HiT4Yh9Fak=; b=cYz+hH9JTM6DDVFwQJJxm1/mW+
-        4U7d5VyO+Na0o05Z9b75x0D4Kq1odfCa5rESy/6fgNMC7pA2w+B0Ja3R44WyaJy0cVsIE8AALcU0T
-        /t9evWN/T6aj49iIwdKgvun2RCqmF8a1H5zlG/f6i0HBY6YRgZ04wfp2BiQhj/kZBN1s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1owtqJ-002x8q-Qr; Mon, 21 Nov 2022 00:35:19 +0100
-Date:   Mon, 21 Nov 2022 00:35:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH 0/3] add dt configuration for dp83867 led modes
-Message-ID: <Y3q5t+1M5A0+FQ0M@lunn.ch>
-References: <20221118001548.635752-1-tharvey@gateworks.com>
- <Y3bRX1N0Rp7EDJkS@lunn.ch>
- <CAJ+vNU3P-t3Q1XZrNG=czvFBU7UsCOA_Ap47k9Ein_3VQy_tGw@mail.gmail.com>
- <Y3eEiyUn6DDeUZmg@lunn.ch>
- <CAJ+vNU2pAQh6KKiX5x7hFuVpN68NZjhnzwFLRAzS9YZ8bWm1KA@mail.gmail.com>
+        with ESMTP id S229551AbiKTXvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 18:51:07 -0500
+X-Greylist: delayed 154 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Nov 2022 15:51:05 PST
+Received: from condef-10.nifty.com (condef-10.nifty.com [202.248.20.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84BB2228D
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 15:51:05 -0800 (PST)
+Received: from conssluserg-06.nifty.com ([10.126.8.85])by condef-10.nifty.com with ESMTP id 2AKNk84r024688
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 08:46:08 +0900
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 2AKNjpZc023879;
+        Mon, 21 Nov 2022 08:45:51 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 2AKNjpZc023879
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1668987952;
+        bh=s9BTiD0GI6mriCXqjrvxYJ6QwNVJZpRs243VrvgUOs8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=V2nZDRtla9IC+j9REytTTKsWS+MWZveXEfc9JkwXO6iWUTYb3XXw3Rb3YONzMHrYn
+         xt7gPB7RpkWo76vO1L1byQmgggdDPp0Mv0A/Xc9Gb/dNlEicIrA9qdbZQdvghsvn3Z
+         AorOLyT61nE5hY+d6LsyQgL3T8tp4kD8AkJEZaYnk2E2DjW42PGBCmF39HyDxJqKQy
+         vFWTqhjTG+U9u+4UeRSbVFecHRM/SXAkBKMK+P7I5MQSaAZBKXWY9L4MPeHR7LLAcq
+         BURdxxVISTvkgqox0RllxQyDFYXZpVCqgM5Q9HHrFk7ZrKRAf9K8HegVJJSaV2gS04
+         Ncuh8LmUa7mrw==
+X-Nifty-SrcIP: [209.85.160.45]
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-14263779059so11195196fac.1;
+        Sun, 20 Nov 2022 15:45:51 -0800 (PST)
+X-Gm-Message-State: ANoB5pnsxTkwEWK9xOGTMYZerkJ99tO25ZOJIrxqWny155XM7SCDRmFr
+        z0Qs/ccoviMGK28HjWVhWLktfZrJMPwnU7A8eXo=
+X-Google-Smtp-Source: AA0mqf6ByykYs2P1cELTWy1CDKXEPOUZKOc5edEnQWT685V2mFlLkrfF2ubF7Vp17JaN2YvW4BmTrQrfECsi24Gezaw=
+X-Received: by 2002:a05:6870:3b06:b0:13b:5d72:d2c6 with SMTP id
+ gh6-20020a0568703b0600b0013b5d72d2c6mr8759399oab.287.1668987950539; Sun, 20
+ Nov 2022 15:45:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ+vNU2pAQh6KKiX5x7hFuVpN68NZjhnzwFLRAzS9YZ8bWm1KA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,T_SPF_HELO_TEMPERROR,
-        T_SPF_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
+References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-12-alobakin@pm.me>
+ <Y3oxyUx0UkWVjGvn@smile.fi.intel.com> <961a7d7e-c917-86a8-097b-5961428e9ddc@redhat.com>
+In-Reply-To: <961a7d7e-c917-86a8-097b-5961428e9ddc@redhat.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 21 Nov 2022 08:45:14 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASxxzA1OEGuJR=BU=6G8XaatGx+gDCMe2s9Y3MRcwptYw@mail.gmail.com>
+Message-ID: <CAK7LNASxxzA1OEGuJR=BU=6G8XaatGx+gDCMe2s9Y3MRcwptYw@mail.gmail.com>
+Subject: Re: [PATCH 11/18] platform/x86: int3472: fix object shared between
+ several modules
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        linux-kbuild@vger.kernel.org, Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 11:57:00AM -0800, Tim Harvey wrote:
-> On Fri, Nov 18, 2022 at 5:11 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > Andrew,
-> > >
-> > > I completely agree with you but I haven't seen how that can be done
-> > > yet. What support exists for a PHY driver to expose their LED
-> > > configuration to be used that way? Can you point me to an example?
-> >
-> > Nobody has actually worked on this long enough to get code merged. e.g.
-> > https://lore.kernel.org/netdev/20201004095852.GB1104@bug/T/
-> > https://lists.archive.carbon60.com/linux/kernel/3396223
-> >
-> > This is probably the last attempt, which was not too far away from getting merged:
-> > https://patches.linaro.org/project/linux-leds/cover/20220503151633.18760-1-ansuelsmth@gmail.com/
-> >
-> > I seem to NACK a patch like yours every couple of months. If all that
-> > wasted time was actually spent on a common framework, this would of
-> > been solved years ago.
-> >
-> > How important is it to you to control these LEDs? Enough to finish
-> > this code and get it merged?
-> >
-> 
-> Andrew,
-> 
-> Thanks for the links - the most recent attempt does look promising.
-> For whatever reason I don't have that series in my mail history so
-> it's not clear how I can respond to it.
+On Mon, Nov 21, 2022 at 5:55 AM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 11/20/22 14:55, Andy Shevchenko wrote:
+> > On Sat, Nov 19, 2022 at 11:08:17PM +0000, Alexander Lobakin wrote:
+> >> common.o is linked to both intel_skl_int3472_{discrete,tps68470}:
+> >>
+> >>> scripts/Makefile.build:252: ./drivers/platform/x86/intel/int3472/Makefile:
+> >>> common.o is added to multiple modules: intel_skl_int3472_discrete
+> >>> intel_skl_int3472_tps68470
+> >>
+> >> Although both drivers share one Kconfig option
+> >> (CONFIG_INTEL_SKL_INT3472), it's better to not link one object file
+> >> into several modules (and/or vmlinux).
+> >> Under certain circumstances, such can lead to the situation fixed by
+> >> commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects").
+> >>
+> >> Introduce the new module, intel_skl_int3472_common, to provide the
+> >> functions from common.o to both discrete and tps68470 drivers. This
+> >> adds only 3 exports and doesn't provide any changes to the actual
+> >> code.
+>
+> Replying to Andy's reply here since I never saw the original submission
+> which was not Cc-ed to platform-driver-x86@vger.kernel.org .
+>
+> As you mention already in the commit msg, the issue from:
+>
+> commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects")
+>
+> is not an issue here since both modules sharing the .o file are
+> behind the same Kconfig option.
+>
+> So there is not really an issue here and common.o is tiny, so
+> small chances are it does not ever increase the .ko size
+> when looking a the .ko size rounded up to a multiple of
+> the filesystem size.
+>
+> At the same time adding an extra module does come with significant
+> costs, it will eat up at least 1 possibly more then 1 fs blocks
+> (I don't know what the module header size overhead is).
+>
+> And it needs to be loaded separately and module loading is slow;
+> and it will grow the /lib/modules/<kver>/modules.* sizes.
+>
+> So nack from me for this patch, since I really don't see
+> it adding any value.
 
-apt-get install b4
 
-> Ansuel, are you planning on posting a v7 of 'Adds support for PHY LEDs
-> with offload triggers' [1]?
-> 
-> I'm not all that familiar with netdev led triggers. Is there a way to
-> configure the default offload blink mode via dt with your series? I
-> didn't quite follow how the offload function/blink-mode gets set.
 
-The idea is that the PHY LEDs are just LEDs in the Linux LED
-framework. So read Documentation/devicetree/bindings/leds/common.yaml.
-The PHY should make use of these standard DT properties, including
-linux,default-trigger.
 
-	Andrew
+This does have a value.
+
+This clarifies the ownership of the common.o,
+in other words, makes KBUILD_MODNAME deterministic.
+
+
+If an object belongs to a module,
+KBUILD_MODNAME is defined as the module name.
+
+If an object is always built-in,
+KBUILD_MODNAME is defined as the basename of the object.
+
+
+
+Here is a question:
+if common.o is shared by two modules intel_skl_int3472_discrete
+and intel_skl_int3472_tps68470, what should KBUILD_MODNAME be?
+
+
+I see some patch submissions relying on the assumption that
+KBUILD_MODNAME is unique.
+We cannot determine KBUILD_MODNAME correctly if an object is shared
+by multiple modules.
+
+
+
+
+
+
+BTW, this patch is not the way I suggested.
+The Suggested-by should not have been there
+(or at least Reported-by)
+
+
+You argued "common.o is tiny", so I would vote for
+making them inline functions, like
+
+
+https://lore.kernel.org/linux-kbuild/20221119225650.1044591-2-alobakin@pm.me/T/#u
+
+
+
+
+
+
+
+
+> Regards,
+>
+> Hans
+>
+>
+>
+>
+>
+> >
+> > ...
+> >
+> >> +MODULE_IMPORT_NS(INTEL_SKL_INT3472);
+> >> +
+> >
+> > Redundant blank line. You may put it to be last MODULE_*() in the file, if you
+> > think it would be more visible.
+> >
+> >>  MODULE_DESCRIPTION("Intel SkyLake INT3472 ACPI Discrete Device Driver");
+> >>  MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
+> >>  MODULE_LICENSE("GPL v2");
+> >
+> > ...
+> >
+> >> +MODULE_IMPORT_NS(INTEL_SKL_INT3472);
+> >> +
+> >>  MODULE_DESCRIPTION("Intel SkyLake INT3472 ACPI TPS68470 Device Driver");
+> >>  MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
+> >>  MODULE_LICENSE("GPL v2");
+> >
+> > Ditto. And the same to all your patches.
+> >
+>
+
+
+-- 
+Best Regards
+Masahiro Yamada
