@@ -2,52 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C84AD63133C
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:47:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE61D631340
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229516AbiKTJrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 04:47:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        id S229619AbiKTJwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 04:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiKTJrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:47:03 -0500
-X-Greylist: delayed 37808 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Nov 2022 01:47:01 PST
-Received: from forward501j.mail.yandex.net (forward501j.mail.yandex.net [5.45.198.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095A328E2F
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:47:00 -0800 (PST)
-Received: from iva8-56bd2512c3ca.qloud-c.yandex.net (iva8-56bd2512c3ca.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:a8a6:0:640:56bd:2512])
-        by forward501j.mail.yandex.net (Yandex) with ESMTP id AB6DF623246;
-        Sun, 20 Nov 2022 12:46:58 +0300 (MSK)
-Received: by iva8-56bd2512c3ca.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id Sxyh8itqmF-kvVewUcf;
-        Sun, 20 Nov 2022 12:46:57 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1668937617;
-        bh=VMjepradDonUOVZH+OaXCWlmdOxnl8EIHPzwtfYz9to=;
-        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-        b=C6quGSOIuo6F/fFw+QCn9ZKertT5bz8AyNvsryCj4wslTKLgDO6CicQ7MW170j53X
-         6USYQRHAA5Ay0Ic5RYmi3drouQxbRWP4EmSm+IPPDGLUQeEhSZrgXfXPK1r45F+ZIL
-         RXvbjLIo8W2YwoAxzZazQ0Itk/iVahJrovCPGNqo=
-Authentication-Results: iva8-56bd2512c3ca.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
-Message-ID: <b28db7e5-9af0-59ba-adb6-e78a26403d88@ya.ru>
-Date:   Sun, 20 Nov 2022 12:46:55 +0300
+        with ESMTP id S229446AbiKTJwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:52:40 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE7612752
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:52:38 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id ft34so22506857ejc.12
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:52:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yoM1VQAq7h1PK02LIY6g7IAXTRa5gsCiiA/BW+WTdpc=;
+        b=AfEI2NF/BedyRtTllBFcKajF/GmCC/RYrLyQGJ+5Kw6Ymtz7d3pxBSNiF25ON2yoB+
+         Obj9iLh/YOSyJDzqH1rZiH9bqIzYKN52QWU8VAjQvI84di+4XGdm6ADBxCs/Y0lYWCLW
+         /Asr2AkRsbyEV2rbiZKNELO/glFIlWivfG0TdhOnCqemG/UDtFnVwuZgJp54vyZJx4k0
+         6gSw1WVad3/B6g2wM6F6s6P0/HQSjC9MAIUnG44ZtCXwkdt0CYwzXWLH8yOSVp7uQtp/
+         zNGUC0xspOB85fzFUhkmwWxPSjLUy/+xvNNSDOYgpbX4ipROsYIaU2KyAttfGgS4PGFJ
+         t8FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yoM1VQAq7h1PK02LIY6g7IAXTRa5gsCiiA/BW+WTdpc=;
+        b=I9GraE7iOsg2iGTF+eJi0AbWG4nCBy/4SC6LqsDuWfHQEgMzyAxQ9FWutvn3lVxZQc
+         P1qkC1YOqIYQbeVMINcUZeEDR8gEak57NQx7Qr53Gi+kgsgA3iiM71FMq9vbe0ZJb/k3
+         3V3/G7lK/wCv8vIylcw2uP5DOOPWzcHH4/nmACJl34hlYYNo5ABZlkQKfiE+75mAq66o
+         F6aXzM3FThokdHMQiqGcgSGOHg7dhTpe0gRdNFdSM4IY6y+Uvu1XL0DcKDmR3lwmOMp8
+         tRJnikfMZs+nMfg19UE/vRTs85sPi+ipf34KMau7Pc8UeLde0bwV/xwoEBnbWT5QylWb
+         SsLw==
+X-Gm-Message-State: ANoB5pk9KFH5Thl7zbozpY9Wef1XvG4uTxlixiXeZs2mGoe4h1gc8vRm
+        bcYCDcHpiH9esVbyz+txH8+seYcTjPhD9H0GOyo=
+X-Google-Smtp-Source: AA0mqf7T0Wdp8jYQHjjcUK5s+3X/Nu0tgegBbMiYh2m+lQI4x1UNv941RRLSjXpgZ8cR1d9RKRAIvZadJteofoMYCSk=
+X-Received: by 2002:a17:906:ce4a:b0:7ae:5ad1:e834 with SMTP id
+ se10-20020a170906ce4a00b007ae5ad1e834mr11643438ejb.312.1668937957253; Sun, 20
+ Nov 2022 01:52:37 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net] unix: Fix race in SOCK_SEQPACKET's
- unix_dgram_sendmsg()
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com
-References: <38a920a7-cfba-7929-886d-c3c6effc0c43@ya.ru>
- <20221120090928.30474-1-kuniyu@amazon.com>
-Content-Language: en-US
-From:   Kirill Tkhai <tkhai@ya.ru>
-In-Reply-To: <20221120090928.30474-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-3-dnlplm@gmail.com>
+ <20221110173222.3536589-1-alexandr.lobakin@intel.com> <CAGRyCJHmNgzVVnGunUh7wwKxYA7GzSvfgqPDAxL+-NcO2P+1wg@mail.gmail.com>
+ <20221116162016.3392565-1-alexandr.lobakin@intel.com> <CAGRyCJHX9WMeHLBgh5jJj2mNJh3hqzAhHacVnLqP_CpoHQaTaw@mail.gmail.com>
+ <87tu2unewg.fsf@miraculix.mork.no>
+In-Reply-To: <87tu2unewg.fsf@miraculix.mork.no>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Sun, 20 Nov 2022 10:52:26 +0100
+Message-ID: <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets aggregation
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,132 +79,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.11.2022 12:09, Kuniyuki Iwashima wrote:
-> From:   Kirill Tkhai <tkhai@ya.ru>
-> Date:   Sun, 20 Nov 2022 02:16:47 +0300
->> There is a race resulting in alive SOCK_SEQPACKET socket
->> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
->>
->> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
->>   sock_orphan(peer)
->>     sock_set_flag(peer, SOCK_DEAD)
->>                                            sock_alloc_send_pskb()
->>                                              if !(sk->sk_shutdown & SEND_SHUTDOWN)
->>                                                OK
->>                                            if sock_flag(peer, SOCK_DEAD)
->>                                              sk->sk_state = TCP_CLOSE
->>   sk->sk_shutdown = SHUTDOWN_MASK
->>
->>
->> After that socket sk remains almost normal: it is able to connect, listen, accept
->> and recvmsg, while it can't sendmsg.
-> 
-> nit: Then, also recvmsg() fails with -ENOTCONN.  And after connect(), even
-> both of recvmsg() and sendmsg() does not fail.
-
-Possible, I wrote not clear. I mean sendmsg fails after connect, while recvmsg does not fail :)
-Here is sendmsg abort path:
-
-unix_dgram_sendmsg()
-  sock_alloc_send_pskb()
-    if (sk->sk_shutdown & SEND_SHUTDOWN)
-      FAIL
-
-> static int unix_seqpacket_recvmsg(struct socket *sock, struct msghdr *msg,
-> 				  size_t size, int flags)
-> {
-> 	struct sock *sk = sock->sk;
-> 
-> 	if (sk->sk_state != TCP_ESTABLISHED)
-> 		return -ENOTCONN;
-> 
-> 	return unix_dgram_recvmsg(sock, msg, size, flags);
-> }
-> 
-> 
->>
->> Since this is the only possibility for alive SOCK_SEQPACKET to change
->> the state in such way, we should better fix this strange and potentially
->> danger corner case.
->>
->> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock.
->>
->> Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
-> 
-> Fixes tag is needed:
-> 
-> Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
->> Before this commit, there was no state change and SEQPACKET sk also went
-> through the same path.  The bug was introduced because the commit did not
-> consider SEAPACKET.
-> 
-> So, I think the fix should be like below, then we can free the peer faster.
-> Note unix_dgram_peer_wake_disconnect_wakeup() is dgram-specific too.
+Il giorno dom 20 nov 2022 alle ore 10:39 Bj=C3=B8rn Mork <bjorn@mork.no> ha=
+ scritto:
 >
-> ---8<---
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index b3545fc68097..be40023a61fb 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -2001,11 +2001,14 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
->  		err = 0;
->  		if (unix_peer(sk) == other) {
->  			unix_peer(sk) = NULL;
-> -			unix_dgram_peer_wake_disconnect_wakeup(sk, other);
-> +
-> +			if (sk->sk_type == SOCK_DGRAM) {
-> +				unix_dgram_peer_wake_disconnect_wakeup(sk, other);
-> +				sk->sk_state = TCP_CLOSE;
-> +			}
->  
->  			unix_state_unlock(sk);
->  
-> -			sk->sk_state = TCP_CLOSE;
->  			unix_dgram_disconnected(sk, other);
->  			sock_put(other);
->  			err = -ECONNREFUSED;
-> ---8<---
-> 
-> Also, it's better to mention that moving TCP_CLOSE under the lock resolves
-> another rare race with unix_dgram_connect() for DGRAM sk:
-> 
->   unix_state_unlock(sk);
->   <--------------------------> connect() could set TCP_ESTABLISHED here.
->   sk->sk_state = TCP_CLOSE;
+> Daniele Palmas <dnlplm@gmail.com> writes:
+>
+> > Ok, so rmnet would only take care of qmap rx packets deaggregation and
+> > qmi_wwan of the tx aggregation.
+> >
+> > At a conceptual level, implementing tx aggregation in qmi_wwan for
+> > passthrough mode could make sense, since the tx aggregation parameters
+> > belong to the physical device and are shared among the virtual rmnet
+> > netdevices, which can't have different aggr configurations if they
+> > belong to the same physical device.
+> >
+> > Bj=C3=B8rn, would this approach be ok for you?
+>
+> Sounds good to me, if this can be done within the userspace API
+> restrictions we've been through.
+>
+> I assume it's possible to make this Just Work(tm) in qmi_wwan
+> passthrough mode?  I do not think we want any solution where the user
+> will have to configure both qmi_wwan and rmnet to make things work
+> properly.
+>
 
-Sounds good, I'll test this variant. Thanks!
+Yes, I think so: the ethtool configurations would apply to the
+qmi_wwan netdevice so that nothing should be done on the rmnet side.
 
-Kirill
-
->> ---
->>  net/unix/af_unix.c |   11 +++++++++--
->>  1 file changed, 9 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
->> index b3545fc68097..6fd745cfc492 100644
->> --- a/net/unix/af_unix.c
->> +++ b/net/unix/af_unix.c
->> @@ -1999,13 +1999,20 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
->>  			unix_state_lock(sk);
->>  
->>  		err = 0;
->> -		if (unix_peer(sk) == other) {
->> +		if (sk->sk_type == SOCK_SEQPACKET) {
->> +			/* We are here only when racing with unix_release_sock()
->> +			 * is clearing @other. Never change state to TCP_CLOSE
->> +			 * unlike SOCK_DGRAM wants.
->> +			 */
->> +			unix_state_unlock(sk);
->> +			err = -EPIPE;
->> +		} else if (unix_peer(sk) == other) {
->>  			unix_peer(sk) = NULL;
->>  			unix_dgram_peer_wake_disconnect_wakeup(sk, other);
->>  
->> +			sk->sk_state = TCP_CLOSE;
->>  			unix_state_unlock(sk);
->>  
->> -			sk->sk_state = TCP_CLOSE;
->>  			unix_dgram_disconnected(sk, other);
->>  			sock_put(other);
->>  			err = -ECONNREFUSED;
-
+Regards,
+Daniele
