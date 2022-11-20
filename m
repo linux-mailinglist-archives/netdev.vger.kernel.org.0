@@ -2,308 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B20631323
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 09:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0FF663132B
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:09:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiKTIpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 03:45:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
+        id S229505AbiKTJDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 04:03:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiKTIpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 03:45:52 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9535F15A20
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 00:45:50 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1owfwv-0007RS-DW; Sun, 20 Nov 2022 09:45:13 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1owfwr-0002Gx-Lp; Sun, 20 Nov 2022 09:45:09 +0100
-Date:   Sun, 20 Nov 2022 09:45:09 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-Cc:     Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        kbuild test robot <lkp@intel.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        David Jander <david@protonic.nl>, linux-kernel@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        netdev@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        kernel@pengutronix.de, Robin van der Gracht <robin@protonic.nl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org
-Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-Message-ID: <20221120084509.GB7626@pengutronix.de>
-References: <e0f6b26e2c724439752f3c13b53af1a56a42a5bf.camel@egluetechnologies.com>
- <20221117162251.5e5933c1@erd992>
- <20221118060647.GE12278@pengutronix.de>
- <7b575cface09a2817ac53485507985a7fef7b835.camel@egluetechnologies.com>
- <20221118123013.GF12278@pengutronix.de>
- <1fd663d232c7fba5f956faf1ad45fb410a675086.camel@egluetechnologies.com>
- <20221118134447.GG12278@pengutronix.de>
- <a01fe547c052e861d47089d6767aba639250adda.camel@egluetechnologies.com>
- <20221119101211.GA7626@pengutronix.de>
- <6c13c3072ca4c8c3217f9449f56921a8496c32eb.camel@egluetechnologies.com>
+        with ESMTP id S229480AbiKTJDb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:03:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1510B8
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:02:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668934952;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oEYRj+tvOCAOAYfObhytG1SVOeN3XgfIQzsjLTeBgGY=;
+        b=b/yM8opZEW1JjuO7UTNj7NlVg192MAqzjUVZ4MdgyoG9SiBaGgIzv9UhxzMU6YBEN7siQ8
+        bWIaGgMxpGZr03gS2KQFiDZAK2/I1FCFSt3PTGhklh5JricLar1UjdkjaTMQqli43sygY0
+        J4+HhIALZm398fuDi08beOYEmqG98AM=
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
+ [209.85.214.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-351-Mgmf45zPNDi5i8IY6rorIA-1; Sun, 20 Nov 2022 04:02:31 -0500
+X-MC-Unique: Mgmf45zPNDi5i8IY6rorIA-1
+Received: by mail-pl1-f200.google.com with SMTP id p18-20020a170902a41200b00188e87d0f04so7155737plq.14
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:02:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oEYRj+tvOCAOAYfObhytG1SVOeN3XgfIQzsjLTeBgGY=;
+        b=0JmO3VslBPGwsa7wL5EP9efVzQY9VXilghHCp8JVnP4+JFltPySyOMOsF/4rVzm00d
+         XbgDfs5ZPzno58fziV136gp0TJT9bLdQUA18bje54IQbHf568EFIOmZ0VRgEgDDFA4UD
+         /+Vq7gpAIeJJsVXMQJIJ20TfIXoh9oZH6OjknJyxQIRtrh9kUONqUv+AqrHIAaBC6kTz
+         R3l87P54ebGKEHFUCvs+3gAay1x0DsfQn4fFszuYCMI8m2sJPw5n/WeiV51JUGcIunOE
+         8FElAhitrQ/v4oDBZ0Ue5KroBUsdvhtPxQoUFroA5FOTiuav3JLmWBblj3Rvu6KdTdwL
+         iL+Q==
+X-Gm-Message-State: ANoB5pkKZmJaJwD/iwzkYWwzgLnasgTcBD436C3yf0oe1MjxOaBoS7hy
+        kOEgBxHrztGmG3sA/yMhAISg34y2i4pUxcA8sg6fAIp0tc18PHFtLoLVkXwZR2bGtJs3myqL6gH
+        W6AtHDVmwUELhmNxp
+X-Received: by 2002:a17:902:b40b:b0:188:ca57:ce0c with SMTP id x11-20020a170902b40b00b00188ca57ce0cmr7033109plr.57.1668934949248;
+        Sun, 20 Nov 2022 01:02:29 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4c5i9VsfKVT/Mxkk5lyuy7Yin/M7or7UVp/BJAMTxyKaeZuWn4RbXKkx9F9pBOVxYbPS6Ptg==
+X-Received: by 2002:a17:902:b40b:b0:188:ca57:ce0c with SMTP id x11-20020a170902b40b00b00188ca57ce0cmr7033078plr.57.1668934948810;
+        Sun, 20 Nov 2022 01:02:28 -0800 (PST)
+Received: from ryzen.. ([240d:1a:c0d:9f00:fc9c:8ee9:e32c:2d9])
+        by smtp.gmail.com with ESMTPSA id h129-20020a625387000000b0056c063dd4cfsm6323422pfb.66.2022.11.20.01.02.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Nov 2022 01:02:28 -0800 (PST)
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Shigeru Yoshida <syoshida@redhat.com>,
+        syzbot+106f9b687cd64ee70cd1@syzkaller.appspotmail.com
+Subject: [PATCH v2] net: tun: Fix use-after-free in tun_detach()
+Date:   Sun, 20 Nov 2022 18:02:13 +0900
+Message-Id: <20221120090213.922567-1-syoshida@redhat.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6c13c3072ca4c8c3217f9449f56921a8496c32eb.camel@egluetechnologies.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 01:11:52AM +0100, Devid Antonio Filoni wrote:
-> On Sat, 2022-11-19 at 11:12 +0100, Oleksij Rempel wrote:
-> > On Fri, Nov 18, 2022 at 04:12:40PM +0100, Devid Antonio Filoni wrote:
-> > > Hi Oleksij,
-> > > 
-> > > honestly I would apply proposed patch because it is the easier solution
-> > > and makes the driver compliant with the standard for the following
-> > > reasons:
-> > > - on the first claim, the kernel will wait 250 ms as stated by the
-> > > standard
-> > > + on successive claims with the same name, the kernel will not wait
-> > > 250ms, this implies:
-> > >   - it will not wait after sending the address-claimed message when the
-> > > claimed address has been spoofed, but the standard does not explicitly
-> > > states what to do in this case (see previous emails in this thread), so
-> > > it would be up to the application developer to decide how to manage the
-> > > conflict
-> > >   - it will not wait after sending the address-claimed message when a
-> > > request for address-claimed message has been received as stated by the
-> > > standard
-> > 
-> > Standard says:
-> > 1. No CF _shall_ begin, or resume, transmission on the network until 250 ms
-> >    after it has successfully claimed an address (Figure 4).
-> > 2. This does not apply when responding to a request for address claimed.
-> > 
-> > With current patch state: 1. is implemented and working as expected, 2.
-> > is not implemented.
-> > With this patch: 1. is partially broken and 2. is partially faking
-> > needed behavior.
-> > 
-> > It will not wait if remote ECU which rebooted for some reasons. With this patch
-> > we are breaking one case of the standard in favor to fake compatibility to the
-> > other case. We should avoid waiting only based on presence of RfAC not based
-> > on the old_addr == new_addr.
-> 
-> I'm sorry, I don't think I understood the point about reboot ("It will
-> not wait if remote ECU which rebooted for some reasons"). If another ECU
-> rebooted, then *it* will have to perform the claim procedure again
-> waiting 250 ms before beginning the transmission. Your ECU doesn't have
-> to check if the other ECUs respected the 250 ms wait.
+syzbot reported use-after-free in tun_detach() [1].  This causes call
+trace like below:
 
-With proposed patch:
-- local application which is sending to the remote NAME, will start or continue
-  communication with ECU which should stay silent.
-- local application which was manually or automatically restarted (see
-  application watchdogs), will bypass address claim procedure
-  completion and start sending without 250ms delay.
+==================================================================
+BUG: KASAN: use-after-free in notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
+Read of size 8 at addr ffff88807324e2a8 by task syz-executor.0/3673
 
-> Also, the ISO11783-5 standard, with "Figure 6 (Resolving address
-> contention between two self-configurable-address CF)" of "4.5.4.2 -
-> Address-claim prioritization", shows that:
-> - ECU1 claims the address (time: 0 ms)
-> - ECU2 claims the same address (time: 0+x ms)
-> - ECU1 NAME has the higher priority, so ECU1 sends again the address
-> claimed message as soon as it received the address-claim from ECU2
-> (time: 0+x+y ms)
-> - ECU1 starts normal transmission (time: 250 ms)
-> With current implementation, the ECU1 would start the transmission at
-> time 0+x+y+250 ms, with proposed patch it would not.
+CPU: 0 PID: 3673 Comm: syz-executor.0 Not tainted 6.1.0-rc5-syzkaller-00044-gcc675d22e422 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:284 [inline]
+ print_report+0x15e/0x461 mm/kasan/report.c:395
+ kasan_report+0xbf/0x1f0 mm/kasan/report.c:495
+ notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
+ call_netdevice_notifiers_info+0x86/0x130 net/core/dev.c:1942
+ call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+ call_netdevice_notifiers net/core/dev.c:1997 [inline]
+ netdev_wait_allrefs_any net/core/dev.c:10237 [inline]
+ netdev_run_todo+0xbc6/0x1100 net/core/dev.c:10351
+ tun_detach drivers/net/tun.c:704 [inline]
+ tun_chr_close+0xe4/0x190 drivers/net/tun.c:3467
+ __fput+0x27c/0xa90 fs/file_table.c:320
+ task_work_run+0x16f/0x270 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xb3d/0x2a30 kernel/exit.c:820
+ do_group_exit+0xd4/0x2a0 kernel/exit.c:950
+ get_signal+0x21b1/0x2440 kernel/signal.c:2858
+ arch_do_signal_or_restart+0x86/0x2300 arch/x86/kernel/signal.c:869
+ exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+ exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+ do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-You are right, this should be fixed.
-But proposed patch closes one issues and opens another, with this patch it will
-be enough to send at least two address claimed messages to bypass the delay.
+The cause of the issue is that sock_put() from __tun_detach() drops
+last reference count for struct net, and then notifier_call_chain()
+from netdev_state_change() accesses that struct net.
 
-> Same is showed in "Figure 7 (Resolving address contention between a non-
-> configurable address CF and a self-configurable address CF)", the ECU
-> waits again 250 ms only when claiming a different address.
+This patch fixes the issue by calling sock_put() from tun_detach()
+after all necessary accesses for the struct net has done.
 
-Ack
+Fixes: 83c1f36f9880 ("tun: send netlink notification when the device is modified")
+Reported-by: syzbot+106f9b687cd64ee70cd1@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=96eb7f1ce75ef933697f24eeab928c4a716edefe [1]
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+---
+v2:
+- Include symbolic stack trace
+- Add Fixes and Reported-by tags
+v1: https://lore.kernel.org/all/20221119075615.723290-1-syoshida@redhat.com/
+---
+ drivers/net/tun.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-> Also, as previously discussed in this thread, the standard states in
-> 4.4.4.3 - Address violation:
-> If a CF receives a message, other than the address-claimed message,
-> which uses the CF's own SA,
-> then the CF:
-> - shall send the address-claim message to the Global address;
-> - shall activate a diagnostic trouble code with SPN = 2000+SA and FMI =
-> 31
-> It is not *explicitly* stated that you have to wait 250 ms after the
-> address-claim message has been sent.
-
-There is no need to explicitly state it. The requirement is clearly described
-in the 4.5.2.d part 1 with clearly defined exception in  4.5.2.d part 2.
-If something is not explicitly stated, the stated requirement has always
-priority.
-
-> Please note that the 250 ms wait is  mentioned only in "4.5 - Network
-> initialization"
-
-OK, we need to refer to the wording used in a specifications, in
-general:
-Shall – Shall is used to designate a mandatory requirement.
-Should – Should is used for requirements that are considered good and are
-         recommended, but are not absolutely mandatory.
-May – May is used to for requirements that are optional.
-
-If a requirement with strong wording as "shall" is not strong enough for
-you and you are suing words as ".. mentioned only in .." then even a
-statistical analysis of this spec will have no meaning. In all
-cases we can just invalidate all arguments by using: it is only X or Y. 
-
-> while above statements come from "4.4 - Network-management procedures".
-> Also in this case, the proposed patch is still standard compliant.
-
-If we remove 4.5.2.d from the spec, then yes.
-
-> So I'm sorry but I have to disagree with you, there are many things
-> broken in the current implementation because it is forcing the 250 wait
-> to all cases but it should not.
-
-If we remove 4.5.2.d from the spec, then yes. Every construction is
-logical if we adopt input variables to the construction.
-
-> > Without words 2. part should be implemented without breaking 1.
-> > 
-> > > Otherwise you will have to keep track of above cases and decide if the
-> > > wait is needed or not, but this is hard do accomplish because is the
-> > > application in charge of sending the address-claimed message, so you
-> > > would have to decide how much to keep track of the request for address-
-> > > claimed message thus adding more complexity to the code of the driver.
-> > 
-> > Current kernel already tracks all claims on the bus and knows all registered
-> > NAMEs. I do not see increased complicity in this case.
-> 
-> The kernel tracks the claims but it does *not track* incoming requests
-> for address-claimed message, it would have to and it would have to
-
-yes
-
-> allow the application to answer to it *within a defined time window*.
-
-yes.
-
-> But keep in mind that there are other cases when the 250 ms wait is wrong
-> or it is not explicitly stated by the standard.
-
-If it is not stated in the standard how can we decide if it is wrong?
-And if strongly worded statements have no value just because it is
-stated only one time, how proper standard should look like? 
-
-> > IMHO, only missing part i a user space interface. Some thing like "ip n"
-> > will do.
-> > 
-> > > Another solution is to let the driver send the address-claimed message
-> > > waiting or without waiting 250 ms for successive messages depending on
-> > > the case.
-> > 
-> > You can send "address-claimed message" in any time you wont. Kernel will
-> > just not resolve the NAME to address until 1. part of the spec will
-> > apply. Do not forget, the NAME cache is used for local _and_ remote
-> > names. You can trick out local system, not remote.
-> > 
-> > Even if you implement "smart" logic in user space and will know better
-> > then kernel, that this application is responding to RfAC. You will newer
-> > know if address-claimed message of remote system is a response to RfAC.
-> > 
-> > From this perspective, I do not know, how allowing the user space break
-> > the rules will help to solve the problem?
-> 
-> I think you did not understand this last proposal: since the driver is
-> already implementing part of the standard, then it might as well send
-> the address-claimed message when needed and wait 250 ms or not depending
-> on the case.
-
-Let's try following test:
-j1939acd -r 80 -c /tmp/1122334455667788.jacd 11223344556677 vcan0 &
-while(true); do testj1939 -s8 vcan0:0x80 :0x90,0x12300; done
-
-And start candump with delta time stamps:
-:~ candump -t d vcan0                                                 
- (000.000000)  vcan0  18EAFFFE   [3]  00 EE 00               
- (000.002437)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF <---- no 250ms delay
- (000.011458)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.011964)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.011712)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012585)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012891)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012082)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012604)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012357)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012790)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012765)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012483)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012680)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012144)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-... snip ...
- (000.012592)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012515)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.013183)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012653)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.011886)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012836)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.009494)  vcan0  18EEFF80   [8]  77 66 55 44 33 22 11 00 <---- SA 0x80 address claimed 
- (000.003362)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF <---- next packet from SA 0x80 3 usecs after previous. No 250ms delay.
- (000.012351)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012983)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012602)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012594)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.012348)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
- (000.011922)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-
-As you can see, the j1939 stack do not forcing application to use NAMEs and
-do not preventing sending any message withing 250ms delay. The only thing
-what has the 250 timer is NAME to address resolution which should be fixed in
-respect of 4.5.2.d without breaking every thing else.
-
-> In this way, for example, you won't have to keep track of a request for
-> address-claimed, you just would have to answer to it directly.
-
-see example above.
-
-> Feel free to implement what you think is more appropriate but please
-> read the ISO11783-5 standard carefully too before changing the code,
-> there are many cases and it is not possible to simplify everything into
-> one rule.
-
-this is why we have this discussion.
-
-> Meanwhile I'm going to apply the patch to my own kernel, I've tried to
-> workaround the limitation using a CAN_RAW socket to send the address-
-> claimed message but the J1939 driver refuses to send other messages in
-> the 250 ms time window because it has detected the address-claimed
-> message sent from the other socket, so I can only apply the patch to
-> make it compliant with the standard.
-
-If you can use CAN_RAW you can use above example without any delay.
-
-Regards,
-Oleksij
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 7a3ab3427369..ce9fcf4c8ef4 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -686,7 +686,6 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+ 		if (tun)
+ 			xdp_rxq_info_unreg(&tfile->xdp_rxq);
+ 		ptr_ring_cleanup(&tfile->tx_ring, tun_ptr_free);
+-		sock_put(&tfile->sk);
+ 	}
+ }
+ 
+@@ -702,6 +701,11 @@ static void tun_detach(struct tun_file *tfile, bool clean)
+ 	if (dev)
+ 		netdev_state_change(dev);
+ 	rtnl_unlock();
++
++	if (clean) {
++		synchronize_rcu();
++		sock_put(&tfile->sk);
++	}
+ }
+ 
+ static void tun_detach_all(struct net_device *dev)
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.38.1
+
