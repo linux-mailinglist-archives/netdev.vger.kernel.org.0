@@ -2,126 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EBB63131A
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 09:40:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B849631318
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 09:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiKTIj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 03:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
+        id S229564AbiKTIjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 03:39:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiKTIj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 03:39:57 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on20600.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eb2::600])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCD7140E6;
-        Sun, 20 Nov 2022 00:39:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eJO8jFGJzovs0rmHl1qmZ4EaTJ0hDCFpJZzGSgg35n4R8+au0yElXJNrB8/0iibTcuY2r2liYT8GmphIpjUO8uEO+y4lgYmxMMvOw4dYcPn12XchVbrzukXNPRDr1w4PmcqJYm5+Ob3AXsBxpLXQ0IIGcAxzt7Q9QPElR+d8a93T2IraotYeeGb0OWw4ULUmKHxuGsnAq0dtSNYAPPLjCOtX73tML2TpftnUfnrdt9ed85qwmC/jWsAV6ENvSwuaHL9fG+Yyut6+GS3+joksNM+MNAVaQcg0gm5T+OKvy9vOzkOhK+eqz/7D8UI5ISR62K9Z5ILNCWhXlnq3igdqeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S9vtSp8c01ilHRKMOwIk6b6v9Vbr8FNVp4MVgaqnFzQ=;
- b=OIZvAykKbqFTWZrygttJMjz2/A8unrP0sL3RK0L+vPAW6wlbBn54gxa/g03jYF6dtIGzPGfpx9mqzYYiWkdaelX043MzPoiDwQ+Qz36163BSIqFKGIRk8wTtLsaOkZ/OAPIoCl3sK5rjyhRzsv6cSp3Guu1BF5zUY7Vggm9oI0qaY7217V5wigbC2mmZgjnNeFxqtfpISQC1sVVz/hPf2hQgptUurTP0/FNODvLFIvocz85lrz02fPQ79RFM43NLDtnm6jU34el4sZYrSpsyIPwSwvqGGMfA7oI61w642+q9X0FS9RjeyFngLrmMw6BUn+bH0t2Rz8Qq9E0Gbmppaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S9vtSp8c01ilHRKMOwIk6b6v9Vbr8FNVp4MVgaqnFzQ=;
- b=pIQUWUARYB6FAVAn1tHR9nMkrn72XmbXeZY2uatVnCCm5tIbBRvl6tSqJXadk5N3yl2gmzhjalfenpNJK4y9PEnkfqNv1ks6kb3r6kqK79v3cHIVWVeylrgozKTJs631xhTnltHi8WG+OXilDGO61xVAPbfSKvJaC0m5tvEzaA56FDs08UMyjfwS4askG57+DkNlF/RkkFhq2fs+ebZHQor8Rq34MV6dbyCoFjY3GG/BPnpXuxqyPg6qbS6kkbPMUEOgXZOQt35vg+5az+famE5oAvMnAIzJ78q774jIbu7lmTn3fynk9Df/l7suLHhFKvhnahFLoXEXq/rvTA1jnw==
-Received: from DM6PR17CA0002.namprd17.prod.outlook.com (2603:10b6:5:1b3::15)
- by DS0PR12MB8019.namprd12.prod.outlook.com (2603:10b6:8:14e::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Sun, 20 Nov
- 2022 08:39:53 +0000
-Received: from DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b3:cafe::40) by DM6PR17CA0002.outlook.office365.com
- (2603:10b6:5:1b3::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.9 via Frontend
- Transport; Sun, 20 Nov 2022 08:39:53 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DM6NAM11FT031.mail.protection.outlook.com (10.13.172.203) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5834.8 via Frontend Transport; Sun, 20 Nov 2022 08:39:53 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sun, 20 Nov
- 2022 00:39:52 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Sun, 20 Nov 2022 00:39:52 -0800
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.36 via Frontend
- Transport; Sun, 20 Nov 2022 00:39:50 -0800
-From:   Moshe Shemesh <moshe@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Jiri Pirko <jiri@nvidia.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next] devlink: remove redundant health state set to error
-Date:   Sun, 20 Nov 2022 10:36:52 +0200
-Message-ID: <1668933412-5498-1-git-send-email-moshe@nvidia.com>
-X-Mailer: git-send-email 1.8.4.3
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT031:EE_|DS0PR12MB8019:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9fcf70f3-3ab9-4c05-f90a-08dacad2cba6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uNoH0SKUhBbtxQDHQqwE0Ji45KXnBGtABHgJKTvP/LVyOkKPyNee+CkP9EkOqC2ryCukE6qtF8zN7PBsOsz+fra9DrkM4u0BPAz65e9JSkxRo7YOG6Nvyg+jtvlDwFIySlEcI97/HHAzp2zgpGm8+eJq7a/xJFmp39KOQQDVY0XcvmCAwBllE+jtiqRmHOxP7U+oUv38p5LidNbhpWi4Gg4uMWIH4qDvFzzHBNhSG1O8zTWrbhcJk+jRlxChc44AyDA3o5ged1HnUAFTqxsaEVVoJChzXOjXVHXtp6Nz9GbJ2W3hvkLKiPpMPECWLsGWZ0V9e/jxIohyhBv0siv9byh9K8OW2eE1TSXD9ObR9gn8nojGtBYSxH+nw5Oq8WfZrX1gSwn9oJ9vRKdLa4BxoET2epOC4KZyUggmuj899PB8iCjgXOxu+MNXlvBe1LOvM4MvDLsQF+txuUsCYRyF5lyaBiR5FBDEA09LjrkOV/Moq20ek+zWcvGiuLAkcZQks/tLj5HkMKWaEviWqQjyV3ono6uebBRXKuo2K9qQC3RqqQWl4AiWEtGGeXsQO0VS5TiY2Z9DgDl4VhzAHWqUw3nl8KCDRf+kbjigj7v0UShN6qNOtyr3VtVAcQ9hNav2S38QDD3curlZUbQzVSzRw3dygbSOPxll7uLtA9qdE/k9Y7E8GfKMIqp+enzJIRj5CyikHHb9MJhEGr3ReGio5w==
-X-Forefront-Antispam-Report: CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199015)(36840700001)(40470700004)(46966006)(86362001)(36756003)(82310400005)(40460700003)(40480700001)(41300700001)(2616005)(70206006)(70586007)(4326008)(8676002)(4744005)(47076005)(426003)(186003)(8936002)(336012)(5660300002)(107886003)(478600001)(316002)(26005)(7696005)(54906003)(110136005)(82740400003)(7636003)(356005)(83380400001)(2906002)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2022 08:39:53.3600
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9fcf70f3-3ab9-4c05-f90a-08dacad2cba6
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8019
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S229505AbiKTIi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 03:38:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FA8140E7
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 00:38:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1668933485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=N3vbV+ztH5/Vvr0aVSjuKvkitpk+wLaTbt0iqubISsM=;
+        b=i55Cob2M58pUl75uyaOGKGcvnBHd1uWzID4VT5yeBessT37Z8S6H7Kz06kUQuFlXmIl3Vc
+        sP3z08+VIhfJoD02+p5uL5bIXNDFG5krx6SAgl5YDSOyuOH8PV0374oz6xBT9dEBvzWZUe
+        rn2rxjrlqFiTqlbBuD+ZhgwWn01z3w4=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-455-72SSQf7oPWSTaaU_dblttw-1; Sun, 20 Nov 2022 03:38:03 -0500
+X-MC-Unique: 72SSQf7oPWSTaaU_dblttw-1
+Received: by mail-pl1-f199.google.com with SMTP id m1-20020a170902db0100b00188eec2726cso7081404plx.18
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 00:38:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to:from
+         :subject:cc:to:message-id:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=N3vbV+ztH5/Vvr0aVSjuKvkitpk+wLaTbt0iqubISsM=;
+        b=Uh8gboL68VB9BHKjvJ4LpWR0zrUgSEoedWWjB/7ow7xhAML5XyMcMJqHCtxBbUgO6V
+         uZXzD9U8hIsBp+kf12P7AE6htk7EGhMreK+GEqD0ZIDK8wBRV9OR2vlR6zADPhThKZu9
+         f+YCXmwmrfMdxzYepyC8LvPMS9786VF8vbkpGMJeS0b9s8ILmcNr6JvmIEUC2iMTZVBc
+         OHtk5bjTsJ4XEhvuCsLj4lIz471mBVKMbsypck1HoeNL7g66fY8BXxm/DQuDJ2QABhIG
+         rGocjiiR0sNM9y8O09PQauGXlgby6qGNQ3Tpfx84sesZDbcFqh8D1biQVbZ9vJes+Eou
+         C72Q==
+X-Gm-Message-State: ANoB5png1rwwH+Yeoepd7Neg48RJjxOgn+lWHJ7Twrnip21EyCcRGU8S
+        eiAwV1o3WTOrMKLhyy2CEZdFI0Yr6TlSURuoiZWXKOXtIRFUiGcyG4EJHzTEBABxVL97Ln/mxos
+        bm70hud4iwfavFV/9
+X-Received: by 2002:a17:903:40cb:b0:188:7dca:6f4a with SMTP id t11-20020a17090340cb00b001887dca6f4amr1992200pld.60.1668933482021;
+        Sun, 20 Nov 2022 00:38:02 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4Nd4nQxSB7+apOwSZYQOnx1kGg0VOQPy3ysl72rEjv+17g6Zdt6KNUYaCfhFWCAeR0I11B/g==
+X-Received: by 2002:a17:903:40cb:b0:188:7dca:6f4a with SMTP id t11-20020a17090340cb00b001887dca6f4amr1992187pld.60.1668933481605;
+        Sun, 20 Nov 2022 00:38:01 -0800 (PST)
+Received: from localhost ([240d:1a:c0d:9f00:94be:c13b:981e:47e6])
+        by smtp.gmail.com with ESMTPSA id b13-20020a170903228d00b00174d9bbeda4sm7045010plh.197.2022.11.20.00.37.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Nov 2022 00:38:01 -0800 (PST)
+Date:   Sun, 20 Nov 2022 17:37:49 +0900 (JST)
+Message-Id: <20221120.173749.1469001343691116558.syoshida@redhat.com>
+To:     edumazet@google.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH] net: tun: Fix use-after-free in tun_detach()
+From:   Shigeru Yoshida <syoshida@redhat.com>
+In-Reply-To: <CANn89iJaCRMb-vSrBOV_zbjxq8Gpg7K3d031AECmEqSN-XWpkA@mail.gmail.com>
+References: <20221119075615.723290-1-syoshida@redhat.com>
+        <CANn89iJaCRMb-vSrBOV_zbjxq8Gpg7K3d031AECmEqSN-XWpkA@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 28.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reporter health_state is set twice to error in devlink_health_report().
-Remove second time as it is redundant.
+Hi Eric,
 
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
----
- net/core/devlink.c | 2 --
- 1 file changed, 2 deletions(-)
+On Sat, 19 Nov 2022 10:31:38 -0800, Eric Dumazet wrote:
+> On Fri, Nov 18, 2022 at 11:56 PM Shigeru Yoshida <syoshida@redhat.com> wrote:
+>>
+>> syzbot reported use-after-free in tun_detach() [1].  This causes call
+>> trace like below:
+>>
+>> ==================================================================
+>> BUG: KASAN: use-after-free in notifier_call_chain+0x1da/0x1e0
+>> ...
+>> Call Trace:
+> 
+> Please include a symbolic stack trace, I think syzbot has them.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index d93bc95cd7cb..cea154ddce7a 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -7846,8 +7846,6 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
- 		return -ECANCELED;
- 	}
- 
--	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
--
- 	if (reporter->auto_dump) {
- 		mutex_lock(&reporter->dump_lock);
- 		/* store current dump of current error, for later analysis */
--- 
-2.26.3
+Thank you so much for your comment.  I got it.
+
+>>  <TASK>
+>>  dump_stack_lvl+0x100/0x178
+>>  print_report+0x167/0x470
+>>  ? __virt_addr_valid+0x5e/0x2d0
+>>  ? __phys_addr+0xc6/0x140
+>>  ? notifier_call_chain+0x1da/0x1e0
+>>  ? notifier_call_chain+0x1da/0x1e0
+>>  kasan_report+0xbf/0x1e0
+>>  ? notifier_call_chain+0x1da/0x1e0
+>>  notifier_call_chain+0x1da/0x1e0
+>>  call_netdevice_notifiers_info+0x83/0x130
+>>  netdev_run_todo+0xc33/0x11b0
+>>  ? generic_xdp_install+0x490/0x490
+>>  ? __tun_detach+0x1500/0x1500
+>>  tun_chr_close+0xe2/0x190
+>>  __fput+0x26a/0xa40
+>>  task_work_run+0x14d/0x240
+>>  ? task_work_cancel+0x30/0x30
+>>  do_exit+0xb31/0x2a40
+>>  ? reacquire_held_locks+0x4a0/0x4a0
+>>  ? do_raw_spin_lock+0x12e/0x2b0
+>>  ? mm_update_next_owner+0x7c0/0x7c0
+>>  ? rwlock_bug.part.0+0x90/0x90
+>>  ? lockdep_hardirqs_on_prepare+0x17f/0x410
+>>  do_group_exit+0xd4/0x2a0
+>>  __x64_sys_exit_group+0x3e/0x50
+>>  do_syscall_64+0x38/0xb0
+>>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>>
+>> The cause of the issue is that sock_put() from __tun_detach() drops
+>> last reference count for struct net, and then notifier_call_chain()
+>> from netdev_state_change() accesses that struct net.
+>>
+>> This patch fixes the issue by calling sock_put() from tun_detach()
+>> after all necessary accesses for the struct net has done.
+>>
+>> Link: https://syzkaller.appspot.com/bug?id=96eb7f1ce75ef933697f24eeab928c4a716edefe [1]
+>> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+> 
+> Please add a Fixes: tag, once you identified which commit added this bug.
+
+I got it too.  I'll send v2 patch.
+
+Thanks,
+Shigeru
+
+>> ---
+>>  drivers/net/tun.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> index 7a3ab3427369..ce9fcf4c8ef4 100644
+>> --- a/drivers/net/tun.c
+>> +++ b/drivers/net/tun.c
+>> @@ -686,7 +686,6 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+>>                 if (tun)
+>>                         xdp_rxq_info_unreg(&tfile->xdp_rxq);
+>>                 ptr_ring_cleanup(&tfile->tx_ring, tun_ptr_free);
+>> -               sock_put(&tfile->sk);
+>>         }
+>>  }
+>>
+>> @@ -702,6 +701,11 @@ static void tun_detach(struct tun_file *tfile, bool clean)
+>>         if (dev)
+>>                 netdev_state_change(dev);
+>>         rtnl_unlock();
+>> +
+>> +       if (clean) {
+>> +               synchronize_rcu();
+>> +               sock_put(&tfile->sk);
+>> +       }
+>>  }
+>>
+>>  static void tun_detach_all(struct net_device *dev)
+>> --
+>> 2.38.1
+>>
+> 
 
