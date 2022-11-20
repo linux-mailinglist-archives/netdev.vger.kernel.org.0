@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE9C631343
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:54:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 189C063134A
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 11:15:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbiKTJyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 04:54:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
+        id S229583AbiKTKPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 05:15:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiKTJyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:54:14 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6746415A06;
-        Sun, 20 Nov 2022 01:54:13 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 2C9101883853;
-        Sun, 20 Nov 2022 09:54:12 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id E626A25002DE;
-        Sun, 20 Nov 2022 09:54:11 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id D69C691201E4; Sun, 20 Nov 2022 09:54:11 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229462AbiKTKPN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 05:15:13 -0500
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DCD41D336;
+        Sun, 20 Nov 2022 02:15:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=AlZgy
+        GzJSksbiSVnwu7EnHZCXOjLRMJSW611pKd6AVw=; b=Kwm7NayBh3mQjmPLXeDOy
+        miId3jIeCSmEC078Ebg7vopeSk7l6D5eOHQX4eVjz11QAkECDbZNVsJjHg2XugCV
+        9bHRjNr2TvUzfuZPGH5Gv2aFI3r2glHy7HPK8nptadliwquPnbcA2S1t5CxpCopg
+        Zcn0ItMaYuslY5nLPeZk0U=
+Received: from localhost.localdomain (unknown [36.112.3.106])
+        by smtp2 (Coremail) with SMTP id GtxpCgCnIgz4_XljPtHttg--.23124S4;
+        Sun, 20 Nov 2022 18:14:24 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mailhol.vincent@wanadoo.fr,
+        stefan.maetje@esd.eu, socketcan@hartkopp.net, hbh25y@gmail.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] can: mcba_usb: fix potential resource leak in mcba_usb_xmit_cmd()
+Date:   Sun, 20 Nov 2022 18:14:14 +0800
+Message-Id: <20221120101414.6071-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Date:   Sun, 20 Nov 2022 10:54:11 +0100
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 net-next 2/2] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <20221115222312.lix6xpvddjbsmoac@skbuf>
-References: <20221112203748.68995-1-netdev@kapio-technology.com>
- <20221112203748.68995-1-netdev@kapio-technology.com>
- <20221112203748.68995-3-netdev@kapio-technology.com>
- <20221112203748.68995-3-netdev@kapio-technology.com>
- <20221115222312.lix6xpvddjbsmoac@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <7f2a4ef8d5d790c557b255f715e63ade@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgCnIgz4_XljPtHttg--.23124S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7XFy7ZF13Jr1DWFy3ur1fXrb_yoWDCFX_K3
+        y7Gry8WayUJrn09w18K3yxJ34FywsrZr4kuFs3t343JFW2ya18JFnFgr9rGr1ruw4aqa9x
+        CwnrZF1DJw4SvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRisXo5UUUUU==
+X-Originating-IP: [36.112.3.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiWwC-jGI0XGfXSAAAsa
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-15 23:23, Vladimir Oltean wrote:
-> On Sat, Nov 12, 2022 at 09:37:48PM +0100, Hans J. Schultz wrote:
->> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h 
->> b/drivers/net/dsa/mv88e6xxx/chip.h
->> index e693154cf803..3b951cd0e6f8 100644
->> --- a/drivers/net/dsa/mv88e6xxx/chip.h
->> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
->> @@ -280,6 +280,10 @@ struct mv88e6xxx_port {
->>  	unsigned int serdes_irq;
->>  	char serdes_irq_name[64];
->>  	struct devlink_region *region;
->> +
->> +	/* Locked port and MacAuth control flags */
-> 
-> Can you please be consistent and call MAB MAC Authentication Bypass?
-> I mean, "bypass" is the most important part of what goes on, and you
-> just omit it.
-> 
+mcba_usb_xmit_cmd() gets free ctx by mcba_usb_get_free_ctx(). When
+mcba_usb_xmit() fails, the ctx should be freed with mcba_usb_free_ctx()
+like mcba_usb_start_xmit() does in label "xmit_failed" to avoid potential
+resource leak.
 
-I must admit that I consider 'MacAuth' and 'Mac Authentication Bypass' 
-to be
-completely equivalent terms, where the MAB terminology is what is coined 
-by
-Cisco. Afaik, there is no difference in the core functionality between 
-the two.
+Fix it by calling mcba_usb_free_ctx() when mcba_usb_xmit() fails.
 
-I do see that Cisco has a more extended concept, when you consider 
-non-core
-functionality, as how the whole authorization decision process and the
-infrastructure that is involved works, and thus is very Cisco centered, 
-as I
-have had in my cover letter:
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/can/usb/mcba_usb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-"This feature is known as MAC-Auth or MAC Authentication Bypass
-(MAB) in Cisco terminology, where the full MAB concept involves
-additional Cisco infrastructure for authorization."
+diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+index 218b098b261d..471f6be6e030 100644
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -380,9 +380,11 @@ static void mcba_usb_xmit_cmd(struct mcba_priv *priv,
+ 	}
+ 
+ 	err = mcba_usb_xmit(priv, usb_msg, ctx);
+-	if (err)
++	if (err) {
++		mcba_usb_free_ctx(ctx);
+ 		netdev_err(priv->netdev, "Failed to send cmd (%d)",
+ 			   usb_msg->cmd_id);
++	}
+ }
+ 
+ static void mcba_usb_xmit_change_bitrate(struct mcba_priv *priv, u16 bitrate)
+-- 
+2.25.1
 
-I would have preferred the MacAuth terminology as I see it as more 
-generic
-and open, but 'mab' is short as a flag name... :D
