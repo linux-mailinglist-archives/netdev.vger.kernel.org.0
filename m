@@ -2,66 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79069631513
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 17:11:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC87C631511
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 17:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiKTQEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 11:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56356 "EHLO
+        id S229652AbiKTQJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 11:09:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiKTQE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 11:04:28 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B32FEB
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 08:04:26 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id s18so11040278ybe.10
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 08:04:26 -0800 (PST)
+        with ESMTP id S229513AbiKTQJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 11:09:33 -0500
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025602408D
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 08:09:33 -0800 (PST)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-39115d17f3dso86793357b3.1
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 08:09:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=63KL2Saxfoi531hFptfQlVE1NeSUNbrmZNLZbGcmaxY=;
-        b=BTEHfCYO4GwUrFkNHsTnE7XzHROm+8LVsAn2nQgWZLOib6kcL5YP6+oE0PfXHnuTUw
-         6RkEoOliWVHmtzJg1crFqmrVKkxeYfZWKZvPmndibUDTbX8coRt4iUUiQsBmgr3eMv2z
-         h14FmZ4QceXzeBw5wo7eS0Sq++q/lIxcWcO5bS4XHURsU/mTEIFcgu5H0m65kGiFaszQ
-         rzVOK7LMNbSNvR52oTwW3Gj/c7bj7opiAOPiUWdEfBCaZCPdh/FO2sysYq8PA5C7YvLX
-         otKChIOthp0rvPMSdK6MWG7HIrxQK72L7helMKV/dSx7NJaKQX8NQ3XQ5zm3wYsaksum
-         GZKA==
+        bh=UO70B7phnyoLseCqZJMNls/H5oUiAGjgzVRSYZX7L1A=;
+        b=KpX6rW7fECQJxtHXzd2KQkLTlszL1aCbc6RUwYhrWNrWzX0puI68W055/PalL9Zwxn
+         9HGSFmIW+6pn0Lr0zEhDNk5ldSfPJe4TFjxCY9vnfF/1K7zjys4dD30xC3c1NwxTUfgj
+         VdYeo/sJJCAByrJ1XkQewCbiwwCSeQIhHm21+YYCW80e+pc+hNZtAzUTHCQzSVThN7oU
+         WcLcq0A3z/cnnvGGeA7qKOJvfGw72YLozpAushchpXTEklQELpGaNbB43BRUhbml+Xn7
+         2rkt5OSnJosTcgrDas3KEJiyVSe0mf9zLWtXXqywOBL5OzojO/EXRMrZ4I/1N45Mr1tP
+         8qwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=63KL2Saxfoi531hFptfQlVE1NeSUNbrmZNLZbGcmaxY=;
-        b=gzUzTfyTXFQZby446K0BmxxuQ+tVutymOyu+rRNmQoz5ZMEWp582QRqie/1xkkGBO4
-         Kp7Q7s73g86a+8/6nVJmyOjo8ZNCZ0kN32wnGyPVZC6gbYlgFf3fOT659NP8zCYvT1hK
-         pyD6TIXTD2LbLfNqXmWzUWIxh5AwhTx3Ea2rD6HszV9rK3stcbyTWPom9cZEV1kvvN/U
-         zvdQ/GVxQpcsMnMs36uYmJwGyy4mJPnO3BePfBvsF6/MRBmT6ma2lXsWH5FF5QqjSgfR
-         mtkEMUyqsq4FunLnj4EtN6rBFdEggvilbSq/yiAdsavB7+9UIF72Nk0//Lv3pt/fD4/8
-         FutQ==
-X-Gm-Message-State: ANoB5pmSkynE29LwYrVm9xIaNeJxHZWVuVWtBB/mNgigxfcIqIgOelbH
-        vlC7DfOtu61mCoLeGBQ/KjjIY0958rwVf2Jlh+MzzQ==
-X-Google-Smtp-Source: AA0mqf6K3o0mb0hd9Rd6/OPbQTHO4qrPuKzcvOlD6ReLl/K3P0vC3tVJMNh6UpBg4AJoNjI1BgF4H8664zHJsIhI/wI=
-X-Received: by 2002:a25:348c:0:b0:6cb:ec87:a425 with SMTP id
- b134-20020a25348c000000b006cbec87a425mr12946602yba.387.1668960265640; Sun, 20
- Nov 2022 08:04:25 -0800 (PST)
+        bh=UO70B7phnyoLseCqZJMNls/H5oUiAGjgzVRSYZX7L1A=;
+        b=QjV2/J8w9OA59tkFLXRzpGfRrt4O+UrTNxOm6qSF3m4vIXIIPHAQH2UMUzvt8vagTf
+         awsxdh4NsX7cu8aAZ83mp+VOwosu9+qWmWlEtZzasrf1vnEbeYjUI3nOhtXXIMuSdUYM
+         2MiJwIlXmyfejeILaPUfxqTyKarXpSPb5hBgfUNcPRtAydHWPcanRAQaEu6XH8r0t0gh
+         Fo7p6PtSA8YzzZToEl5lv87o0tYruDSmk0PiNUbatnUGCjYoVZLXR1TYQB3jZC6iKcEO
+         CoqnsHmStWVKpUd3dJ1V91qqqnOlhgrtpnAX2xu9azHlJjDYi0D/ilKzY/52etVhHcVu
+         D4EA==
+X-Gm-Message-State: ANoB5pk8KUeSDKG6LZGWF2JdrWsg118gSpbCe6b3mOAJzkiuCs5PpTzK
+        ycAuO2yzZk7MC9LLqxvqTSHZ0Wzdfd6ZwzyU/GOIFxk6bsU=
+X-Google-Smtp-Source: AA0mqf5JNHf//F6jj7OtbLTnpMr6e8KHMHaL2A5DHRw8J3brjZV7gw00R7JZHrlCfSOb/tWIE8rontKNFEk5BwvCJeA=
+X-Received: by 2002:a81:5f04:0:b0:393:ab0b:5a31 with SMTP id
+ t4-20020a815f04000000b00393ab0b5a31mr12020079ywb.55.1668960571948; Sun, 20
+ Nov 2022 08:09:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20221120090213.922567-1-syoshida@redhat.com> <20221120104907.4795-1-hdanton@sina.com>
-In-Reply-To: <20221120104907.4795-1-hdanton@sina.com>
+References: <20221018203258.2793282-1-edumazet@google.com> <162f9155-dfe3-9d78-c59f-f47f7dcf83f5@nvidia.com>
+ <CANn89iKwN9tgrNTngYrqWdi_Ti0nb1-02iehJ=tL7oT5wOte2Q@mail.gmail.com>
+ <20221103082751.353faa4d@kernel.org> <CANn89iJGcYDqiCHu25X7Eg=s2ypVNLfbNZMomcqvD-7f0SagMw@mail.gmail.com>
+ <CAKErNvoCWWHrWGDT+rqKzGgzeaTexss=tNTm0+9Vr-TOH_8y=Q@mail.gmail.com>
+ <CANn89iL2Jajn65L7YhqtjTAVMKNpkH0+-zJtQwFVcgrtJwxEWg@mail.gmail.com>
+ <46dde206-53bf-8ba8-f964-6bcc22a303c7@nvidia.com> <15d10423-9f8b-668a-ba14-f9c15a3b3782@nvidia.com>
+ <9f4c2ca9-bc6d-f2bf-6c03-e95affb55aae@nvidia.com>
+In-Reply-To: <9f4c2ca9-bc6d-f2bf-6c03-e95affb55aae@nvidia.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 20 Nov 2022 08:04:13 -0800
-Message-ID: <CANn89iJxiV_-g6n60aeA=mO=DYwGV9VdJswHP4pc-Vwq_UgrRA@mail.gmail.com>
-Subject: Re: [PATCH v2] net: tun: Fix use-after-free in tun_detach()
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Shigeru Yoshida <syoshida@redhat.com>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        syzbot+106f9b687cd64ee70cd1@syzkaller.appspotmail.com
+Date:   Sun, 20 Nov 2022 08:09:20 -0800
+Message-ID: <CANn89iJkdQ9eBkwmWMcf7uKwB=cY8hbwo2Jqdtwo3mpjswAFHg@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: fix race condition in qdisc_graft()
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>, eric.dumazet@gmail.com,
+        syzbot <syzkaller@googlegroups.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maxtram95@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,76 +80,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 2:49 AM Hillf Danton <hdanton@sina.com> wrote:
+On Sat, Nov 19, 2022 at 11:42 PM Gal Pressman <gal@nvidia.com> wrote:
 >
-> On 20 Nov 2022 18:02:13 +0900 Shigeru Yoshida <syoshida@redhat.com>
-> > syzbot reported use-after-free in tun_detach() [1].  This causes call
-> > trace like below:
-> >
-> > ==================================================================
-> > BUG: KASAN: use-after-free in notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
-> > Read of size 8 at addr ffff88807324e2a8 by task syz-executor.0/3673
-> >
-> > CPU: 0 PID: 3673 Comm: syz-executor.0 Not tainted 6.1.0-rc5-syzkaller-00044-gcc675d22e422 #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> > Call Trace:
-> >  <TASK>
-> >  __dump_stack lib/dump_stack.c:88 [inline]
-> >  dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
-> >  print_address_description mm/kasan/report.c:284 [inline]
-> >  print_report+0x15e/0x461 mm/kasan/report.c:395
-> >  kasan_report+0xbf/0x1f0 mm/kasan/report.c:495
-> >  notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
-> >  call_netdevice_notifiers_info+0x86/0x130 net/core/dev.c:1942
-> >  call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
-> >  call_netdevice_notifiers net/core/dev.c:1997 [inline]
-> >  netdev_wait_allrefs_any net/core/dev.c:10237 [inline]
-> >  netdev_run_todo+0xbc6/0x1100 net/core/dev.c:10351
-> >  tun_detach drivers/net/tun.c:704 [inline]
-> >  tun_chr_close+0xe4/0x190 drivers/net/tun.c:3467
-> >  __fput+0x27c/0xa90 fs/file_table.c:320
-> >  task_work_run+0x16f/0x270 kernel/task_work.c:179
-> >  exit_task_work include/linux/task_work.h:38 [inline]
-> >  do_exit+0xb3d/0x2a30 kernel/exit.c:820
-> >  do_group_exit+0xd4/0x2a0 kernel/exit.c:950
-> >  get_signal+0x21b1/0x2440 kernel/signal.c:2858
-> >  arch_do_signal_or_restart+0x86/0x2300 arch/x86/kernel/signal.c:869
-> >  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
-> >  exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
-> >  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
-> >  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
-> >  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
-> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> >
-> > The cause of the issue is that sock_put() from __tun_detach() drops
-> > last reference count for struct net, and then notifier_call_chain()
-> > from netdev_state_change() accesses that struct net.
+> On 10/11/2022 11:08, Gal Pressman wrote:
+> > On 06/11/2022 10:07, Gal Pressman wrote:
+
+> >> It reproduces consistently:
+> >> ip link set dev eth2 up
+> >> ip addr add 194.237.173.123/16 dev eth2
+> >> tc qdisc add dev eth2 clsact
+> >> tc qdisc add dev eth2 root handle 1: htb default 1 offload
+> >> tc class add dev eth2 classid 1: parent root htb rate 18000mbit ceil
+> >> 22500.0mbit burst 450000kbit cburst 450000kbit
+> >> tc class add dev eth2 classid 1:3 parent 1: htb rate 3596mbit burst
+> >> 89900kbit cburst 89900kbit
+> >> tc qdisc delete dev eth2 clsact
+> >> tc qdisc delete dev eth2 root handle 1: htb default 1
+> >>
+> >> Please let me know if there's anything else you want me to check.
+> > Hi Eric, did you get a chance to take a look?
 >
-> Correct. IOW the race between netdev_run_todo() and cleanup_net() is behind
-> the uaf report from syzbot.
->
-> >
-> > This patch fixes the issue by calling sock_put() from tun_detach()
-> > after all necessary accesses for the struct net has done.
->
-> Thanks for your fix.
->
-> But tun is not special wrt netdev_run_todo() and call_netdevice_notifiers(),
-> so the correct fix should be making netdev grab another hold on net and
-> invoking put_net() in the path of netdev_run_todo().
+> No response for quite a long time, Jakub, should I submit a revert?
 
-Well, this is not going to work. Unless I am missing something.
+Sorry, I won't have time to look at this before maybe two weeks.
 
-1) A netns is destroyed when its refcount reaches zero.
+If you want to revert a patch which is correct, because some code
+assumes something wrong,
+I will simply say this seems not good.
 
-   if (refcount_dec_and_test(&net->ns.count))
-        __put_net(net);
-
-    This transition is final.
-
-    (It is illegal to attempt a refcount_inc() from this state)
-
-2) All its netdevices are unregistered.
-
-   Trying to get a reference on netns in netdevice dismantle path
-would immediately trigger a refcount_t warning.
+I think this offload code path needs more care from nvidia folks.
