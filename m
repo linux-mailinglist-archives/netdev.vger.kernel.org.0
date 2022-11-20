@@ -2,185 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A1C263132C
-	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:11:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEA2631332
+	for <lists+netdev@lfdr.de>; Sun, 20 Nov 2022 10:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229620AbiKTJJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 04:09:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
+        id S229535AbiKTJ0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 04:26:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiKTJJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:09:47 -0500
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECC98F3DC
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:09:45 -0800 (PST)
+        with ESMTP id S229530AbiKTJ0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 04:26:07 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EED9922D5
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:26:06 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id s12so12566427edd.5
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 01:26:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1668935385; x=1700471385;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LvLRtFPaan5gE4b9PgmIVWJFVG/QQpSQaG+ZzjS5aK8=;
-  b=oJY8iko4v3iwKrOrz/PTZDytKt/DCXqhbAM0bgObP1ojXBWF+30Vq6LV
-   eJK34q1AsqGj+tg+/Ot65lxB4Ob3MwMBZnAjRYw79Aw5EcyvCYh49MB31
-   DD8YLKExFZnqF/FGXV79cSozuB/awfxzyssQg9JpVx8ixnu51RNOOF6vH
-   8=;
-X-IronPort-AV: E=Sophos;i="5.96,179,1665446400"; 
-   d="scan'208";a="281939831"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-5eae960a.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2022 09:09:41 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-m6i4x-5eae960a.us-west-2.amazon.com (Postfix) with ESMTPS id 634D44166C;
-        Sun, 20 Nov 2022 09:09:40 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Sun, 20 Nov 2022 09:09:38 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.223) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Sun, 20 Nov 2022 09:09:36 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <tkhai@ya.ru>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <kuniyu@amazon.com>
-Subject: Re: [PATCH net] unix: Fix race in SOCK_SEQPACKET's unix_dgram_sendmsg()
-Date:   Sun, 20 Nov 2022 01:09:28 -0800
-Message-ID: <20221120090928.30474-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <38a920a7-cfba-7929-886d-c3c6effc0c43@ya.ru>
-References: <38a920a7-cfba-7929-886d-c3c6effc0c43@ya.ru>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7jd78G4d5ZD0lDCvBRuLW/rYa/9HXjleQQwuOU/fiPw=;
+        b=b1Ibj41YUhEAIQ+hvEljA36vR3EuoG2YSppLRS4jiDRpD39a15sd90p0btSZ9VUG4O
+         HhiO/qYCGDw/lsxdkGOmd8CA9G42r6EKEMJVN7dHlabcM4ekI335nf44gVPvDazvmSAe
+         /qsyCfm2aAwzlg9MY4a6assytFtOvRPQjBbR7cJ88hif+jYFtprqFokQL25pEugjcoWe
+         XnmflNJUxY3v83N/2lKHNTkjBFTLG97yfVPfB6fwut/3JVDsaq+FM9+oEc/RPGwZ0vmF
+         5cXRKTeza/cnGEg+7awcUaPud+4zKtGrY8TOnY/9eFgCSjDTgvNYE3mxUb48etIEw4Ja
+         UfAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7jd78G4d5ZD0lDCvBRuLW/rYa/9HXjleQQwuOU/fiPw=;
+        b=pkRgOLHHNUCMJEPWAOdWdWtdnUo5vhvZoqjzEWDl1Q2b794q2BB1eNfYdiLEQnPH8S
+         9JD1mod2ZhPGOziV8aQ9FHc6sqK9lcJagHX8EeJYx6Jrtnte7km+ZW3c0/Pc9N3dUU73
+         eiIgzpEWk38i/odcv35gn497JfLA3EzhjOwewgBdVK4F3d3l/yyifgrp19TMeeq3JZs/
+         Vrpba0VlkrFRBGZwbBhMsnsZ1VbuSd7vNe5ufymrgFMWWNbKSduXtKhvopwdtun8EFsl
+         Y22LQtC6Czkk89dDeSYIniG+T9TIg/hV5Z9OvJRZbMDtNgT2vpw5IVgh+BkZftRziStv
+         Teow==
+X-Gm-Message-State: ANoB5pmoalkmUO7MJhv2WhmLoGlCrzlf4LbPUUg2/5z6hYIMcnZZEau2
+        ZfNgeuQMIp762cTvrfA+DvLMy2JHAeyCQuy5TLg=
+X-Google-Smtp-Source: AA0mqf4Pl5riN/v882vsdxON9sLQ7RxmOLrN2tZLxRh5UvUbwkPZx9gfNkDPhe4UI7C6XoaGw8w916K596TGA/59f+s=
+X-Received: by 2002:a05:6402:3485:b0:468:89dd:d326 with SMTP id
+ v5-20020a056402348500b0046889ddd326mr12167892edc.352.1668936364795; Sun, 20
+ Nov 2022 01:26:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.223]
-X-ClientProxiedBy: EX13D45UWA001.ant.amazon.com (10.43.160.91) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-3-dnlplm@gmail.com>
+ <20221110173222.3536589-1-alexandr.lobakin@intel.com> <CAGRyCJHmNgzVVnGunUh7wwKxYA7GzSvfgqPDAxL+-NcO2P+1wg@mail.gmail.com>
+ <20221116162016.3392565-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20221116162016.3392565-1-alexandr.lobakin@intel.com>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Sun, 20 Nov 2022 10:25:53 +0100
+Message-ID: <CAGRyCJHX9WMeHLBgh5jJj2mNJh3hqzAhHacVnLqP_CpoHQaTaw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets aggregation
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Kirill Tkhai <tkhai@ya.ru>
-Date:   Sun, 20 Nov 2022 02:16:47 +0300
-> There is a race resulting in alive SOCK_SEQPACKET socket
-> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
-> 
-> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
->   sock_orphan(peer)
->     sock_set_flag(peer, SOCK_DEAD)
->                                            sock_alloc_send_pskb()
->                                              if !(sk->sk_shutdown & SEND_SHUTDOWN)
->                                                OK
->                                            if sock_flag(peer, SOCK_DEAD)
->                                              sk->sk_state = TCP_CLOSE
->   sk->sk_shutdown = SHUTDOWN_MASK
-> 
-> 
-> After that socket sk remains almost normal: it is able to connect, listen, accept
-> and recvmsg, while it can't sendmsg.
+Il giorno mer 16 nov 2022 alle ore 17:21 Alexander Lobakin
+<alexandr.lobakin@intel.com> ha scritto:
+>
+> From: Daniele Palmas <dnlplm@gmail.com>
+> Date: Wed, 16 Nov 2022 16:19:48 +0100
+>
+> > Hello Alexander,
+> >
+> > Il giorno gio 10 nov 2022 alle ore 18:35 Alexander Lobakin
+> > <alexandr.lobakin@intel.com> ha scritto:
+> > >
+> > > Do I get the whole logics correctly, you allocate a new big skb and
+> > > just copy several frames into it, then send as one chunk once its
+> > > size reaches the threshold? Plus linearize every skb to be able to
+> > > do that... That's too much of overhead I'd say, just handle S/G and
+> > > fraglists and make long trains of frags from them without copying
+> > > anything?
+> >
+> > sorry for my question, for sure I'm lacking knowledge about this, but
+> > I'm trying to understand how I can move forward.
+> >
+> > Suppose I'm able to build the aggregated block as a train of
+> > fragments, then I have to send it to the underlying netdevice that, in
+> > my scenario, is created by the qmi_wwan driver: I could be wrong, but
+> > my understanding is that it does not support fragments.
+> >
+> > And, as far as I know, there's only another driver in mainline used
+> > with rmnet (mhi_net) and that one also does not seem to support them
+> > either.
+> >
+> > Does this mean that once I have the aggregated block through fragments
+> > it should be converted to a single linear skb before sending?
+>
+> Ah okay, I've missed the fact it's only an intermediate layer and
+> there's some real device behind it.
+> If you make an skb with fragments and queue it up to a netdev which
+> doesn't advertise %NETIF_F_SG, networking core will take care of
+> this. It will then form a set of regular skbs and queue it for
+> sending instead. Sure, there'll be some memcopies, but I can't say
+> this implementation is better until some stats provided.
+>
+> And BTW, as Gal indirectly mentioned, those perf problems belong to
+> the underlying device, e.g. qmi_wwan and so on, rmnet shouldn't do
+> anything here.
 
-nit: Then, also recvmsg() fails with -ENOTCONN.  And after connect(), even
-both of recvmsg() and sendmsg() does not fail.
+Ok, so rmnet would only take care of qmap rx packets deaggregation and
+qmi_wwan of the tx aggregation.
 
-static int unix_seqpacket_recvmsg(struct socket *sock, struct msghdr *msg,
-				  size_t size, int flags)
-{
-	struct sock *sk = sock->sk;
+At a conceptual level, implementing tx aggregation in qmi_wwan for
+passthrough mode could make sense, since the tx aggregation parameters
+belong to the physical device and are shared among the virtual rmnet
+netdevices, which can't have different aggr configurations if they
+belong to the same physical device.
 
-	if (sk->sk_state != TCP_ESTABLISHED)
-		return -ENOTCONN;
+Bj=C3=B8rn, would this approach be ok for you?
 
-	return unix_dgram_recvmsg(sock, msg, size, flags);
-}
+Thanks,
+Daniele
 
-
-> 
-> Since this is the only possibility for alive SOCK_SEQPACKET to change
-> the state in such way, we should better fix this strange and potentially
-> danger corner case.
-> 
-> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock.
-> 
-> Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
-
-Fixes tag is needed:
-
-Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
-
-Before this commit, there was no state change and SEQPACKET sk also went
-through the same path.  The bug was introduced because the commit did not
-consider SEAPACKET.
-
-So, I think the fix should be like below, then we can free the peer faster.
-Note unix_dgram_peer_wake_disconnect_wakeup() is dgram-specific too.
-
----8<---
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index b3545fc68097..be40023a61fb 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -2001,11 +2001,14 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- 		err = 0;
- 		if (unix_peer(sk) == other) {
- 			unix_peer(sk) = NULL;
--			unix_dgram_peer_wake_disconnect_wakeup(sk, other);
-+
-+			if (sk->sk_type == SOCK_DGRAM) {
-+				unix_dgram_peer_wake_disconnect_wakeup(sk, other);
-+				sk->sk_state = TCP_CLOSE;
-+			}
- 
- 			unix_state_unlock(sk);
- 
--			sk->sk_state = TCP_CLOSE;
- 			unix_dgram_disconnected(sk, other);
- 			sock_put(other);
- 			err = -ECONNREFUSED;
----8<---
-
-Also, it's better to mention that moving TCP_CLOSE under the lock resolves
-another rare race with unix_dgram_connect() for DGRAM sk:
-
-  unix_state_unlock(sk);
-  <--------------------------> connect() could set TCP_ESTABLISHED here.
-  sk->sk_state = TCP_CLOSE;
-
-
-Thank you!
-
-
-> ---
->  net/unix/af_unix.c |   11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index b3545fc68097..6fd745cfc492 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -1999,13 +1999,20 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
->  			unix_state_lock(sk);
->  
->  		err = 0;
-> -		if (unix_peer(sk) == other) {
-> +		if (sk->sk_type == SOCK_SEQPACKET) {
-> +			/* We are here only when racing with unix_release_sock()
-> +			 * is clearing @other. Never change state to TCP_CLOSE
-> +			 * unlike SOCK_DGRAM wants.
-> +			 */
-> +			unix_state_unlock(sk);
-> +			err = -EPIPE;
-> +		} else if (unix_peer(sk) == other) {
->  			unix_peer(sk) = NULL;
->  			unix_dgram_peer_wake_disconnect_wakeup(sk, other);
->  
-> +			sk->sk_state = TCP_CLOSE;
->  			unix_state_unlock(sk);
->  
-> -			sk->sk_state = TCP_CLOSE;
->  			unix_dgram_disconnected(sk, other);
->  			sock_put(other);
->  			err = -ECONNREFUSED;
+> So you could try implement aggregation there or
+> whatever you'd like to pick. I'd try to read some specs first and
+> see whether qmi_wwan HW is capable of S/G or whether some driver
+> improvements for Tx could be done there.
+>
+> >
+> > Thanks,
+> > Daniele
+>
+> Thanks,
+> Olek
