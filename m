@@ -2,92 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4F21632C78
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 19:58:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3D8A632C7B
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 19:59:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbiKUS6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 13:58:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
+        id S229885AbiKUS7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 13:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbiKUS6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 13:58:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA5CC72F2
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 10:58:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B5E46142D
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:58:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47959C433D6;
-        Mon, 21 Nov 2022 18:58:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669057122;
-        bh=QjNzKdbTsJioXsSph0J6Yn94Lp4d8+3kVhp8nY6a8RM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=t+YRR7SBhRW9T+t5FpdUQrrrFjVOGk0QF63tr7bt0PJ0qsse50sDwlYcViR8vQEmY
-         uHjTg925445bxWI+zbVM/8BKcGrmgxv7pXfQ79lE+nVweZ6Y6fFv19wZ01gxhFCtlk
-         yET3RnJUER5OczuDTwiKY9tMyEh3Q4El7HnasgcgPFIIGLohQpL2CIsx6JBDOIlQQf
-         bEZViGwv6QD+w1zCbNApAWNW86p59rj4V9zQKx8JUxS9qeN2kDv0xb4RFJwDL9ssmn
-         VD1wi7qDgl+obxMjFdbnzZ+sTInkNcIxfgBE/YTVXr3YoIYnvcdXWpP03IPBQSvWXQ
-         Bi/URHIgzD6ng==
-Date:   Mon, 21 Nov 2022 10:58:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH net-next v3] ethtool: add netlink based get rss support
-Message-ID: <20221121105841.214ce8e2@kernel.org>
-In-Reply-To: <20221120210217.zcdmr47r6ck33cf4@lion.mk-sys.cz>
-References: <20221116232554.310466-1-sudheer.mogilappagari@intel.com>
-        <Y3dgpNASNn6pvT05@electric-eye.fr.zoreil.com>
-        <IA1PR11MB6266E62A4F46CCE62C053451E40B9@IA1PR11MB6266.namprd11.prod.outlook.com>
-        <20221120210217.zcdmr47r6ck33cf4@lion.mk-sys.cz>
+        with ESMTP id S230377AbiKUS7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 13:59:03 -0500
+Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A7BCFBB1;
+        Mon, 21 Nov 2022 10:59:02 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.west.internal (Postfix) with ESMTP id C021D2B06846;
+        Mon, 21 Nov 2022 13:59:01 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Mon, 21 Nov 2022 13:59:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1669057141; x=1669060741; bh=aYKy/dWFpy
+        EcPoInA9iPPi4kQ5Fezf2eiVvaR1Q7RH8=; b=rCqLFx5jHrHDVCUf2MGyaBQMWk
+        yhiTUubU9lJuAsvRKkXhBZn8Yad6tqx2qo81TSvX/0NPSLH6d9eh3JI/NQaGT7TD
+        g21CibRcjdf+e8rcNEfHDYkO1kzkCSSQwfDzQHoGr+3/i98kxLjDhY0TTMc8ZrWK
+        cwX1dgaBr3DrJ55+IH5Ky8+9ITneW3FPO2YfK5fZc3j9J1k+jL7NW6R+XO3BoPON
+        j9g9dzYOhjT1GlLuY3hig/f9a32dpzSrDEltjU0cYWMe7/Ys4EPHD7/lLMg8QV7b
+        r7miNcnh4zUerYcPKHn8+i3/K7XbUSXFomfScO6wWVQoLJpiAoXrk64ZfevA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1669057141; x=1669060741; bh=aYKy/dWFpyEcPoInA9iPPi4kQ5Fe
+        zf2eiVvaR1Q7RH8=; b=bJL6sk+Ia6Y8ZUAw+o5TZFar1Q/B+WH/sf8x+6wMPPle
+        L7mHgPsqVIUol8jt28AQypcQE0PU6DDLZyRRDTvE0+DbwB4hUp+aB2AkBLFLP4Mn
+        iMzb1mbdb1yKO6HSROu91P3Zz6cZwA0QAzqV/X5KM7RaaOtGiSWzSEkrXclUhnpG
+        vTOMsyLJJuw9b9jB7tu5fb0qVQsBs3bO+dPoXnQSR5CBMzyM9+u1Eo3BhED93NE9
+        cbmKES9m9T0LFZopf5/46odvgz2DYSpA2ahw6OcPSPjtqWg7xXtnP2gqIRSnYiOq
+        q4HTGvy8oDJNEY1lybNGSTLq8iQt/6AufQ9iO0T+3Q==
+X-ME-Sender: <xms:dcp7Y_M-bZkMAJEYQ6_3goT9bBvRg_s4dNTcwaox6zx4U-pSZefPOg>
+    <xme:dcp7Y587DIQhHPAz6kiByo3Qp0IzQM_uk_3kb5R8ZnDZ8ajdLEMmel5xWGuEbbkaD
+    6vFU_i9lav3S1ulDLs>
+X-ME-Received: <xmr:dcp7Y-SUugaTmws5CgG0AdwXsHZfmZQt1chHTDBUrcKJt1ThV0YM29VVLwYHazk2GAbMyI78kx0UNsFmreH7owGm0gpcQlbI2IS8an_czQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheeigdduudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfhgfhffvvefuffgjkfggtgesthdtredttdertdenucfhrhhomhepufhtvghf
+    rghnucftohgvshgthhcuoehshhhrseguvghvkhgvrhhnvghlrdhioheqnecuggftrfgrth
+    htvghrnhepveelgffghfehudeitdehjeevhedthfetvdfhledutedvgeeikeeggefgudeg
+    uedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsh
+    hhrhesuggvvhhkvghrnhgvlhdrihho
+X-ME-Proxy: <xmx:dcp7YzupSb7r6_y0VHKA8Gz5zL1AhgpaKn50VtxFmUZMVaitJh1d6Q>
+    <xmx:dcp7Y3fUD5xjrP4U0KVzeNwtCD4mF6ORiGkw20-f7nrrFUFt0VjRxg>
+    <xmx:dcp7Y_38OjzfaQ2KWRFwaGnmszD-swLIpWnFnTGsV_MCdVjOPfd2-w>
+    <xmx:dcp7Y4HFGCxktdNot6TF4OZtH2nhrzPmBm6c76tWVwjFgkZi0g4SP0D3Zhc>
+Feedback-ID: i84614614:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Nov 2022 13:59:00 -0500 (EST)
+References: <20221119041149.152899-1-shr@devkernel.io>
+ <20221119041149.152899-2-shr@devkernel.io>
+ <c5ac425d-48e2-0a6d-3f56-c6154d3ac81f@gnuweeb.org>
+User-agent: mu4e 1.6.11; emacs 28.2.50
+From:   Stefan Roesch <shr@devkernel.io>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Facebook Kernel Team <kernel-team@fb.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Olivier Langlois <olivier@trillion01.com>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [RFC PATCH v4 1/4] liburing: add api to set napi busy poll
+ settings
+Date:   Mon, 21 Nov 2022 10:58:45 -0800
+In-reply-to: <c5ac425d-48e2-0a6d-3f56-c6154d3ac81f@gnuweeb.org>
+Message-ID: <qvqwsfic3zik.fsf@dev0134.prn3.facebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,URIBL_BLACK autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 20 Nov 2022 22:02:17 +0100 Michal Kubecek wrote:
-> That would leave us with two questions:
 
-Here's my 2 cents:
+Ammar Faizi <ammarfaizi2@gnuweeb.org> writes:
 
-> 1. What to do with ETHTOOL_GRXRING? Can we use ETHTOOL_MSG_RINGS_GET as
-> it is? (I.e. should the count be always equal to rx + combined?) If not,
-> should we extend it or put the count into ETHTOOL_MSG_RSS_GET?
+> On 11/19/22 11:11 AM, Stefan Roesch wrote:
+>> +
+>> +int io_uring_register_napi(struct io_uring *ring, struct io_uring_napi *napi)
+>> +{
+>> +	return __sys_io_uring_register(ring->ring_fd,
+>> +				IORING_REGISTER_NAPI, napi, 0);
+>> +}
+>> +
+>> +int io_uring_unregister_napi(struct io_uring *ring, struct io_uring_napi *napi)
+>> +{
+>> +	return __sys_io_uring_register(ring->ring_fd,
+>> +				IORING_REGISTER_NAPI, napi, 0);
+>> +}
+>
+> The latter should be IORING_UNREGISTER_NAPI instead of IORING_REGISTER_NAPI?
+> Or did I miss something?
 
-That'd be great.. but there are drivers out there for which 
-rx + combined is incorrect.
-
-Maybe we need to add an attr to ETHTOOL_MSG_RINGS_GET which core will
-fill in by default to rx + combined but broken drivers can correct it
-to whatever is right for them?
-
-We can either create that attr already or wait for someone to complain?
-The same info is needed to size AF_XDP tables, which was a bit of a
-unifying force to do the right thing (i.e. make rx + combined correct).
-
-I'm torn, because I'm happy for the driver authors who got this wrong
-to suffer and get complaints. But that implies that users also suffer
-which is not cool :(
-
-> 2. What would be the best way to handle creation and deletion of RSS
-> contexts? I guess either a separate message type or combining the
-> functionality into ETHTOOL_MSG_RSS_SET somehow (but surely not via some
-> magic values like it's done in ioctl).
-
-Explicit RSS_CTX_ADD / RSS_CTX_DEL seems reasonable. And we should have
-the core keep an explicit list of the contexts while at it :/
+Thats correct.
