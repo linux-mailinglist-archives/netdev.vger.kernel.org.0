@@ -2,94 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8E45632D94
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 21:01:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92BB0632DA3
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 21:08:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiKUUA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 15:00:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        id S231809AbiKUUIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 15:08:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiKUUA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 15:00:58 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE571C6D32
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:00:56 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id h10so8719859qvq.7
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:00:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1UIX4I79tzgfezjqzOL6mvQLJnpPXeBL3ccyYC7TF7k=;
-        b=nVjqolMWEkkuifVaRlFA+u8/pjbvlQUXWQdR6gSjyF8hdhYMm+MU54ainX4o2zo1Q9
-         XhxKzbT0QbKiHY4GBqMU1+0MGX1RJGlH0A+7Gm2PqoNJja3CqZbAwpRj1YdkOda/UINk
-         bwAZk6wk6A5rRrEKEOlRw0n+7AKYpgJN9l/lUo3E4jC3JvcIHrthOYvP94owDJUYQ6qo
-         PEhu4IgkBj2Ur8RElSu8RFtRkYIX7NDUae1FclOPqWTLfLCFqBqmBmv9ldD9um8smnMq
-         GW/joy1b8MZwD6/KLNnTG15+PB1KaPeGtmSmsVuasCGZXrUuwhkAlsaShecTMHlQT93Q
-         xJ4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1UIX4I79tzgfezjqzOL6mvQLJnpPXeBL3ccyYC7TF7k=;
-        b=I/AalxtxuZzP5FNWAhoSeyuXsiZKkYLdOWnTonJZDhVPH4YBrz6MRJB6dpFQAIWJSB
-         FXFWXbV4HSlCWQLVp0axl2TwonLSETD9mYeYMAx/IwPD/Y+dUnilACHoMs/ibVjma8Dw
-         K4IWkTg5VrmFtuXt3tU0IFuzu1r9nYeEFMPVGXSbsf5K6YxgRRusfC97qu5fYplKyVxz
-         nnn80VAsIILl9dUyhdVT7wVAN7q6m6cQW+JdjeTA4Pu3oSR/BN/QRRiRJ3VbI9lCRfK8
-         Cc8KYqk2QzJ5bqyIO0ftZKLdij7dps3gdBNKcUym0z2/N0CVn7vTOIoHemyxrIuawaio
-         qm5g==
-X-Gm-Message-State: ANoB5pmlG/nxcS0ugBf1Q8Ejfl8QuBVOdA+VYtwACwum3XT5DxkYOpmX
-        p+KSwjf9gg9i5MiCjFB+hoW6b8Xb1VA=
-X-Google-Smtp-Source: AA0mqf4W28wltTTXh7jKy88k+PWWnWbPLPpyXiO+RTqQebUHD0mJuOWAHqC0GD1O1ncUD7I0G3MJ1Q==
-X-Received: by 2002:a05:6214:5d8a:b0:4c6:98e3:5ee9 with SMTP id mf10-20020a0562145d8a00b004c698e35ee9mr8333381qvb.10.1669060855576;
-        Mon, 21 Nov 2022 12:00:55 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v20-20020a05620a0f1400b006fbae4a5f59sm8725454qkl.41.2022.11.21.12.00.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 12:00:54 -0800 (PST)
-Message-ID: <9b619f22-6234-e6ac-74ee-d654abafc453@gmail.com>
-Date:   Mon, 21 Nov 2022 12:00:52 -0800
+        with ESMTP id S229553AbiKUUIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 15:08:22 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA4C15831;
+        Mon, 21 Nov 2022 12:08:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=hWWAojqdsRSVQu9mmlJr+UEwHfZNqJ2JQR14vWSq+ZU=; b=V48oykoV4CwB7MWCnl4eEysjLB
+        1CjUshTHpVjsaElOiqSY+vICHBA3usOUTQMgEI0qvidIJ8F8pInEGPiN/0UVuGftSKVjvkHxkTZdk
+        8UmR7gQiOzeE8eRe+C8UBY5JfZZR7WWdJssZ8ywY+PkGDAlEzcUKvOj0/dkpbeEUn/Hk=;
+Received: from p200300daa7225c007502151ad3a4cf6f.dip0.t-ipconnect.de ([2003:da:a722:5c00:7502:151a:d3a4:cf6f] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1oxD5R-003bHe-80; Mon, 21 Nov 2022 21:08:13 +0100
+Message-ID: <441bcda3-403f-0bf6-2d6f-d8c9d2ce44d6@nbd.name>
+Date:   Mon, 21 Nov 2022 21:08:12 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next 08/17] net: dsa: move headers exported by slave.c
- to slave.h
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.5.0
+Subject: Re: [PATCH] netfilter: nf_flow_table: add missing locking
 Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netfilter-devel@vger.kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
- <20221121135555.1227271-9-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221121135555.1227271-9-vladimir.oltean@nxp.com>
+        Paolo Abeni <pabeni@redhat.com>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221121182615.90843-1-nbd@nbd.name>
+ <3a9c2e94-3c45-5f83-c703-75e1cde13be1@nbd.name>
+ <CANn89iKps9pM=DPn1aWF1SDMqrr=HHkHL8VofVHThUmtqzn=tQ@mail.gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <CANn89iKps9pM=DPn1aWF1SDMqrr=HHkHL8VofVHThUmtqzn=tQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/21/22 05:55, Vladimir Oltean wrote:
-> Minimize the use of the bloated dsa_priv.h by moving the prototypes
-> exported by slave.c to their own header file.
+On 21.11.22 20:47, Eric Dumazet wrote:
+> On Mon, Nov 21, 2022 at 11:45 AM Felix Fietkau <nbd@nbd.name> wrote:
+>>
+>> On 21.11.22 19:26, Felix Fietkau wrote:
+>> > nf_flow_table_block_setup and the driver TC_SETUP_FT call can modify the flow
+>> > block cb list while they are being traversed elsewhere, causing a crash.
+>> > Add a write lock around the calls to protect readers
+>> >
+>> > Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>> Sorry, I forgot to add this:
+>>
+>> Reported-by: Chad Monroe <chad.monroe@smartrg.com>
+>>
+>> - Felix
 > 
-> This is just approximate to get the code structure right. There are some
-> interdependencies with static inline code left in dsa_priv.h, so leave
-> slave.h included from there for now.
+> Hi Felix
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Could you also add a Fixes: tag ?
+I don't know which commit to use for that tag.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
-
+- Felix
