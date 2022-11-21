@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C30632CD5
+	by mail.lfdr.de (Postfix) with ESMTP id D2163632CD6
 	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:17:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231403AbiKUTQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 14:16:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        id S231419AbiKUTQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 14:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiKUTQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:16:12 -0500
+        with ESMTP id S229813AbiKUTQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:16:13 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A103B66CAD
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:15:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0DB686A2
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:15:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 505A4B815D8
+        by ams.source.kernel.org (Postfix) with ESMTPS id A44D6B815D7
         for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 19:15:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D980AC43148;
-        Mon, 21 Nov 2022 19:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D6F2C433C1;
+        Mon, 21 Nov 2022 19:15:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1669058150;
-        bh=iVpNL4ZdQVbg5k5TiocvWucQSS530ONdakGLBRKiBjw=;
+        bh=6CAc1aB4SiA6zhOk/Kz3HDG8f5FhnlI/f0cCxc8NxSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZijP+883nyhD1bGJr9T85BiWwPn5UNr+beonUDy2biARMOg0w8UZtgSL9TEWXt5Dv
-         WSW6vubx8UbsQDZjlBEuIQzAL4NLOp4/r+DbjaAIoOhI7jwG3QdKGdGaXgIdYa0KN9
-         3SYj4R6w626kmHLE0LzMsDes6ArgH6PFC5On6nG1ONMMLuBxEN+PsgIcTeCMJTF012
-         6cX1xhAha1ZtzZXJgFuV0xXdIWuIPc+UqQGh8ahaB8rIWSZp3YeZi2oYAPVAgUKF4c
-         5l//fBL1KxE7waz+JWBjWjXaXDAATOe4NZbke2iyh2MPHHGLBoVQLEUy3LY9BGvt4K
-         ulAzdXC4ekUiA==
+        b=O9OGMvPhhyKeslRhtZdhNVFol5VFMFjmhEgkoJC962n7ijoPM4DatJfrDTVBSTVxL
+         nmWk636EkaGO51bdwB4vQOv3y5a2tr7TQPCyUODOcLFiZ6Ry4RHeNmn8/DdegONEwy
+         E6reMMtdY4PDrwkonsuB+ElfdZnNLfS6vYAExIz+wyZiO59+Vp/YkavdazsM1jw8kz
+         Z84+WSkGhG0iFBjmFqnAms3b3SLTpFG/sw9CzPGxUoPQeAdw2mS+qAO8XCad5a7qcz
+         P51MK/xegSzenXp/gc5ku6tM0BHErpb6vufMbULbnao9q3sAJjw2qyyt83b2DfuPOn
+         juwJTb1oNJK0Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         uwe@kleine-koenig.org,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 04/12] net/mlxsw: Convert to i2c's .probe_new()
-Date:   Mon, 21 Nov 2022 11:15:38 -0800
-Message-Id: <20221121191546.1853970-5-kuba@kernel.org>
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH net-next 05/12] nfc: microread: Convert to i2c's .probe_new()
+Date:   Mon, 21 Nov 2022 11:15:39 -0800
+Message-Id: <20221121191546.1853970-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221121191546.1853970-1-kuba@kernel.org>
 References: <20221121191546.1853970-1-kuba@kernel.org>
@@ -57,40 +57,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-.probe_new() doesn't get the i2c_device_id * parameter, so determine
-that explicitly in the probe function.
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/i2c.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/nfc/microread/i2c.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-index f5f5f8dc3d19..2c586c2308ae 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-@@ -632,9 +632,9 @@ static const struct mlxsw_bus mlxsw_i2c_bus = {
- 	.cmd_exec		= mlxsw_i2c_cmd_exec,
+diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
+index 5eaa18f81355..e72b358a2a12 100644
+--- a/drivers/nfc/microread/i2c.c
++++ b/drivers/nfc/microread/i2c.c
+@@ -231,8 +231,7 @@ static const struct nfc_phy_ops i2c_phy_ops = {
+ 	.disable = microread_i2c_disable,
  };
  
--static int mlxsw_i2c_probe(struct i2c_client *client,
--			   const struct i2c_device_id *id)
-+static int mlxsw_i2c_probe(struct i2c_client *client)
+-static int microread_i2c_probe(struct i2c_client *client,
+-			       const struct i2c_device_id *id)
++static int microread_i2c_probe(struct i2c_client *client)
  {
-+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	const struct i2c_adapter_quirks *quirks = client->adapter->quirks;
- 	struct mlxsw_i2c *mlxsw_i2c;
- 	u8 status;
-@@ -751,7 +751,7 @@ static void mlxsw_i2c_remove(struct i2c_client *client)
- 
- int mlxsw_i2c_driver_register(struct i2c_driver *i2c_driver)
- {
--	i2c_driver->probe = mlxsw_i2c_probe;
-+	i2c_driver->probe_new = mlxsw_i2c_probe;
- 	i2c_driver->remove = mlxsw_i2c_remove;
- 	return i2c_add_driver(i2c_driver);
- }
+ 	struct microread_i2c_phy *phy;
+ 	int r;
+@@ -287,7 +286,7 @@ static struct i2c_driver microread_i2c_driver = {
+ 	.driver = {
+ 		.name = MICROREAD_I2C_DRIVER_NAME,
+ 	},
+-	.probe		= microread_i2c_probe,
++	.probe_new	= microread_i2c_probe,
+ 	.remove		= microread_i2c_remove,
+ 	.id_table	= microread_i2c_id,
+ };
 -- 
 2.38.1
 
