@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6762632E08
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 21:36:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3561A632E09
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 21:37:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiKUUgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 15:36:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
+        id S230165AbiKUUhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 15:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiKUUgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 15:36:43 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8ED8DA4CA
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:36:42 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id l22-20020a17090a3f1600b00212fbbcfb78so15311347pjc.3
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:36:42 -0800 (PST)
+        with ESMTP id S229505AbiKUUhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 15:37:31 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0D72600
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:37:30 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id x21so8919970qkj.0
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:37:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Eah76lvYsPeNHMD8i11r9iqPmQNtRAGhGD0e1zU04jc=;
-        b=CFw1fbcJOf5pTgkgN5NqBZqUrFq+Btc+FS+K/uQvoNIHPNSMNKfonuqx0U9ylX+FP9
-         0HGTGUQWoKNDtiyjduEbzcd5WVDs5JhLNFRzVBFLqTGRQgoJCpv3/t09N3s2/HFxVsbg
-         kgvampDmtUiFWLWtwAnjmYe8sR7GARd6H0j8vcJXRRmeCsbAYVR2HF8JOGpxMdJ5JL5S
-         CZ+AuTqNLcAMHFbKAjHn90BrHzwuPEuNyFJyK/hT9PDzrfqJrZRY/gXqlFR0poFTMRUt
-         qZW+QxLpvZRk1cyMtwrygtsymrLskp8L4qa9Y3o1z7a1mijJx2sEk9A77/C6IQoyNzVL
-         zr8g==
+        bh=VSTFZDWXdFJDvhUzZRFjlklMEnXTs9XTlAZMMTw9ssE=;
+        b=MH2gPNTFMyVi9i0qMAvl7NJ20HqHqt4X2FhiTIEWXv1TUFmfKSGFUZKbl/kv/8viep
+         5LmX1OU7RLBxH1ffbwAabRjpYr4ObPIQcGGixUsqPcoovjbzKxoXWu52m2N7JXDX7xl4
+         HKceDmscbP9Hny6XzvZ86eeavjwv2vNv0BT4GyK1gBoYmaMJYzuVroWWyiNs0U6ZkEk1
+         +VBOGZFkPt/i1jkZfeyk2b+b3dlT6kevS2QnjtBWp8UHtf8U6X7f+Ltsm/EU4DOT/Slf
+         yTGw44ZvZdNzEoS7c7H5Lc2jycbpsOyyPnvjyTqniRGiwRILGsm64YhLB2Q7Rt6dsbe5
+         Iwkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Eah76lvYsPeNHMD8i11r9iqPmQNtRAGhGD0e1zU04jc=;
-        b=ER9sPArifHT/CXVcfMAVOeNcgLIMWxx22c+VKZkrRZQRXYSTlS8Bo/YgiYXNHTsv8M
-         j63nVNoOtZPDr4Thv/1bHyoCpXHqsvP/AAStnxa+wuZ5PzcExivn+yR7HH4WDPyMpvvf
-         1geABPyA66d3CM9ZuplLrcSWerL4oA5vCGdh7jxXFL0l6DzZ/3hlgh3y4HRzTA/WYnr7
-         Vbxk5CPIGfk11VTuFtcKVxnDSo3SQn0xntsfGfgM8fG+PPnLPlTO0yLHsS/q0DzhxRUH
-         Mr7GqkWJW+aOimNOADyyXMRJdX4GM6q5Ki6RM/pn2AfhcVUEc8Lnc0OxRyUZYFwxDPgb
-         qOnQ==
-X-Gm-Message-State: ANoB5pnLO1wa9F03oYVlGcb9OnXCYWcWYXhRO0Nz5k/LTRgAr2NjHdvw
-        uTNWyt7NUuI7rj38sU33pCA=
-X-Google-Smtp-Source: AA0mqf6I7DSTT5mrSKi4mwgDoyYmZ7ytb8ognHx+bIOty71azc3mXBpFAt4AFLjKlFmoTQkp6oH3kA==
-X-Received: by 2002:a17:90a:7e0d:b0:213:d630:f4af with SMTP id i13-20020a17090a7e0d00b00213d630f4afmr22303375pjl.77.1669063002120;
-        Mon, 21 Nov 2022 12:36:42 -0800 (PST)
+        bh=VSTFZDWXdFJDvhUzZRFjlklMEnXTs9XTlAZMMTw9ssE=;
+        b=hIG8dqmRanFkf1wFxclJON5aiO8YzRpPNYwQIqcuhgUqCE9fDEjML818QXH9/0S4S8
+         VZ/s6Uix4KphHFyWnbgonh0tNCb6kXL1LMGKrceJCei8B9m7guvlWA5TgvrlexQBSSh7
+         eEIW+PX+6zlwxssCkf/cL3lwTFv0AHn6rHFlsmmWsLhYUICIcpFReVmqUzUG1LL6jYO1
+         ygbymaSBpJHIscdntN534tPYSU6GkauGvEnLso5uYQDcWWTDdJWoSg8Ff34nngZnyvgR
+         BungbxUJDMRe1nLkzurEwN8nuF54b31ufjJJpy+JeCFqg5QGTlhNzPC7eLPNOnTxG0wa
+         PC/g==
+X-Gm-Message-State: ANoB5pnVs0y654x2n65+luxiRNjIk8IkNXC+/rDTTm+qNMzw0YCTRlMm
+        9jYYKQ5E++UB56kVWGFNPdc=
+X-Google-Smtp-Source: AA0mqf5yz+Ny1PZaZzze0VnwgJgqP2NmJdxWBZ++eG2NGLbgRpXHPsfmtSvtoC1n/Qu2L9EsCyRnGA==
+X-Received: by 2002:ae9:e509:0:b0:6f5:5aa7:c772 with SMTP id w9-20020ae9e509000000b006f55aa7c772mr3752312qkf.97.1669063049508;
+        Mon, 21 Nov 2022 12:37:29 -0800 (PST)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f4-20020a170902e98400b00188c5f0f9e9sm10120804plb.199.2022.11.21.12.36.40
+        by smtp.googlemail.com with ESMTPSA id h4-20020a05620a400400b006eeb3165565sm9006086qko.80.2022.11.21.12.37.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 12:36:41 -0800 (PST)
-Message-ID: <5e86377a-c4bb-6c65-00bc-311d3998dec6@gmail.com>
-Date:   Mon, 21 Nov 2022 12:36:39 -0800
+        Mon, 21 Nov 2022 12:37:28 -0800 (PST)
+Message-ID: <cb6b6dca-eac4-174c-ea38-d3a5c97bf6e9@gmail.com>
+Date:   Mon, 21 Nov 2022 12:37:26 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Subject: Re: [PATCH net-next 13/17] net: dsa: merge dsa.c into dsa2.c
+Subject: Re: [PATCH net-next 14/17] net: dsa: rename dsa2.c back into dsa.c
+ and create its header
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
@@ -63,9 +64,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 References: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
- <20221121135555.1227271-14-vladimir.oltean@nxp.com>
+ <20221121135555.1227271-15-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221121135555.1227271-14-vladimir.oltean@nxp.com>
+In-Reply-To: <20221121135555.1227271-15-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,8 +80,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/21/22 05:55, Vladimir Oltean wrote:
-> There is no longer a meaningful distinction between what goes into
-> dsa2.c and what goes into dsa.c. Merge the 2 into a single file.
+> The previous change moved the code into the larger file (dsa2.c) to
+> minimize the delta. Rename that now to dsa.c, and create dsa.h, where
+> all related definitions from dsa_priv.h go.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
