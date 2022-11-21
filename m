@@ -2,100 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8698632398
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:31:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C70B3632352
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:22:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230526AbiKUNbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 08:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34972 "EHLO
+        id S229941AbiKUNV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 08:21:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiKUNaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:30:52 -0500
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Nov 2022 05:30:49 PST
-Received: from zproxy110.enst.fr (zproxy110.enst.fr [IPv6:2001:660:330f:2::c0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC675B960E;
-        Mon, 21 Nov 2022 05:30:49 -0800 (PST)
-Received: from localhost (localhost [IPv6:::1])
-        by zproxy110.enst.fr (Postfix) with ESMTP id 2598E8178C;
-        Mon, 21 Nov 2022 14:14:53 +0100 (CET)
-Received: from zproxy110.enst.fr ([IPv6:::1])
-        by localhost (zproxy110.enst.fr [IPv6:::1]) (amavisd-new, port 10032)
-        with ESMTP id YxON5zsV5vs7; Mon, 21 Nov 2022 14:14:52 +0100 (CET)
-Received: from localhost (localhost [IPv6:::1])
-        by zproxy110.enst.fr (Postfix) with ESMTP id C60A381708;
-        Mon, 21 Nov 2022 14:14:52 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zproxy110.enst.fr C60A381708
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=imt-atlantique.fr;
-        s=50EA75E8-DE22-11E6-A6DE-0662BA474D24; t=1669036492;
-        bh=aJJOodTsPa2Ecy/ELaEaLyge5Npy7UNg4STVNNQkDe4=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=b22Gvep5+R/VsmgZ4PLxjvNigTW8ZUYQg20Inuw8Sa30A3kd/qBcTZ/Bl9JyPSFFN
-         jtgM8gzI65M7zZTAsUeFBiOk/btAG1a0X5uwRySrnTFg4XbZU+sA5q28nV14OqCSzv
-         ncd3+Cmn33jZirEZWvFiL3wUtDytykz+7PBeTG4M=
-X-Virus-Scanned: amavisd-new at zproxy110.enst.fr
-Received: from zproxy110.enst.fr ([IPv6:::1])
-        by localhost (zproxy110.enst.fr [IPv6:::1]) (amavisd-new, port 10026)
-        with ESMTP id cxeTwijy0Ayi; Mon, 21 Nov 2022 14:14:52 +0100 (CET)
-Received: from localhost (unknown [10.29.225.100])
-        by zproxy110.enst.fr (Postfix) with ESMTPSA id 9ADA9813EE;
-        Mon, 21 Nov 2022 14:14:52 +0100 (CET)
-From:   =?UTF-8?q?Santiago=20Ruano=20Rinc=C3=B3n?= 
-        <santiago.ruano-rincon@imt-atlantique.fr>
-To:     Oliver Neukum <oliver@neukum.org>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?q?Santiago=20Ruano=20Rinc=C3=B3n?= 
-        <santiago.ruano-rincon@imt-atlantique.fr>
-Subject: [PATCH] net/cdc_ncm: Fix multicast RX support for CDC NCM devices with ZLP
-Date:   Mon, 21 Nov 2022 14:13:37 +0100
-Message-Id: <20221121131336.21494-1-santiago.ruano-rincon@imt-atlantique.fr>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229788AbiKUNVy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:21:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD31274CEF
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:21:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69E39B81015
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 13:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93B1EC433C1;
+        Mon, 21 Nov 2022 13:21:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669036910;
+        bh=3q5MAXyml2TGXEOQfIBwydZ0aJBAfHx7YKo33iI5Xy8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NJOSnKXCy6FRPEyD4qf3y4B06YuRnXXRDSvIblj2pCTNQDklZVnLuUDbJtMGw3RRB
+         3t6zjfFGG8kKKhIzJ1prHkJ8xymg6zIQZ5yGtVd09zXWYL/Ae6phrrM6o/JFpNE68v
+         mjVLkN7ElCWjwYUjT53pYLN7Zipz2cpUlC+yaALq8oSy9cRx+XZjleXp/Vz7hXxt8g
+         n8cDcWVhSlqgW/Sz0PCjp3OvvdWsXnqLWoZC0yJRCB4KVZKGa7ZfpVaVM7Vv8TcbLC
+         E88kVPtsYdFX6akeX1ui4s5esKgqIi8jAF+GL3kvctnKb3VTrLR/rKPVmKp4cUFGZb
+         eZV9soHZXLVWw==
+Date:   Mon, 21 Nov 2022 15:21:45 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3t7aSUBPXPoR8VD@unreal>
+References: <Y3YuVcj5uNRHS7Ek@unreal>
+ <20221118104907.GR704954@gauss3.secunet.de>
+ <Y3p9LvAEQMAGeaCR@unreal>
+ <20221121094404.GU704954@gauss3.secunet.de>
+ <Y3tSdcA9GgpOJjgP@unreal>
+ <20221121110926.GV704954@gauss3.secunet.de>
+ <Y3td2OjeIL0GN7uO@unreal>
+ <20221121112521.GX704954@gauss3.secunet.de>
+ <Y3tiRnbfBcaH7bP0@unreal>
+ <20221121121040.GY704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_05,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221121121040.GY704954@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ZLP for DisplayLink ethernet devices was enabled in 6.0:
-266c0190aee3 ("net/cdc_ncm: Enable ZLP for DisplayLink ethernet devices")=
-.
-The related driver_info should be the "same as cdc_ncm_info, but with
-FLAG_SEND_ZLP". However, set_rx_mode that enables handling multicast
-traffic was missing in the new cdc_ncm_zlp_info.
+On Mon, Nov 21, 2022 at 01:10:40PM +0100, Steffen Klassert wrote:
+> On Mon, Nov 21, 2022 at 01:34:30PM +0200, Leon Romanovsky wrote:
+> > 
+> > Sorry, my bad. But why can't we drop all packets that don't have HW
+> > state? Why do we need to add larval?
+> 
+> The first packet of a flow tiggers an acquire and inserts a larval
+> state. On a traffic triggered connection, we need this to get
+> a state with keys installed.
+> 
+> We need this larval state then, because that tells us we sent already an
+> acquire to userspace. All subsequent packets of that flow will be
+> dropped without sending another acquire. Otherwise each subsequent
+> packet will generate another acquire until the keys are negotiated.
+> If a flow starts sending on a high rate, this would be not so nice
+> for userspace :)
 
-usbnet_cdc_update_filter rx mode was introduced in linux 5.9 with:
-e10dcb1b6ba7 ("net: cdc_ncm: hook into set_rx_mode to admit multicast
-traffic")
+The thing is that this SW acquire flow is a fraction case, as it applies
+to locally generated traffic.
 
-Without this hook, multicast, and then IPv6 SLAAC, is broken.
+In my mind, there are other cases, like eswitch mode and tunnel mode. In
+these cases, the packets are arrived to HW without even passing SW stack.
 
-Fixes: 266c0190aee3 ("net/cdc_ncm: Enable ZLP for DisplayLink ethernet
-devices")
+What we want to do is to catch in HW all TX packets, which don't have SAs
+(applicable for all types of traffic), mark them and route back to the
+driver. The driver will be responsible to talk with XFRM core to
+generate acquire.
 
-Signed-off-by: Santiago Ruano Rinc=C3=B3n <santiago.ruano-rincon@imt-atla=
-ntique.fr>
----
- drivers/net/usb/cdc_ncm.c | 1 +
- 1 file changed, 1 insertion(+)
+The same logic of rerouting packets is required for audit and will be done
+later. Right now, we rely on *swan implementations which configure everything
+in advance.
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 8d5cbda33f66..0897fdb6254b 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1915,6 +1915,7 @@ static const struct driver_info cdc_ncm_zlp_info =3D=
- {
- 	.status =3D cdc_ncm_status,
- 	.rx_fixup =3D cdc_ncm_rx_fixup,
- 	.tx_fixup =3D cdc_ncm_tx_fixup,
-+	.set_rx_mode =3D usbnet_cdc_update_filter,
- };
-=20
- /* Same as cdc_ncm_info, but with FLAG_WWAN */
---=20
-2.38.1
+Also larval is default to 1 (drop) in all distros.
 
+I hope that this larval/acquire is not must for this series to be merged.
+And it is going to be implemented later as I'm assigned to work on this
+offload feature till feature complete :).
+
+Thanks
