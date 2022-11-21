@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DCA63286B
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 16:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD3B963286D
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 16:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231223AbiKUPmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 10:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
+        id S231559AbiKUPmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 10:42:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231241AbiKUPmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 10:42:09 -0500
+        with ESMTP id S231470AbiKUPmV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 10:42:21 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB61A4B986;
-        Mon, 21 Nov 2022 07:42:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699CA4A069;
+        Mon, 21 Nov 2022 07:42:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669045323; x=1700581323;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=2/oxAXLOp39GLFi3+acpxJRqZsGAlZP5t3Ltf3CliCM=;
-  b=LgQygZbQ0MgLSdO+awtg5xeQnaSkWnA74mu7ENK9nSgqgeLD8No4yz00
-   sJdozDQo97IpyydlLVeP8q2KGZ2mk2nQevkzCVaYQVOtWOPSPD6TurV+T
-   nHqlbPI+oeQyqYRmhQ+3Pordjd8W3sJPlLlq95NqjEBfhnC3GrjEvNtQ9
-   qQ4EPvEfZQln1WxRi1JDdrDMAhnfFiQMjkVM2tJJJu7l04HeT4OFiYB10
-   TwSEAEcbrGLgfFHXvOHC4D8BUUwIJPPW5M/HexGH1nlI7q9OIlgdHFKd3
-   pN6Ahk+ko9DAwYUi/2unPd/lVdqVhuzF2c843g3GiY/9RqQ2iSsoXxmLN
+  t=1669045338; x=1700581338;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yzSQCKzqqvX1+cSg/sFYh+5Sk7VWHcMcBa7T5qXDR7E=;
+  b=mqQIsY05KyAlSO07Ku4D19cLEUWaTEYwPpNda3lXhgCXU1lQCzh2EaZ+
+   pQvKVtogniO0plY8y5OTPsqDHxau2n2sWju9fjiI27OKwBYkGw4ixK68A
+   Tn0lOlWBr7ea7VpFBgHjKDUQQhaw1RksvLjfjBEPjra8OUWjVBz25tFXj
+   fgR6/7EaB9TBzZYLTt+iqUyG25w/gQ0ylwyPMweU4coZYloAprNbVIPLG
+   RbLITjkoFQFza4+vI0qNlaD57LvgsBTtYB5VDMXDDwNcPZbqQ3C+OQxwE
+   IHn0Esdoc5UtnH/mAmw7kJoUUgJynXkbdWCNKEgU5hHkBkxUILj7Lhzld
    Q==;
 X-IronPort-AV: E=Sophos;i="5.96,181,1665471600"; 
-   d="scan'208";a="189907560"
+   d="scan'208";a="189874443"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Nov 2022 08:42:02 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Nov 2022 08:42:17 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 21 Nov 2022 08:42:02 -0700
+ 15.1.2507.12; Mon, 21 Nov 2022 08:42:12 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 21 Nov 2022 08:41:58 -0700
+ 15.1.2507.12 via Frontend Transport; Mon, 21 Nov 2022 08:42:07 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -46,10 +46,12 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>
-Subject: [RFC Patch net-next v2 0/8] net: dsa: microchip: add PTP support for KSZ9x and LAN937x
-Date:   Mon, 21 Nov 2022 21:11:42 +0530
-Message-ID: <20221121154150.9573-1-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v2 1/8] net: ptp: add helper for one-step P2P clocks
+Date:   Mon, 21 Nov 2022 21:11:43 +0530
+Message-ID: <20221121154150.9573-2-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20221121154150.9573-1-arun.ramadoss@microchip.com>
+References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -63,47 +65,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LAN937x switch has capable for supporting IEEE 1588 PTP protocol. This
-patch series add PTP support and tested using the ptp4l application.
-LAN937x has the same PTP register set similar to KSZ9563, hence the
-implementation has been made common for the ksz switches.
-KSZ9563 does not support two step timestamping but LAN937x supports both.
-Tested the 1step & 2step p2p timestamping in LAN937x and p2p1step
-timestamping in KSZ9563.
+From: Christian Eggers <ceggers@arri.de>
 
-RFC v1 -> v2
-- Added the p2p1step timestamping and conditional execution of 2 step for
-  LAN937x only.
-- Added the periodic output support
+For P2P delay measurement, the ingress time stamp of the PDelay_Req is
+required for the correction field of the PDelay_Resp. The application
+echoes back the correction field of the PDelay_Req when sending the
+PDelay_Resp.
 
-Arun Ramadoss (7):
-  net: dsa: microchip: adding the posix clock support
-  net: dsa: microchip: Initial hardware time stamping support
-  net: dsa: microchip: Manipulating absolute time using ptp hw clock
-  net: dsa: microchip: enable the ptp interrupt for timestamping
-  net: dsa: microchip: Adding the ptp packet reception logic
-  net: dsa: microchip: add the transmission tstamp logic
-  net: dsa: microchip: ptp: add periodic output signal
+Some hardware (like the ZHAW InES PTP time stamping IP core) subtracts
+the ingress timestamp autonomously from the correction field, so that
+the hardware only needs to add the egress timestamp on tx. Other
+hardware (like the Microchip KSZ9563) reports the ingress time stamp via
+an interrupt and requires that the software provides this time stamp via
+tail-tag on tx.
 
-Christian Eggers (1):
-  net: ptp: add helper for one-step P2P clocks
+In order to avoid introducing a further application interface for this,
+the driver can simply emulate the behavior of the InES device and
+subtract the ingress time stamp in software from the correction field.
 
- drivers/net/dsa/microchip/Kconfig       |   12 +
- drivers/net/dsa/microchip/Makefile      |    5 +
- drivers/net/dsa/microchip/ksz_common.c  |   44 +-
- drivers/net/dsa/microchip/ksz_common.h  |   48 +
- drivers/net/dsa/microchip/ksz_ptp.c     | 1117 +++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp.h     |   96 ++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  136 +++
- include/linux/dsa/ksz_common.h          |   55 ++
- include/linux/ptp_classify.h            |   73 ++
- net/dsa/tag_ksz.c                       |  288 +++++-
- 10 files changed, 1859 insertions(+), 15 deletions(-)
- create mode 100644 drivers/net/dsa/microchip/ksz_ptp.c
- create mode 100644 drivers/net/dsa/microchip/ksz_ptp.h
- create mode 100644 drivers/net/dsa/microchip/ksz_ptp_reg.h
- create mode 100644 include/linux/dsa/ksz_common.h
+On egress, the correction field can either be kept as it is (and the
+time stamp field in the tail-tag is set to zero) or move the value from
+the correction field back to the tail-tag.
 
+Changing the correction field requires updating the UDP checksum (if UDP
+is used as transport).
+
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
+ include/linux/ptp_classify.h | 73 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
+
+diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+index 2b6ea36ad162..e32efe3c4d66 100644
+--- a/include/linux/ptp_classify.h
++++ b/include/linux/ptp_classify.h
+@@ -10,8 +10,12 @@
+ #ifndef _PTP_CLASSIFY_H_
+ #define _PTP_CLASSIFY_H_
+ 
++#include <asm/unaligned.h>
+ #include <linux/ip.h>
++#include <linux/ktime.h>
+ #include <linux/skbuff.h>
++#include <linux/udp.h>
++#include <net/checksum.h>
+ 
+ #define PTP_CLASS_NONE  0x00 /* not a PTP event message */
+ #define PTP_CLASS_V1    0x01 /* protocol version 1 */
+@@ -129,6 +133,67 @@ static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
+ 	return msgtype;
+ }
+ 
++/**
++ * ptp_check_diff8 - Computes new checksum (when altering a 64-bit field)
++ * @old: old field value
++ * @new: new field value
++ * @oldsum: previous checksum
++ *
++ * This function can be used to calculate a new checksum when only a single
++ * field is changed. Similar as ip_vs_check_diff*() in ip_vs.h.
++ *
++ * Return: Updated checksum
++ */
++static inline __wsum ptp_check_diff8(__be64 old, __be64 new, __wsum oldsum)
++{
++	__be64 diff[2] = { ~old, new };
++
++	return csum_partial(diff, sizeof(diff), oldsum);
++}
++
++/**
++ * ptp_header_update_correction - Update PTP header's correction field
++ * @skb: packet buffer
++ * @type: type of the packet (see ptp_classify_raw())
++ * @hdr: ptp header
++ * @correction: new correction value
++ *
++ * This updates the correction field of a PTP header and updates the UDP
++ * checksum (if UDP is used as transport). It is needed for hardware capable of
++ * one-step P2P that does not already modify the correction field of Pdelay_Req
++ * event messages on ingress.
++ */
++static inline
++void ptp_header_update_correction(struct sk_buff *skb, unsigned int type,
++				  struct ptp_header *hdr, s64 correction)
++{
++	__be64 correction_old;
++	struct udphdr *uhdr;
++
++	/* previous correction value is required for checksum update. */
++	memcpy(&correction_old,  &hdr->correction, sizeof(correction_old));
++
++	/* write new correction value */
++	put_unaligned_be64((u64)correction, &hdr->correction);
++
++	switch (type & PTP_CLASS_PMASK) {
++	case PTP_CLASS_IPV4:
++	case PTP_CLASS_IPV6:
++		/* locate udp header */
++		uhdr = (struct udphdr *)((char *)hdr - sizeof(struct udphdr));
++		break;
++	default:
++		return;
++	}
++
++	/* update checksum */
++	uhdr->check = csum_fold(ptp_check_diff8(correction_old,
++						hdr->correction,
++						~csum_unfold(uhdr->check)));
++	if (!uhdr->check)
++		uhdr->check = CSUM_MANGLED_0;
++}
++
+ /**
+  * ptp_msg_is_sync - Evaluates whether the given skb is a PTP Sync message
+  * @skb: packet buffer
+@@ -166,5 +231,13 @@ static inline bool ptp_msg_is_sync(struct sk_buff *skb, unsigned int type)
+ {
+ 	return false;
+ }
++
++static inline
++void ptp_onestep_p2p_move_t2_to_correction(struct sk_buff *skb,
++					   unsigned int type,
++					   struct ptp_header *hdr,
++					   ktime_t t2)
++{
++}
+ #endif
+ #endif /* _PTP_CLASSIFY_H_ */
 -- 
 2.36.1
 
