@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9352B632CD2
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1B4632CD8
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbiKUTQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 14:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45676 "EHLO
+        id S231276AbiKUTRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 14:17:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiKUTQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:16:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB59D48D8
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:15:52 -0800 (PST)
+        with ESMTP id S231272AbiKUTQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:16:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FDAD53B9
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:15:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C02E6144E
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 19:15:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0298C433C1;
-        Mon, 21 Nov 2022 19:15:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 201476142D
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 19:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 546AEC43147;
+        Mon, 21 Nov 2022 19:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1669058152;
-        bh=Obutgu2WsdcNW5+RYlbX611pjMXilgLMQL03SjAfyZY=;
+        bh=Su6kfkxatbFFjdL0cqvrD9NaKGJqNFqgxti96jNa/XY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tvzPBQdCbpQ2rxGPAxkPGkZgKXAHdQZ6jA4KkmsKtQe9CBfdRB0GhCcdICRe1JUsK
-         uRnMbH1vOFK3tS44MoMyq6OcCY31mrkozXcTxj0YfGKzK7ks/w5fLLNNagTG/mvXkj
-         Haw10ob7efHvP9nlXjm23LAM8yi0xXAr5ERT6GBL1upa9vMYZkdnKBWdxWONRyYNVK
-         kKhVMylcemEDuTEcPUusMRS0OpBWZttFCaam5IoOAHRiyJo/MEgoEkAK0Fd58Bmvd4
-         7RgoK508yddUbFFaMRdRXqv86rnQFwl6Fb0zAKxkLlbvfr3Th23oi1wl89KsqbhLys
-         xmZjfxSC9nNug==
+        b=aoft2NE+dBFIcqFNl7tUMdCnRZOw//vU5TuRFsYPiFXFCUPnxWYJPhRSdvDMXriql
+         R+Hg2RX4hrb/nt9P7Yxn4LdeVT4SCKEFWt5qkN0uwoURSxfKJidkcrVZ++qKnsGb0d
+         ThcLqRp+yzdZebEhJd5rgC/A/chh6c9XW4ivtBBomOAmkQD7C9hqc+kg0swkZ2lzei
+         zrQpawjk3uGRXGrXg1M+Lw2HtRT2dNtzeOUbiKLZdj+eWXcemTbOH8nWkFUJNZBbd4
+         u07UpohQmEn3Sb8I0WWB4t/IUIpCsPrWpu2I2bmuTlzz5VU8sFA3soxt3hmh0QjEmj
+         Mww0tpOyptW2w==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         uwe@kleine-koenig.org,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH net-next 10/12] nfc: s3fwrn5: Convert to i2c's .probe_new()
-Date:   Mon, 21 Nov 2022 11:15:44 -0800
-Message-Id: <20221121191546.1853970-11-kuba@kernel.org>
+Subject: [PATCH net-next 11/12] nfc: st-nci: Convert to i2c's .probe_new()
+Date:   Mon, 21 Nov 2022 11:15:45 -0800
+Message-Id: <20221121191546.1853970-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221121191546.1853970-1-kuba@kernel.org>
 References: <20221121191546.1853970-1-kuba@kernel.org>
@@ -62,31 +62,31 @@ can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/nfc/s3fwrn5/i2c.c | 5 ++---
+ drivers/nfc/st-nci/i2c.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index ecdee838d25d..2517ae71f9a4 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -177,8 +177,7 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
- 	return 0;
- }
+diff --git a/drivers/nfc/st-nci/i2c.c b/drivers/nfc/st-nci/i2c.c
+index 89fa24d71bef..6b5eed8a1fbe 100644
+--- a/drivers/nfc/st-nci/i2c.c
++++ b/drivers/nfc/st-nci/i2c.c
+@@ -195,8 +195,7 @@ static const struct acpi_gpio_mapping acpi_st_nci_gpios[] = {
+ 	{},
+ };
  
--static int s3fwrn5_i2c_probe(struct i2c_client *client,
+-static int st_nci_i2c_probe(struct i2c_client *client,
 -				  const struct i2c_device_id *id)
-+static int s3fwrn5_i2c_probe(struct i2c_client *client)
++static int st_nci_i2c_probe(struct i2c_client *client)
  {
- 	struct s3fwrn5_i2c_phy *phy;
- 	int ret;
-@@ -262,7 +261,7 @@ static struct i2c_driver s3fwrn5_i2c_driver = {
- 		.name = S3FWRN5_I2C_DRIVER_NAME,
- 		.of_match_table = of_match_ptr(of_s3fwrn5_i2c_match),
+ 	struct device *dev = &client->dev;
+ 	struct st_nci_i2c_phy *phy;
+@@ -284,7 +283,7 @@ static struct i2c_driver st_nci_i2c_driver = {
+ 		.of_match_table = of_match_ptr(of_st_nci_i2c_match),
+ 		.acpi_match_table = ACPI_PTR(st_nci_i2c_acpi_match),
  	},
--	.probe = s3fwrn5_i2c_probe,
-+	.probe_new = s3fwrn5_i2c_probe,
- 	.remove = s3fwrn5_i2c_remove,
- 	.id_table = s3fwrn5_i2c_id_table,
+-	.probe = st_nci_i2c_probe,
++	.probe_new = st_nci_i2c_probe,
+ 	.id_table = st_nci_i2c_id_table,
+ 	.remove = st_nci_i2c_remove,
  };
 -- 
 2.38.1
