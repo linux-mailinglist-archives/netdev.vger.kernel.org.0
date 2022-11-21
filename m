@@ -2,157 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AA73632E98
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 22:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3675632E9A
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 22:17:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiKUVRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 16:17:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        id S230049AbiKUVRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 16:17:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiKUVQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 16:16:54 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D6049B49
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 13:16:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669065414; x=1700601414;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=qmBuqP98n0FjDNTKqV0+FGvRCtg1VFCs6sQRilubh3M=;
-  b=jeirDCqm/pJubgbn1M68OhxLanPpjSSSthxbUp64cDAk1FYDPqhTt42d
-   HqdOMS19tnAk7q3XmIRHeELplstDhhmHU2C198v9llDKZJ8JJHyJ8mL2P
-   PQKXXH0BBfL3wtwfPzI+/udDp9dfYbFX3oftH6Ynols1hsspBraPAyLd8
-   66i9FImcMY/exrkqxyVy3gX2HYmlHmlOPz7IF4rabIqmmZZluLG/tDAcG
-   0K+Fwu61zo1LVySdOFxFcadkd50AYNzQz8njhfR0sZusdd3c1MMeSUyn6
-   IJuU/nVd4y4JzvwdLbj7sKISayEU74HVF9JKUVG6SEvumiM+BvyOrNxJQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="311294843"
-X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
-   d="scan'208";a="311294843"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 13:16:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="747070424"
-X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
-   d="scan'208";a="747070424"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga002.fm.intel.com with ESMTP; 21 Nov 2022 13:16:54 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 21 Nov 2022 13:16:53 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Mon, 21 Nov 2022 13:16:53 -0800
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.47) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Mon, 21 Nov 2022 13:16:53 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fRy262NOEYBrJVeYxdV99Rv6SyHHbyu/+aaSQZ5vzGkioQlrV15qyULo4Fud/gnaOe+licNRDcaWPQJmti5gVRBqKX7IBv7ZE1bPtgOpCngxyimUPr4+4rc76xKbL34d9nsLwkQ26ZrARVqWYRamMdFvC2HKxOZyka0oo3fxJdhy1Lc9lNGRNeTkKRXCMiA9Mx36We2+6mQvxXKTTABNvsSL9sGivlFujxr3PWqBNqlAXX19cmCuvuFWziRJvskhvNHj9WyR0CIAn1ape9mBjXH/8jTfxcPuj3DU4rsbbHi9L35vt7SPSQDO3QZRh7omkoWn1sY8w6kJEbt4uw4E/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iLYweNLB5gCqn4hskFJDyHFplxbv9wAUfJw0S+9qzNY=;
- b=Ph5RJwyJVvjAixaiz+nJe25J8ufDQD3KT53p7cru+vQxLHc602L5UeoIw6/6A2Cj8aY1kwUvypYF9gPfsPkHMA9Tj1EISREY6pgc9sxsRQIwdZ/j8FIxbvmWCNvNBfzk6zZdnRtxLpku9K8Luq+JL0TXd3IISc7kESOFgOw2x9acRFMSAOWzvWL8mN/8ePJlug7w/aHetjS5MgK0TIMKcgGxBB2R07ZFc6Xe+3fL/7m+kwU0NTDPxX0sN5F4EwdIazD8RV+4k7hoqTr0PU8v/D2Brqcdt/MvSHDq7Ad1WtA/NxMo9lRCkW8M0gRVXra87QmJ+kXq5syHHn2zFQBenA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by SA2PR11MB5003.namprd11.prod.outlook.com (2603:10b6:806:11e::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Mon, 21 Nov
- 2022 21:16:51 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::9e54:f368:48d1:7a28]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::9e54:f368:48d1:7a28%3]) with mapi id 15.20.5813.017; Mon, 21 Nov 2022
- 21:16:51 +0000
-Message-ID: <7f70a230-c247-fca4-67ac-0bf906a7cf67@intel.com>
-Date:   Mon, 21 Nov 2022 13:16:47 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 2/8] devlink: use min_t to calculate data_size
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
-References: <20221117220803.2773887-1-jacob.e.keller@intel.com>
- <20221117220803.2773887-3-jacob.e.keller@intel.com>
- <20221118173628.2a9d6e7b@kernel.org>
- <753941bf-a1da-f658-f49b-7ae36f9406f8@intel.com>
- <8b8d2f27-7295-4740-3264-9b4883153dd5@intel.com>
- <20221121110602.6cc663f4@kernel.org>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20221121110602.6cc663f4@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR04CA0005.namprd04.prod.outlook.com
- (2603:10b6:a03:217::10) To CO1PR11MB5089.namprd11.prod.outlook.com
- (2603:10b6:303:9b::16)
+        with ESMTP id S230475AbiKUVRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 16:17:09 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBF24C250;
+        Mon, 21 Nov 2022 13:17:05 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id f27so31523922eje.1;
+        Mon, 21 Nov 2022 13:17:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=J4M9TI7AR4OgJadp3C58zz3rlNRRRueDQ1CdlwASDX4=;
+        b=pWh+ByunsuuktyLY7ubAZRWiVS0Hmwa/4eNNcAewLWhbjCEpyLjSU4cJgG9beTu4Bh
+         Rex9Zdd/mczmBS+XiFAWcoO4T6uhX5q+m2uBeQJ2+mt9WQ8Ir57pfQsx3ttsqbOwfZsE
+         oh8Rvbp53gAmanHTUlbbnKaLRVH6Knh+gMCqxaqAzEGGQHr10yrMxpgRkCxe3UBmaqAZ
+         l6zQM4aahvLmqZk5E4nfSZBS7F2TYiI4pZcElyrqsahdUlXyIU3Rg7KYYvuGjytSnTSQ
+         YBltiE5oEn9X3u0R5RDkbO84Tqu0TlHgpR8FmnTp5xKrp3+WZMDXIOrW0VpS2fp7Drq+
+         tJZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J4M9TI7AR4OgJadp3C58zz3rlNRRRueDQ1CdlwASDX4=;
+        b=rM5/36BCuEaK6sGi4ySlFkxxO/BRFYoLlcboLQ1aSV2tnPx52n2bE5dMS4ppxdhNsx
+         y7hBdMeV+89IwB046OAh7UdLuIC7PrPkGIGWIEnr6Dm9HcH3HsIbsK9JLc0U4DH8z+jF
+         CwM09UN2wmfhxqrkUhvIGyEtfk4BnC5eVnwd010+oZeVEkCbDdbOWHy78XaUYjZYzeIx
+         BTYnJFaU6HCHf6yaju7XHX+lKPo7kZW+/Wxw8H1TdSJ+V/aeZhpW4aMZn2g5uDHij6EA
+         wp569Be16JyoI4wp3/IIe586rnKhHoAdfR6CRXkPmqWpE3cFUPD2XzZcdrzM/hhzuR8+
+         OESQ==
+X-Gm-Message-State: ANoB5pmAU2Ul/mH46WMZ72hBgbUqfQD8bB0flDL/gdjrhQAVG82uiT4C
+        Fa/JtuhZzVAWQ6yAcyr7z8k=
+X-Google-Smtp-Source: AA0mqf6mAmmSnfS9SnWiU7N+ovuVP+3zzQarOCYDy/t20leR1UbHF1fOPtzC9gqkusg2YF4mv8MwHQ==
+X-Received: by 2002:a17:906:edce:b0:7ad:dd43:5d18 with SMTP id sb14-20020a170906edce00b007addd435d18mr1048608ejb.389.1669065423932;
+        Mon, 21 Nov 2022 13:17:03 -0800 (PST)
+Received: from skbuf ([188.26.57.184])
+        by smtp.gmail.com with ESMTPSA id fi13-20020a056402550d00b004580862ffdbsm5610901edb.59.2022.11.21.13.17.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Nov 2022 13:17:03 -0800 (PST)
+Date:   Mon, 21 Nov 2022 23:17:00 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk,
+        Tristram.Ha@microchip.com, richardcochran@gmail.com
+Subject: Re: [RFC Patch net-next v2 0/8] net: dsa: microchip: add PTP support
+ for KSZ9x and LAN937x
+Message-ID: <20221121211700.egmoxcav55axeylb@skbuf>
+References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA2PR11MB5003:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3ff0bfdd-6322-4221-f87f-08dacc05b3eb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rxc8TmHU8lvW5d8kRlp0WkT0hxSOQA/6HO6nKVhepcyYSDTeUiG83Xd3T+1stKasZOE8XozTVuo7PHIMr9Ik5edCay+sH0kWP5BiBqyB24trSg+vkV837z6BITNpaMIzmMrwSHiCdqFLhLANjWXVdfBJflqvQCx9OSTpXy7j1YRB21lV5DzrREa6QiydGIe1cw+ktnymlZvpbuTEuObSvF8Br8CYvo1UfakMRggWEqTYwCK0Lgg8B5P8/AF9A17wDUY51B8fhMNgFtb9LxRwmgDbh1a9JwC7m+cX2h/AEpx+8KazAc5jHAkMm8B9hfgT8n/V4qGzwZFLjxAKtpYjD1rMXJWbO+PyY9Eui8qnO7qK5gENaUa9fGeNcep/EhBfbAPtppWSAmtSXsoLVau47tz3ZCEv77fy7aJ4xyrb9/eUFQ0k8l2owKmSdPc4uFat2S9dy+VfcqPJMs6Nev9UziqjnIEdWBtIzITc4j+uT2B8ZWicPCkQ1FO8yA5iZIgKogMMijHeqXfNLODUEFcPH72gr1xHlihKjztgMpUsiPo9AhPVDpXtr+ARTL1R8pSlUQzpzild27+NoD+yw3wKHkbLUqI8I83f0pf5mtJn/+h11R6GDbQdDcQQNprZb66I7MjR703KFO22vK8F93yD5qkfnnOmIg8ji5MhZq/6qYgilW+w0DKrbAjxpsxSu82rvxsUfcfICyvd4OJ2hPfL4/QTkQqH3NEuWo/5LB7TNyE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(396003)(136003)(346002)(39860400002)(366004)(451199015)(2616005)(82960400001)(83380400001)(6486002)(2906002)(186003)(6916009)(26005)(6512007)(6506007)(478600001)(6666004)(53546011)(316002)(36756003)(38100700002)(66946007)(66556008)(66476007)(4744005)(8676002)(5660300002)(4326008)(8936002)(41300700001)(31686004)(86362001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T2V1MWNReXVRcGxqVFBvbEpNaTI4bys3WHhVd0xhN0FZeUNvSENaUFhCNWVs?=
- =?utf-8?B?Vjlhc2JsVXZQUzgxUi81V1RBbHQvaXNoSDlDcTJBS3hjc3RJSlN0Q250WS9n?=
- =?utf-8?B?dGxRZkdLMDZpYWJZV0s2ZDRpWkltd2RaaVJvb1pWTGEwS2pUYnNTTWQ0ZkxX?=
- =?utf-8?B?L0pyOFo1dUxWZTlnbEFmZlFDNmZVejc0eUpGT3JYVnN0Y3F6ZDRWbUw2dStv?=
- =?utf-8?B?cXhINnpNSWZqbnkraUY3MXNmMmkrSTZPdzhDMDhqNkFsM3pHK0RhRkY3Y1Rp?=
- =?utf-8?B?U1R6MUM0WDRjeUNZNG5YMVA4WHR2Z0lDdlpFbW14VU5vb3FhR0VQTTRiK25N?=
- =?utf-8?B?Y3JNSjF0dDA5RjgwQ25GLzA4OVZiemdHRjdGQ1ljNzE5MDh4b05XbTB3Uy9o?=
- =?utf-8?B?T0orTHRiQXdTbDdqQXlvYys2ODZORG4vVHhsL2Q2NEpmTkdUN2xldmprV1Bh?=
- =?utf-8?B?L0F1c0Z5RXZOaEZ3SmpoQzNZZ1plL0pNT2tNZlhpOTAyNmUydVplbksrVnMy?=
- =?utf-8?B?UDZpRy9EWk9wREc5U294U3NPTDhaazdRQUxoTEJNcVJjQU9tRUxHZVZuNFhj?=
- =?utf-8?B?QkZtVVVFajZveGRCZ2F4UUFoc0tUa2wxOFEzM3FMOEZmOFVnZ1ZVbTJKWGxo?=
- =?utf-8?B?VkRGaGRDRmtPWE9Od240cnlTR0o0OEd5ZEI2VVVLNHhjdERUQ3ZjUlEvZkVK?=
- =?utf-8?B?T0FYby9Ud3YzZVRjZjV0QW5FdlRmZlVHcjZnUGlKSGVyeXZUQVVQQ2pQdk13?=
- =?utf-8?B?VWlsYmFxeE95VmdISzRsZzFiR1ZnM0V2S042dWladnlhdTBkZ2d1bXVQaEkw?=
- =?utf-8?B?RVlkc3pPVFRaTXRjR1FUbkI1dG5BVkR5emVMK3htL0JuV0RncG9xLzZkVjhk?=
- =?utf-8?B?RFIyMVhMYTdtSzhnYjA4aEUzSmpvSVUrVmJwVVJQMXNzM2pyN2lNWE5Jc094?=
- =?utf-8?B?Q3phcnVGM3owZjY3eEl0dnZkTGlpYjg3VzVyUlZCdFNQU3hpck1LRVpIeDlL?=
- =?utf-8?B?YVRFRWd2R1cwVEhhWlVTRnEzcHA2YUI4MnVDN21DeHhhQkkxcnF4R1V0ZUxp?=
- =?utf-8?B?VUpLb1djeTQwdWYvS2h2OWxCL1lrMzIwNXRyTVo0bU04TVY3VVF2bVRyNm9W?=
- =?utf-8?B?aUtpUmJtdzdqQTZPQm15UE9XTVVQdXRIb1FSRkZibVgvcnNqTllHNllpRmU0?=
- =?utf-8?B?ZjRoSUxZdVptdDlkdm1OQ1pZa2ZyQlY3NXlFSkV0RDRCU1FuYmw5SnNYSzBF?=
- =?utf-8?B?OXBBTDNIZ1B6VkdoRmxjVG5SUTRRN0oxZDJuenYrZzFvdU41ZnpYR1FObjdu?=
- =?utf-8?B?SUxQSisvRUFXZGdwOVoyenh4VjRxRll2c3dOZE10dE95THFGYmV3S0YzTDZh?=
- =?utf-8?B?UnNFdmhKTHlIYTRNSDdEZkdRYzdocUNZTjRnUDdsSis3Y0hIQ0VPOVBERXBV?=
- =?utf-8?B?U2tJeS9KT1BEUU9rMWFNajNOZ2orM25GSDZGSTlLK3paaTdLUnpBbVg3OEQ5?=
- =?utf-8?B?Ukp2QjQ5WUYvekRrc2o2V2N3NUlnaGdvenN5L3YvSW1JcW1CSHo2ek5aNXZY?=
- =?utf-8?B?ZExPUi9FckFDSmErVmRwWE9YWE5QYXNyNG1uTmlFT01hRENDdklZTjIwWnlj?=
- =?utf-8?B?aWdMOEdsemFoR0UxY0lxa1VzdzFydmJESis0VjlmSDl2NmljZ2w2MWx6R1dH?=
- =?utf-8?B?ODlWSDhDa0xkYVhnWXFvN2l4Wk1ObVVnNW02NFJyQTNQYWUveW4rYnRJdExw?=
- =?utf-8?B?SXBLZEsxNlF3Y0ROVFZvcmVSNWxyVkRURWg2YjJXSzhJSW5yS1VvQmdFL1FO?=
- =?utf-8?B?MmU4Nkc1UUkzWjNiNVY2c09tUVk1YUpqRk1YeGdEM05DQmRRL3R2SkFUaENS?=
- =?utf-8?B?WlZoSmRnSVpBU1hzQWxiS2Qra2dVWTVJbFUwS3BvS0kxcUlIRTc5VWNRTmx1?=
- =?utf-8?B?eFhNL01vUzV2OXRJRGNXdmlUeXBUS0UveDR2MGZTNnViM3lGSEI3SkNDejgy?=
- =?utf-8?B?NGNwV1ZuWmFVN1BQalVsbXNiTVVUckVHQ1hJZ0tTbUZnM3dJQTdCSUtJTlB5?=
- =?utf-8?B?QzhDUGJZWWM3VHV4djNHcDZUNFR0RTAvM0dBL1VFUGhnZWtEMUptYmZnb211?=
- =?utf-8?B?MFJpZW9TbVUyZFhFTHlFY0pEN3N3QnhuWUhUZ1QrTVRGVnJQMlZDd2NxR2Nm?=
- =?utf-8?B?QUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ff0bfdd-6322-4221-f87f-08dacc05b3eb
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2022 21:16:51.0137
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZeZf0rBw+coro59j1e27ieW0DeTCGVg2lhSuNQ9oTUCFaik43vB9ld5QjPtdMkttMCCkflssugCO4EhCMAu1WFctBccJ+fmQltOsLq/MlSg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5003
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221121154150.9573-1-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -160,31 +75,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Arun,
 
+On Mon, Nov 21, 2022 at 09:11:42PM +0530, Arun Ramadoss wrote:
+> The LAN937x switch has capable for supporting IEEE 1588 PTP protocol. This
+> patch series add PTP support and tested using the ptp4l application.
+> LAN937x has the same PTP register set similar to KSZ9563, hence the
+> implementation has been made common for the ksz switches.
+> KSZ9563 does not support two step timestamping but LAN937x supports both.
+> Tested the 1step & 2step p2p timestamping in LAN937x and p2p1step
+> timestamping in KSZ9563.
 
-On 11/21/2022 11:06 AM, Jakub Kicinski wrote:
-> On Mon, 21 Nov 2022 10:35:34 -0800 Jacob Keller wrote:
->>> Sure, that makes sense.
->>
->> This becomes the only variable in patch 5 of 8. It ends up making the
->> diff look more complicated if I change it back to a combined
->> declare+assign in that patch.
-> 
-> Don't change it back to declare+assign, then? :)
-> In general declare+assign should be used sparingly IMO.
-> My eyes are trained to skip right past the variable declarations,
-> the goal is to make the code clear, not short :S
-> 
-> BTW you can probably make DEVLINK_REGION_READ_CHUNK_SIZE a ULL to switch
-> from min_t() to min() ?
+A process-related pattern I noticed in your patches. The Author: is in
+general the same as the first Signed-off-by:. I don't know of cases
+where that's not true.
 
-Fair enough. It looked a bit weird when it was:
+There can be more subsequent Signed-off-by: tags, and those are people
+through the hands of whom those patches have passed, and who might have
+made changes to them.
 
-u32 data_size;
-
-data_size = ...
-
-But I think thats ok.
-
-Thanks,
-Jake
+When you use Christian's patches (verbatim or with non-radical rework,
+like fixes here and there, styling rework, commit message rewrite),
+you need Christian to appear in the Author: and first Signed-off-by:
+field, and you in the second. When patches are more or less a complete
+rework (such that it no longer resembles Christian's original intentions
+and it would be misleading to put his sign off on something which he did
+not write), you can put yourself as author and first sign off, and use
+Co-developed-by: + Signed-off-by for Christian's work (the sign off
+still seems to be required for some reason). You need to use your
+judgement here, you can't always put your name on others' work.
+You can also say "based on a previous patch posted on the mailing lists
+which was heavily reworked" and provide a Link: tag with a
+lore.kernel.org or patchwork.kernel.org link. Under the "---" sign in
+the patch you can also clarify the changes you've made, if you decide to
+keep Christian's authorship but make significant but not radical changes.
+These annotations will always be visible in patchwork even if not in
+git. At least that's what I would do.
