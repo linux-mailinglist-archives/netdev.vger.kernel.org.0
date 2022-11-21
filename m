@@ -2,77 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E40AB6319F9
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 08:01:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDBB631ACE
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 08:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiKUHBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 02:01:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
+        id S229685AbiKUH5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 02:57:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiKUHBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 02:01:08 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0C8175A9
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 23:01:04 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id l24so2325427edj.8
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 23:01:04 -0800 (PST)
+        with ESMTP id S229632AbiKUH5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 02:57:18 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C48BC04;
+        Sun, 20 Nov 2022 23:57:17 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id j4so17670274lfk.0;
+        Sun, 20 Nov 2022 23:57:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FEdhuNBwcjrSfq3V8p7WNBmlKyeGLF5K9ZAquaFbLe0=;
-        b=qolCpLT+VjMjlxSjpKMeuwN756qc4J5YzBVKvcSZAdCJ2U2om1MuvD3uoHg/48yyaS
-         i4kno0xvZojD4tzTnah8haWb6GUx0v68zd4458FBSpofON5s4R4wVAa3wQQOo3YPMAO6
-         gOpvecqfRTRrIKtgtwr6b6Y1TZ+Z1Q8HwcKTgFn8re4JunarmsXsW4MUSnGcey/vsU6F
-         64hSP3hZrYRlKjDUUX6D7fl8STyDx90jtD3YTBfQT4aB2v+brXkQoSk1DNrYOVl9xbMo
-         t91R2ZFa/rViY+MUszZOX/Ole/Fn4B92fxPzIekxdWO+Bfk/lXC1KEO8b2qtB1lCPoaK
-         PbEQ==
+        bh=Vs2l23NxmyfDzTeykhjw4XnqjbPvSyKWp0TKAT504Gs=;
+        b=qZ5TqP+tU7NjssMr6vD8VJ70uIGXA+SK4QPz6fglRMTHclkDx/hz9TcruN6hw9XTMk
+         JuDdr5vV0v8XrXshakEitOkB1K6RHeaTBIW8uLhJBYjJKS+w3nF8WjxgmpciZIrcK2mY
+         EloizFriSWMWsMxGPDDXwtsqtUJWdhPJAWgzwkkUQ9sWpYS2zAFBLVLjPntiIfHmWkzP
+         TMeuFaRBQn7q9M69nb6JF/hMrFzHs5mgtLQbScUVKQf9DgjmMHmbT6rFsPfS86MMMJhQ
+         w64IGNmISHNJ9A9zzBV1v/z8YG7o1cnFIddNGfhMGdOZxxFWY/af1ti5gTHGynLLQtWe
+         C2LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FEdhuNBwcjrSfq3V8p7WNBmlKyeGLF5K9ZAquaFbLe0=;
-        b=IVO5nQAzRwV9erpX7j3RLZzQqs7KoGJG2XJ8rucuLvPZpBzqdYLg6j7DQ7tokfz7XB
-         Xy1jg33avUbGoaZAdRGlj5VqQ88/+1hHjajVBhHKmmzYuuG0YRcw5nVLeMCox7rTNf15
-         tTvk8GkvB8gAgXNI38NhVaafYVr1wD0Q2t2rq/zSYR41+rCjy8dcXa7ohbiQ5WDXotf8
-         JWdCq9v81kZHBHnn1drfZgRMPX5/yZKQWUtv1vemCvNZ38jNDRmf0NAEhi7qrIbvb98p
-         WbKBIll7ZEsWC79A7gSo5O/hSahsCtOtpGI1hXWoHrc0WtIc+SUNTVZsWhcjzxP8wor9
-         FBuQ==
-X-Gm-Message-State: ANoB5pl8zAsXlXU9lm+uHDklL338CrDthO87cze56iIGLuKXWpBWsPBc
-        5lFMfw9L+9yMCitplst7EvMY+qfNoq8P2KodLOQ=
-X-Google-Smtp-Source: AA0mqf6itR3x+AHX7+3a1PogzounLRKd8hdStZ/vq7eQu6aMvTzFZq4FL/oVpD3xiHdulpNz9l2tXLnJ7zyyqocCOp8=
-X-Received: by 2002:a05:6402:14:b0:461:deed:6d20 with SMTP id
- d20-20020a056402001400b00461deed6d20mr15473726edu.55.1669014063173; Sun, 20
- Nov 2022 23:01:03 -0800 (PST)
-MIME-Version: 1.0
-References: <20221109180249.4721-1-dnlplm@gmail.com> <20221109180249.4721-3-dnlplm@gmail.com>
- <20221110173222.3536589-1-alexandr.lobakin@intel.com> <CAGRyCJHmNgzVVnGunUh7wwKxYA7GzSvfgqPDAxL+-NcO2P+1wg@mail.gmail.com>
- <20221116162016.3392565-1-alexandr.lobakin@intel.com> <CAGRyCJHX9WMeHLBgh5jJj2mNJh3hqzAhHacVnLqP_CpoHQaTaw@mail.gmail.com>
- <87tu2unewg.fsf@miraculix.mork.no> <CAGRyCJFnh8iXBCyzNxzxSp9PBCDxXYDVOfeyojNBGnFtNWniLw@mail.gmail.com>
- <80e0a215-4b63-3ff9-3c31-765dbba5e7bb@quicinc.com>
-In-Reply-To: <80e0a215-4b63-3ff9-3c31-765dbba5e7bb@quicinc.com>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Mon, 21 Nov 2022 08:00:51 +0100
-Message-ID: <CAGRyCJEXLF7pbghH83scyO6mjAP3Emo32sgfQOcTeGSyToctMQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: qualcomm: rmnet: add tx packets aggregation
-To:     "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>
-Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        David Miller <davem@davemloft.net>,
+        bh=Vs2l23NxmyfDzTeykhjw4XnqjbPvSyKWp0TKAT504Gs=;
+        b=0BMn/r6N/ZuFFi8Tg13IwmrUoJ7RvwYHgt3S8HYJ8rhgofXRmu340nNcy0Pysh9vBE
+         +hCral1ClY1yzjiKTZHaynAy/1BV6i0FXvEJXwagdbsUvkoYLIen0RQxcXrzqPbu+MmS
+         4OJ+SF9yoh+CmzADvwpTI0Jll/Z41UFYBmL49MSdDOh2g8Yhofk1O4GabouN7QIlFMFB
+         bBBJaqhFv4gsIP5ee43Na/rHLRKW7jSDuGKUrv3TMpG9nmilAHn+RcX6XoUQ91RLWcDR
+         nr2Q50Kv9r9qZv0XoOgxUf+XTzKX2CTlJPrceHuI14uVSruPyjhhuTmwLCZuLvXGcdah
+         o0sA==
+X-Gm-Message-State: ANoB5pmn2usfSCjVcJ5JaIZ001zeMyWk0wcAknID7Zg4m6RVlplGI89e
+        YlL3dWhytPeyndGRYEadVh/gr2nLiFn9yIiQ9Idt3w==
+X-Google-Smtp-Source: AA0mqf4m6QUsMqZQdvZ8Mj+V6wwfroTLEtPD1osHScALU5pHabMfzEKi82v2T1XBNFbV69Vy8AJz+Q==
+X-Received: by 2002:a05:6512:280e:b0:4a2:5154:ead9 with SMTP id cf14-20020a056512280e00b004a25154ead9mr5836045lfb.32.1669017435541;
+        Sun, 20 Nov 2022 23:57:15 -0800 (PST)
+Received: from mkor.rasu.local ([212.22.67.162])
+        by smtp.gmail.com with ESMTPSA id y18-20020a05651c107200b0027741daec09sm1292904ljm.107.2022.11.20.23.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Nov 2022 23:57:15 -0800 (PST)
+From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Andrew Lunn <andrew@lunn.ch>, Tom Rix <trix@redhat.com>,
+        Marco Bonelli <marco@mebeim.net>,
+        Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH] ethtool: avoiding integer overflow in ethtool_phys_id()
+Date:   Mon, 21 Nov 2022 10:56:18 +0300
+Message-Id: <20221121075618.15877-1-korotkov.maxim.s@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,53 +72,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il giorno dom 20 nov 2022 alle ore 18:48 Subash Abhinov
-Kasiviswanathan (KS) <quic_subashab@quicinc.com> ha scritto:
->
-> On 11/20/2022 2:52 AM, Daniele Palmas wrote:
-> > Il giorno dom 20 nov 2022 alle ore 10:39 Bj=C3=B8rn Mork <bjorn@mork.no=
-> ha scritto:
-> >>
-> >> Daniele Palmas <dnlplm@gmail.com> writes:
-> >>
-> >>> Ok, so rmnet would only take care of qmap rx packets deaggregation an=
-d
-> >>> qmi_wwan of the tx aggregation.
-> >>>
-> >>> At a conceptual level, implementing tx aggregation in qmi_wwan for
-> >>> passthrough mode could make sense, since the tx aggregation parameter=
-s
-> >>> belong to the physical device and are shared among the virtual rmnet
-> >>> netdevices, which can't have different aggr configurations if they
-> >>> belong to the same physical device.
-> >>>
-> >>> Bj=C3=B8rn, would this approach be ok for you?
-> >>
-> >> Sounds good to me, if this can be done within the userspace API
-> >> restrictions we've been through.
-> >>
-> >> I assume it's possible to make this Just Work(tm) in qmi_wwan
-> >> passthrough mode?  I do not think we want any solution where the user
-> >> will have to configure both qmi_wwan and rmnet to make things work
-> >> properly.
-> >>
-> >
-> > Yes, I think so: the ethtool configurations would apply to the
-> > qmi_wwan netdevice so that nothing should be done on the rmnet side.
-> >
-> > Regards,
-> > Daniele
->
-> My only concern against this option is that we would now need to end up
-> implementing the same tx aggregation logic in the other physical device
-> drivers - mhi_netdev & ipa. Keeping this tx aggregation logic in rmnet
-> allows you to leverage it across all these various physical devices.
+The value of an arithmetic expression "n * id.data" is subject
+to possible overflow due to a failure to cast operands to a larger data
+type before performing arithmetic. Added cast of first operand to u64
+for avoiding overflow.
 
-Yes, that's true.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-But according to this discussion, the need for tx aggregation seems
-relevant just to USB devices (and maybe also a minority of them, since
-so far no one complained about it lacking), isn't it?
+Fixes: 2adc6edcaec0 ("ethtool: fix error handling in ethtool_phys_id")
+Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+---
+ net/ethtool/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-Daniele
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 6a7308de192d..cf87e53c2e74 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2007,7 +2007,7 @@ static int ethtool_phys_id(struct net_device *dev, void __user *useraddr)
+ 	} else {
+ 		/* Driver expects to be called at twice the frequency in rc */
+ 		int n = rc * 2, interval = HZ / n;
+-		u64 count = n * id.data, i = 0;
++		u64 count = (u64)n * id.data, i = 0;
+ 
+ 		do {
+ 			rtnl_lock();
+-- 
+2.17.1
+
