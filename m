@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2B9632595
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 15:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 205386325A1
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 15:23:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230494AbiKUOXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 09:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
+        id S230483AbiKUOXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 09:23:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiKUOXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 09:23:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2908515715;
-        Mon, 21 Nov 2022 06:23:13 -0800 (PST)
+        with ESMTP id S230477AbiKUOXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 09:23:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82BA13EA6;
+        Mon, 21 Nov 2022 06:23:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B19D161278;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14534B81057;
+        Mon, 21 Nov 2022 14:23:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C670C433D7;
         Mon, 21 Nov 2022 14:23:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 768A5C433C1;
-        Mon, 21 Nov 2022 14:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669040592;
-        bh=HFpo77BQsl9Ohhe2NaWGfq8emkBB12mjiU/sde8Xnzg=;
+        s=k20201202; t=1669040594;
+        bh=/jH9GYwDzo2HsuJAbISAsztvTBt8ms8nOOwZqv/Mke8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gx+uBKz7w78qUyoXj7z1zrl3gBMfjuCsa7QUoh8o5+YzvncgLa3L4jK1hzipWMa7i
-         SKUX4DYjNnl3rfH7/RQuZYRk1W19cxngraxbbfMH1dcDlYfB/Wf2A3p6ULrPK505S6
-         alydqN8o14100jPPXUpJM5b8cEXtqQVa+ySaSaUYiN3dbEwKCn+fcH5ZHeB+kCpYUh
-         P5BnsfCVwQYoQOMgjNz22gNJX/bBlJ37qXy4cXSh0/gjJvdEotvBmtqPZFXTj8ShJT
-         rTU7eaRDu5Oi3YGj0QM7gagWTqnbAktkYvdUCaG3h4mSRyLkhNts2MVqBVknDp0Vto
-         W/ojNxR2r4DRg==
+        b=E8j/afhgrCow+OkHmWwi/LOPFVdR6d5GZ0YUosld+p174tdNR2q494HyQLCZF2AX2
+         ifTVbaC8Ev8c4mWlSiHQ7DLcACuL0cnAMSLlMwLZqMUZ3PBaeTKYsVuD36PnXwe9Pt
+         elOinOX6CTyNMi03LeCL9Iz+JkN+xRBJIx4aR+Lh2dBNx5q7QcZwgHGzn32OP+5pH2
+         X/o5gMirLaLai0AHRzi6F58UYWRYF2K2BrQ8MFN+24QIBwlx8qYZGFIH5yTOTpazZz
+         ZGZ549pI3kGrKfD/xpxZM7jNg1q1DzGzUGggK2taltDifjUl3TEQCIhIRIWRioLGvl
+         h/1UgX2+Sk6Ng==
 From:   Roger Quadros <rogerq@kernel.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     edumazet@google.com, pabeni@redhat.com, vigneshr@ti.com,
         linux-omap@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v2 2/4] net: ethernet: ti: am65-cpsw-nuss: Remove redundant ALE_CLEAR
-Date:   Mon, 21 Nov 2022 16:22:58 +0200
-Message-Id: <20221121142300.9320-3-rogerq@kernel.org>
+Subject: [PATCH v2 3/4] net: ethernet: ti: am65-cpsw: Restore ALE only if any interface was up
+Date:   Mon, 21 Nov 2022 16:22:59 +0200
+Message-Id: <20221121142300.9320-4-rogerq@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221121142300.9320-1-rogerq@kernel.org>
 References: <20221121142300.9320-1-rogerq@kernel.org>
@@ -51,27 +51,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ALE_CLEAR command is issued in cpsw_ale_start() so no need
-to issue it before the call to cpsw_ale_start().
+There is no point in restoring ALE if all interfaces were down
+prior to suspend as ALE will be cleared when any interface is
+brought up.
 
-Fixes: fd23df72f2be ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
+So restore ALE only if any interface was up before system suspended.
+
+Fixes: 1af3cb3702d0 ("net: ethernet: ti: am65-cpsw: Fix hardware switch mode on suspend/resume")
 Signed-off-by: Roger Quadros <rogerq@kernel.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 505c9edf98ff..2acde5b14516 100644
+index 2acde5b14516..dda9afe5410c 100644
 --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
 +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -404,7 +404,6 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
- 	/* disable priority elevation */
- 	writel(0, common->cpsw_base + AM65_CPSW_REG_PTYPE);
+@@ -2935,6 +2935,7 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 	struct net_device *ndev;
+ 	int i, ret;
+ 	struct am65_cpsw_host *host_p = am65_common_get_host(common);
++	bool need_ale_restore = false;
  
--	cpsw_ale_control_set(common->ale, 0, ALE_CLEAR, 1);
- 	cpsw_ale_start(common->ale);
+ 	ret = am65_cpsw_nuss_init_tx_chns(common);
+ 	if (ret)
+@@ -2957,6 +2958,7 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 			continue;
  
- 	/* limit to one RX flow only */
+ 		if (netif_running(ndev)) {
++			need_ale_restore = true;
+ 			rtnl_lock();
+ 			ret = am65_cpsw_nuss_ndo_slave_open(ndev);
+ 			rtnl_unlock();
+@@ -2971,7 +2973,8 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 	}
+ 
+ 	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+-	cpsw_ale_restore(common->ale, common->ale_context);
++	if (need_ale_restore)
++		cpsw_ale_restore(common->ale, common->ale_context);
+ 
+ 	return 0;
+ }
 -- 
 2.17.1
 
