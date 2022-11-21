@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9CC86330E5
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 00:44:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6C4633102
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 00:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbiKUXoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 18:44:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        id S231996AbiKUXzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 18:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232082AbiKUXnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 18:43:20 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2C3CFA49;
-        Mon, 21 Nov 2022 15:42:01 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id 205so15424748ybe.7;
-        Mon, 21 Nov 2022 15:42:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=2QYGdlTqVTZzzGT2k0gcrBowvF2w0tHqlVlLs9KVxJg=;
-        b=qlO3PrlwXeBX3yWUzExdFewXfBpm+n7Iun15QymV+YVktCi1G/36bFxRx2P0dOFq2g
-         eJ+Y97lsdy7N1+c3CYUYcMfW9oHFB1Uynp4d+RsXKYsdFtdy5l+tnB750c3fuO5Gvrif
-         cIrfMx9QyFPJbSmTO7Y1BO4FUpV+TxyvJpeefgrVu0RaATObDAnEBeF0zYvqxoGcZazO
-         IYRcFabOci0lEXx0tzU1F5bP4htiCaZK98/FCCUSV1xPWuZDNWh9L3Bt1Mx1zLYYvRVj
-         ZWSjbeH2LPIuGDFu15MEpldeVp6W2Vc4rlmHWyawaIgsghiXb9JtnjNh/k8QpTUZTU6P
-         p2UA==
+        with ESMTP id S231322AbiKUXzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 18:55:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E30DFA5
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 15:54:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669074885;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Vfi5JoUW4sy0rV+2b6cm9JwJhGIJ1OzKdAPSqEmwZ/s=;
+        b=ICmylPkgpZwfu6WZVhAAR3wOx5bX6E3WK0wiSV/acphMLVy7W7aU2bjANPTSDoLI72wmUV
+        cRZoLhNfb4Uz84TCgJQQbhUPnOl/cm9igTJOASO2UWPj9MuntKYsRtj3UuMj0iK5Gj0hqu
+        k+QRt31J5SSYaffCtS2f4hLz2egGzW0=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-426-gAYb8BhqNcKV7SoJ1J9VIg-1; Mon, 21 Nov 2022 18:54:44 -0500
+X-MC-Unique: gAYb8BhqNcKV7SoJ1J9VIg-1
+Received: by mail-ed1-f71.google.com with SMTP id y18-20020a056402359200b004635f8b1bfbso7762420edc.17
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 15:54:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=2QYGdlTqVTZzzGT2k0gcrBowvF2w0tHqlVlLs9KVxJg=;
-        b=UkmUgvspHJfl2AWXWBniCRye0U1QTDiVo5iNPjuvvKdRI9/S6CfYZ+up1OB29A628A
-         WkBevFMJxxe8Pfrttu0G09iCcfslL6ks7FRyOOMaLOwvQz+J+Yi3aQ8GowSnSEf8b23B
-         UT5f/uutxJBiCJdHsywKjZvGd+wQYet0JxVoSk0SALq/ORZbxhX8THPcCgnIpFROLRJ9
-         Gblv8GOI8yZhMcPZYtghIYLUGWPQKKYc/HwQG5AbtFTY22aDWOda72Eic10Zo81W6GYY
-         4y3gdrEBtsCTZpHkCdeopW0E+HUG1vlXaC8Fy/xrD4vl8GTukT4u55EBRluvW78PIsfr
-         67gQ==
-X-Gm-Message-State: ANoB5pnMDDxBBSYYg3JvraHHUtyY4ZS64C5Hq60hcnDLIV7lXgDtlDLm
-        lViQPi8/ymaS65Eu+7j5zpYnwzBWqjGAftXbGd8=
-X-Google-Smtp-Source: AA0mqf5idy2ZBRXr1SawCaysikxsz6W8SLXz2rngPSGYJLLYR+uJPsaWcms1lhTHLmN46AOpAb5vZ4wm3Ky/yflmADU=
-X-Received: by 2002:a5b:151:0:b0:6ca:aa9f:e8d4 with SMTP id
- c17-20020a5b0151000000b006caaa9fe8d4mr4951772ybp.129.1669074114870; Mon, 21
- Nov 2022 15:41:54 -0800 (PST)
+        bh=Vfi5JoUW4sy0rV+2b6cm9JwJhGIJ1OzKdAPSqEmwZ/s=;
+        b=pwa0wSTBhsEBypQmbOJ4YtDDUYTmBXPVSIe2VX+fnPICrFTHyAIJb/V3MiUETvE0M9
+         jpAQjfjoj3AYvlRtPfOfSQOSnnLVLEpgkeUp8ptMYXB0Jyue7H704YLceGb1j3sT90Dm
+         JVc3ogHl89SC0JjeySHJ8oVRWu6Vf4jzKwxH0zsWvi3qMBvpHfXf6UNSICRnLSSsVL9P
+         HjQ5Wikaiq19MOTBCHsTySRVClk3HvvLgb58MvZxAzjqQVDgwmibV6fcZ2+uYOvPNkIJ
+         rbDbHckINLlqnwSjqJoI5jGisYaP7RB8GVzY5fPIfPag3alNZMajxUcPJAmmb0i/3r6K
+         sgCw==
+X-Gm-Message-State: ANoB5pl84SoTjfL+s7To3aeSPXfL09xy3Td2+MirDPAFmpiY06ozJQ2s
+        T3R1v+1Mu5Vy9845kmilVskfhJUIzpbKzITMQq16Nr8z5VM/exGWCYpEGEjXaNu+cJeP67UenI8
+        wQEGkC6pBrWp6dH60muFwCF7jdbLYJGRT
+X-Received: by 2002:a05:6402:2075:b0:457:1323:1b7e with SMTP id bd21-20020a056402207500b0045713231b7emr18096145edb.311.1669074882829;
+        Mon, 21 Nov 2022 15:54:42 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4plkbvfUTn37DrpMuiuokQS5FXamM7cr2o73T3mVCgtfVsKKFvQIEszefLXUsr5uMQowhWAfAqhL/yJ1ppcs8=
+X-Received: by 2002:a05:6402:2075:b0:457:1323:1b7e with SMTP id
+ bd21-20020a056402207500b0045713231b7emr18096132edb.311.1669074882578; Mon, 21
+ Nov 2022 15:54:42 -0800 (PST)
 MIME-Version: 1.0
-References: <20221119014914.31792-1-kuniyu@amazon.com> <20221119014914.31792-5-kuniyu@amazon.com>
-In-Reply-To: <20221119014914.31792-5-kuniyu@amazon.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Mon, 21 Nov 2022 15:41:43 -0800
-Message-ID: <CAJnrk1YUNuJKvdYDp6Ye2rXgVzr8KViq65P0EGrh5W4WeoQkDA@mail.gmail.com>
-Subject: Re: [PATCH v4 net 4/4] dccp/tcp: Fixup bhash2 bucket when connect() fails.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+References: <20221102151915.1007815-1-miquel.raynal@bootlin.com>
+ <20221102151915.1007815-2-miquel.raynal@bootlin.com> <CAK-6q+iSzRyDDiNusXiRWvUsS5dSS5bSzAtNjSLTt6kgaxtbHg@mail.gmail.com>
+ <20221118230443.2e5ba612@xps-13> <CAK-6q+jJKoFy359_Pd4_d+EfqLw4PTdG4F7H4u+URD=UKu9k6w@mail.gmail.com>
+ <20221121100539.75e13069@xps-13>
+In-Reply-To: <20221121100539.75e13069@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 21 Nov 2022 18:54:31 -0500
+Message-ID: <CAK-6q+g9XghJsH+Yh-7qRV1BAhC1J9GkOHOqBrpRerkQMn1sMw@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 1/3] ieee802154: Advertize coordinators discovery
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@mandriva.com>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Pengfei Xu <pengfei.xu@intel.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        dccp@vger.kernel.org, syzbot <syzkaller@googlegroups.com>
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,255 +86,206 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 5:51 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> If a socket bound to a wildcard address fails to connect(), we
-> only reset saddr and keep the port.  Then, we have to fix up the
-> bhash2 bucket; otherwise, the bucket has an inconsistent address
-> in the list.
->
-> Also, listen() for such a socket will fire the WARN_ON() in
-> inet_csk_get_port(). [0]
->
-> Note that when a system runs out of memory, we give up fixing the
-> bucket and unlink sk from bhash and bhash2 by inet_put_port().
->
-> [0]:
-> WARNING: CPU: 0 PID: 207 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> Modules linked in:
-> CPU: 0 PID: 207 Comm: bhash2_prev_rep Not tainted 6.1.0-rc3-00799-gc8421681c845 #63
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.amzn2022.0.1 04/01/2014
-> RIP: 0010:inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> Code: 74 a7 eb 93 48 8b 54 24 18 0f b7 cb 4c 89 e6 4c 89 ff e8 48 b2 ff ff 49 8b 87 18 04 00 00 e9 32 ff ff ff 0f 0b e9 34 ff ff ff <0f> 0b e9 42 ff ff ff 41 8b 7f 50 41 8b 4f 54 89 fe 81 f6 00 00 ff
-> RSP: 0018:ffffc900003d7e50 EFLAGS: 00010202
-> RAX: ffff8881047fb500 RBX: 0000000000004e20 RCX: 0000000000000000
-> RDX: 000000000000000a RSI: 00000000fffffe00 RDI: 00000000ffffffff
-> RBP: ffffffff8324dc00 R08: 0000000000000001 R09: 0000000000000001
-> R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000000
-> R13: 0000000000000001 R14: 0000000000004e20 R15: ffff8881054e1280
-> FS:  00007f8ac04dc740(0000) GS:ffff88842fc00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000020001540 CR3: 00000001055fa003 CR4: 0000000000770ef0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> Call Trace:
->  <TASK>
->  inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
->  inet_listen (net/ipv4/af_inet.c:228)
->  __sys_listen (net/socket.c:1810)
->  __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
->  do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
->  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> RIP: 0033:0x7f8ac051de5d
-> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 93 af 1b 00 f7 d8 64 89 01 48
-> RSP: 002b:00007ffc1c177248 EFLAGS: 00000206 ORIG_RAX: 0000000000000032
-> RAX: ffffffffffffffda RBX: 0000000020001550 RCX: 00007f8ac051de5d
-> RDX: ffffffffffffff80 RSI: 0000000000000000 RDI: 0000000000000004
-> RBP: 00007ffc1c177270 R08: 0000000000000018 R09: 0000000000000007
-> R10: 0000000020001540 R11: 0000000000000206 R12: 00007ffc1c177388
-> R13: 0000000000401169 R14: 0000000000403e18 R15: 00007f8ac0723000
->  </TASK>
->
-> Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Reported-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Hi,
 
-Acked-by: Joanne Koong <joannelkoong@gmail.com>
-> ---
->  include/net/inet_hashtables.h |  1 +
->  net/dccp/ipv4.c               |  3 +--
->  net/dccp/ipv6.c               |  3 +--
->  net/dccp/proto.c              |  3 +--
->  net/ipv4/inet_hashtables.c    | 38 +++++++++++++++++++++++++++++++----
->  net/ipv4/tcp.c                |  3 +--
->  net/ipv4/tcp_ipv4.c           |  3 +--
->  net/ipv6/tcp_ipv6.c           |  3 +--
->  8 files changed, 41 insertions(+), 16 deletions(-)
+On Mon, Nov 21, 2022 at 4:05 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> index ba06e8b52264..69174093078f 100644
-> --- a/include/net/inet_hashtables.h
-> +++ b/include/net/inet_hashtables.h
-> @@ -282,6 +282,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
->   * rcv_saddr field should already have been updated when this is called.
->   */
->  int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
-> +void inet_bhash2_reset_saddr(struct sock *sk);
+> Hi Alexander,
 >
->  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
->                     struct inet_bind2_bucket *tb2, unsigned short port);
-> diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> index 95e376e3b911..b780827f5e0a 100644
-> --- a/net/dccp/ipv4.c
-> +++ b/net/dccp/ipv4.c
-> @@ -143,8 +143,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
->          * This unhashes the socket and releases the local port, if necessary.
->          */
->         dccp_set_state(sk, DCCP_CLOSED);
-> -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> -               inet_reset_saddr(sk);
-> +       inet_bhash2_reset_saddr(sk);
->         ip_rt_put(rt);
->         sk->sk_route_caps = 0;
->         inet->inet_dport = 0;
-> diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> index 94c101ed57a9..602f3432d80b 100644
-> --- a/net/dccp/ipv6.c
-> +++ b/net/dccp/ipv6.c
-> @@ -970,8 +970,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> aahringo@redhat.com wrote on Sun, 20 Nov 2022 19:57:31 -0500:
 >
->  late_failure:
->         dccp_set_state(sk, DCCP_CLOSED);
-> -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> -               inet_reset_saddr(sk);
-> +       inet_bhash2_reset_saddr(sk);
->         __sk_dst_reset(sk);
->  failure:
->         inet->inet_dport = 0;
-> diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-> index c548ca3e9b0e..85e35c5e8890 100644
-> --- a/net/dccp/proto.c
-> +++ b/net/dccp/proto.c
-> @@ -279,8 +279,7 @@ int dccp_disconnect(struct sock *sk, int flags)
+> > Hi,
+> >
+> > On Fri, Nov 18, 2022 at 5:04 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > Hi Alexander,
+> > >
+> > > aahringo@redhat.com wrote on Sun, 6 Nov 2022 21:01:35 -0500:
+> > >
+> > > > Hi,
+> > > >
+> > > > On Wed, Nov 2, 2022 at 11:20 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > >
+> > > > > Let's introduce the basics for advertizing discovered PANs and
+> > > > > coordinators, which is:
+> > > > > - A new "scan" netlink message group.
+> > > > > - A couple of netlink command/attribute.
+> > > > > - The main netlink helper to send a netlink message with all the
+> > > > >   necessary information to forward the main information to the user.
+> > > > >
+> > > > > Two netlink attributes are proactively added to support future UWB
+> > > > > complex channels, but are not actually used yet.
+> > > > >
+> > > > > Co-developed-by: David Girault <david.girault@qorvo.com>
+> > > > > Signed-off-by: David Girault <david.girault@qorvo.com>
+> > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > > ---
+> > > > >  include/net/cfg802154.h   |  20 +++++++
+> > > > >  include/net/nl802154.h    |  44 ++++++++++++++
+> > > > >  net/ieee802154/nl802154.c | 121 ++++++++++++++++++++++++++++++++++++++
+> > > > >  net/ieee802154/nl802154.h |   6 ++
+> > > > >  4 files changed, 191 insertions(+)
+> > > > >
+> > > > > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > > > > index e1481f9cf049..8d67d9ed438d 100644
+> > > > > --- a/include/net/cfg802154.h
+> > > > > +++ b/include/net/cfg802154.h
+> > > > > @@ -260,6 +260,26 @@ struct ieee802154_addr {
+> > > > >         };
+> > > > >  };
+> > > > >
+> > > > > +/**
+> > > > > + * struct ieee802154_coord_desc - Coordinator descriptor
+> > > > > + * @coord: PAN ID and coordinator address
+> > > > > + * @page: page this coordinator is using
+> > > > > + * @channel: channel this coordinator is using
+> > > > > + * @superframe_spec: SuperFrame specification as received
+> > > > > + * @link_quality: link quality indicator at which the beacon was received
+> > > > > + * @gts_permit: the coordinator accepts GTS requests
+> > > > > + * @node: list item
+> > > > > + */
+> > > > > +struct ieee802154_coord_desc {
+> > > > > +       struct ieee802154_addr *addr;
+> > > >
+> > > > Why is this a pointer?
+> > >
+> > > No reason anymore, I've changed this member to be a regular structure.
+> > >
+> >
+> > ok.
+> >
+> > > >
+> > > > > +       u8 page;
+> > > > > +       u8 channel;
+> > > > > +       u16 superframe_spec;
+> > > > > +       u8 link_quality;
+> > > > > +       bool gts_permit;
+> > > > > +       struct list_head node;
+> > > > > +};
+> > > > > +
+> > > > >  struct ieee802154_llsec_key_id {
+> > > > >         u8 mode;
+> > > > >         u8 id;
+> > > > > diff --git a/include/net/nl802154.h b/include/net/nl802154.h
+> > > > > index 145acb8f2509..cfe462288695 100644
+> > > > > --- a/include/net/nl802154.h
+> > > > > +++ b/include/net/nl802154.h
+> > > > > @@ -58,6 +58,9 @@ enum nl802154_commands {
+> > > > >
+> > > > >         NL802154_CMD_SET_WPAN_PHY_NETNS,
+> > > > >
+> > > > > +       NL802154_CMD_NEW_COORDINATOR,
+> > > > > +       NL802154_CMD_KNOWN_COORDINATOR,
+> > > > > +
+> > > >
+> > > > NEW is something we never saw before and KNOWN we already saw before?
+> > > > I am not getting that when I just want to maintain a list in the user
+> > > > space and keep them updated, but I think we had this discussion
+> > > > already or? Currently they do the same thing, just the command is
+> > > > different. The user can use it to filter NEW and KNOWN? Still I am not
+> > > > getting it why there is not just a start ... event, event, event ....
+> > > > end. and let the user decide if it knows that it's new or old from its
+> > > > perspective.
+> > >
+> > > Actually we already discussed this once and I personally liked more to
+> > > handle this in the kernel, but you seem to really prefer letting the
+> > > user space device whether or not the beacon is a new one or not, so
+> > > I've updated both the kernel side and the userspace side to act like
+> > > this.
+> > >
+> >
+> > I thought there was some problem about when the "scan-op" is running
+> > and there could be the case that the discovered PANs are twice there,
+> > but this looks more like handling UAPI features as separate new and
+> > old ones? I can see that there can be a need for the first case?
 >
->         inet->inet_dport = 0;
+> I don't think there is a problem handling this on one side or the
+> other, both should work identically. I've done the change anyway in v2
+> :)
 >
-> -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> -               inet_reset_saddr(sk);
-> +       inet_bhash2_reset_saddr(sk);
->
->         sk->sk_shutdown = 0;
->         sock_reset_flag(sk, SOCK_DONE);
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index 18ef370af113..3cec471a2cd2 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -871,7 +871,7 @@ static void inet_update_saddr(struct sock *sk, void *saddr, int family)
->  #endif
->  }
->
-> -int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> +static int __inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family, bool reset)
->  {
->         struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
->         struct inet_bind_hashbucket *head, *head2;
-> @@ -883,7 +883,11 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
->
->         if (!inet_csk(sk)->icsk_bind2_hash) {
->                 /* Not bind()ed before. */
-> -               inet_update_saddr(sk, saddr, family);
-> +               if (reset)
-> +                       inet_reset_saddr(sk);
-> +               else
-> +                       inet_update_saddr(sk, saddr, family);
-> +
->                 return 0;
->         }
->
-> @@ -892,8 +896,19 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
->          * allocation fails.
->          */
->         new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
-> -       if (!new_tb2)
-> +       if (!new_tb2) {
-> +               if (reset) {
-> +                       /* The (INADDR_ANY, port) bucket might have already
-> +                        * been freed, then we cannot fixup icsk_bind2_hash,
-> +                        * so we give up and unlink sk from bhash/bhash2 not
-> +                        * to leave inconsistency in bhash2.
-> +                        */
-> +                       inet_put_port(sk);
-> +                       inet_reset_saddr(sk);
-> +               }
 
-nit: I think this is better placed in the dccp/tcp_ipv4/6 layer, to
-make it clear / more obvious that the sk gets unbinded in this edge
-case.
+ok.
 
-> +
->                 return -ENOMEM;
-> +       }
+> > > > >         /* add new commands above here */
+> > > > >
+> > > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> > > > > @@ -133,6 +136,8 @@ enum nl802154_attrs {
+> > > > >         NL802154_ATTR_PID,
+> > > > >         NL802154_ATTR_NETNS_FD,
+> > > > >
+> > > > > +       NL802154_ATTR_COORDINATOR,
+> > > > > +
+> > > > >         /* add attributes here, update the policy in nl802154.c */
+> > > > >
+> > > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> > > > > @@ -218,6 +223,45 @@ enum nl802154_wpan_phy_capability_attr {
+> > > > >         NL802154_CAP_ATTR_MAX = __NL802154_CAP_ATTR_AFTER_LAST - 1
+> > > > >  };
+> > > > >
+> > > > > +/**
+> > > > > + * enum nl802154_coord - Netlink attributes for a coord
+> > > > > + *
+> > > > > + * @__NL802154_COORD_INVALID: invalid
+> > > > > + * @NL802154_COORD_PANID: PANID of the coordinator (2 bytes)
+> > > > > + * @NL802154_COORD_ADDR: coordinator address, (8 bytes or 2 bytes)
+> > > > > + * @NL802154_COORD_CHANNEL: channel number, related to @NL802154_COORD_PAGE (u8)
+> > > > > + * @NL802154_COORD_PAGE: channel page, related to @NL802154_COORD_CHANNEL (u8)
+> > > > > + * @NL802154_COORD_PREAMBLE_CODE: Preamble code used when the beacon was received,
+> > > > > + *     this is PHY dependent and optional (u8)
+> > > > > + * @NL802154_COORD_MEAN_PRF: Mean PRF used when the beacon was received,
+> > > > > + *     this is PHY dependent and optional (u8)
+> > > > > + * @NL802154_COORD_SUPERFRAME_SPEC: superframe specification of the PAN (u16)
+> > > > > + * @NL802154_COORD_LINK_QUALITY: signal quality of beacon in unspecified units,
+> > > > > + *     scaled to 0..255 (u8)
+> > > > > + * @NL802154_COORD_GTS_PERMIT: set to true if GTS is permitted on this PAN
+> > > > > + * @NL802154_COORD_PAYLOAD_DATA: binary data containing the raw data from the
+> > > > > + *     frame payload, (only if beacon or probe response had data)
+> > > > > + * @NL802154_COORD_PAD: attribute used for padding for 64-bit alignment
+> > > > > + * @NL802154_COORD_MAX: highest coordinator attribute
+> > > > > + */
+> > > > > +enum nl802154_coord {
+> > > > > +       __NL802154_COORD_INVALID,
+> > > > > +       NL802154_COORD_PANID,
+> > > > > +       NL802154_COORD_ADDR,
+> > > > > +       NL802154_COORD_CHANNEL,
+> > > > > +       NL802154_COORD_PAGE,
+> > > > > +       NL802154_COORD_PREAMBLE_CODE,
+> > > >
+> > > > Interesting, if you do a scan and discover pans and others answers I
+> > > > would think you would see only pans on the same preamble. How is this
+> > > > working?
+> > >
+> > > Yes this is how it is working, you only see PANs on one preamble at a
+> > > time. That's why we need to tell on which preamble we received the
+> > > beacon.
+> > >
+> >
+> > But then I don't know how you want to change the preamble while
+> > scanning?
 >
->         bhash = inet_bhashfn(net, port, hinfo->bhash_size);
->         head = &hinfo->bhash[bhash];
-> @@ -909,7 +924,10 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
->         inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
->         spin_unlock(&head2->lock);
+> Just to be sure: here we are talking about reporting the beacons that
+> were received and the coordinators they advertise. Which means we
+> _need_ to tell the user on which preamble code it was, but we don't yet
+> consider any preamble code changes here on the PHY.
 >
-> -       inet_update_saddr(sk, saddr, family);
-> +       if (reset)
-> +               inet_reset_saddr(sk);
-> +       else
-> +               inet_update_saddr(sk, saddr, family);
->
->         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
->
-> @@ -930,8 +948,20 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
->
->         return 0;
->  }
-> +
-> +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> +{
-> +       return __inet_bhash2_update_saddr(sk, saddr, family, false);
-> +}
->  EXPORT_SYMBOL_GPL(inet_bhash2_update_saddr);
->
-> +void inet_bhash2_reset_saddr(struct sock *sk)
-> +{
-> +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> +               __inet_bhash2_update_saddr(sk, NULL, 0, true);
-> +}
-> +EXPORT_SYMBOL_GPL(inet_bhash2_reset_saddr);
 
-> +
->  /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
->   * Note that we use 32bit integers (vs RFC 'short integers')
->   * because 2^16 is not a multiple of num_ephemeral and this
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 54836a6b81d6..4f2205756cfe 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -3114,8 +3114,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+but there is my question, how coordinators can advertise they are
+running on a different preamble as they sent on the advertisement. And
+what I thought was that the preamble is a non changeable thing, more
+specifically 4 octet all zero (preamble) followed by 0xA7 (SFD)). I
+know there are transceivers to change at least the SFD value, but then
+I was assuming you were running out of spec (some people doing that to
+ehm... "fake secure" their 802.15.4 communication as I heard).
+
+> > I know there are registers for changing the preamble and I
+> > thought that is a vendor specific option. However I am not an expert
+> > to judge if it's needed or not, but somehow curious how it's working.
 >
->         inet->inet_dport = 0;
+> I guess this is a problem that we must delegate to the drivers, very
+> much like channel changes, no?
 >
-> -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> -               inet_reset_saddr(sk);
-> +       inet_bhash2_reset_saddr(sk);
->
->         sk->sk_shutdown = 0;
->         sock_reset_flag(sk, SOCK_DONE);
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 23dd7e9df2d5..da46357f501b 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -331,8 +331,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
->          * if necessary.
->          */
->         tcp_set_state(sk, TCP_CLOSE);
-> -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> -               inet_reset_saddr(sk);
-> +       inet_bhash2_reset_saddr(sk);
->         ip_rt_put(rt);
->         sk->sk_route_caps = 0;
->         inet->inet_dport = 0;
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 2f3ca3190d26..f0548dbcabd2 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -346,8 +346,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
->
->  late_failure:
->         tcp_set_state(sk, TCP_CLOSE);
-> -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> -               inet_reset_saddr(sk);
-> +       inet_bhash2_reset_saddr(sk);
->  failure:
->         inet->inet_dport = 0;
->         sk->sk_route_caps = 0;
-> --
-> 2.30.2
->
+
+yes.
+
+- Alex
+
