@@ -2,185 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDC4632717
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 15:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10C4B63274C
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 16:06:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbiKUO5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 09:57:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
+        id S231329AbiKUPGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 10:06:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231918AbiKUO4X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 09:56:23 -0500
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B59D14D6
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 06:46:56 -0800 (PST)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-398cff43344so65766177b3.0
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 06:46:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ulFUKCXAc9aqxzSy5N0/HB1Zcs+rWuap2uwJAvIalXY=;
-        b=E3+Ab5ymBjhRv+mPQJsnLPZIUqlEY50RqereQhANaVN+0Uf8zUE9qEmhkyFg9YbgoY
-         XZrxBVNnHIRsdUXCq51HwP1XE6ayGuVklfNJYVwT//yxtQug++UxpjUooF4W44/qx95V
-         R+yBMfLpKu4xjrTWEoOwbSbuVSG+N7aurs6ZL/GUG/A28VS3hELpuowlVQyDWD/dBavW
-         GQKf+r7C0FoIZdlMNhUnosu/gXKKDjns/oL77HkDRCIb9kI6yTLyFshfHzRbC53DpmCV
-         7Nf/SszYnGjcR/YcmjjPH290oLtMTo22A5B+/WTpl/RZZMLCXAjN3OAijwajceDzv7mQ
-         GMKg==
+        with ESMTP id S231263AbiKUPFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 10:05:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CBCE674C
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 06:53:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669042376;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tyYoQDvW5BLwsxIUp85ljPCfFSUwHbhCNM6YdC5pOm0=;
+        b=FGk0dMG9U3VmOgKd7Sbo4spjI63ae6ZNqCDkwDRzV1VAHHl/zJryKze8YlHtokRertcKBI
+        JcFCJpV+RZOpG+6TL4Ah0y47NTf/ApGi0GYXpSHcw5T46iiZTqi1k2GsZMlCM6JC5MfuEK
+        KHtc0UuUAtcRPG43N6zoTe6pp5XC3cQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-481-5RMb0wt8NGuVpxFF4vhZwg-1; Mon, 21 Nov 2022 09:52:55 -0500
+X-MC-Unique: 5RMb0wt8NGuVpxFF4vhZwg-1
+Received: by mail-wm1-f72.google.com with SMTP id c10-20020a7bc84a000000b003cf81c2d3efso3195360wml.7
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 06:52:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ulFUKCXAc9aqxzSy5N0/HB1Zcs+rWuap2uwJAvIalXY=;
-        b=n3f8MV3LEdPTp+PSKDM3VmCfh5ALdiLz2sG1S2YYfzXCL8hU/6MeT4IADswUdCxPyu
-         qibMqmmbv41yrgB7O4g/ixH5V9xTInXSgKbea9//ISBGC1v0I3KFMZzo28CiggvcPZbE
-         y1Z2OiSbeMC/XsOItc5RysWP1C0whGWmJCvCIIrN9o+Yvz3gORf3l2CLpZPZZ+w+//M9
-         i+/lJFGg1yz3ACXfWjGpnbef/MScezoi0aJxZF8O6q4IrPLa8MTPJgcjdL0R1JP41IDq
-         inYYPKIMrWVOZON2Z8dYuONeAOYeQu9JnHHAvI3IcNvO/ess4qOMPQyPTSfdJzQNXmvG
-         M5+g==
-X-Gm-Message-State: ANoB5pltNw1+iMuilbwfTD70W1SVbXS/gbWmYXaUvxUC+OIsFVpyKTo6
-        K/iAzR6htCsftfVErdN5ksWtGvQNQGbm0YjLFbH/MQ==
-X-Google-Smtp-Source: AA0mqf67GSNoHFtEMWoa7PQwZkXnx8oBOgaiP3Qk0ae9QNXF+lKDNVeKAdZ++WEoIc1A7cDg/0qXZF55lJEASemST8M=
-X-Received: by 2002:a81:520a:0:b0:38e:3015:b4cd with SMTP id
- g10-20020a81520a000000b0038e3015b4cdmr17831033ywb.87.1669042015544; Mon, 21
- Nov 2022 06:46:55 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tyYoQDvW5BLwsxIUp85ljPCfFSUwHbhCNM6YdC5pOm0=;
+        b=FO6cK6sjcrtcMwwRHP0kuN0ummXBuqoNjgpN+bKnYlHH+01fNVbsgIRsjew2As6YJh
+         zhwJHJyZG8T6QObiBNqRcZu7NjAd+ne9Skhcz3rwl0M0W2sUhQIemXMW0KqDalILwVTf
+         /n2DEsgA/uYaaTbE64R9MVVAiCcELhMgQ0H29yTzgh6kp8JdSOWshLy3ScOQQQfWv0MT
+         /QsxwfPcVmyFXh1zxuNN32o43UEs39JVKNKzI8CEEkJbdG2kFvgiZVk9amCjNZeo/8em
+         3PWYSlwnsOGs8/KSswMFkMil4OUn1Jfdpw9QlZ782BGkhf6ysiNsie7GG+PPbsIZ5k9M
+         nrMQ==
+X-Gm-Message-State: ANoB5pl4ZZcZ78f0cA0+1SYu7UUv/ianLeXOKHFTxmvnHM3ymDTfac7f
+        Qmsg3BiE2RsT+EGCSXl8Xf5HQqJYzKphYW8o85oPNOzFRU35n0kGLlBNmCjsxa/zNqgaurGsYSC
+        DdK2XVbht1YuU9EBr
+X-Received: by 2002:a05:600c:3d16:b0:3c6:de4a:d768 with SMTP id bh22-20020a05600c3d1600b003c6de4ad768mr1677484wmb.61.1669042373653;
+        Mon, 21 Nov 2022 06:52:53 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5jdJos1x+fJLl/VjateAcyVlqjFB0fbz73X92rukgJDZZKLp+g2j6EymPu53UGC0WeUNRsJg==
+X-Received: by 2002:a05:600c:3d16:b0:3c6:de4a:d768 with SMTP id bh22-20020a05600c3d1600b003c6de4ad768mr1677469wmb.61.1669042373452;
+        Mon, 21 Nov 2022 06:52:53 -0800 (PST)
+Received: from sgarzare-redhat (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
+        by smtp.gmail.com with ESMTPSA id o18-20020a05600c4fd200b003cfa26c410asm20547986wmq.20.2022.11.21.06.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Nov 2022 06:52:53 -0800 (PST)
+Date:   Mon, 21 Nov 2022 15:52:48 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        kernel <kernel@sberdevices.ru>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v1 2/3] test/vsock: add big message test
+Message-ID: <20221121145248.cmscv5vg3fir543x@sgarzare-redhat>
+References: <ba294dff-812a-bfc2-a43c-286f99aee0b8@sberdevices.ru>
+ <f0510949-cc97-7a01-5fc8-f7e855b80515@sberdevices.ru>
 MIME-Version: 1.0
-References: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
- <20221117215557.1277033-7-miquel.raynal@bootlin.com> <CAPv3WKdZ+tsW-jRJt_n=KqT+oEe+5QAEFOWKrXsTjHCBBzEh0A@mail.gmail.com>
- <20221121102928.7b190296@xps-13>
-In-Reply-To: <20221121102928.7b190296@xps-13>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Mon, 21 Nov 2022 15:46:44 +0100
-Message-ID: <CAPv3WKds1gUN1V-AkdhPJ7W_G285Q4PmAbS0_nApPgU+3RK+fA@mail.gmail.com>
-Subject: Re: [PATCH net-next 6/6] net: mvpp2: Consider NVMEM cells as possible
- MAC address source
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Robert Marko <robert.marko@sartura.hr>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <f0510949-cc97-7a01-5fc8-f7e855b80515@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 21 lis 2022 o 10:29 Miquel Raynal <miquel.raynal@bootlin.com> napisa=
-=C5=82(a):
+On Tue, Nov 15, 2022 at 08:52:35PM +0000, Arseniy Krasnov wrote:
+>This adds test for sending message, bigger than peer's buffer size.
+>For SOCK_SEQPACKET socket it must fail, as this type of socket has
+>message size limit.
 >
-> Hi Marcin,
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> tools/testing/vsock/vsock_test.c | 62 ++++++++++++++++++++++++++++++++
+> 1 file changed, 62 insertions(+)
 >
-> mw@semihalf.com wrote on Sat, 19 Nov 2022 09:18:34 +0100:
+>diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>index 107c11165887..bb4e8657f1d6 100644
+>--- a/tools/testing/vsock/vsock_test.c
+>+++ b/tools/testing/vsock/vsock_test.c
+>@@ -560,6 +560,63 @@ static void test_seqpacket_timeout_server(const struct test_opts *opts)
+> 	close(fd);
+> }
 >
-> > Hi Miquel,
-> >
-> >
-> > czw., 17 lis 2022 o 22:56 Miquel Raynal <miquel.raynal@bootlin.com> nap=
-isa=C5=82(a):
-> > >
-> > > The ONIE standard describes the organization of tlv (type-length-valu=
-e)
-> > > arrays commonly stored within NVMEM devices on common networking
-> > > hardware.
-> > >
-> > > Several drivers already make use of NVMEM cells for purposes like
-> > > retrieving a default MAC address provided by the manufacturer.
-> > >
-> > > What made ONIE tables unusable so far was the fact that the informati=
-on
-> > > where "dynamically" located within the table depending on the
-> > > manufacturer wishes, while Linux NVMEM support only allowed staticall=
-y
-> > > defined NVMEM cells. Fortunately, this limitation was eventually tack=
-led
-> > > with the introduction of discoverable cells through the use of NVMEM
-> > > layouts, making it possible to extract and consistently use the conte=
-nt
-> > > of tables like ONIE's tlv arrays.
-> > >
-> > > Parsing this table at runtime in order to get various information is =
-now
-> > > possible. So, because many Marvell networking switches already follow
-> > > this standard, let's consider using NVMEM cells as a new valid source=
- of
-> > > information when looking for a base MAC address, which is one of the
-> > > primary uses of these new fields. Indeed, manufacturers following the
-> > > ONIE standard are encouraged to provide a default MAC address there, =
-so
-> > > let's eventually use it if no other MAC address has been found using =
-the
-> > > existing methods.
-> > >
-> > > Link: https://opencomputeproject.github.io/onie/design-spec/hw_requir=
-ements.html
-> >
-> > Thanks for the patch. Did you manage to test in on a real HW? I am curi=
-ous about
->
-> Yes, I have a Replica switch on which the commercial ports use the
-> replica PCI IP while the config "OOB" port is running with mvpp2:
-> [   16.737759] mvpp2 f2000000.ethernet eth52: Using nvmem cell mac addres=
-s 18:be:92:13:9a:00
->
+>+static void test_seqpacket_bigmsg_client(const struct test_opts *opts)
+>+{
+>+	unsigned long sock_buf_size;
+>+	ssize_t send_size;
+>+	socklen_t len;
+>+	void *data;
+>+	int fd;
+>+
+>+	len = sizeof(sock_buf_size);
+>+
+>+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
 
-Nice. Do you have a DT snippet that can possibly be shared? I'd like
-to recreate this locally and eventually leverage EDK2 firmware to
-expose that.
+Not for this patch, but someday we should add a macro for this port and 
+maybe even make it configurable :-)
 
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > >
-> > > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/driver=
-s/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > index eb0fb8128096..7c8c323f4411 100644
-> > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > @@ -6104,6 +6104,12 @@ static void mvpp2_port_copy_mac_addr(struct ne=
-t_device *dev, struct mvpp2 *priv,
-> > >                 }
-> > >         }
-> > >
-> > > +       if (!of_get_mac_address(to_of_node(fwnode), hw_mac_addr)) {
-> >
-> > Unfortunately, nvmem cells seem to be not supported with ACPI yet, so
-> > we cannot extend fwnode_get_mac_address - I think it should be,
-> > however, an end solution.
->
-> Agreed.
->
-> > As of now, I'd prefer to use of_get_mac_addr_nvmem directly, to avoid
-> > parsing the DT again (after fwnode_get_mac_address) and relying
-> > implicitly on falling back to nvmem stuff (currently, without any
-> > comment it is not obvious).
->
-> I did not do that in the first place because of_get_mac_addr_nvmem()
-> was not exported, but I agree it would be the cleanest (and quickest)
-> approach, so I'll attempt to export the function first, and then use it
-> directly from the driver.
->
+>+	if (fd < 0) {
+>+		perror("connect");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	if (getsockopt(fd, AF_VSOCK, SO_VM_SOCKETS_BUFFER_SIZE,
+>+		       &sock_buf_size, &len)) {
+>+		perror("getsockopt");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	sock_buf_size++;
+>+
+>+	data = malloc(sock_buf_size);
+>+	if (!data) {
+>+		perror("malloc");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	send_size = send(fd, data, sock_buf_size, 0);
+>+	if (send_size != -1) {
 
-That would be great, thank you. Please add one-comment in the
-mvpp2_main.c, that this is valid for now only in DT world.
+Can we check also `errno`?
+IIUC it should contains EMSGSIZE.
 
-Best regards,
-Marcin
+>+		fprintf(stderr, "expected 'send(2)' failure, got %zi\n",
+>+			send_size);
+>+	}
+>+
+>+	control_writeln("CLISENT");
+>+
+>+	free(data);
+>+	close(fd);
+>+}
+>+
+>+static void test_seqpacket_bigmsg_server(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+
+>+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
+>+	if (fd < 0) {
+>+		perror("accept");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	control_expectln("CLISENT");
+>+
+>+	close(fd);
+>+}
+>+
+> #define BUF_PATTERN_1 'a'
+> #define BUF_PATTERN_2 'b'
+>
+>@@ -832,6 +889,11 @@ static struct test_case test_cases[] = {
+> 		.run_client = test_seqpacket_timeout_client,
+> 		.run_server = test_seqpacket_timeout_server,
+> 	},
+>+	{
+>+		.name = "SOCK_SEQPACKET big message",
+>+		.run_client = test_seqpacket_bigmsg_client,
+>+		.run_server = test_seqpacket_bigmsg_server,
+>+	},
+
+I would add new tests always at the end, so if some CI uses --skip, we 
+don't have to update the scripts to skip some tests.
+
+> 	{
+> 		.name = "SOCK_SEQPACKET invalid receive buffer",
+> 		.run_client = test_seqpacket_invalid_rec_buffer_client,
+>-- 
+>2.25.1
+
