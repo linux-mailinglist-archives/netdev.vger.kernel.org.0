@@ -2,254 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 637CC6323A3
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:32:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 851A06323A8
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiKUNcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 08:32:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        id S230391AbiKUNdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 08:33:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbiKUNcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:32:42 -0500
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653FE11471
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:32:34 -0800 (PST)
-Received: from [192.168.16.41] (helo=fisk.sw.ru)
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <nikolay.borisov@virtuozzo.com>)
-        id 1ox6th-0011Rq-GP;
-        Mon, 21 Nov 2022 14:31:41 +0100
-From:   Nikolay Borisov <nikolay.borisov@virtuozzo.com>
-To:     nhorman@tuxdriver.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, den@virtuozzo.com, khorenko@virtuozzo.com,
-        Nikolay Borisov <nikolay.borisov@virtuozzo.com>
-Subject: [PATCH net-next 3/3] selftests: net: Add drop monitor tests for namespace filtering functionality
-Date:   Mon, 21 Nov 2022 15:31:32 +0200
-Message-Id: <20221121133132.1837107-4-nikolay.borisov@virtuozzo.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221121133132.1837107-1-nikolay.borisov@virtuozzo.com>
-References: <20221121133132.1837107-1-nikolay.borisov@virtuozzo.com>
+        with ESMTP id S230371AbiKUNdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:33:03 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFAEBFF59;
+        Mon, 21 Nov 2022 05:32:59 -0800 (PST)
+Received: from zn.tnic (p200300ea9733e725329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e725:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C9C6B1EC053F;
+        Mon, 21 Nov 2022 14:32:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1669037577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=h6QdlM3if85oKaJAXlxT1/ww0EFma2c3NtTeZN9RKM4=;
+        b=F/qey3CdoLaY63yMD4WxsH1hFqcb8XOOWthbY+Nbxn+Wmmnr5u1piaNXCGLV0Mh3LG99Pn
+        rqOSgWpLbhkeLNecWYqWX/jiQzwmnfIMO7Eb2YyHE4IM4ljndmEMt8EppBbrHJD5+8r0GA
+        BDmK9mEPeFJCTBclgIhpz+1NyntkeW8=
+Date:   Mon, 21 Nov 2022 14:32:54 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+        peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
+        robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
+        hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com,
+        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        isaku.yamahata@intel.com, dan.j.williams@intel.com,
+        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+        iommu@lists.linux.dev
+Subject: Re: [Patch v3 01/14] x86/ioremap: Fix page aligned size calculation
+ in __ioremap_caller()
+Message-ID: <Y3t+BipyGPUV3q8F@zn.tnic>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-2-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1668624097-14884-2-git-send-email-mikelley@microsoft.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the current set of tests with new ones covering the updated
-functionality allowing to filter events based on the net namespace they
-originated from. The new set of tests:
+On Wed, Nov 16, 2022 at 10:41:24AM -0800, Michael Kelley wrote:
+> Current code re-calculates the size after aligning the starting and
+> ending physical addresses on a page boundary. But the re-calculation
+> also embeds the masking of high order bits that exceed the size of
+> the physical address space (via PHYSICAL_PAGE_MASK). If the masking
+> removes any high order bits, the size calculation results in a huge
+> value that is likely to immediately fail.
+> 
+> Fix this by re-calculating the page-aligned size first. Then mask any
+> high order bits using PHYSICAL_PAGE_MASK.
+> 
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> ---
+>  arch/x86/mm/ioremap.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+> index 78c5bc6..6453fba 100644
+> --- a/arch/x86/mm/ioremap.c
+> +++ b/arch/x86/mm/ioremap.c
+> @@ -217,9 +217,15 @@ static void __ioremap_check_mem(resource_size_t addr, unsigned long size,
+>  	 * Mappings have to be page-aligned
+>  	 */
+>  	offset = phys_addr & ~PAGE_MASK;
+> -	phys_addr &= PHYSICAL_PAGE_MASK;
+> +	phys_addr &= PAGE_MASK;
+>  	size = PAGE_ALIGN(last_addr+1) - phys_addr;
+>  
+> +	/*
+> +	 * Mask out any bits not part of the actual physical
+> +	 * address, like memory encryption bits.
+> +	 */
+> +	phys_addr &= PHYSICAL_PAGE_MASK;
+> +
+>  	retval = memtype_reserve(phys_addr, (u64)phys_addr + size,
+>  						pcm, &new_pcm);
+>  	if (retval) {
+> -- 
 
-Software drops test
-    TEST: No filtering                                                  [ OK ]
-    TEST: Filter everything                                             [ OK ]
-    TEST: NS2 packet drop filtered                                      [ OK ]
-    TEST: Filtering reset                                               [ OK ]
-    TEST: Filtering disabled                                            [ OK ]
+This looks like a fix to me that needs to go to independently to stable.
+And it would need a Fixes tag.
 
-Hardware drops test
-    TEST: No filtering                                                  [ OK ]
-    TEST: Filter everything                                             [ OK ]
-    TEST: NS2 packet drop filtered                                      [ OK ]
-    TEST: Filtering reset                                               [ OK ]
-    TEST: Filtering disabled                                            [ OK ]
+/me does some git archeology...
 
-Signed-off-by: Nikolay Borisov <nikolay.borisov@virtuozzo.com>
----
- .../selftests/net/drop_monitor_tests.sh       | 127 +++++++++++++++---
- 1 file changed, 108 insertions(+), 19 deletions(-)
+I guess this one:
 
-diff --git a/tools/testing/selftests/net/drop_monitor_tests.sh b/tools/testing/selftests/net/drop_monitor_tests.sh
-index b7650e30d18b..776aabc036f1 100755
---- a/tools/testing/selftests/net/drop_monitor_tests.sh
-+++ b/tools/testing/selftests/net/drop_monitor_tests.sh
-@@ -13,14 +13,13 @@ TESTS="
- 	hw_drops
- "
- 
--IP="ip -netns ns1"
--TC="tc -netns ns1"
--DEVLINK="devlink -N ns1"
--NS_EXEC="ip netns exec ns1"
- NETDEVSIM_PATH=/sys/bus/netdevsim/
--DEV_ADDR=1337
--DEV=netdevsim${DEV_ADDR}
--DEVLINK_DEV=netdevsim/${DEV}
-+DEV1_ADDR=1336
-+DEV2_ADDR=1337
-+DEV1=netdevsim${DEV1_ADDR}
-+DEV2=netdevsim${DEV2_ADDR}
-+DEVLINK_DEV1=netdevsim/${DEV1}
-+DEVLINK_DEV2=netdevsim/${DEV2}
- 
- log_test()
- {
-@@ -44,20 +43,29 @@ setup()
- 
- 	set -e
- 	ip netns add ns1
--	$IP link add dummy10 up type dummy
--
--	$NS_EXEC echo "$DEV_ADDR 1" > ${NETDEVSIM_PATH}/new_device
-+	ip netns add ns2
-+	NS1INUM=$(findmnt -t nsfs | grep -m1 ns1 | sed -rn 's/.*net:\[([[:digit:]]+)\].*/\1/p')
-+	NS2INUM=$(findmnt -t nsfs | grep -m1 ns2 | sed -rn 's/.*net:\[([[:digit:]]+)\].*/\1/p')
-+	ip -netns ns1 link add dummy10 up type dummy
-+	ip -netns ns2 link add dummy10 up type dummy
-+
-+	ip netns exec ns1 echo "$DEV1_ADDR 1" > ${NETDEVSIM_PATH}/new_device
-+	ip netns exec ns2 echo "$DEV2_ADDR 1" > ${NETDEVSIM_PATH}/new_device
- 	udevadm settle
--	local netdev=$($NS_EXEC ls ${NETDEVSIM_PATH}/devices/${DEV}/net/)
--	$IP link set dev $netdev up
-+	local netdev=$(ip netns exec ns1 ls ${NETDEVSIM_PATH}/devices/${DEV1}/net/)
-+	ip -netns ns1 link set dev $netdev up
-+	netdev=$(ip netns exec ns2 ls ${NETDEVSIM_PATH}/devices/${DEV2}/net/)
-+	ip -netns ns2 link set dev $netdev up
- 
- 	set +e
- }
- 
- cleanup()
- {
--	$NS_EXEC echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
-+	ip netns exec ns1 echo "$DEV1_ADDR" > ${NETDEVSIM_PATH}/del_device
-+	ip netns exec ns2 echo "$DEV2_ADDR" > ${NETDEVSIM_PATH}/del_device
- 	ip netns del ns1
-+	ip netns del ns2
- }
- 
- sw_drops_test()
-@@ -69,13 +77,53 @@ sw_drops_test()
- 
- 	local dir=$(mktemp -d)
- 
--	$TC qdisc add dev dummy10 clsact
--	$TC filter add dev dummy10 egress pref 1 handle 101 proto ip \
-+	tc -netns ns1 qdisc add dev dummy10 clsact
-+	tc -netns ns2 qdisc add dev dummy10 clsact
-+	tc -netns ns1 filter add dev dummy10 egress pref 1 handle 101 proto ip \
-+		flower dst_ip 192.0.2.10 action drop
-+	tc -netns ns2 filter add dev dummy10 egress pref 1 handle 101 proto ip \
- 		flower dst_ip 192.0.2.10 action drop
- 
--	$NS_EXEC mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
-+	ip netns exec ns1 mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
- 		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
- 		-d 100msec &
-+	ip netns exec ns2 mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
-+		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
-+		-d 100msec &
-+
-+	# Test that if we set to 0 we get all packets
-+	echo -e  "set alertmode summary\nset ns 0\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS1INUM $dir/output.txt
-+	local ret1=$?
-+	grep -q $NS2INUM $dir/output.txt
-+	local ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "No filtering"
-+
-+	# Set filter to a non-existant ns and we should see nothing
-+	echo -e  "set alertmode summary\nset ns -1\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q drops $dir/output.txt
-+	log_test $? 1 "Filter everything"
-+
-+	# Set filter to NS1 so we shouldn't see NS2
-+	echo -e  "set ns $NS1INUM\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS2INUM $dir/output.txt
-+	log_test $? 1 "NS2 packet drop filtered"
-+
-+	# Return filter to 0 and ensure everything is fine
-+	echo -e  "set ns 0\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS1INUM $dir/output.txt
-+	ret1=$?
-+	grep -q $NS2INUM $dir/output.txt
-+	ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "Filtering reset"
-+
-+	# disable ns capability at all
-+	echo -e  "set ns off\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q ns: $dir/output.txt
-+	log_test $? 1 "Filtering disabled"
-+
- 	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) != 0))
-@@ -83,7 +131,8 @@ sw_drops_test()
- 
- 	rm ${dir}/packets.pcap
- 
--	{ kill %% && wait %%; } 2>/dev/null
-+	{ kill $(jobs -p) && wait $(jobs -p); } 2> /dev/null
-+
- 	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) == 0))
-@@ -103,16 +152,56 @@ hw_drops_test()
- 
- 	local dir=$(mktemp -d)
- 
--	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action trap
-+	devlink -N ns1 trap set $DEVLINK_DEV1 trap blackhole_route action trap
-+	devlink -N ns2 trap set $DEVLINK_DEV2 trap blackhole_route action trap
-+
-+	# Test that if we set to 0 we get all packets
-+	echo -e  "set alertmode summary\nset ns 0\nset hw true\nstart" \
-+		| timeout -s 2 5 dropwatch &> $dir/output.txt
-+	#echo -e  "set hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS1INUM\]" $dir/output.txt
-+	local ret1=$?
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS2INUM\]" $dir/output.txt
-+	local ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "No filtering"
-+
-+	# Set filter to a non-existant ns and we should see nothing
-+	echo -e  "set ns -1\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q "\[hardware\]" $dir/output.txt
-+	log_test $? 1 "Filter everything"
-+
-+	# Set filter to NS1 so we shouldn't see NS2
-+	echo -e  "set ns $NS1INUM\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS2INUM $dir/output.txt
-+	log_test $? 1 "NS2 packet drop filtered"
-+
-+	# Return filter to 0 and ensure everything is fine
-+	echo -e  "set ns 0\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS1INUM\]" $dir/output.txt
-+	local ret1=$?
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS2INUM\]" $dir/output.txt
-+	local ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "Filtering reset"
-+
-+	# disable ns capability at all
-+	echo -e  "set ns off\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q ns: $dir/output.txt
-+	log_test $? 1 "Filtering disabled"
-+
- 	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
- 		| wc -l) != 0))
- 	log_test $? 0 "Capturing active hardware drops"
- 
-+	cp ${dir}/packets.pcap /root/host/
- 	rm ${dir}/packets.pcap
- 
--	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action drop
-+	devlink -N ns1 trap set $DEVLINK_DEV1 trap blackhole_route action drop
-+	devlink -N ns2 trap set $DEVLINK_DEV2 trap blackhole_route action drop
-+
- 	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
+ffa71f33a820 ("x86, ioremap: Fix incorrect physical address handling in PAE mode")
+
+should be old enough so that it goes to all relevant stable kernels...
+
+Hmm?
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
