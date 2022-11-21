@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F72A632CBB
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0237632CC2
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbiKUTPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 14:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
+        id S229960AbiKUTPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 14:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiKUTOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:14:55 -0500
+        with ESMTP id S230086AbiKUTPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:15:05 -0500
 Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DDE63143
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:14:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13E612630
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:15:04 -0800 (PST)
 Received: by dev0134.prn3.facebook.com (Postfix, from userid 425415)
-        id 253D81B812B3; Mon, 21 Nov 2022 11:14:39 -0800 (PST)
+        id 8BCCD1B8130C; Mon, 21 Nov 2022 11:15:00 -0800 (PST)
 From:   Stefan Roesch <shr@devkernel.io>
 To:     kernel-team@fb.com
 Cc:     shr@devkernel.io, axboe@kernel.dk, olivier@trillion01.com,
-        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH v5 3/3] io_uring: add api to set napi prefer busy poll
-Date:   Mon, 21 Nov 2022 11:14:37 -0800
-Message-Id: <20221121191437.996297-4-shr@devkernel.io>
+        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org,
+        ammarfaizi2@gnuweeb.org
+Subject: [PATCH v5 0/4] liburing: add api for napi busy poll
+Date:   Mon, 21 Nov 2022 11:14:55 -0800
+Message-Id: <20221121191459.998388-1-shr@devkernel.io>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221121191437.996297-1-shr@devkernel.io>
-References: <20221121191437.996297-1-shr@devkernel.io>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
@@ -37,71 +36,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds an api to register and unregister the napi prefer busy poll
-setting from liburing. To be able to use this functionality, the
-corresponding liburing patch is needed.
+This adds two new api's to set/clear the napi busy poll settings. The two
+new functions are called:
+- io_uring_register_napi
+- io_uring_unregister_napi
+
+The patch series also contains the documentation for the two new function=
+s
+and two example programs. The client program is called napi-busy-poll-cli=
+ent
+and the server program napi-busy-poll-server. The client measures the
+roundtrip times of requests.
+
+There is also a kernel patch "io-uring: support napi busy poll" to enable
+this feature on the kernel side.
+
+Changes:
+- V5:
+  - Fixes to documentation.
+  - Correct opcode for unregister call
+  - Initialize napi structure in example programs
+  - Address tab issues in recordRTT()
+- V4:
+  - Modify functions to use a structure to pass the napi busy poll settin=
+gs
+    to the kernel.
+  - Return previous values when returning from the above functions.
+  - Rename the functions and remove one function (no longer needed as the
+    data is passed as a structure)
+- V3:
+  - Updated liburing.map file
+  - Moved example programs from the test directory to the example directo=
+ry.
+    The two example programs don't fit well in the test category and need=
+ to
+    be run from separate hosts.
+  - Added the io_uring_register_napi_prefer_busy_poll API.
+  - Added the call to io_uring_register_napi_prefer_busy_poll to the exam=
+ple
+    programs
+  - Updated the documentation
+- V2:
+  - Updated the liburing.map file for the two new functions.
+    (added a 2.4 section)
+  - Added a description of the new feature to the changelog file
+  - Fixed the indentation of the longopts structure
+  - Used defined exit constants
+  - Fixed encodeUserData to support 32 bit builds
+
 
 Signed-off-by: Stefan Roesch <shr@devkernel.io>
----
- include/uapi/linux/io_uring.h | 3 ++-
- io_uring/io_uring.c           | 6 +++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.=
-h
-index 1a713bbafaee..514604c623ae 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -619,7 +619,8 @@ struct io_uring_buf_reg {
- /* argument for IORING_(UN)REGISTER_NAPI */
- struct io_uring_napi {
- 	__u32	busy_poll_to;
--	__u32	pad;
-+	__u8	prefer_busy_poll;
-+	__u8	pad[3];
- 	__u64	resv;
- };
-=20
-diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
-index d8790c1b1cfb..555964310931 100644
---- a/io_uring/io_uring.c
-+++ b/io_uring/io_uring.c
-@@ -4127,15 +4127,17 @@ static int io_register_napi(struct io_ring_ctx *c=
-tx, void __user *arg)
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 	const struct io_uring_napi curr =3D {
- 		.busy_poll_to =3D ctx->napi_busy_poll_to,
-+		.prefer_busy_poll =3D ctx->napi_prefer_busy_poll
- 	};
- 	struct io_uring_napi napi;
-=20
- 	if (copy_from_user(&napi, arg, sizeof(napi)))
- 		return -EFAULT;
--	if (napi.pad || napi.resv)
-+	if (napi.pad[0] || napi.pad[1] || napi.pad[2] || napi.resv)
- 		return -EINVAL;
-=20
- 	WRITE_ONCE(ctx->napi_busy_poll_to, napi.busy_poll_to);
-+	WRITE_ONCE(ctx->napi_prefer_busy_poll, !!napi.prefer_busy_poll);
-=20
- 	if (copy_to_user(arg, &curr, sizeof(curr)))
- 		return -EFAULT;
-@@ -4151,12 +4153,14 @@ static int io_unregister_napi(struct io_ring_ctx =
-*ctx, void __user *arg)
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 	const struct io_uring_napi curr =3D {
- 		.busy_poll_to =3D ctx->napi_busy_poll_to,
-+		.prefer_busy_poll =3D ctx->napi_prefer_busy_poll
- 	};
-=20
- 	if (copy_to_user(arg, &curr, sizeof(curr)))
- 		return -EFAULT;
-=20
- 	WRITE_ONCE(ctx->napi_busy_poll_to, 0);
-+	WRITE_ONCE(ctx->napi_prefer_busy_poll, false);
- 	return 0;
- #else
- 	return -EINVAL;
+Stefan Roesch (4):
+  liburing: add api to set napi busy poll settings
+  liburing: add documentation for new napi busy polling
+  liburing: add example programs for napi busy poll
+  liburing: update changelog with new feature
+
+ .gitignore                       |   2 +
+ CHANGELOG                        |   3 +
+ examples/Makefile                |   2 +
+ examples/napi-busy-poll-client.c | 442 +++++++++++++++++++++++++++++++
+ examples/napi-busy-poll-server.c | 386 +++++++++++++++++++++++++++
+ man/io_uring_register_napi.3     |  40 +++
+ man/io_uring_unregister_napi.3   |  27 ++
+ src/include/liburing.h           |   3 +
+ src/include/liburing/io_uring.h  |  12 +
+ src/liburing.map                 |   6 +
+ src/register.c                   |  12 +
+ 11 files changed, 935 insertions(+)
+ create mode 100644 examples/napi-busy-poll-client.c
+ create mode 100644 examples/napi-busy-poll-server.c
+ create mode 100644 man/io_uring_register_napi.3
+ create mode 100644 man/io_uring_unregister_napi.3
+
+
+base-commit: 8fc22e3b3348c0a6384ec926e0b19b6707622e58
 --=20
 2.30.2
 
