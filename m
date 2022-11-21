@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B2663246F
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EDB63246D
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:56:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231510AbiKUN4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 08:56:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
+        id S231327AbiKUN4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 08:56:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231409AbiKUN4X (ORCPT
+        with ESMTP id S231355AbiKUN4X (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:56:23 -0500
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80080.outbound.protection.outlook.com [40.107.8.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E69ABF80A
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:56:22 -0800 (PST)
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2057.outbound.protection.outlook.com [40.107.21.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976C7C1F7E
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:56:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JYGCXBv2YHhrM8SImwvuWQw38GWr+1GE/Vd4ij/eA63X3pBEP7og3iuAB4GxpJu9XuOg81KgIXcTEOgtIdEm/wzGlYLkwyBxo+tQXMp03DUngDVYXcgnHpiGwYY/6ACWdC0pXR0ewzcEuezZVQgvU3SwwLNi+HK5kENlbj7r2rBw2qd/gr/nYpD23+7noKGh+0vhcKi2hQXjjRH1dLb1PbT2/n0YX+wsxy5XpqUrfPtVPzZrj7/A1uO45TwhY6kv8j5lrawUTJYQT8hGXUwK4wqaLDXq3ntUJcdeJmJuQWZDiEzeuEMthRNAtpgXkmPDUX0nGDozS2lGLyKXZMu2Mg==
+ b=YnMDVXgqv9OcFvPPVlliLdup6PgEQH/7QYknvc7DTW+xW7jK69h4X1UT62KvJ0goZChkGmoN5MLkdIU1Ta1QfTbFYr232MkSrTsVmVku/eIT3sJopYfM3QMWHGy/muOEv94TsTPNSN6QfFd6UJz8xf03BOVs/HD3iQuls07nCOaFHwILv94DCoAoNyVmcJcSwRiBVI4v1rfvaZkWA+I1d0eI5kFV6WLmwH4De4DZHapadRC+qOt3aARY1q53Tzk9nrPat4Ehh2bUfGgOkiWu32qDsvMtP6Vxgke5pt5wKpwz/Dqm7InBEnkSKvYLtpZDNtsr41rmDUvoInAuAu93tg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qAF3wnp+gySgOTAUnpHbyx1SM5uKbNOh1Q5P5Zp0JoA=;
- b=EXhbprtJcyWZ2zq5ybj/wV8xJxwcRVWofrf3WTYno095JgWBmc0IUid1cHZCfJ8IW184YRFxxsp8/wEIc2+YqcocyGSJd2bTRUbrPWAofHkhqoTDnM2VLyfHLS6W69VfWUt9h4/tpkTF6xXFUGvC+efIbH/4fZXDq82oBZShkYIPIdQaO/DDuNCZ6u2K43dR5NkiaOqtp/ADxfwgN5S9oWUnMu4MONfwZ8UqkyUWAVMmEa16XFfVvrpPcI6i+3lsLQvUY/wAwL0vKxE93tMwtHfGCWDmj9oHSo6cpVUAXGHvJof4PqqzxzqGMf0u4DQN5hKGbfLYXOUAtedp1AtPHQ==
+ bh=nWqkGudtKSV4LI+klLeRXn8Ix13BrTUlMb7Fl3jQKSE=;
+ b=kn408as+5VepeW2Adpvx5B+r0tOpjjHYjxHrJsN3zvx4QdKT09WkMhZ1vtLiuW4TUkhL+N1JYaBmpNkP/rTjL3ZUDWd98COyZ80oFqasvzHASRz4gWpVZhs3Nzx1RxzU7AgTWxb2+I3horSoAsSY65BdgMo/4TXK7KRQLTB4Zh8fHC5lcUnwbtnoMFOPh6rRjgKHkAEJ7r8tc91MbiNp4jyt4rwg1Na3eZUGPcUJwwXbhR56nTaoEWZaPOz3eNHKgpT3rXbZWzAIwto6GyBrBgzZhj9ZvKvD5Fs7hyp/xhUi9Gv6CuaZD/wKVARb3B5tx0Yg1EiMnaYgkOenetwAiw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qAF3wnp+gySgOTAUnpHbyx1SM5uKbNOh1Q5P5Zp0JoA=;
- b=iQIlnj6uTDOTw92Ji8CSTEYoQn/aOgS6k06ft40irxwNvJ4U6nnU8Covm4SPCa+QbapG/Japp3yTfg3b/OOdwwIZdI3gK5zh1dgHrSHNZPY2UMdbOmCo6KF/HtqhKbt+2WqZ/czWz/pcSJC2fcRSch50QcI7zMoqfo/JH3gGf5g=
+ bh=nWqkGudtKSV4LI+klLeRXn8Ix13BrTUlMb7Fl3jQKSE=;
+ b=GfElWm0Vos243cnwaawj+mYRklv6cN8X14wbPemGnyHfIqP0UE7KmLgazog4Y+t9h4oxFJR9YcseZ9ooMEWMvPgIjFHr2doVX+rvN9YU/QRK3lsTKGqt2FbQML6iDbNy8TpeULK7YKTh+X4W8zqqzYbgjZUxi+Mq+MJVoY4O8+o=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AS8PR04MB8134.eurprd04.prod.outlook.com (2603:10a6:20b:3f1::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.11; Mon, 21 Nov
- 2022 13:56:15 +0000
+ 2022 13:56:16 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Mon, 21 Nov 2022
- 13:56:15 +0000
+ 13:56:16 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -48,9 +48,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 05/17] net: dsa: move rest of devlink setup/teardown to devlink.c
-Date:   Mon, 21 Nov 2022 15:55:43 +0200
-Message-Id: <20221121135555.1227271-6-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 06/17] net: dsa: move headers exported by port.c to port.h
+Date:   Mon, 21 Nov 2022 15:55:44 +0200
+Message-Id: <20221121135555.1227271-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
 References: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
@@ -62,51 +62,51 @@ X-ClientProxiedBy: VI1P194CA0015.EURP194.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8134:EE_
-X-MS-Office365-Filtering-Correlation-Id: eef3e61e-1528-4db5-69a8-08dacbc8284f
+X-MS-Office365-Filtering-Correlation-Id: da37e2b1-3d6c-4880-4f2d-08dacbc828b8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iZwgpFV30Q1P/GgYRmaZaPcf/6cdh0gahYvqXonX+qWfQvBSkJTQ64Cr73A9MK7UBlXpYQW2yyPDo5JP6UYH459HoKt1zKCvbt+FbYifFfa0WpIZqVm0ibYyylaP7X+yffd3UC+L2lC38StIh+oFIZ3I3dbcy3ICQdGussUj1vJN18qRoItJjG3lDVXmqC1IPKt1mUiL6Aa3r3vc/lWB95kspaE2GrxlTknTK93e/wtgyxYyBXGsR1642Oz00RIKuR+6U1pMKiQiid0wv+tQEtY4np0lIYRhHjmmnSikqxO+/dwBSjgebhw21ur+wzXgq/cnv8kNE3pQlBuX5GdQJzHvD8Sr+YRZxPYnmIOOwSp7GtZlEpyQAZmiOI9DZm66hoMHrESqvJp9OEVlI6wSseqCN8CEYKhhE59J0oxYwHQ8nrAGIgLCgTvzjxrEUPwDVv0jh1avalzXE4FaAGietWtFpO0iQsLBusMpq4bJ25Ova7wPRHdGJ6hlKwX/Nn7J4ilCmMNXv7MY/Iw+ujEcpYCgOZ77WAK4HGkAtC/POHD5IPmEUZqTPH5dXI8hNe+cUhNa54/+YkOODId3Phbz8a4PH3LJXEeb0t7mozCJxYEXe9LxzTUsAPGH/VtK2GoM8k+DhfuCTfY2+MV/YecIe4DIksSKrmL1p1gr5xGqa0h6lqDhneGQ+1LDDQMvIsyTabEBWt1iL7U2waXX76SEZw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(451199015)(36756003)(478600001)(5660300002)(44832011)(6512007)(66946007)(54906003)(66476007)(26005)(6916009)(4326008)(8676002)(316002)(2616005)(6506007)(52116002)(66556008)(41300700001)(1076003)(186003)(8936002)(38350700002)(38100700002)(83380400001)(2906002)(86362001)(6666004)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: bxKfXgLpiVJOcNIyuasP3M+XaGa/AJF5dQ2cv8MWa7vdi0f3Tfo6/Sw8lYtC1iXUtoQateF7NdbHUeoSeCsvbgBs2UQl1wpXKqnUxyF0Ms4DbLk4Hmyk3qzz4Ay5dpIuEmm6FHq70vJlE3AK8Y1JbmVGVZRVMQuVcZcNHRHBEuROVKebF5PL5yGHazHDZR8ex9CTt9VDQBAawEhxVRTynfySdBu6d1b0xg+DOjWvtxJHIK1nxtsDpWybZTXhFSjA3B4aYRljECWtHIXKQkISwps6GP3d9VoDpfsgke8Lx9lEUnSqNUyXIPvwxcseBcmr4ZDx+aKsqZUNKaz6GhuZMLHWpDJ8Ul7Oemuhma0kHKS4VUvoFGpLzrLPAAi/UcU7AnI8GE+xAuvJjd/6w1M78yyYTa4yQKraYd60170NkPmg0Y4Zqs/bo9sELGVwtwi7rgy5jfjzUk/PL1gZsGvcAMVALGQRJDEan1aJxHbk+KfYzvxmPQjsGz6Tk/fYUmdeo04A/el5CBlOINdtFDF+S7CQe2nrLRrFBYM4gDiFTZp9g9sC+HPMa75hKHfXLBVRKEcyRN++hSPPDpjF4+PMDQJbLi1Xrs/QmXWtnImSi66K/BtVkxR6PGeC0AElULIWAWsk+1ughPGr8/ilrbcgom6FtgG92ycg1xvfdzq8Qr3qAeXQ7D8Vba5gVSnVTptA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(451199015)(36756003)(30864003)(478600001)(5660300002)(44832011)(6512007)(66946007)(54906003)(66476007)(26005)(6916009)(4326008)(8676002)(316002)(2616005)(6506007)(52116002)(66556008)(41300700001)(1076003)(186003)(8936002)(38350700002)(38100700002)(83380400001)(2906002)(86362001)(6666004)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tTsEfIqXxiKV3EBO9Ge7cOgncatz9omkjAE2/ZW2v/6FwcA8gZcJiaL7jTGL?=
- =?us-ascii?Q?srUZnsVTyK9ZRCf0u/LndNstfEC4Vyp+2E9gl3rRKRoEbrXSqGbL1f9lIf0b?=
- =?us-ascii?Q?UhwNSvj+I57LrZbUqmb2gSe2lsCvrTSTcX3I7I9U8wmLkvd9IQrhux0wbpA9?=
- =?us-ascii?Q?3mkOO7FKcj3Z4SiU67em+1wt3M9hQN+1NMPNZekUiiW+kjE1bK+NrHJh/+t7?=
- =?us-ascii?Q?VHaJ7US+3DD5mz9oJx7Od1UiwyEeD+KsSonJIgkvkTps+VuvsyCi3I3nZmxJ?=
- =?us-ascii?Q?hDk8aYdNh91/ExIuyfTnSzXATkExX88MXz5hYweYv4ckftCZl4rP/Ee6GaiR?=
- =?us-ascii?Q?mmzAm72HIcRHzwHK6K1ClzlH+e48kv2GeKDlUpsLP4lkeqTZ/WFflzPIj/i8?=
- =?us-ascii?Q?auKCEEekRlvMtJbg7UH6z0XhGDHPMdYMG/MlbKNAzUXXi3Z+JMH+y2s29xc8?=
- =?us-ascii?Q?hZNkN44w3PtnJ5q/mxtoQXSvTTdxdEilA5c1FkTzT6UNO4M49T1quBtZgShu?=
- =?us-ascii?Q?lCVYrQyNHU77RRtIq/gdpEZ1mVtvS+WbNMg1XiXEy/BEmA3fNpS0Va03vXCR?=
- =?us-ascii?Q?WwUXsbNyNdRhRGBGZaWqE9bDf8HQonUDYG2HAtymWPnq2sk9BMh/hG92HlWS?=
- =?us-ascii?Q?QcW994dTs1CseqTKL0DbV6mgcpOZ3NOmrU7FV8Qtg4TOglyIceDohw73GKS8?=
- =?us-ascii?Q?lSpKPTx+kkaSO7a9n13wfOgnQ/iR23T5+YiCaZ3ZXSqcVLCUUKx81UuNDxZ/?=
- =?us-ascii?Q?B3iBkbWhTOrVYnf3xQMhznw/VM5rv9aDKFVXo9lrDJ4ioRJ5w2m8QrPs0AyG?=
- =?us-ascii?Q?daYl2QjFzPGll+teiXCZKyB2qvy25UHNjttH8uGp9yWvn0cjao6caHG79rBp?=
- =?us-ascii?Q?TqQ1cChNnFMqwF9agPJflbpk8q4Kqfi7l5kIuGqJPJokDbJEQ3Q6IEucthWF?=
- =?us-ascii?Q?+8rEZ7RjpqAfpu1ZwDASomLoOSWrLg3DaCmLXEdqpsy7XiLzxo7CzEDf6E26?=
- =?us-ascii?Q?kaPXj2XWCtL2H3vdTsFhsphAp58xX7296UCKMWu0HWn3dFZr/NfngLwET+4X?=
- =?us-ascii?Q?/NWtubWIg/J3IAyjJny+1lqq9PCNMBdDwvA89aC0EuS+tIaw8G/rElgTavN1?=
- =?us-ascii?Q?Wbca7P3r3oOyCZkzlKBJcTupokLXChDRN0pjKT5CM8q4jaflX2HXR99YpYTK?=
- =?us-ascii?Q?9836502FbmIwsS7uEczxxSoG9Vye4y/DWm+xcuDYSZkmpala/hdHReBavfj1?=
- =?us-ascii?Q?q75U/GDTlZBVZSeCcIzShzKrXq0A2hBtCKQt2XarAG+kzakcjGipB6e2bJ+P?=
- =?us-ascii?Q?Qvrb0R14UvZMw15bn1DLNqrBmgjUaOcp5FXdQq8tV2uCYIG0WYzVJE7c//E3?=
- =?us-ascii?Q?4FSmdvdEkBEOJWLU9r4ydnCI1EubsHkbTj/IigeYwO4kaKiyB6gQseq+sxqr?=
- =?us-ascii?Q?FL39IDbL5q58WLmi5njDvXLAsLfgxI1EtbWsH9GT/rYH7Nw8ZSoa/R+BLPcw?=
- =?us-ascii?Q?M9sAvrNit+RJc+8z8NT2ZoBreG2nohpy9zEKZMTjb5nWhOrl+H7uz26X1bnc?=
- =?us-ascii?Q?xrrfphnkACjmceFs0fAcwz5zWjig/EdQzssIOWN7Nbq3b6nxpGrPuYWoa0Il?=
- =?us-ascii?Q?uQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BGWtlytC9DiujRqvu+t5DDj2QYKwjqkeSXCQfzO4cScSJybzEf+YEA+iIGI9?=
+ =?us-ascii?Q?g3hTA5ynF6N0AIeIY6Y2WUPJGklGj5OzC87C8f3AhCHDqNq8KMl8rC5wkUwr?=
+ =?us-ascii?Q?ewEQD+QL48l8JU3HvQ2uI+0MEtzzc/jduieRtq+Mq59kU/UghmfvtJ1Sl+VI?=
+ =?us-ascii?Q?8A0afsFQV4tjCKFjongknCtHDRo1gt2Oq/vhatwD6pe7Tic4Wwb6QCjB0/wc?=
+ =?us-ascii?Q?kK130lxfLoEj0FmunEKY1IQZP/Z//waLTgamnwHtXaAUZ5SPNnXc95cQGnL2?=
+ =?us-ascii?Q?hAlY+RIFDmnbT3dZRvTOnHoZL+O613XOcGQSxctodyBdmMvkn6F93+NTumfC?=
+ =?us-ascii?Q?mc4cLIrV0cl+V/LSd3EQWvNHOkTIAt8ef7TIt941f8jXhG/uivDxw1dj09WQ?=
+ =?us-ascii?Q?NJ9uvm3xknRhPeotc5hrzjl3Td3x9/1bRgylNrHZtkUiZL3pkRYmgW0QTb+B?=
+ =?us-ascii?Q?WoE3PNlDyPqINvvbf7UHzuGPs82zcO+FW7UjDZLnnpa0TYjzfU31Eos+kVyF?=
+ =?us-ascii?Q?QKIVblyVrb9J8iDc139Fwat/1IG41euGZTWEmCRn/Gwb6JYWkpNaLBLbf/B2?=
+ =?us-ascii?Q?kJ0dPdA2EuUqnovC1wB/Ti2bdrwjmeYemyAJLP7lYfW1MVSEOws/igPJhFn+?=
+ =?us-ascii?Q?IpaT5XaI/BSh5XZOR3HSduv5RHk8XVcrwF78ITsImabCoLzsXWoWfJAOaFUS?=
+ =?us-ascii?Q?z/zSKAzh5qrkpxfT4kmjxXAML4F8uaep7GMmOmlfYeJBrxuxczeVLuf6wH8J?=
+ =?us-ascii?Q?xU1Vn0BFs6L/w2y5TEDrl7B/Jgpnzn3yw2HtXyEyXZxmRZO1I5VRzBgYqSoE?=
+ =?us-ascii?Q?i+Ok2Mmr1A/gFSGk8uYK/GZFBm6Kx/E7ImD5HUXqh39MQjaxL6xREqy8i/qx?=
+ =?us-ascii?Q?AR+pm76xpw9I6XVSMNPpRLgsfWEuNV+LdzeNC9wHa57koohTBNVoHvMrme2o?=
+ =?us-ascii?Q?hnqi1Qyb7snvwd2mCkdHEpfeO4omPZPUDjiM1Qkme2WCxnzXejWNiPxk8RNS?=
+ =?us-ascii?Q?nZHnAbdzt6wd9zRg8eV0ITkLRuNjKmRVo9Gqj+XcNVH8/ksD2QQ93007QAjY?=
+ =?us-ascii?Q?PRhH2lbuoWxt5XGOcrBM+c9wuAhuO/rdDYvXt5teYU3DVMuiWRx/4jM7h+5D?=
+ =?us-ascii?Q?ecfgf4mIndsR3evfV3fOTbw0JgEjseekMa/XwsD6rnk3NyC3qCEA3gtQg89d?=
+ =?us-ascii?Q?9aT634a2k0I45c1Ii2K3TsDhZyhVVt0S0N86s42O/5tUGXvArYxqBdQZSWMl?=
+ =?us-ascii?Q?TmtfRjIuhg3oIUzWETIZQRnfA2N5KDZTroh9A1+2HDq1qEr94oft3Lko4zcx?=
+ =?us-ascii?Q?sWDyfKYC6NnlzA/tCwdMovPxjvMXYiaAM+rpmdw/GqjUubZ+aqrXGshhn8jh?=
+ =?us-ascii?Q?L1dL9z+rGRn0W5jhfWPihi2YSMLKGW+O6Q+CSCAv9LUK2YQZODWFa3eJvw8s?=
+ =?us-ascii?Q?04ghZNOGsxP7IsZ4xUCPiALj2ImqhWJxhgmq+Thbh2h9NKsfmMPtcnKCyG74?=
+ =?us-ascii?Q?OpK7SMwbGCnT2jOMQ6Gr9ha6pcihStk4UXOr3vWu7AmkX9blKYRAxL5Y5are?=
+ =?us-ascii?Q?m6wO6wcQ2bi8eOAtDhbb/PnEaWst6hNWJvgsyVGpi/l7urUWPLmVxlq47OEL?=
+ =?us-ascii?Q?pQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eef3e61e-1528-4db5-69a8-08dacbc8284f
+X-MS-Exchange-CrossTenant-Network-Message-Id: da37e2b1-3d6c-4880-4f2d-08dacbc828b8
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2022 13:56:15.8255
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2022 13:56:16.5755
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D1nnjMrGcXbIwKM/8Gs/OEh5VKtmxAYHqfWDIqACfThK17cu8j4PO7jNJ2bnbazaKFiSMGoK2flIiRI84qzZyg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: dbO6dXzB4EWAONOt3WNOE/ByqjxRSgY2bF7QTYW4qa++/3S4G4810NkCO2hLqSHRmyjugdnHu9fmzWXONw9wfQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8134
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -118,167 +118,322 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code that needed further refactoring into dedicated functions in
-dsa2.c was left aside. Move it now to devlink.c, and make dsa2.c stop
-including net/devlink.h.
+Minimize the use of the bloated dsa_priv.h by moving the prototypes
+exported by port.c to their own header file.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/devlink.c | 38 +++++++++++++++++++++++++++++++++++++-
- net/dsa/devlink.h |  7 +++++--
- net/dsa/dsa2.c    | 24 +++++++-----------------
- 3 files changed, 49 insertions(+), 20 deletions(-)
+ net/dsa/dsa2.c      |   1 +
+ net/dsa/dsa_priv.h  |  97 -------------------------------------
+ net/dsa/master.c    |   1 +
+ net/dsa/port.c      |   1 +
+ net/dsa/port.h      | 114 ++++++++++++++++++++++++++++++++++++++++++++
+ net/dsa/slave.c     |   1 +
+ net/dsa/switch.c    |   1 +
+ net/dsa/tag_8021q.c |   1 +
+ 8 files changed, 120 insertions(+), 97 deletions(-)
+ create mode 100644 net/dsa/port.h
 
-diff --git a/net/dsa/devlink.c b/net/dsa/devlink.c
-index eff440b2b3c5..431bf52290a1 100644
---- a/net/dsa/devlink.c
-+++ b/net/dsa/devlink.c
-@@ -167,7 +167,7 @@ dsa_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
- 							p_max);
- }
- 
--const struct devlink_ops dsa_devlink_ops = {
-+static const struct devlink_ops dsa_devlink_ops = {
- 	.info_get			= dsa_devlink_info_get,
- 	.sb_pool_get			= dsa_devlink_sb_pool_get,
- 	.sb_pool_set			= dsa_devlink_sb_pool_set,
-@@ -353,3 +353,39 @@ void dsa_port_devlink_teardown(struct dsa_port *dp)
- 
- 	devlink_port_fini(dlp);
- }
-+
-+void dsa_switch_devlink_register(struct dsa_switch *ds)
-+{
-+	devlink_register(ds->devlink);
-+}
-+
-+void dsa_switch_devlink_unregister(struct dsa_switch *ds)
-+{
-+	devlink_unregister(ds->devlink);
-+}
-+
-+int dsa_switch_devlink_alloc(struct dsa_switch *ds)
-+{
-+	struct dsa_devlink_priv *dl_priv;
-+	struct devlink *dl;
-+
-+	/* Add the switch to devlink before calling setup, so that setup can
-+	 * add dpipe tables
-+	 */
-+	dl = devlink_alloc(&dsa_devlink_ops, sizeof(*dl_priv), ds->dev);
-+	if (!dl)
-+		return -ENOMEM;
-+
-+	ds->devlink = dl;
-+
-+	dl_priv = devlink_priv(ds->devlink);
-+	dl_priv->ds = ds;
-+
-+	return 0;
-+}
-+
-+void dsa_switch_devlink_free(struct dsa_switch *ds)
-+{
-+	devlink_free(ds->devlink);
-+	ds->devlink = NULL;
-+}
-diff --git a/net/dsa/devlink.h b/net/dsa/devlink.h
-index d077c7f336da..4d9f4f23705b 100644
---- a/net/dsa/devlink.h
-+++ b/net/dsa/devlink.h
-@@ -4,10 +4,13 @@
- #define __DSA_DEVLINK_H
- 
- struct dsa_port;
--
--extern const struct devlink_ops dsa_devlink_ops;
-+struct dsa_switch;
- 
- int dsa_port_devlink_setup(struct dsa_port *dp);
- void dsa_port_devlink_teardown(struct dsa_port *dp);
-+void dsa_switch_devlink_register(struct dsa_switch *ds);
-+void dsa_switch_devlink_unregister(struct dsa_switch *ds);
-+int dsa_switch_devlink_alloc(struct dsa_switch *ds);
-+void dsa_switch_devlink_free(struct dsa_switch *ds);
- 
- #endif
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index f890dfcbf412..c0ef49d86381 100644
+index c0ef49d86381..5a9cf74a0166 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -15,7 +15,6 @@
- #include <linux/of.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
--#include <net/devlink.h>
- #include <net/sch_generic.h>
+@@ -19,6 +19,7 @@
  
  #include "devlink.h"
-@@ -627,7 +626,6 @@ static void dsa_switch_teardown_tag_protocol(struct dsa_switch *ds)
+ #include "dsa_priv.h"
++#include "port.h"
  
- static int dsa_switch_setup(struct dsa_switch *ds)
+ static DEFINE_MUTEX(dsa2_mutex);
+ LIST_HEAD(dsa_tree_list);
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index c4ea5fda8f14..81ddc52feb94 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -286,103 +286,6 @@ static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
+ /* netlink.c */
+ extern struct rtnl_link_ops dsa_link_ops __read_mostly;
+ 
+-/* port.c */
+-bool dsa_port_supports_hwtstamp(struct dsa_port *dp, struct ifreq *ifr);
+-void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
+-			       const struct dsa_device_ops *tag_ops);
+-int dsa_port_set_state(struct dsa_port *dp, u8 state, bool do_fast_age);
+-int dsa_port_set_mst_state(struct dsa_port *dp,
+-			   const struct switchdev_mst_state *state,
+-			   struct netlink_ext_ack *extack);
+-int dsa_port_enable_rt(struct dsa_port *dp, struct phy_device *phy);
+-int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy);
+-void dsa_port_disable_rt(struct dsa_port *dp);
+-void dsa_port_disable(struct dsa_port *dp);
+-int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+-			 struct netlink_ext_ack *extack);
+-void dsa_port_pre_bridge_leave(struct dsa_port *dp, struct net_device *br);
+-void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br);
+-int dsa_port_lag_change(struct dsa_port *dp,
+-			struct netdev_lag_lower_state_info *linfo);
+-int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
+-		      struct netdev_lag_upper_info *uinfo,
+-		      struct netlink_ext_ack *extack);
+-void dsa_port_pre_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
+-void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
+-int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+-			    struct netlink_ext_ack *extack);
+-bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+-int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
+-int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+-			struct netlink_ext_ack *extack);
+-int dsa_port_vlan_msti(struct dsa_port *dp,
+-		       const struct switchdev_vlan_msti *msti);
+-int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
+-int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid);
+-int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid);
+-int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
+-				     const unsigned char *addr, u16 vid);
+-int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
+-				     const unsigned char *addr, u16 vid);
+-int dsa_port_bridge_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-				 u16 vid);
+-int dsa_port_bridge_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-				 u16 vid);
+-int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-			 u16 vid);
+-int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-			 u16 vid);
+-int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data);
+-int dsa_port_mdb_add(const struct dsa_port *dp,
+-		     const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_mdb_del(const struct dsa_port *dp,
+-		     const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_standalone_host_mdb_add(const struct dsa_port *dp,
+-				     const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
+-				     const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
+-				 const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
+-				 const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+-			      struct switchdev_brport_flags flags,
+-			      struct netlink_ext_ack *extack);
+-int dsa_port_bridge_flags(struct dsa_port *dp,
+-			  struct switchdev_brport_flags flags,
+-			  struct netlink_ext_ack *extack);
+-int dsa_port_vlan_add(struct dsa_port *dp,
+-		      const struct switchdev_obj_port_vlan *vlan,
+-		      struct netlink_ext_ack *extack);
+-int dsa_port_vlan_del(struct dsa_port *dp,
+-		      const struct switchdev_obj_port_vlan *vlan);
+-int dsa_port_host_vlan_add(struct dsa_port *dp,
+-			   const struct switchdev_obj_port_vlan *vlan,
+-			   struct netlink_ext_ack *extack);
+-int dsa_port_host_vlan_del(struct dsa_port *dp,
+-			   const struct switchdev_obj_port_vlan *vlan);
+-int dsa_port_mrp_add(const struct dsa_port *dp,
+-		     const struct switchdev_obj_mrp *mrp);
+-int dsa_port_mrp_del(const struct dsa_port *dp,
+-		     const struct switchdev_obj_mrp *mrp);
+-int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
+-			       const struct switchdev_obj_ring_role_mrp *mrp);
+-int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
+-			       const struct switchdev_obj_ring_role_mrp *mrp);
+-int dsa_port_phylink_create(struct dsa_port *dp);
+-void dsa_port_phylink_destroy(struct dsa_port *dp);
+-int dsa_shared_port_link_register_of(struct dsa_port *dp);
+-void dsa_shared_port_link_unregister_of(struct dsa_port *dp);
+-int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr);
+-void dsa_port_hsr_leave(struct dsa_port *dp, struct net_device *hsr);
+-int dsa_port_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid, bool broadcast);
+-void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broadcast);
+-void dsa_port_set_host_flood(struct dsa_port *dp, bool uc, bool mc);
+-int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
+-			   struct netlink_ext_ack *extack);
+-
+ /* slave.c */
+ extern struct notifier_block dsa_slave_switchdev_notifier;
+ extern struct notifier_block dsa_slave_switchdev_blocking_notifier;
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index e24f02743c21..0d3ef591b3b4 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include "dsa_priv.h"
++#include "port.h"
+ 
+ static int dsa_master_get_regs_len(struct net_device *dev)
  {
--	struct dsa_devlink_priv *dl_priv;
- 	struct device_node *dn;
- 	int err;
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 707bd854cea2..0708fe8d4736 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -13,6 +13,7 @@
+ #include <linux/of_net.h>
  
-@@ -641,15 +639,9 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	 */
- 	ds->phys_mii_mask |= dsa_user_ports(ds);
+ #include "dsa_priv.h"
++#include "port.h"
  
--	/* Add the switch to devlink before calling setup, so that setup can
--	 * add dpipe tables
--	 */
--	ds->devlink =
--		devlink_alloc(&dsa_devlink_ops, sizeof(*dl_priv), ds->dev);
--	if (!ds->devlink)
--		return -ENOMEM;
--	dl_priv = devlink_priv(ds->devlink);
--	dl_priv->ds = ds;
-+	err = dsa_switch_devlink_alloc(ds);
-+	if (err)
-+		return err;
+ /**
+  * dsa_port_notify - Notify the switching fabric of changes to a port
+diff --git a/net/dsa/port.h b/net/dsa/port.h
+new file mode 100644
+index 000000000000..9c218660d223
+--- /dev/null
++++ b/net/dsa/port.h
+@@ -0,0 +1,114 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++
++#ifndef __DSA_PORT_H
++#define __DSA_PORT_H
++
++#include <linux/types.h>
++#include <net/dsa.h>
++
++struct ifreq;
++struct netdev_lag_lower_state_info;
++struct netdev_lag_upper_info;
++struct netlink_ext_ack;
++struct switchdev_mst_state;
++struct switchdev_obj_port_mdb;
++struct switchdev_vlan_msti;
++struct phy_device;
++
++bool dsa_port_supports_hwtstamp(struct dsa_port *dp, struct ifreq *ifr);
++void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
++			       const struct dsa_device_ops *tag_ops);
++int dsa_port_set_state(struct dsa_port *dp, u8 state, bool do_fast_age);
++int dsa_port_set_mst_state(struct dsa_port *dp,
++			   const struct switchdev_mst_state *state,
++			   struct netlink_ext_ack *extack);
++int dsa_port_enable_rt(struct dsa_port *dp, struct phy_device *phy);
++int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy);
++void dsa_port_disable_rt(struct dsa_port *dp);
++void dsa_port_disable(struct dsa_port *dp);
++int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
++			 struct netlink_ext_ack *extack);
++void dsa_port_pre_bridge_leave(struct dsa_port *dp, struct net_device *br);
++void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br);
++int dsa_port_lag_change(struct dsa_port *dp,
++			struct netdev_lag_lower_state_info *linfo);
++int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
++		      struct netdev_lag_upper_info *uinfo,
++		      struct netlink_ext_ack *extack);
++void dsa_port_pre_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
++void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
++int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
++			    struct netlink_ext_ack *extack);
++bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
++int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
++int dsa_port_mst_enable(struct dsa_port *dp, bool on,
++			struct netlink_ext_ack *extack);
++int dsa_port_vlan_msti(struct dsa_port *dp,
++		       const struct switchdev_vlan_msti *msti);
++int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
++int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
++		     u16 vid);
++int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
++		     u16 vid);
++int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
++				     const unsigned char *addr, u16 vid);
++int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
++				     const unsigned char *addr, u16 vid);
++int dsa_port_bridge_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
++				 u16 vid);
++int dsa_port_bridge_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
++				 u16 vid);
++int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
++			 u16 vid);
++int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
++			 u16 vid);
++int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data);
++int dsa_port_mdb_add(const struct dsa_port *dp,
++		     const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_mdb_del(const struct dsa_port *dp,
++		     const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_standalone_host_mdb_add(const struct dsa_port *dp,
++				     const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
++				     const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
++				 const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
++				 const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
++			      struct switchdev_brport_flags flags,
++			      struct netlink_ext_ack *extack);
++int dsa_port_bridge_flags(struct dsa_port *dp,
++			  struct switchdev_brport_flags flags,
++			  struct netlink_ext_ack *extack);
++int dsa_port_vlan_add(struct dsa_port *dp,
++		      const struct switchdev_obj_port_vlan *vlan,
++		      struct netlink_ext_ack *extack);
++int dsa_port_vlan_del(struct dsa_port *dp,
++		      const struct switchdev_obj_port_vlan *vlan);
++int dsa_port_host_vlan_add(struct dsa_port *dp,
++			   const struct switchdev_obj_port_vlan *vlan,
++			   struct netlink_ext_ack *extack);
++int dsa_port_host_vlan_del(struct dsa_port *dp,
++			   const struct switchdev_obj_port_vlan *vlan);
++int dsa_port_mrp_add(const struct dsa_port *dp,
++		     const struct switchdev_obj_mrp *mrp);
++int dsa_port_mrp_del(const struct dsa_port *dp,
++		     const struct switchdev_obj_mrp *mrp);
++int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
++			       const struct switchdev_obj_ring_role_mrp *mrp);
++int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
++			       const struct switchdev_obj_ring_role_mrp *mrp);
++int dsa_port_phylink_create(struct dsa_port *dp);
++void dsa_port_phylink_destroy(struct dsa_port *dp);
++int dsa_shared_port_link_register_of(struct dsa_port *dp);
++void dsa_shared_port_link_unregister_of(struct dsa_port *dp);
++int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr);
++void dsa_port_hsr_leave(struct dsa_port *dp, struct net_device *hsr);
++int dsa_port_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid, bool broadcast);
++void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broadcast);
++void dsa_port_set_host_flood(struct dsa_port *dp, bool uc, bool mc);
++int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
++			   struct netlink_ext_ack *extack);
++
++#endif
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 24d8ad36fc8b..b782a1788f5a 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -23,6 +23,7 @@
+ #include <linux/netpoll.h>
  
- 	err = dsa_switch_register_notifier(ds);
- 	if (err)
-@@ -682,7 +674,7 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 			goto free_slave_mii_bus;
- 	}
+ #include "dsa_priv.h"
++#include "port.h"
  
--	devlink_register(ds->devlink);
-+	dsa_switch_devlink_register(ds);
+ static void dsa_slave_standalone_event_work(struct work_struct *work)
+ {
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index ce56acdba203..5ece5c5c2acf 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -13,6 +13,7 @@
+ #include <net/switchdev.h>
  
- 	ds->setup = true;
- 	return 0;
-@@ -696,8 +688,7 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- unregister_notifier:
- 	dsa_switch_unregister_notifier(ds);
- devlink_free:
--	devlink_free(ds->devlink);
--	ds->devlink = NULL;
-+	dsa_switch_devlink_free(ds);
- 	return err;
- }
+ #include "dsa_priv.h"
++#include "port.h"
  
-@@ -706,7 +697,7 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 	if (!ds->setup)
- 		return;
+ static unsigned int dsa_switch_fastest_ageing_time(struct dsa_switch *ds,
+ 						   unsigned int ageing_time)
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 34e5ec5d3e23..a6617d7b692a 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -8,6 +8,7 @@
+ #include <linux/dsa/8021q.h>
  
--	devlink_unregister(ds->devlink);
-+	dsa_switch_devlink_unregister(ds);
+ #include "dsa_priv.h"
++#include "port.h"
  
- 	if (ds->slave_mii_bus && ds->ops->phy_read) {
- 		mdiobus_unregister(ds->slave_mii_bus);
-@@ -721,8 +712,7 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 
- 	dsa_switch_unregister_notifier(ds);
- 
--	devlink_free(ds->devlink);
--	ds->devlink = NULL;
-+	dsa_switch_devlink_free(ds);
- 
- 	ds->setup = false;
- }
+ /* Binary structure of the fake 12-bit VID field (when the TPID is
+  * ETH_P_DSA_8021Q):
 -- 
 2.34.1
 
