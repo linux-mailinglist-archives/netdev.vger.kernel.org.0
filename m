@@ -2,232 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 266BB6320BA
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 12:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 297B96320CE
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 12:37:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbiKULeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 06:34:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
+        id S231296AbiKULhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 06:37:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231200AbiKULdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 06:33:38 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D78818B13;
-        Mon, 21 Nov 2022 03:29:15 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VVKgY2u_1669030152;
-Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VVKgY2u_1669030152)
-          by smtp.aliyun-inc.com;
-          Mon, 21 Nov 2022 19:29:13 +0800
-From:   Heng Qi <hengqi@linux.alibaba.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH 2/2] Revert "veth: Avoid drop packets when xdp_redirect performs"
-Date:   Mon, 21 Nov 2022 19:28:48 +0800
-Message-Id: <20221121112848.51388-3-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20221121112848.51388-1-hengqi@linux.alibaba.com>
-References: <eebf1c5ae11db046256eeb1aa287a0019adc3606.camel@redhat.com>
- <20221121112848.51388-1-hengqi@linux.alibaba.com>
+        with ESMTP id S231522AbiKULhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 06:37:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F2CF005
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 03:34:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A5E860FF4
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:34:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51768C433B5;
+        Mon, 21 Nov 2022 11:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669030474;
+        bh=BgMlPK3jVxY7kl0IQ45+ysDYm8FXcLNHEMzqRJluLLE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oLfxP33d2XuQY9CN1gKc4sdyoREOMtvVtok3i9Q6oFLzfP4qPhFQkvFqfVvmj7s+R
+         Sgl0A+ZHg3uP5TTO4+X4WpOSW4J90CqWDjMIkeYc1o5LxC5Rjh1lLOyHDlS+caXfgr
+         2i1/W4vmJ9fpwuDhUfLCeg7EYLtWGYysV/kb32vfj5LKBs7ZS+jyYebcvB8T71hvoK
+         0cfumZ3mi2kv67659ZpgkS9ANYpxytYPfLP6zpVnwtj4SBc2noccvlvA9+gWj6oWj6
+         LDcv2M0Q0DBqDLe/ivbAM4CRoZJr5jKUaYPi8rKqRqEd/tqhsveG+RepdSGjGB3rqM
+         oYQvbnQVPkTaQ==
+Date:   Mon, 21 Nov 2022 13:34:30 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3tiRnbfBcaH7bP0@unreal>
+References: <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
+ <20221117121243.GJ704954@gauss3.secunet.de>
+ <Y3YuVcj5uNRHS7Ek@unreal>
+ <20221118104907.GR704954@gauss3.secunet.de>
+ <Y3p9LvAEQMAGeaCR@unreal>
+ <20221121094404.GU704954@gauss3.secunet.de>
+ <Y3tSdcA9GgpOJjgP@unreal>
+ <20221121110926.GV704954@gauss3.secunet.de>
+ <Y3td2OjeIL0GN7uO@unreal>
+ <20221121112521.GX704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221121112521.GX704954@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 2e0de6366ac16ab4d0abb2aaddbc8a1eba216d11.
+On Mon, Nov 21, 2022 at 12:25:21PM +0100, Steffen Klassert wrote:
+> On Mon, Nov 21, 2022 at 01:15:36PM +0200, Leon Romanovsky wrote:
+> > On Mon, Nov 21, 2022 at 12:09:26PM +0100, Steffen Klassert wrote:
+> > > On Mon, Nov 21, 2022 at 12:27:01PM +0200, Leon Romanovsky wrote:
+> > > > On Mon, Nov 21, 2022 at 10:44:04AM +0100, Steffen Klassert wrote:
+> > > > > On Sun, Nov 20, 2022 at 09:17:02PM +0200, Leon Romanovsky wrote:
+> > > > > > On Fri, Nov 18, 2022 at 11:49:07AM +0100, Steffen Klassert wrote:
+> > > > > > > On Thu, Nov 17, 2022 at 02:51:33PM +0200, Leon Romanovsky wrote:
+> > > > > > > > On Thu, Nov 17, 2022 at 01:12:43PM +0100, Steffen Klassert wrote:
+> > > > > > > > > On Wed, Nov 09, 2022 at 02:54:34PM +0200, Leon Romanovsky wrote:
+> > > > > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > > > 
+> > > > > > > > > So this raises the question how to handle acquires with this packet
+> > > > > > > > > offload. 
+> > > > > > > > 
+> > > > > > > > We handle acquires as SW policies and don't offload them.
+> > > > > > > 
+> > > > > > > We trigger acquires with states, not policies. The thing is,
+> > > > > > > we might match a HW policy but create a SW acquire state.
+> > > > > > > This will not match anymore as soon as the lookup is
+> > > > > > > implemented correctly.
+> > > > > > 
+> > > > > > For now, all such packets will be dropped as we have offlaoded
+> > > > > > policy but not SA.
+> > > > > 
+> > > > > I think you missed my point. If the HW policy does not match
+> > > > > the SW acquire state, then each packet will geneate a new
+> > > > > acquire. So you need to make sure that policy and acquire
+> > > > > state will match to send the acquire just once to userspace.
+> > > > 
+> > > > I think that I'm still missing the point.
+> > > > 
+> > > > We require both policy and SA to be offloaded. It means that once
+> > > > we hit HW policy, we must hit SA too (at least this is how mlx5 part
+> > > > is implemented).
+> > > 
+> > > Let's assume a packet hits a HW policy. Then this HW policy must match
+> > > a HW state. In case there is no matching HW state, we generate an acquire
+> > > and insert a larval state. Currently, larval states are never marked as HW.
+> > 
+> > And this is there our views are different. If HW (in RX) sees policy but
+> > doesn't have state, this packet will be dropped in HW. It won't get to
+> > stack and no acquire request will be issues.
+> 
+> This makes no sense. Acquires are always generated at TX, never at RX.
 
-Based on the issues reported by John and Paolo and their comments,
-this patch and the corresponding fix 5e5dc33d5da are reverted, and
-we'll remake it.
+Sorry, my bad. But why can't we drop all packets that don't have HW
+state? Why do we need to add larval?
 
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- drivers/net/veth.c | 88 +++++++---------------------------------------
- 1 file changed, 12 insertions(+), 76 deletions(-)
-
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index b1ed5a93b6c5..ac7c0653695f 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1119,14 +1119,10 @@ static void veth_disable_xdp_range(struct net_device *dev, int start, int end,
- 
- static int veth_enable_xdp(struct net_device *dev)
- {
-+	bool napi_already_on = veth_gro_requested(dev) && (dev->flags & IFF_UP);
- 	struct veth_priv *priv = netdev_priv(dev);
--	bool napi_already_on;
--	struct veth_rq *rq;
- 	int err, i;
- 
--	rq = &priv->rq[0];
--	napi_already_on = (dev->flags & IFF_UP) && rcu_access_pointer(rq->napi);
--
- 	if (!xdp_rxq_info_is_reg(&priv->rq[0].xdp_rxq)) {
- 		err = veth_enable_xdp_range(dev, 0, dev->real_num_rx_queues, napi_already_on);
- 		if (err)
-@@ -1327,28 +1323,18 @@ static int veth_set_channels(struct net_device *dev,
- 
- static int veth_open(struct net_device *dev)
- {
--	struct veth_priv *peer_priv, *priv = netdev_priv(dev);
-+	struct veth_priv *priv = netdev_priv(dev);
- 	struct net_device *peer = rtnl_dereference(priv->peer);
--	struct veth_rq *peer_rq;
- 	int err;
- 
- 	if (!peer)
- 		return -ENOTCONN;
- 
--	peer_priv = netdev_priv(peer);
--	peer_rq = &peer_priv->rq[0];
--
- 	if (priv->_xdp_prog) {
- 		err = veth_enable_xdp(dev);
- 		if (err)
- 			return err;
--		/* refer to the logic in veth_xdp_set() */
--		if (!rtnl_dereference(peer_rq->napi)) {
--			err = veth_napi_enable(peer);
--			if (err)
--				return err;
--		}
--	} else if (veth_gro_requested(dev) || peer_priv->_xdp_prog) {
-+	} else if (veth_gro_requested(dev)) {
- 		err = veth_napi_enable(dev);
- 		if (err)
- 			return err;
-@@ -1364,29 +1350,17 @@ static int veth_open(struct net_device *dev)
- 
- static int veth_close(struct net_device *dev)
- {
--	struct veth_priv *peer_priv, *priv = netdev_priv(dev);
-+	struct veth_priv *priv = netdev_priv(dev);
- 	struct net_device *peer = rtnl_dereference(priv->peer);
--	struct veth_rq *peer_rq;
- 
- 	netif_carrier_off(dev);
--	if (peer) {
--		peer_priv = netdev_priv(peer);
--		peer_rq = &peer_priv->rq[0];
--	}
-+	if (peer)
-+		netif_carrier_off(peer);
- 
--	if (priv->_xdp_prog) {
-+	if (priv->_xdp_prog)
- 		veth_disable_xdp(dev);
--		/* refer to the logic in veth_xdp_set */
--		if (peer && rtnl_dereference(peer_rq->napi)) {
--			if (!veth_gro_requested(peer) && !peer_priv->_xdp_prog)
--				veth_napi_del(peer);
--		}
--	} else if (veth_gro_requested(dev) || (peer && peer_priv->_xdp_prog)) {
-+	else if (veth_gro_requested(dev))
- 		veth_napi_del(dev);
--	}
--
--	if (peer)
--		netif_carrier_off(peer);
- 
- 	return 0;
- }
-@@ -1496,21 +1470,17 @@ static int veth_set_features(struct net_device *dev,
- {
- 	netdev_features_t changed = features ^ dev->features;
- 	struct veth_priv *priv = netdev_priv(dev);
--	struct veth_rq *rq = &priv->rq[0];
- 	int err;
- 
- 	if (!(changed & NETIF_F_GRO) || !(dev->flags & IFF_UP) || priv->_xdp_prog)
- 		return 0;
- 
- 	if (features & NETIF_F_GRO) {
--		if (!rtnl_dereference(rq->napi)) {
--			err = veth_napi_enable(dev);
--			if (err)
--				return err;
--		}
-+		err = veth_napi_enable(dev);
-+		if (err)
-+			return err;
- 	} else {
--		if (rtnl_dereference(rq->napi))
--			veth_napi_del(dev);
-+		veth_napi_del(dev);
- 	}
- 	return 0;
- }
-@@ -1542,19 +1512,14 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 			struct netlink_ext_ack *extack)
- {
- 	struct veth_priv *priv = netdev_priv(dev);
--	struct veth_priv *peer_priv;
- 	struct bpf_prog *old_prog;
--	struct veth_rq *peer_rq;
- 	struct net_device *peer;
--	bool napi_already_off;
- 	unsigned int max_mtu;
--	bool noreq_napi;
- 	int err;
- 
- 	old_prog = priv->_xdp_prog;
- 	priv->_xdp_prog = prog;
- 	peer = rtnl_dereference(priv->peer);
--	peer_priv = netdev_priv(peer);
- 
- 	if (prog) {
- 		if (!peer) {
-@@ -1591,24 +1556,6 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 			}
- 		}
- 
--		if (peer && (peer->flags & IFF_UP)) {
--			peer_rq = &peer_priv->rq[0];
--
--			/* If the peer hasn't enabled GRO and loaded xdp,
--			 * then we enable napi automatically if its napi
--			 * is not ready.
--			 */
--			napi_already_off = !rtnl_dereference(peer_rq->napi);
--			if (napi_already_off) {
--				err = veth_napi_enable(peer);
--				if (err) {
--					NL_SET_ERR_MSG_MOD(extack,
--							   "Failed to automatically enable napi of peer");
--					goto err;
--				}
--			}
--		}
--
- 		if (!old_prog) {
- 			peer->hw_features &= ~NETIF_F_GSO_SOFTWARE;
- 			peer->max_mtu = max_mtu;
-@@ -1623,17 +1570,6 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 			if (peer) {
- 				peer->hw_features |= NETIF_F_GSO_SOFTWARE;
- 				peer->max_mtu = ETH_MAX_MTU;
--				peer_rq = &peer_priv->rq[0];
--
--				/* If the peer doesn't has its xdp and enabled
--				 * GRO, then we disable napi if its napi is ready;
--				 */
--				if (rtnl_dereference(peer_rq->napi)) {
--					noreq_napi = !veth_gro_requested(peer) &&
--						     !peer_priv->_xdp_prog;
--					if (noreq_napi && (peer->flags & IFF_UP))
--						veth_napi_del(peer);
--				}
- 			}
- 		}
- 		bpf_prog_put(old_prog);
--- 
-2.19.1.6.gb485710b
-
+> 
+> On RX, the state lookup happens first, the policy must match to the
+> decapsulated packet.
+> 
