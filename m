@@ -2,99 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25785631D83
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E18631DA2
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 11:03:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231148AbiKUJ4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 04:56:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
+        id S229894AbiKUKDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 05:03:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiKUJ4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:56:50 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28302603;
-        Mon, 21 Nov 2022 01:56:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=XA5Uk4Jqr3EzkRGc1SJfAPurCcuwLt5SF1EzetIfQQY=; b=CkGXa1mk2zHKvuchxSVR0LMuTa
-        Da66jQf0+9mTx5Nb2vAdEYX8xgHFR/i7eZfScJ9rcz0wAXQz5xgkNYwHiPWGZAJWjqUSiVf7UljWB
-        UCzIq/sEf4rKG56Set1L45qfW1LIX4NL8mJe8AP5ZKV0boBomRl6laAXI9oipmMWWOJRhsMBNizSh
-        XO4pGZPPjze5352bKB8/ruFTG2b3JozvS+03Rgs5VPg5W5rwLaV5QD0589VrQdGWX9O5pxpRPWvK9
-        aRpJWb9AhTJnp+UWMB2HB/f9TLOTyHwPoa288kA8CVNzhtVkeGbJ8/VHTV4VQPQOmdXL9fJTGpuVy
-        mZZKKMjg==;
-Received: from [2001:4bb8:199:6d04:3c43:44c4:4e80:d8ad] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ox3Xb-00C2Fq-Af; Mon, 21 Nov 2022 09:56:39 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Greg Ungerer <gerg@linux-m68k.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229908AbiKUKDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 05:03:33 -0500
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD81A4A07E
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 02:03:28 -0800 (PST)
+Received: from fsav315.sakura.ne.jp (fsav315.sakura.ne.jp [153.120.85.146])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2ALA3ONB003573;
+        Mon, 21 Nov 2022 19:03:25 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav315.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp);
+ Mon, 21 Nov 2022 19:03:24 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2ALA3OKL003569
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 21 Nov 2022 19:03:24 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
+Date:   Mon, 21 Nov 2022 19:03:24 +0900
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
+ sk_callback_lock
+Content-Language: en-US
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 2/2] m68k: return NULL from dma_alloc_coherent for nommu or coldfire
-Date:   Mon, 21 Nov 2022 10:56:31 +0100
-Message-Id: <20221121095631.216209-3-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221121095631.216209-1-hch@lst.de>
-References: <20221121095631.216209-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Tom Parkin <tparkin@katalix.com>,
+        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
+        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
+        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
+References: <20221119130317.39158-1-jakub@cloudflare.com>
+ <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
+ <a850c224-f728-983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>
+ <87wn7o7k7r.fsf@cloudflare.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <87wn7o7k7r.fsf@cloudflare.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-m68knommu and coldfire platforms can't support allocating coherent DMA
-memory.  Instead of just returning noncoherent memory, just fail the
-allocation.
+On 2022/11/21 18:00, Jakub Sitnicki wrote:
+>> Is it safe to temporarily set a dummy pointer like below?
+>> If it is not safe, what makes assignments done by
+>> setup_udp_tunnel_sock() safe?
+> 
+> Yes, I think so. Great idea. I've used it in v2.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/m68k/kernel/dma.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
+So, you are sure that e.g.
 
-diff --git a/arch/m68k/kernel/dma.c b/arch/m68k/kernel/dma.c
-index 2e192a5df949b..63618fce5dc7f 100644
---- a/arch/m68k/kernel/dma.c
-+++ b/arch/m68k/kernel/dma.c
-@@ -37,23 +37,13 @@ pgprot_t pgprot_dmacoherent(pgprot_t prot)
- void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs)
- {
--	void *ret;
--
--	if (dev == NULL || (*dev->dma_mask < 0xffffffff))
--		gfp |= GFP_DMA;
--	ret = (void *)__get_free_pages(gfp, get_order(size));
--
--	if (ret != NULL) {
--		memset(ret, 0, size);
--		*dma_handle = virt_to_phys(ret);
--	}
--	return ret;
-+	return NULL;
- }
- 
- void arch_dma_free(struct device *dev, size_t size, void *vaddr,
- 		dma_addr_t dma_handle, unsigned long attrs)
- {
--	free_pages((unsigned long)vaddr, get_order(size));
-+	WARN_ON_ONCE(1);
- }
- 
- #endif /* CONFIG_MMU && !CONFIG_COLDFIRE */
--- 
-2.30.2
+	udp_sk(sk)->gro_receive = cfg->gro_receive;
+
+in setup_udp_tunnel_sock() (where the caller is passing cfg->gro_receive == NULL)
+never races with e.g. below check (because the socket might be sending/receiving
+in progress since the socket is retrieved via user-specified file descriptor) ?
+
+Then, v2 patch would be OK for fixing this regression. (But I think we still should
+avoid retrieving a socket from user-specified file descriptor in order to avoid
+lockdep race window.)
+
+
+struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+                                struct udphdr *uh, struct sock *sk)
+{
+	(...snipped...)
+        if (!sk || !udp_sk(sk)->gro_receive) {
+		(...snipped...)
+                /* no GRO, be sure flush the current packet */
+                goto out;
+        }
+	(...snipped...)
+        pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
+out:
+        skb_gro_flush_final(skb, pp, flush);
+        return pp;
+}
+
+> 
+> We can check & assign sk_user_data under sk_callback_lock, and then just
+> let setup_udp_tunnel_sock overwrite it with the same value, without
+> holding the lock.
+
+Given that sk_user_data is RCU-protected on reader-side, don't we need to
+wait for RCU grace period after resetting to NULL?
+
+> 
+> I still think that it's best to keep the critical section as short as
+> possible, though.
 
