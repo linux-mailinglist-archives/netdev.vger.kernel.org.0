@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B0B632D8A
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3803632D8C
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:59:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiKUT7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 14:59:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        id S231376AbiKUT7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 14:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbiKUT7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:59:03 -0500
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8968545A1B
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:59:02 -0800 (PST)
-Received: by mail-qk1-x731.google.com with SMTP id v8so8796647qkg.12
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:59:02 -0800 (PST)
+        with ESMTP id S229840AbiKUT7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:59:36 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F354385A
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:59:35 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id k4so8798199qkj.8
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:59:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=U7Z1nlS9hcss1xQnMGb9ASGNT3jDBI84+fF7J/Sejpc=;
-        b=LL3uUblM04JB3eTu94IEyNLyb+n6dD5/U6+bmOFEjAt4Cdz7u1UBlfMju62NstIa0K
-         wZ/0ZZTAzfB9l1MqMBW1X6UOZVBiJKg5hweohAIPqdRqqJcmyBCdVEApo5kxKPXPi/zK
-         kJd8DTAW+uIcYjJ+iucO+X6c4YlhiA73dnuYMoZDYqmup3lWuDQyb52brIMy6P0LxWx7
-         eVybV5Lg0HMmZW2RS0fFLUrY38OSnM7sI7hO/trvhEZdijX/g7cwrRGCL6IBB2BtqK1A
-         bmzrNaDtvw2t2E2zfDqw4MhR1E6nXkf79H2axQU4o5RFuVH0FhIdJhA0E15NmTVDF9Rv
-         ou5Q==
+        bh=Pdnw7K9TPf+eHf9zGnhvaqIDWZNdcE9UBDMAyL0uyyM=;
+        b=qyE/DCJ/oS5pRVr13kZlbaG27J0p/GvxpnZ+iCr974wXVqUhOYcFsqI/fp12aVtv4f
+         gYOXL1XKsdiWN2yaD7MPJvplu/ErL8JGVLoZQeRiszxu7553IenWI4v/mHxzhmqVr49K
+         bRvrUhe1KgD5QLYakP4/Rbz5j4FH1jIYa/KORe5toveCcXV0AohNa/7/BGN4AP6ecO+P
+         H7GfvawT16lNZHAopn5M8Y0O8u13PbsdKgXEEsf2dExA/W63i0pFntUB40AGxib2vfL6
+         hqZJfnCiBZD6AgNH+h9sGvKNly0C7rYs/5G6LbIksbrYVYe//lIYLwkM4pdnPIw3d+3K
+         kR+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=U7Z1nlS9hcss1xQnMGb9ASGNT3jDBI84+fF7J/Sejpc=;
-        b=EXy665DwjsFBvYYtin8MJK4i9vBtj6pp1LSkGJHm4qUtDXRl/FhM+DBglq7SL17iYG
-         ZH8gsvWiIrYi7b68DE4hi+hOXY43Eys5qi4sLwqV3ahUVUxzzUnnonAgyc6M5nkdecDL
-         BRGtajaotk1Y+zU80l+a6a/0b2C4woEL0h32LgH4E1X5qO7w/SG+yh8f3QWtaeIgMp6r
-         ++Sh2V+7f9Fj7WpeW56iSWft0kqXlkvm/wF+o4gWGWjLJKl0T+oS/qjwKHR7nlNAsuj8
-         MLej2zRM3zGKSnzM0dv5vhUbjjWvAxDQOLvK5gwE4LcTnbXT0tO7zFs+CVDZleUf0G7V
-         uHYg==
-X-Gm-Message-State: ANoB5plurIB/Xtzj9GdDsGnO1eq9EbuRN3VKmh31XQSn0ox/bn6vH1Gp
-        aFFt4q40tJWN7Ne/pngUdxZYRy8rSbQ=
-X-Google-Smtp-Source: AA0mqf4lXibm5HDTCxPJQtyiGoCYmx0JPxFBsUVjn0mAsl4dJhLukiJLDE48F52X2veyWTf4qs9KJg==
-X-Received: by 2002:a37:895:0:b0:6fa:8ddf:256b with SMTP id 143-20020a370895000000b006fa8ddf256bmr17535963qki.662.1669060741602;
-        Mon, 21 Nov 2022 11:59:01 -0800 (PST)
+        bh=Pdnw7K9TPf+eHf9zGnhvaqIDWZNdcE9UBDMAyL0uyyM=;
+        b=VwB65SJDtMLLLwbgJOX2W6nD1xHmTWZmb+NPCjufRX8nU0rUs2mK0oeQVk1nBxpx1z
+         uT3e93r938J7PLVxXBVzQRRMLDHes6D3wig3BS7u7tZfxIZiQZtcmEiblcWUpepFt2GP
+         DpldRguG9LsOZz2QfTqiRB3tRzu7xpC8o2CVvLhequTVsj3thg3vLniHN6riSW95neJM
+         csS9NKtGL5Mv2t6GzvQCrqrL7Ly8B8Tq8xWA8GbBJPXTuatqsKmCKoQTkrE2tPIzxj//
+         kBntTjdPTRBFtrSjUtg0SWX7z1ffWcKYfo0aOCfNSg0e9iWcwXAPU0S7c8MYu9i2ySGY
+         SYnw==
+X-Gm-Message-State: ANoB5plIoZZFRN3mjDDY8PyXXTLNIJTw2nedVKKW4zaCP7ZHyBOpkegb
+        BUoWFBUC6EXoVHblNiEx3SU=
+X-Google-Smtp-Source: AA0mqf5VBamr9W/G+/61Qv9gH1fuYeE1EknUGg8GoFDrHS/1vNCmxRwdGmj1STu/zxcbpzjVfJC3Ng==
+X-Received: by 2002:a05:620a:2b41:b0:6fb:f2dc:eca4 with SMTP id dp1-20020a05620a2b4100b006fbf2dceca4mr4787868qkb.505.1669060774404;
+        Mon, 21 Nov 2022 11:59:34 -0800 (PST)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id oo19-20020a05620a531300b006fa00941e9dsm8381289qkn.136.2022.11.21.11.59.00
+        by smtp.googlemail.com with ESMTPSA id x13-20020a05620a448d00b006fa4ac86bfbsm8717233qkp.55.2022.11.21.11.59.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 11:59:01 -0800 (PST)
-Message-ID: <e58b428b-df69-a2a0-c22e-ceec7eeb5d99@gmail.com>
-Date:   Mon, 21 Nov 2022 11:58:59 -0800
+        Mon, 21 Nov 2022 11:59:33 -0800 (PST)
+Message-ID: <d3e8166c-632d-7c6c-7aa3-12ecec0bf5a4@gmail.com>
+Date:   Mon, 21 Nov 2022 11:59:31 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Subject: Re: [PATCH net-next 05/17] net: dsa: move rest of devlink
- setup/teardown to devlink.c
+Subject: Re: [PATCH net-next 06/17] net: dsa: move headers exported by port.c
+ to port.h
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
@@ -64,9 +64,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 References: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
- <20221121135555.1227271-6-vladimir.oltean@nxp.com>
+ <20221121135555.1227271-7-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221121135555.1227271-6-vladimir.oltean@nxp.com>
+In-Reply-To: <20221121135555.1227271-7-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,9 +80,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/21/22 05:55, Vladimir Oltean wrote:
-> The code that needed further refactoring into dedicated functions in
-> dsa2.c was left aside. Move it now to devlink.c, and make dsa2.c stop
-> including net/devlink.h.
+> Minimize the use of the bloated dsa_priv.h by moving the prototypes
+> exported by port.c to their own header file.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
