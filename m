@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7AB632877
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 16:43:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC18632879
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 16:43:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232434AbiKUPnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 10:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
+        id S232484AbiKUPnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 10:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232419AbiKUPnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 10:43:01 -0500
+        with ESMTP id S232277AbiKUPnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 10:43:07 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362BDFAE4;
-        Mon, 21 Nov 2022 07:42:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4FAB1F6;
+        Mon, 21 Nov 2022 07:43:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669045373; x=1700581373;
+  t=1669045381; x=1700581381;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=anDIcSbWjalK9bjtt2pzLdEhiqwjwCG/8MC1pJS/H9g=;
-  b=MOZg1xs50/GVhnWtiWkRradXZ+8M9JxXNPzMpoVRSCcU+etyPpaTZgV+
-   hGQbeVjFflUoS0oM4pkHaqBivC8Isnb6jMLOSEA4o7m3ymBqSQVD8lHhC
-   gqeZlu2lI8JDhEm/+h7q18qTwW6a2L9pQ5ZNYQmYWkmZXWWFiuQ5TxEkL
-   fIQT5KXcfm7H+VVl6ovuDL/2NcbkYe0iJQxQilUi8KFUGPUPj6d6UgfXa
-   8GO0PRQpwtSbA5ta9VDonL/JaZiVCpzbCAb6HF2wB1G9tibHDdfOYnmd3
-   kEF8Pp6JhQ4Ru4mGwIaZ6r+jLZG4f3zOusAso581CyzaJqOhtJctWcVAP
-   A==;
+  bh=NeyX9fJf4+o90P1pDbzmykY7qysuHWK3uM4J0i/oV/8=;
+  b=TU7zfFX5Xy8A+hV1F7if+QZ362hfCa/sOCkBYsVkmV1t4XbP0aDcJ7EU
+   p+HCQh37ybJP1Y69j3NtqqsGhF9Qjrd+cNjUgzK4QW6ZOr2/4Z9lSniAF
+   2qnXKM+CNjJEAYBDedmY3212cQKDglUrfn+H7yHWhCpoIiFbAYoPKVJxJ
+   ir04wETAEHwJ5ycwrLF/IMbOdc4Ed8K5tP2sR1ajAF4mOwnZ2opusctOc
+   hLB1mx+yKi3KVnx2/mFzr0PcZ5u4xtIC5B5Zg70i7VGrj6hmt1S+q5Q6e
+   AsvtCIlpbPXd/A8ByEdCMBatq/vT3vbZ4RBjHuv0eYCuxtC060ksHc70I
+   w==;
 X-IronPort-AV: E=Sophos;i="5.96,181,1665471600"; 
-   d="scan'208";a="189874702"
+   d="scan'208";a="189874767"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Nov 2022 08:42:52 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Nov 2022 08:43:00 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 21 Nov 2022 08:42:50 -0700
+ 15.1.2507.12; Mon, 21 Nov 2022 08:42:57 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 21 Nov 2022 08:42:45 -0700
+ 15.1.2507.12 via Frontend Transport; Mon, 21 Nov 2022 08:42:52 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -46,9 +46,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>
-Subject: [RFC Patch net-next v2 5/8] net: dsa: microchip: enable the ptp interrupt for timestamping
-Date:   Mon, 21 Nov 2022 21:11:47 +0530
-Message-ID: <20221121154150.9573-6-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v2 6/8] net: dsa: microchip: Adding the ptp packet reception logic
+Date:   Mon, 21 Nov 2022 21:11:48 +0530
+Message-ID: <20221121154150.9573-7-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20221121154150.9573-1-arun.ramadoss@microchip.com>
 References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
@@ -65,391 +65,338 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP Interrupt mask and status register differ from the global and port
-interrupt mechanism by two methods. One is that for global/port
-interrupt enabling we have to clear the bit but for ptp interrupt we
-have to set the bit. And other is bit12:0 is reserver in ptp interrupt
-registers. This forced to not use the generic implementation of
-global/port interrupt method routine. This patch implement the ptp
-interrupt mechanism to read the timestamp register for sync, pdelay_req
-and pdelay_resp.
+This patch adds the routines for timestamping received ptp packets.
+Whenever the ptp packet is received, the 4 byte hardware time stamped
+value is append to its packet. This 4 byte value is extracted from the
+tail tag and reconstructed to absolute time and assigned to skb
+hwtstamp.
 
+Signed-off-by: Christian Eggers <ceggers@arri.de>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz_common.c  |  15 +-
- drivers/net/dsa/microchip/ksz_common.h  |  11 ++
- drivers/net/dsa/microchip/ksz_ptp.c     | 201 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp.h     |   9 ++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  16 ++
- 5 files changed, 250 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c | 13 +++++
+ drivers/net/dsa/microchip/ksz_ptp.c    | 78 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ptp.h    | 12 ++++
+ include/linux/dsa/ksz_common.h         | 16 ++++++
+ net/dsa/tag_ksz.c                      | 73 ++++++++++++++++++++++--
+ 5 files changed, 186 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 0abbb2ebcd00..c0b9b406fca8 100644
+index c0b9b406fca8..6430241fce46 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2014,13 +2014,17 @@ static int ksz_setup(struct dsa_switch *ds)
- 			ret = ksz_pirq_setup(dev, dp->index);
- 			if (ret)
- 				goto out_girq;
-+
-+			ret = ksz_ptp_irq_setup(ds, dp->index);
-+			if (ret)
-+				goto out_pirq;
- 		}
- 	}
- 
- 	ret = ksz_ptp_clock_register(ds);
- 	if (ret) {
- 		dev_err(dev->dev, "Failed to register PTP clock: %d\n", ret);
--		goto out_pirq;
-+		goto out_ptpirq;
- 	}
- 
- 	ret = ksz_mdio_register(dev);
-@@ -2037,6 +2041,10 @@ static int ksz_setup(struct dsa_switch *ds)
- 
- out_ptp_clock_unregister:
- 	ksz_ptp_clock_unregister(ds);
-+out_ptpirq:
-+	if (dev->irq > 0)
-+		dsa_switch_for_each_user_port(dp, dev->ds)
-+			ksz_ptp_irq_free(ds, dp->index);
- out_pirq:
- 	if (dev->irq > 0)
- 		dsa_switch_for_each_user_port(dp, dev->ds)
-@@ -2056,8 +2064,11 @@ static void ksz_teardown(struct dsa_switch *ds)
- 	ksz_ptp_clock_unregister(ds);
- 
- 	if (dev->irq > 0) {
--		dsa_switch_for_each_user_port(dp, dev->ds)
-+		dsa_switch_for_each_user_port(dp, dev->ds) {
-+			ksz_ptp_irq_free(ds, dp->index);
-+
- 			ksz_irq_free(&dev->ports[dp->index].pirq);
-+		}
- 
- 		ksz_irq_free(&dev->girq);
- 	}
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 4c092376fc89..510aff116f3e 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -22,6 +22,7 @@
- #define KSZ_MAX_NUM_PORTS 8
- 
- struct ksz_device;
-+struct ksz_port;
- 
- struct vlan_table {
- 	u32 table[3];
-@@ -85,6 +86,13 @@ struct ksz_irq {
- 	struct ksz_device *dev;
- };
- 
-+struct ksz_ptp_irq {
-+	struct ksz_port *port;
-+	u16 ts_reg;
-+	char name[16];
-+	int irq_num;
-+};
-+
- struct ksz_port {
- 	bool remove_tag;		/* Remove Tag flag set, for ksz8795 only */
- 	bool learning;
-@@ -107,6 +115,8 @@ struct ksz_port {
- 	u8 num;
- #if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ_PTP)
- 	u8 hwts_tx_en;
-+	struct ksz_irq ptpirq;
-+	struct ksz_ptp_irq ptpmsg_irq[3];
- #endif
- };
- 
-@@ -608,6 +618,7 @@ static inline int is_lan937x(struct ksz_device *dev)
- #define REG_PORT_INT_MASK		0x001F
- 
- #define PORT_SRC_PHY_INT		1
-+#define PORT_SRC_PTP_INT		2
- 
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index 5db67dc6a565..4b46cdc1c3bb 100644
---- a/drivers/net/dsa/microchip/ksz_ptp.c
-+++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -4,6 +4,8 @@
-  */
- 
- #include <linux/dsa/ksz_common.h>
-+#include <linux/irq.h>
-+#include <linux/irqdomain.h>
- #include <linux/kernel.h>
- #include <linux/ptp_classify.h>
- #include <linux/ptp_clock_kernel.h>
-@@ -22,6 +24,8 @@
- #define KSZ_PTP_INC_NS 40  /* HW clock is incremented every 40 ns (by 40) */
- #define KSZ_PTP_SUBNS_BITS 32  /* Number of bits in sub-nanoseconds counter */
- 
-+#define KSZ_PTP_INT_START 13
-+
- static int ksz_ptp_enable_mode(struct ksz_device *dev, bool enable)
- {
- 	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-@@ -430,6 +434,203 @@ void ksz_ptp_clock_unregister(struct dsa_switch *ds)
- 	ptp_clock_unregister(ptp_data->clock);
+@@ -2453,6 +2453,18 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
+ 	return proto;
  }
  
-+static irqreturn_t ksz_ptp_msg_thread_fn(int irq, void *dev_id)
++static int ksz_connect_tag_protocol(struct dsa_switch *ds,
++				    enum dsa_tag_protocol proto)
 +{
-+	return IRQ_NONE;
++	struct ksz_tagger_data *tagger_data;
++
++	tagger_data = ksz_tagger_data(ds);
++	tagger_data->meta_tstamp_handler = ksz_tstamp_reconstruct;
++	tagger_data->is_ptp_twostep = ksz_is_ptp_twostep;
++
++	return 0;
 +}
 +
-+static irqreturn_t ksz_ptp_irq_thread_fn(int irq, void *dev_id)
+ static int ksz_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 				   bool flag, struct netlink_ext_ack *extack)
+ {
+@@ -2849,6 +2861,7 @@ static int ksz_switch_detect(struct ksz_device *dev)
+ 
+ static const struct dsa_switch_ops ksz_switch_ops = {
+ 	.get_tag_protocol	= ksz_get_tag_protocol,
++	.connect_tag_protocol   = ksz_connect_tag_protocol,
+ 	.get_phy_flags		= ksz_get_phy_flags,
+ 	.setup			= ksz_setup,
+ 	.teardown		= ksz_teardown,
+diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
+index 4b46cdc1c3bb..c9c43a98427b 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp.c
++++ b/drivers/net/dsa/microchip/ksz_ptp.c
+@@ -167,6 +167,59 @@ int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
+ 	return ret;
+ }
+ 
++void ksz_port_txtstamp(struct dsa_switch *ds, int port,
++		       struct sk_buff *skb)
 +{
-+	struct ksz_irq *ptpirq = dev_id;
-+	unsigned int nhandled = 0;
-+	struct ksz_device *dev;
-+	unsigned int sub_irq;
-+	u16 data;
-+	int ret;
-+	u8 n;
++	struct ksz_device *dev	= ds->priv;
++	struct ksz_port *prt = &dev->ports[port];
++	struct ptp_header *hdr;
++	struct sk_buff *clone;
++	unsigned int type;
++	u8 ptp_msg_type;
 +
-+	dev = ptpirq->dev;
++	if (!prt->hwts_tx_en)
++		return;
 +
-+	/* Read interrupt status register */
-+	ret = ksz_read16(dev, ptpirq->reg_status, &data);
-+	if (ret)
-+		goto out;
++	type = ptp_classify_raw(skb);
++	if (type == PTP_CLASS_NONE)
++		return;
 +
-+	for (n = 0; n < ptpirq->nirqs; ++n) {
-+		if (data & BIT(n + KSZ_PTP_INT_START)) {
-+			sub_irq = irq_find_mapping(ptpirq->domain, n);
-+			handle_nested_irq(sub_irq);
-+			++nhandled;
-+		}
++	hdr = ptp_parse_header(skb, type);
++	if (!hdr)
++		return;
++
++	ptp_msg_type = ptp_get_msgtype(hdr, type);
++
++	switch (ptp_msg_type) {
++	case PTP_MSGTYPE_SYNC:
++		if (prt->hwts_tx_en == HWTSTAMP_TX_ONESTEP_P2P)
++			return;
++	case PTP_MSGTYPE_PDELAY_REQ:
++	case PTP_MSGTYPE_PDELAY_RESP:
++		break;
++
++	default:
++		return;
 +	}
 +
-+	//Clear the interrupts W1C
-+	ret = ksz_write16(dev, ptpirq->reg_status, data);
-+	if (ret)
-+		return IRQ_NONE;
++	clone = skb_clone_sk(skb);
++	if (!clone)
++		return;
 +
-+out:
-+	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
++	/* caching the value to be used in later */
++	KSZ_SKB_CB(skb)->clone = clone;
++	KSZ_SKB_CB(clone)->ptp_type = type;
++	KSZ_SKB_CB(clone)->ptp_msg_type = ptp_msg_type;
 +}
 +
-+static void ksz_ptp_irq_mask(struct irq_data *d)
++bool ksz_is_ptp_twostep(struct dsa_switch *ds, unsigned int port)
 +{
-+	struct ksz_irq *kirq = irq_data_get_irq_chip_data(d);
++	struct ksz_device *dev	= ds->priv;
++	struct ksz_port *prt = &dev->ports[port];
 +
-+	kirq->masked &= ~BIT(d->hwirq + KSZ_PTP_INT_START);
++	return (prt->hwts_tx_en == HWTSTAMP_TX_ON);
 +}
 +
-+static void ksz_ptp_irq_unmask(struct irq_data *d)
-+{
-+	struct ksz_irq *kirq = irq_data_get_irq_chip_data(d);
-+
-+	kirq->masked |= BIT(d->hwirq + KSZ_PTP_INT_START);
-+}
-+
-+static void ksz_ptp_irq_bus_lock(struct irq_data *d)
-+{
-+	struct ksz_irq *kirq  = irq_data_get_irq_chip_data(d);
-+
-+	mutex_lock(&kirq->dev->lock_irq);
-+}
-+
-+static void ksz_ptp_irq_bus_sync_unlock(struct irq_data *d)
-+{
-+	struct ksz_irq *kirq  = irq_data_get_irq_chip_data(d);
-+	struct ksz_device *dev = kirq->dev;
-+	int ret;
-+
-+	ret = ksz_write16(dev, kirq->reg_mask, kirq->masked);
-+	if (ret)
-+		dev_err(dev->dev, "failed to change IRQ mask\n");
-+
-+	mutex_unlock(&dev->lock_irq);
-+}
-+
-+static const struct irq_chip ksz_ptp_irq_chip = {
-+	.name			= "ksz-irq",
-+	.irq_mask		= ksz_ptp_irq_mask,
-+	.irq_unmask		= ksz_ptp_irq_unmask,
-+	.irq_bus_lock		= ksz_ptp_irq_bus_lock,
-+	.irq_bus_sync_unlock	= ksz_ptp_irq_bus_sync_unlock,
-+};
-+
-+static int ksz_ptp_irq_domain_map(struct irq_domain *d,
-+				  unsigned int irq, irq_hw_number_t hwirq)
-+{
-+	irq_set_chip_data(irq, d->host_data);
-+	irq_set_chip_and_handler(irq, &ksz_ptp_irq_chip, handle_level_irq);
-+	irq_set_noprobe(irq);
-+
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops ksz_ptp_irq_domain_ops = {
-+	.map	= ksz_ptp_irq_domain_map,
-+	.xlate	= irq_domain_xlate_twocell,
-+};
-+
-+static int ksz_ptp_msg_irq_setup(struct ksz_port *port)
-+{
-+	u16 ts_reg[] = {REG_PTP_PORT_PDRESP_TS, REG_PTP_PORT_XDELAY_TS,
-+			REG_PTP_PORT_SYNC_TS};
-+	struct ksz_device *dev = port->ksz_dev;
-+	struct ksz_irq *ptpirq = &port->ptpirq;
-+	struct ksz_ptp_irq *ptpmsg_irq;
-+	int ret;
-+	u8 n;
-+
-+	for (n = 0; n < ptpirq->nirqs; n++) {
-+		ptpmsg_irq = &port->ptpmsg_irq[n];
-+
-+		ptpmsg_irq->port = port;
-+		ptpmsg_irq->ts_reg = dev->dev_ops->get_port_addr(port->num,
-+								 ts_reg[n]);
-+		ptpmsg_irq->irq_num = irq_create_mapping(ptpirq->domain, n);
-+		if (ptpmsg_irq->irq_num < 0) {
-+			ret = ptpmsg_irq->irq_num;
-+			goto out;
-+		}
-+
-+		snprintf(ptpmsg_irq->name, sizeof(ptpmsg_irq->name),
-+			 "PTP-MSG-%d", n);
-+
-+		ret = request_threaded_irq(ptpmsg_irq->irq_num, NULL,
-+					   ksz_ptp_msg_thread_fn,
-+					   IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
-+					   ptpmsg_irq->name, ptpmsg_irq);
-+		if (ret)
-+			goto out;
-+	}
-+
-+	return 0;
-+
-+out:
-+	while (n--)
-+		irq_dispose_mapping(port->ptpmsg_irq[n].irq_num);
-+
-+	return ret;
-+}
-+
-+int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p)
+ /* These are function related to the ptp clock info */
+ static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts)
+ {
+@@ -380,6 +433,31 @@ static int ksz_ptp_start_clock(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
++ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	const struct ksz_dev_ops *ops = dev->dev_ops;
-+	struct ksz_port *port = &dev->ports[p];
-+	struct ksz_irq *ptpirq = &port->ptpirq;
-+	int ret;
++	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
++	struct timespec64 ts = ktime_to_timespec64(tstamp);
++	struct timespec64 ptp_clock_time;
++	struct timespec64 diff;
 +
-+	ptpirq->dev = dev;
-+	ptpirq->masked = 0;
-+	ptpirq->nirqs = 3;
-+	ptpirq->reg_mask = ops->get_port_addr(p, REG_PTP_PORT_TX_INT_ENABLE__2);
-+	ptpirq->reg_status = ops->get_port_addr(p,
-+						REG_PTP_PORT_TX_INT_STATUS__2);
-+	snprintf(ptpirq->name, sizeof(ptpirq->name), "ptp_irq-%d", p);
++	spin_lock_bh(&ptp_data->clock_lock);
++	ptp_clock_time = ptp_data->clock_time;
++	spin_unlock_bh(&ptp_data->clock_lock);
 +
-+	ptpirq->irq_num = irq_find_mapping(port->pirq.domain, PORT_SRC_PTP_INT);
-+	if (ptpirq->irq_num < 0)
-+		return ptpirq->irq_num;
++	/* calculate full time from partial time stamp */
++	ts.tv_sec = (ptp_clock_time.tv_sec & ~3) | ts.tv_sec;
 +
-+	ptpirq->domain = irq_domain_add_simple(dev->dev->of_node, ptpirq->nirqs,
-+					       0, &ksz_ptp_irq_domain_ops,
-+					       ptpirq);
-+	if (!ptpirq->domain)
-+		return -ENOMEM;
++	/* find nearest possible point in time */
++	diff = timespec64_sub(ts, ptp_clock_time);
++	if (diff.tv_sec > 2)
++		ts.tv_sec -= 4;
++	else if (diff.tv_sec < -2)
++		ts.tv_sec += 4;
 +
-+	ret = request_threaded_irq(ptpirq->irq_num, NULL, ksz_ptp_irq_thread_fn,
-+				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
-+				   ptpirq->name, ptpirq);
-+	if (ret)
-+		goto out;
-+
-+	ret = ksz_ptp_msg_irq_setup(port);
-+	if (ret)
-+		goto out;
-+
-+	return 0;
-+
-+out:
-+	irq_dispose_mapping(ptpirq->irq_num);
-+
-+	return ret;
++	return timespec64_to_ktime(ts);
 +}
 +
-+void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port *port = &dev->ports[p];
-+	struct ksz_irq *ptpirq = &port->ptpirq;
-+	u8 n;
-+
-+	free_irq(ptpirq->irq_num, ptpirq);
-+
-+	for (n = 0; n < ptpirq->nirqs; n++)
-+		irq_dispose_mapping(port->ptpmsg_irq[n].irq_num);
-+
-+	irq_domain_remove(ptpirq->domain);
-+}
-+
- MODULE_AUTHOR("Christian Eggers <ceggers@arri.de>");
- MODULE_AUTHOR("Arun Ramadoss <arun.ramadoss@microchip.com>");
- MODULE_DESCRIPTION("PTP support for KSZ switch");
+ static const struct ptp_clock_info ksz_ptp_caps = {
+ 	.owner		= THIS_MODULE,
+ 	.name		= "Microchip Clock",
 diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
-index 09c0e58c365e..7e5d374d2acf 100644
+index 7e5d374d2acf..46b1ccbace81 100644
 --- a/drivers/net/dsa/microchip/ksz_ptp.h
 +++ b/drivers/net/dsa/microchip/ksz_ptp.h
-@@ -26,6 +26,8 @@ int ksz_get_ts_info(struct dsa_switch *ds, int port,
- 		    struct ethtool_ts_info *ts);
- int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
+@@ -28,6 +28,8 @@ int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
  int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
-+int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p);
-+void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
+ int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p);
+ void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
++ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp);
++bool ksz_is_ptp_twostep(struct dsa_switch *ds, unsigned int port);
  
  #else
  
-@@ -55,6 +57,13 @@ static inline int ksz_hwtstamp_set(struct dsa_switch *ds, int port,
- 	return -EOPNOTSUPP;
- }
+@@ -64,6 +66,16 @@ static inline int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p)
  
-+static inline int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p)
+ static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
+ 
++static inline ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp)
 +{
 +	return 0;
 +}
 +
-+static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
++bool ksz_is_ptp_twostep(struct dsa_switch *ds, unsigned int port)
++{
++	return 0;
++}
 +
  #endif	/* End of CONFIG_NET_DSA_MICROCHIOP_KSZ_PTP */
  
  #endif
-diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-index 2bf8395475b9..2ae6c8b01b00 100644
---- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
-+++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-@@ -50,3 +50,19 @@
- #define PTP_TC_P2P			BIT(2)
- #define PTP_MASTER			BIT(1)
- #define PTP_1STEP			BIT(0)
+diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
+index 8903bce4753b..d71851dbeb4d 100644
+--- a/include/linux/dsa/ksz_common.h
++++ b/include/linux/dsa/ksz_common.h
+@@ -9,9 +9,25 @@
+ 
+ #include <net/dsa.h>
+ 
++/* All time stamps from the KSZ consist of 2 bits for seconds and 30 bits for
++ * nanoseconds. This is NOT the same as 32 bits for nanoseconds.
++ */
++#define KSZ_TSTAMP_SEC_MASK  GENMASK(31, 30)
++#define KSZ_TSTAMP_NSEC_MASK GENMASK(29, 0)
 +
-+/* Port PTP Register */
-+#define REG_PTP_PORT_RX_DELAY__2	0x0C00
-+#define REG_PTP_PORT_TX_DELAY__2	0x0C02
-+#define REG_PTP_PORT_ASYM_DELAY__2	0x0C04
++static inline ktime_t ksz_decode_tstamp(u32 tstamp)
++{
++	u64 ns = FIELD_GET(KSZ_TSTAMP_SEC_MASK, tstamp) * NSEC_PER_SEC +
++		 FIELD_GET(KSZ_TSTAMP_NSEC_MASK, tstamp);
 +
-+#define REG_PTP_PORT_XDELAY_TS		0x0C08
-+#define REG_PTP_PORT_SYNC_TS		0x0C0C
-+#define REG_PTP_PORT_PDRESP_TS		0x0C10
++	return ns_to_ktime(ns);
++}
 +
-+#define REG_PTP_PORT_TX_INT_STATUS__2	0x0C14
-+#define REG_PTP_PORT_TX_INT_ENABLE__2	0x0C16
+ struct ksz_tagger_data {
+ 	bool (*hwtstamp_get_state)(struct dsa_switch *ds);
+ 	void (*hwtstamp_set_state)(struct dsa_switch *ds, bool on);
++	ktime_t (*meta_tstamp_handler)(struct dsa_switch *ds, ktime_t tstamp);
++	bool (*is_ptp_twostep)(struct dsa_switch *ds, unsigned int port);
+ };
+ 
+ static inline struct ksz_tagger_data *
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 6a909a300c13..39b27f6e26be 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -7,6 +7,7 @@
+ #include <linux/dsa/ksz_common.h>
+ #include <linux/etherdevice.h>
+ #include <linux/list.h>
++#include <linux/ptp_classify.h>
+ #include <net/dsa.h>
+ #include "dsa_priv.h"
+ 
+@@ -169,6 +170,63 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ8795, KSZ8795_NAME);
+ #define KSZ9477_TAIL_TAG_OVERRIDE	BIT(9)
+ #define KSZ9477_TAIL_TAG_LOOKUP		BIT(10)
+ 
++static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag,
++			      struct net_device *dev, unsigned int port)
++{
++	struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
++	u8 *tstamp_raw = tag - KSZ9477_PTP_TAG_LEN;
++	struct dsa_switch *ds = dev->dsa_ptr->ds;
++	struct ksz_tagger_data *tagger_data;
++	struct ptp_header *ptp_hdr;
++	unsigned int ptp_type;
++	u8 ptp_msg_type;
++	ktime_t tstamp;
++	s64 correction;
 +
-+#define PTP_PORT_SYNC_INT		BIT(15)
-+#define PTP_PORT_XDELAY_REQ_INT		BIT(14)
-+#define PTP_PORT_PDELAY_RESP_INT	BIT(13)
++	tagger_data = ksz_tagger_data(ds);
++	if (!tagger_data->meta_tstamp_handler)
++		return;
++
++	/* convert time stamp and write to skb */
++	tstamp = ksz_decode_tstamp(get_unaligned_be32(tstamp_raw));
++	memset(hwtstamps, 0, sizeof(*hwtstamps));
++	hwtstamps->hwtstamp = tagger_data->meta_tstamp_handler(ds, tstamp);
++
++	if (skb_headroom(skb) < ETH_HLEN)
++		return;
++
++	__skb_push(skb, ETH_HLEN);
++	ptp_type = ptp_classify_raw(skb);
++	__skb_pull(skb, ETH_HLEN);
++
++	if (ptp_type == PTP_CLASS_NONE)
++		return;
++
++	ptp_hdr = ptp_parse_header(skb, ptp_type);
++	if (!ptp_hdr)
++		return;
++
++	if (!tagger_data->is_ptp_twostep)
++		return;
++
++	if (tagger_data->is_ptp_twostep(ds, port))
++		return;
++
++	ptp_msg_type = ptp_get_msgtype(ptp_hdr, ptp_type);
++	if (ptp_msg_type != PTP_MSGTYPE_PDELAY_REQ)
++		return;
++
++	/* Only subtract the partial time stamp from the correction field.  When
++	 * the hardware adds the egress time stamp to the correction field of
++	 * the PDelay_Resp message on tx, also only the partial time stamp will
++	 * be added.
++	 */
++	correction = (s64)get_unaligned_be64(&ptp_hdr->correction);
++	correction -= ktime_to_ns(tstamp) << 16;
++
++	ptp_header_update_correction(skb, ptp_type, ptp_hdr, correction);
++}
++
+ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
+ 				    struct net_device *dev)
+ {
+@@ -202,8 +260,10 @@ static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	unsigned int len = KSZ_EGRESS_TAG_LEN;
+ 
+ 	/* Extra 4-bytes PTP timestamp */
+-	if (tag[0] & KSZ9477_PTP_TAG_INDICATION)
++	if (tag[0] & KSZ9477_PTP_TAG_INDICATION) {
++		ksz_rcv_timestamp(skb, tag, dev, port);
+ 		len += KSZ9477_PTP_TAG_LEN;
++	}
+ 
+ 	return ksz_common_rcv(skb, dev, port, len);
+ }
+@@ -215,7 +275,7 @@ static const struct dsa_device_ops ksz9477_netdev_ops = {
+ 	.rcv	= ksz9477_rcv,
+ 	.connect = ksz_connect,
+ 	.disconnect = ksz_disconnect,
+-	.needed_tailroom = KSZ9477_INGRESS_TAG_LEN,
++	.needed_tailroom = KSZ9477_INGRESS_TAG_LEN + KSZ9477_PTP_TAG_LEN,
+ };
+ 
+ DSA_TAG_DRIVER(ksz9477_netdev_ops);
+@@ -253,7 +313,7 @@ static const struct dsa_device_ops ksz9893_netdev_ops = {
+ 	.rcv	= ksz9477_rcv,
+ 	.connect = ksz_connect,
+ 	.disconnect = ksz_disconnect,
+-	.needed_tailroom = KSZ_INGRESS_TAG_LEN,
++	.needed_tailroom = KSZ_INGRESS_TAG_LEN + KSZ9477_PTP_TAG_LEN,
+ };
+ 
+ DSA_TAG_DRIVER(ksz9893_netdev_ops);
+@@ -266,10 +326,11 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893, KSZ9893_NAME);
+  * tag0 : represents tag override, lookup and valid
+  * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
+  *
+- * For rcv, 1 byte is added before FCS.
++ * For rcv, 1/5 bytes is added before FCS.
+  * ---------------------------------------------------------------------------
+- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
++ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
+  * ---------------------------------------------------------------------------
++ * ts   : time stamp (Present only if bit 7 of tag0 is set)
+  * tag0 : zero-based value represents port
+  *	  (eg, 0x00=port1, 0x02=port3, 0x07=port8)
+  */
+@@ -313,7 +374,7 @@ static const struct dsa_device_ops lan937x_netdev_ops = {
+ 	.rcv	= ksz9477_rcv,
+ 	.connect = ksz_connect,
+ 	.disconnect = ksz_disconnect,
+-	.needed_tailroom = LAN937X_EGRESS_TAG_LEN,
++	.needed_tailroom = LAN937X_EGRESS_TAG_LEN + KSZ9477_PTP_TAG_LEN,
+ };
+ 
+ DSA_TAG_DRIVER(lan937x_netdev_ops);
 -- 
 2.36.1
 
