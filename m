@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD058632C90
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CFF2632C99
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiKUTCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 14:02:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
+        id S230364AbiKUTFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 14:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230441AbiKUTCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:02:46 -0500
+        with ESMTP id S229985AbiKUTFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:05:17 -0500
 Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED930655A;
-        Mon, 21 Nov 2022 11:02:42 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.west.internal (Postfix) with ESMTP id 8372D2B066F8;
-        Mon, 21 Nov 2022 14:02:38 -0500 (EST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224DE63164;
+        Mon, 21 Nov 2022 11:05:17 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.west.internal (Postfix) with ESMTP id 325042B06861;
+        Mon, 21 Nov 2022 14:05:16 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 21 Nov 2022 14:02:39 -0500
+  by compute2.internal (MEProxy); Mon, 21 Nov 2022 14:05:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
         cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1669057358; x=1669060958; bh=XifaYgP4cg
-        6klUWe6s0Y+A6Kru7YxNsJCO7wsdxTXL8=; b=Ts93nwe0nyFN00UuaoW8YELbHm
-        MKNad5fSyaFoKWcseZkz/rZQnypRJJeg69Tq2BFQYsVGe+/s97gt+oH/GkAeJJP1
-        rtG/S8tYAih2+RPGOqrZqO0+8SVxYxrMOysFbolTdqzxRPnjplXzHnSKRtkdQ7PU
-        84gPpTObd/UYdOoFFT8bL2hv3emsx+tp0DjTgM6cgoSdzrQa3SH56WDlcAFA/6UY
-        yUjqnn5oWTLCxrUIa9hghOIgQOZJNxyqTnnqOdn89nz1246mEpVzMtrv4/WKdYDy
-        Z1CaCaUEzcpgnEegvG9jxCcyVdbSMMiYqWreoQa8rcyVza0DUvUrKuze6N3Q==
+        :subject:to:to; s=fm2; t=1669057515; x=1669061115; bh=MDmNofgTyd
+        /8UJfQtKp6/eKZa3jaDLLUvSfgZm02MsI=; b=U4ipgXYUivaC94aBfx6XqnWmWA
+        z1DEstIN2TL3iTMRVb1PJbOBNfeqnWh7OFP5MRRwdvfDfk0FYiJ25i+JHVPnCEOS
+        KD+he402psUwBnwD1PwwjyFrsMNYIrWoA9hL+WqN/7+HisOefgOL52AijzLwIuJw
+        Eto2fsuee1hmP1n45UVnrhZ95bSHNHdJlHODAzBuxZt7PYReJsPwlHOjZABV07Cq
+        CJrDO/6VB0clCFUa1Hex2Mq1x3uHuw2YewAxEWXppnA6Fy5e5kWgtdRmxKbCjhkB
+        p8BQITIilJxj8b3WPqjwEoaalQV/YqQldI66wIzKetySxjKO0UZHz6/bnbOg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
         :feedback-id:from:from:in-reply-to:in-reply-to:message-id
         :mime-version:references:reply-to:sender:subject:subject:to:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1669057358; x=1669060958; bh=XifaYgP4cg6klUWe6s0Y+A6Kru7Y
-        xNsJCO7wsdxTXL8=; b=huBGJuiDLdOG9euwoA6OaMob3pzS6IcaJ30l0Qz5iAqu
-        e4kJplLagE+kuc/EoOomqgSqE8Aaye3JslxsPhBwdoKnXR8Ay9cWUm1GwYxCBE4G
-        kd70Ogi/kOWgHO8QpNJ+Ib2aZXnlsyTG8H6s9n3hvr6yEf1/J3NSUzFbBYBgGyr8
-        tfvu00ghgFtjd5C9O7rZwzCyOBTHcjP3R9c1Ru99IGMBszhVNo81TshYlia98GGp
-        N+pFGMIA8R2jgnl30hrf5REEmyGZGU+zbF8tRqESuM5fsASrUu5Tqry1hYGl5Rgw
-        wj42RqdObOK2Mc9yRuz3roU0+x81VBhj8+MXSM5Fag==
-X-ME-Sender: <xms:Tct7YwkfzvGVvhGpMjy7aO4T3go6EtBLQujWhD32LXgYLGIyN8C82g>
-    <xme:Tct7Y_1o59Zpr9FsJwv6kVW0opaD5N5I2bp92scUj7BADMwi7p8u9PHZqLwSrd0Ti
-    -ZtKpPJ-qzQABfLrEc>
-X-ME-Received: <xmr:Tct7Y-pZd49KRTpOElFjOkB78K1kQGWfidRQbdHaIEFzBmF2xN9zk4LaQgSGS6pbwjOhRJAaGoz5QRsIRNYw3ZmjhrhRrj6YOpvqhvc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheeigdduudelucetufdoteggodetrfdotf
+        fm1; t=1669057515; x=1669061115; bh=MDmNofgTyd/8UJfQtKp6/eKZa3ja
+        DLLUvSfgZm02MsI=; b=wlGV0HVpqhyc54HAb14+iQ//Ar4ooFcIpbKVLqGI3aQz
+        Hij6tusG9eza/IcNmMRjV0qC8iDnoBOiQgbEd/rFU0aBHdQCzHeALJrNHMO2kvHb
+        UBqRr4B7dCTN3+PmQGFrdOoYPIkURjch2zZNqOVs5bE0KXzOroG3P3U0u9wEieT4
+        UkvhFLwBSZR0nEsBPjHEyotbqR0OcfzwQzlw4ATBPltHRUhy3MimjMChGlZZWOwE
+        4129tGOrVyiZ2LBf2f493dS5BOLK3iHG3qcoSbnz3TcgAJxcnYHPno7Obcabj6JJ
+        3HmeGSck0JRA2Kd2hIJpCXTaLrOjLTGIg7NFtCb0oQ==
+X-ME-Sender: <xms:68t7Y8H7sOVM9xQ72rpcjeSoeFvxZFab5r3NzHO6kiXmWr7sWgX8rQ>
+    <xme:68t7Y1WzbIqUwbvBA8k3cNY4AUijbkMdsVb5iPumJK2NL9YqmZuQWrixZ6tC7XUf_
+    IjtiQFnEaygZQQThjg>
+X-ME-Received: <xmr:68t7Y2IRI5lWrNIf4vHfWGCJBI412H1G04EUxhIxAPreK8XgVDB_yMx6JTZmD5CNVSZ9gG99T35H-FMLCB3M5yHaUX6Tkmau6oIcjlT_>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheeigdduvddtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfhgfhffvvefuffgjkfggtgesthdtredttdertdenucfhrhhomhepufhtvghf
@@ -53,16 +53,16 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheeigdduudelucetufdoteggod
     htvghrnhepveelgffghfehudeitdehjeevhedthfetvdfhledutedvgeeikeeggefgudeg
     uedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsh
     hhrhesuggvvhhkvghrnhgvlhdrihho
-X-ME-Proxy: <xmx:Tct7Y8nwNGUsx1SGyAC0uPr-Q3NwlOXV-ChOJVCpCy3KrOeOqzlSLw>
-    <xmx:Tct7Y-3fbisSIFocSoZiFWu5WkVBh-H1COZWYK_4OxaEP-79uTMsjQ>
-    <xmx:Tct7YzvixpDR9t4fP1E4oK9JE0TJrFkMEYDFDATfFty10zXXFNdfwQ>
-    <xmx:Tst7Y6_XVABnRbt_cI0sbf8jXyMv4qQAMTxo-hCAt0w1GC8yRAkX6GlWcjI>
+X-ME-Proxy: <xmx:68t7Y-Hex_w2PjWzu7reUVSe7uPIXrSu7hfVYKa7BRo9_Bf4jHdV5w>
+    <xmx:68t7YyXQBwXHmh6kWuf5p26xYs9tVKqDD7okplJmoAyIPRhMaz4nmA>
+    <xmx:68t7YxN6V6KMaiHSfEYM3tp47Xxe4r2GUtuD8uTvhHO4_HICYyg6fg>
+    <xmx:68t7Y0fqJ7qpL0DK6rPhDLccGdTENJT5ZOSsT2iOfCQuFOcTskW3yXJ6es8>
 Feedback-ID: i84614614:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Nov 2022 14:02:37 -0500 (EST)
+ 21 Nov 2022 14:05:14 -0500 (EST)
 References: <20221119041149.152899-1-shr@devkernel.io>
- <20221119041149.152899-4-shr@devkernel.io>
- <b1ad8fb5-fe95-f344-f691-dae6c5114810@gnuweeb.org>
+ <20221119041149.152899-3-shr@devkernel.io>
+ <24e5c8a3-faba-2e1a-eb9f-69bcbc2b28cd@gnuweeb.org>
 User-agent: mu4e 1.6.11; emacs 28.2.50
 From:   Stefan Roesch <shr@devkernel.io>
 To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
@@ -72,11 +72,11 @@ Cc:     Facebook Kernel Team <kernel-team@fb.com>,
         netdev Mailing List <netdev@vger.kernel.org>,
         io-uring Mailing List <io-uring@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [RFC PATCH v4 3/4] liburing: add example programs for napi busy
- poll
-Date:   Mon, 21 Nov 2022 11:02:25 -0800
-In-reply-to: <b1ad8fb5-fe95-f344-f691-dae6c5114810@gnuweeb.org>
-Message-ID: <qvqwk03o3zcj.fsf@dev0134.prn3.facebook.com>
+Subject: Re: [RFC PATCH v4 2/4] liburing: add documentation for new napi
+ busy polling
+Date:   Mon, 21 Nov 2022 11:04:59 -0800
+In-reply-to: <24e5c8a3-faba-2e1a-eb9f-69bcbc2b28cd@gnuweeb.org>
+Message-ID: <qvqwfsec3z85.fsf@dev0134.prn3.facebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -92,18 +92,29 @@ X-Mailing-List: netdev@vger.kernel.org
 Ammar Faizi <ammarfaizi2@gnuweeb.org> writes:
 
 > On 11/19/22 11:11 AM, Stefan Roesch wrote:
->> +void recordRTT(struct ctx *ctx)
->> +{
->> +    struct timespec startTs = ctx->ts;
->> +
->> +    // Send next ping.
->> +    sendPing(ctx);
->> +
->> +    // Store round-trip time.
->> +    ctx->rtt[ctx->rtt_index] = diffTimespec(&ctx->ts, &startTs);
->> +    ctx->rtt_index++;
->> +}
+>> This adds two man pages for the two new functions:
+>> - io_uring_register_nap
 >
-> Use tabs for indentation, not spaces.
+> Typo:
+>
+>    s/io_uring_register_nap/io_uring_register_napi/
+>
+>> +.SH RETURN VALUE
+>> +On success
+>> +.BR io_uring_register_napi_prefer_busy_poll (3)
+>> +return 0. On failure they return
+>> +.BR -errno .
+>> +It also updates the napi structure with the current values.
+>
+> io_uring_register_napi_prefer_busy_poll() no longer exists in this version.
+>
+>> +.SH RETURN VALUE
+>> +On success
+>> +.BR io_uring_unregister_napi_busy_poll_timeout (3)
+>> +return 0. On failure they return
+>> +.BR -errno .
+>> +It also updates the napi structure with the current values.
+>
+> io_uring_unregister_napi_busy_poll_timeout() no longer exists in this version.
 
-Fixed in next version.
+Fixed in the next version.
