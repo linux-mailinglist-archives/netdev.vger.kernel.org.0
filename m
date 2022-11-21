@@ -2,177 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA164631C43
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90CDE631C47
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:01:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiKUJAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 04:00:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
+        id S230078AbiKUJBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 04:01:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229965AbiKUJA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:00:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B0C2ED5F
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:00:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A727EB80D75
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 09:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10393C433D7;
-        Mon, 21 Nov 2022 09:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669021223;
-        bh=xD/meMWbsV5llZFZtNrqMXecQ4aLfDz08to7GAeABv8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eco/YqiJrvui/g6npdEJoLoVR0z9a/jviX7jL9YDXiwNWq9ED5jXQZK+kqGNRzCOb
-         ED6GzgcaAZ8ycLTNmUjUZ2PSnwFIn8qAxvz5qYcWGTIYCNazdQ5Xc/Q1FOK0mlU/mY
-         0jaW5O6/D1u2BGmwVywKCV1d+j/QQFdv3uQkja+P4fQ4zZQopo0UorDkZhOTCJQjxs
-         CmkS8VvTXjXYOc7Zl5mfRL77+B6DTWGezs90RYJjoomwN3ezR8ab6CFYUskZ1CMBvw
-         8na81wlt7yUMzF9vMATetM8xAIra78hovUpCsuWFuvKlLQYJW1W2/GRvxMmmdVHRRx
-         sZMe5iPn4ZEYg==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, lorenzo.bianconi@redhat.com,
-        sujuan.chen@mediatek.com, linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 5/5] net: ethernet: mtk_wed: add reset to tx_ring_setup callback
-Date:   Mon, 21 Nov 2022 09:59:25 +0100
-Message-Id: <9c4dded2b7a35a8e44b255a74e776a703359797b.1669020847.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <cover.1669020847.git.lorenzo@kernel.org>
-References: <cover.1669020847.git.lorenzo@kernel.org>
+        with ESMTP id S230092AbiKUJAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:00:55 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A93483EB7
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:00:53 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id f7so15256199edc.6
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:00:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zrgtw0c3wlZA/yLqn73oinTIP8rBDSYjdfY3JiqY95Y=;
+        b=FX92/3g89aBBdGw8DVUZGivQJtvneU1hhd40rtHhxDy5+vjd7eQ0L87fFyeaDv8eYr
+         jWTLHFoyISLLTOyo0qY/XsJZHuNONd2R315irYa7X9+iZDp2gyi8IjLrO8VVxUt0Wbq6
+         nbN9rZzw8TzlT2pLFC1zrInmaOSK6bFBf2Hbw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zrgtw0c3wlZA/yLqn73oinTIP8rBDSYjdfY3JiqY95Y=;
+        b=cISg8JMWIcgoVtWeivacCeU7CeQRMbTPEm8FhH7ijddrQsVa5MqjZ9s28U504yYAbl
+         ckaDs75vSEy7GSO4DfUdFXUKoFnoSjoOj3klkT8aJZRF04rZLiZuhAImibHcoboBwgKa
+         rtvuZYnsDFlFR5CF0OoO4N6tyngofhKnYuUE5ACCGVnk+xQNo16b87edy7CTsU0QotH9
+         KyY+xrtbod3+5hjI9hQ6EJ1Cvn0xOQ19H/joXTHGq4LPFk0rJRzuqbclBnrfC7wm83C9
+         HKEMHvfv3R1PlYnqFv2uioukJwmbIeH0LHTWhzK5Q5vQeN2xrEE1WGk21m+hE/bWGl2N
+         l8cQ==
+X-Gm-Message-State: ANoB5pk4YB2mW18WFjvuhyNDLJfwZjnB2lZ1p1ZbnBW9hYiszOtQ11l6
+        ZK235JtLnP9gmFiWw9A1gRwMItCKBJOWYw==
+X-Google-Smtp-Source: AA0mqf4MGMXQsd1mc/MxFUt+u3uLWv4Oy/01mFKD/PLMtVjf08N7BVrEO9u9Jr2/Zin1BUalzVCURQ==
+X-Received: by 2002:a05:6402:419:b0:461:e82b:bdff with SMTP id q25-20020a056402041900b00461e82bbdffmr14717759edv.370.1669021251799;
+        Mon, 21 Nov 2022 01:00:51 -0800 (PST)
+Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
+        by smtp.gmail.com with ESMTPSA id x20-20020a170906805400b007919ba4295esm4791867ejw.216.2022.11.21.01.00.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Nov 2022 01:00:51 -0800 (PST)
+References: <20221119130317.39158-1-jakub@cloudflare.com>
+ <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tom Parkin <tparkin@katalix.com>,
+        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
+        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
+        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
+Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
+ sk_callback_lock
+Date:   Mon, 21 Nov 2022 10:00:09 +0100
+In-reply-to: <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
+Message-ID: <871qpw8ywt.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce reset parameter to mtk_wed_tx_ring_setup signature.
-This is a preliminary patch to add Wireless Ethernet Dispatcher reset
-support.
+On Sat, Nov 19, 2022 at 10:52 PM +09, Tetsuo Handa wrote:
+> On 2022/11/19 22:03, Jakub Sitnicki wrote:
+>> When holding a reader-writer spin lock we cannot sleep. Calling
+>> setup_udp_tunnel_sock() with write lock held violates this rule, because we
+>> end up calling percpu_down_read(), which might sleep, as syzbot reports
+>> [1]:
+>> 
+>>  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9890
+>>  percpu_down_read include/linux/percpu-rwsem.h:49 [inline]
+>>  cpus_read_lock+0x1b/0x140 kernel/cpu.c:310
+>>  static_key_slow_inc+0x12/0x20 kernel/jump_label.c:158
+>>  udp_tunnel_encap_enable include/net/udp_tunnel.h:187 [inline]
+>>  setup_udp_tunnel_sock+0x43d/0x550 net/ipv4/udp_tunnel_core.c:81
+>>  l2tp_tunnel_register+0xc51/0x1210 net/l2tp/l2tp_core.c:1509
+>>  pppol2tp_connect+0xcdc/0x1a10 net/l2tp/l2tp_ppp.c:723
+>> 
+>> Trim the writer-side critical section for sk_callback_lock down to the
+>> minimum, so that it covers only operations on sk_user_data.
+>
+> This patch does not look correct.
+>
+> Since l2tp_validate_socket() checks that sk->sk_user_data == NULL with
+> sk->sk_callback_lock held, you need to call rcu_assign_sk_user_data(sk, tunnel)
+> before releasing sk->sk_callback_lock.
 
-Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/mediatek/mtk_wed.c  | 19 +++++++++++--------
- drivers/net/wireless/mediatek/mt76/dma.c |  2 +-
- include/linux/soc/mediatek/mtk_wed.h     |  8 ++++----
- 3 files changed, 16 insertions(+), 13 deletions(-)
+You're right. v2 posted:
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-index 07261aeacc56..927a74e4f51d 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-@@ -1181,7 +1181,8 @@ mtk_wed_ring_alloc(struct mtk_wed_device *dev, struct mtk_wed_ring *ring,
- }
- 
- static int
--mtk_wed_wdma_rx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
-+mtk_wed_wdma_rx_ring_setup(struct mtk_wed_device *dev, int idx, int size,
-+			   bool reset)
- {
- 	u32 desc_size = sizeof(struct mtk_wdma_desc) * dev->hw->version;
- 	struct mtk_wed_ring *wdma;
-@@ -1190,8 +1191,8 @@ mtk_wed_wdma_rx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
- 		return -EINVAL;
- 
- 	wdma = &dev->rx_wdma[idx];
--	if (mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE, desc_size,
--			       true))
-+	if (!reset && mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE,
-+					 desc_size, true))
- 		return -ENOMEM;
- 
- 	wdma_w32(dev, MTK_WDMA_RING_RX(idx) + MTK_WED_RING_OFS_BASE,
-@@ -1389,7 +1390,7 @@ mtk_wed_start(struct mtk_wed_device *dev, u32 irq_mask)
- 
- 	for (i = 0; i < ARRAY_SIZE(dev->rx_wdma); i++)
- 		if (!dev->rx_wdma[i].desc)
--			mtk_wed_wdma_rx_ring_setup(dev, i, 16);
-+			mtk_wed_wdma_rx_ring_setup(dev, i, 16, false);
- 
- 	mtk_wed_hw_init(dev);
- 	mtk_wed_configure_irq(dev, irq_mask);
-@@ -1495,7 +1496,8 @@ mtk_wed_attach(struct mtk_wed_device *dev)
- }
- 
- static int
--mtk_wed_tx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs)
-+mtk_wed_tx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs,
-+		      bool reset)
- {
- 	struct mtk_wed_ring *ring = &dev->tx_ring[idx];
- 
-@@ -1514,11 +1516,12 @@ mtk_wed_tx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs)
- 	if (WARN_ON(idx >= ARRAY_SIZE(dev->tx_ring)))
- 		return -EINVAL;
- 
--	if (mtk_wed_ring_alloc(dev, ring, MTK_WED_TX_RING_SIZE,
--			       sizeof(*ring->desc), true))
-+	if (!reset && mtk_wed_ring_alloc(dev, ring, MTK_WED_TX_RING_SIZE,
-+					 sizeof(*ring->desc), true))
- 		return -ENOMEM;
- 
--	if (mtk_wed_wdma_rx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE))
-+	if (mtk_wed_wdma_rx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE,
-+				       reset))
- 		return -ENOMEM;
- 
- 	ring->reg_base = MTK_WED_RING_TX(idx);
-diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
-index 8dca8d2447b7..3f8c0845fcca 100644
---- a/drivers/net/wireless/mediatek/mt76/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/dma.c
-@@ -632,7 +632,7 @@ mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q)
- 
- 	switch (type) {
- 	case MT76_WED_Q_TX:
--		ret = mtk_wed_device_tx_ring_setup(wed, ring, q->regs);
-+		ret = mtk_wed_device_tx_ring_setup(wed, ring, q->regs, false);
- 		if (!ret)
- 			q->wed_regs = wed->tx_ring[ring].reg_base;
- 		break;
-diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
-index 0bbba50cf929..32d87c701333 100644
---- a/include/linux/soc/mediatek/mtk_wed.h
-+++ b/include/linux/soc/mediatek/mtk_wed.h
-@@ -155,7 +155,7 @@ struct mtk_wed_device {
- struct mtk_wed_ops {
- 	int (*attach)(struct mtk_wed_device *dev);
- 	int (*tx_ring_setup)(struct mtk_wed_device *dev, int ring,
--			     void __iomem *regs);
-+			     void __iomem *regs, bool reset);
- 	int (*rx_ring_setup)(struct mtk_wed_device *dev, int ring,
- 			     void __iomem *regs);
- 	int (*txfree_ring_setup)(struct mtk_wed_device *dev,
-@@ -213,8 +213,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
- #define mtk_wed_device_active(_dev) !!(_dev)->ops
- #define mtk_wed_device_detach(_dev) (_dev)->ops->detach(_dev)
- #define mtk_wed_device_start(_dev, _mask) (_dev)->ops->start(_dev, _mask)
--#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs) \
--	(_dev)->ops->tx_ring_setup(_dev, _ring, _regs)
-+#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs, _reset) \
-+	(_dev)->ops->tx_ring_setup(_dev, _ring, _regs, _reset)
- #define mtk_wed_device_txfree_ring_setup(_dev, _regs) \
- 	(_dev)->ops->txfree_ring_setup(_dev, _regs)
- #define mtk_wed_device_reg_read(_dev, _reg) \
-@@ -240,7 +240,7 @@ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
- }
- #define mtk_wed_device_detach(_dev) do {} while (0)
- #define mtk_wed_device_start(_dev, _mask) do {} while (0)
--#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs) -ENODEV
-+#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV
- #define mtk_wed_device_txfree_ring_setup(_dev, _ring, _regs) -ENODEV
- #define mtk_wed_device_reg_read(_dev, _reg) 0
- #define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
--- 
-2.38.1
-
+https://lore.kernel.org/netdev/20221121085426.21315-1-jakub@cloudflare.com/
