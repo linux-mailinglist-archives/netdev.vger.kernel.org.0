@@ -2,43 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FC7063227A
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 13:41:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF856322FB
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbiKUMla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 07:41:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        id S229657AbiKUNCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 08:02:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiKUMl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 07:41:29 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46D2B7000;
-        Mon, 21 Nov 2022 04:41:27 -0800 (PST)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NG6SL4zJ5zHvRd;
-        Mon, 21 Nov 2022 20:40:50 +0800 (CST)
-Received: from huawei.com (10.67.175.21) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 21 Nov
- 2022 20:41:25 +0800
-From:   Li Zetao <lizetao1@huawei.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <lizetao1@huawei.com>, <rusty@rustcorp.com.au>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] virtio_net: Fix probe failed when modprobe virtio_net
-Date:   Mon, 21 Nov 2022 21:29:35 +0800
-Message-ID: <20221121132935.2032325-1-lizetao1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229902AbiKUNBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:01:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B586A2B24B
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:01:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CBF06119B
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 13:01:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D87AC433C1;
+        Mon, 21 Nov 2022 13:01:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669035706;
+        bh=qRKlkidoX5h2btWWYCf3stlYm+5gAB2qbUW2LWIt8J0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tPq/1b5sGLIdBIbYV4nQ7eHoISJtcx9eY4KoRz3zeP8W/Mztcc4PfAufgKNJrcEVd
+         51TimrGGQY+OegrWEMxB1Egfbtnfp+qaC9yz4YL9BP0Cq5nDAoFNta7dPmwscRchhS
+         nyv4OICAxOWZ0i50TBdeh8wYpBjtC4+GoaXqheAilM1GQQj0H3x5bTY4leyLTSU3yS
+         mj853lm0M7T0AKCmDozy13U0lcVxc9oW33lewB9DMrNhO62HsYYkVgbcccnoMeqSWi
+         uBlsbi4HKCzYvGbKSLd9nYm5w8QIdPQ3br63+DW350zsEri01U7F2tvltE7hB8+yl1
+         T1iAJJukDorgw==
+Date:   Mon, 21 Nov 2022 15:01:42 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3t2tsHDpxjnBAb/@unreal>
+References: <20221118104907.GR704954@gauss3.secunet.de>
+ <Y3p9LvAEQMAGeaCR@unreal>
+ <20221121094404.GU704954@gauss3.secunet.de>
+ <Y3tSdcA9GgpOJjgP@unreal>
+ <20221121110926.GV704954@gauss3.secunet.de>
+ <Y3td2OjeIL0GN7uO@unreal>
+ <20221121112521.GX704954@gauss3.secunet.de>
+ <Y3tiRnbfBcaH7bP0@unreal>
+ <Y3to7FYBwfkBSZYA@unreal>
+ <20221121124349.GZ704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.175.21]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221121124349.GZ704954@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -46,71 +63,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing the following test steps, an error was found:
-  step 1: modprobe virtio_net succeeded
-    # modprobe virtio_net        <-- OK
+On Mon, Nov 21, 2022 at 01:43:49PM +0100, Steffen Klassert wrote:
+> On Mon, Nov 21, 2022 at 02:02:52PM +0200, Leon Romanovsky wrote:
+> > 
+> > I think that something like this will do the trick.
+> > 
+> > diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> > index 5076f9d7a752..d1c9ef857755 100644
+> > --- a/net/xfrm/xfrm_state.c
+> > +++ b/net/xfrm/xfrm_state.c
+> > @@ -1090,6 +1090,28 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+> >         }
+> >  }
+> > 
+> > +static bool xfrm_state_and_policy_mixed(struct xfrm_state *x,
+> > +                                       struct xfrm_policy *p)
+> > +{
+> > +       /* Packet offload: both policy and SA should be offloaded */
+> > +       if (p->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
+> > +           x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
+> > +               return true;
+> > +
+> > +       if (p->xdo.type != XFRM_DEV_OFFLOAD_PACKET &&
+> > +           x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
+> > +               return true;
+> > +
+> > +       if (p->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
+> > +               return false;
+> > +
+> > +       /* Packet offload: both policy and SA should have same device */
+> > +       if (p->xdo.dev != x->xso.dev)
+> > +               return true;
+> > +
+> > +       return false;
+> > +}
+> > +
+> >  struct xfrm_state *
+> >  xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> >                 const struct flowi *fl, struct xfrm_tmpl *tmpl,
+> > @@ -1147,7 +1169,8 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> > 
+> >  found:
+> >         x = best;
+> > -       if (!x && !error && !acquire_in_progress) {
+> > +       if (!x && !error && !acquire_in_progress &&
+> > +           pol->xdo.type != XFRM_DEV_OFFLOAD_PACKET) {
+> >                 if (tmpl->id.spi &&
+> >                     (x0 = __xfrm_state_lookup(net, mark, daddr, tmpl->id.spi,
+> >                                               tmpl->id.proto, encap_family)) != NULL) {
+> > @@ -1228,7 +1251,14 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> >                         *err = -EAGAIN;
+> >                         x = NULL;
+> >                 }
+> > +               if (x && xfrm_state_and_policy_mixed(x, pol)) {
+> > +                       *err = -EINVAL;
+> > +                       x = NULL;
+> 
+> If policy and state do not match here, this means the lookup
+> returned the wrong state. The correct state might still sit
+> in the database. At this point, you should either have found
+> a matching state, or no state at all.
 
-  step 2: fault injection in register_netdevice()
-    # modprobe -r virtio_net     <-- OK
-    # ...
-      FAULT_INJECTION: forcing a failure.
-      name failslab, interval 1, probability 0, space 0, times 0
-      CPU: 0 PID: 3521 Comm: modprobe
-      Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-      Call Trace:
-       <TASK>
-       ...
-       should_failslab+0xa/0x20
-       ...
-       dev_set_name+0xc0/0x100
-       netdev_register_kobject+0xc2/0x340
-       register_netdevice+0xbb9/0x1320
-       virtnet_probe+0x1d72/0x2658 [virtio_net]
-       ...
-       </TASK>
-      virtio_net: probe of virtio0 failed with error -22
+I check for "x" because of "x = NULL" above.
 
-  step 3: modprobe virtio_net failed
-    # modprobe virtio_net        <-- failed
-      virtio_net: probe of virtio0 failed with error -2
-
-The root cause of the problem is that the queues are not
-disable on the error handling path when register_netdevice()
-fails in virtnet_probe(), resulting in an error "-ENOENT"
-returned in the next modprobe call in setup_vq().
-
-virtio_pci_modern_device uses virtqueues to send or
-receive message, and "queue_enable" records whether the
-queues are available. In vp_modern_find_vqs(), all queues
-will be selected and activated, but once queues are enabled
-there is no way to go back except reset.
-
-Fix it by reset virtio device on error handling path.
-
-Fixes: 1fcf0512c9c8 ("virtio_pci: modern driver")
-Signed-off-by: Li Zetao <lizetao1@huawei.com>
----
- drivers/net/virtio_net.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 7106932c6f88..86e52454b5b5 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -3949,12 +3949,11 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	return 0;
- 
- free_unregister_netdev:
--	virtio_reset_device(vdev);
--
- 	unregister_netdev(dev);
- free_failover:
- 	net_failover_destroy(vi->failover);
- free_vqs:
-+	virtio_reset_device(vdev);
- 	cancel_delayed_work_sync(&vi->refill);
- 	free_receive_page_frags(vi);
- 	virtnet_del_vqs(vi);
--- 
-2.25.1
-
+Thanks
