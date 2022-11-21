@@ -2,107 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B10632B1D
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 18:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9C7632B1F
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 18:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbiKURfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 12:35:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
+        id S230403AbiKURg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 12:36:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiKURfY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 12:35:24 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A178D22BB
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 09:35:23 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id 11so9174593iou.0
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 09:35:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NbXbP/OGIS8yFJO36lfD6OzaXaz25L4/fBO6OzyOg4w=;
-        b=blKpYCuyCMuL6Rb8tiVkxOP7nZI37FdvBJbxwEyWzprKX1sdqlAY5kZziaE9AhDpT/
-         y3vGA6D0/gQcrx6z3DR16iPx9cvV2aZgj0arIZf7g+FnuZ6YrAgsXV9tl7pcAZGDJzI9
-         wHwFc/0hzxumZbmgLWsN0fzO3VHJlwFVSTQbts6K7EYtY/4DPNDZII27JtTSDgvHrILA
-         HGy14S84BHony3kymD/ZRV6+XMAfkyukbxiuJiN3cVpzLOlj+cF93HVzvNa1L8vaikmD
-         LqqCw048zR3lL96IzurZjhpWP1vtC21pKRbL/Wp82/GqOd9Qgt0Si9VTATD8LaVjWf+U
-         +YVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NbXbP/OGIS8yFJO36lfD6OzaXaz25L4/fBO6OzyOg4w=;
-        b=b3kGPPjBo7SHmw+doL2CmjRO7oFtkaFwiIHmEBaWTVfKMPwpRb90/4YZLaVX6Q5tNX
-         r9CUrLyaxv9sAh2LOUKjxBssJTk7tppa/ogaWg2tjrz7UEyOFTTgJrH63L0PdjmIXrK6
-         KLQm270pDuwvpoQPuMBlqDia20i3AZhil2HeCi7wJ3KYKUcCEVl5/rzddipKN9afxWLn
-         8U5eimjyZygrF1yu0+jOVcSw5EzobK2j6ZuVOcw0dcV8SMsN5FrykTMYrLZGzawC7coy
-         65VvOOowu2Spu3zrtBgYfhF8oxlD7ChJR3cQ1BekBp1Ce/n88I95GSnb4TuVM8GCD0LV
-         nFRg==
-X-Gm-Message-State: ANoB5pnU6DUgej01z7cz+hTHHnoPfYGC6ITIB7AYzhb527bvOn0wPKTb
-        SsT8o0J6rquDblyTrJ6Jr/DqzQ==
-X-Google-Smtp-Source: AA0mqf44Saq0YN2zfJtZ/lfRbRtCkVg72HIlPrwencgASna47SdqI4iq17YSB9eCXjAMpRIq3Yh4/Q==
-X-Received: by 2002:a02:cc84:0:b0:363:aec4:2c0d with SMTP id s4-20020a02cc84000000b00363aec42c0dmr2286408jap.266.1669052122405;
-        Mon, 21 Nov 2022 09:35:22 -0800 (PST)
-Received: from [192.168.1.94] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id e16-20020a926910000000b00300e6efca96sm4069975ilc.55.2022.11.21.09.35.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 09:35:22 -0800 (PST)
-Message-ID: <529345e2-5e13-0549-0f6b-be8fe091b8ff@kernel.dk>
-Date:   Mon, 21 Nov 2022 10:35:20 -0700
+        with ESMTP id S230368AbiKURg4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 12:36:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EC9CEBAA;
+        Mon, 21 Nov 2022 09:36:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB5D7B8123A;
+        Mon, 21 Nov 2022 17:36:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2A1C433D6;
+        Mon, 21 Nov 2022 17:36:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669052212;
+        bh=NQjSwgUDT/c7wh4R1lYEuESLykGc+qlQRR0SRX0+IWg=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=WLl5HrN1dCOyEVFxsrOGEEpsb4jtJDNE9mdho8tJZTJhHLYgeC7+pAa4/FOdWVuPH
+         akH4eQ7I7btKQyB6QVpcUBPuV0X4x/JWEnmGIF4brKXQfSbMtAE3f4ucVRoO0+Onyo
+         c6cE14AcfKxwnvg8HNGdKQdZUbvNaD3rCg7L0y6iED/psh3M2G7vhsWaBQeoMiqwTu
+         YCTKqtl+Tki8tK1gV56ZD34Va/xo1IamvOaVv0Mq0lsWfnoNSZSKqi6qO9kl12wJmM
+         pxBMWrDaspS67iyqJBsf40OuPLAOUtRRIGC6QvEDFuUpa4+Bo+2pNtPVTYSVgiAm19
+         vapP3vwMN3zdA==
+Date:   Mon, 21 Nov 2022 18:36:50 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+cc:     Marcel Holtmann <marcel@holtmann.org>,
+        linux-bluetooth@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH hid-next] HID: fix BT_HIDP Kconfig dependencies
+In-Reply-To: <20221118084254.1880165-1-benjamin.tissoires@redhat.com>
+Message-ID: <nycvar.YFH.7.76.2211211836260.6045@cbobk.fhfr.pm>
+References: <20221118084254.1880165-1-benjamin.tissoires@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [RFC PATCH v4 2/3] io_uring: add api to set / get napi
- configuration.
-Content-Language: en-US
-To:     Stefan Roesch <shr@devkernel.io>, kernel-team@fb.com
-Cc:     olivier@trillion01.com, netdev@vger.kernel.org,
-        io-uring@vger.kernel.org, kuba@kernel.org
-References: <20221121172953.4030697-1-shr@devkernel.io>
- <20221121172953.4030697-3-shr@devkernel.io>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20221121172953.4030697-3-shr@devkernel.io>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/21/22 10:29 AM, Stefan Roesch wrote:
-> This adds an api to register the busy poll timeout from liburing. To be
-> able to use this functionality, the corresponding liburing patch is needed.
-> 
-> Signed-off-by: Stefan Roesch <shr@devkernel.io>
-> ---
->  include/linux/io_uring_types.h |  2 +-
->  include/uapi/linux/io_uring.h  | 11 +++++++
->  io_uring/io_uring.c            | 54 ++++++++++++++++++++++++++++++++++
->  3 files changed, 66 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/io_uring_types.h b/include/linux/io_uring_types.h
-> index 23993b5d3186..67b861305d97 100644
-> --- a/include/linux/io_uring_types.h
-> +++ b/include/linux/io_uring_types.h
-> @@ -274,8 +274,8 @@ struct io_ring_ctx {
->  	struct list_head	napi_list;	/* track busy poll napi_id */
->  	spinlock_t		napi_lock;	/* napi_list lock */
->  
-> -	unsigned int		napi_busy_poll_to; /* napi busy poll default timeout */
->  	bool			napi_prefer_busy_poll;
-> +	unsigned int		napi_busy_poll_to;
->  #endif
+On Fri, 18 Nov 2022, Benjamin Tissoires wrote:
 
-Why is this being moved? Seems unrelated, and it actually creates another
-hole rather than filling one as it did before.
+> If HID_SUPPORT is not selected, BT_HIDP should not be available, simply
+> because we disallowed the HID bus entirely.
+> 
+> Add a new depends and actually revert this file back to where it was 10
+> years ago before it was changed by commit 1f41a6a99476 ("HID: Fix the
+> generic Kconfig options").
+> 
+> Fixes: 25621bcc8976 ("HID: Kconfig: split HID support and hid-core compilation")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/r/202211181514.fLhaiS7o-lkp@intel.com/
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+
+Applied to for-6.2/hid-bpf.
 
 -- 
-Jens Axboe
-
+Jiri Kosina
+SUSE Labs
 
