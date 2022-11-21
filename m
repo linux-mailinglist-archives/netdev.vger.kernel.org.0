@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B8E632C6A
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 19:55:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 550FF632C6D
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 19:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbiKUSzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 13:55:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
+        id S229716AbiKUS4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 13:56:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbiKUSzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 13:55:35 -0500
+        with ESMTP id S230298AbiKUS4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 13:56:18 -0500
 Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C516859FFE;
-        Mon, 21 Nov 2022 10:55:34 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.west.internal (Postfix) with ESMTP id C81772B06839;
-        Mon, 21 Nov 2022 13:55:31 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 21 Nov 2022 13:55:32 -0500
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E8059FD1;
+        Mon, 21 Nov 2022 10:56:17 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.west.internal (Postfix) with ESMTP id B691B2B067A3;
+        Mon, 21 Nov 2022 13:56:16 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 21 Nov 2022 13:56:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1669056931; x=1669060531; bh=gbDYpRgXS/
-        PrcuHRn0a0spyU+256g08Jc7t1RMRjpMY=; b=mEKAq8maOOvvCGWF7PHAqUE842
-        n2sLV8kkeJPorytfzX8gzcSs/abpW6R46ncY6G3VknRTMV60EayaBmoMVeE1TH3V
-        d6+qZZGBAQD2bhZkMpAWKnOOEIn+b8Scju9s9+mJU5cksF/7K+6rYq0eb4fTfrFB
-        iVcZz3gVA6lQyZ8ZzGww5Hz5W7UbBTsEoi1rkvd+paGKtEVhHA+JnKABbhnFzJ+3
-        mBA/UaIKQY6HcmmzYkOJMmbtmUTm+ew8hOdQUlwfkGML5T3QcSlsCk2X0gO8cdWf
-        7WidvyhWqioxbfNrpzFbnYZ2mUCb85aQ82Vm+kunUP0VfcnC+6cKizMTWLnQ==
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1669056976; x=
+        1669060576; bh=YoN05QllSVrQN8AyvV30I2FiL3NjbAn7K1Lnt3fEf4w=; b=H
+        KpAzy2SA+H5kJMLyjq27etx3MUWxKKH1X4Rn96z9UI2hMfHdafyw0Ob09XqZZPag
+        FJTbD4QB5FzBf/L+s9lpB4s8FvZ4dAliRu8pJ45AQbjZx3KljuVkY33gxuTp9nLN
+        49N9IjR+vZYMgLa2uDskUC94YgO1nq3VxjcherB8fb0wpFsl+Ha16nGh5TBaJWd8
+        j6lHfmhcGr4LXe36twLP0yh6pWQC7vWhHj4AEFxF/ANLYgTvJXyUj/BhiY/S7uAA
+        mwrO0llOqJhqx9W5dcgSuD/wsINUxqNUDzwdXexpNcq6fsuEj/2HHfAWyMMYbpxp
+        jujRQUqNRRrOrONqHWbfg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1669056931; x=1669060531; bh=gbDYpRgXS/PrcuHRn0a0spyU+256
-        g08Jc7t1RMRjpMY=; b=TY/qDe5214oCum7xfL4dwa3yHtj9pnFDeVI+EwdQMN9M
-        D467oeNrkRY9+6DW936vAj/FsvbH1h7FIubkx0amwiIEpJCq/Tr21+y8xD6D7MNJ
-        gYH+nlYU7LqQfgRuXwwaB+sna4X0kM6FwPUvdn4GUMVxPYX0PnVGPBb/mroMJH7S
-        QPi/tQauCCEKjoSwo1p5xs8SxVUHaOuwnv5KW00/wGR3kRxIhXHUv22gm/I6bb3P
-        whDgQxnG/zxrMRUXZN/PWEbSIwnnzbPIEjqCyvTtMKMRxxID+w5L8Bq5ITUGyI3n
-        D+dMOJCPLkpBM4EdWq4HAoJOLRVaK8vNhkMROlFjYg==
-X-ME-Sender: <xms:o8l7Y-M1JgDiLtw2iWQQ8aTl18GI99BCynz_OfGUBjPMkG2pCjTiQw>
-    <xme:o8l7Y8__6DPxrr_7QOO63EVEGmFKfI3IHQ4PcKOWucd4Tk6x98aE0tqf8m5d4GVjp
-    KxxXG_V9HVy1WnNloY>
-X-ME-Received: <xmr:o8l7Y1Q9PbztpqZiHcYfEZFhFpLlBBaoL4vkdp5DoN1S5_fBFtL0fchbqeYsKQSWSBU8IFFgO9osiYVy0g_XV-J6_M5LihkA2tG2xYGNbw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheeigdduudekucetufdoteggodetrfdotf
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669056976; x=
+        1669060576; bh=YoN05QllSVrQN8AyvV30I2FiL3NjbAn7K1Lnt3fEf4w=; b=c
+        igh3x7x6gc4BhLKLk/CR/DBO4T9mvVLqXWe8MKmPOtDeK++6Uo3VdCtAg0FrYh/c
+        WfVKOFFvZKUBUUHYp42KJI0MvylpFwqkqBuGK0ICW9uAo/cCg9msrZSoEl6G24Lk
+        FGqVOxmYTg+UxY01dUyKITiaauF8NvHL3zPDemnA6QetABW7QTaSade2ua6aTEMX
+        TxsmrkwMsL0Gq/fS2xoVN5Xlr0KAMC5Itroa7nIj4++ogJDD3Td6u1pV+1suRGIb
+        glBoYdkj67tvzTRwwMo72kYZMoFCSSo1E5VvhsUHTtM+rtbsdCOExDalwWfOF3iN
+        hxtt+2B2rPDUNBAp6+mOw==
+X-ME-Sender: <xms:0Ml7Yxa9yyUqPF5B-9cg76jk1e2fNGKfw7bXmxvLvTrucP0adgvT_w>
+    <xme:0Ml7Y4Zi389lhwLeB5jdVPyFN3fsipHH_mGbA3Hg8v0der_hOwwEaa1guh2NQb6a8
+    bO3Zb-gwpyyU-hvH2Y>
+X-ME-Received: <xmr:0Ml7Yz-viTPjdzQf0NIArlBf1wpoCSuQaumhzRG6k3HYQ2miuNF0zVF65XqZxc8-h06j1e843BZk5KW_XPLwwDIJW4ZYAF1nXlRGTsw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrheeigdduudejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfhgfhffvvefuffgjkfggtgesthdtredttdertdenucfhrhhomhepufhtvghf
-    rghnucftohgvshgthhcuoehshhhrseguvghvkhgvrhhnvghlrdhioheqnecuggftrfgrth
-    htvghrnhepveelgffghfehudeitdehjeevhedthfetvdfhledutedvgeeikeeggefgudeg
-    uedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsh
-    hhrhesuggvvhhkvghrnhgvlhdrihho
-X-ME-Proxy: <xmx:o8l7Y-sAgNEm8BMcaY-n623AT0QOBY5QA_9ojRUe_t1Ji72vbfb8pQ>
-    <xmx:o8l7Y2dKOxNyknBSm36TNx-LxfauDExUKjxHobRCW68qv9OCOhUUrw>
-    <xmx:o8l7Yy3U8d6FfjFAN9iitg9h5b5gMhoh2L0JF79oPgBpMVaf8LLf4A>
-    <xmx:o8l7Y15s72sxIhLUkxuKdRip5e8RZiQrHlUh5yWxwtqQMmxe-18I5I1qQg8>
+    cujfgurhepfhgfhffvvefuffgjkfggtgfgsehtqhertddtreejnecuhfhrohhmpefuthgv
+    fhgrnhcutfhovghstghhuceoshhhrhesuggvvhhkvghrnhgvlhdrihhoqeenucggtffrrg
+    htthgvrhhnpeehleelhfeiieettddthefhteeiteefteehkedvtedtheefvdejtefhteev
+    leffffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hshhhrseguvghvkhgvrhhnvghlrdhioh
+X-ME-Proxy: <xmx:0Ml7Y_qjCRqVnTDVS2feAgGYkxZg9zOHkOZ2k0xzhpm0eoT2TpYdfQ>
+    <xmx:0Ml7Y8oxKfKZ5OUIPcasAtSMN4PGMDbi-klOBiqyfsZ7fxSt3-gTvQ>
+    <xmx:0Ml7Y1RLZLGGVI5fKpEXJMPAEIF13B4h8lfpsGIycBEgb5Cxxv6cNA>
+    <xmx:0Ml7Y1kqiLHheze5VTrHFCJaCOyh_4pak97Uorzo_Xv94_KE8FCBj5ACdfc>
 Feedback-ID: i84614614:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Nov 2022 13:55:30 -0500 (EST)
+ 21 Nov 2022 13:56:15 -0500 (EST)
 References: <20221121172953.4030697-1-shr@devkernel.io>
  <20221121172953.4030697-3-shr@devkernel.io>
- <33473b5b-5d56-a6cd-b95e-726d778502c9@kernel.dk>
+ <529345e2-5e13-0549-0f6b-be8fe091b8ff@kernel.dk>
 User-agent: mu4e 1.6.11; emacs 28.2.50
 From:   Stefan Roesch <shr@devkernel.io>
 To:     Jens Axboe <axboe@kernel.dk>
@@ -70,11 +72,12 @@ Cc:     kernel-team@fb.com, olivier@trillion01.com, netdev@vger.kernel.org,
         io-uring@vger.kernel.org, kuba@kernel.org
 Subject: Re: [RFC PATCH v4 2/3] io_uring: add api to set / get napi
  configuration.
-Date:   Mon, 21 Nov 2022 10:55:06 -0800
-In-reply-to: <33473b5b-5d56-a6cd-b95e-726d778502c9@kernel.dk>
-Message-ID: <qvqw5yf85e91.fsf@dev0134.prn3.facebook.com>
+Date:   Mon, 21 Nov 2022 10:55:43 -0800
+In-reply-to: <529345e2-5e13-0549-0f6b-be8fe091b8ff@kernel.dk>
+Message-ID: <qvqw1qpw5e7l.fsf@dev0134.prn3.facebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
         SPF_PASS,URIBL_BLACK autolearn=no autolearn_force=no version=3.4.6
@@ -87,41 +90,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Jens Axboe <axboe@kernel.dk> writes:
 
-> On 11/21/22 10:29?AM, Stefan Roesch wrote:
->> diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
->> index 4f432694cbed..cf0e7cc8ad2e 100644
->> --- a/io_uring/io_uring.c
->> +++ b/io_uring/io_uring.c
->> @@ -4122,6 +4122,48 @@ static __cold int io_register_iowq_max_workers(struct io_ring_ctx *ctx,
->>  	return ret;
->>  }
+> On 11/21/22 10:29=E2=80=AFAM, Stefan Roesch wrote:
+>> This adds an api to register the busy poll timeout from liburing. To be
+>> able to use this functionality, the corresponding liburing patch is need=
+ed.
 >>
->> +static int io_register_napi(struct io_ring_ctx *ctx, void __user *arg)
->> +{
->> +#ifdef CONFIG_NET_RX_BUSY_POLL
->> +	const struct io_uring_napi curr = {
->> +		.busy_poll_to = ctx->napi_busy_poll_to,
->> +	};
->> +	struct io_uring_napi *napi;
->> +
->> +	napi = memdup_user(arg, sizeof(*napi));
->> +	if (IS_ERR(napi))
->> +		return PTR_ERR(napi);
->> +
->> +	WRITE_ONCE(ctx->napi_busy_poll_to, napi->busy_poll_to);
->> +
->> +	kfree(napi);
->> +
->> +	if (copy_to_user(arg, &curr, sizeof(curr)))
->> +		return -EFAULT;
->> +
->> +	return 0;
->> +#else
->> +	return -EINVAL;
->> +#endif
->> +}
+>> Signed-off-by: Stefan Roesch <shr@devkernel.io>
+>> ---
+>>  include/linux/io_uring_types.h |  2 +-
+>>  include/uapi/linux/io_uring.h  | 11 +++++++
+>>  io_uring/io_uring.c            | 54 ++++++++++++++++++++++++++++++++++
+>>  3 files changed, 66 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/io_uring_types.h b/include/linux/io_uring_typ=
+es.h
+>> index 23993b5d3186..67b861305d97 100644
+>> --- a/include/linux/io_uring_types.h
+>> +++ b/include/linux/io_uring_types.h
+>> @@ -274,8 +274,8 @@ struct io_ring_ctx {
+>>  	struct list_head	napi_list;	/* track busy poll napi_id */
+>>  	spinlock_t		napi_lock;	/* napi_list lock */
+>>
+>> -	unsigned int		napi_busy_poll_to; /* napi busy poll default timeout */
+>>  	bool			napi_prefer_busy_poll;
+>> +	unsigned int		napi_busy_poll_to;
+>>  #endif
 >
-> This should return -EINVAL if any of the padding or reserved fields are
-> non-zero. If you don't do that, then it's not expendable in the future.
+> Why is this being moved? Seems unrelated, and it actually creates another
+> hole rather than filling one as it did before.
 
-The next version will have that change.
+That was not intended. The next version of the patch will restore the
+previous order.
