@@ -2,246 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B7F631C5E
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:07:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2701631C8C
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:11:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiKUJHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 04:07:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
+        id S229508AbiKUJLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 04:11:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiKUJHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:07:22 -0500
-X-Greylist: delayed 33674 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Nov 2022 01:07:21 PST
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8E26DCF7;
-        Mon, 21 Nov 2022 01:07:20 -0800 (PST)
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 2AL96qJA015443;
-        Mon, 21 Nov 2022 18:06:53 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 2AL96qJA015443
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1669021613;
-        bh=7X6L8AAqOEY0/aQSZIAWdIdlY5cPDBedn82Z4qDbDj8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bnQuxmb5RXwPbs0ZUhMNOeDUNzwY/Zhp3ZOHah5mrJYICSCcNUgGwoPPHUg+BegtS
-         J5pOR0SpnPPe0CMz2/5zaUv0EMjloyHCipCzvBpgWgP5oZYfVjposgLigRwcWb8oGH
-         xeOb1/sGcD/hs/x7q+hmiHfCDuj6GRApfYKFGMmLqqY9DyJ5GZx0cs3+8G+kxyV1yR
-         9mHIoaQAXnbD7ta3fVmQMGlWgic0DZ0vihX9O5QatbZekvvHcuOddmheF5BFtJR77J
-         RwVI/6juTSl6HHmeT2AMWdHS0zmsqqca7hX2ruiTisv54Z2WAkOry2L6gcFQEBPaOT
-         Fbfvz7BhBRCmQ==
-X-Nifty-SrcIP: [209.85.167.171]
-Received: by mail-oi1-f171.google.com with SMTP id v81so11911434oie.5;
-        Mon, 21 Nov 2022 01:06:53 -0800 (PST)
-X-Gm-Message-State: ANoB5pnsxr4EPOygI75y6gbxGkHkInPVXXh5B+WiciRX9Nqx8H3/d9UL
-        Z7NVhLEHi+1MyNx1FRY1mE5e3TfqYcLe+Fw6mvc=
-X-Google-Smtp-Source: AA0mqf4oPAKiL8xYOTZ6xdM9i5EZ8/eV9uwfHeFU3qXK3j1ph/tgydAxQdRN8Em2+5zt0pL3BK3LUpJUuqi8g1IvgKM=
-X-Received: by 2002:a05:6808:3009:b0:354:94a6:a721 with SMTP id
- ay9-20020a056808300900b0035494a6a721mr11148779oib.194.1669021611960; Mon, 21
- Nov 2022 01:06:51 -0800 (PST)
+        with ESMTP id S229921AbiKUJLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:11:40 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D356167C6
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:11:39 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id k19so13811270lji.2
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:11:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=TBqHLFX6njp5xQIYaT1aXOK/XEWwB7WcZYV3wFuiEmE=;
+        b=dYBSRLy6D2Tn32sIw6dTTu6d9402EYzy9u1ZjuxrP8lQB/6ighZah4JXw8EEP12YgA
+         zK0/zQ3mUoH/+qKU7t3TI/kQ6ZBMPP5nSvn3EGIQPlsA5pVwUi19y3/tt+cRoyiJxMFB
+         0qZlFv8NsFBMyonyN0MK48tTJOAgbQsGZzbi8z0yC5NaKdT2pBmNQjupFP0/VUFF8hUJ
+         fRloI4TqXT86DmwImBQrpISt8HibHsqfMb7VgjxiGxh7l6IDjO5OYvuDb9tzlXsu8VQi
+         KGPQksE2QVj4KiQQJ7M+2v2YJKrnsoKtFHwjKwFRDvlJ7B2aqaQ7bOZvXvv/wAmLSCJt
+         EFhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TBqHLFX6njp5xQIYaT1aXOK/XEWwB7WcZYV3wFuiEmE=;
+        b=o2afgGM766R7h/ucCl1pEp02lIG3BHZlMAoP3Dt+bKLC7tV4gtO6fVKX00TNQHwUju
+         cmW/vkvh7mkY/0pJWjuIbILqxO/qVTuf4blk+74IYXUFOCOpkivOh67Zm0OSurRb3h7f
+         bIoYHwVT6c1sIFmbqlIFL/zTXwqchJLhzRMxGHStoOV20No3BUmGREPXUuwGL0Oa+GgY
+         v+RtXX0DV8yYpPJtzVZOPmGYjQuP2PLQuBLtLNZq7E8nBgllxkkU+3grEjmXC8EnnA62
+         EtNIvcyU4rFjT+z7kTiwYwd+J44j10Zt/MF3E8Jdn1T4XRblM7USCH8fhLaehTAbZSUN
+         eCGg==
+X-Gm-Message-State: ANoB5pkjhmv+BMRn+XFucIrNNFjjyIUzgjSfw7dH0TWg4oOs2QQpC3P3
+        M/GdbayKIiDF+QaZsWnUTEA5sr5+/M5jbazs/Isetd8X3qU=
+X-Google-Smtp-Source: AA0mqf5W1MYzq8quFPlfN0qnjh4UMs6hZRDX2ESdkhI7m0uaf90C+HxQ52M72bDtsSZXsAAFp1Ifv9XbMNdlH4WUmZE=
+X-Received: by 2002:a2e:bcc5:0:b0:279:3851:1420 with SMTP id
+ z5-20020a2ebcc5000000b0027938511420mr3355637ljp.265.1669021897741; Mon, 21
+ Nov 2022 01:11:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-12-alobakin@pm.me>
- <Y3oxyUx0UkWVjGvn@smile.fi.intel.com> <961a7d7e-c917-86a8-097b-5961428e9ddc@redhat.com>
- <CAK7LNASxxzA1OEGuJR=BU=6G8XaatGx+gDCMe2s9Y3MRcwptYw@mail.gmail.com> <87852fc9-0757-7e58-35a2-90cccf970f5c@redhat.com>
-In-Reply-To: <87852fc9-0757-7e58-35a2-90cccf970f5c@redhat.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 21 Nov 2022 18:06:15 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAROUV6Z6L6yn4WiigfPRJTGU4+j0ujLt6nsxVp9+aCUzw@mail.gmail.com>
-Message-ID: <CAK7LNAROUV6Z6L6yn4WiigfPRJTGU4+j0ujLt6nsxVp9+aCUzw@mail.gmail.com>
-Subject: Re: [PATCH 11/18] platform/x86: int3472: fix object shared between
- several modules
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        linux-kbuild@vger.kernel.org, Nicolas Schier <nicolas@fjasle.eu>,
-        Jens Axboe <axboe@kernel.dk>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <CAMGffEmiu2BPx6=KW+7_+pzD-=hb8sX9r5cJ1_NovmrWG9xFuA@mail.gmail.com>
+ <Y0fJ6P943FuVZ3k1@unreal> <CAMGffEmFCgKv-6XNXjAKzr5g6TtT_=wj6H62AdGCUXx4hruxBQ@mail.gmail.com>
+ <Y0foGrlwnYX8lJX2@unreal> <CAMGffEnWmVb_qZFq6_rhZGH5q1Wq=n5ciJmp6uxxE6JLctywng@mail.gmail.com>
+ <CAMGffEmY6SGPg8KMMFCFKtv4wiF1VOtVnA7JPnXhz5LKrJsiJA@mail.gmail.com>
+ <82a62c6c-1616-ebb4-6308-ce56ec176cf3@nvidia.com> <CAMGffEk5=BWNVROHs185WfNH0DRiGpdQnS7aSgD74yjhT803tw@mail.gmail.com>
+ <CAMGffEkaZUDLfXQXK239Nt-DSxqkZpbC=8zUeubv0pxLuoMcZw@mail.gmail.com> <54c10b62-5d53-a3a5-48bb-74552e976067@nvidia.com>
+In-Reply-To: <54c10b62-5d53-a3a5-48bb-74552e976067@nvidia.com>
+From:   Jinpu Wang <jinpu.wang@ionos.com>
+Date:   Mon, 21 Nov 2022 10:11:26 +0100
+Message-ID: <CAMGffEk8_1AYbfcamfn9BCxDCvOaTm1ndNsVYsn+hz3GRH9B6w@mail.gmail.com>
+Subject: Re: [BUG] mlx5_core general protection fault in mlx5_cmd_comp_handler
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>, Shay Drory <shayd@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 5:12 PM Hans de Goede <hdegoede@redhat.com> wrote:
+On Tue, Nov 15, 2022 at 5:41 PM Moshe Shemesh <moshe@nvidia.com> wrote:
 >
-> Hi,
 >
-> On 11/21/22 00:45, Masahiro Yamada wrote:
-> > On Mon, Nov 21, 2022 at 5:55 AM Hans de Goede <hdegoede@redhat.com> wrote:
-> >>
-> >> Hi,
-> >>
-> >> On 11/20/22 14:55, Andy Shevchenko wrote:
-> >>> On Sat, Nov 19, 2022 at 11:08:17PM +0000, Alexander Lobakin wrote:
-> >>>> common.o is linked to both intel_skl_int3472_{discrete,tps68470}:
+> On 11/15/2022 5:08 PM, Jinpu Wang wrote:
+> > On Tue, Nov 15, 2022 at 6:46 AM Jinpu Wang <jinpu.wang@ionos.com> wrote:
+> >> On Tue, Nov 15, 2022 at 6:15 AM Moshe Shemesh <moshe@nvidia.com> wrote:
+> >>>
+> >>> On 11/9/2022 11:51 AM, Jinpu Wang wrote:
+> >>>> On Mon, Oct 17, 2022 at 7:54 AM Jinpu Wang <jinpu.wang@ionos.com> wrote:
+> >>>>> On Thu, Oct 13, 2022 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >>>>>> On Thu, Oct 13, 2022 at 10:32:55AM +0200, Jinpu Wang wrote:
+> >>>>>>> On Thu, Oct 13, 2022 at 10:18 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >>>>>>>> On Wed, Oct 12, 2022 at 01:55:55PM +0200, Jinpu Wang wrote:
+> >>>>>>>>> Hi Leon, hi Saeed,
+> >>>>>>>>>
+> >>>>>>>>> We have seen crashes during server shutdown on both kernel 5.10 and
+> >>>>>>>>> kernel 5.15 with GPF in mlx5 mlx5_cmd_comp_handler function.
+> >>>>>>>>>
+> >>>>>>>>> All of the crashes point to
+> >>>>>>>>>
+> >>>>>>>>> 1606                         memcpy(ent->out->first.data,
+> >>>>>>>>> ent->lay->out, sizeof(ent->lay->out));
+> >>>>>>>>>
+> >>>>>>>>> I guess, it's kind of use after free for ent buffer. I tried to reprod
+> >>>>>>>>> by repeatedly reboot the testing servers, but no success  so far.
+> >>>>>>>> My guess is that command interface is not flushed, but Moshe and me
+> >>>>>>>> didn't see how it can happen.
+> >>>>>>>>
+> >>>>>>>>     1206         INIT_DELAYED_WORK(&ent->cb_timeout_work, cb_timeout_handler);
+> >>>>>>>>     1207         INIT_WORK(&ent->work, cmd_work_handler);
+> >>>>>>>>     1208         if (page_queue) {
+> >>>>>>>>     1209                 cmd_work_handler(&ent->work);
+> >>>>>>>>     1210         } else if (!queue_work(cmd->wq, &ent->work)) {
+> >>>>>>>>                             ^^^^^^^ this is what is causing to the splat
+> >>>>>>>>     1211                 mlx5_core_warn(dev, "failed to queue work\n");
+> >>>>>>>>     1212                 err = -EALREADY;
+> >>>>>>>>     1213                 goto out_free;
+> >>>>>>>>     1214         }
+> >>>>>>>>
+> >>>>>>>> <...>
+> >>>>>>>>> Is this problem known, maybe already fixed?
+> >>>>>>>> I don't see any missing Fixes that exist in 6.0 and don't exist in 5.5.32.
+> >>>>>> Sorry it is 5.15.32
+> >>>>>>
+> >>>>>>>> Is it possible to reproduce this on latest upstream code?
+> >>>>>>> I haven't been able to reproduce it, as mentioned above, I tried to
+> >>>>>>> reproduce by simply reboot in loop, no luck yet.
+> >>>>>>> do you have suggestions to speedup the reproduction?
+> >>>>>> Maybe try to shutdown during filling command interface.
+> >>>>>> I think that any query command will do the trick.
+> >>>>> Just an update.
+> >>>>> I tried to run "saquery" in a loop in one session and do "modproble -r
+> >>>>> mlx5_ib && modprobe mlx5_ib" in loop in another session during last
+> >>>>> days , but still no luck. --c
+> >>>>>>> Once I can reproduce, I can also try with kernel 6.0.
+> >>>>>> It will be great.
+> >>>>>>
+> >>>>>> Thanks
+> >>>>> Thanks!
+> >>>> Just want to mention, we see more crash during reboot, all the crash
+> >>>> we saw are all
+> >>>> Intel  Intel(R) Xeon(R) Gold 6338 CPU. We use the same HCA on
+> >>>> different servers. So I suspect the bug is related to Ice Lake server.
 > >>>>
-> >>>>> scripts/Makefile.build:252: ./drivers/platform/x86/intel/int3472/Makefile:
-> >>>>> common.o is added to multiple modules: intel_skl_int3472_discrete
-> >>>>> intel_skl_int3472_tps68470
-> >>>>
-> >>>> Although both drivers share one Kconfig option
-> >>>> (CONFIG_INTEL_SKL_INT3472), it's better to not link one object file
-> >>>> into several modules (and/or vmlinux).
-> >>>> Under certain circumstances, such can lead to the situation fixed by
-> >>>> commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects").
-> >>>>
-> >>>> Introduce the new module, intel_skl_int3472_common, to provide the
-> >>>> functions from common.o to both discrete and tps68470 drivers. This
-> >>>> adds only 3 exports and doesn't provide any changes to the actual
-> >>>> code.
-> >>
-> >> Replying to Andy's reply here since I never saw the original submission
-> >> which was not Cc-ed to platform-driver-x86@vger.kernel.org .
-> >>
-> >> As you mention already in the commit msg, the issue from:
-> >>
-> >> commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects")
-> >>
-> >> is not an issue here since both modules sharing the .o file are
-> >> behind the same Kconfig option.
-> >>
-> >> So there is not really an issue here and common.o is tiny, so
-> >> small chances are it does not ever increase the .ko size
-> >> when looking a the .ko size rounded up to a multiple of
-> >> the filesystem size.
-> >>
-> >> At the same time adding an extra module does come with significant
-> >> costs, it will eat up at least 1 possibly more then 1 fs blocks
-> >> (I don't know what the module header size overhead is).
-> >>
-> >> And it needs to be loaded separately and module loading is slow;
-> >> and it will grow the /lib/modules/<kver>/modules.* sizes.
-> >>
-> >> So nack from me for this patch, since I really don't see
-> >> it adding any value.
+> >>>> In case it matters, here is lspci attached.
+> >>>
+> >>> Please try the following change on 5.15.32, let me know if it solves the
+> >>> failure :
+> >> Thank you Moshe, I will test it on affected servers and report back the result.
+> > Hi Moshe,
 > >
-> >
-> >
-> >
-> > This does have a value.
-> >
-> > This clarifies the ownership of the common.o,
-> > in other words, makes KBUILD_MODNAME deterministic.
-> >
-> >
-> > If an object belongs to a module,
-> > KBUILD_MODNAME is defined as the module name.
-> >
-> > If an object is always built-in,
-> > KBUILD_MODNAME is defined as the basename of the object.
-> >
-> >
-> >
-> > Here is a question:
-> > if common.o is shared by two modules intel_skl_int3472_discrete
-> > and intel_skl_int3472_tps68470, what should KBUILD_MODNAME be?
-> >
-> >
-> > I see some patch submissions relying on the assumption that
-> > KBUILD_MODNAME is unique.
-> > We cannot determine KBUILD_MODNAME correctly if an object is shared
-> > by multiple modules.
-> >
-> >
-> >
-> >
-> >
-> >
-> > BTW, this patch is not the way I suggested.
-> > The Suggested-by should not have been there
-> > (or at least Reported-by)
-> >
-> >
-> > You argued "common.o is tiny", so I would vote for
-> > making them inline functions, like
-> >
-> >
-> > https://lore.kernel.org/linux-kbuild/20221119225650.1044591-2-alobakin@pm.me/T/#u
->
-> Yes just moving the contents of common.c to static inline helpers in common.h
-> would be much better.
->
-> If someone creates such a patch, please do not forget to Cc
-> platform-driver-x86@vger.kernel.org
-
-
-
-I think this patch series should be split
-and sent to each sub-system instead of kbuild.
-
-
-
-
-
-
-> Regards,
->
-> Hans
+> > I've been running the reboot tests on 4 affected machines in parallel
+> > for more than 6 hours,  in total did 300+ reboot, I can no longer
+> > reproduce the crash. without the fix, I was able to reproduce 2 times
+> > in 20 reboots.
+> > So I think the bug is fixed.
 >
 >
+> Great !
+>
+> > I also did some basic functional test via RNBD/IPOIB, all look good.
+> > Tested-by: Jack Wang <jinpu.wang@ionos.com>
+> > Please provide a formal fix.
+>
+>
+> Will do.
+Hi Moshe,
+A gentle ping, when will you send the fix?
+
+Thanks!
+
+>
+> Thanks!
 >
 > >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >> Regards,
-> >>
-> >> Hans
-> >>
-> >>
-> >>
-> >>
-> >>
+> > Thx!
+> >>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> >>> b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> >>> index e06a6104e91f..d45ca9c52a21 100644
+> >>> --- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> >>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> >>> @@ -971,6 +971,7 @@ static void cmd_work_handler(struct work_struct *work)
+> >>>                   cmd_ent_get(ent);
+> >>>           set_bit(MLX5_CMD_ENT_STATE_PENDING_COMP, &ent->state);
 > >>>
-> >>> ...
+> >>> +       cmd_ent_get(ent); /* for the _real_ FW event on completion */
+> >>>           /* Skip sending command to fw if internal error */
+> >>>           if (mlx5_cmd_is_down(dev) || !opcode_allowed(&dev->cmd, ent->op)) {
+> >>>                   u8 status = 0;
+> >>> @@ -984,7 +985,6 @@ static void cmd_work_handler(struct work_struct *work)
+> >>>                   return;
+> >>>           }
 > >>>
-> >>>> +MODULE_IMPORT_NS(INTEL_SKL_INT3472);
-> >>>> +
+> >>> -       cmd_ent_get(ent); /* for the _real_ FW event on completion */
+> >>>           /* ring doorbell after the descriptor is valid */
+> >>>           mlx5_core_dbg(dev, "writing 0x%x to command doorbell\n", 1 <<
+> >>> ent->idx);
+> >>>           wmb();
+> >>> @@ -1598,8 +1598,8 @@ static void mlx5_cmd_comp_handler(struct
+> >>> mlx5_core_dev *dev, u64 vec, bool force
+> >>>                                   cmd_ent_put(ent); /* timeout work was
+> >>> canceled */
 > >>>
-> >>> Redundant blank line. You may put it to be last MODULE_*() in the file, if you
-> >>> think it would be more visible.
+> >>>                           if (!forced || /* Real FW completion */
+> >>> -                           pci_channel_offline(dev->pdev) || /* FW is
+> >>> inaccessible */
+> >>> -                           dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
+> >>> +                            mlx5_cmd_is_down(dev) || /* No real FW
+> >>> completion is expected */
+> >>> +                            !opcode_allowed(cmd, ent->op))
+> >>>                                   cmd_ent_put(ent);
 > >>>
-> >>>>  MODULE_DESCRIPTION("Intel SkyLake INT3472 ACPI Discrete Device Driver");
-> >>>>  MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
-> >>>>  MODULE_LICENSE("GPL v2");
+> >>>                           ent->ts2 = ktime_get_ns();
 > >>>
-> >>> ...
-> >>>
-> >>>> +MODULE_IMPORT_NS(INTEL_SKL_INT3472);
-> >>>> +
-> >>>>  MODULE_DESCRIPTION("Intel SkyLake INT3472 ACPI TPS68470 Device Driver");
-> >>>>  MODULE_AUTHOR("Daniel Scally <djrscally@gmail.com>");
-> >>>>  MODULE_LICENSE("GPL v2");
-> >>>
-> >>> Ditto. And the same to all your patches.
-> >>>
-> >>
-> >
-> >
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+> >>>> Thx!
