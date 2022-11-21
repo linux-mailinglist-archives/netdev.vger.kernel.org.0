@@ -2,202 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51930631A6F
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 08:39:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD597631AF2
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 09:06:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229871AbiKUHjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 02:39:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
+        id S229730AbiKUIGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 03:06:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiKUHjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 02:39:39 -0500
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAFC13DC4;
-        Sun, 20 Nov 2022 23:39:38 -0800 (PST)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4NFzmj33PDz4f3v7Z;
-        Mon, 21 Nov 2022 15:39:33 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP4 (Coremail) with SMTP id gCh0CgC329g0K3tj2M2XAw--.53628S9;
-        Mon, 21 Nov 2022 15:39:36 +0800 (CST)
-From:   Ye Bin <yebin@huaweicloud.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        linux_oss@crudebyte.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, yebin10@huawei.com
-Subject: [PATCH 5/5] 9p: refactor 'post_recv()'
-Date:   Mon, 21 Nov 2022 16:00:49 +0800
-Message-Id: <20221121080049.3850133-6-yebin@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20221121080049.3850133-1-yebin@huaweicloud.com>
-References: <20221121080049.3850133-1-yebin@huaweicloud.com>
+        with ESMTP id S229598AbiKUIGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 03:06:41 -0500
+Received: from out28-75.mail.aliyun.com (out28-75.mail.aliyun.com [115.124.28.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3121409D;
+        Mon, 21 Nov 2022 00:06:39 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07487702|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00576339-0.106031-0.888205;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047188;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.QCzvKBK_1669017959;
+Received: from sunhua.motor-comm.com(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QCzvKBK_1669017959)
+          by smtp.aliyun-inc.com;
+          Mon, 21 Nov 2022 16:06:37 +0800
+From:   Frank <Frank.Sae@motor-comm.com>
+To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     yinghong.zhang@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>
+Subject: [PATCH net-next] net: phy: add Motorcomm YT8531S phy id.
+Date:   Mon, 21 Nov 2022 16:06:38 +0800
+Message-Id: <20221121080638.547-1-Frank.Sae@motor-comm.com>
+X-Mailer: git-send-email 2.31.0.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgC329g0K3tj2M2XAw--.53628S9
-X-Coremail-Antispam: 1UD129KBjvJXoWxJF4fGr1rKF1fJFykAFyUAwb_yoWrXr1fpF
-        4fuwsIyrZ0qF17Cw4kKa4UZF12kr4rCa1rG3y8Kws3JFn8trn5KF4jyryFgFWxuFZ7J3WF
-        yr1DKFWruF1UZrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBab4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
-        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
-        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267
-        AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E
-        14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7
-        xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Y
-        z7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2
-        Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
-        6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0x
-        vE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwCI42IY
-        6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aV
-        CY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07UZo7tUUUUU=
-X-CM-SenderInfo: p1hex046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+We added patch for motorcomm.c to support YT8531S. This patch has
+been tested on AM335x platform which has one YT8531S interface
+card and passed all test cases.
+The tested cases indluding: YT8531S UTP function with support of
+10M/100M/1000M; YT8531S Fiber function with support of 100M/1000M;
+and YT8531S Combo function that supports auto detection of media type.
+ 
+Since most functions of YT8531S are similar to YT8521 and we reuse some
+codes for YT8521 in the patch file.
 
-Refactor 'post_recv()', move receive resource request from 'rdma_request()' to
-'post_recv()'.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Frank <Frank.Sae@motor-comm.com>
 ---
- net/9p/trans_rdma.c | 77 +++++++++++++++++++++++----------------------
- 1 file changed, 39 insertions(+), 38 deletions(-)
+ drivers/net/phy/Kconfig     |  2 +-
+ drivers/net/phy/motorcomm.c | 50 ++++++++++++++++++++++++++++++++++---
+ 2 files changed, 47 insertions(+), 5 deletions(-)
 
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index bb917389adc9..78452c289f35 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -380,19 +380,40 @@ static void rdma_destroy_trans(struct p9_trans_rdma *rdma)
- 	kfree(rdma);
- }
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 040c8bf6d05b..af00cf44cd97 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -260,7 +260,7 @@ config MOTORCOMM_PHY
+ 	tristate "Motorcomm PHYs"
+ 	help
+ 	  Enables support for Motorcomm network PHYs.
+-	  Currently supports the YT8511, YT8521 Gigabit Ethernet PHYs.
++	  Currently supports the YT8511, YT8521, YT8531S Gigabit Ethernet PHYs.
  
--static int
--post_recv(struct p9_client *client, struct p9_rdma_context *c)
-+static int post_recv(struct p9_client *client, struct p9_req_t *req)
- {
- 	struct p9_trans_rdma *rdma = client->trans;
-+	struct p9_rdma_context *c = NULL;
- 	struct ib_recv_wr wr;
- 	struct ib_sge sge;
--	int err = -EIO;
-+	int err;
+ config NATIONAL_PHY
+ 	tristate "National Semiconductor PHYs"
+diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+index bd1ab5d0631f..4c46c3edc0d9 100644
+--- a/drivers/net/phy/motorcomm.c
++++ b/drivers/net/phy/motorcomm.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ /*
+- * Motorcomm 8511/8521 PHY driver.
++ * Motorcomm 8511/8521/8531S PHY driver.
+  *
+  * Author: Peter Geis <pgwipeout@gmail.com>
+  * Author: Frank <Frank.Sae@motor-comm.com>
+@@ -13,8 +13,9 @@
+ 
+ #define PHY_ID_YT8511		0x0000010a
+ #define PHY_ID_YT8521				0x0000011A
++#define PHY_ID_YT8531S				0x4F51E91A
+ 
+-/* YT8521 Register Overview
++/* YT8521/YT8531S Register Overview
+  *	UTP Register space	|	FIBER Register space
+  *  ------------------------------------------------------------
+  * |	UTP MII			|	FIBER MII		|
+@@ -147,7 +148,7 @@
+ #define YT8521_LINK_TIMER_CFG2_REG		0xA5
+ #define YT8521_LTCR_EN_AUTOSEN			BIT(15)
+ 
+-/* 0xA000, 0xA001, 0xA003 ,and 0xA006 ~ 0xA00A  are common ext registers
++/* 0xA000, 0xA001, 0xA003 , 0xA006 ~ 0xA00A and 0xA012 are common ext registers
+  * of yt8521 phy. There is no need to switch reg space when operating these
+  * registers.
+  */
+@@ -221,6 +222,9 @@
+  */
+ #define YTPHY_WCR_TYPE_PULSE			BIT(0)
+ 
++#define YT8531S_SYNCE_CFG_REG			0xA012
++#define YT8531S_SCR_SYNCE_ENABLE		BIT(6)
 +
-+	c = kmalloc(sizeof *c, GFP_NOFS);
-+	if (!c) {
-+		err = -ENOMEM;
-+		goto error;
-+	}
-+	c->rc.sdata = req->rc.sdata;
-+
-+	/*
-+	 * Post a receive buffer for this request. We need to ensure
-+	 * there is a reply buffer available for every outstanding
-+	 * request. A flushed request can result in no reply for an
-+	 * outstanding request, so we must keep a count to avoid
-+	 * overflowing the RQ.
-+	 */
-+	if (down_interruptible(&rdma->rq_sem)) {
-+		err = -EINTR;
-+		goto error;
-+	}
+ /* Extended Register  end */
  
- 	c->busa = ib_dma_map_single(rdma->cm_id->device,
- 				    c->rc.sdata, client->msize,
- 				    DMA_FROM_DEVICE);
--	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa))
--		goto error;
-+	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa)) {
-+		err = -EIO;
-+		goto sem_error;
-+	}
- 
- 	c->cqe.done = recv_done;
- 
-@@ -405,15 +426,18 @@ post_recv(struct p9_client *client, struct p9_rdma_context *c)
- 	wr.sg_list = &sge;
- 	wr.num_sge = 1;
- 	err = ib_post_recv(rdma->qp, &wr, NULL);
--	if (err) {
--		ib_dma_unmap_single(rdma->cm_id->device, c->busa,
--				    client->msize, DMA_FROM_DEVICE);
--		goto error;
--	}
-+	if (err)
-+		goto mapping_error;
-+
+ struct yt8521_priv {
+@@ -647,6 +651,26 @@ static int yt8521_probe(struct phy_device *phydev)
  	return 0;
-- error:
-+
-+mapping_error:
-+	ib_dma_unmap_single(rdma->cm_id->device, c->busa,
-+			    client->msize, DMA_FROM_DEVICE);
-+sem_error:
- 	up(&rdma->rq_sem);
--	p9_debug(P9_DEBUG_ERROR, "EIO\n");
-+error:
-+	kfree(c);
- 	return err;
  }
  
-@@ -481,9 +505,8 @@ static int post_send(struct p9_client *client, struct p9_req_t *req)
- static int rdma_request(struct p9_client *client, struct p9_req_t *req)
- {
- 	struct p9_trans_rdma *rdma = client->trans;
--	int err = 0;
- 	unsigned long flags;
--	struct p9_rdma_context *rpl_context = NULL;
-+	int err;
++/**
++ * yt8531s_probe() - read chip config then set suitable polling_mode
++ * @phydev: a pointer to a &struct phy_device
++ *
++ * returns 0 or negative errno code
++ */
++static int yt8531s_probe(struct phy_device *phydev)
++{
++	int ret;
++
++	/* Disable SyncE clock output by default */
++	ret = ytphy_modify_ext_with_lock(phydev, YT8531S_SYNCE_CFG_REG,
++					 YT8531S_SCR_SYNCE_ENABLE, 0);
++	if (ret < 0)
++		return ret;
++
++	/* same as yt8521_probe */
++	return yt8521_probe(phydev);
++}
++
+ /**
+  * ytphy_utp_read_lpa() - read LPA then setup lp_advertising for utp
+  * @phydev: a pointer to a &struct phy_device
+@@ -1750,11 +1774,28 @@ static struct phy_driver motorcomm_phy_drvs[] = {
+ 		.suspend	= yt8521_suspend,
+ 		.resume		= yt8521_resume,
+ 	},
++	{
++		PHY_ID_MATCH_EXACT(PHY_ID_YT8531S),
++		.name		= "YT8531S Gigabit Ethernet",
++		.get_features	= yt8521_get_features,
++		.probe		= yt8531s_probe,
++		.read_page	= yt8521_read_page,
++		.write_page	= yt8521_write_page,
++		.get_wol	= ytphy_get_wol,
++		.set_wol	= ytphy_set_wol,
++		.config_aneg	= yt8521_config_aneg,
++		.aneg_done	= yt8521_aneg_done,
++		.config_init	= yt8521_config_init,
++		.read_status	= yt8521_read_status,
++		.soft_reset	= yt8521_soft_reset,
++		.suspend	= yt8521_suspend,
++		.resume		= yt8521_resume,
++	},
+ };
  
- 	/* When an error occurs between posting the recv and the send,
- 	 * there will be a receive context posted without a pending request.
-@@ -505,27 +528,7 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
- 		}
- 	}
+ module_phy_driver(motorcomm_phy_drvs);
  
--	/* Allocate an fcall for the reply */
--	rpl_context = kmalloc(sizeof *rpl_context, GFP_NOFS);
--	if (!rpl_context) {
--		err = -ENOMEM;
--		goto recv_error;
--	}
--	rpl_context->rc.sdata = req->rc.sdata;
--
--	/*
--	 * Post a receive buffer for this request. We need to ensure
--	 * there is a reply buffer available for every outstanding
--	 * request. A flushed request can result in no reply for an
--	 * outstanding request, so we must keep a count to avoid
--	 * overflowing the RQ.
--	 */
--	if (down_interruptible(&rdma->rq_sem)) {
--		err = -EINTR;
--		goto recv_error;
--	}
--
--	err = post_recv(client, rpl_context);
-+	err = post_recv(client, req);
- 	if (err) {
- 		p9_debug(P9_DEBUG_ERROR, "POST RECV failed: %d\n", err);
- 		goto recv_error;
-@@ -547,9 +550,7 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
- 	}
- 	return err;
+-MODULE_DESCRIPTION("Motorcomm 8511/8521 PHY driver");
++MODULE_DESCRIPTION("Motorcomm 8511/8521/8531S PHY driver");
+ MODULE_AUTHOR("Peter Geis");
+ MODULE_AUTHOR("Frank");
+ MODULE_LICENSE("GPL");
+@@ -1762,6 +1803,7 @@ MODULE_LICENSE("GPL");
+ static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+ 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
+ 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8521) },
++	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531S) },
+ 	{ /* sentinal */ }
+ };
  
-- /* Handle errors that happened during or while preparing post_recv(): */
-- recv_error:
--	kfree(rpl_context);
-+recv_error:
- 	spin_lock_irqsave(&rdma->req_lock, flags);
- 	if (err != -EINTR && rdma->state < P9_RDMA_CLOSING) {
- 		rdma->state = P9_RDMA_CLOSING;
 -- 
-2.31.1
+2.31.0.windows.1
 
