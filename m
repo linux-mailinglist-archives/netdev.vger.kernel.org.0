@@ -2,76 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7DB6632540
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 15:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 517CA632563
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 15:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiKUONf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 09:13:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
+        id S229740AbiKUORm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 09:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiKUONM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 09:13:12 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654EB10B6F
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 06:11:44 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id r8so4033896ljn.8
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 06:11:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DLuxvrtTwLpjQCdZkBOlAPtT4PuOt7o3XUb4SWGRYeY=;
-        b=ZuqIlZt0gN7LvLqLHOeZLr594lzujfZhePYXLj7XlVvXEh5WITMpD591Pq2VU29rHG
-         qijZY9bH3snSAbYuWhIyeTjy+25Qi8B4jI61PI/8sGPRdx8u7w3ticNnDDxNQZwlXa+j
-         SKG9LvQISh3zQdoL0fCuB7HEPw1QCi1qw4XrytLg25PaQQvKGGipPbnMmxMvyKx5axjU
-         bOaHkPdYT100zPMWPmfXQQ83R/MHsb1a4r8liFo63VSkdvfLXYGyx1GR7cXdZkNkdROa
-         DMPy1VfUNWFa9H8ryyhvmQlRfU+DHoktopyu/vUOH7arpV9zjJ68/JRbrTnMIhOkeqNN
-         LWqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DLuxvrtTwLpjQCdZkBOlAPtT4PuOt7o3XUb4SWGRYeY=;
-        b=HvnLiBMdTW2BNRUBIo8jbyN4w1YPc2dDFRHjVO0aTHCwtn967jsK1H0G0H1RJP1L1i
-         jVVDl+njWC6vzNfSznb4oZ5sWsoAsQlLwxDCWSw2mEelJDBcNV+4KEp58D/M45RAp9pE
-         6cBTwWJZ4iqSO3blY/NMnaIJT2OtfGpJR0VJSiytNGbPG32+XNV9Ut9aspBk3OxWHn/w
-         NbWRzADUvSt3MudMbYdG+sjfXrUO0DGZlGEZVZoB4KfWfIFEP65rrKwJbMSs2lhmxIdV
-         ap4WwUNxGOs6ioitz62939UAB3F3frLabdY/iW4A0EgG0jE9TKAj8cfwXda0cXtFJkWX
-         iKxQ==
-X-Gm-Message-State: ANoB5pl9LR5d90flbyFd1br3yzA4UEDu1dbRjT+lIqjYuSawjEjm03Ui
-        1LQcYV2Dp4CpYN7QHB2Ot5yqo7l3Q200k6s6beU=
-X-Google-Smtp-Source: AA0mqf4qfdtst8qQg8lEmr88yBL5bETz0MccOhOZe362+u+PZd90AC+0Bott4vk+lcf7WylI0p4kOqTs7j1Ky/GY1j4=
-X-Received: by 2002:a2e:a5c5:0:b0:277:155d:28c4 with SMTP id
- n5-20020a2ea5c5000000b00277155d28c4mr2041861ljp.123.1669039902582; Mon, 21
- Nov 2022 06:11:42 -0800 (PST)
+        with ESMTP id S229914AbiKUORM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 09:17:12 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC43310B49;
+        Mon, 21 Nov 2022 06:17:10 -0800 (PST)
+Received: (Authenticated sender: didi.debian@cknow.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 931F710000B;
+        Mon, 21 Nov 2022 14:17:01 +0000 (UTC)
+From:   Diederik de Haas <didi.debian@cknow.org>
+To:     "Bonaccorso, Salvatore" <carnil@debian.org>,
+        "Kumar, M Chetan" <m.chetan.kumar@intel.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linuxwwan <linuxwwan@intel.com>,
+        "loic.poulain@linaro.org" <loic.poulain@linaro.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>
+Subject: Re: drivers/net/wwan/iosm/iosm_ipc_protocol.c:244:36: error: passing argument 3 of 'dma_alloc_coherent' from incompatible pointer type [-Werror=incompatible-pointer-types]
+Date:   Mon, 21 Nov 2022 15:16:52 +0100
+Message-ID: <3150689.e9J7NaK4W3@bagend>
+Organization: Connecting Knowledge
+In-Reply-To: <SJ0PR11MB500875E67568132D3D4EBCB1D70A9@SJ0PR11MB5008.namprd11.prod.outlook.com>
+References: <Y3aKqZ5E8VVIZ6jh@eldamar.lan> <2951107.mvXUDI8C0e@bagend> <SJ0PR11MB500875E67568132D3D4EBCB1D70A9@SJ0PR11MB5008.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Received: by 2002:a05:651c:1a0d:0:0:0:0 with HTTP; Mon, 21 Nov 2022 06:11:42
- -0800 (PST)
-Reply-To: thajxoa@gmail.com
-From:   Thaj Xoa <rw32888@gmail.com>
-Date:   Mon, 21 Nov 2022 14:11:42 +0000
-Message-ID: <CAM3vi+8x4M9FeJSY0BWAN6Rry+f14JgHbsitrU=dvjjdtgAdhw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: multipart/signed; boundary="nextPart3495024.aeNJFYEL58"; micalg="pgp-sha256"; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear Friend,
+--nextPart3495024.aeNJFYEL58
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Diederik de Haas <didi.debian@cknow.org>
+Date: Mon, 21 Nov 2022 15:16:52 +0100
+Message-ID: <3150689.e9J7NaK4W3@bagend>
+Organization: Connecting Knowledge
+MIME-Version: 1.0
 
-I have an important message for you.
+Hi Chetan,
 
-Sincerely,
+On Monday, 21 November 2022 14:47:20 CET Kumar, M Chetan wrote:
+> I tried reproducing it at my side by compiling kernel for armhf
+> configuration [1] but could not reproduce it. Could you please share the
+> steps and config details for reproducing it locally so that I can take a
+> look at it.
 
-Mr thaj xoa
-Deputy Financial State Securities Commission (SSC)
-Hanoi-Vietnam
+I have a clone of the upstream kernel in ~/dev/kernel.org/linux
+You also need a clone of https://salsa.debian.org/kernel-team/linux
+
+All the commands are done from the 'kernel-team/linux' dir.
+
+The configuration file for compilation is generated from the `debian/config` dir.
+
+# Create an 'orig' tarball from upstream 6.1-rc5
+$ debian/bin/genorig.py ~/dev/kernel.org/linux/
+
+# set some (cross compile) build options (with 14 cores)
+$ export DEB_BUILD_OPTIONS="parallel=14"
+$ export DEB_BUILD_PROFILES="cross nodoc pkg.linux.nosource pkg.linux.notools pkg.linux.nokerneldbg"
+$ export ARCH=armhf
+$ export CC=arm-linux-gnueabihf-gcc-12
+$ dpkg-architecture --host-arch armhf
+
+# Clean things up and do the actual build
+$ dpkg-architecture -c fakeroot debian/rules maintainerclean
+$ dpkg-architecture -c debian/rules orig
+$ time dpkg-architecture -c fakeroot debian/rules binary-indep
+$ time dpkg-architecture -c fakeroot debian/rules binary-arch
+
+HTH,
+  Diederik
+--nextPart3495024.aeNJFYEL58
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQT1sUPBYsyGmi4usy/XblvOeH7bbgUCY3uIVAAKCRDXblvOeH7b
+buuqAQD8NyiZaKYdxlxsCaeQjVVpFkD9cHF+t/byYMblMsJZ4wEA2l7K9qavwSdM
+K8Yz8DLFnIQUEHpbCPMjK/6i/P57Zw4=
+=y5WD
+-----END PGP SIGNATURE-----
+
+--nextPart3495024.aeNJFYEL58--
+
+
+
