@@ -2,122 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C4A631DE0
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 11:12:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA74631E3B
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 11:24:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiKUKMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 05:12:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
+        id S231368AbiKUKYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 05:24:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231368AbiKUKMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 05:12:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8691AFAED
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 02:11:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669025471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NwLjb0E2762mkBoRuKP5ZO/x2E2Yg04BUzrNFBoai9w=;
-        b=ZLpKgzlFGZV/H7T1QT7oJc+wTz7c5+tfsKiBhyuxI6tV7xMMxyrHIkzMm6A0yxPu1LxuL1
-        2M5Dqx3dUzdQJwQQBWhB5KALf/7h4nhbQIYNr9Zj1+wuC+P6qtJUE7TPxKMXcuM2W7HAvs
-        5/bBI5qQGdHMlmNWKfMEIL75OkaXAFg=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-561-17Yrc-9MO8yjH_f3EN9Apw-1; Mon, 21 Nov 2022 05:11:09 -0500
-X-MC-Unique: 17Yrc-9MO8yjH_f3EN9Apw-1
-Received: by mail-qk1-f197.google.com with SMTP id u5-20020a05620a0c4500b006fb30780443so15277777qki.22
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 02:11:09 -0800 (PST)
+        with ESMTP id S231325AbiKUKYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 05:24:45 -0500
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FB820F66
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 02:24:44 -0800 (PST)
+Received: by mail-qk1-f172.google.com with SMTP id s20so7682379qkg.5
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 02:24:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NwLjb0E2762mkBoRuKP5ZO/x2E2Yg04BUzrNFBoai9w=;
-        b=qPMaQRXD0zwg7uX8CfGatOzC6jPsN6TIxMFY4X7HUIsNbLvtZ3WXzwhN1c6k98nCzf
-         Oz8mSZ5O24fggRqYhmeTAgO1PKLWpu6aEc/NbCuOgTkeqws4FOpVjMevH4ORXdxCfrFJ
-         zuqczOzlVA5nFjQDZ1OBJAyfnbAI+xGDQofLhay8PqwgbEMvxNtRVLtM7rhnqBLGGabF
-         LcpxFK8InHa5Mzed/s74I9ARb9PYFiOh5f4/p5OtwZt7BMF76AWn3RcLd+4LsgdGtd/v
-         xHDi/cxqigGOvWrdRiuDLkq4K10BErYAUCD/YRCOIXQHXqU5m5sSCowvhP4R7mm8v6pM
-         9HLw==
-X-Gm-Message-State: ANoB5pmIPqkJKgXNsvaWAdHTxLtzYM/jrv5mnvDbVROm2pmPeH2j8qzR
-        k3sTAzPV5z+ieZ+wxlqcwVDhL85wrcIrq7RBFc6osMup4ec/V3TQ44E7iFKIUDc9S4x5Z5k06Sk
-        THqGctTu9yPstdtk5
-X-Received: by 2002:a37:5885:0:b0:6fa:1ef8:49dc with SMTP id m127-20020a375885000000b006fa1ef849dcmr15618251qkb.314.1669025469503;
-        Mon, 21 Nov 2022 02:11:09 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf71eq5OjrF2ILYGHiO1RNCvRVc/hZiNHJD5N51HaDY3vkNB/0Mm+r5QjLEFpRdkiy8bI24xmA==
-X-Received: by 2002:a37:5885:0:b0:6fa:1ef8:49dc with SMTP id m127-20020a375885000000b006fa1ef849dcmr15618235qkb.314.1669025469169;
-        Mon, 21 Nov 2022 02:11:09 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id t7-20020a37ea07000000b006fa2cc1b0fbsm7906162qkj.11.2022.11.21.02.11.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Nov 2022 02:11:08 -0800 (PST)
-Message-ID: <eebf1c5ae11db046256eeb1aa287a0019adc3606.camel@redhat.com>
-Subject: Re: [PATCH net-next 0/2] veth: a couple of fixes
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Heng Qi <hengqi@linux.alibaba.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Date:   Mon, 21 Nov 2022 11:11:05 +0100
-In-Reply-To: <ce5fe56b-bf1b-71c0-1e96-cff6fde40ff3@linux.alibaba.com>
-References: <cover.1668727939.git.pabeni@redhat.com>
-         <edc73e5d5cdb06460aea9931a6c644daa409da48.camel@redhat.com>
-         <1669001595.7554848-1-xuanzhuo@linux.alibaba.com>
-         <ce5fe56b-bf1b-71c0-1e96-cff6fde40ff3@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tuz4GXSuMABf7djgSVIWhgWtMsICfYMb1in6u5g4o1Y=;
+        b=RD2+Q6ttYuomYwS2aqwU3NLD9InKsr7zv7HnUtEy7wmemF3jhJdUMRudzlqOrNRTsz
+         71OEhKoud0jnfxvMgc4VMptv+ysIdlS04trZh0eouUVpt8+a5nqUoJAVy1bVRnXUCVjc
+         Kazs7klHYL8aaHNafK+3rpTWHHPSr15PkV8lean1wvUZWjhfq+2jbbKj2EVjZ8DYlgEe
+         gtfPtdUeGZCKLMU8WOi5fuOGqQPeuOkvOqAecTw1q7wAxdltUzQsj8r6AhbXB8oYdGFb
+         fbZXA4K7DrseDFtIkarrVe7sPSD9/ZiVkH3i/xSLiQU3ai33lSSbGY3xoqMQ3K1V4AKe
+         sR5w==
+X-Gm-Message-State: ANoB5pkLTxyUJS9ueCITcVaFmVjU3jdOXI9HKGVpFADsT7ZXfg00h0ha
+        UgqsTV2CpTw5RAHGOfTEFn+LTO5tsXk4nw==
+X-Google-Smtp-Source: AA0mqf5lhtfta+xinzEQ3RZfTomsgA0x3s2TmSkphccriFBwYMWhkvVHcI6g1yvyzk/En3vNLAnIPA==
+X-Received: by 2002:a37:b901:0:b0:6ec:2b04:5099 with SMTP id j1-20020a37b901000000b006ec2b045099mr1660098qkf.501.1669026283135;
+        Mon, 21 Nov 2022 02:24:43 -0800 (PST)
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
+        by smtp.gmail.com with ESMTPSA id bq40-20020a05620a46a800b006fb7c42e73asm7938643qkb.21.2022.11.21.02.24.40
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Nov 2022 02:24:41 -0800 (PST)
+Received: by mail-yb1-f177.google.com with SMTP id n189so617396yba.8
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 02:24:40 -0800 (PST)
+X-Received: by 2002:a25:ad8b:0:b0:6de:6c43:3991 with SMTP id
+ z11-20020a25ad8b000000b006de6c433991mr15252917ybi.604.1669026280531; Mon, 21
+ Nov 2022 02:24:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20221121095631.216209-1-hch@lst.de> <20221121095631.216209-2-hch@lst.de>
+In-Reply-To: <20221121095631.216209-2-hch@lst.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 21 Nov 2022 11:24:29 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVWjDYEAXqWuYYEOb=C-phYjS7wYNPSyZYweR0WhzSZ+A@mail.gmail.com>
+Message-ID: <CAMuHMdVWjDYEAXqWuYYEOb=C-phYjS7wYNPSyZYweR0WhzSZ+A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: fec: use dma_alloc_noncoherent for m532x
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Greg Ungerer <gerg@linux-m68k.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-11-21 at 11:55 +0800, Heng Qi wrote:
-> 在 2022/11/21 上午11:33, Xuan Zhuo 写道:
-> > On Fri, 18 Nov 2022 09:41:05 +0100, Paolo Abeni <pabeni@redhat.com> wrote:
-> > > On Fri, 2022-11-18 at 00:33 +0100, Paolo Abeni wrote:
-> > > > Recent changes in the veth driver caused a few regressions
-> > > > this series addresses a couple of them, causing oops.
-> > > > 
-> > > > Paolo Abeni (2):
-> > > >    veth: fix uninitialized napi disable
-> > > >    veth: fix double napi enable
-> > > > 
-> > > >   drivers/net/veth.c | 6 ++++--
-> > > >   1 file changed, 4 insertions(+), 2 deletions(-)
-> > > @Xuan Zhuo: another option would be reverting 2e0de6366ac1 ("veth:
-> > > Avoid drop packets when xdp_redirect performs") and its follow-up
-> > > 5e5dc33d5dac ("bpf: veth driver panics when xdp prog attached before
-> > > veth_open").
-> > >  option would be possibly safer, because I feel there are other
-> > > issues with 2e0de6366ac1, and would offer the opportunity to refactor
-> > > its logic a bit: the napi enable/disable condition is quite complex and
-> > > not used consistently mixing and alternating the gro/xdp/peer xdp check
-> > > with the napi ptr dereference.
-> > > 
-> > > Ideally it would be better to have an helper alike
-> > > napi_should_be_enabled(), use it everywhere, and pair the new code with
-> > > some selftests, extending the existing ones.
-> > > 
-> > > WDYT?
-> > I take your point.
-> 
-> I'll rewrite a patch as soon as possible and resubmit it.
+Hi Christoph,
 
-Could you please first send the revert?
+On Mon, Nov 21, 2022 at 10:56 AM Christoph Hellwig <hch@lst.de> wrote:
+> The m532x coldfire platforms can't properly implement dma_alloc_coherent
+> and currently just return noncoherent memory from it.  The fec driver
+> than works around this with a flush of all caches in the receive path.
+> Make this hack a little less bad by using the explicit
+> dma_alloc_noncoherent API and documenting the hacky cache flushes.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Thanks!
+Thanks for your patch!
 
-Paolo
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -1580,6 +1580,10 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+>         struct page *page;
+>
+>  #ifdef CONFIG_M532x
+> +       /*
+> +        * Hacky flush of all caches instead of using the DMA API for the TSO
+> +        * headers.
+> +        */
+>         flush_cache_all();
+>  #endif
+>         rxq = fep->rx_queue[queue_id];
+> @@ -3123,10 +3127,17 @@ static void fec_enet_free_queue(struct net_device *ndev)
+>         for (i = 0; i < fep->num_tx_queues; i++)
+>                 if (fep->tx_queue[i] && fep->tx_queue[i]->tso_hdrs) {
+>                         txq = fep->tx_queue[i];
+> +#ifdef CONFIG_M532x
 
+Shouldn't this be the !CONFIG_M532x path?
+
+>                         dma_free_coherent(&fep->pdev->dev,
+>                                           txq->bd.ring_size * TSO_HEADER_SIZE,
+>                                           txq->tso_hdrs,
+>                                           txq->tso_hdrs_dma);
+> +#else
+> +                       dma_free_noncoherent(&fep->pdev->dev,
+> +                                         txq->bd.ring_size * TSO_HEADER_SIZE,
+> +                                         txq->tso_hdrs, txq->tso_hdrs_dma,
+> +                                         DMA_BIDIRECTIONAL);
+> +#endif
+>                 }
+>
+>         for (i = 0; i < fep->num_rx_queues; i++)
+> @@ -3157,10 +3168,18 @@ static int fec_enet_alloc_queue(struct net_device *ndev)
+>                 txq->tx_wake_threshold =
+>                         (txq->bd.ring_size - txq->tx_stop_threshold) / 2;
+>
+> +#ifdef CONFIG_M532x
+
+Likewise
+
+>                 txq->tso_hdrs = dma_alloc_coherent(&fep->pdev->dev,
+>                                         txq->bd.ring_size * TSO_HEADER_SIZE,
+>                                         &txq->tso_hdrs_dma,
+>                                         GFP_KERNEL);
+> +#else
+> +               /* m68knommu manually flushes all caches in fec_enet_rx_queue */
+> +               txq->tso_hdrs = dma_alloc_noncoherent(&fep->pdev->dev,
+> +                                       txq->bd.ring_size * TSO_HEADER_SIZE,
+> +                                       &txq->tso_hdrs_dma, DMA_BIDIRECTIONAL,
+> +                                       GFP_KERNEL);
+> +#endif
+>                 if (!txq->tso_hdrs) {
+>                         ret = -ENOMEM;
+>                         goto alloc_failed;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
