@@ -2,123 +2,302 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 195AC631D17
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:44:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71F53631D35
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230271AbiKUJoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 04:44:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        id S230323AbiKUJrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 04:47:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiKUJoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:44:10 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DE5C775
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:44:07 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id C59352049B;
-        Mon, 21 Nov 2022 10:44:05 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id aK65mOmtWRYx; Mon, 21 Nov 2022 10:44:05 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        with ESMTP id S230419AbiKUJrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:47:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D320697362;
+        Mon, 21 Nov 2022 01:47:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3FFF220185;
-        Mon, 21 Nov 2022 10:44:05 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 3A31C80004A;
-        Mon, 21 Nov 2022 10:44:05 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 21 Nov 2022 10:44:05 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 21 Nov
- 2022 10:44:04 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 6DFD331829DB; Mon, 21 Nov 2022 10:44:04 +0100 (CET)
-Date:   Mon, 21 Nov 2022 10:44:04 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 924D6B80DB8;
+        Mon, 21 Nov 2022 09:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D55D0C433D6;
+        Mon, 21 Nov 2022 09:47:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1669024023;
+        bh=HIQ2aiXqHffXudy5bIIYyTtVPp45N10Zp+on4Ytbzt0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kRtjkGLcpaTdluA3MPqMp/OBRucZ44PHfZF34mfgf17QHkP/8YR46Hx5a1OmHu3Qw
+         g0wIN1z30f2VFu1U77SsQhX9sJ2xbc06dCKwkdmPZpStPUOS68E68yqUjdgcz/w2cT
+         pe6PY7zlJEOK+AXvuPmP0FqRNQkYwoLnGxO2KQIQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
-Message-ID: <20221121094404.GU704954@gauss3.secunet.de>
-References: <cover.1667997522.git.leonro@nvidia.com>
- <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
- <20221117121243.GJ704954@gauss3.secunet.de>
- <Y3YuVcj5uNRHS7Ek@unreal>
- <20221118104907.GR704954@gauss3.secunet.de>
- <Y3p9LvAEQMAGeaCR@unreal>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>, linux-nfs@vger.kernel.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH 1/5] kobject: make kobject_get_ownership() take a constant kobject *
+Date:   Mon, 21 Nov 2022 10:46:45 +0100
+Message-Id: <20221121094649.1556002-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y3p9LvAEQMAGeaCR@unreal>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9144; i=gregkh@linuxfoundation.org; h=from:subject; bh=HIQ2aiXqHffXudy5bIIYyTtVPp45N10Zp+on4Ytbzt0=; b=owGbwMvMwCRo6H6F97bub03G02pJDMnVnuw5ldPS6tKre1+vkzhzoFdmhsH6vHieSzff35Fs1svn eKzSEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABNJMGCY73nXbtrMz9Mbph3mjDrW6H 6W8biNIcOCpR4Jy/NfcTjI9PU2vu+58azV6uJDAA==
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 09:17:02PM +0200, Leon Romanovsky wrote:
-> On Fri, Nov 18, 2022 at 11:49:07AM +0100, Steffen Klassert wrote:
-> > On Thu, Nov 17, 2022 at 02:51:33PM +0200, Leon Romanovsky wrote:
-> > > On Thu, Nov 17, 2022 at 01:12:43PM +0100, Steffen Klassert wrote:
-> > > > On Wed, Nov 09, 2022 at 02:54:34PM +0200, Leon Romanovsky wrote:
-> > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > > So this raises the question how to handle acquires with this packet
-> > > > offload. 
-> > > 
-> > > We handle acquires as SW policies and don't offload them.
-> > 
-> > We trigger acquires with states, not policies. The thing is,
-> > we might match a HW policy but create a SW acquire state.
-> > This will not match anymore as soon as the lookup is
-> > implemented correctly.
-> 
-> For now, all such packets will be dropped as we have offlaoded
-> policy but not SA.
+The call, kobject_get_ownership(), does not modify the kobject passed
+into it, so make it const.  This propagates down into the kobj_type
+function callbacks so make the kobject passed into them also const,
+ensuring that nothing in the kobject is being changed here.
 
-I think you missed my point. If the HW policy does not match
-the SW acquire state, then each packet will geneate a new
-acquire. So you need to make sure that policy and acquire
-state will match to send the acquire just once to userspace.
+This helps make it more obvious what calls and callbacks do, and do not,
+modify structures passed to them.
 
-> > > It is not different from any other kernel code, bugs will be fixed.
-> > 
-> > The thing that is different here is, that the concept is already
-> > broken. We can't split the datapath to be partially handled in
-> > SW and HW in any sane way, this becomes clearer and clearer.
-> > 
-> > The full protocol offload simply does not fit well into HW,
-> > but we try to make it fit with a hammer. This is the problem
-> > why I do not really like this, and is also the reason why this
-> > is still not merged. We might be much better of by doing a
-> > HW frindly redesign of the protocol and offload this then.
-> > But, yes that takes time and will have issues too.
-> 
-> When you say "protocol", what do you mean? Many users, who have
-> deployed IPsec solutions, just want to have same look and feel
-> but much faster.
-> 
-> I truly believe that this packet offload fits SW model and the
-> (small) amount of changes supports it. There are almost no changes
-> to the stack to natively support this offload.
-> 
-> As long as HW involved, you will never have solution without issues,
-> and like you said even redesign "will have issues".
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+Cc: Anna Schumaker <anna@kernel.org>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Nikolay Aleksandrov <razor@blackwall.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Chuck Lever <chuck.lever@oracle.com>
+Cc: Jeff Layton <jlayton@kernel.org>
+Cc: linux-nfs@vger.kernel.org
+Cc: bridge@lists.linux-foundation.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/base/class.c    | 2 +-
+ drivers/base/core.c     | 8 ++++----
+ fs/nfs/sysfs.c          | 4 ++--
+ include/linux/kobject.h | 8 ++++----
+ lib/kobject.c           | 4 ++--
+ net/bridge/br_if.c      | 2 +-
+ net/core/net-sysfs.c    | 8 ++++----
+ net/sunrpc/sysfs.c      | 8 ++++----
+ 8 files changed, 22 insertions(+), 22 deletions(-)
 
-Things would be much easier, if we don't need to add HW policies
-and states to SW databases. But yes, a redesign might have issues
-too. That's why we are still working on the current soluion :)
+diff --git a/drivers/base/class.c b/drivers/base/class.c
+index 8ceafb7d0203..86ec554cfe60 100644
+--- a/drivers/base/class.c
++++ b/drivers/base/class.c
+@@ -62,7 +62,7 @@ static void class_release(struct kobject *kobj)
+ 	kfree(cp);
+ }
+ 
+-static const struct kobj_ns_type_operations *class_child_ns_type(struct kobject *kobj)
++static const struct kobj_ns_type_operations *class_child_ns_type(const struct kobject *kobj)
+ {
+ 	struct subsys_private *cp = to_subsys_private(kobj);
+ 	struct class *class = cp->class;
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index ab01828fe6c1..a79b99ecf4d8 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -2335,7 +2335,7 @@ static void device_release(struct kobject *kobj)
+ 	kfree(p);
+ }
+ 
+-static const void *device_namespace(struct kobject *kobj)
++static const void *device_namespace(const struct kobject *kobj)
+ {
+ 	const struct device *dev = kobj_to_dev(kobj);
+ 	const void *ns = NULL;
+@@ -2346,7 +2346,7 @@ static const void *device_namespace(struct kobject *kobj)
+ 	return ns;
+ }
+ 
+-static void device_get_ownership(struct kobject *kobj, kuid_t *uid, kgid_t *gid)
++static void device_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
+ {
+ 	const struct device *dev = kobj_to_dev(kobj);
+ 
+@@ -2986,9 +2986,9 @@ static void class_dir_release(struct kobject *kobj)
+ }
+ 
+ static const
+-struct kobj_ns_type_operations *class_dir_child_ns_type(struct kobject *kobj)
++struct kobj_ns_type_operations *class_dir_child_ns_type(const struct kobject *kobj)
+ {
+-	struct class_dir *dir = to_class_dir(kobj);
++	const struct class_dir *dir = to_class_dir(kobj);
+ 	return dir->class->ns_type;
+ }
+ 
+diff --git a/fs/nfs/sysfs.c b/fs/nfs/sysfs.c
+index a6f740366963..67a87800b3a9 100644
+--- a/fs/nfs/sysfs.c
++++ b/fs/nfs/sysfs.c
+@@ -26,7 +26,7 @@ static void nfs_netns_object_release(struct kobject *kobj)
+ }
+ 
+ static const struct kobj_ns_type_operations *nfs_netns_object_child_ns_type(
+-		struct kobject *kobj)
++		const struct kobject *kobj)
+ {
+ 	return &net_ns_type_operations;
+ }
+@@ -130,7 +130,7 @@ static void nfs_netns_client_release(struct kobject *kobj)
+ 	kfree(c);
+ }
+ 
+-static const void *nfs_netns_client_namespace(struct kobject *kobj)
++static const void *nfs_netns_client_namespace(const struct kobject *kobj)
+ {
+ 	return container_of(kobj, struct nfs_netns_client, kobject)->net;
+ }
+diff --git a/include/linux/kobject.h b/include/linux/kobject.h
+index fc40fc81aeb1..d978dbceb50d 100644
+--- a/include/linux/kobject.h
++++ b/include/linux/kobject.h
+@@ -113,7 +113,7 @@ extern struct kobject * __must_check kobject_get_unless_zero(
+ extern void kobject_put(struct kobject *kobj);
+ 
+ extern const void *kobject_namespace(struct kobject *kobj);
+-extern void kobject_get_ownership(struct kobject *kobj,
++extern void kobject_get_ownership(const struct kobject *kobj,
+ 				  kuid_t *uid, kgid_t *gid);
+ extern char *kobject_get_path(const struct kobject *kobj, gfp_t flag);
+ 
+@@ -121,9 +121,9 @@ struct kobj_type {
+ 	void (*release)(struct kobject *kobj);
+ 	const struct sysfs_ops *sysfs_ops;
+ 	const struct attribute_group **default_groups;
+-	const struct kobj_ns_type_operations *(*child_ns_type)(struct kobject *kobj);
+-	const void *(*namespace)(struct kobject *kobj);
+-	void (*get_ownership)(struct kobject *kobj, kuid_t *uid, kgid_t *gid);
++	const struct kobj_ns_type_operations *(*child_ns_type)(const struct kobject *kobj);
++	const void *(*namespace)(const struct kobject *kobj);
++	void (*get_ownership)(const struct kobject *kobj, kuid_t *uid, kgid_t *gid);
+ };
+ 
+ struct kobj_uevent_env {
+diff --git a/lib/kobject.c b/lib/kobject.c
+index ba1017cd67d1..26e744a46d24 100644
+--- a/lib/kobject.c
++++ b/lib/kobject.c
+@@ -45,7 +45,7 @@ const void *kobject_namespace(struct kobject *kobj)
+  * representation of given kobject. Normally used to adjust ownership of
+  * objects in a container.
+  */
+-void kobject_get_ownership(struct kobject *kobj, kuid_t *uid, kgid_t *gid)
++void kobject_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
+ {
+ 	*uid = GLOBAL_ROOT_UID;
+ 	*gid = GLOBAL_ROOT_GID;
+@@ -907,7 +907,7 @@ static void kset_release(struct kobject *kobj)
+ 	kfree(kset);
+ }
+ 
+-static void kset_get_ownership(struct kobject *kobj, kuid_t *uid, kgid_t *gid)
++static void kset_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
+ {
+ 	if (kobj->parent)
+ 		kobject_get_ownership(kobj->parent, uid, gid);
+diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+index 228fd5b20f10..ad13b48e3e08 100644
+--- a/net/bridge/br_if.c
++++ b/net/bridge/br_if.c
+@@ -262,7 +262,7 @@ static void release_nbp(struct kobject *kobj)
+ 	kfree(p);
+ }
+ 
+-static void brport_get_ownership(struct kobject *kobj, kuid_t *uid, kgid_t *gid)
++static void brport_get_ownership(const struct kobject *kobj, kuid_t *uid, kgid_t *gid)
+ {
+ 	struct net_bridge_port *p = kobj_to_brport(kobj);
+ 
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index a8c5a7cd9701..9cfc80b8ed25 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1020,7 +1020,7 @@ static void rx_queue_release(struct kobject *kobj)
+ 	netdev_put(queue->dev, &queue->dev_tracker);
+ }
+ 
+-static const void *rx_queue_namespace(struct kobject *kobj)
++static const void *rx_queue_namespace(const struct kobject *kobj)
+ {
+ 	struct netdev_rx_queue *queue = to_rx_queue(kobj);
+ 	struct device *dev = &queue->dev->dev;
+@@ -1032,7 +1032,7 @@ static const void *rx_queue_namespace(struct kobject *kobj)
+ 	return ns;
+ }
+ 
+-static void rx_queue_get_ownership(struct kobject *kobj,
++static void rx_queue_get_ownership(const struct kobject *kobj,
+ 				   kuid_t *uid, kgid_t *gid)
+ {
+ 	const struct net *net = rx_queue_namespace(kobj);
+@@ -1623,7 +1623,7 @@ static void netdev_queue_release(struct kobject *kobj)
+ 	netdev_put(queue->dev, &queue->dev_tracker);
+ }
+ 
+-static const void *netdev_queue_namespace(struct kobject *kobj)
++static const void *netdev_queue_namespace(const struct kobject *kobj)
+ {
+ 	struct netdev_queue *queue = to_netdev_queue(kobj);
+ 	struct device *dev = &queue->dev->dev;
+@@ -1635,7 +1635,7 @@ static const void *netdev_queue_namespace(struct kobject *kobj)
+ 	return ns;
+ }
+ 
+-static void netdev_queue_get_ownership(struct kobject *kobj,
++static void netdev_queue_get_ownership(const struct kobject *kobj,
+ 				       kuid_t *uid, kgid_t *gid)
+ {
+ 	const struct net *net = netdev_queue_namespace(kobj);
+diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
+index c1f559892ae8..1e05a2d723f4 100644
+--- a/net/sunrpc/sysfs.c
++++ b/net/sunrpc/sysfs.c
+@@ -31,7 +31,7 @@ static void rpc_sysfs_object_release(struct kobject *kobj)
+ }
+ 
+ static const struct kobj_ns_type_operations *
+-rpc_sysfs_object_child_ns_type(struct kobject *kobj)
++rpc_sysfs_object_child_ns_type(const struct kobject *kobj)
+ {
+ 	return &net_ns_type_operations;
+ }
+@@ -381,17 +381,17 @@ static void rpc_sysfs_xprt_release(struct kobject *kobj)
+ 	kfree(xprt);
+ }
+ 
+-static const void *rpc_sysfs_client_namespace(struct kobject *kobj)
++static const void *rpc_sysfs_client_namespace(const struct kobject *kobj)
+ {
+ 	return container_of(kobj, struct rpc_sysfs_client, kobject)->net;
+ }
+ 
+-static const void *rpc_sysfs_xprt_switch_namespace(struct kobject *kobj)
++static const void *rpc_sysfs_xprt_switch_namespace(const struct kobject *kobj)
+ {
+ 	return container_of(kobj, struct rpc_sysfs_xprt_switch, kobject)->net;
+ }
+ 
+-static const void *rpc_sysfs_xprt_namespace(struct kobject *kobj)
++static const void *rpc_sysfs_xprt_namespace(const struct kobject *kobj)
+ {
+ 	return container_of(kobj, struct rpc_sysfs_xprt,
+ 			    kobject)->xprt->xprt_net;
+-- 
+2.38.1
 
