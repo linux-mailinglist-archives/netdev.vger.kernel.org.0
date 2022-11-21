@@ -2,290 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6C4633102
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 00:55:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF2B633113
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 00:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231996AbiKUXzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 18:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        id S230390AbiKUX7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 18:59:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231322AbiKUXzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 18:55:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E30DFA5
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 15:54:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669074885;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vfi5JoUW4sy0rV+2b6cm9JwJhGIJ1OzKdAPSqEmwZ/s=;
-        b=ICmylPkgpZwfu6WZVhAAR3wOx5bX6E3WK0wiSV/acphMLVy7W7aU2bjANPTSDoLI72wmUV
-        cRZoLhNfb4Uz84TCgJQQbhUPnOl/cm9igTJOASO2UWPj9MuntKYsRtj3UuMj0iK5Gj0hqu
-        k+QRt31J5SSYaffCtS2f4hLz2egGzW0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-426-gAYb8BhqNcKV7SoJ1J9VIg-1; Mon, 21 Nov 2022 18:54:44 -0500
-X-MC-Unique: gAYb8BhqNcKV7SoJ1J9VIg-1
-Received: by mail-ed1-f71.google.com with SMTP id y18-20020a056402359200b004635f8b1bfbso7762420edc.17
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 15:54:43 -0800 (PST)
+        with ESMTP id S229919AbiKUX7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 18:59:36 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAE412754
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 15:59:29 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id q96-20020a17090a1b6900b00218b8f9035cso3640989pjq.5
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 15:59:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jccJ4Bm2honkk55HL5L3ubecWLHTgsBISaT1aAHD2nQ=;
+        b=5QhulFzI1G8WHE9oKX4gt1WUeh1Fynoxt5ZWH2vyk7Oo9+FSoHFRaWUZLEr3pywHNF
+         nGb0E+jUepD7p20/iTExnyVbiziyc8byaeDw4KWtx5Z+RTbTKJ1cxsZBZCli/lr/yRI+
+         cAvro7xKn6Te2WNhjfzLv7u4hLfGfqYiUr5sePWuVMDXVHngVq9HENgpdAB5xVqc1l/x
+         BVborIe3koNOM4bggrC9+HzY6mwzYgLUVM1gGVu+2vwcIGjmNToc0rqflPYE4TRgEEpf
+         +5lnj9VX1VE3A2MrgNLnCB6v2AdV3wFaQ95in+L+uZ1Qr6Rm9qEemD8a3KJHbFhPBsi9
+         T/Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Vfi5JoUW4sy0rV+2b6cm9JwJhGIJ1OzKdAPSqEmwZ/s=;
-        b=pwa0wSTBhsEBypQmbOJ4YtDDUYTmBXPVSIe2VX+fnPICrFTHyAIJb/V3MiUETvE0M9
-         jpAQjfjoj3AYvlRtPfOfSQOSnnLVLEpgkeUp8ptMYXB0Jyue7H704YLceGb1j3sT90Dm
-         JVc3ogHl89SC0JjeySHJ8oVRWu6Vf4jzKwxH0zsWvi3qMBvpHfXf6UNSICRnLSSsVL9P
-         HjQ5Wikaiq19MOTBCHsTySRVClk3HvvLgb58MvZxAzjqQVDgwmibV6fcZ2+uYOvPNkIJ
-         rbDbHckINLlqnwSjqJoI5jGisYaP7RB8GVzY5fPIfPag3alNZMajxUcPJAmmb0i/3r6K
-         sgCw==
-X-Gm-Message-State: ANoB5pl84SoTjfL+s7To3aeSPXfL09xy3Td2+MirDPAFmpiY06ozJQ2s
-        T3R1v+1Mu5Vy9845kmilVskfhJUIzpbKzITMQq16Nr8z5VM/exGWCYpEGEjXaNu+cJeP67UenI8
-        wQEGkC6pBrWp6dH60muFwCF7jdbLYJGRT
-X-Received: by 2002:a05:6402:2075:b0:457:1323:1b7e with SMTP id bd21-20020a056402207500b0045713231b7emr18096145edb.311.1669074882829;
-        Mon, 21 Nov 2022 15:54:42 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4plkbvfUTn37DrpMuiuokQS5FXamM7cr2o73T3mVCgtfVsKKFvQIEszefLXUsr5uMQowhWAfAqhL/yJ1ppcs8=
-X-Received: by 2002:a05:6402:2075:b0:457:1323:1b7e with SMTP id
- bd21-20020a056402207500b0045713231b7emr18096132edb.311.1669074882578; Mon, 21
- Nov 2022 15:54:42 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jccJ4Bm2honkk55HL5L3ubecWLHTgsBISaT1aAHD2nQ=;
+        b=SdoOXPMypEA6yBvNIOo5Ep4/zjN05vE+b7dIfAtRGrLSvzEMndBqVjp9Vb/oo7R+UH
+         b0g1IvEZYOZ8LD/hgkRfN7A65I8HLaetH0krbMd7e8FKkIHB6Rj16P9HGS0oRjKGwX9y
+         O7/HGuE0khRRzdQvwMvPUwaWAjBtzLPz8DiTetd152AKHVbMOMpAVt7dpuhYpBH1nx6l
+         AzGccA7+wY/WjdwgqZRTo+rtqJ3va2JGNJECeENtEkvFMUioeAbUSraenpAFiDpc3mea
+         fWLnXtphDibki63I4QUKhADhP94Kd70jwaHRfyny0u75I5ljfTDCHtz3MqtotvXPws//
+         HcKQ==
+X-Gm-Message-State: ANoB5pmFVF7x5/ePWTnNr/H/UgRdQuKpYCY00GuuyQCPE9/iT09DWdm0
+        +lvhcXjXKQs1N0/zAFX18M44EA==
+X-Google-Smtp-Source: AA0mqf6Qm/z49ORGSNpdORDWI9uJV5l4u+ZQ0/SajrYhCffr1+7KkL52SrzOdM2ahfQEvSvHL5HLNA==
+X-Received: by 2002:a17:903:2144:b0:188:a1eb:9a8a with SMTP id s4-20020a170903214400b00188a1eb9a8amr5571440ple.153.1669075168333;
+        Mon, 21 Nov 2022 15:59:28 -0800 (PST)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id t8-20020aa79468000000b005625d6d2999sm9231276pfq.187.2022.11.21.15.59.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Nov 2022 15:59:27 -0800 (PST)
+Message-ID: <74feda24-37fd-11ea-af0e-1eff9ed4941e@kernel.dk>
+Date:   Mon, 21 Nov 2022 16:59:26 -0700
 MIME-Version: 1.0
-References: <20221102151915.1007815-1-miquel.raynal@bootlin.com>
- <20221102151915.1007815-2-miquel.raynal@bootlin.com> <CAK-6q+iSzRyDDiNusXiRWvUsS5dSS5bSzAtNjSLTt6kgaxtbHg@mail.gmail.com>
- <20221118230443.2e5ba612@xps-13> <CAK-6q+jJKoFy359_Pd4_d+EfqLw4PTdG4F7H4u+URD=UKu9k6w@mail.gmail.com>
- <20221121100539.75e13069@xps-13>
-In-Reply-To: <20221121100539.75e13069@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 21 Nov 2022 18:54:31 -0500
-Message-ID: <CAK-6q+g9XghJsH+Yh-7qRV1BAhC1J9GkOHOqBrpRerkQMn1sMw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 1/3] ieee802154: Advertize coordinators discovery
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v5 1/3] io_uring: add napi busy polling support
+Content-Language: en-US
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Stefan Roesch <shr@devkernel.io>, kernel-team@fb.com
+Cc:     olivier@trillion01.com, netdev@vger.kernel.org,
+        io-uring@vger.kernel.org, kuba@kernel.org
+References: <20221121191437.996297-1-shr@devkernel.io>
+ <20221121191437.996297-2-shr@devkernel.io>
+ <067a22bc-72ba-9035-05da-93c43ce356f2@kernel.dk>
+In-Reply-To: <067a22bc-72ba-9035-05da-93c43ce356f2@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 11/21/22 12:45?PM, Jens Axboe wrote:
+> On 11/21/22 12:14?PM, Stefan Roesch wrote:
+>> +/*
+>> + * io_napi_add() - Add napi id to the busy poll list
+>> + * @file: file pointer for socket
+>> + * @ctx:  io-uring context
+>> + *
+>> + * Add the napi id of the socket to the napi busy poll list.
+>> + */
+>> +void io_napi_add(struct file *file, struct io_ring_ctx *ctx)
+>> +{
+>> +	unsigned int napi_id;
+>> +	struct socket *sock;
+>> +	struct sock *sk;
+>> +	struct io_napi_entry *ne;
+>> +
+>> +	if (!io_napi_busy_loop_on(ctx))
+>> +		return;
+>> +
+>> +	sock = sock_from_file(file);
+>> +	if (!sock)
+>> +		return;
+>> +
+>> +	sk = sock->sk;
+>> +	if (!sk)
+>> +		return;
+>> +
+>> +	napi_id = READ_ONCE(sk->sk_napi_id);
+>> +
+>> +	/* Non-NAPI IDs can be rejected */
+>> +	if (napi_id < MIN_NAPI_ID)
+>> +		return;
+>> +
+>> +	spin_lock(&ctx->napi_lock);
+>> +	list_for_each_entry(ne, &ctx->napi_list, list) {
+>> +		if (ne->napi_id == napi_id) {
+>> +			ne->timeout = jiffies + NAPI_TIMEOUT;
+>> +			goto out;
+>> +		}
+>> +	}
+>> +
+>> +	ne = kmalloc(sizeof(*ne), GFP_NOWAIT);
+>> +	if (!ne)
+>> +		goto out;
+>> +
+>> +	ne->napi_id = napi_id;
+>> +	ne->timeout = jiffies + NAPI_TIMEOUT;
+>> +	list_add_tail(&ne->list, &ctx->napi_list);
+>> +
+>> +out:
+>> +	spin_unlock(&ctx->napi_lock);
+>> +}
+> 
+> I think this all looks good now, just one minor comment on the above. Is
+> the expectation here that we'll basically always add to the napi list?
+> If so, then I think allocating 'ne' outside the spinlock would be a lot
+> saner, and then just kfree() it for the unlikely case where we find a
+> duplicate.
 
-On Mon, Nov 21, 2022 at 4:05 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Sun, 20 Nov 2022 19:57:31 -0500:
->
-> > Hi,
-> >
-> > On Fri, Nov 18, 2022 at 5:04 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > Hi Alexander,
-> > >
-> > > aahringo@redhat.com wrote on Sun, 6 Nov 2022 21:01:35 -0500:
-> > >
-> > > > Hi,
-> > > >
-> > > > On Wed, Nov 2, 2022 at 11:20 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > > >
-> > > > > Let's introduce the basics for advertizing discovered PANs and
-> > > > > coordinators, which is:
-> > > > > - A new "scan" netlink message group.
-> > > > > - A couple of netlink command/attribute.
-> > > > > - The main netlink helper to send a netlink message with all the
-> > > > >   necessary information to forward the main information to the user.
-> > > > >
-> > > > > Two netlink attributes are proactively added to support future UWB
-> > > > > complex channels, but are not actually used yet.
-> > > > >
-> > > > > Co-developed-by: David Girault <david.girault@qorvo.com>
-> > > > > Signed-off-by: David Girault <david.girault@qorvo.com>
-> > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > > ---
-> > > > >  include/net/cfg802154.h   |  20 +++++++
-> > > > >  include/net/nl802154.h    |  44 ++++++++++++++
-> > > > >  net/ieee802154/nl802154.c | 121 ++++++++++++++++++++++++++++++++++++++
-> > > > >  net/ieee802154/nl802154.h |   6 ++
-> > > > >  4 files changed, 191 insertions(+)
-> > > > >
-> > > > > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> > > > > index e1481f9cf049..8d67d9ed438d 100644
-> > > > > --- a/include/net/cfg802154.h
-> > > > > +++ b/include/net/cfg802154.h
-> > > > > @@ -260,6 +260,26 @@ struct ieee802154_addr {
-> > > > >         };
-> > > > >  };
-> > > > >
-> > > > > +/**
-> > > > > + * struct ieee802154_coord_desc - Coordinator descriptor
-> > > > > + * @coord: PAN ID and coordinator address
-> > > > > + * @page: page this coordinator is using
-> > > > > + * @channel: channel this coordinator is using
-> > > > > + * @superframe_spec: SuperFrame specification as received
-> > > > > + * @link_quality: link quality indicator at which the beacon was received
-> > > > > + * @gts_permit: the coordinator accepts GTS requests
-> > > > > + * @node: list item
-> > > > > + */
-> > > > > +struct ieee802154_coord_desc {
-> > > > > +       struct ieee802154_addr *addr;
-> > > >
-> > > > Why is this a pointer?
-> > >
-> > > No reason anymore, I've changed this member to be a regular structure.
-> > >
-> >
-> > ok.
-> >
-> > > >
-> > > > > +       u8 page;
-> > > > > +       u8 channel;
-> > > > > +       u16 superframe_spec;
-> > > > > +       u8 link_quality;
-> > > > > +       bool gts_permit;
-> > > > > +       struct list_head node;
-> > > > > +};
-> > > > > +
-> > > > >  struct ieee802154_llsec_key_id {
-> > > > >         u8 mode;
-> > > > >         u8 id;
-> > > > > diff --git a/include/net/nl802154.h b/include/net/nl802154.h
-> > > > > index 145acb8f2509..cfe462288695 100644
-> > > > > --- a/include/net/nl802154.h
-> > > > > +++ b/include/net/nl802154.h
-> > > > > @@ -58,6 +58,9 @@ enum nl802154_commands {
-> > > > >
-> > > > >         NL802154_CMD_SET_WPAN_PHY_NETNS,
-> > > > >
-> > > > > +       NL802154_CMD_NEW_COORDINATOR,
-> > > > > +       NL802154_CMD_KNOWN_COORDINATOR,
-> > > > > +
-> > > >
-> > > > NEW is something we never saw before and KNOWN we already saw before?
-> > > > I am not getting that when I just want to maintain a list in the user
-> > > > space and keep them updated, but I think we had this discussion
-> > > > already or? Currently they do the same thing, just the command is
-> > > > different. The user can use it to filter NEW and KNOWN? Still I am not
-> > > > getting it why there is not just a start ... event, event, event ....
-> > > > end. and let the user decide if it knows that it's new or old from its
-> > > > perspective.
-> > >
-> > > Actually we already discussed this once and I personally liked more to
-> > > handle this in the kernel, but you seem to really prefer letting the
-> > > user space device whether or not the beacon is a new one or not, so
-> > > I've updated both the kernel side and the userspace side to act like
-> > > this.
-> > >
-> >
-> > I thought there was some problem about when the "scan-op" is running
-> > and there could be the case that the discovered PANs are twice there,
-> > but this looks more like handling UAPI features as separate new and
-> > old ones? I can see that there can be a need for the first case?
->
-> I don't think there is a problem handling this on one side or the
-> other, both should work identically. I've done the change anyway in v2
-> :)
->
+After thinking about this a bit more, I don't think this is done in the
+most optimal fashion. If the list is longer than a few entries, this
+check (or check-alloc-insert) is pretty expensive and it'll add
+substantial overhead to the poll path for sockets if napi is enabled.
 
-ok.
+I think we should do something ala:
 
-> > > > >         /* add new commands above here */
-> > > > >
-> > > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-> > > > > @@ -133,6 +136,8 @@ enum nl802154_attrs {
-> > > > >         NL802154_ATTR_PID,
-> > > > >         NL802154_ATTR_NETNS_FD,
-> > > > >
-> > > > > +       NL802154_ATTR_COORDINATOR,
-> > > > > +
-> > > > >         /* add attributes here, update the policy in nl802154.c */
-> > > > >
-> > > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-> > > > > @@ -218,6 +223,45 @@ enum nl802154_wpan_phy_capability_attr {
-> > > > >         NL802154_CAP_ATTR_MAX = __NL802154_CAP_ATTR_AFTER_LAST - 1
-> > > > >  };
-> > > > >
-> > > > > +/**
-> > > > > + * enum nl802154_coord - Netlink attributes for a coord
-> > > > > + *
-> > > > > + * @__NL802154_COORD_INVALID: invalid
-> > > > > + * @NL802154_COORD_PANID: PANID of the coordinator (2 bytes)
-> > > > > + * @NL802154_COORD_ADDR: coordinator address, (8 bytes or 2 bytes)
-> > > > > + * @NL802154_COORD_CHANNEL: channel number, related to @NL802154_COORD_PAGE (u8)
-> > > > > + * @NL802154_COORD_PAGE: channel page, related to @NL802154_COORD_CHANNEL (u8)
-> > > > > + * @NL802154_COORD_PREAMBLE_CODE: Preamble code used when the beacon was received,
-> > > > > + *     this is PHY dependent and optional (u8)
-> > > > > + * @NL802154_COORD_MEAN_PRF: Mean PRF used when the beacon was received,
-> > > > > + *     this is PHY dependent and optional (u8)
-> > > > > + * @NL802154_COORD_SUPERFRAME_SPEC: superframe specification of the PAN (u16)
-> > > > > + * @NL802154_COORD_LINK_QUALITY: signal quality of beacon in unspecified units,
-> > > > > + *     scaled to 0..255 (u8)
-> > > > > + * @NL802154_COORD_GTS_PERMIT: set to true if GTS is permitted on this PAN
-> > > > > + * @NL802154_COORD_PAYLOAD_DATA: binary data containing the raw data from the
-> > > > > + *     frame payload, (only if beacon or probe response had data)
-> > > > > + * @NL802154_COORD_PAD: attribute used for padding for 64-bit alignment
-> > > > > + * @NL802154_COORD_MAX: highest coordinator attribute
-> > > > > + */
-> > > > > +enum nl802154_coord {
-> > > > > +       __NL802154_COORD_INVALID,
-> > > > > +       NL802154_COORD_PANID,
-> > > > > +       NL802154_COORD_ADDR,
-> > > > > +       NL802154_COORD_CHANNEL,
-> > > > > +       NL802154_COORD_PAGE,
-> > > > > +       NL802154_COORD_PREAMBLE_CODE,
-> > > >
-> > > > Interesting, if you do a scan and discover pans and others answers I
-> > > > would think you would see only pans on the same preamble. How is this
-> > > > working?
-> > >
-> > > Yes this is how it is working, you only see PANs on one preamble at a
-> > > time. That's why we need to tell on which preamble we received the
-> > > beacon.
-> > >
-> >
-> > But then I don't know how you want to change the preamble while
-> > scanning?
->
-> Just to be sure: here we are talking about reporting the beacons that
-> were received and the coordinators they advertise. Which means we
-> _need_ to tell the user on which preamble code it was, but we don't yet
-> consider any preamble code changes here on the PHY.
->
+1) When arming poll AND napi has been enabled for the ring, then
+    alloc io_napi_entry upfront and store it in ->async_data.
 
-but there is my question, how coordinators can advertise they are
-running on a different preamble as they sent on the advertisement. And
-what I thought was that the preamble is a non changeable thing, more
-specifically 4 octet all zero (preamble) followed by 0xA7 (SFD)). I
-know there are transceivers to change at least the SFD value, but then
-I was assuming you were running out of spec (some people doing that to
-ehm... "fake secure" their 802.15.4 communication as I heard).
+2) Maintain the state in the io_napi_entry. If we're on the list,
+    that can be checked with just list_empty(), for example. If not
+    on the list, assign timeout and add.
 
-> > I know there are registers for changing the preamble and I
-> > thought that is a vendor specific option. However I am not an expert
-> > to judge if it's needed or not, but somehow curious how it's working.
->
-> I guess this is a problem that we must delegate to the drivers, very
-> much like channel changes, no?
->
+3) Have regular request cleanup free it.
 
-yes.
+This could be combined with an alloc cache, I would not do that for the
+first iteration though.
 
-- Alex
+This would make io_napi_add() cheap - no more list iteration, and no
+more allocations. And that is arguably the most important part, as that
+is called everytime the poll is woken up. Particularly for multishot
+that makes a big difference.
 
+It's also designed much better imho, moving the more expensive bits to
+the setup side.
+
+-- 
+Jens Axboe
