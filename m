@@ -2,140 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B344631BE5
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 09:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5518D631C0B
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 09:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbiKUIwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 03:52:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        id S230286AbiKUIwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 03:52:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbiKUIwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 03:52:04 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755F782217;
-        Mon, 21 Nov 2022 00:52:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669020721; x=1700556721;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PRZcPQKEh9lZYS6k17IpBGFrKOu26GUNvPvApWrz/lc=;
-  b=h2xPBvv6bNCoJlna2SRRXh4LmTgnNuMLJpOaf4C5CFsEB0R3LlCjLEuc
-   mvmP20HCxKj8XCDEXAOA6Bf2/DSMBcc5q8e1RDsjaC1GKKKbqiNYJgxem
-   ZJpNX5HVpxWB1VNYzrjjViQatWXIpn6CjoXqRPcdTtmGznZvQF3cf2+tP
-   d2F+hsOsPPsER7e0QmYBluGc13V57JEbkyMAaJWruJGiVXzIz3NbPQUbT
-   OoMN2BAiuSqKv1PgyCCUKKwkp9c6vlPI3uYCL/KEvr+NFaRlhkAJtvUAj
-   HcmSPApBanNPWXwz8h0sKqqqNadrVrTQ34Z+KbDZIznFn7Gma4BGfdTLx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10537"; a="313536858"
-X-IronPort-AV: E=Sophos;i="5.96,180,1665471600"; 
-   d="scan'208";a="313536858"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 00:52:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10537"; a="709730243"
-X-IronPort-AV: E=Sophos;i="5.96,180,1665471600"; 
-   d="scan'208";a="709730243"
-Received: from a0cec8d9c8fc.jf.intel.com ([10.45.77.137])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Nov 2022 00:51:46 -0800
-From:   Chen Hu <hu1.chen@intel.com>
-Cc:     hu1.chen@intel.com, jpoimboe@kernel.org, memxor@gmail.com,
-        bpf@vger.kernel.org, Pengfei Xu <pengfei.xu@intel.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf] selftests/bpf: Fix "missing ENDBR" BUG for destructor kfunc
-Date:   Mon, 21 Nov 2022 00:51:13 -0800
-Message-Id: <20221121085113.611504-1-hu1.chen@intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230246AbiKUIwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 03:52:23 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617A082BC3
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 00:52:16 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id h23so7323501edj.1
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 00:52:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5EKX9hkLxhPi34ZOuIB7WgZy5OSr/nuOfldd6jagSc0=;
+        b=v2pXUiNWHHlmA3CgFN9RaBA5VmUKVPgU1gePlYZrS3D6SPaht5nDB2w5V4uOZQSLv+
+         M7FPH1qscDF6KCdnLC+J2EwNIIM/nEuLJctgMy4zXfvQ83tdg0UmtA3J7f9J71w2RGh4
+         RLhGqmnAVEwcyK7qRWSRs9/apwwWN2et6jg0UuYoCWBZPQfAhTA4q0TIZdhxwVABy7e1
+         ZH/uPVovN2pAGSv01/Gl6oh1SZEHkLlTIU8erjJQnbTz+2cUinEPhlRdPkzXH8lr3xfE
+         dGZDNJOL2etTmGnNsWZRibnLgznRdi0oTPc4vJtXZuz4xVpoBy5OEdBdl8s965GsgZ3r
+         0obQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5EKX9hkLxhPi34ZOuIB7WgZy5OSr/nuOfldd6jagSc0=;
+        b=o011qSrnbZ2IWdYygj90l+FaNnLvv0kjJvdtvCDzx/gWzFOzoQS/n6y6or0n7MbqhT
+         iIGZ0ydDViOEt7ra0S5A+/6PBBcWmP/DJ59GpmV+2oAmiELyEhjEtaSsjH5g82q5dgYn
+         QOXXVbD2reMdjKF2ENyzUhMVhaYu4/heAU3M0Mg3foy/RGpD1tgGWP8PQ7QTG1tbQWJO
+         Xudg1ov6tF6qOJ1s+UkP/Oz/2d5aruqsD+eJFRqGNgZ7Fx/pruUCFonjS9rdi/gMhRpd
+         NK140r3ecU8MPNmYTggbGFGK8IXsNuqQz5rufAhd9xYaPJPaZF3hVGcZzYPQ7usJs/4J
+         Hpng==
+X-Gm-Message-State: ANoB5pki6WGiEMFDByS25YhKfKsvZ1NL5U2Sx7Ql5rIF+jAFfVqAfVqJ
+        Uqc1p7ViwDdJNiKKabWt0QXnxg==
+X-Google-Smtp-Source: AA0mqf7NlGBLRMqJJD6VuzgvPTeyKU+9xBzZ2MKufx72NGx3Su8hyH1HugGQukHgksdHhKmkRbZ1ug==
+X-Received: by 2002:a05:6402:1015:b0:461:5f19:61da with SMTP id c21-20020a056402101500b004615f1961damr15200850edu.34.1669020734874;
+        Mon, 21 Nov 2022 00:52:14 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id p13-20020a17090653cd00b007ade5cc6e7asm4762104ejo.39.2022.11.21.00.52.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Nov 2022 00:52:14 -0800 (PST)
+Date:   Mon, 21 Nov 2022 09:52:13 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com
+Subject: Re: [patch iproute2] devlink: load ifname map on demand from
+ ifname_map_rev_lookup() as well
+Message-ID: <Y3s8PUndcemwO+kk@nanopsycho>
+References: <20221109124851.975716-1-jiri@resnulli.us>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221109124851.975716-1-jiri@resnulli.us>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With CONFIG_X86_KERNEL_IBT enabled, the test_verifier triggers the
-following BUG:
+Wed, Nov 09, 2022 at 01:48:51PM CET, jiri@resnulli.us wrote:
+>From: Jiri Pirko <jiri@nvidia.com>
+>
+>Commit 5cddbb274eab ("devlink: load port-ifname map on demand") changed
+>the ifname map to be loaded on demand from ifname_map_lookup(). However,
+>it didn't put this on-demand loading into ifname_map_rev_lookup() which
+>causes ifname_map_rev_lookup() to return -ENOENT all the time.
+>
+>Fix this by triggering on-demand ifname map load
+>from ifname_map_rev_lookup() as well.
+>
+>Fixes: 5cddbb274eab ("devlink: load port-ifname map on demand")
+>Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-  traps: Missing ENDBR: bpf_kfunc_call_test_release+0x0/0x30
-  ------------[ cut here ]------------
-  kernel BUG at arch/x86/kernel/traps.c:254!
-  invalid opcode: 0000 [#1] PREEMPT SMP
-  <TASK>
-   asm_exc_control_protection+0x26/0x50
-  RIP: 0010:bpf_kfunc_call_test_release+0x0/0x30
-  Code: 00 48 c7 c7 18 f2 e1 b4 e8 0d ca 8c ff 48 c7 c0 00 f2 e1 b4 c3
-	0f 1f 44 00 00 66 0f 1f 00 0f 1f 44 00 00 0f 0b 31 c0 c3 66 90
-       <66> 0f 1f 00 0f 1f 44 00 00 48 85 ff 74 13 4c 8d 47 18 b8 ff ff ff
-   bpf_map_free_kptrs+0x2e/0x70
-   array_map_free+0x57/0x140
-   process_one_work+0x194/0x3a0
-   worker_thread+0x54/0x3a0
-   ? rescuer_thread+0x390/0x390
-   kthread+0xe9/0x110
-   ? kthread_complete_and_exit+0x20/0x20
+Stephen, its' almost 3 weeks since I sent this. Could you please check
+this out? I would like to follow-up with couple of patches to -next
+branch which are based on top of this fix.
 
-This is because there are no compile-time references to the destructor
-kfuncs, bpf_kfunc_call_test_release() for example. So objtool marked
-them sealable and ENDBR in the functions were sealed (converted to NOP)
-by apply_ibt_endbr().
-
-This fix creates dummy compile-time references to destructor kfuncs so
-ENDBR stay there.
-
-Signed-off-by: Chen Hu <hu1.chen@intel.com>
-Tested-by: Pengfei Xu <pengfei.xu@intel.com>
----
- include/linux/btf_ids.h | 7 +++++++
- net/bpf/test_run.c      | 2 ++
- 2 files changed, 9 insertions(+)
-
-diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
-index 2aea877d644f..6c6b520ea58f 100644
---- a/include/linux/btf_ids.h
-+++ b/include/linux/btf_ids.h
-@@ -266,4 +266,11 @@ MAX_BTF_TRACING_TYPE,
- 
- extern u32 btf_tracing_ids[];
- 
-+#if defined(CONFIG_X86_KERNEL_IBT) && !defined(__DISABLE_EXPORTS)
-+#define BTF_IBT_NOSEAL(name)					\
-+	asm(IBT_NOSEAL(#name));
-+#else
-+#define BTF_IBT_NOSEAL(name)
-+#endif /* CONFIG_X86_KERNEL_IBT */
-+
- #endif
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 13d578ce2a09..465952e5de11 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -1653,6 +1653,8 @@ BTF_ID(struct, prog_test_ref_kfunc)
- BTF_ID(func, bpf_kfunc_call_test_release)
- BTF_ID(struct, prog_test_member)
- BTF_ID(func, bpf_kfunc_call_memb_release)
-+BTF_IBT_NOSEAL(bpf_kfunc_call_test_release)
-+BTF_IBT_NOSEAL(bpf_kfunc_call_memb_release)
- 
- static int __init bpf_prog_test_run_init(void)
- {
--- 
-2.34.1
-
+Thanks!
