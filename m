@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 665A5632481
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:57:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 495F263247C
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:57:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231492AbiKUN50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 08:57:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
+        id S231415AbiKUN5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 08:57:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231480AbiKUN4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:56:38 -0500
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2085.outbound.protection.outlook.com [40.107.249.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF43C4943
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:56:29 -0800 (PST)
+        with ESMTP id S231458AbiKUN4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:56:37 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130075.outbound.protection.outlook.com [40.107.13.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8555EC4C03
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:56:27 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=flPskHyVAjJuathwyyaEaU7ZJA+Kvnvs9UgP+Rk3lORud19HAIaTMIp7kVWShWBE/xVrqaJuY//091GdMRJvDtX17NHZd5tZCtSqOEoUHCfgHt2IvMtJk21+G2MH+LDcg5gXyBjK7cTQM+ds+OXxfJFbgXdiluxdke9QfOsKBE0d6cvm3GJJcqWSTs1VWmMkHxOC+OLPEYEa8iQc5uTUuqmx2vGdReusfxxlHDUDXy42+gYcFaOoeblmDeo75MCKoaC2yvmWf5MjdgmUfZdXAgK1qr0b5D8pZfn0bjNyh0PUENuEGFr4ujpjJqYVWJE1V5QZXF6a3RekjZpVSvgPCA==
+ b=AP/9H49j4EkKhzMVPDuTW7cQ+D2z/BCjljn5RbNWUg42CDdHUv1T3NXOupwbYsbL+iwHWGna0mxLqS9ZR9Obe2YVbat6MrUHaNe7FGLC4bRUwmb+V0i5hDLcQuCbgrgYkDIZxvCSclnzlg3j5vgCffzoC3Dcfcnd4f5AF+jFenlXJrPvKE4tX9BtJKZHH/NlKyjIS43RlY4VGZ595f3aE/kF4OE/qPnw9TcafdPrT+qZG12qJr2waYWA2xgenF/n8EpCzuKMMZSGLE0LB2lmJIqE77PVNsRYIF/Rctil6Rr39SGTKIwgsHPjtGIQnN+l1C/xW5U1IOVLU+thGYQA9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gQehvYWTIHnU01jcIwQmpSSfgvU7Ppf5DXbI5WKMoAg=;
- b=jcvb/I72rX+D7wpXUzH3GCdhMKLBlGO32yKTuF+UDSFfl1UbSTljVbrcKaXIPebQ281tHlFgDbwFqxEkQSe1rOak8OypRhoFTGQoHVb+fUQ9+9h54tYSCr+oOJQBEmTXPRewllDfAzQoeo+vRUO60zKP/xmZ94xkWMRirVpLG3c7CopofEJsgwHvOT34XFJe9Z336gBsWWMsIsz8uvfIKV21r5sUb738VhEbvzrbRbR157bAJE7TqGlPK1Pjpa3GA9LjtSCXe7132JthRzWRMQhrhyVjYUjZauKcD0XV9C8A4a2ceWn7xV+KkZTVUlkltozEIpUy53a1gxSxURNX1w==
+ bh=ZgB78tnnEx7N+1zrdKRvr/i1Gnr5+z0P8A7HEXFAdgE=;
+ b=F3GRBc5qLe77bSk/oSzR4b1LfRumB7P/gvnJLQ3O6GNTGYH5MZJr9Lc2988rjK6V7ceZ2pTHVheDELf6fK9ZI8CHUF5Drw253hKJYWpcuQQPi5e3c9LnLknZ/ZOAUU48wzf0726UpKs2HLZFRiuisudDDpak76NuifqmMNk8auJ9rqsHFDSjmrID7lXGWTWAriaBKAydHPulEo4EbPAnWAS9ytDo4Rwyn6p7ytJj53EzfDTI5MiE5+4K3QuKq/2VohqWkG3lgBeMPgJHvP6fmYayGwBbtZ8RVixl42cqBkGrRUei+3YTB1xBETSOT1KoDnJrrgmpIgjxVpBRRbuq+Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gQehvYWTIHnU01jcIwQmpSSfgvU7Ppf5DXbI5WKMoAg=;
- b=hkcFzm4j2uu9+xYSGFC3eMmmEj7r6+foW0vxf4tnrQvySPiBxDZuH7HbRxQJxM6oM40H77/UfIwLSndujCriSGDwpM2oPJYrNImhIXbwZcBnQU+bko8NUgGnIbr0mf57YrlNsNanl/PWLD/Hj2DyVA0raId0xMwfKajZe5/qn3s=
+ bh=ZgB78tnnEx7N+1zrdKRvr/i1Gnr5+z0P8A7HEXFAdgE=;
+ b=ImNS8EB6RSgTys1j0Jdgxv6+rDVO4l3CzroOEz0+WE1C+pFH+t8BaLMH1IhsHmifNzRW9wgkZ4Hz/XNrVtQ2f8VmD+GI8KM/3TSov1XI2tg+U2K8dn3sGWgLwSXZz4r6ruUk3QgFfvVqP0evJAgwJ9PiU8Xi2pjZqPMEqT0dhGs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB6829.eurprd04.prod.outlook.com (2603:10a6:803:13b::12) with
+ by DB9PR04MB8137.eurprd04.prod.outlook.com (2603:10a6:10:244::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.11; Mon, 21 Nov
- 2022 13:56:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Mon, 21 Nov
+ 2022 13:56:24 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Mon, 21 Nov 2022
- 13:56:23 +0000
+ 13:56:24 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -48,9 +48,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 16/17] net: dsa: move tag_8021q headers to their proper place
-Date:   Mon, 21 Nov 2022 15:55:54 +0200
-Message-Id: <20221121135555.1227271-17-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 17/17] net: dsa: kill off dsa_priv.h
+Date:   Mon, 21 Nov 2022 15:55:55 +0200
+Message-Id: <20221121135555.1227271-18-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
 References: <20221121135555.1227271-1-vladimir.oltean@nxp.com>
@@ -61,53 +61,53 @@ X-ClientProxiedBy: VI1P194CA0015.EURP194.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|VI1PR04MB6829:EE_
-X-MS-Office365-Filtering-Correlation-Id: 964b746f-c8ed-4785-2030-08dacbc82cca
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB9PR04MB8137:EE_
+X-MS-Office365-Filtering-Correlation-Id: a3d55286-27f9-45f7-7c8e-08dacbc82d29
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: svr3aWaGhv/g4hlQl5JrZ0wzzjrYa8ACGrMvoC/kodlHD9IoZg3m6nfb1QcVsfpzfSDTTzbeniS0pUVjguAMbQJNrx3Enw/tJ8pwjzqN9WofEFwVGYgciwi6TAX486Q2BHoCpHiKkvfbw8os2NvAHZg22u09u1W6PgucIixMJTylW/b4Yi5GC8oAOFREcwLIkH0Jq3G7cTddvucl8e2ch7I8BljiVBGvzKcWyC/ukWnWadDUhmknAhL3tcBeD6XP9an7FeWxgRfH5xtmbQvMJPYQ3mDNfXNniNrFT7hoD8ozdzek6G46ybsRACTZn96QagPdLT5ewDnTi0gmSwwLpPMPhe5qc/mgHNH1qcZgMG1o7rwRCDPLwdGr4LlmE0iyqawbn+8jo/k5To+/UFb0YYrxMKH19SF1wEzRyxC7CnJlIjbinMztwUzeo3Kwkw6h2scoKrT1mLTfmN7UyiUd4xPwmg7OA+ao6rkdswucF7xJXH+IzEA3PO26HslvtCTneU8EvxQPfCWyTEBgqgg3cGC0pIu1yoarR85+ZKKOfcdSoDrnXMElN4hsi29JZL5O1c29T0En3OktBbG1mSFTpXpasDqHue9jO3sRNye1fzP3AR+Q3UYvSATpwS8mIQcnJPqCX/CHcS+3NlHh0iS7EmYOJQr3XtVuJODB3UoNmug8J4wIDpSamHS5djuKWguf
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(376002)(136003)(346002)(39860400002)(451199015)(6486002)(26005)(2906002)(86362001)(36756003)(6506007)(6666004)(478600001)(83380400001)(38350700002)(6512007)(38100700002)(52116002)(1076003)(2616005)(186003)(44832011)(8936002)(41300700001)(66556008)(4326008)(66476007)(8676002)(5660300002)(66946007)(66899015)(6916009)(54906003)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 2gXO28U9l0BwKL4acBLzTTn4j1Gb/TBk0d4sKhq6ubf4FrjHwyk/Vr42On7P8T7sU3r8t4nGqVM6friQCQ3TJx+JgLKpKmWQj39/3jlpnnX2LRMfLXH/uDR4NIi9FujIDm32+UwJhDdoSE17eexwZHh3hnP8L/F/u50uDkbx8h95O69lnONh6EFJm5B3bEw/7Xmm1SNbvDL3UIlVdw9tyvLjgw1Dq5/GvsAm5mFS1O4qElFIwUvue5yceb+ZMGbPE1HRAXVzgysd7tLSqgZoay5fMbGYlC2G76LZikMqfJcdGc4W2pLQeI5pQc3xlciphHi/8egd27kKZGIfWT0Qkw7K6ghOovJybDGkPcd25AKuQ/5rxlTEy5SzTq1s1y5Qr3GHsk9A+xaqMBvzRCMRKd9tkTUEue2HTfEg6cFvXThI+Qy+7hWhPgYsYNFpKDSXFcjL2KCZq79HwJfwg/CNkFO2UsnYhthTuPVWTq4g0xJy5TJpnhCCL05ywN2HX+tGxuQPm8WQhGYoulaKQKB6VLOu/fv/yScFoBHNLQxvojFcn1qnRoLxrc94JVJ4rf+082SHLm721Vf1NT+IuaqUWz0RPI2J/WhsbvxGWOwoui/hmpgYZPjRCIrFE+10uWFhXlTnNsl5COz+Go+6CMhWMOamPIPiXnUcFh6kFyoaKeVdaJRRWugv6tBkC3A8/P2A
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(451199015)(44832011)(1076003)(186003)(2616005)(5660300002)(66476007)(66556008)(4326008)(83380400001)(8676002)(36756003)(66946007)(54906003)(316002)(86362001)(8936002)(6916009)(38100700002)(2906002)(38350700002)(6666004)(6506007)(6512007)(41300700001)(26005)(478600001)(52116002)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JkmbOx7WjyZvel47ZESXcu6SAbQBRxHntC1oejD1ZpfItPbIsXLjvd0uVhKQ?=
- =?us-ascii?Q?zdyWJ9SSksePpW5Cmjb3khAbae672U6KoXQxqLGd7Hx0MRAE5yoOrzQ+BWR8?=
- =?us-ascii?Q?MLvnzk+w3AZrmCdGNQUBI4r6zUT8TKHUeoDMoE5dEoHaBaG+Ne3TbQrcarnE?=
- =?us-ascii?Q?mEwjCLw8lXiJz1YT9Q3R61Vg/h1o+/G0G18HWxAh0JBvw2cLjLvf+OQ03nX5?=
- =?us-ascii?Q?4zYad3pPWnmoFMZxEYBmjVbwHtSuxPmtLwicnooFEz861IBMdxG3gzoSL6Hd?=
- =?us-ascii?Q?ES9keN/L0cQxxu5lAfaLoOiy4JzVqzttM4OMqFqaZ4GXVi3d9IzWlL1KHPZY?=
- =?us-ascii?Q?XXoXY78KaPZEUc79CZWw9Uh5ukvAsJDtsO7IhW1Yn0Byq/4/PVlXMQj5rGmF?=
- =?us-ascii?Q?lohPNIv/SEPdpaGvKqey0T5FtAqaeAvrbB78sZZIZAV9UBVdEysb6zaMSvU/?=
- =?us-ascii?Q?ji8lkI8v7eqZpmeIOk0TwgwefvZCYG05ygCraQXeLoE6gs8p1T9pHEdRQepy?=
- =?us-ascii?Q?cHq6f0c7bTLn8i5BSj6XYl97LPqWzT+QjWCsLLPaSKq8GOKYG8uQXcQY1ZlZ?=
- =?us-ascii?Q?pInNihxTlJNMUwrycHtX/qgdL1jQkDI6X6WqA55NEmfUeei87iBU5eKci28l?=
- =?us-ascii?Q?ZYGm/tRLkn6d4KL/pS+ePj5menH6RtEC3N44gQfI5MjAHOwx/hPbViJpxXzf?=
- =?us-ascii?Q?QfeLaAKyhQ8cgT1mQk0NqbcshoG3s+akg8AhxZwzzPs/T0VdfLbM/qXT+ekp?=
- =?us-ascii?Q?iFW3IY3f7FlF+IaNR3tMvLvogZTQHQtl3w8uNT4xYmXPpB6cuSRO18alSlF6?=
- =?us-ascii?Q?N9cRYc8yvGrZV+2VPh+WIE/brPuV+3QqyJhvq2qe9HjrFQdscTnlqk8Y3/bJ?=
- =?us-ascii?Q?tPMZixhqWolRitkOuytniZgfidfPdG+oVjKde+3J8ipTCnCYU1elCWC7XsKd?=
- =?us-ascii?Q?EngfhGdBEdpNJmV9zT5ayUqIpc20kS1AKEKANAd8cU/yvhPbAKLCVQq6rkXK?=
- =?us-ascii?Q?TM7yzntoVQNNf7xDh1pJMRA8vL2NAJdfF153clkx8gVFvbO1t6++vBAtyzWE?=
- =?us-ascii?Q?FOFmkA/lF71fvaQqPov1VVCAGFgIrdbsSOMXMhh1bbOeVdgizUlDyRo+l9BI?=
- =?us-ascii?Q?tF3tulfRH1FmLMPtITFvtLZNloVcAOp1m0s71x4vO/auCNMH5Kn72jPzR48g?=
- =?us-ascii?Q?NWspM6+FUZVZp95OejTcUFiBLpXuX3I5P5iQpUxxQb9rKVBMY2F7c963qkMl?=
- =?us-ascii?Q?uMUbJecZBnQtF8l3RqfNh9CrrNChaeOXpLTMvYGBB0HQjOUzqON0MhB8T92G?=
- =?us-ascii?Q?mTbtv6co/IFTPkGErMfmRu9KdqLSbLHZMMwN6Nrkn+PFcmJxAbd9HVp9cCMG?=
- =?us-ascii?Q?hM0K1fh92HsKIe177oKmvu3rOfjD1Ma4sQ3uZkQhFoQaIQFBoD6ROW6n59hQ?=
- =?us-ascii?Q?Zxfv9qXr+XuC7svEFsWMemQ/TuxAjtZ2YzWFMpPeS07UlDX3uqDzqTpBsDnK?=
- =?us-ascii?Q?M9mP58J4mLQZpJaVAIRqgqET9K6L5ERS2iQC6f4zDJmsgBbCygcC1RO3bE8L?=
- =?us-ascii?Q?JH8I3PujcmAefjQx6y96bpviqOYDnhKS+KvMcuPaVXGKyWTL2awYfOoTia6r?=
- =?us-ascii?Q?qA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/0V5bWW+7/C1nCuBxyXRHdxhMB6REZQGa31y0oYscES3xDMkpbmFbR8WsIal?=
+ =?us-ascii?Q?tmsgD+M8LIaVwivc1ZJVsbYz3pGGsT8nf2rjjslWcn06oJEe/DNsTCk9wrB7?=
+ =?us-ascii?Q?0JNa6znxnk7XhLOq4lqavG5qgmSORdx+DADXD66WnkUMibgunvm4LE8mbQ/f?=
+ =?us-ascii?Q?o8I3aFoAe9jBbjh0oYYhCJa8vkE9/hI8T7rXogfE5GsP1/11eHOVWtdnj0Nq?=
+ =?us-ascii?Q?K0yeNkLjHheOPgfvsxDAW7h6oUUJJfn7xd4UXHC/CsgKAhDgG5miOuY75xvj?=
+ =?us-ascii?Q?jFbC9womtxfmdTQkCpMi2iUK1+jBPCSwwP7Ar9ECaCdlbKepGWmC9y/H5s/a?=
+ =?us-ascii?Q?ebMsuKOJ6W2zjNWIzxZ0maXaDGv83AgBxeyZi51PLvK1uB3F2QlF49+zurab?=
+ =?us-ascii?Q?pApVB64eZ6QBbXnmWgU/5Zo7fNS8GGWc5ww2o1JPfcaRdT56e5JzjA7TvVy2?=
+ =?us-ascii?Q?IgkbPTbBbBQmAMttKbmDA7m06KRXQEs+bUbvD6S1dzDmDUVRNWJoXL1XerUR?=
+ =?us-ascii?Q?jlZODRr9dHO5vlYaQSe1QBIh1566rcJoEQ/7Zwme293Cr1M7K/1cOloSr2Zn?=
+ =?us-ascii?Q?Bi3tamRPW8bxMC1YbKNeAyO118FaYURnmW6gl+IdkdwUBoth0yUOw37FkVPn?=
+ =?us-ascii?Q?ZnrsvlvCFtc87oEE/24/4b8MotCHH2+Rhy+VDFvPJSV0YC1BmHsGTyd2wdOi?=
+ =?us-ascii?Q?dkeYFfIZ2lkIvMFJbgE9KBVnxHIpeS1f9kJntAhyarRoC2LZ6K6hJ9XNAQOH?=
+ =?us-ascii?Q?y4XaQq+yO+25+XdCBoq6vWz+2cK0vWgYNZQh7Q9Z3DiXB1G81BlYRueIB5mx?=
+ =?us-ascii?Q?ErzbgamQ9oJkIqeoaRyYcidAQfWOvsS4WLALYg0KMOzQuiogOn9ZCMjbWXui?=
+ =?us-ascii?Q?vNsVae4uP+SHTtKZd6ldPyKv9WZpBAG4XHiBzUtX7MVQnSxLmxccii459HlW?=
+ =?us-ascii?Q?etcoG5P5HgXtrhD0yL2Q+rmKBZUUqwD5y2lnqMdfKTtVY0g9X/NPgAD/tpot?=
+ =?us-ascii?Q?evCJ4u9B+O53QpdtuFAlZHJ9kVhCF06TCvQ6wbd8VihzEBuzpwtO/0FII5e7?=
+ =?us-ascii?Q?+pf2FfvS3QF3X85BcmFs1JLc+2qhqKlt3hAivx51wTVGMcp8EnG1TGuxCTTq?=
+ =?us-ascii?Q?N7gq7vagEaZfDyNCmOLzMMSs/0ODwFcMc7WlYEVb6c/xL0uh+nsVogRWCpOy?=
+ =?us-ascii?Q?ORT9LWkKJoqAXWhiGkhelkOcHstQlwI8qbX7QeB7+KaV1KEszqDbWyZW7Xvj?=
+ =?us-ascii?Q?mh7XD9mCKo+rWD1sdyjoVoKo3OjT+qIRcHqfLgYvtH8V4kyMpvc5LlE0Mq5T?=
+ =?us-ascii?Q?lxzHVpwd8+s8NlY92JRxhsqCiElpfI1fXmQ1WV5krbcVTNVnmGLlmz2KVNcw?=
+ =?us-ascii?Q?oMrnAAjo1p2iNUQQTLSJF2SWzcXZjrjhWkYgVSvxCeqbUOz8Wq8TyYrRwsGm?=
+ =?us-ascii?Q?GN3+tDHnhYCx3TQrg8Nq+OVpfhGSlZ/lfxlnjYr9JBgJ9nxoN6c7xon/cmMM?=
+ =?us-ascii?Q?/ZzMERVpRyhBkXomBetg//tPoC45F32PRIG6ihnlLV8P9nfqcimFijEGIUHG?=
+ =?us-ascii?Q?F3No12Dgx7pJPDTDpuhGVad8oUP2JcnIWyHWFSWrnTvUDmHJoKPzpqMyFhnO?=
+ =?us-ascii?Q?kQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 964b746f-c8ed-4785-2030-08dacbc82cca
+X-MS-Exchange-CrossTenant-Network-Message-Id: a3d55286-27f9-45f7-7c8e-08dacbc82d29
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2022 13:56:23.3094
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2022 13:56:23.9500
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D/9W1g93dYysRTy48ARVoJuTvyjD9TjCX/3rdqTgG/S7iacUdi35hz1LUPcz0QuCPA1kdvOPIpOC2CrUgsYG9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6829
+X-MS-Exchange-CrossTenant-UserPrincipalName: fspCInE41uHgGNbk1lzFsjcw/1+HwPMA5uci0mlyS4sDyeXYZdYOpcXIIV9RA/DHVY8VdtGF07vZoeEH7H78mA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8137
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -118,229 +118,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tag_8021q definitions are all over the place. Some are exported to
-linux/dsa/8021q.h (visible by DSA core, taggers, switch drivers and
-everyone else), and some are in dsa_priv.h.
+The last remnants in dsa_priv.h are a netlink-related definition for
+which we create a new header, and DSA_MAX_NUM_OFFLOADING_BRIDGES which
+is only used from dsa.c, so move it there.
 
-Move the structures that don't need external visibility into tag_8021q.c,
-and the ones which don't need the world or switch drivers to see them
-into tag_8021q.h.
-
-We also have the tag_8021q.h inclusion from switch.c, which is basically
-the entire reason why tag_8021q.c was built into DSA in commit
-8b6e638b4be2 ("net: dsa: build tag_8021q.c as part of DSA core").
-I still don't know how to better deal with that, so leave it alone.
+Some inclusions need to be adjusted now that we no longer have headers
+included transitively from dsa_priv.h.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/dsa/8021q.h  | 31 +------------------------------
- include/net/dsa.h          |  1 +
- net/dsa/dsa_priv.h         |  8 --------
- net/dsa/port.c             |  1 +
- net/dsa/switch.c           |  1 +
- net/dsa/tag_8021q.c        | 15 +++++++++++++++
- net/dsa/tag_8021q.h        | 27 +++++++++++++++++++++++++++
- net/dsa/tag_ocelot_8021q.c |  1 +
- net/dsa/tag_sja1105.c      |  1 +
- 9 files changed, 48 insertions(+), 38 deletions(-)
- create mode 100644 net/dsa/tag_8021q.h
+ net/dsa/dsa.c           |  4 +++-
+ net/dsa/dsa_priv.h      | 19 -------------------
+ net/dsa/netlink.c       |  2 +-
+ net/dsa/netlink.h       |  8 ++++++++
+ net/dsa/slave.c         |  2 +-
+ net/dsa/switch.c        |  2 +-
+ net/dsa/tag_8021q.c     |  1 -
+ net/dsa/tag_hellcreek.c |  1 -
+ 8 files changed, 14 insertions(+), 25 deletions(-)
+ delete mode 100644 net/dsa/dsa_priv.h
+ create mode 100644 net/dsa/netlink.h
 
-diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
-index 3ed117e299ec..f3664ee12170 100644
---- a/include/linux/dsa/8021q.h
-+++ b/include/linux/dsa/8021q.h
-@@ -5,28 +5,8 @@
- #ifndef _NET_DSA_8021Q_H
- #define _NET_DSA_8021Q_H
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index fee4d28b7304..e5f156940c67 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -21,13 +21,15 @@
  
--#include <linux/refcount.h>
--#include <linux/types.h>
- #include <net/dsa.h>
--
--struct dsa_switch;
--struct dsa_port;
--struct sk_buff;
--struct net_device;
--
--struct dsa_tag_8021q_vlan {
--	struct list_head list;
--	int port;
--	u16 vid;
--	refcount_t refcount;
--};
--
--struct dsa_8021q_context {
--	struct dsa_switch *ds;
--	struct list_head vlans;
--	/* EtherType of RX VID, used for filtering on master interface */
--	__be16 proto;
--};
-+#include <linux/types.h>
- 
- int dsa_tag_8021q_register(struct dsa_switch *ds, __be16 proto);
- 
-@@ -38,15 +18,6 @@ int dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,
- void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
- 				struct dsa_bridge bridge);
- 
--struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
--			       u16 tpid, u16 tci);
--
--void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id,
--		   int *vbid);
--
--struct net_device *dsa_tag_8021q_find_port_by_vbid(struct net_device *master,
--						   int vbid);
--
- u16 dsa_tag_8021q_bridge_vid(unsigned int bridge_num);
- 
- u16 dsa_tag_8021q_standalone_vid(const struct dsa_port *dp);
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index d5bfcb63d4c2..96086289aa9b 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -22,6 +22,7 @@
- #include <net/devlink.h>
- #include <net/switchdev.h>
- 
-+struct dsa_8021q_context;
- struct tc_action;
- struct phy_device;
- struct fixed_phy_status;
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index aa685d2309e0..265659954ffd 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -13,15 +13,7 @@
- 
- #define DSA_MAX_NUM_OFFLOADING_BRIDGES		BITS_PER_LONG
- 
--struct dsa_notifier_tag_8021q_vlan_info;
--
- /* netlink.c */
- extern struct rtnl_link_ops dsa_link_ops __read_mostly;
- 
--/* tag_8021q.c */
--int dsa_switch_tag_8021q_vlan_add(struct dsa_switch *ds,
--				  struct dsa_notifier_tag_8021q_vlan_info *info);
--int dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,
--				  struct dsa_notifier_tag_8021q_vlan_info *info);
--
- #endif
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index e6d5c05b41b4..67ad1adec2a2 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -16,6 +16,7 @@
+ #include "devlink.h"
+ #include "dsa.h"
+-#include "dsa_priv.h"
+ #include "master.h"
++#include "netlink.h"
  #include "port.h"
  #include "slave.h"
- #include "switch.h"
-+#include "tag_8021q.h"
- 
- /**
-  * dsa_port_notify - Notify the switching fabric of changes to a port
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 4420af0081af..e53cc0c3c933 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -17,6 +17,7 @@
- #include "port.h"
- #include "slave.h"
- #include "switch.h"
-+#include "tag_8021q.h"
- 
- static unsigned int dsa_switch_fastest_ageing_time(struct dsa_switch *ds,
- 						   unsigned int ageing_time)
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index abd994dc76d5..ac2eb933106e 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -11,6 +11,7 @@
- #include "port.h"
  #include "switch.h"
  #include "tag.h"
-+#include "tag_8021q.h"
  
- /* Binary structure of the fake 12-bit VID field (when the TPID is
-  * ETH_P_DSA_8021Q):
-@@ -63,6 +64,20 @@
- #define DSA_8021Q_PORT(x)		(((x) << DSA_8021Q_PORT_SHIFT) & \
- 						 DSA_8021Q_PORT_MASK)
++#define DSA_MAX_NUM_OFFLOADING_BRIDGES		BITS_PER_LONG
++
+ static DEFINE_MUTEX(dsa2_mutex);
+ LIST_HEAD(dsa_tree_list);
  
-+struct dsa_tag_8021q_vlan {
-+	struct list_head list;
-+	int port;
-+	u16 vid;
-+	refcount_t refcount;
-+};
-+
-+struct dsa_8021q_context {
-+	struct dsa_switch *ds;
-+	struct list_head vlans;
-+	/* EtherType of RX VID, used for filtering on master interface */
-+	__be16 proto;
-+};
-+
- u16 dsa_tag_8021q_bridge_vid(unsigned int bridge_num)
- {
- 	/* The VBID value of 0 is reserved for precise TX, but it is also
-diff --git a/net/dsa/tag_8021q.h b/net/dsa/tag_8021q.h
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+deleted file mode 100644
+index 265659954ffd..000000000000
+--- a/net/dsa/dsa_priv.h
++++ /dev/null
+@@ -1,19 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*
+- * net/dsa/dsa_priv.h - Hardware switch handling
+- * Copyright (c) 2008-2009 Marvell Semiconductor
+- */
+-
+-#ifndef __DSA_PRIV_H
+-#define __DSA_PRIV_H
+-
+-#include <linux/phy.h>
+-#include <linux/netdevice.h>
+-#include <net/dsa.h>
+-
+-#define DSA_MAX_NUM_OFFLOADING_BRIDGES		BITS_PER_LONG
+-
+-/* netlink.c */
+-extern struct rtnl_link_ops dsa_link_ops __read_mostly;
+-
+-#endif
+diff --git a/net/dsa/netlink.c b/net/dsa/netlink.c
+index 824b09d904cc..bd4bbaf851de 100644
+--- a/net/dsa/netlink.c
++++ b/net/dsa/netlink.c
+@@ -4,7 +4,7 @@
+ #include <linux/netdevice.h>
+ #include <net/rtnetlink.h>
+ 
+-#include "dsa_priv.h"
++#include "netlink.h"
+ #include "slave.h"
+ 
+ static const struct nla_policy dsa_policy[IFLA_DSA_MAX + 1] = {
+diff --git a/net/dsa/netlink.h b/net/dsa/netlink.h
 new file mode 100644
-index 000000000000..b75cbaa028ef
+index 000000000000..7eda2fa15722
 --- /dev/null
-+++ b/net/dsa/tag_8021q.h
-@@ -0,0 +1,27 @@
++++ b/net/dsa/netlink.h
+@@ -0,0 +1,8 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +
-+#ifndef __DSA_TAG_8021Q_H
-+#define __DSA_TAG_8021Q_H
++#ifndef __DSA_NETLINK_H
++#define __DSA_NETLINK_H
 +
-+#include <net/dsa.h>
-+
-+#include "switch.h"
-+
-+struct sk_buff;
-+struct net_device;
-+
-+struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
-+			       u16 tpid, u16 tci);
-+
-+void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id,
-+		   int *vbid);
-+
-+struct net_device *dsa_tag_8021q_find_port_by_vbid(struct net_device *master,
-+						   int vbid);
-+
-+int dsa_switch_tag_8021q_vlan_add(struct dsa_switch *ds,
-+				  struct dsa_notifier_tag_8021q_vlan_info *info);
-+int dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,
-+				  struct dsa_notifier_tag_8021q_vlan_info *info);
++extern struct rtnl_link_ops dsa_link_ops __read_mostly;
 +
 +#endif
-diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-index 7f0c2d71e89b..1f0b8c20eba5 100644
---- a/net/dsa/tag_ocelot_8021q.c
-+++ b/net/dsa/tag_ocelot_8021q.c
-@@ -12,6 +12,7 @@
- #include <linux/dsa/ocelot.h>
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 337cbd80633a..aab79c355224 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -23,9 +23,9 @@
+ #include <linux/netpoll.h>
  
+ #include "dsa.h"
+-#include "dsa_priv.h"
+ #include "port.h"
+ #include "master.h"
++#include "netlink.h"
+ #include "slave.h"
  #include "tag.h"
-+#include "tag_8021q.h"
  
- #define OCELOT_8021Q_NAME "ocelot-8021q"
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index e53cc0c3c933..d5bc4bb7310d 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -13,7 +13,7 @@
+ #include <net/switchdev.h>
  
-diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index 8f581617e15c..f14f51b41491 100644
---- a/net/dsa/tag_sja1105.c
-+++ b/net/dsa/tag_sja1105.c
-@@ -7,6 +7,7 @@
- #include <linux/packing.h>
+ #include "dsa.h"
+-#include "dsa_priv.h"
++#include "netlink.h"
+ #include "port.h"
+ #include "slave.h"
+ #include "switch.h"
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index ac2eb933106e..b1263917fcb2 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -7,7 +7,6 @@
+ #include <linux/if_vlan.h>
+ #include <linux/dsa/8021q.h>
  
+-#include "dsa_priv.h"
+ #include "port.h"
+ #include "switch.h"
  #include "tag.h"
-+#include "tag_8021q.h"
+diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+index a047041e7686..71884296fc70 100644
+--- a/net/dsa/tag_hellcreek.c
++++ b/net/dsa/tag_hellcreek.c
+@@ -11,7 +11,6 @@
+ #include <linux/skbuff.h>
+ #include <net/dsa.h>
  
- #define SJA1105_NAME				"sja1105"
- #define SJA1110_NAME				"sja1110"
+-#include "dsa_priv.h"
+ #include "tag.h"
+ 
+ #define HELLCREEK_NAME		"hellcreek"
 -- 
 2.34.1
 
