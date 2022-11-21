@@ -2,87 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5F9E6318A0
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 03:29:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6976318F2
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 04:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbiKUC3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Nov 2022 21:29:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        id S229547AbiKUDe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Nov 2022 22:34:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiKUC3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 21:29:18 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6502A95F
-        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 18:29:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668997757; x=1700533757;
-  h=from:to:cc:subject:date:message-id;
-  bh=V9i1b20xtvNGSzyV1wht8aJ3//5lbdD6Lro2VAybm08=;
-  b=ng5hu6QUT2phGnpDBsCfAvqEZj7tq7Y3T5KUNYt8k0aPLRu7wIX2DTwm
-   xGp+sm69fWrr8rzXxiZUwjUOl+I5C11YpiGfrTvuaKquhidH1K6rAJ5Di
-   a7CCiE7Slwn84JgPKw3hjCXSIbLyjcllPe8MZl7eMRoe9LXTgUUEdLHUn
-   tbZHBcihjuUqhas3YMTaL7SAIoGTzopdvEcXg5ZPWe9cdlCNpouPLTuSE
-   RWfatilK+fKpyWxOdQ6BD29QwMCV7nltHyx+rnc5HJsXmIOHLL+lrrH2f
-   AZVj9KKgu1cHBL6098qShliKT7f93xQYjN1d8pXBuyh20C3SHh0gUuy47
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10537"; a="375601909"
-X-IronPort-AV: E=Sophos;i="5.96,180,1665471600"; 
-   d="scan'208";a="375601909"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2022 18:29:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10537"; a="709641471"
-X-IronPort-AV: E=Sophos;i="5.96,180,1665471600"; 
-   d="scan'208";a="709641471"
-Received: from ssid-ilbpg3.png.intel.com ([10.88.227.111])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Nov 2022 18:29:14 -0800
-From:   Lai Peter Jun Ann <jun.ann.lai@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-        Lai Peter Jun Ann <jun.ann.lai@intel.com>
-Subject: [PATCH iproute2-next v1] tc_util: Change datatype for maj to avoid overflow issue
-Date:   Mon, 21 Nov 2022 10:29:09 +0800
-Message-Id: <1668997749-5942-1-git-send-email-jun.ann.lai@intel.com>
-X-Mailer: git-send-email 1.9.1
-X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229455AbiKUDeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Nov 2022 22:34:25 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8BA2A72F
+        for <netdev@vger.kernel.org>; Sun, 20 Nov 2022 19:34:24 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NFtFL09dLzqSPT;
+        Mon, 21 Nov 2022 11:30:30 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 21 Nov
+ 2022 11:34:22 +0800
+From:   Yuan Can <yuancan@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <sfr@canb.auug.org.au>, <error27@gmail.com>,
+        <bigeasy@linutronix.de>, <colin.i.king@gmail.com>,
+        <yang.lee@linux.alibaba.com>, <josright123@gmail.com>,
+        <netdev@vger.kernel.org>
+CC:     <yuancan@huawei.com>
+Subject: [PATCH] net: dm9051: Fix missing dev_kfree_skb() in dm9051_loop_rx()
+Date:   Mon, 21 Nov 2022 03:32:26 +0000
+Message-ID: <20221121033226.91461-1-yuancan@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value by stroul() is unsigned long int. Hence the datatype
-for maj should defined as unsigned long to avoid overflow issue.
+The dm9051_loop_rx() returns without release skb when dm9051_stop_mrcmd()
+returns error, free the skb to avoid this leak.
 
-Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Signed-off-by: Lai Peter Jun Ann <jun.ann.lai@intel.com>
+Fixes: 2dc95a4d30ed ("net: Add dm9051 driver")
+Signed-off-by: Yuan Can <yuancan@huawei.com>
 ---
- tc/tc_util.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/davicom/dm9051.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 44137ad..f8d9c88 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -74,7 +74,7 @@ const char *get_tc_lib(void)
+diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/davicom/dm9051.c
+index a523ddda7609..de7105a84747 100644
+--- a/drivers/net/ethernet/davicom/dm9051.c
++++ b/drivers/net/ethernet/davicom/dm9051.c
+@@ -798,8 +798,10 @@ static int dm9051_loop_rx(struct board_info *db)
+ 		}
  
- int get_qdisc_handle(__u32 *h, const char *str)
- {
--	__u32 maj;
-+	unsigned long maj;
- 	char *p;
+ 		ret = dm9051_stop_mrcmd(db);
+-		if (ret)
++		if (ret) {
++			dev_kfree_skb(skb);
+ 			return ret;
++		}
  
- 	maj = TC_H_UNSPEC;
+ 		skb->protocol = eth_type_trans(skb, db->ndev);
+ 		if (db->ndev->features & NETIF_F_RXCSUM)
 -- 
-1.9.1
+2.17.1
 
