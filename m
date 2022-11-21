@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 141F6631C3F
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:00:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E34AF631C3B
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 10:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229982AbiKUJA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 04:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50522 "EHLO
+        id S229973AbiKUJAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 04:00:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbiKUJAT (ORCPT
+        with ESMTP id S229968AbiKUJAT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 04:00:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EB7193CD
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:00:18 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048C019C05
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 01:00:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98F6FB80D79
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91DBB60F6D
         for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 09:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 45419C433B5;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6603C43470;
         Mon, 21 Nov 2022 09:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669021216;
-        bh=ChOyvrwmFHZrNADqe8vJQ0hfa4V8zkvs8z9H4fGQNFk=;
+        s=k20201202; t=1669021217;
+        bh=1CeqnEykMfRulD+FH2fFJxcsoD356Avs8pwtKpBUaeU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R0LZ7oatrxHvl3VVxT5E8AU/U9gOmneCavCAhgdpw7yaSouOhNE3EqPXeHI7fkjaq
-         XtR5NLVOCscTAV58UhNqLn7JPQEF2/T1ceW/TibRqairKVqvjyzqCSPnWzjHwdWNke
-         wLulhvi+gh0SUWumZ3LwGR2WtvGzA/SekbpQr6e6b3BMJ0lWalr6HfYeFTfuYygApj
-         e+JI8L4jhs3ELxIR4KvxAkTxal9BQ6DjyoBZ4SU+l2zWywNoqPdrz6BCuCqhoU3e9I
-         ccMTACuNG8QuaTe7Jmp05CpSJTAJDP1zyhO09nkUxmBPmoQ/XutW6eroT7+DYA3uQz
-         nsd+3cNlKwebw==
+        b=TUFs+sWJ1a72X98FM/3slto2gXbCDk3Bc9CmC9uV98dlWcp3j+v/p7lW6cZ7pu3/E
+         4t1AKRvaFzMHkRAmQ3yJORcG/JjBXqHT8Nvhcfe1BP1UMdb6wy5xNvwAUmX1QYOO/f
+         /pU9mVsoWqEUtIHAKBhmvnEEvJjkfWq4NMLLBZoXOdwh5lJhgqSMh7CKif2o4NsvNL
+         zJCSbLtzm9ISoxKruUw7l02jdgYS5vP2gPedkeBh6mBumvg7yWqLmlbbbNEf9HLeqP
+         7nKc/r/1gyXYlp4RRpODgxsxtVsvVoyaJZzVEBkhjryxJkSpa05F86fYZVVMUpI2S0
+         5VBpHKLTjP1hw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 278C3E29F3F;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2AA3C395FF;
         Mon, 21 Nov 2022 09:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/3] nfc: Fix potential memory leak of skb
+Subject: Re: [PATCH net-next v4 0/3] nfp: IPsec offload support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166902121615.26857.6390374258212309010.git-patchwork-notify@kernel.org>
+Message-Id: <166902121685.26857.7983343247206670415.git-patchwork-notify@kernel.org>
 Date:   Mon, 21 Nov 2022 09:00:16 +0000
-References: <20221117113714.12776-1-shangxiaojing@huawei.com>
-In-Reply-To: <20221117113714.12776-1-shangxiaojing@huawei.com>
-To:     Shang XiaoJing <shangxiaojing@huawei.com>
-Cc:     krzysztof.kozlowski@linaro.org, pavel@denx.de,
-        u.kleine-koenig@pengutronix.de, kuba@kernel.org, michael@walle.cc,
-        cuissard@marvell.com, sameo@linux.intel.com,
-        clement.perrochaud@nxp.com, r.baldyga@samsung.com,
-        netdev@vger.kernel.org
+References: <20221117132102.678708-1-simon.horman@corigine.com>
+In-Reply-To: <20221117132102.678708-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        leon@kernel.org, chengtian.liu@corigine.com,
+        huanhuan.wang@corigine.com, yinjun.zhang@corigine.com,
+        louis.peens@corigine.com, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,27 +61,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 17 Nov 2022 19:37:11 +0800 you wrote:
-> There are still somewhere maybe leak the skb, fix the memleaks by adding
-> fail path.
+On Thu, 17 Nov 2022 14:20:59 +0100 you wrote:
+> Huanhuan Wang says:
 > 
-> Shang XiaoJing (3):
->   nfc: nfcmrvl: Fix potential memory leak in nfcmrvl_i2c_nci_send()
->   nfc: nxp-nci: Fix potential memory leak in nxp_nci_send()
->   nfc: s3fwrn5: Fix potential memory leak in s3fwrn5_nci_send()
+> this series adds support for IPsec offload to the NFP driver.
+> 
+> It covers three enhancements:
+> 
+> 1. Patches 1/3:
+>    - Extend the capability word and control word to to support
+>      new features.
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/3] nfc: nfcmrvl: Fix potential memory leak in nfcmrvl_i2c_nci_send()
-    https://git.kernel.org/netdev/net/c/e204ead35401
-  - [2/3] nfc: nxp-nci: Fix potential memory leak in nxp_nci_send()
-    https://git.kernel.org/netdev/net/c/614761e1119c
-  - [3/3] nfc: s3fwrn5: Fix potential memory leak in s3fwrn5_nci_send()
-    https://git.kernel.org/netdev/net/c/60dcb5ff55e5
+  - [net-next,v4,1/3] nfp: extend capability and control words
+    https://git.kernel.org/netdev/net-next/c/484963ce9f1e
+  - [net-next,v4,2/3] nfp: add framework to support ipsec offloading
+    https://git.kernel.org/netdev/net-next/c/57f273adbcd4
+  - [net-next,v4,3/3] nfp: implement xfrm callbacks and expose ipsec offload feature to upper layer
+    https://git.kernel.org/netdev/net-next/c/859a497fe80c
 
 You are awesome, thank you!
 -- 
