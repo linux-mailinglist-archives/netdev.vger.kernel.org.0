@@ -2,93 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E9BE632D36
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA92632D3B
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 20:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbiKUTrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 14:47:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37826 "EHLO
+        id S231629AbiKUTrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 14:47:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiKUTr1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:47:27 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E71D48DA
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:47:22 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-3a7081e3b95so19545547b3.1
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:47:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=miGLX/uer5DgQxU7dvQq3Q5LleCS+CJp67dSlDVaExE=;
-        b=W2eOWoW8GzSBhampXzP/DkPaV0qxqLK7MXncDfdEBhfBV0RYg1+uYg9j9oBTndzM3T
-         96Ik633xtnuZok5Z8y8RfrMiVr+a75bpLEwv/Rl49WaGFUifA/lPteT7VUVt2P1uaNhQ
-         p6q1xNDRV1aNGPRDHmUu9DNNwkjc6hHvJIPJOp2GqIagFJX82jlHrGYZvUM01JjJD3YY
-         Xs/LFjGEpBLKr7g+8yqOzY+gYblQXhLmDy2WnCKnCLP1bT6JOr1nxQsyB5lsnEqVPY3q
-         kgAF8ahZxe+UEz+dCBQN3snrVjZ4vOkXoAlPIL0CyKCWtXsWjSGEHAsdyGjs/gC+GDmJ
-         DHdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=miGLX/uer5DgQxU7dvQq3Q5LleCS+CJp67dSlDVaExE=;
-        b=crd/N+LW01SUkaLOtD3oJabt+3/mSrMS7YELBGfCE5mN51mZR6yLLDIodHijVsvzNR
-         rmaE4z5sT8rV/BLWw8tMRdv6gz0msOb3rT8ncp0oMCeAI4IMDvWYQyjrfDQN9Y+wgSWq
-         FG7/NEKc2E4vBXH3AXxE7Sba/QONIqV4rBQ9FB/ZhCQQflBu8uuNHNTqxYsG1Xb4FTzd
-         ga0bkGEGLakV1CogQikanxhayPcqERoAgOZHqGXHeN0ToqIvNTUfO39eBQb0MvGvpdWn
-         G78WSHIVYhWsX7U0ByeFyHE2UBim2hRQiJDdm7lxyTZRvpvm7WNBgNEAuRMyCHy2FEGY
-         GpUQ==
-X-Gm-Message-State: ANoB5pnc7IvElhBhsjW7yNHn9flGVpHsVZphYa+hjB8ljhK4ClNFeTPF
-        XuRQIWttMHZg/TbqORkBz1wggODYL7oAr1wAWQ57Eg==
-X-Google-Smtp-Source: AA0mqf7B/dgQPr7bn/BklMbZlqJRMsNTBtq6JKRQPaSuWwvWGzkQMMVJYbTG6638TJXaq3twZOa68lSzR7DB2QQgO3c=
-X-Received: by 2002:a0d:c103:0:b0:370:7a9a:564 with SMTP id
- c3-20020a0dc103000000b003707a9a0564mr18324139ywd.278.1669060041149; Mon, 21
- Nov 2022 11:47:21 -0800 (PST)
+        with ESMTP id S231585AbiKUTrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 14:47:36 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C39EC46;
+        Mon, 21 Nov 2022 11:47:33 -0800 (PST)
+Received: from zn.tnic (p200300ea9733e725329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e725:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 87EAA1EC03EA;
+        Mon, 21 Nov 2022 20:47:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1669060051;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=0uapQ/jko4KpvJWg/ZoraTvmt2pwq0IphKEQ+GXfl3Y=;
+        b=P+3PDmG5v2VqfCkJBeBXHsG2E9wN1mQ9GUtM7JFSOn6FV1oh8ntwuLJ3DXPfc7qcHgfqto
+        7iCIJhCNXJJlT/j2dnMd/h/iHxBjxHzwT1EtHqDTmPY/wJf5B4hXCEbpfz1tFUF1IeO//h
+        o+kwT8fTPFyKRF+o1TF/lh1Z0sVPayM=
+Date:   Mon, 21 Nov 2022 20:47:31 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [Patch v3 02/14] x86/ioapic: Gate decrypted mapping on
+ cc_platform_has() attribute
+Message-ID: <Y3vV0/NoRcIgYiHM@zn.tnic>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-3-git-send-email-mikelley@microsoft.com>
+ <Y3uCLPInEaA0ufN4@zn.tnic>
+ <BYAPR21MB16881FF9B49F546CDDE95486D70A9@BYAPR21MB1688.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-References: <20221121182615.90843-1-nbd@nbd.name> <3a9c2e94-3c45-5f83-c703-75e1cde13be1@nbd.name>
-In-Reply-To: <3a9c2e94-3c45-5f83-c703-75e1cde13be1@nbd.name>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 21 Nov 2022 11:47:10 -0800
-Message-ID: <CANn89iKps9pM=DPn1aWF1SDMqrr=HHkHL8VofVHThUmtqzn=tQ@mail.gmail.com>
-Subject: Re: [PATCH] netfilter: nf_flow_table: add missing locking
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netfilter-devel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB16881FF9B49F546CDDE95486D70A9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 11:45 AM Felix Fietkau <nbd@nbd.name> wrote:
->
-> On 21.11.22 19:26, Felix Fietkau wrote:
-> > nf_flow_table_block_setup and the driver TC_SETUP_FT call can modify the flow
-> > block cb list while they are being traversed elsewhere, causing a crash.
-> > Add a write lock around the calls to protect readers
-> >
-> > Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> Sorry, I forgot to add this:
->
-> Reported-by: Chad Monroe <chad.monroe@smartrg.com>
->
-> - Felix
+On Mon, Nov 21, 2022 at 04:43:01PM +0000, Michael Kelley (LINUX) wrote:
+> I'm OK with naming it very narrowly.  When/if there's a more general
+> case later, we can generalize to whatever degree is appropriate.
 
-Hi Felix
+Exactly.
 
-Could you also add a Fixes: tag ?
+Those defines are free to change when we see fit.
 
-Thanks.
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
