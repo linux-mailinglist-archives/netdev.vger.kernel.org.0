@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1650E6323A0
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:32:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 637CC6323A3
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 14:32:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbiKUNcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 08:32:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
+        id S230294AbiKUNcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 08:32:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiKUNci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:32:38 -0500
+        with ESMTP id S230218AbiKUNcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 08:32:42 -0500
 Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729F92DC5
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653FE11471
         for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 05:32:34 -0800 (PST)
 Received: from [192.168.16.41] (helo=fisk.sw.ru)
         by relay.virtuozzo.com with esmtp (Exim 4.95)
         (envelope-from <nikolay.borisov@virtuozzo.com>)
-        id 1ox6th-0011Rq-2y;
+        id 1ox6th-0011Rq-GP;
         Mon, 21 Nov 2022 14:31:41 +0100
 From:   Nikolay Borisov <nikolay.borisov@virtuozzo.com>
 To:     nhorman@tuxdriver.com
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org, den@virtuozzo.com, khorenko@virtuozzo.com,
         Nikolay Borisov <nikolay.borisov@virtuozzo.com>
-Subject: [PATCH net-next 2/3] drop_monitor: Add namespace filtering/reporting for hardware drops
-Date:   Mon, 21 Nov 2022 15:31:31 +0200
-Message-Id: <20221121133132.1837107-3-nikolay.borisov@virtuozzo.com>
+Subject: [PATCH net-next 3/3] selftests: net: Add drop monitor tests for namespace filtering functionality
+Date:   Mon, 21 Nov 2022 15:31:32 +0200
+Message-Id: <20221121133132.1837107-4-nikolay.borisov@virtuozzo.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221121133132.1837107-1-nikolay.borisov@virtuozzo.com>
 References: <20221121133132.1837107-1-nikolay.borisov@virtuozzo.com>
@@ -40,109 +40,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for filtering and conveying the netnamespace where a
-particular drop event occured. This is counterpart to the software
-drop events support that was added earlier.
+Extend the current set of tests with new ones covering the updated
+functionality allowing to filter events based on the net namespace they
+originated from. The new set of tests:
+
+Software drops test
+    TEST: No filtering                                                  [ OK ]
+    TEST: Filter everything                                             [ OK ]
+    TEST: NS2 packet drop filtered                                      [ OK ]
+    TEST: Filtering reset                                               [ OK ]
+    TEST: Filtering disabled                                            [ OK ]
+
+Hardware drops test
+    TEST: No filtering                                                  [ OK ]
+    TEST: Filter everything                                             [ OK ]
+    TEST: NS2 packet drop filtered                                      [ OK ]
+    TEST: Filtering reset                                               [ OK ]
+    TEST: Filtering disabled                                            [ OK ]
 
 Signed-off-by: Nikolay Borisov <nikolay.borisov@virtuozzo.com>
 ---
- include/uapi/linux/net_dropmon.h |  1 +
- net/core/drop_monitor.c          | 28 ++++++++++++++++++++++++++--
- 2 files changed, 27 insertions(+), 2 deletions(-)
+ .../selftests/net/drop_monitor_tests.sh       | 127 +++++++++++++++---
+ 1 file changed, 108 insertions(+), 19 deletions(-)
 
-diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 016c36b531da..c6ab91e48b2a 100644
---- a/include/uapi/linux/net_dropmon.h
-+++ b/include/uapi/linux/net_dropmon.h
-@@ -92,6 +92,7 @@ enum net_dm_attr {
- 	NET_DM_ATTR_HW_ENTRIES,			/* nested */
- 	NET_DM_ATTR_HW_ENTRY,			/* nested */
- 	NET_DM_ATTR_HW_TRAP_COUNT,		/* u32 */
-+	NET_DM_ATTR_HW_NS,			/* u32 */
- 	NET_DM_ATTR_SW_DROPS,			/* flag */
- 	NET_DM_ATTR_HW_DROPS,			/* flag */
- 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index d8450c1ee739..e5fba0b0dd4d 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -64,6 +64,7 @@ struct net_dm_stats {
- struct net_dm_hw_entry {
- 	char trap_name[NET_DM_MAX_HW_TRAP_NAME_LEN];
- 	u32 count;
-+	u32 ns_id;
- };
+diff --git a/tools/testing/selftests/net/drop_monitor_tests.sh b/tools/testing/selftests/net/drop_monitor_tests.sh
+index b7650e30d18b..776aabc036f1 100755
+--- a/tools/testing/selftests/net/drop_monitor_tests.sh
++++ b/tools/testing/selftests/net/drop_monitor_tests.sh
+@@ -13,14 +13,13 @@ TESTS="
+ 	hw_drops
+ "
  
- struct net_dm_hw_entries {
-@@ -355,6 +356,9 @@ static int net_dm_hw_entry_put(struct sk_buff *msg,
- 	if (nla_put_u32(msg, NET_DM_ATTR_HW_TRAP_COUNT, hw_entry->count))
- 		goto nla_put_failure;
+-IP="ip -netns ns1"
+-TC="tc -netns ns1"
+-DEVLINK="devlink -N ns1"
+-NS_EXEC="ip netns exec ns1"
+ NETDEVSIM_PATH=/sys/bus/netdevsim/
+-DEV_ADDR=1337
+-DEV=netdevsim${DEV_ADDR}
+-DEVLINK_DEV=netdevsim/${DEV}
++DEV1_ADDR=1336
++DEV2_ADDR=1337
++DEV1=netdevsim${DEV1_ADDR}
++DEV2=netdevsim${DEV2_ADDR}
++DEVLINK_DEV1=netdevsim/${DEV1}
++DEVLINK_DEV2=netdevsim/${DEV2}
  
-+	if (nla_put_u32(msg, NET_DM_ATTR_HW_NS, hw_entry->ns_id))
-+		goto nla_put_failure;
+ log_test()
+ {
+@@ -44,20 +43,29 @@ setup()
+ 
+ 	set -e
+ 	ip netns add ns1
+-	$IP link add dummy10 up type dummy
+-
+-	$NS_EXEC echo "$DEV_ADDR 1" > ${NETDEVSIM_PATH}/new_device
++	ip netns add ns2
++	NS1INUM=$(findmnt -t nsfs | grep -m1 ns1 | sed -rn 's/.*net:\[([[:digit:]]+)\].*/\1/p')
++	NS2INUM=$(findmnt -t nsfs | grep -m1 ns2 | sed -rn 's/.*net:\[([[:digit:]]+)\].*/\1/p')
++	ip -netns ns1 link add dummy10 up type dummy
++	ip -netns ns2 link add dummy10 up type dummy
 +
- 	nla_nest_end(msg, attr);
++	ip netns exec ns1 echo "$DEV1_ADDR 1" > ${NETDEVSIM_PATH}/new_device
++	ip netns exec ns2 echo "$DEV2_ADDR 1" > ${NETDEVSIM_PATH}/new_device
+ 	udevadm settle
+-	local netdev=$($NS_EXEC ls ${NETDEVSIM_PATH}/devices/${DEV}/net/)
+-	$IP link set dev $netdev up
++	local netdev=$(ip netns exec ns1 ls ${NETDEVSIM_PATH}/devices/${DEV1}/net/)
++	ip -netns ns1 link set dev $netdev up
++	netdev=$(ip netns exec ns2 ls ${NETDEVSIM_PATH}/devices/${DEV2}/net/)
++	ip -netns ns2 link set dev $netdev up
  
- 	return 0;
-@@ -452,6 +456,21 @@ static void net_dm_hw_summary_work(struct work_struct *work)
- 	kfree(hw_entries);
+ 	set +e
  }
  
-+static bool hw_entry_matches(struct net_dm_hw_entry *entry,
-+			     const char *trap_name, unsigned long ns_id)
-+{
-+	if (net_dm_ns && entry->ns_id == net_dm_ns &&
-+	    !strncmp(entry->trap_name, trap_name,
-+		     NET_DM_MAX_HW_TRAP_NAME_LEN - 1))
-+		return true;
-+	else if (net_dm_ns == 0 && entry->ns_id == ns_id &&
-+		 !strncmp(entry->trap_name, trap_name,
-+			  NET_DM_MAX_HW_TRAP_NAME_LEN - 1))
-+		return true;
-+	else
-+		return false;
-+}
+ cleanup()
+ {
+-	$NS_EXEC echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
++	ip netns exec ns1 echo "$DEV1_ADDR" > ${NETDEVSIM_PATH}/del_device
++	ip netns exec ns2 echo "$DEV2_ADDR" > ${NETDEVSIM_PATH}/del_device
+ 	ip netns del ns1
++	ip netns del ns2
+ }
+ 
+ sw_drops_test()
+@@ -69,13 +77,53 @@ sw_drops_test()
+ 
+ 	local dir=$(mktemp -d)
+ 
+-	$TC qdisc add dev dummy10 clsact
+-	$TC filter add dev dummy10 egress pref 1 handle 101 proto ip \
++	tc -netns ns1 qdisc add dev dummy10 clsact
++	tc -netns ns2 qdisc add dev dummy10 clsact
++	tc -netns ns1 filter add dev dummy10 egress pref 1 handle 101 proto ip \
++		flower dst_ip 192.0.2.10 action drop
++	tc -netns ns2 filter add dev dummy10 egress pref 1 handle 101 proto ip \
+ 		flower dst_ip 192.0.2.10 action drop
+ 
+-	$NS_EXEC mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
++	ip netns exec ns1 mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
+ 		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
+ 		-d 100msec &
++	ip netns exec ns2 mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
++		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
++		-d 100msec &
 +
- static void
- net_dm_hw_trap_summary_probe(void *ignore, const struct devlink *devlink,
- 			     struct sk_buff *skb,
-@@ -461,11 +480,15 @@ net_dm_hw_trap_summary_probe(void *ignore, const struct devlink *devlink,
- 	struct net_dm_hw_entry *hw_entry;
- 	struct per_cpu_dm_data *hw_data;
- 	unsigned long flags;
-+	unsigned long ns_id;
- 	int i;
- 
- 	if (metadata->trap_type == DEVLINK_TRAP_TYPE_CONTROL)
- 		return;
- 
-+	if (net_dm_ns && dev_net(skb->dev)->ns.inum != net_dm_ns)
-+		return;
++	# Test that if we set to 0 we get all packets
++	echo -e  "set alertmode summary\nset ns 0\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q $NS1INUM $dir/output.txt
++	local ret1=$?
++	grep -q $NS2INUM $dir/output.txt
++	local ret2=$?
++	(( ret1 == 0 && ret2 == 0 ))
++	log_test $? 0 "No filtering"
 +
- 	hw_data = this_cpu_ptr(&dm_hw_cpu_data);
- 	spin_lock_irqsave(&hw_data->lock, flags);
- 	hw_entries = hw_data->hw_entries;
-@@ -473,10 +496,10 @@ net_dm_hw_trap_summary_probe(void *ignore, const struct devlink *devlink,
- 	if (!hw_entries)
- 		goto out;
++	# Set filter to a non-existant ns and we should see nothing
++	echo -e  "set alertmode summary\nset ns -1\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q drops $dir/output.txt
++	log_test $? 1 "Filter everything"
++
++	# Set filter to NS1 so we shouldn't see NS2
++	echo -e  "set ns $NS1INUM\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q $NS2INUM $dir/output.txt
++	log_test $? 1 "NS2 packet drop filtered"
++
++	# Return filter to 0 and ensure everything is fine
++	echo -e  "set ns 0\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q $NS1INUM $dir/output.txt
++	ret1=$?
++	grep -q $NS2INUM $dir/output.txt
++	ret2=$?
++	(( ret1 == 0 && ret2 == 0 ))
++	log_test $? 0 "Filtering reset"
++
++	# disable ns capability at all
++	echo -e  "set ns off\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q ns: $dir/output.txt
++	log_test $? 1 "Filtering disabled"
++
+ 	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
+ 	(( $(tshark -r ${dir}/packets.pcap \
+ 		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) != 0))
+@@ -83,7 +131,8 @@ sw_drops_test()
  
-+	ns_id = dev_net(skb->dev)->ns.inum;
- 	for (i = 0; i < hw_entries->num_entries; i++) {
- 		hw_entry = &hw_entries->entries[i];
--		if (!strncmp(hw_entry->trap_name, metadata->trap_name,
--			     NET_DM_MAX_HW_TRAP_NAME_LEN - 1)) {
-+		if (hw_entry_matches(hw_entry, metadata->trap_name, ns_id)) {
- 			hw_entry->count++;
- 			goto out;
- 		}
-@@ -489,6 +512,7 @@ net_dm_hw_trap_summary_probe(void *ignore, const struct devlink *devlink,
- 		NET_DM_MAX_HW_TRAP_NAME_LEN - 1);
- 	hw_entry->count = 1;
- 	hw_entries->num_entries++;
-+	hw_entry->ns_id = ns_id;
+ 	rm ${dir}/packets.pcap
  
- 	if (!timer_pending(&hw_data->send_timer)) {
- 		hw_data->send_timer.expires = jiffies + dm_delay * HZ;
+-	{ kill %% && wait %%; } 2>/dev/null
++	{ kill $(jobs -p) && wait $(jobs -p); } 2> /dev/null
++
+ 	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
+ 	(( $(tshark -r ${dir}/packets.pcap \
+ 		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) == 0))
+@@ -103,16 +152,56 @@ hw_drops_test()
+ 
+ 	local dir=$(mktemp -d)
+ 
+-	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action trap
++	devlink -N ns1 trap set $DEVLINK_DEV1 trap blackhole_route action trap
++	devlink -N ns2 trap set $DEVLINK_DEV2 trap blackhole_route action trap
++
++	# Test that if we set to 0 we get all packets
++	echo -e  "set alertmode summary\nset ns 0\nset hw true\nstart" \
++		| timeout -s 2 5 dropwatch &> $dir/output.txt
++	#echo -e  "set hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS1INUM\]" $dir/output.txt
++	local ret1=$?
++	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS2INUM\]" $dir/output.txt
++	local ret2=$?
++	(( ret1 == 0 && ret2 == 0 ))
++	log_test $? 0 "No filtering"
++
++	# Set filter to a non-existant ns and we should see nothing
++	echo -e  "set ns -1\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q "\[hardware\]" $dir/output.txt
++	log_test $? 1 "Filter everything"
++
++	# Set filter to NS1 so we shouldn't see NS2
++	echo -e  "set ns $NS1INUM\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q $NS2INUM $dir/output.txt
++	log_test $? 1 "NS2 packet drop filtered"
++
++	# Return filter to 0 and ensure everything is fine
++	echo -e  "set ns 0\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS1INUM\]" $dir/output.txt
++	local ret1=$?
++	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS2INUM\]" $dir/output.txt
++	local ret2=$?
++	(( ret1 == 0 && ret2 == 0 ))
++	log_test $? 0 "Filtering reset"
++
++	# disable ns capability at all
++	echo -e  "set ns off\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
++	grep -q ns: $dir/output.txt
++	log_test $? 1 "Filtering disabled"
++
+ 	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
+ 	(( $(tshark -r ${dir}/packets.pcap \
+ 		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
+ 		| wc -l) != 0))
+ 	log_test $? 0 "Capturing active hardware drops"
+ 
++	cp ${dir}/packets.pcap /root/host/
+ 	rm ${dir}/packets.pcap
+ 
+-	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action drop
++	devlink -N ns1 trap set $DEVLINK_DEV1 trap blackhole_route action drop
++	devlink -N ns2 trap set $DEVLINK_DEV2 trap blackhole_route action drop
++
+ 	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
+ 	(( $(tshark -r ${dir}/packets.pcap \
+ 		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
 -- 
 2.34.1
 
