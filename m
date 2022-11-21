@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2A7F632DD6
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 21:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF485632DDF
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 21:23:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiKUUUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 15:20:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35084 "EHLO
+        id S229645AbiKUUXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 15:23:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiKUUUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 15:20:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F06BF5AA;
-        Mon, 21 Nov 2022 12:20:00 -0800 (PST)
+        with ESMTP id S229476AbiKUUXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 15:23:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2E45654A
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 12:23:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B82D4CE18C1;
-        Mon, 21 Nov 2022 20:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8978EC433D6;
-        Mon, 21 Nov 2022 20:19:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43E706136A
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 20:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 641CDC433C1;
+        Mon, 21 Nov 2022 20:23:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669061997;
-        bh=UuGz2IwXBvI0BbDZ3NR6oeGTtt+ttfHSFxkiX6eMD7s=;
+        s=k20201202; t=1669062230;
+        bh=eIlcdxxc4MGysu44viTWUwFmD9Brj78qjDXhujEcvhc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MxjGoL6zHyMj7IQcaILqqt+4NOkTJv4Xp5tpPsv4sArxmtlFkQNRgdiaZiogTXZD5
-         tk3gyDDlO90efbqWv1ut5/UpbdqPcNYOLEE7tqtVuDzy2dsrdM4y41WRDNqqay3mgg
-         YdCosODoNEagMiMbaDQnKi90d44yGh5lEm3ZVMVXSPnAaae+Ep2BR7PCPaoea0IaAZ
-         3x+hUB3qYL/2FeJrY+tGIthjjEigCEBNBjIb+F0f7gnvfNL8dvuu2oBiSV8Z02pjid
-         fLKjs+Gqxib0XC+pesAoZLXMSFAeC4z9cJnXxm30JM+YVeDg7MxoS3dh4vm9s3Hi0H
-         tLEa17iD5g/Wg==
-Date:   Mon, 21 Nov 2022 12:19:55 -0800
+        b=BV/4ZB0a3gFVwPynFZySJmnlkfNW8LAgjnd9O7Wf8xFlW6M75TiiZC3jyI0avZC9o
+         OIxIOHWZkoY3ARVLfeN7d02+ELl96vsvZv2Th48dG0zbHYM8zPnV6DT14n4FO/uqZS
+         cwQT5/ynYJL9wq44hEYFnFdfLT++5wiC4gvofbZp3vi1h9v3uKzmEiy8q9dlQvC6qq
+         uccFfZag0vnYVpXK1cMQaI9GPGXx4vehNKCAgLy2Sjh//XtICu8+WvxIsWGFCq9NxW
+         C9s4CNDyU0F+XvxGIHr1EhM0kTff9NCFWZJbZKeZ7yUUiePUUXSZTjOwtPx4V6zBMj
+         dkvK0UPcCKwfw==
+Date:   Mon, 21 Nov 2022 12:23:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     xiangxia.m.yue@gmail.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>
-Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
-Message-ID: <20221121121939.0e5e2401@kernel.org>
-In-Reply-To: <20221121100521.56601-2-xiangxia.m.yue@gmail.com>
-References: <20221121100521.56601-1-xiangxia.m.yue@gmail.com>
-        <20221121100521.56601-2-xiangxia.m.yue@gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Nikolay Borisov <nikolay.borisov@virtuozzo.com>,
+        nhorman@tuxdriver.com, davem@davemloft.net, pabeni@redhat.com,
+        netdev@vger.kernel.org, den@virtuozzo.com, khorenko@virtuozzo.com
+Subject: Re: [PATCH net-next 1/3] drop_monitor: Implement namespace
+ filtering/reporting for software drops
+Message-ID: <20221121122349.3b217935@kernel.org>
+In-Reply-To: <Y3uKNf53EkKMmVwh@nanopsycho>
+References: <20221121133132.1837107-1-nikolay.borisov@virtuozzo.com>
+        <20221121133132.1837107-2-nikolay.borisov@virtuozzo.com>
+        <Y3uKNf53EkKMmVwh@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,14 +56,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Nov 2022 18:05:21 +0800 xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Mon, 21 Nov 2022 15:24:53 +0100 Jiri Pirko wrote:
+> >+	NET_DM_ATTR_NS,				/* u32 */  
 > 
-> The commit 20b6cc34ea74 ("bpf: Avoid hashtab deadlock with map_locked"),
-> try to fix deadlock, but in some case, the deadlock occurs:
-> 
-> * CPUn in task context with K1, and taking lock.
-> * CPUn interrupted by NMI context, with K2.
-> * They are using the same bucket, but different map_locked.
+> I believe that we need to add a CI warning for this kind of UAPI
+> breakage...
 
-You should really put bpf@ in the CC line for bpf patches.
+Do you have any ideas on how to code it up in python?
+I don't think we let too many such errors thru.
+
+Nikolay, you can't add in the middle of an enum in uAPI because binary
+backward compatibility would break. Always add attrs at the end / before
+the "cnt" or "max" member.
