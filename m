@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B92DD63201D
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 12:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E4A763204C
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 12:21:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiKULPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 06:15:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39720 "EHLO
+        id S230249AbiKULVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 06:21:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbiKULOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 06:14:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD26FBFF64
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 03:10:23 -0800 (PST)
+        with ESMTP id S230309AbiKULUj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 06:20:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E48C5637
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 03:15:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5149AB80E6D
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7898CC433B5;
-        Mon, 21 Nov 2022 11:10:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F01AE61009
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 11:15:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86411C433D6;
+        Mon, 21 Nov 2022 11:15:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669029020;
-        bh=vmnKL1HNdj9hjcxqAxzTQCOjgehMdyfX0jZXqfWGi5U=;
+        s=k20201202; t=1669029341;
+        bh=SR2CBLWGnJycuKVplG/voy7722IHfuUgP+kIvtzChlY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L1einEpB2zxZ88yjuL1bXoAcayg6qfHsiwPbfhsog70vmdgcAaGZl2sOI5vLztUf3
-         NStw05LspmER4w8bU2yrDacc2ojhWkM3j/3gIyL+RKlwSzvUdTN8A9T1FmFTiiTYwc
-         1glaXGE7c7jPIbgUoMGY7so42miNwBKobuDtfYcFM/vsrpioCXVUZzqFKwjWfWDG95
-         u7AJxN9vXbjAPtXKyCvmktUcNtJpG7KMl24S6qkv2bKxPLc2eaGaPjQ9Z3pptppMd9
-         WnVMsuNzvYlLeS9fmmTBlyvZ3tgcMXxSXa2/lYC2X/olsKOj5dJDCHCGxnaDdaevpM
-         0GjO2OH44c4uw==
-Date:   Mon, 21 Nov 2022 13:10:15 +0200
+        b=FDtxBvq2Jwh3KVZ+JT5JSC1lrKLa5hSdu42cXdgAHmGYg6Zkz2X9e4XoRsi372oi9
+         LRy94VYFrSzragETs1A0UnpwO6DscTQKrEMW09dbc8S23isGUx+ET84qSWvE6u4iRW
+         mjVyQqc6RYBJtCRZcFhChbx6NYW7CvolEK4H6EBUnMYcm5WacWqW1jUutfzjxZQJld
+         9HOrt1+4gDqdu7jM5E+AtXYQtwmvwCI8tsuvqFZqSJmLC3Lgm8LAJyPfyVH+8LjZJa
+         DPbQkIqNGojiatKiMSvwSAJwTDpEmxGtfd/P/pYw4Uf0mvneOhj0xlLjEjgP3+Waqn
+         aRfYhFf/r19zQ==
+Date:   Mon, 21 Nov 2022 13:15:36 +0200
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH xfrm-next v7 4/8] xfrm: add TX datapath support for IPsec
- packet offload mode
-Message-ID: <Y3tcl3H/d9tkj/v8@unreal>
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3td2OjeIL0GN7uO@unreal>
 References: <cover.1667997522.git.leonro@nvidia.com>
- <f0148001c77867d288251a96f6d838a16a6dbdc4.1667997522.git.leonro@nvidia.com>
- <20221117115939.GI704954@gauss3.secunet.de>
- <Y3YpyplG969qtYO3@unreal>
- <20221118102310.GQ704954@gauss3.secunet.de>
+ <f611857594c5c53918d782f104d6f4e028ba465d.1667997522.git.leonro@nvidia.com>
+ <20221117121243.GJ704954@gauss3.secunet.de>
+ <Y3YuVcj5uNRHS7Ek@unreal>
+ <20221118104907.GR704954@gauss3.secunet.de>
+ <Y3p9LvAEQMAGeaCR@unreal>
+ <20221121094404.GU704954@gauss3.secunet.de>
+ <Y3tSdcA9GgpOJjgP@unreal>
+ <20221121110926.GV704954@gauss3.secunet.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221118102310.GQ704954@gauss3.secunet.de>
+In-Reply-To: <20221121110926.GV704954@gauss3.secunet.de>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,84 +62,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 11:23:10AM +0100, Steffen Klassert wrote:
-> On Thu, Nov 17, 2022 at 02:32:10PM +0200, Leon Romanovsky wrote:
-> > On Thu, Nov 17, 2022 at 12:59:39PM +0100, Steffen Klassert wrote:
-> > > On Wed, Nov 09, 2022 at 02:54:32PM +0200, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Nov 21, 2022 at 12:09:26PM +0100, Steffen Klassert wrote:
+> On Mon, Nov 21, 2022 at 12:27:01PM +0200, Leon Romanovsky wrote:
+> > On Mon, Nov 21, 2022 at 10:44:04AM +0100, Steffen Klassert wrote:
+> > > On Sun, Nov 20, 2022 at 09:17:02PM +0200, Leon Romanovsky wrote:
+> > > > On Fri, Nov 18, 2022 at 11:49:07AM +0100, Steffen Klassert wrote:
+> > > > > On Thu, Nov 17, 2022 at 02:51:33PM +0200, Leon Romanovsky wrote:
+> > > > > > On Thu, Nov 17, 2022 at 01:12:43PM +0100, Steffen Klassert wrote:
+> > > > > > > On Wed, Nov 09, 2022 at 02:54:34PM +0200, Leon Romanovsky wrote:
+> > > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > 
+> > > > > > > So this raises the question how to handle acquires with this packet
+> > > > > > > offload. 
+> > > > > > 
+> > > > > > We handle acquires as SW policies and don't offload them.
+> > > > > 
+> > > > > We trigger acquires with states, not policies. The thing is,
+> > > > > we might match a HW policy but create a SW acquire state.
+> > > > > This will not match anymore as soon as the lookup is
+> > > > > implemented correctly.
+> > > > 
+> > > > For now, all such packets will be dropped as we have offlaoded
+> > > > policy but not SA.
 > > > 
-> > > > @@ -2708,6 +2710,23 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
-> > > >  	if (!dev)
-> > > >  		goto free_dst;
-> > > >  
-> > > > +	dst1 = &xdst0->u.dst;
-> > > > +	/* Packet offload: both policy and SA should be offloaded */
-> > > > +	if ((policy->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
-> > > > +	     dst1->xfrm->xso.type != XFRM_DEV_OFFLOAD_PACKET) ||
-> > > > +	    (policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET &&
-> > > > +	     dst1->xfrm->xso.type == XFRM_DEV_OFFLOAD_PACKET)) {
-> > > > +		err = -EINVAL;
-> > > > +		goto free_dst;
-> > > > +	}
-> > > > +
-> > > > +	/* Packet offload: both policy and SA should have same device */
-> > > > +	if (policy->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
-> > > > +	    policy->xdo.dev != dst1->xfrm->xso.dev) {
-> > > > +		err = -EINVAL;
-> > > > +		goto free_dst;
-> > > > +	}
-> > > > +
-> > > 
-> > > This is the wrong place for these checks. Things went already wrong
-> > > in the lookup if policy and state do not match here.
+> > > I think you missed my point. If the HW policy does not match
+> > > the SW acquire state, then each packet will geneate a new
+> > > acquire. So you need to make sure that policy and acquire
+> > > state will match to send the acquire just once to userspace.
 > > 
-> > Where do you think we should put such checks?
+> > I think that I'm still missing the point.
+> > 
+> > We require both policy and SA to be offloaded. It means that once
+> > we hit HW policy, we must hit SA too (at least this is how mlx5 part
+> > is implemented).
 > 
-> You need to create a new lookup key for this and match the policies
-> template against the TS of the state. This happens in xfrm_state_find.
-> Unfortunately this affects also the SW datapath even without HW
-> policies/states. So please try to make it a NOP if there are no HW
-> policies/states.
+> Let's assume a packet hits a HW policy. Then this HW policy must match
+> a HW state. In case there is no matching HW state, we generate an acquire
+> and insert a larval state. Currently, larval states are never marked as HW.
 
-Do you think that this will be enough?
-
-+static bool xfrm_state_and_policy_mixed(struct xfrm_state *x,
-+                                       struct xfrm_policy *p)
-+{
-+       /* Packet offload: both policy and SA should be offloaded */
-+       if (p->xdo.type == XFRM_DEV_OFFLOAD_PACKET &&
-+           x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
-+               return true;
-+
-+       if (p->xdo.type != XFRM_DEV_OFFLOAD_PACKET &&
-+           x->xso.type == XFRM_DEV_OFFLOAD_PACKET)
-+               return true;
-+
-+       if (p->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
-+               return false;
-+
-+       /* Packet offload: both policy and SA should have same device */
-+       if (p->xdo.dev != x->xso.dev)
-+               return true;
-+
-+       return false;
-+}
-+
- struct xfrm_state *
- xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
-                const struct flowi *fl, struct xfrm_tmpl *tmpl,
-@@ -1228,6 +1250,10 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
-                        *err = -EAGAIN;
-                        x = NULL;
-                }
-+               if (x && xfrm_state_and_policy_mixed(x, pol)) {
-+                       *err = -EINVAL;
-+                       x = NULL;
-+               }
-        } else {
-                *err = acquire_in_progress ? -EAGAIN : error;
-        }
-(END)
-
+And this is there our views are different. If HW (in RX) sees policy but
+doesn't have state, this packet will be dropped in HW. It won't get to
+stack and no acquire request will be issues.
 
 > 
+> Now, the next packet from the same flow maches again this HW policy,
+> but it does not find the larval state because it is not marked as
+> a HW state. So we generate another acquire and insert another
+> larval state. Same happens for packets 3,4,5...
+> 
+> Expected behaviour for subsequent packets is that the lookup will
+> find a matching HW larval state and the packet is dropped without
+> creating another acquire + larval state for the same flow.
+> 
+
+This is why we don't support acquire for now as it will require mixing
+HW and SW paths which we don't want for now.
+
+Thanks
