@@ -2,111 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDE9632EDF
-	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 22:33:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48579632EE9
+	for <lists+netdev@lfdr.de>; Mon, 21 Nov 2022 22:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiKUVdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 16:33:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
+        id S231644AbiKUVfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 16:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiKUVdK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 16:33:10 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF9F10B5F;
-        Mon, 21 Nov 2022 13:33:08 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id gv23so31526839ejb.3;
-        Mon, 21 Nov 2022 13:33:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MrnT+eSbey2CG+aPSBBnxrMG7unNpVOnktkqfmkzqVU=;
-        b=n6ChiPX/0X6KmY7+2o4+fswG5u7ei9vyDif1QYvCokDRZtasfbHHoM1gqpfPC1kNns
-         aw1mNKF3DlH/d+46jwy7UVuURA/jwPqAv6+siGb+IAFnL1jMOiV0dlbnH94tpdyYcUhq
-         IAqz6alY2BEUzJbBeIhxt9br1EZ5o3Ol30/8dBh1H96brOgmV7noZ4Nnc8izd1zMzOQq
-         NOBKdUmTKsO/KrzrjeuP+OOtCbE3GaEyGmS64OrQyiC0NRcX28WONs89jJkk8kApqJC0
-         YYJG3xma3lsIFG2+tyQbXB6xwl/L1Dy1lS5nuIXcmPenWMA71Fd5+10ORiM1+eBY9IRC
-         G6yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MrnT+eSbey2CG+aPSBBnxrMG7unNpVOnktkqfmkzqVU=;
-        b=6zlQ2kVvWzhWVeazc8vecX/OjN+k90Erz2Sa+ocPSNTSFL0rxpF/onN38nCBG9Pg9Z
-         4s73P3dpaiU7e+OCUVSZ1d7THRyiRn7XuNUY7ITHlc1TNvFAp5wj/TwvmAHE2OvezKG1
-         sJoqxno+TlY1b6KhwDz7EhyEnnf2HRd3jAiT48vUelg3XTlwoSbao9mY+DjVs/vtyVOa
-         zbRS7i93ZSGy2L0SyAdY2Xl/laqoKMkPjQAgJvkefeY3v5ZHOIGVYs5vju6cr83Rkbz9
-         ofawEy7OVidNPoQM/OliXRihBVoYqEVqjo0cyw1l0IuMHV3zfTseOQW7pRVjfbwWqlc0
-         r+VA==
-X-Gm-Message-State: ANoB5pmJoqBs2v0CncftXkN0DFDEGXwdoElLi7UjU1PSnN+wt12EYRd6
-        h8X3V6bxh+laM6+0EPRu1Y8=
-X-Google-Smtp-Source: AA0mqf6vCReIQ8RGXycSP2jzKhKbxAj0ZLfxQq5d8yLVtjj3HJWldO6lB73MNpWQrMUvgv3McGlJJQ==
-X-Received: by 2002:a17:906:b0cd:b0:78d:8c6b:397b with SMTP id bk13-20020a170906b0cd00b0078d8c6b397bmr4210221ejb.364.1669066387317;
-        Mon, 21 Nov 2022 13:33:07 -0800 (PST)
-Received: from skbuf ([188.26.57.184])
-        by smtp.gmail.com with ESMTPSA id cn16-20020a0564020cb000b0045c010d0584sm5644221edb.47.2022.11.21.13.33.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Nov 2022 13:33:06 -0800 (PST)
-Date:   Mon, 21 Nov 2022 23:33:04 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com
-Subject: Re: [RFC Patch net-next v2 2/8] net: dsa: microchip: adding the
- posix clock support
-Message-ID: <20221121213304.vytvbfvikuwcw3oi@skbuf>
-References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
- <20221121154150.9573-1-arun.ramadoss@microchip.com>
- <20221121154150.9573-3-arun.ramadoss@microchip.com>
- <20221121154150.9573-3-arun.ramadoss@microchip.com>
+        with ESMTP id S231641AbiKUVfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 16:35:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0615B17A91;
+        Mon, 21 Nov 2022 13:35:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8B50B81665;
+        Mon, 21 Nov 2022 21:35:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D821C433C1;
+        Mon, 21 Nov 2022 21:35:24 +0000 (UTC)
+Date:   Mon, 21 Nov 2022 16:35:22 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [patch 10/15] timers: Silently ignore timers with a NULL
+ function
+Message-ID: <20221121163522.5eedbfe9@gandalf.local.home>
+In-Reply-To: <20221115202117.560506554@linutronix.de>
+References: <20221115195802.415956561@linutronix.de>
+        <20221115202117.560506554@linutronix.de>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121154150.9573-3-arun.ramadoss@microchip.com>
- <20221121154150.9573-3-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 09:11:44PM +0530, Arun Ramadoss wrote:
-> +int ksz_ptp_clock_register(struct dsa_switch *ds)
-> +{
-> +	/* Register the PTP Clock */
-> +	ptp_data->clock = ptp_clock_register(&ptp_data->caps, dev->dev);
-> +	if (IS_ERR_OR_NULL(ptp_data->clock))
-> +		return PTR_ERR(ptp_data->clock);
-> +}
-> +
-> +void ksz_ptp_clock_unregister(struct dsa_switch *ds)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-> +
-> +	if (IS_ERR_OR_NULL(ptp_data->clock))
-> +		return;
-> +
-> +	ptp_clock_unregister(ptp_data->clock);
-> +}
+On Tue, 15 Nov 2022 21:28:49 +0100 (CET)
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-API usage seems to be incorrect here (probably copied from sja1105 which
-is written by me and also incorrect, yay).
+> @@ -1128,6 +1144,9 @@ static inline int
+>   * mod_timer_pending() is the same for pending timers as mod_timer(), but
+>   * will not activate inactive timers.
+>   *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded.
+> + *
+>   * Return:
+>   * * %0 - The timer was inactive and not modified
+>   * * %1 - The timer was active and requeued to expire at @expires
+> @@ -1154,6 +1173,9 @@ EXPORT_SYMBOL(mod_timer_pending);
+>   * same timer, then mod_timer() is the only safe way to modify the timeout,
+>   * since add_timer() cannot modify an already running timer.
+>   *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded, the return value is 0 and meaningless.
+> + *
+>   * Return:
+>   * * %0 - The timer was inactive and started
 
-The intention with IS_ERR_OR_NULL() is for the caller to return 0
-(success) when ptp_clock_register() returns NULL (when PTP support
-is compiled out), and this will not make the driver fail to probe.
+For those that only read the "Return" portion of kernel-doc, perhaps add
+here:
+             "or the timer is in the shutdown state and was not started".
 
-There isn't a reason to use IS_ERR_OR_NULL() in the normal unregister
-code path, because the code won't get there in the IS_ERR() case.
-So a simple "if (ptp_data->clock) ptp_clock_unregister(ptp_data->clock)"
-would do.
+
+>   * * %1 - The timer was active and requeued to expire at @expires or
+> @@ -1175,6 +1197,9 @@ EXPORT_SYMBOL(mod_timer);
+>   * modify an enqueued timer if that would reduce the expiration time. If
+>   * @timer is not enqueued it starts the timer.
+>   *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded.
+> + *
+>   * Return:
+>   * * %0 - The timer was inactive and started
+>   * * %1 - The timer was active and requeued to expire at @expires or
+> @@ -1201,6 +1226,9 @@ EXPORT_SYMBOL(timer_reduce);
+>   *
+>   * If @timer->expires is already in the past @timer will be queued to
+>   * expire at the next timer tick.
+> + *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded.
+>   */
+>  void add_timer(struct timer_list *timer)
+>  {
+> @@ -1217,13 +1245,18 @@ EXPORT_SYMBOL(add_timer);
+>   *
+>   * This can only operate on an inactive timer. Attempts to invoke this on
+>   * an active timer are rejected with a warning.
+> + *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded.
+>   */
+>  void add_timer_on(struct timer_list *timer, int cpu)
+>  {
+>  	struct timer_base *new_base, *base;
+>  	unsigned long flags;
+>  
+> -	if (WARN_ON_ONCE(timer_pending(timer) || !timer->function))
+> +	debug_assert_init(timer);
+> +
+> +	if (WARN_ON_ONCE(timer_pending(timer)))
+>  		return;
+>  
+>  	new_base = get_timer_cpu_base(timer->flags, cpu);
+> @@ -1234,6 +1267,13 @@ void add_timer_on(struct timer_list *tim
+>  	 * wrong base locked.  See lock_timer_base().
+>  	 */
+>  	base = lock_timer_base(timer, &flags);
+> +	/*
+> +	 * Has @timer been shutdown? This needs to be evaluated while
+> +	 * holding base lock to prevent a race against the shutdown code.
+> +	 */
+> +	if (!timer->function)
+> +		goto out_unlock;
+> +
+>  	if (base != new_base) {
+>  		timer->flags |= TIMER_MIGRATING;
+>  
+> @@ -1247,6 +1287,7 @@ void add_timer_on(struct timer_list *tim
+>  
+>  	debug_timer_activate(timer);
+>  	internal_add_timer(base, timer);
+> +out_unlock:
+>  	raw_spin_unlock_irqrestore(&base->lock, flags);
+>  }
+>  EXPORT_SYMBOL_GPL(add_timer_on);
+> @@ -1532,6 +1573,12 @@ static void expire_timers(struct timer_b
+>  
+>  		fn = timer->function;
+>  
+> +		if (WARN_ON_ONCE(!fn)) {
+> +			/* Should never happen. Emphasis on should! */
+> +			base->running_timer = NULL;
+> +			return;
+
+Why return and not continue?
+
+Wont this drop the other timers in the queue?
+
+-- Steve
+
+
+> +		}
+> +
+>  		if (timer->flags & TIMER_IRQSAFE) {
+>  			raw_spin_unlock(&base->lock);
+>  			call_timer_fn(timer, fn, baseclk);
+
