@@ -2,133 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48930633DDA
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8250F633DDC
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:39:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233085AbiKVNi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 08:38:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        id S232844AbiKVNjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 08:39:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232844AbiKVNiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:38:55 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F0E59874;
-        Tue, 22 Nov 2022 05:38:54 -0800 (PST)
+        with ESMTP id S233836AbiKVNjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:39:15 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF185A6C2;
+        Tue, 22 Nov 2022 05:39:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669124334; x=1700660334;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=++lP3KudX1Bg9p4n7EIiOiN/6GstJqa2TC078+e0FNM=;
-  b=IFOVHr1gDoiJgoyyVP2631VGble6XGm0kVZZ4WHU/0sGIrKzT3cHFYYM
-   4BwSpqyKBev6ewCzRyDwXP1RdynCVmI2Rb6LR/MqLtmij7GcG+TpEH0eY
-   c4ds38xWRAg3uVSbTYXJAmwWGj5IMQRfrTUq+iERvGEHUAlN11EyCbT46
-   /1tn3t49X9w0IHd5DURhGEQRIcENdmidxl1DK4jNprOlK5ac8icYN5Msk
-   68Ciw8GxNhhx1tGgotX7Guea4RX9aLKzi00koASDWlYPtDx4HkKpgZVjD
-   uQWtUKj98R+KoMVEEIEZh2fdJdLtMhs49A1xIH89aO57g1/h3Ek8capQ5
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="378072259"
+  t=1669124354; x=1700660354;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=baUu216IUMMxROK88p879RcNlQI5RcX61iVIIKzbJhQ=;
+  b=OwU79Ol2ujy/AVOnwaBtc7FBMh0+gf3D3NQLJYPLBOV/gJXX+4HQh4d0
+   dp6deNDrQejRwbDsN6iMKIoRcPyzSM3LdcBSOeHNcGIRvX2CnbOEgyu1o
+   7ANX2L7OxI3MXiGu0QO+tKUBTMpJV+O0pBAeLhszx5LQW11v+V9b9uxuO
+   ZGmauEX9bN5mHFd78l6EkBE7iJumg4eqk7uVPl/cEYGRaSOnh8GYOCjZl
+   GEgnLyD2ZbgUQrs0XHSBGDOED6hBomNQl1EuB70pnMn6VkYemsRrpj2wT
+   vmRj5rsMwkG6NcVwlL7tciCxr63DbLjbD2/V0e6+jRmcJ9oBqEeu959Sx
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="340684535"
 X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="378072259"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 05:38:53 -0800
+   d="scan'208";a="340684535"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 05:39:13 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="674349310"
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="643723081"
 X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="674349310"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP; 22 Nov 2022 05:38:48 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oxTU5-00Fqhm-2v;
-        Tue, 22 Nov 2022 15:38:45 +0200
-Date:   Tue, 22 Nov 2022 15:38:45 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Lee Jones <lee@kernel.org>, Gene Chen <gene_chen@richtek.com>,
-        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+   d="scan'208";a="643723081"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga007.fm.intel.com with ESMTP; 22 Nov 2022 05:39:11 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AMDd9CW026835;
+        Tue, 22 Nov 2022 13:39:09 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Maxim Korotkov <korotkov.maxim.s@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
-Message-ID: <Y3zQ5ZtAU4NL3hG4@smile.fi.intel.com>
-References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
- <Y1gZ/zBtc2KgXlbw@smile.fi.intel.com>
- <Y1+NHVS5ZJLFTBke@google.com>
- <Y1/qisszTjUL9ngU@smile.fi.intel.com>
- <Y2pmqBXYq3WQa97u@smile.fi.intel.com>
- <Y3IUTUr/MXf9RQEP@google.com>
- <Y3IWMe5nGePMAEFv@smile.fi.intel.com>
- <Y3IbW5/yTWE7z0cO@kroah.com>
- <Y3Iq7tuSveejlVEU@smile.fi.intel.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Tom Rix <trix@redhat.com>, Marco Bonelli <marco@mebeim.net>,
+        Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: Re: [PATCH v3] ethtool: avoiding integer overflow in ethtool_phys_id()
+Date:   Tue, 22 Nov 2022 14:39:08 +0100
+Message-Id: <20221122133908.422677-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221122122901.22294-1-korotkov.maxim.s@gmail.com>
+References: <20221122122901.22294-1-korotkov.maxim.s@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3Iq7tuSveejlVEU@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 14, 2022 at 01:47:58PM +0200, Andy Shevchenko wrote:
-> On Mon, Nov 14, 2022 at 11:41:31AM +0100, Greg Kroah-Hartman wrote:
-> > On Mon, Nov 14, 2022 at 12:19:29PM +0200, Andy Shevchenko wrote:
-> > > On Mon, Nov 14, 2022 at 10:11:25AM +0000, Lee Jones wrote:
-> > > > On Tue, 08 Nov 2022, Andy Shevchenko wrote:
-> > > > > On Mon, Oct 31, 2022 at 05:32:26PM +0200, Andy Shevchenko wrote:
-> > > > > > On Mon, Oct 31, 2022 at 08:53:49AM +0000, Lee Jones wrote:
-> > > > > > > On Tue, 25 Oct 2022, Andy Shevchenko wrote:
-> > > > > > > > On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
-> > > > > > > > > There are several users of LED framework that reimplement the
-> > > > > > > > > functionality of led_init_default_state_get(). In order to
-> > > > > > > > > deduplicate them move the declaration to the global header
-> > > > > > > > > (patch 2) and convert users (patche 3-11).
-> > > > > > > > 
-> > > > > > > > Dear LED maintainers, is there any news on this series? It's hanging around
-> > > > > > > > for almost 2 months now...
-> > > > > > > 
-> > > > > > > My offer still stands if help is required.
-> > > > > > 
-> > > > > > From my point of view the LED subsystem is quite laggish lately (as shown by
-> > > > > > this patch series, for instance), which means that _in practice_ the help is
-> > > > > > needed, but I haven't got if we have any administrative agreement on that.
-> > > > > > 
-> > > > > > Pavel?
-> > > > > 
-> > > > > So, Pavel seems quite unresponsive lately... Shall we just move on and take
-> > > > > maintainership?
-> > > > 
-> > > > I had an off-line conversation with Greg who advised me against that.
-> > > 
-> > > OK. What the reasonable option we have then?
-> > 
-> > I thought there is now a new LED maintainer, is that not working out?
+From: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+Date: Tue, 22 Nov 2022 15:29:01 +0300
+
+> The value of an arithmetic expression "n * id.data" is subject
+> to possible overflow due to a failure to cast operands to a larger data
+> type before performing arithmetic. Used macro for multiplication instead
+> operator for avoiding overflow.
 > 
-> No new (co-)maintainer due to stale mate situation as far as I can read it
-> right now.
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> 
+> Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
 
-So, any suggestion on how to proceed here?
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-De facto we have no patch flow in LED subsystem and the queue is growing...
+> ---
+>  net/ethtool/ioctl.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index 6a7308de192d..6b59e7a1c906 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -2007,7 +2007,8 @@ static int ethtool_phys_id(struct net_device *dev, void __user *useraddr)
+>  	} else {
+>  		/* Driver expects to be called at twice the frequency in rc */
+>  		int n = rc * 2, interval = HZ / n;
+> -		u64 count = n * id.data, i = 0;
+> +		u64 count = mul_u32_u32(n, id.data);
+> +		u64 i = 0;
+>  
+>  		do {
+>  			rtnl_lock();
+> -- 
+> 2.17.1
 
--- 
-With Best Regards,
-Andy Shevchenko
+Some notes to the process, not the code:
 
+1) I asked to add my Reviewed-by to v3 in the previous thread, it's
+   mandatory for authors to pick-up all the tags before publishing
+   a new revision;
+2) when sending v2, v3, ... vN, please have a changelog in the
+   commit message or right below those '---' after your SoB, that
+   makes it easier to review.
 
+Thanks,
+Olek
