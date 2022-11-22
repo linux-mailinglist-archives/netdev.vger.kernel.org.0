@@ -2,173 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD73634951
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5423F6349A8
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:53:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235107AbiKVVcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 16:32:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        id S234916AbiKVVx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:53:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235069AbiKVVcq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:32:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6B67640;
-        Tue, 22 Nov 2022 13:32:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669152757; x=1700688757;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ISteiEafnpwfxSB+bh7FKbXTjSTCofLvMskNHi+6Jts=;
-  b=niki0MW8zySgQId4KQJ0TaRx7tzE3ydkYA3Aeph16YmJsCLQSuu0etg+
-   nggM0G4A/sXdu19qPQIv+mlixWjsJTtPxWmof39W1NW37c+/WwLbRuzZL
-   qfHEdZ3rY9RogWk+HufSt9TvmXKgP0PERhWnm48bEvECo/9/C90y3ld6k
-   uylANtJljdfHocqWuXuo1A5wWO5rTY0ACBO6rEs1rzT2N4aRr4ZMj4sW9
-   Lf7WAOHReo7vrrh9V9RA8BegLgdax5oNfRWpv96oCkHTslE6+8qGedyr0
-   4i+LxBRTBJLP08PlblfHvS2ZzdBK3PTQOLWJhxNofIk3IphADRL3jj7s4
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,185,1665471600"; 
-   d="scan'208";a="190136597"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 14:32:34 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 22 Nov 2022 14:32:33 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 22 Nov 2022 14:32:33 -0700
-Date:   Tue, 22 Nov 2022 22:37:24 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next v3 7/7] net: lan966x: Add support for
- XDP_REDIRECT
-Message-ID: <20221122213724.exqdhdxujvgtojxq@soft-dev3-1>
-References: <20221121212850.3212649-1-horatiu.vultur@microchip.com>
- <20221121212850.3212649-8-horatiu.vultur@microchip.com>
- <20221122120430.419770-1-alexandr.lobakin@intel.com>
+        with ESMTP id S234767AbiKVVx1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:53:27 -0500
+X-Greylist: delayed 530 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Nov 2022 13:53:26 PST
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050:0:465::103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0AF1B9E0;
+        Tue, 22 Nov 2022 13:53:25 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:b231:465::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4NGyTD0c6Vz9sQf;
+        Tue, 22 Nov 2022 22:44:32 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1669153472;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=39N5ene9tAmFEvVg6TgCHu1wGZWNbFPFY6utdvj6ZFc=;
+        b=pkksKF6Hl0OaoStHbY4IMDxKIlgwnaHVitMWu8fr4cOBf0iuI/QOK/w2sAerREfWDIgAvo
+        PLOs1NIUQno76DNsK5oC5UC6X1eWnvl6EYSR8K3RcxTjZ69vSF75c7qVd7ce8SBkO3g/6J
+        saX++n23n7stkfIQ5+5aDEFgbCWGfGAeygjlQfT9dr3aG0tZ9JPJ4dGRyMkyn0gd72hGbZ
+        GOYC7YyrnQsg2G/dEkbMz/CQfDDduAaGDy7MBXTfSxmPDW7mcIJxQDuZL2xRhz0/Z6ZQAs
+        TmVaNzTK0C2U8ZGnYyktIkn1f4OlXIwKj1bLVU6YthAii2bISnSETXyIkV+sTA==
+From:   Alexander Lobakin <alobakin@mailbox.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1669153470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=39N5ene9tAmFEvVg6TgCHu1wGZWNbFPFY6utdvj6ZFc=;
+        b=mh5jFPTkTqQOQ5KWablFFSe2AaO0Ix0KEBRg7fBJRaZrUbZFQf1bf2HtNKu3ltol3iGTAW
+        UCUDP1H75wqHoAVPypVfhXWhjfKBM0YPSuVqipNsT3ePmzz9qaOKGwkAh4galOSKio02zP
+        hFfHnVik+v5S7UETL8aye3in+rsK3BBBWMSDOT9LZGX+brCHWINU/5Cw/Xv6sDa1JUUFuQ
+        5I1l80JhWkP8+H2Gt9aFjRHZDPeSUymqLseVS8qac1ou2YQSvKIWWXkCtLVWIgVXdp4GSa
+        rWX8q/N4oeW6w0CCh4gezBFywnoAN6QWhA47Cmm5VSoe5qbqkaVkgaqgAtcjdA==
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Alexander Lobakin <alobakin@mailbox.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/18] treewide: fix object files shared between several modules
+Date:   Tue, 22 Nov 2022 22:37:54 +0100
+Message-Id: <20221122213754.45474-1-alobakin@mailbox.org>
+In-Reply-To: <Y3oWYhw9VZOANneu@sirena.org.uk>
+References: <20221119225650.1044591-1-alobakin@pm.me> <Y3oWYhw9VZOANneu@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20221122120430.419770-1-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-MBO-RS-META: aa1jm95dg46x8drm3w7tkogdgi51quqe
+X-MBO-RS-ID: 2cae87ace713e522bfe
+X-Rspamd-Queue-Id: 4NGyTD0c6Vz9sQf
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/22/2022 13:04, Alexander Lobakin wrote:
-> 
-> From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> Date: Mon, 21 Nov 2022 22:28:50 +0100
-> 
-> > Extend lan966x XDP support with the action XDP_REDIRECT. This is similar
-> > with the XDP_TX, so a lot of functionality can be reused.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  .../ethernet/microchip/lan966x/lan966x_fdma.c | 83 +++++++++++++++----
-> >  .../ethernet/microchip/lan966x/lan966x_main.c |  1 +
-> >  .../ethernet/microchip/lan966x/lan966x_main.h | 10 ++-
-> >  .../ethernet/microchip/lan966x/lan966x_xdp.c  | 31 ++++++-
-> >  4 files changed, 109 insertions(+), 16 deletions(-)
-> 
-> [...]
-> 
-> > @@ -558,6 +575,10 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
-> >               case FDMA_TX:
-> >                       lan966x_fdma_rx_advance_dcb(rx);
-> >                       continue;
-> > +             case FDMA_REDIRECT:
-> > +                     lan966x_fdma_rx_advance_dcb(rx);
-> > +                     redirect = true;
-> > +                     continue;
-> 
-> I think you can save a couple lines here and avoid small code dup:
-> 
-> +               case FDMA_REDIRECT:
-> +                       redirect = true;
-> +                       fallthrough;
->                 case FDMA_TX:
->                         lan966x_fdma_rx_advance_dcb(rx);
->                         continue;
+From: Mark Brown <broonie@kernel.org>
+Date: Sun, 20 Nov 2022 11:58:26 +0000
 
-I will save only a line but I will add this change in the next version
-as I like it more than what I wrote.
+> On Sat, Nov 19, 2022 at 11:03:57PM +0000, Alexander Lobakin wrote:
+> 
+> Your mails appear to be encrypted which isn't helping with
+> review...
 
-> 
-> The logics stays the same.
-> 
-> >               case FDMA_DROP:
-> >                       lan966x_fdma_rx_free_page(rx);
-> >                       lan966x_fdma_rx_advance_dcb(rx);
-> 
-> [...]
-> 
-> > @@ -178,6 +180,7 @@ struct lan966x_tx_dcb_buf {
-> >       struct net_device *dev;
-> >       struct sk_buff *skb;
-> >       struct xdp_frame *xdpf;
-> > +     bool xdp_ndo;
-> 
-> I suggest carefully inspecting this struct with pahole (or by just
-> printkaying its layout/sizes/offsets at runtime) and see if there's
-> any holes and how it could be optimized.
-> Also, it's just my personal preference, but it's not that unpopular:
-> I don't trust bools inside structures as they may surprise with
-> their sizes or alignment depending on the architercture. Considering
-> all the blah I wrote, I'd define it as:
-> 
-> struct lan966x_tx_dcb_buf {
->         dma_addr_t dma_addr;            // can be 8 bytes on 32-bit plat
->         struct net_device *dev;         // ensure natural alignment
->         struct sk_buff *skb;
->         struct xdp_frame *xdpf;
->         u32 len;
->         u32 xdp_ndo:1;                  // put all your booleans here in
->         u32 used:1;                     // one u32
->         ...
-> };
+Oh I'm sorry. I gave ProtonMail one more chance. I had the same
+issue with them at spring, they told me then that it's a super-pro
+builtin feature that I can't disable :clownface: They promised to
+"think on it" tho, so I thought maybe after half a year...
+Nope. Ok, whatever. My workaround will be the same as Conor's, just
+to change the provider lol.
+Should be better now?
 
-Thanks for the suggestion. I make sure not that this struct will not
-have any holes.
-Can it be a rule of thumb, that every time when a new member is added to
-a struct, to make sure that it doesn't introduce any holes?
-
-> 
-> BTW, we usually do union { skb, xdpf } since they're mutually
-> exclusive. And to distinguish between XDP and regular Tx you can use
-> one more bit/bool. This can also come handy later when you add XSk
-> support (you will be adding it, right? Please :P).
-
-I think I will take this battle at later point when I will add XSK :)
-After I finish with this patch series, I will need to focus on some VCAP
-support for lan966x.
-And maybe after that I will be able to add XSK. Because I need to look
-more at this XSK topic as I have looked too much on it before but I heard
-a lot of great things about it :)
-
-> 
-> >       int len;
-> >       dma_addr_t dma_addr;
-> >       bool used;
-> 
-> [...]
-> 
-> > --
-> > 2.38.0
-> 
-> Thanks,
-> Olek
-
--- 
-/Horatiu
+Thanks,
+Olek
