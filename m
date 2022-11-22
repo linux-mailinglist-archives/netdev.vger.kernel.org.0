@@ -2,107 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 234BA633B7A
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:35:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28BFC633B80
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:36:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiKVLfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 06:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
+        id S233208AbiKVLg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 06:36:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232879AbiKVLet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:34:49 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D338763179
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:29:31 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id l8so17577028ljh.13
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:29:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7ohz89mTTi+wtNLm9DOxB9MoRGFiSLwrwa9L5e3igNk=;
-        b=jxOy1fIm3nNG38LEKNi/ewxeNSQ/VPtJYT2xrANP0yjm/BJl0qWl70TUSqnWSJhR/I
-         W0tLRyBUxOYttCX/N7udDmuMuuYA/qh6Q9cYjIOXwvAbIhEQR4y/N2vN7+bq3cNNGI8V
-         Qu4jX6IjDAKtuR+JohrSqvxjGFqDPRArpkyOvba9x93yrljgyaT5VEZRK3DDwaQbMEAd
-         U/GMmHVSI/9t1Rq+37p1Lamzgv2g5GMIm8bPPd03yqsXcwOPOzW9AvVZJgvka835jqL3
-         gQeaYNkB0Ya+g2BLx6pR5JIVPu+hpgSCyE9TfgLjtSmt2+rHb+ZATfn3hhhHav//aPIB
-         3t9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7ohz89mTTi+wtNLm9DOxB9MoRGFiSLwrwa9L5e3igNk=;
-        b=xzTyMGS4KLcx3Fs0JAx8S6hBeX/QU1Sw/OtiR21NMSk6JW7r62wwoIvs3BLfA+Pj8s
-         02IyukpeNGeS/ptsYvRWpHYmsD1NSLZB1RMwIpU8HbKgwRluPTRqa8r5y6p3hC+OanFF
-         fYtP0gwRkl+1dkFrgTf8uYSqIABHAEMJmDMFDwGMnLBNx1T7obA0ugaIMl3VmlQ7zjWP
-         rjT2kx4Ybi/xteA01oel4nunAZzhGa5kiu/CpxGgGUIBDd7FuzdYYlX4WnIH7KEKkWBg
-         joLtWHroXfQsWzSL6QzXJfPWduSgHrhQ0HUU+q9D5Zrj24mbdx5JQrUGttprCeGquo+D
-         3kaA==
-X-Gm-Message-State: ANoB5pminYWY6LG1c6ZQUQ5k/HEcRRI89GUp1JUc2hFHsPW5DAvLDdlU
-        3AzJstoj2cDXs8sA3aCTNddVfA==
-X-Google-Smtp-Source: AA0mqf7jsH3Hgo07rB7sNMeL9pThc3Z6lPBZjcZvJmEhUXFMwXH+xii9jyMTItjtm8w44OH6nEoqZw==
-X-Received: by 2002:a2e:9d0c:0:b0:26b:ddca:8642 with SMTP id t12-20020a2e9d0c000000b0026bddca8642mr6839137lji.149.1669116570220;
-        Tue, 22 Nov 2022 03:29:30 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id m4-20020ac24244000000b004ab98cd5644sm2447133lfl.182.2022.11.22.03.29.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 03:29:29 -0800 (PST)
-Message-ID: <d91329cf-7b88-49e1-8ede-4ea5d7efc0d0@linaro.org>
-Date:   Tue, 22 Nov 2022 12:29:28 +0100
+        with ESMTP id S232887AbiKVLgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:36:05 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7BD17078;
+        Tue, 22 Nov 2022 03:30:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669116628; x=1700652628;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EUs3v5zzG9DDU2IR/ERFhdsdv5DgY0vpIZcHgBcJ/j4=;
+  b=iojumDoB1ETExG4r4D6bD56/+roag8EF22rQGKcgJ8Gyb/P+pRKCLO2r
+   4Udkrvi2EsKYYKUM+2MPwoDN7z4jLcb9C084cczvlQ0Z60S5g6a99/zjX
+   /vysPbbkoFHCYAFZkej59ZqR3gmUMJWFfEV1kqNWzTrQLTkAxd8vJmM3F
+   K7aw78QFl6GIT6Gvpcf/uubxcH3ydw+HTUJuWFeij5nyk/ASqSg2Ee9Du
+   KUbBdO/42qYc4BTo/1EfPgQEOs71MehnSby5iz3uGykDlLcl9rQwwGevy
+   eaMblYuUNB2BEPJXtyobb2Vx7JQtBeYJLHt0QhOX7db7Eu4LLj3aNpNNo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="294184542"
+X-IronPort-AV: E=Sophos;i="5.96,183,1665471600"; 
+   d="scan'208";a="294184542"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 03:30:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="674320405"
+X-IronPort-AV: E=Sophos;i="5.96,183,1665471600"; 
+   d="scan'208";a="674320405"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 22 Nov 2022 03:30:25 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AMBUNAB001561;
+        Tue, 22 Nov 2022 11:30:23 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v3 3/7] net: lan966x: Add len field to lan966x_tx_dcb_buf
+Date:   Tue, 22 Nov 2022 12:30:22 +0100
+Message-Id: <20221122113022.418632-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221121212850.3212649-4-horatiu.vultur@microchip.com>
+References: <20221121212850.3212649-1-horatiu.vultur@microchip.com> <20221121212850.3212649-4-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net v2 3/3] nfc: st-nci: fix incorrect sizing calculations
- in EVT_TRANSACTION
-Content-Language: en-US
-To:     Martin Faltesek <mfaltesek@google.com>, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-nfc@lists.01.org, davem@davemloft.net
-Cc:     martin.faltesek@gmail.com, christophe.ricard@gmail.com,
-        groeck@google.com, jordy@pwning.systems, krzk@kernel.org,
-        sameo@linux.intel.com, theflamefire89@gmail.com,
-        duoming@zju.edu.cn, Denis Efremov <denis.e.efremov@oracle.com>
-References: <20221122004246.4186422-1-mfaltesek@google.com>
- <20221122004246.4186422-4-mfaltesek@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221122004246.4186422-4-mfaltesek@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/11/2022 01:42, Martin Faltesek wrote:
-> The transaction buffer is allocated by using the size of the packet buf,
-> and subtracting two which seems intended to remove the two tags which are
-> not present in the target structure. This calculation leads to under
-> counting memory because of differences between the packet contents and the
-> target structure. The aid_len field is a u8 in the packet, but a u32 in
-> the structure, resulting in at least 3 bytes always being under counted.
-> Further, the aid data is a variable length field in the packet, but fixed
-> in the structure, so if this field is less than the max, the difference is
-> added to the under counting.
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Mon, 21 Nov 2022 22:28:46 +0100
+
+> Currently when a frame was transmitted, it is required to unamp the
+> frame that was transmitted. The length of the frame was taken from the
+> transmitted skb. In the future we might not have an skb, therefore store
+> the length skb directly in the lan966x_tx_dcb_buf and use this one to
+> unamp the frame.
 > 
-> To fix, perform validation checks progressively to safely reach the
-> next field, to determine the size of both buffers and verify both tags.
-> Once all validation checks pass, allocate the buffer and copy the data.
-> This eliminates freeing memory on the error path, as validation checks are
-> moved ahead of memory allocation.
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 5 +++--
+>  drivers/net/ethernet/microchip/lan966x/lan966x_main.h | 1 +
+>  2 files changed, 4 insertions(+), 2 deletions(-)
 > 
-> Reported-by: Denis Efremov <denis.e.efremov@oracle.com>
-> Reviewed-by: Guenter Roeck <groeck@google.com>
-> Fixes: 5d1ceb7f5e56 ("NFC: st21nfcb: Add HCI transaction event support")
-> Signed-off-by: Martin Faltesek <mfaltesek@google.com>
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> index 94c720e59caee..384ed34197d58 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+> @@ -391,12 +391,12 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
+>  			continue;
+>  
+>  		dcb_buf->dev->stats.tx_packets++;
+> -		dcb_buf->dev->stats.tx_bytes += dcb_buf->skb->len;
+> +		dcb_buf->dev->stats.tx_bytes += dcb_buf->len;
+>  
+>  		dcb_buf->used = false;
+>  		dma_unmap_single(lan966x->dev,
+>  				 dcb_buf->dma_addr,
+> -				 dcb_buf->skb->len,
+> +				 dcb_buf->len,
+>  				 DMA_TO_DEVICE);
+>  		if (!dcb_buf->ptp)
+>  			dev_kfree_skb_any(dcb_buf->skb);
+> @@ -709,6 +709,7 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
+>  	/* Fill up the buffer */
+>  	next_dcb_buf = &tx->dcbs_buf[next_to_use];
+>  	next_dcb_buf->skb = skb;
+> +	next_dcb_buf->len = skb->len;
+>  	next_dcb_buf->dma_addr = dma_addr;
+>  	next_dcb_buf->used = true;
+>  	next_dcb_buf->ptp = false;
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> index bc93051aa0798..7bb9098496f60 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> @@ -175,6 +175,7 @@ struct lan966x_rx {
+>  struct lan966x_tx_dcb_buf {
+>  	struct net_device *dev;
+>  	struct sk_buff *skb;
+> +	int len;
 
+Nit: perhaps you can define it as `u32` since fram length can't be
+negative?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>  	dma_addr_t dma_addr;
 
-Best regards,
-Krzysztof
+Oh, also, on platforms with 64-bit addressing, `int len` placed in
+between ::skb and ::dma_addr would create a 4-byte hole in the
+structure. Placing `len` after ::dma_addr would make it holeless on
+any architercture.
 
+>  	bool used;
+>  	bool ptp;
+> -- 
+> 2.38.0
+
+Thanks,
+Olek
