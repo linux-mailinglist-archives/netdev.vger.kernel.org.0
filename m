@@ -2,214 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECEBF63432A
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 19:01:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 145206343A8
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 19:31:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233925AbiKVSBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 13:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
+        id S234510AbiKVSbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 13:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232583AbiKVSB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 13:01:29 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6563927FE8
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:01:28 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-381662c78a9so152044437b3.7
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:01:28 -0800 (PST)
+        with ESMTP id S234232AbiKVSbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 13:31:32 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C672E87A59
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:31:31 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id s12so21812710edd.5
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:31:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6B0NrMvYa9h30nShzcOWnnoLa9VhsXqCL7iaXLlPHUo=;
-        b=iWPChtAoKFdKhqcc/DN3txXed0Dwlsv6aeY/kU0GIAptMe3AhWO8wNTMkP814+mpot
-         Lw+8OhB61MCpzcW/qHOQt9y0qCwc2TeVUQZL6D4AaTgJnk4brkjJmPWHb9ErENo8EMPV
-         vNAw2U5rYK5vDLFMMjyG/YPN8oDJszHjXswrS7dU4RuyirXZUZn3LSiKEZH67u0ITTlB
-         vm7GHgRSaPuARILnXSmyQdd3uOb1udK3X9qB19+nwQzHalBvF2/CKdn9VUtUr2dTyGfD
-         Ub/JVtM14HO5rq2oN6TgFpsme/nE5KtZ05qtTeNRWANWEX7Ghk/R9QA5RRdfaycx8rvi
-         csrA==
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=Gaak7skZamRjfvKXr8Vn2aBIqzH3LyXYNlgiuxnc+3o=;
+        b=hn1VHTAMFehl5BStBrbsUCeeQnYi4x6stXHAK+/qpub7Pxu1E6pH8eFlUxfGwG1kG5
+         zTkINCGG2milV6IdX6FAEZQDAa5AuEy2zSbrvoOjyTmRNuO5XaTvSn3+eKu+emA7TX6W
+         Oxlcl7kkBM5lSlhbQ85wpf+uX8iLGnnLxqIYo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6B0NrMvYa9h30nShzcOWnnoLa9VhsXqCL7iaXLlPHUo=;
-        b=jmZXPWpNJhRBr4RIpV+VlJhhjpY1vKIhhLCkRx5KrpwKzbuN3++N4dGk29W9dmfbr5
-         oSJQesazMk+igyC9zgOOfBmQfZ0thNyqs3WrY7u3Wn6y1khnHYTKfGfXg2JU+vqoODLZ
-         k1HnGYtcS9a9iIFHtVIQFE91nYK7WpcNlS2fPqoeSGAKT1pRi0GgM6FDL/ktqlCjwH2C
-         mmoVfC0T9kCBhErmoGcmcvqgwYRrrFzHC/jVakxTrn+3X1rPVXc3ac0wgXSETGDGft5A
-         SP2L4JhoFWhH9rZR100vHSZcn2Lge6l7FGB84A61UjClLWJiTR7qqx4f70tUW/BKlhDY
-         ilGQ==
-X-Gm-Message-State: ANoB5pnFUYvokNw6N5pqpB1Nya9dep2O9CMzxzMcSkwuEs1TlNQH4yKw
-        MFonfi2wG5JCT4DnzA4AFMESw9hUb4hfAzJWuQ9OmQ==
-X-Google-Smtp-Source: AA0mqf4Nx1p+QeB+x8oyriiysv0tI4zAGBzohwN/TWpubU148DMkvHTEfKohRc437Kc40T/hVsvx+Bc3QdOFRwtDMfE=
-X-Received: by 2002:a05:690c:a92:b0:36c:aaa6:e571 with SMTP id
- ci18-20020a05690c0a9200b0036caaa6e571mr23063228ywb.467.1669140087308; Tue, 22
- Nov 2022 10:01:27 -0800 (PST)
-MIME-Version: 1.0
-References: <CABWYdi0G7cyNFbndM-ELTDAR3x4Ngm0AehEp5aP0tfNkXUE+Uw@mail.gmail.com>
-In-Reply-To: <CABWYdi0G7cyNFbndM-ELTDAR3x4Ngm0AehEp5aP0tfNkXUE+Uw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 22 Nov 2022 10:01:16 -0800
-Message-ID: <CANn89iLzARPp6jW1xS0rf+-wS_RnwK-Kfgs9uQFYan2AHPRQFA@mail.gmail.com>
-Subject: Re: Low TCP throughput due to vmpressure with swap enabled
-To:     Ivan Babrou <ivan@cloudflare.com>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Gaak7skZamRjfvKXr8Vn2aBIqzH3LyXYNlgiuxnc+3o=;
+        b=e7bGlk4iiU6iHv1DgQ7G/8IYctlTEKOX5UlXeNmvV6texahpo/zTqr6oEB+0wEsQ0+
+         ZHTgJBS3K7gcD2S61Jv6IA97By0G6MtGHyGRwNoSWLPOhvAe5118zsL9g/8/UaIfo2nC
+         N/QLeenKbcLXtMSJNBh20VnrK96wJpRIwdUnqjwZW6XGWdNVAO3NviBazuZKNJ9cORH5
+         mcTNEfaV2Lw+GGAVp+mzU7sz5oEGoZQpceYqzs/ygE4U+fyU4bY0F57oN1xZbEviuRxc
+         LtfJJ8s+L83rbgly2lkv0fck6APK7r2w9Fmv7/3alIWAAZQxU2Qj55CyFOOvovzLI+zj
+         xZTA==
+X-Gm-Message-State: ANoB5pniKbUS6322IhoAcpH6S/49d7g5yjm2VkInSTGix7WFFyliGkoj
+        i5hwGhas0tap3gIfcN8wicRwPSGVoeip3w==
+X-Google-Smtp-Source: AA0mqf6WMvNpF9VvIMySOhK5qk6DpOglcnpkV5ECVDuWFkciVIUbDDNfZl63DEDq6+Q+3pgF27wO6A==
+X-Received: by 2002:a05:6402:444a:b0:459:401:c23e with SMTP id o10-20020a056402444a00b004590401c23emr6989876edb.23.1669141890294;
+        Tue, 22 Nov 2022 10:31:30 -0800 (PST)
+Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
+        by smtp.gmail.com with ESMTPSA id e22-20020a170906315600b00738795e7d9bsm6240934eje.2.2022.11.22.10.31.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 10:31:29 -0800 (PST)
+References: <00000000000033a0120588fac894@google.com>
+ <693b572a-6436-14e6-442c-c8f2f361ed94@I-love.SAKURA.ne.jp>
+ <YydimPlesKO+4QKG@boqun-archlinux>
+ <f1567517-5614-2b2a-b42d-4c26433de3b2@I-love.SAKURA.ne.jp>
+ <c9695548-3f27-dda1-3124-ec21da106741@I-love.SAKURA.ne.jp>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     Boqun Feng <boqun.feng@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, cgroups@vger.kernel.org,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>, netdev@vger.kernel.org,
+        syzbot <syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: WARNING: locking bug in inet_autobind
+Date:   Tue, 22 Nov 2022 19:02:31 +0100
+In-reply-to: <c9695548-3f27-dda1-3124-ec21da106741@I-love.SAKURA.ne.jp>
+Message-ID: <87sfialu2n.fsf@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 4:53 PM Ivan Babrou <ivan@cloudflare.com> wrote:
+On Tue, Sep 27, 2022 at 10:00 PM +09, Tetsuo Handa wrote:
+> On 2022/09/19 14:02, Tetsuo Handa wrote:
+>> But unfortunately reordering
+>> 
+>>   tunnel->sock = sk;
+>>   ...
+>>   lockdep_set_class_and_name(&sk->sk_lock.slock,...);
+>> 
+>> by
+>> 
+>>   lockdep_set_class_and_name(&sk->sk_lock.slock, &l2tp_socket_class, "l2tp_sock");
+>>   smp_store_release(&tunnel->sock, sk);
+>> 
+>> does not help, for connect() on AF_INET6 socket is not finding this "sk" by
+>> accessing tunnel->sock.
+>> 
 >
-> Hello,
+> I considered something like below diff, but I came to think that this problem
+> cannot be solved unless l2tp_tunnel_register() stops using userspace-supplied
+> file descriptor and starts always calling l2tp_tunnel_sock_create(), for
+> userspace can continue using userspace-supplied file descriptor as if a normal
+> socket even after lockdep_set_class_and_name() told that this is a tunneling
+> socket.
 >
-> We have observed a negative TCP throughput behavior from the following commit:
+> Since userspace-supplied file descriptor has to be a datagram socket,
+> can we somehow copy the source/destination addresses from
+> userspace-supplied socket to kernel-created socket?
 >
-> * 8e8ae645249b mm: memcontrol: hook up vmpressure to socket pressure
 >
-> It landed back in 2016 in v4.5, so it's not exactly a new issue.
->
-> The crux of the issue is that in some cases with swap present the
-> workload can be unfairly throttled in terms of TCP throughput.
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> index 7499c51b1850..07429bed7c4c 100644
+> --- a/net/l2tp/l2tp_core.c
+> +++ b/net/l2tp/l2tp_core.c
+> @@ -1382,8 +1382,6 @@ static int l2tp_tunnel_sock_create(struct net *net,
+>  	return err;
+>  }
+>  
+> -static struct lock_class_key l2tp_socket_class;
+> -
+>  int l2tp_tunnel_create(int fd, int version, u32 tunnel_id, u32 peer_tunnel_id,
+>  		       struct l2tp_tunnel_cfg *cfg, struct l2tp_tunnel **tunnelp)
+>  {
+> @@ -1509,8 +1507,20 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+>  
+>  	tunnel->old_sk_destruct = sk->sk_destruct;
+>  	sk->sk_destruct = &l2tp_tunnel_destruct;
+> -	lockdep_set_class_and_name(&sk->sk_lock.slock, &l2tp_socket_class,
+> -				   "l2tp_sock");
+> +	if (IS_ENABLED(CONFIG_LOCKDEP)) {
+> +		static struct lock_class_key l2tp_socket_class;
+> +
+> +		/* Changing class/name of an already visible sock might race
+> +		 * with first lock_sock() call on that sock. In order to make
+> +		 * sure that register_lock_class() has completed before
+> +		 * lockdep_set_class_and_name() changes class/name, explicitly
+> +		 * lock/release that sock.
+> +		 */
+> +		lock_sock(sk);
+> +		release_sock(sk);
+> +		lockdep_set_class_and_name(&sk->sk_lock.slock,
+> +					   &l2tp_socket_class, "l2tp_sock");
+> +	}
+>  	sk->sk_allocation = GFP_ATOMIC;
+>  
+>  	trace_register_tunnel(tunnel);
 
-I guess defining 'fairness' in such a scenario is nearly impossible.
+What if we revisit Eric's lockdep splat fix in 37159ef2c1ae ("l2tp: fix
+a lockdep splat") and:
 
-Have you tried changing /proc/sys/net/ipv4/tcp_rmem  (and/or tcp_wmem) ?
-Defaults are quite conservative.
-If for your workload you want to ensure a minimum amount of memory per
-TCP socket,
-that might be good enough.
+1. remove the lockdep_set_class_and_name(...) call in l2tp; it looks
+   like an odd case within the network stack, and
 
-Of course, if your proxy has to deal with millions of concurrent TCP
-sockets, I fear this is not an option.
+2. switch to bh_lock_sock_nested in l2tp_xmit_core so that we don't
+   break what has been fixed in 37159ef2c1ae.
 
->
-> I am able to reproduce this issue in a VM locally on v6.1-rc6 with 8
-> GiB of RAM with zram enabled.
->
-> The setup is fairly simple:
->
-> 1. Run the following go proxy in one cgroup (it has some memory
-> ballast to simulate useful memory usage):
->
-> * https://gist.github.com/bobrik/2c1a8a19b921fefe22caac21fda1be82
->
-> sudo systemd-run --scope -p MemoryLimit=6G go run main.go
->
-> 2. Run the following fio config in another cgroup to simulate mmapped
-> page cache usage:
->
-> [global]
-> size=8g
-> bs=256k
-> iodepth=256
-> direct=0
-> ioengine=mmap
-> group_reporting
-> time_based
-> runtime=86400
-> numjobs=8
-> name=randread
-> rw=randread
->
-> [job1]
-> filename=derp
->
-> sudo systemd-run --scope fio randread.fio
->
-> 3. Run curl to request a large file via proxy:
->
-> curl -o /dev/null http://localhost:4444
->
-> 4. Observe low throughput. The numbers here are dependent on your
-> location, but in my VM the throughput drops from 60MB/s to 10MB/s
-> depending on whether fio is running or not.
->
-> I can see that this happens because of the commit I mentioned with
-> some perf tracing:
->
-> sudo perf probe --add 'vmpressure:48 memcg->css.cgroup->kn->id scanned
-> vmpr_scanned=vmpr->scanned reclaimed vmpr_reclaimed=vmpr->reclaimed'
-> sudo perf probe --add 'vmpressure:72 memcg->css.cgroup->kn->id'
->
-> I can record the probes above during curl runtime:
->
-> sudo perf record -a -e probe:vmpressure_L48,probe:vmpressure_L72 -- sleep 5
->
-> Line 48 allows me to observe scanned and reclaimed page counters, line
-> 72 is the actual throttling.
->
-> Here's an example trace showing my go proxy cgroup:
->
-> kswapd0 89 [002] 2351.221995: probe:vmpressure_L48: (ffffffed2639dd90)
-> id=0xf23 scanned=0x140 vmpr_scanned=0x0 reclaimed=0x0
-> vmpr_reclaimed=0x0
-> kswapd0 89 [007] 2351.333407: probe:vmpressure_L48: (ffffffed2639dd90)
-> id=0xf23 scanned=0x2b3 vmpr_scanned=0x140 reclaimed=0x0
-> vmpr_reclaimed=0x0
-> kswapd0 89 [007] 2351.333408: probe:vmpressure_L72: (ffffffed2639de2c) id=0xf23
->
-> We scanned lots of pages, but weren't able to reclaim anything.
->
-> When throttling happens, it's in tcp_prune_queue, where rcv_ssthresh
-> (TCP window clamp) is set to 4 x advmss:
->
-> * https://elixir.bootlin.com/linux/v5.15.76/source/net/ipv4/tcp_input.c#L5373
->
-> else if (tcp_under_memory_pressure(sk))
-> tp->rcv_ssthresh = min(tp->rcv_ssthresh, 4U * tp->advmss);
->
-> I can see plenty of memory available in both my go proxy cgroup and in
-> the system in general:
->
-> $ free -h
-> total used free shared buff/cache available
-> Mem: 7.8Gi 4.3Gi 104Mi 0.0Ki 3.3Gi 3.3Gi
-> Swap: 11Gi 242Mi 11Gi
->
-> It just so happens that all of the memory is hot and is not eligible
-> to be reclaimed. Since swap is enabled, the memory is still eligible
-> to be scanned. If swap is disabled, then my go proxy is not eligible
-> for scanning anymore (all memory is anonymous, nowhere to reclaim it),
-> so the whole issue goes away.
->
-> Punishing well behaving programs like that doesn't seem fair. We saw
-> production metals with 200GB page cache out of 384GB of RAM, where a
-> well behaved proxy with 60GB of RAM + 15GB of swap is throttled like
-> that. The fact that it only happens with swap makes it extra weird.
->
-> I'm not really sure what to do with this. From our end we'll probably
-> just pass cgroup.memory=nosocket in cmdline to disable this behavior
-> altogether, since it's not like we're running out of TCP memory (and
-> we can deal with that better if it ever comes to that). There should
-> probably be a better general case solution.
-
-Probably :)
-
->
-> I don't know how widespread this issue can be. You need a fair amount
-> of page cache pressure to try to go to anonymous memory for reclaim to
-> trigger this.
->
-> Either way, this seems like a bit of a landmine.
+Eric, WDYT?
