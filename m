@@ -2,187 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D367A63430E
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:55:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE22F634315
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234075AbiKVRzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:55:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
+        id S234640AbiKVR4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:56:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234629AbiKVRyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:54:35 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8878DFE;
-        Tue, 22 Nov 2022 09:52:36 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9BF001C0004;
-        Tue, 22 Nov 2022 17:52:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1669139555;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LlhTz4hZ6khVI5ivLTLmhvJIL86V0Pr/7JrsMu5aav0=;
-        b=SMMCzrs0uEnKUmCsxVv/pVCvICUZCNmuXWZZXL23JO+6908+SKZxVrD1vJ5PGEahS1Ec7L
-        3jcXg8WpBne2CPMdi5l/I7JwAMrKwGpCzn2v9eeRDHPID4/v29t5XCNreDV8ZWFh55vtEa
-        IeGzEEha0XsOXpZzsUf1PfaU6A8cM8SgQ2ca9Wl/epKakpeeGCOwMPFfcJtqn9ob3cg/Vd
-        g3UwGMZYxk69xBvXoXb2vf4ObcCw9BK4hB0stTFZ8XkukCVFpyl3hoFeImcKW7Qj9wWeMc
-        fVFn9KMrmkRJ7en2XXVf3rp9StoYggUdwYTrHHFOeVNIf2m7+JI9N0Q7vnzbUA==
-Date:   Tue, 22 Nov 2022 18:52:31 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234449AbiKVRzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:55:43 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417EE85ED1
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:54:23 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-39e61d2087dso76405847b3.5
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:54:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=DJtljlWfswpDDpAnUDjR7A0FiOUmuThlBRS2V8r1yRY=;
+        b=py5ChYRIZNZiWkvTN1pQuru3K0U579g0Q5nhoTfbPCxQKixcseAxCNXdAeCa/xmKyZ
+         dOVPW11QaM3MCGIL8i7cUUxoE79bu7eD9gEFy5n4SdZj5IVZtUkNv9nglUpG4m7MGtiM
+         u9hEYP8FtUScpfAuexX4xZ2X0KGWyIvMk9F1IeYQ3y6DutdpnfxLk33hoO0qFDjZHPe8
+         xVfP0rRVJAGZiLOG4iNktItFrVoipiisfV0Zh7HDUriKFEaRW6f8o+U2OJGzmo27/m2O
+         LGEurA5onvKXdL0HWls2plA91V8sZCO0dbpIUfpgjGpq483AWtgD5ULBpBDTCvBcVOnQ
+         UrpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DJtljlWfswpDDpAnUDjR7A0FiOUmuThlBRS2V8r1yRY=;
+        b=XHMzCZKJ7INyWrqNIlKbqIHdgD/IMaZAx7O4+gIugW+aR3k3U4PApGwF+8FkAkUWFs
+         n29MHankceaPRWZhUMs49D8l5Lck2hxJ9SauUw35AKwqbipeCEedg7FcokrwmZuqcRFQ
+         X6q++VJtdpbqJWMdDN1XLA+eBwAoe1Sb6FDz29Xf9Qwr4LbGLiIjIt0cqiibLQJTa1W6
+         rc66HuZp1wn9mBUYEaDlmEUdhyEJRWImzhMBfxuiY63mNulLmPlqxx3lhGTd0OEP1axK
+         tfSxTe/mvUZkGkAyEiF07bsa5vfZueW6Yv7g1aVYBS0vnHzGxSg/guZQiD4oPFBQk7V7
+         Kvpw==
+X-Gm-Message-State: ANoB5pmEdtuFMIq8n8+tpOAPqMcMCiSf21BdXTfcnGL1AZfBjK/IVMMu
+        i2SpqrzbyBYB016QskJTpofqm27oQa4LYcfBxNo0TA==
+X-Google-Smtp-Source: AA0mqf6gtl57ZKrhqiQPjl7KA2EKKX2kPX8Aw8Q+Lw/4WFrk6BpWQA6DOjTCJc9rM03uMHOPYBJPZCW8UZoS6u/xDe4=
+X-Received: by 2002:a0d:dbcf:0:b0:39f:21ad:8475 with SMTP id
+ d198-20020a0ddbcf000000b0039f21ad8475mr5048210ywe.489.1669139662229; Tue, 22
+ Nov 2022 09:54:22 -0800 (PST)
+MIME-Version: 1.0
+References: <20221119014914.31792-1-kuniyu@amazon.com>
+In-Reply-To: <20221119014914.31792-1-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 22 Nov 2022 09:54:11 -0800
+Message-ID: <CANn89iLTh6OPb0LLcAnfzZPt8jDtfyUo5xDA4c0gL4534xmiOg@mail.gmail.com>
+Subject: Re: [PATCH v4 net 0/4] dccp/tcp: Fix bhash2 issues related to
+ WARN_ON() in inet_csk_get_port().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Robert Marko <robert.marko@sartura.hr>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH net-next 6/6] net: mvpp2: Consider NVMEM cells as
- possible MAC address source
-Message-ID: <20221122185231.6302874a@xps-13>
-In-Reply-To: <CAPv3WKds1gUN1V-AkdhPJ7W_G285Q4PmAbS0_nApPgU+3RK+fA@mail.gmail.com>
-References: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
-        <20221117215557.1277033-7-miquel.raynal@bootlin.com>
-        <CAPv3WKdZ+tsW-jRJt_n=KqT+oEe+5QAEFOWKrXsTjHCBBzEh0A@mail.gmail.com>
-        <20221121102928.7b190296@xps-13>
-        <CAPv3WKds1gUN1V-AkdhPJ7W_G285Q4PmAbS0_nApPgU+3RK+fA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@mandriva.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        dccp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcin,
+On Fri, Nov 18, 2022 at 5:49 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> syzkaller was hitting a WARN_ON() in inet_csk_get_port() in the 4th patch,
+> which was because we forgot to fix up bhash2 bucket when connect() for a
+> socket bound to a wildcard address fails in __inet_stream_connect().
+>
+> There was a similar report [0], but its repro does not fire the WARN_ON() due
+> to inconsistent error handling.
+>
+> When connect() for a socket bound to a wildcard address fails, saddr may or
+> may not be reset depending on where the failure happens.  When we fail in
+> __inet_stream_connect(), sk->sk_prot->disconnect() resets saddr.  OTOH, in
+> (dccp|tcp)_v[46]_connect(), if we fail after inet_hash6?_connect(), we
+> forget to reset saddr.
+>
+> We fix this inconsistent error handling in the 1st patch, and then we'll
+> fix the bhash2 WARN_ON() issue.
+>
+> Note that there is still an issue in that we reset saddr without checking
+> if there are conflicting sockets in bhash and bhash2, but this should be
+> another series.
+>
+> See [1][2] for the previous discussion.
+>
+> [0]: https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+> [1]: https://lore.kernel.org/netdev/20221029001249.86337-1-kuniyu@amazon.com/
+> [2]: https://lore.kernel.org/netdev/20221103172419.20977-1-kuniyu@amazon.com/
+> [3]: https://lore.kernel.org/netdev/20221118081906.053d5231@kernel.org/T/#m00aafedb29ff0b55d5e67aef0252ef1baaf4b6ee
+>
+>
+> Changes:
+>   v4:
+>     * Patch 3
+>       * Narrow down the bhash lock section (Joanne Koong)
+>
+>   v3: https://lore.kernel.org/netdev/20221118205839.14312-1-kuniyu@amazon.com/
+>     * Patch 3
+>       * Update saddr under the bhash's lock
+>       * Correct Fixes tag
+>       * Change #ifdef in inet_update_saddr() along the recent
+>         discussion [3]
+>
+>   v2: https://lore.kernel.org/netdev/20221116222805.64734-1-kuniyu@amazon.com/
+>     * Add patch 2-4
+>
+>   v1: [2]
+>
+>
+> Kuniyuki Iwashima (4):
+>   dccp/tcp: Reset saddr on failure after inet6?_hash_connect().
+>   dccp/tcp: Remove NULL check for prev_saddr in
+>     inet_bhash2_update_saddr().
+>   dccp/tcp: Update saddr under bhash's lock.
+>   dccp/tcp: Fixup bhash2 bucket when connect() fails.
 
-mw@semihalf.com wrote on Mon, 21 Nov 2022 15:46:44 +0100:
+SGTM, thanks !
 
-> pon., 21 lis 2022 o 10:29 Miquel Raynal <miquel.raynal@bootlin.com> napis=
-a=C5=82(a):
-> >
-> > Hi Marcin,
-> >
-> > mw@semihalf.com wrote on Sat, 19 Nov 2022 09:18:34 +0100:
-> > =20
-> > > Hi Miquel,
-> > >
-> > >
-> > > czw., 17 lis 2022 o 22:56 Miquel Raynal <miquel.raynal@bootlin.com> n=
-apisa=C5=82(a): =20
-> > > >
-> > > > The ONIE standard describes the organization of tlv (type-length-va=
-lue)
-> > > > arrays commonly stored within NVMEM devices on common networking
-> > > > hardware.
-> > > >
-> > > > Several drivers already make use of NVMEM cells for purposes like
-> > > > retrieving a default MAC address provided by the manufacturer.
-> > > >
-> > > > What made ONIE tables unusable so far was the fact that the informa=
-tion
-> > > > where "dynamically" located within the table depending on the
-> > > > manufacturer wishes, while Linux NVMEM support only allowed statica=
-lly
-> > > > defined NVMEM cells. Fortunately, this limitation was eventually ta=
-ckled
-> > > > with the introduction of discoverable cells through the use of NVMEM
-> > > > layouts, making it possible to extract and consistently use the con=
-tent
-> > > > of tables like ONIE's tlv arrays.
-> > > >
-> > > > Parsing this table at runtime in order to get various information i=
-s now
-> > > > possible. So, because many Marvell networking switches already foll=
-ow
-> > > > this standard, let's consider using NVMEM cells as a new valid sour=
-ce of
-> > > > information when looking for a base MAC address, which is one of the
-> > > > primary uses of these new fields. Indeed, manufacturers following t=
-he
-> > > > ONIE standard are encouraged to provide a default MAC address there=
-, so
-> > > > let's eventually use it if no other MAC address has been found usin=
-g the
-> > > > existing methods.
-> > > >
-> > > > Link: https://opencomputeproject.github.io/onie/design-spec/hw_requ=
-irements.html =20
-> > >
-> > > Thanks for the patch. Did you manage to test in on a real HW? I am cu=
-rious about =20
-> >
-> > Yes, I have a Replica switch on which the commercial ports use the
-> > replica PCI IP while the config "OOB" port is running with mvpp2:
-> > [   16.737759] mvpp2 f2000000.ethernet eth52: Using nvmem cell mac addr=
-ess 18:be:92:13:9a:00
-> > =20
->=20
-> Nice. Do you have a DT snippet that can possibly be shared? I'd like
-> to recreate this locally and eventually leverage EDK2 firmware to
-> expose that.
-
-Yes of course, the DT is public on Sartura's Github, but here is the
-exact file I used showing the diff cleaning the Armada 7040 TN48M DT
-eeprom description and its use as an nvmem-cell provider):
-https://github.com/miquelraynal/linux/commit/230ee68728799454e2f07f61792e11=
-724e731d6d
-
->=20
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > > >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 ++++++
-> > > >  1 file changed, 6 insertions(+)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/driv=
-ers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > index eb0fb8128096..7c8c323f4411 100644
-> > > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > @@ -6104,6 +6104,12 @@ static void mvpp2_port_copy_mac_addr(struct =
-net_device *dev, struct mvpp2 *priv,
-> > > >                 }
-> > > >         }
-> > > >
-> > > > +       if (!of_get_mac_address(to_of_node(fwnode), hw_mac_addr)) {=
- =20
-> > >
-> > > Unfortunately, nvmem cells seem to be not supported with ACPI yet, so
-> > > we cannot extend fwnode_get_mac_address - I think it should be,
-> > > however, an end solution. =20
-> >
-> > Agreed.
-> > =20
-> > > As of now, I'd prefer to use of_get_mac_addr_nvmem directly, to avoid
-> > > parsing the DT again (after fwnode_get_mac_address) and relying
-> > > implicitly on falling back to nvmem stuff (currently, without any
-> > > comment it is not obvious). =20
-> >
-> > I did not do that in the first place because of_get_mac_addr_nvmem()
-> > was not exported, but I agree it would be the cleanest (and quickest)
-> > approach, so I'll attempt to export the function first, and then use it
-> > directly from the driver.
-> > =20
->=20
-> That would be great, thank you. Please add one-comment in the
-> mvpp2_main.c, that this is valid for now only in DT world.
-
-Ack.
-
-Thanks,
-Miqu=C3=A8l
+Reviewed-by: Eric Dumazet <edumazet@google.com>
