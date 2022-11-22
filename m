@@ -2,221 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD11863416F
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 17:27:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBCB63418C
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 17:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233788AbiKVQ1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 11:27:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
+        id S234240AbiKVQad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 11:30:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234235AbiKVQ1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 11:27:02 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFC6528A9;
-        Tue, 22 Nov 2022 08:27:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669134421; x=1700670421;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=LRl9OFrG3WKPzK0+KQQ5Jb19UpnCGBAfognwPjt/46M=;
-  b=iTbJCo/mDmqCg9Vml4+WtJrc5/xcYZkJ+rkJVCb7z4dvNMVbc81Gfhp6
-   xYvQJDaMVeExI/CnWkh1iQk9o5caQEbot39XWPymyzWVaPQdos4NXetAm
-   dyizDn7iY0PKUTL/uAuW3sz6qw9M8sOycD0/j3pA6otuwtmAlYoOcPsvn
-   tl2CaqFPc8OaIvf6/ReDVuChvMtTvcRTms7QqNojl2zYHvFCkEB4eTkFg
-   vELh9NIEmsRXvg54MIBA5zb0j4Vk8lgERzzm4HF/4UcJNVw8YyS4fpORy
-   O3J2eiIaX7wQLzLuanMTe+ewBPKe0QV77qD8OULTUChPHwks56uuAeHqC
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="315004946"
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="315004946"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 08:27:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="641471580"
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="641471580"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga002.jf.intel.com with ESMTP; 22 Nov 2022 08:27:00 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.13; Tue, 22 Nov 2022 08:27:00 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 08:26:59 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 22 Nov 2022 08:26:59 -0800
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.44) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 22 Nov 2022 08:26:59 -0800
+        with ESMTP id S234010AbiKVQaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 11:30:23 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2061.outbound.protection.outlook.com [40.107.22.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2669959845
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 08:30:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eDp8VC/gC2JVq+kcqv7tUSKp48UfVQSWf0OeiWeQACfJg5b0sEtM1fSsALaz89UBRksQkVD1oaYnH84n7ulKJUlwI4qsmfdJJlIT04sBdjheykQBOP2tsk0+tQSUBITcLSyPjD53hXGvLMDbFEkDiakJGTaXNIf5U5tZRiBCe/VYBOkXLlv+D0r8ESjazVInkVTAGu/baIPzwU5lIxHpQirwHXhfz1+Df638s6/lvb4NNsIs8yumgvvpsy71JQ35G+fcpGp/KImFk0s2Zc/9NAdCpyfoiRzdERCoc1170RK5CRLccZ5zPSe8p+56+6fpIM8deJhpmAs+ksZ45kHQDw==
+ b=GJRKaAvnCSwPDpkhgBUkDFFuYZAAWTdDi5cMQpu2ex3e+BfyBi9/Ee//AbWEKi1SWstZxXzlNug2L6xAupxzhYoP7OnlRqC70fbMz01kfU5eDHF79uNle16mv2cL8aN9Ns0pvo4a5JSYAFmLcvNoGul+6I0cdznniez41adMkouZBqJY20KN8j+/eOa6Qt4YlGuyfwi/ggSSCoakdzU0qEhOv2L8EGug3jVLqrpSCizHCGtCxuzyvemtoCYgjQE0K8A1e15cY9++zyZjRmexzbOxLIq8GjCxdAW+lhiZVDsnYbeh1o8txOLOj70nnOj6HN0f6Y4bqxl9Nr3KeULG/Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U/htbNsj/QtG3rGWw4G9+1tnkAKpBry6ub8WOIjUUJg=;
- b=l8zoQWmxdjLxgBlziZWHh7jY281NyFFqTefYZl3FotdVAz6LjBoPXJWMtLkcBPVQ8BhV95P6ENps43Idq4tUsUk9zsT+TpvqVq2xQQexmXhbohOY0X4ZF1arOgiYuzq07eVytiBdje7rAoveUK0tPm9ZG2ahQPbHUa1iWwUbnHb8H+3tB7gPO6RzrUD2YW7ZItyOTsI29l9w0zBQJzq4yK1gvsEKVicbftW2hCPHSAcpcOZTVxNnraQ28muzjrm+wEXf54pmfhAmvT719VLBpxDvVQXXOovVxM3ZGsCWy5FaE5gWdKl5sfwuyWA530AIE0vDsu7f+VqRB+rPW8Uupw==
+ bh=LZ9pRPZToM/rs1NZS4iMH6GMBVBuSIn/DJNzCfs3orM=;
+ b=K5Xs5XQfd+CBXvWA5AetBbko00W7XtbDgtrC8N4YUMBByxqBZPC2ji/jiksl8Wzm1ToV5bD84y/WCd0vJpSm0mZER9n4tmBhBbCfBuBgyLUH/xl2uId5GycNUDslqsLIE+j6KpptBb90532tzy0YAHTiUNIuBLslozS9U9sbK0KIeBIKAc03puVdykYeQJ7Cf+wVEnfgHPDfQqsynJCUHrAojecXCmjPwB4FlZzBFmN3sCK2zfL/M+MZJAL0x+f/fH+fTl+/bYJBcC2PvvFMoeaXpyH7b2akku+jjy2tXuGVJPnBZuHdfElWRZZPQLCRhTDEEFjygqKH6sATK6z+uw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LZ9pRPZToM/rs1NZS4iMH6GMBVBuSIn/DJNzCfs3orM=;
+ b=Eh5ZrlVirg+NWT57gdSYA5Nnd3YU9fh2ZHTrjokBDuJCoiaTaO5nLPcGjjX0FlpfH16XdHckDAIbI0IMhNtX0hKdtz6jhA3q47DIUns+XD9x3PunIn3AECMyKdKpd1Jb+lMM7TBZnZ5p638FuMBLHNXcztjvbYAuJEYCNI315rM=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
- PH7PR11MB6748.namprd11.prod.outlook.com (2603:10b6:510:1b6::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5834.15; Tue, 22 Nov 2022 16:26:57 +0000
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::5f39:1ef:13a5:38b6]) by DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::5f39:1ef:13a5:38b6%6]) with mapi id 15.20.5834.009; Tue, 22 Nov 2022
- 16:26:57 +0000
-Date:   Tue, 22 Nov 2022 17:26:50 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Akihiko Odaki <akihiko.odaki@daynix.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <intel-wired-lan@lists.osuosl.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8255.eurprd04.prod.outlook.com (2603:10a6:102:1ce::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.9; Tue, 22 Nov
+ 2022 16:30:16 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Tue, 22 Nov 2022
+ 16:30:16 +0000
+Date:   Tue, 22 Nov 2022 18:30:12 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Yan Vugenfirer" <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>
-Subject: Re: [PATCH v2] igb: Allocate MSI-X vector when testing
-Message-ID: <Y3z4SlmtA/u/3ipA@boxer>
-References: <20221122131145.68107-1-akihiko.odaki@daynix.com>
-Content-Type: text/plain; charset="us-ascii"
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>
+Subject: Re: [PATCH v4 net-next 0/8] Let phylink manage in-band AN for the PHY
+Message-ID: <20221122163012.w5gsoawp22lc3nyl@skbuf>
+References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
+ <c1b102aa-1597-0552-641b-56a811a2520e@seco.com>
+ <20221121194444.ran2bec6fhfk72lt@skbuf>
+ <4bf812ec-f59b-6f64-b1e0-0feb54138bad@seco.com>
+ <20221122001700.hilrumuzc5ulkafi@skbuf>
+ <522f823f-70d2-d595-1f2b-1ca447c6f288@seco.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221122131145.68107-1-akihiko.odaki@daynix.com>
-X-ClientProxiedBy: FR3P281CA0105.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a1::6) To DM4PR11MB6117.namprd11.prod.outlook.com
- (2603:10b6:8:b3::19)
+In-Reply-To: <522f823f-70d2-d595-1f2b-1ca447c6f288@seco.com>
+X-ClientProxiedBy: AM9P193CA0026.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21e::31) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|PH7PR11MB6748:EE_
-X-MS-Office365-Filtering-Correlation-Id: 631f2858-c9cc-4882-4da0-08dacca65fc4
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8255:EE_
+X-MS-Office365-Filtering-Correlation-Id: 08f6768b-3ae5-4510-6c11-08dacca6d667
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Df2jHsHikHY0FE1ArSeZvI9RwsupNOrPB+spmMRQgtw8hEs4YNwLUgDdoSm3BGzu8C/S1gA0VRqAyxkhilIZmcZ6ElAhIf9ZBo1iyitfqWvevoeMDPf/bVlIYeB93EOHQ2B3ru85kcg/7IyRzHIP5NQbuPmnIiMXTVaiVQQzeXxyGyUMfiITDsNEsGMBr+dXa28pV7MAvRKP711TTnt2ufcigdBMG6qNYWXt77ogKR3LyhJjDTFZtD36ITkMk3cBDE4zjSUpuOeWFDyxe/TWck+saEmA5mELcOUQFvhiLgajQ86HTghTf71QwQ/CH0oTTem0uA37H4ng2mcmHpV9fZi04rNVme5bO7WG+jZo5ewI2tfki9/O29k+pKJfUtIqhkIKGNIu59X9nbpeKW/fgNg2iD+rurApJ0rcOWMNETq9VdQAmXIZfKMMTx92B0GvVj3mOvKz71pipP90aYHcttrFUitWVtclQlyCvHNbBVb9iB4ugpUy3y8ao5mpqq2JzLiCTbBnMmtV3G2Fp2NRc2//E1/1IIkdn0OhgPSR3q2p+Eu6wS876D9Av5F6xi4lTVmm5lctbKziIvPXZwkcC658GkPKEw+5ZfwZHVfx0VMkf//0eRNHJ9FHVqy055mhbMy8QYcCln5tLIUIeVO/GQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(136003)(376002)(346002)(366004)(396003)(39860400002)(451199015)(86362001)(7416002)(2906002)(82960400001)(4326008)(83380400001)(38100700002)(316002)(8936002)(66476007)(6916009)(478600001)(6486002)(186003)(8676002)(9686003)(33716001)(26005)(41300700001)(66946007)(44832011)(66556008)(5660300002)(54906003)(6506007)(6666004)(6512007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: /OX/KDLcaeDmOrG9t6QyUIrIf96iLZNLTo8A0ywk0zfs66nslSQQJP2e1RuFCGnBZehqbTr+hwJvfhdDFinXicvLnmT3FM7PBNbIkweRgy92rgaTZkRQg9Vz78lyRUU9bUjLPAwUMzlDs02SlWiFB0hUJsFkUli2FJTpR2pXm6QZz++w3zr353uBH/cyjxr4tyKlnS2clazuT9p4WUcxf3shoRWune9jqaOheAiNiBy4rsOxYP4uTSMjeaZsG2IeK1bzV2P1exNiBeWu4eiIkayiHonyLuM1ag888cMSwEBLLmyfyJUjft7gUGS0kkuTviabFjyQ4x78phLjfFCa0ZesiG1NfTnHZXtW5ra6dUCxaFjUclE89FC1uC6ldgq4jYgRrm4h1FaJH7GyRdqgBeb7qBKYdUwG7gE19xO/rN83Rtae1KjDAEIDkaC8wEOUd6TBRH1swhpaS9kNhplgg0yR7wUsS9IkxV8Ow4OL/1aUFl9aqdnUxmWKw4QxhCsT+5+DQVw/nCeOWiFHeMS7sZCCG+xwHNPyXectQuFasT0NX8cypkRxi0ONp2WDU/+betU+EtJBbNvX4pBu927Mi3uR7/MbL9Khp4Hc4USgxIThGbQ4tUd1p+G22Rgcz2+IWJ4yREbb6kc5Bb7MZSuYfg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(346002)(39860400002)(366004)(136003)(376002)(396003)(451199015)(54906003)(8936002)(66946007)(66556008)(6916009)(8676002)(66476007)(316002)(4326008)(41300700001)(478600001)(6486002)(6666004)(53546011)(9686003)(26005)(6506007)(33716001)(5660300002)(83380400001)(6512007)(38100700002)(7416002)(86362001)(44832011)(1076003)(186003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WtfLo6vdgKqesLYcis5gzO+MtWK27uwFVqJfDVzZWERMJ2uGV7M/HpCMf8pR?=
- =?us-ascii?Q?s0jBj8rM5k/MeKBUwFX/ckUXYfahw1Hq3MzaxSjXInWLKa+9jiA54k3k7eKr?=
- =?us-ascii?Q?frs6yqVY64khaXv1drLWti3mWhqbNDVuHSlU7RBpt+Ds/Krs+dLgeyCqJuyP?=
- =?us-ascii?Q?uWndAMvcqOrdrwCrqO+ViU0g/D5/98r8SjWOJXCLdT/wJsJurtZIDKVlX9iM?=
- =?us-ascii?Q?gj6SGYV8Jtmq13pUHkdE/mknM1NNTqnrdq9dD12Gxw+d7aRiaEZ9UDIe/C1A?=
- =?us-ascii?Q?iK5n7bylF6AZARx+BjKiby2fYSSgRaUQFSZ63XKGJaCi2AxBWoQDa0HFTx41?=
- =?us-ascii?Q?Bw5uBV+Km4LbuFZdWDZ/VDkdw1YMSHG0MpiPDqsDKAUvtDY6dbnkKLksbtAb?=
- =?us-ascii?Q?NwLngob+xecyqADCmBN9eGE4i1yfGtsTZcbbxWdZpfcxj82hoEGtVx6wCRi8?=
- =?us-ascii?Q?C/E6gyHVyIGNtWOa+Q2PWzhtez/PD+Bzp7XrtEeScyEBcWyChHV6npJC4Hji?=
- =?us-ascii?Q?3XOJjXlhn1NwLeE3kKQKarPmlmeUg1waoVX1UQkT9X7wTXDqyOuB1VOvKBey?=
- =?us-ascii?Q?WBUwITCLUTrpbx+B2ZvXwIORqT1f+PKruNtYhL5lN3IKH+CKOhvxl1pEi6vU?=
- =?us-ascii?Q?qgNXRKfy/4YNxHXUL9ZabWW2z7IRw5w8U3t9EhNB2xcYY9+pcq/GpDE0jdDP?=
- =?us-ascii?Q?17HdAaRNac/Gs325WkU0gg4HWEzcWGtdE3OUPjQJgoSp9570gpwyCvAWTcxI?=
- =?us-ascii?Q?A4oZr6iPRySfe1aGvB3gtDhdk1dw8lIIGYSwPzzwJ0m+QOaih//w+Z94lXe4?=
- =?us-ascii?Q?ctUmgBhVGUhcPde3dD6BB0+bMZeWARZ2tW0gw5nw/85jMVJ/y+FQjCTaOksh?=
- =?us-ascii?Q?yjeyMjrY5mxFPbY33QoIP96E1otAh2bpLsHXRSStvkJlr+v29eMQYf82QKlP?=
- =?us-ascii?Q?AYqVKEIRMhDAp0I/WFkIH+79C0gP/IeLhSmFYwwn5jMuqr3sw9SjAv2TVZea?=
- =?us-ascii?Q?TftUxFIC38fknkrXGXyw9LfWUkeOyzvVkR+ToJnrHcjcTix/Z6QQRIPMLSFw?=
- =?us-ascii?Q?AZ8GYL2/GE+8ZKgX3SaxXP9ozRop8qYRVbINGapzYnhvu5PdqUUlO7QtZIxI?=
- =?us-ascii?Q?XPKVfWERUKhxJIXkUC1Umkv8lu36CUsEshaaqYRYZeeV63KQ3BUih/CUHTOC?=
- =?us-ascii?Q?wCqQv4NwV3raDhzm2KmMfm0KzhS/K2BQi0fFhjHD50Y2MHaoy670hPCI4WUI?=
- =?us-ascii?Q?ytx8JSmU8zwU8ZJHl2+7CD7R1Dys0jPwKs9FrOEQfb78Qt5J0mpPDdsGxecG?=
- =?us-ascii?Q?6EaegP7sucj7PoO2JstpAltyevLJ8vMO1tsaHdGZMZlLVRJss53sy5Ni9cz2?=
- =?us-ascii?Q?hTeA4ZPqWJOv2uPVAujUZ/lMyq1OSZP9rvv6Z7kJ2T1rWRxPdfTC9JIaTmSN?=
- =?us-ascii?Q?cFYxABLTGC+uEqcKdfw0Y5Cuobi6HRU0sRotu2hxGiaWDFnNiu7uLFWNsZZo?=
- =?us-ascii?Q?5GUEcdh/aphFW2mvSv4lWtY4DWmiQ/8DBt6oCamnsLEM/YUgMOE8UAHi4hT0?=
- =?us-ascii?Q?y8P+Douv56whayatf8Yhj3P3rirquAIdkNJk3ng8VcONCLPEU7Ej904o0JqM?=
- =?us-ascii?Q?sQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 631f2858-c9cc-4882-4da0-08dacca65fc4
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JF8tDq2vwn5efTU1CY0aWRSr8kmQFBG70LgmBH3SxMEFaDlbr4tE5vXAUDpL?=
+ =?us-ascii?Q?xKGQKlkl5/hZyd/KQ/eQRaZVHwFj0TH9YHNJDpay6VzA71oEQ4Wp/cit4CW5?=
+ =?us-ascii?Q?WBT/ZnojSxqgHK9CuwGa1HHf3DxfwGjuETJuaJycPERQmvBMuHpQTd+1DnKX?=
+ =?us-ascii?Q?P1FStWGH6pxKmXCE/MwbHR/gVU1EfHIdXw/4i4jMsIWhxc9D/JNKhtTtRYJ6?=
+ =?us-ascii?Q?YrwL5Zp8/j7zjtsZiV2N7Rr8+0TyrgN8CZn0HMv+XikA+7Ze9r0/Xr9nFeq1?=
+ =?us-ascii?Q?s/5lqv8W2y6OFiLc/S1BGgZRDm4+iUT9gqBfEmpWT13YRkoFPkXCIZ+yUEHu?=
+ =?us-ascii?Q?QaJMkC+Q2Iz/eBzECO5bHg/vCsuBM4+2b/2pFHkM3hsKYoILlzENN7TcGrnC?=
+ =?us-ascii?Q?QObWbKGS5uziSnEtS0SKfPn1nhh6QE3gyhgkL6TvFzgp4i1ZcNo37rZpx+yh?=
+ =?us-ascii?Q?i04OvglVQsEBMERIq4QyMjnuj1S8EXRUjkCtgTNfTr8LOgENr7KtFKTOF8Kw?=
+ =?us-ascii?Q?MjbbX1ZlSlOeekx649gnoisaxQs/fmakpmvGHRq7lOtzn3tRlOK6/6R6mTaA?=
+ =?us-ascii?Q?DffSBhds8rhPobtTH05F5ERWk+8Ae6GdMnHYpWS9/tPHNgpAaQQcoN2k4/Dq?=
+ =?us-ascii?Q?lEp0sAd1sR+KApq1SV/TbKg2VJnfPzIqCdTDhIfyVO8O6zzBVBMIWit/x75p?=
+ =?us-ascii?Q?o9A34KIQjaUu99TnScTOKNkelZ9E3CX/Ut0hi+IiZleioVBpQKiZBnM+XUIz?=
+ =?us-ascii?Q?+foTZlg/A+fqdceuQ80ZtrvkbtS/nO3D0wGQc/8MlveRvGm4UCLdmf4nPabq?=
+ =?us-ascii?Q?wXXq9KA9QLjtnbKaf7N3oH3zj28Ay0XLD1Lns65SwAoAS4nlHyEY7kpLQXDW?=
+ =?us-ascii?Q?6dEYnifXPSjXZiW55YTkzl+8FcR1aR1tAhL7WxfOhzSGH7eBEQEgiYGIjmh4?=
+ =?us-ascii?Q?XjKZdIiwufrp1mdfBlgvBnWi3sCXYS6v2mkR+bQQOuf3xBkM8A3I+RXwADgx?=
+ =?us-ascii?Q?bZdP1uhGILsOFFbS+QxdwaNljdtuqairE0D/bYBp4LYqzkt8cWrpDhzSUvKb?=
+ =?us-ascii?Q?QAilrd+hpc9dEUuRH2NVqbWveg4q5QvUWxuMeAz02q3NBI7Y6vwsq6/BTNql?=
+ =?us-ascii?Q?uDr7fpHQMHLHY6rZ+wxMMvWXJ19yGY0L39DTHwTv/6UM1xZZrlBbKG39dKZ1?=
+ =?us-ascii?Q?DVS964WWyhV8jwWwcl8wDOcIFr90UDXGYhu2SDjk/MwLnPg+ZjbTkFhy6xIG?=
+ =?us-ascii?Q?fPqpodckGbRgituQDdoqPP2fSxJgAbLrWFXA41wIdCIvgZy24WrWN0/7fs0v?=
+ =?us-ascii?Q?n+pPOfYEGFMLgXRrxyEJ54djEjw/8ErWUV+0eeiiS2zhRzzXoZPPlA9UnAlU?=
+ =?us-ascii?Q?59da1rwhCCgaokd1NtiS3PHmsOGLFJmpuMEJpwMNEoNvW7mmKsSSEiE8Dv4W?=
+ =?us-ascii?Q?QMm4qleG6XYSO5jOQA0JaE4zLzYoL6NJW8zPzGqZEaSjNFqGVkODPGrMXgEd?=
+ =?us-ascii?Q?66opqDH6RA+VxfTIzH1U+nLKIoLZykJvwej7JjRx6ScYNR0/nEF6KY9jxz2h?=
+ =?us-ascii?Q?mSj6b5lvDa832QO6Vfajm5s6QT9UfvO3G81B6x2sYT0ZB0ziqam2dwkTe7qZ?=
+ =?us-ascii?Q?XA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08f6768b-3ae5-4510-6c11-08dacca6d667
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 16:26:57.0934
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 16:30:16.2117
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vFdmLiKKWY7U0lzqOnk5H0tsH9yUdiixwkhU1GQwM0MazGd0FeC9K7tzmmcu86iovhHZhruqWSKUoTrHot39Ox90p04N4lxJYlXjQ/7Gahg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6748
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8sWguK76Nl90WyztugjF8Pxnmuu8Vqt15d6/B4cBjztWYu/2dJe5Bc13iaYe9Vt9ewy924T9tCcRqUMZuQBCxw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8255
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 10:11:45PM +0900, Akihiko Odaki wrote:
-> Without this change, the interrupt test fail with MSI-X environment:
+On Tue, Nov 22, 2022 at 11:10:03AM -0500, Sean Anderson wrote:
+> On 11/21/22 19:17, Vladimir Oltean wrote:
+> > On Mon, Nov 21, 2022 at 05:42:44PM -0500, Sean Anderson wrote:
+> >> Are you certain this is the cause of the issue? It's also possible that
+> >> there is some errata for the PCS which is causing the issue. I have
+> >> gotten no review/feedback from NXP regarding the phylink conversion
+> >> (aside from acks for the cleanups).
+> > 
+> > Erratum which does what out of the ordinary? Your description of the
+> > hardware failure seems consistent with the most plausible explanation
+> > that doesn't involve any bugs.
 > 
-> $ sudo ethtool -t enp0s2 offline
-> [   43.921783] igb 0000:00:02.0: offline testing starting
-> [   44.855824] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Down
-> [   44.961249] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
-> [   51.272202] igb 0000:00:02.0: testing shared interrupt
-> [   56.996975] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
-> The test result is FAIL
-> The test extra info:
-> Register test  (offline)	 0
-> Eeprom test    (offline)	 0
-> Interrupt test (offline)	 4
-> Loopback test  (offline)	 0
-> Link test   (on/offline)	 0
-> 
-> Here, "4" means an expected interrupt was not delivered.
-> 
-> This change routes interrupts correctly to the first MSI-X vector, and
-> fixes the test:
+> Well, I don't have a setup which doesn't require in-band AN, so I can't
+> say one way or the other where the problem lies. To me, the Lynx PCS is
+> just as opaque as the phy.
 
-Try to use imperative mood - simply stating something like "To fix this,
-route IRQs correctly to the first MSI-X vector by xyz"
+ok.
 
+> > If you enable C37/SGMII AN in the PCS (of the PHY or of the MAC) and AN
+> > does not complete (because it's not enabled on the other end), that
+> > system side of the link remains down. Which you don't see when you
+> > operate in MLO_AN_PHY mode, because phylink only considers the PCS link
+> > state in MLO_AN_INBAND mode. So this is why you see the link as up but
+> > it doesn't work.
 > 
-> $ sudo ethtool -t enp0s2 offline
-> [   42.762985] igb 0000:00:02.0: offline testing starting
-> [   50.141967] igb 0000:00:02.0: testing shared interrupt
-> [   56.163957] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
-> The test result is PASS
-> The test extra info:
-> Register test  (offline)	 0
-> Eeprom test    (offline)	 0
-> Interrupt test (offline)	 0
-> Loopback test  (offline)	 0
-> Link test   (on/offline)	 0
+> Actually, I checked the PCS manually in phy mode, and the link was up.
+> I expected it to be down, so this was a bit surprising to me.
 
-Looks better now, would be also good to explain what is the *actual* fix
-by explaining the HW registers setting that you're doing.
+Well, if autoneg is disabled in the Lynx PCS (which it is in MLO_AN_PHY),
+then the link should come up right away, as long as it can lock on some
+symbols IIRC. It's a different story for the PHY PCS if autoneg is
+enabled there. Still nothing surprising here, really.
 
-Thanks!
+> > To confirm whether I'm right or wrong, there's a separate SERDES
+> > Interrupt Status Register at page 0xde1 offset 0x12, whose bit 4 is
+> > "SERDES link status change" and bit 0 is "SERDES auto-negotiation error".
+> > These bits should both be set when you double-read them (regardless of
+> > IRQ enable I think) when your link is down with MLO_AN_PHY, but should
+> > be cleared with MLO_AN_INBAND.
+> 
+> This register is always 0s for me...
+> 
+> >> This is used for SGMII to RGMII bridge mode (figure 4). It doesn't seem
+> >> to contain useful information for UTP mode (figure 1).
+> > 
+> > So it would seem. It was a hasty read last time, sorry. Re-reading, the
+> > field says that when it's set, the SGMII code word being transmitted is
+> > "selected by the register" SGMII ANAR. And in the SGMII ANLPAR, you can
+> > see what the MAC said.
+> 
+> ... possibly because of this.
+> 
+> That said, ANLPAR is 0x4001 (all reserved bits) when we use in-band:
+> 
+> [    8.191146] RTL8211F Gigabit Ethernet 0x0000000001afc000:04: INER=0000 INSR=0000 ANARSEL=0000 ANAR=0050 ANLPAR=4001
+> 
+> but all zeros without:
+> 
+> [   11.263245] RTL8211F Gigabit Ethernet 0x0000000001afc000:04: INER=0000 INSR=0000 ANARSEL=0000 ANAR=0050 ANLPAR=0000
 
+So enabling in-band autoneg in the Lynx PCS does what you'd expect it to do.
+I don't know why you don't get a "SERDES auto-negotiation error" bit in
+the interrupt status register. Maybe you need to first enable it in the
+interrupt enable register?! Who knows. Not sure how far it's worth
+diving into this.
+
+> It's all 1s when using RGMII. These bits are reserved, so it's not that
+> interesting, but maybe these registers are not as useless as they seem.
+
+Yeah, with RGMII I don't know if the PHY responds to the SERDES registers
+over MDIO. All ones may mean the MDIO bus pull-ups.
+
+> > Of course, it doesn't say what happens when the bit for software-driven
+> > SGMII autoneg is *not* set, if the process can be at all bypassed.
+> > I suppose now that it can't, otherwise the ANLPAR register could also be
+> > writable over MDIO, they would have likely reused at least partly the
+> > same mechanisms.
+> > 
+> >> > +	ret = phy_read_paged(phydev, 0xd08, RTL8211FS_SGMII_ANARSEL);
+> >> 
+> >> That said, you have to use the "Indirect access method" to access this
+> >> register (per section 8.5). This is something like
+> >> 
+> >> #define RTL8211F_IAAR				0x1b
+> >> #define RTL8211F_IADR				0x1c
+> >> 
+> >> #define RTL8211F_IAAR_PAGE			GENMASK(15, 4)
+> >> #define RTL8211F_IAAR_REG			GENMASK(3, 1)
+> >> #define INDIRECT_ADDRESS(page, reg) \
+> >> 	(FIELD_PREP(RTL8211F_IAAR_PAGE, page) | \
+> >> 	 FIELD_PREP(RTL8211F_IAAR_REG, reg - 16))
+> >> 
+> >> 	ret = phy_write_paged(phydev, 0xa43, RTL8211F_IAAR,
+> >> 			      INDIRECT_ADDRESS(0xd08, RTL8211FS_SGMII_ANARSEL));
+> >> 	if (ret < 0)
+> >> 		return ret;
+> >> 
+> >> 	ret = phy_read_paged(phydev, 0xa43, RTL8211F_IADR);
+> >> 	if (ret < 0)
+> >> 		return ret;
+> >> 
+> >> I dumped the rest of the serdes registers using this method, but I
+> >> didn't see anything interesting (all defaults).
+> > 
+> > I'm _really_ not sure where you got the "Indirect access method" via
+> > registers 0x1b/0x1c from.
 > 
-> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
-> ---
->  drivers/net/ethernet/intel/igb/igb_ethtool.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Huh. Looks like this is a second case of differing datasheets. Mine is
+> revision 1.8 dated 2021-04-21. The documentation for indirect access was
+> added in revision 1.7 dated 2020-07-08. Although it seems like the
+> SERDES registers were also added in this revision, so maybe you just
+> missed this section?
+
+I have Rev. 1.2. dated July 2014. Either that, or I'm holding the book
+upside down...
+
+> > My datasheet for RTL8211FS doesn't show
+> > offsets 0x1b and 0x1c in page 0xa43.
 > 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> index e5f3e7680dc6..ff911af16a4b 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> @@ -1413,6 +1413,8 @@ static int igb_intr_test(struct igb_adapter *adapter, u64 *data)
->  			*data = 1;
->  			return -1;
->  		}
-> +		wr32(E1000_IVAR_MISC, E1000_IVAR_VALID << 8);
-> +		wr32(E1000_EIMS, BIT(0));
->  	} else if (adapter->flags & IGB_FLAG_HAS_MSI) {
->  		shared_int = false;
->  		if (request_irq(irq,
-> -- 
-> 2.38.1
+> Neither does mine. These registers are only documented by reference from
+> section 8.5. They also aren't named, so the above defines are my own
+> coinage.
 > 
+> > Additionally, I cross-checked with
+> > other registers that are accessed by the driver (like the Interrupt
+> > Enable Register), and the driver access procedure -
+> > phy_write_paged(phydev, 0xa42, RTL821x_INER, val) - seems to be pretty
+> > much in line with what my datasheet shows.
+> 
+> | The SERDES related registers should be read and written through indirect
+> | access method. The registers include Page 0xdc0 to Page 0xdcf and Page
+> | 0xde0 to Page 0xdf0.
+> 
+> Each register accessed this way also has
+> 
+> | Note: This register requires indirect access.
+> 
+> below the register table.
+
+Ok, possible. And none of the registers accessed by Linux using
+phy_read_paged() / phy_write_paged() have the "indirect access" note?
+Maybe it was a documentation update as you say, which I don't have.
+
+> >> I think it would be better to just return PHY_AN_INBAND_ON when using
+> >> SGMII.
+> > 
+> > Well, of course hardcoding PHY_AN_INBAND_ON in the driver is on the
+> > table, if it isn't possible to alter this setting to the best of our
+> > knowledge (or if it's implausible that someone modified it). And this
+> > seems more and more like the case.
+> 
+> I meant something like
+> 
+> 	if (interface == PHY_INTERFACE_MODE_SGMII)
+> 		return PHY_AN_INBAND_ON;
+> 
+> 	return PHY_AN_INBAND_UNKNOWN;
+
+Absolutely, I understood the first time. So you confirm that such a
+change makes your Lynx PCS promote to MLO_AN_INBAND, which makes the
+RTL8211FS work, right?
+
+> Although for RGMII, in-band status is (per MIICR2):
+> 
+> - Enabled by default
+> - Disablable
+> - Optional
+> 
+> So maybe we should do (PHY_AN_INBAND_ON | PHY_AN_INBAND_OFF) in that
+> case. That said, RGMII in-band is not supported by phylink (yet).
+
+Well, it kinda is. I even said this in one of the commit messages
+
+|    net: phy: at803x: validate in-band autoneg for AT8031/AT8033
+|
+|    These PHYs also support RGMII, and for that mode, we report that in-band
+|    AN is unknown, which means that phylink will not change the mode from
+|    the device tree. Since commit d73ffc08824d ("net: phylink: allow
+|    RGMII/RTBI in-band status"), RGMII in-band status is a thing, and I
+|    don't want to meddle with that unless I have a reason for it.
+
+Although I'd be much more comfortable for now if we could concentrate on
+SERDES protocols. I'm not exactly sure what are the hardware state machines
+and responsible standards for RGMII in-band status, what will happen on
+settings mismatch (I know that NXP MACs fail to link up if we enable the
+feature but we attach a switch and not a PHY to RGMII - see c76a97218dcb
+("net: enetc: force the RGMII speed and duplex instead of operating in
+inband mode") - but not much more). Essentially I don't know enough
+right now to even attempt to make any generalizations. Although I suppose
+a discussion could be started about it.
