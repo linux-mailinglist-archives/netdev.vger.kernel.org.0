@@ -2,216 +2,564 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D094C633135
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 01:17:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D648563313B
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 01:18:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbiKVARO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 19:17:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        id S232049AbiKVAR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 19:17:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiKVARM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 19:17:12 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2054.outbound.protection.outlook.com [40.107.22.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6921E39D
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 16:17:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LVOumdbfJ2OCpOTmw0SPy62eBz0OAgEKMP85DIyWJvuFRXvi5PzROspKs3KIkXpMkzru01iHSX+L3xXHO8P7ipdqwb5lFwJM+J4PRPuDptF3KynGS+QApTHOtCN08AtIjvEN37Jbsz6ARHYtX4lOcANXid//S249ntJe3+xbLlWh1CRtch3adwG/P8ZpXacF82Uv7rlR0W9apuktxR6fZRkVGEdj2cSMxnAEnnV8gTW4oPVl2biajscSS5wPd9XluCmQGjQ1MJhZkBulsvRfn8gJtmCy7Z3WOGAMT2d3PUEVA/xvrP11WhteTolHhiJbKdoZMmuUDLH9gdWv1FmD5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gcN1gERVPP5MJdCW//IlhmmOuQZHmLOVtrz8yrTYHqQ=;
- b=SsUwRoRnqVHGtsELtsVdGEUqsm+becwm1cmCEwv7cKAHdUQPSk9FwZDcUFr8MNTEElVMKQ0Nlq1V8mWJhGWrhU/P1mkm2Yanyqo9NojxclhY5KCvyLRvvz24SQA6nIidNzV6lkR+lmu9b3q65i206jnC486af47kSX+fDLAJ6nAVrzmBqQmghycWI6zkrM714e2itBs3CCquz8ehqEQUdmHW7/Ftw419iaimGZEICD/D4Smfpt/TcWGQTVUOSJriJ5ZVsuUYEI5h3JXH2kz+kf3DyCPBpWz7C61ttQ8vgYJ/VVxABbHYn0H+wTCeeeIcqgOCFb4tGcI14zSMnwJpBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gcN1gERVPP5MJdCW//IlhmmOuQZHmLOVtrz8yrTYHqQ=;
- b=FXwxt517cdwArCPQrkrhPr6/VhHzVYQn9IwyK7Z7Wb2BtdA43uMr/1ERKSYCl4xKPg62KTg9w9QB+WRUb0uK2wkh3f39N4iozIClIuS94pe+FFODjiDteCkxOWrMbZA/X/ovwHlSZuoSLOUoxakpqHmbLSrY08XySNTX0y0BcJw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM9PR04MB8858.eurprd04.prod.outlook.com (2603:10a6:20b:409::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.11; Tue, 22 Nov
- 2022 00:17:05 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Tue, 22 Nov 2022
- 00:17:05 +0000
-Date:   Tue, 22 Nov 2022 02:17:00 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Antoine Tenart <atenart@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Raag Jadav <raagjadav@gmail.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Marek Behun <marek.behun@nic.cz>
-Subject: Re: [PATCH v4 net-next 0/8] Let phylink manage in-band AN for the PHY
-Message-ID: <20221122001700.hilrumuzc5ulkafi@skbuf>
-References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
- <c1b102aa-1597-0552-641b-56a811a2520e@seco.com>
- <20221121194444.ran2bec6fhfk72lt@skbuf>
- <4bf812ec-f59b-6f64-b1e0-0feb54138bad@seco.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4bf812ec-f59b-6f64-b1e0-0feb54138bad@seco.com>
-X-ClientProxiedBy: BE1P281CA0045.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:22::14) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S232046AbiKVARx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 19:17:53 -0500
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D58E0B;
+        Mon, 21 Nov 2022 16:17:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1669076249; x=1700612249;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TLMDXjEQqAhs2Zao1nJCgsteUu1V/1obWDcUX4vchqo=;
+  b=rAiw7Xcrb7EfHQ91txXvaFdmzFKc7hqyDfwyWWxUNJsRoTtVnq1c3+j0
+   HSv8HtaGaW0lspxgqD7Nu2FzK38QqgIRHTBih+kNZ7iKI/Iw1tgFxznkT
+   5hCgtshzaYO9UcvLVb0W+060ZxPkcBMk3XHAW2UVgzUEm72/VWbhv1DWg
+   U=;
+X-IronPort-AV: E=Sophos;i="5.96,182,1665446400"; 
+   d="scan'208";a="1076063776"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 00:17:23 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id 2FA5A813D5;
+        Tue, 22 Nov 2022 00:17:17 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Tue, 22 Nov 2022 00:17:17 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.162.178) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Tue, 22 Nov 2022 00:17:13 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <joannelkoong@gmail.com>
+CC:     <acme@mandriva.com>, <davem@davemloft.net>, <dccp@vger.kernel.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>, <martin.lau@kernel.org>,
+        <mathew.j.martineau@linux.intel.com>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <pengfei.xu@intel.com>,
+        <stephen@networkplumber.org>, <william.xuanziyang@huawei.com>,
+        <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v3 net 3/4] dccp/tcp: Update saddr under bhash's lock.
+Date:   Mon, 21 Nov 2022 16:17:04 -0800
+Message-ID: <20221122001704.55561-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAJnrk1aWpYphczt6J8g51q3jXmYupo-JyaFKsq-zEYnsbmTyOQ@mail.gmail.com>
+References: <CAJnrk1aWpYphczt6J8g51q3jXmYupo-JyaFKsq-zEYnsbmTyOQ@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8858:EE_
-X-MS-Office365-Filtering-Correlation-Id: 37176249-6b5f-4157-3d6d-08dacc1ee1f3
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MMi08TVBC6eWrg3rl3yYGtJad0XqVdY5jxZCfX545wKLjAWfnLZL0Fdu7Koi/ZO5mhdpHoS/E8pvt6Yojw/l2gAPZ+YrpR65L933hGH9NEu8yrgqD1IHiQ3if1uI8VM0LhRhuhjShwou17GCiiSKPmZCDJNzmccz7MEYfEFfAcI34LLVrcnqT9Yt15S3Y7RqF+qpMZrxHudQO4EGeUGBrbd2sTlh8t2JhmTKy/Gl+jAiuiQ03dLVcRriDzAO9SvdN4RFo5oW9vH7C127m6+hFROMxU+bHBRbhkBO8rJkeikxjbemaqXcy1jkZMEGDGoYZLLJG31brOiPN0WzDBuZjDfv3TRiKYl85k1zXzyoL7c+6UkdojhtvL5j4Jx6hmkscLctatrNLY68Plo2Nzv2cPPDt4QQ8joflrrt1mntJcieGM8xa7BYi+MdbEO8xa0OeYQCU8q+6icdsr1RYRHCqjmhkB6y+pLxw1FOYlmQs8UfnablFh4mrdc8gP7ztsCItMsTsnz4N+GAyc18kCPc0NdiUdABcGeSG9MHX5OVxAWE9b960r4UV2DkVKvwscf+D7pwZVV2VmEEEke/LOKXp1n8XwWtpxK81NCO0GbHCVh4xisQM6lZatzEEpU2IEY7PuWsKSXlyz00RrY7xtw/zg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(39860400002)(396003)(366004)(136003)(376002)(346002)(451199015)(2906002)(316002)(7416002)(5660300002)(8936002)(41300700001)(9686003)(6512007)(86362001)(66946007)(4326008)(66476007)(8676002)(83380400001)(54906003)(6916009)(66556008)(33716001)(44832011)(38100700002)(1076003)(186003)(26005)(6666004)(478600001)(6486002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oaFEyNLlSPii0HR/qpvPIDxLlrNRoov/bY2hpf7mKbyrHlMQFYDmPuWKBwO3?=
- =?us-ascii?Q?XgUn/fITwtLJgi7p2xBkPbop2d69R2zLuikWN3L8PDZa6jt7rAWW/8bTJCE+?=
- =?us-ascii?Q?dfpvShty80+omlkn2oFkGUqnxtG4mzmNTQEKLh1wGLp0lpUaNTsnd79eJK+0?=
- =?us-ascii?Q?oBR1YpuujOhz9depk//QoYln3fX+xlTdvUmgQB+WgMIrH0x/2Pv42h04+HmV?=
- =?us-ascii?Q?Dydu/SiMOJd0m8NSYaZbGOL7Ji0ToFad9IQWEg1flJuoroTm3R2RcsxXGcc9?=
- =?us-ascii?Q?pNCdFoUNwlybvB6nr9PXdf5ub3Ckhh2j2iWP7YaJccbMQmLfNJ/xQJkeKU1u?=
- =?us-ascii?Q?cm3WggtSjGETZYMumfZq8uOr0aqTJbWe2mXqvq0b0jBJDzYjJXDXa6Xb6u/q?=
- =?us-ascii?Q?HXbqFmQapvKun5H2KdPZ5I+0mvPFaAwxGh9mDc37OgxGGmJVPJVg/zrK44Dr?=
- =?us-ascii?Q?NNMRUnsB3butWJRqW4E9RaGd1ha+ul/5CAMH8d2ISkDI1R+VXctSRAoKKieu?=
- =?us-ascii?Q?Mpi/r7Qg17trBMJyw4id5rC8YrNMzvwNO899bIvSQUJohpe05BDcwSFJQjsD?=
- =?us-ascii?Q?k7LHQ147dRERmrNN3ufAnCZPjLt0u6mGhAtp1jk38gYjz+NYMFI0BSNjcytv?=
- =?us-ascii?Q?/yEPilIoUk8vHY1I+3r6eszsbVgmPA+suCOM77h4maP0qnUMawYJuF0sihOv?=
- =?us-ascii?Q?QRzwgpwG3RH2cwxZKdIIz20zs3b5xu/RL2Z1M3+c839T7SWjuZ3EM86REnG2?=
- =?us-ascii?Q?rYjOnLHJyyatahT7NkKGx0bGpWyu9xr/FgrNKYKNtg8ZCmAON7nLdilRFzrK?=
- =?us-ascii?Q?kEYJWVZswiTv9UpjMRLlIMZnjvkO27xIAIT2mSWCoL0iPuvymbTlLKU9QBi/?=
- =?us-ascii?Q?erNyP4q6OMqRGaAMExkFFkdIsNi/YpetU7wzfPWsEMgH+7ynElkwwQJK6E90?=
- =?us-ascii?Q?b29DzJn2oSTHMaHYZ9eyHCCrwA4cNyZF3vv3wCAbrJaR4hc0AfseOtb/0VWc?=
- =?us-ascii?Q?ckel8HBzCsmLys2faEVA51bD8Bo/mJ6xQqVmz6cEp3ljj0dBQ9u1irUTdI5J?=
- =?us-ascii?Q?f+ssECOCgjHU4z2UKnfzfEwrT8VAWPhMNSS5H2ll+XAV8VgROhwNNSZMKYUe?=
- =?us-ascii?Q?GpuFKeg5EeBRA8/tH95POxZZjOwPRFy8atkdVJUQSL2as6U7tn+FS60xmtw1?=
- =?us-ascii?Q?tjX/IX18E3zTGKGfipvtYA6G5jM7tQ+4xKMyUiigyfg/RpNGM53tGMiDX1np?=
- =?us-ascii?Q?0FaDugxacOkC+QloZsVw5XzIMZDfpoxrLxcgEeYabE8vAx6nsxavg+6KoKaz?=
- =?us-ascii?Q?XGSipkpFL9oauqCBjnaBVtqrMNmYr0Dz9VIB7ic3hyx+pGex5GjG3HtMp8wP?=
- =?us-ascii?Q?R+QMXqkHRYGM/24vPLmIV455FYZiAIvHHmlBj2eEse7hSCvvv6nzJB4kwfuH?=
- =?us-ascii?Q?UL6pOoXBNHAwTWeA6GN6pmOfkeUWrZd+M3FUY/7dKu9bcplMfH97uQtXH+iM?=
- =?us-ascii?Q?T3Gs5Ujm3O9Yulko0/zrN1F0wla15uyHPm7Hm0Q5ZL5TZzRIxIk5orOyPsFL?=
- =?us-ascii?Q?fzKIki/qZRXv/2A1cJfVKTFzQj3fvYNJP0B8iCdqsFobEYx4aWbAAGXyBgu+?=
- =?us-ascii?Q?PA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37176249-6b5f-4157-3d6d-08dacc1ee1f3
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 00:17:04.9807
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kTjBmdxJqXkjN/+IyboxoPCejTMZtn3DNF8HgJMlmSg88p1Z/am/V7l5TWNW6LqMMtz/SLvUk1IR286HQ2J/jQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8858
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.178]
+X-ClientProxiedBy: EX13D47UWA001.ant.amazon.com (10.43.163.6) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 05:42:44PM -0500, Sean Anderson wrote:
-> Are you certain this is the cause of the issue? It's also possible that
-> there is some errata for the PCS which is causing the issue. I have
-> gotten no review/feedback from NXP regarding the phylink conversion
-> (aside from acks for the cleanups).
-
-Erratum which does what out of the ordinary? Your description of the
-hardware failure seems consistent with the most plausible explanation
-that doesn't involve any bugs.
-
-If you enable C37/SGMII AN in the PCS (of the PHY or of the MAC) and AN
-does not complete (because it's not enabled on the other end), that
-system side of the link remains down. Which you don't see when you
-operate in MLO_AN_PHY mode, because phylink only considers the PCS link
-state in MLO_AN_INBAND mode. So this is why you see the link as up but
-it doesn't work.
-
-To confirm whether I'm right or wrong, there's a separate SERDES
-Interrupt Status Register at page 0xde1 offset 0x12, whose bit 4 is
-"SERDES link status change" and bit 0 is "SERDES auto-negotiation error".
-These bits should both be set when you double-read them (regardless of
-IRQ enable I think) when your link is down with MLO_AN_PHY, but should
-be cleared with MLO_AN_INBAND.
-
-> This is used for SGMII to RGMII bridge mode (figure 4). It doesn't seem
-> to contain useful information for UTP mode (figure 1).
-
-So it would seem. It was a hasty read last time, sorry. Re-reading, the
-field says that when it's set, the SGMII code word being transmitted is
-"selected by the register" SGMII ANAR. And in the SGMII ANLPAR, you can
-see what the MAC said.
-
-Of course, it doesn't say what happens when the bit for software-driven
-SGMII autoneg is *not* set, if the process can be at all bypassed.
-I suppose now that it can't, otherwise the ANLPAR register could also be
-writable over MDIO, they would have likely reused at least partly the
-same mechanisms.
-
-> > +	ret = phy_read_paged(phydev, 0xd08, RTL8211FS_SGMII_ANARSEL);
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Mon, 21 Nov 2022 14:52:56 -0800
+> On Fri, Nov 18, 2022 at 4:49 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > From:   Joanne Koong <joannelkoong@gmail.com>
+> > Date:   Fri, 18 Nov 2022 15:20:20 -0800
+> > > On Fri, Nov 18, 2022 at 1:00 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > >
+> > > > When we call connect() for a socket bound to a wildcard address, we update
+> > > > saddr locklessly.  However, it could result in a data race; another thread
+> > > > iterating over bhash might see a corrupted address.
+> > > >
+> > > > Let's update saddr under the bhash bucket's lock.
+> > >
+> > > Thanks for the quick turnaround!
+> > >
+> > > >
+> > > > Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
+> > > > Fixes: 7c657876b63c ("[DCCP]: Initial implementation")
+> > > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > ---
+> > > >  include/net/inet_hashtables.h |  2 +-
+> > > >  net/dccp/ipv4.c               | 22 +++-----------
+> > > >  net/dccp/ipv6.c               | 23 +++------------
+> > > >  net/ipv4/af_inet.c            | 11 +------
+> > > >  net/ipv4/inet_hashtables.c    | 55 +++++++++++++++++++++++++++++------
+> > > >  net/ipv4/tcp_ipv4.c           | 20 +++----------
+> > > >  net/ipv6/tcp_ipv6.c           | 19 ++----------
+> > > >  7 files changed, 63 insertions(+), 89 deletions(-)
+> > > >
+> > > > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> > > > index 3af1e927247d..ba06e8b52264 100644
+> > > > --- a/include/net/inet_hashtables.h
+> > > > +++ b/include/net/inet_hashtables.h
+> > > > @@ -281,7 +281,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+> > > >   * sk_v6_rcv_saddr (ipv6) changes after it has been binded. The socket's
+> > > >   * rcv_saddr field should already have been updated when this is called.
+> > > >   */
+> > > > -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk);
+> > > > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
+> > > >
+> > > >  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+> > > >                     struct inet_bind2_bucket *tb2, unsigned short port);
+> > > > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+> > > > index 40640c26680e..95e376e3b911 100644
+> > > > --- a/net/dccp/ipv4.c
+> > > > +++ b/net/dccp/ipv4.c
+> > > > @@ -45,11 +45,10 @@ static unsigned int dccp_v4_pernet_id __read_mostly;
+> > > >  int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > > >  {
+> > > >         const struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+> > > > -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > > > -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
+> > > >         struct inet_sock *inet = inet_sk(sk);
+> > > >         struct dccp_sock *dp = dccp_sk(sk);
+> > > >         __be16 orig_sport, orig_dport;
+> > > > +       __be32 daddr, nexthop;
+> > > >         struct flowi4 *fl4;
+> > > >         struct rtable *rt;
+> > > >         int err;
+> > > > @@ -91,26 +90,13 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > > >                 daddr = fl4->daddr;
+> > > >
+> > > >         if (inet->inet_saddr == 0) {
+> > > > -               if (inet_csk(sk)->icsk_bind2_hash) {
+> > > > -                       prev_addr_hashbucket =
+> > > > -                               inet_bhashfn_portaddr(&dccp_hashinfo, sk,
+> > > > -                                                     sock_net(sk),
+> > > > -                                                     inet->inet_num);
+> > > > -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
+> > > > -               }
+> > > > -               inet->inet_saddr = fl4->saddr;
+> > > > -       }
+> > > > -
+> > > > -       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> > > > -
+> > > > -       if (prev_addr_hashbucket) {
+> > > > -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > > > +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
+> > > >                 if (err) {
+> > > > -                       inet->inet_saddr = 0;
+> > > > -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
+> > > >                         ip_rt_put(rt);
+> > > >                         return err;
+> > > >                 }
+> > > > +       } else {
+> > > > +               sk_rcv_saddr_set(sk, inet->inet_saddr);
+> > > >         }
+> > > >
+> > > >         inet->inet_dport = usin->sin_port;
+> > > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> > > > index 626166cb6d7e..94c101ed57a9 100644
+> > > > --- a/net/dccp/ipv6.c
+> > > > +++ b/net/dccp/ipv6.c
+> > > > @@ -934,26 +934,11 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> > > >         }
+> > > >
+> > > >         if (saddr == NULL) {
+> > > > -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > > > -               struct in6_addr prev_v6_rcv_saddr;
+> > > > -
+> > > > -               if (icsk->icsk_bind2_hash) {
+> > > > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(&dccp_hashinfo,
+> > > > -                                                                    sk, sock_net(sk),
+> > > > -                                                                    inet->inet_num);
+> > > > -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+> > > > -               }
+> > > > -
+> > > >                 saddr = &fl6.saddr;
+> > > > -               sk->sk_v6_rcv_saddr = *saddr;
+> > > > -
+> > > > -               if (prev_addr_hashbucket) {
+> > > > -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > > > -                       if (err) {
+> > > > -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
+> > > > -                               goto failure;
+> > > > -                       }
+> > > > -               }
+> > > > +
+> > > > +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
+> > > > +               if (err)
+> > > > +                       goto failure;
+> > > >         }
+> > > >
+> > > >         /* set the source address */
+> > > > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> > > > index 4728087c42a5..0da679411330 100644
+> > > > --- a/net/ipv4/af_inet.c
+> > > > +++ b/net/ipv4/af_inet.c
+> > > > @@ -1230,7 +1230,6 @@ EXPORT_SYMBOL(inet_unregister_protosw);
+> > > >
+> > > >  static int inet_sk_reselect_saddr(struct sock *sk)
+> > > >  {
+> > > > -       struct inet_bind_hashbucket *prev_addr_hashbucket;
+> > > >         struct inet_sock *inet = inet_sk(sk);
+> > > >         __be32 old_saddr = inet->inet_saddr;
+> > > >         __be32 daddr = inet->inet_daddr;
+> > > > @@ -1260,16 +1259,8 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+> > > >                 return 0;
+> > > >         }
+> > > >
+> > > > -       prev_addr_hashbucket =
+> > > > -               inet_bhashfn_portaddr(tcp_or_dccp_get_hashinfo(sk), sk,
+> > > > -                                     sock_net(sk), inet->inet_num);
+> > > > -
+> > > > -       inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
+> > > > -
+> > > > -       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > > > +       err = inet_bhash2_update_saddr(sk, &new_saddr, AF_INET);
+> > > >         if (err) {
+> > > > -               inet->inet_saddr = old_saddr;
+> > > > -               inet->inet_rcv_saddr = old_saddr;
+> > > >                 ip_rt_put(rt);
+> > > >                 return err;
+> > > >         }
+> > > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > > > index d745f962745e..fce0bd62d6b5 100644
+> > > > --- a/net/ipv4/inet_hashtables.c
+> > > > +++ b/net/ipv4/inet_hashtables.c
+> > > > @@ -858,31 +858,65 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+> > > >         return &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
+> > > >  }
+> > > >
+> > > > -int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk)
+> > > > +static void inet_update_saddr(struct sock *sk, void *saddr, int family)
+> > > > +{
+> > > > +       if (family == AF_INET) {
+> > > > +               inet_sk(sk)->inet_saddr = *(__be32 *)saddr;
+> > > > +               sk_rcv_saddr_set(sk, inet_sk(sk)->inet_saddr);
+> > > > +       }
+> > > > +#if IS_ENABLED(CONFIG_IPV6)
+> > > > +       else {
+> > > > +               sk->sk_v6_rcv_saddr = *(struct in6_addr *)saddr;
+> > > > +       }
+> > > > +#endif
+> > > > +}
+> > > > +
+> > > > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
+> > > >  {
+> > > >         struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+> > > > +       struct inet_bind_hashbucket *head, *head2;
+> > > >         struct inet_bind2_bucket *tb2, *new_tb2;
+> > > >         int l3mdev = inet_sk_bound_l3mdev(sk);
+> > > > -       struct inet_bind_hashbucket *head2;
+> > > >         int port = inet_sk(sk)->inet_num;
+> > > >         struct net *net = sock_net(sk);
+> > > > +       int bhash, err = 0;
+> > > > +
+> > > > +       if (!inet_csk(sk)->icsk_bind2_hash) {
+> > > > +               /* Not bind()ed before. */
+> > > > +               inet_update_saddr(sk, saddr, family);
+> > > > +               goto out;
+> > > > +       }
+> > >
+> > > I think it would be cleaner if this logic were outside
+> > > bhash2_update_saddr(), since this mutates the sk's address when the
+> > > socket hasn't been previously bound to bhash2. I think something like
+> > > this would be clearer:
+> > >
+> > > static int inet_update_saddr(struct sock *sk, void *saddr, int family)
+> > > {
+> > >     if (!inet_csk(sk)->icsk_bind2_hash) {
+> > >       update_sk_saddr(sk, saddr, family)
+> > >       return 0;
+> > >     }
+> > >     return inet_bhash2_update_saddr(sk, saddr, family);
+> > > }
+> > >
+> > > and then from dccp/tcp_ipv4/6_connect(), we just call
+> > > inet_update_saddr(). This also "moves" the lower-level implementation
+> > > details (eg underlying bind tables) to inet_hashtables.c, instead of
+> > > it being mentioned in the higher dccp_tcp_ipv4/6 layers.
+> > >
+> > > What are your thoughts?
+> >
+> > Hmm..  There are other users of inet_reset_saddr().  If we hide the
+> > details of reset & bhash2 logic too, we need a cleanup patch below.
 > 
-> That said, you have to use the "Indirect access method" to access this
-> register (per section 8.5). This is something like
-> 
-> #define RTL8211F_IAAR				0x1b
-> #define RTL8211F_IADR				0x1c
-> 
-> #define RTL8211F_IAAR_PAGE			GENMASK(15, 4)
-> #define RTL8211F_IAAR_REG			GENMASK(3, 1)
-> #define INDIRECT_ADDRESS(page, reg) \
-> 	(FIELD_PREP(RTL8211F_IAAR_PAGE, page) | \
-> 	 FIELD_PREP(RTL8211F_IAAR_REG, reg - 16))
-> 
-> 	ret = phy_write_paged(phydev, 0xa43, RTL8211F_IAAR,
-> 			      INDIRECT_ADDRESS(0xd08, RTL8211FS_SGMII_ANARSEL));
-> 	if (ret < 0)
-> 		return ret;
-> 
-> 	ret = phy_read_paged(phydev, 0xa43, RTL8211F_IADR);
-> 	if (ret < 0)
-> 		return ret;
-> 
-> I dumped the rest of the serdes registers using this method, but I
-> didn't see anything interesting (all defaults).
+> I don't think reset needs to be hidden / abstracted away, that sounds
+> generic. But bhash2 sounds like an implementation detail, which is why
+> it seems cleaner to me if we didn't have bhash2 mentioned in the
+> dccp/tcp_ipv4/6 layers.
 
-I'm _really_ not sure where you got the "Indirect access method" via
-registers 0x1b/0x1c from. My datasheet for RTL8211FS doesn't show
-offsets 0x1b and 0x1c in page 0xa43. Additionally, I cross-checked with
-other registers that are accessed by the driver (like the Interrupt
-Enable Register), and the driver access procedure -
-phy_write_paged(phydev, 0xa42, RTL821x_INER, val) - seems to be pretty
-much in line with what my datasheet shows.
+Sorry, my description was not clear.
 
-> I think it would be better to just return PHY_AN_INBAND_ON when using
-> SGMII.
+Now we have inet_bhash2_update_saddr() and inet_bhash2_reset_saddr().
 
-Well, of course hardcoding PHY_AN_INBAND_ON in the driver is on the
-table, if it isn't possible to alter this setting to the best of our
-knowledge (or if it's implausible that someone modified it). And this
-seems more and more like the case.
+If we hide bhash2 logic as inet_update_saddr(),
+
+  - inet_update_saddr
+    - if (...)
+      - __inet_update_saddr
+    - inet_bhash2_update_saddr
+      - __inet_update_saddr
+
+then we will change inet_bhash2_reset_saddr() logic like
+
+  - inet_reset_saddr
+    - if (...)
+      - __inet_reset_saddr
+    - inet_bhash2_reset_saddr
+      - __inet_reset_saddr
+
+inet_update_saddr() is what we newly added, but inet_reset_saddr() is not.
+There are existing users of inet_reset_saddr(), e.g. UDP, and we need a
+patch below.
+
+If we don't clean up, other protocol not using bhash2 also go through
+this condition via inet_reset_saddr(), which is originally unnecessary.
+
+  if (!inet_csk(sk)->icsk_bind2_hash)
+
+What do you think ?
+
+
+> > So, I'll keep this part as is in the next spin.  If needed, I can
+> > post a followup for net-next.
+> >
+> > And I noticed UDP has the same problem, this will be another series.
+> 
+> Sounds good, looking forward to your UDP patchset.
+> 
+> >
+> > Thank you!
+> >
+> > ---8<---
+> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> > index 95a18c029d5b..6ac7d5b8cbed 100644
+> > --- a/include/net/inet_hashtables.h
+> > +++ b/include/net/inet_hashtables.h
+> > @@ -277,6 +277,7 @@ inet_bhashfn_portaddr(const struct inet_hashinfo *hinfo, const struct sock *sk,
+> >  struct inet_bind_hashbucket *
+> >  inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, int port);
+> >
+> > +void inet_reset_saddr(struct sock *sk);
+> >  int inet_update_saddr(struct sock *sk, void *saddr, int family);
+> >
+> >  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+> > diff --git a/include/net/ip.h b/include/net/ip.h
+> > index 144bdfbb25af..43939a235398 100644
+> > --- a/include/net/ip.h
+> > +++ b/include/net/ip.h
+> > @@ -632,7 +632,7 @@ static inline void ip_ipgre_mc_map(__be32 naddr, const unsigned char *broadcast,
+> >  #include <linux/ipv6.h>
+> >  #endif
+> >
+> > -static __inline__ void inet_reset_saddr(struct sock *sk)
+> > +static __inline__ void __inet_reset_saddr(struct sock *sk)
+> >  {
+> >         inet_sk(sk)->inet_rcv_saddr = inet_sk(sk)->inet_saddr = 0;
+> >  #if IS_ENABLED(CONFIG_IPV6)
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index b0ababa74c02..4171077b127c 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -941,6 +941,12 @@ int inet_update_saddr(struct sock *sk, void *saddr, int family)
+> >  }
+> >  EXPORT_SYMBOL_GPL(inet_update_saddr);
+> >
+> > +void inet_reset_saddr(struct sock *sk)
+> > +{
+> > +       __inet_reset_saddr(sk);
+> > +}
+> > +EXPORT_SYMBOL_GPL(inet_reset_saddr);
+> > +
+> >  /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
+> >   * Note that we use 32bit integers (vs RFC 'short integers')
+> >   * because 2^16 is not a multiple of num_ephemeral and this
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index 6a320a614e54..a3c64866207d 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -1971,7 +1971,7 @@ int __udp_disconnect(struct sock *sk, int flags)
+> >         sock_rps_reset_rxhash(sk);
+> >         sk->sk_bound_dev_if = 0;
+> >         if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK)) {
+> > -               inet_reset_saddr(sk);
+> > +               __inet_reset_saddr(sk);
+> >                 if (sk->sk_prot->rehash &&
+> >                     (sk->sk_userlocks & SOCK_BINDPORT_LOCK))
+> >                         sk->sk_prot->rehash(sk);
+> > diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+> > index 024191004982..fea2de97ba54 100644
+> > --- a/net/ipv6/af_inet6.c
+> > +++ b/net/ipv6/af_inet6.c
+> > @@ -411,7 +411,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+> >                       (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
+> >                 if (sk->sk_prot->get_port(sk, snum)) {
+> >                         sk->sk_ipv6only = saved_ipv6only;
+> > -                       inet_reset_saddr(sk);
+> > +                       __inet_reset_saddr(sk);
+> >                         err = -EADDRINUSE;
+> >                         goto out;
+> >                 }
+> > @@ -419,7 +419,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+> >                         err = BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk);
+> >                         if (err) {
+> >                                 sk->sk_ipv6only = saved_ipv6only;
+> > -                               inet_reset_saddr(sk);
+> > +                               __inet_reset_saddr(sk);
+> >                                 if (sk->sk_prot->put_port)
+> >                                         sk->sk_prot->put_port(sk);
+> >                                 goto out;
+> >
+> > ---8<---
+> >
+> >
+> > >
+> > > > +
+> > > > +       bhash = inet_bhashfn(net, port, hinfo->bhash_size);
+> > > > +       head = &hinfo->bhash[bhash];
+> > > > +
+> > > > +       /* If we change saddr locklessly, another thread
+> > > > +        * iterating over bhash might see corrupted address.
+> > > > +        */
+> > > > +       spin_lock_bh(&head->lock);
+> > >
+> > > I don't think we should be acquiring the bhash lock here. I think we
+> > > only need to acquire it right before we mutate the saddr, and we can
+> > > release it right after.
+> > >
+> > > >
+> > > >         /* Allocate a bind2 bucket ahead of time to avoid permanently putting
+> > > >          * the bhash2 table in an inconsistent state if a new tb2 bucket
+> > > >          * allocation fails.
+> > > >          */
+> > > >         new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
+> > > > -       if (!new_tb2)
+> > > > -               return -ENOMEM;
+> > > > +       if (!new_tb2) {
+> > > > +               err = -ENOMEM;
+> > > > +               goto unlock;
+> > > > +       }
+> > > >
+> > > >         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+> > > >
+> > > > -       spin_lock_bh(&prev_saddr->lock);
+> > > > +       spin_lock(&head2->lock);
+> > > >         __sk_del_bind2_node(sk);
+> > > >         inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
+> > > > -       spin_unlock_bh(&prev_saddr->lock);
+> > > > +       spin_unlock(&head2->lock);
+> > > > +
+> > > > +       inet_update_saddr(sk, saddr, family);
+> > > >
+> > > > -       spin_lock_bh(&head2->lock);
+> > > > +       head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+> > > > +
+> > > > +       spin_lock(&head2->lock);
+> > > >         tb2 = inet_bind2_bucket_find(head2, net, port, l3mdev, sk);
+> > > >         if (!tb2) {
+> > > >                 tb2 = new_tb2;
+> > > > @@ -890,12 +924,15 @@ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct soc
+> > > >         }
+> > > >         sk_add_bind2_node(sk, &tb2->owners);
+> > > >         inet_csk(sk)->icsk_bind2_hash = tb2;
+> > > > -       spin_unlock_bh(&head2->lock);
+> > > > +       spin_unlock(&head2->lock);
+> > > >
+> > > >         if (tb2 != new_tb2)
+> > > >                 kmem_cache_free(hinfo->bind2_bucket_cachep, new_tb2);
+> > > >
+> > > > -       return 0;
+> > > > +unlock:
+> > > > +       spin_unlock_bh(&head->lock);
+> > > > +out:
+> > > > +       return err;
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(inet_bhash2_update_saddr);
+> > > >
+> > > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > > > index 6a3a732b584d..23dd7e9df2d5 100644
+> > > > --- a/net/ipv4/tcp_ipv4.c
+> > > > +++ b/net/ipv4/tcp_ipv4.c
+> > > > @@ -199,15 +199,14 @@ static int tcp_v4_pre_connect(struct sock *sk, struct sockaddr *uaddr,
+> > > >  /* This will initiate an outgoing connection. */
+> > > >  int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > > >  {
+> > > > -       struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > > >         struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+> > > >         struct inet_timewait_death_row *tcp_death_row;
+> > > > -       __be32 daddr, nexthop, prev_sk_rcv_saddr;
+> > > >         struct inet_sock *inet = inet_sk(sk);
+> > > >         struct tcp_sock *tp = tcp_sk(sk);
+> > > >         struct ip_options_rcu *inet_opt;
+> > > >         struct net *net = sock_net(sk);
+> > > >         __be16 orig_sport, orig_dport;
+> > > > +       __be32 daddr, nexthop;
+> > > >         struct flowi4 *fl4;
+> > > >         struct rtable *rt;
+> > > >         int err;
+> > > > @@ -251,24 +250,13 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> > > >         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
+> > > >
+> > > >         if (!inet->inet_saddr) {
+> > > > -               if (inet_csk(sk)->icsk_bind2_hash) {
+> > > > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
+> > > > -                                                                    sk, net, inet->inet_num);
+> > > > -                       prev_sk_rcv_saddr = sk->sk_rcv_saddr;
+> > > > -               }
+> > > > -               inet->inet_saddr = fl4->saddr;
+> > > > -       }
+> > > > -
+> > > > -       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> > > > -
+> > > > -       if (prev_addr_hashbucket) {
+> > > > -               err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > > > +               err = inet_bhash2_update_saddr(sk,  &fl4->saddr, AF_INET);
+> > > >                 if (err) {
+> > > > -                       inet->inet_saddr = 0;
+> > > > -                       sk_rcv_saddr_set(sk, prev_sk_rcv_saddr);
+> > > >                         ip_rt_put(rt);
+> > > >                         return err;
+> > > >                 }
+> > > > +       } else {
+> > > > +               sk_rcv_saddr_set(sk, inet->inet_saddr);
+> > > >         }
+> > > >
+> > > >         if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
+> > > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > > > index 81b396e5cf79..2f3ca3190d26 100644
+> > > > --- a/net/ipv6/tcp_ipv6.c
+> > > > +++ b/net/ipv6/tcp_ipv6.c
+> > > > @@ -292,24 +292,11 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> > > >         tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
+> > > >
+> > > >         if (!saddr) {
+> > > > -               struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
+> > > > -               struct in6_addr prev_v6_rcv_saddr;
+> > > > -
+> > > > -               if (icsk->icsk_bind2_hash) {
+> > > > -                       prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
+> > > > -                                                                    sk, net, inet->inet_num);
+> > > > -                       prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+> > > > -               }
+> > > >                 saddr = &fl6.saddr;
+> > > > -               sk->sk_v6_rcv_saddr = *saddr;
+> > > >
+> > > > -               if (prev_addr_hashbucket) {
+> > > > -                       err = inet_bhash2_update_saddr(prev_addr_hashbucket, sk);
+> > > > -                       if (err) {
+> > > > -                               sk->sk_v6_rcv_saddr = prev_v6_rcv_saddr;
+> > > > -                               goto failure;
+> > > > -                       }
+> > > > -               }
+> > > > +               err = inet_bhash2_update_saddr(sk, saddr, AF_INET6);
+> > > > +               if (err)
+> > > > +                       goto failure;
+> > > >         }
+> > > >
+> > > >         /* set the source address */
+> > > > --
+> > > > 2.30.2
