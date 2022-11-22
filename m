@@ -2,128 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2D8633542
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 07:27:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F23B633546
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 07:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbiKVG1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 01:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
+        id S231792AbiKVG2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 01:28:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231934AbiKVG1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 01:27:01 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25682E685;
-        Mon, 21 Nov 2022 22:27:00 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 84F4F20270;
-        Tue, 22 Nov 2022 07:26:59 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id FN8Hhv3eqx_w; Tue, 22 Nov 2022 07:26:58 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        with ESMTP id S229728AbiKVG2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 01:28:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2F512771
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 22:27:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 9352B20184;
-        Tue, 22 Nov 2022 07:26:58 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 8CE8780004A;
-        Tue, 22 Nov 2022 07:26:58 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 07:26:58 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 22 Nov
- 2022 07:26:58 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id EB57631829DB; Tue, 22 Nov 2022 07:26:57 +0100 (CET)
-Date:   Tue, 22 Nov 2022 07:26:57 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     syzbot <syzbot+bfb2bee01b9c01fff864@syzkaller.appspotmail.com>,
-        <davem@davemloft.net>, <edumazet@google.com>,
-        <herbert@gondor.apana.org.au>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-next@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <sfr@canb.auug.org.au>, <syzkaller-bugs@googlegroups.com>
-Subject: Re: [syzbot] linux-next test error: general protection fault in
- xfrm_policy_lookup_bytype
-Message-ID: <20221122062657.GE704954@gauss3.secunet.de>
-References: <000000000000706e6f05edfb4ce0@google.com>
- <Y3uULqIZ31at0aIX@hog>
- <20221121171513.GB704954@gauss3.secunet.de>
- <Y3vwpcJcUgqn22Fw@hog>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86FCDB8122F
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:27:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5A6CC433D6;
+        Tue, 22 Nov 2022 06:27:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669098472;
+        bh=MH/yqZD3LWWVAMcNMt6lFR86KMSWUyjyKO1yYV67qNs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oviZiir+KXmCiNBf0drGAYt5D5vN49gNPPGyOKKSAwVxOUBeL8DPuQj/YDsEDTpYt
+         9dRuYPmcFl0FWcQw5QSbDu1FLXfQ5ywaUJr1fmHdmi/SjRVuK0Xyitj176VkfRLYUe
+         NbtoettThsdYmA7hsjK/qMgITTLDIVinc8eRQ7btr0rxdMTOrotoChNl+gIvSSm4fL
+         hAZOt6Y/3JmWOjB6hsZKxv+5sX6LpYaDc4zFlzAHQkPVB/mvHNk9XHGsfsNxgud42M
+         jWKHvpN6vWVdfGbZmwR7p2cUnkUjFWnHkdKn6onVZgWiVqyCHsFc7pIKO/61AszRQe
+         QK0HFS1+ECZmQ==
+Date:   Tue, 22 Nov 2022 08:27:48 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y3xr5DkA+EZXEfkZ@unreal>
+References: <Y3p9LvAEQMAGeaCR@unreal>
+ <20221121094404.GU704954@gauss3.secunet.de>
+ <Y3tSdcA9GgpOJjgP@unreal>
+ <20221121110926.GV704954@gauss3.secunet.de>
+ <Y3td2OjeIL0GN7uO@unreal>
+ <20221121112521.GX704954@gauss3.secunet.de>
+ <Y3tiRnbfBcaH7bP0@unreal>
+ <20221121121040.GY704954@gauss3.secunet.de>
+ <Y3t7aSUBPXPoR8VD@unreal>
+ <Y3xQGEZ7izv/JAAX@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y3vwpcJcUgqn22Fw@hog>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y3xQGEZ7izv/JAAX@gondor.apana.org.au>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 10:41:57PM +0100, Sabrina Dubroca wrote:
-> 2022-11-21, 18:15:13 +0100, Steffen Klassert wrote:
-> > On Mon, Nov 21, 2022 at 04:07:26PM +0100, Sabrina Dubroca wrote:
-> > > 2022-11-21, 05:47:38 -0800, syzbot wrote:
-> > > > Hello,
-> > > > 
-> > > > syzbot found the following issue on:
-> > > > 
-> > > > HEAD commit:    e4cd8d3ff7f9 Add linux-next specific files for 20221121
-> > > > git tree:       linux-next
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1472370d880000
-> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a0ebedc6917bacc1
-> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=bfb2bee01b9c01fff864
-> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > > 
-> > > > Downloadable assets:
-> > > > disk image: https://storage.googleapis.com/syzbot-assets/b59eb967701d/disk-e4cd8d3f.raw.xz
-> > > > vmlinux: https://storage.googleapis.com/syzbot-assets/37a7b43e6e84/vmlinux-e4cd8d3f.xz
-> > > > kernel image: https://storage.googleapis.com/syzbot-assets/ebfb0438e6a2/bzImage-e4cd8d3f.xz
-> > > > 
-> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > Reported-by: syzbot+bfb2bee01b9c01fff864@syzkaller.appspotmail.com
-> > > > 
-> > > > general protection fault, probably for non-canonical address 0xdffffc0000000019: 0000 [#1] PREEMPT SMP KASAN
-> > > > KASAN: null-ptr-deref in range [0x00000000000000c8-0x00000000000000cf]
-> > > > CPU: 0 PID: 5295 Comm: kworker/0:3 Not tainted 6.1.0-rc5-next-20221121-syzkaller #0
-> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> > > > Workqueue: ipv6_addrconf addrconf_dad_work
-> > > > RIP: 0010:xfrm_policy_lookup_bytype.cold+0x1c/0x54 net/xfrm/xfrm_policy.c:2139
-> > > 
-> > > That's the printk at the end of the function, when
-> > > xfrm_policy_lookup_bytype returns NULL. It seems to have snuck into
-> > > commit c39f95aaf6d1 ("xfrm: Fix oops in __xfrm_state_delete()"), we
-> > > can just remove it:
-> > > 
-> > > diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-> > > index 3a203c59a11b..e392d8d05e0c 100644
-> > > --- a/net/xfrm/xfrm_policy.c
-> > > +++ b/net/xfrm/xfrm_policy.c
-> > > @@ -2135,9 +2135,6 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
-> > >  fail:
-> > >  	rcu_read_unlock();
-> > >  
-> > > -	if (!IS_ERR(ret))
-> > > -		printk("xfrm_policy_lookup_bytype: policy if_id %d, wanted if_id  %d\n", ret->if_id, if_id);
-> > > -
-> > >  	return ret;
-> > 
-> > Hm, this was not in the original patch. Maybe my tree was not
-> > clean when I applied it. Do you want to send a patch, or should
-> > I just remove it?
+On Tue, Nov 22, 2022 at 12:29:12PM +0800, Herbert Xu wrote:
+> On Mon, Nov 21, 2022 at 03:21:45PM +0200, Leon Romanovsky wrote:
+> >
+> > The thing is that this SW acquire flow is a fraction case, as it applies
+> > to locally generated traffic.
 > 
-> Go ahead, I guess it's more convenient for you.
+> A router can trigger an acquire on forwarded packets too.  Without
+> larvals this could quickly overwhelm the router.
 
-I just did a forced push to remove that hunk.
+This series doesn't support tunnel mode yet.
 
-Thanks!
+Maybe I was not clear, but I wanted to say what in eswitch case and
+tunnel mode, the packets will be handled purely by HW without raising
+into SW core.
+
+It is so called transparent IPsec, where all configuration is done on
+hypervisor, so VMs connected through eswitch will get already decrypted
+traffic which is routed through eswitch NIC logic without passing
+hypervisor data path.
+
+Steffen expected to see changes to acquire logic as part of this series
+and in my explanation, I tried to explain why it is not needed now and
+how will it be implemented later.
+
+Thanks
+
+> 
+> Cheers,
+> -- 
+> Email: Herbert Xu <herbert@gondor.apana.org.au>
+> Home Page: http://gondor.apana.org.au/~herbert/
+> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
