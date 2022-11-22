@@ -2,137 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7039633F15
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:39:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B70633F20
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiKVOjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 09:39:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S232604AbiKVOkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:40:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231475AbiKVOi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:38:59 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7DC2B1AD;
-        Tue, 22 Nov 2022 06:38:57 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id y4so13845647plb.2;
-        Tue, 22 Nov 2022 06:38:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tVuwP251JI0J9486LpQEsG/geG2FeNl8X2kV1b5W5q0=;
-        b=ddV5BJEYTQfeA1K7pTcwqvps5E2lAEF1MY7CMMCf1ejnNpQWCbZlJ++FKQUlmbI+xV
-         cRGcPkXO2EH/iwlqua7vAj8zXTR9y6rtKmKUEgGbyPvtvJIVkQp7QZ9z6XVvLnnaY2tP
-         3Y79Aqu6/Ai3bkQ8BG0d7Xi5WufwJeWiuyAac1+eD1A1IXQ2rhKh7mR+gBo77/1J99g6
-         3PKyucoa/2xCw6YQFKbsYLpBpw9LoaI8W2NpCGxQB2XDkDrgmDCjUmLbTCZ8vUGPpAy2
-         NsOr1iKZ+0kHeZi8Pg1kz17bZkLkanZhXRiFx6qrBWOC73hwT715IT8da8oKW90adQj6
-         3ZkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tVuwP251JI0J9486LpQEsG/geG2FeNl8X2kV1b5W5q0=;
-        b=D9XJA+EccubnPrpcrTBLolZdp3cHQXM1XENaSSCAzp8tJfJUadKLU6O0YmL4k7l1kK
-         +xmIeFUhA7nqlzzNxEIPIhQC11HPheuZSDaL9pg27+oYNnmc6TW8en2yqnCZ6K8APwVr
-         bGtStcYqJZLdTM2GMMwiDnC4AikJX6BlmRbLXt4VPHfLeyfoowt6D0xDVIvqwNEuIEc8
-         vDDOVbOZUKrZ8C5xM9wSCkOPDl+hHbbfBm4FAi1ewd+JKMMgp5VNHCzEBvTI8AiYQO02
-         UWB7P1CmwXxLW1WsybDWHtorWabHfM55Lq/ZlSyZZjhTKs3jRt56iR+xyhbeoBHWcJup
-         c6Uw==
-X-Gm-Message-State: ANoB5pkQmusPneSU2zoZ7kwhllxy9pH1OKaDrIUBgJzkKjSqPDfEEX2J
-        GaheRMItj3B8awJL+QDCmHU=
-X-Google-Smtp-Source: AA0mqf44OKSH/IJzzcyXFVYdPLL0givZmbapdvwxCwpoGgBie66zH/Mfystxx8NutxYWYOepnzuWMw==
-X-Received: by 2002:a17:90a:c095:b0:212:e766:f3e4 with SMTP id o21-20020a17090ac09500b00212e766f3e4mr25192156pjs.213.1669127936797;
-        Tue, 22 Nov 2022 06:38:56 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id az23-20020a17090b029700b00218b32f6a9esm3985479pjb.18.2022.11.22.06.38.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 06:38:56 -0800 (PST)
-Date:   Tue, 22 Nov 2022 06:38:53 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com
-Subject: Re: [RFC Patch net-next v2 8/8] net: dsa: microchip: ptp: add
- periodic output signal
-Message-ID: <Y3ze/S7qOCswSnv1@hoboy.vegasvil.org>
-References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
- <20221121154150.9573-9-arun.ramadoss@microchip.com>
+        with ESMTP id S232132AbiKVOkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:40:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4D62B1AD;
+        Tue, 22 Nov 2022 06:40:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17D2C61741;
+        Tue, 22 Nov 2022 14:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7D752C433D6;
+        Tue, 22 Nov 2022 14:40:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669128017;
+        bh=ZdUOPikyCG80XtHDnM2rGG9TSWAkvMCXAo+3DdnnZnY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Z3U1U0YaPUGWa+E3QQtLfU26qUd7pWht5fsQmND3VCvU/L7pi5f6PIWpruwvuA7D8
+         LgI+JPMKQoa08L0kJhOky7Jbv3aPYxaEZ2gH1BWTMsqr3f28RgjYvxtSEvkqbE6EyZ
+         aH1l8QQ03gEyUMM9Sc9r8O5ZdyA2X2ahJv1vJ3iOKIy/3DwYFqcV1szwkeWUuNnAcj
+         waizuuLBDFN+jNZd1N5rG8FrOt6358KQF+kjka2teqkRkbXIenk+cIdQa04kJQwloj
+         uMrslTew19gILSsG3xDK9Ehlj13n/qxa7pFJ99SBc8HuT0YlR3AGE5SJHLu2IxSPvk
+         sAaPxQ1XJknxQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5FCE4E270E3;
+        Tue, 22 Nov 2022 14:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121154150.9573-9-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next 0/3] cleanup ocelot_stats exposure
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166912801738.31871.6233306488148993395.git-patchwork-notify@kernel.org>
+Date:   Tue, 22 Nov 2022 14:40:17 +0000
+References: <20221119231406.3167852-1-colin.foster@in-advantage.com>
+In-Reply-To: <20221119231406.3167852-1-colin.foster@in-advantage.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, edumazet@google.com, davem@davemloft.net,
+        f.fainelli@gmail.com, andrew@lunn.ch, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 09:11:50PM +0530, Arun Ramadoss wrote:
+Hello:
 
-> +static int ksz_ptp_restart_perout(struct ksz_device *dev)
-> +{
-> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-> +	s64 now_ns, first_ns, period_ns, next_ns;
-> +	struct timespec64 now;
-> +	unsigned int count;
-> +	int ret;
-> +
-> +	ret = _ksz_ptp_gettime(dev, &now);
-> +	if (ret)
-> +		return ret;
-> +
-> +	now_ns = timespec64_to_ns(&now);
-> +	first_ns = timespec64_to_ns(&ptp_data->perout_target_time_first);
-> +
-> +	/* Calculate next perout event based on start time and period */
-> +	period_ns = timespec64_to_ns(&ptp_data->perout_period);
-> +
-> +	if (first_ns < now_ns) {
-> +		count = div_u64(now_ns - first_ns, period_ns);
-> +		next_ns = first_ns + count * period_ns;
-> +	} else {
-> +		next_ns = first_ns;
-> +	}
-> +
-> +	/* Ensure 100 ms guard time prior next event */
-> +	while (next_ns < now_ns + 100000000)
-> +		next_ns += period_ns;
-> +
-> +	/* Restart periodic output signal */
-> +	{
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-CodingStyle: avoid anonymous blocks.  Move to helper function instead?
+On Sat, 19 Nov 2022 15:14:03 -0800 you wrote:
+> The ocelot_stats structures became redundant across all users. Replace
+> this redundancy with a static const struct. After doing this, several
+> definitions inside include/soc/mscc/ocelot.h no longer needed to be
+> shared. Patch 2 removes them.
+> 
+> Checkpatch throws an error for a complicated macro not in parentheses. I
+> understand the reason for OCELOT_COMMON_STATS was to allow expansion, but
+> interestingly this patch set is essentially reverting the ability for
+> expansion. I'm keeping the macro in this set, but am open to remove it,
+> since it doesn't _actually_ provide any immediate benefits anymore.
+> 
+> [...]
 
-Thanks,
-Richard
+Here is the summary with links:
+  - [v2,net-next,1/3] net: mscc: ocelot: remove redundant stats_layout pointers
+    https://git.kernel.org/netdev/net-next/c/33d5eeb9a684
+  - [v2,net-next,2/3] net: mscc: ocelot: remove unnecessary exposure of stats structures
+    https://git.kernel.org/netdev/net-next/c/a3bb8f521fd8
+  - [v2,net-next,3/3] net: mscc: ocelot: issue a warning if stats are incorrectly ordered
+    https://git.kernel.org/netdev/net-next/c/877e7b7c3b12
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> +		struct timespec64 next = ns_to_timespec64(next_ns);
-> +		struct ptp_perout_request perout_request = {
-> +			.start = {
-> +				.sec  = next.tv_sec,
-> +				.nsec = next.tv_nsec
-> +			},
-> +			.period = {
-> +				.sec  = ptp_data->perout_period.tv_sec,
-> +				.nsec = ptp_data->perout_period.tv_nsec
-> +			},
-> +			.index = 0,
-> +			.flags = 0,  /* keep current values */
-> +		};
-> +		ret = ksz_ptp_enable_perout(dev, &perout_request, 1);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	return 0;
-> +}
