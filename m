@@ -2,567 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C180633A31
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 11:34:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 568E7633A6D
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 11:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbiKVKe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 05:34:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60882 "EHLO
+        id S232627AbiKVKqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 05:46:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233397AbiKVKd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 05:33:59 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D05BDC1
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:30:39 -0800 (PST)
+        with ESMTP id S232621AbiKVKqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 05:46:12 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DF21DDE6;
+        Tue, 22 Nov 2022 02:43:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669113038; x=1700649038;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=x2bKx2k6bVyEgP3jYNgYW294DWDWqPzePYiVPPpNlmc=;
-  b=aJ7gcICr5m9OWZk2TEZR83wyy+mbCtCBxlKc0kTuAPyHMcUBu4TlHbu0
-   WzO5LnOywbqtDhaERjPuTPyoDRsu7XkzThaBZoJUvMQoxE9towlPQqcUc
-   Z261YwH9vwucucBw6TC8axpEQL50LAUw/FIfVBwIirHKPrcTxGykjDdNV
-   ysxrq/xP+Wol0kQv+8Wg9YOzAMnwK5QRgI428Fe8/7IwiiLOF2V5lZMHn
-   2frrYcbrhij9jrM1JCVFUDRMTHGkLHdIKZrr+a2Cl1sSCPIAj2bFev88j
-   usbmd1cq14lTOTyje0BeG5HrZeEhzQa+yqYJXC2Sjlwx2GdJRzDSrMuPr
-   A==;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669113786; x=1700649786;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=Vv3D73OdIpML3ieqalFnqy9UrsJs62nwEbglnh5UzmI=;
+  b=lAdAw9mOl9bKSQ9CKoAgTxcYOe7N0kkwpZyW1bekbne75GnvPRy1gnlk
+   lQIFx4YF9qQnp/zZC2w9DUN1Z7Y4aaOfDUPCw1zaHQdAY38icUpUmPkJ1
+   j2OUkBOPAD+LmlgVVTbSVsnVRYdMOECHnUdLSnqJb6KX5t3Fmz0nktP2y
+   Qqfd0PBgcXSMJLHccyIYl3TRjdepCvvedKl8uMSH4cGMndEQSfdwfAZXS
+   Fh8tH0mittALP5qPQO8Kh2m1YHHCj3R2z4MIGJPXwVlsZAnF83q7T5rYO
+   p3vYI54tJQuq1fncdQSh2BHjJSPJ//xdPygUMMgLTP55KEuOaVMDNuf02
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="312488237"
 X-IronPort-AV: E=Sophos;i="5.96,183,1665471600"; 
-   d="scan'208";a="190066890"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 03:30:38 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+   d="scan'208";a="312488237"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 02:43:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="592101868"
+X-IronPort-AV: E=Sophos;i="5.96,183,1665471600"; 
+   d="scan'208";a="592101868"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga003.jf.intel.com with ESMTP; 22 Nov 2022 02:43:06 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 22 Nov 2022 03:30:38 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 22 Nov 2022 03:30:36 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <dsahern@kernel.org>, <stephen@networkplumber.org>,
-        <petrm@nvidia.com>, <maxime.chevallier@bootlin.com>,
-        <vladimir.oltean@nxp.com>, <UNGLinuxDriver@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>
-Subject: [PATCH iproute2-next 2/2] dcb: add new subcommand for apptrust
-Date:   Tue, 22 Nov 2022 11:41:12 +0100
-Message-ID: <20221122104112.144293-3-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221122104112.144293-1-daniel.machon@microchip.com>
-References: <20221122104112.144293-1-daniel.machon@microchip.com>
+ 15.1.2375.31; Tue, 22 Nov 2022 02:43:05 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 22 Nov 2022 02:43:05 -0800
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.44) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 22 Nov 2022 02:43:05 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h3Cmn+vbVS3vMLz0I0HEQdCrKpITb0X6t52xy27v5QjzHkq7LQYA2woSyWRkDXvYUo0lQc/cCKkZiyZJ4px40PqoBKJjfX29OjNxP//mz5DKmzc2Spd7/agH9kvUZeVZy00ufiT8XugE9m4cCrmd3p9J8bRZbtKj/usCDizGhRc1P2k7vDziTR2TMNIuzI41sHJcqyO0uGqX0Qpxl756Rcn4e2e7eJ0NKRaD/VebgWjCxAVxy+f5y5dLREoG9vpF4uMVglMWHMdwoNLK2IszNAHDg638SoRN59d0faEABrcIpYh/NHBnrig0BWHzZPtstbeFomcsMyiVJMOlqM052g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+7RxhigFrl+k37JhQJq0oYJ08jabk87Z0Ckt+uYOToA=;
+ b=eVQmeRd7fLjV2BloNicoYs0uUN37GEpD0uNmP2LBpcn51hEZUgXxab+wyJouKYXwroJshevQRTOqvsJEQFDGVnK+4FrMNigoL4Avo65MsmC7LzAZpD2DiNnBNnIV7M+dnCoICRN4a9HgYu495r3L4RXYtqr691WomwiB+C5XlkMEylN3cmf06sumd+49EKJ04TNTidunvWDBT0Zu90e43rDMPL3w3dIiAAdVyVGs1xgeuLdP/XMYdGW1arJyZWWlYKA9XaP+b33fO+TDU03DF1QdRZkrUowSRnntXTvsq8akfdks+2/Hdi2q7vDWHIRM5Rq8AgboWMx0EbdnQrTKHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ PH0PR11MB5880.namprd11.prod.outlook.com (2603:10b6:510:143::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Tue, 22 Nov
+ 2022 10:43:03 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6%6]) with mapi id 15.20.5834.009; Tue, 22 Nov 2022
+ 10:43:03 +0000
+Date:   Tue, 22 Nov 2022 11:42:57 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+CC:     <magnus.karlsson@intel.com>, <bjorn@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <jonathan.lemon@gmail.com>, <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf 1/3] selftests/xsk: print correct payload for packet
+ dump
+Message-ID: <Y3ynse0I7HgZ6rEX@boxer>
+References: <20221115080538.18503-1-magnus.karlsson@gmail.com>
+ <20221115080538.18503-2-magnus.karlsson@gmail.com>
+ <Y3OGJv2lym4u86C/@boxer>
+ <CAJ8uoz3kLArrELgNi7gr_xx_9dPSD6QrwZvw9-2mzqHr9y_yTw@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAJ8uoz3kLArrELgNi7gr_xx_9dPSD6QrwZvw9-2mzqHr9y_yTw@mail.gmail.com>
+X-ClientProxiedBy: FR3P281CA0074.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1f::12) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|PH0PR11MB5880:EE_
+X-MS-Office365-Filtering-Correlation-Id: a434bf68-3662-4694-d6c1-08dacc76552d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nfnG3XjKBdscGzAgYW985zptFkbuZktLe+8AejQhjpBf0rNOa8GVnKiszC2K/2oYeepe1Pn1g9KyphIxM4BjqJhcPJ7YVa2a1+25GPUf0UyNxFnAMkvshcD95JZvbdhygqGIJRh0w6X8VuSXJiacykrWjqlbbjJwwAzlROyq613HEzE6KltKAp1r2OSNJcIRN0zypNokOUNvcgcQqnZMVlVy+BuvICfP8nXQqJJv7t7voTehJvA9qofuBhiNP3Jn7WBHFXGO7RtQc458gZjLHhdd8U5CjyYqcuJZSx1SsMv6pXmMJcDX0XWX1TWAUnbHsDXldNrdd3+kPhJxGyiDygJY/LRePFKQ4suagFOaZDIwfnRcDEy3siyMC1O5RzLsshLsN9aLiHBh8eH9rbmbH6f3u5DxnJOKAo5reaehFHlF9a1cuDaHfhLTCX2e43tD5rJP22cF/JrWor3z6S4SzuWYu0nXQgsdtky5TItKHI1yud1utb9fM5ksXf4LjZwZE+jPL3bIQyeefPx+BkHqcbt2i9FKtvs8uVDFUObzn+wpvUjuTqAwe5Fbp0+QvzG3bBLFZUVIUfYMvWL3duozOClXq+OYbbHs7tJHV6VKPJ1OtDJwo133F8yytdeZG+f8
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(396003)(376002)(366004)(39860400002)(136003)(346002)(451199015)(41300700001)(4326008)(8676002)(66556008)(66476007)(66946007)(5660300002)(8936002)(478600001)(6916009)(316002)(6486002)(83380400001)(82960400001)(38100700002)(86362001)(26005)(6666004)(6506007)(53546011)(6512007)(186003)(9686003)(66899015)(33716001)(2906002)(44832011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BvgXsYK9NmneRj6Y8KuT5E8RjdfB31V6Vqfc2Ry871dLCXhfAYoZMCaoNKzU?=
+ =?us-ascii?Q?aB1fAxrEOwhA6Yb65rBbYjNy+mYaBEz9tCHHjzMkShwnEbFzLp9rk5F3FiaV?=
+ =?us-ascii?Q?6/LrSpggBwzvcX3Xw6udea3X+SLQCtE/ANJxkFLbNSmElLlucpfFKYo+u7yl?=
+ =?us-ascii?Q?zalXLZiFEqSOiT4rS4c9uetNZFbKBLdA5u1oVLJUg9Z3nBUYr8tvW9f+b42B?=
+ =?us-ascii?Q?sMPzsNL743yKNOY1gPCc8aoYVsmtVO8pfVePkWbtTVVDAiGvcC3fyXlO07ct?=
+ =?us-ascii?Q?gz0gDou0p+WJWKy2IR+TsZfaZz9wSz/DHSsG1NI8Nsz/eJYIJMs2H7eDaEre?=
+ =?us-ascii?Q?JVwU4D81/7IJn07sSGDZCw341pnRRsf5CxtcHCZV4VC6OfEHtwQxXoPl8gjy?=
+ =?us-ascii?Q?Pv9REHxkHBELwrI1uC0yQOx/DKF/o93t4m0sdsimrvXHIAZsZHxQbKb8B2Ny?=
+ =?us-ascii?Q?DyGy5yTgp7h8+vHj+N8N0UaIWHIj5cTq4z9FdS1W1Ww6jeInzArgwDMdwfv/?=
+ =?us-ascii?Q?ZmzrjTxrXQMFm/3LfsZaVIeD0BFONcNHo3oaZ/s9MZFOCYCnbL/gE2IlTQtS?=
+ =?us-ascii?Q?T4QQcsrFeDVTh7HBxCDvvDrBGkt+wtCy1F9tm9+MO71jszRV4FL8x7Y/9HB+?=
+ =?us-ascii?Q?lb3gXYNScKSVmd/IvXnz++1OqyOB3soM5EonlfjjNjzH+iSHMgvsBkA8+YQ3?=
+ =?us-ascii?Q?W45hBatJhuON0GaKbQ7a/sXt4NpOIfERGDbI7r1L+HL05bsfyjkKUn5Ae3Bh?=
+ =?us-ascii?Q?KliZ/sed0ugmjAl785hpGEpYdooyL95jfjMbGAbmaVsJ/leMHm5ATPJ5CY2+?=
+ =?us-ascii?Q?/oVVXtCLXH1UOa5tlXeAX4N6Rs9pzdkoOXS3wB11eHKejjAHBx0BzGreerLW?=
+ =?us-ascii?Q?erIpu2s1pvu2njmuYeclXId9bsboxGwUPfkAw3s6Bct5TwFKAqEf1Lpo0zAB?=
+ =?us-ascii?Q?H8zf5dOLpCAXTro2tldgShlsoKrj24Gy6lG645EGhkP0DHpwJJ9xp43M2Ng+?=
+ =?us-ascii?Q?8G6jVfycEMA7TpKvcUZT1W4oiV4qxROJr69B3G+522D7mWz09IqWeJSRJ4wU?=
+ =?us-ascii?Q?eQdw3FWQpHcS3IvJKdSt/U2Nc8doP9uj7QyfiFgC+1ssm+K7WRo0YKNn6n9M?=
+ =?us-ascii?Q?6OErVVbXfz9emH2TpFTegJPx99fvK4qDuFsDcEDG8/4eMsac0iD129RX6XvT?=
+ =?us-ascii?Q?wpm3ga5nuhRmZcKtd7QqptvKt9W5S8IQPJxSNp7KY683kpS3SRSHqiVnl4Lf?=
+ =?us-ascii?Q?Za8bfzDKf6BLpDC2GeX+uVrEsy2nxjUgidLmqWAfNDHqSokbQIg9CwppYX8K?=
+ =?us-ascii?Q?o6OXIbotbraqlCCZhDHkwq9k2fX84LNCEj1Vgsb7Gb+bEXRUgfrABC3VR7fk?=
+ =?us-ascii?Q?kh6UnMJmOEE89K0KirUvT9FmYeiNY3CFRKPJOTSnbgzZ1QIQH2zAI6sGNx0h?=
+ =?us-ascii?Q?4q84ci28vEg9CO9d4EN6PhAQ+omS1imU0G/JWPUvcX1Jhsk1EMoQkvwg7xyN?=
+ =?us-ascii?Q?VNuSz+CG8Zm8Q6J/kL6dNQ8h1hv5RtW/EJOkK7CTBdz6/O7ZAsHP1HTwxJAA?=
+ =?us-ascii?Q?2VNs9AxAA3r1QUrUSPVlASu3uTvzRpCBm1GsEqXblKptduAdU/D8bpeEvwV8?=
+ =?us-ascii?Q?jw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a434bf68-3662-4694-d6c1-08dacc76552d
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 10:43:03.4870
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nF9Bco3wPzESOaBGOWySa2fXqwp0vRM0NNEAu9Cull3s9ItROLqjFSgLk25/LP/m1Zdpm7GG/ljXCRSClSr0wjHAyCS4vS5kN6AMKWr8jLA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5880
+X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new apptrust subcommand for the dcbnl apptrust extension object.
+On Tue, Nov 15, 2022 at 01:40:48PM +0100, Magnus Karlsson wrote:
+> On Tue, Nov 15, 2022 at 1:29 PM Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+> >
+> > On Tue, Nov 15, 2022 at 09:05:36AM +0100, Magnus Karlsson wrote:
+> > > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> > >
+> > > Print the correct payload when the packet dump option is selected. The
+> > > network to host conversion was forgotten and the payload was
+> > > erronously declared to be an int instead of an unsigned int. Changed
+> > > the loop index i too, as it does not need to be an int and was
+> > > declared on the same row.
+> > >
+> > > The printout looks something like this after the fix:
+> > >
+> > > DEBUG>> L2: dst mac: 000A569EEE62
+> > > DEBUG>> L2: src mac: 000A569EEE61
+> > > DEBUG>> L3: ip_hdr->ihl: 05
+> > > DEBUG>> L3: ip_hdr->saddr: 192.168.100.161
+> > > DEBUG>> L3: ip_hdr->daddr: 192.168.100.162
+> > > DEBUG>> L4: udp_hdr->src: 2121
+> > > DEBUG>> L4: udp_hdr->dst: 2020
+> > > DEBUG>> L5: payload: 4
+> > > ---------------------------------------
+> >
+> > Above would be helpful if previous output was included as well but not a
+> > big deal i guess.
+> 
+> It would not bring any value IMHO. The only difference is that the
+> "L5: payload" row is now showing the correct payload.
 
-The apptrust command lets you specify a consecutive ordered list of
-trusted selectors, which can be used by drivers to determine which
-selectors are eligible (trusted) for packet prioritization, and in which
-order.
+Ah okay then. I have already acked whole series, but just to make things
+clear, I am okay with the current state of this patch:
 
-Selectors are sent in a new nested attribute:
-DCB_ATTR_IEEE_APP_TRUST_TABLE.  The nest contains trusted selectors
-encapsulated in either DCB_ATTR_IEEE_APP or DCB_ATTR_DCB_APP attributes,
-for standard and non-standard selectors, respectively.
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-Example:
-
-Trust selectors dscp and pcp, in that order
-$ dcb apptrust set dev eth0 order dscp pcp
-
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
----
- dcb/Makefile            |   3 +-
- dcb/dcb.c               |   4 +-
- dcb/dcb.h               |   4 +
- dcb/dcb_apptrust.c      | 291 ++++++++++++++++++++++++++++++++++++++++
- man/man8/dcb-apptrust.8 | 118 ++++++++++++++++
- 5 files changed, 418 insertions(+), 2 deletions(-)
- create mode 100644 dcb/dcb_apptrust.c
- create mode 100644 man/man8/dcb-apptrust.8
-
-diff --git a/dcb/Makefile b/dcb/Makefile
-index ca65d4670c80..dd41a559a0c8 100644
---- a/dcb/Makefile
-+++ b/dcb/Makefile
-@@ -7,7 +7,8 @@ DCBOBJ = dcb.o \
-          dcb_dcbx.o \
-          dcb_ets.o \
-          dcb_maxrate.o \
--         dcb_pfc.o
-+         dcb_pfc.o \
-+         dcb_apptrust.o
- TARGETS += dcb
- LDLIBS += -lm
- 
-diff --git a/dcb/dcb.c b/dcb/dcb.c
-index 391fd95455f4..3ffa91d64d0d 100644
---- a/dcb/dcb.c
-+++ b/dcb/dcb.c
-@@ -470,7 +470,7 @@ static void dcb_help(void)
- 	fprintf(stderr,
- 		"Usage: dcb [ OPTIONS ] OBJECT { COMMAND | help }\n"
- 		"       dcb [ -f | --force ] { -b | --batch } filename [ -n | --netns ] netnsname\n"
--		"where  OBJECT := { app | buffer | dcbx | ets | maxrate | pfc }\n"
-+		"where  OBJECT := { app | apptrust | buffer | dcbx | ets | maxrate | pfc }\n"
- 		"       OPTIONS := [ -V | --Version | -i | --iec | -j | --json\n"
- 		"                  | -N | --Numeric | -p | --pretty\n"
- 		"                  | -s | --statistics | -v | --verbose]\n");
-@@ -483,6 +483,8 @@ static int dcb_cmd(struct dcb *dcb, int argc, char **argv)
- 		return 0;
- 	} else if (matches(*argv, "app") == 0) {
- 		return dcb_cmd_app(dcb, argc - 1, argv + 1);
-+	} else if (strcmp(*argv, "apptrust") == 0) {
-+		return dcb_cmd_apptrust(dcb, argc - 1, argv + 1);
- 	} else if (matches(*argv, "buffer") == 0) {
- 		return dcb_cmd_buffer(dcb, argc - 1, argv + 1);
- 	} else if (matches(*argv, "dcbx") == 0) {
-diff --git a/dcb/dcb.h b/dcb/dcb.h
-index 05eddcbbcfdf..d40664f29dad 100644
---- a/dcb/dcb.h
-+++ b/dcb/dcb.h
-@@ -61,6 +61,10 @@ enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
- bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
- bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
- 
-+/* dcb_apptrust.c */
-+
-+int dcb_cmd_apptrust(struct dcb *dcb, int argc, char **argv);
-+
- /* dcb_buffer.c */
- 
- int dcb_cmd_buffer(struct dcb *dcb, int argc, char **argv);
-diff --git a/dcb/dcb_apptrust.c b/dcb/dcb_apptrust.c
-new file mode 100644
-index 000000000000..14d18dcb7f83
---- /dev/null
-+++ b/dcb/dcb_apptrust.c
-@@ -0,0 +1,291 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <errno.h>
-+#include <linux/dcbnl.h>
-+
-+#include "dcb.h"
-+#include "utils.h"
-+
-+static void dcb_apptrust_help_set(void)
-+{
-+	fprintf(stderr,
-+		"Usage: dcb apptrust set dev STRING\n"
-+		"	[ order [ eth | stream | dgram | any | dscp | pcp ] ]\n"
-+		"\n");
-+}
-+
-+static void dcb_apptrust_help_show(void)
-+{
-+	fprintf(stderr, "Usage: dcb [ -i ] apptrust show dev STRING\n"
-+			"           [ order ]\n"
-+			"\n");
-+}
-+
-+static void dcb_apptrust_help(void)
-+{
-+	fprintf(stderr, "Usage: dcb apptrust help\n"
-+			"\n");
-+	dcb_apptrust_help_show();
-+	dcb_apptrust_help_set();
-+}
-+
-+static const char *const selector_names[] = {
-+	[IEEE_8021QAZ_APP_SEL_ETHERTYPE] = "eth",
-+	[IEEE_8021QAZ_APP_SEL_STREAM]    = "stream",
-+	[IEEE_8021QAZ_APP_SEL_DGRAM]     = "dgram",
-+	[IEEE_8021QAZ_APP_SEL_ANY]       = "any",
-+	[IEEE_8021QAZ_APP_SEL_DSCP]      = "dscp",
-+	[DCB_APP_SEL_PCP]                = "pcp",
-+};
-+
-+struct dcb_apptrust_table {
-+	__u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1];
-+	int nselectors;
-+};
-+
-+static bool dcb_apptrust_contains(const struct dcb_apptrust_table *table,
-+				  __u8 selector)
-+{
-+	int i;
-+
-+	for (i = 0; i < table->nselectors; i++)
-+		if (table->selectors[i] == selector)
-+			return true;
-+
-+	return false;
-+}
-+
-+static void dcb_apptrust_print(const struct dcb_apptrust_table *table)
-+{
-+	const char *str;
-+	__u8 selector;
-+	int i;
-+
-+	open_json_array(PRINT_JSON, "order");
-+	print_string(PRINT_FP, NULL, "order: ", NULL);
-+
-+	for (i = 0; i < table->nselectors; i++) {
-+		selector = table->selectors[i];
-+		str = selector_names[selector];
-+		print_string(PRINT_ANY, NULL, "%s ", str);
-+	}
-+	print_nl();
-+
-+	close_json_array(PRINT_JSON, "order");
-+}
-+
-+static int dcb_apptrust_get_cb(const struct nlattr *attr, void *data)
-+{
-+	struct dcb_apptrust_table *table = data;
-+	uint16_t type;
-+	__u8 selector;
-+
-+	type = mnl_attr_get_type(attr);
-+
-+	if (!dcb_app_attr_type_validate(type)) {
-+		fprintf(stderr,
-+			"Unknown attribute in DCB_ATTR_IEEE_APP_TRUST_TABLE: %d\n",
-+			type);
-+		return MNL_CB_OK;
-+	}
-+
-+	if (mnl_attr_get_payload_len(attr) < 1) {
-+		fprintf(stderr,
-+			"DCB_ATTR_IEEE_APP_TRUST payload expected to have size %zd, not %d\n",
-+			sizeof(struct dcb_app), mnl_attr_get_payload_len(attr));
-+		return MNL_CB_OK;
-+	}
-+
-+	selector = mnl_attr_get_u8(attr);
-+
-+	/* Check that selector is encapsulated in the right attribute */
-+	if (!dcb_app_selector_validate(type, selector)) {
-+		fprintf(stderr, "Wrong type for selector: %s\n",
-+			selector_names[selector]);
-+		return MNL_CB_OK;
-+	}
-+
-+	table->selectors[table->nselectors++] = selector;
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int dcb_apptrust_get(struct dcb *dcb, const char *dev,
-+			    struct dcb_apptrust_table *table)
-+{
-+	uint16_t payload_len;
-+	void *payload;
-+	int ret;
-+
-+	ret = dcb_get_attribute_va(dcb, dev, DCB_ATTR_DCB_APP_TRUST_TABLE,
-+				   &payload, &payload_len);
-+	if (ret != 0)
-+		return ret;
-+
-+	ret = mnl_attr_parse_payload(payload, payload_len, dcb_apptrust_get_cb,
-+				     table);
-+	if (ret != MNL_CB_OK)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int dcb_apptrust_set_cb(struct dcb *dcb, struct nlmsghdr *nlh,
-+			       void *data)
-+{
-+	const struct dcb_apptrust_table *table = data;
-+	enum ieee_attrs_app type;
-+	struct nlattr *nest;
-+	int i;
-+
-+	nest = mnl_attr_nest_start(nlh, DCB_ATTR_DCB_APP_TRUST_TABLE);
-+
-+	for (i = 0; i < table->nselectors; i++) {
-+		type = dcb_app_attr_type_get(table->selectors[i]);
-+		mnl_attr_put_u8(nlh, type, table->selectors[i]);
-+	}
-+
-+	mnl_attr_nest_end(nlh, nest);
-+
-+	return 0;
-+}
-+
-+static int dcb_apptrust_set(struct dcb *dcb, const char *dev,
-+			    const struct dcb_apptrust_table *table)
-+{
-+	return dcb_set_attribute_va(dcb, DCB_CMD_IEEE_SET, dev,
-+				    &dcb_apptrust_set_cb, (void *)table);
-+}
-+
-+static int dcb_apptrust_parse_selector_list(int *argcp, char ***argvp,
-+					    struct dcb_apptrust_table *table)
-+{
-+	char **argv = *argvp;
-+	int argc = *argcp;
-+	__u8 selector;
-+	int ret;
-+
-+	NEXT_ARG_FWD();
-+
-+	/* No trusted selectors ? */
-+	if (argc == 0)
-+		goto out;
-+
-+	while (argc > 0) {
-+		selector = parse_one_of("order", *argv, selector_names,
-+					ARRAY_SIZE(selector_names), &ret);
-+		if (ret < 0)
-+			return -EINVAL;
-+
-+		if (table->nselectors > IEEE_8021QAZ_APP_SEL_MAX)
-+			return -ERANGE;
-+
-+		if (dcb_apptrust_contains(table, selector)) {
-+			fprintf(stderr, "Duplicate selector: %s\n",
-+				selector_names[selector]);
-+			return -EINVAL;
-+		}
-+
-+		table->selectors[table->nselectors++] = selector;
-+
-+		NEXT_ARG_FWD();
-+	}
-+
-+out:
-+	*argcp = argc;
-+	*argvp = argv;
-+
-+	return 0;
-+}
-+
-+static int dcb_cmd_apptrust_set(struct dcb *dcb, const char *dev, int argc,
-+				char **argv)
-+{
-+	struct dcb_apptrust_table table = { 0 };
-+	int ret;
-+
-+	if (!argc) {
-+		dcb_apptrust_help_set();
-+		return 0;
-+	}
-+
-+	do {
-+		if (strcmp(*argv, "help") == 0) {
-+			dcb_apptrust_help_set();
-+			return 0;
-+		} else if (strcmp(*argv, "order") == 0) {
-+			ret = dcb_apptrust_parse_selector_list(&argc, &argv,
-+							       &table);
-+			if (ret < 0) {
-+				fprintf(stderr, "Invalid list of selectors\n");
-+				return -EINVAL;
-+			}
-+			continue;
-+		} else {
-+			fprintf(stderr, "What is \"%s\"?\n", *argv);
-+			dcb_apptrust_help_set();
-+			return -EINVAL;
-+		}
-+
-+		NEXT_ARG_FWD();
-+	} while (argc > 0);
-+
-+	return dcb_apptrust_set(dcb, dev, &table);
-+}
-+
-+static int dcb_cmd_apptrust_show(struct dcb *dcb, const char *dev, int argc,
-+				 char **argv)
-+{
-+	struct dcb_apptrust_table table = { 0 };
-+	int ret;
-+
-+	ret = dcb_apptrust_get(dcb, dev, &table);
-+	if (ret)
-+		return ret;
-+
-+	open_json_object(NULL);
-+
-+	if (!argc) {
-+		dcb_apptrust_help();
-+		goto out;
-+	}
-+
-+	do {
-+		if (strcmp(*argv, "help") == 0) {
-+			dcb_apptrust_help_show();
-+			return 0;
-+		} else if (strcmp(*argv, "order") == 0) {
-+			dcb_apptrust_print(&table);
-+		} else {
-+			fprintf(stderr, "What is \"%s\"?\n", *argv);
-+			dcb_apptrust_help_show();
-+			return -EINVAL;
-+		}
-+
-+		NEXT_ARG_FWD();
-+	} while (argc > 0);
-+
-+out:
-+	close_json_object();
-+	return 0;
-+}
-+
-+int dcb_cmd_apptrust(struct dcb *dcb, int argc, char **argv)
-+{
-+	if (!argc || strcmp(*argv, "help") == 0) {
-+		dcb_apptrust_help();
-+		return 0;
-+	} else if (strcmp(*argv, "show") == 0) {
-+		NEXT_ARG_FWD();
-+		return dcb_cmd_parse_dev(dcb, argc, argv, dcb_cmd_apptrust_show,
-+					 dcb_apptrust_help_show);
-+	} else if (strcmp(*argv, "set") == 0) {
-+		NEXT_ARG_FWD();
-+		return dcb_cmd_parse_dev(dcb, argc, argv, dcb_cmd_apptrust_set,
-+					 dcb_apptrust_help_set);
-+	} else {
-+		fprintf(stderr, "What is \"%s\"?\n", *argv);
-+		dcb_apptrust_help();
-+		return -EINVAL;
-+	}
-+}
-diff --git a/man/man8/dcb-apptrust.8 b/man/man8/dcb-apptrust.8
-new file mode 100644
-index 000000000000..9ebe7c17292c
---- /dev/null
-+++ b/man/man8/dcb-apptrust.8
-@@ -0,0 +1,118 @@
-+.TH DCB-APPTRUST 8 "22 November 2022" "iproute2" "Linux"
-+.SH NAME
-+dcb-apptrust \- show / manipulate per-selector trust and trust order of the application
-+priority table of the DCB (Data Center Bridging) subsystem.
-+.SH SYNOPSIS
-+.sp
-+.ad l
-+.in +8
-+
-+.ti -8
-+.B dcb
-+.RI "[ " OPTIONS " ] "
-+.B apptrust
-+.RI "{ " COMMAND " | " help " }"
-+.sp
-+
-+.ti -8
-+.B dcb apptrust show dev order
-+.RI DEV
-+
-+.ti -8
-+.B dcb apptrust set dev order
-+.RI DEV
-+.RB "[ " eth " ]"
-+.RB "[ " stream " ]"
-+.RB "[ " dgram " ]"
-+.RB "[ " any " ]"
-+.RB "[ " dscp " ]"
-+.RB "[ " pcp " ]"
-+
-+.SH DESCRIPTION
-+
-+.B dcb apptrust
-+is used to configure and manipulate per-selector trust and trust order of the
-+Application Priority Table, see
-+.BR dcb-app (8)
-+for details on how to configure app table entries.
-+
-+Selector trust can be used by the
-+software stack, or drivers (most likely the latter), when querying the APP
-+table, to determine if an APP entry should take effect, or not. Additionaly, the
-+order of the trusted selectors will dictate which selector should take
-+precedence, in the case of multiple different APP selectors being present in the
-+APP table.
-+
-+.SH COMMANDS
-+
-+.TP
-+.B show
-+Display all trusted selectors.
-+
-+.TP
-+.B set
-+Set new list of trusted selectors. Empty list is effectively the same as
-+removing trust entirely.
-+
-+.SH PARAMETERS
-+
-+The following describes only the write direction, i.e. as used with the
-+\fBset\fR command. For the \fBshow\fR command, the parameter name is to be used
-+as a simple keyword without further arguments. This instructs the tool to show
-+the values of a given parameter.
-+
-+.TP
-+.B order \fISELECTOR-NAMES
-+\fISELECTOR-NAMES\fR is a space-separated list of selector names:\fR
-+
-+.B eth
-+Trust EtherType.
-+
-+.B stream
-+Trust TCP, or Stream Control Transmission Protocol (SCTP).
-+
-+.B dgram
-+Trust UDP, or Datagram Congestion Control Protocol (DCCP).
-+
-+.B any
-+Trust TCP, SCTP, UDP, or DCCP.
-+
-+.B dscp
-+Trust Differentiated Services Code Point (DSCP) values.
-+
-+.B pcp
-+Trust Priority Code Point/Drop Eligible Indicator (PCP/DEI).
-+
-+
-+.SH EXAMPLE & USAGE
-+
-+Set trust order to: dscp, pcp for eth0:
-+.P
-+# dcb apptrust set dev eth0 order dscp pcp
-+
-+Set trust order to: any (stream or dgram), pcp, eth for eth1:
-+.P
-+# dcb apptrust set dev eth1 order any pcp eth
-+
-+Show what was set:
-+
-+.P
-+# dcb apptrust show dev eth0
-+.br
-+order: any pcp eth
-+
-+.SH EXIT STATUS
-+Exit status is 0 if command was successful or a positive integer upon failure.
-+
-+.SH SEE ALSO
-+.BR dcb (8),
-+.BR dcb-app (8)
-+
-+.SH REPORTING BUGS
-+Report any bugs to the Network Developers mailing list
-+.B <netdev@vger.kernel.org>
-+where the development and maintenance is primarily done.
-+You do not have to be subscribed to the list to send a message there.
-+
-+.SH AUTHOR
-+Daniel Machon <daniel.machon@microchip.com>
--- 
-2.34.1
-
+> 
+> > >
+> > > Fixes: facb7cb2e909 ("selftests/bpf: Xsk selftests - SKB POLL, NOPOLL")
+> > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > ---
+> > >  tools/testing/selftests/bpf/xskxceiver.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+> > > index 681a5db80dae..51e693318b3f 100644
+> > > --- a/tools/testing/selftests/bpf/xskxceiver.c
+> > > +++ b/tools/testing/selftests/bpf/xskxceiver.c
+> > > @@ -767,7 +767,7 @@ static void pkt_dump(void *pkt, u32 len)
+> > >       struct ethhdr *ethhdr;
+> > >       struct udphdr *udphdr;
+> > >       struct iphdr *iphdr;
+> > > -     int payload, i;
+> > > +     u32 payload, i;
+> > >
+> > >       ethhdr = pkt;
+> > >       iphdr = pkt + sizeof(*ethhdr);
+> > > @@ -792,7 +792,7 @@ static void pkt_dump(void *pkt, u32 len)
+> > >       fprintf(stdout, "DEBUG>> L4: udp_hdr->src: %d\n", ntohs(udphdr->source));
+> > >       fprintf(stdout, "DEBUG>> L4: udp_hdr->dst: %d\n", ntohs(udphdr->dest));
+> > >       /*extract L5 frame */
+> > > -     payload = *((uint32_t *)(pkt + PKT_HDR_SIZE));
+> > > +     payload = ntohl(*((u32 *)(pkt + PKT_HDR_SIZE)));
+> > >
+> > >       fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
+> > >       fprintf(stdout, "---------------------------------------\n");
+> > > --
+> > > 2.34.1
+> > >
