@@ -2,127 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF376342FE
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:53:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9916463430C
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232909AbiKVRvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:51:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
+        id S234411AbiKVRyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:54:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234448AbiKVRv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:51:29 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E00B1BAC
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:48:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669139289; x=1700675289;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+lZlzOey+N2T5dJ99mloaMy5FtnSTIdVqqdNKRUqnwg=;
-  b=JzREktjZofJdKnooRJ0yyih/lRnh6tDPX25k7RZY4OZv915hXca0cRjQ
-   YNUkYO0UCEKV5TvFSHsXiiQheNit+ZxxNOceXAUQwGJw4QCPC8iEGwQae
-   d1Vzhn5U2YHIkcBlgFchQGDF0TDFxOdX/xaP6FR4706k+FVfX6lTuMQum
-   q7DLt6sntKNq3n2i32ahEpOZVgh2asGMBruQKfmMPS1ilYiBw2958CMd0
-   wkqAd0btxYaBJsfTijMo+4TJ0wz+q1X+CFY0nLeQkPNnghJv3nnmo1WBG
-   KsLKD4Qy8efBjv9KEj1peGYBIW5NCCoEUaVGbkt9BjJFvmpGDy5UyhR6C
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="400165212"
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="400165212"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 09:47:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="619301145"
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="619301145"
-Received: from bswcg005.iind.intel.com ([10.224.174.166])
-  by orsmga006.jf.intel.com with ESMTP; 22 Nov 2022 09:47:49 -0800
-From:   m.chetan.kumar@linux.intel.com
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com,
-        edumazet@google.com, pabeni@redhat.com
-Subject: [PATCH net 4/4] net: wwan: iosm: fix incorrect skb length
-Date:   Tue, 22 Nov 2022 23:17:46 +0530
-Message-Id: <20221122174746.3496864-1-m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S234525AbiKVRy3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:54:29 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5FADFCC8
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:51:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=vDNIHl7HjUK4qnj+62lmuQ9kdA37W2iOkqCjlLIcJ8s=; b=yydZg85PpfBni/xTNOZCwLzX5L
+        ckyTc7wadkbhJ/ZhQ9//zpyowfD7qy2CjJg2x/7rO+HdQSj5xZN0p4VIW7RAxxAIG5VfUH765Rqp4
+        kIOc3tQ3VLHG70GSy++myn7ZnET/QAFF/usS5SrFMKQ0l12nmXTucGNVn8MFlDjiK6gnsxbbAPm0v
+        IU5T5Kwf/uNtRKrQV/MLbLwBcvuRqVuNHZ15dSlrUMaYM85xWvRmpCUtq8x0xSW2Vag3cH3kz0K79
+        ECZXun7iYeLqbLoM8iS36YWabWpBsdoUxqM7iAvRNER6BC+Wj/FF9hUg9ecMa5RxzfXRAtEQjQtdG
+        EN0ksdfA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35384)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oxXR4-0001qf-G7; Tue, 22 Nov 2022 17:51:54 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oxXR0-0003Ub-NQ; Tue, 22 Nov 2022 17:51:50 +0000
+Date:   Tue, 22 Nov 2022 17:51:50 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>
+Subject: Re: [PATCH v4 net-next 3/8] net: phy: bcm84881: move the in-band
+ capability check where it belongs
+Message-ID: <Y30MNsLs164iX3x5@shell.armlinux.org.uk>
+References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
+ <20221118000124.2754581-4-vladimir.oltean@nxp.com>
+ <Y3yYo63kj+ACdkW1@shell.armlinux.org.uk>
+ <20221122122451.5hk5aw4q6mu6t22o@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221122122451.5hk5aw4q6mu6t22o@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+On Tue, Nov 22, 2022 at 02:24:51PM +0200, Vladimir Oltean wrote:
+> On Tue, Nov 22, 2022 at 09:38:43AM +0000, Russell King (Oracle) wrote:
+> > 88E1111 is the commonly used accessible PHY on gigabit SFPs, as this
+> > PHY implements I2C access natively.
+> 
+> As a side question, I suppose it would be possible to put PHYs on copper
+> SFP modules even if they don't natively implement I2C access. In that case,
+> if configuration from the host is at all available, how does that happen,
+> is there some sort of protocol translator (I2C -> MDIO) on the module?
 
-skb passed to network layer contains incorrect length.
+Modules that provide access to the PHY seem to do so on I2C address 0x56
+and require specific I2C access patterns. I think the 88e1111 set a kind
+of "standard" and many follow that or similar.
 
-In mux aggregation protocol, the datagram block received
-from device contains block signature, packet & datagram
-header. The right skb len to be calculated by subracting
-datagram pad len from datagram length.
+Some just don't give any kind of access to the PHY - for example, the
+Mikrotik modules have an AR803x PHY on them, but there is no way to
+access it.
 
-Whereas in mux lite protocol, the skb contains single
-datagram so skb len is calculated by subtracting the
-packet offset from datagram header.
+> Do you know of any part number for an I2C controlled MDIO controller?
 
-Fixes: 1f52d7b62285 ("net: wwan: iosm: Enable M.2 7360 WWAN card support")
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
----
- drivers/net/wwan/iosm/iosm_ipc_mux_codec.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+I think many that don't use a microcontroller - for example, when
+someone puts an 88x3310, bcm84881, the protocols are very similar but
+timing may vary.
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c b/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-index 738420bd14af..16f319dd2804 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-@@ -365,7 +365,8 @@ static void ipc_mux_dl_cmd_decode(struct iosm_mux *ipc_mux, struct sk_buff *skb)
- /* Pass the DL packet to the netif layer. */
- static int ipc_mux_net_receive(struct iosm_mux *ipc_mux, int if_id,
- 			       struct iosm_wwan *wwan, u32 offset,
--			       u8 service_class, struct sk_buff *skb)
-+			       u8 service_class, struct sk_buff *skb,
-+			       u32 pkt_len)
- {
- 	struct sk_buff *dest_skb = skb_clone(skb, GFP_ATOMIC);
+Some of the patches from Marek provided a different way - via the 0x50
+or 0x51 "eeprom" addresses, accessing specific addresses with in those
+spaces, and if I remember correctly, requiring a "password" to enable
+access.
 
-@@ -373,7 +374,7 @@ static int ipc_mux_net_receive(struct iosm_mux *ipc_mux, int if_id,
- 		return -ENOMEM;
-
- 	skb_pull(dest_skb, offset);
--	skb_set_tail_pointer(dest_skb, dest_skb->len);
-+	skb_trim(dest_skb, pkt_len);
- 	/* Pass the packet to the netif layer. */
- 	dest_skb->priority = service_class;
-
-@@ -473,7 +474,8 @@ static void ipc_mux_dl_adgh_decode(struct iosm_mux *ipc_mux,
-
- 	/* Pass the packet to the netif layer */
- 	rc = ipc_mux_net_receive(ipc_mux, if_id, wwan, packet_offset,
--				 adgh->service_class, skb);
-+				 adgh->service_class, skb,
-+				 adgh->length - packet_offset);
- 	if (rc) {
- 		dev_err(ipc_mux->dev, "mux adgh decoding error");
- 		return;
-@@ -565,8 +567,9 @@ static int mux_dl_process_dg(struct iosm_mux *ipc_mux, struct mux_adbh *adbh,
- 			/* Pass the packet to the netif layer. */
- 			rc = ipc_mux_net_receive(ipc_mux, if_id, ipc_mux->wwan,
- 						 packet_offset,
--						 dg->service_class,
--						 skb);
-+						 dg->service_class, skb,
-+						 dg->datagram_length -
-+						 dl_head_pad_len);
- 			if (rc)
- 				goto dg_error;
- 		}
---
-2.34.1
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
