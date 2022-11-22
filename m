@@ -2,132 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36CFE633D38
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2324633D47
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:14:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232777AbiKVNM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 08:12:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S233605AbiKVNOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 08:14:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbiKVNMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:12:25 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC9D623A4
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 05:12:23 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id s196so14064268pgs.3
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 05:12:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=oqwHzAInlPVGD6Tj99gfuhNqltvuUaoQbnrjs4tthqQ=;
-        b=iqFptG7/uCjX/WZys0RvEFs1QNIHoCzPFv1fNAzqAMu+zJYLIAIlTk5xbXKdx+huTA
-         903beUgNqdUyJbtx+1indJKeCxTl6PcQCU9vqOpDLb83FX0WK23+ILBpy9ly3TpIZDCC
-         xgjqsPh29pWWGt+2eiT8p/uT708pvtye0mpxMZQl+7KXngPg5fYjUKzILGUff0EBmGWG
-         OWN1ybOPMEoD14w22QOUMf0rMMUS/XViBDGXZgvtTtSzOJdrHzoq31K9eGKmHbbI91Gb
-         UUo/9UggJh/iYOMPpOGdHM+AU2ZIRy4cGxaeLE55UWyAkPBxF36Rdhb8iB+puBt7zvDM
-         ub8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oqwHzAInlPVGD6Tj99gfuhNqltvuUaoQbnrjs4tthqQ=;
-        b=grGSpNeeziELrY+jmSN7tUaBgwNClsVdJXJtPGzEJPbtxjIRiAz257ZxHQpqZRn6vO
-         Ff+QujZrE5qULAxjpZ69RVmDlXLhOKNF6dVp7ehZTL/jP2zMM94/A7ITu/VDcdn8IDMU
-         z2IQGKai2n9hlilNM9wqopAPfKK0q2alFLStvgTIePFFIibeTmiLE6btKUNFb1J8irJm
-         5Kj5IgvA3El3E+GR91X+wqv+NpT5EfRfGkkNAyErqB3mkpNDJkZ5oHSiQyxcmUZB2V9L
-         sWomfI2Ys4XJF81oR8fQUirw25ErxIx0fJoBuPoKg2CAqbkvvMRC3pj0tn4k5NBkkdEc
-         81uA==
-X-Gm-Message-State: ANoB5pkj9Q4f4fzXIwT60nOi3M4hTazuw2Kj/U3HZGCVR/v/GLVyzG0b
-        q/izFIDF27hZhoJZdnjHYchWKQ==
-X-Google-Smtp-Source: AA0mqf5OK6x93CXuy3MfVmeRxV/APyqC08Eof6VVqXzHXz44JzeRwY1jefa62wpRCQH0dU2x4RqDtw==
-X-Received: by 2002:a63:5819:0:b0:476:8ce9:be5d with SMTP id m25-20020a635819000000b004768ce9be5dmr5324378pgb.15.1669122743413;
-        Tue, 22 Nov 2022 05:12:23 -0800 (PST)
-Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
-        by smtp.gmail.com with ESMTPSA id w18-20020a170902e89200b00183e2a96414sm11948992plg.121.2022.11.22.05.12.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 05:12:22 -0800 (PST)
-From:   Akihiko Odaki <akihiko.odaki@daynix.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        Akihiko Odaki <akihiko.odaki@daynix.com>
-Subject: [PATCH v2] igb: Allocate MSI-X vector when testing
-Date:   Tue, 22 Nov 2022 22:11:45 +0900
-Message-Id: <20221122131145.68107-1-akihiko.odaki@daynix.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S233526AbiKVNN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:13:59 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EEF286F0;
+        Tue, 22 Nov 2022 05:13:49 -0800 (PST)
+Received: from [10.7.7.5] (unknown [182.253.183.240])
+        by gnuweeb.org (Postfix) with ESMTPSA id BE5DC816C8;
+        Tue, 22 Nov 2022 13:13:46 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1669122829;
+        bh=0vvZL7yCi24L6SpwtynEYYsQneiGf+itsq4xm1bGdnM=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=TaJMuIuVQTMWg6h/iHYBJi9GIdkYDmyAw86nCii1mhsUfnkEj9eomhALrpn1gI+vt
+         nWy1YHZVSGjzhdXLLbNg5BghQQdbmFG50PfbCSlg9WQ4gbGMFnlnXbIeZA3X3Ksn6a
+         SrcsAeMBp5Il8idcuywFQiNpbj5aWSM3AOMRS6BopFxug4HRy87WJpP4iJOnyzVLy8
+         4LyhgusmAmJMx7GCEUyz4D2DwfE/dNyqNjS3CViDLu2VS2n2IXoQfbX3qJCy28ttBb
+         ENb/GKOXywlFBD6hTKu/7r7f2y3gB/x+7mvNQrnj8mMQqa3f+a3WwTJCD2x9v2nHGC
+         wYWBzb+Vhnkuw==
+Message-ID: <0bb0734c-5c3e-3f2c-1163-a9bfa720bf26@gnuweeb.org>
+Date:   Tue, 22 Nov 2022 20:13:43 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Stefan Roesch <shr@devkernel.io>,
+        Facebook Kernel Team <kernel-team@fb.com>,
+        Olivier Langlois <olivier@trillion01.com>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20221121191437.996297-1-shr@devkernel.io>
+ <20221121191437.996297-3-shr@devkernel.io>
+ <35168b29-a81c-e1b2-7ec9-b5f0b896ee74@kernel.dk>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [PATCH v5 2/3] io_uring: add api to set / get napi configuration.
+In-Reply-To: <35168b29-a81c-e1b2-7ec9-b5f0b896ee74@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Without this change, the interrupt test fail with MSI-X environment:
+On 11/22/22 2:46 AM, Jens Axboe wrote:
+> On 11/21/22 12:14?PM, Stefan Roesch wrote:
+>> +static int io_unregister_napi(struct io_ring_ctx *ctx, void __user *arg)
+>> +{
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	const struct io_uring_napi curr = {
+>> +		.busy_poll_to = ctx->napi_busy_poll_to,
+>> +	};
+>> +
+>> +	if (copy_to_user(arg, &curr, sizeof(curr)))
+>> +		return -EFAULT;
+>> +
+>> +	WRITE_ONCE(ctx->napi_busy_poll_to, 0);
+>> +	return 0;
+>> +#else
+>> +	return -EINVAL;
+>> +#endif
+>> +}
+> 
+> Should probably check resv/pad here as well, maybe even the
+> 'busy_poll_to' being zero?
 
-$ sudo ethtool -t enp0s2 offline
-[   43.921783] igb 0000:00:02.0: offline testing starting
-[   44.855824] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Down
-[   44.961249] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
-[   51.272202] igb 0000:00:02.0: testing shared interrupt
-[   56.996975] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
-The test result is FAIL
-The test extra info:
-Register test  (offline)	 0
-Eeprom test    (offline)	 0
-Interrupt test (offline)	 4
-Loopback test  (offline)	 0
-Link test   (on/offline)	 0
+Jens, this function doesn't read from __user memory, it writes to
+__user memory.
 
-Here, "4" means an expected interrupt was not delivered.
+@curr.resv and @curr.pad are on the kernel's stack. Both are already
+implicitly initialized to zero by the partial struct initializer.
 
-This change routes interrupts correctly to the first MSI-X vector, and
-fixes the test:
-
-$ sudo ethtool -t enp0s2 offline
-[   42.762985] igb 0000:00:02.0: offline testing starting
-[   50.141967] igb 0000:00:02.0: testing shared interrupt
-[   56.163957] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
-The test result is PASS
-The test extra info:
-Register test  (offline)	 0
-Eeprom test    (offline)	 0
-Interrupt test (offline)	 0
-Loopback test  (offline)	 0
-Link test   (on/offline)	 0
-
-Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
----
- drivers/net/ethernet/intel/igb/igb_ethtool.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index e5f3e7680dc6..ff911af16a4b 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -1413,6 +1413,8 @@ static int igb_intr_test(struct igb_adapter *adapter, u64 *data)
- 			*data = 1;
- 			return -1;
- 		}
-+		wr32(E1000_IVAR_MISC, E1000_IVAR_VALID << 8);
-+		wr32(E1000_EIMS, BIT(0));
- 	} else if (adapter->flags & IGB_FLAG_HAS_MSI) {
- 		shared_int = false;
- 		if (request_irq(irq,
 -- 
-2.38.1
+Ammar Faizi
 
