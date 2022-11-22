@@ -2,255 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F026348D5
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 21:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB2FA6348E4
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbiKVU6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 15:58:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
+        id S233369AbiKVVCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:02:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiKVU6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 15:58:40 -0500
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE025E3EF
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 12:58:38 -0800 (PST)
+        with ESMTP id S229481AbiKVVCJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:02:09 -0500
+Received: from mx0b-003ede02.pphosted.com (mx0b-003ede02.pphosted.com [205.220.181.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0DF7AF45
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 13:02:08 -0800 (PST)
+Received: from pps.filterd (m0286619.ppops.net [127.0.0.1])
+        by mx0b-003ede02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AMI4I3D030263
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 13:02:07 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=getcruise.com; h=mime-version :
+ references : in-reply-to : from : date : message-id : subject : to : cc :
+ content-type : content-transfer-encoding; s=ppemail;
+ bh=1Nr6Weq5S6LppJJOH2ZyQCCwCrs4wzrQyHScK/QvWRk=;
+ b=HjrVWujDWNuHi8pFERP9Lw+5qTfHljYM6Bmb/wxltxNnXUtXRdVA7sqcdf/tY66khOLI
+ kIHdXGSSpbnmepslG07WQPLAouT0/HwfDLnXn/bDA4+ie4fSnic3fi/UJZdsnIRAVxOU
+ Obrd0xZgTuvF/leTBfgNgcTm4OrMxs1t7IQGwyEmE2sVmEu3WJ6VwGOvwNlzRBy7fZog
+ +NKmdSNbiJj2Fds30C/RvO5MKTtniZ+EfbjuOOTUo78h8VV2N3opLok5ioyNhM8w3xod
+ Blqb1VKzbfvh/uVqxym9q/XbwC/gM5lM+u7CSR1tMtFP6a3SskRynmkNt59h8hx9GJiA 5g== 
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        by mx0b-003ede02.pphosted.com (PPS) with ESMTPS id 3m13cqr7m2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 13:02:07 -0800
+Received: by mail-ed1-f72.google.com with SMTP id g14-20020a056402090e00b0046790cd9082so9565353edz.21
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 13:02:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1669150719; x=1700686719;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=58dNQVKqeDksWseF0awQrKYpFQ4D7sUOyuz+r+YL5uk=;
-  b=a02FxHO0HKXeurLPdII8dpbE5t0ZK9DJUGY3bviyPpJk1HY6ZUUL1H1x
-   E9/xFGUAzE1i+800dBr3sGm3klYXdA+2PwdRYSd9D17e4EeBCBR7WzCNX
-   5jIeLqoNKN4384bi6LqlFvBl2bB+ymWtvfjJo8ZyO0GxssxJdHRwO+UcW
-   w=;
-X-IronPort-AV: E=Sophos;i="5.96,185,1665446400"; 
-   d="scan'208";a="243003183"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-25ac6bd5.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 20:58:34 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1d-m6i4x-25ac6bd5.us-east-1.amazon.com (Postfix) with ESMTPS id 0539F42438;
-        Tue, 22 Nov 2022 20:58:30 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Tue, 22 Nov 2022 20:58:29 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.14) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Tue, 22 Nov 2022 20:58:27 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
-        Wei Chen <harperchen1110@gmail.com>
-Subject: [PATCH v1 net] af_unix: Call sk_diag_fill() under the bucket lock.
-Date:   Tue, 22 Nov 2022 12:58:11 -0800
-Message-ID: <20221122205811.20910-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        d=getcruise.com; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1Nr6Weq5S6LppJJOH2ZyQCCwCrs4wzrQyHScK/QvWRk=;
+        b=O75GQ1Jj6qv+bQnEo8Xe3befs0PXMrwaSlS6+eVFyl96hkHNp8tKP7etgDnsvUTcxx
+         O7dhtpxJQCZdFN/32ZIfeYfv6m0Mz2LyzIPOZ04AIIu4gUorKT17koHfJKCTL4jUPIsX
+         tI+9/NemtIgGvt58gchskMNl7O/Opg/s2gH39lQabctd7D6fv2U8Sm4fr7QRjmhKvBlF
+         it5gCYvxe9v5yrf+UemW3WmosGeKe0HGclBA7FpN/U3Z96VxuhD7m3y+GEjohci6P4rG
+         Fv96+ijDliHet5TwS/w9o8swIN0dg5usu0pNpo0PmVuQbSjUEMXO5EDJ6KJvtFcgnDOF
+         /DLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1Nr6Weq5S6LppJJOH2ZyQCCwCrs4wzrQyHScK/QvWRk=;
+        b=0yl46BHg/UgjMkkLMJSsrf8oya0VcFAnrrHAyoF2EzCLlZjrTMSWRt8utv6SV7zS/0
+         pLfAToDGeFijZtisl175y4KqiGWX/r5S+iaIl8+4GZHyp6cKqjYF3NFw5EU5SUO9XTTY
+         z1W+Ge6ChT2vTAwJlF5TfPUzdcsIsTK4D6X2BrRIoDmG92azpKMtKp1nSXHbReONslw6
+         /7S2I8tJqLriLqg6bjDdbrE6xkP4YUFdkS/r2Lq6tdnK8WB0KldrrJN8mvJ5VaX4zQuR
+         jkSPcg8HK69b20z27KCtm/yLzeGRo27f4kQaV5Q+JrpIBSXAOAnk95ueJA0AmxY3UM4h
+         /xsA==
+X-Gm-Message-State: ANoB5pneLn43Cy1nikGo4FKBTbYzdXIbn5aOgBzuxvNpwjn1VNmIW0t/
+        8dVxhBBBAgMgrzi+CriKgN6u3A6Wnr7vr2D2WSquSZ1dSwUKXMmYZypIGbvTzShfo+iOHJybSDx
+        lIO3/HxDMlK+ZpPx0jxyAQia7PO2TDb7Y
+X-Received: by 2002:a17:906:1495:b0:7ad:d250:b904 with SMTP id x21-20020a170906149500b007add250b904mr5133044ejc.633.1669150925346;
+        Tue, 22 Nov 2022 13:02:05 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4lwFv3ZRjvTAyj9TUHJAGnvFVdrU/wv9XHdxre/fFeU+J3e7A9x+Vmm3k6hLF8pCT9OK5kz4bJi3oNrusDldY=
+X-Received: by 2002:a17:906:1495:b0:7ad:d250:b904 with SMTP id
+ x21-20020a170906149500b007add250b904mr5133033ejc.633.1669150925069; Tue, 22
+ Nov 2022 13:02:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.14]
-X-ClientProxiedBy: EX13D49UWC003.ant.amazon.com (10.43.162.10) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221118232639.13743-1-steve.williams@getcruise.com>
+ <20221121195810.3f32d4fd@kernel.org> <20221122113412.dg4diiu5ngmulih2@skbuf> <Y30pD0B6t4MmUht9@lunn.ch>
+In-Reply-To: <Y30pD0B6t4MmUht9@lunn.ch>
+From:   Steve Williams <steve.williams@getcruise.com>
+Date:   Tue, 22 Nov 2022 13:01:54 -0800
+Message-ID: <CALHoRjeU_28Sm+SoYQ6NP4W0ppK+okUubWt2orwgAZ2B4RVwfw@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
+ interface for high availability links
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-GUID: u1b6zTB1Xhk71qb4ogsvnIYzdUlogD6y
+X-Proofpoint-ORIG-GUID: u1b6zTB1Xhk71qb4ogsvnIYzdUlogD6y
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-22_11,2022-11-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 clxscore=1015 mlxscore=0 bulkscore=0
+ adultscore=0 priorityscore=1501 impostorscore=0 mlxlogscore=999
+ phishscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2210170000 definitions=main-2211220161
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wei Chen reported sk->sk_socket can be NULL in sk_user_ns(). [0][1]
+On Tue, Nov 22, 2022 at 11:55 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > ../drivers/net/hanic/hanic_sysfs.c:83:31: error: =E2=80=98struct hanic_=
+netns=E2=80=99 has no member named =E2=80=98class_attr_sandlan_interfaces=
+=E2=80=99; did you mean =E2=80=98class_attr_hanic_interfaces=E2=80=99?
+> >    83 |         sysfs_attr_init(&xns->class_attr_sandlan_interfaces.att=
+r);
+>
+> There was another submission over the weekend adding a network
+> emulation system called sandlan. The cover latter for this patchset
+> should of at minimum said there was a dependency between the two. But
+> in practice, there should not be any dependency at all. It is unclear
+> if sandlan will get merged.
+>
 
-It seems that syzbot was dumping an AF_UNIX socket while closing it,
-and there is a race below.
+Hanic does not rely on sandlan. I used sandlan as a test bed while implemen=
+ting
+the hanic driver, and apparently some bits leaked into this patch. I'll fix=
+ it.
+--=20
 
-  unix_release_sock               unix_diag_handler_dump
-  |                               `- unix_diag_get_exact
-  |                                  |- unix_lookup_by_ino
-  |                                  |  |- spin_lock(&net->unx.table.locks[i])
-  |                                  |  |- sock_hold
-  |                                  |  `- spin_unlock(&net->unx.table.locks[i])
-  |- unix_remove_socket(net, sk)     |     /* after releasing this lock,
-  |  /* from here, sk cannot be      |      * there is no guarantee that
-  |   * seen in the hash table.      |      * sk is not SOCK_DEAD.
-  |   */                             |      */
-  |                                  |
-  |- unix_state_lock(sk)             |
-  |- sock_orphan(sk)                 `- sk_diag_fill
-  |  |- sock_set_flag(sk, SOCK_DEAD)    `- sk_diag_dump_uid
-  |  `- sk_set_socket(sk, NULL)            `- sk_user_ns
-  `- unix_state_unlock(sk)                   `- sk->sk_socket->file->f_cred->user_ns
-                                                /* NULL deref here */
+Stephen Williams
 
-After releasing the bucket lock, we cannot guarantee that the found
-socket is still alive.  Then, we have to check the SOCK_DEAD flag
-under unix_state_lock() and keep holding it unless we access the socket.
+Senior Software Engineer
 
-In this case, however, we cannot acquire unix_state_lock() in
-unix_lookup_by_ino() because we lock it later in sk_diag_dump_peer(),
-resulting in deadlock.
+Cruise
 
-Instead, we do not release the bucket lock; then, we can safely access
-sk->sk_socket later in sk_user_ns(), and there is no deadlock scenario.
-We are already using this strategy in unix_diag_dump().
+--=20
 
-Note we have to call nlmsg_new() before unix_lookup_by_ino() not to
-change the flag from GFP_KERNEL to GFP_ATOMIC.
 
-[0]: https://lore.kernel.org/netdev/CAO4mrfdvyjFpokhNsiwZiP-wpdSD0AStcJwfKcKQdAALQ9_2Qw@mail.gmail.com/
-[1]:
-BUG: kernel NULL pointer dereference, address: 0000000000000270
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 12bbce067 P4D 12bbce067 PUD 12bc40067 PMD 0
-Oops: 0000 [#1] PREEMPT SMP
-CPU: 0 PID: 27942 Comm: syz-executor.0 Not tainted 6.1.0-rc5-next-20221118 #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-RIP: 0010:sk_user_ns include/net/sock.h:920 [inline]
-RIP: 0010:sk_diag_dump_uid net/unix/diag.c:119 [inline]
-RIP: 0010:sk_diag_fill+0x77d/0x890 net/unix/diag.c:170
-Code: 89 ef e8 66 d4 2d fd c7 44 24 40 00 00 00 00 49 8d 7c 24 18 e8
-54 d7 2d fd 49 8b 5c 24 18 48 8d bb 70 02 00 00 e8 43 d7 2d fd <48> 8b
-9b 70 02 00 00 48 8d 7b 10 e8 33 d7 2d fd 48 8b 5b 10 48 8d
-RSP: 0018:ffffc90000d67968 EFLAGS: 00010246
-RAX: ffff88812badaa48 RBX: 0000000000000000 RCX: ffffffff840d481d
-RDX: 0000000000000465 RSI: 0000000000000000 RDI: 0000000000000270
-RBP: ffffc90000d679a8 R08: 0000000000000277 R09: 0000000000000000
-R10: 0001ffffffffffff R11: 0001c90000d679a8 R12: ffff88812ac03800
-R13: ffff88812c87c400 R14: ffff88812ae42210 R15: ffff888103026940
-FS:  00007f08b4e6f700(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000270 CR3: 000000012c58b000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- unix_diag_get_exact net/unix/diag.c:285 [inline]
- unix_diag_handler_dump+0x3f9/0x500 net/unix/diag.c:317
- __sock_diag_cmd net/core/sock_diag.c:235 [inline]
- sock_diag_rcv_msg+0x237/0x250 net/core/sock_diag.c:266
- netlink_rcv_skb+0x13e/0x250 net/netlink/af_netlink.c:2564
- sock_diag_rcv+0x24/0x40 net/core/sock_diag.c:277
- netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
- netlink_unicast+0x5e9/0x6b0 net/netlink/af_netlink.c:1356
- netlink_sendmsg+0x739/0x860 net/netlink/af_netlink.c:1932
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- ____sys_sendmsg+0x38f/0x500 net/socket.c:2476
- ___sys_sendmsg net/socket.c:2530 [inline]
- __sys_sendmsg+0x197/0x230 net/socket.c:2559
- __do_sys_sendmsg net/socket.c:2568 [inline]
- __se_sys_sendmsg net/socket.c:2566 [inline]
- __x64_sys_sendmsg+0x42/0x50 net/socket.c:2566
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x4697f9
-Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f08b4e6ec48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000077bf80 RCX: 00000000004697f9
-RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
-RBP: 00000000004d29e9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000077bf80
-R13: 0000000000000000 R14: 000000000077bf80 R15: 00007ffdb36bc6c0
- </TASK>
-Modules linked in:
-CR2: 0000000000000270
-
-Fixes: 5d3cae8bc39d ("unix_diag: Dumping exact socket core")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: Wei Chen <harperchen1110@gmail.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- net/unix/diag.c | 38 +++++++++++++++++++++++---------------
- 1 file changed, 23 insertions(+), 15 deletions(-)
-
-diff --git a/net/unix/diag.c b/net/unix/diag.c
-index 105f522a89fe..96583cb71cf5 100644
---- a/net/unix/diag.c
-+++ b/net/unix/diag.c
-@@ -242,8 +242,9 @@ static struct sock *unix_lookup_by_ino(struct net *net, unsigned int ino)
- 		spin_lock(&net->unx.table.locks[i]);
- 		sk_for_each(sk, &net->unx.table.buckets[i]) {
- 			if (ino == sock_i_ino(sk)) {
--				sock_hold(sk);
--				spin_unlock(&net->unx.table.locks[i]);
-+				/* sk_diag_fill() must be done under the bucket
-+				 * lock not to race with unix_release_sock().
-+				 */
- 				return sk;
- 			}
- 		}
-@@ -264,15 +265,6 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
- 
- 	err = -EINVAL;
- 	if (req->udiag_ino == 0)
--		goto out_nosk;
--
--	sk = unix_lookup_by_ino(net, req->udiag_ino);
--	err = -ENOENT;
--	if (sk == NULL)
--		goto out_nosk;
--
--	err = sock_diag_check_cookie(sk, req->udiag_cookie);
--	if (err)
- 		goto out;
- 
- 	extra_len = 256;
-@@ -282,8 +274,21 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
- 	if (!rep)
- 		goto out;
- 
-+	/* Acquire a bucket lock on success. */
-+	sk = unix_lookup_by_ino(net, req->udiag_ino);
-+	err = -ENOENT;
-+	if (!sk)
-+		goto free;
-+
-+	err = sock_diag_check_cookie(sk, req->udiag_cookie);
-+	if (err)
-+		goto unlock;
-+
- 	err = sk_diag_fill(sk, rep, req, NETLINK_CB(in_skb).portid,
- 			   nlh->nlmsg_seq, 0, req->udiag_ino);
-+
-+	spin_unlock(&net->unx.table.locks[sk->sk_hash]);
-+
- 	if (err < 0) {
- 		nlmsg_free(rep);
- 		extra_len += 256;
-@@ -292,13 +297,16 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
- 
- 		goto again;
- 	}
--	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
- 
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
- out:
--	if (sk)
--		sock_put(sk);
--out_nosk:
- 	return err;
-+
-+unlock:
-+	spin_unlock(&net->unx.table.locks[sk->sk_hash]);
-+free:
-+	nlmsg_free(rep);
-+	goto out;
- }
- 
- static int unix_diag_handler_dump(struct sk_buff *skb, struct nlmsghdr *h)
--- 
-2.30.2
-
+*Confidentiality=C2=A0Note:*=C2=A0We care about protecting our proprietary=
+=20
+information,=C2=A0confidential=C2=A0material, and trade secrets.=C2=A0This =
+message may=20
+contain some or all of those things. Cruise will suffer material harm if=20
+anyone other than the intended recipient disseminates or takes any action=
+=20
+based on this message. If you have received this message (including any=20
+attachments) in error, please delete it immediately and notify the sender=
+=20
+promptly.
