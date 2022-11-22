@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BA7633E6A
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:06:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37BFB633E54
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:05:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233979AbiKVOF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 09:05:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S233998AbiKVOFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:05:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233991AbiKVOFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:05:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7CB20BF7
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:03:19 -0800 (PST)
+        with ESMTP id S233734AbiKVOFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:05:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DD820BEB
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:03:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669125798;
+        s=mimecast20190719; t=1669125797;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=D+4flvqengNNBgDwPRdu4ptsudDd6Mu7MlqZ94ZwyBM=;
-        b=O7jEDqA2hjII+PvmuSVxde0aMKqzDZjTzeeYCMQlNMat4VUt9REGRpjOHkakNx7/vVsB7S
-        3MEM1S2CwE4khDSYIgNQm7TQcRLF1Vg/DDudGrXPd4wcvzIygr8x7mLkS28/dkUejs/2Nz
-        iZE6orDKy9VZeeAXnDrkmm3HB4o8U/U=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=rYhRWhA1aSMDmEn1uPY3m1Uoc/nxJhjisw6iqoh6KAk=;
+        b=Jug1gOBMdHwQxjkze73hRb+ssEKcQWkRvP21etQCS7kZDL1yscN8K/sVGG9dAsYJ5TS2Fn
+        8GYfMMLZyjlqUYManSCEwJio+yvk30yVPPebhnc7PpIZERcc+8iBgZ8C0IqfLTUHvuc7PG
+        HNVX5LMwI0Y2W0SYgIWcbdBcdukb4dE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-119-Yl-nshPSMeqNYM-1s8XnDg-1; Tue, 22 Nov 2022 09:03:16 -0500
-X-MC-Unique: Yl-nshPSMeqNYM-1s8XnDg-1
+ us-mta-654-4mjhlybcObqbcyDAl7QVdg-1; Tue, 22 Nov 2022 09:03:16 -0500
+X-MC-Unique: 4mjhlybcObqbcyDAl7QVdg-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7E67C3C0F231;
-        Tue, 22 Nov 2022 14:03:15 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 12028973283;
+        Tue, 22 Nov 2022 14:03:16 +0000 (UTC)
 Received: from RHTPC1VM0NT.redhat.com (unknown [10.22.16.203])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 83EB740C6EC6;
-        Tue, 22 Nov 2022 14:03:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9132A40C6EC6;
+        Tue, 22 Nov 2022 14:03:15 +0000 (UTC)
 From:   Aaron Conole <aconole@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Pravin B Shelar <pshelar@ovn.org>,
@@ -49,9 +49,9 @@ Cc:     Pravin B Shelar <pshelar@ovn.org>,
         Ilya Maximets <i.maximets@ovn.org>,
         Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org
-Subject: [RFC net-next 5/6] selftests: openvswitch: add upcall support
-Date:   Tue, 22 Nov 2022 09:03:06 -0500
-Message-Id: <20221122140307.705112-6-aconole@redhat.com>
+Subject: [RFC net-next 6/6] selftests: openvswitch: add exclude support for packet commands
+Date:   Tue, 22 Nov 2022 09:03:07 -0500
+Message-Id: <20221122140307.705112-7-aconole@redhat.com>
 In-Reply-To: <20221122140307.705112-1-aconole@redhat.com>
 References: <20221122140307.705112-1-aconole@redhat.com>
 MIME-Version: 1.0
@@ -59,7 +59,7 @@ Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,260 +67,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Future tests can make use of CMD_MISS events to do things like
-cross validated packet contents with the flow key that was
-generated by flow key extraction.  This will also be used in
-an upcoming commit to allow removing the flow key from upcall
-messages.
+Introduce a test case to show that we can exclude flows based
+on specific configurations.
 
 Signed-off-by: Aaron Conole <aconole@redhat.com>
 ---
- .../selftests/net/openvswitch/ovs-dpctl.py    | 140 +++++++++++++++++-
- 1 file changed, 133 insertions(+), 7 deletions(-)
+ .../selftests/net/openvswitch/openvswitch.sh  | 53 +++++++++++++++++--
+ .../selftests/net/openvswitch/ovs-dpctl.py    | 34 +++++++++++-
+ 2 files changed, 81 insertions(+), 6 deletions(-)
 
+diff --git a/tools/testing/selftests/net/openvswitch/openvswitch.sh b/tools/testing/selftests/net/openvswitch/openvswitch.sh
+index ce14913150fe..f04f2f748332 100755
+--- a/tools/testing/selftests/net/openvswitch/openvswitch.sh
++++ b/tools/testing/selftests/net/openvswitch/openvswitch.sh
+@@ -11,7 +11,8 @@ VERBOSE=0
+ TRACING=0
+ 
+ tests="
+-	netlink_checks				ovsnl: validate netlink attrs and settings"
++	netlink_checks				ovsnl: validate netlink attrs and settings
++	upcall_interfaces			ovs: test the upcall interfaces"
+ 
+ info() {
+     [ $VERBOSE = 0 ] || echo $*
+@@ -72,7 +73,15 @@ ovs_add_dp () {
+ 
+ ovs_add_if () {
+ 	info "Adding IF to DP: br:$2 if:$3"
+-	ovs_sbx "$1" python3 $ovs_base/ovs-dpctl.py add-if "$2" "$3" || return 1
++	if [ "$4" != "-u" ]; then
++		ovs_sbx "$1" python3 $ovs_base/ovs-dpctl.py add-if "$2" "$3" \
++		    || return 1
++	else
++		python3 $ovs_base/ovs-dpctl.py add-if \
++		    -u "$2" "$3" >$ovs_dir/$3.out 2>$ovs_dir/$3.err &
++		pid=$!
++		on_exit "ovs_sbx $1 kill -TERM $pid 2>/dev/null"
++	fi
+ }
+ 
+ ovs_del_if () {
+@@ -103,10 +112,16 @@ ovs_add_netns_and_veths () {
+ 	ovs_sbx "$1" ip netns exec "$3" ip link set "$5" up || return 1
+ 
+ 	if [ "$6" != "" ]; then
+-		ovs_sbx "$1" ip netns exec "$4" ip addr add "$6" dev "$5" \
++		ovs_sbx "$1" ip netns exec "$3" ip addr add "$6" dev "$5" \
+ 		    || return 1
+ 	fi
+-	ovs_add_if "$1" "$2" "$4" || return 1
++
++	if [ "$7" != "-u" ]; then
++		ovs_add_if "$1" "$2" "$4" || return 1
++	else
++		ovs_add_if "$1" "$2" "$4" -u || return 1
++	fi
++
+ 	[ $TRACING -eq 1 ] && ovs_netns_spawn_daemon "$1" "$3" \
+ 			tcpdump -i any -s 65535 >> ${ovs_dir}/tcpdump_"$3".log
+ 
+@@ -158,6 +173,36 @@ test_netlink_checks () {
+ 	return 0
+ }
+ 
++test_upcall_interfaces() {
++	sbx_add "test_upcall_interfaces" || return 1
++
++	info "setting up new DP"
++	ovs_add_dp "test_upcall_interfaces" ui0 || return 1
++
++	ovs_add_netns_and_veths "test_upcall_interfaces" ui0 upc left0 l0 \
++	    172.31.110.1/24 -u || return 1
++
++	sleep 1
++	info "sending arping"
++	ip netns exec upc arping -I l0 172.31.110.20 -c 1 \
++	    >$ovs_dir/arping.stdout 2>$ovs_dir/arping.stderr
++
++	grep -E "MISS upcall\[0/yes\]: .*arp\(sip=172.31.110.1,tip=172.31.110.20,op=1,sha=" $ovs_dir/left0.out >/dev/null 2>&1 || return 1
++	# now tear down the DP and set it up with the new options
++	ovs_sbx "test_upcall_interfaces" python3 $ovs_base/ovs-dpctl.py \
++	    del-dp ui0 || return 1
++	ovs_sbx "test_upcall_interfaces" python3 $ovs_base/ovs-dpctl.py \
++	    add-dp -e miss -- ui0 || return 1
++	ovs_add_if "test_upcall_interfaces" ui0 left0 -u || return 1
++
++	sleep 1
++	info "sending second arping"
++	ip netns exec upc arping -I l0 172.31.110.20 -c 1 \
++	    >$ovs_dir/arping.stdout 2>$ovs_dir/arping.stderr
++	grep -E "MISS upcall\[0/yes\]: \(none\)" $ovs_dir/left0.out >/dev/null 2>&1 || return 1
++	return 0
++}
++
+ run_test() {
+ 	(
+ 	tname="$1"
 diff --git a/tools/testing/selftests/net/openvswitch/ovs-dpctl.py b/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
-index fe14da358901..94204af48d28 100644
+index 94204af48d28..ba115fb51773 100644
 --- a/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
 +++ b/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
-@@ -8,6 +8,8 @@ import argparse
- import errno
- import ipaddress
- import logging
-+import multiprocessing
-+import struct
- import sys
- import time
- 
-@@ -58,6 +60,53 @@ class ovs_dp_msg(genlmsg):
-     fields = genlmsg.fields + (("dpifindex", "I"),)
- 
- 
-+class OvsPacket(GenericNetlinkSocket):
-+    OVS_PACKET_CMD_MISS = 1                # Flow table miss
-+    OVS_PACKET_CMD_ACTION = 2              # USERSPACE action
-+    OVS_PACKET_CMD_EXECUTE = 3             # Apply actions to packet
-+
-+    class ovs_packet_msg(ovs_dp_msg):
-+        nla_map = (
-+            ('OVS_PACKET_ATTR_UNSPEC', 'none'),
-+            ('OVS_PACKET_ATTR_PACKET', 'array(uint8)'),
-+            ('OVS_PACKET_ATTR_KEY', 'nested'),
-+            ('OVS_PACKET_ATTR_ACTIONS', 'nested'),
-+            ('OVS_PACKET_ATTR_USERDATA', 'nested'),
-+            ('OVS_PACKET_ATTR_EGRESS_TUN_KEY', 'nested'),
-+	    ('OVS_PACKET_ATTR_UNUSED1', 'none'),
-+	    ('OVS_PACKET_ATTR_UNUSED2', 'none'),
-+            ('OVS_PACKET_ATTR_PROBE', 'none'),
-+            ('OVS_PACKET_ATTR_MRU', 'uint16'),
-+            ('OVS_PACKET_ATTR_LEN', 'uint32'),
-+            ('OVS_PACKET_ATTR_HASH', 'uint64'),
-+        )
-+
-+    def __init__(self):
-+        GenericNetlinkSocket.__init__(self)
-+        print("Binding to packet family")
-+        self.bind(OVS_PACKET_FAMILY, OvsPacket.ovs_packet_msg)
-+        print("Port", self.epid)
-+
-+    def upcall_handler(self, up=None):
-+        print("listening on upcall packet handler:", self.epid)
-+        while True:
-+            try:
-+                msgs = self.get()
-+                for msg in msgs:
-+                    if not up:
-+                        continue
-+                    if msg["cmd"] == OvsPacket.OVS_PACKET_CMD_MISS:
-+                        up.miss(msg)
-+                    elif msg["cmd"] == OvsPacket.OVS_PACKET_CMD_ACTION:
-+                        up.action(msg)
-+                    elif msg["cmd"] == OvsPacket.OVS_PACKET_CMD_EXECUTE:
-+                        up.execute(msg)
-+                    else:
-+                        print("Unkonwn cmd: %d" % msg["cmd"])
-+            except NetlinkError as ne:
-+                raise ne
-+
-+
- class OvsDatapath(GenericNetlinkSocket):
+@@ -111,6 +111,7 @@ class OvsDatapath(GenericNetlinkSocket):
  
      OVS_DP_F_VPORT_PIDS = 1 << 1
-@@ -122,7 +171,7 @@ class OvsDatapath(GenericNetlinkSocket):
+     OVS_DP_F_DISPATCH_UPCALL_PER_CPU = 1 << 3
++    OVS_DP_F_EXCLUDE_UPCALL_FLOW_KEY = 1 << 4
+ 
+     class dp_cmd_msg(ovs_dp_msg):
+         """
+@@ -127,6 +128,8 @@ class OvsDatapath(GenericNetlinkSocket):
+             ("OVS_DP_ATTR_PAD", "none"),
+             ("OVS_DP_ATTR_MASKS_CACHE_SIZE", "uint32"),
+             ("OVS_DP_ATTR_PER_CPU_PIDS", "array(uint32)"),
++            ("OVS_DP_ATTR_IFINDEX", "uint32"),
++            ("OVS_DP_ATTR_EXCLUDE_CMDS", "uint32"),
+         )
+ 
+         class dpstats(nla):
+@@ -171,7 +174,8 @@ class OvsDatapath(GenericNetlinkSocket):
  
          return reply
  
--    def create(self, dpname, shouldUpcall=False, versionStr=None):
-+    def create(self, dpname, shouldUpcall=False, versionStr=None, p=OvsPacket()):
+-    def create(self, dpname, shouldUpcall=False, versionStr=None, p=OvsPacket()):
++    def create(self, dpname, shouldUpcall=False, versionStr=None, p=OvsPacket(),
++               exclude=[]):
          msg = OvsDatapath.dp_cmd_msg()
          msg["cmd"] = OVS_DP_CMD_NEW
          if versionStr is None:
-@@ -139,9 +188,19 @@ class OvsDatapath(GenericNetlinkSocket):
-         else:
-             dpfeatures = OvsDatapath.OVS_DP_F_VPORT_PIDS
- 
--        msg["attrs"].append(["OVS_DP_ATTR_USER_FEATURES", dpfeatures])
-         if not shouldUpcall:
-             msg["attrs"].append(["OVS_DP_ATTR_UPCALL_PID", [0]])
-+        else:
+@@ -200,6 +204,23 @@ class OvsDatapath(GenericNetlinkSocket):
+             for i in range(1, nproc):
+                 procarray += [int(p.epid)]
+             msg["attrs"].append(["OVS_DP_ATTR_UPCALL_PID", procarray])
++
++        excluded = 0
++        print("exclude", exclude)
++        if len(exclude) > 0:
++            for ex in exclude:
++                if ex == "miss":
++                    excluded |= 1 << OvsPacket.OVS_PACKET_CMD_MISS
++                elif ex == "action":
++                    excluded |= 1 << OvsPacket.OVS_PACKET_CMD_ACTION
++                elif ex == "execute":
++                    excluded |= 1 << OvsPacket.OVS_PACKET_CMD_EXECUTE
++                else:
++                    print("DP CREATE: Unknown type: '%s'" % ex)
++            msg["attrs"].append(["OVS_DP_ATTR_EXCLUDE_CMDS", excluded])
 +            if versionStr is None or versionStr.find(":") == -1:
-+                dpfeatures |= OvsDatapath.OVS_DP_F_DISPATCH_UPCALL_PER_CPU
-+                dpfeatures &= ~OvsDatapath.OVS_DP_F_VPORT_PIDS
++                dpfeatures |= OvsDatapath.OVS_DP_F_EXCLUDE_UPCALL_FLOW_KEY
 +
-+            nproc = multiprocessing.cpu_count()
-+            procarray = []
-+            for i in range(1, nproc):
-+                procarray += [int(p.epid)]
-+            msg["attrs"].append(["OVS_DP_ATTR_UPCALL_PID", procarray])
-+        msg["attrs"].append(["OVS_DP_ATTR_USER_FEATURES", dpfeatures])
+         msg["attrs"].append(["OVS_DP_ATTR_USER_FEATURES", dpfeatures])
  
          try:
-             reply = self.nlm_request(
-@@ -238,9 +297,10 @@ class OvsVport(GenericNetlinkSocket):
-             return OvsVport.OVS_VPORT_TYPE_GENEVE
-         raise ValueError("Unknown vport type: '%s'" % vport_type)
- 
--    def __init__(self):
-+    def __init__(self, packet=OvsPacket()):
-         GenericNetlinkSocket.__init__(self)
-         self.bind(OVS_VPORT_FAMILY, OvsVport.ovs_vport_msg)
-+        self.upcall_packet = packet
- 
-     def info(self, vport_name, dpifindex=0, portno=None):
-         msg = OvsVport.ovs_vport_msg()
-@@ -278,7 +338,36 @@ class OvsVport(GenericNetlinkSocket):
- 
-         msg["attrs"].append(["OVS_VPORT_ATTR_TYPE", port_type])
-         msg["attrs"].append(["OVS_VPORT_ATTR_NAME", vport_ifname])
--        msg["attrs"].append(["OVS_VPORT_ATTR_UPCALL_PID", [self.pid]])
-+        msg["attrs"].append(["OVS_VPORT_ATTR_UPCALL_PID",
-+                             [self.upcall_packet.epid]])
-+
-+        try:
-+            reply = self.nlm_request(
-+                msg, msg_type=self.prid, msg_flags=NLM_F_REQUEST | NLM_F_ACK
-+            )
-+            reply = reply[0]
-+        except NetlinkError as ne:
-+            if ne.code == errno.EEXIST:
-+                reply = None
-+            else:
-+                raise ne
-+        return reply
-+
-+    def reset_upcall(self, dpindex, vport_ifname, p=None):
-+        msg = OvsVport.ovs_vport_msg()
-+
-+        msg["cmd"] = OVS_VPORT_CMD_SET
-+        msg["version"] = OVS_DATAPATH_VERSION
-+        msg["reserved"] = 0
-+        msg["dpifindex"] = dpindex
-+        msg["attrs"].append(["OVS_VPORT_ATTR_NAME", vport_ifname])
-+
-+        if p == None:
-+            p = self.upcall_packet
-+        else:
-+            self.upcall_packet = p
-+
-+        msg["attrs"].append(["OVS_VPORT_ATTR_UPCALL_PID", [p.epid]])
- 
-         try:
-             reply = self.nlm_request(
-@@ -310,6 +399,9 @@ class OvsVport(GenericNetlinkSocket):
-                 raise ne
-         return reply
- 
-+    def upcall_handler(self, handler=None):
-+        self.upcall_packet.upcall_handler(handler)
-+
- 
- def macstr(mac):
-     outstr = ":".join(["%02X" % i for i in mac])
-@@ -1064,6 +1156,26 @@ class OvsFlow(GenericNetlinkSocket):
-             raise ne
-         return rep
- 
-+    def miss(self, packetmsg):
-+        seq = packetmsg["header"]["sequence_number"]
-+        keystr = "(none)"
-+        key_field = packetmsg.get_attr("OVS_PACKET_ATTR_KEY")
-+        if key_field is not None:
-+            keymsg = OvsFlow.ovs_flow_msg.nestedflow(data=key_field)
-+            keymsg.decode()
-+            keystr = keymsg.dpstr(None, True)
-+
-+        pktdata = packetmsg.get_attr("OVS_PACKET_ATTR_PACKET")
-+        pktpres = "yes" if pktdata is not None else "no"
-+
-+        print("MISS upcall[%d/%s]: %s" % (seq, pktpres, keystr), flush = True)
-+
-+    def execute(self, packetmsg):
-+        print("userspace execute command")
-+
-+    def action(self, packetmsg):
-+        print("userspace action command")
-+
- 
- def print_ovsdp_full(dp_lookup_rep, ifindex, ndb=NDB(), vpl=OvsVport()):
-     dp_name = dp_lookup_rep.get_attr("OVS_DP_ATTR_NAME")
-@@ -1141,6 +1253,12 @@ def main(argv):
-     addifcmd = subparsers.add_parser("add-if")
-     addifcmd.add_argument("dpname", help="Datapath Name")
-     addifcmd.add_argument("addif", help="Interface name for adding")
-+    addifcmd.add_argument(
-+        "-u",
-+        "--upcall",
-+        action="store_true",
-+        help="Leave open a reader for upcalls",
+@@ -1240,6 +1261,14 @@ def main(argv):
+         action="store_true",
+         help="Leave open a reader for upcalls",
+     )
++    adddpcmd.add_argument(
++        "-e",
++        "--exclude",
++        type=str,
++        default=[],
++        nargs="+",
++        help="Exclude flow key from upcall packet commands"
 +    )
-     addifcmd.add_argument(
-         "-t",
-         "--ptype",
-@@ -1162,8 +1280,9 @@ def main(argv):
-         if args.verbose > 1:
-             logging.basicConfig(level=logging.DEBUG)
- 
-+    ovspk = OvsPacket()
-     ovsdp = OvsDatapath()
--    ovsvp = OvsVport()
-+    ovsvp = OvsVport(ovspk)
-     ovsflow = OvsFlow()
-     ndb = NDB()
- 
-@@ -1186,11 +1305,13 @@ def main(argv):
+     adddpcmd.add_argument(
+         "-V",
+         "--versioning",
+@@ -1305,7 +1334,8 @@ def main(argv):
                  msg += ":'%s'" % args.showdp
              print(msg)
      elif hasattr(args, "adddp"):
--        rep = ovsdp.create(args.adddp, args.upcall, args.versioning)
-+        rep = ovsdp.create(args.adddp, args.upcall, args.versioning, ovspk)
+-        rep = ovsdp.create(args.adddp, args.upcall, args.versioning, ovspk)
++        rep = ovsdp.create(args.adddp, args.upcall, args.versioning, ovspk,
++                           args.exclude)
          if rep is None:
              print("DP '%s' already exists" % args.adddp)
          else:
-             print("DP '%s' added" % args.adddp)
-+        if args.upcall:
-+            ovspk.upcall_handler(ovsflow)
-     elif hasattr(args, "deldp"):
-         ovsdp.destroy(args.deldp)
-     elif hasattr(args, "addif"):
-@@ -1198,13 +1319,18 @@ def main(argv):
-         if rep is None:
-             print("DP '%s' not found." % args.dpname)
-             return 1
--        rep = ovsvp.attach(rep["dpifindex"], args.addif, args.ptype)
-+        dpindex = rep["dpifindex"]
-+        rep = ovsvp.attach(dpindex, args.addif, args.ptype)
-         msg = "vport '%s'" % args.addif
-         if rep and rep["error"] == 0:
-             msg += " added."
-         else:
-             msg += " failed to add."
-         print(msg)
-+        if args.upcall:
-+            if rep is None:
-+                rep = ovsvp.reset_upcall(dpindex, args.addif, ovspk)
-+            ovsvp.upcall_handler(ovsflow)
-     elif hasattr(args, "delif"):
-         rep = ovsdp.info(args.dpname, 0)
-         if rep is None:
 -- 
 2.34.3
 
