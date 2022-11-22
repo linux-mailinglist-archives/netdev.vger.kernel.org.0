@@ -2,149 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 043B26333EA
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 04:28:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF95633400
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 04:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiKVD2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 22:28:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46392 "EHLO
+        id S231569AbiKVDjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 22:39:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbiKVD2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 22:28:32 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E0725E87;
-        Mon, 21 Nov 2022 19:28:30 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NGV8032Ryz15Mlk;
-        Tue, 22 Nov 2022 11:28:00 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 11:28:28 +0800
-Message-ID: <ecc8b532-4e80-b7bd-3621-78cd55fd48fa@huawei.com>
-Date:   Tue, 22 Nov 2022 11:28:28 +0800
+        with ESMTP id S229499AbiKVDjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 22:39:11 -0500
+Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E51A327CD7
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 19:39:09 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-05 (Coremail) with SMTP id zQCowADX3+9lQnxjt1KwAA--.9972S2;
+        Tue, 22 Nov 2022 11:30:46 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, michal.simek@xilinx.com, harini.katakam@amd.com,
+        xuhaoyue1@hisilicon.com, huangjunxian6@hisilicon.com,
+        wangqing@vivo.com, christophe.jaillet@wanadoo.fr,
+        yangyingliang@huawei.com, chenhao288@hisilicon.com
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] NTB: ntb_tool: Add check for devm_kcalloc
+Date:   Tue, 22 Nov 2022 11:30:44 +0800
+Message-Id: <20221122033044.5720-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [syzbot] unregister_netdevice: waiting for DEV to become free (7)
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Dmitry Vyukov <dvyukov@google.com>
-CC:     syzbot <syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com>,
-        Leon Romanovsky <leon@kernel.org>, <chenzhongjin@huawei.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <syzkaller-bugs@googlegroups.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>
-References: <00000000000060c7e305edbd296a@google.com>
- <CACT4Y+a=HbyJE3A_SnKm3Be-kcQytxXXF89gZ_cN1gwoAW-Zgw@mail.gmail.com>
- <Y3wwOPmH1WoRj0Uo@ziepe.ca>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <Y3wwOPmH1WoRj0Uo@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-CM-TRANSID: zQCowADX3+9lQnxjt1KwAA--.9972S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Jw4DurWfJryxGFy8CFW8tFb_yoWfZFc_CF
+        y2qrsrGr45Cw45K3Z2yr4xZrWxA3WDuFZ7W3y8tan8urWDCw1xXry8urZxCa1fua48GFZr
+        G34jyry0yF1xujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
+        n2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+        AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCI
+        c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
+        AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbU
+        UUUUU==
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As the devm_kcalloc may return NULL pointer,
+it should be better to add check for the return
+value, as same as the others.
 
+Fixes: 7f46c8b3a552 ("NTB: ntb_tool: Add full multi-port NTB API support")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/ntb/test/ntb_tool.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-在 2022/11/22 10:13, Jason Gunthorpe 写道:
-> On Fri, Nov 18, 2022 at 02:28:53PM +0100, Dmitry Vyukov wrote:
->> On Fri, 18 Nov 2022 at 12:39, syzbot
->> <syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com> wrote:
->>>
->>> Hello,
->>>
->>> syzbot found the following issue on:
->>>
->>> HEAD commit:    9c8774e629a1 net: eql: Use kzalloc instead of kmalloc/memset
->>> git tree:       net-next
->>> console output: https://syzkaller.appspot.com/x/log.txt?x=17bf6cc8f00000
->>> kernel config:  https://syzkaller.appspot.com/x/.config?x=9eb259db6b1893cf
->>> dashboard link: https://syzkaller.appspot.com/bug?extid=5e70d01ee8985ae62a3b
->>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1136d592f00000
->>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1193ae64f00000
->>>
->>> Bisection is inconclusive: the issue happens on the oldest tested release.
->>>
->>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=167c33a2f00000
->>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=157c33a2f00000
->>> console output: https://syzkaller.appspot.com/x/log.txt?x=117c33a2f00000
->>>
->>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>> Reported-by: syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com
->>>
->>> iwpm_register_pid: Unable to send a nlmsg (client = 2)
->>> infiniband syj1: RDMA CMA: cma_listen_on_dev, error -98
->>> unregister_netdevice: waiting for vlan0 to become free. Usage count = 2
->>
->> +RDMA maintainers
->>
->> There are 4 reproducers and all contain:
->>
->> r0 = socket$nl_rdma(0x10, 0x3, 0x14)
->> sendmsg$RDMA_NLDEV_CMD_NEWLINK(...)
->>
->> Also the preceding print looks related (a bug in the error handling
->> path there?):
->>
->> infiniband syj1: RDMA CMA: cma_listen_on_dev, error -98
-> 
-> I'm pretty sure it is an rxe bug
-> 
-> ib_device_set_netdev() will hold the netdev until the caller destroys
-> the ib_device
-> 
-> rxe calls it during rxe_register_device() because the user asked for a
-> stacked ib_device on top of the netdev
-> 
-> Presumably rxe needs to have a notifier to also self destroy the rxe
-> device if the underlying net device is to be destroyed?
-> 
-> Can someone from rxe check into this?
+diff --git a/drivers/ntb/test/ntb_tool.c b/drivers/ntb/test/ntb_tool.c
+index 5ee0afa621a9..eeeb4b1c97d2 100644
+--- a/drivers/ntb/test/ntb_tool.c
++++ b/drivers/ntb/test/ntb_tool.c
+@@ -998,6 +998,8 @@ static int tool_init_mws(struct tool_ctx *tc)
+ 		tc->peers[pidx].outmws =
+ 			devm_kcalloc(&tc->ntb->dev, tc->peers[pidx].outmw_cnt,
+ 				   sizeof(*tc->peers[pidx].outmws), GFP_KERNEL);
++		if (tc->peers[pidx].outmws == NULL)
++			return -ENOMEM;
+ 
+ 		for (widx = 0; widx < tc->peers[pidx].outmw_cnt; widx++) {
+ 			tc->peers[pidx].outmws[widx].pidx = pidx;
+-- 
+2.25.1
 
-The following patch may fix the issue：
-
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -4049,6 +4049,9 @@ int rdma_listen(struct rdma_cm_id *id, int backlog)
-         return 0;
-  err:
-         id_priv->backlog = 0;
-+       if (id_priv->cma_dev)
-+               cma_release_dev(id_priv);
-+
-         /*
-          * All the failure paths that lead here will not allow the 
-req_handler's
-          * to have run.
-
-
-
-The causes are as follows:
-
-rdma_listen()
-   rdma_bind_addr()
-     cma_acquire_dev_by_src_ip()
-       cma_attach_to_dev()
-         _cma_attach_to_dev()
-	      cma_dev_get()
-		
-   cma_check_port()
-   <--The return value is not zero， goto err
-
-err：
-<-- The error handling here is missing the operation of cma_release_dev.
-
-> 
-> Jason
