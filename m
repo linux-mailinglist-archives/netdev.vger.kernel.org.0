@@ -2,129 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA15D633D61
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34246633D66
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:19:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbiKVNRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 08:17:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        id S233650AbiKVNTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 08:19:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233495AbiKVNRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:17:49 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B1E95AE
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 05:17:46 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id b185so14330938pfb.9
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 05:17:46 -0800 (PST)
+        with ESMTP id S233510AbiKVNTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:19:04 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1A013DC2
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 05:19:03 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 6so14050100pgm.6
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 05:19:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Px5PFcbBcn5kKKxwkSdASImn/3PTZhLKqsWw3Vdjrd0=;
-        b=pkZg3MALBkgNlhuxmzZN3kNu35Fe4iW2g/ojUC2OxXPVlBzOxvsSNsuuIMtoQQbITo
-         daP+yIqfhkBvEZro+AZ01RV66RFbYcLlfrgeO0/HRtwJLT4ZwM4V3RUMI5LAEaot+bsI
-         uf8NhZSrHdqyX5oC7vGlZYtGFOobRCvW704aAmSk3VLUy6pB2l94GyKe/uXo5KKY+oud
-         /bZrK0Qlum3iyJYyWxENMejzQwY5ICDUs3rOuu5m4OAXuLa7oWw9SvuwFBCW5k9Oh3KP
-         dwPliZyl02ZQ7rSGkTfrsrhCA2NSDaTBRjnjo7ekwHZ3dva4+lJ1jcsqMGJ4cXMPCjuy
-         jhqA==
+        bh=70ZAKTIUuA9YZcsgy083aOCzRGeKQXa1ItWrXhx5S5w=;
+        b=MIv7PhUCQTJ/fvr0WS6ibpUE7jF5LIR48clJkTlKU+JBtWtqmvc02LbfysiIiGy2+t
+         YGOCao37S+jQwJVWeYAASnvt2izKv1Y/eCqU9wxy9CMIKbhNheAdSgELhvwg1j6Ek/pd
+         qMx2Wb9CUctgbtzF8HXlg1N0iSW9Nk7xCRVqpxQNo489MU9Xv6RDLKsWTR/dI5Ljd/6v
+         /ZMl+aYS0shHtmR124OpU72+PvWQP+vPsNovoaPMUKLbytV6ibv6ecst1N70kRnmBL+9
+         apRglcWpnkYQgaZIRkLDYFgfrCTL0UUP5niz0OmtnF1SOfIIvE+YM9O5OdQ8YZqyE1UE
+         P48w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Px5PFcbBcn5kKKxwkSdASImn/3PTZhLKqsWw3Vdjrd0=;
-        b=WgrvRhWMGDrPjRpHi0SOE+UB0lyfzx+BrwyE8n5PnYSgOGAGt0TrpuxQALfm5fQwNJ
-         zIvFwd7mXUYJHYuSpTkFE5J83cYgt7tDnmtgKRmf1yJSiFBmWjOmygmfRkgm7tmh0fKl
-         vCZ5fO7DMCekExCABUfrkPnrq6Ib3kO1GIsO+kvR79gclOJ9qW3RoZCvq/FwaCHEZ5cK
-         Ry2HBYaA+etVBsxCbWsFOP5okrucFwIL4rGJfDzH5oTg5hzF36g0OcciPSSWuHnZfa8e
-         H9ugl276QAA8Y0++MWrhYTuRYusTwQdqdMTdIMvRKmgZjPrzYs9DKXyS6ItkqJVPeVJG
-         1oSw==
-X-Gm-Message-State: ANoB5pmUzpvcI+gtc4rVS7mh3IAWye+MCpSnGg1egQLV/jtoBUj9p9Rp
-        sW3FUQlorGEQmbbTPgtY106/Yene9AGuBQ==
-X-Google-Smtp-Source: AA0mqf6V/B5zSapMpHlFVtbuZGXiZ1CptoqfnNyOiDaIdhdaBxM1kAuQPg9elHW5MRCOxE9RXq/7vg==
-X-Received: by 2002:a05:6a00:2908:b0:56b:d738:9b with SMTP id cg8-20020a056a00290800b0056bd738009bmr4021107pfb.61.1669123065947;
-        Tue, 22 Nov 2022 05:17:45 -0800 (PST)
-Received: from ?IPV6:2400:4050:c360:8200:8ae8:3c4:c0da:7419? ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
-        by smtp.gmail.com with ESMTPSA id n10-20020a6563ca000000b0043a18cef977sm9123052pgv.13.2022.11.22.05.17.43
+        bh=70ZAKTIUuA9YZcsgy083aOCzRGeKQXa1ItWrXhx5S5w=;
+        b=eP1T32M7MlS1TMXVDq6xoH5V5uea0avXA1VaUVoKeBCBDO0dMPcJXDbElrlreKXhum
+         uu/5Amb+x+KbyVWjvENAdtFRxITAXfM/Be1zafe5SekqrYLoreyrlLfxTSDX4iz1A8PO
+         Pcc86txIvL4IS49qUg1ycdPk8vgKpfWtQDQlce+MfxOACZplBu4DCISRZf0ZRbEp21SZ
+         qYbega2JOlP23oIEarV36CouAmYwDzQm2uNu6otUSmttnHbMFlBwDD/CA76MdpTlGSGq
+         ADp4s0XfLPOalr/zDyT5ZLz8bRVC35ydj6Y3zGCmYOUW2KHOh2EVAEOq2giRGFAuPVmX
+         Bwjw==
+X-Gm-Message-State: ANoB5pkavkeZGQSlv/4+bVYOduoRILhcqJLmnCksbPxGaY8WOsr6sNF1
+        eQAgySh9rELlL845chqIyzC0tQ==
+X-Google-Smtp-Source: AA0mqf6no6RcjD96qeYFL2BP6tcfJGycPT1JQALf9uuds2j8FHqtS5pFRXH/ti+ZQhJ7JYGPuP82Ng==
+X-Received: by 2002:a65:4d43:0:b0:470:8e8a:e7fe with SMTP id j3-20020a654d43000000b004708e8ae7femr7561362pgt.215.1669123143085;
+        Tue, 22 Nov 2022 05:19:03 -0800 (PST)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id l14-20020a17090a49ce00b0020d9df9610bsm12110105pjm.19.2022.11.22.05.19.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 05:17:45 -0800 (PST)
-Message-ID: <be5617fe-d332-447a-b836-bec9a6c6d42d@daynix.com>
-Date:   Tue, 22 Nov 2022 22:17:41 +0900
+        Tue, 22 Nov 2022 05:19:02 -0800 (PST)
+Message-ID: <06973f73-16c9-1e21-3416-bc624b8675e4@kernel.dk>
+Date:   Tue, 22 Nov 2022 06:19:01 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH] igb: Allocate MSI-X vector when testing
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v5 2/3] io_uring: add api to set / get napi configuration.
 Content-Language: en-US
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>
-References: <20221122121312.57741-1-akihiko.odaki@daynix.com>
- <Y3y9dbBUYi5j3Qre@boxer>
-From:   Akihiko Odaki <akihiko.odaki@daynix.com>
-In-Reply-To: <Y3y9dbBUYi5j3Qre@boxer>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Stefan Roesch <shr@devkernel.io>,
+        Facebook Kernel Team <kernel-team@fb.com>,
+        Olivier Langlois <olivier@trillion01.com>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20221121191437.996297-1-shr@devkernel.io>
+ <20221121191437.996297-3-shr@devkernel.io>
+ <35168b29-a81c-e1b2-7ec9-b5f0b896ee74@kernel.dk>
+ <0bb0734c-5c3e-3f2c-1163-a9bfa720bf26@gnuweeb.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <0bb0734c-5c3e-3f2c-1163-a9bfa720bf26@gnuweeb.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/11/22 21:15, Maciej Fijalkowski wrote:
-> On Tue, Nov 22, 2022 at 09:13:12PM +0900, Akihiko Odaki wrote:
->> Allocate MSI-X vector when testing interrupts, otherwise the tests will
->> not work.
-> 
-> Hi,
-> 
-> can you say a bit more about why current code was broken? And also what is
-> the current result of that ethtool test?
-> 
-> Also this is a fix, please provide Fixes: tag and route it to net tree.
-
-Hi, I have just sent v2, please check it out.
-
-Regarding Fixes: tag, I couldn't tell when the bug appeared. The 
-modified function, igb_intr_test() lacked the interrupt allocation code 
-from the start. My guess is that some code in igb_reset() or after the 
-function had code to allocate interrupts in the past and later removed. 
-But I couldn't find such code.
-
-Regards,
-Akihiko Odaki
-
-> 
+On 11/22/22 6:13 AM, Ammar Faizi wrote:
+> On 11/22/22 2:46 AM, Jens Axboe wrote:
+>> On 11/21/22 12:14?PM, Stefan Roesch wrote:
+>>> +static int io_unregister_napi(struct io_ring_ctx *ctx, void __user *arg)
+>>> +{
+>>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>>> +    const struct io_uring_napi curr = {
+>>> +        .busy_poll_to = ctx->napi_busy_poll_to,
+>>> +    };
+>>> +
+>>> +    if (copy_to_user(arg, &curr, sizeof(curr)))
+>>> +        return -EFAULT;
+>>> +
+>>> +    WRITE_ONCE(ctx->napi_busy_poll_to, 0);
+>>> +    return 0;
+>>> +#else
+>>> +    return -EINVAL;
+>>> +#endif
+>>> +}
 >>
->> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
->> ---
->>   drivers/net/ethernet/intel/igb/igb_ethtool.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> index e5f3e7680dc6..ff911af16a4b 100644
->> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> @@ -1413,6 +1413,8 @@ static int igb_intr_test(struct igb_adapter *adapter, u64 *data)
->>   			*data = 1;
->>   			return -1;
->>   		}
->> +		wr32(E1000_IVAR_MISC, E1000_IVAR_VALID << 8);
->> +		wr32(E1000_EIMS, BIT(0));
->>   	} else if (adapter->flags & IGB_FLAG_HAS_MSI) {
->>   		shared_int = false;
->>   		if (request_irq(irq,
->> -- 
->> 2.38.1
->>
+>> Should probably check resv/pad here as well, maybe even the
+>> 'busy_poll_to' being zero?
+> 
+> Jens, this function doesn't read from __user memory, it writes to
+> __user memory.
+> 
+> @curr.resv and @curr.pad are on the kernel's stack. Both are already
+> implicitly initialized to zero by the partial struct initializer.
+
+Oh yes, guess I totally missed that we don't care about the value
+at all (just zero the target) and copy back the old values.
+
+-- 
+Jens Axboe
+
+
