@@ -2,84 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B92C1634959
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:35:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5264A63496D
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:36:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234791AbiKVVfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 16:35:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
+        id S235121AbiKVVgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:36:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232572AbiKVVfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:35:14 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13336BEAFC;
-        Tue, 22 Nov 2022 13:35:13 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id e13so22426849edj.7;
-        Tue, 22 Nov 2022 13:35:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=cWvFlRLFU7LxrYn/RLpYUbjQ3plVi0tJneW/bVBsyxw=;
-        b=LLRKmHZJ1FLrE+Q7xD9f28XFkVSJaJpFTSHzIMu/jCX2IqoRBzKgqByPmZmfJniTCV
-         mYUoY0OKqq3VxFluJK6DATs4r3DEwG5lUM54yi+u5aLVdoyUl2mbSTAOjKFjazkmcoQj
-         iGyM386wFl1/DXAFiiOsgrWk4cq3hJHcv5vyYk4caEbrQC/4rQ29QCT15ilDbcYAUdSZ
-         gzZ3fySLeXQq3UrTilnyVf2SMc+Jsr6cfSJUKpaveYbZKzDGr599z6nCiZ1wfCOlgmFb
-         r/mo/V19UFi206+KpcyWKWEBdpq9miwfWRGfC2p//E7+1Fuofzb+ODezJCWTciDMgT4Z
-         /Hvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cWvFlRLFU7LxrYn/RLpYUbjQ3plVi0tJneW/bVBsyxw=;
-        b=jmeJM+h0pF8Ckk0t+MZKWNDYh3A/QaIsXAaKvDvIEdgKur2KOvaDjCJ2npHlVxgNYF
-         SmbzSqUETAua+8ecTz0nTQGHG/tk69qkX1IKnOhGDG/xJ7hrzjiuJShDNUNzn1f8n6+t
-         z9xbIqjtQmDcjLvadD8Kktq7e7JfYp82gLWQ+wdQ8yGwb+p1GuSglIcVSzowzmkS4Ysx
-         Ndu/yHImb8R266aSBUU3P/Hsg918FfR3EhJbUyRET9nvJ4ZU25mFmXGNuily5RpL1wdk
-         d75axnYKbuASU4LrzESVbOz4wGf2M12lIgj4bz6pw9A3EArbgmZSPuXv/YG3rtTMdluK
-         63xQ==
-X-Gm-Message-State: ANoB5pl2e9HkF5Oxjp9pf5wZ/6hPlhv/yHi7INEf/Y2lnpEFifsJtqp+
-        MiZzkCxdh3RFW9TggBM2PuoIh2Y45aZnVWJFrkilsXyR
-X-Google-Smtp-Source: AA0mqf798oCyCTmC7/hNZb1PoaevfH2dXyc5dL93XgeOtgwyFtilBdL3o+96iXAGdWGth+nYeYqk8nGIi0/iOnHrJvY=
-X-Received: by 2002:a05:6402:5289:b0:462:70ee:fdb8 with SMTP id
- en9-20020a056402528900b0046270eefdb8mr23224297edb.66.1669152911428; Tue, 22
- Nov 2022 13:35:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20221123082409.51f63598@canb.auug.org.au>
-In-Reply-To: <20221123082409.51f63598@canb.auug.org.au>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 22 Nov 2022 13:35:00 -0800
-Message-ID: <CAADnVQLEeeu5qyjqGFfQLEed8b2_LwZccyAkPKidyO4Yb+yPBw@mail.gmail.com>
-Subject: Re: linux-next: Signed-off-by missing for commit in the bpf-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
+        with ESMTP id S235109AbiKVVgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:36:03 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30CC6057;
+        Tue, 22 Nov 2022 13:36:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=REnOO6pdZKaSYowgojxsI/6VyW5I6orQgYoQL3HrlV0=;
+        t=1669152962; x=1670362562; b=MiDXpUhnbIbyBE9t9sy2tBOfAiynpq4c4NljKBx/4xbx8dm
+        FE1PANNZPhQsL6ss7+CA5dsbuPRwGXB0EZQ/BwHZfNPIVGjyNZW85j41I8nYeyjY3dF1D4QTZgKvU
+        Ii5N4oFDGWVlVgwcbiL0fHRgzi2C6KE9rBUkD0T8+g76JgHuGSh/rpSenaIHOVPsojJzhHCpvkQBf
+        e5i5vzPHPVTXTI56Nwax7AHc7RT7/4Zg3lD5Y+1bwU7y2/o2tTV/vk7EN/BGJMvt0t8IWAvJaWcvM
+        nVw6ZYgSOdLOY0Nlx5lV0UfpMk3Ivq9ckru9JwQyfl2u+lmcJUUZApBV/4lqlzuA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oxavq-006Twm-0z;
+        Tue, 22 Nov 2022 22:35:54 +0100
+Message-ID: <379c3360c8e675532e48d7f2e6cc99f4f98c0fbe.camel@sipsolutions.net>
+Subject: Re: Variables being modified but not used in
+ net/wireless/lib80211_crypt_tkip.c
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     "Colin King (gmail)" <colin.i.king@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Tue, 22 Nov 2022 22:35:53 +0100
+In-Reply-To: <aeec15d5-6f7a-2c4f-0f90-72c52d082ce8@gmail.com>
+References: <aeec15d5-6f7a-2c4f-0f90-72c52d082ce8@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 1:24 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> Commit
->
->   6caf7a275b42 ("Revert "selftests/bpf: Temporarily disable linked list tests"")
->
-> is missing a Signed-off-by from its author and committer.
->
-> Reverts are commits too.
+Hi,
 
-Ahh. Fixed and force pushed.
+Sorry it took me so long to get to this ...
+
+This is ancient code, FWIW, and likely almost never used :-)
+
+> I was reviewing some clang scan build static analysis results and found=
+=20
+> an interesting warning:
+>=20
+> Source: net/wireless/lib80211_crypt_tkip.c
+>=20
+> net/wireless/lib80211_crypt_tkip.c:667:7: warning: variable 'iv32' set=
+=20
+> but not used [-Wunused-but-set-variable]
+>                  u32 iv32 =3D tkey->tx_iv32;
+>=20
+> The variables iv32 and iv16 are being decremented, but are not=20
+> referenced after that. The seq[] array is being updated with the=20
+> pre-decremented values. Is that correct?
+>=20
+>          if (seq) {
+>                  /* Return the sequence number of the last transmitted=
+=20
+> frame. */
+>                  u16 iv16 =3D tkey->tx_iv16;
+>                  u32 iv32 =3D tkey->tx_iv32;
+>                  if (iv16 =3D=3D 0)
+>                          iv32--;
+>                  iv16--;
+>                  seq[0] =3D tkey->tx_iv16;
+>                  seq[1] =3D tkey->tx_iv16 >> 8;
+>                  seq[2] =3D tkey->tx_iv32;
+>                  seq[3] =3D tkey->tx_iv32 >> 8;
+>                  seq[4] =3D tkey->tx_iv32 >> 16;
+>                  seq[5] =3D tkey->tx_iv32 >> 24;
+>          }
+>=20
+
+By the comment, that's not correct, and should use iv16/iv32 in the
+seq[] assignments, since lib80211_tkip_hdr() increments tx_iv16/32
+*after* setting it in the frame.
+
+That said only some really ancient ioctls can even reach this
+(prism2_ioctl_giwencodeext, prism2_ioctl_get_encryption) and then it
+will be used by hostapd only in AP mode (also likely less used than
+client mode) to send the seqno of the GTK on GTK rekeying to the client,
+and then the client will (hopefully) use it to drop replays ...
+
+So looks like worst case the client would drop a single frame because of
+this, unless of course that frame was anyway already transmitted while
+the whole rekeying was in progress...
+
+johannes
