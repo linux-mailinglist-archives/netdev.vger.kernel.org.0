@@ -2,299 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C14BB633FB6
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:01:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8580A633E96
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:13:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbiKVPB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 10:01:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
+        id S232976AbiKVOND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:13:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234142AbiKVPAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:00:54 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70905E9F0;
-        Tue, 22 Nov 2022 07:00:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669129202; x=1700665202;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aWK/w3O8H43VBVicVuiR2cJT/wFQ8uPk13PWRF6aQ9M=;
-  b=hIJdQrq1R2B9DscxmNIeifmxPza7kkMU//JrCUkd+SCjlN+EOeQ2wpA8
-   2hmd5PLmHGLDNjfU7cWdm0qKV3IHIxrxW5xAxEyc3nO5XYr3RfeOhV4Ih
-   kD0MHP7o7I5dS1QtMbhWQxbPKfLkrvraUwtoGqDgx1ubu5n2Kpj+j9qXz
-   68Wszzr4kJmEp2jThtxtYSQKVo71z1/+AmsGCXbf3xHGV2qolcH4WW9iR
-   kNYY0AsFJiOCAo49F5SRWEw6rwSxXyOxsvN3Uyeub8BvYE6cg26w9LDm3
-   1oji+4ODWkxmPyLtB0YC8M0N5AVUoXXsA7nossI+2BmVAcTPOVBIOSn7V
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="200931761"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 08:00:02 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 22 Nov 2022 07:59:57 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 22 Nov 2022 07:59:53 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Casper Andersson" <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next 4/4] net: microchip: sparx5: Add VCAP filter keys KUNIT test
-Date:   Tue, 22 Nov 2022 15:59:38 +0100
-Message-ID: <20221122145938.1775954-5-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221122145938.1775954-1-steen.hegelund@microchip.com>
-References: <20221122145938.1775954-1-steen.hegelund@microchip.com>
+        with ESMTP id S232572AbiKVONC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:13:02 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B4D18B2A;
+        Tue, 22 Nov 2022 06:13:01 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NGmRd5h6rz15Mhp;
+        Tue, 22 Nov 2022 22:12:29 +0800 (CST)
+Received: from huawei.com (10.67.175.21) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 22 Nov
+ 2022 22:12:58 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <lizetao1@huawei.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>,
+        <jasowang@redhat.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <mst@redhat.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <rusty@rustcorp.com.au>, <cornelia.huck@de.ibm.com>,
+        <virtualization@lists.linux-foundation.org>
+Subject: [PATCH v2] virtio_net: Fix probe failed when modprobe virtio_net
+Date:   Tue, 22 Nov 2022 23:00:46 +0800
+Message-ID: <20221122150046.3910638-1-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221121132935.2032325-1-lizetao1@huawei.com>
+References: <20221121132935.2032325-1-lizetao1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.175.21]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests the filtering of keys, either dropping unsupported keys or
-dropping keys specified in a list.
+When doing the following test steps, an error was found:
+  step 1: modprobe virtio_net succeeded
+    # modprobe virtio_net        <-- OK
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+  step 2: fault injection in register_netdevice()
+    # modprobe -r virtio_net     <-- OK
+    # ...
+      FAULT_INJECTION: forcing a failure.
+      name failslab, interval 1, probability 0, space 0, times 0
+      CPU: 0 PID: 3521 Comm: modprobe
+      Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+      Call Trace:
+       <TASK>
+       ...
+       should_failslab+0xa/0x20
+       ...
+       dev_set_name+0xc0/0x100
+       netdev_register_kobject+0xc2/0x340
+       register_netdevice+0xbb9/0x1320
+       virtnet_probe+0x1d72/0x2658 [virtio_net]
+       ...
+       </TASK>
+      virtio_net: probe of virtio0 failed with error -22
+
+  step 3: modprobe virtio_net failed
+    # modprobe virtio_net        <-- failed
+      virtio_net: probe of virtio0 failed with error -2
+
+The root cause of the problem is that the queues are not
+disable on the error handling path when register_netdevice()
+fails in virtnet_probe(), resulting in an error "-ENOENT"
+returned in the next modprobe call in setup_vq().
+
+virtio_pci_modern_device uses virtqueues to send or
+receive message, and "queue_enable" records whether the
+queues are available. In vp_modern_find_vqs(), all queues
+will be selected and activated, but once queues are enabled
+there is no way to go back except reset.
+
+Fix it by reset virtio device on error handling path. This
+makes error handling follow the same order as normal device
+cleanup in virtnet_remove() which does: unregister, destroy
+failover, then reset. And that flow is better tested than
+error handling so we can be reasonably sure it works well.
+
+Fixes: 024655555021 ("virtio_net: fix use after free on allocation failure")
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- .../ethernet/microchip/vcap/vcap_api_kunit.c  | 194 ++++++++++++++++++
- 1 file changed, 194 insertions(+)
+v1 was posted at: https://lore.kernel.org/all/20221121132935.2032325-1-lizetao1@huawei.com/
+v1 -> v2: modify commit log and fixes tag
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index 875068e484c9..76a31215ebfb 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1954,6 +1954,198 @@ static void vcap_api_next_lookup_advanced_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, true, ret);
- }
+ drivers/net/virtio_net.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 7106932c6f88..86e52454b5b5 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3949,12 +3949,11 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	return 0;
  
-+static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+		.data.keyset = VCAP_KFS_MAC_ETYPE,
-+	};
-+	enum vcap_key_field keylist[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_ARP_ADDR_SPACE_OK_IS,  /* arp keys are not in keyset */
-+		VCAP_KF_ARP_PROTO_SPACE_OK_IS,
-+		VCAP_KF_ARP_LEN_OK_IS,
-+		VCAP_KF_ARP_TGT_MATCH_IS,
-+		VCAP_KF_ARP_SENDER_MATCH_IS,
-+		VCAP_KF_ARP_OPCODE_UNKNOWN_IS,
-+		VCAP_KF_ARP_OPCODE,
-+		VCAP_KF_8021Q_DEI_CLS,
-+		VCAP_KF_8021Q_PCP_CLS,
-+		VCAP_KF_8021Q_VID_CLS,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+	};
-+	enum vcap_key_field expected[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_8021Q_DEI_CLS,
-+		VCAP_KF_8021Q_PCP_CLS,
-+		VCAP_KF_8021Q_VID_CLS,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+	};
-+	struct vcap_client_keyfield *ckf, *next;
-+	bool ret;
-+	int idx;
-+
-+	/* Add all keys to the rule */
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
-+		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
-+		if (ckf) {
-+			ckf->ctrl.key = keylist[idx];
-+			list_add_tail(&ckf->ctrl.list, &ri.data.keyfields);
-+		}
-+	}
-+
-+	KUNIT_EXPECT_EQ(test, 14, ARRAY_SIZE(keylist));
-+
-+	/* Drop unsupported keys from the rule */
-+	ret = vcap_filter_rule_keys(&ri.data, NULL, 0, true);
-+
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* Check remaining keys in the rule */
-+	idx = 0;
-+	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
-+		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
-+		list_del(&ckf->ctrl.list);
-+		kfree(ckf);
-+		++idx;
-+	}
-+	KUNIT_EXPECT_EQ(test, 7, idx);
-+}
-+
-+static void vcap_api_filter_keylist_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS0,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+		.data.keyset = VCAP_KFS_NORMAL_7TUPLE,
-+	};
-+	enum vcap_key_field keylist[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_LOOKUP_GEN_IDX_SEL,
-+		VCAP_KF_LOOKUP_GEN_IDX,
-+		VCAP_KF_IF_IGR_PORT_MASK_SEL,
-+		VCAP_KF_IF_IGR_PORT_MASK,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+		VCAP_KF_8021Q_VLAN_TAGS,
-+		VCAP_KF_8021Q_TPID0,
-+		VCAP_KF_8021Q_PCP0,
-+		VCAP_KF_8021Q_DEI0,
-+		VCAP_KF_8021Q_VID0,
-+		VCAP_KF_8021Q_TPID1,
-+		VCAP_KF_8021Q_PCP1,
-+		VCAP_KF_8021Q_DEI1,
-+		VCAP_KF_8021Q_VID1,
-+		VCAP_KF_8021Q_TPID2,
-+		VCAP_KF_8021Q_PCP2,
-+		VCAP_KF_8021Q_DEI2,
-+		VCAP_KF_8021Q_VID2,
-+		VCAP_KF_L2_DMAC,
-+		VCAP_KF_L2_SMAC,
-+		VCAP_KF_IP_MC_IS,
-+		VCAP_KF_ETYPE_LEN_IS,
-+		VCAP_KF_ETYPE,
-+		VCAP_KF_IP_SNAP_IS,
-+		VCAP_KF_IP4_IS,
-+		VCAP_KF_L3_FRAGMENT_TYPE,
-+		VCAP_KF_L3_FRAG_INVLD_L4_LEN,
-+		VCAP_KF_L3_OPTIONS_IS,
-+		VCAP_KF_L3_DSCP,
-+		VCAP_KF_L3_IP6_DIP,
-+		VCAP_KF_L3_IP6_SIP,
-+		VCAP_KF_TCP_UDP_IS,
-+		VCAP_KF_TCP_IS,
-+		VCAP_KF_L4_SPORT,
-+		VCAP_KF_L4_RNG,
-+	};
-+	enum vcap_key_field droplist[] = {
-+		VCAP_KF_8021Q_TPID1,
-+		VCAP_KF_8021Q_PCP1,
-+		VCAP_KF_8021Q_DEI1,
-+		VCAP_KF_8021Q_VID1,
-+		VCAP_KF_8021Q_TPID2,
-+		VCAP_KF_8021Q_PCP2,
-+		VCAP_KF_8021Q_DEI2,
-+		VCAP_KF_8021Q_VID2,
-+		VCAP_KF_L3_IP6_DIP,
-+		VCAP_KF_L3_IP6_SIP,
-+		VCAP_KF_L4_SPORT,
-+		VCAP_KF_L4_RNG,
-+	};
-+	enum vcap_key_field expected[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_LOOKUP_GEN_IDX_SEL,
-+		VCAP_KF_LOOKUP_GEN_IDX,
-+		VCAP_KF_IF_IGR_PORT_MASK_SEL,
-+		VCAP_KF_IF_IGR_PORT_MASK,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+		VCAP_KF_8021Q_VLAN_TAGS,
-+		VCAP_KF_8021Q_TPID0,
-+		VCAP_KF_8021Q_PCP0,
-+		VCAP_KF_8021Q_DEI0,
-+		VCAP_KF_8021Q_VID0,
-+		VCAP_KF_L2_DMAC,
-+		VCAP_KF_L2_SMAC,
-+		VCAP_KF_IP_MC_IS,
-+		VCAP_KF_ETYPE_LEN_IS,
-+		VCAP_KF_ETYPE,
-+		VCAP_KF_IP_SNAP_IS,
-+		VCAP_KF_IP4_IS,
-+		VCAP_KF_L3_FRAGMENT_TYPE,
-+		VCAP_KF_L3_FRAG_INVLD_L4_LEN,
-+		VCAP_KF_L3_OPTIONS_IS,
-+		VCAP_KF_L3_DSCP,
-+		VCAP_KF_TCP_UDP_IS,
-+		VCAP_KF_TCP_IS,
-+	};
-+	struct vcap_client_keyfield *ckf, *next;
-+	bool ret;
-+	int idx;
-+
-+	/* Add all keys to the rule */
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
-+		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
-+		if (ckf) {
-+			ckf->ctrl.key = keylist[idx];
-+			list_add_tail(&ckf->ctrl.list, &ri.data.keyfields);
-+		}
-+	}
-+
-+	KUNIT_EXPECT_EQ(test, 38, ARRAY_SIZE(keylist));
-+
-+	/* Drop listed keys from the rule */
-+	ret = vcap_filter_rule_keys(&ri.data, droplist, ARRAY_SIZE(droplist),
-+				    false);
-+
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* Check remaining keys in the rule */
-+	idx = 0;
-+	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
-+		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
-+		list_del(&ckf->ctrl.list);
-+		kfree(ckf);
-+		++idx;
-+	}
-+	KUNIT_EXPECT_EQ(test, 26, idx);
-+}
-+
- static struct kunit_suite vcap_api_rule_remove_test_suite = {
- 	.name = "VCAP_API_Rule_Remove_Testsuite",
- 	.test_cases = vcap_api_rule_remove_test_cases,
-@@ -1984,6 +2176,8 @@ static struct kunit_suite vcap_api_rule_counter_test_suite = {
- static struct kunit_case vcap_api_support_test_cases[] = {
- 	KUNIT_CASE(vcap_api_next_lookup_basic_test),
- 	KUNIT_CASE(vcap_api_next_lookup_advanced_test),
-+	KUNIT_CASE(vcap_api_filter_unsupported_keys_test),
-+	KUNIT_CASE(vcap_api_filter_keylist_test),
- 	{}
- };
- 
+ free_unregister_netdev:
+-	virtio_reset_device(vdev);
+-
+ 	unregister_netdev(dev);
+ free_failover:
+ 	net_failover_destroy(vi->failover);
+ free_vqs:
++	virtio_reset_device(vdev);
+ 	cancel_delayed_work_sync(&vi->refill);
+ 	free_receive_page_frags(vi);
+ 	virtnet_del_vqs(vi);
 -- 
-2.38.1
+2.25.1
 
