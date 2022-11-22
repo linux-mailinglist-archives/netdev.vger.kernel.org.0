@@ -2,205 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB78F6348EF
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:10:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B51F06348EB
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232626AbiKVVJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 16:09:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
+        id S234309AbiKVVGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:06:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiKVVJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:09:51 -0500
-Received: from mx0b-003ede02.pphosted.com (mx0b-003ede02.pphosted.com [205.220.181.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFE57C699
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 13:09:50 -0800 (PST)
-Received: from pps.filterd (m0286620.ppops.net [127.0.0.1])
-        by mx0b-003ede02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AMI4S6E024085
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 12:52:06 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=getcruise.com; h=mime-version :
- references : in-reply-to : from : date : message-id : subject : to : cc :
- content-type : content-transfer-encoding; s=ppemail;
- bh=ioMhQlwG34p+m8/pjImhoC+o75N/VcRHDY3I8VsdufU=;
- b=aT1O+ng5S5MEJolDHXbK+L+nSGmJu/iyt9lQWY2RRpKumDyU9h/LApHNIbnvHVrlw33K
- Xk/BC2fiijxe6FwvBIECYG5admKmWXTTZS+XmuG5MygwaK33Zu1tTfglgLTB0DW/iH/g
- O9B1R4gllazp3OoUfviC40QYBAmktY3Odos7dwb7YapEf2YHZr2m5v2/Lp3dtQjmpWO2
- vCxk8/o7Wa551BFEYTaB6NpR6vqAoSbuvn0KOR7LL2o8nOZReMnQY2Zexl+Y0J6viTgS
- 0M5ihXi29YyC7hW9sWTsmjXJ3kDyGttOihNg9Rxkjw33FplMl6xiYO9RgSnstQev0BTq sA== 
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
-        by mx0b-003ede02.pphosted.com (PPS) with ESMTPS id 3m13cr0711-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 12:52:06 -0800
-Received: by mail-ej1-f71.google.com with SMTP id qw20-20020a1709066a1400b007af13652c92so8955676ejc.20
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 12:52:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=getcruise.com; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ioMhQlwG34p+m8/pjImhoC+o75N/VcRHDY3I8VsdufU=;
-        b=SprEy11qQ+WB7Wzj2sjVw7PJzFJyhpOoaepBuqFSsAgwGDsCOvO/oDY7LJhsu6pPrL
-         0XkUkiCJmDoI/2EIdtvfTdgAjkmRkz6HsLs7Gfq745MkZlKAF/rGBnrq5dPRjjbUx3JQ
-         TuMGy6jskVQGF9KYKomGkQetAc+A8F7o8dZm5Y/fXCh52UM43C27jTVMaL8Jqk0wtRWt
-         5NF6HW8d0XP9J7IBYLZ1zQJB3QNSAhxmIMbEz2s0tby+lj7M2RiGwS5gsEZJeZkfV6GZ
-         h9vq0haK6RfFKNDswjHiNSLtYgKh7lOY6tMK5T5LkoUhZsUEWcckhx0DEB+LaKH7D1Y3
-         rDwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ioMhQlwG34p+m8/pjImhoC+o75N/VcRHDY3I8VsdufU=;
-        b=XyCFN/6dhXHGsD8hulscytBHrOajuz/uUNZJumXrQYzIGZXAbwDlbdaF2K7E5AZG39
-         yrEf5nyqJtAbzLOsecbAhZTHx5oreSu65ov2TzhCe/8GTLUuUvKKdjcczNVoMM/6z+Ys
-         FgH9izutQIYDqfUEd1RH82j/jCYGsgLntziREbTpuJobEfbJ7e/QlEk4+R0OW1NXmhuL
-         jQmpD8bfZaoGCfK0WRvtPlAwvq7nvX3tH0Ta0/ZSLqr0k0p1UeALxsoEie7jfSa9Hqb4
-         rYU5K6JTw/Cpro9g0UVKWdU2ll2oX0Cejc//qUAeTGuDlE+ExFQZmc82ait5h58o/71A
-         4uew==
-X-Gm-Message-State: ANoB5plDZ8VrzkNQQKFcT8u9/3G92WzpJy7FhuAh6L7frV+74U5oAOCH
-        qMiH+4lL5TQwKRtSmqw8wJ165NC7a0Lqd7hoLL4YemzUHWPUiPP48YY8bozA8CuNNGvkecUPeXR
-        IFhT1XcIQyn8tCW486ui5vPdHaIVx9gyz
-X-Received: by 2002:a17:906:1495:b0:7ad:d250:b904 with SMTP id x21-20020a170906149500b007add250b904mr5109720ejc.633.1669150324824;
-        Tue, 22 Nov 2022 12:52:04 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf63BonXiTXZTfcVBNbvjCPw2Q7YIDX2PtDjlxec7D4vJj2egSwdexvtrdrItvNuBIU/IyTrEAmoKJ1anxru07A=
-X-Received: by 2002:a17:906:1495:b0:7ad:d250:b904 with SMTP id
- x21-20020a170906149500b007add250b904mr5109703ejc.633.1669150324508; Tue, 22
- Nov 2022 12:52:04 -0800 (PST)
+        with ESMTP id S234076AbiKVVGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:06:44 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154657C00E
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 13:06:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669151203; x=1700687203;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=iLD5FzlMEa7TBzvvk8fVTVADjSckDxydumzFyajFNy4=;
+  b=KaCNLH6LSvDLUxoaJ/y1hoyWcA9eYEPgtSNnLhBT5TR3WuTNYh4DHA6d
+   vsijzySJfZ3I0Qnmh/MkO8xSsp8rUNvCl/78ICvobPzjyeWPowcCO1ovp
+   g+qNDmLSg8+qELkjlFVhnCkAHdsODZ3BaJHFqvN0Tm9IqEX1tmkyM9sK2
+   mUxO0IhRtl5wRudkT47iRsvhfPKg2p7UmoDe6FpPD6jveA/6NyWlQtznR
+   RnUNg6jHEgYxvYROvUsKt/+dzl9AvuSR9Sd4LXSKN3h2gF2x5SoE+gjyS
+   xp2rPeaDyO/1GnrGjoen2CAEqZx1mJXRSt7XA/1p6lXmbnmlQD0868qUX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="378172866"
+X-IronPort-AV: E=Sophos;i="5.96,185,1665471600"; 
+   d="scan'208";a="378172866"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 13:06:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="783981740"
+X-IronPort-AV: E=Sophos;i="5.96,185,1665471600"; 
+   d="scan'208";a="783981740"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga001.fm.intel.com with ESMTP; 22 Nov 2022 13:06:42 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 22 Nov 2022 13:06:41 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 22 Nov 2022 13:06:41 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 22 Nov 2022 13:06:41 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 22 Nov 2022 13:06:15 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZxlRf5ZoQltzdL/8astMcoUfF07BuhrJSi5P6iLkJssxeyUqG1HLw/EcbiinRnuU/F6Wm5r+8/OIe30hXPl8L+ShWaedVMW3jGTa5W+n2RO5geshh0BgbpUVIDujOXfGTtdSqyekLdXVeGGz4mJRsN/BMc726RBrPhjOY3AeU/JHiRz94U5/xNIGY8T/xCTHJTmCjOJLceIOCg10/Z7xW4lubgtDK7yOZ7k8gcbnvFn284bUDwsILmlbrb8joeUGOVmgIC9W+Kuk8UDLBeOha+bCbninVcwvsRTGGRz69zTBU3VzteKr4qgxcxojXX/MbhEcmHZz4K4J0f91mWryuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oJnh+AwqmRkxMyGr/pl79sNuFyhF4gCLg0Pn02gMj94=;
+ b=lRdZVcAhjmoeUI6CflK2ARPBHBUEqa71FyVyEPYvVFJGVzZ7uzkYrGwnHQuYky6NPMMzlf87e2AcPcSSni+ZRro8pqU7dGIaI9FgrIK60nBASWef44/BWBgwNEHD5yU4h5slldy+OS8Cjo+dBIF1T6ySzHbjD+58SPLaVIXpA5nYH4+iEbID+jbqe3CVXgwSIGC2jrE+6HqdIqEczZESfetNw1kc3/F29Kj4fs65DpyBo5kpel1Fg94bomVnZPTnL/sPbuQn2+K5CCN5D+s6dpEQwc9aiHySLEtJBBp7VgKDzPbt/g9PnHrHR5UkYPkaG8fweEEqPA2r29nIZJCmoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
+ by SA2PR11MB4972.namprd11.prod.outlook.com (2603:10b6:806:fb::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Tue, 22 Nov
+ 2022 21:06:13 +0000
+Received: from MW3PR11MB4764.namprd11.prod.outlook.com
+ ([fe80::d585:716:9c72:fbab]) by MW3PR11MB4764.namprd11.prod.outlook.com
+ ([fe80::d585:716:9c72:fbab%6]) with mapi id 15.20.5834.015; Tue, 22 Nov 2022
+ 21:06:13 +0000
+Message-ID: <b19e7bcb-e781-779c-0d2b-42b2e9b184fe@intel.com>
+Date:   Tue, 22 Nov 2022 13:06:09 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next 0/5] Remove uses of kmap_atomic()
+To:     Jakub Kicinski <kuba@kernel.org>, Leon Romanovsky <leon@kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>
+References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
+ <Y3yyf+mxwEfIi8Xm@unreal> <20221122105059.7ef304ff@kernel.org>
+Content-Language: en-US
+From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+In-Reply-To: <20221122105059.7ef304ff@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0001.namprd07.prod.outlook.com
+ (2603:10b6:a02:bc::14) To MW3PR11MB4764.namprd11.prod.outlook.com
+ (2603:10b6:303:5a::16)
 MIME-Version: 1.0
-References: <20221118232639.13743-1-steve.williams@getcruise.com>
- <20221121195810.3f32d4fd@kernel.org> <20221122113412.dg4diiu5ngmulih2@skbuf>
-In-Reply-To: <20221122113412.dg4diiu5ngmulih2@skbuf>
-From:   Steve Williams <steve.williams@getcruise.com>
-Date:   Tue, 22 Nov 2022 12:51:53 -0800
-Message-ID: <CALHoRjcw8Du+4Px__x=vfDfjKnHVRnMmAhBBEznQ2CfHPZ9S0A@mail.gmail.com>
-Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
- interface for high availability links
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-GUID: Pse5KjatG2fBha7wil1ePkBdc-oSzIQs
-X-Proofpoint-ORIG-GUID: Pse5KjatG2fBha7wil1ePkBdc-oSzIQs
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-22_11,2022-11-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
- mlxscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0 mlxlogscore=999
- priorityscore=1501 adultscore=0 impostorscore=0 clxscore=1015
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211220160
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|SA2PR11MB4972:EE_
+X-MS-Office365-Filtering-Correlation-Id: 30361fd4-4be1-484c-5ab9-08dacccd6257
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NbjWxZgVUAaTWmN7wSBzpI4/aTi4nkmNexxuP1cFjGg2LLbKbyaGWDH+7dCejv9nV9r12hFieBFULyL94TccW4PKXUVsDLGnhra2CjbYhUEktucLCVtACVoUQXnQorET8KdCm4K9YGCy8YPEH897Tem/u1oX36+zjAL+d4Jy++t1C96ax5PYROQCls7jdzRP0hoy6f0YlNxbRbBM23EVWTykjB8rvWfiyfD9womTt8OPPS2jZpYSI2+VGjkbrT946NQbbhuV0qsya095OHpDg+sp3yiR1LdweK1NitAbEZDNKuqZsJkyp1HF5/jIS+g32fRHAcXur382iwR86PkRzZ/ow3kgFJNbzvqNf6O8kJuqPdxQ9B61k3vvpj6x0hppflAFGcdgjM5yXmGGLtFbEtzaFT+LVrAaLKHnk2KighXjv6ARbduNTLIzk2hbmXAyB9EqpqxeMXCjnU25/55cN7c+POx058wpoMrc5ACiBr8mvpX3+dm2ZQb++v4ihdafAlFeS4C8QYJULT4I8HYK8JWzrtgBTybQni8s56fNQWh/6gng9vmgJtSvtExDyx+ymgOBMljTUPuKY/gJG1ncgkK6No7fOltVqEkdoWeSj7bLdaG5JhDOieMX8Pv/MIy1DUX7CSXXyeYbsoKsR3kDSycdiR4dbjkTGzMje2n/D5flLmm+5FwWlfxMUFdF2yk2d6zJZFFZXgcNXfoM6Ftrfw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(39860400002)(396003)(346002)(376002)(451199015)(6506007)(6486002)(6666004)(53546011)(6512007)(26005)(186003)(110136005)(36756003)(2906002)(478600001)(38100700002)(82960400001)(31696002)(86362001)(83380400001)(2616005)(31686004)(8936002)(41300700001)(66556008)(66946007)(66476007)(44832011)(8676002)(5660300002)(4326008)(54906003)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cWhRWmd4MHV6Mm9mR0R0NDZreStobFlOMyszQ1Y0RURzTEpDVmd5Nk4ySEJn?=
+ =?utf-8?B?Ym1IVXJqRTg1b250b2FlcG1mWmZWVFpzcUViRW5IZU5OTmNySG9VY1lkNmJq?=
+ =?utf-8?B?VGx2QnUvK3ZYbW1MVXA0d3BjMVBFVUF0cFBMVytYZmdEeFI2aHh3LzJTUEJB?=
+ =?utf-8?B?UEVwdUNYeTRYdTNuNzhzVFVLMUFUMEFVeE9SbUd4OERieHNxREoveFZZM05Y?=
+ =?utf-8?B?ZGVRd0c4VXp6OERNdzZzdW5PRStLT1VUdStOeTg1L2NSeWVZVlUzTzBqT1V2?=
+ =?utf-8?B?N25sS3ZQSUZxSXdVZ0tTNld5Q2w3Y1dOM1BJVkg0bisveDBtWVUvbzVkeTRY?=
+ =?utf-8?B?VEZCbERkVllxR05BeGdYWm5hTG40NFFUbkdtc2h6WnBlbVFYOUMwMFZqUmpw?=
+ =?utf-8?B?QnJaK1RoUjgxdTFoeGRldHZrcUx1bkdMRkdkZ2lwZFhYaEJzWi90WGJaOUc1?=
+ =?utf-8?B?bjVoK2RpaUVhdFgvbk9EeCtEQ0t6ekhScVhsNDM5SUh3NU9CU0JGNThsRHFK?=
+ =?utf-8?B?S3Z3MmJLQ0JTTUZPb2dqZzdTTUpNdmpld3czZ3dVaEF4dGtBUXJUelVFc2JR?=
+ =?utf-8?B?SXJ1MSszakJpNTRuNWtWcVEzcmZEQWFMbUZIcEdZcXZTZm8yR09IQWNJaWNj?=
+ =?utf-8?B?NHZyb2k2RUlNd1RkNDAzdk42R1RPd1RjZGZUS1ZRS2F2RDBTeUxCNVhtY2hw?=
+ =?utf-8?B?b01oemo0ZWF2K29jZU43OFVFTjRNZkkrbjNGVDZUME96K25hRGZSRERVNFFG?=
+ =?utf-8?B?Zi9Pbmh5SFpYNTZMdzlmL2FDSzRmVnJPWExhYWpkRGFKQlRLQTJQMlpSVTFy?=
+ =?utf-8?B?Y0RZNFd0YzZtR21VYTBVVXRVRVhIa2o0UlZyNmpZOVdlMFlycng3UG50ZElx?=
+ =?utf-8?B?QTc4bC9saU1YN245eFd5RzNjaG5PNExYWG13WnpmR3poVkE2R2ZiS0hlMm5C?=
+ =?utf-8?B?LzdUUXBPZS9ORm1LTXpURWVqdTZ6cW5WMXlkTUI0TXVnZDJFcmNzOEJMc2JW?=
+ =?utf-8?B?ejJTUjZPN1hKeFBlcFdVY2lycmpSMVVOT2dCRGRnRXpDckM5OEpON1NMUW9J?=
+ =?utf-8?B?V0ZXNnBwNVJsU2RKZHBySk54WnJNSTdQREF4SnJWc1pWNkVWVXZ0RGpIZjNI?=
+ =?utf-8?B?VTZvajQwWW1naFJQck5ONGVEcXIzbFBTVDVXT2hpSkUvRkxYNklkRnU3TFQ1?=
+ =?utf-8?B?WTBBaENlUHg0djBlS3djVjRIbjFtMHJkbTkrcU9PTlFoTXdGMUpaeFd1M1gv?=
+ =?utf-8?B?T3kzWjNldUF3M1lOZnhNSUhHM2FtR3Qzd3FmUThubStCQVpkNTM3NHZIWWlQ?=
+ =?utf-8?B?aXVwbzN3eWpUZ2dTNmRQcE1XclZRNFluZ2xwWUVCaEpmZ2p6VkUvR1ZjMDRD?=
+ =?utf-8?B?VkNndHZVL0lsV0d4VVNmc1pBZFVZZ3ozUk9qVTVFYVl2QjdOTG5tN3hPdWd3?=
+ =?utf-8?B?MUJubGZXblFCSTg0OGk0VTVvT1ZrVFVWZzkvdEJ0enUyNkF4czdhdFdCZkU1?=
+ =?utf-8?B?bHpybVZnNkprdS96cndOSkVvUlJWM2JjZXZXcjUwMnhlcFNWVHRodWcrSXpF?=
+ =?utf-8?B?bkowaEFGcklVVE8yTGY4VG9LbHNsZlNMUnNUT1dVNmxKWkZORDg4WFFBY2VN?=
+ =?utf-8?B?VlhwcTlGNEhiZ1NleDAxRCs1U0tLd2VxNTJhMzUwWVRybFRudnd4RjhRb2sr?=
+ =?utf-8?B?QjB5WVZ0Y2F6VEEzOElVeGhidko1M3hUY2NsaTFiUzI2eU5xcmFabmRhVWp6?=
+ =?utf-8?B?eDZGQ2FBZFhhYUVmQ1VPQzhPS0pxcUJUWlVuWXVIUVA3Ly9oTTFXSVFGdmpt?=
+ =?utf-8?B?M2NNNzNSaVd6Z3FGOUFxYVBqR2VKa3ZoU2lBSVpOMGUxWE81QW12Ny85elRC?=
+ =?utf-8?B?MlQ5N2loVUlWblJRMTdQQ3VQVUdTbFlUbFF6NEViSitlWUJ4bm8xZjJQZnFP?=
+ =?utf-8?B?SlAxRGZHNG9SSkJaemxJR2lNU2hiVHB3bU5hWktBQ1g5dG1vNmZWQkFHOUFj?=
+ =?utf-8?B?OW44UVNHZU94dWwzN3NIVDdrVnArcWVDOU1Mc2c0SmFDRkpzRW4zOU9VZmwx?=
+ =?utf-8?B?KzljblpsNWVFaGJYOGtHL0tPTmZSTDI4N3pCQlpVK3REL3hmbTJFYnF4dUJa?=
+ =?utf-8?B?eERuUXVnbldiMURTZytyRlJmVnA3SmhJVkNWVnBlZGEzcDBwS0JzYW5hUDlI?=
+ =?utf-8?Q?DgY2ULq1qnzVmWrQtkEm7NU=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30361fd4-4be1-484c-5ab9-08dacccd6257
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 21:06:13.1443
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EoHhBfKYdcq66aPCc7Gx9ke/Se620lFbuwgbPwCe0Vp5pXT1ZTm2fKpOavpgOJHIjWP7R8Q5V3bJJfHZN5zJjBgcu68sbcvGG3ZN4c2b0Eh1WB8jmN7H+vFHbATpDCgf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4972
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 3:34 AM Vladimir Oltean <vladimir.oltean@nxp.com> w=
-rote:
->
->
-> I have some problems getting it to compile with W=3D1 C=3D1 (possibly not=
- only
-> with those flags).
->
+On 11/22/2022 10:50 AM, Jakub Kicinski wrote:
+> On Tue, 22 Nov 2022 13:29:03 +0200 Leon Romanovsky wrote:
+>>>   drivers/net/ethernet/sun/cassini.c            | 40 ++++++-------------
+>>>   drivers/net/ethernet/sun/sunvnet_common.c     |  4 +-
+>>
+>> Dave, Jakub, Paolo
+>> I wonder if these drivers can be simply deleted.
+> 
+> My thought as well. It's just a matter of digging thru the history,
+> platform code and the web to find potential users and contacting them.
 
-Looks like something I get to address.
+I did a little bit of digging on these two files. Here's what I found.
 
->
-> It will take me a while until I come with more intelligent feedback, but
-> as a first set of questions (based solely on the documentation and not
-> the code, I'm wondering a few things):
->
-> 1. You seem to create a usage model which is heavily optimized for ping
->    (the termination plane), but not at all optimized for the forwarding
->    plane. What I mean is that the documentation says "Inbound traffic
->    that does not have an R-TAG is assumed to not be redundant, and is
->    simply passed up the network stack." That's a pretty big limitation,
->    isn't that so? If you want to build a RED box (intermediary device
->    which connects a non-redundant device into a redundant network) out
->    of a Linux device with hanic, how would you do that? Inbound traffic
->    which comes from the FRER-unaware device must match on a TSN stream
->    which says where it should go and how it should be tagged. And the
->    set of destination ports for inbound traffic may well be a subset of
->    the other enlisted ports, not the hanic device or one of its VLAN
->    uppers.
+For the cassini driver, I don't see any recent patches that fix an end 
+user visible issue. There are clean ups, updates to use newer kernel 
+APIs, and some build/memory leak fixes. I checked as far back as 2011. 
+There are web references to some issues in kernel v2.6. I didn't see 
+anything more recent.
 
-This is indeed intended to cover the talker/listener cases, so doesn't impl=
-ement
-bridging. Besides, there are software bridges for that. This driver provide=
-s a
-way for outbound traffic to be tagged and duplicated out multiple ports, an=
-d
-inbound R-TAG'ed packets to be deduplicated. This is probably most like bon=
-ding,
-and I did look at the bonding driver. But the bulk of the hanic driver is t=
-he
-R-TAG protocol handling. The ethernet packet editing seemed more than
-the bonding driver would handle well, and I also wanted this implementation
-to be as lightweight as possible.
+The code in sunvnet_common.c seems to be common code that's used by
 
-Hanic tries to make the R-TAG handling transparent, so a "hanic" device can
-be connected to software bridges if one wants to implement a converter box,
-but in our experience that's more commonly handled by specialized hardware.
+[1] "Sun4v LDOM Virtual Switch Driver" (ldmvsw.c, kconfig flag 
+CONFIG_LDMVSW)
 
-> 2. What about stream identification rules which aren't based on MAC DA/VL=
-AN?
->    How about MAC SA/VLAN, or SIP, DIP, or active identification rules,
->    or generic byte@offset pattern matching?
+[2] "Sun LDOM virtual network driver" (sunvnet.c, kconfig flag 
+CONFIG_SUNVNET).
 
-Generic filtering and/or dynamic stream identification methods just seemed
-out of scope for this driver. Certainly out of scope for our needs. Althoug=
-h as
-you noted, there are some controls on this matching, mostly for outbound
-traffic, in order to allow some streams to be high-availability, and some t=
-o
-be not.
+These two seem to have had some feature updates around 2017, but 
+otherwise the situation is the same as cassini.
 
-> 3. Shouldn't TSN streams be input by NETCONF/YANG in a useful industrial
->    production network, rather than be auto-discovered based on incoming
->    and outgoing traffic?
-
-In theory yes, but the self-configuring has proven helpful. In our practica=
-l
-systems, there are switches that are routing tagged traffic around, and the=
-y
-do indeed forward based on fixed routing rules. This driver makes for a cle=
-an
-way to act as an endpoint in that network. "It just works."
-
-> I mean, I can truly, genuinely understand why you made some of the
-> choices you've made in the design of this driver, but the more I look at
-> Xiaoliang's tc filter/action based take, the more I get the feeling that
-> his approach is the way to fully exploit what can be accomplished with
-> the 802.1CB standard. What you're presenting is more like your take on a
-> subset that's useful to you (I mean, it *is* called "Cruise High
-> Availability NIC driver", so at least it's truthful to that).
-
-Yes, hanic implements a practical subset of the standard, and I try to be
-clear about that in the documentation.
-
---=20
-
-Stephen Williams
-
-Senior Software Engineer
-
-Cruise
-
---=20
-
-
-*Confidentiality=C2=A0Note:*=C2=A0We care about protecting our proprietary=
-=20
-information,=C2=A0confidential=C2=A0material, and trade secrets.=C2=A0This =
-message may=20
-contain some or all of those things. Cruise will suffer material harm if=20
-anyone other than the intended recipient disseminates or takes any action=
-=20
-based on this message. If you have received this message (including any=20
-attachments) in error, please delete it immediately and notify the sender=
-=20
-promptly.
+Ani
