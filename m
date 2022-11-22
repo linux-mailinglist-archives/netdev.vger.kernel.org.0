@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73EC7633D69
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 14:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BEAD633EF6
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:31:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233705AbiKVNTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 08:19:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
+        id S233994AbiKVObJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiKVNTY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 08:19:24 -0500
+        with ESMTP id S233916AbiKVObC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:31:02 -0500
+X-Greylist: delayed 4084 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Nov 2022 06:31:01 PST
 Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E1D1B1ED;
-        Tue, 22 Nov 2022 05:19:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD9065E44;
+        Tue, 22 Nov 2022 06:31:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=R807ln6AiqSe+3HbtFqvP+BN4yO/wv214XfFb1EqQbE=; b=Cp5ZsrWKUviJGN4iZ8ebliVHg8
-        XrD6kI035Ghf8BzClosXhfrvpUT0ccJIjXAhcibCXTJJVHOmcjEudO8HrNxwxDY4LcOHn7GYCCtfk
-        BC3tGylzbaNaAdZElIA5USHN/F2smve6g5ln8xoWhExRWWSnECmaNJNn+ElT/FOs/j98JrYfJoQ4i
-        p9IDt8Vn7K7Ufj9PJMpWBR7alvG8NSJF0gLKedddixCXJ1DyxBrmrkjA3oP1kGou//EySNS1qoBRL
-        qY1gtI7dbROFyTMfUVdD3j0ezj2gdIGyfpX9V4eRXtNgYm2yljfNkOazXccZrYxBNMqguPjyfQJH9
-        nrm/6fsg==;
+        bh=FY+JqUTCgihErrGkfvd81tTDafGHo4/Ls5aZBztvCRI=; b=AYvzjRrTruNeQnueKgELb+zCk8
+        UVbGiVtGj9aoxeLpY3IHAd6Yyk/0XAO+o2htBjsFecMi89SKtq9feHUApjGt4pHm9mbOA9I+V6mQy
+        eA1GZ6fQ6GWJNN3dCHh8ww04qprqnImBnhWQLBqyOQGGeGjftBRgox+qxDxtDwCs7Pe3JTcckNuWw
+        22NGy7Gh2WlrpbVnmNlxHaFUiSJQ0FGaPuTPCZR61CqiCeq1X2BlTCgPo3VjT41nAbu/kZbhSbP3E
+        nCOY/8g75zWymxjFr1MTnfhgzD0q7u7PDtf6dQ4r8PSil1SrtlAunMWnkjmPGBICS5bbVJH8nkYfS
+        sle/jWGg==;
 Received: from [177.102.6.147] (helo=[192.168.1.60])
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oxTBH-006xGt-Ne; Tue, 22 Nov 2022 14:19:19 +0100
-Message-ID: <c6b543d2-8569-7f7a-56fb-2f5899b6504c@igalia.com>
-Date:   Tue, 22 Nov 2022 10:19:15 -0300
+        id 1oxTEh-006xXr-3p; Tue, 22 Nov 2022 14:22:52 +0100
+Message-ID: <3f0bc380-e6c9-d1fa-a22f-6ba9051d4219@igalia.com>
+Date:   Tue, 22 Nov 2022 10:22:45 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.3.2
-Subject: Re: [PATCH V3 02/11] notifier: Add panic notifiers info and purge
- trailing whitespaces
+Subject: Re: [PATCH V3 03/11] alpha: Clean-up the panic notifier code
 Content-Language: en-US
-To:     akpm@linux-foundation.org
+To:     linux-alpha@vger.kernel.org, Richard Henderson <rth@gcc.gnu.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, richard.henderson@linaro.org
 Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        pmladek@suse.com, bhe@redhat.com, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        Petr Mladek <pmladek@suse.com>
 References: <20220819221731.480795-1-gpiccoli@igalia.com>
- <20220819221731.480795-3-gpiccoli@igalia.com>
+ <20220819221731.480795-4-gpiccoli@igalia.com>
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220819221731.480795-3-gpiccoli@igalia.com>
+In-Reply-To: <20220819221731.480795-4-gpiccoli@igalia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -59,35 +61,39 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 19/08/2022 19:17, Guilherme G. Piccoli wrote:
-> Although many notifiers are mentioned in the comments, the panic
-> notifiers infrastructure is not. Also, the file contains some
-> trailing whitespaces. Fix both issues here.
+> The alpha panic notifier has some code issues, not following
+> the conventions of other notifiers. Also, it might halt the
+> machine but still it is set to run as early as possible, which
+> doesn't seem to be a good idea.
 > 
-> Cc: Arjan van de Ven <arjan@linux.intel.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Valentin Schneider <valentin.schneider@arm.com>
-> Cc: Xiaoming Ni <nixiaoming@huawei.com>
-> Reviewed-by: Baoquan He <bhe@redhat.com>
+> So, let's clean the code and set the notifier to run as the
+> latest, following the same approach other architectures are
+> doing - also, remove the unnecessary include of a header already
+> included indirectly.
+> 
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: Richard Henderson <rth@gcc.gnu.org>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
 > Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 > 
 > ---
 > 
 > V3:
-> - Added Baoquan review tag - thanks!
-> 
-> V2:
 > - No changes.
 > 
+> V2:
+> - Fixed rth email address;
+> - Added Petr's review tag - thanks!
 > 
 
-Hi Andrew, do you think it makes sense to merge this one for v6.2/next?
-I don't see anything else required here, lemme know otherwise.
+Hi Alpha maintainers, is there anything else to be done here? I'd really
+appreciate any advice on how to get this merged.
 
-Thanks,
+I'm also adding here Richard's linaro email (and trimming huge CC list).
+
+Thanks in advance!
+Cheers,
 
 
 Guilherme
-
-
-P.S. Trimmed a bit the huge CC list, but kept all MLs.
