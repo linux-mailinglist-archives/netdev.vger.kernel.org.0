@@ -2,134 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 782A863382D
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:18:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A9C633833
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:19:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233271AbiKVJSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 04:18:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52400 "EHLO
+        id S233314AbiKVJTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 04:19:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233352AbiKVJSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:18:15 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C2E43AEA;
-        Tue, 22 Nov 2022 01:18:13 -0800 (PST)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NGdvW4mv2zRpTQ;
-        Tue, 22 Nov 2022 17:17:43 +0800 (CST)
-Received: from [10.174.179.215] (10.174.179.215) by
- canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 17:18:11 +0800
-Subject: Re: [PATCH -next] Bluetooth: Fix Kconfig warning for BT_HIDP
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>
-CC:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <jkosina@suse.cz>, <gregkh@linuxfoundation.org>,
-        <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20221122034246.24408-1-yuehaibing@huawei.com>
- <29fb52c0-155b-470e-10d5-5e3b2451272d@molgen.mpg.de>
- <CAO-hwJKraiox13k=ukXOhSNt9sTc6Q0KpGR5=AHDknZeR6omwA@mail.gmail.com>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <ee09680a-899c-96c8-778d-0af04d6d59ee@huawei.com>
-Date:   Tue, 22 Nov 2022 17:18:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <CAO-hwJKraiox13k=ukXOhSNt9sTc6Q0KpGR5=AHDknZeR6omwA@mail.gmail.com>
+        with ESMTP id S233312AbiKVJSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:18:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21A049B4F;
+        Tue, 22 Nov 2022 01:18:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41FF2615B1;
+        Tue, 22 Nov 2022 09:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DDEC433C1;
+        Tue, 22 Nov 2022 09:18:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669108714;
+        bh=j9speDymTYbUPsP1fOy8bbC9qMHtxNbRU0XlKQO9gww=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=TOB+dzstBVseFxp1lggAMCRNz9fLnNifrR62pam7JAqtqyIEeAFvsiuC3wQw7B9gZ
+         UOaLWruuYlFRpj1goSOogbU+I+7Q9ViTohU4R0gtOhUIwPoWZnmnRL0Pja0o0xRSlS
+         wHdIFiiVBfQFzrjUmQ54t7oHJriq1L/m/EUWy/rCNanjRnIa8P58iqyHSDI7vEVwgd
+         9Q12a+/rornNH9gUxFMkdKEqoXWXyqlgIP+76lyygnslZNIEVwIYVf0rtnnOrqgY+d
+         PZL9FWLxAIrFHXNZiFg+ilbr5SKaiG1Q18DBMajvO5QnSJbNGizdBiXdsvwxNUAmAK
+         6QenHfl9HLtUA==
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] wifi: rsi: Mark driver as orphan
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20221113185838.11643-1-marex@denx.de>
+References: <20221113185838.11643-1-marex@denx.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-wireless@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166910870966.6391.12194362025928207561.kvalo@kernel.org>
+Date:   Tue, 22 Nov 2022 09:18:31 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Marek Vasut <marex@denx.de> wrote:
 
-On 2022/11/22 17:06, Benjamin Tissoires wrote:
-> Hi,
-> 
-> On Tue, Nov 22, 2022 at 9:37 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
->>
->> Dear YueHaibing,
->>
->>
->> Thank you for your patch.
->>
->>
->> Am 22.11.22 um 04:42 schrieb YueHaibing:
->>
->> Maybe use the more specific summary below:
->>
->> Bluetooth: Add HID_SUPPORT dependency for BT_HIDP
->>
->>> commit 25621bcc8976 add HID_SUPPORT, and HID depends on it now.
->>
->> add*s*
->>
->> or
->>
->> Commit 25621bcc8976 ("HID: Kconfig: split HID support and hid-core
->> compilation") introduces the new Kconfig symbol HID_SUPPORT …
->>
->>
->> Kind regards,
->>
->> Paul
->>
->>
->>> Add HID_SUPPORT dependency for BT_HIDP to fix the warning:
->>>
->>> WARNING: unmet direct dependencies detected for HID
->>>    Depends on [n]: HID_SUPPORT [=n]
->>>    Selected by [m]:
->>>    - BT_HIDP [=m] && NET [=y] && BT_BREDR [=y] && INPUT [=m]
->>>
->>> Fixes: 25621bcc8976 ("HID: Kconfig: split HID support and hid-core compilation")
->>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->>> ---
-> 
-> 
-> FWIW, a fix is already in -next:
-> https://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git/commit/?h=for-6.2/hid-bpf&id=6cc90ccd4f6cfed98e2a3a378debc69f28d57473
+> Neither Redpine Signals nor Silicon Labs seem to care about proper
+> maintenance of this driver, nor is there any help, documentation or
+> feedback on patches. The driver suffers from various problems and
+> subtle bugs. Mark it as orphaned.
 
-OK, thanks for your info.
+This is really unfortunate but I don't see any other option. I hope that in
+the future the companies would change their minds and start contributing to
+upstream again. 
 
-> 
->  But thanks for the patch nonetheless!
-> 
-> Cheers,
-> Benjamin
-> 
->>
->>>   net/bluetooth/hidp/Kconfig | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/net/bluetooth/hidp/Kconfig b/net/bluetooth/hidp/Kconfig
->>> index 14100f341f33..6746be07e222 100644
->>> --- a/net/bluetooth/hidp/Kconfig
->>> +++ b/net/bluetooth/hidp/Kconfig
->>> @@ -1,7 +1,7 @@
->>>   # SPDX-License-Identifier: GPL-2.0-only
->>>   config BT_HIDP
->>>       tristate "HIDP protocol support"
->>> -     depends on BT_BREDR && INPUT
->>> +     depends on BT_BREDR && INPUT && HID_SUPPORT
->>>       select HID
->>>       help
->>>         HIDP (Human Interface Device Protocol) is a transport layer
->>
-> 
-> .
-> 
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20221113185838.11643-1-marex@denx.de/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
