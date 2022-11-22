@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EF76342F2
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:47:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5635E6342F4
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234651AbiKVRrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
+        id S234583AbiKVRrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234570AbiKVRqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:46:06 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B18F84331;
-        Tue, 22 Nov 2022 09:45:12 -0800 (PST)
-Message-ID: <20221122173649.018971915@linutronix.de>
+        with ESMTP id S234579AbiKVRqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:46:07 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DA2F38;
+        Tue, 22 Nov 2022 09:45:13 -0800 (PST)
+Message-ID: <20221122173649.075273417@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669139110;
+        s=2020; t=1669139112;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=87QZpCh0faCKJGN7E79B+YLvDwCLrhCyE7zZDe+9ZyU=;
-        b=wtECrHcC+cQJKedJl/ID7HXmlF6xyPU87K1kIEWbWThYdz0SdPyIMyKiTohxMyXNZSN03+
-        lNqkCwWLR/rNJrh7piFsu58WJuoaS4Klh40CVnY9khH4RfaxRvaylrH3qNJNRIuYslFmQG
-        WzWnDENmC+bBjqzmhuJ2EjyX1ycQ+14FeNBBllrPV9ndwhgQkie3iH2Cn8jB6u2hT9B6tn
-        vT/LV+B8iyUdS97JWLQ6uebM5DtVQVHQdhRSJeX/g6s4adiQmXIwkXIGfUdCi6xrJ+x0Zt
-        9x4WfDQ1950Vev1ue9cVttlHp44YB2TJrNEbNEPKBzR1PpCda1PPeRQS6+6Nxg==
+         references:references; bh=oI5vClIK5VXyvU77WUUhvfXGhlYe4fvxRaN99XtMgVU=;
+        b=egHu6FhzMGVOkguJ5qXG7yxjl71SA9AN/e6OvsPp9OMLx+nax1Y5Y9fc6fC8+/ZD5Kmsd4
+        9JgWIHHx91GqueaKBEyztDSGaDLgRJskkRxKdrxIq+GPdZnFz1mlxi/6sscbm0Aye8JRin
+        SOm/Eh6ur6kMYMYDzkA4ioJO9VEFe/om6lMSxytWm+Uw0cuMgcA+EHuVxuX7g7UaJn60er
+        UBWBZbGKIgxWbFwckSJGkUK4fLjYXHi/fZOwnvAh5Ij3tx9F+mAEFycBmDBaDRxPCkxm4s
+        cdIcDm2w3xDCUjTN1z0yy7zYu4kH48kS698M/fW0HGs4l6QLQo5sxiMCk+9A7w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669139110;
+        s=2020e; t=1669139112;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=87QZpCh0faCKJGN7E79B+YLvDwCLrhCyE7zZDe+9ZyU=;
-        b=jZfQFAaa7z5EeBEPsw/N6W/viHAdTgwJVIkjofEh/cCCE12KwADUYOs2/fkJk2Dvqo3t03
-        h3cUnBpFVKqYrOAA==
+         references:references; bh=oI5vClIK5VXyvU77WUUhvfXGhlYe4fvxRaN99XtMgVU=;
+        b=KD+ZBXbLsEWmaF1zCfxVndsPLd6sfamM4FuZleyD1L6ZQ9G+52BN/vWvU+sSvxVSiTE2/v
+        VEKFOqrnzE423TBg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
@@ -55,13 +53,11 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [patch V2 16/17] timers: Update the documentation to reflect on the
- new timer_shutdown() API
+Subject: [patch V2 17/17] Bluetooth: hci_qca: Fix the teardown problem for real
 References: <20221122171312.191765396@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Date:   Tue, 22 Nov 2022 18:45:10 +0100 (CET)
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 22 Nov 2022 18:45:11 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -71,54 +67,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogIlN0ZXZlbiBSb3N0ZWR0IChHb29nbGUpIiA8cm9zdGVkdEBnb29kbWlzLm9yZz4KCklu
-IG9yZGVyIHRvIG1ha2Ugc3VyZSB0aGF0IGEgdGltZXIgaXMgbm90IHJlLWFybWVkIGFmdGVyIGl0
-IGlzIHN0b3BwZWQKYmVmb3JlIGZyZWVpbmcsIGEgbmV3IHNodXRkb3duIHN0YXRlIGlzIGFkZGVk
-IHRvIHRoZSB0aW1lciBjb2RlLiBUaGUgQVBJCnRpbWVyX3NodXRkb3duX3N5bmMoKSBhbmQgdGlt
-ZXJfc2h1dGRvd24oKSBtdXN0IGJlIGNhbGxlZCBiZWZvcmUgdGhlCm9iamVjdCB0aGF0IGhvbGRz
-IHRoZSB0aW1lciBjYW4gYmUgZnJlZWQuCgpVcGRhdGUgdGhlIGRvY3VtZW50YXRpb24gdG8gcmVm
-bGVjdCB0aGlzIG5ldyB3b3JrZmxvdy4KClsgdGdseDogVXBkYXRlZCB0byB0aGUgbmV3IHNlbWFu
-dGljcyBhbmQgdXBkYXRlZCB0aGUgemhfQ04gdmVyc2lvbiBdCgpTaWduZWQtb2ZmLWJ5OiBTdGV2
-ZW4gUm9zdGVkdCAoR29vZ2xlKSA8cm9zdGVkdEBnb29kbWlzLm9yZz4KU2lnbmVkLW9mZi1ieTog
-VGhvbWFzIEdsZWl4bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+ClRlc3RlZC1ieTogR3VlbnRlciBS
-b2VjayA8bGludXhAcm9lY2stdXMubmV0PgpMaW5rOiBodHRwczovL2xvcmUua2VybmVsLm9yZy9y
-LzIwMjIxMTEwMDY0MTQ3LjcxMjkzNDc5M0Bnb29kbWlzLm9yZwotLS0KIERvY3VtZW50YXRpb24v
-UkNVL0Rlc2lnbi9SZXF1aXJlbWVudHMvUmVxdWlyZW1lbnRzLnJzdCAgfCAgICAyICstCiBEb2N1
-bWVudGF0aW9uL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QgICAgICAgICAgICAgICAgICAgIHwgICAg
-MiArLQogRG9jdW1lbnRhdGlvbi9rZXJuZWwtaGFja2luZy9sb2NraW5nLnJzdCAgICAgICAgICAg
-ICAgICB8ICAgIDUgKysrKysKIERvY3VtZW50YXRpb24vdHJhbnNsYXRpb25zL3poX0NOL2NvcmUt
-YXBpL2xvY2FsX29wcy5yc3QgfCAgICAyICstCiA0IGZpbGVzIGNoYW5nZWQsIDggaW5zZXJ0aW9u
-cygrKSwgMyBkZWxldGlvbnMoLSkKCi0tLSBhL0RvY3VtZW50YXRpb24vUkNVL0Rlc2lnbi9SZXF1
-aXJlbWVudHMvUmVxdWlyZW1lbnRzLnJzdAorKysgYi9Eb2N1bWVudGF0aW9uL1JDVS9EZXNpZ24v
-UmVxdWlyZW1lbnRzL1JlcXVpcmVtZW50cy5yc3QKQEAgLTE4NTgsNyArMTg1OCw3IEBAIHVubG9h
-ZGVkLiBBZnRlciBhIGdpdmVuIG1vZHVsZSBoYXMgYmVlbgogb25lIG9mIGl0cyBmdW5jdGlvbnMg
-cmVzdWx0cyBpbiBhIHNlZ21lbnRhdGlvbiBmYXVsdC4gVGhlIG1vZHVsZS11bmxvYWQKIGZ1bmN0
-aW9ucyBtdXN0IHRoZXJlZm9yZSBjYW5jZWwgYW55IGRlbGF5ZWQgY2FsbHMgdG8gbG9hZGFibGUt
-bW9kdWxlCiBmdW5jdGlvbnMsIGZvciBleGFtcGxlLCBhbnkgb3V0c3RhbmRpbmcgbW9kX3RpbWVy
-KCkgbXVzdCBiZSBkZWFsdAotd2l0aCB2aWEgdGltZXJfZGVsZXRlX3N5bmMoKSBvciBzaW1pbGFy
-Lgord2l0aCB2aWEgdGltZXJfc2h1dGRvd25fc3luYygpIG9yIHNpbWlsYXIuCiAKIFVuZm9ydHVu
-YXRlbHksIHRoZXJlIGlzIG5vIHdheSB0byBjYW5jZWwgYW4gUkNVIGNhbGxiYWNrOyBvbmNlIHlv
-dQogaW52b2tlIGNhbGxfcmN1KCksIHRoZSBjYWxsYmFjayBmdW5jdGlvbiBpcyBldmVudHVhbGx5
-IGdvaW5nIHRvIGJlCi0tLSBhL0RvY3VtZW50YXRpb24vY29yZS1hcGkvbG9jYWxfb3BzLnJzdAor
-KysgYi9Eb2N1bWVudGF0aW9uL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QKQEAgLTE5MSw3ICsxOTEs
-NyBAQCBIZXJlIGlzIGEgc2FtcGxlIG1vZHVsZSB3aGljaCBpbXBsZW1lbnRzCiAKICAgICBzdGF0
-aWMgdm9pZCBfX2V4aXQgdGVzdF9leGl0KHZvaWQpCiAgICAgewotICAgICAgICAgICAgdGltZXJf
-ZGVsZXRlX3N5bmMoJnRlc3RfdGltZXIpOworICAgICAgICAgICAgdGltZXJfc2h1dGRvd25fc3lu
-YygmdGVzdF90aW1lcik7CiAgICAgfQogCiAgICAgbW9kdWxlX2luaXQodGVzdF9pbml0KTsKLS0t
-IGEvRG9jdW1lbnRhdGlvbi9rZXJuZWwtaGFja2luZy9sb2NraW5nLnJzdAorKysgYi9Eb2N1bWVu
-dGF0aW9uL2tlcm5lbC1oYWNraW5nL2xvY2tpbmcucnN0CkBAIC0xMDA3LDYgKzEwMDcsMTEgQEAg
-Y2FsbGluZyBhZGRfdGltZXIoKSBhdCB0aGUgZW5kIG9mIHRoZWlyCiBCZWNhdXNlIHRoaXMgaXMg
-YSBmYWlybHkgY29tbW9uIGNhc2Ugd2hpY2ggaXMgcHJvbmUgdG8gcmFjZXMsIHlvdSBzaG91bGQK
-IHVzZSB0aW1lcl9kZWxldGVfc3luYygpIChgYGluY2x1ZGUvbGludXgvdGltZXIuaGBgKSB0byBo
-YW5kbGUgdGhpcyBjYXNlLgogCitCZWZvcmUgZnJlZWluZyBhIHRpbWVyLCB0aW1lcl9zaHV0ZG93
-bigpIG9yIHRpbWVyX3NodXRkb3duX3N5bmMoKSBzaG91bGQgYmUKK2NhbGxlZCB3aGljaCB3aWxs
-IGtlZXAgaXQgZnJvbSBiZWluZyByZWFybWVkLiBBbnkgc3Vic2VxdWVudCBhdHRlbXB0IHRvCity
-ZWFybSB0aGUgdGltZXIgd2lsbCBiZSBzaWxlbnRseSBpZ25vcmVkIGJ5IHRoZSBjb3JlIGNvZGUu
-CisKKwogTG9ja2luZyBTcGVlZAogPT09PT09PT09PT09PQogCi0tLSBhL0RvY3VtZW50YXRpb24v
-dHJhbnNsYXRpb25zL3poX0NOL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QKKysrIGIvRG9jdW1lbnRh
-dGlvbi90cmFuc2xhdGlvbnMvemhfQ04vY29yZS1hcGkvbG9jYWxfb3BzLnJzdApAQCAtMTg1LDcg
-KzE4NSw3IEBAIFVQ5LmL6Ze05rKh5pyJ5LiN5ZCM55qE6KGM5Li677yM5Zyo5L2g77+9CiAKICAg
-ICBzdGF0aWMgdm9pZCBfX2V4aXQgdGVzdF9leGl0KHZvaWQpCiAgICAgewotICAgICAgICAgICAg
-dGltZXJfZGVsZXRlX3N5bmMoJnRlc3RfdGltZXIpOworICAgICAgICAgICAgdGltZXJfc2h1dGRv
-d25fc3luYygmdGVzdF90aW1lcik7CiAgICAgfQogCiAgICAgbW9kdWxlX2luaXQodGVzdF9pbml0
-KTsKCg==
+While discussing solutions for the teardown problem which results from
+circular dependencies between timers and workqueues, where timers schedule
+work from their timer callback and workqueues arm the timers from work
+items, it was discovered that the recent fix to the QCA code is incorrect.
+
+That commit fixes the obvious problem of using del_timer() instead of
+del_timer_sync() and reorders the teardown calls to
+
+   destroy_workqueue(wq);
+   del_timer_sync(t);
+
+This makes it less likely to explode, but it's still broken:
+
+   destroy_workqueue(wq);
+   /* After this point @wq cannot be touched anymore */
+
+   ---> timer expires
+         queue_work(wq) <---- Results in a NULl pointer dereference
+			      deep in the work queue core code.
+   del_timer_sync(t);
+
+Use the new timer_shutdown_sync() function to ensure that the timers are
+disarmed, no timer callbacks are running and the timers cannot be armed
+again. This restores the original teardown sequence:
+
+   timer_shutdown_sync(t);
+   destroy_workqueue(wq);
+
+which is now correct because the timer core silently ignores potential
+rearming attempts which can happen when destroy_workqueue() drains pending
+work before mopping up the workqueue.
+
+Fixes: 72ef98445aca ("Bluetooth: hci_qca: Use del_timer_sync() before freeing")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: linux-bluetooth@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Link: https://lore.kernel.org/all/87iljhsftt.ffs@tglx
+---
+ drivers/bluetooth/hci_qca.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -696,9 +696,15 @@ static int qca_close(struct hci_uart *hu
+ 	skb_queue_purge(&qca->tx_wait_q);
+ 	skb_queue_purge(&qca->txq);
+ 	skb_queue_purge(&qca->rx_memdump_q);
++	/*
++	 * Shut the timers down so they can't be rearmed when
++	 * destroy_workqueue() drains pending work which in turn might try
++	 * to arm a timer.  After shutdown rearm attempts are silently
++	 * ignored by the timer core code.
++	 */
++	timer_shutdown_sync(&qca->tx_idle_timer);
++	timer_shutdown_sync(&qca->wake_retrans_timer);
+ 	destroy_workqueue(qca->workqueue);
+-	del_timer_sync(&qca->tx_idle_timer);
+-	del_timer_sync(&qca->wake_retrans_timer);
+ 	qca->hu = NULL;
+ 
+ 	kfree_skb(qca->rx_skb);
+
