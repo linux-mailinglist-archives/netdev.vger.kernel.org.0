@@ -2,95 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FEAE633C73
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 13:28:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C16633C76
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 13:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbiKVM2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 07:28:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
+        id S232715AbiKVM3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 07:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233753AbiKVM2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 07:28:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8929254B3C
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 04:28:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1D1A616CD
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 12:28:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E8BC433C1;
-        Tue, 22 Nov 2022 12:28:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669120086;
-        bh=kAbjs6A5Z20pI0hgvNqjFISXDXwAWdWyrv+rGHU0k4I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ld4qBog7d/hM9XILgGLQbBy6+/mAXuqr0UumtxGpj0dtJ/kduLoDsiOSM2l0YCO+s
-         K2bL4i6Dob05hkvN6MiVtPKfJ9IHq2lRr3EfxSlwQIGwjZ87/EgiHZ5pe59mjYt9hv
-         PPv8+9WtllyK6ImlLSvCc73LZ3hjPRM0rUIpPEy+EFSLU24+tHBn2Lhpi8COnqU6P1
-         7lKniPxZYFEu/SxX/ESky1BSS2HCq1wUza4S6wmqEKaRhMhdoyVjjVG099VZvWZ5bD
-         h6KnyeCLCYCmDoJq2z0dOVFSgOvaC3DhmPXWhcyVrN8SjFNFGcV/stNYOi5OxEiGcF
-         EbMJXhTYIr+9w==
-Date:   Tue, 22 Nov 2022 14:28:02 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Gaosheng Cui <cuigaosheng1@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, thomas.lendacky@amd.com, shayagr@amazon.com,
-        wsa+renesas@sang-engineering.com, msink@permonline.ru,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: ethernet: wiznet: w5300: free irq when alloc
- link_name failed in w5300_hw_probe()
-Message-ID: <Y3zAUi5phHtYkjbb@unreal>
-References: <20221119071007.3858043-1-cuigaosheng1@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221119071007.3858043-1-cuigaosheng1@huawei.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229628AbiKVM3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 07:29:46 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36343450BF;
+        Tue, 22 Nov 2022 04:29:45 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id f13so1818958lfa.6;
+        Tue, 22 Nov 2022 04:29:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qG9k0HLJtBKzDnSY86wVSnvV+i9S7/oBKCID23f+3EQ=;
+        b=ZfERH2OQIOYLGULfO5tULnn8BtI9Fxe1ZQdtKpjLnpoasPcc5Dd0xOcUnXDO7AJkFQ
+         OZz+/9xuK8faMsN9dDPK+6vuxhwAHyXVW8D7tasLXUzhs4oZoAAkzfBwOZEQ0FN5KRAl
+         qopbsX2DVWqApQozSK48JzE36zHBhb7ImQTSBvx5iONwTGWGQgfrqEiFbxsfML/NFl/b
+         DmLlzoeqbqiID72ASK5EacsK4ZuP322rOi4XN2NgO99PL/zQxje0ACpGrnM3+IwrCg+m
+         SkH0t5wwS0m5mS1/mQuJQ4s6Ghf0cn2/bi4IS0QaE2ST3O6EUYgmxCEZf/165VhB8iNV
+         wYEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qG9k0HLJtBKzDnSY86wVSnvV+i9S7/oBKCID23f+3EQ=;
+        b=OsD9v6n7jau+O08bzO9wWqXEgXgMIsgSiJajeHibqT0HjlOf9Bsyc7zzjCTvBHBL77
+         FRP8c2HiWkYSYATWb6heeZzm6qGdKsW/jQtKtJka1pDLDe3NvbQcQ9RFlW6Qx7gbJXso
+         Si1RrhDK7TWQF2AZ2GbBG8u+Z7aojFzj9aIdTxtgDWIQSTrFQkwVoJGkb7ZASAzGu7VK
+         K9gtJ6c+hdrpPh1y7T0kZU9x3axS7ywvJsF07zGq8+hJs/JPREWTXEu46IxlPh14OC4t
+         IcsgP7lx0r/ll4O1dtGCIK2LpN1kN+yrMIHB+XYvcUHxDJoQ7hvA/sFctrWxM3ZqVsRM
+         2WWw==
+X-Gm-Message-State: ANoB5pnILMwjBFVbK2o9ARzDKljuO8l90i568WBY744wUadwQCt7df6H
+        mmV4SF6rxEqkJo07xvzuoB8=
+X-Google-Smtp-Source: AA0mqf6cIZ+AdRctQhtWsFiZp2CrpVinQr9cyIkZb+8z9ng57+u3o/xS4TeDE7glEv4F62amVq4Nyw==
+X-Received: by 2002:a05:6512:489:b0:4b4:9193:1caf with SMTP id v9-20020a056512048900b004b491931cafmr1422091lfq.300.1669120181759;
+        Tue, 22 Nov 2022 04:29:41 -0800 (PST)
+Received: from mkor.rasu.local ([212.22.67.162])
+        by smtp.gmail.com with ESMTPSA id c16-20020a056512075000b0049462af8614sm2462897lfs.145.2022.11.22.04.29.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 04:29:41 -0800 (PST)
+From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Tom Rix <trix@redhat.com>, Marco Bonelli <marco@mebeim.net>,
+        Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH v3] ethtool: avoiding integer overflow in ethtool_phys_id()
+Date:   Tue, 22 Nov 2022 15:29:01 +0300
+Message-Id: <20221122122901.22294-1-korotkov.maxim.s@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 19, 2022 at 03:10:07PM +0800, Gaosheng Cui wrote:
-> When alloc link_name failed in w5300_hw_probe(), irq has not been
-> freed. Fix it.
-> 
-> Fixes: 9899b81e7ca5 ("Ethernet driver for the WIZnet W5300 chip")
-> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-> ---
->  drivers/net/ethernet/wiznet/w5300.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/wiznet/w5300.c b/drivers/net/ethernet/wiznet/w5300.c
-> index b0958fe8111e..5571d4c365e9 100644
-> --- a/drivers/net/ethernet/wiznet/w5300.c
-> +++ b/drivers/net/ethernet/wiznet/w5300.c
-> @@ -572,8 +572,10 @@ static int w5300_hw_probe(struct platform_device *pdev)
->  	priv->link_gpio = data ? data->link_gpio : -EINVAL;
->  	if (gpio_is_valid(priv->link_gpio)) {
->  		char *link_name = devm_kzalloc(&pdev->dev, 16, GFP_KERNEL);
-> -		if (!link_name)
-> +		if (!link_name) {
-> +			free_irq(irq, ndev);
->  			return -ENOMEM;
-> +		}
->  		snprintf(link_name, 16, "%s-link", name);
->  		priv->link_irq = gpio_to_irq(priv->link_gpio);
->  		if (request_any_context_irq(priv->link_irq, w5300_detect_link,
+The value of an arithmetic expression "n * id.data" is subject
+to possible overflow due to a failure to cast operands to a larger data
+type before performing arithmetic. Used macro for multiplication instead
+operator for avoiding overflow.
 
-  579                 if (request_any_context_irq(priv->link_irq, w5300_detect_link,
-  580                                 IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-  581                                 link_name, priv->ndev) < 0)
-  582                         priv->link_gpio = -EINVAL;
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-You should call to same free_irq(irq, ndev) in this "if" too.
+Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+---
+ net/ethtool/ioctl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 6a7308de192d..6b59e7a1c906 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2007,7 +2007,8 @@ static int ethtool_phys_id(struct net_device *dev, void __user *useraddr)
+ 	} else {
+ 		/* Driver expects to be called at twice the frequency in rc */
+ 		int n = rc * 2, interval = HZ / n;
+-		u64 count = n * id.data, i = 0;
++		u64 count = mul_u32_u32(n, id.data);
++		u64 i = 0;
+ 
+ 		do {
+ 			rtnl_lock();
+-- 
+2.17.1
 
-> -- 
-> 2.25.1
-> 
