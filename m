@@ -2,142 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17E7C634051
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:36:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 275F1634068
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233729AbiKVPgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 10:36:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        id S232939AbiKVPii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 10:38:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233784AbiKVPgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:36:02 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C916F359
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:35:43 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id 13-20020a056e0216cd00b003023e8b7d03so10813097ilx.7
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:35:43 -0800 (PST)
+        with ESMTP id S232875AbiKVPif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:38:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B533D716F5
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:37:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669131459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IYJvZpyPquZ6swRZiIUcOh5y3RG1j/mpcsdgMWy7LiQ=;
+        b=Cpardqg6t3Ss7nB3VrcdbaQ6cuiGx7ylZ2cYySroILs2fHYJFwLgtt7yRjLRf74pUAkkXt
+        V4Jc4xpR75RD/YRFzreU87+ocvSRkuQTH9JN6Xq3okWjrFZy+WbYDV/G2dh5f0vKxP1q3X
+        8SjK8t3oZub6IK3FMWIErmHdJ9pfRss=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-183-hATEUWkwPPWWpdm6jrmeEA-1; Tue, 22 Nov 2022 10:37:38 -0500
+X-MC-Unique: hATEUWkwPPWWpdm6jrmeEA-1
+Received: by mail-qk1-f199.google.com with SMTP id bj1-20020a05620a190100b006fa12a05188so19282304qkb.4
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:37:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FybAGmp4BbsPjSoEeGjsL2UWXFm29CqL7tXapCANqIc=;
-        b=dosQdRnSNbv8Puqkc5WEbZeNRL7p9jfDjiwtEKZnC77q6c4vkNudMafDEld6EIvqhD
-         JG5ZDSCuP32G8Dvd2okhuEkiwBwaZDsq4uy14TrH6SHpw4Gh5/52XZBRmiFkIh8JRlsg
-         qc26J4Pql8Hc25mB4z2ImX0dUHz3eyJPZ8NI+HrOjU3NklLokGw98vw6nCpA93C0XPWj
-         m1Ls+vQqOHvrMD/Okop3K71pYTxp1FPSGW4O8WcHe9pgxWs1RIYvJ3C6g1B7WJ8yWrmc
-         h0IGmVXR3/ctszNXjcvYvAghVXto/ikUUzROjqJa8zY5h0P7yc/v9WLwK5kpBzBIVGNT
-         GLfQ==
-X-Gm-Message-State: ANoB5pnY1/yeigY8Lu6vueZkb+f8s62g6cBAGBQh8q7JS4HKYuAN6nLI
-        8CvLGf7tDs2yyj8iZvZEjhv7kfbu4e643E93k9YzmRVTGumo
-X-Google-Smtp-Source: AA0mqf5g7k/nFJPRGTnZdfeeydh62nJVXo1KeUOY4LE5TL48czuCU3II59FpuD8+o24q7J6r7iFr+EoA3rSuYkEnEjXJw9BuTqpf
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IYJvZpyPquZ6swRZiIUcOh5y3RG1j/mpcsdgMWy7LiQ=;
+        b=GccInd9WhOEno4eVxg2ifSh63NFblQLvIZclUbIDwxTfoMIXAWRnMlaEw85KJb9Rpy
+         k/5Oi+ljT7OBsi2gR9P2g3vX1YRDuA8X4B5pYV6LBZqjLdoUAsKQkrou5qjtXPRrX7ut
+         /RHNxQjA7MbuPOygpszikTCUxS7V0bbEWJoxWzc9wpw+9rf6Dmj+1/7DvHcvj1Erqwnf
+         PpeMMAGzQCOBmYWLTDsspd/m5KtTWH8u6g9uHjDLlebuyW8fO7cajJ1VsR51b2m8Eo0t
+         G9K1cy7J+RMxThrGwR37kEzbG57X0RhoxOxv77sm/OTSIZEE+DtIiLkFtqWg+n1N45IB
+         VVig==
+X-Gm-Message-State: ANoB5plf50X+0U1gn6/tBsrRuj3GeK8dolzrY8ByJ17W9EMrTODjhQSa
+        tWMfcpGyylJ0MZr6axuHsjFgsVKIKG52MdPLwKad5+Fhi5tAM4xxMZtyOmZuhpBMvMr5F8aEZ8O
+        YCDeI0pD7POQ0yBVG
+X-Received: by 2002:a37:cd1:0:b0:6fb:74c7:ccf with SMTP id 200-20020a370cd1000000b006fb74c70ccfmr7682950qkm.146.1669131457578;
+        Tue, 22 Nov 2022 07:37:37 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6QcSoyyAxhrMKUbI9B03XaxqOQnOQuQhGiLn/VICj3mwjpfdUO6hBBmalLljb94SkdlehA4Q==
+X-Received: by 2002:a37:cd1:0:b0:6fb:74c7:ccf with SMTP id 200-20020a370cd1000000b006fb74c70ccfmr7682932qkm.146.1669131457341;
+        Tue, 22 Nov 2022 07:37:37 -0800 (PST)
+Received: from [192.168.33.110] (c-73-19-232-221.hsd1.tn.comcast.net. [73.19.232.221])
+        by smtp.gmail.com with ESMTPSA id x10-20020a05620a258a00b006bb82221013sm10418903qko.0.2022.11.22.07.37.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Nov 2022 07:37:36 -0800 (PST)
+Message-ID: <e1150971-ec16-0421-a13a-d6d2a0a66348@redhat.com>
+Date:   Tue, 22 Nov 2022 10:37:35 -0500
 MIME-Version: 1.0
-X-Received: by 2002:a5e:a604:0:b0:6de:353:ab43 with SMTP id
- q4-20020a5ea604000000b006de0353ab43mr2182230ioi.40.1669131343153; Tue, 22 Nov
- 2022 07:35:43 -0800 (PST)
-Date:   Tue, 22 Nov 2022 07:35:43 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cad14205ee10ec87@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in p9_client_disconnect
-From:   syzbot <syzbot+ea8b28e8dca42fc3bcbe@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH net-next 2/2] bonding: fix link recovery in mode 2 when
+ updelay is nonzero
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Jay Vosburgh <j.vosburgh@gmail.com>
+Cc:     Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <cover.1668800711.git.jtoppins@redhat.com>
+ <cb89b92af89973ee049a696c362b4a2abfdd9b82.1668800711.git.jtoppins@redhat.com>
+ <38fbc36783d583f805f30fb3a55a8a87f67b59ac.camel@redhat.com>
+ <1fe036eb-5207-eccd-0cb3-aa22f5d130ce@redhat.com>
+ <5718ba71a8755040f61ed7b2f688b1067ca56594.camel@redhat.com>
+Content-Language: en-US
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <5718ba71a8755040f61ed7b2f688b1067ca56594.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 11/22/22 09:45, Paolo Abeni wrote:
+> On Tue, 2022-11-22 at 08:36 -0500, Jonathan Toppins wrote:
+>> On 11/22/22 05:59, Paolo Abeni wrote:
+>>> Hello,
+>>>
+>>> On Fri, 2022-11-18 at 15:30 -0500, Jonathan Toppins wrote:
+>>>> Before this change when a bond in mode 2 lost link, all of its slaves
+>>>> lost link, the bonding device would never recover even after the
+>>>> expiration of updelay. This change removes the updelay when the bond
+>>>> currently has no usable links. Conforming to bonding.txt section 13.1
+>>>> paragraph 4.
+>>>>
+>>>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>>>
+>>> Why are you targeting net-next? This looks like something suitable to
+>>> the -net tree to me. If, so could you please include a Fixes tag?
+>>>
+>>> Note that we can add new self-tests even via the -net tree.
+>>>
+>>
+>> I could not find a reasonable fixes tag for this, hence why I targeted
+>> the net-next tree.
+> 
+> When in doubt I think it's preferrable to point out a commit surely
+> affected by the issue - even if that is possibly not the one
+> introducing the issue - than no Fixes as all. The lack of tag will make
+> more difficult the work for stable teams.
+> 
+> In this specific case I think that:
+> 
+> Fixes: 41f891004063 ("bonding: ignore updelay param when there is no active slave")
+> 
+> should be ok, WDYT? if you agree would you mind repost for -net?
+> 
+> Thanks,
+> 
+> Paolo
+> 
 
-syzbot found the following issue on:
+Yes that looks like a good one. I will repost to -net a v2 that includes 
+changes to reduce the number of icmp echos sent before failing the test.
 
-HEAD commit:    a77d28d13789 Merge branch 'for-next/core' into for-kernelci
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=113a41f9880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c4c990190d758078
-dashboard link: https://syzkaller.appspot.com/bug?extid=ea8b28e8dca42fc3bcbe
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
+Thanks,
+-Jon
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/7c4b04ddbeb3/disk-a77d28d1.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/3ecedb0cf6ca/vmlinux-a77d28d1.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/44c59c4393c7/Image-a77d28d1.gz.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ea8b28e8dca42fc3bcbe@syzkaller.appspotmail.com
-
-Unable to handle kernel paging request at virtual address 0032503900080052
-Mem abort info:
-  ESR = 0x0000000096000044
-  EC = 0x25: DABT (current EL), IL = 32 bits
-  SET = 0, FnV = 0
-  EA = 0, S1PTW = 0
-  FSC = 0x04: level 0 translation fault
-Data abort info:
-  ISV = 0, ISS = 0x00000044
-  CM = 0, WnR = 1
-[0032503900080052] address between user and kernel address ranges
-Internal error: Oops: 0000000096000044 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 1 PID: 3127 Comm: syz-executor.1 Not tainted 6.1.0-rc6-syzkaller-32651-ga77d28d13789 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
-pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : p9_client_disconnect+0x1c/0x30 net/9p/client.c:1067
-lr : p9_client_disconnect+0x18/0x30 net/9p/client.c:1065
-sp : ffff800013c43ca0
-x29: ffff800013c43ca0 x28: ffff0000f2cc8000 x27: 0000000000000000
-x26: 00000000000000c0 x25: 0000000000000002 x24: ffff80000d3ad050
-x23: ffff80000d3a9000 x22: 0000000000000000 x21: 0000000000000000
-x20: ffff000105870300 x19: 3032503900080002 x18: 0000000000000369
-x17: 53006964623d4d45 x16: ffff80000dc18158 x15: ffff0000f2cc8000
-x14: 0000000000000008 x13: 00000000ffffffff x12: ffff0000f2cc8000
-x11: ff8080000be9c0e0 x10: 0000000000000000 x9 : ffff80000be9c0e0
-x8 : 0000000000000002 x7 : ffff80000c058c98 x6 : 0000000000000000
-x5 : 0000000000000080 x4 : 0000000000000001 x3 : 0000000000000000
-x2 : ffff0000f2cc8000 x1 : ffff80000cede3e6 x0 : 3032503900080002
-Call trace:
- p9_client_disconnect+0x1c/0x30
- v9fs_session_cancel+0x20/0x30 fs/9p/v9fs.c:530
- v9fs_kill_super+0x2c/0x50 fs/9p/vfs_super.c:225
- deactivate_locked_super+0x70/0xe8 fs/super.c:332
- deactivate_super+0xd0/0xd4 fs/super.c:363
- cleanup_mnt+0x184/0x1c0 fs/namespace.c:1186
- __cleanup_mnt+0x20/0x30 fs/namespace.c:1193
- task_work_run+0x100/0x148 kernel/task_work.c:179
- resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
- do_notify_resume+0x174/0x1f0 arch/arm64/kernel/signal.c:1127
- prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
- exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
- el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
- el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
- el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
-Code: 910003fd aa0003f3 9710261f 52800048 (b9005268) 
----[ end trace 0000000000000000 ]---
-----------------
-Code disassembly (best guess):
-   0:	910003fd 	mov	x29, sp
-   4:	aa0003f3 	mov	x19, x0
-   8:	9710261f 	bl	0xfffffffffc409884
-   c:	52800048 	mov	w8, #0x2                   	// #2
-* 10:	b9005268 	str	w8, [x19, #80] <-- trapping instruction
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
