@@ -2,147 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC17633336
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59824633346
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232721AbiKVCVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 21:21:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
+        id S231888AbiKVC23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 21:28:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232664AbiKVCVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:21:25 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FE72036D;
-        Mon, 21 Nov 2022 18:17:40 -0800 (PST)
-X-UUID: 53452f68fdd5447cb992ece0fd039a80-20221122
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=VDymyQAetc3WEtO27z94FAZO4pTlwjOlBCBrAhSOXn4=;
-        b=NEcBQQVaHh/gqjO9PGuVjtNL/5Gwlfbfv/P+3CF5uuwh3xiqtej0/Zd0N/IcoRAT39vJJn3t+v/wB+vJavJEN/dOEc/NUmuBJiKaDRV2FtNtkamFNFlc7+nGu31tSCG5YUhisM+T2/GZASQsATXGO6g0yKkE4mvXjCNDZGaF2OE=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.12,REQID:db0bf781-6641-4807-860b-75e724fdbe99,IP:0,U
-        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Release_Ham,ACTI
-        ON:release,TS:95
-X-CID-INFO: VERSION:1.1.12,REQID:db0bf781-6641-4807-860b-75e724fdbe99,IP:0,URL
-        :0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
-        ON:quarantine,TS:95
-X-CID-META: VersionHash:62cd327,CLOUDID:9acb6e2f-2938-482e-aafd-98d66723b8a9,B
-        ulkID:221121105616SQ0WFPLA,BulkQuantity:4,Recheck:0,SF:28|17|19|48,TC:nil,
-        Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:41,QS:nil,BEC:nil,COL:0
-X-UUID: 53452f68fdd5447cb992ece0fd039a80-20221122
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <sujuan.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1697112962; Tue, 22 Nov 2022 10:17:34 +0800
-Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Tue, 22 Nov 2022 10:17:33 +0800
-Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
- mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Tue, 22 Nov 2022 10:17:31 +0800
-From:   Sujuan Chen <sujuan.chen@mediatek.com>
-To:     <netdev@vger.kernel.org>
-CC:     Felix Fietkau <nbd@nbd.name>, <linux-kernel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Evelyn Tsai <evelyn.tsai@mediatek.com>,
-        Bo Jiao <bo.jiao@mediatek.com>,
-        linux-mediatek <linux-mediatek@lists.infradead.org>,
-        Sujuan Chen <sujuan.chen@mediatek.com>
-Subject: [PATCH,RESEND] net: ethernet: mtk_wed: add wcid overwritten support for wed v1
-Date:   Tue, 22 Nov 2022 10:17:29 +0800
-Message-ID: <217932f091aa9d9cb5e876a2e958ca25f80f80b2.1668997816.git.sujuan.chen@mediatek.com>
-X-Mailer: git-send-email 2.17.0
+        with ESMTP id S231720AbiKVC20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:28:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F83178A1
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C49BB8190B
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA626C433C1;
+        Tue, 22 Nov 2022 02:28:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669084102;
+        bh=mZxYpQcyNJ6BtCaIkuNtcH3PVNlLpkkhMVWk7mv7sSM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cFIwCjup4G++wiop+X7C6ZmPSbHzuKi3L4HRtM8PpqFVjGNg4F802rAOf8I29YNcV
+         F2gAvZxr8ARtAiOE/OIYT8amfCSlCeKA2KhI2m/thrCD9wL9Q3Cb0QvmPEINYyjAVS
+         fkBE/Gr4AvAVQTKfzM0icU4+8V7617IDMlNKDAdNIPu8lf5SVPWqHTnjq8MxcOEwNY
+         IsMvpKwRPBXhVdaCqbNEu+EppqkWR4Y7iEZ/+4Q0SAjai0LC5E/5d0npaiiKHe/8dd
+         Jj+b72qGFY3KQ/veSw0tN3X+ar5YkrFvJ+S+I/l+fxj1uXDve6eMRXlwNpmQJBu+WX
+         JG/9TIWorV0KQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net 00/14] mlx5 fixes 2022-11-21
+Date:   Mon, 21 Nov 2022 18:25:45 -0800
+Message-Id: <20221122022559.89459-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All wed versions should enable wcid overwritten feature,
-since the wcid size is controlled by the wlan driver.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Tested-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Co-developed-by: Bo Jiao <bo.jiao@mediatek.com>
-Signed-off-by: Bo Jiao <bo.jiao@mediatek.com>
-Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
----
- drivers/net/ethernet/mediatek/mtk_wed.c      | 9 ++++++---
- drivers/net/ethernet/mediatek/mtk_wed_regs.h | 2 ++
- include/linux/soc/mediatek/mtk_wed.h         | 3 +++
- 3 files changed, 11 insertions(+), 3 deletions(-)
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-index 7d8842378c2b..a20093803e04 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-@@ -526,9 +526,9 @@ mtk_wed_dma_disable(struct mtk_wed_device *dev)
- 			MTK_WED_WPDMA_RX_D_RX_DRV_EN);
- 		wed_clr(dev, MTK_WED_WDMA_GLO_CFG,
- 			MTK_WED_WDMA_GLO_CFG_TX_DDONE_CHK);
--
--		mtk_wed_set_512_support(dev, false);
- 	}
-+
-+	mtk_wed_set_512_support(dev, false);
- }
- 
- static void
-@@ -1290,9 +1290,10 @@ mtk_wed_start(struct mtk_wed_device *dev, u32 irq_mask)
- 		if (mtk_wed_rro_cfg(dev))
- 			return;
- 
--		mtk_wed_set_512_support(dev, dev->wlan.wcid_512);
- 	}
- 
-+	mtk_wed_set_512_support(dev, dev->wlan.wcid_512);
-+
- 	mtk_wed_dma_enable(dev);
- 	dev->running = true;
- }
-@@ -1338,6 +1339,8 @@ mtk_wed_attach(struct mtk_wed_device *dev)
- 	dev->irq = hw->irq;
- 	dev->wdma_idx = hw->index;
- 	dev->version = hw->version;
-+	if (hw->version != 1)
-+		dev->rev_id = wed_r32(dev, MTK_WED_REV_ID);
- 
- 	if (hw->eth->dma_dev == hw->eth->dev &&
- 	    of_dma_is_coherent(hw->eth->dev->of_node))
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_regs.h b/drivers/net/ethernet/mediatek/mtk_wed_regs.h
-index 9e39dace95eb..873d50b9a6e6 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_regs.h
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_regs.h
-@@ -20,6 +20,8 @@ struct mtk_wdma_desc {
- 	__le32 info;
- } __packed __aligned(4);
- 
-+#define MTK_WED_REV_ID					0x004
-+
- #define MTK_WED_RESET					0x008
- #define MTK_WED_RESET_TX_BM				BIT(0)
- #define MTK_WED_RESET_TX_FREE_AGENT			BIT(4)
-diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
-index 8294978f4bca..1b1ef57609f7 100644
---- a/include/linux/soc/mediatek/mtk_wed.h
-+++ b/include/linux/soc/mediatek/mtk_wed.h
-@@ -85,6 +85,9 @@ struct mtk_wed_device {
- 	int irq;
- 	u8 version;
- 
-+	/* used by wlan driver */
-+	u32 rev_id;
-+
- 	struct mtk_wed_ring tx_ring[MTK_WED_TX_QUEUES];
- 	struct mtk_wed_ring rx_ring[MTK_WED_RX_QUEUES];
- 	struct mtk_wed_ring txfree_ring;
--- 
-2.18.0
+Thanks,
+Saeed.
 
+
+The following changes since commit badbda1a01860c80c6ab60f329ef46c713653a27:
+
+  octeontx2-af: cn10k: mcs: Fix copy and paste bug in mcs_bbe_intr_handler() (2022-11-21 13:04:28 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-11-21
+
+for you to fetch changes up to 8514e325ef016e3fdabaa015ed1adaa6e6d8722a:
+
+  net/mlx5e: Fix possible race condition in macsec extended packet number update routine (2022-11-21 18:14:35 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2022-11-21
+
+----------------------------------------------------------------
+Chris Mi (1):
+      net/mlx5e: Offload rule only when all encaps are valid
+
+Eli Cohen (1):
+      net/mlx5: Lag, avoid lockdep warnings
+
+Emeel Hakim (3):
+      net/mlx5e: Fix MACsec SA initialization routine
+      net/mlx5e: Fix MACsec update SecY
+      net/mlx5e: Fix possible race condition in macsec extended packet number update routine
+
+Moshe Shemesh (4):
+      net/mlx5: Fix FW tracer timestamp calculation
+      net/mlx5: cmdif, Print info on any firmware cmd failure to tracepoint
+      net/mlx5: Fix handling of entry refcount when command is not issued to FW
+      net/mlx5: Fix sync reset event handler error flow
+
+Roi Dayan (1):
+      net/mlx5: E-Switch, Set correctly vport destination
+
+Roy Novich (1):
+      net/mlx5: Do not query pci info while pci disabled
+
+Shay Drory (1):
+      net/mlx5: SF: Fix probing active SFs during driver probe phase
+
+Tariq Toukan (2):
+      net/mlx5e: Fix missing alignment in size of MTT/KLM entries
+      net/mlx5e: Remove leftovers from old XSK queues enumeration
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  47 +++++-----
+ .../mellanox/mlx5/core/diag/cmd_tracepoint.h       |  45 ++++++++++
+ .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |  16 ++--
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.h  |   3 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  |  19 ++--
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  18 ----
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  17 ++--
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   9 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h  |  14 ++-
+ .../net/ethernet/mellanox/mlx5/core/lag/mpesw.c    | 100 +++++++++++++--------
+ .../net/ethernet/mellanox/mlx5/core/lag/mpesw.h    |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   |  88 ++++++++++++++++++
+ include/linux/mlx5/driver.h                        |   1 +
+ 18 files changed, 281 insertions(+), 118 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/diag/cmd_tracepoint.h
