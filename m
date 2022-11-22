@@ -2,137 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31D36633E93
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:11:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0984C633E9E
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:14:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiKVOLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 09:11:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        id S233659AbiKVOOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbiKVOLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:11:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4613E45A12
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:10:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669126216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kUXtYQe0ohDvr6A78vOZ5b4tncoePLFzJblR8fMqSyk=;
-        b=JetNRvQzpzFo9zRdmMZX7CWTtdHEoGKxAmAgfmhybgj4kAZ52tARYMWQCPJc/z/3aWyPx2
-        apob4PmBX4l8UhaVqKI799SyvDrqJDQlbw79pXy8Ljt2bRBLrnp4cR6VThMwSlzERRaVl+
-        1BrsCIZAzci4micOAzSwBx9L2dIidnU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-528-FN3sQiPONBGwIFx_62Fj_Q-1; Tue, 22 Nov 2022 09:10:15 -0500
-X-MC-Unique: FN3sQiPONBGwIFx_62Fj_Q-1
-Received: by mail-wm1-f72.google.com with SMTP id v188-20020a1cacc5000000b003cf76c4ae66so11033409wme.7
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:10:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kUXtYQe0ohDvr6A78vOZ5b4tncoePLFzJblR8fMqSyk=;
-        b=gXfkCx8mqPWCSqbsHYtuQFhMn3Teh5lhf/R+IYS6WHCDrKlH0uk8HXOcrTNk0MEHMq
-         RJxY4Erls0cPPzdpvft8Gqf857J5wu+aMGSWr6kR8y/Kug+xrZLUu6l7Eu7AwpR08GTR
-         WdNMxmvGn+/BqK0zEVx6qirdZwlc+UQAnNkAyH1q1zAFUfUdN97wOTPQk5R3iTqDYs3W
-         7iwJeSCqJLF9Lvus/wjbRd0pKzW5gyJnYe6GUz1IuKhoZETW1JiD1ZM/Ux+iNI9k8V8o
-         Lqmy1yll9TwOi+bTVsqbx+/I2b8RpQaVMztqLIpdH8TmJS7JgNGK2dAwmv8u1TXvflyZ
-         v9sA==
-X-Gm-Message-State: ANoB5plHll2ak20SRLvrW9GJWC2bJpuCX364Q2xYPVXf/RV+cfjxxE/S
-        blvNp9p6iijBhJnqAPj6obpunKiYmgPGKWtKe88lSDcujlbN3bdGFhGytw3TiuN1GFdH7hiC88G
-        ZcPSlVH2a4GHfhGAs
-X-Received: by 2002:adf:e986:0:b0:241:8435:ea7e with SMTP id h6-20020adfe986000000b002418435ea7emr13610123wrm.103.1669126214054;
-        Tue, 22 Nov 2022 06:10:14 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5vbCTaSmKUY7Zj6hCXQETQMUra7D0zA4edFEMtn2U+jmGpeBEffvptZMw6+34NERhptkMVJQ==
-X-Received: by 2002:adf:e986:0:b0:241:8435:ea7e with SMTP id h6-20020adfe986000000b002418435ea7emr13610106wrm.103.1669126213814;
-        Tue, 22 Nov 2022 06:10:13 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id n17-20020a05600c465100b003cf483ee8e0sm19995036wmo.24.2022.11.22.06.10.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 06:10:12 -0800 (PST)
-Date:   Tue, 22 Nov 2022 15:10:11 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
+        with ESMTP id S231993AbiKVOOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:14:49 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D214F2CE39;
+        Tue, 22 Nov 2022 06:14:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=fPPV6bHHJk7Bs+EMqqf8ix0CTVkJxWliUb6bnx5zXTg=; b=HdO+Bn2qho/Fg02s5a+yFi5L/z
+        s0NtsK38g/aax/ZAJqb3zpsAMqYq7+Q7tadhZHCFcDv1F8NGUS7eMrvUVi6gO0Se6McQOvAq3EGvL
+        2kViVT7V7FMmfwuik/UpbfWf7ZfBgB0Sd8aBtzOA1ZGU4sFgBdRLOLdVIpDDIBDRCL0BgV3NB5s8H
+        VKjVRBdnpccjyfxP0D+XRHZnKynxW/A+W7CgX/YFu2injmmqoGzfKseis/z+POMQ258gzMv/SBjZb
+        vxn2zgiGmmQ5uxX+zUys8Q1Tg/lPY+AiXkiTSXv5kRITvA/tjn3PL2mSG0brgGwDC2ZTeZl0fGh8O
+        RnnjkvdA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oxU2k-006RC4-4S; Tue, 22 Nov 2022 14:14:34 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DDB44300322;
+        Tue, 22 Nov 2022 15:14:26 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 885B22D69A8AA; Tue, 22 Nov 2022 15:14:26 +0100 (CET)
+Date:   Tue, 22 Nov 2022 15:14:26 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Chen Hu <hu1.chen@intel.com>, jpoimboe@kernel.org,
+        memxor@gmail.com, bpf@vger.kernel.org,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Parkin <tparkin@katalix.com>,
-        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
-        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
-        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
-Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
- sk_callback_lock
-Message-ID: <20221122141011.GA3303@pc-4.home>
-References: <20221119130317.39158-1-jakub@cloudflare.com>
- <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
- <a850c224-f728-983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>
- <87wn7o7k7r.fsf@cloudflare.com>
- <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
- <87fseb7vbm.fsf@cloudflare.com>
- <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
- <871qpvmfab.fsf@cloudflare.com>
- <a3b7d8cd-0c72-8e6b-78f2-71b92e70360f@I-love.SAKURA.ne.jp>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf v2] selftests/bpf: Fix "missing ENDBR" BUG for
+ destructor kfunc
+Message-ID: <Y3zZQpHNQ8cRjKQY@hirez.programming.kicks-ass.net>
+References: <20221122073244.21279-1-hu1.chen@intel.com>
+ <Y3zTF0CjQFt/dR2M@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a3b7d8cd-0c72-8e6b-78f2-71b92e70360f@I-love.SAKURA.ne.jp>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Y3zTF0CjQFt/dR2M@krava>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 08:14:33PM +0900, Tetsuo Handa wrote:
-> On 2022/11/22 19:46, Jakub Sitnicki wrote:
-> >> https://syzkaller.appspot.com/bug?extid=94cc2a66fc228b23f360 is the one
-> >> where changing lockdep class is concurrently done on pre-existing sockets.
-> >>
-> >> I think we need to always create a new socket inside l2tp_tunnel_register(),
-> >> rather than trying to serialize setting of sk_user_data under sk_callback_lock.
+On Tue, Nov 22, 2022 at 02:48:07PM +0100, Jiri Olsa wrote:
+> On Mon, Nov 21, 2022 at 11:32:43PM -0800, Chen Hu wrote:
+> > With CONFIG_X86_KERNEL_IBT enabled, the test_verifier triggers the
+> > following BUG:
 > > 
-> > While that would be easier to handle, I don't see how it can be done in
-> > a backward-compatible way. User-space is allowed to pass a socket to
-> > l2tp today [1].
-> 
-> What is the expected usage of the socket which was passed to l2tp_tunnel_register() ?
+> >   traps: Missing ENDBR: bpf_kfunc_call_test_release+0x0/0x30
+> >   ------------[ cut here ]------------
+> >   kernel BUG at arch/x86/kernel/traps.c:254!
+> >   invalid opcode: 0000 [#1] PREEMPT SMP
+> >   <TASK>
+> >    asm_exc_control_protection+0x26/0x50
+> >   RIP: 0010:bpf_kfunc_call_test_release+0x0/0x30
+> >   Code: 00 48 c7 c7 18 f2 e1 b4 e8 0d ca 8c ff 48 c7 c0 00 f2 e1 b4 c3
+> > 	0f 1f 44 00 00 66 0f 1f 00 0f 1f 44 00 00 0f 0b 31 c0 c3 66 90
+> >        <66> 0f 1f 00 0f 1f 44 00 00 48 85 ff 74 13 4c 8d 47 18 b8 ff ff ff
+> >    bpf_map_free_kptrs+0x2e/0x70
+> >    array_map_free+0x57/0x140
+> >    process_one_work+0x194/0x3a0
+> >    worker_thread+0x54/0x3a0
+> >    ? rescuer_thread+0x390/0x390
+> >    kthread+0xe9/0x110
+> >    ? kthread_complete_and_exit+0x20/0x20
+> > 
+> > This is because there are no compile-time references to the destructor
+> > kfuncs, bpf_kfunc_call_test_release() for example. So objtool marked
+> > them sealable and ENDBR in the functions were sealed (converted to NOP)
+> > by apply_ibt_endbr().
 
-It receives L2TP packets. Those can be either control or data ones.
-Data packets are processed by the kernel. Control packets are queued to
-user space.
-
-> Is the userspace supposed to just close() that socket? Or, is the userspace allowed to
-> continue using the socket?
-
-User space uses this socket to send and receive L2TP control packets
-(tunnel and session configuration, keep alive and tear down). Therefore
-it absolutely needs to continue using this socket after the
-registration phase.
-
-> If the userspace might continue using the socket, we would
-> 
->   create a new socket, copy required attributes (the source and destination addresses?) from
->   the socket fetched via sockfd_lookup(), and call replace_fd() like e.g. umh_pipe_setup() does
-> 
-> inside l2tp_tunnel_register(). i-node number of the socket would change, but I assume that
-> the process which called l2tp_tunnel_register() is not using that i-node number.
-> 
-> Since the socket is a datagram socket, I think we can copy required attributes. But since
-> I'm not familiar with networking code, I don't know what attributes need to be copied. Thus,
-> I leave implementing it to netdev people.
-
-That looks fragile to me. If the problem is that setup_udp_tunnel_sock()
-can sleep, we can just drop the udp_tunnel_encap_enable() call from
-setup_udp_tunnel_sock(), rename it __udp_tunnel_encap_enable() and make
-make udp_tunnel_encap_enable() a wrapper around it that'd also call
-udp_tunnel_encap_enable().
+If there is no compile time reference to it, what stops an LTO linker
+from throwing it out in the first place?
 
