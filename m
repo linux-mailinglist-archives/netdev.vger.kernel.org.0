@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE99634283
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:32:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52DB8634284
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:32:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbiKVRct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:32:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
+        id S234500AbiKVRcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:32:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234496AbiKVRcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:32:32 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F822BE8
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:32:29 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id p18so10756407qkg.2
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:32:29 -0800 (PST)
+        with ESMTP id S232192AbiKVRch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:32:37 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB19BA3
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:32:30 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id d18so7031516qvs.6
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:32:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=p3rcuH36mN84wESRx05bYVQTdbTqnB9PFnSiB03P/qI=;
-        b=hJmA2rbIoGD5Rj5tdFIeVyLsgnfUiX5OrRkOSyJM4dG2HMWYdcTH4w+0P2jIWDtdv1
-         nHYsTiXuTcK1Ehc6r5iOnjAicidIBizK5Rf4KN61pQgSzlb07+J7BMu9ksZ02lrR69LZ
-         sQCUp1ngXZr3xe6N23H5d1IEMX5otc5zF74IKsyjNL8fh1wJeBzfxn2kTpSyWMqg5LbH
-         VWfomyLQxYXjm1lBaQb7HUugr4gD6uqb7QAbTb/HbgBiGpiY+llPes0m/BUSzi7Rdd06
-         kKCtMXgPcD0nBSEyaYl+kuRU6wqo+4+vR7PEoCb+fGHJV3c/aQCXnYzXncpGY37HwuQ+
-         bdow==
+        bh=ehYMZLUvktYqzKA34sv7SuHaatYQ6MJnVzzXpFPOn90=;
+        b=Wxw0POML48rxxCfZhsB12TWOdfQVZsErlNcHgFS0s7/Gvw46wg5SWeBluWWCovvF2/
+         X++fI5mIdwmXQFopsUcpg0SvQ3VxT54FELCHcD8mlQ7zAGAE0wBGXDfi2wcNdqcvraB4
+         3OgbxSBo01mnjrD/WNh2iLUkjI7zDhJ2VszPhfPs3Xe9P2HtUmkexEmilFuKZDsXVJAV
+         LKpIb3QNihdv/bfuuFD7szLKXEpFKH+nQLtja07rf9mNWx+EAEPkO6GU7FRyKNE5MeZH
+         P0qNpetehD9fLP9KNo3tyw3w0Du9UCWZTiWuvgA233V+FYOwTxxNVMM+YqZAUZNZxTfm
+         DbqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=p3rcuH36mN84wESRx05bYVQTdbTqnB9PFnSiB03P/qI=;
-        b=sfE4WtQYX/dgMeNeqlQNkEWvIDOnQOC1GZPuUKp4FLGNYJZ/GlytxoPE2BQnPoL5fV
-         SaqcKH0/eoU4m8XL/MckU80OrisfEbAk8XO9Kjvv9+fpDvzrW/F+Er8rSkbUMpNsp4Dl
-         m654b8TmvThZHeV0sOKWis5+y0iuCsFn+cXCA8uXy+Qt8Co//sa95mUancz8Hh3ihWMh
-         +EgOBoYSQnkGE9DfBb1CoAxm35x6kMDG6sPr7UxRZ7j29gsNa6CeZFI8q9rZ45VUNSaq
-         oDKqBCrJMycSWKaX4yHAtDBMT4mzTtHY8fvbhYCYnKimFeEFoLhnZm7vcZa8xU5wuHQ5
-         7mTw==
-X-Gm-Message-State: ANoB5pkgH6wq/dd7PM3OHxEkDkQw2NJX9ZnB+MCsaxHm4+uqYi7VJrmj
-        KJIPhgbWF+fmJ77QDZKLjYBz3D+h2i9xvw==
-X-Google-Smtp-Source: AA0mqf5rZwHfdNwvh8iAxXlCk9OLPe1rQqOkJ2fkAFA42FxXVmpBhvVZqL9FUPJUQc7Qsa4sqa4CaA==
-X-Received: by 2002:a37:b2c6:0:b0:6ee:a33b:a583 with SMTP id b189-20020a37b2c6000000b006eea33ba583mr4288028qkf.352.1669138348412;
-        Tue, 22 Nov 2022 09:32:28 -0800 (PST)
+        bh=ehYMZLUvktYqzKA34sv7SuHaatYQ6MJnVzzXpFPOn90=;
+        b=5QfE0TAJqCVH/20YuEN+m5Lx2qIPrd6fUlAnfuJ8AGbLAofRgGRIXhVK9vkA2MPuqd
+         ge7o8Iu7h+Lh8HWiLR4WufP45xRUWUBCz8aDd/EY+OLuXBQxKF5pduaIbHZ0JZQeRHB/
+         LdG8fP7KXBxNnWC/kj7V75gBghkBDMt5oF4aJsF+ZEI+wDB/7MArtr2TEK0ZxhH5/arr
+         qs3z6m7So4twVQ1MBys5FFDZ4DM79E/XtXPx4QTV1sFY/myb8fVt1d5J9put71kAFLkW
+         nj8LSxOXUYRtDFj4GTaBJfkaaV96+pu6Fridv0fE55+43uFvBbtoIun5i8htQTX64i2L
+         5S4g==
+X-Gm-Message-State: ANoB5pl2VIIs3zpvRQ6CJs0mqql7MBUH2rDUZ+7i35lUjgu5pd9qmdtt
+        Ock34/0O0SU1priihD5DvGxYIkoHkXgcSQ==
+X-Google-Smtp-Source: AA0mqf4K1BREno2zDFwDVF/74PCDBPw4jYxVFBZ2PHInrluIy3/nzY+7WtVxM6/yEy+6sjwaJVsBHw==
+X-Received: by 2002:a0c:fa01:0:b0:4b4:6402:bc03 with SMTP id q1-20020a0cfa01000000b004b46402bc03mr4450970qvn.81.1669138349779;
+        Tue, 22 Nov 2022 09:32:29 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j12-20020a05620a410c00b006eef13ef4c8sm10865040qko.94.2022.11.22.09.32.26
+        by smtp.gmail.com with ESMTPSA id j12-20020a05620a410c00b006eef13ef4c8sm10865040qko.94.2022.11.22.09.32.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 09:32:27 -0800 (PST)
+        Tue, 22 Nov 2022 09:32:29 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
         ovs-dev@openvswitch.org
@@ -67,9 +67,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Ilya Maximets <i.maximets@ovn.org>,
         Eelco Chaudron <echaudro@redhat.com>,
         Aaron Conole <aconole@redhat.com>
-Subject: [PATCHv2 net-next 3/5] net: sched: return NF_ACCEPT when fails to add nat ext in tcf_ct_act_nat
-Date:   Tue, 22 Nov 2022 12:32:19 -0500
-Message-Id: <439676c5242282638057f92dc51314df7bcd0a73.1669138256.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 4/5] net: sched: update the nat flag for icmp error packets in ct_nat_execute
+Date:   Tue, 22 Nov 2022 12:32:20 -0500
+Message-Id: <dc9fc5ba4cb9036e52005b207c75cd56755db49d.1669138256.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1669138256.git.lucien.xin@gmail.com>
 References: <cover.1669138256.git.lucien.xin@gmail.com>
@@ -85,9 +85,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch changes to return NF_ACCEPT when fails to add nat
-ext before doing NAT in tcf_ct_act_nat(), to keep consistent
-with OVS' processing in ovs_ct_nat().
+In ovs_ct_nat_execute(), the packet flow key nat flags are updated
+when it processes ICMP(v6) error packets translation successfully.
+
+In ct_nat_execute() when processing ICMP(v6) error packets translation
+successfully, it should have done the same in ct_nat_execute() to set
+post_ct_s/dnat flag, which will be used to update flow key nat flags
+in OVS module later.
 
 Reviewed-by: Saeed Mahameed <saeed@kernel.org>
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
@@ -96,18 +100,24 @@ Signed-off-by: Xin Long <lucien.xin@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index da0b7f665277..8869b3ef6642 100644
+index 8869b3ef6642..c7782c9a6ab6 100644
 --- a/net/sched/act_ct.c
 +++ b/net/sched/act_ct.c
-@@ -994,7 +994,7 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
+@@ -936,13 +936,13 @@ static int ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 	}
  
- 	/* Add NAT extension if not confirmed yet. */
- 	if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
--		return NF_DROP;   /* Can't NAT. */
-+		return NF_ACCEPT;   /* Can't NAT. */
- 
- 	if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
- 	    (ctinfo != IP_CT_RELATED || commit)) {
+ 	err = nf_nat_packet(ct, ctinfo, hooknum, skb);
++out:
+ 	if (err == NF_ACCEPT) {
+ 		if (maniptype == NF_NAT_MANIP_SRC)
+ 			tc_skb_cb(skb)->post_ct_snat = 1;
+ 		if (maniptype == NF_NAT_MANIP_DST)
+ 			tc_skb_cb(skb)->post_ct_dnat = 1;
+ 	}
+-out:
+ 	return err;
+ }
+ #endif /* CONFIG_NF_NAT */
 -- 
 2.31.1
 
