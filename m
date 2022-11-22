@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 456CD633351
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:29:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F16633354
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:29:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbiKVC3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 21:29:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56202 "EHLO
+        id S232173AbiKVC3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 21:29:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231675AbiKVC3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:29:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDAF2E69E
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:36 -0800 (PST)
+        with ESMTP id S232034AbiKVC3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:29:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08FE2EF79
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B458A61534
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10D2AC433C1;
-        Tue, 22 Nov 2022 02:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B766661542
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F450C433C1;
+        Tue, 22 Nov 2022 02:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669084116;
-        bh=IV99aF/LKZzKTFhC7P+bY9zyaQuPIcwTwHYGZfpAtnc=;
+        s=k20201202; t=1669084117;
+        bh=Z1ILSTbcWmOpIOd5FbPAnvJN/RwxZMrdsOX98o7hd8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OaLoN8JaWRY7s4tBGrOtaKSPscRx9gG7dP3rgyoIE3RketrgIv3PkseqJA7SZgqPW
-         yucGZIVygtw3OwZW1MTjd7FibapyWeueaNc0iA7y/zEQLcRT7/C942dmNJiuT198ex
-         doAeyhO9u85hnkl+Iq1SrDwm3FTxiHAzjZbhr/NoYc1/6G27mJ4/OB4J7KFktl9p1u
-         clUF0YSpAlc3iuvhU5LEN4ugXRekJZHRlzThXQuk4h4zvUCwISVOXyNQfikbbwjt7A
-         5xhAXryRg3I6IxALhjxPTFD2nLO/etuDBJZ+k44zAvFuDNH7ug4RakF6q3iplhTu/L
-         EHD1z9zuJ4Ong==
+        b=d7XWxssxhi/Dx9GY9cFGroeaQHyJFBs0OD5IEwLrAGZYN0NgcLaLGmmZJvXcwf0HQ
+         suHvdqce8fi0XgXv2QcGD9AhLq1Pe17kzdnAvHzYu8MXPrZwdQl6OyHgaYRAqEZvfj
+         wFCuGNjM1NpuY2Y235UbSgOU/+l4WYUhbiRgWRZuaO6xOEnZWpSlZVo7beoo2azSgS
+         ClqIRFA2djZ6r7zEWoGt0BL9nHdMEV83vCQquqTNN/leOGx4MamuIsszgPRCpIjbSl
+         BIdAqc6F/IEqqisQT5dwguIu5EGXlm42ZLJkBds81nVV56k5+X5kxOFlrtnKBLuLRf
+         dBnlcdvGyD3gA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Emeel Hakim <ehakim@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [net 13/14] net/mlx5e: Fix MACsec update SecY
-Date:   Mon, 21 Nov 2022 18:25:58 -0800
-Message-Id: <20221122022559.89459-14-saeed@kernel.org>
+        Emeel Hakim <ehakim@nvidia.com>
+Subject: [net 14/14] net/mlx5e: Fix possible race condition in macsec extended packet number update routine
+Date:   Mon, 21 Nov 2022 18:25:59 -0800
+Message-Id: <20221122022559.89459-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221122022559.89459-1-saeed@kernel.org>
 References: <20221122022559.89459-1-saeed@kernel.org>
@@ -58,34 +58,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emeel Hakim <ehakim@nvidia.com>
 
-Currently updating SecY destroys and re-creates RX SA objects,
-the re-created RX SA objects are not identical to the destroyed
-objects and it disagree on the encryption enabled property which
-holds the value false after recreation, this value is not
-supported with offload which leads to no traffic after an update.
-Fix by recreating an identical objects.
+Currenty extended packet number (EPN) update routine is accessing
+macsec object without holding the general macsec lock hence facing
+a possible race condition when an EPN update occurs while updating
+or deleting the SA.
+Fix by holding the general macsec lock before accessing the object.
 
-Fixes: 5a39816a75e5 ("net/mlx5e: Add MACsec offload SecY support")
+Fixes: 4411a6c0abd3 ("net/mlx5e: Support MACsec offload extended packet number (EPN)")
 Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index 8f8a735a4501..4f96c69c6cc4 100644
+index 4f96c69c6cc4..3dc6c987b8da 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -1155,7 +1155,7 @@ static int macsec_upd_secy_hw_address(struct macsec_context *ctx,
- 				continue;
+@@ -1536,6 +1536,8 @@ static void macsec_async_event(struct work_struct *work)
  
- 			if (rx_sa->active) {
--				err = mlx5e_macsec_init_sa(ctx, rx_sa, false, false);
-+				err = mlx5e_macsec_init_sa(ctx, rx_sa, true, false);
- 				if (err)
- 					goto out;
- 			}
+ 	async_work = container_of(work, struct mlx5e_macsec_async_work, work);
+ 	macsec = async_work->macsec;
++	mutex_lock(&macsec->lock);
++
+ 	mdev = async_work->mdev;
+ 	obj_id = async_work->obj_id;
+ 	macsec_sa = get_macsec_tx_sa_from_obj_id(macsec, obj_id);
+@@ -1557,6 +1559,7 @@ static void macsec_async_event(struct work_struct *work)
+ 
+ out_async_work:
+ 	kfree(async_work);
++	mutex_unlock(&macsec->lock);
+ }
+ 
+ static int macsec_obj_change_event(struct notifier_block *nb, unsigned long event, void *data)
 -- 
 2.38.1
 
