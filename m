@@ -2,140 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F96633851
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B19E633862
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232675AbiKVJZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 04:25:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        id S233284AbiKVJ15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 04:27:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232984AbiKVJZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:25:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B26F49B56
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:24:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669109068;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z3VVqk1FobqmR1kglBG91dZn4+J8B8jTIvbBuAdolWs=;
-        b=GKLkBBdot85n653yo60XkRsaMo+QSqsutxpoNXnqBILWOvOqQy038jsAVzXaFqJTq8ca6A
-        DPehU+6ujrA4fD+c/bzxp0b4KM19XjcYn0Jva6TDCeAmPPW5MZ2xGqgLC6KXxRhAJBwCPd
-        jU2keMJNmazYGdC4GjTYEUmK265uikk=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-252-K31Ka5ufNLOyz1AnBxJeeg-1; Tue, 22 Nov 2022 04:24:26 -0500
-X-MC-Unique: K31Ka5ufNLOyz1AnBxJeeg-1
-Received: by mail-qk1-f197.google.com with SMTP id w4-20020a05620a444400b006fa24b2f394so18337793qkp.15
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:24:26 -0800 (PST)
+        with ESMTP id S232806AbiKVJ1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:27:51 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFC5627F
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:27:29 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id q71so13562240pgq.8
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:27:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=eATo/hld30hJMYbs854XvpQGAeslm1I6YJ3BHDFYFEg=;
+        b=Dh3UF3El3dMJ6YHfGqSY2/yW/4eIWI4c2NX7FXI3gZTQg52GpepQx2iYs+axwGyBch
+         xiLrUm+XzFNiFGIfuuQRPX9rt6coTdn4F9lkTciXMvemJQXPzHd68W7F/hIphcnaTbBV
+         8cByzmD0CZttP5yYv4Rs0IuLYG/6TWS6YFUemU+GT8E0CXUkzN22hbt4eFMS2TinVBRl
+         x0SmsG5H6gYOAnieaxxv5MxW4lHVdXfqFXPd2AI4NhLFOiybEtgqwU5eZikBFTVreFz9
+         L5njN1gHd6uREwoD6fbog1A8q5qxdd1uYNjAqvPpzZnWJaClkz1cMnLhqB2DWZd8wFyp
+         Q9Zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Z3VVqk1FobqmR1kglBG91dZn4+J8B8jTIvbBuAdolWs=;
-        b=MuIuErU+hbwFzn2NMNY1uNTvTUfhuUMRLt0sCVdmyWvTIZZ9z3yi1QPZhY+wQZZ86s
-         Yc2rBvGgLsfeaPvSjCP1PdvLxqla1xz+g33fWcOKUV3WtuLM6Wf/cLzQ1oChljR4WWz0
-         qMU1y9Q84wii0K0SEJ0V3r4NVOK30Xvfq6kiae/S6DCRhiLC65CBTia2VwA/VbTS6Vq6
-         jiK4O53tAZjiFipRe7M3tmte3slAIaWN/EIrbLuKjX163+sVTguUUIdsDxzX85d9FGx+
-         FzvrLp4NXKtB5niW5zc6PotAUuPGPDUdJWqNY1rr9oDKelc9f5Z3EdR9+tw2ABDxtcmi
-         7kBA==
-X-Gm-Message-State: ANoB5pnyRzqWDZ/V4/QFjIo6u66imeqluYOBXNM60zXIJvNZKeNEb84R
-        M2m0k68RFkmbm7pRy1BA554hMkPQsNIXh6k7X34jicNR36qP23ya7I75541fYKalhX38d4m+m16
-        Vx1GGSgf4WCL/TXH1
-X-Received: by 2002:a05:620a:459f:b0:6fa:f76d:bbc1 with SMTP id bp31-20020a05620a459f00b006faf76dbbc1mr2670130qkb.11.1669109065982;
-        Tue, 22 Nov 2022 01:24:25 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4NndHTnC1enH5ZhldwUXr78bILEXUWFS8kgfAOXZhJi6hWQbrf6QnncAM1MNDAVH3b80T1qw==
-X-Received: by 2002:a05:620a:459f:b0:6fa:f76d:bbc1 with SMTP id bp31-20020a05620a459f00b006faf76dbbc1mr2670113qkb.11.1669109065733;
-        Tue, 22 Nov 2022 01:24:25 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id i10-20020a05620a404a00b006bb8b5b79efsm10069093qko.129.2022.11.22.01.24.23
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eATo/hld30hJMYbs854XvpQGAeslm1I6YJ3BHDFYFEg=;
+        b=6Fm1LofsOTwk4pC0FMckacQTnIIrTccPl+qRvCR80SX2oZtiZYFMq+uZM69icRWkrY
+         GgE8RgipfLz0+Xw8CKkAvc4YOijZpWJyCeDVYZwqm1Q0eWi4LRW4Gix0G3rgNNy4GTfX
+         VRwOqtkgpJoWHTaLrzTyESkg4RqoeDf4kp6h9clqlBMHf6QpUB3bNa04jc6GvMKCemSW
+         vZySYr+DT+P2hx0cJYOtQ2s4xvye9oFn8wNe2hMbk7QWrsZtjcPYEEdUczjOlWIihER1
+         ZAc60qlfbCD+umN2yLxxRH5RhfDiOe1mP8+FkU+FdehN5WMuWv0oOGiX7JTSkrlsWtH4
+         zuqg==
+X-Gm-Message-State: ANoB5pmyETnVz+VeitEzG8wMZeYeUF2wgvDGgFjU+MY+9N70KPB2iUVZ
+        zsF6Tz4PFpJNPoyDrhnf1Dlfdg==
+X-Google-Smtp-Source: AA0mqf5FEiWQeGphury5+1tD79SfHYxjMoofOiV7AmZQVVrt3KAqnKKRF05vDd/tj0redx0XMfIMUw==
+X-Received: by 2002:aa7:9293:0:b0:56b:9bf4:c1c4 with SMTP id j19-20020aa79293000000b0056b9bf4c1c4mr14057458pfa.67.1669109249227;
+        Tue, 22 Nov 2022 01:27:29 -0800 (PST)
+Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
+        by smtp.gmail.com with ESMTPSA id g10-20020a170902d1ca00b00178acc7ef16sm9678567plb.253.2022.11.22.01.27.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 01:24:25 -0800 (PST)
-Message-ID: <5b8e8eab4cf2f46f4ff6727097fefaf9e17a9c3b.camel@redhat.com>
-Subject: Re: [net-next PATCH] octeontx2-pf: Add support to filter packet
- based on IP fragment
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Suman Ghosh <sumang@marvell.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, sgoutham@marvell.com,
-        sbhatta@marvell.com, jerinj@marvell.com, gakula@marvell.com,
-        hkelam@marvell.com, lcherian@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 22 Nov 2022 10:24:21 +0100
-In-Reply-To: <20221118062248.2532370-1-sumang@marvell.com>
-References: <20221118062248.2532370-1-sumang@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 22 Nov 2022 01:27:28 -0800 (PST)
+From:   Akihiko Odaki <akihiko.odaki@daynix.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Akihiko Odaki <akihiko.odaki@daynix.com>
+Subject: [PATCH] igbvf: Regard vf reset nack as success
+Date:   Tue, 22 Nov 2022 18:27:07 +0900
+Message-Id: <20221122092707.30981-1-akihiko.odaki@daynix.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+vf reset nack actually represents the reset operation itself is
+performed but no address is not assigned. Therefore, e1000_reset_hw_vf
+should fill the "perm_addr" with the zero address and return success on
+such an occassion. This prevents its callers in netdev.c from saying PF
+still resetting, and instead allows them to correctly report that no
+address is assigned.
 
-On Fri, 2022-11-18 at 11:52 +0530, Suman Ghosh wrote:
-> 1. Added support to filter packets based on IP fragment.
-> For IPv4 packets check for ip_flag == 0x20 (more fragment bit set).
-> For IPv6 packets check for next_header == 0x2c (next_header set to
-> 'fragment headre for IPv6')
+Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+---
+ drivers/net/ethernet/intel/igbvf/vf.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-typo above  ^^^^^^ header
-
-> @@ -891,10 +896,22 @@ static int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
->  			req->features |= BIT_ULL(NPC_OUTER_VID);
->  		}
->  
-> -		/* Not Drop/Direct to queue but use action in default entry */
-> -		if (fsp->m_ext.data[1] &&
-> -		    fsp->h_ext.data[1] == cpu_to_be32(OTX2_DEFAULT_ACTION))
-> -			req->op = NIX_RX_ACTION_DEFAULT;
-> +		if (fsp->m_ext.data[1]) {
-> +			if (flow_type == IP_USER_FLOW) {
-> +				if (be32_to_cpu(fsp->h_ext.data[1]) != 0x20)
-> +					return -EINVAL;
-> +
-> +				pkt->ip_flag = be32_to_cpu(fsp->h_ext.data[1]);
-> +				pmask->ip_flag = fsp->m_ext.data[1];
-
-This causes a warning:
-
-../drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c:882:48: warning: incorrect type in assignment (different base types)
-../drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c:882:48:    expected unsigned char [usertype] ip_flag
-../drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c:882:48:    got restricted __be32
-
-and looks wrong: both pkt->ip_flag and pmask->ip_flag should get
-be32_to_cpu, or neither of them
-
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-> index e64318c110fd..a4a85e075eeb 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-> @@ -532,6 +532,31 @@ static int otx2_tc_prepare_flow(struct otx2_nic *nic, struct otx2_tc_flow *node,
->  			req->features |= BIT_ULL(NPC_IPPROTO_ICMP6);
->  	}
->  
-> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
-> +		struct flow_match_control match;
-> +
-> +		flow_rule_match_control(rule, &match);
-> +		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
-> +			netdev_info(nic->netdev, "HW doesn't support frag first/later");
-
-Here and below you are better off reporting the error via the extack:
-f->common.extack.
-
-
-Cheers,
-
-Paolo
+diff --git a/drivers/net/ethernet/intel/igbvf/vf.c b/drivers/net/ethernet/intel/igbvf/vf.c
+index b8ba3f94c363..2691ae2a8002 100644
+--- a/drivers/net/ethernet/intel/igbvf/vf.c
++++ b/drivers/net/ethernet/intel/igbvf/vf.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright(c) 2009 - 2018 Intel Corporation. */
+ 
++#include <linux/etherdevice.h>
++
+ #include "vf.h"
+ 
+ static s32 e1000_check_for_link_vf(struct e1000_hw *hw);
+@@ -131,11 +133,18 @@ static s32 e1000_reset_hw_vf(struct e1000_hw *hw)
+ 		/* set our "perm_addr" based on info provided by PF */
+ 		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
+ 		if (!ret_val) {
+-			if (msgbuf[0] == (E1000_VF_RESET |
+-					  E1000_VT_MSGTYPE_ACK))
++			switch (msgbuf[0]) {
++			case E1000_VF_RESET | E1000_VT_MSGTYPE_ACK:
+ 				memcpy(hw->mac.perm_addr, addr, ETH_ALEN);
+-			else
++				break;
++
++			case E1000_VF_RESET | E1000_VT_MSGTYPE_NACK:
++				eth_zero_addr(hw->mac.perm_addr);
++				break;
++
++			default:
+ 				ret_val = -E1000_ERR_MAC_INIT;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.38.1
 
