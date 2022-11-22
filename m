@@ -2,69 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A266634317
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:56:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10A0B63431A
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234483AbiKVR4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        id S233029AbiKVR5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:57:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234526AbiKVRzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:55:46 -0500
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A848DB5;
-        Tue, 22 Nov 2022 09:54:37 -0800 (PST)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3a4c2c83300so55977427b3.13;
-        Tue, 22 Nov 2022 09:54:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=L0rPPoMf/BQcnP7OVRdbz7eh/i+6Gf4OOaHX2I41UhU=;
-        b=d5VW+1b1VGIj13TRqpfUbm9lLtaM1CtTAtbQ1RHvN0H9yd6uo1BpMvacToZcZFyzx3
-         mQVjzGPGlrTVWDfBiXXxeBlRrQDYIEtzyJAcj5x6UXF8wq2+nIGL0TgNkMkYM/6ZBhLE
-         0c/0eFFu6uFJpNaehRs/89T3C+109cH6rH8OxLRyTCErkOB6+VrUOnrH8KdiyuIFrN2r
-         z6v7qGm09vuHS/rFVDHOcj7vw+7NRYDPWDgr2i3Ut6Uzk4/oDZSxLGN5Wt/RE/fr2blY
-         x1IZLZ3mM6pzIHyMuyLn2InX6z3+9vPyLUZBGEB6V47GOZ49n73GSWqTPca53SHMvh9O
-         CcSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=L0rPPoMf/BQcnP7OVRdbz7eh/i+6Gf4OOaHX2I41UhU=;
-        b=SSKBPtb11B0AhJQOr+no/rGQiQ6uuaro/zFDCjYMbE4BFAckmjqKPOdu0xNHK1PxMq
-         mlm0opSBVYgRcjgWC7gjiX0ZPN+uCo2HCPtKUkK+wiS1XeZg0DmQc9oTzpji1NIiJhVt
-         Rz2xzN/6opqbzquwa+ghwReukOACY7N/Hd2ASFK5+hfOyo+0BB4bC/RIIp5/Pu+Ri1Iw
-         f6uXMgxak0l9/E/lXe2kFK/mG/5bfuk3RuAfRvCi9Zu8kwc7Fe5K1qMBr/CqNKI+Rtti
-         4M3kEb6Jnstu7+JcHEkX4QDvNQI5f1U+cnQdwmgRoYW3g4CTB+P1MIVKg3GvNguxCVwb
-         Ofkg==
-X-Gm-Message-State: ANoB5pl7t8+0oULQVEpGheIjyfFDtjI4POQKJnbbzMZSs6J/mAQUKJOz
-        ai/o2uPTVcNLOBijQVp5gOZ4E420jdXYvb0byII=
-X-Google-Smtp-Source: AA0mqf7+udcH8F5ou6EBnqpzxPoJ7Sn8opE9LMmn0RU+R8gjos9Cxgw6UcypmHl1cUNGp6GSPUPn1vr95GiFH8GNwR0=
-X-Received: by 2002:a81:9145:0:b0:36c:ada0:8ae8 with SMTP id
- i66-20020a819145000000b0036cada08ae8mr4625148ywg.513.1669139676417; Tue, 22
- Nov 2022 09:54:36 -0800 (PST)
+        with ESMTP id S234540AbiKVR50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:57:26 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140051.outbound.protection.outlook.com [40.107.14.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5DD657E
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 09:56:33 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vf3Ap+hGghY+bED8U8WzaRM5uMmLlAYakBBGS0UOe/g96lj4T0A+ztshaR8TXiZ+dk+hV3Bq1xnEFqdrElXXIKCArfERtImOSm2OWhel57IXSwj7vJt8bP2zDkayRCFXOIGK35a8blJEzYf5+IY+uyA61Ho11+V4ekp+vBjeLF/4YafwqnVb1lRtuj5ssx9iw8tr5pvQUlbZ4Q00kX5Hky0KcKJ1FEKOitUbxvsNNK/wED8oRv0SiN1O/K2qOu73bwFk6OOz/2emYRbKz7APmqOeaMWdGfRuNRP/nQ8KGBsKAi0/BLkNuwKuSnKDtgZFznlTU8a6U/19G9jJE6lAmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GNKTX9vNsAh9GK/zccHR9jHivlNbwHRHBxm5jDz6V1U=;
+ b=SQT7qUDrhCpW2XvI7E5qi+IQ+hL2JYdnqg7oJK3wHOssCZvpjUodDCEypsyYoYL0vsV8Xu9Z9HmM/h37+M+qvz+fOG+lypUq7a7cLiAz9APiARhwX59wzra8Ex73dLlj0+A47LygR3iLKQxfIT5r3vU8B2ehwNanFjNNweUfgZ7W+CuBS6mIb569MlzRx3Hfwo2+RMTNQPB0PoNWxUvWARHa8kHifKnKYeKCAw5ndBy3iD8OSO7psApCrHMwoHPPteUdRurppRe8b8LpETF5l3DSIx25YhxwFo1/2+DqFSol+UIw/J81DQnSAI/pDxiJt0h7xGnZaeczZEvmu7b57w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GNKTX9vNsAh9GK/zccHR9jHivlNbwHRHBxm5jDz6V1U=;
+ b=N7wByFHzMt5KuLxk5BgQSaqAtlMU/ay5Zz7+PWZfmvzN2hTxUB2v4/xhqihocR1FRW/8vp94HSUzJpnYMviGFWZAx/o4YPQzw1CmgU5zGWqUymOvi40oOn/2WeRLNPwm4N9cKeslfvVVPAqmkyMzP0dx2uy2r7iX2J7WW9SlVnI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB7766.eurprd04.prod.outlook.com (2603:10a6:20b:2aa::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.11; Tue, 22 Nov
+ 2022 17:56:29 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Tue, 22 Nov 2022
+ 17:56:29 +0000
+Date:   Tue, 22 Nov 2022 19:56:25 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>
+Subject: Re: [PATCH v4 net-next 3/8] net: phy: bcm84881: move the in-band
+ capability check where it belongs
+Message-ID: <20221122175603.soux2q2cxs2wfsun@skbuf>
+References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
+ <20221118000124.2754581-4-vladimir.oltean@nxp.com>
+ <Y3yYo63kj+ACdkW1@shell.armlinux.org.uk>
+ <Y3yvd0uyG2tNeED3@shell.armlinux.org.uk>
+ <20221122121122.klqkw4onjxabyi22@skbuf>
+ <Y3z/xcbYMQFM5SN4@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3z/xcbYMQFM5SN4@shell.armlinux.org.uk>
+X-ClientProxiedBy: AM0PR05CA0078.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-References: <CAJnrk1YUNuJKvdYDp6Ye2rXgVzr8KViq65P0EGrh5W4WeoQkDA@mail.gmail.com>
- <20221122005050.56912-1-kuniyu@amazon.com>
-In-Reply-To: <20221122005050.56912-1-kuniyu@amazon.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 22 Nov 2022 09:54:24 -0800
-Message-ID: <CAJnrk1b+bMdNW=wBe0fQ-bPuxQUA9GAeQ4RiNoCccrFuB8OOAQ@mail.gmail.com>
-Subject: Re: [PATCH v4 net 4/4] dccp/tcp: Fixup bhash2 bucket when connect() fails.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     acme@mandriva.com, davem@davemloft.net, dccp@vger.kernel.org,
-        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
-        kuni1840@gmail.com, martin.lau@kernel.org,
-        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, pengfei.xu@intel.com,
-        stephen@networkplumber.org, syzkaller@googlegroups.com,
-        william.xuanziyang@huawei.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7766:EE_
+X-MS-Office365-Filtering-Correlation-Id: 56fb9059-2b4d-4f9c-22cc-08daccb2e1dc
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vNWCbA6yv2z7dycoIc3sWB9W9Oa+MqGM8+XI/dCPAVhzqzwnUGn1+MHzomsEH2QNRnze9hAc1NcfIBsAIg1nYnFvEwZry9C1Y546p0qScrnwhG93Ksa1LBMoluFkG9qsBjTiIP1nnOpviXjLjJUAjIU5N7vt5/+cZWdXsOEvFrRECTgQQxwAVAKG39Tu3c8mN4rw/eq+Bubxi6bvQqHbQxV1UXMd7hgQ4C93G6gGmwRgovM7BwJvb6hTxlHn73b1s1o/Z2UIxKxK5gz7OGOdoXJciuzihHxa+88/O3bW6wGaU+HPML3nv1ANgHSxp41jP0uDctsVl2ze0izDwjaBwDBjwaVQt6165Q9WiPkNqX69ti+xFEo8OotuP6BBdUduN83TD09fSV5y+xhmH+oHAzNvLcLiN9UCNchl7v3o3dpl6ue4m7+/bk5S7CVyiy8c+GjbURTddWXufwEimOZOynEqBvG+AEkugLWHCzpw6V3Zwiqhr9Bgz/cQY3P95pX98K5/vZlVcLCLXwra5+7K9gsHg3wrO2ss/l11r9G9zO7PaoDcVT3pWTV90/knBmQC5bpjOy/xYui9ouBvycqhqhvIxnc1V0b65tnDYRZx1L28kE7dGNEq93iNufSV/BCgiKZYxXTWK2XEO+02L3mmmA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(366004)(376002)(396003)(136003)(346002)(39860400002)(451199015)(6486002)(26005)(2906002)(6506007)(6666004)(86362001)(33716001)(83380400001)(478600001)(38100700002)(9686003)(6512007)(1076003)(186003)(7416002)(8936002)(44832011)(41300700001)(66476007)(66556008)(8676002)(4326008)(6916009)(66946007)(5660300002)(316002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UP/sFqQttQoqras0d/rjl+FFW7AwH3DRGcnN6cqIkzPkFF8hR/mcZvDX8Hsc?=
+ =?us-ascii?Q?ET4KIAX6vVk4gyp1NCyhbi6n2XCoJ5cff7oUdEFEREp4daCgMFwSTZns2AMw?=
+ =?us-ascii?Q?+P+dZ6p9OmfQrJ7AmHqP+cN0WEj8zOJbuv+ZkNFcLh5lHGvq7OR9sfdy4f6l?=
+ =?us-ascii?Q?nnUIEJxuRnMRXKE3jppdTsRUtXlVV4J0XCH1lAf4gpRXE043AuiOouC2qwSk?=
+ =?us-ascii?Q?tqRUnnWDLM4E29Evn57PpkN0CX7LhiaqOygCFxz3NeXF0gjPrb3iNjS8CIBI?=
+ =?us-ascii?Q?qa5mmDcY49RoU6URmiJtj5T4GKIphgQEcL4bcrHF0BbKCSlOistlHZPCeo0N?=
+ =?us-ascii?Q?+0KREqljcQEt4y71bOzLm6d1zbnnLsU60VX4+GecM8dvY/E5XE80yhdesGL0?=
+ =?us-ascii?Q?p1YflcpITPpY5v0f03camVvmYPupNjX14m7R+r8KjhzDyW2EdZgrPg5Ll19/?=
+ =?us-ascii?Q?htfCbm8cO1x0yc9v8vjpaeF98nzDQVEbuGtbFRjo3VmApNtwWzvnXnjJ6sbl?=
+ =?us-ascii?Q?jTB08DgmncKL3SDJ2A+ZTmaBPn8EAZZ6LdrrqrlxJnLP6/LuspBwWy36kMjF?=
+ =?us-ascii?Q?WgPFQSzxJ/FUAwyW5K08JbnBzxtMYIlZkDzjaBV98MCSWb25Y7KwEjtkN1HJ?=
+ =?us-ascii?Q?Hjd5dasOH6mLCnLfW17RU3nLYShcTs0JIXQBebRphU7nt7ZGo60P2K4bs5bB?=
+ =?us-ascii?Q?1FQIZad7PzC9+kNjzX2TZYdO9tnl8VuzUOisHNplW4P7XxcTcx61LhnNw8i4?=
+ =?us-ascii?Q?LBk8dIMqff/Ts4bJzXVjtl3UrakziihOYq3gLSHpMYq9QcgcVeeqiO9KgNZT?=
+ =?us-ascii?Q?fuvKgIcfGHRm/DxFNzEqbPHy6BODuzPAV5cshim66z6o9EKMXUQKwDzYsbZc?=
+ =?us-ascii?Q?o55OFJgVCReaV+7vMh0Gwo8m/dkgtyVrEN1cLJlVy2Par32x2x1VNoqQceyd?=
+ =?us-ascii?Q?hKEm2vz4G/Fs4eNKKSaSo+Qvvcf7bKVpzLbJKdc+oEfQAuAkF3cQn3mBGHI/?=
+ =?us-ascii?Q?GEPPy4AlXSfxxN8nltbBYMMSvkZFfGbxleR4IhluQBPCW7j71yKZUbjnKDrP?=
+ =?us-ascii?Q?HbUo6IN69Td8zNSu3t236byKpPmR5JVFOLBBKOXKsT9N8QYF6ilDoqVGiili?=
+ =?us-ascii?Q?fpd++UjXJZhAJoPE/EwmgV3ClNleZiIPyS9DZPm0P5GxuPvG4+Jevh9SHg72?=
+ =?us-ascii?Q?HZaiZO14jbOfIAXuQwV16pD3mb1LJyOiV5ohXLsrgrQxvC6QANAJZFcARf3V?=
+ =?us-ascii?Q?jnk5mqw93IdcDMXiLqCHxJ/DoFCik6yUOFMtCFG7H6H+8i9qZbuprMAA2Ymk?=
+ =?us-ascii?Q?y9rrEbyDUHZXkUbWfvBGyl5K4E+w4PU7K2YXI8a82edKDq7t4180ZbjTSWXS?=
+ =?us-ascii?Q?Lk0g1iygSO1jLvSzlfJKbX6cncD+SkhyyFuHx+EZxBKebeJjukUuuO9T021q?=
+ =?us-ascii?Q?xosJU4NT/HeW1GPPUMVdaCauYibbRRjh9k5hwpKf702IIcYlQETaOAL2tYbF?=
+ =?us-ascii?Q?wza5hPMe1o91Mx78/SDdAxNqZoH1FTdoStS+1uwF5CMereSCI5cSou5rd8g4?=
+ =?us-ascii?Q?S2s/sgu4mlgVxCZSG6uHygJdC97a3rZWZYxiZlPcMShkps6eOBvsDqXtL7ej?=
+ =?us-ascii?Q?VQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56fb9059-2b4d-4f9c-22cc-08daccb2e1dc
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 17:56:29.3923
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: leWt9sRs/kwVxKsEo4LYLhxuX7+Kb5uUJsJwfm1O0ljE0zykNzmIESXjBMn04Mwp+Po76MzwWC0F0s7iQNhzvA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7766
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,289 +139,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 4:51 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> From:   Joanne Koong <joannelkoong@gmail.com>
-> Date:   Mon, 21 Nov 2022 15:41:43 -0800
-> > On Fri, Nov 18, 2022 at 5:51 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > >
-> > > If a socket bound to a wildcard address fails to connect(), we
-> > > only reset saddr and keep the port.  Then, we have to fix up the
-> > > bhash2 bucket; otherwise, the bucket has an inconsistent address
-> > > in the list.
-> > >
-> > > Also, listen() for such a socket will fire the WARN_ON() in
-> > > inet_csk_get_port(). [0]
-> > >
-> > > Note that when a system runs out of memory, we give up fixing the
-> > > bucket and unlink sk from bhash and bhash2 by inet_put_port().
-> > >
-> > > [0]:
-> > > WARNING: CPU: 0 PID: 207 at net/ipv4/inet_connection_sock.c:548 inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> > > Modules linked in:
-> > > CPU: 0 PID: 207 Comm: bhash2_prev_rep Not tainted 6.1.0-rc3-00799-gc8421681c845 #63
-> > > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.amzn2022.0.1 04/01/2014
-> > > RIP: 0010:inet_csk_get_port (net/ipv4/inet_connection_sock.c:548 (discriminator 1))
-> > > Code: 74 a7 eb 93 48 8b 54 24 18 0f b7 cb 4c 89 e6 4c 89 ff e8 48 b2 ff ff 49 8b 87 18 04 00 00 e9 32 ff ff ff 0f 0b e9 34 ff ff ff <0f> 0b e9 42 ff ff ff 41 8b 7f 50 41 8b 4f 54 89 fe 81 f6 00 00 ff
-> > > RSP: 0018:ffffc900003d7e50 EFLAGS: 00010202
-> > > RAX: ffff8881047fb500 RBX: 0000000000004e20 RCX: 0000000000000000
-> > > RDX: 000000000000000a RSI: 00000000fffffe00 RDI: 00000000ffffffff
-> > > RBP: ffffffff8324dc00 R08: 0000000000000001 R09: 0000000000000001
-> > > R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000000
-> > > R13: 0000000000000001 R14: 0000000000004e20 R15: ffff8881054e1280
-> > > FS:  00007f8ac04dc740(0000) GS:ffff88842fc00000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000000020001540 CR3: 00000001055fa003 CR4: 0000000000770ef0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > PKRU: 55555554
-> > > Call Trace:
-> > >  <TASK>
-> > >  inet_csk_listen_start (net/ipv4/inet_connection_sock.c:1205)
-> > >  inet_listen (net/ipv4/af_inet.c:228)
-> > >  __sys_listen (net/socket.c:1810)
-> > >  __x64_sys_listen (net/socket.c:1819 net/socket.c:1817 net/socket.c:1817)
-> > >  do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> > >  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> > > RIP: 0033:0x7f8ac051de5d
-> > > Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 93 af 1b 00 f7 d8 64 89 01 48
-> > > RSP: 002b:00007ffc1c177248 EFLAGS: 00000206 ORIG_RAX: 0000000000000032
-> > > RAX: ffffffffffffffda RBX: 0000000020001550 RCX: 00007f8ac051de5d
-> > > RDX: ffffffffffffff80 RSI: 0000000000000000 RDI: 0000000000000004
-> > > RBP: 00007ffc1c177270 R08: 0000000000000018 R09: 0000000000000007
-> > > R10: 0000000020001540 R11: 0000000000000206 R12: 00007ffc1c177388
-> > > R13: 0000000000401169 R14: 0000000000403e18 R15: 00007f8ac0723000
-> > >  </TASK>
-> > >
-> > > Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
-> > > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > > Reported-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> >
-> > Acked-by: Joanne Koong <joannelkoong@gmail.com>
->
-> Thanks for all your help!
->
->
-> > > ---
-> > >  include/net/inet_hashtables.h |  1 +
-> > >  net/dccp/ipv4.c               |  3 +--
-> > >  net/dccp/ipv6.c               |  3 +--
-> > >  net/dccp/proto.c              |  3 +--
-> > >  net/ipv4/inet_hashtables.c    | 38 +++++++++++++++++++++++++++++++----
-> > >  net/ipv4/tcp.c                |  3 +--
-> > >  net/ipv4/tcp_ipv4.c           |  3 +--
-> > >  net/ipv6/tcp_ipv6.c           |  3 +--
-> > >  8 files changed, 41 insertions(+), 16 deletions(-)
-> > >
-> > > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > > index ba06e8b52264..69174093078f 100644
-> > > --- a/include/net/inet_hashtables.h
-> > > +++ b/include/net/inet_hashtables.h
-> > > @@ -282,6 +282,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
-> > >   * rcv_saddr field should already have been updated when this is called.
-> > >   */
-> > >  int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
-> > > +void inet_bhash2_reset_saddr(struct sock *sk);
-> > >
-> > >  void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
-> > >                     struct inet_bind2_bucket *tb2, unsigned short port);
-> > > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > > index 95e376e3b911..b780827f5e0a 100644
-> > > --- a/net/dccp/ipv4.c
-> > > +++ b/net/dccp/ipv4.c
-> > > @@ -143,8 +143,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >          * This unhashes the socket and releases the local port, if necessary.
-> > >          */
-> > >         dccp_set_state(sk, DCCP_CLOSED);
-> > > -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > -               inet_reset_saddr(sk);
-> > > +       inet_bhash2_reset_saddr(sk);
-> > >         ip_rt_put(rt);
-> > >         sk->sk_route_caps = 0;
-> > >         inet->inet_dport = 0;
-> > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > > index 94c101ed57a9..602f3432d80b 100644
-> > > --- a/net/dccp/ipv6.c
-> > > +++ b/net/dccp/ipv6.c
-> > > @@ -970,8 +970,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > >
-> > >  late_failure:
-> > >         dccp_set_state(sk, DCCP_CLOSED);
-> > > -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > -               inet_reset_saddr(sk);
-> > > +       inet_bhash2_reset_saddr(sk);
-> > >         __sk_dst_reset(sk);
-> > >  failure:
-> > >         inet->inet_dport = 0;
-> > > diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-> > > index c548ca3e9b0e..85e35c5e8890 100644
-> > > --- a/net/dccp/proto.c
-> > > +++ b/net/dccp/proto.c
-> > > @@ -279,8 +279,7 @@ int dccp_disconnect(struct sock *sk, int flags)
-> > >
-> > >         inet->inet_dport = 0;
-> > >
-> > > -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > -               inet_reset_saddr(sk);
-> > > +       inet_bhash2_reset_saddr(sk);
-> > >
-> > >         sk->sk_shutdown = 0;
-> > >         sock_reset_flag(sk, SOCK_DONE);
-> > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > > index 18ef370af113..3cec471a2cd2 100644
-> > > --- a/net/ipv4/inet_hashtables.c
-> > > +++ b/net/ipv4/inet_hashtables.c
-> > > @@ -871,7 +871,7 @@ static void inet_update_saddr(struct sock *sk, void *saddr, int family)
-> > >  #endif
-> > >  }
-> > >
-> > > -int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > > +static int __inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family, bool reset)
-> > >  {
-> > >         struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
-> > >         struct inet_bind_hashbucket *head, *head2;
-> > > @@ -883,7 +883,11 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > >
-> > >         if (!inet_csk(sk)->icsk_bind2_hash) {
-> > >                 /* Not bind()ed before. */
-> > > -               inet_update_saddr(sk, saddr, family);
-> > > +               if (reset)
-> > > +                       inet_reset_saddr(sk);
-> > > +               else
-> > > +                       inet_update_saddr(sk, saddr, family);
-> > > +
-> > >                 return 0;
-> > >         }
-> > >
-> > > @@ -892,8 +896,19 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > >          * allocation fails.
-> > >          */
-> > >         new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
-> > > -       if (!new_tb2)
-> > > +       if (!new_tb2) {
-> > > +               if (reset) {
-> > > +                       /* The (INADDR_ANY, port) bucket might have already
-> > > +                        * been freed, then we cannot fixup icsk_bind2_hash,
-> > > +                        * so we give up and unlink sk from bhash/bhash2 not
-> > > +                        * to leave inconsistency in bhash2.
-> > > +                        */
-> > > +                       inet_put_port(sk);
-> > > +                       inet_reset_saddr(sk);
-> > > +               }
-> >
-> > nit: I think this is better placed in the dccp/tcp_ipv4/6 layer, to
-> > make it clear / more obvious that the sk gets unbinded in this edge
-> > case.
->
-> But it duplicates 2 calls (and a comment) across 6 places.
->
-> or we can move it to inet_bhash2_reset_saddr() like
->
-> void inet_bhash2_reset_saddr(struct sock *sk)
-> {
->         if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK) &&
->             __inet_bhash2_update_saddr(sk, NULL, 0, true) {
->                 inet_put_port(sk);
->                 inet_reset_saddr(sk);
->         }
-> }
-> EXPORT_SYMBOL_GPL(inet_bhash2_reset_saddr);
->
-> I'm fine with whichever, which do you like ?
->
-> Or we can go as is and post a follow-up.
->
+On Tue, Nov 22, 2022 at 04:58:45PM +0000, Russell King (Oracle) wrote:
+> The intention of the above is to report how the PHY is going to behave
+> with the current code when the PHY is in operation, which I believe to
+> be the intention of the validate callback. I'm not proposing at the
+> moment to add the config() part, although that can be done later.
 
-I'm fine with whichever too. I think it being in
-inet_bhash2_reset_saddr() would be clearer than it being within
-__inet_bhash2_update_saddr().
+Again, all I'm saying is that with validate() but no config(), you should
+report a single bit, not PHY_AN_INBAND_ON | PHY_AN_INBAND_TIMEOUT.
+The code which you posted does report multiple bits, and we won't know
+how to make sense out of them. We'd select what is the most convenient
+to us, and we'll call phy_config_an_inband() with that, but it'll return
+-EOPNOTSUPP, which will be perfectly reasonable to us. Except that the
+PHY may actually not currently operate in the mode it reported as a
+supported capability. So things are broken.
 
-Thanks for your work on this!
+> As I stated, with the 88e1111, if we are asked to operate in 1000base-X
+> mode, when we configure the PHY we will allow bypass mode and I believe
+> in-band will be enabled, because this is what config_init() does today
+> when operating in 1000base-X mode. If we add support for your config()
+> method, then we will need a way to prevent a later config_init()
+> changing that configuration.
 
->
-> >
-> > > +
-> > >                 return -ENOMEM;
-> > > +       }
-> > >
-> > >         bhash = inet_bhashfn(net, port, hinfo->bhash_size);
-> > >         head = &hinfo->bhash[bhash];
-> > > @@ -909,7 +924,10 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > >         inet_bind2_bucket_destroy(hinfo->bind2_bucket_cachep, inet_csk(sk)->icsk_bind2_hash);
-> > >         spin_unlock(&head2->lock);
-> > >
-> > > -       inet_update_saddr(sk, saddr, family);
-> > > +       if (reset)
-> > > +               inet_reset_saddr(sk);
-> > > +       else
-> > > +               inet_update_saddr(sk, saddr, family);
-> > >
-> > >         head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
-> > >
-> > > @@ -930,8 +948,20 @@ int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > >
-> > >         return 0;
-> > >  }
-> > > +
-> > > +int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family)
-> > > +{
-> > > +       return __inet_bhash2_update_saddr(sk, saddr, family, false);
-> > > +}
-> > >  EXPORT_SYMBOL_GPL(inet_bhash2_update_saddr);
-> > >
-> > > +void inet_bhash2_reset_saddr(struct sock *sk)
-> > > +{
-> > > +       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > +               __inet_bhash2_update_saddr(sk, NULL, 0, true);
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(inet_bhash2_reset_saddr);
-> >
-> > > +
-> > >  /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
-> > >   * Note that we use 32bit integers (vs RFC 'short integers')
-> > >   * because 2^16 is not a multiple of num_ephemeral and this
-> > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > > index 54836a6b81d6..4f2205756cfe 100644
-> > > --- a/net/ipv4/tcp.c
-> > > +++ b/net/ipv4/tcp.c
-> > > @@ -3114,8 +3114,7 @@ int tcp_disconnect(struct sock *sk, int flags)
-> > >
-> > >         inet->inet_dport = 0;
-> > >
-> > > -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > -               inet_reset_saddr(sk);
-> > > +       inet_bhash2_reset_saddr(sk);
-> > >
-> > >         sk->sk_shutdown = 0;
-> > >         sock_reset_flag(sk, SOCK_DONE);
-> > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > > index 23dd7e9df2d5..da46357f501b 100644
-> > > --- a/net/ipv4/tcp_ipv4.c
-> > > +++ b/net/ipv4/tcp_ipv4.c
-> > > @@ -331,8 +331,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >          * if necessary.
-> > >          */
-> > >         tcp_set_state(sk, TCP_CLOSE);
-> > > -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > -               inet_reset_saddr(sk);
-> > > +       inet_bhash2_reset_saddr(sk);
-> > >         ip_rt_put(rt);
-> > >         sk->sk_route_caps = 0;
-> > >         inet->inet_dport = 0;
-> > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > > index 2f3ca3190d26..f0548dbcabd2 100644
-> > > --- a/net/ipv6/tcp_ipv6.c
-> > > +++ b/net/ipv6/tcp_ipv6.c
-> > > @@ -346,8 +346,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > >
-> > >  late_failure:
-> > >         tcp_set_state(sk, TCP_CLOSE);
-> > > -       if (!(sk->sk_userlocks & SOCK_BINDADDR_LOCK))
-> > > -               inet_reset_saddr(sk);
-> > > +       inet_bhash2_reset_saddr(sk);
-> > >  failure:
-> > >         inet->inet_dport = 0;
-> > >         sk->sk_route_caps = 0;
-> > > --
-> > > 2.30.2
+If config_init() is going to be kept being called only from
+phy_attach_direct() -> phy_init_hw(), then, at least with phylink, we
+only call phy_config_an_inband() from phylink_bringup_phy(), so after
+the phy_attach_direct() call. So we overwrite what the driver does by
+default.
+
+The problem is not phy_config_an_inband() but phy_validate_an_inband().
+We call that earlier than phy_attach_direct(), so if the PHY driver is
+going to read a register from HW which hasn't yet been written, we get
+an incorrect report of the current capabilities.
+
+I'll see if I can fix that and delay phy_validate_an_inband() a bit,
+maybe up until before right before phy_config_an_inband().
+
+> 
+> For SGMII, things are a lot more complicated, the result depends on how
+> the PHY has been setup by firmware or possibly reset pin strapping, so
+> we need to read registers to work out how it's going to behave. So,
+> unless we do that, we just can't report anything with certainty. We
+> probably ought to be reading a register to check that in-band is indeed
+> enabled.
+> 
+> Note that a soft-reset doesn't change any of this - it won't enable
+> in-band if it was disabled, and it won't disable it if it was previously
+> set to be enabled.
+
+Similar to VSC8514 and the U-Boot preconfiguration issue. Soft reset,
+but the setting sticks.
+
+> > If you implement just validate(), you should report just one
+> > bit, corresponding to what the hardware is configured for (so either
+> > PHY_AN_INBAND_ON, *or* PHY_AN_INBAND_TIMEOUT). This is because you'd
+> > otherwise tell phylink that 2 modes are supported, but provide no way to
+> > choose between them, and you don't make it clear which one is in use
+> > either. This will force phylink to adapt to MLO_AN_PHY or MLO_AN_INBAND,
+> > depending on what has a chance of working.
+> 
+> Don't we have the same problem with PHY_AN_INBAND_TIMEOUT? If a PHY
+> reports that, do we use MLO_AN_INBAND or MLO_AN_PHY?
+
+Well, I haven't yet written any logic for it.
+
+To your question: "PHY_AN_INBAND_ON_TIMEOUT => MLO_AN_PHY or MLO_AN_INBAND"?
+I'd say either depending on situation, since my expectation is that it's
+compatible with both.
+
+Always give preference to what's in the device tree if it can work
+somehow. If it can work in fully compatible modes (MLO_AN_PHY with
+PHY_AN_INBAND_OFF; MLO_AN_INBAND with PHY_AN_INBAND_ON), perfect.
+If not, but what's in the device tree can work with PHY_AN_INBAND_ON_TIMEOUT,
+also good => use ON_TIMEOUT.
+
+If what's in the device tree needs to be changed, it pretty much means
+that ON_TIMEOUT isn't supported by the PHY.
+
+Concretely, I would propose something like this (a modification of the
+function added by the patch set, notice the extra "an_inband" argument,
+as well as the new checks for PHY_AN_INBAND_ON_TIMEOUT):
+
+static void phylink_sync_an_inband(struct phylink *pl, struct phy_device *phy,
+				   enum phy_an_inband *an_inband)
+{
+	unsigned int mode = pl->cfg_link_an_mode;
+	int ret;
+
+	if (!pl->config->sync_an_inband)
+		return;
+
+	ret = phy_validate_an_inband(phy, pl->link_config.interface);
+	if (ret == PHY_AN_INBAND_UNKNOWN) {
+		phylink_dbg(pl,
+			    "PHY driver does not report in-band autoneg capability, assuming %s\n",
+			    phylink_autoneg_inband(mode) ? "true" : "false");
+
+		*an_inband = PHY_AN_INBAND_UNKNOWN;
+	} else if (phylink_autoneg_inband(mode) &&
+		   !(ret & PHY_AN_INBAND_ON) &&
+		   !(ret & PHY_AN_INBAND_ON_TIMEOUT)) {
+		phylink_err(pl,
+			    "Requested in-band autoneg but driver does not support this, disabling it.\n");
+
+		mode = MLO_AN_PHY;
+		*an_inband = PHY_AN_INBAND_OFF;
+	} else if (!phylink_autoneg_inband(mode) &&
+		   !(ret & PHY_AN_INBAND_OFF) &&
+		   !(ret & PHY_AN_INBAND_ON_TIMEOUT)) {
+		phylink_dbg(pl,
+			    "PHY driver requests in-band autoneg, force-enabling it.\n");
+
+		mode = MLO_AN_INBAND;
+		*an_inband = PHY_AN_INBAND_ON;
+	} else {
+		/* For the checks below, we've found a common operating
+		 * mode with the PHY, just need to figure out if we
+		 * agree fully or if we have to rely on the PHY's
+		 * timeout ability
+		 */
+		if (phylink_autoneg_inband(mode)) {
+			*an_inband = !!(ret & PHY_AN_INBAND_ON) ? PHY_AN_INBAND_ON :
+					PHY_AN_INBAND_ON_TIMEOUT;
+		} else {
+			*an_inband = !!(ret & PHY_AN_INBAND_OFF) ? PHY_AN_INBAND_OFF :
+					PHY_AN_INBAND_ON_TIMEOUT;
+		}
+	}
+
+	pl->cur_link_an_mode = mode;
+}
+
+then call phy_config_an_inband() with "an_inband" as the mode to use.
+
+As per Sean's feedback, we force the PHY to report at least one valid
+capability, otherwise, 0 is PHY_AN_INBAND_UNKNOWN and it's also treated
+correctly.
+
+> > If you implement config_an_inband() too, then the validate procedure
+> > becomes a simple report of what can be configured for that PHY
+> > (OFF | ON | ON_TIMEOUT for 88E151x, and ON | ON_TIMEOUT for 88E1111).
+> > It's then the config_an_inband() procedure that applies to hardware the
+> > mode that is selected by phylink. From config_an_inband() you can return
+> > a negative error code on PHY I/O failure.
+> 
+> So it sounds like the decision about which mode to use needs to be
+> coupled with "does the PHY driver implement config_an_inband()"
+
+So do you recommend that I should put a WARN_ON() somewhere, which
+asserts something like this?
+
+"if the weight (number of bits set) in the return code of
+phy_validate_an_inband() is larger than 1, then phydev->drv->phy_config_an_inband()
+must be a non-NULL pointer, to allow selecting between them"
+
+> > If you can prepare some more formal patches for these PHYs for which I
+> > don't have documentation, I think I have a copper SFP module which uses
+> > SGMII and 88E1111, and I can plug it into the Honeycomb and see what
+> > happens.
+> 
+> I'm away from home at the moment, which means I don't have a way to
+> do any in-depth tests other than with the SFPs that are plugged into
+> my Honeycomb - which does include some copper SFPs but they're not
+> connected to anything. So I can't test to see if data passes until
+> I'm back home next week.
+
+I actually meant that I can test on a Solidrun Honeycomb board that I
+happen to have access to, if you have some Marvell PHY code, even untested,
+that I could try out. I'm pretty much in the dark when it comes to their
+hardware documentation.
