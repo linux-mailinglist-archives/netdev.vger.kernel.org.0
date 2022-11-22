@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1621A63334F
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE55633350
 	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbiKVC3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 21:29:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56040 "EHLO
+        id S229687AbiKVC3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 21:29:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbiKVC2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:28:51 -0500
+        with ESMTP id S229527AbiKVC3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:29:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3E52B638
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752902CDC1
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B74961542
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F038FC433D7;
-        Tue, 22 Nov 2022 02:28:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99D7061545
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E65C433D6;
+        Tue, 22 Nov 2022 02:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669084114;
-        bh=cndmhdKtUnOpVKJ1L7RnoGdNtxYasa4C/gImAlsUEms=;
+        s=k20201202; t=1669084115;
+        bh=PNP+9agWu9IpFwa4uMo9Q/btguOfuRqkBXWcV2FYsQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FdS0cJT6Bh/mrk+OZbeEkvPKYmL7EGjw1H2QdxRvQ0PlDIFwjxzheLC/b42X+OaFr
-         ksBBluT3wJHkUjfHsLYLbxB1ppZ+Fypjz9zmrnlcKS/FC+SLY4FgykClpEE7jRPB0J
-         xuiqS+Pi5ydqK0x9RHRFbtkDFvzPkgobn7UXTEZ+x1jUr4HACziKYFUJRly8PcVy/m
-         ypW9TWL62Wzkt0IjSxskW5wOf2rR4UNQOcOyMCUBa8fEOdgSd2mTFlTp58TdAoHEoF
-         w/QM+aAJyofkcEoNp5vKG6f8IDs0jqvh2yEObUS2laF4HGiNVCLse/L6+IclEJEMEB
-         7bbCg0tp4CBHg==
+        b=K3PAuarIDuZD7a9ZGOs4DxCHVAwZcQ0kZuxsu81Kxx9u8IJPzjFUrunMVTsQBe9sC
+         YcuZJTZplZcuPDP4sgTuMQxcfYFxZU+jcYGC3RzAdUKT8Xjri42VLWSG0meDYzM/7p
+         /OoxZeH142x/Kw5+dSsuz/E04d+JWGA8jsP8UYliRAQxGzobssW3WN+25zee24+hgK
+         kFtsSwVfNQH8Ben+Aet7hfaKOMVf6F2lI4Ugipkf6WavVdEB/Mb4uFQp5rlKztuw06
+         zc4Hx7Vn5h4gP/c/jgQtkU3jORlcvEiQwDz+rdKtBdn7mOgEdghW5FtSmce4NNoO6K
+         lG06lESInlg7Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
-Subject: [net 11/14] net/mlx5e: Remove leftovers from old XSK queues enumeration
-Date:   Mon, 21 Nov 2022 18:25:56 -0800
-Message-Id: <20221122022559.89459-12-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Emeel Hakim <ehakim@nvidia.com>, Raed Salem <raeds@nvidia.com>
+Subject: [net 12/14] net/mlx5e: Fix MACsec SA initialization routine
+Date:   Mon, 21 Nov 2022 18:25:57 -0800
+Message-Id: <20221122022559.89459-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221122022559.89459-1-saeed@kernel.org>
 References: <20221122022559.89459-1-saeed@kernel.org>
@@ -55,71 +56,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Emeel Hakim <ehakim@nvidia.com>
 
-Before the cited commit, for N channels, a dedicated set of N queues was
-created to support XSK, in indices [N, 2N-1], doubling the number of
-queues.
+Currently as part of MACsec SA initialization routine
+extended packet number (EPN) object attribute is always
+being set without checking if EPN is actually enabled,
+the above could lead to a NULL dereference.
+Fix by adding such a check.
 
-In addition, changing the number of channels was prohibited, as it would
-shift the indices.
-
-Remove these two leftovers, as we moved XSK to a new queueing scheme,
-starting from index 0.
-
-Fixes: 3db4c85cde7a ("net/mlx5e: xsk: Use queue indices starting from 0 for XSK queues")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
+Fixes: 4411a6c0abd3 ("net/mlx5e: Support MACsec offload extended packet number (EPN)")
+Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_ethtool.c   | 18 ------------------
- 1 file changed, 18 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 24aa25da482b..1728e197558d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -35,7 +35,6 @@
- #include "en.h"
- #include "en/port.h"
- #include "en/params.h"
--#include "en/xsk/pool.h"
- #include "en/ptp.h"
- #include "lib/clock.h"
- #include "en/fs_ethtool.h"
-@@ -412,15 +411,8 @@ void mlx5e_ethtool_get_channels(struct mlx5e_priv *priv,
- 				struct ethtool_channels *ch)
- {
- 	mutex_lock(&priv->state_lock);
--
- 	ch->max_combined   = priv->max_nch;
- 	ch->combined_count = priv->channels.params.num_channels;
--	if (priv->xsk.refcnt) {
--		/* The upper half are XSK queues. */
--		ch->max_combined *= 2;
--		ch->combined_count *= 2;
--	}
--
- 	mutex_unlock(&priv->state_lock);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+index 2ef36cb9555a..8f8a735a4501 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+@@ -368,15 +368,15 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
+ 	obj_attrs.aso_pdn = macsec->aso.pdn;
+ 	obj_attrs.epn_state = sa->epn_state;
  
-@@ -454,16 +446,6 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
+-	if (is_tx) {
+-		obj_attrs.ssci = cpu_to_be32((__force u32)ctx->sa.tx_sa->ssci);
+-		key = &ctx->sa.tx_sa->key;
+-	} else {
+-		obj_attrs.ssci = cpu_to_be32((__force u32)ctx->sa.rx_sa->ssci);
+-		key = &ctx->sa.rx_sa->key;
++	key = (is_tx) ? &ctx->sa.tx_sa->key : &ctx->sa.rx_sa->key;
++
++	if (sa->epn_state.epn_enabled) {
++		obj_attrs.ssci = (is_tx) ? cpu_to_be32((__force u32)ctx->sa.tx_sa->ssci) :
++					   cpu_to_be32((__force u32)ctx->sa.rx_sa->ssci);
++
++		memcpy(&obj_attrs.salt, &key->salt, sizeof(key->salt));
+ 	}
  
- 	mutex_lock(&priv->state_lock);
+-	memcpy(&obj_attrs.salt, &key->salt, sizeof(key->salt));
+ 	obj_attrs.replay_window = ctx->secy->replay_window;
+ 	obj_attrs.replay_protect = ctx->secy->replay_protect;
  
--	/* Don't allow changing the number of channels if there is an active
--	 * XSK, because the numeration of the XSK and regular RQs will change.
--	 */
--	if (priv->xsk.refcnt) {
--		err = -EINVAL;
--		netdev_err(priv->netdev, "%s: AF_XDP is active, cannot change the number of channels\n",
--			   __func__);
--		goto out;
--	}
--
- 	/* Don't allow changing the number of channels if HTB offload is active,
- 	 * because the numeration of the QoS SQs will change, while per-queue
- 	 * qdiscs are attached.
 -- 
 2.38.1
 
