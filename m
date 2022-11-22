@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8620633EE9
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87361633EEC
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233697AbiKVO27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 09:28:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        id S233772AbiKVO3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233706AbiKVO24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:28:56 -0500
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F162E6316F
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:28:54 -0800 (PST)
-Received: from fsav313.sakura.ne.jp (fsav313.sakura.ne.jp [153.120.85.144])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2AMESqla060599;
-        Tue, 22 Nov 2022 23:28:52 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav313.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav313.sakura.ne.jp);
- Tue, 22 Nov 2022 23:28:52 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav313.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2AMESlPX060590
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 22 Nov 2022 23:28:51 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <c50bb326-7946-82b9-418a-95638818aa84@I-love.SAKURA.ne.jp>
-Date:   Tue, 22 Nov 2022 23:28:45 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
- sk_callback_lock
-Content-Language: en-US
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233906AbiKVO3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:29:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81BF682BA;
+        Tue, 22 Nov 2022 06:29:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D803B81B7E;
+        Tue, 22 Nov 2022 14:29:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1344EC433B5;
+        Tue, 22 Nov 2022 14:29:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669127352;
+        bh=UBcHS3VCg4uRpxjAZY8+t6NA0BKBZWz6tTw6f0PgiKE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aePwc+RuP1PDa5b8dSM0cuWR7QxcUAUMLFOxaq5bGQ+dkUoJiidtxzLNk2/iS+VcA
+         ivZtkSuxm6SKRFBC0scNgnRMyYNqQjkso6KPhOls9//r+dWp/DNYsYeZxd2jhcEqwh
+         bcBQqamIq3vy57+EavKkfL3pCNaHkmpOrFOu/ilMY5hxXlbI+1r/dzC7fcky63M4g9
+         zdBupJehOuDbZYmhcg2QfaMJR5Igr+dLuMPnRiSW/WXygAtc3QVpkDa0AxAgEHFkox
+         O926a5BSc+Niq4NeF6BfX1Tw7aj/QN7RizsS+X0Zhoy5GpZU5lo7uFYa5YYY1Brwad
+         f8y7lshywVWGA==
+Date:   Tue, 22 Nov 2022 16:29:08 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yanchao Yang <yanchao.yang@mediatek.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Tom Parkin <tparkin@katalix.com>,
-        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
-        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
-        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
-References: <20221119130317.39158-1-jakub@cloudflare.com>
- <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
- <a850c224-f728-983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>
- <87wn7o7k7r.fsf@cloudflare.com>
- <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
- <87fseb7vbm.fsf@cloudflare.com>
- <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
- <871qpvmfab.fsf@cloudflare.com>
- <a3b7d8cd-0c72-8e6b-78f2-71b92e70360f@I-love.SAKURA.ne.jp>
- <20221122141011.GA3303@pc-4.home>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20221122141011.GA3303@pc-4.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        netdev ML <netdev@vger.kernel.org>,
+        kernel ML <linux-kernel@vger.kernel.org>,
+        MTK ML <linux-mediatek@lists.infradead.org>,
+        Liang Lu <liang.lu@mediatek.com>,
+        Haijun Liu <haijun.liu@mediatek.com>,
+        Hua Yang <hua.yang@mediatek.com>,
+        Ting Wang <ting.wang@mediatek.com>,
+        Felix Chen <felix.chen@mediatek.com>,
+        Mingliang Xu <mingliang.xu@mediatek.com>,
+        Min Dong <min.dong@mediatek.com>,
+        Aiden Wang <aiden.wang@mediatek.com>,
+        Guohao Zhang <guohao.zhang@mediatek.com>,
+        Chris Feng <chris.feng@mediatek.com>,
+        Lambert Wang <lambert.wang@mediatek.com>,
+        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
+        Xiayu Zhang <xiayu.zhang@mediatek.com>,
+        Haozhe Chang <haozhe.chang@mediatek.com>,
+        MediaTek Corporation <linuxwwan@mediatek.com>
+Subject: Re: [PATCH net-next v1 13/13] net: wwan: tmi: Add maintainers and
+ documentation
+Message-ID: <Y3zctKXWaVuGvGhP@unreal>
+References: <20221122112710.161020-1-yanchao.yang@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221122112710.161020-1-yanchao.yang@mediatek.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/11/22 23:10, Guillaume Nault wrote:
-> User space uses this socket to send and receive L2TP control packets
-> (tunnel and session configuration, keep alive and tear down). Therefore
-> it absolutely needs to continue using this socket after the
-> registration phase.
-
-Thank you for explanation.
-
->> If the userspace might continue using the socket, we would
->>
->>   create a new socket, copy required attributes (the source and destination addresses?) from
->>   the socket fetched via sockfd_lookup(), and call replace_fd() like e.g. umh_pipe_setup() does
->>
->> inside l2tp_tunnel_register(). i-node number of the socket would change, but I assume that
->> the process which called l2tp_tunnel_register() is not using that i-node number.
->>
->> Since the socket is a datagram socket, I think we can copy required attributes. But since
->> I'm not familiar with networking code, I don't know what attributes need to be copied. Thus,
->> I leave implementing it to netdev people.
+On Tue, Nov 22, 2022 at 07:27:10PM +0800, Yanchao Yang wrote:
+> From: MediaTek Corporation <linuxwwan@mediatek.com>
 > 
-> That looks fragile to me. If the problem is that setup_udp_tunnel_sock()
-> can sleep, we can just drop the udp_tunnel_encap_enable() call from
-> setup_udp_tunnel_sock(), rename it __udp_tunnel_encap_enable() and make
-> make udp_tunnel_encap_enable() a wrapper around it that'd also call
-> udp_tunnel_encap_enable().
+> Adds maintainers and documentation for MediaTek TMI 5G WWAN modem
+> device driver.
 > 
+> Signed-off-by: Felix Chen <felix.chen@mediatek.com>
+> Signed-off-by: MediaTek Corporation <linuxwwan@mediatek.com>
 
-That's what I thought at https://lkml.kernel.org/r/c64284f4-2c2a-ecb9-a08e-9e49d49c720b@I-love.SAKURA.ne.jp .
+Author and SOB should have real names and can't be company.
 
-But the problem is not that setup_udp_tunnel_sock() can sleep. The problem is that lockdep
-gets confused due to changing lockdep class after the socket is already published. We need
-to avoid calling lockdep_set_class_and_name() on a socket retrieved via sockfd_lookup().
-
+Thanks
