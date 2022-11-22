@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1259633191
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 01:48:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E28633196
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 01:49:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231704AbiKVAs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 19:48:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
+        id S231740AbiKVAtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 19:49:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiKVAs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 19:48:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20B4B30
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 16:47:29 -0800 (PST)
+        with ESMTP id S229919AbiKVAtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 19:49:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AED22B3A
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 16:48:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669078049;
+        s=mimecast20190719; t=1669078101;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jfWO1iPIC4YjnRVG6Jdr+VOmWa2xaarKqFD6yPIS5pU=;
-        b=DcA1Wyazs757uQsaWzKFoe7mWxIbO5I1WbURsc5KqTSUAouD/c2ur7mpDJGeodB3xDi19E
-        iUqtcHjEtoQvI2OOC3KGqRGVyT6KRa7eN+vj3KAvlTr1FmTcGmH3IVRdpwpHxb7KuRwDHl
-        nvKOCAQEISG4KLpRYqUdZH+23hLibS0=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=N1lAtUfxSqu18fCCviIv82tE3o1gDbqJA8/vG7g+Iw4=;
+        b=WP0ljl9/51M7509U4+EZOG4TW3MvWobcHGkY50a7RCVUXdWg2JqbxbgE2hZdHPeHYejsCS
+        f2+yz2MDaTyDtRTGVpl/NPn8ODmcOdoikkoluwWAJ8WfNTdm6R6m5wP4e0gEhJGOUd6RGV
+        /Psp+9KC7m09XuDRk1BVJezCGFAgjPM=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-624-zwJ04Z64OquTkjLU3zXMmg-1; Mon, 21 Nov 2022 19:47:20 -0500
-X-MC-Unique: zwJ04Z64OquTkjLU3zXMmg-1
-Received: by mail-qv1-f72.google.com with SMTP id b1-20020a0cfb41000000b004c690b1dd8bso11193432qvq.6
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 16:47:20 -0800 (PST)
+ us-mta-673-Lm7P3tVgP7KWi-LP5mWmuQ-1; Mon, 21 Nov 2022 19:48:20 -0500
+X-MC-Unique: Lm7P3tVgP7KWi-LP5mWmuQ-1
+Received: by mail-qv1-f69.google.com with SMTP id h13-20020a0ceecd000000b004c6964dc952so9672441qvs.13
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 16:48:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jfWO1iPIC4YjnRVG6Jdr+VOmWa2xaarKqFD6yPIS5pU=;
-        b=pHrY93RK8cizI+vnNDMRWwvXLCuAJp6Qa2gMEOdU+lvMiZ5V/VJI6Dbi7ebzHaoDGY
-         jh3XDciMqxN0dBkvTQ0kxZdy+WtvvKxhoIon3tTujjj5O9Wv/cRHn01HIUBCuNWN3CWy
-         5opkbYPz1vGFtYbpqLUy4Fe/VpIB9tCKwCLX1+ORCRdoDC8FDaA82+Ih/cTet1QK7CgV
-         ldD8cd73TiW+MmtuJergf7CKULHCY54mov6lbk6zNXHftC3V1NVl5NvoSuBoSIUnsyyG
-         11FbfiqKVmJQj4K40ljNWawtP2shd0paNqss5XH+DOTqKMQ+Oory5JpevByGq4A3hYCY
-         8FiQ==
-X-Gm-Message-State: ANoB5pldi5K4GnyHsrWxltPr/My40YHKGVZz6bcLmOsRapQKtF3yfi5G
-        d8UWkhKg3jfNrq/C0URHE+AIyfZDed+VVzBCNJnoCVOJMAZ40jSndGKmBS0H06J448vNa+jF+TE
-        A+v1D4jy2Xiqe2L1t
-X-Received: by 2002:ae9:df07:0:b0:6fa:12b5:8d2f with SMTP id t7-20020ae9df07000000b006fa12b58d2fmr19338734qkf.60.1669078039962;
-        Mon, 21 Nov 2022 16:47:19 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4TW63Ms8uylbg59YEPvwhnhMoLwoR2qsiMkV9MSgi0Fi5JclY69TTCOpxXThpuV8+vbo8ZFA==
-X-Received: by 2002:ae9:df07:0:b0:6fa:12b5:8d2f with SMTP id t7-20020ae9df07000000b006fa12b58d2fmr19338713qkf.60.1669078039685;
-        Mon, 21 Nov 2022 16:47:19 -0800 (PST)
+        bh=N1lAtUfxSqu18fCCviIv82tE3o1gDbqJA8/vG7g+Iw4=;
+        b=h/Lb6rf3wFe9aDvK0qdwFagIy8pOLOLk9UoX6i6yxWPdbfwsN1YIJSkRltW9UOUuAT
+         XQLwEnbodpM3k/gTUcU9svLdjxwiF5S0o4exz/XRdb3tDUU/SBPjLCR1ePyMdpurnZV5
+         L7dGbpm6oUmgh2fGMc7EDPwGbV/XnYf7MB1jPqetGkItumGK1OuKVOmW80JRtVibWB9h
+         d6/wZw9tGE84aP9vUyD8y95yDHtyUYaaAoTN+uAtYSHxCn4PRE8j9FMmP7NnLRA1vQAB
+         Bv+bFP6vCG/PdrRS03wGzvUK27Zi0yIgS4Iw5kDbkWaJaGGZwFtLczboxfFNsynaIEjh
+         Nngg==
+X-Gm-Message-State: ANoB5pnP3kx/AdoXzXIrKmTlKfVhjCr6LToZkKU6FE7MEVfdsaS+rj2z
+        lENXtswpd+QgvGpgKZB+s4LU9Ur7T6PPRjYltD+kagXnqzDCKzQi+hH0Vly0U9GgcAaxbxTVtvs
+        mYtrU/rgKpp0sW1Ur
+X-Received: by 2002:a05:620a:8086:b0:6fa:7b74:1cc1 with SMTP id ef6-20020a05620a808600b006fa7b741cc1mr3318044qkb.144.1669078099764;
+        Mon, 21 Nov 2022 16:48:19 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6qV3cnbP4oy61ujmZe64y9rbsAHEhhDhutJO9GEtcu+pUoCPG21F4vHc1eu9t0SH3F6onHJA==
+X-Received: by 2002:a05:620a:8086:b0:6fa:7b74:1cc1 with SMTP id ef6-20020a05620a808600b006fa7b741cc1mr3318008qkb.144.1669078099482;
+        Mon, 21 Nov 2022 16:48:19 -0800 (PST)
 Received: from [10.0.0.96] ([24.225.241.171])
-        by smtp.gmail.com with ESMTPSA id de36-20020a05620a372400b006fbb4b98a25sm9261261qkb.109.2022.11.21.16.47.18
+        by smtp.gmail.com with ESMTPSA id t18-20020a05620a451200b006fafc111b12sm9466619qkp.83.2022.11.21.16.48.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 16:47:19 -0800 (PST)
-Message-ID: <ddde1e8f-4970-cc4b-144a-647679dbd1bb@redhat.com>
-Date:   Mon, 21 Nov 2022 19:47:18 -0500
+        Mon, 21 Nov 2022 16:48:19 -0800 (PST)
+Message-ID: <9c813d3e-96f9-218b-94a7-a5e47615d617@redhat.com>
+Date:   Mon, 21 Nov 2022 19:48:18 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH net 0/2] tipc: fix two race issues in tipc_conn_alloc
+Subject: Re: [PATCH net] tipc: check skb_linearize() return value in
+ tipc_disc_rcv()
 Content-Language: en-US
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Wei Chen <harperchen1110@gmail.com>
-References: <cover.1668807842.git.lucien.xin@gmail.com>
+To:     YueHaibing <yuehaibing@huawei.com>, ying.xue@windriver.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+References: <20221119072832.7896-1-yuehaibing@huawei.com>
 From:   Jon Maloy <jmaloy@redhat.com>
-In-Reply-To: <cover.1668807842.git.lucien.xin@gmail.com>
+In-Reply-To: <20221119072832.7896-1-yuehaibing@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -87,19 +85,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/18/22 16:44, Xin Long wrote:
-> The race exists beteen tipc_topsrv_accept() and tipc_conn_close(),
-> one is allocating the con while the other is freeing it and there
-> is no proper lock protecting it. Therefore, a null-pointer-defer
-> and a use-after-free may be triggered, see details on each patch.
+On 11/19/22 02:28, YueHaibing wrote:
+> If skb_linearize() fails in tipc_disc_rcv(), we need to free the skb instead of
+> handle it.
 >
-> Xin Long (2):
->    tipc: set con sock in tipc_conn_alloc
->    tipc: add an extra conn_get in tipc_conn_alloc
+> Fixes: 25b0b9c4e835 ("tipc: handle collisions of 32-bit node address hash values")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>   net/tipc/discover.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
 >
->   net/tipc/topsrv.c | 20 +++++++++++---------
->   1 file changed, 11 insertions(+), 9 deletions(-)
->
-Series
+> diff --git a/net/tipc/discover.c b/net/tipc/discover.c
+> index e8630707901e..e8dcdf267c0c 100644
+> --- a/net/tipc/discover.c
+> +++ b/net/tipc/discover.c
+> @@ -211,7 +211,10 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *skb,
+>   	u32 self;
+>   	int err;
+>   
+> -	skb_linearize(skb);
+> +	if (skb_linearize(skb)) {
+> +		kfree_skb(skb);
+> +		return;
+> +	}
+>   	hdr = buf_msg(skb);
+>   
+>   	if (caps & TIPC_NODE_ID128)
 Acked-by: Jon Maloy <jmaloy@redhat.com>
 
