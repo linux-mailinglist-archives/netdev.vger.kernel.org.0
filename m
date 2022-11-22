@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C026342DC
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:46:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73EE06342E2
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:46:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbiKVRpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        id S234568AbiKVRqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:46:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234423AbiKVRp3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:45:29 -0500
+        with ESMTP id S233878AbiKVRpl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:45:41 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF427D51E;
-        Tue, 22 Nov 2022 09:45:02 -0800 (PST)
-Message-ID: <20221122173648.679936164@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4A27CB84;
+        Tue, 22 Nov 2022 09:45:03 -0800 (PST)
+Message-ID: <20221122173648.737720888@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669139100;
+        s=2020; t=1669139102;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=1Q8N97xZ72xYy6vaaOLnyE0AxAlIzspsYSXG7581VxQ=;
-        b=IkD8ianPoPQldqkb3P9hR8nlIuHVqEK6gsxCD0j71FFDedH2uho5vWyvLz+Mq+EYVTG0Pl
-        OwFR45jUL/j9LDD8rBl+552yobOcxn+8xuKQeeGANg27GP/QwCZVOIj/KiNxqbFJt+wwZE
-        UHx8KLgVNnFaAHK40vW0/SIxalv938uEETX9ps7oZQOm0MmKD70z2MBnOmvS2vcEQP6+sa
-        CazvwU2GXkqt8wFkRZ9tLY/YaQI1AqTEePpOsKCV9DOKFkWqyAt9HC6SCjY93mfl2E2T2v
-        nMT5KVujR9X7NI4UhbCoaoe0dQg7HVAUdBQIAJ/TY2NWv5VlVSe6IzsKF9zftQ==
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=y8/Vu8FUleXD3Q2rM81FfgxNTEn3ZV50/HwHiGfKzVY=;
+        b=FseicS90xmf4gF1/tgcarYUG2IWEALo5wjRDB5bPlMl5usMOp61n8lHSQXUIyyfy+AVZWt
+        iM/QqKgTQH8STr2H2lrM9Xq1hciVp6V5y8RujYnhgjUAsZdI3wCpwrpVzG88Oc9b1skgsr
+        odLIAshZxWvWhd8Jx5W1nb7nWzQh6x2BBkIp5R0L6DbPU8bNLhu0KgFqQBv1DOo45wOKAw
+        ZXnzBWLDK/DC85WTrCTi5cUnDvM3UFLDHRDYdXhfkArYoxZxp8w1+2JhIeTmpfWgRAsm29
+        z3xJzrfkUdt1RG7KN0QX7t5oh/oofsc3JWYZr+e5OPmrlxLj/mo7o8b6hyf6TA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669139100;
+        s=2020e; t=1669139102;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=1Q8N97xZ72xYy6vaaOLnyE0AxAlIzspsYSXG7581VxQ=;
-        b=9BIIdv4TvKJqzaHSdYedMWcor4slJm9zpeR2PZ5ms6tHSxp7lUbb90kMBJCRQrZCMelDMS
-        /nOYXb6GFrm1BqAA==
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=y8/Vu8FUleXD3Q2rM81FfgxNTEn3ZV50/HwHiGfKzVY=;
+        b=U3tuUlrXkU0PYik4DgaMpL9uwmedgy2Vu16MaSbtxwVzRVFHlkPCeYS3NdwrZUK+ht15f+
+        pjQXICn3DDkGOBCA==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
@@ -53,11 +55,12 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [patch V2 10/17] timers: Rename del_timer() to timer_delete()
+Subject: [patch V2 11/17] Documentation: Replace del_timer/del_timer_sync()
 References: <20221122171312.191765396@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 22 Nov 2022 18:45:00 +0100 (CET)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Date:   Tue, 22 Nov 2022 18:45:01 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -67,85 +70,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The timer related functions do not have a strict timer_ prefixed namespace
-which is really annoying.
-
-Rename del_timer() to timer_delete() and provide del_timer()
-as a wrapper. Document that del_timer() is not for new code.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Tested-by: Guenter Roeck <linux@roeck-us.net>
----
- include/linux/timer.h |   15 ++++++++++++++-
- kernel/time/timer.c   |    6 +++---
- 2 files changed, 17 insertions(+), 4 deletions(-)
-
---- a/include/linux/timer.h
-+++ b/include/linux/timer.h
-@@ -169,7 +169,6 @@ static inline int timer_pending(const st
- }
- 
- extern void add_timer_on(struct timer_list *timer, int cpu);
--extern int del_timer(struct timer_list * timer);
- extern int mod_timer(struct timer_list *timer, unsigned long expires);
- extern int mod_timer_pending(struct timer_list *timer, unsigned long expires);
- extern int timer_reduce(struct timer_list *timer, unsigned long expires);
-@@ -184,6 +183,7 @@ extern void add_timer(struct timer_list
- 
- extern int try_to_del_timer_sync(struct timer_list *timer);
- extern int timer_delete_sync(struct timer_list *timer);
-+extern int timer_delete(struct timer_list *timer);
- 
- /**
-  * del_timer_sync - Delete a pending timer and wait for a running callback
-@@ -198,6 +198,19 @@ static inline int del_timer_sync(struct
- 	return timer_delete_sync(timer);
- }
- 
-+/**
-+ * del_timer - Delete a pending timer
-+ * @timer:	The timer to be deleted
-+ *
-+ * See timer_delete() for detailed explanation.
-+ *
-+ * Do not use in new code. Use timer_delete() instead.
-+ */
-+static inline int del_timer(struct timer_list *timer)
-+{
-+	return timer_delete(timer);
-+}
-+
- extern void init_timers(void);
- struct hrtimer;
- extern enum hrtimer_restart it_real_fn(struct hrtimer *);
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -1253,7 +1253,7 @@ void add_timer_on(struct timer_list *tim
- EXPORT_SYMBOL_GPL(add_timer_on);
- 
- /**
-- * del_timer - Deactivate a timer.
-+ * timer_delete - Deactivate a timer.
-  * @timer:	The timer to be deactivated
-  *
-  * The function only deactivates a pending timer, but contrary to
-@@ -1266,7 +1266,7 @@ EXPORT_SYMBOL_GPL(add_timer_on);
-  * * %0 - The timer was not pending
-  * * %1 - The timer was pending and deactivated
-  */
--int del_timer(struct timer_list *timer)
-+int timer_delete(struct timer_list *timer)
- {
- 	struct timer_base *base;
- 	unsigned long flags;
-@@ -1282,7 +1282,7 @@ int del_timer(struct timer_list *timer)
- 
- 	return ret;
- }
--EXPORT_SYMBOL(del_timer);
-+EXPORT_SYMBOL(timer_delete);
- 
- /**
-  * try_to_del_timer_sync - Try to deactivate a timer
-
+QWRqdXN0IHRvIHRoZSBuZXcgcHJlZmVycmVkIGZ1bmN0aW9uIG5hbWVzLgoKU3VnZ2VzdGVkLWJ5
+OiBTdGV2ZW4gUm9zdGVkdCA8cm9zdGVkdEBnb29kbWlzLm9yZz4KU2lnbmVkLW9mZi1ieTogVGhv
+bWFzIEdsZWl4bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+Ci0tLQogRG9jdW1lbnRhdGlvbi9SQ1Uv
+RGVzaWduL1JlcXVpcmVtZW50cy9SZXF1aXJlbWVudHMucnN0ICAgICAgfCAgICAyICstCiBEb2N1
+bWVudGF0aW9uL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QgICAgICAgICAgICAgICAgICAgICAgICB8
+ICAgIDIgKy0KIERvY3VtZW50YXRpb24va2VybmVsLWhhY2tpbmcvbG9ja2luZy5yc3QgICAgICAg
+ICAgICAgICAgICAgIHwgICAxMSArKysrKy0tLS0tLQogRG9jdW1lbnRhdGlvbi90aW1lcnMvaHJ0
+aW1lcnMucnN0ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAyICstCiBEb2N1bWVudGF0
+aW9uL3RyYW5zbGF0aW9ucy9pdF9JVC9rZXJuZWwtaGFja2luZy9sb2NraW5nLnJzdCB8ICAgMTAg
+KysrKystLS0tLQogRG9jdW1lbnRhdGlvbi90cmFuc2xhdGlvbnMvemhfQ04vY29yZS1hcGkvbG9j
+YWxfb3BzLnJzdCAgICAgfCAgICAyICstCiA2IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMo
+KyksIDE1IGRlbGV0aW9ucygtKQoKLS0tIGEvRG9jdW1lbnRhdGlvbi9SQ1UvRGVzaWduL1JlcXVp
+cmVtZW50cy9SZXF1aXJlbWVudHMucnN0CisrKyBiL0RvY3VtZW50YXRpb24vUkNVL0Rlc2lnbi9S
+ZXF1aXJlbWVudHMvUmVxdWlyZW1lbnRzLnJzdApAQCAtMTg1OCw3ICsxODU4LDcgQEAgdW5sb2Fk
+ZWQuIEFmdGVyIGEgZ2l2ZW4gbW9kdWxlIGhhcyBiZWVuCiBvbmUgb2YgaXRzIGZ1bmN0aW9ucyBy
+ZXN1bHRzIGluIGEgc2VnbWVudGF0aW9uIGZhdWx0LiBUaGUgbW9kdWxlLXVubG9hZAogZnVuY3Rp
+b25zIG11c3QgdGhlcmVmb3JlIGNhbmNlbCBhbnkgZGVsYXllZCBjYWxscyB0byBsb2FkYWJsZS1t
+b2R1bGUKIGZ1bmN0aW9ucywgZm9yIGV4YW1wbGUsIGFueSBvdXRzdGFuZGluZyBtb2RfdGltZXIo
+KSBtdXN0IGJlIGRlYWx0Ci13aXRoIHZpYSBkZWxfdGltZXJfc3luYygpIG9yIHNpbWlsYXIuCit3
+aXRoIHZpYSB0aW1lcl9kZWxldGVfc3luYygpIG9yIHNpbWlsYXIuCiAKIFVuZm9ydHVuYXRlbHks
+IHRoZXJlIGlzIG5vIHdheSB0byBjYW5jZWwgYW4gUkNVIGNhbGxiYWNrOyBvbmNlIHlvdQogaW52
+b2tlIGNhbGxfcmN1KCksIHRoZSBjYWxsYmFjayBmdW5jdGlvbiBpcyBldmVudHVhbGx5IGdvaW5n
+IHRvIGJlCi0tLSBhL0RvY3VtZW50YXRpb24vY29yZS1hcGkvbG9jYWxfb3BzLnJzdAorKysgYi9E
+b2N1bWVudGF0aW9uL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QKQEAgLTE5MSw3ICsxOTEsNyBAQCBI
+ZXJlIGlzIGEgc2FtcGxlIG1vZHVsZSB3aGljaCBpbXBsZW1lbnRzCiAKICAgICBzdGF0aWMgdm9p
+ZCBfX2V4aXQgdGVzdF9leGl0KHZvaWQpCiAgICAgewotICAgICAgICAgICAgZGVsX3RpbWVyX3N5
+bmMoJnRlc3RfdGltZXIpOworICAgICAgICAgICAgdGltZXJfZGVsZXRlX3N5bmMoJnRlc3RfdGlt
+ZXIpOwogICAgIH0KIAogICAgIG1vZHVsZV9pbml0KHRlc3RfaW5pdCk7Ci0tLSBhL0RvY3VtZW50
+YXRpb24va2VybmVsLWhhY2tpbmcvbG9ja2luZy5yc3QKKysrIGIvRG9jdW1lbnRhdGlvbi9rZXJu
+ZWwtaGFja2luZy9sb2NraW5nLnJzdApAQCAtOTY3LDcgKzk2Nyw3IEBAIElmIHlvdSB3YW50IHRv
+IGRlc3Ryb3kgdGhlIGVudGlyZSBjb2xsZWMKIAogICAgICAgICAgICAgd2hpbGUgKGxpc3QpIHsK
+ICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGZvbyAqbmV4dCA9IGxpc3QtPm5leHQ7Ci0gICAg
+ICAgICAgICAgICAgICAgIGRlbF90aW1lcigmbGlzdC0+dGltZXIpOworICAgICAgICAgICAgICAg
+ICAgICB0aW1lcl9kZWxldGUoJmxpc3QtPnRpbWVyKTsKICAgICAgICAgICAgICAgICAgICAga2Zy
+ZWUobGlzdCk7CiAgICAgICAgICAgICAgICAgICAgIGxpc3QgPSBuZXh0OwogICAgICAgICAgICAg
+fQpAQCAtOTgxLDcgKzk4MSw3IEBAIHRoZSBsb2NrIGFmdGVyIHdlIHNwaW5fdW5sb2NrX2JoKCks
+IGFuZAogdGhlIGVsZW1lbnQgKHdoaWNoIGhhcyBhbHJlYWR5IGJlZW4gZnJlZWQhKS4KIAogVGhp
+cyBjYW4gYmUgYXZvaWRlZCBieSBjaGVja2luZyB0aGUgcmVzdWx0IG9mCi1kZWxfdGltZXIoKTog
+aWYgaXQgcmV0dXJucyAxLCB0aGUgdGltZXIgaGFzIGJlZW4gZGVsZXRlZC4KK3RpbWVyX2RlbGV0
+ZSgpOiBpZiBpdCByZXR1cm5zIDEsIHRoZSB0aW1lciBoYXMgYmVlbiBkZWxldGVkLgogSWYgMCwg
+aXQgbWVhbnMgKGluIHRoaXMgY2FzZSkgdGhhdCBpdCBpcyBjdXJyZW50bHkgcnVubmluZywgc28g
+d2UgY2FuCiBkbzo6CiAKQEAgLTk5MCw3ICs5OTAsNyBAQCBJZiAwLCBpdCBtZWFucyAoaW4gdGhp
+cyBjYXNlKSB0aGF0IGl0IGlzCiAKICAgICAgICAgICAgICAgICAgICAgd2hpbGUgKGxpc3QpIHsK
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgZm9vICpuZXh0ID0gbGlzdC0+bmV4
+dDsKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoIWRlbF90aW1lcigmbGlzdC0+dGlt
+ZXIpKSB7CisgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCF0aW1lcl9kZWxldGUoJmxp
+c3QtPnRpbWVyKSkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLyogR2l2
+ZSB0aW1lciBhIGNoYW5jZSB0byBkZWxldGUgdGhpcyAqLwogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgc3Bpbl91bmxvY2tfYmgoJmxpc3RfbG9jayk7CiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBnb3RvIHJldHJ5OwpAQCAtMTAwNSw4ICsxMDA1LDcgQEAg
+SWYgMCwgaXQgbWVhbnMgKGluIHRoaXMgY2FzZSkgdGhhdCBpdCBpcwogQW5vdGhlciBjb21tb24g
+cHJvYmxlbSBpcyBkZWxldGluZyB0aW1lcnMgd2hpY2ggcmVzdGFydCB0aGVtc2VsdmVzIChieQog
+Y2FsbGluZyBhZGRfdGltZXIoKSBhdCB0aGUgZW5kIG9mIHRoZWlyIHRpbWVyIGZ1bmN0aW9uKS4K
+IEJlY2F1c2UgdGhpcyBpcyBhIGZhaXJseSBjb21tb24gY2FzZSB3aGljaCBpcyBwcm9uZSB0byBy
+YWNlcywgeW91IHNob3VsZAotdXNlIGRlbF90aW1lcl9zeW5jKCkgKGBgaW5jbHVkZS9saW51eC90
+aW1lci5oYGApIHRvCi1oYW5kbGUgdGhpcyBjYXNlLgordXNlIHRpbWVyX2RlbGV0ZV9zeW5jKCkg
+KGBgaW5jbHVkZS9saW51eC90aW1lci5oYGApIHRvIGhhbmRsZSB0aGlzIGNhc2UuCiAKIExvY2tp
+bmcgU3BlZWQKID09PT09PT09PT09PT0KQEAgLTEzMzQsNyArMTMzMyw3IEBAIGxvY2suCiAKIC0g
+IGtmcmVlKCkKIAotLSAgYWRkX3RpbWVyKCkgYW5kIGRlbF90aW1lcigpCistICBhZGRfdGltZXIo
+KSBhbmQgdGltZXJfZGVsZXRlKCkKIAogTXV0ZXggQVBJIHJlZmVyZW5jZQogPT09PT09PT09PT09
+PT09PT09PQotLS0gYS9Eb2N1bWVudGF0aW9uL3RpbWVycy9ocnRpbWVycy5yc3QKKysrIGIvRG9j
+dW1lbnRhdGlvbi90aW1lcnMvaHJ0aW1lcnMucnN0CkBAIC0xMTgsNyArMTE4LDcgQEAgZXhpc3Rp
+bmcgdGltZXIgd2hlZWwgY29kZSwgYXMgaXQgaXMgbWF0dQogd2FzIG5vdCByZWFsbHkgYSB3aW4s
+IGR1ZSB0byB0aGUgZGlmZmVyZW50IGRhdGEgc3RydWN0dXJlcy4gQWxzbywgdGhlCiBocnRpbWVy
+IGZ1bmN0aW9ucyBub3cgaGF2ZSBjbGVhcmVyIGJlaGF2aW9yIGFuZCBjbGVhcmVyIG5hbWVzIC0g
+c3VjaCBhcwogaHJ0aW1lcl90cnlfdG9fY2FuY2VsKCkgYW5kIGhydGltZXJfY2FuY2VsKCkgW3do
+aWNoIGFyZSByb3VnaGx5Ci1lcXVpdmFsZW50IHRvIGRlbF90aW1lcigpIGFuZCBkZWxfdGltZXJf
+c3luYygpXSAtIHNvIHRoZXJlJ3Mgbm8gZGlyZWN0CitlcXVpdmFsZW50IHRvIHRpbWVyX2RlbGV0
+ZSgpIGFuZCB0aW1lcl9kZWxldGVfc3luYygpXSAtIHNvIHRoZXJlJ3Mgbm8gZGlyZWN0CiAxOjEg
+bWFwcGluZyBiZXR3ZWVuIHRoZW0gb24gdGhlIGFsZ29yaXRobWljIGxldmVsLCBhbmQgdGh1cyBu
+byByZWFsCiBwb3RlbnRpYWwgZm9yIGNvZGUgc2hhcmluZyBlaXRoZXIuCiAKLS0tIGEvRG9jdW1l
+bnRhdGlvbi90cmFuc2xhdGlvbnMvaXRfSVQva2VybmVsLWhhY2tpbmcvbG9ja2luZy5yc3QKKysr
+IGIvRG9jdW1lbnRhdGlvbi90cmFuc2xhdGlvbnMvaXRfSVQva2VybmVsLWhhY2tpbmcvbG9ja2lu
+Zy5yc3QKQEAgLTk5MCw3ICs5OTAsNyBAQCBTZSB2b2xldGUgZWxpbWluYXJlIGwnaW50ZXJhIGNv
+bGxlemlvbmUKIAogICAgICAgICAgICAgd2hpbGUgKGxpc3QpIHsKICAgICAgICAgICAgICAgICAg
+ICAgc3RydWN0IGZvbyAqbmV4dCA9IGxpc3QtPm5leHQ7Ci0gICAgICAgICAgICAgICAgICAgIGRl
+bF90aW1lcigmbGlzdC0+dGltZXIpOworICAgICAgICAgICAgICAgICAgICB0aW1lcl9kZWxldGUo
+Jmxpc3QtPnRpbWVyKTsKICAgICAgICAgICAgICAgICAgICAga2ZyZWUobGlzdCk7CiAgICAgICAg
+ICAgICAgICAgICAgIGxpc3QgPSBuZXh0OwogICAgICAgICAgICAgfQpAQCAtMTAwMyw3ICsxMDAz
+LDcgQEAgZSBwcmVuZGVyw6AgaWwgKmxvY2sqIHNvbG8gZG9wbyBzcGluX3VubAogZGkgZWxpbWlu
+YXJlIGlsIHN1byBvZ2dldHRvIChjaGUgcGVyw7Igw6ggZ2nDoCBzdGF0byBlbGltaW5hdG8pLgog
+CiBRdWVzdG8gcHXDsiBlc3NlcmUgZXZpdGF0byBjb250cm9sbGFuZG8gaWwgdmFsb3JlIGRpIHJp
+dG9ybm8gZGkKLWRlbF90aW1lcigpOiBzZSByaXRvcm5hIDEsIGlsIHRlbXBvcml6emF0b3JlIMOo
+IHN0YXRvIGdpw6AKK3RpbWVyX2RlbGV0ZSgpOiBzZSByaXRvcm5hIDEsIGlsIHRlbXBvcml6emF0
+b3JlIMOoIHN0YXRvIGdpw6AKIHJpbW9zc28uIFNlIDAsIHNpZ25pZmljYSAoaW4gcXVlc3RvIGNh
+c28pIGNoZSBpbCB0ZW1wb3JpenphdG9yZSDDqCBpbgogZXNlY3V6aW9uZSwgcXVpbmRpIHBvc3Np
+YW1vIGZhcmUgY29tZSBzZWd1ZTo6CiAKQEAgLTEwMTIsNyArMTAxMiw3IEBAIHJpbW9zc28uIFNl
+IDAsIHNpZ25pZmljYSAoaW4gcXVlc3RvIGNhc28KIAogICAgICAgICAgICAgICAgICAgICB3aGls
+ZSAobGlzdCkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBmb28gKm5leHQg
+PSBsaXN0LT5uZXh0OwotICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmICghZGVsX3RpbWVy
+KCZsaXN0LT50aW1lcikpIHsKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoIXRpbWVy
+X2RlbGV0ZSgmbGlzdC0+dGltZXIpKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAvKiBHaXZlIHRpbWVyIGEgY2hhbmNlIHRvIGRlbGV0ZSB0aGlzICovCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBzcGluX3VubG9ja19iaCgmbGlzdF9sb2NrKTsKICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gcmV0cnk7CkBAIC0xMDI2LDcg
+KzEwMjYsNyBAQCByaW1vc3NvLiBTZSAwLCBzaWduaWZpY2EgKGluIHF1ZXN0byBjYXNvCiBVbiBh
+bHRybyBwcm9ibGVtYSDDqCBsJ2VsaW1pbmF6aW9uZSBkZWkgdGVtcG9yaXp6YXRvcmkgY2hlIHNp
+IHJpYXZ2aWFubwogZGEgc29saSAoY2hpYW1hbmRvIGFkZF90aW1lcigpIGFsbGEgZmluZSBkZWxs
+YSBsb3JvIGVzZWN1emlvbmUpLgogRGF0byBjaGUgcXVlc3RvIMOoIHVuIHByb2JsZW1hIGFiYmFz
+dGFuemEgY29tdW5lIGNvbiB1bmEgcHJvcGVuc2lvbmUKLWFsbGUgY29yc2UgY3JpdGljaGUsIGRv
+dnJlc3RlIHVzYXJlIGRlbF90aW1lcl9zeW5jKCkKK2FsbGUgY29yc2UgY3JpdGljaGUsIGRvdnJl
+c3RlIHVzYXJlIHRpbWVyX2RlbGV0ZV9zeW5jKCkKIChgYGluY2x1ZGUvbGludXgvdGltZXIuaGBg
+KSBwZXIgZ2VzdGlyZSBxdWVzdG8gY2Fzby4KIAogVmVsb2NpdMOgIGRlbGxhIHNpbmNyb25penph
+emlvbmUKQEAgLTEzNzIsNyArMTM3Miw3IEBAIGNvbnRlc3RvLCBvIHRyYXR0ZW5lbmRvIHVuIHF1
+YWxzaWFzaSAqbG8KIAogLSAga2ZyZWUoKQogCi0tICBhZGRfdGltZXIoKSBlIGRlbF90aW1lcigp
+CistICBhZGRfdGltZXIoKSBlIHRpbWVyX2RlbGV0ZSgpCiAKIFJpZmVyaW1lbnRvIHBlciBsJ0FQ
+SSBkZWkgTXV0ZXgKID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGEvRG9jdW1l
+bnRhdGlvbi90cmFuc2xhdGlvbnMvemhfQ04vY29yZS1hcGkvbG9jYWxfb3BzLnJzdAorKysgYi9E
+b2N1bWVudGF0aW9uL3RyYW5zbGF0aW9ucy96aF9DTi9jb3JlLWFwaS9sb2NhbF9vcHMucnN0CkBA
+IC0xODUsNyArMTg1LDcgQEAgVVDkuYvpl7TmsqHmnInkuI3lkIznmoTooYzkuLrvvIzlnKjkvaDv
+v70KIAogICAgIHN0YXRpYyB2b2lkIF9fZXhpdCB0ZXN0X2V4aXQodm9pZCkKICAgICB7Ci0gICAg
+ICAgICAgICBkZWxfdGltZXJfc3luYygmdGVzdF90aW1lcik7CisgICAgICAgICAgICB0aW1lcl9k
+ZWxldGVfc3luYygmdGVzdF90aW1lcik7CiAgICAgfQogCiAgICAgbW9kdWxlX2luaXQodGVzdF9p
+bml0KTsKCg==
