@@ -2,72 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16820633B74
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:34:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B11B8633B72
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:34:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbiKVLen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 06:34:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
+        id S231967AbiKVLee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 06:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbiKVLeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:34:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA4A57B68;
-        Tue, 22 Nov 2022 03:28:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD662B8190C;
-        Tue, 22 Nov 2022 11:28:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D87C433D6;
-        Tue, 22 Nov 2022 11:28:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669116494;
-        bh=6NCM6m31OczIAvsK/iy/GTtUbOr+0Immp0oWffvrMeA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Vgm/WLBj9j4v3l0ckOLVXUSNGoV/3JN32+v0rS4nPs3rYoclkrcLBmGgQxJcG37x4
-         WdBQ8mOeCQtJda46M3vYLsmsjM7px3vF9aukN9oROquqkxIoqMTfrashC7qRVvJnvH
-         zdvqBfTuugU07MSQIZhcjR9Ii69VHdR4CqziCZgVMD544U7NJuQgrwMS8novta3+bX
-         +FeMRXdT60tbU3ema1UjHD1eq+stL0ALsKu4Fcmr+S5JYIEB9C5gbdXsTNJpl9Q4bU
-         GW6DfQCySFTEldRVMcywvp7aP4ubepHuYEg1IQznAajvHmcfCtt4hX8nToGNabuW27
-         eaePpR6OPQZuQ==
-Date:   Tue, 22 Nov 2022 11:28:01 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Conor Dooley <conor@kernel.org>
-Cc:     Alexander Lobakin <alobakin@pm.me>, linux-kbuild@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Jens Axboe <axboe@kernel.dk>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/18] treewide: fix object files shared between several
- modules
-Message-ID: <Y3yyQS7Q8cL+z89L@sirena.org.uk>
-References: <20221119225650.1044591-1-alobakin@pm.me>
- <Y3oWYhw9VZOANneu@sirena.org.uk>
- <Y3oc2B6y0TB51+/j@spud>
+        with ESMTP id S232729AbiKVLeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:34:09 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D47A528AB
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:28:11 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id a15so17590131ljb.7
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:28:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=W/2KboP7aDBe1NYViL1rOGOSS6zsKqMYiIoKfwCQQMI=;
+        b=Ov0oib1k0t+e0P2SjXf8SFwdPHnACc12Z7xhLVbLKFLWGS6fL84ftsb360QmyL2t7r
+         ZhgtI0TtjU+xg8ti0yLYMagM5arx8xDoh1cGIZxhCuAd7ghzwCm3wIbLISuXb1SbBQcc
+         ChGFJFoeMvKuttgRkFV3RpVOAjFLvc5nJSI9UN1Y/dLN8gsvjaX60T/neFN8TFODFrwd
+         /axyZ973o8yoJQb0rT8RFfHVDJca0SGX1E+Ksu9iGzeDVoq4+ovUvb7Xl4pSaYYO1mlu
+         rWxdj6JRmlXxLBUDipy7XVKp77KRRA4A/ZxKe6XmDQDc4kk6zGj9lzR6xm5ifzWlB/3F
+         51kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=W/2KboP7aDBe1NYViL1rOGOSS6zsKqMYiIoKfwCQQMI=;
+        b=H6JMc3vlhEV8scAg5Y9xIMpjiP0JL+TV2V6rAgLu8MEXyu0hg6hFEwe+7CGirrIbBx
+         IHtbxitwKWeo5+0HXOViDsO6QYq83zThifof70rHm6gynQWZvi6LTBHnYA09R92rfR/X
+         5EuvfBy79bPxI5iWVqY65wpHmSIy0GRn6vjP01EuRoUjliirBFk/Ac7EoolTbtKqAoO/
+         N5DTCXKQmPBHOd2FakTaAndvX4PkqfqIERFZiFHeyN9e6DdAbK6LkKm6h9zi7D1kI0BJ
+         cFBAvdNPzJ+2KiAv/mz43FXKHyHkcgaHSmEguMP3Ljoe6LurKpEhZiLvkFo8W3fgeUB4
+         sHAg==
+X-Gm-Message-State: ANoB5pltd591c0JRmevhIY3TW6tyVfYkrausGzqGvNyAjIkYrnfINFTw
+        ZGhicbrSTzOb3CzWXM/iEcZF1Q==
+X-Google-Smtp-Source: AA0mqf4A0miTCOCsyCp2t2s3vA+Q5w7x++fFSlnVreMOjo+8Lbol4ErFhuD0e8A7sPn4m43VRfsWmQ==
+X-Received: by 2002:a05:651c:241:b0:26d:e38f:7e21 with SMTP id x1-20020a05651c024100b0026de38f7e21mr6990303ljn.273.1669116489716;
+        Tue, 22 Nov 2022 03:28:09 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id t1-20020a056512208100b004b4e4671212sm75843lfr.232.2022.11.22.03.28.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Nov 2022 03:28:08 -0800 (PST)
+Message-ID: <c47b0ab1-df50-36dd-5a60-8cdc4f632fb6@linaro.org>
+Date:   Tue, 22 Nov 2022 12:28:07 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="GZgMp8h7GaJD8EJs"
-Content-Disposition: inline
-In-Reply-To: <Y3oc2B6y0TB51+/j@spud>
-X-Cookie: That's what she said.
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net v2 2/3] nfc: st-nci: fix memory leaks in
+ EVT_TRANSACTION
+Content-Language: en-US
+To:     Martin Faltesek <mfaltesek@google.com>, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-nfc@lists.01.org, davem@davemloft.net
+Cc:     martin.faltesek@gmail.com, christophe.ricard@gmail.com,
+        groeck@google.com, jordy@pwning.systems, krzk@kernel.org,
+        sameo@linux.intel.com, theflamefire89@gmail.com,
+        duoming@zju.edu.cn, Denis Efremov <denis.e.efremov@oracle.com>
+References: <20221122004246.4186422-1-mfaltesek@google.com>
+ <20221122004246.4186422-3-mfaltesek@google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221122004246.4186422-3-mfaltesek@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,44 +78,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 22/11/2022 01:42, Martin Faltesek wrote:
+> Error path does not free previously allocated memory. Add devm_kfree() to
+> the failure path.
+> 
+> Reported-by: Denis Efremov <denis.e.efremov@oracle.com>
+> Reviewed-by: Guenter Roeck <groeck@google.com>
+> Fixes: 5d1ceb7f5e56 ("NFC: st21nfcb: Add HCI transaction event support")
+> Signed-off-by: Martin Faltesek <mfaltesek@google.com>
+> ---
 
---GZgMp8h7GaJD8EJs
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Sun, Nov 20, 2022 at 12:26:00PM +0000, Conor Dooley wrote:
-> On Sun, Nov 20, 2022 at 11:58:26AM +0000, Mark Brown wrote:
-> > On Sat, Nov 19, 2022 at 11:03:57PM +0000, Alexander Lobakin wrote:
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> > Your mails appear to be encrypted which isn't helping with
-> > review...
+Best regards,
+Krzysztof
 
-> https://lore.kernel.org/all/20221119225650.1044591-1-alobakin@pm.me/
-
-> Looks un-encrypted on lore. pm.me looks to be a protonmail domain - I
-> had issues with protonmail where it picked up Maz's key via Web Key
-> Directory. "Kernel.org publishes the WKD for all developers who have
-> kernel.org accounts" & unfortunately proton doesn't (or didn't) offer a
-> way to disable this. If someone's key is available it gets used & proton
-> told me, IIRC, that not having a way to disable this is a privacy
-> feature.
-
-It wasn't obviously encrypted to my key either...=20
-
---GZgMp8h7GaJD8EJs
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmN8skAACgkQJNaLcl1U
-h9A3zwf8CWUf5xGrZknftvQzY1zcdbm1NfAH7drvcnlBKaeN5/5IAXzz0T92hgTh
-KVP3hFD/dw7SQz/FJGYJKAMxHeI5GhXtWsc4QoWBvVdjnR44Xz3GtAkp2pW8dV+C
-CJ5gDnRy+Q81W5Mt/c0HaFiJOFhodMEqFxJclOiIfR8Euilxob2Xa2moJku4CS5t
-Bt09ghKrW8l3cTq4TxCa4dAsNc/VBcjjwaOHgmC/AHlW+WfDeZZahvWfD1SBY2T9
-H1iFavcwXFQ8pPAtzLcg/8qqzw696nM0LbGFnLIG/nAdtdM7+vOncmwmIPElCLBc
-uyRU0xb6uTkIlLl1ThRtzVT0GmIW+A==
-=uKrw
------END PGP SIGNATURE-----
-
---GZgMp8h7GaJD8EJs--
