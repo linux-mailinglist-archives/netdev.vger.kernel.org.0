@@ -2,117 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C59D7633C1D
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 13:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2AB633C29
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 13:12:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbiKVMJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 07:09:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
+        id S233545AbiKVMMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 07:12:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbiKVMJa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 07:09:30 -0500
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFB349B4F;
-        Tue, 22 Nov 2022 04:09:29 -0800 (PST)
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4NGjjg5NNXz8QrkZ;
-        Tue, 22 Nov 2022 20:09:27 +0800 (CST)
-Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
-        by mse-fl2.zte.com.cn with SMTP id 2AMC9KZH006279;
-        Tue, 22 Nov 2022 20:09:20 +0800 (+08)
-        (envelope-from yang.yang29@zte.com.cn)
-Received: from mapi (szxlzmapp02[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Tue, 22 Nov 2022 20:09:23 +0800 (CST)
-Date:   Tue, 22 Nov 2022 20:09:23 +0800 (CST)
-X-Zmail-TransId: 2b04637cbbf3ffffffffe6ce2da8
-X-Mailer: Zmail v1.0
-Message-ID: <202211222009239312149@zte.com.cn>
-Mime-Version: 1.0
-From:   <yang.yang29@zte.com.cn>
-To:     <peppe.cavallaro@st.com>
-Cc:     <alexandre.torgue@foss.st.com>, <joabreu@synopsys.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <xu.panda@zte.com.cn>,
-        <yang.yang29@zte.com.cn>
-Subject: =?UTF-8?B?W1BBVENIIGxpbnV4LW5leHRdIG5ldDogc3RtbWFjOiB1c2Ugc3lzZnNfc3RyZXEoKSBpbnN0ZWFkIG9mIHN0cm5jbXAoKQ==?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 2AMC9KZH006279
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.250.137.novalocal with ID 637CBBF7.000 by FangMail milter!
-X-FangMail-Envelope: 1669118967/4NGjjg5NNXz8QrkZ/637CBBF7.000/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<yang.yang29@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 637CBBF7.000/4NGjjg5NNXz8QrkZ
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231899AbiKVMMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 07:12:39 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89C1BC4
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 04:12:35 -0800 (PST)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NGjjW0MSYzJnpt;
+        Tue, 22 Nov 2022 20:09:19 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 22 Nov 2022 20:12:34 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 22 Nov
+ 2022 20:12:33 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <jiri@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>
+Subject: [PATCH net] net: devlink: fix UAF in devlink_compat_running_version()
+Date:   Tue, 22 Nov 2022 20:10:48 +0800
+Message-ID: <20221122121048.776643-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xu Panda <xu.panda@zte.com.cn>
+I got a UAF report as following when doing fault injection test:
 
-Replace the open-code with sysfs_streq().
+BUG: KASAN: use-after-free in devlink_compat_running_version+0x5b9/0x6a0
+Read of size 8 at addr ffff88810ac591f0 by task systemd-udevd/458
 
-Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
-Signed-off-by: Yang Yang <yang.yang29@zte.com>
+CPU: 2 PID: 458 Comm: systemd-udevd Not tainted 6.1.0-rc5-00155-ga9d2b54dd4e7-dirty #1359
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ <TASK>
+ kasan_report+0x90/0x190
+ devlink_compat_running_version+0x5b9/0x6a0
+ dev_ethtool+0x2ca/0x340
+ dev_ioctl+0x16c/0xff0
+ sock_do_ioctl+0x1ae/0x220
+
+Allocated by task 456:
+ kasan_save_stack+0x1c/0x40
+ kasan_set_track+0x21/0x30
+ __kasan_kmalloc+0x7e/0x90
+ __kmalloc+0x59/0x1b0
+ devlink_alloc_ns+0xf7/0xa10
+ nsim_drv_probe+0xa8/0x150 [netdevsim]
+ really_probe+0x1ff/0x660
+
+Freed by task 456:
+ kasan_save_stack+0x1c/0x40
+ kasan_set_track+0x21/0x30
+ kasan_save_free_info+0x2a/0x50
+ __kasan_slab_free+0x102/0x190
+ __kmem_cache_free+0xca/0x400
+ nsim_drv_probe.cold.31+0x2af/0xf62 [netdevsim]
+ really_probe+0x1ff/0x660
+
+It happened like this:
+
+processor A							processor B
+nsim_drv_probe()
+  devlink_alloc_ns()
+  nsim_dev_port_add_all()
+    __nsim_dev_port_add() // add eth1 successful
+								dev_ethtool()
+								  ethtool_get_drvinfo(eth1)
+								    netdev_to_devlink_get(eth1)
+								      devlink_try_get() // get devlink here
+    __nsim_dev_port_add() // add eth2 failed, goto error
+      devlink_free() // it's called in the error path
+								  devlink_compat_running_version() <- causes UAF
+  devlink_register() // it's in normal path, not called yet
+
+There is two ports to add in nsim_dev_port_add_all(), if first
+port is added successful, the devlink is visable and can be get
+by devlink_try_get() on another cpu, but it is not registered
+yet. And then the second port is failed to added, in the error
+path, devlink_free() is called, at last it causes UAF.
+
+Add check in devlink_try_get(), if the 'devlink' is not registered
+it returns NULL to avoid UAF like this case.
+
+Fixes: a62fdbbe9403 ("netdevsim: implement ndo_get_devlink_port")
+Reported-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ net/core/devlink.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 0a9d13d7976f..4167e768a86a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7562,31 +7562,31 @@ static int __init stmmac_cmdline_opt(char *str)
- 	if (!str || !*str)
- 		return 1;
- 	while ((opt = strsep(&str, ",")) != NULL) {
--		if (!strncmp(opt, "debug:", 6)) {
-+		if (sysfs_streq(opt, "debug:")) {
- 			if (kstrtoint(opt + 6, 0, &debug))
- 				goto err;
--		} else if (!strncmp(opt, "phyaddr:", 8)) {
-+		} else if (sysfs_streq(opt, "phyaddr:")) {
- 			if (kstrtoint(opt + 8, 0, &phyaddr))
- 				goto err;
--		} else if (!strncmp(opt, "buf_sz:", 7)) {
-+		} else if (sysfs_streq(opt, "buf_sz:")) {
- 			if (kstrtoint(opt + 7, 0, &buf_sz))
- 				goto err;
--		} else if (!strncmp(opt, "tc:", 3)) {
-+		} else if (sysfs_streq(opt, "tc:")) {
- 			if (kstrtoint(opt + 3, 0, &tc))
- 				goto err;
--		} else if (!strncmp(opt, "watchdog:", 9)) {
-+		} else if (sysfs_streq(opt, "watchdog:")) {
- 			if (kstrtoint(opt + 9, 0, &watchdog))
- 				goto err;
--		} else if (!strncmp(opt, "flow_ctrl:", 10)) {
-+		} else if (sysfs_streq(opt, "flow_ctrl:")) {
- 			if (kstrtoint(opt + 10, 0, &flow_ctrl))
- 				goto err;
--		} else if (!strncmp(opt, "pause:", 6)) {
-+		} else if (sysfs_streq(opt, "pause:", 6)) {
- 			if (kstrtoint(opt + 6, 0, &pause))
- 				goto err;
--		} else if (!strncmp(opt, "eee_timer:", 10)) {
-+		} else if (sysfs_streq(opt, "eee_timer:")) {
- 			if (kstrtoint(opt + 10, 0, &eee_timer))
- 				goto err;
--		} else if (!strncmp(opt, "chain_mode:", 11)) {
-+		} else if (sysfs_streq(opt, "chain_mode:")) {
- 			if (kstrtoint(opt + 11, 0, &chain_mode))
- 				goto err;
- 		}
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 89baa7c0938b..6453ac0558fb 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -250,6 +250,9 @@ void devlink_put(struct devlink *devlink)
+ 
+ struct devlink *__must_check devlink_try_get(struct devlink *devlink)
+ {
++	 if (!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED))
++		return NULL;
++
+ 	if (refcount_inc_not_zero(&devlink->refcount))
+ 		return devlink;
+ 	return NULL;
 -- 
-2.15.2
+2.25.1
+
