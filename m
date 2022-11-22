@@ -2,281 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0DB5633AC7
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:10:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C56633ACF
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232841AbiKVLKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 06:10:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
+        id S232856AbiKVLMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 06:12:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232269AbiKVLKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:10:44 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCBF2CCAC
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:10:41 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id j4so23108623lfk.0
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:10:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=a+lumkSANeVYN39oKSfvZrAR/Mw6IxYn5W+438PdGoU=;
-        b=GpncHk39WOYTmUb3Rr+o4xTv2bRvSTGGcDX/29Os+HHdP2Y1LWP+6hxUdJjsvvuaCi
-         3WJgK23q7GcS1S0BVWjNRWqBKYUEselyQgin/9cX40QvnJudtpmSJiRXvC3bTHzFfJh/
-         shYj7o8cuBbW0Wkq2tauFVFhR2koue7P6pNa3lc0xJV8fP8IXBPfVaY8gmQ5B0eEdMk1
-         n65TIwn8lw781l+Ti4+48cCHHvCS7GM64Ns1R7K1lG7ZZiGaLoE0bDVDQOqCYLuJVwc0
-         KbYcxH7Kl7n4OHklKL+bL+qv6kb2UoZQX/5suvprSfjQxrEP4dPH6uOCamO2W4ZWxI+f
-         g9/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=a+lumkSANeVYN39oKSfvZrAR/Mw6IxYn5W+438PdGoU=;
-        b=FTyxjkQz/wmBynhuJk7Pyy7qrWNN4twYnG2/95XsUdn/gBa9yz33QtKlydRH6hyExU
-         H5w1EjnUrkL/W4fOm9sQ+1s4pcWoyVPq6rXQY3OHPt3BKYfAD4/QJPrFpczeMzHnJMVg
-         MyW7z2sDZX4BqJL0zyQyMeYaezdjQKgwp4Oh29SqAKnzXRSh7ecrtKPisiR1O7hCa9UD
-         UFTl39xdXGXETeaBqGnDkcxOVZngQkOHUTWmW4pU/7h0O9gr7KDDHirD+8N3u0Nh9C5B
-         JfP3IXyN9lipqjjOZCYo8roY7x8jmeL7V6pMC70deeyj7WXVTmelETJzhBXI4UWY7Fb2
-         nQ2A==
-X-Gm-Message-State: ANoB5pn9XJzcl+XygJq1/uWpw4FVDMmwje45DDnn0ueRG2KYXpRixoow
-        8jyW5C+tZqigA3u5AfNw1mdkiQ==
-X-Google-Smtp-Source: AA0mqf7czya88nL8uLXBENV8SqQL7ahBZMH/wfPdIKsODvU5jhTA4yZHA2oF8xUGBTDiY0eAjtCl5w==
-X-Received: by 2002:a05:6512:3147:b0:4a7:7daf:905b with SMTP id s7-20020a056512314700b004a77daf905bmr7353168lfi.665.1669115440128;
-        Tue, 22 Nov 2022 03:10:40 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id o15-20020a05651205cf00b0049ad2619becsm2451218lfo.131.2022.11.22.03.10.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 03:10:39 -0800 (PST)
-Message-ID: <e74b7496-cd3d-0f20-0308-ce285e7e5dd6@linaro.org>
-Date:   Tue, 22 Nov 2022 12:10:38 +0100
+        with ESMTP id S231318AbiKVLMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:12:12 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D339E2F64F;
+        Tue, 22 Nov 2022 03:12:09 -0800 (PST)
+X-UUID: e48cd87da41b4c7a85063be4f3c56350-20221122
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=4QNzSdvQ3Vol+vIsemSRu1OecRAsVQwKPhb3CjZyW3I=;
+        b=Wjj3x9k9H9br8RznpAAgIsN0mM5D2Qpb3R1YxinrH6pK3NE0HgTL92sFFXvTS/Jw4e845s7Mu8xp6u5Y+Yx7SKXrYNjpK/tdgaIe6IyLnC2mnjt4uSvSjM8iFpePcpvWYa9NnbfLIfPZHBY1v+w8XyYCyLlGUzxauRG6wflUbxQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.12,REQID:772d0a80-79c2-45d7-91f5-ccc5403c409f,IP:0,U
+        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+        :release,TS:-5
+X-CID-META: VersionHash:62cd327,CLOUDID:422e7f2f-2938-482e-aafd-98d66723b8a9,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: e48cd87da41b4c7a85063be4f3c56350-20221122
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <yanchao.yang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 219710448; Tue, 22 Nov 2022 19:12:01 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 22 Nov 2022 19:12:00 +0800
+Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Tue, 22 Nov 2022 19:11:58 +0800
+From:   Yanchao Yang <yanchao.yang@mediatek.com>
+To:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev ML <netdev@vger.kernel.org>,
+        kernel ML <linux-kernel@vger.kernel.org>
+CC:     MTK ML <linux-mediatek@lists.infradead.org>,
+        Liang Lu <liang.lu@mediatek.com>,
+        Haijun Liu <haijun.liu@mediatek.com>,
+        Hua Yang <hua.yang@mediatek.com>,
+        Ting Wang <ting.wang@mediatek.com>,
+        Felix Chen <felix.chen@mediatek.com>,
+        Mingliang Xu <mingliang.xu@mediatek.com>,
+        Min Dong <min.dong@mediatek.com>,
+        Aiden Wang <aiden.wang@mediatek.com>,
+        Guohao Zhang <guohao.zhang@mediatek.com>,
+        Chris Feng <chris.feng@mediatek.com>,
+        Yanchao Yang <yanchao.yang@mediatek.com>,
+        Lambert Wang <lambert.wang@mediatek.com>,
+        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
+        Xiayu Zhang <xiayu.zhang@mediatek.com>,
+        Haozhe Chang <haozhe.chang@mediatek.com>,
+        MediaTek Corporation <linuxwwan@mediatek.com>
+Subject: [PATCH net-next v1 00/13] net: wwan: tmi: PCIe driver for MediaTek M.2 modem
+Date:   Tue, 22 Nov 2022 19:11:39 +0800
+Message-ID: <20221122111152.160377-1-yanchao.yang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next V3] dt-bindings: net: xlnx,axi-ethernet: convert
- bindings document to yaml
-Content-Language: en-US
-To:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@amd.com
-References: <20221122102437.1702630-1-sarath.babu.naidu.gaddam@amd.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221122102437.1702630-1-sarath.babu.naidu.gaddam@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/11/2022 11:24, Sarath Babu Naidu Gaddam wrote:
-> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> 
-> Convert the bindings document for Xilinx AXI Ethernet Subsystem
-> from txt to yaml. No changes to existing binding description.
-> 
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-> ---
-> 
-> Changes in V3:
-> 1) Moved RFC to PATCH.
-> 2) Addressed below review comments
-> 	a) Indentation.
-> 	b) maxItems:3 does not match your description.
-> 	c) Filename matching compatibles.
-> 
-> Changes in V2:
-> 1) remove .txt and change the name of file to xlnx,axiethernet.yaml.
-> 2) Fix DT check warning('device_type' does not match any of the regexes:
->    'pinctrl-[0-9]+' From schema: Documentation/devicetree/bindings/net
->     /xilinx_axienet.yaml).
-> ---
->  .../bindings/net/xilinx_axienet.txt           |  99 ------------
->  .../bindings/net/xlnx,axi-ethernet.yaml       | 150 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  3 files changed, 151 insertions(+), 99 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/xilinx_axienet.txt
->  create mode 100644 Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> deleted file mode 100644
-> index 1aa4c6006cd0..000000000000
-> --- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> +++ /dev/null
-> @@ -1,99 +0,0 @@
-> -XILINX AXI ETHERNET Device Tree Bindings
-> ---------------------------------------------------------
-> -
-> -Also called  AXI 1G/2.5G Ethernet Subsystem, the xilinx axi ethernet IP core
-> -provides connectivity to an external ethernet PHY supporting different
-> -interfaces: MII, GMII, RGMII, SGMII, 1000BaseX. It also includes two
-> -segments of memory for buffering TX and RX, as well as the capability of
-> -offloading TX/RX checksum calculation off the processor.
-> -
-> -Management configuration is done through the AXI interface, while payload is
-> -sent and received through means of an AXI DMA controller. This driver
-> -includes the DMA driver code, so this driver is incompatible with AXI DMA
-> -driver.
-> -
-> -For more details about mdio please refer phy.txt file in the same directory.
-> -
-> -Required properties:
-> -- compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
-> -		  "xlnx,axi-ethernet-1.01.a", "xlnx,axi-ethernet-2.01.a"
-> -- reg		: Address and length of the IO space, as well as the address
-> -                  and length of the AXI DMA controller IO space, unless
-> -                  axistream-connected is specified, in which case the reg
-> -                  attribute of the node referenced by it is used.
-> -- interrupts	: Should be a list of 2 or 3 interrupts: TX DMA, RX DMA,
-> -		  and optionally Ethernet core. If axistream-connected is
-> -		  specified, the TX/RX DMA interrupts should be on that node
-> -		  instead, and only the Ethernet core interrupt is optionally
-> -		  specified here.
-> -- phy-handle	: Should point to the external phy device if exists. Pointing
-> -		  this to the PCS/PMA PHY is deprecated and should be avoided.
-> -		  See ethernet.txt file in the same directory.
-> -- xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
-> -
-> -Optional properties:
-> -- phy-mode	: See ethernet.txt
-> -- xlnx,phy-type	: Deprecated, do not use, but still accepted in preference
-> -		  to phy-mode.
-> -- xlnx,txcsum	: 0 or empty for disabling TX checksum offload,
-> -		  1 to enable partial TX checksum offload,
-> -		  2 to enable full TX checksum offload
-> -- xlnx,rxcsum	: Same values as xlnx,txcsum but for RX checksum offload
-> -- xlnx,switch-x-sgmii : Boolean to indicate the Ethernet core is configured to
-> -		  support both 1000BaseX and SGMII modes. If set, the phy-mode
-> -		  should be set to match the mode selected on core reset (i.e.
-> -		  by the basex_or_sgmii core input line).
-> -- clock-names: 	  Tuple listing input clock names. Possible clocks:
-> -		  s_axi_lite_clk: Clock for AXI register slave interface
-> -		  axis_clk: AXI4-Stream clock for TXD RXD TXC and RXS interfaces
-> -		  ref_clk: Ethernet reference clock, used by signal delay
-> -			   primitives and transceivers
-> -		  mgt_clk: MGT reference clock (used by optional internal
-> -			   PCS/PMA PHY)
-> -
-> -		  Note that if s_axi_lite_clk is not specified by name, the
-> -		  first clock of any name is used for this. If that is also not
-> -		  specified, the clock rate is auto-detected from the CPU clock
-> -		  (but only on platforms where this is possible). New device
-> -		  trees should specify all applicable clocks by name - the
-> -		  fallbacks to an unnamed clock or to CPU clock are only for
-> -		  backward compatibility.
-> -- clocks: 	  Phandles to input clocks matching clock-names. Refer to common
-> -		  clock bindings.
-> -- axistream-connected: Reference to another node which contains the resources
-> -		       for the AXI DMA controller used by this device.
-> -		       If this is specified, the DMA-related resources from that
-> -		       device (DMA registers and DMA TX/RX interrupts) rather
-> -		       than this one will be used.
-> - - mdio		: Child node for MDIO bus. Must be defined if PHY access is
-> -		  required through the core's MDIO interface (i.e. always,
-> -		  unless the PHY is accessed through a different bus).
-> -
-> - - pcs-handle: 	  Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
-> -		  modes, where "pcs-handle" should be used to point
-> -		  to the PCS/PMA PHY, and "phy-handle" should point to an
-> -		  external PHY if exists.
-> -
-> -Example:
-> -	axi_ethernet_eth: ethernet@40c00000 {
-> -		compatible = "xlnx,axi-ethernet-1.00.a";
-> -		device_type = "network";
-> -		interrupt-parent = <&microblaze_0_axi_intc>;
-> -		interrupts = <2 0 1>;
-> -		clock-names = "s_axi_lite_clk", "axis_clk", "ref_clk", "mgt_clk";
-> -		clocks = <&axi_clk>, <&axi_clk>, <&pl_enet_ref_clk>, <&mgt_clk>;
-> -		phy-mode = "mii";
-> -		reg = <0x40c00000 0x40000 0x50c00000 0x40000>;
-> -		xlnx,rxcsum = <0x2>;
-> -		xlnx,rxmem = <0x800>;
-> -		xlnx,txcsum = <0x2>;
-> -		phy-handle = <&phy0>;
-> -		axi_ethernetlite_0_mdio: mdio {
-> -			#address-cells = <1>;
-> -			#size-cells = <0>;
-> -			phy0: phy@0 {
-> -				device_type = "ethernet-phy";
-> -				reg = <1>;
-> -			};
-> -		};
-> -	};
-> diff --git a/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml b/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
-> new file mode 100644
-> index 000000000000..5dc41ab7584b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
-> @@ -0,0 +1,150 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/xlnx,axi-ethernet.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: AXI 1G/2.5G Ethernet Subsystem
-> +
-> +description: |
-> +  Also called  AXI 1G/2.5G Ethernet Subsystem, the xilinx axi ethernet IP core
-> +  provides connectivity to an external ethernet PHY supporting different
-> +  interfaces: MII, GMII, RGMII, SGMII, 1000BaseX. It also includes two
-> +  segments of memory for buffering TX and RX, as well as the capability of
-> +  offloading TX/RX checksum calculation off the processor.
-> +
-> +  Management configuration is done through the AXI interface, while payload is
-> +  sent and received through means of an AXI DMA controller. This driver
-> +  includes the DMA driver code, so this driver is incompatible with AXI DMA
-> +  driver.
-> +
-> +
-> +allOf:
-> +  - $ref: ethernet-controller.yaml#
-> +
-> +maintainers:
-> +  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - xlnx,axi-ethernet-1.00.a
-> +      - xlnx,axi-ethernet-1.01.a
-> +      - xlnx,axi-ethernet-2.01.a
-> +
-> +  reg:
-> +    description:
-> +      Address and length of the IO space, as well as the address
-> +      and length of the AXI DMA controller IO space, unless
-> +      axistream-connected is specified, in which case the reg
-> +      attribute of the node referenced by it is used.
-> +    maxItems: 2
-> +
-> +  interrupts:
-> +    description:
-> +      Ethernet core interrupt is optional. If axistream-connected property is
-> +      present DMA node should contains TX/RX DMA interrupts else DMA interrupt
-> +      resources are mentioned on ethernet node.
-> +    maxItems: 3
+From: MediaTek Corporation <linuxwwan@mediatek.com>
 
-This does not fully match the old bindings and you did not mention in
-commit msg any changes during conversion. IOW, old binding allowed only
-core interrupt. You do not allow it. Was this your intention?
+TMI(T-series Modem Interface) is the PCIe host device driver for MediaTek's
+modem. The driver uses the WWAN framework infrastructure to create the
+following control ports and network interfaces for data transactions.
+* /dev/wwan0at0 - Interface that supports AT commands.
+* /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
+* wwan0-X - Primary network interface for IP traffic.
 
-This affects both reg and interrupts which otherwise should have
-allOf:if:then constraints.
+The main blocks in the TMI driver are:
+* HW layer - Abstracts the hardware bus operations for the device, and
+   provides generic interfaces for the transaction layer to get the device's
+   information and control the device's behavior. It includes:
 
+   * PCIe - Implements probe, removal and interrupt handling.
+   * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
+     for bidirectional event notification such as handshake, exception,
+     power management and port enumeration.
+   * RGU (Reset General Unit) - Receives reset notification from device.
 
-Best regards,
-Krzysztof
+* Transaction layer - Implements data transactions for the control plane
+   and the data plane. It includes:
+
+   * DPMAIF (Data Plane Modem AP Interface) - Controls the hardware that
+     provides uplink and downlink queues for the data path. The data exchange
+     takes place using circular buffers to share data buffer addresses and
+     metadata to describe the packets.
+   * CLDMA (Cross Layer DMA) - Manages the hardware used by the port layer
+     to send control messages to the device using MediaTek's CCCI (Cross-Core
+     Communication Interface) protocol.
+   * TX Services - Dispatch packets from the port layer to the device.
+   * RX Services - Dispatch packets to the port layer when receiving packets
+     from the device.
+
+* Port layer - Provides control plane and data plane interfaces to userspace.
+   It includes:
+
+   * Control Plane - Provides device node interfaces for controlling data
+     transactions.
+   * Data Plane - Provides network link interfaces wwanX (0, 1, 2...) for IP
+     data transactions.
+
+* Core logic - Contains the core logic to keep the device working.
+   It includes:
+
+   * FSM (Finite State Machine) - Monitors the state of the device, and
+     notifies each module when the state changes.
+   * PM (Power Management) - Reduces power consumption by putting the device
+     into low power state.
+   * Exception - Monitors exception events and tries to recover the device.
+
+The compilation of the TMI driver is enabled by the CONFIG_MTK_TMI config
+option which depends on CONFIG_WWAN.
+
+List of contributors:
+Min Dong <min.dong@mediatek.com>
+Ting Wang <ting.wang@mediatek.com>
+Hua Yang <hua.yang@mediatek.com>
+Mingliang Xu <mingliang.xu@mediatek.com>
+Felix Chen <felix.chen@mediatek.com>
+Aiden Wang <aiden.wang@mediatek.com>
+Guohao Zhang <guohao.zhang@mediatek.com>
+Chris Feng <chris.feng@mediatek.com>
+Michael Cai <michael.cai@mediatek.com>
+Lambert Wang <lambert.wang@mediatek.com>
+Mingchuang Qiao <mingchuang.qiao@mediatek.com>
+Xiayu Zhang <xiayu.zhang@mediatek.com>
+Haozhe Chang <haozhe.chang@mediatek.com>
+
+MediaTek Corporation (13):
+  net: wwan: tmi: Add PCIe core
+  net: wwan: tmi: Add buffer management
+  net: wwan: tmi: Add control plane transaction layer
+  net: wwan: tmi: Add control DMA interface
+  net: wwan: tmi: Add control port
+  net: wwan: tmi: Add FSM thread
+  net: wwan: tmi: Add AT & MBIM WWAN ports
+  net: wwan: tmi: Introduce data plane hardware interface
+  net: wwan: tmi: Add data plane transaction layer
+  net: wwan: tmi: Introduce WWAN interface
+  net: wwan: tmi: Add exception handling service
+  net: wwan: tmi: Add power management support
+  net: wwan: tmi: Add maintainers and documentation
+
+ .../networking/device_drivers/wwan/index.rst  |    1 +
+ .../networking/device_drivers/wwan/tmi.rst    |   48 +
+ MAINTAINERS                                   |   11 +
+ drivers/net/wwan/Kconfig                      |   11 +
+ drivers/net/wwan/Makefile                     |    1 +
+ drivers/net/wwan/mediatek/Makefile            |   25 +
+ drivers/net/wwan/mediatek/mtk_bm.c            |  369 ++
+ drivers/net/wwan/mediatek/mtk_bm.h            |   79 +
+ drivers/net/wwan/mediatek/mtk_cldma.c         |  354 ++
+ drivers/net/wwan/mediatek/mtk_cldma.h         |  162 +
+ drivers/net/wwan/mediatek/mtk_common.h        |   30 +
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.c    |  508 ++
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.h    |  118 +
+ drivers/net/wwan/mediatek/mtk_data_plane.h    |  124 +
+ drivers/net/wwan/mediatek/mtk_dev.c           |  103 +
+ drivers/net/wwan/mediatek/mtk_dev.h           |  713 +++
+ drivers/net/wwan/mediatek/mtk_dpmaif.c        | 4237 +++++++++++++++++
+ drivers/net/wwan/mediatek/mtk_dpmaif_drv.h    |  277 ++
+ drivers/net/wwan/mediatek/mtk_ethtool.c       |  179 +
+ drivers/net/wwan/mediatek/mtk_except.c        |  176 +
+ drivers/net/wwan/mediatek/mtk_fsm.c           | 1321 +++++
+ drivers/net/wwan/mediatek/mtk_fsm.h           |  178 +
+ drivers/net/wwan/mediatek/mtk_pm.c            | 1004 ++++
+ drivers/net/wwan/mediatek/mtk_port.c          | 1349 ++++++
+ drivers/net/wwan/mediatek/mtk_port.h          |  305 ++
+ drivers/net/wwan/mediatek/mtk_port_io.c       |  767 +++
+ drivers/net/wwan/mediatek/mtk_port_io.h       |   86 +
+ drivers/net/wwan/mediatek/mtk_wwan.c          |  665 +++
+ .../wwan/mediatek/pcie/mtk_cldma_drv_t800.c   | 1049 ++++
+ .../wwan/mediatek/pcie/mtk_cldma_drv_t800.h   |   24 +
+ .../wwan/mediatek/pcie/mtk_dpmaif_drv_t800.c  | 2115 ++++++++
+ .../wwan/mediatek/pcie/mtk_dpmaif_reg_t800.h  |  368 ++
+ drivers/net/wwan/mediatek/pcie/mtk_pci.c      | 1356 ++++++
+ drivers/net/wwan/mediatek/pcie/mtk_pci.h      |  150 +
+ drivers/net/wwan/mediatek/pcie/mtk_reg.h      |   84 +
+ 35 files changed, 18347 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+ create mode 100644 drivers/net/wwan/mediatek/Makefile
+ create mode 100644 drivers/net/wwan/mediatek/mtk_bm.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_bm.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_common.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ctrl_plane.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ctrl_plane.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_data_plane.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dev.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dev.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dpmaif.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dpmaif_drv.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ethtool.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_except.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_fsm.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_fsm.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_pm.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_wwan.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_dpmaif_drv_t800.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_dpmaif_reg_t800.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_reg.h
+
+-- 
+2.32.0
 
