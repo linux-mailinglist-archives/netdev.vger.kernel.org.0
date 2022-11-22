@@ -2,103 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD094633F5E
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:52:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D09A9633F73
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 15:53:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233195AbiKVOwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 09:52:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
+        id S233561AbiKVOxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 09:53:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232762AbiKVOwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:52:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6F1697DC
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:51:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669128674;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1Aql4QhJxVxvNQzM6ixf9UhoovYHEV1FkcCSwtG2tyM=;
-        b=ZaXKjLDRPuJckcUuU+uZ2xnurYDmoNak7IlfpQRKi1bqOZ5M7kv/zhwQ5jlnQmsNJkJznn
-        2j/PmFbEUoP3bqxY6OT0+/wJBOoPgloKlafXs5zxlIfhL71xHy5KUmNuoR9Hts3vncJvfz
-        snFnqwI3RwSRA1pwfTJMTVcjiPZImIM=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-617-2zB2XWcQM_2mPHEbjHkOIw-1; Tue, 22 Nov 2022 09:51:09 -0500
-X-MC-Unique: 2zB2XWcQM_2mPHEbjHkOIw-1
-Received: by mail-wm1-f71.google.com with SMTP id p14-20020a05600c204e00b003cf4cce4da5so4157401wmg.0
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:51:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1Aql4QhJxVxvNQzM6ixf9UhoovYHEV1FkcCSwtG2tyM=;
-        b=rl/YRoqqZH29KUT5F9VfDEjfnyU8Bc+mtiRPwq9fIzSOPxMez1BZkyL8hTnyHogUUZ
-         R70W3PPMdjwPJaHmxorHJToWuzwGyUV+RPPi4Jz0gh2TaFpYSjCGUXxGg9Y5oga78+Af
-         IdsLmBnKy3VcvaST64rfv0rj+0FuZwzLDBopgwGZhkdxc5A1SSh3f8pafLryAUjuRWnw
-         S50iyw/F28lkNBq/NY0vjZ0dcufKp0O/FJ93sukuDh19Zn6iSL2lkD0j3uM2g74sdqSy
-         8+5iihuvk3zAzNE6MNUGgjq0VZjiezoKjJ+ziMf6SOtG5nmVmkjj44mGOh1XFF2wIdvP
-         0AFQ==
-X-Gm-Message-State: ANoB5pmd68KwmSdmFXCBsJ8gPDYd0ywAjbZo+HZTZ/W0A0CjbUXdVGET
-        NlbsoNYPswLQSVcI8mr7yH+OO4RO6/LvkTzrhN6kuSWf3366XUu1pBe2VCzIBh9rgo8Ql0t2ut2
-        +1BFKCJUiTnC9INCk
-X-Received: by 2002:a05:600c:5023:b0:3cf:8ed7:7131 with SMTP id n35-20020a05600c502300b003cf8ed77131mr16549397wmr.84.1669128667142;
-        Tue, 22 Nov 2022 06:51:07 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6UFJ4g7o2yW/9afzBMDZQI9UTuI0lDj4CL8APodQiMAAie0ZFGIO2Ae8fJ340N2j0NUwTGIw==
-X-Received: by 2002:a05:600c:5023:b0:3cf:8ed7:7131 with SMTP id n35-20020a05600c502300b003cf8ed77131mr16549368wmr.84.1669128666842;
-        Tue, 22 Nov 2022 06:51:06 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id r24-20020adfa158000000b00236b2804d79sm14782746wrr.2.2022.11.22.06.51.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 06:51:06 -0800 (PST)
-Message-ID: <fd546e83a38157b76f8bde2219f985c70056abf7.camel@redhat.com>
-Subject: Re: [PATCH net-next] tsnep: Fix rotten packets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com
-Date:   Tue, 22 Nov 2022 15:51:05 +0100
-In-Reply-To: <20221119211825.81805-1-gerhard@engleder-embedded.com>
-References: <20221119211825.81805-1-gerhard@engleder-embedded.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S233698AbiKVOxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 09:53:03 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A24A167EB
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 06:52:53 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oxUdc-0006Ld-4v; Tue, 22 Nov 2022 15:52:40 +0100
+Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oxUdX-005s7M-HJ; Tue, 22 Nov 2022 15:52:36 +0100
+Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oxUdX-00H3kU-I2; Tue, 22 Nov 2022 15:52:35 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     linux-wireless@vger.kernel.org
+Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>, Po-Hao Huang <phhuang@realtek.com>,
+        Viktor Petrenko <g0000ga@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v3 00/11] RTW88: Add support for USB variants
+Date:   Tue, 22 Nov 2022 15:52:15 +0100
+Message-Id: <20221122145226.4065843-1-s.hauer@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-11-19 at 22:18 +0100, Gerhard Engleder wrote:
-> If PTP synchronisation is done every second, then sporadic the interval
-> is higher than one second:
-> 
-> ptp4l[696.582]: master offset        -17 s2 freq   -1891 path delay 573
-> ptp4l[697.582]: master offset        -22 s2 freq   -1901 path delay 573
-> ptp4l[699.368]: master offset         -1 s2 freq   -1887 path delay 573
->       ^^^^^^^ Should be 698.582!
-> 
-> This problem is caused by rotten packets, which are received after
-> polling but before interrupts are enabled again. This can be fixed by
-> checking for pending work and rescheduling if necessary after interrupts
-> has been enabled again.
-> 
-> Fixes: 403f69bbdbad ("tsnep: Add TSN endpoint Ethernet MAC driver")
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+This is the third round of adding support for the USB variants to the
+RTW88 driver. There are a few changes to the last version which make it
+worth looking at this version.
 
-For the records, when targeting the net tree, you should include the
-'net' tag into the patch prefix, instead of 'net-next'.
+First of all RTL8723du and RTL8821cu are tested working now. The issue
+here was that the txdesc checksum calculation was wrong. I found the
+correct calculation in various downstream drivers found on github.
 
-Thanks,
+The second big issue was that TX packet aggregation was wrong. When
+aggregating packets each packet start has to be aligned to eight bytes.
+The necessary alignment was added to the total URB length before
+checking if there is another packet to aggregate, so the URB length
+included that padding after the last packet, which is wrong.  Fixing
+this makes the driver work much more reliably.
 
-Paolo
+I added all people to Cc: who showed interest in this driver and I want
+to welcome you for testing and reviewing.
+
+Sascha
+
+
+Sascha Hauer (11):
+  rtw88: print firmware type in info message
+  rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex held
+  rtw88: Drop rf_lock
+  rtw88: Drop h2c.lock
+  rtw88: Drop coex mutex
+  rtw88: iterate over vif/sta list non-atomically
+  rtw88: Add common USB chip support
+  rtw88: Add rtw8821cu chipset support
+  rtw88: Add rtw8822bu chipset support
+  rtw88: Add rtw8822cu chipset support
+  rtw88: Add rtw8723du chipset support
+
+ drivers/net/wireless/realtek/rtw88/Kconfig    |  47 +
+ drivers/net/wireless/realtek/rtw88/Makefile   |  14 +
+ drivers/net/wireless/realtek/rtw88/coex.c     |   3 +-
+ drivers/net/wireless/realtek/rtw88/debug.c    |  15 +
+ drivers/net/wireless/realtek/rtw88/fw.c       |  13 +-
+ drivers/net/wireless/realtek/rtw88/hci.h      |   9 +-
+ drivers/net/wireless/realtek/rtw88/mac.c      |   3 +
+ drivers/net/wireless/realtek/rtw88/mac80211.c |   2 +-
+ drivers/net/wireless/realtek/rtw88/main.c     |  12 +-
+ drivers/net/wireless/realtek/rtw88/main.h     |  12 +-
+ drivers/net/wireless/realtek/rtw88/phy.c      |   6 +-
+ drivers/net/wireless/realtek/rtw88/ps.c       |   2 +-
+ drivers/net/wireless/realtek/rtw88/reg.h      |   1 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c |  28 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h |  13 +-
+ .../net/wireless/realtek/rtw88/rtw8723du.c    |  36 +
+ .../net/wireless/realtek/rtw88/rtw8723du.h    |  10 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |  18 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h |  21 +
+ .../net/wireless/realtek/rtw88/rtw8821cu.c    |  50 +
+ .../net/wireless/realtek/rtw88/rtw8821cu.h    |  10 +
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c |  19 +
+ .../net/wireless/realtek/rtw88/rtw8822bu.c    |  90 ++
+ .../net/wireless/realtek/rtw88/rtw8822bu.h    |  10 +
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c |  24 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.c    |  44 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.h    |  10 +
+ drivers/net/wireless/realtek/rtw88/tx.h       |  31 +
+ drivers/net/wireless/realtek/rtw88/usb.c      | 918 ++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/usb.h      | 107 ++
+ drivers/net/wireless/realtek/rtw88/util.c     | 103 ++
+ drivers/net/wireless/realtek/rtw88/util.h     |  12 +-
+ 32 files changed, 1655 insertions(+), 38 deletions(-)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
+
+-- 
+2.30.2
 
