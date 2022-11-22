@@ -2,190 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD846633B6C
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:32:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16820633B74
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:34:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232128AbiKVLc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 06:32:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49888 "EHLO
+        id S232671AbiKVLen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 06:34:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233502AbiKVLcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:32:08 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB295288E;
-        Tue, 22 Nov 2022 03:27:24 -0800 (PST)
-X-UUID: e76ffcae5c714fee94eba8a586db9c6b-20221122
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=HLfCmvTA7XX9kHpprIfVaZHlyBrC288B65o6uhfAvVg=;
-        b=QcQ9rKFcHLZE9DKEVcitV7RjbzhcUIxC/KEg89SEYZiS9Ij1sRjSml3EPPmziJAriUOSW/DQLDC7aPvshmk8HmQNN63MeL7yBpOx2shuw8UaBFWD7yigda+vas4E20n5JOL8YB/iJKPsndzWk3/VlmjpbfhWzlV4tjdMK3xSvN8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.12,REQID:a7780134-a06a-406c-a025-c71dc2660dc1,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-        :release,TS:95
-X-CID-INFO: VERSION:1.1.12,REQID:a7780134-a06a-406c-a025-c71dc2660dc1,IP:0,URL
-        :0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTION
-        :quarantine,TS:95
-X-CID-META: VersionHash:62cd327,CLOUDID:bca3fbf8-3a34-4838-abcf-dfedf9dd068e,B
-        ulkID:2211221927200U8INVQ6,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48,TC:n
-        il,Content:0,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: e76ffcae5c714fee94eba8a586db9c6b-20221122
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <yanchao.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 945321861; Tue, 22 Nov 2022 19:27:18 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Tue, 22 Nov 2022 19:27:16 +0800
-Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Tue, 22 Nov 2022 19:27:14 +0800
-From:   Yanchao Yang <yanchao.yang@mediatek.com>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev ML <netdev@vger.kernel.org>,
-        kernel ML <linux-kernel@vger.kernel.org>
-CC:     MTK ML <linux-mediatek@lists.infradead.org>,
-        Liang Lu <liang.lu@mediatek.com>,
-        Haijun Liu <haijun.liu@mediatek.com>,
-        Hua Yang <hua.yang@mediatek.com>,
-        Ting Wang <ting.wang@mediatek.com>,
-        Felix Chen <felix.chen@mediatek.com>,
-        Mingliang Xu <mingliang.xu@mediatek.com>,
-        Min Dong <min.dong@mediatek.com>,
-        Aiden Wang <aiden.wang@mediatek.com>,
-        Guohao Zhang <guohao.zhang@mediatek.com>,
-        Chris Feng <chris.feng@mediatek.com>,
-        Yanchao Yang <yanchao.yang@mediatek.com>,
-        Lambert Wang <lambert.wang@mediatek.com>,
-        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
-        Xiayu Zhang <xiayu.zhang@mediatek.com>,
-        Haozhe Chang <haozhe.chang@mediatek.com>,
-        MediaTek Corporation <linuxwwan@mediatek.com>
-Subject: [PATCH net-next v1 13/13] net: wwan: tmi: Add maintainers and documentation
-Date:   Tue, 22 Nov 2022 19:27:10 +0800
-Message-ID: <20221122112710.161020-1-yanchao.yang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        with ESMTP id S232756AbiKVLeM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:34:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA4A57B68;
+        Tue, 22 Nov 2022 03:28:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD662B8190C;
+        Tue, 22 Nov 2022 11:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D87C433D6;
+        Tue, 22 Nov 2022 11:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669116494;
+        bh=6NCM6m31OczIAvsK/iy/GTtUbOr+0Immp0oWffvrMeA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vgm/WLBj9j4v3l0ckOLVXUSNGoV/3JN32+v0rS4nPs3rYoclkrcLBmGgQxJcG37x4
+         WdBQ8mOeCQtJda46M3vYLsmsjM7px3vF9aukN9oROquqkxIoqMTfrashC7qRVvJnvH
+         zdvqBfTuugU07MSQIZhcjR9Ii69VHdR4CqziCZgVMD544U7NJuQgrwMS8novta3+bX
+         +FeMRXdT60tbU3ema1UjHD1eq+stL0ALsKu4Fcmr+S5JYIEB9C5gbdXsTNJpl9Q4bU
+         GW6DfQCySFTEldRVMcywvp7aP4ubepHuYEg1IQznAajvHmcfCtt4hX8nToGNabuW27
+         eaePpR6OPQZuQ==
+Date:   Tue, 22 Nov 2022 11:28:01 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Alexander Lobakin <alobakin@pm.me>, linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/18] treewide: fix object files shared between several
+ modules
+Message-ID: <Y3yyQS7Q8cL+z89L@sirena.org.uk>
+References: <20221119225650.1044591-1-alobakin@pm.me>
+ <Y3oWYhw9VZOANneu@sirena.org.uk>
+ <Y3oc2B6y0TB51+/j@spud>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="GZgMp8h7GaJD8EJs"
+Content-Disposition: inline
+In-Reply-To: <Y3oc2B6y0TB51+/j@spud>
+X-Cookie: That's what she said.
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: MediaTek Corporation <linuxwwan@mediatek.com>
 
-Adds maintainers and documentation for MediaTek TMI 5G WWAN modem
-device driver.
+--GZgMp8h7GaJD8EJs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Felix Chen <felix.chen@mediatek.com>
-Signed-off-by: MediaTek Corporation <linuxwwan@mediatek.com>
----
- .../networking/device_drivers/wwan/index.rst  |  1 +
- .../networking/device_drivers/wwan/tmi.rst    | 48 +++++++++++++++++++
- MAINTAINERS                                   | 11 +++++
- 3 files changed, 60 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+On Sun, Nov 20, 2022 at 12:26:00PM +0000, Conor Dooley wrote:
+> On Sun, Nov 20, 2022 at 11:58:26AM +0000, Mark Brown wrote:
+> > On Sat, Nov 19, 2022 at 11:03:57PM +0000, Alexander Lobakin wrote:
 
-diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
-index 370d8264d5dc..8298629b4d55 100644
---- a/Documentation/networking/device_drivers/wwan/index.rst
-+++ b/Documentation/networking/device_drivers/wwan/index.rst
-@@ -10,6 +10,7 @@ Contents:
- 
-    iosm
-    t7xx
-+   tmi
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/networking/device_drivers/wwan/tmi.rst b/Documentation/networking/device_drivers/wwan/tmi.rst
-new file mode 100644
-index 000000000000..3655779bf692
---- /dev/null
-+++ b/Documentation/networking/device_drivers/wwan/tmi.rst
-@@ -0,0 +1,48 @@
-+.. SPDX-License-Identifier: BSD-3-Clause-Clear
-+
-+.. Copyright (c) 2022, MediaTek Inc.
-+
-+.. _tmi_driver_doc:
-+
-+====================================================
-+TMI driver for MTK PCIe based T-series 5G Modem
-+====================================================
-+The TMI(T-series Modem Interface) driver is a WWAN PCIe host driver developed
-+for data exchange over PCIe interface between Host platform and MediaTek's
-+T-series 5G modem. The driver exposes control plane and data plane interfaces
-+to applications. The control plane provides device node interfaces for control
-+data transactions. The data plane provides network link interfaces for IP data
-+transactions.
-+
-+Control channel userspace ABI
-+=============================
-+/dev/wwan0at0 character device
-+------------------------------
-+The driver exposes an AT port by implementing AT WWAN Port.
-+The userspace end of the control channel pipe is a /dev/wwan0at0 character
-+device. Application shall use this interface to issue AT commands.
-+
-+/dev/wwan0mbim0 character device
-+--------------------------------
-+The driver exposes an MBIM interface to the MBIM function by implementing
-+MBIM WWAN Port. The userspace end of the control channel pipe is a
-+/dev/wwan0mbim0 character device. Applications shall use this interface
-+for MBIM protocol communication.
-+
-+Data channel userspace ABI
-+==========================
-+wwan0-X network device
-+----------------------
-+The TMI driver exposes IP link interfaces "wwan0-X" of type "wwan" for IP
-+traffic. Iproute network utility is used for creating "wwan0-X" network
-+interfaces and for associating it with the MBIM IP session.
-+
-+The userspace management application is responsible for creating a new IP link
-+prior to establishing an MBIM IP session where the SessionId is greater than 0.
-+
-+For example, creating a new IP link for an MBIM IP session with SessionId 1:
-+
-+  ip link add dev wwan0-1 parentdev wwan0 type wwan linkid 1
-+
-+The driver will automatically map the "wwan0-1" network device to MBIM IP
-+session 1.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a96c60c787af..eac544b274ac 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13058,6 +13058,17 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/wwan/t7xx/
- 
-+MEDIATEK TMI 5G WWAN MODEM DRIVER
-+M:	Yanchao Yang <yanchao.yang@mediatek.com>
-+M:	Min Dong <min.dong@mediatek.com>
-+M:	MediaTek Corporation <linuxwwan@mediatek.com>
-+R:	Liang Lu <liang.lu@mediatek.com>
-+R:	Haijun Liu <haijun.liu@mediatek.com>
-+R:	Lambert Wang <lambert.wang@mediatek.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/wwan/tmi/
-+
- MEDIATEK USB3 DRD IP DRIVER
- M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-usb@vger.kernel.org
--- 
-2.32.0
+> > Your mails appear to be encrypted which isn't helping with
+> > review...
 
+> https://lore.kernel.org/all/20221119225650.1044591-1-alobakin@pm.me/
+
+> Looks un-encrypted on lore. pm.me looks to be a protonmail domain - I
+> had issues with protonmail where it picked up Maz's key via Web Key
+> Directory. "Kernel.org publishes the WKD for all developers who have
+> kernel.org accounts" & unfortunately proton doesn't (or didn't) offer a
+> way to disable this. If someone's key is available it gets used & proton
+> told me, IIRC, that not having a way to disable this is a privacy
+> feature.
+
+It wasn't obviously encrypted to my key either...=20
+
+--GZgMp8h7GaJD8EJs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmN8skAACgkQJNaLcl1U
+h9A3zwf8CWUf5xGrZknftvQzY1zcdbm1NfAH7drvcnlBKaeN5/5IAXzz0T92hgTh
+KVP3hFD/dw7SQz/FJGYJKAMxHeI5GhXtWsc4QoWBvVdjnR44Xz3GtAkp2pW8dV+C
+CJ5gDnRy+Q81W5Mt/c0HaFiJOFhodMEqFxJclOiIfR8Euilxob2Xa2moJku4CS5t
+Bt09ghKrW8l3cTq4TxCa4dAsNc/VBcjjwaOHgmC/AHlW+WfDeZZahvWfD1SBY2T9
+H1iFavcwXFQ8pPAtzLcg/8qqzw696nM0LbGFnLIG/nAdtdM7+vOncmwmIPElCLBc
+uyRU0xb6uTkIlLl1ThRtzVT0GmIW+A==
+=uKrw
+-----END PGP SIGNATURE-----
+
+--GZgMp8h7GaJD8EJs--
