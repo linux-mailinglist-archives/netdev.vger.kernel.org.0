@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E841634941
+	by mail.lfdr.de (Postfix) with ESMTP id 67A1E634940
 	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232685AbiKVV2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 16:28:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53258 "EHLO
+        id S234726AbiKVV2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:28:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232572AbiKVV2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:28:18 -0500
+        with ESMTP id S234416AbiKVV2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:28:20 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1656022529;
-        Tue, 22 Nov 2022 13:28:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD3392A425;
+        Tue, 22 Nov 2022 13:28:19 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 0/3] Netfilter fixes for net
-Date:   Tue, 22 Nov 2022 22:28:11 +0100
-Message-Id: <20221122212814.63177-1-pablo@netfilter.org>
+Subject: [PATCH net 1/3] netfilter: ipset: regression in ip_set_hash_ip.c
+Date:   Tue, 22 Nov 2022 22:28:12 +0100
+Message-Id: <20221122212814.63177-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221122212814.63177-1-pablo@netfilter.org>
+References: <20221122212814.63177-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -32,56 +34,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Vishwanath Pai <vpai@akamai.com>
 
-The following patch contains another round of Netfilter fixes for net:
+This patch introduced a regression: commit 48596a8ddc46 ("netfilter:
+ipset: Fix adding an IPv4 range containing more than 2^31 addresses")
 
-1) Fix regression in ipset hash:ip with IPv4 range, from Vishwanath Pai.
-   This is fixing up a bug introduced in the 6.0 release.
+The variable e.ip is passed to adtfn() function which finally adds the
+ip address to the set. The patch above refactored the for loop and moved
+e.ip = htonl(ip) to the end of the for loop.
 
-2) The "netfilter: ipset: enforce documented limit to prevent allocating
-   huge memory" patch contained a wrong condition which makes impossible to
-   add up to 64 clashing elements to a hash:net,iface type of set while it
-   is the documented feature of the set type. The patch fixes the condition
-   and thus makes possible to add the elements while keeps preventing
-   allocating huge memory, from Jozsef Kadlecsik. This has been broken
-   for several releases.
+What this means is that if the value of "ip" changes between the first
+assignement of e.ip and the forloop, then e.ip is pointing to a
+different ip address than "ip".
 
-3) Missing locking when updating the flow block list which might lead
-   a reader to crash. This has been broken since the introduction of the
-   flowtable hardware offload support.
+Test case:
+$ ipset create jdtest_tmp hash:ip family inet hashsize 2048 maxelem 100000
+$ ipset add jdtest_tmp 10.0.1.1/31
+ipset v6.21.1: Element cannot be added to the set: it's already added
 
-Please, pull these changes from:
+The value of ip gets updated inside the  "else if (tb[IPSET_ATTR_CIDR])"
+block but e.ip is still pointing to the old value.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
+Fixes: 48596a8ddc46 ("netfilter: ipset: Fix adding an IPv4 range containing more than 2^31 addresses")
+Reviewed-by: Joshua Hunt <johunt@akamai.com>
+Signed-off-by: Vishwanath Pai <vpai@akamai.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/ipset/ip_set_hash_ip.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Thanks.
+diff --git a/net/netfilter/ipset/ip_set_hash_ip.c b/net/netfilter/ipset/ip_set_hash_ip.c
+index dd30c03d5a23..75d556d71652 100644
+--- a/net/netfilter/ipset/ip_set_hash_ip.c
++++ b/net/netfilter/ipset/ip_set_hash_ip.c
+@@ -151,18 +151,16 @@ hash_ip4_uadt(struct ip_set *set, struct nlattr *tb[],
+ 	if (((u64)ip_to - ip + 1) >> (32 - h->netmask) > IPSET_MAX_RANGE)
+ 		return -ERANGE;
+ 
+-	if (retried) {
++	if (retried)
+ 		ip = ntohl(h->next.ip);
+-		e.ip = htonl(ip);
+-	}
+ 	for (; ip <= ip_to;) {
++		e.ip = htonl(ip);
+ 		ret = adtfn(set, &e, &ext, &ext, flags);
+ 		if (ret && !ip_set_eexist(ret, flags))
+ 			return ret;
+ 
+ 		ip += hosts;
+-		e.ip = htonl(ip);
+-		if (e.ip == 0)
++		if (ip == 0)
+ 			return 0;
+ 
+ 		ret = 0;
+-- 
+2.30.2
 
-----------------------------------------------------------------
-
-The following changes since commit badbda1a01860c80c6ab60f329ef46c713653a27:
-
-  octeontx2-af: cn10k: mcs: Fix copy and paste bug in mcs_bbe_intr_handler() (2022-11-21 13:04:28 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
-
-for you to fetch changes up to bcd9e3c1656d0f7dd9743598c65c3ae24efb38d0:
-
-  netfilter: flowtable_offload: add missing locking (2022-11-22 22:17:12 +0100)
-
-----------------------------------------------------------------
-Felix Fietkau (1):
-      netfilter: flowtable_offload: add missing locking
-
-Jozsef Kadlecsik (1):
-      netfilter: ipset: restore allowing 64 clashing elements in hash:net,iface
-
-Vishwanath Pai (1):
-      netfilter: ipset: regression in ip_set_hash_ip.c
-
- net/netfilter/ipset/ip_set_hash_gen.h | 2 +-
- net/netfilter/ipset/ip_set_hash_ip.c  | 8 +++-----
- net/netfilter/nf_flow_table_offload.c | 4 ++++
- 3 files changed, 8 insertions(+), 6 deletions(-)
