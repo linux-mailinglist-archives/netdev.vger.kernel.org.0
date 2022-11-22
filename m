@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78251633FB2
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63E72633FAF
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:01:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234238AbiKVPBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 10:01:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46820 "EHLO
+        id S234042AbiKVPBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 10:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiKVPAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:00:49 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8604371F03;
-        Tue, 22 Nov 2022 06:59:56 -0800 (PST)
+        with ESMTP id S234224AbiKVPAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:00:48 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4475D716CD;
+        Tue, 22 Nov 2022 06:59:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669129196; x=1700665196;
+  t=1669129191; x=1700665191;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=aOXQOQtlrELBIyuq9bhOlkOu6tSjScHBE2oELpwzY7g=;
-  b=rlrVuUON1hVADZUlFbicRQWu3NLjeE0MsUmijYYLJO1v7ZkHAyvbXCBz
-   aKOzXnq921SrFmVqJxkyvSQUL4H7ow9xExsWyvxdmbjQZ2RVQqmnUb8Dv
-   EpUaMD2SziarEmYMaealscJyj3GMBk53OR2LnsepkspjGrcKudjW4QW8I
-   ZwgbcUCfyA1MTYNr6oOu60LVRcfqBJxh+mWMFvbbxshFRRu0eN3vCxhiL
-   fTyxCN4+GWiVi0Cjyik4zTvi7TKSQOJQyhvsiW9nDoPWJKuIMAluP/A2n
-   6T7NDpKYM8Q3ZvNYpwZGaVgbno9fbP4qR21C6I+2c5fsOvTtU42EMIrE7
-   w==;
+  bh=13nnEeD5/sqn4Q5vO902YKQTR+lPJMkEUpXmaLS9Ryc=;
+  b=zRcnnaz+F/QRPxmHY8L1jxjwP5VuXSM7IA8BnIlm10moS42YwGZqJGXZ
+   yA/94aM6j4uKRqRgdW/E72NiNcfZbeMOjXLmk/10iYOsFsAr65K4dMRmV
+   Ygq8SEVUKcjotCFoead/YirhF8rlF0T2+IyvYKLtn2y0nW5qITmmcrgMR
+   i/PHTTYQxdVijf9Qao590UEXytWj76N9DPprg773I+lVG0jHLjYA6BTtC
+   QMH6xbx2FoyBL80Evjxt8+eW3bViAPofZBqEIX50d9S6xU11jDueXuEyy
+   uSqTyyL0xEY8Lea23W9+JmJlRehzSv13wlFtzEJxF1u+kqvgKjqXnMqGF
+   g==;
 X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="184689541"
+   d="scan'208";a="200931719"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 07:59:55 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 07:59:50 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 22 Nov 2022 07:59:46 -0700
+ 15.1.2507.12; Tue, 22 Nov 2022 07:59:50 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 22 Nov 2022 07:59:43 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 22 Nov 2022 07:59:47 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,9 +56,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Daniel Machon <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next 1/4] net: microchip: sparx5: Support for copying and modifying rules in the API
-Date:   Tue, 22 Nov 2022 15:59:35 +0100
-Message-ID: <20221122145938.1775954-2-steen.hegelund@microchip.com>
+Subject: [PATCH net-next 2/4] net: microchip: sparx5: Support for TC protocol all
+Date:   Tue, 22 Nov 2022 15:59:36 +0100
+Message-ID: <20221122145938.1775954-3-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221122145938.1775954-1-steen.hegelund@microchip.com>
 References: <20221122145938.1775954-1-steen.hegelund@microchip.com>
@@ -67,360 +67,347 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for making a copy of a rule and modify keys and actions
-to differentiate the copy.
+This allows support of TC protocol all for the Sparx5 IS2 VCAP.
+
+This is done by creating multiple rules that covers the rule size and
+traffic types in the IS2.
+Each rule size (e.g X16 and X6) may have multiple keysets and if there are
+more than one the type field in the VCAP rule will be wildcarded to support
+these keysets.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../net/ethernet/microchip/vcap/vcap_api.c    | 185 +++++++++++++++++-
- .../ethernet/microchip/vcap/vcap_api_client.h |  22 ++-
- .../ethernet/microchip/vcap/vcap_api_kunit.c  |   6 +-
- .../microchip/vcap/vcap_api_private.h         |   4 -
- 4 files changed, 206 insertions(+), 11 deletions(-)
+ .../microchip/sparx5/sparx5_tc_flower.c       | 209 +++++++++++++++++-
+ .../microchip/sparx5/sparx5_vcap_impl.c       |  18 +-
+ .../microchip/sparx5/sparx5_vcap_impl.h       |  13 ++
+ 3 files changed, 234 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index ac7a32ff755e..fd45d4bd7052 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -173,6 +173,7 @@ const struct vcap_set *vcap_keyfieldset(struct vcap_control *vctrl,
- 		return NULL;
- 	return kset;
- }
-+EXPORT_SYMBOL_GPL(vcap_keyfieldset);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+index bd6bd380ba34..1ed304a816cc 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+@@ -12,6 +12,20 @@
+ #include "sparx5_main.h"
+ #include "sparx5_vcap_impl.h"
  
- /* Return the typegroup table for the matching keyset (using subword size) */
- const struct vcap_typegroup *
-@@ -824,8 +825,8 @@ vcap_find_keyset_keyfield(struct vcap_control *vctrl,
- }
- 
- /* Match a list of keys against the keysets available in a vcap type */
--static bool vcap_rule_find_keysets(struct vcap_rule_internal *ri,
--				   struct vcap_keyset_list *matches)
-+static bool _vcap_rule_find_keysets(struct vcap_rule_internal *ri,
-+				    struct vcap_keyset_list *matches)
++#define SPX5_MAX_RULE_SIZE 13 /* allows X1, X2, X4, X6 and X12 rules */
++
++/* Collect keysets and type ids for multiple rules per size */
++struct sparx5_wildcard_rule {
++	bool selected;
++	u8 value;
++	u8 mask;
++	enum vcap_keyfield_set keyset;
++};
++
++struct sparx5_multiple_rules {
++	struct sparx5_wildcard_rule rule[SPX5_MAX_RULE_SIZE];
++};
++
+ struct sparx5_tc_flower_parse_usage {
+ 	struct flow_cls_offload *fco;
+ 	struct flow_rule *frule;
+@@ -618,7 +632,7 @@ static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
  {
- 	const struct vcap_client_keyfield *ckf;
- 	int keyset, found, keycount, map_size;
-@@ -864,6 +865,16 @@ static bool vcap_rule_find_keysets(struct vcap_rule_internal *ri,
- 	return matches->cnt > 0;
+ 	int err;
+ 
+-	err = vcap_rule_add_action_u32(vrule, VCAP_AF_CNT_ID, vrule->id);
++	err = vcap_rule_mod_action_u32(vrule, VCAP_AF_CNT_ID, vrule->id);
+ 	if (err)
+ 		return err;
+ 
+@@ -626,11 +640,190 @@ static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
+ 	return err;
  }
  
-+/* Match a list of keys against the keysets available in a vcap type */
-+bool vcap_rule_find_keysets(struct vcap_rule *rule,
-+			    struct vcap_keyset_list *matches)
++/* Collect all port keysets and apply the first of them, possibly wildcarded */
++static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
++					    struct vcap_rule *vrule,
++					    struct vcap_admin *admin,
++					    u16 l3_proto,
++					    struct sparx5_multiple_rules *multi)
 +{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct vcap_keyset_list portkeysetlist = {};
++	enum vcap_keyfield_set portkeysets[10] = {};
++	struct vcap_keyset_list matches = {};
++	enum vcap_keyfield_set keysets[10];
++	int idx, jdx, err = 0, count = 0;
++	struct sparx5_wildcard_rule *mru;
++	const struct vcap_set *kinfo;
++	struct vcap_control *vctrl;
 +
-+	return _vcap_rule_find_keysets(ri, matches);
-+}
-+EXPORT_SYMBOL_GPL(vcap_rule_find_keysets);
++	vctrl = port->sparx5->vcap_ctrl;
 +
- /* Validate a rule with respect to available port keys */
- int vcap_val_rule(struct vcap_rule *rule, u16 l3_proto)
- {
-@@ -888,7 +899,7 @@ int vcap_val_rule(struct vcap_rule *rule, u16 l3_proto)
- 	matches.max = ARRAY_SIZE(keysets);
- 	if (ri->data.keyset == VCAP_KFS_NO_VALUE) {
- 		/* Iterate over rule keyfields and select keysets that fits */
--		if (!vcap_rule_find_keysets(ri, &matches)) {
-+		if (!_vcap_rule_find_keysets(ri, &matches)) {
- 			ri->data.exterr = VCAP_ERR_NO_KEYSET_MATCH;
- 			return -EINVAL;
- 		}
-@@ -1270,6 +1281,19 @@ int vcap_del_rules(struct vcap_control *vctrl, struct vcap_admin *admin)
- }
- EXPORT_SYMBOL_GPL(vcap_del_rules);
- 
-+/* Find a client key field in a rule */
-+static struct vcap_client_keyfield *
-+vcap_find_keyfield(struct vcap_rule *rule, enum vcap_key_field key)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+	struct vcap_client_keyfield *ckf;
++	/* Find the keysets that the rule can use */
++	matches.keysets = keysets;
++	matches.max = ARRAY_SIZE(keysets);
++	if (vcap_rule_find_keysets(vrule, &matches) == 0)
++		return -EINVAL;
 +
-+	list_for_each_entry(ckf, &ri->data.keyfields, ctrl.list)
-+		if (ckf->ctrl.key == key)
-+			return ckf;
-+	return NULL;
-+}
++	/* Find the keysets that the port configuration supports */
++	portkeysetlist.max = ARRAY_SIZE(portkeysets);
++	portkeysetlist.keysets = portkeysets;
++	err = sparx5_vcap_get_port_keyset(ndev,
++					  admin, vrule->vcap_chain_id,
++					  l3_proto,
++					  &portkeysetlist);
++	if (err)
++		return err;
 +
- /* Find information on a key field in a rule */
- const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
- 					      enum vcap_key_field key)
-@@ -1442,6 +1466,19 @@ static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
- 	memcpy(&field->data, data, sizeof(field->data));
- }
- 
-+/* Find a client action field in a rule */
-+static struct vcap_client_actionfield *
-+vcap_find_actionfield(struct vcap_rule *rule, enum vcap_action_field act)
-+{
-+	struct vcap_rule_internal *ri = (struct vcap_rule_internal *)rule;
-+	struct vcap_client_actionfield *caf;
++	/* Find the intersection of the two sets of keyset */
++	for (idx = 0; idx < portkeysetlist.cnt; ++idx) {
++		kinfo = vcap_keyfieldset(vctrl, admin->vtype,
++					 portkeysetlist.keysets[idx]);
++		if (!kinfo)
++			continue;
 +
-+	list_for_each_entry(caf, &ri->data.actionfields, ctrl.list)
-+		if (caf->ctrl.action == act)
-+			return caf;
-+	return 0;
-+}
++		/* Find a port keyset that matches the required keys
++		 * If there are multiple keysets then compose a type id mask
++		 */
++		for (jdx = 0; jdx < matches.cnt; ++jdx) {
++			if (portkeysetlist.keysets[idx] != matches.keysets[jdx])
++				continue;
 +
- /* Check if the actionfield is already in the rule */
- static bool vcap_actionfield_unique(struct vcap_rule *rule,
- 				    enum vcap_action_field act)
-@@ -1772,6 +1809,148 @@ int vcap_rule_get_counter(struct vcap_rule *rule, struct vcap_counter *ctr)
- }
- EXPORT_SYMBOL_GPL(vcap_rule_get_counter);
- 
-+static int vcap_rule_mod_key(struct vcap_rule *rule,
-+			     enum vcap_key_field key,
-+			     enum vcap_field_type ftype,
-+			     struct vcap_client_keyfield_data *data)
-+{
-+	struct vcap_client_keyfield *field;
-+
-+	field = vcap_find_keyfield(rule, key);
-+	if (!field)
-+		return vcap_rule_add_key(rule, key, ftype, data);
-+	vcap_copy_from_client_keyfield(rule, field, data);
-+	return 0;
-+}
-+
-+/* Modify a 32 bit key field with value and mask in the rule */
-+int vcap_rule_mod_key_u32(struct vcap_rule *rule, enum vcap_key_field key,
-+			  u32 value, u32 mask)
-+{
-+	struct vcap_client_keyfield_data data;
-+
-+	data.u32.value = value;
-+	data.u32.mask = mask;
-+	return vcap_rule_mod_key(rule, key, VCAP_FIELD_U32, &data);
-+}
-+EXPORT_SYMBOL_GPL(vcap_rule_mod_key_u32);
-+
-+static int vcap_rule_mod_action(struct vcap_rule *rule,
-+				enum vcap_action_field action,
-+				enum vcap_field_type ftype,
-+				struct vcap_client_actionfield_data *data)
-+{
-+	struct vcap_client_actionfield *field;
-+
-+	field = vcap_find_actionfield(rule, action);
-+	if (!field)
-+		return vcap_rule_add_action(rule, action, ftype, data);
-+	vcap_copy_from_client_actionfield(rule, field, data);
-+	return 0;
-+}
-+
-+/* Modify a 32 bit action field with value in the rule */
-+int vcap_rule_mod_action_u32(struct vcap_rule *rule,
-+			     enum vcap_action_field action,
-+			     u32 value)
-+{
-+	struct vcap_client_actionfield_data data;
-+
-+	data.u32.value = value;
-+	return vcap_rule_mod_action(rule, action, VCAP_FIELD_U32, &data);
-+}
-+EXPORT_SYMBOL_GPL(vcap_rule_mod_action_u32);
-+
-+/* Drop keys in a keylist and any keys that are not supported by the keyset */
-+int vcap_filter_rule_keys(struct vcap_rule *rule,
-+			  enum vcap_key_field keylist[], int length,
-+			  bool drop_unsupported)
-+{
-+	struct vcap_rule_internal *ri = to_intrule(rule);
-+	struct vcap_client_keyfield *ckf, *next_ckf;
-+	const struct vcap_field *fields;
-+	enum vcap_key_field key;
-+	int err = 0;
-+	int idx;
-+
-+	if (length > 0) {
-+		err = -EEXIST;
-+		list_for_each_entry_safe(ckf, next_ckf,
-+					 &ri->data.keyfields, ctrl.list) {
-+			key = ckf->ctrl.key;
-+			for (idx = 0; idx < length; ++idx)
-+				if (key == keylist[idx]) {
-+					list_del(&ckf->ctrl.list);
-+					kfree(ckf);
-+					idx++;
-+					err = 0;
-+				}
++			mru = &multi->rule[kinfo->sw_per_item];
++			if (!mru->selected) {
++				mru->selected = true;
++				mru->keyset = portkeysetlist.keysets[idx];
++				mru->value = kinfo->type_id;
++			}
++			mru->value &= kinfo->type_id;
++			mru->mask |= kinfo->type_id;
++			++count;
 +		}
 +	}
-+	if (drop_unsupported) {
-+		err = -EEXIST;
-+		fields = vcap_keyfields(ri->vctrl, ri->admin->vtype,
-+					rule->keyset);
-+		if (!fields)
-+			return err;
-+		list_for_each_entry_safe(ckf, next_ckf,
-+					 &ri->data.keyfields, ctrl.list) {
-+			key = ckf->ctrl.key;
-+			if (fields[key].width == 0) {
-+				list_del(&ckf->ctrl.list);
-+				kfree(ckf);
-+				err = 0;
-+			}
-+		}
++	if (count == 0)
++		return -EPROTO;
++
++	if (l3_proto == ETH_P_ALL && count < portkeysetlist.cnt)
++		return -ENOENT;
++
++	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
++		mru = &multi->rule[idx];
++		if (!mru->selected)
++			continue;
++
++		/* Align the mask to the combined value */
++		mru->mask ^= mru->value;
++	}
++
++	/* Set the chosen keyset on the rule and set a wildcarded type if there
++	 * are more than one keyset
++	 */
++	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
++		mru = &multi->rule[idx];
++		if (!mru->selected)
++			continue;
++
++		vcap_set_rule_set_keyset(vrule, mru->keyset);
++		if (count > 1)
++			/* Some keysets do not have a type field */
++			vcap_rule_mod_key_u32(vrule, VCAP_KF_TYPE,
++					      mru->value,
++					      ~mru->mask);
++		mru->selected = false; /* mark as done */
++		break; /* Stop here and add more rules later */
 +	}
 +	return err;
 +}
-+EXPORT_SYMBOL_GPL(vcap_filter_rule_keys);
 +
-+/* Make a full copy of an existing rule with a new rule id */
-+struct vcap_rule *vcap_copy_rule(struct vcap_rule *erule)
++static int sparx5_tc_add_rule_copy(struct vcap_control *vctrl,
++				   struct flow_cls_offload *fco,
++				   struct vcap_rule *erule,
++				   struct vcap_admin *admin,
++				   struct sparx5_wildcard_rule *rule)
 +{
-+	struct vcap_rule_internal *ri = to_intrule(erule);
-+	struct vcap_client_actionfield *caf;
-+	struct vcap_client_keyfield *ckf;
-+	struct vcap_rule *rule;
++	enum vcap_key_field keylist[] = {
++		VCAP_KF_IF_IGR_PORT_MASK,
++		VCAP_KF_IF_IGR_PORT_MASK_SEL,
++		VCAP_KF_IF_IGR_PORT_MASK_RNG,
++		VCAP_KF_LOOKUP_FIRST_IS,
++		VCAP_KF_TYPE,
++	};
++	struct vcap_rule *vrule;
 +	int err;
 +
-+	err = vcap_api_check(ri->vctrl);
++	/* Add an extra rule with a special user and the new keyset */
++	erule->user = VCAP_USER_TC_EXTRA;
++	vrule = vcap_copy_rule(erule);
++	if (IS_ERR(vrule))
++		return PTR_ERR(vrule);
++
++	/* Link the new rule to the existing rule with the cookie */
++	vrule->cookie = erule->cookie;
++	vcap_filter_rule_keys(vrule, keylist, ARRAY_SIZE(keylist), true);
++	err = vcap_set_rule_set_keyset(vrule, rule->keyset);
++	if (err) {
++		pr_err("%s:%d: could not set keyset %s in rule: %u\n",
++		       __func__, __LINE__,
++		       vcap_keyset_name(vctrl, rule->keyset),
++		       vrule->id);
++		goto out;
++	}
++
++	/* Some keysets do not have a type field, so ignore return value */
++	vcap_rule_mod_key_u32(vrule, VCAP_KF_TYPE, rule->value, ~rule->mask);
++
++	err = vcap_set_rule_set_actionset(vrule, erule->actionset);
 +	if (err)
-+		return ERR_PTR(err);
++		goto out;
 +
-+	rule = vcap_alloc_rule(ri->vctrl, ri->ndev, ri->data.vcap_chain_id,
-+			       ri->data.user, ri->data.priority, 0);
-+	if (IS_ERR(rule))
-+		return rule;
++	err = sparx5_tc_add_rule_counter(admin, vrule);
++	if (err)
++		goto out;
 +
-+	list_for_each_entry(ckf, &ri->data.keyfields, ctrl.list) {
-+		/* Add a key duplicate in the new rule */
-+		err = vcap_rule_add_key(rule,
-+					ckf->ctrl.key,
-+					ckf->ctrl.type,
-+					&ckf->data);
-+		if (err)
-+			goto err;
++	err = vcap_val_rule(vrule, ETH_P_ALL);
++	if (err) {
++		pr_err("%s:%d: could not validate rule: %u\n",
++		       __func__, __LINE__, vrule->id);
++		vcap_set_tc_exterr(fco, vrule);
++		goto out;
 +	}
-+
-+	list_for_each_entry(caf, &ri->data.actionfields, ctrl.list) {
-+		/* Add a action duplicate in the new rule */
-+		err = vcap_rule_add_action(rule,
-+					   caf->ctrl.action,
-+					   caf->ctrl.type,
-+					   &caf->data);
-+		if (err)
-+			goto err;
++	err = vcap_add_rule(vrule);
++	if (err) {
++		pr_err("%s:%d: could not add rule: %u\n",
++		       __func__, __LINE__, vrule->id);
++		goto out;
 +	}
-+	return rule;
-+err:
-+	vcap_free_rule(rule);
-+	return ERR_PTR(err);
++out:
++	vcap_free_rule(vrule);
++	return err;
 +}
-+EXPORT_SYMBOL_GPL(vcap_copy_rule);
 +
- #ifdef CONFIG_VCAP_KUNIT_TEST
- #include "vcap_api_kunit.c"
- #endif
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-index 654ef8fa6d62..93a0fcb12a81 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-@@ -168,6 +168,8 @@ int vcap_val_rule(struct vcap_rule *rule, u16 l3_proto);
- int vcap_add_rule(struct vcap_rule *rule);
- /* Delete rule in a VCAP instance */
- int vcap_del_rule(struct vcap_control *vctrl, struct net_device *ndev, u32 id);
-+/* Make a full copy of an existing rule with a new rule id */
-+struct vcap_rule *vcap_copy_rule(struct vcap_rule *rule);
++static int sparx5_tc_add_remaining_rules(struct vcap_control *vctrl,
++					 struct flow_cls_offload *fco,
++					 struct vcap_rule *erule,
++					 struct vcap_admin *admin,
++					 struct sparx5_multiple_rules *multi)
++{
++	int idx, err = 0;
++
++	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
++		if (!multi->rule[idx].selected)
++			continue;
++
++		err = sparx5_tc_add_rule_copy(vctrl, fco, erule, admin,
++					      &multi->rule[idx]);
++		if (err)
++			break;
++	}
++	return err;
++}
++
+ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 				    struct flow_cls_offload *fco,
+ 				    struct vcap_admin *admin)
+ {
+ 	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5_multiple_rules multi = {};
+ 	struct flow_action_entry *act;
+ 	struct vcap_control *vctrl;
+ 	struct flow_rule *frule;
+@@ -700,6 +893,15 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 			goto out;
+ 		}
+ 	}
++
++	err = sparx5_tc_select_protocol_keyset(ndev, vrule, admin, l3_proto,
++					       &multi);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "No matching port keyset for filter protocol and keys");
++		goto out;
++	}
++
+ 	/* provide the l3 protocol to guide the keyset selection */
+ 	err = vcap_val_rule(vrule, l3_proto);
+ 	if (err) {
+@@ -710,6 +912,11 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 	if (err)
+ 		NL_SET_ERR_MSG_MOD(fco->common.extack,
+ 				   "Could not add the filter");
++
++	if (l3_proto == ETH_P_ALL)
++		err = sparx5_tc_add_remaining_rules(vctrl, fco, vrule, admin,
++						    &multi);
++
+ out:
+ 	vcap_free_rule(vrule);
+ 	return err;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+index 0c4d4e6d51e6..a0c126ba9a87 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+@@ -7,11 +7,6 @@
+  * https://github.com/microchip-ung/sparx-5_reginfo
+  */
  
- /* Update the keyset for the rule */
- int vcap_set_rule_set_keyset(struct vcap_rule *rule,
-@@ -213,7 +215,13 @@ bool vcap_is_next_lookup(struct vcap_control *vctrl, int cur_cid, int next_cid);
- /* Provide all rules via a callback interface */
- int vcap_rule_iter(struct vcap_control *vctrl,
- 		   int (*callback)(void *, struct vcap_rule *), void *arg);
+-#include <linux/types.h>
+-#include <linux/list.h>
 -
-+/* Match a list of keys against the keysets available in a vcap type */
-+bool vcap_rule_find_keysets(struct vcap_rule *rule,
-+			    struct vcap_keyset_list *matches);
-+/* Return the keyset information for the keyset */
-+const struct vcap_set *vcap_keyfieldset(struct vcap_control *vctrl,
-+					enum vcap_type vt,
-+					enum vcap_keyfield_set keyset);
- /* Copy to host byte order */
- void vcap_netbytes_copy(u8 *dst, u8 *src, int count);
+-#include "vcap_api.h"
+-#include "vcap_api_client.h"
+ #include "vcap_api_debugfs.h"
+ #include "sparx5_main_regs.h"
+ #include "sparx5_main.h"
+@@ -279,6 +274,19 @@ static int sparx5_vcap_is2_get_port_keysets(struct net_device *ndev,
+ 	return 0;
+ }
  
-@@ -226,6 +234,10 @@ int vcap_del_rules(struct vcap_control *vctrl, struct vcap_admin *admin);
- /* Add a keyset to a keyset list */
- bool vcap_keyset_list_add(struct vcap_keyset_list *keysetlist,
- 			  enum vcap_keyfield_set keyset);
-+/* Drop keys in a keylist and any keys that are not supported by the keyset */
-+int vcap_filter_rule_keys(struct vcap_rule *rule,
-+			  enum vcap_key_field keylist[], int length,
-+			  bool drop_unsupported);
- 
- /* map keyset id to a string with the keyset name */
- const char *vcap_keyset_name(struct vcap_control *vctrl,
-@@ -234,4 +246,12 @@ const char *vcap_keyset_name(struct vcap_control *vctrl,
- const char *vcap_keyfield_name(struct vcap_control *vctrl,
- 			       enum vcap_key_field key);
- 
-+/* Modify a 32 bit key field with value and mask in the rule */
-+int vcap_rule_mod_key_u32(struct vcap_rule *rule, enum vcap_key_field key,
-+			  u32 value, u32 mask);
-+/* Modify a 32 bit action field with value in the rule */
-+int vcap_rule_mod_action_u32(struct vcap_rule *rule,
-+			     enum vcap_action_field action,
-+			     u32 value);
++/* Get the port keyset for the vcap lookup */
++int sparx5_vcap_get_port_keyset(struct net_device *ndev,
++				struct vcap_admin *admin,
++				int cid,
++				u16 l3_proto,
++				struct vcap_keyset_list *kslist)
++{
++	int lookup;
 +
- #endif /* __VCAP_API_CLIENT__ */
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index f48d93f374af..875068e484c9 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1197,7 +1197,7 @@ static void vcap_api_rule_find_keyset_basic_test(struct kunit *test)
- 	for (idx = 0; idx < ARRAY_SIZE(ckf); idx++)
- 		list_add_tail(&ckf[idx].ctrl.list, &ri.data.keyfields);
++	lookup = sparx5_vcap_cid_to_lookup(cid);
++	return sparx5_vcap_is2_get_port_keysets(ndev, lookup, kslist, l3_proto);
++}
++
+ /* API callback used for validating a field keyset (check the port keysets) */
+ static enum vcap_keyfield_set
+ sparx5_vcap_validate_keyset(struct net_device *ndev,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
+index 8a6b7e3d2618..0a0f2412c980 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
+@@ -10,6 +10,12 @@
+ #ifndef __SPARX5_VCAP_IMPL_H__
+ #define __SPARX5_VCAP_IMPL_H__
  
--	ret = vcap_rule_find_keysets(&ri, &matches);
-+	ret = vcap_rule_find_keysets(&ri.data, &matches);
++#include <linux/types.h>
++#include <linux/list.h>
++
++#include "vcap_api.h"
++#include "vcap_api_client.h"
++
+ #define SPARX5_VCAP_CID_IS2_L0 VCAP_CID_INGRESS_STAGE2_L0 /* IS2 lookup 0 */
+ #define SPARX5_VCAP_CID_IS2_L1 VCAP_CID_INGRESS_STAGE2_L1 /* IS2 lookup 1 */
+ #define SPARX5_VCAP_CID_IS2_L2 VCAP_CID_INGRESS_STAGE2_L2 /* IS2 lookup 2 */
+@@ -65,4 +71,11 @@ enum vcap_is2_port_sel_arp {
+ 	VCAP_IS2_PS_ARP_ARP,
+ };
  
- 	KUNIT_EXPECT_EQ(test, true, ret);
- 	KUNIT_EXPECT_EQ(test, 1, matches.cnt);
-@@ -1244,7 +1244,7 @@ static void vcap_api_rule_find_keyset_failed_test(struct kunit *test)
- 	for (idx = 0; idx < ARRAY_SIZE(ckf); idx++)
- 		list_add_tail(&ckf[idx].ctrl.list, &ri.data.keyfields);
- 
--	ret = vcap_rule_find_keysets(&ri, &matches);
-+	ret = vcap_rule_find_keysets(&ri.data, &matches);
- 
- 	KUNIT_EXPECT_EQ(test, false, ret);
- 	KUNIT_EXPECT_EQ(test, 0, matches.cnt);
-@@ -1291,7 +1291,7 @@ static void vcap_api_rule_find_keyset_many_test(struct kunit *test)
- 	for (idx = 0; idx < ARRAY_SIZE(ckf); idx++)
- 		list_add_tail(&ckf[idx].ctrl.list, &ri.data.keyfields);
- 
--	ret = vcap_rule_find_keysets(&ri, &matches);
-+	ret = vcap_rule_find_keysets(&ri.data, &matches);
- 
- 	KUNIT_EXPECT_EQ(test, true, ret);
- 	KUNIT_EXPECT_EQ(test, 6, matches.cnt);
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_private.h b/drivers/net/ethernet/microchip/vcap/vcap_api_private.h
-index 18a9a0cd9606..9ac1b1d55f22 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_private.h
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_private.h
-@@ -59,10 +59,6 @@ void vcap_iter_update(struct vcap_stream_iter *itr);
- 
- /* Keyset and keyfield functionality */
- 
--/* Return the keyset information for the keyset */
--const struct vcap_set *vcap_keyfieldset(struct vcap_control *vctrl,
--					enum vcap_type vt,
--					enum vcap_keyfield_set keyset);
- /* Return the number of keyfields in the keyset */
- int vcap_keyfield_count(struct vcap_control *vctrl,
- 			enum vcap_type vt, enum vcap_keyfield_set keyset);
++/* Get the port keyset for the vcap lookup */
++int sparx5_vcap_get_port_keyset(struct net_device *ndev,
++				struct vcap_admin *admin,
++				int cid,
++				u16 l3_proto,
++				struct vcap_keyset_list *kslist);
++
+ #endif /* __SPARX5_VCAP_IMPL_H__ */
 -- 
 2.38.1
 
