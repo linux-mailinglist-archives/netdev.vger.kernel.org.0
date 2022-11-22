@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D3C0634536
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 21:09:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D63B263476C
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 21:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234619AbiKVUJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 15:09:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        id S234693AbiKVUMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 15:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232993AbiKVUJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 15:09:38 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE39FAB0EA
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 12:09:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cZAXYdgN4BksCn9n8En8JQsom3SEB58PaiUft/DYgKo=; b=JWjd7JEAIJtSy+Hpi62YJV+4Qm
-        y8cPOmmXCrSWwTuGeVBo21pN7GJfsUO8Yj9mpIOfuVndA+wFK0bTDauyeJAaMuPLsoq4QwETghQ+k
-        yqwg3kGZKxQv1t1qwIOGnPKKWJfD7zAXnhoNBeYfZ5Q2t/dBYR0dCjEpeuTeMocBRsEM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oxZaG-0039fx-M6; Tue, 22 Nov 2022 21:09:32 +0100
-Date:   Tue, 22 Nov 2022 21:09:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Steve Williams <steve.williams@getcruise.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [EXT] Re: [PATCH net-next] sandlan: Add the sandlan virtual
- network interface
-Message-ID: <Y30sfGrQ2lQN+CMY@lunn.ch>
-References: <20221116222429.7466-1-steve.williams@getcruise.com>
- <20221117200046.0533b138@kernel.org>
- <CALHoRjctagiFOWi8OWai5--m+sezaMHSOpKNLSQbrKEgRbs-KQ@mail.gmail.com>
+        with ESMTP id S234696AbiKVUMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 15:12:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2705FBD7;
+        Tue, 22 Nov 2022 12:12:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C46FCB81D85;
+        Tue, 22 Nov 2022 20:12:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2456AC433C1;
+        Tue, 22 Nov 2022 20:12:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669147944;
+        bh=ErWQ6/edZDHfnmUj1x+2RpXl4f9HPSeF5jQRSQKBKOo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Dh3PsVIvtCZ+ztGKmg8rwGcRRizt+CZnrruVT6xkYS/H+N3oig4wWQ+sPu2sGhmjn
+         qoM3ahO/U8f6t9q+EiuZ9Ka25iUR5L0PtRUkxGNgYz/e/2DCJ10W62hYmUTk3MIu5K
+         YuYbbXCAKNRc4KTZAew2/NwG7p0aGGWOOcC30VLl1KBKhK7+6kLjb3bCznVadPT5PQ
+         apqLyBvq26P4OoK2E8SDcu1SAi3bZVnOa56y8xLGomOPEGejGQ6iWGH8pl7e+DbRJ9
+         o1upCLxtGFnj1GhAQHnrDXMxCjQNRnt1Es1ls9yHGaYlyazofQmAjSaSoGeaZPvHPV
+         t7tw6LN00wxOQ==
+Date:   Tue, 22 Nov 2022 12:12:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Peter Kosyh <pkosyh@yandex.ru>, Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH] mlx4: use snprintf() instead of sprintf() for safety
+Message-ID: <20221122121223.265d6d97@kernel.org>
+In-Reply-To: <Y3zhL0/OItHF1R03@unreal>
+References: <20221122130453.730657-1-pkosyh@yandex.ru>
+        <Y3zhL0/OItHF1R03@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALHoRjctagiFOWi8OWai5--m+sezaMHSOpKNLSQbrKEgRbs-KQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 06:59:11PM -0800, Steve Williams wrote:
-> I have had trouble with the veth driver not transparently passing the
-> full ethernet packets unaltered, and this is wreaking havoc with the
-> hanic driver that I have (and that I'm submitting separately). That,
-> and veth nodes only come in pairs, whereas with sandlan I can make
-> more complex LANs and that allows me to emulate more complex
-> situations. But fair point, and I am looking more closely at figuring
-> out exactly what the veth driver is doing to my packets.
+On Tue, 22 Nov 2022 16:48:15 +0200 Leon Romanovsky wrote:
+> On Tue, Nov 22, 2022 at 04:04:53PM +0300, Peter Kosyh wrote:
+> > Use snprintf() to avoid the potential buffer overflow. Although in the
+> > current code this is hardly possible, the safety is unclean.  
+> 
+> Let's fix the tools instead. The kernel code is correct.
 
-Please don't top post.
-
-If there is a real problem with veth, please describe it, so we can
-fix the bugs. We don't add new emulators because of bugs in the
-existing system.
-
-It also seems like this emulator is very limited compared to
-netem. For testing hanic i assume you need different delays in each
-parallel path, different packet losses, packet reordering, etc. netem
-does all this for you.
-
-    Andrew
+I'm guessing the code is correct because port can't be a high value?
+Otherwise, if I'm counting right, large enough port representation
+(e.g. 99999999) could overflow the string. If that's the case - how
+would they "fix the tool" to know the port is always a single digit?
