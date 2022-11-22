@@ -2,122 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB926338A6
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C50E36338B3
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:39:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232156AbiKVJhV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Nov 2022 04:37:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
+        id S233319AbiKVJjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 04:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbiKVJhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:37:15 -0500
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D64B4E435
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:37:14 -0800 (PST)
-Received: by mail-qv1-f53.google.com with SMTP id c8so9715156qvn.10
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:37:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0qbQIDMT0mVQK2fDYDatBMKVgp9C8v9nTt52ud61lvU=;
-        b=Wb29EbGHurHbp526JmmjF+sFhrMoTCVi7aUkYF5Wj78Ud/cPxIWCN00s1J6BCOTHfv
-         Co01XiDIDplvQAxWUmhvQTqLD9LKp33deR8RFpYYIMSTtCMb3LFsBcizDKiav2eBdS+c
-         aqgfrOzmUiiHDC+35obksXCWgQPe0a/yOXr/S/s4+gJlIIesxMKofsPvg478qAPVJIFT
-         QW67rnpbvlM4qNJCneqY9zu4XhnRXPjzeX1G6i7Kc+peKGrjY4fD6B0vcWxBB0rCEr52
-         YX5D85G2bY1BcHqTn8dIkyPK8WdBD6wBmK51nsyjTuzDqAOU23b32JDPTUltkjdn29Hm
-         cVQA==
-X-Gm-Message-State: ANoB5plaO1poHLqMSwjn35Pgv1WkLMkdK5ybB/cSz9PLEoQFv+qfFsd3
-        kvQ6rv7NvC3e5bVuUDfkWwJHQrkGPU+M5w==
-X-Google-Smtp-Source: AA0mqf6iRTuaeADgwb5wac/r7lwdGqvLe5g4+Hm05kGenuLlvn3qo835bTTzlb6Cs858EuE8KND4HA==
-X-Received: by 2002:a05:6214:590e:b0:4c6:aaeb:6384 with SMTP id lp14-20020a056214590e00b004c6aaeb6384mr2911783qvb.41.1669109833445;
-        Tue, 22 Nov 2022 01:37:13 -0800 (PST)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id j12-20020a05620a410c00b006eef13ef4c8sm10129804qko.94.2022.11.22.01.37.11
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 01:37:12 -0800 (PST)
-Received: by mail-yb1-f175.google.com with SMTP id 7so16643831ybp.13
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:37:11 -0800 (PST)
-X-Received: by 2002:a25:bcc6:0:b0:6dd:1c5c:5602 with SMTP id
- l6-20020a25bcc6000000b006dd1c5c5602mr21891954ybm.36.1669109831615; Tue, 22
- Nov 2022 01:37:11 -0800 (PST)
+        with ESMTP id S232948AbiKVJiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:38:54 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992C14FF9C
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:38:51 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oxPjp-0006Gd-Vq; Tue, 22 Nov 2022 10:38:46 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oxPjn-005p9I-Of; Tue, 22 Nov 2022 10:38:44 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oxPjn-000lfQ-Uz; Tue, 22 Nov 2022 10:38:43 +0100
+Date:   Tue, 22 Nov 2022 10:38:43 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, uwe@kleine-koenig.org
+Subject: Re: [PATCH net-next 00/12] net: Complete conversion to i2c_probe_new
+Message-ID: <20221122093843.ph5prj7thbxds5n7@pengutronix.de>
+References: <20221121191546.1853970-1-kuba@kernel.org>
 MIME-Version: 1.0
-References: <20221122093131.161499-1-saeed@kernel.org>
-In-Reply-To: <20221122093131.161499-1-saeed@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 22 Nov 2022 10:37:00 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVQAkPhtEdq=-kwQE8v2sgyCx_bD-f2yk95Fc7t4Fz56w@mail.gmail.com>
-Message-ID: <CAMuHMdVQAkPhtEdq=-kwQE8v2sgyCx_bD-f2yk95Fc7t4Fz56w@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: Fix build break when CONFIG_IPV6=n
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pckmndphi6im6mzp"
+Content-Disposition: inline
+In-Reply-To: <20221121191546.1853970-1-kuba@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed,
 
-On Tue, Nov 22, 2022 at 10:31 AM Saeed Mahameed <saeed@kernel.org> wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
->
-> The cited commit caused the following build break when CONFIG_IPV6 was
-> disabled
->
-> net/ipv4/tcp_input.c: In function ‘tcp_syn_flood_action’:
-> include/net/sock.h:387:37: error: ‘const struct sock_common’ has no member named ‘skc_v6_rcv_saddr’; did you mean ‘skc_rcv_saddr’?
->
-> Fix by using inet6_rcv_saddr() macro which handles this situation
-> nicely.
->
-> Fixes: d9282e48c608 ("tcp: Add listening address to SYN flood message")
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+--pckmndphi6im6mzp
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your patch!
+Hello Jakub,
 
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -6843,9 +6843,9 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
->
->         if (!READ_ONCE(queue->synflood_warned) && syncookies != 2 &&
->             xchg(&queue->synflood_warned, 1) == 0) {
-> -               if (IS_ENABLED(CONFIG_IPV6) && sk->sk_family == AF_INET6) {
-> +               if (sk->sk_family == AF_INET6) {
+On Mon, Nov 21, 2022 at 11:15:34AM -0800, Jakub Kicinski wrote:
+> Reposting for Uwe the networking slice of his mega-series:
+> https://lore.kernel.org/all/20221118224540.619276-1-uwe@kleine-koenig.org/
+> so that our build bot can confirm the obvious.
+>=20
+> fix mlx5 -> mlxsw while at it.
 
-I think the IS_ENABLED() should stay, to make sure the IPV6-only
-code is optimized away when IPv6-support is disabled.
+What is the relevant difference that made the build bot consider your
+resent but not my series? Is it "net-next" in the Subject?
 
->                         net_info_ratelimited("%s: Possible SYN flooding on port [%pI6c]:%u. %s.\n",
-> -                                       proto, &sk->sk_v6_rcv_saddr,
-> +                                       proto, inet6_rcv_saddr(sk),
->                                         sk->sk_num, msg);
->                 } else {
->                         net_info_ratelimited("%s: Possible SYN flooding on port %pI4:%u. %s.\n",
+Best regards
+Uwe
 
-Gr{oetje,eeting}s,
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-                        Geert
+--pckmndphi6im6mzp
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+-----BEGIN PGP SIGNATURE-----
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmN8mKAACgkQwfwUeK3K
+7AlcgQgAhsM0yRxxrMFx+bXl4n8XJRE1dU/QfeVK0WhF3PNDvSX3401aGJP2G4I/
+GpisNchryy7ypTL3ByHPtx/NyesiRvZhP5ip71WircczwXCa51Cov7bbdx7EQrLQ
+INvdDICs3iPRzBLdCsZ5LGF0sqvQDn1SMkjHYm/3VpXjworjTBU116Lo93hqg+ts
+cGfRUZOTCg2UnylK35NGMcBy3Mkv6SQnfTx24PFU4d1AyeLnP1DsQWqWMflDGdzT
+zAJ4fOp4eZ1OSvKn9+QV8jM0mmxU5b5oL250GQfbyk01YusicSDy3/oR04MyxKq4
+uVRo6p2FKrRZr9TOHAsgbDJpYskFRQ==
+=Nz5i
+-----END PGP SIGNATURE-----
+
+--pckmndphi6im6mzp--
