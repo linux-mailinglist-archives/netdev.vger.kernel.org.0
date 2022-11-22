@@ -2,75 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B11B8633B72
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1743633B77
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 12:35:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231967AbiKVLee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 06:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        id S232348AbiKVLfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 06:35:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232729AbiKVLeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:34:09 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D47A528AB
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:28:11 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id a15so17590131ljb.7
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:28:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=W/2KboP7aDBe1NYViL1rOGOSS6zsKqMYiIoKfwCQQMI=;
-        b=Ov0oib1k0t+e0P2SjXf8SFwdPHnACc12Z7xhLVbLKFLWGS6fL84ftsb360QmyL2t7r
-         ZhgtI0TtjU+xg8ti0yLYMagM5arx8xDoh1cGIZxhCuAd7ghzwCm3wIbLISuXb1SbBQcc
-         ChGFJFoeMvKuttgRkFV3RpVOAjFLvc5nJSI9UN1Y/dLN8gsvjaX60T/neFN8TFODFrwd
-         /axyZ973o8yoJQb0rT8RFfHVDJca0SGX1E+Ksu9iGzeDVoq4+ovUvb7Xl4pSaYYO1mlu
-         rWxdj6JRmlXxLBUDipy7XVKp77KRRA4A/ZxKe6XmDQDc4kk6zGj9lzR6xm5ifzWlB/3F
-         51kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=W/2KboP7aDBe1NYViL1rOGOSS6zsKqMYiIoKfwCQQMI=;
-        b=H6JMc3vlhEV8scAg5Y9xIMpjiP0JL+TV2V6rAgLu8MEXyu0hg6hFEwe+7CGirrIbBx
-         IHtbxitwKWeo5+0HXOViDsO6QYq83zThifof70rHm6gynQWZvi6LTBHnYA09R92rfR/X
-         5EuvfBy79bPxI5iWVqY65wpHmSIy0GRn6vjP01EuRoUjliirBFk/Ac7EoolTbtKqAoO/
-         N5DTCXKQmPBHOd2FakTaAndvX4PkqfqIERFZiFHeyN9e6DdAbK6LkKm6h9zi7D1kI0BJ
-         cFBAvdNPzJ+2KiAv/mz43FXKHyHkcgaHSmEguMP3Ljoe6LurKpEhZiLvkFo8W3fgeUB4
-         sHAg==
-X-Gm-Message-State: ANoB5pltd591c0JRmevhIY3TW6tyVfYkrausGzqGvNyAjIkYrnfINFTw
-        ZGhicbrSTzOb3CzWXM/iEcZF1Q==
-X-Google-Smtp-Source: AA0mqf4A0miTCOCsyCp2t2s3vA+Q5w7x++fFSlnVreMOjo+8Lbol4ErFhuD0e8A7sPn4m43VRfsWmQ==
-X-Received: by 2002:a05:651c:241:b0:26d:e38f:7e21 with SMTP id x1-20020a05651c024100b0026de38f7e21mr6990303ljn.273.1669116489716;
-        Tue, 22 Nov 2022 03:28:09 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id t1-20020a056512208100b004b4e4671212sm75843lfr.232.2022.11.22.03.28.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 03:28:08 -0800 (PST)
-Message-ID: <c47b0ab1-df50-36dd-5a60-8cdc4f632fb6@linaro.org>
-Date:   Tue, 22 Nov 2022 12:28:07 +0100
+        with ESMTP id S232526AbiKVLec (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 06:34:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB126314D
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 03:29:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFEB9B81A29
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 11:29:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DA8C433D6;
+        Tue, 22 Nov 2022 11:29:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669116548;
+        bh=HIeb1miepSI+2beteNcMmbvxY+NUbGb7OayzFNRvk8k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qSfpoiK0S0+gEk71RX7WkY5clz3eVLnwTUPcsIuHT1VYVArwa8BMCSmUSVEdIWQrE
+         VAIumdXSJSAX7yiJD751qF4VfoKLASXF42GJ5r8gq02NYqZjrPjwnlpgtBile+cnoP
+         jYQVslCOeNAn701sy9F7bou3tsEGMd6U4VqWsH5hqqXrvqUFSeug6js6eIJkZCWuP4
+         /M+Pl9BtmGFN64bc2ezeBHlWgbfhebeT2ve+q02xaPmnUcxO8YAwl9DhXeWgH/YKbk
+         alv1q3XBbzttwsI0MEIaM5ej4nS1x4DgHSRdsHYxH7BVrXjqjsQ9RQI3GnZkMndXdx
+         HYx9TCJZVsoqQ==
+Date:   Tue, 22 Nov 2022 13:29:03 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>
+Subject: Re: [PATCH net-next 0/5] Remove uses of kmap_atomic()
+Message-ID: <Y3yyf+mxwEfIi8Xm@unreal>
+References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net v2 2/3] nfc: st-nci: fix memory leaks in
- EVT_TRANSACTION
-Content-Language: en-US
-To:     Martin Faltesek <mfaltesek@google.com>, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-nfc@lists.01.org, davem@davemloft.net
-Cc:     martin.faltesek@gmail.com, christophe.ricard@gmail.com,
-        groeck@google.com, jordy@pwning.systems, krzk@kernel.org,
-        sameo@linux.intel.com, theflamefire89@gmail.com,
-        duoming@zju.edu.cn, Denis Efremov <denis.e.efremov@oracle.com>
-References: <20221122004246.4186422-1-mfaltesek@google.com>
- <20221122004246.4186422-3-mfaltesek@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221122004246.4186422-3-mfaltesek@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,19 +55,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/11/2022 01:42, Martin Faltesek wrote:
-> Error path does not free previously allocated memory. Add devm_kfree() to
-> the failure path.
+On Thu, Nov 17, 2022 at 02:25:52PM -0800, Anirudh Venkataramanan wrote:
+> kmap_atomic() is being deprecated. This little series replaces the last
+> few uses of kmap_atomic() in ethernet drivers with either page_address()
+> or kmap_local_page().
 > 
-> Reported-by: Denis Efremov <denis.e.efremov@oracle.com>
-> Reviewed-by: Guenter Roeck <groeck@google.com>
-> Fixes: 5d1ceb7f5e56 ("NFC: st21nfcb: Add HCI transaction event support")
-> Signed-off-by: Martin Faltesek <mfaltesek@google.com>
-> ---
+> Anirudh Venkataramanan (5):
+>   ch_ktls: Use kmap_local_page() instead of kmap_atomic()
+>   sfc: Use kmap_local_page() instead of kmap_atomic()
+>   cassini: Remove unnecessary use of kmap_atomic()
+>   cassini: Use kmap_local_page() instead of kmap_atomic()
+>   sunvnet: Use kmap_local_page() instead of kmap_atomic()
+> 
+>  .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 10 ++---
+>  drivers/net/ethernet/sfc/tx.c                 |  4 +-
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>  drivers/net/ethernet/sun/cassini.c            | 40 ++++++-------------
+>  drivers/net/ethernet/sun/sunvnet_common.c     |  4 +-
 
-Best regards,
-Krzysztof
+Dave, Jakub, Paolo
+I wonder if these drivers can be simply deleted.
 
+Thanks
+
+>  4 files changed, 22 insertions(+), 36 deletions(-)
+> 
+> 
+> base-commit: b4b221bd79a1c698d9653e3ae2c3cb61cdc9aee7
+> -- 
+> 2.37.2
+> 
