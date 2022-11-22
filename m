@@ -2,79 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE1E6343EF
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 19:47:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6449A6343F1
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 19:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234526AbiKVSrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 13:47:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49936 "EHLO
+        id S234616AbiKVSsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 13:48:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiKVSrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 13:47:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6D5637D;
-        Tue, 22 Nov 2022 10:47:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BE7A6185D;
-        Tue, 22 Nov 2022 18:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AEDAC433D6;
-        Tue, 22 Nov 2022 18:47:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669142849;
-        bh=taCJgh2lGd3ey1WtvG5t2JKi/c+/EKnirY02H77VRTQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ReMWDK5I5fpizL+H1Ds96fyTeZnnTiwTLmyv70GYOpJxoUBbsnQb84xZm7at0vrRn
-         1Zp7IT6dL2LzhtUAXExGMnSF7MXV2Lsx1NsNDYYQwv38Q/Xsq0bh163B+FH8NLTfut
-         2vC95yZnvo6eBdIHfHtHzxva0JmqAhJ7570945kCGk9PbZFEIhUPqauBf8wEYX646q
-         mOb6gtJUsYmeXzfFWUG/Jv6SEgaB9Xpww7Fz4lvx5TSsbHVMvfBDyXHmohFKSgA1Gw
-         PxF9BJYobNiFlJiVUxwjussygP/VBseGHy+L+F/t7Cha8DxRU/ojW0s9kGwPX8GSvq
-         sY0rDisAx9aKw==
-Date:   Tue, 22 Nov 2022 10:47:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Casper Andersson" <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Daniel Machon" <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v2 0/8] Add support for VCAP debugFS in Sparx5
-Message-ID: <20221122104728.7ef02606@kernel.org>
-In-Reply-To: <994f72742a15bec5a93d57324b749b71d0709035.camel@microchip.com>
-References: <20221117213114.699375-1-steen.hegelund@microchip.com>
-        <20221121110154.709bed49@kernel.org>
-        <994f72742a15bec5a93d57324b749b71d0709035.camel@microchip.com>
+        with ESMTP id S232366AbiKVSsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 13:48:24 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD4087A65
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:48:17 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-3a3961f8659so61518867b3.2
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:48:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Suef9qGZyeDmFmQNW1pPUf7Q/ChJX92BCODoUZMGLX8=;
+        b=bpwN8N30HWXpzkqtkYdHqlpJnE/hAc39tI0RG2EBizFiHAyyzDd8REAjY3JuQBRCTH
+         JNdWLd1KhEyT8nHF4Jt3nBNvKdBi/mpsKcpziexcwK2urw9bCT+qaP+ZK98xkkaJSkHN
+         ZT70ZxNJaM9bNGGCmCghOxMNJLrljLTYASXsJPfcnRG2sbK9sXy1t0FIC8pf72nFCtW2
+         YtuDj8eubWOiQQuu6qHx65jW0eU/K6aVXXVZnLvSf72QUEKnYmJX8SfLC7eZYiVZpCEU
+         oIqFgfw3um/rjinQVBwSxysye+mOg+SC/OAC1yx0mhxOeVxVZqyOYd8J4be+TmowG6uc
+         DHrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Suef9qGZyeDmFmQNW1pPUf7Q/ChJX92BCODoUZMGLX8=;
+        b=aNK22y8OpDmChZZUrmADw+a3170rgUTegDTcB/hIWZq/dlUanAvVJeur1BCmqwQnLd
+         C1Svo7pQW8shYXPTWeM1UwUOCaxc/757xTtLMpQafDhyg9BZ5KeYzPTjEddZLXfZTPZx
+         x4tZbHMwgsTBzSb2Vb+O8RB5Ej9QtDH9o4GpL6C/LBJEbG+mjbMnbiBxsGEfo0RBQ9m5
+         tPjyo0xBzHSFMSGAc6BtRk+D68C7LJ0jvAyfzIigC6VrAxmy0Ix4rxnY18c9V1+7HVEr
+         8fM2R+0MO7PbrhSIfGu5521rEQTYRk1LNJbub+lFoIDkT/9oFoVYH9F+jZs8ADAFv69O
+         mrPQ==
+X-Gm-Message-State: ANoB5pktyrj+WouTKPVJPsQcdmiSw/eRdg4TbTJ7sXKWd7331WKyzTHp
+        wH1q7R0LyKjNdGBC9XfLaePlCxZVcjAUk3/6cVN+Ig==
+X-Google-Smtp-Source: AA0mqf7988lpR33vi1F2g1fgKd/46A3PWLVSvRNIGU0sT5FGaq/tu3ij3PEWJqXryerpC9ywVGCNN8/7/vL9DZBIIgM=
+X-Received: by 2002:a05:690c:a92:b0:36c:aaa6:e571 with SMTP id
+ ci18-20020a05690c0a9200b0036caaa6e571mr23269568ywb.467.1669142896591; Tue, 22
+ Nov 2022 10:48:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221122184158.170798-1-saeed@kernel.org>
+In-Reply-To: <20221122184158.170798-1-saeed@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 22 Nov 2022 10:48:05 -0800
+Message-ID: <CANn89i+6wuATYqe2eN2+P4rA6_EwfZwzWhpZb+ZnxWHp+yG5sQ@mail.gmail.com>
+Subject: Re: [PATCH net-next V2] tcp: Fix build break when CONFIG_IPV6=n
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Nov 2022 10:17:22 +0100 Steen Hegelund wrote:
-> > Have you checked devlink dpipe? On a quick scan it may be the right API
-> > to use here? Perhaps this was merged before people who know the code
-> > had a chance to take a look :(  
-> 
-> No I was not aware of the scope of devlink-dpipe, but it looks like the Sparx5
-> VCAP feature would fit in.
-> 
-> I need to take a closer look at the model and see if I can make ends meet, but
-> if so, then I could send support for devlink-dpipe at a later stage...
+On Tue, Nov 22, 2022 at 10:42 AM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> From: Saeed Mahameed <saeedm@nvidia.com>
+>
+> The cited commit caused the following build break when CONFIG_IPV6 was
+> disabled
+>
+> net/ipv4/tcp_input.c: In function =E2=80=98tcp_syn_flood_action=E2=80=99:
+> include/net/sock.h:387:37: error: =E2=80=98const struct sock_common=E2=80=
+=99 has no member named =E2=80=98skc_v6_rcv_saddr=E2=80=99; did you mean =
+=E2=80=98skc_rcv_saddr=E2=80=99?
+>
+> Fix by using inet6_rcv_saddr() macro which handles this situation
+> nicely.
+>
+> Fixes: d9282e48c608 ("tcp: Add listening address to SYN flood message")
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> CC: Matthieu Baerts <matthieu.baerts@tessares.net>
+> CC: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-SG. I don't feel strongly, maybe someone else does..
+
+Thanks.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
