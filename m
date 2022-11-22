@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2BE634976
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:40:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DB763497B
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:42:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235033AbiKVVkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 16:40:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S235103AbiKVVkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:40:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232572AbiKVVkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:40:03 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB45C5B72;
-        Tue, 22 Nov 2022 13:39:59 -0800 (PST)
+        with ESMTP id S234739AbiKVVkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:40:08 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67129039C;
+        Tue, 22 Nov 2022 13:40:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669153199; x=1700689199;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SObOV4ZVsIhR7Pxn0ehVi6XI7f+9C+SzUdrriWqtbxU=;
-  b=KC9tI+yl4ON/W8dci5vDn4ChTJLw1w0PG2cUZwYhhDL/36B+vyTmES8m
-   lkLnQ8d5IRZCIRDfYhK8OjMH04S69i1KVwwQtRQsxGVGC6vRVtHwWY+aY
-   FhLvJXmQgiywl3nx2txTYTjduJHuVJphwzTS3OL5nEqGGWpvVr23ZNQPC
-   J2Xb4seTt3XqO16fYl3N9ubdeCoR6dayK8OseHtqru71Mdb+uHDTvvZb0
-   Tyz/vkeKcLfW2iR+cP2LDJAmnbP0lzGkcfbM6/Qf+S7xVYzTVEgnAGUJ+
-   9etWcM9XFXsRL2zHi/IY/k3UCwah6HbbY7Q6prPsWAQIbhKTpqCyF3nyM
-   w==;
+  t=1669153204; x=1700689204;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WQHtk5rD0UFDH3ezGkF35r6wv2LNLOm3eEkyD65lDDA=;
+  b=NaeZ77QDjGqBsMyCRqBWm50+P8KC951VrY5/aBQhFbDc3PP3AqQZJiYK
+   fmVy4wXEwYgzi6kujcdzRl5MFMGgd77x7JX2+YRjnslB0uoEGvOuZ0Rtu
+   yY1D1zZGSAycJB7MrPu7NfmdwagFryG61IiP3stCoaJ6GP5S+PGBn5G1D
+   UkIdP5vQK7Vi6pNaYvvihC4G6yxTYyAnVS7MfuPY6LprUv3k0XW3R9iuW
+   2VdpC2xjiFbnH3y4tC8L6CUJjYZtw5bAAeBnAs1Rh75rUpt0SoB9ioOfb
+   956oAB39p60/cJIWz9/ilhumEtE77TGrU4OdMCVkxjM/fAxS8vFm4deZc
+   A==;
 X-IronPort-AV: E=Sophos;i="5.96,185,1665471600"; 
-   d="scan'208";a="190137418"
+   d="scan'208";a="184748212"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 14:39:59 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 14:40:01 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 22 Nov 2022 14:39:54 -0700
+ 15.1.2507.12; Tue, 22 Nov 2022 14:39:57 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 22 Nov 2022 14:39:51 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 22 Nov 2022 14:39:54 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bpf@vger.kernel.org>
@@ -46,63 +46,113 @@ CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <hawk@kernel.org>, <john.fastabend@gmail.com>,
         <alexandr.lobakin@intel.com>, <UNGLinuxDriver@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v4 0/7] net: lan966x: Extend xdp support
-Date:   Tue, 22 Nov 2022 22:44:06 +0100
-Message-ID: <20221122214413.3446006-1-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 1/7] net: lan966x: Add XDP_PACKET_HEADROOM
+Date:   Tue, 22 Nov 2022 22:44:07 +0100
+Message-ID: <20221122214413.3446006-2-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.38.0
+In-Reply-To: <20221122214413.3446006-1-horatiu.vultur@microchip.com>
+References: <20221122214413.3446006-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the current support of XDP in lan966x with the action XDP_TX and
-XDP_REDIRECT.
-The first patches just prepare the things such that it would be easier
-to add XDP_TX and XDP_REDIRECT actions. Like adding XDP_PACKET_HEADROOM,
-introduce helper functions, use the correct dma_dir for the page pool
-The last 2 patches introduce the XDP actions XDP_TX and XDP_REDIRECT.
+Update the page_pool params to allocate XDP_PACKET_HEADROOM space as
+headroom for all received frames.
+This is needed for when the XDP_TX and XDP_REDIRECT are implemented.
 
-v3->v4:
-- use napi_consume_skb instead of dev_kfree_skb_any
-- arrange members in struct lan966x_tx_dcb_buf not to have holes
-- fix when xdp program is added the check for determining if page pool
-  needs to be recreated was wrong
-- change type for len in lan966x_tx_dcb_buf to u32
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../ethernet/microchip/lan966x/lan966x_fdma.c    | 16 +++++++++++-----
+ .../net/ethernet/microchip/lan966x/lan966x_xdp.c |  3 ++-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
-v2->v3:
-- make sure to update rxq memory model
-- update the page pool direction if there is any xdp program
-- in case of action XDP_TX give back to reuse the page
-- in case of action XDP_REDIRECT, remap the frame and make sure to
-  unmap it when is transmitted.
-
-v1->v2:
-- use skb_reserve of using skb_put and skb_pull
-- make sure that data_len doesn't include XDP_PACKET_HEADROOM
-
-Horatiu Vultur (7):
-  net: lan966x: Add XDP_PACKET_HEADROOM
-  net: lan966x: Introduce helper functions
-  net: lan966x: Add len field to lan966x_tx_dcb_buf
-  net: lan966x: Update rxq memory model
-  net: lan966x: Update dma_dir of page_pool_params
-  net: lan966x: Add support for XDP_TX
-  net: lan966x: Add support for XDP_REDIRECT
-
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 265 +++++++++++++++---
- .../ethernet/microchip/lan966x/lan966x_main.c |   5 +-
- .../ethernet/microchip/lan966x/lan966x_main.h |  25 +-
- .../ethernet/microchip/lan966x/lan966x_xdp.c  |  70 ++++-
- 4 files changed, 314 insertions(+), 51 deletions(-)
-
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+index 5fbbd479cfb06..3055124b4dd79 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+@@ -1,5 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ 
++#include <linux/bpf.h>
++
+ #include "lan966x_main.h"
+ 
+ static int lan966x_fdma_channel_active(struct lan966x *lan966x)
+@@ -16,7 +18,7 @@ static struct page *lan966x_fdma_rx_alloc_page(struct lan966x_rx *rx,
+ 	if (unlikely(!page))
+ 		return NULL;
+ 
+-	db->dataptr = page_pool_get_dma_addr(page);
++	db->dataptr = page_pool_get_dma_addr(page) + XDP_PACKET_HEADROOM;
+ 
+ 	return page;
+ }
+@@ -72,7 +74,7 @@ static int lan966x_fdma_rx_alloc_page_pool(struct lan966x_rx *rx)
+ 		.nid = NUMA_NO_NODE,
+ 		.dev = lan966x->dev,
+ 		.dma_dir = DMA_FROM_DEVICE,
+-		.offset = 0,
++		.offset = XDP_PACKET_HEADROOM,
+ 		.max_len = rx->max_mtu -
+ 			   SKB_DATA_ALIGN(sizeof(struct skb_shared_info)),
+ 	};
+@@ -432,11 +434,13 @@ static int lan966x_fdma_rx_check_frame(struct lan966x_rx *rx, u64 *src_port)
+ 	if (unlikely(!page))
+ 		return FDMA_ERROR;
+ 
+-	dma_sync_single_for_cpu(lan966x->dev, (dma_addr_t)db->dataptr,
++	dma_sync_single_for_cpu(lan966x->dev,
++				(dma_addr_t)db->dataptr + XDP_PACKET_HEADROOM,
+ 				FDMA_DCB_STATUS_BLOCKL(db->status),
+ 				DMA_FROM_DEVICE);
+ 
+-	lan966x_ifh_get_src_port(page_address(page), src_port);
++	lan966x_ifh_get_src_port(page_address(page) + XDP_PACKET_HEADROOM,
++				 src_port);
+ 	if (WARN_ON(*src_port >= lan966x->num_phys_ports))
+ 		return FDMA_ERROR;
+ 
+@@ -466,6 +470,7 @@ static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx,
+ 
+ 	skb_mark_for_recycle(skb);
+ 
++	skb_reserve(skb, XDP_PACKET_HEADROOM);
+ 	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
+ 
+ 	lan966x_ifh_get_timestamp(skb->data, &timestamp);
+@@ -786,7 +791,8 @@ static int lan966x_fdma_get_max_frame(struct lan966x *lan966x)
+ 	return lan966x_fdma_get_max_mtu(lan966x) +
+ 	       IFH_LEN_BYTES +
+ 	       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) +
+-	       VLAN_HLEN * 2;
++	       VLAN_HLEN * 2 +
++	       XDP_PACKET_HEADROOM;
+ }
+ 
+ int lan966x_fdma_change_mtu(struct lan966x *lan966x)
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+index e77d9f2aad2b4..8ebde1eb6a09c 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+@@ -44,7 +44,8 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
+ 
+ 	xdp_init_buff(&xdp, PAGE_SIZE << lan966x->rx.page_order,
+ 		      &port->xdp_rxq);
+-	xdp_prepare_buff(&xdp, page_address(page), IFH_LEN_BYTES,
++	xdp_prepare_buff(&xdp, page_address(page),
++			 IFH_LEN_BYTES + XDP_PACKET_HEADROOM,
+ 			 data_len - IFH_LEN_BYTES, false);
+ 	act = bpf_prog_run_xdp(xdp_prog, &xdp);
+ 	switch (act) {
 -- 
 2.38.0
 
