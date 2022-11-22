@@ -2,118 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A6D633A99
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 11:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 525DB633A88
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 11:50:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbiKVKxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 05:53:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
+        id S231838AbiKVKua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 05:50:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbiKVKxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 05:53:20 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545CC2AC75
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:53:19 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id bj12so34794898ejb.13
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:53:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=qrat0Pjzpc2UdTChGgfw6N6SPZm+lQzUeXb2AdSMzjo=;
-        b=C1/cubd0PIuUcCiAe+ibYh9Ew8XP4io9382EKY4T5xriMKD7StRrLoeOhUnzGq+2N3
-         qSsbDk1k8hyz9oE9ryxJKYFH9zAHr84EFsf95DMhq9JK1wBjupS5Mdyt3D8PqCdGp0WN
-         81QGK7ejvCdONc7Lgc2CKywhG+tJY4Qn1jMgk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qrat0Pjzpc2UdTChGgfw6N6SPZm+lQzUeXb2AdSMzjo=;
-        b=ojMLUswWxBwUbhaTsWVdzVjWhEC+8iHEvYz+YB1kpdK+n3+jmbFbWVmsjKlihZSUrb
-         B1sty2NS/EO0eIVUBckNpt/wHKl8hjZ/pYf1IdEQOSzaHMSLdNPugLRKm/scKShZEppK
-         pXBnMYyPTKPeLLokbCN/yHCh3puevbdmOndnlX53q9x1zjXaZ251zyyksEqgFtjN4MGW
-         0kbTjKIRJRn+XxJ4payWB2t2aQAv3G92C+RT3SJincEVVwzaB62bNZKcXK/mxlDsUvkw
-         oiUXcMPZi1WGURWyTgddb59ogCAOfgsnODTDH+JTQgCVVr+PJFn4Gf5Or6GP9nHD02Vu
-         LE+Q==
-X-Gm-Message-State: ANoB5pmdsdwnoBdUuYrrtKiIUEQjS+TMA8vsFnHNUuqKrBFN1Emybaus
-        xISvOCamIxymmdM84GRPeXQ40w==
-X-Google-Smtp-Source: AA0mqf7XAJOqNlO6A5nDCWImDOCW+OdFx5uaS68GJz7vfX/5OZJyDnya1hUAtopXJKKk4IzXrtB/Pw==
-X-Received: by 2002:a17:906:8503:b0:7ad:8480:309d with SMTP id i3-20020a170906850300b007ad8480309dmr8154821ejx.156.1669114397871;
-        Tue, 22 Nov 2022 02:53:17 -0800 (PST)
-Received: from cloudflare.com (79.184.204.15.ipv4.supernova.orange.pl. [79.184.204.15])
-        by smtp.gmail.com with ESMTPSA id 8-20020a170906318800b007b47748d22fsm3755160ejy.220.2022.11.22.02.53.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 02:53:17 -0800 (PST)
-References: <20221119130317.39158-1-jakub@cloudflare.com>
- <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
- <a850c224-f728-983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>
- <87wn7o7k7r.fsf@cloudflare.com>
- <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
- <87fseb7vbm.fsf@cloudflare.com>
- <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Parkin <tparkin@katalix.com>,
-        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
-        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
-        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
-Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
- sk_callback_lock
-Date:   Tue, 22 Nov 2022 11:46:58 +0100
-In-reply-to: <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
-Message-ID: <871qpvmfab.fsf@cloudflare.com>
+        with ESMTP id S232556AbiKVKuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 05:50:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2149308
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:50:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AC9061644
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8760AC433D7;
+        Tue, 22 Nov 2022 10:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669114214;
+        bh=lM2YEGHO0Ra6y4DrbWcB0EIe7Qa/Bsn/hT4FcekBCL0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Hv9DqnQwvRiylg1jK7Oq9GhbI79u9WZzGXaSrxAHm5ItFVT9n6sfu1AmUsE/qnXKT
+         2/7pfD/faahJug1ueDqx3enjQmXFuWz9PGEL28w/Dq0icdzVUiMWPj8nELJvHigeSM
+         MgSLh1O3o7DZDfnDyvF/+OeEJtRKb8AxC10hD2hCCoPlQaHit6DsQtJq1hnThe0lDP
+         NuX10FTjVvf3fqppIH16vO3hlwXpIAm8AVaZz6S8SUHQvE8tdUamYbhHVGvFGOMpxD
+         pXmHZn4ddk9WwHIa3C3yJ0QqS8G4s2cJDVhqVoascFHK5sfHsgJzItaNKlvg9b3dyF
+         ciyVgtZkpFU6g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6BE4CE270E3;
+        Tue, 22 Nov 2022 10:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: sparx5: fix error handling in sparx5_port_open()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166911421443.25842.16867836484292079030.git-patchwork-notify@kernel.org>
+Date:   Tue, 22 Nov 2022 10:50:14 +0000
+References: <20221117125918.203997-1-liujian56@huawei.com>
+In-Reply-To: <20221117125918.203997-1-liujian56@huawei.com>
+To:     Liu Jian <liujian56@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, daniel.machon@microchip.com,
+        UNGLinuxDriver@microchip.com, linux@armlinux.org.uk,
+        horatiu.vultur@microchip.com, bjarni.jonasson@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 06:48 PM +09, Tetsuo Handa wrote:
-> On 2022/11/22 6:55, Jakub Sitnicki wrote:
->> First, let me say, that I get the impression that setup_udp_tunnel_sock
->> was not really meant to be used on pre-existing sockets created by
->> user-space. Even though l2tp and gtp seem to be doing that.
->> 
->> That is because, I don't see how it could be used properly. Given that
->> we need to check-and-set sk_user_data under sk_callback_lock, which
->> setup_udp_tunnel_sock doesn't grab itself. At the same time it might
->> sleep. There is no way to apply it without resorting to tricks, like we
->> did here.
->> 
->> So - yeah - there may be other problems. But if there are, they are not
->> related to the faulty commit b68777d54fac ("l2tp: Serialize access to
->> sk_user_data with sk_callback_lock"), which we're trying to fix. There
->> was no locking present in l2tp_tunnel_register before that point.
->
-> https://syzkaller.appspot.com/bug?extid=94cc2a66fc228b23f360 is the one
-> where changing lockdep class is concurrently done on pre-existing sockets.
->
-> I think we need to always create a new socket inside l2tp_tunnel_register(),
-> rather than trying to serialize setting of sk_user_data under sk_callback_lock.
+Hello:
 
-While that would be easier to handle, I don't see how it can be done in
-a backward-compatible way. User-space is allowed to pass a socket to
-l2tp today [1].
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
->
->> However, that is also not related to the race to check-and-set
->> sk_user_data, which commit b68777d54fac is trying to fix.
->
-> Therefore, I feel that reverting commit b68777d54fac "l2tp: Serialize access
-> to sk_user_data with sk_callback_lock" might be the better choice.
+On Thu, 17 Nov 2022 20:59:18 +0800 you wrote:
+> If phylink_of_phy_connect() fails, the port should be disabled.
+> If sparx5_serdes_set()/phy_power_on() fails, the port should be
+> disabled and the phylink should be stopped and disconnected.
+> 
+> Fixes: 946e7fd5053a ("net: sparx5: add port module support")
+> Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
+> Signed-off-by: Liu Jian <liujian56@huawei.com>
+> 
+> [...]
 
-I'm okay with that. Providing we can come up with have an alternative
-fix to the race between l2tp and other sk_user_data users.
+Here is the summary with links:
+  - [net] net: sparx5: fix error handling in sparx5_port_open()
+    https://git.kernel.org/netdev/net/c/4305fe232b8a
 
-[1] https://elixir.bootlin.com/linux/v6.1-rc6/source/net/l2tp/l2tp_netlink.c#L220
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
