@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF6063334E
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E841F633352
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiKVC3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 21:29:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
+        id S232186AbiKVC3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 21:29:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231561AbiKVC2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:28:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107D217A99
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:33 -0800 (PST)
+        with ESMTP id S231344AbiKVC3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:29:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBA62E698
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:28:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A263661544
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED55BC433D6;
-        Tue, 22 Nov 2022 02:28:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51BEBB818E7
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 02:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2174C4347C;
+        Tue, 22 Nov 2022 02:28:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669084112;
-        bh=bGs7CV+Y2dNssitD997BmbOSEG4YePdv89mstWnmysc=;
+        s=k20201202; t=1669084113;
+        bh=l7lMCc7nIduqLlFkD3OnU0L7nz1B45qtdwrfCh5Yn1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b2j465CdvnC5dlGM3Y/g+klZjgUWugbPucx26XvlmDwTBUu5EOc8RPnLGOhCai1Fg
-         s3BVxaP5KJ9pWT4koU8BYuSa7+tVt2fCbjwp74OZxgXJkkn4o0GX/y+LJKYuNjvEuJ
-         h9juXBXmFbjuQbNTfPJbknw2HRZzoFTN+OccWaC7B/pc97xd8qznrnSpE86uNxTYKD
-         Ai72y7x69b7wnnVDMlW1J+nkl1WyXPibp7Q7/mqk5qoSEV80zBLlqpo9JeJf9CXD6B
-         afsIxpVqrAl542Q6A1FIdYt5y25YXudJGVCOKgSqQgOw7dWWrLZ2W/FJfsRN6iKgQJ
-         l8V5cqg/x5NVg==
+        b=keQBwTD2IygGOHyo9ezjKH715U8t1Kti81t50XDCzwmOgZbwkRbfrDp5AkmQNzKeJ
+         s76CMgElBAP0t1HErk82U2wyhbp181ZahbaFlvIEFyZSarRnb2IH7xpvl5y0P/Vj8s
+         bvVEwqTD/ODft1oDdFr7sChTczIbD/E1kz3nEMhYRqbO7+p6VGussbnajEyTVkxp5E
+         PTXVnl/Hw70MavMQ7AqT+WbOwXF4rFA7X3Tw8K3vnHO4eD7l3cCS7X/xA0FKhK/ao0
+         N8PSDwWJDfhQmkJSALV7iUlaysoY5KWf1H3XNPB8dSu/Dps1I1zIrTbAGCAxvHsyBu
+         3ErZY7H/P5ROQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
-Subject: [net 09/14] net/mlx5e: Fix missing alignment in size of MTT/KLM entries
-Date:   Mon, 21 Nov 2022 18:25:54 -0800
-Message-Id: <20221122022559.89459-10-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>, Chris Mi <cmi@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: [net 10/14] net/mlx5e: Offload rule only when all encaps are valid
+Date:   Mon, 21 Nov 2022 18:25:55 -0800
+Message-Id: <20221122022559.89459-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221122022559.89459-1-saeed@kernel.org>
 References: <20221122022559.89459-1-saeed@kernel.org>
@@ -55,56 +56,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Chris Mi <cmi@nvidia.com>
 
-In the cited patch, an alignment required by the HW spec was mistakenly
-dropped. Bring it back to fix error completions like the below:
+The cited commit adds a for loop to support multiple encapsulations.
+But it only checks if the last encap is valid.
 
-mlx5_core 0000:00:08.0 eth2: Error cqe on cqn 0x40b, ci 0x0, qn 0x104f, opcode 0xd, syndrome 0x2, vendor syndrome 0x68
-00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000030: 00 00 00 00 86 00 68 02 25 00 10 4f 00 00 bb d2
-WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0x0, len: 192
-00000000: 00 00 00 25 00 10 4f 0c 00 00 00 00 00 18 2e 00
-00000010: 90 00 00 00 00 02 00 00 00 00 00 00 20 00 00 00
-00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000080: 08 00 00 00 48 6a 00 02 08 00 00 00 0e 10 00 02
-00000090: 08 00 00 00 0c db 00 02 08 00 00 00 0e 82 00 02
-000000a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-000000b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Fix it by setting slow path flag when one of the encap is invalid.
 
-Fixes: 9f123f740428 ("net/mlx5e: Improve MTT/KSM alignment")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
+Fixes: f493f15534ec ("net/mlx5e: Move flow attr reformat action bit to per dest flags")
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../mellanox/mlx5/core/en/tc_tun_encap.c        |  6 ++----
+ .../mellanox/mlx5/core/en/tc_tun_encap.h        |  3 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 17 ++++++-----------
+ 3 files changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index e3a4f01bcceb..5e41dfdf79c8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -206,10 +206,11 @@ static void mlx5e_disable_blocking_events(struct mlx5e_priv *priv)
- static u16 mlx5e_mpwrq_umr_octowords(u32 entries, enum mlx5e_mpwrq_umr_mode umr_mode)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 5b6a79d2034e..ff73d25bc6eb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -764,8 +764,7 @@ int mlx5e_attach_encap(struct mlx5e_priv *priv,
+ 		       struct net_device *mirred_dev,
+ 		       int out_index,
+ 		       struct netlink_ext_ack *extack,
+-		       struct net_device **encap_dev,
+-		       bool *encap_valid)
++		       struct net_device **encap_dev)
  {
- 	u8 umr_entry_size = mlx5e_mpwrq_umr_entry_size(umr_mode);
-+	u32 sz;
+ 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
+ 	struct mlx5e_tc_flow_parse_attr *parse_attr;
+@@ -880,9 +879,8 @@ int mlx5e_attach_encap(struct mlx5e_priv *priv,
+ 	if (e->flags & MLX5_ENCAP_ENTRY_VALID) {
+ 		attr->esw_attr->dests[out_index].pkt_reformat = e->pkt_reformat;
+ 		attr->esw_attr->dests[out_index].flags |= MLX5_ESW_DEST_ENCAP_VALID;
+-		*encap_valid = true;
+ 	} else {
+-		*encap_valid = false;
++		flow_flag_set(flow, SLOW);
+ 	}
+ 	mutex_unlock(&esw->offloads.encap_tbl_lock);
  
--	WARN_ON_ONCE(entries * umr_entry_size % MLX5_OCTWORD);
-+	sz = ALIGN(entries * umr_entry_size, MLX5_UMR_MTT_ALIGNMENT);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.h
+index d542b8476491..8ad273dde40e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.h
+@@ -17,8 +17,7 @@ int mlx5e_attach_encap(struct mlx5e_priv *priv,
+ 		       struct net_device *mirred_dev,
+ 		       int out_index,
+ 		       struct netlink_ext_ack *extack,
+-		       struct net_device **encap_dev,
+-		       bool *encap_valid);
++		       struct net_device **encap_dev);
  
--	return entries * umr_entry_size / MLX5_OCTWORD;
-+	return sz / MLX5_OCTWORD;
- }
+ int mlx5e_attach_decap(struct mlx5e_priv *priv,
+ 		       struct mlx5e_tc_flow *flow,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 5a6aa61ec82a..bd9936af4582 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1634,7 +1634,6 @@ set_encap_dests(struct mlx5e_priv *priv,
+ 		struct mlx5e_tc_flow *flow,
+ 		struct mlx5_flow_attr *attr,
+ 		struct netlink_ext_ack *extack,
+-		bool *encap_valid,
+ 		bool *vf_tun)
+ {
+ 	struct mlx5e_tc_flow_parse_attr *parse_attr;
+@@ -1651,7 +1650,6 @@ set_encap_dests(struct mlx5e_priv *priv,
+ 	parse_attr = attr->parse_attr;
+ 	esw_attr = attr->esw_attr;
+ 	*vf_tun = false;
+-	*encap_valid = true;
  
- static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 	for (out_index = 0; out_index < MLX5_MAX_FLOW_FWD_VPORTS; out_index++) {
+ 		struct net_device *out_dev;
+@@ -1668,7 +1666,7 @@ set_encap_dests(struct mlx5e_priv *priv,
+ 			goto out;
+ 		}
+ 		err = mlx5e_attach_encap(priv, flow, attr, out_dev, out_index,
+-					 extack, &encap_dev, encap_valid);
++					 extack, &encap_dev);
+ 		dev_put(out_dev);
+ 		if (err)
+ 			goto out;
+@@ -1732,8 +1730,8 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
+ 	struct mlx5e_tc_flow_parse_attr *parse_attr;
+ 	struct mlx5_flow_attr *attr = flow->attr;
+ 	struct mlx5_esw_flow_attr *esw_attr;
+-	bool vf_tun, encap_valid;
+ 	u32 max_prio, max_chain;
++	bool vf_tun;
+ 	int err = 0;
+ 
+ 	parse_attr = attr->parse_attr;
+@@ -1823,7 +1821,7 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
+ 		esw_attr->int_port = int_port;
+ 	}
+ 
+-	err = set_encap_dests(priv, flow, attr, extack, &encap_valid, &vf_tun);
++	err = set_encap_dests(priv, flow, attr, extack, &vf_tun);
+ 	if (err)
+ 		goto err_out;
+ 
+@@ -1853,7 +1851,7 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
+ 	 * (1) there's no error
+ 	 * (2) there's an encap action and we don't have valid neigh
+ 	 */
+-	if (!encap_valid || flow_flag_test(flow, SLOW))
++	if (flow_flag_test(flow, SLOW))
+ 		flow->rule[0] = mlx5e_tc_offload_to_slow_path(esw, flow, &parse_attr->spec);
+ 	else
+ 		flow->rule[0] = mlx5e_tc_offload_fdb_rules(esw, flow, &parse_attr->spec, attr);
+@@ -3759,7 +3757,7 @@ alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
+ 	struct mlx5e_post_act *post_act = get_post_action(flow->priv);
+ 	struct mlx5_flow_attr *attr, *next_attr = NULL;
+ 	struct mlx5e_post_act_handle *handle;
+-	bool vf_tun, encap_valid = true;
++	bool vf_tun;
+ 	int err;
+ 
+ 	/* This is going in reverse order as needed.
+@@ -3781,13 +3779,10 @@ alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
+ 		if (list_is_last(&attr->list, &flow->attrs))
+ 			break;
+ 
+-		err = set_encap_dests(flow->priv, flow, attr, extack, &encap_valid, &vf_tun);
++		err = set_encap_dests(flow->priv, flow, attr, extack, &vf_tun);
+ 		if (err)
+ 			goto out_free;
+ 
+-		if (!encap_valid)
+-			flow_flag_set(flow, SLOW);
+-
+ 		err = actions_prepare_mod_hdr_actions(flow->priv, flow, attr, extack);
+ 		if (err)
+ 			goto out_free;
 -- 
 2.38.1
 
