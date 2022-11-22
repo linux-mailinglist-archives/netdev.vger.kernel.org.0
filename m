@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D9C63440C
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 19:55:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFFB763440D
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 19:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbiKVSzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 13:55:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
+        id S234627AbiKVSzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 13:55:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234544AbiKVSzq (ORCPT
+        with ESMTP id S234562AbiKVSzq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 13:55:46 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA16A7ECBB
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:55:44 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id b12so12312641wrn.2
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:55:44 -0800 (PST)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEFF7EBD5
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:55:46 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id t4so11390326wmj.5
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 10:55:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HvKmf8QkEDqM5bOgMSE5Lyq5esRkdcJRdtODvTTixyM=;
-        b=hBw/+9L4EZL/aiqvkrB5TAyD3y/O0/0QjkftTfqA4937+/nNf4uEMM5ZMz5YIsAF56
-         qvojkyFz9LFmOpSU3VK16EcO7Azp14KafzU3tmkch0zgMgkEm+CcYrrSO15/mwxjwvYX
-         kXJRqYkglrr2udytY7dEl92qDUMHYjvtjeA+m9x2ncnkPpxHlc3vG5JnD3eqn9F52cLp
-         6xMtNgk7VcVcjHh1BaJq+AhZKBH3CytGaLvsZA6ygdmc3PEkK/uFAtLWXEM8vawVI18V
-         sxJ7N6/Y/3/vASRsiTnWtWSXzGOC+W/G7D7g6IP1KIpAcCEot6u2nn2KsCe9kxa7Xfgc
-         hGHA==
+        bh=olRr0NxHpe7WEA5OvPe/+zbTbmND6iy3IpcPyCocNn4=;
+        b=XDyTerCb8EVV6AoUL3AxZE7MLj0YRCgmrGvU9upIGo6MXa8PHKk/Eo5mbUQCOr67yV
+         F55ZLJdSshWxSeRO3TvWT2gJp+xiXb71JMxc5NHC/6tZLiGbTmvCTGtIxlD1U5tSk+2B
+         DUT4rN0P5GV4GZ5xcGwBkx2Usf7rsSEekk5roNt4hlmuSJ46fVcW3YKiAc2oykxhPdWQ
+         e8POFl3V8hRLsJtxmGiyU5VQRN1vrwQSFdzIYdtd6OOR3fWd00MGjOOJEqg1wgaNJWec
+         YQ80VxJrvOkF7zu1SU54jP3Mdq9F4+acG+jCQBr57pBv/Vo8rcfj9ocnQljcXIwlLbvw
+         DEOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HvKmf8QkEDqM5bOgMSE5Lyq5esRkdcJRdtODvTTixyM=;
-        b=DtsEDmuchaKfJIdQzz0vSBc+HsRESJV81s0Ob2UWhTmblz+kps9cy99NI7cSTtfdAz
-         62v/PUyetlOlg/yb1SjP410PA1xabcuzrsUzpduM4rRPc5/pJ/54soz06UplZGbLedfz
-         pgxT3tmxkVf4cL+dyugNIuy/2spe95IE+iUy30QqrCKsqxMUkI2uOVpuy32gx2xlJsWH
-         j5zJiPPMuriEiW1AUEXBj4zM21OLJfFM614VnTkwbhRzABCfREWBz1oCMyHjt6uIPRry
-         kG/7bItW59kw0kf6VChBVBacolHENvuVCEAyRt+aPzksAFhx6TYjl4DMmDr0wVDApDaV
-         PWPQ==
-X-Gm-Message-State: ANoB5pmIA83O+6wGzVpyZpbUvOq+/GdS30Fm135urX7mfIn4sR6yZT5u
-        7hdLKCe/w+VqehyTz9uzyKzF4w==
-X-Google-Smtp-Source: AA0mqf6K2SIKd/zviOqdwHxX5J/DPo4yItO3nGC82en2kcy0xyfUOZytD5E9UtkcqKARGu9/thW4JA==
-X-Received: by 2002:a5d:698c:0:b0:236:4930:2465 with SMTP id g12-20020a5d698c000000b0023649302465mr15170230wru.235.1669143343288;
-        Tue, 22 Nov 2022 10:55:43 -0800 (PST)
+        bh=olRr0NxHpe7WEA5OvPe/+zbTbmND6iy3IpcPyCocNn4=;
+        b=4gU1rScJ4E76l7yfoIplieotjpB/u5B/KIL99dX9sXPX78H9/1hYJZ5dkE6Sdxl/LB
+         TvoY4W0EdvMfZsf7aNXr/DDW87BW1xOLDmry+ejdZSwNAU04Mu3nitM7suiQrIhO8AXS
+         4OeYR3LziRXha81TYCtDVEJZnrxWy0evCGGXei7e+CB1IBG1Bv1TnnittrgcyU4m1WNm
+         k7X726ZV2/gA2LqU3KtUph6Y/QMEXj7ZtUZilVWPRPmfW+uY9ArJZLKm00ZLVNgO24z5
+         7Fk4T6L0jh/JMzOeAvVhsBhE3cBWo2jy+WAVkEItvPmHw4nztZYqwu1PS7nP/mTRzeDM
+         i6Pw==
+X-Gm-Message-State: ANoB5pn57aHhZT7zbe2GohptVtWYFad8bU3w7j4h7KKUSV5MmHipKuuy
+        5kIjZSA0JbwM4BJpEwpq4AM7sQ==
+X-Google-Smtp-Source: AA0mqf79PKvGbOF/tQ/G6OyTaH6xguh1xaQVj8z/yXj3fo+32O5rhTgAeCKHWUYyLB29XaV4o2JI6w==
+X-Received: by 2002:a05:600c:3d08:b0:3cf:e84d:6010 with SMTP id bh8-20020a05600c3d0800b003cfe84d6010mr8195465wmb.197.1669143344628;
+        Tue, 22 Nov 2022 10:55:44 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id c18-20020adffb12000000b002365730eae8sm14478044wrr.55.2022.11.22.10.55.42
+        by smtp.gmail.com with ESMTPSA id c18-20020adffb12000000b002365730eae8sm14478044wrr.55.2022.11.22.10.55.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 10:55:42 -0800 (PST)
+        Tue, 22 Nov 2022 10:55:44 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
@@ -65,9 +65,9 @@ Cc:     Dmitry Safonov <dima@arista.com>, Ard Biesheuvel <ardb@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Salam Noureddine <noureddine@arista.com>,
         Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org
-Subject: [PATCH v5 1/5] jump_label: Prevent key->enabled int overflow
-Date:   Tue, 22 Nov 2022 18:55:30 +0000
-Message-Id: <20221122185534.308643-2-dima@arista.com>
+Subject: [PATCH v5 2/5] net/tcp: Separate tcp_md5sig_info allocation into tcp_md5sig_info_add()
+Date:   Tue, 22 Nov 2022 18:55:31 +0000
+Message-Id: <20221122185534.308643-3-dima@arista.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221122185534.308643-1-dima@arista.com>
 References: <20221122185534.308643-1-dima@arista.com>
@@ -82,165 +82,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. With CONFIG_JUMP_LABEL=n static_key_slow_inc() doesn't have any
-   protection against key->enabled refcounter overflow.
-2. With CONFIG_JUMP_LABEL=y static_key_slow_inc_cpuslocked()
-   still may turn the refcounter negative as (v + 1) may overflow.
-
-key->enabled is indeed a ref-counter as it's documented in multiple
-places: top comment in jump_label.h, Documentation/staging/static-keys.rst,
-etc.
-
-As -1 is reserved for static key that's in process of being enabled,
-functions would break with negative key->enabled refcount:
-- for CONFIG_JUMP_LABEL=n negative return of static_key_count()
-  breaks static_key_false(), static_key_true()
-- the ref counter may become 0 from negative side by too many
-  static_key_slow_inc() calls and lead to use-after-free issues.
-
-These flaws result in that some users have to introduce an additional
-mutex and prevent the reference counter from overflowing themselves,
-see bpf_enable_runtime_stats() checking the counter against INT_MAX / 2.
-
-Prevent the reference counter overflow by checking if (v + 1) > 0.
-Change functions API to return whether the increment was successful.
+Add a helper to allocate tcp_md5sig_info, that will help later to
+do/allocate things when info allocated, once per socket.
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/linux/jump_label.h | 19 +++++++++++---
- kernel/jump_label.c        | 54 +++++++++++++++++++++++++++++---------
- 2 files changed, 57 insertions(+), 16 deletions(-)
+ net/ipv4/tcp_ipv4.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 570831ca9951..c0a02d4c2ea2 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -224,9 +224,9 @@ extern bool arch_jump_label_transform_queue(struct jump_entry *entry,
- 					    enum jump_label_type type);
- extern void arch_jump_label_transform_apply(void);
- extern int jump_label_text_reserved(void *start, void *end);
--extern void static_key_slow_inc(struct static_key *key);
-+extern bool static_key_slow_inc(struct static_key *key);
- extern void static_key_slow_dec(struct static_key *key);
--extern void static_key_slow_inc_cpuslocked(struct static_key *key);
-+extern bool static_key_slow_inc_cpuslocked(struct static_key *key);
- extern void static_key_slow_dec_cpuslocked(struct static_key *key);
- extern int static_key_count(struct static_key *key);
- extern void static_key_enable(struct static_key *key);
-@@ -278,10 +278,21 @@ static __always_inline bool static_key_true(struct static_key *key)
- 	return false;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index f0343538d1f8..2d76d50b8ae8 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1172,6 +1172,24 @@ struct tcp_md5sig_key *tcp_v4_md5_lookup(const struct sock *sk,
  }
+ EXPORT_SYMBOL(tcp_v4_md5_lookup);
  
--static inline void static_key_slow_inc(struct static_key *key)
-+static inline bool static_key_slow_inc(struct static_key *key)
- {
-+	int v;
++static int tcp_md5sig_info_add(struct sock *sk, gfp_t gfp)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++	struct tcp_md5sig_info *md5sig;
 +
- 	STATIC_KEY_CHECK_USE(key);
--	atomic_inc(&key->enabled);
-+	/*
-+	 * Prevent key->enabled getting negative to follow the same semantics
-+	 * as for CONFIG_JUMP_LABEL=y, see kernel/jump_label.c comment.
-+	 */
-+	v = atomic_read(&key->enabled);
-+	do {
-+		if (v < 0 || (v + 1) < 0)
-+			return false;
-+	} while (!likely(atomic_try_cmpxchg(&key->enabled, &v, v + 1)));
-+	return true;
- }
- 
- static inline void static_key_slow_dec(struct static_key *key)
-diff --git a/kernel/jump_label.c b/kernel/jump_label.c
-index 4d6c6f5f60db..677a6674c130 100644
---- a/kernel/jump_label.c
-+++ b/kernel/jump_label.c
-@@ -113,9 +113,38 @@ int static_key_count(struct static_key *key)
- }
- EXPORT_SYMBOL_GPL(static_key_count);
- 
--void static_key_slow_inc_cpuslocked(struct static_key *key)
-+/***
-+ * static_key_fast_inc_not_negative - adds a user for a static key
-+ * @key: static key that must be already enabled
-+ *
-+ * The caller must make sure that the static key can't get disabled while
-+ * in this function. It doesn't patch jump labels, only adds a user to
-+ * an already enabled static key.
-+ *
-+ * Returns true if the increment was done.
-+ */
-+static bool static_key_fast_inc_not_negative(struct static_key *key)
- {
-+	int v;
++	if (rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk)))
++		return 0;
 +
- 	STATIC_KEY_CHECK_USE(key);
-+	/*
-+	 * Negative key->enabled has a special meaning: it sends
-+	 * static_key_slow_inc() down the slow path, and it is non-zero
-+	 * so it counts as "enabled" in jump_label_update().  Note that
-+	 * atomic_inc_unless_negative() checks >= 0, so roll our own.
-+	 */
-+	v = atomic_read(&key->enabled);
-+	do {
-+		if (v <= 0 || (v + 1) < 0)
-+			return false;
-+	} while (!likely(atomic_try_cmpxchg(&key->enabled, &v, v + 1)));
++	md5sig = kmalloc(sizeof(*md5sig), gfp);
++	if (!md5sig)
++		return -ENOMEM;
 +
-+	return true;
++	sk_gso_disable(sk);
++	INIT_HLIST_HEAD(&md5sig->head);
++	rcu_assign_pointer(tp->md5sig_info, md5sig);
++	return 0;
 +}
 +
-+bool static_key_slow_inc_cpuslocked(struct static_key *key)
-+{
- 	lockdep_assert_cpus_held();
- 
- 	/*
-@@ -124,15 +153,9 @@ void static_key_slow_inc_cpuslocked(struct static_key *key)
- 	 * jump_label_update() process.  At the same time, however,
- 	 * the jump_label_update() call below wants to see
- 	 * static_key_enabled(&key) for jumps to be updated properly.
--	 *
--	 * So give a special meaning to negative key->enabled: it sends
--	 * static_key_slow_inc() down the slow path, and it is non-zero
--	 * so it counts as "enabled" in jump_label_update().  Note that
--	 * atomic_inc_unless_negative() checks >= 0, so roll our own.
- 	 */
--	for (int v = atomic_read(&key->enabled); v > 0; )
--		if (likely(atomic_try_cmpxchg(&key->enabled, &v, v + 1)))
--			return;
-+	if (static_key_fast_inc_not_negative(key))
-+		return true;
- 
- 	jump_label_lock();
- 	if (atomic_read(&key->enabled) == 0) {
-@@ -144,16 +167,23 @@ void static_key_slow_inc_cpuslocked(struct static_key *key)
- 		 */
- 		atomic_set_release(&key->enabled, 1);
- 	} else {
--		atomic_inc(&key->enabled);
-+		if (WARN_ON_ONCE(!static_key_fast_inc_not_negative(key))) {
-+			jump_label_unlock();
-+			return false;
-+		}
+ /* This can be called on a newly created socket, from other files */
+ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
+ 		   int family, u8 prefixlen, int l3index, u8 flags,
+@@ -1202,17 +1220,11 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
+ 		return 0;
  	}
- 	jump_label_unlock();
-+	return true;
- }
  
--void static_key_slow_inc(struct static_key *key)
-+bool static_key_slow_inc(struct static_key *key)
- {
-+	bool ret;
++	if (tcp_md5sig_info_add(sk, gfp))
++		return -ENOMEM;
 +
- 	cpus_read_lock();
--	static_key_slow_inc_cpuslocked(key);
-+	ret = static_key_slow_inc_cpuslocked(key);
- 	cpus_read_unlock();
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(static_key_slow_inc);
+ 	md5sig = rcu_dereference_protected(tp->md5sig_info,
+ 					   lockdep_sock_is_held(sk));
+-	if (!md5sig) {
+-		md5sig = kmalloc(sizeof(*md5sig), gfp);
+-		if (!md5sig)
+-			return -ENOMEM;
+-
+-		sk_gso_disable(sk);
+-		INIT_HLIST_HEAD(&md5sig->head);
+-		rcu_assign_pointer(tp->md5sig_info, md5sig);
+-	}
  
+ 	key = sock_kmalloc(sk, sizeof(*key), gfp | __GFP_ZERO);
+ 	if (!key)
 -- 
 2.38.1
 
