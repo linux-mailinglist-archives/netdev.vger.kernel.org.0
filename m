@@ -2,153 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDCB63401F
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48327634025
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbiKVPZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 10:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38000 "EHLO
+        id S229639AbiKVP1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 10:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232783AbiKVPZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:25:35 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545A95C775
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:25:34 -0800 (PST)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NGp3D5jfDzHw0q;
-        Tue, 22 Nov 2022 23:24:56 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 23:25:32 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 23:25:31 +0800
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jiri@nvidia.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-References: <20221122121048.776643-1-yangyingliang@huawei.com>
- <Y3zdaX1I0Y8rdSLn@unreal>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <e311b567-8130-15de-8dbb-06878339c523@huawei.com>
-Date:   Tue, 22 Nov 2022 23:25:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S234010AbiKVP1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:27:01 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAC160689
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:27:00 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id q71so14340229pgq.8
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:27:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3eN8PG1tu0zv6ECYGZ0bUFaylUuOM6J9ZGH6Fn6kJHo=;
+        b=MF2ry8jCjEfJSczD2TlSQRhxgxw/769GkaMOON9oAkxuEIN97YK7PZjef+RkvUqmn6
+         c7AjFerXB1PJT2u2UzDPulK7aXgB17t38IkHEMHHKIogmM4cbG1WwJK6iglP6/5mXOrt
+         JmUu/ADf6amE5NTKz6Npi0hz37SGswSnxd+WcFtY0rB4YMUuwQ2w+DwouTzl4kNxpGZr
+         CrgSBr2d6j1OSLNtjFltNveJZwLExs/unNW9lRX31lK/abl95eV/kH0TDAvbWCtkhje9
+         EkbTVXMgxMLewSuaN4hKU4P4MDuGb074N7xhcU37E00p2MKSPiBCSK+7zoaWT6ce5axZ
+         o2ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3eN8PG1tu0zv6ECYGZ0bUFaylUuOM6J9ZGH6Fn6kJHo=;
+        b=ESKuGKXJYV5DphKEFjI1RSwoPc8hWginziolnYyg3Pm46THhNlfpfOcSENx8NZPDjQ
+         KNp7MnEiqH815GRN9gLPK8k1VKJVlwVgOEfax6lit4Yo9B/p4nLBMtRG3tzza9rVamZC
+         dRzx+XJ8NKaNxmc8iwSSApIFgYvi/glsxUQos1B4HS9k+cwipOgiOBy1Py92qzSlNwHU
+         L/LEtUKq9a83rH8luuf8anSegzzFFR/HJD3E6/HUKf7+ZnSWbBkK1j2Lprz4BYVNlYj9
+         8x6XJxmCEwpo64CVyuvWy1plbZSRXmB7LY1WyL7G7Fnbjs6DYYgYy3DI5iUAJ08AzhcH
+         nciw==
+X-Gm-Message-State: ANoB5pmbdKTOV0JDriEG1HYA00bJbkehmRb+KRgXEUXlxevaYWSME+Nv
+        R+dTVsop5cS3FcJ3L4Fc4Q83ip3bHABnkw==
+X-Google-Smtp-Source: AA0mqf62k0bqINVN7BK4sgHzvRy7LZL/c5HZpP1IiynzWyp5FdyrjeP2xnyMjAcErD7lncdNpbEc4w==
+X-Received: by 2002:a62:5e41:0:b0:56b:db09:a235 with SMTP id s62-20020a625e41000000b0056bdb09a235mr6211427pfb.20.1669130820272;
+        Tue, 22 Nov 2022 07:27:00 -0800 (PST)
+Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
+        by smtp.gmail.com with ESMTPSA id m9-20020a170902f64900b00176d218889esm12161633plg.228.2022.11.22.07.26.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 07:26:59 -0800 (PST)
+From:   Akihiko Odaki <akihiko.odaki@daynix.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Akihiko Odaki <akihiko.odaki@daynix.com>
+Subject: [PATCH v2] igbvf: Regard vf reset nack as success
+Date:   Wed, 23 Nov 2022 00:26:30 +0900
+Message-Id: <20221122152630.76190-1-akihiko.odaki@daynix.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-In-Reply-To: <Y3zdaX1I0Y8rdSLn@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+vf reset nack actually represents the reset operation itself is
+performed but no address is assigned. Therefore, e1000_reset_hw_vf
+should fill the "perm_addr" with the zero address and return success on
+such an occasion. This prevents its callers in netdev.c from saying PF
+still resetting, and instead allows them to correctly report that no
+address is assigned.
 
-On 2022/11/22 22:32, Leon Romanovsky wrote:
-> On Tue, Nov 22, 2022 at 08:10:48PM +0800, Yang Yingliang wrote:
->> I got a UAF report as following when doing fault injection test:
->>
->> BUG: KASAN: use-after-free in devlink_compat_running_version+0x5b9/0x6a0
->> Read of size 8 at addr ffff88810ac591f0 by task systemd-udevd/458
->>
->> CPU: 2 PID: 458 Comm: systemd-udevd Not tainted 6.1.0-rc5-00155-ga9d2b54dd4e7-dirty #1359
->> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
->> Call Trace:
->>   <TASK>
->>   kasan_report+0x90/0x190
->>   devlink_compat_running_version+0x5b9/0x6a0
->>   dev_ethtool+0x2ca/0x340
->>   dev_ioctl+0x16c/0xff0
->>   sock_do_ioctl+0x1ae/0x220
->>
->> Allocated by task 456:
->>   kasan_save_stack+0x1c/0x40
->>   kasan_set_track+0x21/0x30
->>   __kasan_kmalloc+0x7e/0x90
->>   __kmalloc+0x59/0x1b0
->>   devlink_alloc_ns+0xf7/0xa10
->>   nsim_drv_probe+0xa8/0x150 [netdevsim]
->>   really_probe+0x1ff/0x660
->>
->> Freed by task 456:
->>   kasan_save_stack+0x1c/0x40
->>   kasan_set_track+0x21/0x30
->>   kasan_save_free_info+0x2a/0x50
->>   __kasan_slab_free+0x102/0x190
->>   __kmem_cache_free+0xca/0x400
->>   nsim_drv_probe.cold.31+0x2af/0xf62 [netdevsim]
->>   really_probe+0x1ff/0x660
->>
->> It happened like this:
->>
->> processor A							processor B
->> nsim_drv_probe()
->>    devlink_alloc_ns()
->>    nsim_dev_port_add_all()
->>      __nsim_dev_port_add() // add eth1 successful
->> 								dev_ethtool()
->> 								  ethtool_get_drvinfo(eth1)
->> 								    netdev_to_devlink_get(eth1)
->> 								      devlink_try_get() // get devlink here
->>      __nsim_dev_port_add() // add eth2 failed, goto error
->>        devlink_free() // it's called in the error path
->> 								  devlink_compat_running_version() <- causes UAF
->>    devlink_register() // it's in normal path, not called yet
->>
->> There is two ports to add in nsim_dev_port_add_all(), if first
->> port is added successful, the devlink is visable and can be get
->> by devlink_try_get() on another cpu, but it is not registered
->> yet. And then the second port is failed to added, in the error
->> path, devlink_free() is called, at last it causes UAF.
->>
->> Add check in devlink_try_get(), if the 'devlink' is not registered
->> it returns NULL to avoid UAF like this case.
->>
->> Fixes: a62fdbbe9403 ("netdevsim: implement ndo_get_devlink_port")
->> Reported-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   net/core/devlink.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index 89baa7c0938b..6453ac0558fb 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -250,6 +250,9 @@ void devlink_put(struct devlink *devlink)
->>   
->>   struct devlink *__must_check devlink_try_get(struct devlink *devlink)
->>   {
->> +	 if (!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED))
->> +		return NULL;
->> +
-> Please fix nsim instead of devlink.
-I think if devlink is not registered, it can not be get and used, but there
-is no API for driver to check this, can I introduce a new helper name
-devlink_is_registered() for driver using.
+Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+---
+ drivers/net/ethernet/intel/igbvf/vf.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-Thanks,
-Yang
->
-> Thanks
->
->>   	if (refcount_inc_not_zero(&devlink->refcount))
->>   		return devlink;
->>   	return NULL;
->> -- 
->> 2.25.1
->>
-> .
+diff --git a/drivers/net/ethernet/intel/igbvf/vf.c b/drivers/net/ethernet/intel/igbvf/vf.c
+index b8ba3f94c363..2691ae2a8002 100644
+--- a/drivers/net/ethernet/intel/igbvf/vf.c
++++ b/drivers/net/ethernet/intel/igbvf/vf.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright(c) 2009 - 2018 Intel Corporation. */
+ 
++#include <linux/etherdevice.h>
++
+ #include "vf.h"
+ 
+ static s32 e1000_check_for_link_vf(struct e1000_hw *hw);
+@@ -131,11 +133,18 @@ static s32 e1000_reset_hw_vf(struct e1000_hw *hw)
+ 		/* set our "perm_addr" based on info provided by PF */
+ 		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
+ 		if (!ret_val) {
+-			if (msgbuf[0] == (E1000_VF_RESET |
+-					  E1000_VT_MSGTYPE_ACK))
++			switch (msgbuf[0]) {
++			case E1000_VF_RESET | E1000_VT_MSGTYPE_ACK:
+ 				memcpy(hw->mac.perm_addr, addr, ETH_ALEN);
+-			else
++				break;
++
++			case E1000_VF_RESET | E1000_VT_MSGTYPE_NACK:
++				eth_zero_addr(hw->mac.perm_addr);
++				break;
++
++			default:
+ 				ret_val = -E1000_ERR_MAC_INIT;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.38.1
+
