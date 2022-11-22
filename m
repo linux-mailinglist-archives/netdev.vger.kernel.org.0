@@ -2,142 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D716D634917
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:20:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E841634941
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 22:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234811AbiKVVUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 16:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46154 "EHLO
+        id S232685AbiKVV2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 16:28:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233174AbiKVVUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:20:21 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EC18F3C3;
-        Tue, 22 Nov 2022 13:20:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669152017; x=1700688017;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ads2cVRvZI8k8jJJ/EENd7OUJlc/7SM5FY/+3wbCKkk=;
-  b=RbwD1C3BA7JaRZqFrOM/Ty1NNyWBKb4cMJM6DBscm3k6rG6z5FcyggF+
-   JYxJ6YhtZOYq4nAyXEhC/H1jD15LuM8gKj+NTNszABb6KWq2ijk9c963u
-   BCZWsb6aPxBuZhbXHGsZGHJYgoGg7Qhow/bTIM5bTbd9gBsZHoF76z7WX
-   qZSYMFzFmXeFAmjtCyp+/HEJmVnOiBVRgZ5WGeef9XbIG64c81ka84BXU
-   XTIio4mS26CiPH1sN0mdj0+OWg5gOxWXDfkvOZIxvKg9IE6raDzYqIKxg
-   iShtMwfCguKHL9XyuHPvGaE2ePz0RhZ4Z3XLYrjzF7ceISZKhPpbEWVTt
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,185,1665471600"; 
-   d="scan'208";a="190134967"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2022 14:20:17 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 22 Nov 2022 14:20:14 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 22 Nov 2022 14:20:14 -0700
-Date:   Tue, 22 Nov 2022 22:25:04 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next v3 5/7] net: lan966x: Update dma_dir of
- page_pool_params
-Message-ID: <20221122212504.nrwaucgab3lqqxpo@soft-dev3-1>
-References: <20221121212850.3212649-1-horatiu.vultur@microchip.com>
- <20221121212850.3212649-6-horatiu.vultur@microchip.com>
- <20221122114339.419188-1-alexandr.lobakin@intel.com>
+        with ESMTP id S232572AbiKVV2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 16:28:18 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1656022529;
+        Tue, 22 Nov 2022 13:28:18 -0800 (PST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net 0/3] Netfilter fixes for net
+Date:   Tue, 22 Nov 2022 22:28:11 +0100
+Message-Id: <20221122212814.63177-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20221122114339.419188-1-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/22/2022 12:43, Alexander Lobakin wrote:
-> 
-> From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> Date: Mon, 21 Nov 2022 22:28:48 +0100
-> 
-> > To add support for XDP_TX it is required to be able to write to the DMA
-> > area therefore it is required that the pages will be mapped using
-> > DMA_BIDIRECTIONAL flag.
-> > Therefore check if there are any xdp programs on the interfaces and in
-> > that case set DMA_BIDRECTIONAL otherwise use DMA_FROM_DEVICE.
-> > Therefore when a new XDP program is added it is required to redo the
-> > page_pool.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  .../ethernet/microchip/lan966x/lan966x_fdma.c | 29 ++++++++++++++----
-> >  .../ethernet/microchip/lan966x/lan966x_main.h |  2 ++
-> >  .../ethernet/microchip/lan966x/lan966x_xdp.c  | 30 +++++++++++++++++++
-> >  3 files changed, 55 insertions(+), 6 deletions(-)
-> 
-> [...]
-> 
-> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-> > index 8ebde1eb6a09c..05c5a28206558 100644
-> > --- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-> > @@ -11,6 +11,8 @@ static int lan966x_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
-> >       struct lan966x_port *port = netdev_priv(dev);
-> >       struct lan966x *lan966x = port->lan966x;
-> >       struct bpf_prog *old_prog;
-> > +     bool old_xdp, new_xdp;
-> > +     int err;
-> >
-> >       if (!lan966x->fdma) {
-> >               NL_SET_ERR_MSG_MOD(xdp->extack,
-> > @@ -18,7 +20,20 @@ static int lan966x_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
-> >               return -EOPNOTSUPP;
-> >       }
-> >
-> > +     old_xdp = lan966x_xdp_present(lan966x);
-> >       old_prog = xchg(&port->xdp_prog, xdp->prog);
-> > +     new_xdp = lan966x_xdp_present(lan966x);
-> > +
-> > +     if (old_xdp != new_xdp)
-> > +             goto out;
-> 
-> Shouldn't it be the other way around? E.g. when there's no prog and
-> you're installing it or there is a prog and we're removing it from
-> the interface, DMA dir must be changed, so we reload the Pools, but
-> if `old_xdp == new_xdp` we should just hotswap them and goto out?
+Hi,
 
-Argh! Yes, it needs to be the other way around.
-> 
-> > +
-> > +     err = lan966x_fdma_reload_page_pool(lan966x);
-> > +     if (err) {
-> > +             xchg(&port->xdp_prog, old_prog);
-> > +             return err;
-> > +     }
-> > +
-> > +out:
-> >       if (old_prog)
-> >               bpf_prog_put(old_prog);
-> >
-> 
-> [...]
-> 
-> > --
-> > 2.38.0
-> 
-> Thanks,
-> Olek
+The following patch contains another round of Netfilter fixes for net:
 
--- 
-/Horatiu
+1) Fix regression in ipset hash:ip with IPv4 range, from Vishwanath Pai.
+   This is fixing up a bug introduced in the 6.0 release.
+
+2) The "netfilter: ipset: enforce documented limit to prevent allocating
+   huge memory" patch contained a wrong condition which makes impossible to
+   add up to 64 clashing elements to a hash:net,iface type of set while it
+   is the documented feature of the set type. The patch fixes the condition
+   and thus makes possible to add the elements while keeps preventing
+   allocating huge memory, from Jozsef Kadlecsik. This has been broken
+   for several releases.
+
+3) Missing locking when updating the flow block list which might lead
+   a reader to crash. This has been broken since the introduction of the
+   flowtable hardware offload support.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit badbda1a01860c80c6ab60f329ef46c713653a27:
+
+  octeontx2-af: cn10k: mcs: Fix copy and paste bug in mcs_bbe_intr_handler() (2022-11-21 13:04:28 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
+
+for you to fetch changes up to bcd9e3c1656d0f7dd9743598c65c3ae24efb38d0:
+
+  netfilter: flowtable_offload: add missing locking (2022-11-22 22:17:12 +0100)
+
+----------------------------------------------------------------
+Felix Fietkau (1):
+      netfilter: flowtable_offload: add missing locking
+
+Jozsef Kadlecsik (1):
+      netfilter: ipset: restore allowing 64 clashing elements in hash:net,iface
+
+Vishwanath Pai (1):
+      netfilter: ipset: regression in ip_set_hash_ip.c
+
+ net/netfilter/ipset/ip_set_hash_gen.h | 2 +-
+ net/netfilter/ipset/ip_set_hash_ip.c  | 8 +++-----
+ net/netfilter/nf_flow_table_offload.c | 4 ++++
+ 3 files changed, 8 insertions(+), 6 deletions(-)
